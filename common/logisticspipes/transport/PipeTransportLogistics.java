@@ -143,11 +143,12 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 		}
 		
 		ForgeDirection blocked = null;
+
+		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetRoutedItem(data);
 		
-		if(!(data instanceof IRoutedItem) && data != null) {
+		if(routedItem.getDestinationUUID() == null) {
 			TravelingItem result = getPipe().getQueuedForItemStack(data.getItemStack());
 			if(result != null) {
-				IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetRoutedItem(data);
 				if(routedItem instanceof RoutedEntityItem && result instanceof RoutedEntityItem) {
 					((RoutedEntityItem)routedItem).useInformationFrom((RoutedEntityItem)result);
 					blocked = data.input.getOpposite();
@@ -157,7 +158,6 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 			}
 		}
 		
-		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetRoutedItem(data);
 		ForgeDirection value;
 		if(this.getPipe().stillNeedReplace()){
 			routedItem.setDoNotBuffer(false);

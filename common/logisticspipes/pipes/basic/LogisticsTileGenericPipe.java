@@ -23,16 +23,18 @@ import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.transport.TileGenericPipe;
+import cofh.api.transport.IItemConduit;
 import dan200.computer.api.IComputerAccess;
 import dan200.computer.api.ILuaContext;
 import dan200.computer.api.IPeripheral;
 
-@ModDependentInterface(modId={"ComputerCraft"}, interfacePath={"dan200.computer.api.IPeripheral"})
-public class LogisticsTileGenericPipe extends TileGenericPipe implements IPeripheral {
+@ModDependentInterface(modId={"ComputerCraft", "CoFHCore"}, interfacePath={"dan200.computer.api.IPeripheral", "cofh.api.transport.IItemConduit"})
+public class LogisticsTileGenericPipe extends TileGenericPipe implements IPeripheral, IItemConduit {
 
 	public boolean turtleConnect[] = new boolean[7];
 	
@@ -494,5 +496,16 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPeriph
 
 	public int getLastCCID() {
 		return SimpleServiceLocator.ccProxy.getLastCCID(this);
+	}
+
+	// To remove IF TE supports BC pipes natively.
+	@Override
+	@ModDependentMethod(modId="CoFHCore")
+	public ItemStack sendItems(ItemStack stack, ForgeDirection dir) {
+		if(this.injectItem(stack, true, dir) == stack.stackSize) {
+			return null;
+		} else {
+			return stack;
+		}
 	}
 }

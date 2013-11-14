@@ -21,7 +21,6 @@
 	<property name="ic2.dir"              value="${mcp.dir}/unpack/ic2"/>
 	<property name="cc.dir"               value="${mcp.dir}/unpack/cc"/>
 	<property name="thaumcraft.dir"       value="${mcp.dir}/unpack/thaumcraft"/>
-	<property name="te.dir"               value="${mcp.dir}/unpack/te"/>
 
 	<property name="minecraftsrc.dir"        value="${mcp.dir}/src/minecraft"/>
 
@@ -40,7 +39,6 @@
 	<property name="ic2.version"          value="2.0.143-experimental"/>
 	<property name="cc.version"           value="1.56"/>
 	<property name="thaumcraft.version"   value="4.0.0"/>
-	<property name="te.version"           value="2.3.0"/>
 	<property name="lombok.version"       value="0.11.8"/>
 	<property name="jarjar.version"       value="1.4"/>
 	<property name="guava.version"        value="15.0-SNAPSHOT"/>
@@ -60,7 +58,6 @@
 		<get src="${downloadserver.full}industrialcraft-2-api_${ic2.version}.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}ComputerCraftAPI${cc.version}.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}Thaumcraft${thaumcraft.version}-API.zip" dest="${download.dir}" usetimestamp="True"/>
-		<get src="${downloadserver.full}ThermalExpansion-API-${te.version}.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}ant-contrib-${antcont.version}-bin.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}jarjar-${jarjar.version}.jar" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}guava-${guava.version}.jar" dest="${download.dir}" usetimestamp="True"/>
@@ -145,12 +142,6 @@
 			</fileset>
 		</unzip>
 
-		<unzip dest="${te.dir}" failOnEmptyArchive="true">
-			<fileset dir="${download.dir}">
-				<include name="ThermalExpansion-API-${te.version}.zip"/>
-			</fileset>
-		</unzip>
-
 		<echo message="Unpacking finished"/>
 
 		<copy file="${download.dir}/lombok-${lombok.version}.jar" todir="${mcp.dir}/lib"/>
@@ -192,13 +183,6 @@
 		<!-- Copy ThaumCraft API source -->
 		<copy todir="${minecraftsrc.dir}">
 			<fileset dir="${thaumcraft.dir}"/>
-		</copy>
-
-		<echo message="Copied ThaumCraft API"/>
-
-		<!-- Copy TE API source -->
-		<copy todir="${minecraftsrc.dir}">
-			<fileset dir="${te.dir}"/>
 		</copy>
 
 		<echo message="Copied TE API"/>

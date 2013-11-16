@@ -34,18 +34,20 @@ import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerHandler;
 import buildcraft.api.power.PowerHandler.PowerReceiver;
 import buildcraft.api.power.PowerHandler.Type;
+import cofh.api.energy.IEnergyHandler;
 import dan200.computer.api.IComputerAccess;
 import dan200.computer.api.ILuaContext;
 import dan200.computer.api.IPeripheral;
 
-@ModDependentInterface(modId={"IC2", "ComputerCraft"}, interfacePath={"ic2.api.energy.tile.IEnergySink", "dan200.computer.api.IPeripheral"})
-public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPowerReceptor, ILogisticsPowerProvider, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IPeripheral {
+@ModDependentInterface(modId={"IC2", "ComputerCraft", "CoFHCore"}, interfacePath={"ic2.api.energy.tile.IEnergySink", "dan200.computer.api.IPeripheral", "cofh.api.energy.IEnergyHandler"})
+public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPowerReceptor, ILogisticsPowerProvider, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IPeripheral, IEnergyHandler {
 
 	// true if it needs more power, turns off at full, turns on at 50%.
 	public boolean needMorePowerTriggerCheck = true;
 	
 	public final int BuildCraftMultiplier = 5;
 	public final int IC2Multiplier = 2;
+	public final int RFMultiplier = 5;
 	public final int MAX_STORAGE = 2000000;
 	
 	private PowerHandler powerFramework;
@@ -373,8 +375,51 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	public PowerReceiver getPowerReceiver(ForgeDirection side) {
 		return powerFramework.getPowerReceiver();
 	}
+
 	@Override
 	public boolean isHUDInvalid() {
 		return this.isInvalid();
+	}
+
+	@Override
+	@ModDependentMethod(modId="CoFHCore")
+	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
+		float space = freeSpace() / RFMultiplier;
+		float minrequest = 1.01f / RFMultiplier;	//we round down, so always ask for a bit over 1LP-equivalent
+		if(space < minrequest)
+			space = minrequest;
+		int availablelp = (int) Math.min(maxReceive, space) * RFMultiplier;
+		if(availablelp > 0) {
+			int totake = (int) availablelp / RFMultiplier;
+			if(!simulate) {
+				addEnergy(availablelp);
+			}
+			return totake;
+		}
+		return 0;
+	}
+
+	@Override
+	@ModDependentMethod(modId="CoFHCore")
+	public int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate) {
+		return 0;
+	}
+
+	@Override
+	@ModDependentMethod(modId="CoFHCore")
+	public boolean canInterface(ForgeDirection from) {
+		return true;
+	}
+
+	@Override
+	@ModDependentMethod(modId="CoFHCore")
+	public int getEnergyStored(ForgeDirection from) {
+		return 0;
+	}
+
+	@Override
+	@ModDependentMethod(modId="CoFHCore")
+	public int getMaxEnergyStored(ForgeDirection from) {
+		return MAX_STORAGE * RFMultiplier;
 	}
 }

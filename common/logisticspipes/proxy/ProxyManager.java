@@ -147,7 +147,7 @@ public class ProxyManager {
 			LogisticsPipes.log.info("Loaded ThermalExpansion DummyProxy");
 		}
 		
-		if(Loader.isModLoaded("BetterStorage")) {
+		if(Loader.isModLoaded("betterstorage")) {
 			SimpleServiceLocator.setBetterStorageProxy(new BetterStorageProxy());
 			LogisticsPipes.log.info("Loaded BetterStorage Proxy");
 		} else {

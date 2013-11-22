@@ -19,7 +19,7 @@ public class SpecialInventoryHandlerManager {
 			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new DigitalChestHandler());
 		}
 
-		if(Loader.isModLoaded("BetterStorage")) {
+		if(Loader.isModLoaded("betterstorage")) {
 			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new CrateInventoryHandler());
 		}
 

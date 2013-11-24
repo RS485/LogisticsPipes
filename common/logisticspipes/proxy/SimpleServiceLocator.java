@@ -15,6 +15,7 @@ import logisticspipes.interfaces.routing.IDirectConnectionManager;
 import logisticspipes.logistics.ILogisticsFluidManager;
 import logisticspipes.logistics.ILogisticsManager;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
+import logisticspipes.proxy.interfaces.IBetterSignProxy;
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
@@ -153,5 +154,10 @@ public final class SimpleServiceLocator {
 	public static IFactorizationProxy factorizationProxy;
 	public static void setFactorizationProxy(IFactorizationProxy proxy) {
 		factorizationProxy = proxy;
+	}
+	
+	public static IBetterSignProxy betterSignProxy;
+	public static void setBetterSignProxy(IBetterSignProxy proxy) {
+		betterSignProxy = proxy;
 	}
 }

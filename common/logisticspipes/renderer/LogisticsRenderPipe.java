@@ -6,6 +6,7 @@ import java.util.List;
 
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.block.Block;
@@ -169,7 +170,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
         
         GL11.glTranslatef(0.0F, -0.3125F, -0.31F);
         GL11.glRotatef(180, 0.0f, 1.0f, 0.0f);
-        this.modelSign.signStick.showModel = false;
+        SimpleServiceLocator.betterSignProxy.hideSignSticks(this.modelSign);
 		Minecraft.getMinecraft().renderEngine.bindTexture(SIGN);
 
         GL11.glPushMatrix();

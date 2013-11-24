@@ -6,12 +6,14 @@ import java.util.List;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.bettersign.BetterSignProxy;
 import logisticspipes.proxy.bs.BetterStorageProxy;
 import logisticspipes.proxy.cc.CCProxy;
 import logisticspipes.proxy.cc.CCTurtleProxy;
 import logisticspipes.proxy.factorization.FactorizationProxy;
 import logisticspipes.proxy.forestry.ForestryProxy;
 import logisticspipes.proxy.ic2.IC2Proxy;
+import logisticspipes.proxy.interfaces.IBetterSignProxy;
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.IFactorizationProxy;
@@ -28,6 +30,7 @@ import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.model.ModelSign;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -208,5 +211,18 @@ public class ProxyManager {
 			});
 			LogisticsPipes.log.info("Loaded Factorization DummyProxy");
 		}
+		
+		if(Loader.isModLoaded("BetterSignsMod")) {
+			SimpleServiceLocator.setBetterSignProxy(new BetterSignProxy());
+			LogisticsPipes.log.info("Loaded BetterSign Proxy");
+		} else {
+			SimpleServiceLocator.setBetterSignProxy(new IBetterSignProxy() {
+				@Override public void hideSignSticks(ModelSign model) {
+					model.signStick.showModel = false;
+				}
+			});
+			LogisticsPipes.log.info("Loaded BetterSign DummyProxy");
+		}
+		
 	}
 }

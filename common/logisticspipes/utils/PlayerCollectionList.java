@@ -60,9 +60,13 @@ public class PlayerCollectionList {
 	}
 
 	public boolean remove(EntityPlayer player) {
-		return players.remove(new EqualWeakReference<EntityPlayer>(player));
+		if(this.contains(player) && players.size() > 0) {
+			return players.remove(new EqualWeakReference<EntityPlayer>(player));
+		} else {
+			return false;
+		}
 	}
-
+	
 	public boolean contains(EntityPlayer player) {
 		checkPlayers();
 		return players.contains(new EqualWeakReference<EntityPlayer>(player));

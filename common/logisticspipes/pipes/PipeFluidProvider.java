@@ -159,6 +159,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 		for(Pair<TileEntity, ForgeDirection> pair:getAdjacentTanks(false)) {
 			FluidTankInfo[] tanks = ((IFluidHandler)pair.getValue1()).getTankInfo(pair.getValue2().getOpposite());
 			for(FluidTankInfo tank:tanks) {
+				if(tank == null) continue;
 				FluidStack liquid;
 				if((liquid = tank.fluid) != null && liquid.fluidID != 0) {
 					FluidIdentifier ident = FluidIdentifier.get(liquid);

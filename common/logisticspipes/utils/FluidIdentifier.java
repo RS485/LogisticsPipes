@@ -204,7 +204,8 @@ public class FluidIdentifier {
 	
 	@Override
 	public String toString() {
-		return name + "/" + fluidID + ":" + tag.toString();
+		String t = tag != null ? tag.toString() : "null"
+		return name + "/" + fluidID + ":" + t;
 	}
 	
 	public FluidIdentifier next() {

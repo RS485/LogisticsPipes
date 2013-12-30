@@ -500,9 +500,22 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPeriph
 
 	// To remove IF TE supports BC pipes natively.
 	@Override
+	@Deprecated
 	@ModDependentMethod(modId="CoFHCore")
 	public ItemStack sendItems(ItemStack stack, ForgeDirection dir) {
-		if(this.injectItem(stack, true, dir) == stack.stackSize) {
+		return insertItem(dir, stack);
+	}
+
+	@Override
+	public ItemStack insertItem(ForgeDirection dir, ItemStack stack) {
+		return insertItem(dir, stack, false);
+	}
+
+	@Override
+	@Deprecated
+	@ModDependentMethod(modId="CoFHCore")
+	public ItemStack insertItem(ForgeDirection dir, ItemStack stack, boolean simulate) {
+		if(this.injectItem(stack, !simulate, dir) == stack.stackSize) {
 			return null;
 		} else {
 			return stack;

@@ -202,7 +202,7 @@ public class ProxyManager {
 			LogisticsPipes.log.info("Loaded Modular Powersuits DummyProxy");
 		}
 		
-		if(Loader.isModLoaded("factorization") && false) {
+		if(Loader.isModLoaded("factorization")) {
 			SimpleServiceLocator.setFactorizationProxy(new FactorizationProxy());
 			LogisticsPipes.log.info("Loaded Factorization Proxy");
 		} else {

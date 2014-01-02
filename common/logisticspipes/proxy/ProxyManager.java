@@ -212,7 +212,7 @@ public class ProxyManager {
 			LogisticsPipes.log.info("Loaded Factorization DummyProxy");
 		}
 		
-		if(Loader.isModLoaded("BetterSignsMod")) {
+		if(Loader.isModLoaded("BetterSignsMod") && MainProxy.isClient()) {
 			SimpleServiceLocator.setBetterSignProxy(new BetterSignProxy());
 			LogisticsPipes.log.info("Loaded BetterSign Proxy");
 		} else {

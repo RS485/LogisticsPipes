@@ -34,6 +34,7 @@ import buildcraft.core.proxy.CoreProxy;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.TravelingItem;
+import buildcraft.transport.pipes.events.PipeEventItem;
 
 public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 
@@ -149,7 +150,7 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 			entityitem.motionX = (float) worldObj.rand.nextGaussian() * f3 + motion.x;
 			entityitem.motionY = (float) worldObj.rand.nextGaussian() * f3 + motion.y;
 			entityitem.motionZ = (float) worldObj.rand.nextGaussian() * f3 + motion.z;
-			worldObj.spawnEntityInWorld(entityitem);
+			//worldObj.spawnEntityInWorld(entityitem);
 			remove();
 
 			return entityitem;
@@ -272,7 +273,13 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 				chassi.queueRoutedItem(SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(newItem), orientation, ItemSendMode.Fast);
 			} else {
 				//this should never happen
-				newItem.toEntityItem();
+				PipeEventItem.DropItem event = new PipeEventItem.DropItem(newItem, newItem.toEntityItem());
+				if(container instanceof TileGenericPipe) {
+					((TileGenericPipe)container).pipe.handlePipeEvent(event);
+				}
+				if (event.entity == null)
+					return;
+				container.worldObj.spawnEntityInWorld(event.entity);
 			}
 		}
 	}

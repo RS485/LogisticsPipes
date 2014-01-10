@@ -9,6 +9,7 @@
 package logisticspipes;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -227,6 +228,20 @@ public class LogisticsPipes {
 	
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
+		String BCVersion = null;
+		try {
+			Field versionField = buildcraft.core.Version.class.getDeclaredField("VERSION");
+			BCVersion = (String) versionField.get(null);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		if(BCVersion != null) {
+			if(!BCVersion.equals("@VERSION@") && !BCVersion.contains("4.2.2")) {
+				throw new RuntimeException("The BC Version '" + BCVersion + "' is not supported by this LP version.");
+			}
+		} else {
+			log.info("Couldn't check the BC Version.");
+		}
 		
 		RouterManager manager = new RouterManager();
 		SimpleServiceLocator.setRouterManager(manager);

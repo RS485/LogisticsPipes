@@ -235,9 +235,10 @@ public class LogisticsPipes {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+		String expectedBCVersion = "4.2.2";
 		if(BCVersion != null) {
-			if(!BCVersion.equals("@VERSION@") && !BCVersion.contains("4.2.2")) {
-				throw new RuntimeException("The BC Version '" + BCVersion + "' is not supported by this LP version.");
+			if(!BCVersion.equals("@VERSION@") && !BCVersion.contains(expectedBCVersion)) {
+				throw new RuntimeException("The BC Version '" + BCVersion + "' is not supported by this LP version. Please use '" + expectedBCVersion + "'");
 			}
 		} else {
 			log.info("Couldn't check the BC Version.");

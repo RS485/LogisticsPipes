@@ -8,7 +8,10 @@
 
 package logisticspipes.transport;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,6 +46,7 @@ import buildcraft.core.proxy.CoreProxy;
 import buildcraft.transport.IItemTravelingHook;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TransportConstants;
+import buildcraft.transport.TravelerSet;
 import buildcraft.transport.TravelingItem;
 
 public class PipeTransportLogistics extends PipeTransportItems implements IItemTravelingHook {
@@ -51,6 +55,8 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 //	private CoreRoutedPipe _pipe = null;
 	private final HashMap<ItemStack,Pair<Integer /* Time */, Integer /* BufferCounter */>> _itemBuffer = new HashMap<ItemStack, Pair<Integer, Integer>>(); 
 //	private Chunk chunk;
+	
+	private static Field toLoad;
 	
 	public PipeTransportLogistics() {
 		allowBouncing = true;
@@ -202,6 +208,7 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
             NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttaglist.tagAt(i);
             _itemBuffer.put(ItemStack.loadItemStackFromNBT(nbttagcompound1), new Pair<Integer, Integer>(_bufferTimeOut, 0));
         }
+        
 	}
 	
 	@Override

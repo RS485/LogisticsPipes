@@ -253,7 +253,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 		ClassReader reader = new ClassReader(bytes);
 		reader.accept(node, 0);
 		for(MethodNode m:node.methods) {
-			if(m.name.equals("readFromNBT") || m.name.equals("fhjsadlfghsdklfhdsjahflsda")) { //TODO find Obfuscated name
+			if(m.name.equals("readFromNBT")) {
 				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
 
 					// logisticspipes.asm.LogisticsASMHookClass.clearInvalidFluidContainers(items);

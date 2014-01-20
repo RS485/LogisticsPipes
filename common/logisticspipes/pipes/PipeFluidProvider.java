@@ -42,7 +42,8 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 		if (!manager.hasOrders() || getWorld().getTotalWorldTime() % 6 != 0) return;
 		
 		Triplet<FluidIdentifier, Integer, IRequestFluid> order = manager.getFirst();
-		int amountToSend = Math.min(order.getValue2(), 5000);
+		int amountToSend, attemptedAmount;
+		amountToSend = attemptedAmount = Math.min(order.getValue2(), 5000);
 		for(Pair<TileEntity, ForgeDirection> pair:getAdjacentTanks(false)) {
 			if(amountToSend <= 0) break;
 			FluidTankInfo[] tanks = ((IFluidHandler)pair.getValue1()).getTankInfo(pair.getValue2().getOpposite());
@@ -52,10 +53,11 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 				if((liquid = tank.fluid) != null) {
 					if(order.getValue1() == FluidIdentifier.get(liquid)) {
 						int amount = Math.min(liquid.amount, amountToSend);
-						amountToSend -= amount;
 						FluidStack drained = ((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), amount, false);
 						if(drained != null && order.getValue1() == FluidIdentifier.get(drained)) {
 							drained = ((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), amount, true);
+							amount = drained.amount;
+							amountToSend -= amount;
 							ItemStack stack = SimpleServiceLocator.logisticsFluidManager.getFluidContainer(drained);
 							IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stack);
 							item.setDestination(order.getValue3().getRouter().getSimpleID());
@@ -68,7 +70,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 				}
 			}
 		}
-		if(amountToSend > 0) {
+		if(amountToSend >= attemptedAmount) {
 			manager.sendFailed();
 		}
 	}

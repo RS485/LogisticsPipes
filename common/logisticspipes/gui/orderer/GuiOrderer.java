@@ -629,7 +629,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 				return;
 			} else if (i == 47 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 				searchinput1 = searchinput1 + getClipboardString();
-			} else if (c == 8) {
+			} else if (c == 8 || (i == 51 && System.getProperty("os.name").toLowerCase().indexOf("mac") >= 0)) { //Backspace
 				if (searchinput1.length() > 0)
 					searchinput1 = searchinput1.substring(0, searchinput1.length() - 1);
 				return;

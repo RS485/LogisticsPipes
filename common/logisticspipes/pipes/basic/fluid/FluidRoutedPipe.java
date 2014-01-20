@@ -113,6 +113,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe implements IItemTra
 	 */
 	
 	public final boolean isConnectableTank(TileEntity tile, ForgeDirection dir, boolean flag) {
+		if(SimpleServiceLocator.specialTankHandler.hasHandlerFor(tile)) return true;
 		if(!(tile instanceof IFluidHandler)) return false;
 		if(!this.canPipeConnect(tile, dir)) return false;
 		if(tile instanceof TileGenericPipe) {

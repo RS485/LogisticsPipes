@@ -78,7 +78,9 @@ public class LogisticsFluidManager implements ILogisticsFluidManager {
 				if (amount==null){
 					allAvailableItems.put(liquid.getKey(), liquid.getValue());
 				} else {
-					allAvailableItems.put(liquid.getKey(), amount + liquid.getValue());
+					long addition = ((long) amount) + liquid.getValue();
+					if(addition > Integer.MAX_VALUE) addition = Integer.MAX_VALUE;
+					allAvailableItems.put(liquid.getKey(), (int) addition);
 				}
 			}
 		}

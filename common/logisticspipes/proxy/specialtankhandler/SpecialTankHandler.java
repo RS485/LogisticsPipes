@@ -33,4 +33,27 @@ public class SpecialTankHandler {
 		}
 		return Lists.newArrayList(tile);
 	}
+
+	public boolean hasHandlerFor(TileEntity tile) {
+		if(tile == null) return false;
+		for(ISpecialTankHandler handler:handlers) {
+			if(handler.isType(tile)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public ISpecialTankHandler getTankHandlerFor(TileEntity tile) {
+		for(ISpecialTankHandler handler:handlers) {
+			if(handler.isType(tile)) {
+				return handler;
+			}
+		}
+		String name = "null";
+		if(tile != null) {
+			name = tile.getClass().getName();
+		}
+		throw new RuntimeException("Unknwon TankTileEntity Request, '" + name + "'");
+	}
 }

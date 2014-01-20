@@ -42,6 +42,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.ProxyManager;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.SpecialInventoryHandlerManager;
+import logisticspipes.proxy.SpecialTankHandlerManager;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.recipeproviders.AssemblyAdvancedWorkbench;
 import logisticspipes.proxy.recipeproviders.AssemblyTable;
@@ -54,7 +55,6 @@ import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
 import logisticspipes.proxy.specialconnection.SpecialTileConnection;
 import logisticspipes.proxy.specialconnection.TeleportPipes;
 import logisticspipes.proxy.specialconnection.TesseractConnection;
-import logisticspipes.proxy.specialtankhandler.BuildCraftTankHandler;
 import logisticspipes.proxy.specialtankhandler.SpecialTankHandler;
 import logisticspipes.recipes.CraftingPermissionManager;
 import logisticspipes.recipes.RecipeManager;
@@ -336,10 +336,10 @@ public class LogisticsPipes {
 		
 		ProxyManager.load();
 		SpecialInventoryHandlerManager.load();
+		SpecialTankHandlerManager.load();
 
 		SimpleServiceLocator.specialpipeconnection.registerHandler(new TeleportPipes());
 		SimpleServiceLocator.specialtileconnection.registerHandler(new TesseractConnection());
-		SimpleServiceLocator.specialTankHandler.registerHandler(new BuildCraftTankHandler());
 		
 		Object renderer = null;
 		if(isClient) {

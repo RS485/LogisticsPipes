@@ -401,7 +401,7 @@ outer:
 				CraftingTemplate template = crafter.getValue1();
 				if(this.isCrafterUsed(template)) // then somewhere in the tree we have already used this
 					continue;
-				if(template.canCraft(this.getStackItem())) 
+				if(!template.canCraft(this.getStackItem())) 
 					continue; // we this is crafting something else		
 				for(IFilter filter:crafter.getValue2()) { // is this filtered for some reason.
 					if(filter.isBlocked() == filter.isFilteredItem(template.getResultItem().getUndamaged()) || filter.blockCrafting()) continue outer;

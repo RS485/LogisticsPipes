@@ -96,7 +96,7 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 	}
 
 	public boolean canCraft(ItemIdentifier item) {
-		return item.equals(_result);
+		return item.equals(_result.getItem());
 	}
 
 	public int getResultStackSize() {

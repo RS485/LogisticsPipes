@@ -236,17 +236,19 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 			
 			switch (routedItem.getTransportMode()){
 			case Default:
-				defaultBoost = 10F;
+				defaultBoost = 20F;
 				break;
 			case Passive:
-				defaultBoost = 20F;
+				defaultBoost = 25F;
 				break;
 			case Active:
 				defaultBoost = 30F;
 				break;
 			case Unknown:
+				defaultBoost = 20F;
 				break;
 			default:
+				defaultBoost = 20F;
 				break;
 			
 			}
@@ -255,7 +257,7 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 			float multiplyerPower = 1.0F + (0.3F * getPipe().getUpgradeManager().getSpeedUpgradeCount());
 			
 			float add = Math.max(item.getSpeed(), TransportConstants.PIPE_NORMAL_SPEED * defaultBoost * multiplyerPower) - item.getSpeed();
-			if(getPipe().useEnergy((int)(add * 25+0.5))) {
+			if(getPipe().useEnergy((int)(add * 50 + 0.5))) {
 				item.setSpeed(Math.min(Math.max(item.getSpeed(), TransportConstants.PIPE_NORMAL_SPEED * defaultBoost * multiplyerSpeed), 1.0F));
 			}
 		}

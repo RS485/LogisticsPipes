@@ -1,5 +1,6 @@
 package logisticspipes.proxy.specialinventoryhandler;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Set;
@@ -12,9 +13,7 @@ import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.common.Loader;
 
 /*
- * This class was last edited on Feb-04-2014 by need4speed402 the creator of 'The Barrels Mod'
- * 
- * DON'T EVER EDIT THIS CLASS -- IF I DO MAKE A CHANGE TO MY MOD, I'LL EDIT THIS CLASS MYSELF
+ * This class was last edited on Feb-05-2014 by need4speed402 the creator of 'The Barrels Mod'
  */
 public class BarrelModInventoryHandler extends SpecialInventoryHandler {
 	private static final Class tileEntityClass;
@@ -25,9 +24,6 @@ public class BarrelModInventoryHandler extends SpecialInventoryHandler {
 	private static final Method getModeForSide;
 
 	static{
-		//Learn this trick: when initializing static fields, do what I did here, it's good practice!
-		//None of that non-static init bs.
-		
 		Class XtileEntityClass = null;
 		Method XgetStackLimit = null, XgetItem = null, XsetItem = null, XgetModeForSide = null;
 		
@@ -97,7 +93,9 @@ public class BarrelModInventoryHandler extends SpecialInventoryHandler {
 			if (this.match(itemIdent, stack) != null) {
 				return stack.stackSize - this.hide;
 			}
-		} catch (Exception e) {}
+		} catch (IllegalAccessException e){}
+		catch (IllegalArgumentException e){}
+		catch (InvocationTargetException e){}
 		
 		return 0;
 	}
@@ -126,7 +124,9 @@ public class BarrelModInventoryHandler extends SpecialInventoryHandler {
 				ret.stackSize = count;
 				return ret;
 			}
-		} catch (Exception e) {}
+		} catch (IllegalAccessException e){}
+		catch (IllegalArgumentException e){}
+		catch (InvocationTargetException e){}
 		
 		return null;
 	}
@@ -141,7 +141,9 @@ public class BarrelModInventoryHandler extends SpecialInventoryHandler {
 			if (stack != null){
 				result.add(ItemIdentifier.get(stack));
 			}
-		} catch (Exception e) {}
+		} catch (IllegalAccessException e){}
+		catch (IllegalArgumentException e){}
+		catch (InvocationTargetException e){}
 		
 		return result;
 	}
@@ -156,7 +158,9 @@ public class BarrelModInventoryHandler extends SpecialInventoryHandler {
 			if (stack != null){
 				result.put(ItemIdentifier.get(stack), stack.stackSize - this.hide);
 			}
-		} catch (Exception e) {}
+		} catch (IllegalAccessException e){}
+		catch (IllegalArgumentException e){}
+		catch (InvocationTargetException e){}
 		
 		return result;
 	}
@@ -167,7 +171,9 @@ public class BarrelModInventoryHandler extends SpecialInventoryHandler {
 			ItemStack stack = (ItemStack) getItem.invoke(this.tile);
 			
 			return this.match(itemIdent, stack) != null;
-		} catch (Exception e) {}
+		} catch (IllegalAccessException e){}
+		catch (IllegalArgumentException e){}
+		catch (InvocationTargetException e){}
 		
 		return false;
 	}
@@ -180,7 +186,9 @@ public class BarrelModInventoryHandler extends SpecialInventoryHandler {
 			if (stack != null){
 				return ItemIdentifier.getUndamaged(stack) == itemIdent;
 			}
-		}catch (Exception e){}
+		} catch (IllegalAccessException e){}
+		catch (IllegalArgumentException e){}
+		catch (InvocationTargetException e){}
 		
 		return false;
 	}
@@ -205,7 +213,9 @@ public class BarrelModInventoryHandler extends SpecialInventoryHandler {
 			}else{
 				return max * itemIdent.makeNormalStack(1).getMaxStackSize();
 			}
-		} catch (Exception e) {}
+		} catch (IllegalAccessException e){}
+		catch (IllegalArgumentException e){}
+		catch (InvocationTargetException e){}
 		
 		return 0;
 	}
@@ -244,7 +254,9 @@ public class BarrelModInventoryHandler extends SpecialInventoryHandler {
 					setItem.invoke(this.tile, inBarrel);
 				}
 			}
-		} catch (Exception e) {}
+		} catch (IllegalAccessException e){}
+		catch (IllegalArgumentException e){}
+		catch (InvocationTargetException e){}
 		
 		return st;
 	}
@@ -264,7 +276,9 @@ public class BarrelModInventoryHandler extends SpecialInventoryHandler {
 		try {
 			//as said in the spec, you cannot use this method to get the direct instance of the item in the barrel, it is a re-calculated copy.
 			return (ItemStack) getItem.invoke(this.tile);
-		} catch (Exception e) {}
+		} catch (IllegalAccessException e){}
+		catch (IllegalArgumentException e){}
+		catch (InvocationTargetException e){}
 		
 		return null;
 	}
@@ -283,7 +297,9 @@ public class BarrelModInventoryHandler extends SpecialInventoryHandler {
 				ret.stackSize = 1;
 				return ret;
 			}
-		} catch (Exception e) {}
+		} catch (IllegalAccessException e){}
+		catch (IllegalArgumentException e){}
+		catch (InvocationTargetException e){}
 		
 		return null;
 	}

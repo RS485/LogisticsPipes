@@ -118,7 +118,7 @@ public class BarrelModInventoryHandler extends SpecialInventoryHandler {
 				
 				stack.stackSize -= count;
 				
-				setItem.invoke(this.tile, stack);
+				setItem.invoke(this.tile, stack.stackSize <= 0 ? null : stack);
 				
 				ItemStack ret = match.copy();
 				ret.stackSize = count;
@@ -291,7 +291,7 @@ public class BarrelModInventoryHandler extends SpecialInventoryHandler {
 			if(stack.stackSize > this.hide) {
 				stack.stackSize -= 1;
 				
-				setItem.invoke(this.tile, stack);
+				setItem.invoke(this.tile, stack.stackSize <= 0 ? null : stack);
 				
 				ItemStack ret = stack.copy();
 				ret.stackSize = 1;

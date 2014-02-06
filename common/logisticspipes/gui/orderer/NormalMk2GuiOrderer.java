@@ -48,28 +48,14 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 			Macrobutton.enabled = false;
 		}
 		
-		//Click on Disk
-		if(lastClickedx != -10000000 &&	lastClickedy != -10000000) {
-			if (lastClickedx >= right - 39 && lastClickedx < right - 19 && lastClickedy >= bottom - 47 && lastClickedy < bottom - 27) {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskDropPacket.class).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
-				lastClickedx = -10000000;
-				lastClickedy = -10000000;
-			}
-		}
 		GL11.glDisable(2896 /*GL_LIGHTING*/);
 	}
 	
 	@Override
 	protected void mouseClicked(int i, int j, int k) {
 		super.mouseClicked(i, j, k);
-		if ((!clickWasButton && i >= right - 39 && i < right - 19 && j >= bottom - 47 && j < bottom - 27) || editsearch){
-			if(!editsearchb) {
-				editsearch = false;
-			}
-			selectedItem = null;
-			lastClickedx = i;
-			lastClickedy = j;
-			lastClickedk = k;
+		if ((i >= right - 39 && i < right - 19 && j >= bottom - 47 && j < bottom - 27)){
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskDropPacket.class).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
 		}
 	}
 

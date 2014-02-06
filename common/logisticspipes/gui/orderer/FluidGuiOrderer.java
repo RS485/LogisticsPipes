@@ -1,7 +1,11 @@
 package logisticspipes.gui.orderer;
 
+import java.util.Iterator;
+
+import logisticspipes.gui.orderer.GuiOrderer.LoadedItem;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.orderer.RequestFluidOrdererRefreshPacket;
+import logisticspipes.network.packets.orderer.RequestSubmitPacket;
 import logisticspipes.network.packets.orderer.SubmitFluidRequestPacket;
 import logisticspipes.pipes.PipeFluidRequestLogistics;
 import logisticspipes.proxy.MainProxy;
@@ -20,20 +24,21 @@ public class FluidGuiOrderer extends GuiOrderer {
 	@Override
 	public void initGui() {
 		super.initGui();
-		buttonList.add(new GuiButton(3, guiLeft + 10, bottom - 25, 46, 20, "Refresh")); // Refresh
+		buttonList.add(new GuiButton(BUTTON_REFRESH, guiLeft + 10, bottom - 25, 46, 20, "Refresh")); // Refresh
 	}
 	
 	@Override
-	protected void actionPerformed(GuiButton guibutton) {
-		if (guibutton.id == 0 && selectedItem != null){
-			if(editsearch) {
-				editsearchb = false;
+	public void requestItems() {
+		if (requestCount > 0) {
+			Iterator<LoadedItem> iter = this.loadedItems.iterator();
+
+			while (iter.hasNext()) {
+				LoadedItem item = iter.next();
+
+				if (item.isSelected() && item.isDisplayed()) {
+					MainProxy.sendPacketToServer(PacketHandler.getPacket(SubmitFluidRequestPacket.class).setDimension(dimension).setStack(item.getStack().getItem().makeStack(requestCount)).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
+				}
 			}
-			clickWasButton = true;
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(SubmitFluidRequestPacket.class).setDimension(dimension).setStack(selectedItem.getItem().makeStack(requestCount)).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
-			refreshItems();
-		} else {
-			super.actionPerformed(guibutton);
 		}
 	}
 	
@@ -48,11 +53,6 @@ public class FluidGuiOrderer extends GuiOrderer {
 		} else {
 			return 16000;
 		}
-	}
-	
-	@Override
-	protected boolean isShiftPageChange() {
-		return false;
 	}
 	
 	@Override

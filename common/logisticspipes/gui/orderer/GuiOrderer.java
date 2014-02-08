@@ -11,13 +11,13 @@ package logisticspipes.gui.orderer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.Configs;
 import logisticspipes.gui.popup.GuiRequestPopup;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.orderer.MissingItems.ProcessedItem;
 import logisticspipes.network.packets.orderer.RequestSubmitPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
@@ -429,18 +429,22 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 							Colors.DarkGrey);
 					specialItemRendering(itemIdentifierStack.getItem(), x, y);
 				}
-
+				
 				String s;
 				if (itemstack.stackSize == 1) {
 					s = "";
 				} else if (itemstack.stackSize < 1000) {
 					s = String.valueOf(itemstack.stackSize);
-				} else if (itemstack.stackSize < 100000) {
-					s = (int) Math.ceil(itemstack.stackSize / 1000F) + "K";
-				} else if (itemstack.stackSize < 1000000000) {
-					s = (int) Math.ceil(itemstack.stackSize / 1000000F) + "M";
+				} else if (itemstack.stackSize < 100000){
+					s = String.valueOf((int) Math.ceil(itemstack.stackSize / 1000F)) + "K";
+				} else if (itemstack.stackSize < 1000000){
+					s = "." + String.valueOf((int) Math.ceil(itemstack.stackSize * 10F / 1000000F)) + "M";
+				} else if (itemstack.stackSize < 100000000) {
+					s = String.valueOf((int) Math.ceil(itemstack.stackSize / 1000000F)) + "M";
+				} else if (itemstack.stackSize < 1000000000){ 
+					s = "." + String.valueOf((int) Math.ceil(itemstack.stackSize * 10F / 1000000000F)) + "B";
 				} else {
-					s = (int) Math.ceil(itemstack.stackSize / 1000000000F) + "B";
+					s = String.valueOf((int) Math.ceil(itemstack.stackSize / 1000000000F)) + "B";
 				}
 
 				FontRenderer font = itemstack.getItem().getFontRenderer(
@@ -752,18 +756,31 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 		super.handleMouseInputSub();
 	}
 
-	public void handleRequestAnswer(Collection<ItemIdentifierStack> items,
-			boolean error, ISubGuiControler control, EntityPlayer player) {
+	public void handleRequestAnswer(ProcessedItem[] items, ISubGuiControler control, EntityPlayer player) {
 		while (control.hasSubGui()) {
 			control = control.getSubGui();
 		}
-		if (error) {
-			control.setSubGui(new GuiRequestPopup(_entityPlayer,
-					"You are missing:", items));
-		} else {
-			control.setSubGui(new GuiRequestPopup(_entityPlayer,
-					"Request successful!", items));
+		
+		List<String> sucessful = new ArrayList<String>(), unsucessful = new ArrayList<String>();
+		
+		for(ProcessedItem item : items){
+			if (item.isSuccessful()){
+				if (sucessful.size() == 0){
+					sucessful.add("Sucessful:");
+				}
+				
+				sucessful.add(item.getStack().getFriendlyName());
+			}else{
+				if (sucessful.size() == 0){
+					sucessful.add("Missing:");
+				}
+				
+				sucessful.add(item.getStack().getFriendlyName());
+			}
 		}
+		
+		
+		control.setSubGui(new GuiRequestPopup(player, unsucessful.size() == 0 ? sucessful.toArray() : new Object[] { unsucessful.toArray(), "", sucessful.toArray() }));
 	}
 
 	public void handleSimulateAnswer(Collection<ItemIdentifierStack> used,
@@ -778,12 +795,16 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 
 	public void requestItems() {
 		if (requestCount > 0) {
+			ArrayList<ItemIdentifierStack> stacks = new ArrayList<ItemIdentifierStack>();
+			
 			for (LoadedItem item : loadedItems){
 				if (item.isSelected() && item.isDisplayed()) {
-					MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitPacket.class).setDimension(dimension).setStack(
-							item.getStack().getItem().makeStack(requestCount)).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
+					stacks.add(item.getStack().getItem().makeStack(requestCount));
 				}
 			}
+			
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitPacket.class).setDimension(dimension)
+					.setStacks(stacks.toArray(new ItemIdentifierStack[stacks.size()])).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 		}
 	}
 
@@ -859,19 +880,19 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 	public void handleKeyboardInputSub() {
 		if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 			if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-				requestCount = Integer.MAX_VALUE;
+				int requestCount = Integer.MAX_VALUE;
 
 				for (LoadedItem item : loadedItems){
 					if (item.isDisplayed() && item.isSelected()) {
-						requestCount = Math.min(requestCount, item.getStack()
-								.getStackSize());
-
-						this.requestCountField.setText(String
-								.valueOf(this.requestCount));
+						requestCount = Math.min(requestCount, item.getStack().getStackSize());
 					}
 				}
 				
-				this.requestCountField.setText(String.valueOf(this.requestCount));
+				if (requestCount != Integer.MAX_VALUE){
+					this.requestCount = requestCount;
+					
+					this.requestCountField.setText(String.valueOf(this.requestCount));
+				}
 			} else if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
 				requestCount = 1;
 

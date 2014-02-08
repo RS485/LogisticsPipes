@@ -242,7 +242,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		drawRect(guiLeft + 6, guiTop + 16, right - 12, bottom - 84, BasicGuiHelper.ConvertEnumToColor(Colors.MiddleGrey));
 		drawRect(guiLeft + 6, bottom - 52, right - 12, bottom - 32, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey));
 		
-		List<ItemIdentifierStack> stacks = new ArrayList<ItemIdentifierStack>(mainGui.getLoadedItems().size());
+		List<ItemIdentifierStack> stacks = new ArrayList<ItemIdentifierStack>(mainGui.getLoadedItems().length);
 		
 		for(LoadedItem itemStack : mainGui.getLoadedItems()) {
 			stacks.add(itemStack.getStack());
@@ -381,7 +381,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		return count;
 	}
 	
-	private int getSearchedItemNumberFromLoadedItems(List<LoadedItem> list) {
+	private int getSearchedItemNumberFromLoadedItems(LoadedItem[] list) {
 		int count = 0;
 		for(LoadedItem item : list) {
 			if(item.isDisplayed() && item.isSelected()) {

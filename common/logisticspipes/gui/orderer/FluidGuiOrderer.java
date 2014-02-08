@@ -1,15 +1,14 @@
 package logisticspipes.gui.orderer;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 
-import logisticspipes.gui.orderer.GuiOrderer.LoadedItem;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.orderer.RequestFluidOrdererRefreshPacket;
-import logisticspipes.network.packets.orderer.RequestSubmitPacket;
 import logisticspipes.network.packets.orderer.SubmitFluidRequestPacket;
 import logisticspipes.pipes.PipeFluidRequestLogistics;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -27,14 +26,18 @@ public class FluidGuiOrderer extends GuiOrderer {
 		buttonList.add(new GuiButton(BUTTON_REFRESH, guiLeft + 10, bottom - 25, 46, 20, "Refresh")); // Refresh
 	}
 	
-	@Override
 	public void requestItems() {
 		if (requestCount > 0) {
-			for (LoadedItem item : this.loadedItems){
+			ArrayList<ItemIdentifierStack> stacks = new ArrayList<ItemIdentifierStack>();
+			
+			for (LoadedItem item : loadedItems){
 				if (item.isSelected() && item.isDisplayed()) {
-					MainProxy.sendPacketToServer(PacketHandler.getPacket(SubmitFluidRequestPacket.class).setDimension(dimension).setStack(item.getStack().getItem().makeStack(requestCount)).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
+					stacks.add(item.getStack().getItem().makeStack(requestCount));
 				}
 			}
+			
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(SubmitFluidRequestPacket.class).setDimension(dimension)
+					.setStacks(stacks.toArray(new ItemIdentifierStack[stacks.size()])).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 		}
 	}
 	

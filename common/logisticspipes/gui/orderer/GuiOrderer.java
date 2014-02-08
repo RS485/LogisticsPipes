@@ -146,7 +146,9 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 			
 			index++;
 		}
-
+		
+		this.loadedItems = newLoaded;
+		
 		updateSearch(this.searchField.getText(), false);
 	}
 

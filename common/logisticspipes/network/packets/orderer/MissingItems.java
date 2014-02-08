@@ -22,11 +22,7 @@ public class MissingItems extends ModernPacket {
 
 	@Getter
 	@Setter
-	private Collection<ItemIdentifierStack> items = new ArrayList<ItemIdentifierStack>();
-	
-	@Setter
-	@Getter
-	private boolean flag;
+	private ProcessedItem[] items;
 	
 	public MissingItems(int id) {
 		super(id);
@@ -41,34 +37,76 @@ public class MissingItems extends ModernPacket {
 	@ClientSideOnlyMethodContent
 	public void processPacket(EntityPlayer player) {
 		if (Configs.DISPLAY_POPUP && FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
-			((GuiOrderer)FMLClientHandler.instance().getClient().currentScreen).handleRequestAnswer(getItems(), isFlag(), (GuiOrderer)FMLClientHandler.instance().getClient().currentScreen, player);
-		} else if(isFlag()) {
-			for(ItemIdentifierStack item:items){
-				player.addChatMessage("Missing: " + item.getFriendlyName());
-			}
+			((GuiOrderer)FMLClientHandler.instance().getClient().currentScreen).handleRequestAnswer(getItems(), (GuiOrderer)FMLClientHandler.instance().getClient().currentScreen, player);
 		} else {
-			for(ItemIdentifierStack item:items) {
-				player.addChatMessage("Requested: " + item.getFriendlyName());
+			StringBuilder sucessful = new StringBuilder(), unsucessful = new StringBuilder();
+			
+			for(ProcessedItem item : items){
+				if (item.isSuccessful()){
+					if (sucessful.length() == 0){
+						sucessful.append(item.getStack().getFriendlyName());
+					}else{
+						sucessful.append(", ").append(item.getStack().getFriendlyName());
+					}
+				}else{
+					if (unsucessful.length() == 0){
+						unsucessful.append(item.getStack().getFriendlyName());
+					}else{
+						unsucessful.append(", ").append(item.getStack().getFriendlyName());
+					}
+				}
 			}
-			player.addChatMessage("Request successful!");
+			
+			if (sucessful.length() > 0){
+				player.addChatMessage("Sucessful: " + sucessful.toString());
+			}
+			
+			if (unsucessful.length() > 0){
+				player.addChatMessage("Missing: " + unsucessful.toString());
+			}
 		}
 	}
 	@Override
 	public void writeData(DataOutputStream data) throws IOException {
-		for(ItemIdentifierStack item:items) {
-			data.write(1);
-			item.write(data);
+		data.writeShort(items.length);
+		
+		for(ProcessedItem item : items) {
+			item.getStack().write(data);
+			data.writeBoolean(item.isSuccessful());
 		}
-		data.write(0);
-		data.writeBoolean(isFlag());
 	}
 
 	@Override
 	public void readData(DataInputStream data) throws IOException {
-		while(data.read() != 0) {
-			items.add(ItemIdentifierStack.read(data));
+		ProcessedItem[] items = new ProcessedItem[data.readUnsignedShort()];
+		
+		for(int i = 0; i < items.length; i++) {
+			items[i] = new ProcessedItem(ItemIdentifierStack.read(data), data.readBoolean());
 		}
-		setFlag(data.readBoolean());
+		
+		this.items = items;
+	}
+	
+	public static class ProcessedItem {
+		private final boolean successful;
+		private ItemIdentifierStack stack;
+		
+		public ProcessedItem (ItemIdentifierStack stack, boolean successful){
+			this.successful = successful;
+			this.stack = stack;
+		}
+		
+		public ItemIdentifierStack getStack() {
+			return stack;
+		}
+		
+		public void setStack(ItemIdentifierStack stack) {
+			this.stack = stack;
+		}
+		
+		public boolean isSuccessful() {
+			return successful;
+		}
 	}
 }
 

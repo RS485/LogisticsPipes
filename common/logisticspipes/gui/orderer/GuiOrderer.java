@@ -11,7 +11,6 @@ package logisticspipes.gui.orderer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -74,7 +73,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 	
 	// protected final IRequestItems _itemRequester;
 	public final EntityPlayer _entityPlayer;
-	protected final List<LoadedItem> loadedItems = new LinkedList<LoadedItem>();
+	protected LoadedItem[] loadedItems = /* prevent possible npe */ new LoadedItem[0];
 
 	protected int requestCount = 1;
 	private GuiTextField searchField, requestCountField;
@@ -126,26 +125,26 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 
 		Collections.sort(allItems, new ItemIdentifierStack.orderedComparitor());
 
-		LoadedItem[] loaded = loadedItems.toArray(new LoadedItem[loadedItems
-				.size()]);
-
-		loadedItems.clear();
-
+		LoadedItem[] newLoaded = new LoadedItem[allItems.size()];
+		int index = 0;
+		
 		con: for (ItemIdentifierStack stack : allItems) {
-			for (LoadedItem load : loaded) {
+			for (LoadedItem load : loadedItems) {
 				if (load.getStack().getItem() == stack.getItem()) {
 					if (load.getStack().getStackSize() == stack.getStackSize()) {
-						loadedItems.add(load);
+						newLoaded[index] = load;
 					} else {
-						loadedItems.add(new LoadedItem(stack,
-								load.isSelected(), load.isDisplayed()));
+						newLoaded[index] = new LoadedItem(stack, load.isSelected(), load.isDisplayed());
 					}
-
+					
+					index++;
 					continue con;
 				}
 			}
 
-			loadedItems.add(new LoadedItem(stack));
+			newLoaded[index] = new LoadedItem(stack);
+			
+			index++;
 		}
 
 		updateSearch(this.searchField.getText(), false);
@@ -367,15 +366,12 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 			GL11.glDisable(GL11.GL_LIGHTING);
 
-			Iterator<LoadedItem> iter = loadedItems.iterator();
 			int index = 0;
 			int renderOffset = numOfRows > rowsDisplayed ? (int) (this.scrollPos
 					* (numOfRows - rowsDisplayed) * panelySize)
 					: 0;
 
-			while (iter.hasNext()) {
-				LoadedItem litem = iter.next();
-
+			for (LoadedItem litem : loadedItems){
 				if (!litem.isDisplayed()) {
 					continue;
 				}
@@ -438,11 +434,11 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 				} else if (itemstack.stackSize < 1000) {
 					s = String.valueOf(itemstack.stackSize);
 				} else if (itemstack.stackSize < 100000) {
-					s = itemstack.stackSize / 1000 + "K";
+					s = (int) Math.ceil(itemstack.stackSize / 1000F) + "K";
 				} else if (itemstack.stackSize < 1000000000) {
-					s = itemstack.stackSize / 1000000 + "M";
+					s = (int) Math.ceil(itemstack.stackSize / 1000000F) + "M";
 				} else {
-					s = itemstack.stackSize / 1000000000 + "B";
+					s = (int) Math.ceil(itemstack.stackSize / 1000000000F) + "B";
 				}
 
 				FontRenderer font = itemstack.getItem().getFontRenderer(
@@ -483,12 +479,9 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 	public abstract void specialItemRendering(ItemIdentifier item, int x, int y);
 
 	private int getRenderedTiles() {
-		Iterator<LoadedItem> iter = loadedItems.iterator();
 		int num = 0;
 
-		while (iter.hasNext()) {
-			LoadedItem item = iter.next();
-
+		for (LoadedItem item : loadedItems){
 			if (item.isDisplayed()) {
 				num++;
 			}
@@ -554,7 +547,6 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 				&& x - this.guiLeft <= startX + ITEM_BOX_WIDTH
 				&& y - this.guiTop > startY
 				&& y - this.guiTop <= startY + ITEM_BOX_HEIGHT) {
-			Iterator<LoadedItem> iter = loadedItems.iterator();
 
 			int index = 0;
 
@@ -574,9 +566,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 			
 			int selected = 0;
 			
-			while (iter.hasNext()) {
-				LoadedItem item = iter.next();
-
+			for (LoadedItem item : loadedItems){
 				if (item.isDisplayed()) {
 					int xx = startX + (index % ITEM_WIDTH) * panelxSize;
 					int yy = startY + (index / ITEM_WIDTH) * panelySize;
@@ -605,11 +595,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 	}
 
 	public void updateSearch(String searchQuery, boolean useOld) {
-		Iterator<LoadedItem> i = loadedItems.iterator();
-
-		while (i.hasNext()) {
-			LoadedItem item = i.next();
-
+		for (LoadedItem item : loadedItems){
 			if (!useOld || item.isDisplayed()) {
 				if (searchQuery == null || searchQuery.length() == 0) {
 					item.setDisplayed(true);
@@ -790,11 +776,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 
 	public void requestItems() {
 		if (requestCount > 0) {
-			Iterator<LoadedItem> iter = loadedItems.iterator();
-
-			while (iter.hasNext()) {
-				LoadedItem item = iter.next();
-
+			for (LoadedItem item : loadedItems){
 				if (item.isSelected() && item.isDisplayed()) {
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitPacket.class).setDimension(dimension).setStack(
 							item.getStack().getItem().makeStack(requestCount)).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
@@ -848,11 +830,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 
 	@Override
 	public boolean itemSearched(ItemIdentifier item) {
-		Iterator<LoadedItem> iter = loadedItems.iterator();
-
-		while (iter.hasNext()) {
-			LoadedItem load = iter.next();
-
+		for (LoadedItem load : loadedItems){
 			if (load.getStack().getItem() == item) {
 				return true;
 			}
@@ -879,13 +857,9 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 	public void handleKeyboardInputSub() {
 		if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 			if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-				Iterator<LoadedItem> iter = loadedItems.iterator();
-
 				requestCount = Integer.MAX_VALUE;
 
-				while (iter.hasNext()) {
-					LoadedItem item = iter.next();
-
+				for (LoadedItem item : loadedItems){
 					if (item.isDisplayed() && item.isSelected()) {
 						requestCount = Math.min(requestCount, item.getStack()
 								.getStackSize());
@@ -894,14 +868,12 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 								.valueOf(this.requestCount));
 					}
 				}
+				
+				this.requestCountField.setText(String.valueOf(this.requestCount));
 			} else if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
 				requestCount = 1;
 
-				Iterator<LoadedItem> iter = loadedItems.iterator();
-
-				while (iter.hasNext()) {
-					LoadedItem item = iter.next();
-
+				for (LoadedItem item : loadedItems){
 					if (item.isSelected()) {
 						item.setSelected(false);
 					}
@@ -967,36 +939,18 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 	public int getGuiID() {
 		return GuiIDs.GUI_Normal_Orderer_ID;
 	}
-
-	/*public List<ItemIdentifierStack> getAllItems() {
-		List<ItemIdentifierStack> list = new LinkedList<ItemIdentifierStack>();
-
-		Iterator<LoadedItem> iter = loadedItems.iterator();
-
-		while (iter.hasNext()) {
-			LoadedItem item = iter.next();
-
-			list.add(item.getStack());
-		}
-
-		return list;
-	}*/
 	
 	protected GuiButton getButton(int id){
-		Iterator<GuiButton> iter = this.buttonList.iterator();
-		
-		while (iter.hasNext()){
-			GuiButton b = iter.next();
-			
-			if (b.id == id){
-				return b;
+		for (Object b : this.buttonList){
+			if (((GuiButton) b).id == id){
+				return ((GuiButton) b);
 			}
 		}
 		
 		return null;
 	}
 	
-	public List<LoadedItem> getLoadedItems() {
+	public LoadedItem[] getLoadedItems() {
 		return loadedItems;
 	}
 	

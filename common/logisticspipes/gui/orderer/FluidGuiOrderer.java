@@ -30,11 +30,7 @@ public class FluidGuiOrderer extends GuiOrderer {
 	@Override
 	public void requestItems() {
 		if (requestCount > 0) {
-			Iterator<LoadedItem> iter = this.loadedItems.iterator();
-
-			while (iter.hasNext()) {
-				LoadedItem item = iter.next();
-
+			for (LoadedItem item : this.loadedItems){
 				if (item.isSelected() && item.isDisplayed()) {
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(SubmitFluidRequestPacket.class).setDimension(dimension).setStack(item.getStack().getItem().makeStack(requestCount)).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 				}

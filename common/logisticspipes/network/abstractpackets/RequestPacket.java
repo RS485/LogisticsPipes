@@ -15,7 +15,7 @@ public abstract class RequestPacket extends CoordinatesPacket {
 
 	@Getter
 	@Setter
-	private ItemIdentifierStack stack;
+	private ItemIdentifierStack[] stacks;
 
 	@Getter
 	@Setter
@@ -33,14 +33,28 @@ public abstract class RequestPacket extends CoordinatesPacket {
 	@Override
 	public void writeData(DataOutputStream data) throws IOException {
 		super.writeData(data);
-		stack.write(data);
+		
+		data.writeShort(stacks.length);
+		
+		for (ItemIdentifierStack stack : stacks){
+			stack.write(data);
+		}
+		
 		data.writeInt(dimension);
 	}
 
 	@Override
 	public void readData(DataInputStream data) throws IOException {
 		super.readData(data);
-		stack = ItemIdentifierStack.read(data);
+		
+		ItemIdentifierStack[] stacks = new ItemIdentifierStack[data.readUnsignedShort()];
+		
+		for (int i = 0; i < stacks.length; i++){
+			stacks[i] = ItemIdentifierStack.read(data);
+		}
+		
+		this.stacks = stacks;
+		
 		dimension = data.readInt();
 	}
 }

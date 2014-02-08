@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 import logisticspipes.interfaces.ISlotClick;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.orderer.OrdererRefreshRequestPacket;
-import logisticspipes.network.packets.orderer.RequestSubmitListPacket;
+import logisticspipes.network.packets.orderer.RequestSubmitPacket;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
@@ -155,10 +155,12 @@ public class GuiRequestTable extends GuiOrderer {
 
 	private void requestMatrix(int multiplier) {
 		ArrayList<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>(9);
+		
 		for(Entry<ItemIdentifier,Integer> e : _table.matrix.getItemsAndCount().entrySet()) {
 			list.add(e.getKey().makeStack(e.getValue() * multiplier));
 		}
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitListPacket.class).setIdentList(list).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
+		
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitPacket.class).setStacks(list.toArray(new ItemIdentifierStack[list.size()])).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 		refreshItems();
 	}
 

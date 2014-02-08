@@ -771,16 +771,35 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 				
 				sucessful.add(item.getStack().getFriendlyName());
 			}else{
-				if (sucessful.size() == 0){
-					sucessful.add("Missing:");
+				if (unsucessful.size() == 0){
+					unsucessful.add("Missing:");
 				}
 				
-				sucessful.add(item.getStack().getFriendlyName());
+				unsucessful.add(item.getStack().getFriendlyName());
+			}
+		}
+		
+		Object[] list;
+		
+		if (unsucessful.size() == 0){
+			list = sucessful.toArray();
+		}else{
+			list = new Object[unsucessful.size() + 1 + sucessful.size()];
+			int index = 0;
+			
+			for (String s : sucessful){
+				list[index++] = s;
+			}
+			
+			list[index++] = "";
+			
+			for (String s : unsucessful){
+				list[index++] = s;
 			}
 		}
 		
 		
-		control.setSubGui(new GuiRequestPopup(player, unsucessful.size() == 0 ? sucessful.toArray() : new Object[] { unsucessful.toArray(), "", sucessful.toArray() }));
+		control.setSubGui(new GuiRequestPopup(player, list));
 	}
 
 	public void handleSimulateAnswer(Collection<ItemIdentifierStack> used,

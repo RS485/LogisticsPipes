@@ -36,8 +36,10 @@ public class FluidGuiOrderer extends GuiOrderer {
 				}
 			}
 			
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(SubmitFluidRequestPacket.class).setDimension(dimension)
-					.setStacks(stacks.toArray(new ItemIdentifierStack[stacks.size()])).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
+			if (stacks.size() > 0){
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(SubmitFluidRequestPacket.class).setDimension(dimension)
+						.setStacks(stacks.toArray(new ItemIdentifierStack[stacks.size()])).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
+			}
 		}
 	}
 	

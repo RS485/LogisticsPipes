@@ -200,7 +200,8 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		this.requestCountField.setVisible(true);
 		this.requestCountField.setFocused(false);
 		this.requestCountField.setTextColor(16777215);
-		this.requestCountField.setText(String.valueOf(this.requestCount));
+		
+		updateRequestCount();
 	}
 
 	@Override
@@ -677,7 +678,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			}
 		}
 
-		this.requestCountField.setText(String.valueOf(this.requestCount));
+		updateRequestCount();
 
 		super.handleMouseInputSub();
 	}
@@ -748,8 +749,10 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 				}
 			}
 			
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitPacket.class).setDimension(dimension)
-					.setStacks(stacks.toArray(new ItemIdentifierStack[stacks.size()])).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
+			if (stacks.size() > 0){
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitPacket.class).setDimension(dimension)
+						.setStacks(stacks.toArray(new ItemIdentifierStack[stacks.size()])).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
+			}
 		}
 	}
 
@@ -790,8 +793,8 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		} else if (guibutton.id == 13) {
 			requestItems();
 		}
-
-		this.requestCountField.setText(String.valueOf(this.requestCount));
+		
+		updateRequestCount();
 
 		super.actionPerformed(guibutton);
 	}
@@ -896,6 +899,14 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			this.searchField.textboxKeyTyped(c, i);
 			this.updateSearch(this.searchField.getText(), false);
 		}
+	}
+	
+	public void updateRequestCount(){
+		if (this.requestCount < 0){
+			requestCount = Integer.MAX_VALUE;
+		}
+		
+		this.requestCountField.setText(String.valueOf(this.requestCount));
 	}
 	
 	@Override

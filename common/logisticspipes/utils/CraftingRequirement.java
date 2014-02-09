@@ -1,9 +1,15 @@
 package logisticspipes.utils;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
+import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.routing.IRouter;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
@@ -81,5 +87,25 @@ public class CraftingRequirement
 		if(ItemStack.areItemStackTagsEqual(stack_n, other_n))
 			return true;
 		return false;
+	}
+	
+	public ArrayList<ItemIdentifier> GetSubtitutes(IRequestItems target)
+	{
+		ArrayList<ItemIdentifier> result = new ArrayList<ItemIdentifier>();
+		Map<ItemIdentifier, Integer> avail_items = SimpleServiceLocator.logisticsManager.getAvailableItems(target.getRouter().getIRoutersByCost());
+		LinkedList<ItemIdentifier> craft_items = SimpleServiceLocator.logisticsManager.getCraftableItems(target.getRouter().getIRoutersByCost());
+		for(Map.Entry<ItemIdentifier, Integer> i : avail_items.entrySet())
+		{
+			if(this.testItem(i.getKey().makeStack(1)))
+				if(!result.contains(i.getKey()))
+					result.add(i.getKey());
+		}
+		for(ItemIdentifier i : craft_items)
+		{
+			if(this.testItem(i.makeStack(1)))
+				if(!result.contains(i))
+					result.add(i);
+		}
+		return result;
 	}
 }

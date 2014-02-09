@@ -609,7 +609,19 @@ outer:
 			}
 			else
 			{
-				//TODO:
+				ArrayList<ItemIdentifier> subtitutes = stack.getValue1().GetSubtitutes(this.target);
+				int req = stack.getValue1().stack.getStackSize();
+				SubRequestGroup grp = new SubRequestGroup();
+				for(ItemIdentifier i : subtitutes)
+				{
+					if(req <= 0)
+						break;
+					RequestTreeNode node = new RequestTreeNode(template, new ItemIdentifierStack(i, req), stack.getValue2(), this, RequestTree.defaultRequestFlags);
+					req -= node.getPromiseItemCount();
+					grp.addNode(node);
+				}
+				if(req > 0)
+					failed = true;
 			}
 		}
 		List<Triplet<FluidIdentifier, Integer, IRequestFluid>> liquids = template.getComponentFluid(nCraftingSets);
@@ -675,7 +687,19 @@ outer:
 				}
 				else
 				{
-					//TODO:
+					ArrayList<ItemIdentifier> subtitutes = stack.getValue1().GetSubtitutes(this.target);
+					int req = stack.getValue1().stack.getStackSize();
+					SubRequestGroup grp = new SubRequestGroup();
+					for(ItemIdentifier i : subtitutes)
+					{
+						if(req <= 0)
+							break;
+						RequestTreeNode node = new RequestTreeNode(template, new ItemIdentifierStack(i, req), stack.getValue2(), this, RequestTree.defaultRequestFlags);
+						req -= node.getPromiseItemCount();
+						grp.addNode(node);
+					}
+					if(req > 0)
+						failed = true;
 				}
 			}
 			List<Triplet<FluidIdentifier, Integer, IRequestFluid>> liquids = template.getComponentFluid(workSets);

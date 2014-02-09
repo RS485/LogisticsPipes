@@ -44,16 +44,21 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
-		IItemSearch {
+public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSearch {
 	// constants
 	public static final String TITLE = "Request items";
 
 	public static final int
+			ITEM_BOX_X = 5,
+			ITEM_BOX_Y = 18,
 			ITEM_BOX_WIDTH = 200,
 			ITEM_BOX_HEIGHT = 140,
-			ITEM_WIDTH = 10,
-			ITEM_HEIGHT = 7,
+			
+			ITEM_WIDTH = 20,
+			ITEM_HEIGHT = 20,
+			ITEM_AMOUNT_WIDTH = 10,
+			ITEM_AMOUNT_HEIGHT = 7,
+			
 			
 			SCROLL_BAR_MIN_HEIGHT = 10,
 			
@@ -118,8 +123,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 		// this is the only problem with this new design, this operation is
 		// expensive.
 
-		List<ItemIdentifierStack> allItems = new ArrayList<ItemIdentifierStack>(
-				items.size());
+		List<ItemIdentifierStack> allItems = new ArrayList<ItemIdentifierStack>(items.size());
 
 		allItems.addAll(items);
 
@@ -163,54 +167,40 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 		this.right = width / 2 + xSize / 2 + xCenterOffset;
 		this.bottom = height / 2 + ySize / 2 + yCenterOffset;
 
-		this.guiLeft += this.getLeftAddition();
 		this.xCenter = (right + guiLeft) / 2;
 		this.yCenter = (bottom + guiTop) / 2;
 
 		buttonList.clear();
 		{
-			GuiButton b = new GuiButton(BUTTON_REQUEST, right - 55, bottom - 25, 50, 20, "Request");
+			GuiButton b = new GuiButton(BUTTON_REQUEST, guiLeft + 165 + this.getRenderOffsetX(), bottom - 25 + this.getRenderOffsetY(), 50, 20, "Request");
 			
 			b.enabled = false;
 			
 			buttonList.add(b); // Request
 		}
 		
-		buttonList.add(new SmallGuiButton(BUTTON_SUB_3, xCenter - 51, bottom - 15, 26,
-				10, "---")); // -64
-		buttonList.add(new SmallGuiButton(BUTTON_SUB_2, xCenter - 51, bottom - 26, 15, 10,
-				"--")); // -10
-		buttonList.add(new SmallGuiButton(BUTTON_SUB_1, xCenter - 35, bottom - 26, 10, 10,
-				"-")); // -1
-		buttonList.add(new SmallGuiButton(BUTTON_ADD_1, xCenter + 26, bottom - 26, 10, 10,
-				"+")); // +1
-		buttonList.add(new SmallGuiButton(BUTTON_ADD_2, xCenter + 38, bottom - 26, 15, 10,
-				"++")); // +10
-		buttonList.add(new SmallGuiButton(BUTTON_ADD_3, xCenter + 26, bottom - 15, 26,
-				10, "+++")); // +64
-		buttonList.add(new GuiCheckBox(CHECKBOX_POPUP, guiLeft + 9, bottom - 60, 14, 14,
-				Configs.DISPLAY_POPUP)); // Popup
+		buttonList.add(new SmallGuiButton(BUTTON_SUB_3, guiLeft + 59 + this.getRenderOffsetX(), bottom - 15 + this.getRenderOffsetY(), 26, 10, "---"));
+		buttonList.add(new SmallGuiButton(BUTTON_SUB_2, guiLeft + 59 + this.getRenderOffsetX(), bottom - 26 + this.getRenderOffsetY(), 15, 10,"--"));
+		buttonList.add(new SmallGuiButton(BUTTON_SUB_1, guiLeft + 75 + this.getRenderOffsetX(), bottom - 26 + this.getRenderOffsetY(), 10, 10,"-"));
+		buttonList.add(new SmallGuiButton(BUTTON_ADD_1, guiLeft + 59 + 76 + this.getRenderOffsetX(), bottom - 26 + this.getRenderOffsetY(), 10, 10,"+"));
+		buttonList.add(new SmallGuiButton(BUTTON_ADD_2, guiLeft + 71 + 76 + this.getRenderOffsetX(), bottom - 26 + this.getRenderOffsetY(), 15, 10,"++"));
+		buttonList.add(new SmallGuiButton(BUTTON_ADD_3, guiLeft + 59 + 76 + this.getRenderOffsetX(), bottom - 15 + this.getRenderOffsetY(), 26,10, "+++"));
+		buttonList.add(new GuiCheckBox(CHECKBOX_POPUP, guiLeft + 9 + this.getRenderOffsetX(), bottom - 60 + this.getRenderOffsetY(), 14, 14, Configs.DISPLAY_POPUP));
 
-		this.searchField = new GuiTextField(this.fontRenderer,
-				this.guiLeft + 30, this.bottom - 77, 160,
-				this.fontRenderer.FONT_HEIGHT + 5);
+		this.searchField = new GuiTextField(this.fontRenderer, 30 + this.getRenderOffsetX(), ITEM_BOX_HEIGHT + 23 + this.getRenderOffsetY(), 160, this.fontRenderer.FONT_HEIGHT + 5);
 		this.searchField.setMaxStringLength(30);
 		this.searchField.setEnableBackgroundDrawing(true);
 		this.searchField.setVisible(true);
 		this.searchField.setFocused(false);
 		this.searchField.setTextColor(16777215);
 
-		this.requestCountField = new GuiTextField(this.fontRenderer,
-				this.guiLeft + 90, this.bottom - 22, 40,
-				this.fontRenderer.FONT_HEIGHT + 5);
+		this.requestCountField = new GuiTextField(this.fontRenderer, 90 + this.getRenderOffsetX(), this.ySize - 22 + this.getRenderOffsetY(), 40, this.fontRenderer.FONT_HEIGHT + 5);
 		this.requestCountField.setMaxStringLength(10);
 		this.requestCountField.setEnableBackgroundDrawing(true);
 		this.requestCountField.setVisible(true);
 		this.requestCountField.setFocused(false);
 		this.requestCountField.setTextColor(16777215);
 		this.requestCountField.setText(String.valueOf(this.requestCount));
-
-		this.guiLeft -= this.getLeftAddition();
 	}
 
 	@Override
@@ -218,71 +208,38 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 		return false;
 	}
 
-	protected int getLeftAddition() {
-		return 0;
-	}
-
-	private static final ResourceLocation TEXTURE = new ResourceLocation(
-			"textures/gui/icons.png");
-
 	@Override
 	public void drawGuiContainerBackgroundLayer(float f, int mouseX, int mouseY) {
 		// super.drawScreen(i, j, f);
 		// drawDefaultBackground();
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom,
 				zLevel, true);
-
-		this.guiLeft += this.getLeftAddition();
-
-		fontRenderer.drawString(TITLE,
-				width / 2 - fontRenderer.getStringWidth(TITLE) / 2, guiTop + 6,
-				0x404040);
-
-		fontRenderer.drawString("Popup", guiLeft + 25, bottom - 56,
-				0xA0A0A0);
-
-		this.requestCountField.drawTextBox();
-
-		// String StackrequestCount = (requestCount / getStackAmount()) + "+" +
-		// (requestCount % getStackAmount());
-
-		// fontRenderer.drawString(String.valueOf(requestCount), xCenter -
-		// fontRenderer.getStringWidth(String.valueOf(requestCount)) / 2, bottom
-		// - 24, 0x404040);
-		// fontRenderer.drawString(StackrequestCount, xCenter -
-		// fontRenderer.getStringWidth(StackrequestCount) / 2, bottom - 14,
-		// 0x404040);
-
-		this.searchField.drawTextBox();
+		
+		guiLeft += this.getRenderOffsetX();
+		guiTop += this.getRenderOffsetY();
+		
+		fontRenderer.drawString("Popup", guiLeft + 25, bottom - 56, 0xA0A0A0);
 
 		GL11.glPushMatrix();
-		GL11.glTranslatef(guiLeft, guiTop, 0.0F);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-		int numOfRows = (int) Math.ceil(this.getRenderedTiles() / (float) ITEM_WIDTH);
-		int rowsDisplayed = ITEM_HEIGHT;
+		int numOfRows = (int) Math.ceil(this.getRenderedTiles() / (float) ITEM_AMOUNT_WIDTH);
+		int rowsDisplayed = ITEM_AMOUNT_HEIGHT;
 
 		{
 			// item outline
-			drawRect(5, 18, 5 + ITEM_BOX_WIDTH - this.getLeftAddition(),
-					18 + ITEM_BOX_HEIGHT, Colors.MiddleGrey);
+			drawRect(ITEM_BOX_X + this.guiLeft, ITEM_BOX_Y + this.guiTop, ITEM_BOX_X + ITEM_BOX_WIDTH + this.guiLeft, ITEM_BOX_Y + ITEM_BOX_HEIGHT + this.guiTop, Colors.MiddleGrey);
 
 			{
 				GL11.glScissor(
-						(int) Math.ceil((5F + this.guiLeft) / this.width
-								* this.mc.displayWidth),
-						(int) Math.ceil((80F + this.guiTop) / this.height
-								* this.mc.displayHeight),
-						(int) Math.ceil((float) ITEM_BOX_WIDTH / this.width
-								* this.mc.displayWidth),
-						(int) Math.ceil((ITEM_BOX_HEIGHT + 4F) / this.height
-								* this.mc.displayHeight));
+						(int) Math.ceil(((float) ITEM_BOX_X + this.guiLeft) / this.width * this.mc.displayWidth),
+						(int) Math.ceil((float) (this.height - (this.guiTop + ITEM_BOX_Y + ITEM_BOX_HEIGHT)) / (this.height + 1) * this.mc.displayHeight),
+						(int) Math.ceil((float) ITEM_BOX_WIDTH / this.width * this.mc.displayWidth),
+						(int) Math.ceil((float) ITEM_BOX_HEIGHT / this.height * this.mc.displayHeight));
 			}
 
 			// scroll bar outline
-			drawRect(6 + ITEM_BOX_WIDTH, 18,
-					6 + ITEM_BOX_WIDTH + 9 - this.getLeftAddition(),
-					ySize - 82, Colors.MiddleGrey);
+			drawRect(ITEM_BOX_X + 1 + ITEM_BOX_WIDTH + this.guiLeft, ITEM_BOX_Y + this.guiTop, ITEM_BOX_X + 1 + ITEM_BOX_WIDTH + 9 + this.guiLeft, this.guiTop + ITEM_BOX_Y + ITEM_BOX_HEIGHT, Colors.MiddleGrey);
 
 			// scroll bar
 			{
@@ -297,18 +254,17 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 				float scrollPos = height * this.scrollPos;
 				scrollPos -= barHeight * ((float) scrollPos / height);
 
-				boolean in = mouseX - this.guiLeft > 5 + ITEM_BOX_WIDTH
-						&& mouseX - this.guiLeft < (6 + ITEM_BOX_WIDTH + 1) + 8
-						&& mouseY - this.guiTop > 17
-						&& mouseY - this.guiTop < 18 + 140;
+				boolean in = mouseX - this.guiLeft > ITEM_BOX_X + ITEM_BOX_WIDTH
+						&& mouseX - this.guiLeft < ITEM_BOX_X + ITEM_BOX_WIDTH + 10
+						&& mouseY - this.guiTop >= ITEM_BOX_Y
+						&& mouseY - this.guiTop < ITEM_BOX_Y + ITEM_BOX_HEIGHT;
 
 				boolean over = scrollBarClicked != -1
 						|| (in
-								&& mouseX - this.guiLeft > 5 + ITEM_BOX_WIDTH + 1
-								&& mouseX - this.guiLeft < (6 + ITEM_BOX_WIDTH + 1) + 7
-								&& mouseY - this.guiTop > 18 + (int) scrollPos && mouseY
-								- this.guiTop < (18 + (int) scrollPos)
-								+ barHeight);
+								&& mouseX - this.guiLeft > ITEM_BOX_X + ITEM_BOX_WIDTH + 1
+								&& mouseX - this.guiLeft < ITEM_BOX_X + ITEM_BOX_WIDTH + 1 + 8
+								&& mouseY - this.guiTop > ITEM_BOX_Y + (int) scrollPos
+								&& mouseY - this.guiTop < ITEM_BOX_Y + (int) scrollPos + barHeight);
 
 				if (Mouse.isButtonDown(0)) {
 					if (scrollBarClicked != -1) {
@@ -344,34 +300,28 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 					this.scrollBarClicked = -1;
 				}
 
-				drawRect(5 + ITEM_BOX_WIDTH + 2, 19 + (int) scrollPos,
-						(5 + ITEM_BOX_WIDTH + 1) + 8, (18 + (int) scrollPos)
-								+ barHeight,
-						this.scrollBarClicked != -1 ? Colors.Black
-								: (over ? Colors.DarkGrey : Colors.LightGrey));
+				drawRect(ITEM_BOX_X + ITEM_BOX_WIDTH + 2 + this.guiLeft, ITEM_BOX_Y + 1 + (int) scrollPos + this.guiTop,
+						ITEM_BOX_X + ITEM_BOX_WIDTH + 1 + 8 + this.guiLeft, this.guiTop + ITEM_BOX_Y + (int) scrollPos + barHeight,
+						this.scrollBarClicked != -1 ? Colors.Black : (over ? Colors.DarkGrey : Colors.LightGrey));
 			}
 		}
 
 		tooltip = null;
 
-		int panelxSize = 20;
-		int panelySize = 20;
-		int startX = 7;
-		int startY = 20;
+		int startX = ITEM_BOX_X + this.guiLeft;
+		int startY = ITEM_BOX_Y + this.guiTop;
 
 		GL11.glEnable(GL11.GL_SCISSOR_TEST);
+		
 		if (listbyserver) {
 			RenderHelper.enableGUIStandardItemLighting();
 			GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit,
-					240 / 1.0F, 240 / 1.0F);
+			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 			GL11.glDisable(GL11.GL_LIGHTING);
 
 			int index = 0;
-			int renderOffset = numOfRows > rowsDisplayed ? (int) (this.scrollPos
-					* (numOfRows - rowsDisplayed) * panelySize)
-					: 0;
+			int renderOffset = numOfRows > rowsDisplayed ? (int) (this.scrollPos * (numOfRows - rowsDisplayed) * ITEM_HEIGHT) : 0;
 
 			for (LoadedItem litem : loadedItems){
 				if (!litem.isDisplayed()) {
@@ -382,15 +332,13 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 
 				ItemIdentifier item = itemIdentifierStack.getItem();
 
-				ItemStack itemstack = itemIdentifierStack
-						.unsafeMakeNormalStack();
+				ItemStack itemstack = itemIdentifierStack.unsafeMakeNormalStack();
 
-				int x = startX + (index % ITEM_WIDTH) * panelxSize;
-				int y = startY + (index / ITEM_WIDTH) * panelySize - renderOffset;
+				int x = startX + (index % ITEM_AMOUNT_WIDTH) * ITEM_WIDTH;
+				int y = startY + (index / ITEM_AMOUNT_WIDTH) * ITEM_HEIGHT - renderOffset;
 
-				// System.out.println(y);
 				// make sure this tile is not out of frame
-				if (y + panelySize <= startY) {
+				if (y + ITEM_HEIGHT <= startY) {
 					index++;
 
 					continue;
@@ -400,86 +348,72 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 					break;
 				}
 
-				int realX = guiLeft + x - 2;
-				int realY = guiTop + y - 2;
+				if (this.scrollBarClicked == -1
+						&& mouseX > startX - 3
+						&& mouseX <= startX + ITEM_BOX_WIDTH
+						&& mouseY > startY - 3
+						&& mouseY <= startY + ITEM_BOX_HEIGHT
+						&& mouseX >= x && mouseX < x + ITEM_WIDTH
+						&& mouseY >= y && mouseY < y + ITEM_HEIGHT) {
+					
+					drawRect(x, y, x + ITEM_WIDTH, y + ITEM_HEIGHT, Colors.Black);
+					drawRect(x + 1, y + 1, x + ITEM_WIDTH - 1, y + ITEM_HEIGHT - 1, Colors.DarkGrey);
 
-				if (mouseX - this.guiLeft > startX - 3
-						&& mouseX - this.guiLeft < startX + ITEM_BOX_WIDTH - 2
-						&& mouseY - this.guiTop > startY - 3
-						&& mouseY - this.guiTop < startY + ITEM_BOX_HEIGHT - 2) {
-					if (this.scrollBarClicked == -1 && mouseX >= realX
-							&& mouseX < realX + panelxSize && mouseY >= realY
-							&& mouseY < realY + panelySize) {
-						drawRect(x - 2, y - 2, x + panelxSize - 2, y
-								+ panelySize - 2, Colors.Black);
-						drawRect(x - 1, y - 1, x + panelxSize - 3, y
-								+ panelySize - 3, Colors.DarkGrey);
-
-						tooltip = new ToolTip(mouseX - 10, mouseY + 5,
-								itemstack);
-					}
+					tooltip = new ToolTip(mouseX - 10, mouseY + 5, itemstack);
 				}
 
 				if (litem.isSelected()) {
-					drawRect(x - 2, y - 2, x + panelxSize - 2, y + panelySize
-							- 2, Colors.Black);
-					drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize
-							- 3, Colors.LightGrey);
-					drawRect(x, y, x + panelxSize - 4, y + panelySize - 4,
-							Colors.DarkGrey);
+					drawRect(x, y, x + ITEM_WIDTH, y + ITEM_HEIGHT, Colors.Black);
+					drawRect(x + 1, y + 1, x + ITEM_WIDTH - 1, y + ITEM_HEIGHT - 1, Colors.LightGrey);
+					drawRect(x + 2, y + 2, x + ITEM_WIDTH - 2, y + ITEM_HEIGHT - 2, Colors.DarkGrey);
 					specialItemRendering(itemIdentifierStack.getItem(), x, y);
 				}
 				
-				String s;
-				if (itemstack.stackSize == 1) {
-					s = "";
-				} else if (itemstack.stackSize < 1000) {
-					s = String.valueOf(itemstack.stackSize);
-				} else if (itemstack.stackSize < 100000){
-					s = String.valueOf((int) Math.ceil(itemstack.stackSize / 1000F)) + "K";
-				} else if (itemstack.stackSize < 1000000){
-					s = "." + String.valueOf((int) Math.ceil(itemstack.stackSize * 10F / 1000000F)) + "M";
-				} else if (itemstack.stackSize < 100000000) {
-					s = String.valueOf((int) Math.ceil(itemstack.stackSize / 1000000F)) + "M";
-				} else if (itemstack.stackSize < 1000000000){ 
-					s = "." + String.valueOf((int) Math.ceil(itemstack.stackSize * 10F / 1000000000F)) + "B";
-				} else {
-					s = String.valueOf((int) Math.ceil(itemstack.stackSize / 1000000000F)) + "B";
+				String overlay = null;
+				if (itemstack.stackSize > 1) {
+					if (itemstack.stackSize < 1000) {
+						overlay = String.valueOf(itemstack.stackSize);
+					} else if (itemstack.stackSize < 100000){
+						overlay = String.valueOf((int) Math.ceil(itemstack.stackSize / 1000F)) + "K";
+					} else if (itemstack.stackSize < 1000000){
+						overlay = "." + String.valueOf((int) Math.ceil(itemstack.stackSize * 10F / 1000000F)) + "M";
+					} else if (itemstack.stackSize < 100000000) {
+						overlay = String.valueOf((int) Math.ceil(itemstack.stackSize / 1000000F)) + "M";
+					} else if (itemstack.stackSize < 1000000000){ 
+						overlay = "." + String.valueOf((int) Math.ceil(itemstack.stackSize * 10F / 1000000000F)) + "B";
+					} else {
+						overlay = String.valueOf((int) Math.ceil(itemstack.stackSize / 1000000000F)) + "B";
+					}
 				}
 
-				FontRenderer font = itemstack.getItem().getFontRenderer(
-						itemstack);
-				if (font == null)
+				FontRenderer font = itemstack.getItem().getFontRenderer(itemstack);
+				if (font == null){
 					font = fontRenderer;
-
-				itemRenderer.zLevel = 100.0F;
+				}
+				
+				itemRenderer.zLevel = 100;
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
 				GL11.glEnable(GL11.GL_LIGHTING);
-				itemRenderer.renderItemAndEffectIntoGUI(font,
-						this.mc.renderEngine, itemstack, x, y);
-				// With empty string, because damage value indicator struggles
-				// with the depth
-				itemRenderer.renderItemOverlayIntoGUI(font,
-						this.mc.renderEngine, itemstack, x, y, "");
+				
+				itemRenderer.renderItemAndEffectIntoGUI(font, this.mc.renderEngine, itemstack, x + 2, y + 2);
+				itemRenderer.renderItemOverlayIntoGUI(font, this.mc.renderEngine, itemstack, x + 2, y + 2, overlay);
+				
 				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
-				itemRenderer.zLevel = 0.0F;
-
-				// Draw number
-				font.drawStringWithShadow(s,
-						x + 19 - 2 - font.getStringWidth(s), y + 6 + 3,
-						16777215);
+				itemRenderer.zLevel = 0;
 
 				index++;
 			}
 
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 		}
-
+		
 		GL11.glDisable(GL11.GL_SCISSOR_TEST);
+		
 		GL11.glPopMatrix();
-
-		this.guiLeft -= this.getLeftAddition();
+		
+		guiLeft -= this.getRenderOffsetX();
+		guiTop -= this.getRenderOffsetY();
 	}
 
 	public abstract void specialItemRendering(ItemIdentifier item, int x, int y);
@@ -495,27 +429,17 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 
 		return num;
 	}
-
+	
 	@Override
 	public void drawGuiContainerForegroundLayer(int par1, int par2) {
-		if (super.hasSubGui())
-			return;
-
-		/*
-		 * I hate myself for doing this but for some reason the clipping done
-		 * when drawing the items is at times inaccurate so I need to expand the
-		 * clip to make sure the clip is filling the box i cover the rest of the
-		 * pixels here later
-		 */
-
-		drawRect(5, 14, 5 + ITEM_BOX_WIDTH - this.getLeftAddition(), 14 + 4,
-				Colors.LightGrey);
-		drawRect(5, 158, 5 + ITEM_BOX_WIDTH - this.getLeftAddition(), 158 + 4,
-				Colors.LightGrey);
-
-		if (tooltip != null) {
-			BasicGuiHelper.displayItemToolTip(tooltip.toArray(), this,
-					this.zLevel, guiLeft, guiTop);
+		this.requestCountField.drawTextBox();
+		this.searchField.drawTextBox();
+		
+		fontRenderer.drawString(TITLE, (xSize - fontRenderer.getStringWidth(TITLE) + this.getRenderOffsetX()) / 2,
+				6 + this.getRenderOffsetY(), 0x404040);
+		
+		if (tooltip != null && !this.hasSubGui()) {
+			BasicGuiHelper.displayItemToolTip(tooltip.toArray(), this, this.zLevel, guiLeft, guiTop);
 		}
 	}
 
@@ -532,13 +456,14 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 	@Override
 	protected void mouseClicked(int x, int y, int type) {
 		super.mouseClicked(x, y, type);
-
-		this.searchField.mouseClicked(x, y, type);
-		this.requestCountField.mouseClicked(x, y, type);
 		
-		if (!requestCountField.isFocused()
-				&& (requestCountField.getText() == null || requestCountField
-						.getText().length() == 0)) {
+		guiLeft += this.getRenderOffsetX();
+		guiTop += this.getRenderOffsetY();
+		
+		this.searchField.mouseClicked(x - this.guiLeft + this.getRenderOffsetX(), y - this.guiTop + this.getRenderOffsetY(), type);
+		this.requestCountField.mouseClicked(x - this.guiLeft + this.getRenderOffsetX(), y - this.guiTop + this.getRenderOffsetY(), type);
+		
+		if (!requestCountField.isFocused() && (requestCountField.getText() == null || requestCountField.getText().length() == 0)) {
 			this.requestCount = 1;
 
 			requestCountField.setText("1");
@@ -546,8 +471,8 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 
 		// select item
 
-		int startX = 4;
-		int startY = 17;
+		int startX = ITEM_BOX_X - 1;
+		int startY = ITEM_BOX_Y - 1;
 
 		if (x - this.guiLeft > startX
 				&& x - this.guiLeft <= startX + ITEM_BOX_WIDTH
@@ -556,15 +481,10 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 
 			int index = 0;
 
-			int panelxSize = 20;
-			int panelySize = 20;
+			int numOfRows = (int) Math.ceil(getRenderedTiles() / (float) ITEM_AMOUNT_WIDTH);
+			int rowsDisplayed = ITEM_AMOUNT_HEIGHT;
 
-			int numOfRows = (int) Math.ceil(getRenderedTiles() / (float) ITEM_WIDTH);
-			int rowsDisplayed = ITEM_HEIGHT;
-
-			int renderOffset = numOfRows > rowsDisplayed ? (int) (this.scrollPos
-					* (numOfRows - rowsDisplayed) * panelySize)
-					: 0;
+			int renderOffset = numOfRows > rowsDisplayed ? (int) (this.scrollPos * (numOfRows - rowsDisplayed) * ITEM_HEIGHT) : 0;
 
 			boolean ctrl = this.isCtrlKeyDown();
 
@@ -574,14 +494,10 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 			
 			for (LoadedItem item : loadedItems){
 				if (item.isDisplayed()) {
-					int xx = startX + (index % ITEM_WIDTH) * panelxSize;
-					int yy = startY + (index / ITEM_WIDTH) * panelySize;
+					int xx = this.guiLeft + startX + (index % ITEM_AMOUNT_WIDTH) * ITEM_WIDTH;
+					int yy = this.guiTop + startY + (index / ITEM_AMOUNT_WIDTH) * ITEM_HEIGHT;
 
-					int realX = guiLeft + xx;
-					int realY = guiTop + yy;
-
-					if (x > realX && x <= realX + panelxSize && y > realY
-							&& y <= realY + panelySize) {
+					if (x > xx && x <= xx + ITEM_WIDTH && y > yy && y <= yy + ITEM_HEIGHT) {
 						item.setSelected(!item.isSelected());
 					} else if (!ctrl) {
 						item.setSelected(false);
@@ -597,9 +513,19 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 			
 			this.getButton(BUTTON_REQUEST).enabled = selected > 0;
 		}
-
+		
+		guiLeft -= this.getRenderOffsetX();
+		guiTop -= this.getRenderOffsetY();
 	}
-
+	
+	public int getRenderOffsetX(){
+		return 0;
+	}
+	
+	public int getRenderOffsetY(){
+		return 0;
+	}
+	
 	public void updateSearch(String searchQuery, boolean useOld) {
 		for (LoadedItem item : loadedItems){
 			if (!useOld || item.isDisplayed()) {
@@ -641,8 +567,8 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 	}
 
 	private void scroll(float amount) {
-		int displayedRows = ITEM_HEIGHT;
-		int numOfRows = (int) Math.ceil(this.getRenderedTiles() / (float) ITEM_WIDTH);
+		int displayedRows = ITEM_AMOUNT_HEIGHT;
+		int numOfRows = (int) Math.ceil(this.getRenderedTiles() / (float) ITEM_AMOUNT_WIDTH);
 
 		if (Configs.LOGISTICS_ORDERER_PAGE_INVERTWHEEL) {
 			amount = -amount;
@@ -890,11 +816,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 			return 64;
 		}
 	}
-
-	protected int getStackAmount() {
-		return 64;
-	}
-
+	
 	@Override
 	public void handleKeyboardInputSub() {
 		if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
@@ -970,7 +892,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements
 			this.updateSearch(this.searchField.getText(), false);
 		}
 	}
-
+	
 	@Override
 	public void resetSubGui() {
 		super.resetSubGui();

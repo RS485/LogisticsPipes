@@ -85,6 +85,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.CraftingRequirement;
 import logisticspipes.utils.DelayedGeneric;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.IHavePriority;
@@ -502,7 +503,9 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		for (int i = 0; i < 9; i++){
 			ItemIdentifierStack resourceStack = getMaterials(i);
 			if (resourceStack == null || resourceStack.getStackSize() == 0) continue;
-			template.addRequirement(resourceStack, target[i]);
+			CraftingRequirement req = new CraftingRequirement();
+			req.stack = resourceStack;
+			template.addRequirement(req, target[i]);
 		}
 		
 		int liquidCrafter = this.getUpgradeManager().getFluidCrafter();

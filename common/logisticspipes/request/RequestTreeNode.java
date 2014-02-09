@@ -661,15 +661,22 @@ outer:
 		if(workSets>0) {
 			//now set the amounts
 
-			List<Pair<ItemIdentifierStack,IRequestItems>> stacks = template.getComponentItems(workSets);
+			List<Pair<CraftingRequirement,IRequestItems>> stacks = template.getComponentItems(workSets);
 
 			boolean failed = false;
-			for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
-				RequestTreeNode node = new RequestTreeNode(template,stack.getValue1(), stack.getValue2(), this, RequestTree.defaultRequestFlags);
-				newChildren.add(node);
-				if(!node.isDone()) {
-					failed = true;
-				}			
+			for(Pair<CraftingRequirement,IRequestItems> stack:stacks) {
+				if(stack.getValue1().isUnique())
+				{
+					RequestTreeNode node = new RequestTreeNode(template,stack.getValue1().stack, stack.getValue2(), this, RequestTree.defaultRequestFlags);
+					newChildren.add(node);
+					if(!node.isDone()) {
+						failed = true;
+					}
+				}
+				else
+				{
+					//TODO:
+				}
 			}
 			List<Triplet<FluidIdentifier, Integer, IRequestFluid>> liquids = template.getComponentFluid(workSets);
 			for(Triplet<FluidIdentifier, Integer, IRequestFluid> liquid:liquids) {
@@ -710,10 +717,10 @@ outer:
 
 		int nCraftingSetsNeeded = (this.getMissingItemCount() + template.getResultStackSize() - 1) / template.getResultStackSize();
 
-		List<Pair<ItemIdentifierStack, IRequestItems>> stacks = template.getComponentItems(nCraftingSetsNeeded);
+		List<Pair<CraftingRequirement, IRequestItems>> stacks = template.getComponentItems(nCraftingSetsNeeded);
 
-		for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
-			new RequestTreeNode(template, stack.getValue1(), stack.getValue2(), this, RequestTree.defaultRequestFlags);
+		for(Pair<CraftingRequirement,IRequestItems> stack:stacks) {
+			new RequestTreeNode(template, stack.getValue1().stack, stack.getValue2(), this, RequestTree.defaultRequestFlags);
 		}
 
 		List<Triplet<FluidIdentifier, Integer, IRequestFluid>> liquids = template.getComponentFluid(nCraftingSetsNeeded);

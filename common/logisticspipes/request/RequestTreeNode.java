@@ -28,6 +28,7 @@ import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.ServerRouter;
+import logisticspipes.utils.CraftingRequirement;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -592,15 +593,24 @@ outer:
 
 	private int getSubRequests(int nCraftingSets, CraftingTemplate template){
 		boolean failed = false;
-		List<Pair<ItemIdentifierStack, IRequestItems>> stacks = template.getComponentItems(nCraftingSets);
+		List<Pair<CraftingRequirement, IRequestItems>> stacks = template.getComponentItems(nCraftingSets);
 		int workSetsAvailable = nCraftingSets;
-		ArrayList<RequestTreeNode>lastNode = new ArrayList<RequestTreeNode>(stacks.size());
-		for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
-			RequestTreeNode node = new RequestTreeNode(template,stack.getValue1(), stack.getValue2(), this, RequestTree.defaultRequestFlags);
-			lastNode.add(node);
-			if(!node.isDone()) {
-				failed = true;
-			}			
+		ArrayList<SubRequestGroup>lastNodes = new ArrayList<SubRequestGroup>(stacks.size());
+		for(Pair<CraftingRequirement,IRequestItems> stack:stacks) {
+			if(stack.getValue1().isUnique())
+			{
+				RequestTreeNode node = new RequestTreeNode(template,stack.getValue1().stack, stack.getValue2(), this, RequestTree.defaultRequestFlags);
+				SubRequestGroup grp = new SubRequestGroup();
+				grp.addNode(node);
+				lastNodes.add(grp);
+				if(!node.isDone()) {
+					failed = true;
+				}
+			}
+			else
+			{
+				//TODO:
+			}
 		}
 		List<Triplet<FluidIdentifier, Integer, IRequestFluid>> liquids = template.getComponentFluid(nCraftingSets);
 		ArrayList<FluidRequestTreeNode>lastFluidNode = new ArrayList<FluidRequestTreeNode>(liquids.size());
@@ -612,8 +622,9 @@ outer:
 			}
 		}
 		if(failed) {
-			for (RequestTreeNode n:lastNode) {
-				n.destroy(); // drop the failed requests.
+			for (SubRequestGroup g:lastNodes) {
+				for(RequestTreeNode n : g.getNodes())
+					n.destroy(); // drop the failed requests.
 			}
 			for (FluidRequestTreeNode n:lastFluidNode) {
 				n.destroy(); // drop the failed requests.
@@ -622,7 +633,7 @@ outer:
 			this.lastCrafterTried = template;
 			//figure out how many we can actually get
 			for(int i = 0; i < stacks.size(); i++) {
-				workSetsAvailable = Math.min(workSetsAvailable, lastNode.get(i).getPromiseItemCount() / (stacks.get(i).getValue1().getStackSize() / nCraftingSets));
+				workSetsAvailable = Math.min(workSetsAvailable, lastNodes.get(i).getTotalPromiseItemCount() / (stacks.get(i).getValue1().stack.getStackSize() / nCraftingSets));
 			}
 			
 			for(int i = 0; i < liquids.size(); i++) {

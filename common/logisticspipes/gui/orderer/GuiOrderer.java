@@ -881,8 +881,13 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 						|| this.requestCountField.getText().length() == 0) {
 					this.requestCount = 0;
 				} else {
-					this.requestCount = Integer.parseInt(this.requestCountField
-							.getText());
+					try{
+						this.requestCount = Integer.parseInt(this.requestCountField.getText());
+					}catch (NumberFormatException e){
+						//can only mean that they guy typed a number more then 4 billion
+						this.requestCount = Integer.MAX_VALUE;
+						this.requestCountField.setText(String.valueOf(this.requestCount));
+					}
 				}
 			}
 		} else {

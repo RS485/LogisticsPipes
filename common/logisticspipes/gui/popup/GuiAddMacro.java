@@ -1,8 +1,10 @@
 package logisticspipes.gui.popup;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import logisticspipes.gui.orderer.GuiOrderer.LoadedItem;
 import logisticspipes.gui.orderer.NormalMk2GuiOrderer;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.orderer.DiscContent;
@@ -142,7 +144,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		
 		fontRenderer.drawString("Add Macro", guiLeft + fontRenderer.getStringWidth("Add Macro") / 2, guiTop + 6, 0x404040);
 		
-		maxPageAll = (int) Math.floor((getSearchedItemNumber(mainGui._allItems) - 1)  / 45F);
+		maxPageAll = (int) Math.floor((getSearchedItemNumberFromLoadedItems(mainGui.getLoadedItems()) - 1)  / 45F);
 		if(maxPageAll == -1) maxPageAll = 0;
 		if (pageAll > maxPageAll){
 			pageAll = maxPageAll;
@@ -240,14 +242,17 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		drawRect(guiLeft + 6, guiTop + 16, right - 12, bottom - 84, BasicGuiHelper.ConvertEnumToColor(Colors.MiddleGrey));
 		drawRect(guiLeft + 6, bottom - 52, right - 12, bottom - 32, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey));
 		
-		for(ItemIdentifierStack itemStack : mainGui._allItems) {
-			ItemIdentifier item = itemStack.getItem();
-			if(!itemSearched(item)) continue;
+		List<ItemIdentifierStack> stacks = new ArrayList<ItemIdentifierStack>(mainGui.getLoadedItems().length);
+		
+		for(LoadedItem itemStack : mainGui.getLoadedItems()) {
+			stacks.add(itemStack.getStack());
+			ItemIdentifier item = itemStack.getStack().getItem();
+			if(!itemStack.isDisplayed()) continue;
 			ppi++;
 			
 			if (ppi <= 45 * pageAll) continue;
 			if (ppi > 45 * (pageAll+1)) continue;
-			ItemStack st = itemStack.unsafeMakeNormalStack();
+			ItemStack st = itemStack.getStack().unsafeMakeNormalStack();
 			int x = guiLeft + 10 + panelxSize * column;
 			int y = guiTop + 18 + panelySize * row;
 
@@ -322,7 +327,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 			}
 		}
 
-		BasicGuiHelper.renderItemIdentifierStackListIntoGui(mainGui._allItems, this, pageAll, guiLeft + 10, guiTop + 18, 9, 45, panelxSize, panelySize, mc, false, false);
+		BasicGuiHelper.renderItemIdentifierStackListIntoGui(stacks, this, pageAll, guiLeft + 10, guiTop + 18, 9, 45, panelxSize, panelySize, mc, false, false);
 
 		ppi = 0;
 		column = 0;
@@ -370,6 +375,16 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		int count = 0;
 		for(ItemIdentifierStack item : list) {
 			if(itemSearched(item.getItem())) {
+				count++;
+			}
+		}
+		return count;
+	}
+	
+	private int getSearchedItemNumberFromLoadedItems(LoadedItem[] list) {
+		int count = 0;
+		for(LoadedItem item : list) {
+			if(item.isDisplayed() && item.isSelected()) {
 				count++;
 			}
 		}

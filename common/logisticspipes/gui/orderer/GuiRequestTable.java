@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 import logisticspipes.interfaces.ISlotClick;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.orderer.OrdererRefreshRequestPacket;
-import logisticspipes.network.packets.orderer.RequestSubmitListPacket;
+import logisticspipes.network.packets.orderer.RequestSubmitPacket;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
@@ -32,7 +32,7 @@ public class GuiRequestTable extends GuiOrderer {
 	public GuiRequestTable(EntityPlayer entityPlayer, PipeBlockRequestTable table) {
 		super(table.getX(), table.getY(), table.getZ(), MainProxy.getDimensionForWorld(table.getWorld()), entityPlayer);
 		_table = table;
-		this.xSize += this.getLeftAddition();
+		
 		DummyContainer dummy = new DummyContainer(entityPlayer.inventory, _table.matrix);
 		int i = 0;
 		for(int y = 0;y < 3;y++) {
@@ -57,21 +57,18 @@ public class GuiRequestTable extends GuiOrderer {
 		this.inventorySlots = dummy;
 		refreshItems();
 	}
-	
-	@Override
-	protected int getLeftAddition() {
-		return 200;
-	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public void initGui() {
+		this.xSize = 420;
+		
 		super.initGui();
-		this.guiLeft += this.getLeftAddition();
-		buttonList.add(new SmallGuiButton(3, guiLeft + 10, bottom - 15, 46, 10, "Refresh")); // Refresh
-		buttonList.add(new SmallGuiButton(13,  guiLeft + 10, bottom - 28, 46, 10, "Content")); // Component
-		buttonList.add(new SmallGuiButton(9, guiLeft + 10, bottom - 41, 46, 10, "Both"));
-		this.guiLeft -= this.getLeftAddition();
+		
+		buttonList.add(new SmallGuiButton(BUTTON_REFRESH, guiLeft + 10 + this.getRenderOffsetX(), bottom - 15 + this.getRenderOffsetY(), 46, 10, "Refresh")); // Refresh
+		buttonList.add(new SmallGuiButton(13, guiLeft + 10 + this.getRenderOffsetX(), bottom - 28 + this.getRenderOffsetY(), 46, 10, "Content")); // Component
+		buttonList.add(new SmallGuiButton(9, guiLeft + 10 + this.getRenderOffsetX(), bottom - 41 + this.getRenderOffsetY(), 46, 10, "Both"));
+		
 		buttonList.add(new SmallGuiButton(14, guiLeft + 96, guiTop + 53, 10, 10, "+")); // +1
 		buttonList.add(new SmallGuiButton(15, guiLeft + 108, guiTop + 53, 15, 10, "++")); // +10
 		buttonList.add(new SmallGuiButton(16, guiLeft + 96, guiTop + 64, 26, 10, "+++")); // +64
@@ -80,6 +77,7 @@ public class GuiRequestTable extends GuiOrderer {
 	@Override
 	public void drawGuiContainerBackgroundLayer(float f, int i, int j) {
 		super.drawGuiContainerBackgroundLayer(f, i, j);
+		
 		for(int x = 0;x < 9;x++) {
 			for(int y = 0;y < 3;y++) {
 				BasicGuiHelper.drawSlotBackground(mc, guiLeft + (x * 18) + 19, guiTop + (y * 18) + 79);
@@ -102,7 +100,12 @@ public class GuiRequestTable extends GuiOrderer {
 		}
 		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 20, guiTop + 150);
 	}
-
+	
+	@Override
+	public int getRenderOffsetX() {
+		return 190;
+	}
+	
 	@Override
 	public void refreshItems(){
 			int integer;
@@ -155,10 +158,12 @@ public class GuiRequestTable extends GuiOrderer {
 
 	private void requestMatrix(int multiplier) {
 		ArrayList<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>(9);
+		
 		for(Entry<ItemIdentifier,Integer> e : _table.matrix.getItemsAndCount().entrySet()) {
 			list.add(e.getKey().makeStack(e.getValue() * multiplier));
 		}
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitListPacket.class).setIdentList(list).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
+		
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitPacket.class).setStacks(list.toArray(new ItemIdentifierStack[list.size()])).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 		refreshItems();
 	}
 

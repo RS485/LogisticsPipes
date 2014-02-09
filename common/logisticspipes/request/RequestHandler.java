@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.orderer.ComponentList;
 import logisticspipes.network.packets.orderer.MissingItems;
+import logisticspipes.network.packets.orderer.MissingItems.ProcessedItem;
 import logisticspipes.network.packets.orderer.OrdererContent;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -38,45 +40,84 @@ public class RequestHandler {
 	}
 	
 	public static void request(final EntityPlayer player, final ItemIdentifierStack stack, CoreRoutedPipe pipe) {
-		if(!pipe.useEnergy(5)) {
+		request(player, new ItemIdentifierStack[] { stack }, pipe);
+	}
+	
+	public static void request(final EntityPlayer player, final ItemIdentifierStack[] stacks, CoreRoutedPipe pipe) {
+		if(!pipe.useEnergy(5 * stacks.length)) {
 			player.sendChatToPlayer(ChatMessageComponent.createFromText("No Energy"));
 			return;
 		}
-		RequestTree.request(ItemIdentifier.get(stack.getItem().itemID, stack.getItem().itemDamage, stack.getItem().tag).makeStack(stack.getStackSize()), pipe
-				, new RequestLog() {
+		
+		final List<ProcessedItem> coll = new ArrayList<ProcessedItem>(stacks.length);
+		
+		RequestLog log = new RequestLog() {
 			@Override
 			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
-				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(items.size());
-				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
-					coll.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
+				for(Entry<ItemIdentifier,Integer> e : items.entrySet()) {
+					boolean found = false;
+					
+					for (ProcessedItem p : coll){
+						if (p.getStack().getItem() == e.getKey()){
+							p.setStack(new ItemIdentifierStack(e.getKey(), e.getValue() + p.getStack().getStackSize()));
+							found = true;
+						}
+					}
+					
+					if (!found){
+						coll.add(new ProcessedItem(new ItemIdentifierStack(e.getKey(), e.getValue()), false));
+					}
 				}
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(true), (Player)player);
 			}
 
 			@Override
 			public void handleSucessfullRequestOf(ItemIdentifier item, int count) {
-				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(1);
-				coll.add(new ItemIdentifierStack(item, count));
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(false), (Player)player);
+				coll.add(new ProcessedItem(new ItemIdentifierStack(item, count), true));
 			}
 			
 			@Override
-			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {}
-		});
+			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {
+				for (Entry<ItemIdentifier,Integer> e : items.entrySet()) {
+					coll.add(new ProcessedItem(new ItemIdentifierStack(e.getKey(), e.getValue()), true));
+				}
+			}
+		};
+		
+		for (ItemIdentifierStack stack : stacks){
+			RequestTree.request(stack, pipe, log);
+		}
+		
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll.toArray(new ProcessedItem[coll.size()])), (Player)player);
 	}
 	
 	public static void simulate(final EntityPlayer player, final ItemIdentifierStack stack, CoreRoutedPipe pipe) {
-		final Map<ItemIdentifier,Integer> used = new HashMap<ItemIdentifier,Integer>();
-		final Map<ItemIdentifier,Integer> missing = new HashMap<ItemIdentifier,Integer>();
-		RequestTree.simulate(ItemIdentifier.get(stack.getItem().itemID, stack.getItem().itemDamage, stack.getItem().tag).makeStack(stack.getStackSize()), pipe, new RequestLog() {
+		simulate(player, new ItemIdentifierStack[] { stack }, pipe);
+	}
+	
+	public static void simulate(final EntityPlayer player, final ItemIdentifierStack[] stacks, CoreRoutedPipe pipe) {
+		final List<ItemIdentifierStack> used = new ArrayList<ItemIdentifierStack>();
+		final List<ItemIdentifierStack> missing = new ArrayList<ItemIdentifierStack>();
+		
+		RequestLog log = new RequestLog() {
 			@Override
 			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
-				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
-					Integer count = missing.get(e.getKey());
-					if(count == null)
-						count = 0;
-					count += e.getValue();
-					missing.put(e.getKey(), count);
+				for (Entry<ItemIdentifier,Integer> e : items.entrySet()) {
+					//iterator is used to be able to remove items
+					Iterator<ItemIdentifierStack> iter = missing.iterator();
+					
+					int count = e.getValue();
+					
+					while (iter.hasNext()){
+						ItemIdentifierStack stack = iter.next();
+						
+						if (stack.getItem() == e.getKey()){
+							count += stack.getStackSize();
+							iter.remove();
+							break;
+						}
+					}
+					
+					missing.add(new ItemIdentifierStack(e.getKey(), count));
 				}
 			}
 
@@ -85,24 +126,32 @@ public class RequestHandler {
 			
 			@Override
 			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {
-				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
-					Integer count = used.get(e.getKey());
-					if(count == null)
-						count = 0;
-					count += e.getValue();
-					used.put(e.getKey(), count);
+				for (Entry<ItemIdentifier,Integer> e : items.entrySet()) {
+					//iterator is used to be able to remove items
+					Iterator<ItemIdentifierStack> iter = used.iterator();
+					
+					int count = e.getValue();
+					
+					while (iter.hasNext()){
+						ItemIdentifierStack stack = iter.next();
+						
+						if (stack.getItem() == e.getKey()){
+							count += stack.getStackSize();
+							iter.remove();
+							break;
+						}
+					}
+					
+					used.add(new ItemIdentifierStack(e.getKey(), count));
 				}
 			}
-		});
-		List<ItemIdentifierStack> usedList = new ArrayList<ItemIdentifierStack>(used.size());
-		List<ItemIdentifierStack> missingList = new ArrayList<ItemIdentifierStack>(missing.size());
-		for(Entry<ItemIdentifier,Integer>e:used.entrySet()) {
-			usedList.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
+		};
+		
+		for (ItemIdentifierStack stack : stacks){
+			RequestTree.simulate(ItemIdentifier.get(stack.getItem().itemID, stack.getItem().itemDamage, stack.getItem().tag).makeStack(stack.getStackSize()), pipe, log);
 		}
-		for(Entry<ItemIdentifier,Integer>e:missing.entrySet()) {
-			missingList.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
-		}
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ComponentList.class).setUsed(usedList).setMissing(missingList), (Player)player);
+		
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ComponentList.class).setUsed(used).setMissing(missing), (Player)player);
 	}
 	
 	public static void refresh(EntityPlayer player, CoreRoutedPipe pipe, DisplayOptions option) {
@@ -135,39 +184,21 @@ public class RequestHandler {
 	
 
 	public static void requestList(final EntityPlayer player, final List<ItemIdentifierStack> list, CoreRoutedPipe pipe) {
-		if(!pipe.useEnergy(5)) {
-			player.sendChatToPlayer(ChatMessageComponent.createFromText("No Energy"));
-			return;
-		}
-		RequestTree.request(list, pipe, new RequestLog() {
-			@Override
-			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
-				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(items.size());
-				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
-					coll.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
-				}
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(true), (Player)player);
-			}
-			
-			@Override
-			public void handleSucessfullRequestOf(ItemIdentifier item, int count) {}
-			
-			@Override
-			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {
-				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(items.size());
-				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
-					coll.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
-				}
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(false), (Player)player);
-			}
-		},RequestTree.defaultRequestFlags);
+		request(player, list.toArray(new ItemIdentifierStack[list.size()]), pipe);
 	}
 
 	public static void requestMacrolist(NBTTagCompound itemlist, CoreRoutedPipe requester, final EntityPlayer player) {
-		if(!requester.useEnergy(5)) {
-			player.sendChatToPlayer(ChatMessageComponent.createFromText("No Energy"));
-			return;
+		requestMacrolist(itemlist, new CoreRoutedPipe[] { requester} , player);
+	}
+	
+	public static void requestMacrolist(NBTTagCompound itemlist, CoreRoutedPipe[] requesters, final EntityPlayer player) {
+		for (CoreRoutedPipe requester : requesters){
+			if(!requester.useEnergy(5)) {
+				player.sendChatToPlayer(ChatMessageComponent.createFromText("No Energy"));
+				return;
+			}
 		}
+		
 		NBTTagList list = itemlist.getTagList("inventar");
 		List<ItemIdentifierStack> transaction = new ArrayList<ItemIdentifierStack>(list.tagCount());
 		for(int i = 0;i < list.tagCount();i++) {
@@ -179,28 +210,46 @@ public class RequestHandler {
 			ItemIdentifierStack stack = ItemIdentifier.get(itemnbt.getInteger("id"),itemnbt.getInteger("data"),itemNBTContent).makeStack(itemnbt.getInteger("amount"));
 			transaction.add(stack);
 		}
-		RequestTree.request(transaction, requester, new RequestLog() {
+		
+		final List<ProcessedItem> coll = new ArrayList<ProcessedItem>(requesters.length);
+		
+		RequestLog log = new RequestLog() {
 			@Override
 			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
-				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(items.size());
-				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
-					coll.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
+				for(Entry<ItemIdentifier,Integer> e : items.entrySet()) {
+					boolean found = false;
+					
+					for (ProcessedItem p : coll){
+						if (p.getStack().getItem() == e.getKey()){
+							p.setStack(new ItemIdentifierStack(e.getKey(), e.getValue() + p.getStack().getStackSize()));
+							found = true;
+						}
+					}
+					
+					if (!found){
+						coll.add(new ProcessedItem(new ItemIdentifierStack(e.getKey(), e.getValue()), false));
+					}
 				}
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(true), (Player)player);
 			}
-			
+
 			@Override
-			public void handleSucessfullRequestOf(ItemIdentifier item, int count) {}
+			public void handleSucessfullRequestOf(ItemIdentifier item, int count) {
+				coll.add(new ProcessedItem(new ItemIdentifierStack(item, count), true));
+			}
 			
 			@Override
 			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {
-				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(items.size());
-				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
-					coll.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
+				for (Entry<ItemIdentifier,Integer> e : items.entrySet()) {
+					coll.add(new ProcessedItem(new ItemIdentifierStack(e.getKey(), e.getValue()), true));
 				}
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(false), (Player)player);
 			}
-		},RequestTree.defaultRequestFlags);
+		};
+		
+		for (CoreRoutedPipe requester : requesters){
+			RequestTree.request(transaction, requester, log,RequestTree.defaultRequestFlags);
+		}
+		
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll.toArray(new ProcessedItem[coll.size()])), (Player)player);
 	}
 
 	public static Object[] computerRequest(final ItemIdentifierStack makeStack, final CoreRoutedPipe pipe, boolean craftingOnly) {
@@ -245,31 +294,50 @@ public class RequestHandler {
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererContent.class).setIdentSet(_allItems), (Player)player);
 	}
 
-	public static void requestFluid(final EntityPlayer player, final ItemIdentifierStack stack, CoreRoutedPipe pipe, IRequestFluid requester) {
+	public static void requestFluid(final EntityPlayer player, final ItemIdentifierStack[] stacks, CoreRoutedPipe pipe, IRequestFluid requester) {
 		if(!pipe.useEnergy(10)) {
 			player.sendChatToPlayer(ChatMessageComponent.createFromText("No Energy"));
 			return;
 		}
 		
-		RequestTree.requestFluid(FluidIdentifier.get(stack.getItem()) , stack.getStackSize(), requester, new RequestLog() {
+		final List<ProcessedItem> coll = new ArrayList<ProcessedItem>(stacks.length);
+		
+		RequestLog log = new RequestLog() {
 			@Override
 			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
-				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(items.size());
-				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
-					coll.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
+				for(Entry<ItemIdentifier,Integer> e : items.entrySet()) {
+					boolean found = false;
+					
+					for (ProcessedItem p : coll){
+						if (p.getStack().getItem() == e.getKey()){
+							p.setStack(new ItemIdentifierStack(e.getKey(), e.getValue() + p.getStack().getStackSize()));
+							found = true;
+						}
+					}
+					
+					if (!found){
+						coll.add(new ProcessedItem(new ItemIdentifierStack(e.getKey(), e.getValue()), false));
+					}
 				}
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(true), (Player)player);
 			}
 
 			@Override
 			public void handleSucessfullRequestOf(ItemIdentifier item, int count) {
-				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(1);
-				coll.add(new ItemIdentifierStack(item, count));
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(false), (Player)player);
+				coll.add(new ProcessedItem(new ItemIdentifierStack(item, count), true));
 			}
 			
 			@Override
-			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {}
-		});
+			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {
+				for (Entry<ItemIdentifier,Integer> e : items.entrySet()) {
+					coll.add(new ProcessedItem(new ItemIdentifierStack(e.getKey(), e.getValue()), true));
+				}
+			}
+		};
+		
+		for (ItemIdentifierStack stack : stacks){
+			RequestTree.requestFluid(FluidIdentifier.get(stack.getItem()) , stack.getStackSize(), requester, log);
+		}
+		
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll.toArray(new ProcessedItem[coll.size()])), (Player)player);
 	}
 }

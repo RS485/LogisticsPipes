@@ -6,6 +6,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestHandler;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class RequestSubmitPacket extends RequestPacket {
@@ -28,7 +29,8 @@ public class RequestSubmitPacket extends RequestPacket {
 		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
 			return;
 		}
-		RequestHandler.request(player, getStack(), (CoreRoutedPipe) pipe.pipe);
+		
+		RequestHandler.request(player, getStacks(), (CoreRoutedPipe) pipe.pipe);
 	}
 }
 

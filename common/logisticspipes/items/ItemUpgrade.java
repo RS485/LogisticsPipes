@@ -8,6 +8,7 @@ import logisticspipes.pipes.upgrades.AdvancedSatelliteUpgrade;
 import logisticspipes.pipes.upgrades.CombinedSneakyUpgrade;
 import logisticspipes.pipes.upgrades.CraftingByproductUpgrade;
 import logisticspipes.pipes.upgrades.FluidCraftingUpgrade;
+import logisticspipes.pipes.upgrades.FuzzyCraftingUpgrade;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
 import logisticspipes.pipes.upgrades.PatternUpgrade;
 import logisticspipes.pipes.upgrades.SpeedUpgrade;
@@ -55,6 +56,7 @@ public class ItemUpgrade extends LogisticsItem {
 	public static final int LIQUID_CRAFTING = 22;
 	public static final int CRAFTING_BYPRODUCT_EXTRACTOR = 23;
 	public static final int SUPPLIER_PATTERN = 24;
+	public static final int FUZZY_CRAFTING = 25;
 	
 	//Values
 	public static final int MAX_LIQUID_CRAFTER = 3;
@@ -136,6 +138,7 @@ public class ItemUpgrade extends LogisticsItem {
 		registerUpgrade(LIQUID_CRAFTING, "Fluid Crafting Upgrade", FluidCraftingUpgrade.class, 15);
 		registerUpgrade(CRAFTING_BYPRODUCT_EXTRACTOR, "Crafting Byproduct Extraction Upgrade", CraftingByproductUpgrade.class, 16);
 		registerUpgrade(SUPPLIER_PATTERN, "Placement Rules Upgrade", PatternUpgrade.class, 17);
+		registerUpgrade(FUZZY_CRAFTING, "Fuzzy Crafting Upgrade", FuzzyCraftingUpgrade.class, 18);
 	}
 	
 	public void registerUpgrade(int id, String name, Class<? extends IPipeUpgrade> moduleClass, int textureId) {
@@ -205,7 +208,7 @@ public class ItemUpgrade extends LogisticsItem {
 
 	@Override
 	public void registerIcons(IconRegister par1IconRegister) {
-		icons=new Icon[18];
+		icons=new Icon[19];
 		icons[0]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyUP");
 		icons[1]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyDOWN");
 		icons[2]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyNORTH");
@@ -227,6 +230,7 @@ public class ItemUpgrade extends LogisticsItem {
 		icons[15]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/FluidCrafting");
 		icons[16]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/CraftingByproduct");
 		icons[17]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/PlacementRules");
+		icons[18]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/FuzzyCrafting");
 	}
 
 	@Override

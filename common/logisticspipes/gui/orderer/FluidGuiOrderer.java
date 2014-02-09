@@ -55,11 +55,6 @@ public class FluidGuiOrderer extends GuiOrderer {
 	}
 	
 	@Override
-	protected int getStackAmount() {
-		return 1000;
-	}
-	
-	@Override
 	public void refreshItems() {
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestFluidOrdererRefreshPacket.class).setInteger(dimension).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 	}

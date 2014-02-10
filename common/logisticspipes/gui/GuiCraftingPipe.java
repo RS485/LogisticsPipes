@@ -29,13 +29,17 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 	private final GuiButton[][] advancedSatButtonArray;
 	private final GuiButton[][] liquidGuiParts;
 	private final boolean isAdvancedSat;
+	private final boolean isFuzzy;
 	private final int liquidCrafter;
 	private final boolean hasByproductExtractor;
+
+	private int fuzzyPanelSelection = -1;
 	
-	public GuiCraftingPipe(EntityPlayer player, IInventory dummyInventory, PipeItemsCraftingLogistics logic, boolean isAdvancedSat, int liquidCrafter, int[] amount, boolean hasByproductExtractor) {
+	public GuiCraftingPipe(EntityPlayer player, IInventory dummyInventory, PipeItemsCraftingLogistics logic, boolean isAdvancedSat, int liquidCrafter, int[] amount, boolean hasByproductExtractor, boolean isFuzzy) {
 		super(null);
 		_player = player;
 		this.isAdvancedSat = isAdvancedSat;
+		this.isFuzzy = isFuzzy;
 		this.liquidCrafter = liquidCrafter;
 		this.hasByproductExtractor = hasByproductExtractor;
 		
@@ -293,6 +297,61 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 		if(hasByproductExtractor) {
 			fontRenderer.drawString("Extra", xSize - 35, 88, 0x404040);
 		}
+		
+		if(isFuzzy)
+		{
+			int mx = par1 - guiLeft;
+			int my = par2 - guiTop;
+			if(!isMouseInFuzzyPanel(mx, my))
+				fuzzyPanelSelection = -1;
+			int hovered_slot = -1;
+			if(my >= 18 && my <= 18 + 16)
+				if((mx - 8) % 18 <= 16 && (mx - 8) % 18 >= 0)
+					hovered_slot = (mx - 8) / 18;
+			if(hovered_slot < 0 || hovered_slot >= 9)
+				hovered_slot = -1;
+			if(hovered_slot != -1)
+				fuzzyPanelSelection = hovered_slot;
+		}
+		
+		if(fuzzyPanelSelection != -1)
+		{
+			int posX = 8 + fuzzyPanelSelection * 18;
+			int posY = 18 + 16;
+			BasicGuiHelper.drawGuiBackGround(mc, posX, posY, posX + 60, posY + 52, zLevel, true, true, true, true, true);
+			int flag = this._pipe.fuzzyCraftingFlagArray[fuzzyPanelSelection];
+			fontRenderer.drawString("OreDict", posX + 4, posY + 4, ((flag & 0x1) == 0 ? 0x404040 : 0xFF4040));
+			fontRenderer.drawString("IgnDamage", posX + 4, posY + 14, ((flag & 0x2) == 0 ? 0x404040 : 0x40FF40));
+			fontRenderer.drawString("IgnNBT", posX + 4, posY + 26, ((flag & 0x4) == 0 ? 0x404040 : 0x4040FF));
+			fontRenderer.drawString("OrePrefix", posX + 4, posY + 38, ((flag & 0x8) == 0 ? 0x404040 : 0x7F7F40));
+		}
+		
+		for(int i = 0; i < 9; i++)
+		{
+			int flag = this._pipe.fuzzyCraftingFlagArray[i];
+			int x1 = 8 + 18 * i;
+			int y1 = 18;
+			if((flag & 0x1) != 0)
+			{
+				drawRect(x1 + 8, y1 - 1, x1 + 17, y1, 0xFFFF4040);
+				drawRect(x1 + 16, y1, x1 + 17, y1 + 8, 0xFFFF4040);
+			}
+			if((flag & 0x2) != 0)
+			{
+				drawRect(x1 - 1, y1 - 1, x1 + 8, y1, 0xFF40FF40);
+				drawRect(x1 - 1, y1, x1, y1 + 8, 0xFF40FF40);
+			}
+			if((flag & 0x4) != 0)
+			{
+				drawRect(x1 - 1, y1 + 16, x1 + 8, y1 + 17, 0xFF4040FF);
+				drawRect(x1 - 1, y1 + 8, x1, y1 + 17, 0xFF4040FF);
+			}
+			if((flag & 0x8) != 0)
+			{
+				drawRect(x1 + 8, y1 + 16, x1 + 17, y1 + 17, 0xFF7F7F40);
+				drawRect(x1 + 16, y1 + 8, x1 + 17, y1 + 17, 0xFF7F7F40);
+			}
+		}
 	}
 	
 	@Override
@@ -385,5 +444,39 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 	@Override
 	public int getGuiID() {
 		return GuiIDs.GUI_CRAFTINGPIPE_ID;
+	}
+	
+	private boolean isMouseInFuzzyPanel(int mx, int my)
+	{
+		if(fuzzyPanelSelection == -1)
+			return false;
+		int posX = 8 + fuzzyPanelSelection * 18;
+		int posY = 18 + 16;
+		return mx >= posX && my >= posY && mx <= posX + 60 && my <= posY + 52;
+	}
+	
+	@Override
+	protected void mouseMovedOrUp(int mouseX, int mouseY, int which)
+	{
+		if(isMouseInFuzzyPanel(mouseX - guiLeft, mouseY - guiTop))
+			return;
+		super.mouseMovedOrUp(mouseX, mouseY, which);
+	}
+	
+	@Override
+	protected void mouseClicked(int mouseX, int mouseY, int par3)
+	{
+		if(isMouseInFuzzyPanel(mouseX - guiLeft, mouseY - guiTop))
+		{
+			int posX = 8 + fuzzyPanelSelection * 18;
+			int posY = 18 + 16;
+			int sel = -1;
+			if(mouseX - guiLeft >= posX + 4 && mouseX - guiLeft <= posX + 60 - 4)
+				if(mouseY - guiTop >= posY + 4 && mouseY - guiTop <= posY + 52 - 4)
+					sel = (mouseY - guiTop - posY - 4) / 11;
+			this._pipe.setFuzzyCraftingFlag(fuzzyPanelSelection, sel, null);
+			return;
+		}
+		super.mouseClicked(mouseX, mouseY, par3);
 	}
 }

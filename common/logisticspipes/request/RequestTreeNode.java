@@ -689,14 +689,13 @@ outer:
 				{
 					ArrayList<ItemIdentifier> subtitutes = stack.getValue1().GetSubtitutes(this.target);
 					int req = stack.getValue1().stack.getStackSize();
-					SubRequestGroup grp = new SubRequestGroup();
 					for(ItemIdentifier i : subtitutes)
 					{
 						if(req <= 0)
 							break;
 						RequestTreeNode node = new RequestTreeNode(template, new ItemIdentifierStack(i, req), stack.getValue2(), this, RequestTree.defaultRequestFlags);
 						req -= node.getPromiseItemCount();
-						grp.addNode(node);
+						newChildren.add(node);
 					}
 					if(req > 0)
 						failed = true;

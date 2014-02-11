@@ -10,6 +10,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
@@ -19,6 +20,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 	
 	public PipeItemsRequestLogisticsMk2 pipe;
 	private SmallGuiButton Macrobutton;
+	private RenderItem renderItem = new RenderItem();
 	
 	public NormalMk2GuiOrderer(PipeItemsRequestLogisticsMk2 RequestPipeMK2 ,EntityPlayer entityPlayer) {
 		super(RequestPipeMK2.getX(), RequestPipeMK2.getY(), RequestPipeMK2.getZ(), MainProxy.getDimensionForWorld(RequestPipeMK2.getWorld()), entityPlayer);
@@ -47,29 +49,15 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 		} else {
 			Macrobutton.enabled = false;
 		}
-		
-		//Click on Disk
-		if(lastClickedx != -10000000 &&	lastClickedy != -10000000) {
-			if (lastClickedx >= right - 39 && lastClickedx < right - 19 && lastClickedy >= bottom - 47 && lastClickedy < bottom - 27) {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskDropPacket.class).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
-				lastClickedx = -10000000;
-				lastClickedy = -10000000;
-			}
-		}
 		GL11.glDisable(2896 /*GL_LIGHTING*/);
 	}
 	
 	@Override
-	protected void mouseClicked(int i, int j, int k) {
-		super.mouseClicked(i, j, k);
-		if ((!clickWasButton && i >= right - 39 && i < right - 19 && j >= bottom - 47 && j < bottom - 27) || editsearch){
-			if(!editsearchb) {
-				editsearch = false;
-			}
-			selectedItem = null;
-			lastClickedx = i;
-			lastClickedy = j;
-			lastClickedk = k;
+	protected void mouseClicked(int x, int y, int k) {
+		if (x >= right - 39 && x < right - 19 && y >= bottom - 47 && y < bottom - 27) {
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskDropPacket.class).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
+		} else {
+			super.mouseClicked(x, y, k);
 		}
 	}
 

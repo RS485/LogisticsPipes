@@ -9,6 +9,7 @@ import java.util.Collection;
 import logisticspipes.Configs;
 import logisticspipes.asm.ClientSideOnlyMethodContent;
 import logisticspipes.gui.orderer.GuiOrderer;
+import logisticspipes.gui.orderer.GuiRequestTable;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import lombok.Getter;
@@ -42,6 +43,8 @@ public class MissingItems extends ModernPacket {
 	public void processPacket(EntityPlayer player) {
 		if (Configs.DISPLAY_POPUP && FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
 			((GuiOrderer)FMLClientHandler.instance().getClient().currentScreen).handleRequestAnswer(getItems(), isFlag(), (GuiOrderer)FMLClientHandler.instance().getClient().currentScreen, player);
+		} else if (Configs.DISPLAY_POPUP && FMLClientHandler.instance().getClient().currentScreen instanceof GuiRequestTable) {
+			((GuiRequestTable)FMLClientHandler.instance().getClient().currentScreen).handleRequestAnswer(getItems(), isFlag(), (GuiOrderer)FMLClientHandler.instance().getClient().currentScreen, player);
 		} else if(isFlag()) {
 			for(ItemIdentifierStack item:items){
 				player.addChatMessage("Missing: " + item.getFriendlyName());

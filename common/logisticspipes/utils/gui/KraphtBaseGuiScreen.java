@@ -282,4 +282,8 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 	public void closeGui() {
 		this.keyTyped(' ', 1);
 	}
+	
+	public Minecraft getMC() {
+		return mc;
+	}
 }

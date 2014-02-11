@@ -2,9 +2,11 @@ package logisticspipes.utils.tuples;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class Quartet<T1, T2, T3, T4> extends Triplet<T1, T2, T3> {
 
 	protected T4 value4;

@@ -142,7 +142,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		
 		fontRenderer.drawString("Add Macro", guiLeft + fontRenderer.getStringWidth("Add Macro") / 2, guiTop + 6, 0x404040);
 		
-		maxPageAll = (int) Math.floor((getSearchedItemNumber(mainGui._allItems) - 1)  / 45F);
+		maxPageAll = (int) Math.floor((getSearchedItemNumber(mainGui.itemDisplay._allItems) - 1)  / 45F);
 		if(maxPageAll == -1) maxPageAll = 0;
 		if (pageAll > maxPageAll){
 			pageAll = maxPageAll;
@@ -240,7 +240,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		drawRect(guiLeft + 6, guiTop + 16, right - 12, bottom - 84, BasicGuiHelper.ConvertEnumToColor(Colors.MiddleGrey));
 		drawRect(guiLeft + 6, bottom - 52, right - 12, bottom - 32, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey));
 		
-		for(ItemIdentifierStack itemStack : mainGui._allItems) {
+		for(ItemIdentifierStack itemStack : mainGui.itemDisplay._allItems) {
 			ItemIdentifier item = itemStack.getItem();
 			if(!itemSearched(item)) continue;
 			ppi++;
@@ -322,7 +322,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 			}
 		}
 
-		BasicGuiHelper.renderItemIdentifierStackListIntoGui(mainGui._allItems, this, pageAll, guiLeft + 10, guiTop + 18, 9, 45, panelxSize, panelySize, mc, false, false);
+		BasicGuiHelper.renderItemIdentifierStackListIntoGui(mainGui.itemDisplay._allItems, this, pageAll, guiLeft + 10, guiTop + 18, 9, 45, panelxSize, panelySize, mc, false, false);
 
 		ppi = 0;
 		column = 0;

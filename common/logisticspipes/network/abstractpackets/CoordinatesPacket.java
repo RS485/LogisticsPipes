@@ -48,6 +48,13 @@ public abstract class CoordinatesPacket extends ModernPacket {
 
 	}
 
+	public CoordinatesPacket setTilePos(TileEntity tile) {
+		this.setPosX(tile.xCoord);
+		this.setPosY(tile.yCoord);
+		this.setPosZ(tile.zCoord);
+		return this;
+	}
+	
 	@SuppressWarnings("unchecked")
 	/**
 	 * Retrieves tileEntity at packet coordinates if any.

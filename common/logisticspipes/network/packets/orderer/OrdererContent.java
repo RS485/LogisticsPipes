@@ -1,6 +1,7 @@
 package logisticspipes.network.packets.orderer;
 
 import logisticspipes.gui.orderer.GuiOrderer;
+import logisticspipes.gui.orderer.GuiRequestTable;
 import logisticspipes.network.abstractpackets.InventoryCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,6 +22,8 @@ public class OrdererContent extends InventoryCoordinatesPacket {
 	public void processPacket(EntityPlayer player) {
 		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
 			((GuiOrderer) FMLClientHandler.instance().getClient().currentScreen).handlePacket(getIdentList());
+		} else if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiRequestTable) {
+			((GuiRequestTable) FMLClientHandler.instance().getClient().currentScreen).handlePacket(getIdentList());
 		}
 	}
 }

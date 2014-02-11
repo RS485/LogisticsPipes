@@ -870,7 +870,7 @@ public class RecipeManager {
 			Character.valueOf('P'), Item.paper, 
 			Character.valueOf('s'), Item.ingotIron
 		});
-		
+
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 24), CraftingDependency.Upgrades, new Object[] { 
 			false, 
 			"Rhy", 
@@ -882,6 +882,16 @@ public class RecipeManager {
 			Character.valueOf('y'), dyes[11], 
 			Character.valueOf('h'), Block.hopperBlock,
 			Character.valueOf('i'), Item.ingotIron, 
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 25), CraftingDependency.Upgrades, new Object[] { 
+			false, 
+			"PrP", 
+			"rCr", 
+			"PrP", 
+			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
+			Character.valueOf('r'), Item.netherQuartz, 
+			Character.valueOf('P'), Item.paper
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsFluidConnectorPipe, 4), CraftingDependency.Basic_Liquid, new Object[] {

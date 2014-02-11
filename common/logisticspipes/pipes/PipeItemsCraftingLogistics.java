@@ -50,6 +50,7 @@ import logisticspipes.network.packets.cpipe.CPipeSatelliteId;
 import logisticspipes.network.packets.cpipe.CPipeSatelliteImport;
 import logisticspipes.network.packets.cpipe.CPipeSatelliteImportBack;
 import logisticspipes.network.packets.cpipe.CraftingAdvancedSatelliteId;
+import logisticspipes.network.packets.cpipe.CraftingFuzzyFlag;
 import logisticspipes.network.packets.cpipe.CraftingPipeOpenConnectedGuiPacket;
 import logisticspipes.network.packets.gui.GuiArgument;
 import logisticspipes.network.packets.hud.HUDStartWatchingPacket;
@@ -85,6 +86,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.CraftingRequirement;
 import logisticspipes.utils.DelayedGeneric;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.IHavePriority;
@@ -502,7 +504,20 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		for (int i = 0; i < 9; i++){
 			ItemIdentifierStack resourceStack = getMaterials(i);
 			if (resourceStack == null || resourceStack.getStackSize() == 0) continue;
-			template.addRequirement(resourceStack, target[i]);
+			CraftingRequirement req = new CraftingRequirement();
+			req.stack = resourceStack;
+			if(getUpgradeManager().isFuzzyCrafter())
+			{
+				if((fuzzyCraftingFlagArray[i] & 0x1) != 0)
+					req.use_od = true;
+				if((fuzzyCraftingFlagArray[i] & 0x2) != 0)
+					req.ignore_dmg = true;
+				if((fuzzyCraftingFlagArray[i] & 0x4) != 0)
+					req.ignore_nbt = true;
+				if((fuzzyCraftingFlagArray[i] & 0x8) != 0)
+					req.use_category = true;
+			}
+			template.addRequirement(req, target[i]);
 		}
 		
 		int liquidCrafter = this.getUpgradeManager().getFluidCrafter();
@@ -719,6 +734,9 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 	@TileNetworkData(staticSize=9)
 	public int advancedSatelliteIdArray[] = new int[9];
+	
+	@TileNetworkData(staticSize = 9)
+	public int fuzzyCraftingFlagArray[] = new int[9];
 
 	@TileNetworkData
 	public int priority = 0;
@@ -918,6 +936,9 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		for(int i=0;i<9;i++) {
 			advancedSatelliteIdArray[i] = nbttagcompound.getInteger("advancedSatelliteId" + i);
 		}
+		for(int i=0;i<9;i++) {
+			fuzzyCraftingFlagArray[i] = nbttagcompound.getByte("fuzzyCraftingFlag" + i);
+		}
 		for(int i=0;i<6;i++) {
 			craftingSigns[i] = nbttagcompound.getBoolean("craftingSigns" + i);
 		}
@@ -947,6 +968,9 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		for(int i=0;i<9;i++) {
 			nbttagcompound.setInteger("advancedSatelliteId" + i, advancedSatelliteIdArray[i]);
 		}
+		for(int i=0;i<9;i++) {
+			nbttagcompound.setByte("fuzzyCraftingFlag" + i, (byte)fuzzyCraftingFlagArray[i]);
+		}
 		for(int i=0;i<6;i++) {
 			nbttagcompound.setBoolean("craftingSigns" + i, craftingSigns[i]);
 		}
@@ -960,7 +984,14 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
 		if (MainProxy.isServer(entityplayer.worldObj)) {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(GuiArgument.class).setGuiID(GuiIDs.GUI_CRAFTINGPIPE_ID).setArgs(new Object[]{((CoreRoutedPipe)this.container.pipe).getUpgradeManager().isAdvancedSatelliteCrafter(), ((CoreRoutedPipe)this.container.pipe).getUpgradeManager().getFluidCrafter(), amount, ((CoreRoutedPipe)this.container.pipe).getUpgradeManager().hasByproductExtractor()}),  (Player) entityplayer);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(GuiArgument.class)
+					.setGuiID(GuiIDs.GUI_CRAFTINGPIPE_ID)
+					.setArgs(new Object[]{((CoreRoutedPipe)this.container.pipe).getUpgradeManager().isAdvancedSatelliteCrafter(),
+							((CoreRoutedPipe)this.container.pipe).getUpgradeManager().getFluidCrafter(),
+							amount,
+							((CoreRoutedPipe)this.container.pipe).getUpgradeManager().hasByproductExtractor(),
+							((CoreRoutedPipe)this.container.pipe).getUpgradeManager().isFuzzyCrafter()}),
+							(Player) entityplayer);
 			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_CRAFTINGPIPE_ID, getWorld(), getX(), getY(), getZ());
 		}
 	}
@@ -1261,4 +1292,19 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		return null;
 	}
 
+	public void setFuzzyCraftingFlag(int slot, int flag, EntityPlayer player)
+	{
+		if(slot < 0 || slot >= 9)
+			return;
+		if(MainProxy.isClient(this.getWorld()))
+			if(player == null)
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingFuzzyFlag.class).setInteger2(flag).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+			else
+				fuzzyCraftingFlagArray[slot] = flag;
+		else
+		{
+			fuzzyCraftingFlagArray[slot] ^= 1 << flag;
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingFuzzyFlag.class).setInteger2(fuzzyCraftingFlagArray[slot]).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+		}
+	}
 }

@@ -14,6 +14,7 @@ public class FluidGuiOrderer extends GuiOrderer {
 
 	public FluidGuiOrderer(PipeFluidRequestLogistics pipe, EntityPlayer entityPlayer) {
 		super(pipe.getX(), pipe.getY(), pipe.getZ(), MainProxy.getDimensionForWorld(pipe.getWorld()), entityPlayer);
+		_title = "Request Fluid";
 		refreshItems();
 	}
 
@@ -22,7 +23,7 @@ public class FluidGuiOrderer extends GuiOrderer {
 	public void initGui() {
 		super.initGui();
 		buttonList.add(new GuiButton(3, guiLeft + 10, bottom - 25, 46, 20, "Refresh")); // Refresh
-		itemDisplay = new ItemDisplay(this, fontRenderer, this, this, 10, 18, width - 20, height - 80, new int[]{1,1000,16000,100}, false);
+		if(itemDisplay == null) itemDisplay = new ItemDisplay(this, fontRenderer, this, this, 10, 18, width - 20, height - 80, new int[]{1,1000,16000,100}, false);
 	}
 	
 	@Override

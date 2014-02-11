@@ -44,7 +44,7 @@ public class ComponentList extends ModernPacket {
 		if (Configs.DISPLAY_POPUP && FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
 			((GuiOrderer)FMLClientHandler.instance().getClient().currentScreen).handleSimulateAnswer(used, missing, (GuiOrderer)FMLClientHandler.instance().getClient().currentScreen, player);
 		} else if (Configs.DISPLAY_POPUP && FMLClientHandler.instance().getClient().currentScreen instanceof GuiRequestTable) {
-			((GuiRequestTable)FMLClientHandler.instance().getClient().currentScreen).handleSimulateAnswer(used, missing, (GuiOrderer)FMLClientHandler.instance().getClient().currentScreen, player);
+			((GuiRequestTable)FMLClientHandler.instance().getClient().currentScreen).handleSimulateAnswer(used, missing, (GuiRequestTable)FMLClientHandler.instance().getClient().currentScreen, player);
 		} else {
 			for(ItemIdentifierStack item:used) {
 				player.addChatMessage("Component: " + item.getFriendlyName());

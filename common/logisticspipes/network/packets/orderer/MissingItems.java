@@ -44,7 +44,7 @@ public class MissingItems extends ModernPacket {
 		if (Configs.DISPLAY_POPUP && FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
 			((GuiOrderer)FMLClientHandler.instance().getClient().currentScreen).handleRequestAnswer(getItems(), isFlag(), (GuiOrderer)FMLClientHandler.instance().getClient().currentScreen, player);
 		} else if (Configs.DISPLAY_POPUP && FMLClientHandler.instance().getClient().currentScreen instanceof GuiRequestTable) {
-			((GuiRequestTable)FMLClientHandler.instance().getClient().currentScreen).handleRequestAnswer(getItems(), isFlag(), (GuiOrderer)FMLClientHandler.instance().getClient().currentScreen, player);
+			((GuiRequestTable)FMLClientHandler.instance().getClient().currentScreen).handleRequestAnswer(getItems(), isFlag(), (GuiRequestTable)FMLClientHandler.instance().getClient().currentScreen, player);
 		} else if(isFlag()) {
 			for(ItemIdentifierStack item:items){
 				player.addChatMessage("Missing: " + item.getFriendlyName());

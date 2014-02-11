@@ -229,7 +229,7 @@ public class ItemDisplay {
 
 				x += panelxSize;
 				if (x > 200) {
-					x = 12;
+					x = 2;
 					y += panelySize;
 				}
 			}

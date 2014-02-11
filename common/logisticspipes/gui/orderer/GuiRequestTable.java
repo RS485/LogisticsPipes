@@ -5,8 +5,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.lwjgl.input.Keyboard;
-
 import logisticspipes.Configs;
 import logisticspipes.gui.popup.GuiRequestPopup;
 import logisticspipes.interfaces.ISlotClick;
@@ -27,7 +25,6 @@ import logisticspipes.utils.gui.ISubGuiControler;
 import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import logisticspipes.utils.gui.SearchBar;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen.Colors;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -36,6 +33,8 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+
+import org.lwjgl.input.Keyboard;
 
 public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch, ISpecialItemRenderer {
 
@@ -56,6 +55,8 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 
 	public int dimension;
 	private boolean showRequest = true;
+	private int	startLeft;
+	private int	startXSize;
 	
 	public GuiRequestTable(EntityPlayer entityPlayer, PipeBlockRequestTable table) {
 		super(410, 240, 0, 0);
@@ -94,6 +95,13 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 	@Override
 	@SuppressWarnings("unchecked")
 	public void initGui() {
+		boolean reHide = false;
+		if(!showRequest) {
+			guiLeft = startLeft;
+			xSize = startXSize;
+			showRequest = true;
+			reHide = true;
+		}
 		super.initGui();
 
 		buttonList.clear();
@@ -116,15 +124,31 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 		buttonList.add(new SmallGuiButton(15, guiLeft + 108, guiTop + 53, 15, 10, "++")); // +10
 		buttonList.add(new SmallGuiButton(16, guiLeft + 96, guiTop + 64, 26, 10, "+++")); // +64
 		
-		buttonList.add(new SmallGuiButton(17, guiLeft + 146, guiTop + 14, 36, 10, "Hide")); // +64
+		buttonList.add(new SmallGuiButton(17, guiLeft + 173, guiTop + 5, 36, 10, "Hide")); // +64
 
-		search = new SearchBar(fontRenderer, this, guiLeft + 210, bottom - 78, 190, 15);
-		itemDisplay = new ItemDisplay(this, fontRenderer, this, this, guiLeft + 210, guiTop + 18, 190, ySize - 100, new int[]{1,10,64,64}, true);
+		if(search == null) search = new SearchBar(fontRenderer, this, guiLeft + 205, bottom - 78, 200, 15);
+		if(itemDisplay == null) itemDisplay = new ItemDisplay(this, fontRenderer, this, this, guiLeft + 205, guiTop + 18, 200, ySize - 100, new int[]{1,10,64,64}, true);
+		
+		startLeft = guiLeft;
+		startXSize = xSize;
+		if(reHide) {
+			showRequest = false;
+			xSize = startXSize - 210;
+			guiLeft = startLeft + 105;
+			for(int i=13;i<16;i++) {
+				((GuiButton)buttonList.get(i)).xPosition += 105;
+			}
+			((GuiButton)buttonList.get(16)).xPosition += 90;
+			((SmallGuiButton)buttonList.get(16)).displayString = "Show";
+			for(int i=0; i< 13;i++) {
+				((GuiButton)buttonList.get(i)).drawButton = false;
+			}
+		}
 	}
 	
 	@Override
 	public void drawGuiContainerBackgroundLayer(float f, int i, int j) {
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right - (showRequest ? 0 : 210), bottom, zLevel, true);
+		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right - (showRequest ? 0 : 105), bottom, zLevel, true);
 		
 		if(showRequest) {
 			fontRenderer.drawString(_title, guiLeft + 180 + fontRenderer.getStringWidth(_title) / 2, guiTop + 6, 0x404040);
@@ -143,10 +167,12 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 			
 			itemDisplay.renderItemArea(zLevel);
 			
-			drawRect(guiLeft + 185, guiTop + 21, guiLeft + 205, guiTop + 16, Colors.DarkGrey);
+			/*
+			drawRect(guiLeft + 180, guiTop + 11, guiLeft + 200, guiTop + 6, Colors.DarkGrey);
 			for(int a = 0; a < 10;a++) {
-				drawRect(guiLeft + 207 - a, guiTop + 18 - a, guiLeft + 208 - a, guiTop + 20 + a, Colors.DarkGrey);
+				drawRect(guiLeft + 202 - a, guiTop + 8 - a, guiLeft + 203 - a, guiTop + 10 + a, Colors.DarkGrey);
 			}
+			*/
 		}
 		
 		
@@ -160,6 +186,7 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 				BasicGuiHelper.drawSlotBackground(mc, guiLeft + (x * 18) + 19, guiTop + (y * 18) + 14);
 			}
 		}
+		fontRenderer.drawString("Sort:", guiLeft + 136, guiTop + 55, 0xffffff);
 		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 100, guiTop + 32);
 		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 163, guiTop + 50);
 		drawRect(guiLeft + 75, guiTop + 38, guiLeft + 95, guiTop + 43, Colors.DarkGrey);
@@ -197,7 +224,7 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 		if (guibutton.id == 0 && itemDisplay.getSelectedItem() != null) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitPacket.class).setDimension(dimension).setStack(itemDisplay.getSelectedItem().getItem().makeStack(itemDisplay.getRequestCount())).setTilePos(_table.container));
 			refreshItems();
-		} else if (guibutton.id == 1){
+		} else if (guibutton.id == 1) {
 			itemDisplay.nextPage();
 		} else if (guibutton.id == 2) {
 			itemDisplay.prevPage();
@@ -248,9 +275,19 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 		} else if(guibutton.id == 17) {
 			showRequest = !showRequest;
 			if(showRequest) {
-				xSize = 410;
+				xSize = startXSize;
+				guiLeft = startLeft;
+				for(int i=13;i<16;i++) {
+					((GuiButton)buttonList.get(i)).xPosition -= 105;
+				}
+				((GuiButton)buttonList.get(16)).xPosition -= 90;
 			} else {
-				xSize = 410 - 210;
+				xSize = startXSize - 210;
+				guiLeft = startLeft + 105;
+				for(int i=13;i<16;i++) {
+					((GuiButton)buttonList.get(i)).xPosition += 105;
+				}
+				((GuiButton)buttonList.get(16)).xPosition += 90;
 			}
 			((SmallGuiButton)buttonList.get(16)).displayString = showRequest ? "Hide" : "Show";
 			for(int i=0; i< 13;i++) {

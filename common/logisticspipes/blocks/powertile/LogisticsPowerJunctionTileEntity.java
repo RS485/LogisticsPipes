@@ -47,7 +47,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	
 	public final int BuildCraftMultiplier = 5;
 	public final int IC2Multiplier = 2;
-	public final int RFMultiplier = 5;
+	public final float RFMultiplier = 0.5F;
 	public final int MAX_STORAGE = 2000000;
 	
 	private PowerHandler powerFramework;
@@ -388,9 +388,9 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 		float minrequest = 1.01f / RFMultiplier;	//we round down, so always ask for a bit over 1LP-equivalent
 		if(space < minrequest)
 			space = minrequest;
-		int availablelp = (int) Math.min(maxReceive, space) * RFMultiplier;
+		int availablelp = (int) (Math.min(maxReceive, space) * RFMultiplier);
 		if(availablelp > 0) {
-			int totake = (int) availablelp / RFMultiplier;
+			int totake = (int) (availablelp / RFMultiplier);
 			if(!simulate) {
 				addEnergy(availablelp);
 			}
@@ -420,6 +420,6 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	@Override
 	@ModDependentMethod(modId="CoFHCore")
 	public int getMaxEnergyStored(ForgeDirection from) {
-		return MAX_STORAGE * RFMultiplier;
+		return (int)(MAX_STORAGE * RFMultiplier);
 	}
 }

@@ -16,38 +16,12 @@ import cpw.mods.fml.common.Loader;
  * This class was last edited on Feb-05-2014 by need4speed402 the creator of 'The Barrels Mod'
  */
 public class BarrelModInventoryHandler extends SpecialInventoryHandler {
-	private static final Class tileEntityClass;
-	private static final Method getStackLimit;
+	private static Class tileEntityClass;
+	private static Method getStackLimit;
 	
-	private static final Method getItem, setItem;
+	private static Method getItem, setItem;
 	
-	private static final Method getModeForSide;
-
-	static{
-		Class XtileEntityClass = null;
-		Method XgetStackLimit = null, XgetItem = null, XsetItem = null, XgetModeForSide = null;
-		
-		if (Loader.isModLoaded("barrels")){
-			try {
-				XtileEntityClass = Class.forName("need4speed402.mods.barrels.TileEntityBarrel");
-				
-				XgetStackLimit = XtileEntityClass.getMethod("getStackLimit");
-				
-				XgetItem = XtileEntityClass.getMethod("getItem");
-				XsetItem = XtileEntityClass.getMethod("setItem", ItemStack.class);
-				
-				XgetModeForSide = XtileEntityClass.getMethod("getModeForSide", int.class);
-			} catch (Exception e) {
-				XtileEntityClass = null;
-			}
-		}
-		
-		tileEntityClass = XtileEntityClass;
-		getStackLimit = XgetStackLimit;
-		getItem = XgetItem;
-		setItem = XsetItem;
-		getModeForSide = XgetModeForSide;
-	}
+	private static Method getModeForSide;
 	
 	private final TileEntity tile;
 	private final int hide;
@@ -64,7 +38,22 @@ public class BarrelModInventoryHandler extends SpecialInventoryHandler {
 	
 	@Override
 	public boolean init() {
-		return tileEntityClass != null;
+		try {
+			tileEntityClass = Class.forName("need4speed402.mods.barrels.TileEntityBarrel");
+			
+			getStackLimit = tileEntityClass.getMethod("getStackLimit");
+			
+			getItem = tileEntityClass.getMethod("getItem");
+			setItem = tileEntityClass.getMethod("setItem", ItemStack.class);
+			
+			getModeForSide = tileEntityClass.getMethod("getModeForSide", int.class);
+			
+			return true;
+		} catch (Exception e) {
+			tileEntityClass = null;
+		}
+		
+		return false;
 	}
 
 	@Override

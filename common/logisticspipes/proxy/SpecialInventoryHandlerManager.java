@@ -1,4 +1,3 @@
-
 package logisticspipes.proxy;
 
 import logisticspipes.proxy.specialinventoryhandler.AEInterfaceInventoryHandler;
@@ -28,12 +27,6 @@ public class SpecialInventoryHandlerManager {
 			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new AEInterfaceInventoryHandler());
 		}
 
-		if(Loader.isModLoaded("MineFactoryReloaded") || Loader.isModLoaded("JABBA")) {
-			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new DSUInventoryHandler());
-		}
-
-		if(Loader.isModLoaded("barrels")) {
-			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new BarrelModInventoryHandler());
-		}
+		SimpleServiceLocator.inventoryUtilFactory.registerHandler(new DSUInventoryHandler());
 	}
 }

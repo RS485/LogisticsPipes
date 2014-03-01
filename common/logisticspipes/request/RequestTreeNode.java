@@ -622,6 +622,7 @@ outer:
 				}
 				if(req > 0)
 					failed = true;
+				lastNodes.add(grp);
 			}
 		}
 		List<Triplet<FluidIdentifier, Integer, IRequestFluid>> liquids = template.getComponentFluid(nCraftingSets);

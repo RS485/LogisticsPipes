@@ -63,7 +63,9 @@ public class ChassiModule extends LogisticsGuiModule{
 		int roomForItem = invUtil.roomForItem(item); 
 		if (roomForItem < 1) return null;
 		if(includeInTransit) {
-			roomForItem-=_parentPipe.countOnRoute(item);
+			int onRoute = _parentPipe.countOnRoute(item);
+			roomForItem = invUtil.roomForItem(item, onRoute + item.getMaxStackSize());
+			roomForItem -= onRoute;
 			if (roomForItem < 1) return null;
 		}
 

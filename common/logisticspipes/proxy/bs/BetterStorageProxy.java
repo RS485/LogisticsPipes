@@ -10,7 +10,7 @@ public class BetterStorageProxy implements IBetterStorageProxy {
 	
 	public BetterStorageProxy() {
 		try {
-			crateClass = Class.forName("net.mcft.copy.betterstorage.block.crate.TileEntityCrate");
+			crateClass = Class.forName("net.mcft.copy.betterstorage.tile.crate.TileEntityCrate");
 			init = true;
 		} catch(Exception e) {
 			e.printStackTrace();

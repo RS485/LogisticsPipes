@@ -43,9 +43,9 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public boolean init() {
 		try {
-			crateClass = Class.forName("net.mcft.copy.betterstorage.block.crate.TileEntityCrate");
+			crateClass = Class.forName("net.mcft.copy.betterstorage.tile.crate.TileEntityCrate");
 			getPileData = crateClass.getDeclaredMethod("getPileData", new Class[]{});
-			cratePileDataClass = Class.forName("net.mcft.copy.betterstorage.block.crate.CratePileData");
+			cratePileDataClass = Class.forName("net.mcft.copy.betterstorage.tile.crate.CratePileData");
 			getNumItems = cratePileDataClass.getDeclaredMethod("getNumItems", new Class[]{});
 			removeItems = cratePileDataClass.getDeclaredMethod("removeItems", new Class[]{ItemStack.class, int.class});
 			getItemStack = cratePileDataClass.getDeclaredMethod("getItemStack", new Class[]{int.class});

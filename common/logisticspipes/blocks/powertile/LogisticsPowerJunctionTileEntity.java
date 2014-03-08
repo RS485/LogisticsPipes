@@ -307,30 +307,29 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 		return true;
 	}
 
+	private void transferFromIC2Buffer() {
+		if(freeSpace() > 0 && internalBuffer >= 1) {
+			int addAmount = Math.min((int)Math.floor(internalBuffer), freeSpace());
+			addEnergy(addAmount);
+			internalBuffer -= addAmount;
+		}
+	}
+
 	@Override
 	@ModDependentMethod(modId="IC2")
 	public double demandedEnergyUnits() {
 		if(!addedToEnergyNet) return 0;
-		if(internalBuffer > 0 && freeSpace() > 0) {
-			internalBuffer = injectEnergyUnits(null, internalBuffer);
-		}
-		return freeSpace();
+		transferFromIC2Buffer();
+		//round up so we demand enough to completely fill visible storage
+		return (freeSpace() + IC2Multiplier - 1) / IC2Multiplier;
 	}
 
 	@Override
 	@ModDependentMethod(modId="IC2")
 	public double injectEnergyUnits(ForgeDirection directionFrom, double amount) {
-		int addAmount = Math.min((int)Math.floor(amount), freeSpace() / IC2Multiplier);
-		if(freeSpace() > 0 && addAmount == 0) {
-			addAmount = 1;
-		}
-		if(!addedToEnergyNet) addAmount = 0;
-		addEnergy(addAmount * IC2Multiplier);
-		if(addAmount == 0 && directionFrom != null) {
-			internalBuffer += amount;
-			return 0;
-		}
-		return amount - addAmount;
+		internalBuffer += amount * IC2Multiplier;
+		transferFromIC2Buffer();
+		return 0;
 	}
 
 	@Override

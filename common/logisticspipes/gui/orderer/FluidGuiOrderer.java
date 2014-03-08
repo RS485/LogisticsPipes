@@ -21,9 +21,10 @@ public class FluidGuiOrderer extends GuiOrderer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
+		boolean setItemDisplay = itemDisplay == null;
 		super.initGui();
 		buttonList.add(new GuiButton(3, guiLeft + 10, bottom - 25, 46, 20, "Refresh")); // Refresh
-		if(itemDisplay == null) itemDisplay = new ItemDisplay(this, fontRenderer, this, this, 10, 18, width - 20, height - 80, new int[]{1,1000,16000,100}, false);
+		if(setItemDisplay) itemDisplay = new ItemDisplay(this, fontRenderer, this, this, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[]{1,1000,16000,100}, false);
 	}
 	
 	@Override

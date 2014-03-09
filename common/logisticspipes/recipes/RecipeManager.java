@@ -466,6 +466,12 @@ public class RecipeManager {
 			Character.valueOf('U'), Item.book
 		});
 
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ENCHANTMENTSINK), CraftingDependency.Sink_Modules, new Object[] {
+			"E",
+			"B",
+			Character.valueOf('E'), Item.enchantedBook,
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ITEMSINK),
+		});
 
 		for(int i=0; i<1000;i++) {
 			LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(new ItemStack(LogisticsPipes.ModuleItem, 1, i), null, null, null, null, null);

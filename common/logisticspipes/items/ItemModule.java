@@ -20,6 +20,7 @@ import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleApiaristTerminus;
 import logisticspipes.modules.ModuleElectricBuffer;
 import logisticspipes.modules.ModuleElectricManager;
+import logisticspipes.modules.ModuleEnchantmentSink;
 import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleExtractorMk2;
 import logisticspipes.modules.ModuleExtractorMk3;
@@ -74,6 +75,7 @@ public class ItemModule extends LogisticsItem {
 	public static final int MODBASEDITEMSINK = 12;
 	public static final int OREDICTITEMSINK = 13;
 	public static final int THAUMICASPECTSINK = 30;
+	public static final int ENCHANTMENTSINK = 31;
 
 	//PASSIVE MK 2
 	public static final int EXTRACTOR_MK2 = 100 + EXTRACTOR;
@@ -187,6 +189,7 @@ public class ItemModule extends LogisticsItem {
 		registerModule(MODBASEDITEMSINK			, "Mod Based ItemSink module"	, ModuleModBasedItemSink.class);
 		registerModule(OREDICTITEMSINK			, "OreDict ItemSink module"		, ModuleOreDictItemSink.class);
 		registerModule(THAUMICASPECTSINK		, "Thaumic AspectSink module"	, ModuleThaumicAspectSink.class);
+		registerModule(ENCHANTMENTSINK			, "Enchantment Sink module"		, ModuleEnchantmentSink.class);
 	}
 
 	public void registerModule(int id, String name, Class<? extends LogisticsModule> moduleClass) {
@@ -234,6 +237,16 @@ public class ItemModule extends LogisticsItem {
 				par2EntityPlayer.openGui(LogisticsPipes.instance, -1, par3World, ((LogisticsGuiModule)module).getGuiHandlerID(), -1 ,par2EntityPlayer.inventory.currentItem);
 			}
 		}
+	}
+	@Override
+	public boolean hasEffect(ItemStack par1ItemStack) {
+		LogisticsModule module = getModuleForItem(par1ItemStack, null, null, null, null, null);
+		if(module != null) {
+			if(par1ItemStack != null && par1ItemStack.stackSize > 0) {
+				return module.hasEffect();
+			}
+		}
+		return false;
 	}
 
 	@Override

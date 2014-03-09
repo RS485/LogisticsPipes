@@ -85,7 +85,7 @@ public abstract class LogisticsModule implements ISaveState {
 	public abstract boolean interestedInAttachedInventory();
 
 	/**
-	 * is this module interested in recieving any damage varient of items in the attached inventory?
+	 * is this module interested in receiving any damage variant of items in the attached inventory?
 	 */
 	public abstract boolean interestedInUndamagedID();
 
@@ -101,6 +101,15 @@ public abstract class LogisticsModule implements ISaveState {
 	@SideOnly(Side.CLIENT)
 	public abstract Icon getIconTexture(IconRegister register);
 	
+	/**
+	 * Returns whether the module should be displayed the effect when as an item.
+	 * @return True to show effect
+	 *         False to no effect (default)
+	 */
+	public boolean hasEffect() {
+		return false;
+	}
+
 	@CCCommand(description="Returns if the Pipe has a gui")
 	public boolean hasGui() {
 		return false;

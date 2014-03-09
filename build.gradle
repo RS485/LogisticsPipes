@@ -40,3 +40,7 @@ processResources
         exclude 'mcmod.info'
     }
 }
+dependencies {
+    compile 'com.mod-buildcraft:BuildCraft:5.0.0.+'
+    compile 'org.projectlombok:lombok:1.12.4'
+}

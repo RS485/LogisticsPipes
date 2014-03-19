@@ -15,6 +15,7 @@ import java.util.UUID;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.transport.TravelingItem;
 
@@ -22,13 +23,12 @@ import buildcraft.transport.TravelingItem;
  * This interface describes the actions that must be available on an item that is considered routed
  *
  */
-public interface IRoutedItem{
+public interface IRoutedItem {
 	
 	public class DelayComparator implements Comparator<IRoutedItem> {
 
 		@Override
 		public int compare(IRoutedItem o1, IRoutedItem o2) {
-			// TODO Auto-generated method stub
 			return (int)(o2.getTimeOut()-o1.getTimeOut()); // cast will never overflow because the delta is in 1/20ths of a second.
 		}
 	
@@ -45,16 +45,6 @@ public interface IRoutedItem{
 	public void setDestination(int destination);
 	public void clearDestination();
 	
-	//public void addRelayPoints(List<IRelayItem> relays);
-	//public void itemRelayed();
-	//public boolean isItemRelayed();
-	//public void replaceRelayID(int newId);
-	
-//	public boolean isPassive();
-//	public void setPassive(boolean isPassive);
-//	public boolean isDefault();
-//	public void setDefault(boolean isDefault);
-	
 	public void setTransportMode(TransportMode transportMode);
 	public TransportMode getTransportMode();
 	
@@ -66,9 +56,6 @@ public interface IRoutedItem{
 
 	public ItemStack getItemStack();
 	public void setItemStack(ItemStack item);
-	
-	//public void setSpeedBoost(float multiplier);
-	//public float getSpeedBoost();
 	
 	public TravelingItem getTravelingItem();
 	public TravelingItem getNewTravelingItem();
@@ -93,4 +80,7 @@ public interface IRoutedItem{
 
 //FIXME: not sure when/if this will be called correctly
 	void remove();
+
+	public NBTTagCompound getNBTData();
+	public void loadFromNBT(NBTTagCompound data);
 }

@@ -249,6 +249,14 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		//LogisticsPipes.log.info("Sending: "+routedItem.getIDStack().getItem().getFriendlyName());
 	}
 
+	//When Recreating the Item from the TE version we have the same hashCode but a different instance so we need to refresh this
+	public void refreshItem(IRoutedItem routedItem) {
+		if(this._inTransitToMe.contains(routedItem)) {
+			this._inTransitToMe.remove(routedItem);
+			this._inTransitToMe.add(routedItem);
+		}
+	}
+
 	public abstract ItemSendMode getItemSendMode();
 	
 	private boolean checkTileEntity(boolean force) {
@@ -351,7 +359,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		while(this._inTransitToMe.peek()!=null && this._inTransitToMe.peek().getTickToTimeOut()<=0){
 			final IRoutedItem p=_inTransitToMe.poll();
 			if (LogisticsPipes.DEBUG) {
-					LogisticsPipes.log.info("Timed Out: "+p.getIDStack().getItem().getFriendlyName());
+					LogisticsPipes.log.info("Timed Out: "+p.getIDStack().getFriendlyName() + " (" + p.hashCode() + ")");
 			}
 		}
 		//update router before ticking logic/transport
@@ -1155,8 +1163,8 @@ outer:
 	}
 
 	public void notifyOfItemArival(RoutedEntityItem routedEntityItem) {
-		this._inTransitToMe.remove(routedEntityItem);		
-		if (this instanceof IRequireReliableTransport){
+		this._inTransitToMe.remove(routedEntityItem);
+		if (this instanceof IRequireReliableTransport) {
 			((IRequireReliableTransport)this).itemArrived(ItemIdentifierStack.getFromStack(routedEntityItem.getItemStack()));
 		}
 		if (this instanceof IRequireReliableFluidTransport) {

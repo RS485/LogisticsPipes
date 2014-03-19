@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.LaunchClassLoader;
@@ -57,7 +58,37 @@ public class LogisticsClassTransformer implements IClassTransformer {
 		try {
 			clearNegativeInterfaceCache();
 			if(name.equals("buildcraft.transport.PipeTransportItems")) {
-				return handlePipeTransportItems(bytes);
+				Configs.load();
+				if(Configs.TE_PIPE_SUPPORT) {
+					return handlePipeTransportItems(bytes);
+				}
+			}
+			if(name.equals("thermalexpansion.part.conduit.ConduitBase")) {
+				Configs.load();
+				if(Configs.TE_PIPE_SUPPORT) {
+					return handleTEConduitBase(bytes);
+				}
+			}
+			if(name.equals("thermalexpansion.part.conduit.item.ConduitItem")) {
+				Configs.load();
+				if(Configs.TE_PIPE_SUPPORT) {
+					return handleTEConduitItem(bytes);
+				}
+			}
+			if(name.equals("thermalexpansion.part.conduit.item.ItemRoute")) {
+				Configs.load();
+				if(Configs.TE_PIPE_SUPPORT) {
+					return handleTEItemRoute(bytes);
+				}
+			}
+			if(name.equals("thermalexpansion.part.conduit.item.TravelingItem")) {
+				Configs.load();
+				if(Configs.TE_PIPE_SUPPORT) {
+					return handleTETravelingItem(bytes);
+				}
+			}
+			if(name.equals("net.minecraft.crash.CrashReport")) {
+				return handleCrashReportClass(bytes);
 			}
 			if(!name.startsWith("logisticspipes.")) {
 				return bytes;
@@ -280,6 +311,357 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			}
 		}
 		ClassWriter writer = new ClassWriter(0);
+		node.accept(writer);
+		return writer.toByteArray();
+	}
+	
+	private enum STATE {SEARCHING, INSERTING, DONE};
+
+	private byte[] handleTEConduitBase(byte[] bytes) {
+		final ClassReader reader = new ClassReader(bytes);
+		final ClassNode node = new ClassNode();
+		reader.accept(node, 0);
+		for(MethodNode m:node.methods) {
+			if(m.name.equals("onNeighborChanged")) {
+				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+					private STATE state = STATE.SEARCHING;
+					
+					@Override
+					public void visitJumpInsn(int opcode, Label label) {
+						super.visitJumpInsn(opcode, label);
+						if(state == STATE.INSERTING) {
+							Label l0 = new Label();
+							super.visitLabel(l0);
+							super.visitVarInsn(Opcodes.ALOAD, 0);
+							super.visitVarInsn(Opcodes.ILOAD, 5);
+							super.visitVarInsn(Opcodes.ALOAD, 1);
+							super.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/proxy/te/ASMHookClass", "handleOnNeighborChanged", "(Lthermalexpansion/part/conduit/ConduitBase;ILnet/minecraft/tileentity/TileEntity;)V");
+							state = STATE.DONE;
+						}
+					}
+
+					@Override
+					public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+						if(state == STATE.SEARCHING && "passOcclusionTest".equals(name)) {
+							state = STATE.INSERTING;
+						}
+						super.visitMethodInsn(opcode, owner, name, desc);
+					}
+				};
+				m.accept(mv);
+				node.methods.set(node.methods.indexOf(m), mv);
+			}
+			if(m.name.equals("onNeighborTileChanged")) {
+				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+					private STATE state = STATE.SEARCHING;
+					
+					@Override
+					public void visitJumpInsn(int opcode, Label label) {
+						super.visitJumpInsn(opcode, label);
+						if(state == STATE.INSERTING) {
+							Label l0 = new Label();
+							super.visitLabel(l0);
+							super.visitVarInsn(Opcodes.ALOAD, 0);
+							super.visitVarInsn(Opcodes.ILOAD, 1);
+							super.visitVarInsn(Opcodes.ALOAD, 3);
+							super.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/proxy/te/ASMHookClass", "handleOnNeighborTileChanged", "(Lthermalexpansion/part/conduit/ConduitBase;ILnet/minecraft/tileentity/TileEntity;)V");
+							state = STATE.DONE;
+						}
+					}
+
+					@Override
+					public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+						if(state == STATE.SEARCHING && "passOcclusionTest".equals(name)) {
+							state = STATE.INSERTING;
+						}
+						super.visitMethodInsn(opcode, owner, name, desc);
+					}
+				};
+				m.accept(mv);
+				node.methods.set(node.methods.indexOf(m), mv);
+			}
+			if(m.name.equals("onAdded")) {
+				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+					private STATE state = STATE.SEARCHING;
+					
+					@Override
+					public void visitJumpInsn(int opcode, Label label) {
+						super.visitJumpInsn(opcode, label);
+						if(state == STATE.INSERTING) {
+							Label l0 = new Label();
+							super.visitLabel(l0);
+							super.visitVarInsn(Opcodes.ALOAD, 0);
+							super.visitVarInsn(Opcodes.ILOAD, 2);
+							super.visitVarInsn(Opcodes.ALOAD, 1);
+							super.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/proxy/te/ASMHookClass", "handleOnAdded", "(Lthermalexpansion/part/conduit/ConduitBase;ILnet/minecraft/tileentity/TileEntity;)V");
+							state = STATE.DONE;
+						}
+					}
+
+					@Override
+					public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+						if(state == STATE.SEARCHING && "passOcclusionTest".equals(name)) {
+							state = STATE.INSERTING;
+						}
+						super.visitMethodInsn(opcode, owner, name, desc);
+					}
+				};
+				m.accept(mv);
+				node.methods.set(node.methods.indexOf(m), mv);
+			}
+			if(m.name.equals("onPartChanged")) {
+				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+					@Override
+					public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+						if("isConduit".equals(name)) {
+							super.visitVarInsn(Opcodes.ILOAD, 7);
+							super.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/proxy/te/ASMHookClass", "handleOnPartChanged", "(Lthermalexpansion/part/conduit/ConduitBase;Lnet/minecraft/tileentity/TileEntity;I)V");
+							Label l0 = new Label();
+							super.visitLabel(l0);
+							super.visitVarInsn(Opcodes.ALOAD, 0);
+							super.visitVarInsn(Opcodes.ALOAD, 2);
+							
+						}
+						super.visitMethodInsn(opcode, owner, name, desc);
+					}
+				};
+				m.accept(mv);
+				node.methods.set(node.methods.indexOf(m), mv);
+			}
+			if(m.name.equals("getConduit") && m.desc.equals("(I)Lthermalexpansion/part/conduit/ConduitBase;")) {
+				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+					private STATE state = STATE.SEARCHING;
+					
+					@Override
+					public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+						super.visitMethodInsn(opcode, owner, name, desc);
+						if(state == STATE.SEARCHING && name.equals("getAdjacentTileEntity")) {
+							state = STATE.INSERTING;
+						}
+					}
+
+					@Override
+					public void visitVarInsn(int opcode, int var) {
+						super.visitVarInsn(opcode, var);
+						if(state == STATE.INSERTING) {
+							Label l0 = new Label();
+							super.visitLabel(l0);
+							super.visitVarInsn(Opcodes.ALOAD, 0);
+							super.visitVarInsn(Opcodes.ILOAD, 1);
+							super.visitVarInsn(Opcodes.ALOAD, 2);
+							super.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/proxy/te/ASMHookClass", "handleGetConduit", "(Lthermalexpansion/part/conduit/ConduitBase;ILnet/minecraft/tileentity/TileEntity;)V");
+							state = STATE.DONE;
+						}
+					}
+				};
+				m.accept(mv);
+				node.methods.set(node.methods.indexOf(m), mv);
+			}
+			if(m.name.equals("onRemoved")) {
+				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+					@Override
+					public void visitCode() {
+						super.visitCode();
+						Label l0 = new Label();
+						super.visitLabel(l0);
+						super.visitVarInsn(Opcodes.ALOAD, 0);
+						super.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/proxy/te/ASMHookClass", "handleOnRemoved", "(Lthermalexpansion/part/conduit/ConduitBase;)V");
+					}
+				};
+				m.accept(mv);
+				node.methods.set(node.methods.indexOf(m), mv);
+			}
+		}
+		ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+		node.accept(writer);
+		return writer.toByteArray();
+	}
+
+	private byte[] handleTEConduitItem(byte[] bytes) {
+		final ClassReader reader = new ClassReader(bytes);
+		final ClassNode node = new ClassNode();
+		reader.accept(node, 0);
+		for(MethodNode m:node.methods) {
+			if(m.name.equals("getConnectionType")) {
+				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+					private Label l1 = new Label();
+					private Label l2 = new Label();
+					private boolean varAdded = false;
+					
+					@Override
+					public void visitCode() {
+						super.visitCode();
+						Label l0 = new Label();
+						super.visitLabel(l0);
+						super.visitVarInsn(Opcodes.ALOAD, 0);
+						super.visitVarInsn(Opcodes.ILOAD, 1);
+						super.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/proxy/te/ASMHookClass", "getTEPipeRenderMode", "(Lthermalexpansion/part/conduit/item/ConduitItem;I)I");
+						super.visitVarInsn(Opcodes.ISTORE, 2);
+						super.visitLabel(l1);
+						super.visitLineNumber(147, l1);
+						super.visitVarInsn(Opcodes.ILOAD, 2);
+						super.visitInsn(Opcodes.ICONST_M1);
+						super.visitJumpInsn(Opcodes.IF_ICMPEQ, l2);
+						super.visitVarInsn(Opcodes.ILOAD, 2);
+						super.visitInsn(Opcodes.IRETURN);
+						super.visitLabel(l2);
+					}
+
+					@Override
+					public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
+						super.visitLocalVariable(name, desc, signature, start, end, index);
+						if(!varAdded) {
+							varAdded = true;
+							super.visitLocalVariable("i_LP_TEMPVAR", "I", null, l1, l2, 2);
+						}
+					}
+				};
+				m.accept(mv);
+				node.methods.set(node.methods.indexOf(m), mv);
+			}
+		}
+		ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+		node.accept(writer);
+		return writer.toByteArray();
+	}
+
+	private byte[] handleTEItemRoute(byte[] bytes) {
+		final ClassReader reader = new ClassReader(bytes);
+		final ClassNode node = new ClassNode();
+		reader.accept(node, 0);
+		for(FieldNode f:node.fields) {
+			f.access = Opcodes.ACC_PUBLIC;
+		}
+		ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+		node.accept(writer);
+		return writer.toByteArray();
+	}
+
+	private byte[] handleTETravelingItem(byte[] bytes) {
+		final ClassReader reader = new ClassReader(bytes);
+		final ClassNode node = new ClassNode();
+		reader.accept(node, 0);
+		boolean add = true;
+		for(FieldNode f:node.fields) {
+			if(f.name.equals("routedLPInfo")) {
+				add = false;
+				break;
+			}
+		}
+		if(add) {
+			node.fields.add(new FieldNode(Opcodes.ACC_PUBLIC, "routedLPInfo", "Lnet/minecraft/nbt/NBTTagCompound;", null, null));
+		}
+		for(MethodNode m:node.methods) {
+			if(m.name.equals("toNBT") && m.desc.equals("(Lnet/minecraft/nbt/NBTTagCompound;)V")) {
+				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+					private STATE state = STATE.SEARCHING;
+
+					@Override
+					public void visitFieldInsn(int opcode, String owner, String name, String desc) {
+						if(state == STATE.SEARCHING && "thermalexpansion/part/conduit/item/TravelingItem".equals(owner) && "startZ".equals(node) && "I".equals(desc)) {
+							state = STATE.INSERTING;
+						}
+						super.visitFieldInsn(opcode, owner, name, desc);
+					}
+
+					@Override
+					public void visitLabel(Label label) {
+						if(state == STATE.INSERTING) {
+							Label l17 = new Label();
+							super.visitLabel(l17);
+							super.visitVarInsn(Opcodes.ALOAD, 0);
+							super.visitFieldInsn(Opcodes.GETFIELD, "thermalexpansion/part/conduit/item/TravelingItem", "routedLPInfo", "Lnet/minecraft/nbt/NBTTagCompound;");
+							Label l18 = new Label();
+							super.visitJumpInsn(Opcodes.IFNULL, l18);
+							Label l19 = new Label();
+							super.visitLabel(l19);
+							super.visitVarInsn(Opcodes.ALOAD, 1);
+							super.visitLdcInsn("LPRoutingInformation");
+							super.visitVarInsn(Opcodes.ALOAD, 0);
+							super.visitFieldInsn(Opcodes.GETFIELD, "thermalexpansion/part/conduit/item/TravelingItem", "routedLPInfo", "Lnet/minecraft/nbt/NBTTagCompound;");
+							super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "net/minecraft/nbt/NBTTagCompound", "setTag", "(Ljava/lang/String;Lnet/minecraft/nbt/NBTBase;)V");
+							super.visitLabel(l18);
+							state = STATE.DONE;
+						}
+						super.visitLabel(label);
+					}
+				};
+				m.accept(mv);
+				node.methods.set(node.methods.indexOf(m), mv);
+			}
+			if(m.name.equals("<init>") && m.desc.equals("(Lnet/minecraft/nbt/NBTTagCompound;)V")) {
+				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+					private STATE state = STATE.SEARCHING;
+
+					@Override
+					public void visitFieldInsn(int opcode, String owner, String name, String desc) {
+						if(state == STATE.SEARCHING && "thermalexpansion/part/conduit/item/TravelingItem".equals(owner) && "startZ".equals(node) && "I".equals(desc)) {
+							state = STATE.INSERTING;
+						}
+						super.visitFieldInsn(opcode, owner, name, desc);
+					}
+
+					@Override
+					public void visitLabel(Label label) {
+						if(state == STATE.INSERTING) {
+							Label l23 = new Label();
+							super.visitLabel(l23);
+							super.visitVarInsn(Opcodes.ALOAD, 0);
+							super.visitVarInsn(Opcodes.ALOAD, 1);
+							super.visitLdcInsn("LPRoutingInformation");
+							super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "net/minecraft/nbt/NBTTagCompound", "getTag", "(Ljava/lang/String;)Lnet/minecraft/nbt/NBTBase;");
+							super.visitTypeInsn(Opcodes.CHECKCAST, "net/minecraft/nbt/NBTTagCompound");
+							super.visitFieldInsn(Opcodes.PUTFIELD, "thermalexpansion/part/conduit/item/TravelingItem", "routedLPInfo", "Lnet/minecraft/nbt/NBTTagCompound;");
+							state = STATE.DONE;
+						}
+						super.visitLabel(label);
+					}
+				};
+				m.accept(mv);
+				node.methods.set(node.methods.indexOf(m), mv);
+			}
+		}
+		ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+		node.accept(writer);
+		return writer.toByteArray();
+	}
+
+	private byte[] handleCrashReportClass(byte[] bytes) {
+		final ClassReader reader = new ClassReader(bytes);
+		final ClassNode node = new ClassNode();
+		reader.accept(node, 0);
+		for(MethodNode m:node.methods) {
+			if(m.name.equals("getCompleteReport") || m.name.equals("func_71502_e")) { //TODO SRG NAME
+				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+					private STATE state = STATE.SEARCHING;
+					
+					@Override
+					public void visitLdcInsn(Object cst) {
+						super.visitLdcInsn(cst);
+						if("\n\n".equals(cst) && state == STATE.SEARCHING) {
+							state = STATE.INSERTING;
+						}
+					}
+					
+					@Override
+					public void visitLabel(Label label) {
+						if(state == STATE.INSERTING) {
+							Label l0 = new Label();
+							super.visitLabel(l0);
+							super.visitVarInsn(Opcodes.ALOAD, 1);
+							super.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/LogisticsASMHookClass", "getCrashReportAddition", "()Ljava/lang/String;");
+							super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;");
+							super.visitInsn(Opcodes.POP);
+							state = STATE.DONE;
+						}
+						super.visitLabel(label);
+					}
+				};
+				m.accept(mv);
+				node.methods.set(node.methods.indexOf(m), mv);
+			}
+		}
+		ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 		node.accept(writer);
 		return writer.toByteArray();
 	}

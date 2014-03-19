@@ -53,6 +53,7 @@ import logisticspipes.pipes.PipeLogisticsChassiMk5;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.fluid.LogisticsFluidConnectorPipe;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.gates.ActionDisableLogistics;
 import logisticspipes.proxy.buildcraft.gates.LogisticsTriggerProvider;
 import logisticspipes.proxy.buildcraft.gates.TriggerCrafting;
@@ -107,6 +108,7 @@ public class BuildCraftProxy {
 		return checkPipesConnections(from, to, way, false);
 	}
 	
+	//TODO generalise more for TE support
 	public boolean checkPipesConnections(TileEntity from, TileEntity to, ForgeDirection way, boolean ignoreSystemDisconnection) {
 		if(from instanceof TileGenericPipe && to instanceof TileGenericPipe && (((TileGenericPipe)from).pipe instanceof CoreRoutedPipe || ((TileGenericPipe)to).pipe instanceof CoreRoutedPipe)) {
 			if(((TileGenericPipe)from).pipe instanceof CoreRoutedPipe) {
@@ -132,6 +134,16 @@ public class BuildCraftProxy {
 					return false;
 				}
 				((CoreRoutedPipe)((TileGenericPipe) from).pipe).globalIgnoreConnectionDisconnection = false;
+			}
+			return true;
+		} else if(from instanceof TileGenericPipe && ((TileGenericPipe)from).pipe instanceof CoreRoutedPipe) {
+			if (!((CoreRoutedPipe)((TileGenericPipe)from).pipe).canPipeConnect(to, way, ignoreSystemDisconnection)) {
+				return false;
+			}
+			return true;
+		} else if(to instanceof TileGenericPipe && ((TileGenericPipe)to).pipe instanceof CoreRoutedPipe) {
+			if (!((CoreRoutedPipe)((TileGenericPipe) to).pipe).canPipeConnect(from, way.getOpposite(), ignoreSystemDisconnection)) {
+				return false;
 			}
 			return true;
 		} else {
@@ -380,5 +392,9 @@ public class BuildCraftProxy {
 		} else {
 			throw new UnsupportedOperationException("[LogisticsPipes|Main] Could not find BlockGenericPipe with ID: " + BuildCraftTransport.genericPipeBlock.blockID + ". We found " + Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID] != null ? Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID].getClass().getName() : "null");
 		}
+	}
+
+	public void registerPipeInformationProvider() {
+		SimpleServiceLocator.pipeInformaitonManager.registerProvider(TileGenericPipe.class, BCPipeInformationProvider.class);
 	}
 }

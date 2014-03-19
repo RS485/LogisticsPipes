@@ -63,6 +63,7 @@ import logisticspipes.renderer.FluidContainerRenderer;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
+import logisticspipes.routing.pathfinder.PipeInformaitonManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.ticks.ClientPacketBufferHandlerThread;
 import logisticspipes.ticks.DebugGuiTickHandler;
@@ -293,7 +294,7 @@ public class LogisticsPipes {
 	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent evt) {
-		Configs.load(evt);
+		Configs.load();
 		log = evt.getModLog();
 		requestLog = Logger.getLogger("LogisticsPipes|Request");
 		requestLog.setUseParentHandlers(false);
@@ -316,8 +317,10 @@ public class LogisticsPipes {
 			log.fine("While the dev versions contain cutting edge features, they may also contain more bugs.");
 			log.fine("Please report any you find to https://github.com/RS485/LogisticsPipes-Dev/issues");
 		}
+		SimpleServiceLocator.setPipeInformationManager(new PipeInformaitonManager());
 		SimpleServiceLocator.setBuildCraftProxy(new BuildCraftProxy());
 		SimpleServiceLocator.buildCraftProxy.replaceBlockGenericPipe();
+		SimpleServiceLocator.buildCraftProxy.registerPipeInformationProvider();
 
 		if (Configs.EASTER_EGGS) {
 			Calendar calendar = Calendar.getInstance();

@@ -4,10 +4,11 @@ import java.io.File;
 
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.Property;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.Loader;
 
 public class Configs {
 
+	private static final String	NEW_LINE = System.getProperty("line.separator");
 	public static final String CATEGORY_MULTITHREAD = "multithread";
 	public static final String CATEGORY_DEBUG 		= "debug";
 
@@ -100,11 +101,16 @@ public class Configs {
 	public static boolean CHECK_FOR_UPDATES = true;
 	
 	public static boolean EASTER_EGGS = true;
-
-	public static void load(FMLPreInitializationEvent event) {
-		File configFile = new File(event.getModConfigurationDirectory(), "LogisticsPipes.cfg");
-		CONFIGURATION = new Configuration(configFile);
+	
+	public static boolean TE_PIPE_SUPPORT = false;
+	
+	private static boolean loaded = false;
+	public static void load() {
+		if(loaded) return;
+		if(Loader.instance().getConfigDir() == null) return;
+		CONFIGURATION = new Configuration(new File(Loader.instance().getConfigDir(), "LogisticsPipes.cfg"));
 		CONFIGURATION.load();
+		loaded = true;
 
 		if (CONFIGURATION.hasCategory("logisticspipe.id")
 				|| CONFIGURATION.hasCategory("logisticsPipe.id")) {
@@ -385,13 +391,20 @@ public class Configs {
 						"Should LogisticsPipes check for updates?")
 				.getBoolean(false);
 		
+		TE_PIPE_SUPPORT = CONFIGURATION
+				.get(Configuration.CATEGORY_GENERAL,
+						"TEPipeSupport",
+						TE_PIPE_SUPPORT,
+						"Enable Support for TE conduits to allow them to connect LP pipes." + NEW_LINE + "This feature MODIFIES TE. That means that bugs inside TE could be caused by LP." + NEW_LINE + "DON'T REPORT BUGS TO TE WITH THIS FEATURE ENABLED.")
+				.getBoolean(false);
+		
 		EASTER_EGGS = CONFIGURATION
 				.get(Configuration.CATEGORY_GENERAL,
 						"easterEggs",
 						EASTER_EGGS,
 						"Do you fancy easter eggs?")
 				.getBoolean(false);
-
+		
 		CONFIGURATION.save();
 	}
 

@@ -33,6 +33,7 @@ import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.routing.pathfinder.PathFinder;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.utils.OneList;
 import logisticspipes.utils.item.ItemIdentifier;

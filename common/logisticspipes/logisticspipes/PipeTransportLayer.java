@@ -37,8 +37,9 @@ public class PipeTransportLayer extends TransportLayer{
 		
 		// 1st prio, deliver to adjacent IInventories
 		
-		for (AdjacentTile tile : adjacentEntities){
+		for (AdjacentTile tile : adjacentEntities) {
 			if (tile.tile instanceof TileGenericPipe) continue;
+			if (_router.isRoutedExit(tile.orientation)) continue;
 			if(denyed != null && denyed.equals(tile.orientation)) continue;
 			
 			CoreRoutedPipe pipe = _router.getPipe();

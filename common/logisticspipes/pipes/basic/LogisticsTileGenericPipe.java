@@ -12,11 +12,15 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.asm.ModDependentField;
 import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
+import logisticspipes.interfaces.routing.IFilter;
+import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.CCHelper;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCQueued;
 import logisticspipes.proxy.cc.interfaces.CCType;
+import logisticspipes.proxy.te.LPConduitItem;
+import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.security.PermissionException;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.AdjacentTile;
@@ -27,6 +31,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
+import thermalexpansion.part.conduit.ConduitBase;
 import buildcraft.transport.TileGenericPipe;
 import cofh.api.transport.IItemConduit;
 import dan200.computer.api.IComputerAccess;
@@ -34,7 +39,7 @@ import dan200.computer.api.ILuaContext;
 import dan200.computer.api.IPeripheral;
 
 @ModDependentInterface(modId={"ComputerCraft", "CoFHCore"}, interfacePath={"dan200.computer.api.IPeripheral", "cofh.api.transport.IItemConduit"})
-public class LogisticsTileGenericPipe extends TileGenericPipe implements IPeripheral, IItemConduit {
+public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeInformationProvider, IPeripheral, IItemConduit {
 
 	public boolean turtleConnect[] = new boolean[7];
 	
@@ -48,6 +53,9 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPeriph
 
 	@ModDependentField(modId="ComputerCraft")
 	public IComputerAccess lastPC;
+
+	@ModDependentField(modId="ThermalExpansion")
+	public LPConduitItem[] localConduit;
 	
 	public LogisticsTileGenericPipe() {
 		if(SimpleServiceLocator.ccProxy.isCC()) {
@@ -67,9 +75,22 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPeriph
 		if(!getCPipe().blockRemove()) {
 			this.tileEntityInvalid = true;
 			super.invalidate();
+			SimpleServiceLocator.thermalExpansionProxy.handleLPInternalConduitRemove(this);
 		}
 	}
-	
+
+	@Override
+	public void onChunkUnload() {
+		super.onChunkUnload();
+		SimpleServiceLocator.thermalExpansionProxy.handleLPInternalConduitChunkUnload(this);
+	}
+
+	@Override
+	public void updateEntity() {
+		SimpleServiceLocator.thermalExpansionProxy.handleLPInternalConduitUpdate(this);
+		super.updateEntity();
+	}
+
 	@Override
 	public void func_85027_a(CrashReportCategory par1CrashReportCategory) {
 		super.func_85027_a(par1CrashReportCategory);
@@ -443,6 +464,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPeriph
 				turtleConnect[i] = false;
 			}
 		}
+		SimpleServiceLocator.thermalExpansionProxy.handleLPInternalConduitNeighborChange(this);
 	}
 
 	@Override
@@ -520,5 +542,111 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPeriph
 		} else {
 			return stack;
 		}
+	}
+
+	@ModDependentMethod(modId="ThermalExpansion")
+	public boolean canTEConduitConnect(ConduitBase conduit, int side) {
+		return pipe.canPipeConnect(conduit.getTile(), ForgeDirection.VALID_DIRECTIONS[side].getOpposite());
+		
+	}
+
+	@ModDependentMethod(modId="ThermalExpansion")
+	public LPConduitItem getTEConduit(int side) {
+		if(localConduit == null) {
+			localConduit = new LPConduitItem[6];
+		}
+		if(localConduit[side] == null) {
+			localConduit[side] = new LPConduitItem(this, side);
+			localConduit[side].onNeighborChanged();
+		}
+		return localConduit[side];
+	}
+
+	/* IPipeInformationProvider */
+	
+	@Override
+	public boolean isCorrect() {
+		return true;
+	}
+
+	@Override
+	public int getX() {
+		return xCoord;
+	}
+
+	@Override
+	public int getY() {
+		return yCoord;
+	}
+
+	@Override
+	public int getZ() {
+		return zCoord;
+	}
+
+	@Override
+	public boolean isInitialised() { //TODO: check for more ???
+		return initialized;
+	}
+
+	@Override
+	public boolean isRoutingPipe() {
+		return pipe instanceof CoreRoutedPipe;
+	}
+
+	@Override
+	public CoreRoutedPipe getRoutingPipe() {
+		if(pipe instanceof CoreRoutedPipe) {
+			return (CoreRoutedPipe) pipe;
+		}
+		throw new RuntimeException("This is no routing pipe");
+	}
+
+	@Override
+	public boolean isFirewallPipe() {
+		return pipe instanceof PipeItemsFirewall;
+	}
+
+	@Override
+	public IFilter getFirewallFilter() {
+		if(pipe instanceof PipeItemsFirewall) {
+			return ((PipeItemsFirewall) pipe).getFilter();
+		}
+		throw new RuntimeException("This is no firewall pipe");
+	}
+
+	@Override
+	public TileEntity getTile() {
+		return this;
+	}
+
+	@Override
+	public boolean divideNetwork() {
+		return false;
+	}
+
+	@Override
+	public boolean powerOnly() {
+		return false;
+	}
+
+	@Override
+	public boolean isOnewayPipe() {
+		return false;
+	}
+
+	@Override
+	public boolean isOutputOpen(ForgeDirection direction) {
+		return false;
+	}
+
+	@Override
+	public boolean canConnect(IPipeInformationProvider provider, ForgeDirection direction, boolean flag) {
+		return SimpleServiceLocator.buildCraftProxy.checkPipesConnections(this, provider.getTile(), direction, true);
+	}
+
+	@Override
+	public int getDistance() {
+		return 1;
 	}
 }

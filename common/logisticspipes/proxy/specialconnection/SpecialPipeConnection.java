@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.interfaces.routing.ISpecialPipedConnection;
-import buildcraft.transport.TileGenericPipe;
+import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 
 public class SpecialPipeConnection {
 	
@@ -16,12 +16,12 @@ public class SpecialPipeConnection {
 		}
 	}
 	
-	public List<TileGenericPipe> getConnectedPipes(TileGenericPipe tile) {
+	public List<IPipeInformationProvider> getConnectedPipes(IPipeInformationProvider startPipe) {
 		for(ISpecialPipedConnection connectionHandler:handler) {
-			if(connectionHandler.isType(tile)) {
-				return connectionHandler.getConnections(tile);
+			if(connectionHandler.isType(startPipe)) {
+				return connectionHandler.getConnections(startPipe);
 			}
 		}
-		return new ArrayList<TileGenericPipe>();
+		return new ArrayList<IPipeInformationProvider>();
 	}
 }

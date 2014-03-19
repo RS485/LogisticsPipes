@@ -9,14 +9,13 @@
 package logisticspipes.transport;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IItemAdvancedExistance;
@@ -25,6 +24,7 @@ import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -46,7 +46,6 @@ import buildcraft.core.proxy.CoreProxy;
 import buildcraft.transport.IItemTravelingHook;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TransportConstants;
-import buildcraft.transport.TravelerSet;
 import buildcraft.transport.TravelingItem;
 
 public class PipeTransportLogistics extends PipeTransportItems implements IItemTravelingHook {
@@ -268,6 +267,17 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 	
 	//called from endReached, return false to let BC transport handle the item.
 	protected boolean handleTileReached(TravelingItem arrivingItem, TileEntity tile) {
+		if(this.getPipe() instanceof FluidRoutedPipe) {
+			if(((FluidRoutedPipe)this.getPipe()).endReached(arrivingItem, tile)) {
+				return true;
+			}
+		}
+		if(SimpleServiceLocator.thermalExpansionProxy.isItemConduit(tile)) {
+			if(SimpleServiceLocator.thermalExpansionProxy.insertIntoConduit(arrivingItem, tile, getPipe())) {
+				items.scheduleRemoval(arrivingItem);
+				return true;
+			}
+		}
 		//((PipeTransportLogistics)pipe).markChunkModified(tile);
 		if (MainProxy.isServer(getWorld()) && (arrivingItem instanceof RoutedEntityItem) && ((RoutedEntityItem)arrivingItem).getArrived()) {
 			getPipe().notifyOfItemArival((RoutedEntityItem) arrivingItem);
@@ -403,7 +413,8 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 	public boolean canPipeConnect(TileEntity tile, ForgeDirection side) {
 		return super.canPipeConnect(tile, side)
 				|| SimpleServiceLocator.betterStorageProxy.isBetterStorageCrate(tile)
-				|| SimpleServiceLocator.factorizationProxy.isBarral(tile);
+				|| SimpleServiceLocator.factorizationProxy.isBarral(tile)
+				|| (Configs.TE_PIPE_SUPPORT && SimpleServiceLocator.thermalExpansionProxy.isItemConduit(tile) && SimpleServiceLocator.thermalExpansionProxy.isSideFree(tile, side.getOpposite().ordinal()));
 	}
 
 	/* --- IItemTravelHook --- */

@@ -6,9 +6,11 @@ import java.util.List;
 
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -42,7 +44,6 @@ import buildcraft.core.render.FluidRenderer;
 import buildcraft.core.render.RenderEntityBlock;
 import buildcraft.core.render.RenderEntityBlock.RenderInfo;
 import buildcraft.transport.Pipe;
-import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.render.PipeRendererTESR;
 
 public class LogisticsRenderPipe extends PipeRendererTESR {
@@ -71,7 +72,8 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 	public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float f) {
 		super.renderTileEntityAt(tileentity, x, y, z, f);
 		if (BuildCraftCore.render == RenderMode.NoDynamic) return;
-		TileGenericPipe pipe = ((TileGenericPipe) tileentity);
+		if(!(tileentity instanceof LogisticsTileGenericPipe)) return;
+		LogisticsTileGenericPipe pipe = ((LogisticsTileGenericPipe) tileentity);
 		if (pipe.pipe == null) return;
 		if (pipe.pipe.transport instanceof PipeFluidTransportLogistics) {
 			renderFluids((Pipe<PipeFluidTransportLogistics>)pipe.pipe, x, y, z);
@@ -84,7 +86,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 				renderBlock((PipeBlockRequestTable) pipe.pipe, x, y, z);
 			} catch(Exception e) {
 				e.printStackTrace();
-	}
+			}
 		}
 	}
 	

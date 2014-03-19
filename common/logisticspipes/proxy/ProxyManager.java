@@ -5,6 +5,7 @@ import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IHUDConfig;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.bettersign.BetterSignProxy;
 import logisticspipes.proxy.bs.BetterStorageProxy;
@@ -38,6 +39,7 @@ import net.minecraft.util.Icon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
+import buildcraft.transport.TravelingItem;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -146,6 +148,13 @@ public class ProxyManager {
 				@Override public boolean isTesseract(TileEntity tile) {return false;}
 				@Override public boolean isTE() {return false;}
 				@Override public List<TileEntity> getConnectedTesseracts(TileEntity tile) {return new ArrayList<TileEntity>(0);}
+				@Override public boolean isItemConduit(TileEntity tile) {return false;}
+				@Override public void handleLPInternalConduitChunkUnload(LogisticsTileGenericPipe pipe) {}
+				@Override public void handleLPInternalConduitRemove(LogisticsTileGenericPipe pipe) {}
+				@Override public void handleLPInternalConduitNeighborChange(LogisticsTileGenericPipe logisticsTileGenericPipe) {}
+				@Override public void handleLPInternalConduitUpdate(LogisticsTileGenericPipe pipe) {}
+				@Override public boolean insertIntoConduit(TravelingItem arrivingItem, TileEntity tile, CoreRoutedPipe pipe) {return false;}
+				@Override public boolean isSideFree(TileEntity tile, int side) {return false;}
 			});
 			LogisticsPipes.log.info("Loaded ThermalExpansion DummyProxy");
 		}

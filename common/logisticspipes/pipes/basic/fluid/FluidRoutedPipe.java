@@ -27,18 +27,16 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidHandler;
 import buildcraft.core.IMachine;
-import buildcraft.transport.IItemTravelingHook;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.TravelingItem;
 
-public abstract class FluidRoutedPipe extends CoreRoutedPipe implements IItemTravelingHook {
+public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 
 	private WorldUtil worldUtil;
 	
 	public FluidRoutedPipe(int itemID) {
 		super(new PipeFluidTransportLogistics(), itemID);
-		((PipeTransportItems) transport).travelHook = this;
 	}
 	
 	@Override
@@ -189,20 +187,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe implements IItemTra
 	
 	public abstract boolean canInsertToTanks();
 	
-	/* IItemTravelingHook */
-
-	@Override
-	public void drop(PipeTransportItems pipe, TravelingItem data) {}
-
-	@Override
-	public void centerReached(PipeTransportItems pipe, TravelingItem data) {}
-
-	@Override
-	public boolean endReached(PipeTransportItems pipe, TravelingItem data, TileEntity tile) {
-		//((PipeTransportLogistics)pipe).markChunkModified(tile);
-		if (MainProxy.isServer(getWorld()) && (data instanceof RoutedEntityItem) && ((RoutedEntityItem)data).getArrived()) {
-			notifyOfItemArival((RoutedEntityItem) data);
-		}
+	public boolean endReached(TravelingItem data, TileEntity tile) {
 		if(canInsertToTanks() && MainProxy.isServer(getWorld())) {
 			if(!(data instanceof IRoutedItem) || data.getItemStack() == null || !(data.getItemStack().getItem() instanceof LogisticsFluidContainer)) return false;
 			if(this.getRouter().getSimpleID() != ((IRoutedItem)data).getDestination()) return false;
@@ -247,7 +232,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe implements IItemTra
 		}
 		return false;
 	}
-
+	
 	@Override
 	public boolean isFluidPipe() {
 		return true;

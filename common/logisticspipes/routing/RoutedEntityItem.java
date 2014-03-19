@@ -16,6 +16,7 @@ import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -38,20 +39,6 @@ import buildcraft.transport.pipes.events.PipeEventItem;
 
 public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 
-	int destinationint = -1;
-	UUID destinationUUID;
-	ItemIdentifierStack thisItem;
-	
-	boolean _doNotBuffer;
-	
-	int bufferCounter = 0;
-	
-	boolean arrived;
-	
-	TransportMode _transportMode = TransportMode.Unknown;
-	
-	List<Integer> jamlist = new ArrayList<Integer>();
-	
 	private static InsertionHandler LP_INSERTIONHANDLER = new InsertionHandler() {
 		@Override
 		public boolean canInsertItem(TravelingItem item, IInventory inv) {
@@ -59,6 +46,16 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 			return true;
 		}
 	};
+	
+	int destinationint = -1;
+	UUID destinationUUID;
+	ItemIdentifierStack thisItem;
+	boolean arrived;
+	private int bufferCounter = 0;
+	private boolean _doNotBuffer;
+	private TransportMode _transportMode = TransportMode.Unknown;
+	private List<Integer> jamlist = new ArrayList<Integer>();
+	
 	
 	public RoutedEntityItem(TravelingItem entityItem) {
 		super(entityItem.id);
@@ -75,11 +72,8 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 		}
 		
 		RoutedEntityItemSaveHandler handler = new RoutedEntityItemSaveHandler(this);
-		NBTTagCompound extraData = entityItem.getExtraData();
-		if(!extraData.hasKey("routingInformation")) {
-			NBTTagCompound newTags = extraData.getCompoundTag("routingInformation");
-			handler.writeToNBT(newTags);
-		} else {
+		NBTTagCompound extraData = this.getExtraData();
+		if(extraData.hasKey("routingInformation")) {
 			NBTTagCompound tags = extraData.getCompoundTag("routingInformation");
 			handler.readFromNBT(tags);
 
@@ -99,6 +93,15 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 		this.setInsetionHandler(LP_INSERTIONHANDLER);
 	}
 	
+	@Override
+	public void writeToNBT(NBTTagCompound data) {
+		RoutedEntityItemSaveHandler handler = new RoutedEntityItemSaveHandler(this);
+		NBTTagCompound extraData = this.getExtraData();
+		NBTTagCompound newTags = extraData.getCompoundTag("routingInformation");
+		handler.writeToNBT(newTags);
+		super.writeToNBT(data);
+	}
+
 	@Override
 	public EntityItem toEntityItem() {
 		World worldObj = container.getWorldObj();
@@ -186,7 +189,9 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 	
 	@Override
 	public void remove() {
-		if(MainProxy.isClient(this.container.getWorldObj())) return;
+		if(this.container != null) {
+			if(MainProxy.isClient(this.container.getWorldObj())) return;
+		}
 		if (destinationint >= 0 && SimpleServiceLocator.routerManager.isRouter(destinationint)){
 			IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(destinationint); 
 			if (!arrived && destinationRouter.getPipe() != null && destinationRouter.getPipe() instanceof IRequireReliableTransport){
@@ -365,7 +370,7 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 		IRouter router = rm.getRouter(destinationint);
 		if(router==null || destinationUUID!=router.getId()) {
 			destinationint=rm.getIDforUUID(destinationUUID);
-		}		
+		}
 	}
 	
 	public void useInformationFrom(RoutedEntityItem result) {
@@ -393,4 +398,28 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 		return delay-this.container.worldObj.getTotalWorldTime();
 	}
 
+	@Override
+	public NBTTagCompound getNBTData() {
+		RoutedEntityItemSaveHandler handler = new RoutedEntityItemSaveHandler(this);
+		NBTTagCompound nbttagcompound = new NBTTagCompound();
+		handler.writeToNBT(nbttagcompound);
+		return nbttagcompound;
+	}
+
+	public void loadFromNBT(NBTTagCompound data) {
+		RoutedEntityItemSaveHandler handler = new RoutedEntityItemSaveHandler(this);
+		handler.readFromNBT(data);
+		this.destinationUUID=handler.destinationUUID;
+		bufferCounter = handler.bufferCounter;
+		arrived = handler.arrived;
+		_transportMode = handler.transportMode;
+		this.checkIDFromUUID();
+	}
+
+	public void refreshDestinationInformation() {
+		IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(destinationint); 
+		if (destinationRouter.getPipe() != null && destinationRouter.getPipe() instanceof CoreRoutedPipe){
+			((CoreRoutedPipe)destinationRouter.getPipe()).refreshItem(this);
+		}
+	}
 }

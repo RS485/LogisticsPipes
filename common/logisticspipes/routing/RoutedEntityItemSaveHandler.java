@@ -38,7 +38,7 @@ public class RoutedEntityItemSaveHandler {
 
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		this.extract();
-		if(destinationUUID !=null) {
+		if(destinationUUID != null) {
 			nbttagcompound.setString("destinationUUID", destinationUUID.toString());
 		}
 		nbttagcompound.setBoolean("arrived", arrived);

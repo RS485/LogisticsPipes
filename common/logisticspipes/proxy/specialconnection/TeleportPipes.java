@@ -7,6 +7,8 @@ import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.ISpecialPipedConnection;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
 
@@ -46,8 +48,10 @@ public class TeleportPipes implements ISpecialPipedConnection {
 
 
 	@Override
-	public boolean isType(TileGenericPipe tile) {
-		if(PipeItemTeleport.isAssignableFrom(tile.pipe.getClass())) return true;
+	public boolean isType(IPipeInformationProvider tile) {
+		if(tile.getTile() instanceof TileGenericPipe && ((TileGenericPipe)tile.getTile()).pipe != null) {
+			if(PipeItemTeleport.isAssignableFrom(((TileGenericPipe)tile.getTile()).pipe.getClass())) return true;
+		}
 		return false;
 	}
 
@@ -60,15 +64,17 @@ public class TeleportPipes implements ISpecialPipedConnection {
 	}
 	
 	@Override
-	public List<TileGenericPipe> getConnections(TileGenericPipe tile) {
-		List<TileGenericPipe> list = new ArrayList<TileGenericPipe>();
-		try {
-			LinkedList<? extends Pipe> pipes = getConnectedTeleportPipes(tile.pipe);
-			for(Pipe pipe : pipes) {
-				list.add(pipe.container);
+	public List<IPipeInformationProvider> getConnections(IPipeInformationProvider tile) {
+		List<IPipeInformationProvider> list = new ArrayList<IPipeInformationProvider>();
+		if(tile.getTile() instanceof TileGenericPipe && ((TileGenericPipe)tile.getTile()).pipe != null) {
+			try {
+				LinkedList<? extends Pipe> pipes = getConnectedTeleportPipes(((TileGenericPipe)tile.getTile()).pipe);
+				for(Pipe pipe : pipes) {
+					list.add(SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(pipe.container));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 		return list;
 	}

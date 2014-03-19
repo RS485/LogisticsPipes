@@ -31,6 +31,7 @@ import logisticspipes.proxy.specialconnection.SpecialTileConnection;
 import logisticspipes.proxy.specialtankhandler.SpecialTankHandler;
 import logisticspipes.recipes.CraftingPermissionManager;
 import logisticspipes.routing.IRouterManager;
+import logisticspipes.routing.pathfinder.PipeInformaitonManager;
 import logisticspipes.ticks.ClientPacketBufferHandlerThread;
 import logisticspipes.ticks.ServerPacketBufferHandlerThread;
 import logisticspipes.utils.InventoryUtilFactory;
@@ -159,5 +160,10 @@ public final class SimpleServiceLocator {
 	public static IBetterSignProxy betterSignProxy;
 	public static void setBetterSignProxy(IBetterSignProxy proxy) {
 		betterSignProxy = proxy;
+	}
+	
+	public static PipeInformaitonManager pipeInformaitonManager;
+	public static void setPipeInformationManager(PipeInformaitonManager manager) {
+		pipeInformaitonManager = manager;
 	}
 }

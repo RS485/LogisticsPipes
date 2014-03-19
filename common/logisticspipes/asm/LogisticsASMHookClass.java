@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.SimpleServiceLocator;
 import net.minecraft.item.ItemStack;
@@ -26,7 +27,8 @@ public class LogisticsASMHookClass {
         		toLoad = TravelerSet.class.getDeclaredField("toLoad");
         		toLoad.setAccessible(true);
         	}
-        	HashSet<TravelingItem> toLoadSet = (HashSet<TravelingItem>) toLoad.get(items);
+        	@SuppressWarnings("unchecked")
+			HashSet<TravelingItem> toLoadSet = (HashSet<TravelingItem>) toLoad.get(items);
         	Iterator<TravelingItem> iterator = toLoadSet.iterator();
         	while(iterator.hasNext()) {
         		TravelingItem item = iterator.next();
@@ -40,5 +42,20 @@ public class LogisticsASMHookClass {
         	LogisticsPipes.log.severe(Arrays.toString(e.getStackTrace()));
         	e.printStackTrace();
         }
+	}
+	
+	public static String getCrashReportAddition() {
+		StringBuilder string = new StringBuilder();
+		if(Configs.TE_PIPE_SUPPORT) {
+			string.append("YOU HAVE ENABLED THE LP SUPPORT FOR TE CONDUITS.");
+			string.append("\n");
+			string.append("DON'T REPORT BUGS TO TE IN THIS CONFIGURATION. LP MODIFIES TE, SO THEY COULD BE CAUSED BY LP.");
+			string.append("\n");
+			string.append("DISABLE THE SUPPORT AND TRY TO REPRODUCE THE BUG.");
+			string.append("\n");
+			string.append("IF YOU CAN ONLY REPRODUCE THE BUG WITH THE SUPPORT ENABLED PLEASE REPORT IT TO LP.");
+			string.append("\n\n");
+		}
+		return string.toString();
 	}
 }

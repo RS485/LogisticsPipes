@@ -2,6 +2,7 @@ package logisticspipes.proxy.te;
 
 import java.lang.reflect.Field;
 
+import logisticspipes.Configs;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
@@ -37,6 +38,9 @@ public class LPConduitItem extends ConduitItem {
 	
 	public LPConduitItem(LogisticsTileGenericPipe pipe, int side) {
 		super((byte)0);
+		if(!Configs.TE_PIPE_SUPPORT) {
+			throw new RuntimeException("This shoudln't be used if the option is disabled");
+		}
 		this.pipe = pipe;
 		this.side = side;
 		this.dir = ForgeDirection.VALID_DIRECTIONS[side];

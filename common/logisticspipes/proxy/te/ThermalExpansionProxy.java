@@ -80,14 +80,21 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 
 	@Override
 	public void handleLPInternalConduitChunkUnload(LogisticsTileGenericPipe pipe) {
+		if(!Configs.TE_PIPE_SUPPORT) return;
+		if(MainProxy.isClient(pipe.worldObj)) return;
 		for(int i=0;i<6;i++) {
 			LPConduitItem conduit = pipe.getTEConduit(i);
-			conduit.onChunkUnload();
+			if(conduit.gridBase != null) {
+				conduit.tileUnloading();
+				conduit.gridBase.removeConduit(conduit);
+				conduit.setGrid(null);
+			}
 		}
 	}
 
 	@Override
 	public void handleLPInternalConduitRemove(LogisticsTileGenericPipe pipe) {
+		if(!Configs.TE_PIPE_SUPPORT) return;
 		for(int i=0;i<6;i++) {
 			LPConduitItem conduit = pipe.getTEConduit(i);
 			conduit.onRemoved();
@@ -96,6 +103,7 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 
 	@Override
 	public void handleLPInternalConduitNeighborChange(LogisticsTileGenericPipe pipe) {
+		if(!Configs.TE_PIPE_SUPPORT) return;
 		for(int i=0;i<6;i++) {
 			LPConduitItem conduit = pipe.getTEConduit(i);
 			conduit.onNeighborChanged();
@@ -104,6 +112,7 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 
 	@Override
 	public void handleLPInternalConduitUpdate(LogisticsTileGenericPipe pipe) {
+		if(!Configs.TE_PIPE_SUPPORT) return;
 		for(int i=0;i<6;i++) {
 			LPConduitItem conduit = pipe.getTEConduit(i);
 			conduit.updateLPStatus();
@@ -112,6 +121,7 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 
 	@Override
 	public boolean insertIntoConduit(buildcraft.transport.TravelingItem arrivingItem, TileEntity tile, CoreRoutedPipe pipe) {
+		if(!Configs.TE_PIPE_SUPPORT) return false;
 		if(MainProxy.isClient(pipe.getWorld())) return true;
 		ConduitItem conduitItem = ((IConduit)tile).getConduitItem();
 		NBTTagCompound data = null;
@@ -123,6 +133,7 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 	}
 	
 	private boolean routeItem(ConduitItem conduit, ItemStack stack, NBTTagCompound data, ForgeDirection dir) {
+		if(!Configs.TE_PIPE_SUPPORT) return false;
 		conduit.cacheRoutes();
 		routeInfo curInfo = null;
 		for(Iterator<ItemRoute> i = conduit.validOutputs.iterator(); i.hasNext();) {
@@ -157,6 +168,7 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 	}
 	
 	private int doRouteRoutedLPItem(ItemRoute aRoute, routeInfo curInfo, ItemStack theItem, ConduitItem conduit, ForgeDirection dir, NBTTagCompound data) {
+		if(!Configs.TE_PIPE_SUPPORT) return -1;
 		if(((ConduitBase)(aRoute.endPoint)).isNode) {
 			ItemStack stack = theItem.copy();
 			if(aRoute.endPoint instanceof LPConduitItem) {
@@ -178,6 +190,7 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 
 	@Override
 	public boolean isSideFree(TileEntity tile, int side) {
+		if(!Configs.TE_PIPE_SUPPORT) return false;
 		return ((IConduit)tile).getConduit().tile().occlusionTest(((IConduit)tile).getConduit().tile().partList(), PropsConduit.occlusions[side]);
 	}
 }

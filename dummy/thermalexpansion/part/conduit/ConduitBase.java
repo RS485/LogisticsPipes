@@ -32,4 +32,5 @@ public abstract class ConduitBase implements IConduit {
 	public TileMultipart tile() {return null;}
 	public void onChunkUnload() {}
 	public void onRemoved() {}
+	public void tileUnloading() {}
 }

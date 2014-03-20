@@ -8,6 +8,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import thermalexpansion.part.conduit.ConduitBase;
+import thermalexpansion.part.conduit.Grid;
 
 public class ConduitItem extends ConduitBase {
 	public List<TravelingItem>	myItems;
@@ -41,4 +42,5 @@ public class ConduitItem extends ConduitBase {
 	public int getLength() {return 0;}
 	public void cacheRoutes() {}
 	public int doRouteItem(ItemRoute aRoute, routeInfo curInfo, ItemStack theItem, int inventorySide) {return 0;}
+	public void setGrid(Grid newGrid) {}
 }

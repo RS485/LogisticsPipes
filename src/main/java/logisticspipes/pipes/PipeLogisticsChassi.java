@@ -75,7 +75,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.core.Position;
@@ -460,7 +460,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 				if (settings == null || settings.openGui) {
 					((PipeLogisticsChassi)this.container.pipe).nextOrientation();
 				} else {
-					entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
+					entityplayer.addChatMessage(new ChatComponentText("Permission denied"));
 				}
 			}
 			SimpleServiceLocator.buildCraftProxy.wrenchUsed(entityplayer, this.getX(), this.getY(), this.getZ());
@@ -472,7 +472,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 				if (settings == null || settings.openGui) {
 					return tryInsertingModule(entityplayer);
 				} else {
-					entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
+					entityplayer.addChatMessage(new ChatComponentText("Permission denied"));
 				}
 			}
 			return true;

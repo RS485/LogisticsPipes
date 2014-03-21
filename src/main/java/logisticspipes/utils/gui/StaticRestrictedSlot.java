@@ -3,11 +3,12 @@ package logisticspipes.utils.gui;
 import logisticspipes.interfaces.ISlotCheck;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 
 public class StaticRestrictedSlot extends RestrictedSlot {
 	int limit;
-	public StaticRestrictedSlot(IInventory iinventory, int i, int j, int k, int ItemID, int stackLimit) {
-		super(iinventory, i, j, k, ItemID);
+	public StaticRestrictedSlot(IInventory iinventory, int i, int j, int k, Item item, int stackLimit) {
+		super(iinventory, i, j, k, item);
 		this.limit = stackLimit;
 	}
 	
@@ -15,8 +16,8 @@ public class StaticRestrictedSlot extends RestrictedSlot {
     	super(iinventory, i, j, k, slotCheck);
 		this.limit = stackLimit;
 	}
-    
-    /**
+
+	/**
      * Return whether this slot's stack can be taken from this slot.
      */
     @Override

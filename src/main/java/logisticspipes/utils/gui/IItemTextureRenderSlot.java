@@ -7,7 +7,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class IItemTextureRenderSlot implements IRenderSlot {
 	@SideOnly(Side.CLIENT)
-	public abstract Icon getTextureIcon();
+	public abstract IIcon getTextureIcon();
 	
 	public abstract boolean drawSlotIcon();
 	

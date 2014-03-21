@@ -71,7 +71,7 @@ public class CraftingRequirement
 					return true;
 			}
 		}
-		if(stack_n.itemID != other_n.itemID)
+		if(!stack_n.getItem().equals(other_n.getItem()))
 			return false;
 		if(stack_n.getItemDamage() != other_n.getItemDamage())
 			if(stack_n.getHasSubtypes())

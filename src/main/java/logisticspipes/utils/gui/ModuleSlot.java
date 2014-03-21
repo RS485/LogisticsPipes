@@ -13,7 +13,7 @@ public class ModuleSlot extends RestrictedSlot {
 	private int _moduleIndex;
 	
 	public ModuleSlot(IInventory iinventory, int i, int j, int k, PipeLogisticsChassi pipe) {
-		super(iinventory, i, j, k, LogisticsPipes.ModuleItem.itemID);
+		super(iinventory, i, j, k, LogisticsPipes.ModuleItem);
 		_pipe = pipe;
 		_moduleIndex = i;
 	}

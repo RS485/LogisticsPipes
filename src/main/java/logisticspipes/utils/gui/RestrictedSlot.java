@@ -3,22 +3,23 @@ package logisticspipes.utils.gui;
 import logisticspipes.interfaces.ISlotCheck;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public class RestrictedSlot extends Slot {
 
-	private final int ItemID;
+	private final Item item;
 	private final ISlotCheck slotCheck;
 	
-	public RestrictedSlot(IInventory iinventory, int i, int j, int k, int ItemID) {
+	public RestrictedSlot(IInventory iinventory, int i, int j, int k, Item item) {
 		super(iinventory, i, j, k);
-		this.ItemID = ItemID;
+		this.item = item;
 		slotCheck = null;
 	}
 	
     public RestrictedSlot(IInventory iinventory, int i, int j, int k, ISlotCheck slotCheck) {
     	super(iinventory, i, j, k);
-    	this.ItemID = -1;
+    	this.item = null;
 		this.slotCheck = slotCheck;
 	}
 
@@ -28,7 +29,7 @@ public class RestrictedSlot extends Slot {
     @Override
 	public boolean isItemValid(ItemStack par1ItemStack) {	
     	if(slotCheck == null) {
-    		return par1ItemStack.itemID == ItemID;
+    		return par1ItemStack.getItem().equals(item);
     	} else {
     		return slotCheck.isStackAllowed(par1ItemStack);
     	}

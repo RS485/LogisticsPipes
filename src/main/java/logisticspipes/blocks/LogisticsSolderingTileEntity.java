@@ -376,13 +376,13 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	}
 
 	@Override
-	public void openChest() {
-		inv.openChest();
+	public void openInventory() {
+		inv.openInventory();
 	}
 
 	@Override
-	public void closeChest() {
-		inv.closeChest();
+	public void closeInventory() {
+		inv.closeInventory();
 	}
 
 	@Override

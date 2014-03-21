@@ -5,7 +5,7 @@ import logisticspipes.commands.LogisticsPipesCommand;
 import logisticspipes.commands.abstracts.ICommandHandler;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.ChatComponentText;
 
 public class BypassCommand implements ICommandHandler {
 	
@@ -28,10 +28,10 @@ public class BypassCommand implements ICommandHandler {
 	public void executeCommand(ICommandSender sender, String[] args) {
 		if(!LogisticsSecurityTileEntity.byPassed.contains((EntityPlayer) sender)) {
     		LogisticsSecurityTileEntity.byPassed.add((EntityPlayer) sender);
-    		sender.sendChatToPlayer(ChatMessageComponent.createFromText("Enabled"));
+    		sender.addChatMessage(new ChatComponentText("Enabled"));
     	} else {
     		LogisticsSecurityTileEntity.byPassed.remove((EntityPlayer) sender);
-    		sender.sendChatToPlayer(ChatMessageComponent.createFromText("Disabled"));
+    		sender.addChatMessage(new ChatComponentText("Disabled"));
     	}
 	}
 }

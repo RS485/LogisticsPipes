@@ -19,7 +19,7 @@ public class SearchBar {
 	protected long oldSystemTime = 0;
 	protected int searchWidth = 150;
 	
-    private final FontRenderer fontRenderer;
+    private final FontRenderer fontRendererObj;
     private final KraphtBaseGuiScreen screen;
     private int left, top, heigth, width;
     

@@ -111,13 +111,13 @@ public final class SidedInventoryMinecraftAdapter implements IInventory {
 	}
 
 	@Override
-	public void openChest() {
-		_sidedInventory.openChest();
+	public void openInventory() {
+		_sidedInventory.openInventory();
 	}
 
 	@Override
-	public void closeChest() {
-		_sidedInventory.closeChest();
+	public void closeInventory() {
+		_sidedInventory.closeInventory();
 	}
 
 

@@ -43,6 +43,5 @@ public class DummyModuleContainer extends DummyContainer {
 	public void onContainerClosed(EntityPlayer par1EntityPlayer) {
 		super.onContainerClosed(par1EntityPlayer);
 		ItemModuleInformationManager.saveInfotmation(par1EntityPlayer.inventory.mainInventory[slot], module);
-		par1EntityPlayer.inventory.onInventoryChanged();
 	}
 }

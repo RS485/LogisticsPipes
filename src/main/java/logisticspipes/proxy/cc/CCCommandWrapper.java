@@ -194,7 +194,7 @@ public class CCCommandWrapper implements ILuaObject {
 			}
 			if(!handled) {
 				error = new StringBuilder();
-				error.append("Internal Excption (Code: 1, ");
+				error.append("Internal Exception (Code: 1, ");
 				error.append(name);
 				error.append(")");
 			}
@@ -211,7 +211,7 @@ public class CCCommandWrapper implements ILuaObject {
 						for(Method method:clazz.getDeclaredMethods()) {
 							if(method.getName().equals(prefunction)) {
 								if(method.getParameterTypes().length > 0) {
-									throw new InternalError("Internal Excption (Code: 3)");
+									throw new InternalError("Internal Exception (Code: 3)");
 								}
 								try {
 									method.invoke(object, new Object[]{});

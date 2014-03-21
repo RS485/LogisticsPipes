@@ -42,7 +42,7 @@ public class CardManagmentInventory implements IInventory {
 			
 			Colors color = Colors.values()[colorCode];
 			
-			nbt.setCompoundTag("colors", colors);
+			nbt.setTag("colors", colors);
 			card.setTagCompound(nbt);
 			inv.setInventorySlotContents(3, card);
 			
@@ -92,20 +92,15 @@ public class CardManagmentInventory implements IInventory {
 			}
 			int slot = i - 4;
 			colors.setInteger("color:" + slot, Colors.getColor(itemstack).ordinal());
-			nbt.setCompoundTag("colors", colors);
+			nbt.setTag("colors", colors);
 			card.setTagCompound(nbt);
 			inv.setInventorySlotContents(3, card);
 		}
 	}
 
 	@Override
-	public String getInvName() {
+	public String getInventoryName() {
 		return "Card Managment Inventory";
-	}
-
-	@Override
-	public boolean isInvNameLocalized() {
-		return false;
 	}
 
 	@Override
@@ -114,18 +109,15 @@ public class CardManagmentInventory implements IInventory {
 	}
 
 	@Override
-	public void onInventoryChanged() {}
-
-	@Override
 	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
 		return true;
 	}
 
 	@Override
-	public void openChest() {}
+	public void openInventory() {}
 
 	@Override
-	public void closeChest() {}
+	public void closeInventory() {}
 
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
@@ -142,4 +134,12 @@ public class CardManagmentInventory implements IInventory {
 		inv.dropContents(player.worldObj, x, y, z);
 	}
 
+	@Override
+	public boolean hasCustomInventoryName() {
+		return false;
+	}
+
+	@Override
+	public void markDirty() {
+	}
 }

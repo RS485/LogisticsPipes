@@ -93,6 +93,6 @@ public class OrientationsUtil {
 			default:
 				break;
 		}
-		return tile.worldObj.getTileEntity(x, y, z);
+		return tile.getWorldObj().getTileEntity(x, y, z);
 	}
 }

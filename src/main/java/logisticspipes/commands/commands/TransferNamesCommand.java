@@ -5,7 +5,7 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.RequestUpdateNamesPacket;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.ChatComponentText;
 import cpw.mods.fml.common.network.Player;
 
 public class TransferNamesCommand implements ICommandHandler {
@@ -27,7 +27,7 @@ public class TransferNamesCommand implements ICommandHandler {
 	
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
-		sender.sendChatToPlayer(ChatMessageComponent.createFromText("Requesting Transfer"));
+		sender.addChatMessage(new ChatComponentText("Requesting Transfer"));
     	MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RequestUpdateNamesPacket.class), (Player)sender);
     	MainProxy.proxy.sendNameUpdateRequest((Player)sender);
 	}

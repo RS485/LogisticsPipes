@@ -116,7 +116,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPeriph
 					if(!method.isAnnotationPresent(CCCommand.class)) continue;
 					for(Class<?> param:method.getParameterTypes()) {
 						if(!param.getName().startsWith("java")) {
-							throw new InternalError("Internal Excption (Code: 2)");
+							throw new InternalError("Internal Exception (Code: 2)");
 						}
 					}
 					commandMap.put(i, method.getName());
@@ -330,7 +330,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPeriph
 			}
 			if(!handled) {
 				error = new StringBuilder();
-				error.append("Internal Excption (Code: 1, ");
+				error.append("Internal Exception (Code: 1, ");
 				error.append(name);
 				error.append(")");
 			}
@@ -352,7 +352,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPeriph
 						for(Method method:clazz.getDeclaredMethods()) {
 							if(method.getName().equals(prefunction)) {
 								if(method.getParameterTypes().length > 0) {
-									throw new InternalError("Internal Excption (Code: 3)");
+									throw new InternalError("Internal Exception (Code: 3)");
 								}
 								try {
 									method.invoke(pipe, new Object[]{});

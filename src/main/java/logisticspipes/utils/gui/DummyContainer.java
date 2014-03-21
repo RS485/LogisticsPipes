@@ -23,6 +23,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -88,11 +89,11 @@ public class DummyContainer extends Container{
 		addSlotToContainer(new Slot(inventory, slotId, xCoord, yCoord));
 	}
 
-	public void addRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, int ItemID) {
-		addSlotToContainer(new RestrictedSlot(inventory, slotId, xCoord, yCoord, ItemID));
+	public void addRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, Item item) {
+		addSlotToContainer(new RestrictedSlot(inventory, slotId, xCoord, yCoord, item));
 	}
-	public void addStaticRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, int ItemID, int stackLimit) {
-		addSlotToContainer(new StaticRestrictedSlot(inventory, slotId, xCoord, yCoord, ItemID, stackLimit));
+	public void addStaticRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, Item item, int stackLimit) {
+		addSlotToContainer(new StaticRestrictedSlot(inventory, slotId, xCoord, yCoord, item, stackLimit));
 	}
 
 	public void addRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, ISlotCheck slotCheck) {
@@ -146,7 +147,7 @@ public class DummyContainer extends Container{
 		if (slot == null || (!(slot instanceof DummySlot) && !(slot instanceof UnmodifiableSlot) && !(slot instanceof FluidSlot) && !(slot instanceof ColorSlot) && !(slot instanceof HandelableSlot))) {
 			ItemStack stack1 = super.slotClick(slotId, mouseButton, isShift, entityplayer);
 			ItemStack stack2 = slot.getStack();
-			if(stack2 != null && stack2.getItem().itemID == LogisticsPipes.ModuleItem.itemID) {
+			if(stack2 != null && stack2.getItem().equals(LogisticsPipes.ModuleItem)) {
 				if(entityplayer instanceof EntityPlayerMP && MainProxy.isServer(entityplayer.worldObj)) {
 					((EntityPlayerMP)entityplayer).sendSlotContents(this, slotId, stack2);
 				}
@@ -358,7 +359,6 @@ public class DummyContainer extends Container{
 	{
 		if(inventorySlots.isEmpty()) {
 			_playerInventory.setInventorySlotContents(par1, par2ItemStack);
-			_playerInventory.onInventoryChanged();
 			return;
 		}
 		super.putStackInSlot(par1, par2ItemStack);

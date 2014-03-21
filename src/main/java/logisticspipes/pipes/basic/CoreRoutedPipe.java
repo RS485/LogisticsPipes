@@ -86,7 +86,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
@@ -767,7 +767,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 				if (settings == null || settings.openUpgrades) {
 					getUpgradeManager().openGui(entityplayer, this);
 				} else {
-					entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
+					entityplayer.addChatMessage(new ChatComponentText("Permission denied"));
 				}
 			}
 			return true;
@@ -806,12 +806,12 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			return true;
 		} else if(entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
 			if(MainProxy.isServer(entityplayer.worldObj)) {
-				entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
+				entityplayer.addChatMessage(new ChatComponentText("Permission denied"));
 			}
 			return true;
 		} else if(entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsNetworkMonitior) {
 			if(MainProxy.isServer(entityplayer.worldObj)) {
-				entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
+				entityplayer.addChatMessage(new ChatComponentText("Permission denied"));
 			}
 			return true;
 		}
@@ -828,7 +828,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 				if (settings == null || settings.openGui) {
 					entityplayer.openGui(LogisticsPipes.instance, ((LogisticsGuiModule)getLogisticsModule()).getGuiHandlerID(), getWorld(), getX(), getY(), getZ());
 				} else {
-					entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
+					entityplayer.addChatMessage(new ChatComponentText("Permission denied"));
 				}
 			}
 			return true;

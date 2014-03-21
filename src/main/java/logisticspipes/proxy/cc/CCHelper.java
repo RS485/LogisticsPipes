@@ -106,7 +106,7 @@ public class CCHelper {
 						if(!method.isAnnotationPresent(CCCommand.class)) continue;
 						for(Class<?> param:method.getParameterTypes()) {
 							if(!param.getName().startsWith("java")) {
-								throw new InternalError("Internal Excption (Code: 2)");
+								throw new InternalError("Internal Exception (Code: 2)");
 							}
 						}
 						info.commandMap.put(i, method.getName());

@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.ChatComponentText;
 
 @Accessors(chain=true)
 public class HUDSettingsPacket extends ModernPacket {
@@ -55,49 +55,49 @@ public class HUDSettingsPacket extends ModernPacket {
 			case 0:
 				config.setHUDChassie(state);
 				if(config.isHUDChassie()) {
-					player.sendChatToPlayer(ChatMessageComponent.createFromText("Enabled Chassie."));
+					player.addChatMessage(new ChatComponentText("Enabled Chassie."));
 				} else {
-					player.sendChatToPlayer(ChatMessageComponent.createFromText("Disabled Chassie."));
+					player.addChatMessage(new ChatComponentText("Disabled Chassie."));
 				}
 				break;
 			case 1:
 				config.setHUDCrafting(state);
 				if(config.isHUDCrafting()) {
-					player.sendChatToPlayer(ChatMessageComponent.createFromText("Enabled Crafting."));
+					player.addChatMessage(new ChatComponentText("Enabled Crafting."));
 				} else {
-					player.sendChatToPlayer(ChatMessageComponent.createFromText("Disabled Crafting."));
+					player.addChatMessage(new ChatComponentText("Disabled Crafting."));
 				}
 				break;
 			case 2:
 				config.setHUDInvSysCon(state);
 				if(config.isHUDInvSysCon()) {
-					player.sendChatToPlayer(ChatMessageComponent.createFromText("Enabled InvSysCon."));
+					player.addChatMessage(new ChatComponentText("Enabled InvSysCon."));
 				} else {
-					player.sendChatToPlayer(ChatMessageComponent.createFromText("Disabled InvSysCon."));
+					player.addChatMessage(new ChatComponentText("Disabled InvSysCon."));
 				}
 				break;
 			case 3:
 				config.setHUDPowerJunction(state);
 				if(config.isHUDPowerJunction()) {
-					player.sendChatToPlayer(ChatMessageComponent.createFromText("Enabled Power Junction."));
+					player.addChatMessage(new ChatComponentText("Enabled Power Junction."));
 				} else {
-					player.sendChatToPlayer(ChatMessageComponent.createFromText("Disabled Power Junction."));
+					player.addChatMessage(new ChatComponentText("Disabled Power Junction."));
 				}
 				break;
 			case 4:
 				config.setHUDProvider(state);
 				if(config.isHUDProvider()) {
-					player.sendChatToPlayer(ChatMessageComponent.createFromText("Enabled Provider."));
+					player.addChatMessage(new ChatComponentText("Enabled Provider."));
 				} else {
-					player.sendChatToPlayer(ChatMessageComponent.createFromText("Disabled Provider."));
+					player.addChatMessage(new ChatComponentText("Disabled Provider."));
 				}
 				break;
 			case 5:
 				config.setHUDSatellite(state);
 				if(config.isHUDSatellite()) {
-					player.sendChatToPlayer(ChatMessageComponent.createFromText("Enabled Satellite."));
+					player.addChatMessage(new ChatComponentText("Enabled Satellite."));
 				} else {
-					player.sendChatToPlayer(ChatMessageComponent.createFromText("Disabled Satellite."));
+					player.addChatMessage(new ChatComponentText("Disabled Satellite."));
 				}
 				break;
 		}

@@ -5,7 +5,7 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.ActivateNBTDebug;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.ChatComponentText;
 import cpw.mods.fml.common.network.Player;
 
 public class NBTDebugCommand implements ICommandHandler {
@@ -27,7 +27,7 @@ public class NBTDebugCommand implements ICommandHandler {
 	
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
-		sender.sendChatToPlayer(ChatMessageComponent.createFromText("Trying to Enable NBTDebug"));
+		sender.addChatMessage(new ChatComponentText("Trying to Enable NBTDebug"));
     	MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ActivateNBTDebug.class), (Player)sender);
 	}
 }

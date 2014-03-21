@@ -57,7 +57,7 @@ public class ItemDisplay {
 	
 	public ItemDisplay(IItemSearch search, FontRenderer fontRenderer, KraphtBaseGuiScreen screen, ISpecialItemRenderer renderer, int left, int top, int width, int height, int[] amountChangeMode, boolean shiftPageChange) {
 		this.search = search;
-		this.fontRendererObj = fontRenderer;
+		this.fontRenderer = fontRenderer;
 		this.screen = screen;
 		this.renderer = renderer;
 		this.left = left;
@@ -95,7 +95,7 @@ public class ItemDisplay {
 			page = maxPage;
 		}
 		String pageString = "Page " + (page + 1) + " / " + (maxPage + 1);
-		fontRendererObj.drawString(pageString, x - fontRendererObj.getStringWidth(pageString) / 2 , y, 0x404040);
+		fontRenderer.drawString(pageString, x - fontRenderer.getStringWidth(pageString) / 2 , y, 0x404040);
 	}
 
 	private int getSearchedItemNumber() {
@@ -110,8 +110,8 @@ public class ItemDisplay {
 
 	public void renderAmount(int x, int y, int stackAmount) {
 		String StackrequestCount = ""+(requestCount/stackAmount) + "+" + (requestCount % stackAmount);
-		fontRendererObj.drawString(requestCount + "", x - fontRendererObj.getStringWidth(requestCount+"") / 2, y, 0x404040);
-		fontRendererObj.drawString(StackrequestCount + "", x - fontRendererObj.getStringWidth(StackrequestCount+"") / 2, y + 10, 0x404040);
+		fontRenderer.drawString(requestCount + "", x - fontRenderer.getStringWidth(requestCount+"") / 2, y, 0x404040);
+		fontRenderer.drawString(StackrequestCount + "", x - fontRenderer.getStringWidth(StackrequestCount+"") / 2, y + 10, 0x404040);
 	}
 	
 	public void renderItemArea(double zLevel) {

@@ -22,7 +22,7 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.common.util.ForgeDirection;
 
 @Accessors(chain=true)
@@ -70,7 +70,7 @@ public class SlotFinderNumberPacket extends CoordinatesPacket {
 			}
 		}
 		if(result == null) {
-			player.sendChatToPlayer(ChatMessageComponent.createFromText("Couldn't find that slot internaly. Sorry. Please try again."));
+			player.addChatMessage(new ChatComponentText("Couldn't find that slot internaly. Sorry. Please try again."));
 		}
 		int resultIndex = -1;
 		if(resultIndex == -1) {
@@ -108,7 +108,7 @@ public class SlotFinderNumberPacket extends CoordinatesPacket {
 			}
 		}
 		if(resultIndex == -1) {
-			player.sendChatToPlayer(ChatMessageComponent.createFromText("Couldn't find that slot externaly. Sorry. Please try again."));
+			player.addChatMessage(new ChatComponentText("Couldn't find that slot externaly. Sorry. Please try again."));
 		} else {
 			//Copy pipe to coordinates to use the getPipe method
 			setPosX(getPipePosX());

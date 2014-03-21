@@ -1,5 +1,7 @@
 package logisticspipes.utils;
 
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 
 public enum Colors {
@@ -32,7 +34,7 @@ public enum Colors {
 	
 	public ItemStack getItemStack() {
 		if(this == BLANK) return null;
-		return new ItemStack(351,1,ordinal());
+		return new ItemStack(Items.dye,1,ordinal());
 	}
 	
 	public Colors getNext() {
@@ -47,7 +49,7 @@ public enum Colors {
 	
 	public static Colors getColor(ItemStack item) {
 		if(item != null) {
-			if(item.itemID == 351 && item.getItemDamage() < 16) {
+			if(item.getItem() instanceof ItemDye && item.getItemDamage() < 16) {
 				return Colors.values()[item.getItemDamage()];
 			}
 		}

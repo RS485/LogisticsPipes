@@ -32,9 +32,9 @@ public class InventoryHelper {
 				lower = chest;
 			}
 			
-			if (chest.adjacentChestZPosition != null){
+			if (chest.adjacentChestZPos != null){
 				upper = chest;
-				lower = chest.adjacentChestZPosition;
+				lower = chest.adjacentChestZPos;
 			}
 			
 			if (lower != null && upper != null){

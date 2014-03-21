@@ -129,7 +129,7 @@ public class BasicGuiHelper {
 				
 				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glTranslated(0.0D, 0.0D, 100.0D);
-				drawStringWithShadow(fontRenderer, s, x + 16 - fontRendererObj.getStringWidth(s), y + 8, 0xFFFFFF);
+				drawStringWithShadow(fontRenderer, s, x + 16 - fontRenderer.getStringWidth(s), y + 8, 0xFFFFFF);
 				GL11.glTranslated(0.0D, 0.0D, -100.0D);
 				GL11.glEnable(GL11.GL_LIGHTING);
 			}
@@ -155,14 +155,14 @@ public class BasicGuiHelper {
      * @throws NoSuchFieldException 
      */
 	private static int drawStringWithShadow(FontRenderer fontRenderer, String par1Str, int par2, int par3, int par4) {
-		fontRendererObj.resetStyles();
-		if(fontRendererObj.bidiFlag) {
-			par1Str = fontRendererObj.bidiReorder(par1Str);
+		fontRenderer.resetStyles();
+		if(fontRenderer.bidiFlag) {
+			par1Str = fontRenderer.bidiReorder(par1Str);
 		}
-		int var5 = fontRendererObj.renderString(par1Str, par2 + 1, par3 + 1, par4, true);
+		int var5 = fontRenderer.renderString(par1Str, par2 + 1, par3 + 1, par4, true);
 		
 		GL11.glTranslated(0.0D, 0.0D, 1.0D);
-		var5 = Math.max(var5, fontRendererObj.renderString(par1Str, par2, par3, par4, false));
+		var5 = Math.max(var5, fontRenderer.renderString(par1Str, par2, par3, par4, false));
 		GL11.glTranslated(0.0D, 0.0D, -1.0D);
 		
 		return var5;
@@ -190,7 +190,7 @@ public class BasicGuiHelper {
 	                
 	                int var11 = ((Integer)tooltip[0]).intValue() - (forceAdd ? 0 : guiLeft) + 12;
 	                int var12 = ((Integer)tooltip[1]).intValue() - (forceAdd ? 0 : guiTop) - 12;
-	                drawToolTip(var11, var12,var24,var22.getRarity().rarityColor, forceminecraft);
+	                drawToolTip(var11, var12,var24,var22.getRarity().rarityColor.ordinal(), forceminecraft);
 	            }
 	            catch(Exception e1) {}
 		}
@@ -224,7 +224,7 @@ public class BasicGuiHelper {
 	                
 	                for (var11 = 0; var11 < var24.size(); ++var11)
 	                {
-	                    var12 = FMLClientHandler.instance().getClient().fontRendererObj.getStringWidth(var24.get(var11));
+	                    var12 = FMLClientHandler.instance().getClient().fontRenderer.getStringWidth(var24.get(var11));
 
 	                    if (var12 > var10)
 	                    {
@@ -270,7 +270,7 @@ public class BasicGuiHelper {
 	                        var19 = "\u00a77" + var19;
 	                    }
 
-	                    FMLClientHandler.instance().getClient().fontRendererObj.drawStringWithShadow(var19, var11, var12, -1);
+	                    FMLClientHandler.instance().getClient().fontRenderer.drawStringWithShadow(var19, var11, var12, -1);
 	        	        
 	                    if (var18 == 0)
 	                    {
@@ -422,7 +422,7 @@ public class BasicGuiHelper {
 	private static final ResourceLocation ITEMS = new ResourceLocation("textures/atlas/items.png");
 	
 
-    public static void renderIconAt(Minecraft mc, int x, int y, float zLevel, Icon icon) {
+    public static void renderIconAt(Minecraft mc, int x, int y, float zLevel, IIcon icon) {
     	if(icon == null) return;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
     	mc.renderEngine.bindTexture(ITEMS);
@@ -441,7 +441,7 @@ public class BasicGuiHelper {
     	mc.renderEngine.bindTexture(ITEMS);
     	
 		for (int i = 0; i < SimpleServiceLocator.forestryProxy.getRenderPassesForAlleleId(id); i++) {
-			Icon icon = SimpleServiceLocator.forestryProxy.getIconIndexForAlleleId(id, i);
+			IIcon icon = SimpleServiceLocator.forestryProxy.getIconIndexForAlleleId(id, i);
 			if(icon == null) continue;
 	        int color = SimpleServiceLocator.forestryProxy.getColorForAlleleId(id, i);
 	        float colorR = (color >> 16 & 0xFF) / 255.0F;

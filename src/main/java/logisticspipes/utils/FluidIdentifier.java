@@ -10,6 +10,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.item.ItemIdentifier;
+import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -266,10 +267,10 @@ public class FluidIdentifier {
 		return ItemIdentifier.get(SimpleServiceLocator.logisticsFluidManager.getFluidContainer(makeFluidStack(0)));
 	}
 
-	public static FluidIdentifier convertFromID(int id) {
+	public static FluidIdentifier convertFromBlock(Block block) {
 		Fluid f = null;
 		for(Fluid fluid:FluidRegistry.getRegisteredFluids().values()) {
-			if(fluid.getBlockID() == id) {
+			if(fluid.getBlock().equals(block)) {
 				f = fluid;
 				break;
 			}

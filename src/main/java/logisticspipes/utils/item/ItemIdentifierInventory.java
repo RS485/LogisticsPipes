@@ -154,10 +154,10 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 	public boolean isUseableByPlayer(EntityPlayer entityplayer) {return false;}
 
 	@Override
-	public void openChest() {}
+	public void openInventory() {}
 
 	@Override
-	public void closeChest() {}
+	public void closeInventory() {}
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {

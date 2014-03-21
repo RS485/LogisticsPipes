@@ -94,9 +94,9 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		fontRenderer.drawString(_provider.getFilterInventory().getInvName(), xSize / 2 - fontRenderer.getStringWidth(_provider.getFilterInventory().getInvName())/2, 6, 0x404040);
-		fontRenderer.drawString("Inventory", 18, ySize - 102, 0x404040);
-		fontRenderer.drawString("Mode: " + _provider.getExtractionMode().getExtractionModeString(), 9, ySize - 112, 0x404040);
+		fontRendererObj.drawString(_provider.getFilterInventory().getInvName(), xSize / 2 - fontRendererObj.getStringWidth(_provider.getFilterInventory().getInvName())/2, 6, 0x404040);
+		fontRendererObj.drawString("Inventory", 18, ySize - 102, 0x404040);
+		fontRendererObj.drawString("Mode: " + _provider.getExtractionMode().getExtractionModeString(), 9, ySize - 112, 0x404040);
 	}
 
 	@Override

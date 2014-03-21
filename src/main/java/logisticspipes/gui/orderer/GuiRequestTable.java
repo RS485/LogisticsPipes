@@ -141,7 +141,7 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 			((GuiButton)buttonList.get(16)).xPosition += 90;
 			((SmallGuiButton)buttonList.get(16)).displayString = "Show";
 			for(int i=0; i< 13;i++) {
-				((GuiButton)buttonList.get(i)).drawButton = false;
+				((GuiButton)buttonList.get(i)).visible = false;
 			}
 		}
 	}
@@ -151,14 +151,14 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right - (showRequest ? 0 : 105), bottom, zLevel, true);
 		
 		if(showRequest) {
-			fontRenderer.drawString(_title, guiLeft + 180 + fontRenderer.getStringWidth(_title) / 2, guiTop + 6, 0x404040);
+			fontRendererObj.drawString(_title, guiLeft + 180 + fontRendererObj.getStringWidth(_title) / 2, guiTop + 6, 0x404040);
 			itemDisplay.renderPageNumber(right - 47, guiTop + 6);
 			
 			
 			if(buttonList.get(9) instanceof GuiCheckBox && ((GuiCheckBox)buttonList.get(9)).getState()) {
-				fontRenderer.drawString("Popup", guiLeft + 225 , bottom - 56, 0x404040);
+				fontRendererObj.drawString("Popup", guiLeft + 225 , bottom - 56, 0x404040);
 			} else {
-				fontRenderer.drawString("Popup", guiLeft + 225 , bottom - 56, 0xA0A0A0);
+				fontRendererObj.drawString("Popup", guiLeft + 225 , bottom - 56, 0xA0A0A0);
 			}
 			
 			itemDisplay.renderAmount(right - 103, bottom - 24, getStackAmount());
@@ -186,7 +186,7 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 				BasicGuiHelper.drawSlotBackground(mc, guiLeft + (x * 18) + 19, guiTop + (y * 18) + 14);
 			}
 		}
-		fontRenderer.drawString("Sort:", guiLeft + 136, guiTop + 55, 0xffffff);
+		fontRendererObj.drawString("Sort:", guiLeft + 136, guiTop + 55, 0xffffff);
 		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 100, guiTop + 32);
 		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 163, guiTop + 50);
 		drawRect(guiLeft + 75, guiTop + 38, guiLeft + 95, guiTop + 43, Colors.DarkGrey);
@@ -291,7 +291,7 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 			}
 			((SmallGuiButton)buttonList.get(16)).displayString = showRequest ? "Hide" : "Show";
 			for(int i=0; i< 13;i++) {
-				((GuiButton)buttonList.get(i)).drawButton = showRequest;
+				((GuiButton)buttonList.get(i)).visible = showRequest;
 			}
 		}
 	}

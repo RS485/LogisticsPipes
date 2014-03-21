@@ -1,7 +1,7 @@
 package logisticspipes.utils;
 
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class AdjacentTile {
 	public TileEntity tile;

@@ -46,13 +46,13 @@ public class GuiFluidSupplierMk2Pipe extends GuiContainer implements IGuiIDHandl
 	
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		fontRenderer.drawString(dummyInventory.getInvName(), xSize / 2 - fontRenderer.getStringWidth(dummyInventory.getInvName())/2, 6, 0x404040);
-		fontRenderer.drawString("Inventory", 15, ySize - 95, 0x404040);
-		fontRenderer.drawString("Fluid:", 25, 22, 0x404040);
-		fontRenderer.drawString("Partial requests:", xSize - 140, ySize - 109, 0x404040);
-		fontRenderer.drawString(Integer.toString(logic.getAmount()), xSize / 2, 22, 0x404040);
-		fontRenderer.drawString("+", 32, 39, 0x404040);
-		fontRenderer.drawString("-", 32, 50, 0x404040);
+		fontRendererObj.drawString(dummyInventory.getInvName(), xSize / 2 - fontRendererObj.getStringWidth(dummyInventory.getInvName())/2, 6, 0x404040);
+		fontRendererObj.drawString("Inventory", 15, ySize - 95, 0x404040);
+		fontRendererObj.drawString("Fluid:", 25, 22, 0x404040);
+		fontRendererObj.drawString("Partial requests:", xSize - 140, ySize - 109, 0x404040);
+		fontRendererObj.drawString(Integer.toString(logic.getAmount()), xSize / 2, 22, 0x404040);
+		fontRendererObj.drawString("+", 32, 39, 0x404040);
+		fontRendererObj.drawString("-", 32, 50, 0x404040);
 	}
 	
 	@Override

@@ -9,7 +9,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.transport.Pipe;
 
 public class CraftingSignCreator extends LogisticsItem {
@@ -27,7 +27,7 @@ public class CraftingSignCreator extends LogisticsItem {
 		if(itemStack.getItemDamage() > this.getMaxDamage() || itemStack.stackSize == 0) {
 			return false;
 		}
-		TileEntity tile = world.getBlockTileEntity(x, y, z);
+		TileEntity tile = world.getTileEntity(x, y, z);
 		if(!(tile instanceof LogisticsTileGenericPipe)) {
 			return false;
 		}

@@ -229,7 +229,7 @@ public class ServerProxy implements IProxy {
 			return null;
 		}
 
-		final TileEntity tile = world.getBlockTileEntity(x, y, z);
+		final TileEntity tile = world.getTileEntity(x, y, z);
 		if (!(tile instanceof TileGenericPipe)) {
 			return null;
 		}

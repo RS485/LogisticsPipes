@@ -129,7 +129,7 @@ public class BasicGuiHelper {
 				
 				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glTranslated(0.0D, 0.0D, 100.0D);
-				drawStringWithShadow(fontRenderer, s, x + 16 - fontRenderer.getStringWidth(s), y + 8, 0xFFFFFF);
+				drawStringWithShadow(fontRenderer, s, x + 16 - fontRendererObj.getStringWidth(s), y + 8, 0xFFFFFF);
 				GL11.glTranslated(0.0D, 0.0D, -100.0D);
 				GL11.glEnable(GL11.GL_LIGHTING);
 			}
@@ -155,14 +155,14 @@ public class BasicGuiHelper {
      * @throws NoSuchFieldException 
      */
 	private static int drawStringWithShadow(FontRenderer fontRenderer, String par1Str, int par2, int par3, int par4) {
-		fontRenderer.resetStyles();
-		if(fontRenderer.bidiFlag) {
-			par1Str = fontRenderer.bidiReorder(par1Str);
+		fontRendererObj.resetStyles();
+		if(fontRendererObj.bidiFlag) {
+			par1Str = fontRendererObj.bidiReorder(par1Str);
 		}
-		int var5 = fontRenderer.renderString(par1Str, par2 + 1, par3 + 1, par4, true);
+		int var5 = fontRendererObj.renderString(par1Str, par2 + 1, par3 + 1, par4, true);
 		
 		GL11.glTranslated(0.0D, 0.0D, 1.0D);
-		var5 = Math.max(var5, fontRenderer.renderString(par1Str, par2, par3, par4, false));
+		var5 = Math.max(var5, fontRendererObj.renderString(par1Str, par2, par3, par4, false));
 		GL11.glTranslated(0.0D, 0.0D, -1.0D);
 		
 		return var5;
@@ -224,7 +224,7 @@ public class BasicGuiHelper {
 	                
 	                for (var11 = 0; var11 < var24.size(); ++var11)
 	                {
-	                    var12 = FMLClientHandler.instance().getClient().fontRenderer.getStringWidth(var24.get(var11));
+	                    var12 = FMLClientHandler.instance().getClient().fontRendererObj.getStringWidth(var24.get(var11));
 
 	                    if (var12 > var10)
 	                    {
@@ -270,7 +270,7 @@ public class BasicGuiHelper {
 	                        var19 = "\u00a77" + var19;
 	                    }
 
-	                    FMLClientHandler.instance().getClient().fontRenderer.drawStringWithShadow(var19, var11, var12, -1);
+	                    FMLClientHandler.instance().getClient().fontRendererObj.drawStringWithShadow(var19, var11, var12, -1);
 	        	        
 	                    if (var18 == 0)
 	                    {

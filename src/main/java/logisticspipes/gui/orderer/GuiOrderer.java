@@ -113,14 +113,14 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 	public void drawGuiContainerBackgroundLayer(float f, int i, int j) {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 
-		fontRenderer.drawString(_title, guiLeft + fontRenderer.getStringWidth(_title) / 2, guiTop + 6, 0x404040);
+		fontRendererObj.drawString(_title, guiLeft + fontRendererObj.getStringWidth(_title) / 2, guiTop + 6, 0x404040);
 		itemDisplay.renderPageNumber(right - 47, guiTop + 6);
 		
 		
 		if(buttonList.get(9) instanceof GuiCheckBox && ((GuiCheckBox)buttonList.get(9)).getState()) {
-			fontRenderer.drawString("Popup", guiLeft + 25 , bottom - 56, 0x404040);
+			fontRendererObj.drawString("Popup", guiLeft + 25 , bottom - 56, 0x404040);
 		} else {
-			fontRenderer.drawString("Popup", guiLeft + 25 , bottom - 56, 0xA0A0A0);
+			fontRendererObj.drawString("Popup", guiLeft + 25 , bottom - 56, 0xA0A0A0);
 		}
 		
 		itemDisplay.renderAmount(xCenter, bottom - 24, getStackAmount());

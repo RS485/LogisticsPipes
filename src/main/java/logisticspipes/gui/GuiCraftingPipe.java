@@ -104,7 +104,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			buttonList.add(normalButtonArray[3] = new SmallGuiButton(4, (width-xSize) / 2 + 6, (height - ySize) / 2 + 50, 28,10, "Open"));
 			for(int i = 0; i < 6; i++) {
 				buttonList.add(buttonarray[i] = new SmallGuiButton(5 + i, (width-xSize) / 2 + 11 + 18 * i, (height - ySize) / 2 + 35, 10,10, ">"));
-				buttonarray[i].drawButton = false;
+				buttonarray[i].visible = false;
 			}
 			buttonList.add(normalButtonArray[4] = new SmallGuiButton(20, (width-xSize) / 2 + 155, (height - ySize) / 2 + 85, 10,10, ">"));
 			buttonList.add(normalButtonArray[5] = new SmallGuiButton(21, (width-xSize) / 2 + 120, (height - ySize) / 2 + 85, 10,10, "<"));
@@ -220,48 +220,48 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		fontRenderer.drawString("Inputs", 18, 7, 0x404040);
-		fontRenderer.drawString("Inventory", 10, ySize - 93, 0x404040);
+		fontRendererObj.drawString("Inputs", 18, 7, 0x404040);
+		fontRendererObj.drawString("Inventory", 10, ySize - 93, 0x404040);
 		
 		if(!isAdvancedSat) {
-			fontRenderer.drawString("Output", 77, 40, 0x404040);
-			fontRenderer.drawString("Satellite", 123, 7, 0x404040);
+			fontRendererObj.drawString("Output", 77, 40, 0x404040);
+			fontRendererObj.drawString("Satellite", 123, 7, 0x404040);
 			if (_pipe.satelliteId == 0) {
-				fontRenderer.drawString("Off", 135, 52, 0x404040);
+				fontRendererObj.drawString("Off", 135, 52, 0x404040);
 			} else {
-				fontRenderer.drawString(""+_pipe.satelliteId , 146 - fontRenderer.getStringWidth(""+_pipe.satelliteId) , 52, 0x404040);
+				fontRendererObj.drawString(""+_pipe.satelliteId , 146 - fontRendererObj.getStringWidth(""+_pipe.satelliteId) , 52, 0x404040);
 			}
-			fontRenderer.drawString("Priority:" , 123 , 75, 0x404040);
-			fontRenderer.drawString(""+_pipe.priority , 143 - (fontRenderer.getStringWidth(""+_pipe.priority) / 2) , 87, 0x404040);
+			fontRendererObj.drawString("Priority:" , 123 , 75, 0x404040);
+			fontRendererObj.drawString(""+_pipe.priority , 143 - (fontRendererObj.getStringWidth(""+_pipe.priority) / 2) , 87, 0x404040);
 		} else {
 			for(int i=0; i<9;i++) {
 				if (_pipe.advancedSatelliteIdArray[i] == 0) {
-					fontRenderer.drawString("Off", 10 + (i * 18), 57, 0x404040);
+					fontRendererObj.drawString("Off", 10 + (i * 18), 57, 0x404040);
 				} else {
-					fontRenderer.drawString(""+_pipe.advancedSatelliteIdArray[i] , 20 - fontRenderer.getStringWidth(""+_pipe.advancedSatelliteIdArray[i]) + (i * 18), 57, 0x404040);
+					fontRendererObj.drawString(""+_pipe.advancedSatelliteIdArray[i] , 20 - fontRendererObj.getStringWidth(""+_pipe.advancedSatelliteIdArray[i]) + (i * 18), 57, 0x404040);
 				}
 			}
-			fontRenderer.drawString("Output", 77, 90, 0x404040);
-			fontRenderer.drawString("Priority:" , 123 , 95, 0x404040);
-			fontRenderer.drawString(""+_pipe.priority , 143 - (fontRenderer.getStringWidth(""+_pipe.priority) / 2) , 107, 0x404040);
+			fontRendererObj.drawString("Output", 77, 90, 0x404040);
+			fontRendererObj.drawString("Priority:" , 123 , 95, 0x404040);
+			fontRendererObj.drawString(""+_pipe.priority , 143 - (fontRendererObj.getStringWidth(""+_pipe.priority) / 2) , 107, 0x404040);
 		}
 		
 		for(int i=0;i<liquidCrafter;i++) {
 			int liquidLeft = -(i*40) - 40;
-			fontRenderer.drawString(Integer.toString(_pipe.getFluidAmount()[i]), liquidLeft + 21 - (fontRenderer.getStringWidth(Integer.toString(_pipe.getFluidAmount()[i])) / 2), 43, 0x404040);
-			fontRenderer.drawString("1", liquidLeft + 18, 57, 0x404040);
-			fontRenderer.drawString("10", liquidLeft + 15, 77, 0x404040);
-			fontRenderer.drawString("100", liquidLeft + 12, 97, 0x404040);
-			fontRenderer.drawString("1000", liquidLeft + 9, 117, 0x404040);
+			fontRendererObj.drawString(Integer.toString(_pipe.getFluidAmount()[i]), liquidLeft + 21 - (fontRendererObj.getStringWidth(Integer.toString(_pipe.getFluidAmount()[i])) / 2), 43, 0x404040);
+			fontRendererObj.drawString("1", liquidLeft + 18, 57, 0x404040);
+			fontRendererObj.drawString("10", liquidLeft + 15, 77, 0x404040);
+			fontRendererObj.drawString("100", liquidLeft + 12, 97, 0x404040);
+			fontRendererObj.drawString("1000", liquidLeft + 9, 117, 0x404040);
 			if(isAdvancedSat) {
 				if(_pipe.liquidSatelliteIdArray[i] == 0) {
 					drawRect(liquidLeft + 1, 13, liquidLeft + 40, 142, 0xAA8B8B8B);
-					fontRenderer.drawString("Off", liquidLeft + 13, 149, 0x404040);
+					fontRendererObj.drawString("Off", liquidLeft + 13, 149, 0x404040);
 					for(int j=0;j<8;j++) {
 						liquidGuiParts[i][j].enabled = false;
 					}
 				} else {
-					fontRenderer.drawString(Integer.toString(_pipe.liquidSatelliteIdArray[i]), liquidLeft + 21 - (fontRenderer.getStringWidth(Integer.toString(_pipe.liquidSatelliteIdArray[i])) / 2), 149, 0x404040);
+					fontRendererObj.drawString(Integer.toString(_pipe.liquidSatelliteIdArray[i]), liquidLeft + 21 - (fontRendererObj.getStringWidth(Integer.toString(_pipe.liquidSatelliteIdArray[i])) / 2), 149, 0x404040);
 					for(int j=0;j<8;j++) {
 						liquidGuiParts[i][j].enabled = true;
 					}
@@ -271,14 +271,14 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 		if(!isAdvancedSat && liquidCrafter != 0) {
 			if(_pipe.liquidSatelliteId == 0) {
 				drawRect(-(liquidCrafter * 40) + 1, 13, 0, 142, 0xAA8B8B8B);
-				fontRenderer.drawString("Off", -(liquidCrafter * 40) / 2 - 7, 149, 0x404040);
+				fontRendererObj.drawString("Off", -(liquidCrafter * 40) / 2 - 7, 149, 0x404040);
 				for(int i=0;i<liquidCrafter;i++) {
 					for(int j=0;j<8;j++) {
 						liquidGuiParts[i][j].enabled = false;
 					}
 				}
 			} else {
-				fontRenderer.drawString(Integer.toString(_pipe.liquidSatelliteId), -(liquidCrafter * 40) / 2 + 1 - (fontRenderer.getStringWidth(Integer.toString(_pipe.liquidSatelliteId)) / 2), 149, 0x404040);
+				fontRendererObj.drawString(Integer.toString(_pipe.liquidSatelliteId), -(liquidCrafter * 40) / 2 + 1 - (fontRendererObj.getStringWidth(Integer.toString(_pipe.liquidSatelliteId)) / 2), 149, 0x404040);
 				for(int i=0;i<liquidCrafter;i++) {
 					for(int j=0;j<8;j++) {
 						liquidGuiParts[i][j].enabled = true;
@@ -295,7 +295,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			}
 		}
 		if(hasByproductExtractor) {
-			fontRenderer.drawString("Extra", xSize - 35, 88, 0x404040);
+			fontRendererObj.drawString("Extra", xSize - 35, 88, 0x404040);
 		}
 		
 		if(isFuzzy)
@@ -320,10 +320,10 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			int posY = 18 + 16;
 			BasicGuiHelper.drawGuiBackGround(mc, posX, posY, posX + 60, posY + 52, zLevel, true, true, true, true, true);
 			int flag = this._pipe.fuzzyCraftingFlagArray[fuzzyPanelSelection];
-			fontRenderer.drawString("OreDict", posX + 4, posY + 4, ((flag & 0x1) == 0 ? 0x404040 : 0xFF4040));
-			fontRenderer.drawString("IgnDamage", posX + 4, posY + 14, ((flag & 0x2) == 0 ? 0x404040 : 0x40FF40));
-			fontRenderer.drawString("IgnNBT", posX + 4, posY + 26, ((flag & 0x4) == 0 ? 0x404040 : 0x4040FF));
-			fontRenderer.drawString("OrePrefix", posX + 4, posY + 38, ((flag & 0x8) == 0 ? 0x404040 : 0x7F7F40));
+			fontRendererObj.drawString("OreDict", posX + 4, posY + 4, ((flag & 0x1) == 0 ? 0x404040 : 0xFF4040));
+			fontRendererObj.drawString("IgnDamage", posX + 4, posY + 14, ((flag & 0x2) == 0 ? 0x404040 : 0x40FF40));
+			fontRendererObj.drawString("IgnNBT", posX + 4, posY + 26, ((flag & 0x4) == 0 ? 0x404040 : 0x4040FF));
+			fontRendererObj.drawString("OrePrefix", posX + 4, posY + 38, ((flag & 0x8) == 0 ? 0x404040 : 0x7F7F40));
 		}
 		
 		for(int i = 0; i < 9; i++)
@@ -432,9 +432,9 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 				Slot slot = inventorySlots.getSlot(count);
 				if(slot != null && slot.getStack() != null && slot.getStack().getMaxStackSize() < 2) {
 					drawRect(guiLeft + 8 + (18 * (count-36)), guiTop + 18, guiLeft + 8 + (18 * (count-36)) + 16, guiTop + 18 + 16, 0xFFFF0000);
-					buttonarray[count - 36].drawButton = true;
+					buttonarray[count - 36].visible = true;
 				} else {
-					buttonarray[count - 36].drawButton = false;
+					buttonarray[count - 36].visible = false;
 				}
 			}
 		}

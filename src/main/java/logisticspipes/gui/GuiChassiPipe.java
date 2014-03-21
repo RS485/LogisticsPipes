@@ -86,9 +86,9 @@ public class GuiChassiPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerP
 			if(_moduleInventory == null) continue;
 			ItemStack module = _moduleInventory.getStackInSlot(i);
 			if(module == null || _chassiPipe.getLogisticsModule().getSubModule(i) == null) {
-				((SmallGuiButton)buttonList.get(i)).drawButton = false;
+				((SmallGuiButton)buttonList.get(i)).visible = false;
 			} else {
-				((SmallGuiButton)buttonList.get(i)).drawButton = _chassiPipe.getLogisticsModule().getSubModule(i) instanceof LogisticsGuiModule;
+				((SmallGuiButton)buttonList.get(i)).visible = _chassiPipe.getLogisticsModule().getSubModule(i) instanceof LogisticsGuiModule;
 			}
 		}
 	}
@@ -117,28 +117,28 @@ public class GuiChassiPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerP
 		for (int i = 0; i < _chassiPipe.getChassiSize(); i++) {
 			ItemStack module = _moduleInventory.getStackInSlot(i);
 			if(module == null || _chassiPipe.getLogisticsModule().getSubModule(i) == null) {
-				((SmallGuiButton)buttonList.get(i)).drawButton = false;
+				((SmallGuiButton)buttonList.get(i)).visible = false;
 			} else {
-				((SmallGuiButton)buttonList.get(i)).drawButton = _chassiPipe.getLogisticsModule().getSubModule(i) instanceof LogisticsGuiModule;
+				((SmallGuiButton)buttonList.get(i)).visible = _chassiPipe.getLogisticsModule().getSubModule(i) instanceof LogisticsGuiModule;
 			}
 		}
 		if (_chassiPipe.getChassiSize() > 0) {
-			fontRenderer.drawString(getModuleName(0), 40, 14, 0x404040);
+			fontRendererObj.drawString(getModuleName(0), 40, 14, 0x404040);
 		}
 		if (_chassiPipe.getChassiSize() > 1) {
-			fontRenderer.drawString(getModuleName(1), 40, 34, 0x404040);
+			fontRendererObj.drawString(getModuleName(1), 40, 34, 0x404040);
 		}
 		if (_chassiPipe.getChassiSize() > 2) {
-			fontRenderer.drawString(getModuleName(2), 40, 54, 0x404040);
+			fontRendererObj.drawString(getModuleName(2), 40, 54, 0x404040);
 		}
 		if (_chassiPipe.getChassiSize() > 3) {
-			fontRenderer.drawString(getModuleName(3), 40, 74, 0x404040);
+			fontRendererObj.drawString(getModuleName(3), 40, 74, 0x404040);
 		}
 		if (_chassiPipe.getChassiSize() > 4) {
-			fontRenderer.drawString(getModuleName(4), 40, 94, 0x404040);
-			fontRenderer.drawString(getModuleName(5), 40, 114, 0x404040);
-			fontRenderer.drawString(getModuleName(6), 40, 134, 0x404040);
-			fontRenderer.drawString(getModuleName(7), 40, 154, 0x404040);
+			fontRendererObj.drawString(getModuleName(4), 40, 94, 0x404040);
+			fontRendererObj.drawString(getModuleName(5), 40, 114, 0x404040);
+			fontRendererObj.drawString(getModuleName(6), 40, 134, 0x404040);
+			fontRendererObj.drawString(getModuleName(7), 40, 154, 0x404040);
 		}
 	}
 	

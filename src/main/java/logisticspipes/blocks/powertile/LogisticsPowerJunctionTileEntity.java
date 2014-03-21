@@ -29,7 +29,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerHandler;
 import buildcraft.api.power.PowerHandler.PowerReceiver;
@@ -292,7 +292,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 
 	@Override
 	public boolean isHUDExistent() {
-		return getWorld().getBlockTileEntity(xCoord, yCoord, zCoord) == this;
+		return getWorld().getTileEntity(xCoord, yCoord, zCoord) == this;
 	}
 	
 	@Override

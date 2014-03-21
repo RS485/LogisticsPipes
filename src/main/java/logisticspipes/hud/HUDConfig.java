@@ -16,7 +16,7 @@ public class HUDConfig implements IHUDConfig {
 	public HUDConfig(NBTTagCompound tag) {
 		configTag = tag;
 		if(configTag == null) {
-			configTag = new NBTTagCompound("tag");
+			configTag = new NBTTagCompound();
 		}
 		
 		if(configTag.hasNoTags()) {

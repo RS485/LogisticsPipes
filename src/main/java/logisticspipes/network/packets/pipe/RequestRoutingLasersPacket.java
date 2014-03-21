@@ -21,7 +21,7 @@ import logisticspipes.routing.PathFinder;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;

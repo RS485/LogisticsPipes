@@ -108,7 +108,7 @@ public abstract class BasicHUDButton implements IHUDButton {
         } else  {
         	color = 0xe0e0e0;
         }
-        minecraft.fontRenderer.drawString(label , -(minecraft.fontRenderer.getStringWidth(label) / 2) + posX + sizeX / 2, posY + (sizeY - 8) / 2, color);
+        minecraft.fontRendererObj.drawString(label , -(minecraft.fontRendererObj.getStringWidth(label) / 2) + posX + sizeX / 2, posY + (sizeY - 8) / 2, color);
 		if(hover && !clicked) {
 			GL11.glTranslatef(0.0F, 0.0F, 0.02F);
 		}

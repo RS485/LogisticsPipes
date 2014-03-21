@@ -49,9 +49,9 @@ public class SearchBar {
 		}
 		screen.drawRect(left + 2, top - 0, left + width - 2, top + heigth - 2, Colors.DarkGrey);
 		
-		fontRenderer.drawString(searchinput1 + searchinput2, left + 5, top + 3, 0xFFFFFF);
+		fontRendererObj.drawString(searchinput1 + searchinput2, left + 5, top + 3, 0xFFFFFF);
 		if(editsearch) {
-			int linex = left + 5 + fontRenderer.getStringWidth(searchinput1);
+			int linex = left + 5 + fontRendererObj.getStringWidth(searchinput1);
 			if(System.currentTimeMillis() - oldSystemTime > 500) {
 				displaycursor = !displaycursor;
 				oldSystemTime = System.currentTimeMillis();
@@ -93,7 +93,7 @@ public class SearchBar {
 			if (searchinput1.length() > 0)
 				searchinput1 = searchinput1.substring(0, searchinput1.length() - 1);
 		} else if (Character.isLetterOrDigit(c) || c == ' ') {
-			if (fontRenderer.getStringWidth(searchinput1 + c + searchinput2) <= searchWidth) {
+			if (fontRendererObj.getStringWidth(searchinput1 + c + searchinput2) <= searchWidth) {
 				searchinput1 += c;
 			}
 		} else if(i == 203) { //Left

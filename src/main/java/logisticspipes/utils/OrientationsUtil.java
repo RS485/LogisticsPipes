@@ -1,7 +1,7 @@
 package logisticspipes.utils;
 
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.transport.PipeTransport;
 
 public class OrientationsUtil {
@@ -93,6 +93,6 @@ public class OrientationsUtil {
 			default:
 				break;
 		}
-		return tile.worldObj.getBlockTileEntity(x, y, z);
+		return tile.worldObj.getTileEntity(x, y, z);
 	}
 }

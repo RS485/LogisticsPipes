@@ -20,7 +20,7 @@ public class GuiStringHandlerButton extends GuiButton {
 	@Override
 	public void drawButton(Minecraft par1Minecraft, int par2, int par3) {
 		this.displayString = handler.getContent();
-		super.drawButton(par1Minecraft, par2, par3);
+		super.visible(par1Minecraft, par2, par3);
 	}
 
 	public interface StringHandler {

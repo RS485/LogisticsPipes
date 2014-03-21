@@ -22,7 +22,7 @@ public class GuiCheckBox extends GuiButton {
     @Override
 	public void drawButton(Minecraft minecraft, int par2, int par3)
     {
-        if (this.drawButton)
+        if (this.visible)
         {
             boolean var5 = par2 >= this.xPosition && par3 >= this.yPosition && par2 < this.xPosition + this.width && par3 < this.yPosition + this.height;
             int var6 = this.getHoverState(var5);

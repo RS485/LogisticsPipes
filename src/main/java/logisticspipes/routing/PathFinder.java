@@ -28,7 +28,7 @@ import logisticspipes.utils.OneList;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.pipes.PipeItemsDiamond;
@@ -56,7 +56,7 @@ public class PathFinder {
 		newSearch.setVisited.add(startPipe);
 		Position p = new Position(startPipe.xCoord, startPipe.yCoord, startPipe.zCoord, startOrientation);
 		p.moveForwards(1);
-		TileEntity entity = startPipe.getWorld().getBlockTileEntity((int)p.x, (int)p.y, (int)p.z);
+		TileEntity entity = startPipe.getWorld().getTileEntity((int)p.x, (int)p.y, (int)p.z);
 		if (!(entity instanceof TileGenericPipe && ((TileGenericPipe)entity).pipe.canPipeConnect(startPipe, startOrientation))){
 			return new HashMap<CoreRoutedPipe, ExitRoute>();
 		}

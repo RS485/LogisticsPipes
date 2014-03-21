@@ -1,7 +1,8 @@
 package logisticspipes.pipes.basic.fluid;
 
 import logisticspipes.textures.Textures;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraft.item.Item;
+import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.core.IIconProvider;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportFluids;
@@ -10,8 +11,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class LogisticsFluidConnectorPipe extends Pipe<LogisitcsFluidConnectionTransport> {
 
-	public LogisticsFluidConnectorPipe(int itemID) {
-		super(new LogisitcsFluidConnectionTransport(),  itemID);
+	public LogisticsFluidConnectorPipe(Item item) {
+		super(new LogisitcsFluidConnectionTransport(),  item);
 
 		((PipeTransportFluids) transport).flowRate = 40;
 		((PipeTransportFluids) transport).travelDelay = 4;

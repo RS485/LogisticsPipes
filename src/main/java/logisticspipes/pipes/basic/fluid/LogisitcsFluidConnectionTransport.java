@@ -2,7 +2,7 @@ package logisticspipes.pipes.basic.fluid;
 
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.IFluidHandler;
 import buildcraft.core.IMachine;
 import buildcraft.transport.BlockGenericPipe;

@@ -11,7 +11,7 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.BuildCraftTransport;
 import buildcraft.core.ITileBufferHolder;
 import buildcraft.transport.PipeTransportItems;
@@ -48,7 +48,7 @@ public class WorldTickHandler implements ITickHandler {
 				World world = tile.worldObj;
 
 				//TE or its chunk might've gone away while we weren't looking
-				TileEntity tilecheck = world.getBlockTileEntity(x, y, z);
+				TileEntity tilecheck = world.getTileEntity(x, y, z);
 				if(tilecheck != tile) {
 					localList.remove(0);
 					continue;

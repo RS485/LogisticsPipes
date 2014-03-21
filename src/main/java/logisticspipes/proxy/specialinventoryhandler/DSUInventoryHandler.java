@@ -7,7 +7,7 @@ import java.util.TreeSet;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import powercrystals.minefactoryreloaded.api.IDeepStorageUnit;
 
 public class DSUInventoryHandler extends SpecialInventoryHandler {

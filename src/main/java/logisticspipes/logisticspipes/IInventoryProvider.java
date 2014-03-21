@@ -2,7 +2,7 @@ package logisticspipes.logisticspipes;
 
 import logisticspipes.interfaces.IInventoryUtil;
 import net.minecraft.inventory.IInventory;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public interface IInventoryProvider {
 	public IInventoryUtil getPointedInventory(boolean forExtraction);

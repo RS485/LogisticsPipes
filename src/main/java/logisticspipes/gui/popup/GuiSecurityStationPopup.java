@@ -40,12 +40,12 @@ public class GuiSecurityStationPopup extends SubGuiScreen {
 	@Override
 	public void drawScreen(int par1, int par2, float par3) {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		fontRenderer.drawString("Player: " + activeSetting.name, guiLeft + 10, guiTop + 10, 0x404040);
-		fontRenderer.drawString("Configure Settings: ", guiLeft + 10, guiTop + 30, 0x404040);
-		fontRenderer.drawString("Active Requesting: ", guiLeft + 10, guiTop + 45, 0x404040);
-		fontRenderer.drawString("Upgrade Pipes: ", guiLeft + 10, guiTop + 60, 0x404040);
-		fontRenderer.drawString("Check Network: ", guiLeft + 10, guiTop + 75, 0x404040);
-		fontRenderer.drawString("Remove Pipes: ", guiLeft + 10, guiTop + 90, 0x404040);
+		fontRendererObj.drawString("Player: " + activeSetting.name, guiLeft + 10, guiTop + 10, 0x404040);
+		fontRendererObj.drawString("Configure Settings: ", guiLeft + 10, guiTop + 30, 0x404040);
+		fontRendererObj.drawString("Active Requesting: ", guiLeft + 10, guiTop + 45, 0x404040);
+		fontRendererObj.drawString("Upgrade Pipes: ", guiLeft + 10, guiTop + 60, 0x404040);
+		fontRendererObj.drawString("Check Network: ", guiLeft + 10, guiTop + 75, 0x404040);
+		fontRendererObj.drawString("Remove Pipes: ", guiLeft + 10, guiTop + 90, 0x404040);
 		super.drawScreen(par1, par2, par3);
 	}
 

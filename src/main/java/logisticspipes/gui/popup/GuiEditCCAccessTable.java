@@ -54,7 +54,7 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 	public void drawScreen(int par1, int par2, float par3) {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		
-		fontRenderer.drawString("(" + (page + 1) + "/" + ((int)((_tile.excludedCC.size() / 9D) + 1 - (_tile.excludedCC.size() % 9 == 0 && _tile.excludedCC.size() != 0 ? 1:0))) + ")", guiLeft + 100, guiTop + 5, 0x4F4F4F);
+		fontRendererObj.drawString("(" + (page + 1) + "/" + ((int)((_tile.excludedCC.size() / 9D) + 1 - (_tile.excludedCC.size() % 9 == 0 && _tile.excludedCC.size() != 0 ? 1:0))) + ")", guiLeft + 100, guiTop + 5, 0x4F4F4F);
 		
 		boolean dark = true;
 		for(int i=0;i < 9;i++) {
@@ -64,7 +64,7 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 		dark = true;
 		for(int i=0;i < 9 && i + (page * 9) < _tile.excludedCC.size();i++) {
 			Integer id = _tile.excludedCC.get(i + (page * 9));
-			fontRenderer.drawString(Integer.toString(id), guiLeft + 75 - (fontRenderer.getStringWidth(Integer.toString(id)) / 2), guiTop + 16 + (i*10), dark ? 0xFFFFFF : 0x000000);
+			fontRendererObj.drawString(Integer.toString(id), guiLeft + 75 - (fontRendererObj.getStringWidth(Integer.toString(id)) / 2), guiTop + 16 + (i*10), dark ? 0xFFFFFF : 0x000000);
 			dark = !dark;
 			if (lastClickedx >= guiLeft + 10 && lastClickedx < right - 10 &&
 					lastClickedy >= guiTop + 15 + (i*10) && lastClickedy < guiTop + 25 + (i*10)) {
@@ -84,9 +84,9 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 		}
 		drawRect(guiLeft + 42, bottom - 28, right - 42, bottom - 15, Colors.DarkGrey);
 		
-		fontRenderer.drawString(searchinput1 + searchinput2, guiLeft + 75 - (fontRenderer.getStringWidth(searchinput1 + searchinput2) / 2), bottom - 25, 0xFFFFFF);
+		fontRendererObj.drawString(searchinput1 + searchinput2, guiLeft + 75 - (fontRendererObj.getStringWidth(searchinput1 + searchinput2) / 2), bottom - 25, 0xFFFFFF);
 		if(editsearch) {
-			int linex = guiLeft + 75 + fontRenderer.getStringWidth(searchinput1) - (fontRenderer.getStringWidth(searchinput1 + searchinput2) / 2);
+			int linex = guiLeft + 75 + fontRendererObj.getStringWidth(searchinput1) - (fontRendererObj.getStringWidth(searchinput1 + searchinput2) / 2);
 			if(System.currentTimeMillis() - oldSystemTime > 500) {
 				displaycursor = !displaycursor;
 				oldSystemTime = System.currentTimeMillis();
@@ -170,7 +170,7 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 			try {
 				int number = Integer.valueOf(searchinput1 + searchinput2);
 				number++;
-				if (fontRenderer.getStringWidth(Integer.toString(number)) <= searchWidth) {
+				if (fontRendererObj.getStringWidth(Integer.toString(number)) <= searchWidth) {
 					searchinput1 = Integer.toString(number);
 					searchinput2 = "";
 				}
@@ -224,7 +224,7 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 					searchinput1 = searchinput1.substring(0, searchinput1.length() - 1);
 				return;
 			} else if (Character.isDigit(c)) {
-				if (fontRenderer.getStringWidth(searchinput1 + c + searchinput2) <= searchWidth) {
+				if (fontRendererObj.getStringWidth(searchinput1 + c + searchinput2) <= searchWidth) {
 					searchinput1 += c;
 				}
 				return;

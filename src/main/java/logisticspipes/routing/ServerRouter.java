@@ -44,7 +44,7 @@ import lombok.Setter;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	
@@ -244,7 +244,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		if(worldObj == null) {
 			return null;
 		}
-		TileEntity tile = worldObj.getBlockTileEntity(_xCoord, _yCoord, _zCoord);
+		TileEntity tile = worldObj.getTileEntity(_xCoord, _yCoord, _zCoord);
 		
 		if (!(tile instanceof LogisticsTileGenericPipe)) return null;
 		LogisticsTileGenericPipe pipe = (LogisticsTileGenericPipe) tile;

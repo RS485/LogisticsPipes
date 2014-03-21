@@ -26,7 +26,7 @@ import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
 
@@ -108,7 +108,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 			Position pos = new Position(this.container);
 			pos.orientation = ori;
 			pos.moveForwards(1);
-			TileEntity tile = this.getWorld().getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
+			TileEntity tile = this.getWorld().getTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
 			if(tile != null) {
 				if(SimpleServiceLocator.forestryProxy.isTileAnalyser(tile)) {
 					return ori;

@@ -16,7 +16,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.relauncher.Side;
@@ -46,7 +46,7 @@ public class LogisticsBlockGenericPipe extends BlockGenericPipe {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public Icon getBlockTexture(IBlockAccess iblockaccess, int i, int j, int k, int l) {
-		TileEntity tile = iblockaccess.getBlockTileEntity(i, j, k);
+		TileEntity tile = iblockaccess.getTileEntity(i, j, k);
 		if(tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe)tile).pipe instanceof PipeBlockRequestTable) {
 			PipeBlockRequestTable table = (PipeBlockRequestTable) ((LogisticsTileGenericPipe)tile).pipe;
 			return table.getTextureFor(l);
@@ -56,7 +56,7 @@ public class LogisticsBlockGenericPipe extends BlockGenericPipe {
 	
 	@Override
 	public void addCollisionBoxesToList(World world, int i, int j, int k, AxisAlignedBB axisalignedbb, List arraylist, Entity par7Entity) {
-		TileEntity tile1 = world.getBlockTileEntity(i, j, k);
+		TileEntity tile1 = world.getTileEntity(i, j, k);
 		TileGenericPipe tileG = (TileGenericPipe) tile1;
 		if(tileG instanceof LogisticsTileGenericPipe && tileG.pipe instanceof PipeBlockRequestTable) {
 			setBlockBounds(0, 0, 0, 1, 1, 1);
@@ -71,7 +71,7 @@ public class LogisticsBlockGenericPipe extends BlockGenericPipe {
 	
 	@Override
 	public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int i, int j, int k) {
-		TileEntity tile1 = world.getBlockTileEntity(i, j, k);
+		TileEntity tile1 = world.getTileEntity(i, j, k);
 		TileGenericPipe tileG = (TileGenericPipe) tile1;
 		if(tileG instanceof LogisticsTileGenericPipe && tileG.pipe instanceof PipeBlockRequestTable) {
 			return AxisAlignedBB.getBoundingBox((double) i + 0, (double) j + 0, (double) k + 0, (double) i + 1, (double) j + 1, (double) k + 1);
@@ -82,7 +82,7 @@ public class LogisticsBlockGenericPipe extends BlockGenericPipe {
 	@Override
 	@ModDependentMethodName(modId="ImmibisMicroblocks", newName="collisionRayTrace_ImmibisMicroblockTransformer", version="")
 	public MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3 origin, Vec3 direction) {
-		TileEntity tile1 = world.getBlockTileEntity(x, y, z);
+		TileEntity tile1 = world.getTileEntity(x, y, z);
 		TileGenericPipe tileG = (TileGenericPipe) tile1;
 		if(tileG instanceof LogisticsTileGenericPipe && tileG.pipe instanceof PipeBlockRequestTable) {
 			this.setBlockBoundsBasedOnState(world, x, y, z);

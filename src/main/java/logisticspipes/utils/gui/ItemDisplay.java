@@ -95,7 +95,7 @@ public class ItemDisplay {
 			page = maxPage;
 		}
 		String pageString = "Page " + (page + 1) + " / " + (maxPage + 1);
-		fontRenderer.drawString(pageString, x - fontRenderer.getStringWidth(pageString) / 2 , y, 0x404040);
+		fontRendererObj.drawString(pageString, x - fontRendererObj.getStringWidth(pageString) / 2 , y, 0x404040);
 	}
 
 	private int getSearchedItemNumber() {
@@ -110,8 +110,8 @@ public class ItemDisplay {
 
 	public void renderAmount(int x, int y, int stackAmount) {
 		String StackrequestCount = ""+(requestCount/stackAmount) + "+" + (requestCount % stackAmount);
-		fontRenderer.drawString(requestCount + "", x - fontRenderer.getStringWidth(requestCount+"") / 2, y, 0x404040);
-		fontRenderer.drawString(StackrequestCount + "", x - fontRenderer.getStringWidth(StackrequestCount+"") / 2, y + 10, 0x404040);
+		fontRendererObj.drawString(requestCount + "", x - fontRendererObj.getStringWidth(requestCount+"") / 2, y, 0x404040);
+		fontRendererObj.drawString(StackrequestCount + "", x - fontRendererObj.getStringWidth(StackrequestCount+"") / 2, y + 10, 0x404040);
 	}
 	
 	public void renderItemArea(double zLevel) {

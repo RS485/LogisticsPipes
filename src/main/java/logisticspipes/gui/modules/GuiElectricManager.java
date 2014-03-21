@@ -76,8 +76,8 @@ public class GuiElectricManager extends GuiWithPreviousGuiContainer {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		fontRenderer.drawString(_module.getFilterInventory().getInvName(), 8, 6, 0x404040);
-		fontRenderer.drawString("Inventory", 8, ySize - 92, 0x404040);
+		fontRendererObj.drawString(_module.getFilterInventory().getInvName(), 8, 6, 0x404040);
+		fontRendererObj.drawString("Inventory", 8, ySize - 92, 0x404040);
 	}
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/itemsink.png");
 	@Override

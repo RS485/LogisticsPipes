@@ -21,7 +21,7 @@ import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack>{
 	public static class orderedComparitor implements Comparator<ItemIdentifierStack>{

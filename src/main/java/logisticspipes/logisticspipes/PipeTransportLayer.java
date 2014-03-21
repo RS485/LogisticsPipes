@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.AdjacentTile;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.transport.TileGenericPipe;
 
 /**

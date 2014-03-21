@@ -19,7 +19,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
@@ -85,7 +85,7 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 		
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		
-		fontRenderer.drawString("Extract orientation", xSize / 2 - fontRenderer.getStringWidth("Extract orientation") / 2 , 10, 0x404040);
+		fontRendererObj.drawString("Extract orientation", xSize / 2 - fontRendererObj.getStringWidth("Extract orientation") / 2 , 10, 0x404040);
 	}
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/extractor.png");	
 	@Override

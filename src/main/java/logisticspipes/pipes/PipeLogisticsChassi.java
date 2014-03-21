@@ -77,7 +77,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.core.Position;
 import buildcraft.core.network.TileNetworkData;
 import buildcraft.transport.TileGenericPipe;
@@ -159,7 +159,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 		if (getRouter().isRoutedExit(connection)) return false;
 		Position pos = new Position(getX(), getY(), getZ(), connection);
 		pos.moveForwards(1.0);
-		TileEntity tile = getWorld().getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
+		TileEntity tile = getWorld().getTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
 
 		if (tile == null) return false;
 		if (tile instanceof TileGenericPipe) return false;

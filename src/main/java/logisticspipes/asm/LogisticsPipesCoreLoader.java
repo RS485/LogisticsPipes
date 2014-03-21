@@ -4,12 +4,7 @@ import java.util.Map;
 
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 
-public class LogisticsPipesCoreLoader implements IFMLLoadingPlugin {
-	@Override
-	public String[] getLibraryRequestClass() {
-		return null;
-	}
-	
+public class LogisticsPipesCoreLoader implements IFMLLoadingPlugin {	
 	@Override
 	public String[] getASMTransformerClass() {
 		return new String[]{
@@ -31,5 +26,10 @@ public class LogisticsPipesCoreLoader implements IFMLLoadingPlugin {
 	@Override
 	public void injectData(Map<String, Object> data) {
 		
+	}
+
+	@Override
+	public String getAccessTransformerClass() {
+		return null;
 	}
 }

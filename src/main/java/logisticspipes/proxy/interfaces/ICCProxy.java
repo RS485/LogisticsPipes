@@ -2,7 +2,7 @@ package logisticspipes.proxy.interfaces;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public interface ICCProxy {
 	public boolean isTurtle(TileEntity tile);

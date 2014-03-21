@@ -9,8 +9,8 @@ import net.minecraft.world.World;
 
 public class LogisticsNetworkManager extends LogisticsItem {
 
-	public LogisticsNetworkManager(int i) {
-		super(i);
+	public LogisticsNetworkManager() {
+		super();
 	}
 
 	@Override

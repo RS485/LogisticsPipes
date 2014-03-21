@@ -4,7 +4,7 @@ import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.utils.SinkReply;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class ChassiTransportLayer extends TransportLayer{
 

@@ -88,7 +88,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import buildcraft.BuildCraftTransport;
 import buildcraft.api.core.IIconProvider;
@@ -254,7 +254,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	private boolean checkTileEntity(boolean force) {
 		if(getWorld().getTotalWorldTime() % 10 == 0 || force) {
 			if(!(this.container instanceof LogisticsTileGenericPipe)) {
-				TileEntity tile = getWorld().getBlockTileEntity(getX(), getY(), getZ());
+				TileEntity tile = getWorld().getTileEntity(getX(), getY(), getZ());
 				if(tile != this.container) {
 					LogisticsPipes.log.severe("LocalCodeError");
 				}

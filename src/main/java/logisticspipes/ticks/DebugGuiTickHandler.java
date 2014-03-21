@@ -59,7 +59,7 @@ import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.EnumMovingObjectType;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
@@ -717,7 +717,7 @@ outer:
 			player.sendChatToPlayer(ChatMessageComponent.createFromText("Checking Block at: x:" + x + " y:" + y + " z:" + z));
 			int id = player.worldObj.getBlockId(x, y, z);
 			player.sendChatToPlayer(ChatMessageComponent.createFromText("Found Block with Id: " + id));
-			final TileEntity tile = player.worldObj.getBlockTileEntity(x, y, z);
+			final TileEntity tile = player.worldObj.getTileEntity(x, y, z);
 			if(tile == null) {
 				player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.RED + "No TileEntity found"));
 			} else {

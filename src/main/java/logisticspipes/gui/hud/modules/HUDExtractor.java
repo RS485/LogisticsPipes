@@ -6,7 +6,7 @@ import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.modules.ModuleExtractor;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class HUDExtractor implements IHUDModuleRenderer {

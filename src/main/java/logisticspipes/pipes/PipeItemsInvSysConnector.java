@@ -46,7 +46,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatMessageComponent;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.core.Position;
 import buildcraft.transport.TravelingItem;
 import cpw.mods.fml.common.network.Player;
@@ -276,7 +276,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		for (int i = 0; i < 6; i++)	{
 			Position p = new Position(getX(), getY(), getZ(), ForgeDirection.values()[i]);
 			p.moveForwards(1);
-			TileEntity tile = getWorld().getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
+			TileEntity tile = getWorld().getTileEntity((int) p.x, (int) p.y, (int) p.z);
 			if(tile instanceof IInventory) {
 				return true;
 			}
@@ -323,7 +323,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		for (int i = 0; i < 6; i++)	{
 			Position p = new Position(getX(), getY(), getZ(), ForgeDirection.values()[i]);
 			p.moveForwards(1);
-			TileEntity lTile = getWorld().getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
+			TileEntity lTile = getWorld().getTileEntity((int) p.x, (int) p.y, (int) p.z);
 			if(lTile instanceof IInventory) {
 				if(lTile == tile) {
 					return true;

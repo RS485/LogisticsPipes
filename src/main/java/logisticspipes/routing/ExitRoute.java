@@ -14,7 +14,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import logisticspipes.interfaces.routing.IFilter;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 
 /**
  * Defines direction with a cost

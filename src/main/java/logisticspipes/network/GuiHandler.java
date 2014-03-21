@@ -119,7 +119,7 @@ public class GuiHandler implements IGuiHandler {
 		
 		TileEntity tile = null;
 		if(y != -1) {
-			tile = world.getBlockTileEntity(x, y, z);
+			tile = world.getTileEntity(x, y, z);
 		}
 		LogisticsTileGenericPipe pipe = null;
 		if(tile instanceof LogisticsTileGenericPipe) {
@@ -773,7 +773,7 @@ public class GuiHandler implements IGuiHandler {
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer player, final World world, int x, int y, int z) {
 		
-		TileEntity tile = world.getBlockTileEntity(x, y, z);
+		TileEntity tile = world.getTileEntity(x, y, z);
 		LogisticsTileGenericPipe pipe = null;
 		if(tile instanceof LogisticsTileGenericPipe) {
 			pipe = (LogisticsTileGenericPipe)tile;

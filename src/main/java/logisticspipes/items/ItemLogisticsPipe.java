@@ -24,8 +24,8 @@ import buildcraft.transport.Pipe;
  * A logistics pipe Item
  */
 public class ItemLogisticsPipe extends ItemPipe {
-	public ItemLogisticsPipe(int key, Class<? extends Pipe> clas) {
-		super(key);
+	public ItemLogisticsPipe(Class<? extends Pipe> clas) {
+		super();
 		//setCreativeTab(LogisticsPipes.LPCreativeTab);
 		//setUnlocalizedName(clas.getSimpleName());
 	}

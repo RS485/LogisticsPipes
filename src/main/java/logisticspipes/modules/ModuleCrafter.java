@@ -15,10 +15,10 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.WorldUtil;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -177,7 +177,7 @@ public class ModuleCrafter extends LogisticsModule{
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public Icon getIconTexture(IconRegister register) {
+	public IIcon getIconTexture(IIconRegister register) {
 		return null;
 	}
 }

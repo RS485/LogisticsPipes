@@ -10,8 +10,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class LogisticsBrokenItem extends LogisticsItem implements IItemAdvancedExistance {
 
-	public LogisticsBrokenItem(int i) {
-		super(i);
+	public LogisticsBrokenItem() {
+		super();
 	}
 
 	@Override

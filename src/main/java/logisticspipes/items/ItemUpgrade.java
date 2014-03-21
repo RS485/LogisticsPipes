@@ -24,10 +24,11 @@ import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeNORTH;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeSOUTH;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeUP;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeWEST;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 
 public class ItemUpgrade extends LogisticsItem {
 
@@ -62,7 +63,7 @@ public class ItemUpgrade extends LogisticsItem {
 	public static final int MAX_LIQUID_CRAFTER = 3;
 
 	List<Upgrade> upgrades = new ArrayList<Upgrade>();
-	private Icon[] icons;
+	private IIcon[] icons;
 	private class Upgrade {
 		private String name;
 		private int id;
@@ -113,8 +114,8 @@ public class ItemUpgrade extends LogisticsItem {
 		}
 	}
 	
-	public ItemUpgrade(int i) {
-		super(i);
+	public ItemUpgrade() {
+		super();
 		this.hasSubtypes = true;
 	}
 	
@@ -173,7 +174,7 @@ public class ItemUpgrade extends LogisticsItem {
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List) {
+	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
 		for(Upgrade upgrade:upgrades) {
 			par3List.add(new ItemStack(this, 1, upgrade.getId()));
 		}
@@ -181,7 +182,7 @@ public class ItemUpgrade extends LogisticsItem {
 	
 	public IPipeUpgrade getUpgradeForItem(ItemStack itemStack, IPipeUpgrade currentUpgrade){
 		if (itemStack == null) return null;
-		if (itemStack.itemID != this.itemID) return null;
+		if (!itemStack.getItem().equals(this)) return null;
 		for(Upgrade upgrade:upgrades) {
 			if(itemStack.getItemDamage() == upgrade.getId()) {
 				if(upgrade.getIPipeUpgradeClass() == null) return null;
@@ -197,7 +198,7 @@ public class ItemUpgrade extends LogisticsItem {
 	}
 
 	@Override
-	public String getItemDisplayName(ItemStack itemstack) {
+	public String getItemStackDisplayName(ItemStack itemstack) {
 		for(Upgrade upgrade:upgrades) {
 			if(itemstack.getItemDamage() == upgrade.getId()) {
 				return upgrade.getName();
@@ -207,8 +208,8 @@ public class ItemUpgrade extends LogisticsItem {
 	}
 
 	@Override
-	public void registerIcons(IconRegister par1IconRegister) {
-		icons=new Icon[19];
+	public void registerIcons(IIconRegister par1IconRegister) {
+		icons=new IIcon[19];
 		icons[0]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyUP");
 		icons[1]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyDOWN");
 		icons[2]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyNORTH");
@@ -234,7 +235,7 @@ public class ItemUpgrade extends LogisticsItem {
 	}
 
 	@Override
-	public Icon getIconFromDamage(int i) {
+	public IIcon getIconFromDamage(int i) {
 
 		for(Upgrade upgrade:upgrades) {
 			if(upgrade.getId() == i) {

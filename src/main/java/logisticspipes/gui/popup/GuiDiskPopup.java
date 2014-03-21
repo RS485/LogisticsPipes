@@ -66,7 +66,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 	private void writeDiskName() {
 		editname = false;
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskSetNamePacket.class).setString(name1 + name2).setPosX(mainGui.pipe.getX()).setPosY(mainGui.pipe.getY()).setPosZ(mainGui.pipe.getZ()));
-		NBTTagCompound nbt = new NBTTagCompound("tag");
+		NBTTagCompound nbt = new NBTTagCompound();
 		if(mainGui.getDisk().hasTagCompound()) {
 			nbt = mainGui.getDisk().getTagCompound();
 		}
@@ -109,7 +109,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 		
 		NBTTagCompound nbt = mainGui.getDisk().getTagCompound();
 		if(nbt == null) {
-			mainGui.getDisk().setTagCompound(new NBTTagCompound("tag"));
+			mainGui.getDisk().setTagCompound(new NBTTagCompound());
 			nbt = mainGui.getDisk().getTagCompound();
 		}
 		
@@ -180,7 +180,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 	private void handleDelete() {
 		NBTTagCompound nbt = mainGui.getDisk().getTagCompound();
 		if(nbt == null) {
-			mainGui.getDisk().setTagCompound(new NBTTagCompound("tag"));
+			mainGui.getDisk().setTagCompound(new NBTTagCompound());
 			nbt = mainGui.getDisk().getTagCompound();
 		}
 

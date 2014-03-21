@@ -96,7 +96,7 @@ public class CraftingPermissionManager {
 			File lpFolder = MainProxy.getLPFolder();
 			File playerFile = new File(lpFolder, name + "_craft.dat");
 			DataOutputStream din = new DataOutputStream(new FileOutputStream(playerFile));
-			NBTTagCompound nbt = new NBTTagCompound("tag");
+			NBTTagCompound nbt = new NBTTagCompound();
 			for(CraftingDependency type: CraftingDependency.values()) {
 				nbt.setBoolean(type.name(), enumSet.contains(type));
 			}

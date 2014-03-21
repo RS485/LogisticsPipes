@@ -84,7 +84,7 @@ public class SlotFinderNumberPacket extends CoordinatesPacket {
 				}
 			} else {
 				ItemStack dummyStack = new ItemStack(1, 0, 0);
-				NBTTagCompound nbt = new NBTTagCompound("tag");
+				NBTTagCompound nbt = new NBTTagCompound();
 				nbt.setBoolean("LPStackFinderBoolean", true); //Make it unique
 				dummyStack.setTagCompound(nbt);
 				result.putStack(dummyStack);

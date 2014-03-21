@@ -4,9 +4,10 @@ import java.util.List;
 
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.proxy.SimpleServiceLocator;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -18,8 +19,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvancedExistance {
 	static int capacity = 8000;
 	
-	public LogisticsFluidContainer(int i) {
-		super(i);
+	public LogisticsFluidContainer() {
+		super();
 	}
 
 	@Override
@@ -34,7 +35,7 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 
 	@Override
     @SideOnly(Side.CLIENT)
-	public void registerIcons(IconRegister iconReg) {
+	public void registerIcons(IIconRegister iconReg) {
 		this.itemIcon = iconReg.registerIcon("logisticspipes:liquids/empty");
 	}
 	
@@ -71,7 +72,7 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 	
 	@Override
 	@SuppressWarnings("rawtypes")
-	public void getSubItems(int par1, CreativeTabs ct, List list) {
+	public void getSubItems(Item par1, CreativeTabs ct, List list) {
 		//Don't add to creative in any way
 	}
 }

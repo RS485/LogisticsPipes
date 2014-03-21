@@ -2,28 +2,29 @@ package logisticspipes.items;
 
 import java.util.List;
 
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 
 public class ItemParts extends LogisticsItem {
-	private Icon[] _icons;
-	public ItemParts(int par1) {
-		super(par1);
+	private IIcon[] _icons;
+	public ItemParts() {
+		super();
 		this.setHasSubtypes(true);
 	}
 	@Override
-	public void registerIcons(IconRegister iconreg)
+	public void registerIcons(IIconRegister iconreg)
 	{
-		_icons=new Icon[4];
+		_icons=new IIcon[4];
 		for(int i=0;i<4;i++)
 		{
 			_icons[i]=iconreg.registerIcon("logisticspipes:"+getUnlocalizedName().replace("item.", "")+"/"+i);
 		}
 	}
     @Override
-	public Icon getIconFromDamage(int par1) {
+	public IIcon getIconFromDamage(int par1) {
     		return _icons[par1%4];
     }
 
@@ -49,7 +50,7 @@ public class ItemParts extends LogisticsItem {
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List) {
+	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
 		par3List.add(new ItemStack(this, 1, 0));
 		par3List.add(new ItemStack(this, 1, 1));
 		par3List.add(new ItemStack(this, 1, 2));

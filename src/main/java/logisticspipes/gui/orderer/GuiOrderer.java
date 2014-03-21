@@ -100,8 +100,8 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		buttonList.add(new SmallGuiButton(11, xCenter + 26, bottom - 15, 26, 10, "+++")); // +64
 		buttonList.add(new GuiCheckBox(8, guiLeft + 9, bottom - 60, 14, 14, Configs.DISPLAY_POPUP)); // Popup
 
-		if(search == null) search = new SearchBar(fontRenderer, this, guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
-		if(itemDisplay == null) itemDisplay = new ItemDisplay(this, fontRenderer, this, this, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[]{1,10,64,64}, true);
+		if(search == null) search = new SearchBar(fontRendererObj, this, guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
+		if(itemDisplay == null) itemDisplay = new ItemDisplay(this, fontRendererObj, this, this, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[]{1,10,64,64}, true);
 	}
 	
 	@Override

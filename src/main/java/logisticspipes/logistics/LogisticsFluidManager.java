@@ -48,7 +48,7 @@ public class LogisticsFluidManager implements ILogisticsFluidManager {
 	@Override
 	public ItemStack getFluidContainer(FluidStack stack) {
 		ItemStack item = new ItemStack(LogisticsPipes.LogisticsFluidContainer, 1);
-		NBTTagCompound nbt = new NBTTagCompound("tag");
+		NBTTagCompound nbt = new NBTTagCompound();
 		stack.writeToNBT(nbt);
 		item.setTagCompound(nbt);
 		return item;

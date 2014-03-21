@@ -9,8 +9,8 @@ import net.minecraft.item.ItemStack;
 
 public class ItemDisk extends LogisticsItem {
 
-	public ItemDisk(int i) {
-		super(i);
+	public ItemDisk() {
+		super();
 	}
 	
 	@Override

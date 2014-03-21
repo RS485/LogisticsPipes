@@ -14,8 +14,8 @@ import buildcraft.transport.Pipe;
 
 public class CraftingSignCreator extends LogisticsItem {
 
-	public CraftingSignCreator(int i) {
-		super(i);
+	public CraftingSignCreator() {
+		super();
 		this.setMaxStackSize(1);
 		this.setMaxDamage(250);
 	}

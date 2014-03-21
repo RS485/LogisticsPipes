@@ -12,9 +12,9 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 
 public class ChassiModule extends LogisticsGuiModule{
 	
@@ -173,7 +173,7 @@ public class ChassiModule extends LogisticsGuiModule{
 	}
 
 	@Override
-	public Icon getIconTexture(IconRegister register) {
+	public IIcon getIconTexture(IIconRegister register) {
 		//Not Needed
 		return null;
 	}

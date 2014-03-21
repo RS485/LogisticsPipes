@@ -62,7 +62,7 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 	
 	public RoutedEntityItem(TravelingItem entityItem) {
 		super(entityItem.id);
-		NBTTagCompound nbt = new NBTTagCompound("tag");
+		NBTTagCompound nbt = new NBTTagCompound();
 		entityItem.writeToNBT(nbt);
 		readFromNBT(nbt);
 		thisItem = ItemIdentifierStack.getFromStack(entityItem.getItemStack());

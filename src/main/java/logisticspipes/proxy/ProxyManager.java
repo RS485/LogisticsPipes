@@ -34,7 +34,7 @@ import net.minecraft.client.model.ModelSign;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -72,13 +72,13 @@ public class ProxyManager {
 				@Override public boolean isCave(ItemStack bee) {return false;}
 				@Override public boolean isPureCave(ItemStack bee) {return false;}
 				@Override public String getForestryTranslation(String input) {return input.substring(input.lastIndexOf(".") + 1).toLowerCase().replace("_", " ");}
-				@Override @SideOnly(Side.CLIENT) public Icon getIconIndexForAlleleId(String id, int phase) {return null;}
+				@Override @SideOnly(Side.CLIENT) public IIcon getIconIndexForAlleleId(String id, int phase) {return null;}
 				@Override @SideOnly(Side.CLIENT) public int getColorForAlleleId(String id, int phase) {return 0;}
 				@Override @SideOnly(Side.CLIENT) public int getRenderPassesForAlleleId(String id) {return 0;}
 				@Override public void addCraftingRecipes() {}
 				@Override public String getNextAlleleId(String uid, World world) {return "";}
 				@Override public String getPrevAlleleId(String uid, World world) {return "";}
-				@Override @SideOnly(Side.CLIENT) public Icon getIconFromTextureManager(String name) {return null;}
+				@Override @SideOnly(Side.CLIENT) public IIcon getIconFromTextureManager(String name) {return null;}
 			});
 			LogisticsPipes.log.info("Loaded Forestry DummyProxy");
 		}

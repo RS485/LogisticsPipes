@@ -4,12 +4,11 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IHUDArmor;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.proxy.MainProxy;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumArmorMaterial;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
@@ -18,8 +17,8 @@ import net.minecraftforge.common.ISpecialArmor;
 
 public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor {
 
-	public ItemHUDArmor(int par1, int renderIndex) {
-		super(par1, EnumArmorMaterial.CHAIN, renderIndex, 0);
+	public ItemHUDArmor(int renderIndex) {
+		super(ArmorMaterial.CHAIN, renderIndex, 0);
 	}
 
 	@Override
@@ -66,7 +65,7 @@ public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor 
 	}
 
 	@Override
-	public void registerIcons(IconRegister par1IconRegister) {	
+	public void registerIcons(IIconRegister par1IconRegister) {	
 		itemIcon=par1IconRegister.registerIcon("logisticspipes:"+getUnlocalizedName().replace("item.",""));
 	}
 

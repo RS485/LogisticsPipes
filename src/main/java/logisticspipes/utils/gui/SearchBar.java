@@ -24,7 +24,7 @@ public class SearchBar {
     private int left, top, heigth, width;
     
     public SearchBar(FontRenderer fontRenderer, KraphtBaseGuiScreen screen, int left, int top, int width, int heigth) {
-    	this.fontRenderer = fontRenderer;
+    	this.fontRendererObj = fontRenderer;
     	this.screen = screen;
     	this.left = left;
     	this.top = top;

@@ -9,6 +9,7 @@ import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ChatComponentText;
 
 public class GuiRequestPopup extends SubGuiScreen {
 	
@@ -62,7 +63,7 @@ public class GuiRequestPopup extends SubGuiScreen {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		for(int i=0;i < this.text.length;i++) {
 			if(this.text[i] == null) continue;
-			String msg = BasicGuiHelper.getCuttedString(this.text[i], mWidth - 10, this.fontRenderer);
+			String msg = BasicGuiHelper.getCuttedString(this.text[i], mWidth - 10, this.fontRendererObj);
 			int stringWidth = this.fontRendererObj.getStringWidth(msg);
 			this.fontRendererObj.drawString(msg, xCenter - (stringWidth / 2), guiTop + 10 + (i * 10), 0x404040);
 		}
@@ -77,7 +78,7 @@ public class GuiRequestPopup extends SubGuiScreen {
 			break;
 		case 1:
 			for(String msg:text) {
-				player.addChatMessage(msg);
+				player.addChatMessage(new ChatComponentText(msg));
 			}
 			((GuiButton)buttonList.get(1)).enabled = false;
 			break;

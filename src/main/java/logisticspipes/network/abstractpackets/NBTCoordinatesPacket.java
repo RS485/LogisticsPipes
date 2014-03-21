@@ -35,7 +35,7 @@ public abstract class NBTCoordinatesPacket extends CoordinatesPacket {
 	}
 	
 	public NBTCoordinatesPacket readFromProvider(INBTPacketProvider provider) {
-		tag = new NBTTagCompound("tag");
+		tag = new NBTTagCompound();
 		provider.writeToPacketNBT(tag);
 		return this;
 	}

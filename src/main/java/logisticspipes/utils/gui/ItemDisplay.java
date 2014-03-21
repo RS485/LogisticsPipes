@@ -57,7 +57,7 @@ public class ItemDisplay {
 	
 	public ItemDisplay(IItemSearch search, FontRenderer fontRenderer, KraphtBaseGuiScreen screen, ISpecialItemRenderer renderer, int left, int top, int width, int height, int[] amountChangeMode, boolean shiftPageChange) {
 		this.search = search;
-		this.fontRenderer = fontRenderer;
+		this.fontRendererObj = fontRenderer;
 		this.screen = screen;
 		this.renderer = renderer;
 		this.left = left;

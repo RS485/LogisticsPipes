@@ -37,16 +37,17 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
 import org.lwjgl.input.Keyboard;
@@ -97,7 +98,7 @@ public class ItemModule extends LogisticsItem {
 		private String name;
 		private int id;
 		private Class<? extends LogisticsModule> moduleClass;
-		private Icon moduleIcon = null;
+		private IIcon moduleIcon = null;
 
 		private Module(int id, String name, Class<? extends LogisticsModule> moduleClass) {
 			this.id = id;
@@ -137,12 +138,12 @@ public class ItemModule extends LogisticsItem {
 			return name;
 		}
 
-		private Icon getIcon() {
+		private IIcon getIcon() {
 			return moduleIcon;
 		}
 
 		@SideOnly(Side.CLIENT)
-		private void registerModuleIcon(IconRegister par1IconRegister) {
+		private void registerModuleIcon(IIconRegister par1IconRegister) {
 			if(moduleClass == null) {
 				this.moduleIcon = par1IconRegister.registerIcon("logisticspipes:" + getUnlocalizedName().replace("item.","") + "/blank");
 			} else {
@@ -158,8 +159,8 @@ public class ItemModule extends LogisticsItem {
 		}
 	}
 
-	public ItemModule(int i) {
-		super(i);
+	public ItemModule() {
+		super();
 		this.hasSubtypes = true;
 	}
 
@@ -221,7 +222,7 @@ public class ItemModule extends LogisticsItem {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List) {
+	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
 		for(Module module:modules) {
 			par3List.add(new ItemStack(this, 1, module.getId()));
 		}
@@ -249,7 +250,7 @@ public class ItemModule extends LogisticsItem {
 		if(MainProxy.isServer(par2EntityPlayer.worldObj)) {
 			TileEntity tile = par3World.getTileEntity(par4, par5, par6);
 			if(tile instanceof LogisticsTileGenericPipe) {
-				if (par2EntityPlayer.username.equals("ComputerCraft")) { //Allow turtle to place modules in pipes.
+				if (par2EntityPlayer.getCommandSenderName().equals("ComputerCraft")) { //Allow turtle to place modules in pipes.
 					Pipe<?> pipe = BlockGenericPipe.getPipe(par3World, par4, par5, par6);
 					if (BlockGenericPipe.isValid(pipe)){
 						pipe.blockActivated(par2EntityPlayer);
@@ -264,7 +265,7 @@ public class ItemModule extends LogisticsItem {
 
 	public LogisticsModule getModuleForItem(ItemStack itemStack, LogisticsModule currentModule, IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider power){
 		if (itemStack == null) return null;
-		if (itemStack.itemID != this.itemID) return null;
+		if (!itemStack.getItem().equals(this)) return null;
 		for(Module module:modules) {
 			if(itemStack.getItemDamage() == module.getId()) {
 				if(module.getILogisticsModuleClass() == null) return null;
@@ -281,7 +282,7 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	@Override
-	public String getItemDisplayName(ItemStack itemstack) {
+	public String getItemStackDisplayName(ItemStack itemstack) {
 		for(Module module:modules) {
 			if(itemstack.getItemDamage() == module.getId()) {
 				return module.getName();
@@ -292,7 +293,7 @@ public class ItemModule extends LogisticsItem {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerIcons(IconRegister par1IconRegister) {
+	public void registerIcons(IIconRegister par1IconRegister) {
 		if(modules.size()<=0) return;
 		for(Module module:modules) {
 			module.registerModuleIcon(par1IconRegister);

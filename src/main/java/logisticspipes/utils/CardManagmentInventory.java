@@ -24,7 +24,7 @@ public class CardManagmentInventory implements IInventory {
 		if(card != null) {
 			NBTTagCompound nbt = card.getTagCompound();
 			if(nbt == null) {
-				nbt = new NBTTagCompound("tag");
+				nbt = new NBTTagCompound();
 			}
 			NBTTagCompound colors = nbt.getCompoundTag("colors");
 			if(colors == null) {
@@ -84,7 +84,7 @@ public class CardManagmentInventory implements IInventory {
 		if(card != null) {
 			NBTTagCompound nbt = card.getTagCompound();
 			if(nbt == null) {
-				nbt = new NBTTagCompound("tag");
+				nbt = new NBTTagCompound();
 			}
 			NBTTagCompound colors = nbt.getCompoundTag("colors");
 			if(colors == null) {

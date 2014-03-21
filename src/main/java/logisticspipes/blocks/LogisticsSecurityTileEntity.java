@@ -197,14 +197,14 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 			}
 			if(inv.getStackInSlot(0) == null) {
 				ItemStack stack = new ItemStack(LogisticsPipes.LogisticsItemCard, 1, LogisticsItemCard.SEC_CARD);
-				stack.setTagCompound(new NBTTagCompound("tag"));
+				stack.setTagCompound(new NBTTagCompound());
 				stack.getTagCompound().setString("UUID", getSecId().toString());
 				inv.setInventorySlotContents(0, stack);
 			} else {
 				ItemStack slot=inv.getStackInSlot(0);
 				if(slot.stackSize < 64) {
 					slot.stackSize++;
-					slot.setTagCompound(new NBTTagCompound("tag"));
+					slot.setTagCompound(new NBTTagCompound());
 					slot.getTagCompound().setString("UUID", getSecId().toString());
 					inv.setInventorySlotContents(0, slot);
 				}
@@ -216,7 +216,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 				return;
 			}
 			ItemStack stack = new ItemStack(LogisticsPipes.LogisticsItemCard, 64, LogisticsItemCard.SEC_CARD);
-			stack.setTagCompound(new NBTTagCompound("tag"));
+			stack.setTagCompound(new NBTTagCompound());
 			stack.getTagCompound().setString("UUID", getSecId().toString());
 			inv.setInventorySlotContents(0, stack);
 			break;

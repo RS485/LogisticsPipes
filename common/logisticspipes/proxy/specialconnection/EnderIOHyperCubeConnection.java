@@ -6,31 +6,31 @@ import java.util.List;
 import logisticspipes.interfaces.routing.ISpecialTileConnection;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
-import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.TravelingItem;
 
-public class TesseractConnection implements ISpecialTileConnection {
+public class EnderIOHyperCubeConnection implements ISpecialTileConnection {
 	
 	@Override
 	public boolean init() {
-		return SimpleServiceLocator.thermalExpansionProxy.isTE();
+		return SimpleServiceLocator.enderIOProxy.isEnderIO();
 	}
 
 	@Override
 	public boolean isType(TileEntity tile) {
-		return SimpleServiceLocator.thermalExpansionProxy.isTesseract(tile);
+		return SimpleServiceLocator.enderIOProxy.isHyperCube(tile);
 	}
 
 	@Override
 	public List<TileEntity> getConnections(TileEntity tile) {
 		boolean onlyOnePipe = false;
 		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-			Position p = new Position(tile.xCoord, tile.yCoord, tile.zCoord, direction);
-			p.moveForwards(1);
-			TileEntity canidate = tile.getWorldObj().getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
+			LPPosition p = new LPPosition(tile);
+			p.moveForward(direction);
+			TileEntity canidate = p.getTileEntity(tile.getWorldObj());
 			if(canidate instanceof TileGenericPipe && SimpleServiceLocator.buildCraftProxy.checkPipesConnections(tile, canidate, direction)) {
 				if(onlyOnePipe) {
 					onlyOnePipe = false;
@@ -40,17 +40,18 @@ public class TesseractConnection implements ISpecialTileConnection {
 				}
 			}
 		}
-		if(!onlyOnePipe) {
+		if(!onlyOnePipe || !SimpleServiceLocator.enderIOProxy.isSendAndReceive(tile)) {
 			return new ArrayList<TileEntity>(0);
 		}
-		List<? extends TileEntity> connections = SimpleServiceLocator.thermalExpansionProxy.getConnectedTesseracts(tile);
+		List<? extends TileEntity> connections = SimpleServiceLocator.enderIOProxy.getConnectedHyperCubes(tile);
 		List<TileEntity> list = new ArrayList<TileEntity>();
 		for(TileEntity connected:connections) {
+			if(!SimpleServiceLocator.enderIOProxy.isSendAndReceive(connected)) continue;
 			TileGenericPipe pipe = null;
 			for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-				Position p = new Position(connected.xCoord, connected.yCoord, connected.zCoord, direction);
-				p.moveForwards(1);
-				TileEntity canidate = connected.getWorldObj().getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
+				LPPosition p = new LPPosition(connected);
+				p.moveForward(direction);
+				TileEntity canidate = p.getTileEntity(tile.getWorldObj());
 				if(canidate instanceof TileGenericPipe && SimpleServiceLocator.buildCraftProxy.checkPipesConnections(connected, canidate, direction)) {
 					if(pipe != null) {
 						pipe = null;

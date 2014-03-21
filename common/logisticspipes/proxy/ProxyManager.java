@@ -11,12 +11,14 @@ import logisticspipes.proxy.bettersign.BetterSignProxy;
 import logisticspipes.proxy.bs.BetterStorageProxy;
 import logisticspipes.proxy.cc.CCProxy;
 import logisticspipes.proxy.cc.CCTurtleProxy;
+import logisticspipes.proxy.enderio.EnderIOProxy;
 import logisticspipes.proxy.factorization.FactorizationProxy;
 import logisticspipes.proxy.forestry.ForestryProxy;
 import logisticspipes.proxy.ic2.IC2Proxy;
 import logisticspipes.proxy.interfaces.IBetterSignProxy;
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
+import logisticspipes.proxy.interfaces.IEnderIOProxy;
 import logisticspipes.proxy.interfaces.IFactorizationProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
@@ -231,6 +233,19 @@ public class ProxyManager {
 				}
 			});
 			LogisticsPipes.log.info("Loaded BetterSign DummyProxy");
+		}
+
+		if(Loader.isModLoaded("EnderIO")) {
+			SimpleServiceLocator.setEnderIOProxy(new EnderIOProxy());
+			LogisticsPipes.log.info("Loaded EnderIO Proxy");
+		} else {
+			SimpleServiceLocator.setEnderIOProxy(new IEnderIOProxy() {
+				@Override public boolean isSendAndReceive(TileEntity tile) {return false;}
+				@Override public boolean isHyperCube(TileEntity tile) {return false;}
+				@Override public List<TileEntity> getConnectedHyperCubes(TileEntity tile) {return new ArrayList<TileEntity>(0);}
+				@Override public boolean isEnderIO() {return false;}
+			});
+			LogisticsPipes.log.info("Loaded EnderIO DummyProxy");
 		}
 		
 	}

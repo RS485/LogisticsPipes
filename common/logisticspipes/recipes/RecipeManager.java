@@ -470,9 +470,22 @@ public class RecipeManager {
 			"E",
 			"B",
 			Character.valueOf('E'), Item.enchantedBook,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ITEMSINK),
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ITEMSINK)
 		});
-
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ENCHANTMENTSINK_MK2), CraftingDependency.Sink_Modules, new Object[] {
+			"U",
+			"B",
+			Character.valueOf('U'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ENCHANTMENTSINK)
+		});
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ENCHANTMENTSINK_MK2), CraftingDependency.Sink_Modules, new Object[] {
+			"U",
+			"B",
+			Character.valueOf('U'), BuildCraftCore.goldGearItem,
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ENCHANTMENTSINK)
+		});
+		
 		for(int i=0; i<1000;i++) {
 			LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(new ItemStack(LogisticsPipes.ModuleItem, 1, i), null, null, null, null, null);
 			if(module != null) {

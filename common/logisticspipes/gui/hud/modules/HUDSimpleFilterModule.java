@@ -4,7 +4,7 @@ import java.util.List;
 
 import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDModuleRenderer;
-import logisticspipes.modules.ModuleTerminus;
+import logisticspipes.interfaces.IModuleSimpleFilter;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.Minecraft;
@@ -13,11 +13,11 @@ import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.client.FMLClientHandler;
 
-public class HUDTerminatorModule implements IHUDModuleRenderer {
+public class HUDSimpleFilterModule implements IHUDModuleRenderer {
 
-	private final ModuleTerminus module;
+	private final IModuleSimpleFilter module;
 	
-	public HUDTerminatorModule(ModuleTerminus module) {
+	public HUDSimpleFilterModule(IModuleSimpleFilter module) {
 		this.module = module;
 	}
 	

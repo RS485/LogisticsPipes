@@ -21,6 +21,7 @@ import logisticspipes.modules.ModuleApiaristTerminus;
 import logisticspipes.modules.ModuleElectricBuffer;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleEnchantmentSink;
+import logisticspipes.modules.ModuleEnchantmentSinkMK2;
 import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleExtractorMk2;
 import logisticspipes.modules.ModuleExtractorMk3;
@@ -80,6 +81,7 @@ public class ItemModule extends LogisticsItem {
 	//PASSIVE MK 2
 	public static final int EXTRACTOR_MK2 = 100 + EXTRACTOR;
 	public static final int ADVANCED_EXTRACTOR_MK2 = 100 + ADVANCED_EXTRACTOR;
+	public static final int ENCHANTMENTSINK_MK2 = 100 + ENCHANTMENTSINK;
 
 	//PASSIVE MK 3
 	public static final int EXTRACTOR_MK3 = 200 + EXTRACTOR;
@@ -190,6 +192,7 @@ public class ItemModule extends LogisticsItem {
 		registerModule(OREDICTITEMSINK			, "OreDict ItemSink module"		, ModuleOreDictItemSink.class);
 		registerModule(THAUMICASPECTSINK		, "Thaumic AspectSink module"	, ModuleThaumicAspectSink.class);
 		registerModule(ENCHANTMENTSINK			, "Enchantment Sink module"		, ModuleEnchantmentSink.class);
+		registerModule(ENCHANTMENTSINK_MK2		, "Enchantment Sink module MK2"	, ModuleEnchantmentSinkMK2.class);
 	}
 
 	public void registerModule(int id, String name, Class<? extends LogisticsModule> moduleClass) {

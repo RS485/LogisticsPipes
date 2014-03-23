@@ -17,10 +17,7 @@ import net.minecraft.util.Icon;
 
 public class ModuleEnchantmentSink extends LogisticsModule {
 	
-	private IInventoryProvider _invProvider;
 	private IRoutedPowerProvider _power;
-	private ISendRoutedItem _itemSender;
-	private IWorldProvider _world;
 	private int slot = 0;
 	
 	@Override
@@ -33,10 +30,7 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 	public void registerHandler(IInventoryProvider invProvider,
 			ISendRoutedItem itemSender, IWorldProvider world,
 			IRoutedPowerProvider powerProvider) {
-		_invProvider = invProvider;
 		_power = powerProvider;
-		_world = world;
-		_itemSender = itemSender;
 	}
 
 	@Override

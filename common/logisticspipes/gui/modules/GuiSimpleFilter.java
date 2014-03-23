@@ -8,7 +8,7 @@
 
 package logisticspipes.gui.modules;
 
-import logisticspipes.modules.ModuleTerminus;
+import logisticspipes.interfaces.IModuleSimpleFilter;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.utils.gui.DummyContainer;
@@ -18,15 +18,15 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiTerminus extends GuiWithPreviousGuiContainer {
+public class GuiSimpleFilter extends GuiWithPreviousGuiContainer {
 
-	private final ModuleTerminus _terminus;
+	private final IModuleSimpleFilter _module;
 	
 	
-	public GuiTerminus(IInventory playerInventory, CoreRoutedPipe pipe, ModuleTerminus terminus, GuiScreen previousGui) {
+	public GuiSimpleFilter(IInventory playerInventory, CoreRoutedPipe pipe, IModuleSimpleFilter module, GuiScreen previousGui) {
 		super(null,pipe,previousGui);
-		_terminus = terminus;
-		DummyContainer dummy = new DummyContainer(playerInventory, _terminus.getFilterInventory());
+		_module = module;
+		DummyContainer dummy = new DummyContainer(playerInventory, _module.getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 
 		//Pipe slots
@@ -41,7 +41,7 @@ public class GuiTerminus extends GuiWithPreviousGuiContainer {
 	
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		fontRenderer.drawString(_terminus.getFilterInventory().getInvName(), 8, 6, 0x404040);
+		fontRenderer.drawString(_module.getFilterInventory().getInvName(), 8, 6, 0x404040);
 		fontRenderer.drawString("Inventory", 8, ySize - 92, 0x404040);
 	}
 
@@ -58,6 +58,6 @@ public class GuiTerminus extends GuiWithPreviousGuiContainer {
 
 	@Override
 	public int getGuiID() {
-		return GuiIDs.GUI_Module_Terminus_ID;
+		return GuiIDs.GUI_Module_Simple_Filter_ID;
 	}
 }

@@ -36,7 +36,6 @@ import logisticspipes.gui.modules.GuiFluidSupplier;
 import logisticspipes.gui.modules.GuiItemSink;
 import logisticspipes.gui.modules.GuiModBasedItemSink;
 import logisticspipes.gui.modules.GuiOreDictItemSink;
-import logisticspipes.gui.modules.GuiPassiveSupplier;
 import logisticspipes.gui.modules.GuiProvider;
 import logisticspipes.gui.modules.GuiSimpleFilter;
 import logisticspipes.gui.modules.GuiThaumicAspectSink;
@@ -255,18 +254,6 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_Module_FluidSupplier_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleFluidSupplier)) return null;
 				dummy = new DummyContainer(player.inventory, ((ModuleFluidSupplier)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).getFilterInventory());
-				dummy.addNormalSlotsForPlayerInventory(8, 60);
-	
-				//Pipe slots
-			    for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
-			    	dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
-			    }
-			    
-			    return dummy;
-				
-			case GuiIDs.GUI_Module_PassiveSupplier_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModulePassiveSupplier)) return null;
-				dummy = new DummyContainer(player.inventory, ((ModulePassiveSupplier)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).getFilterInventory());
 				dummy.addNormalSlotsForPlayerInventory(8, 60);
 	
 				//Pipe slots
@@ -590,24 +577,6 @@ public class GuiHandler implements IGuiHandler {
 			    
 			    return dummy;
 				
-			case GuiIDs.GUI_Module_PassiveSupplier_ID:
-				if(slot >= 0) {
-					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModulePassiveSupplier)) return null;
-					dummy = new DummyContainer(player.inventory, ((ModulePassiveSupplier)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot)).getFilterInventory());
-				} else {
-					dummy = new DummyModuleContainer(player, z);
-					if(!(((DummyModuleContainer)dummy).getModule() instanceof ModulePassiveSupplier)) return null;
-					((DummyModuleContainer)dummy).setInventory(((ModulePassiveSupplier)((DummyModuleContainer)dummy).getModule()).getFilterInventory());
-				}
-				dummy.addNormalSlotsForPlayerInventory(8, 60);
-	
-				//Pipe slots
-			    for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
-			    	dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
-			    }
-			    
-			    return dummy;
-				
 			case GuiIDs.GUI_Module_Provider_ID:
 				if(slot >= 0) {
 					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleProvider)) return null;
@@ -846,10 +815,6 @@ public class GuiHandler implements IGuiHandler {
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleFluidSupplier)) return null;
 				return new GuiFluidSupplier(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleFluidSupplier) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule(), FMLClientHandler.instance().getClient().currentScreen);
 				
-			case GuiIDs.GUI_Module_PassiveSupplier_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModulePassiveSupplier)) return null;
-				return new GuiPassiveSupplier(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModulePassiveSupplier) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule(), FMLClientHandler.instance().getClient().currentScreen);
-				
 			case GuiIDs.GUI_Module_Provider_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleProvider)) return null;
 				return new GuiProvider(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleProvider) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule(), FMLClientHandler.instance().getClient().currentScreen, 0);
@@ -987,20 +952,6 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_Module_FluidSupplier_ID:
 				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleFluidSupplier)) return null;
 				return new GuiFluidSupplier(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleFluidSupplier) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot), FMLClientHandler.instance().getClient().currentScreen);
-				
-			case GuiIDs.GUI_Module_PassiveSupplier_ID:
-				if(slot >= 0) {
-					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModulePassiveSupplier)) return null;
-					return new GuiPassiveSupplier(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModulePassiveSupplier) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot), FMLClientHandler.instance().getClient().currentScreen);
-				} else {
-					ItemStack item = player.inventory.mainInventory[z];
-					if(item == null) return null;
-					LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, null, null);
-					module.registerSlot(-1-z);
-					ItemModuleInformationManager.readInformation(item, module);
-					if(!(module instanceof ModulePassiveSupplier)) return null;
-					return new GuiPassiveSupplier(player.inventory, null, (ModulePassiveSupplier) module, null);	
-				}
 				
 			case GuiIDs.GUI_Module_Provider_ID:
 				if(slot >= 0) {

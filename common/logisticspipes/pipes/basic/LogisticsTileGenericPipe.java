@@ -38,12 +38,12 @@ import dan200.computer.api.IComputerAccess;
 import dan200.computer.api.ILuaContext;
 import dan200.computer.api.IPeripheral;
 
-@ModDependentInterface(modId={"ComputerCraft", "CoFHCore"}, interfacePath={"dan200.computer.api.IPeripheral", "cofh.api.transport.IItemConduit"})
+@ModDependentInterface(modId={"ComputerCraft@1.5", "CoFHCore"}, interfacePath={"dan200.computer.api.IPeripheral", "cofh.api.transport.IItemConduit"})
 public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeInformationProvider, IPeripheral, IItemConduit {
 
 	public boolean turtleConnect[] = new boolean[7];
 	
-	@ModDependentField(modId="ComputerCraft")
+	@ModDependentField(modId="ComputerCraft@1.5")
 	public HashMap<IComputerAccess, ForgeDirection> connections;
 	
 	private boolean init = false;
@@ -51,7 +51,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	private Map<Integer, Method> commands = new LinkedHashMap<Integer, Method>();
 	private String typeName = "";
 
-	@ModDependentField(modId="ComputerCraft")
+	@ModDependentField(modId="ComputerCraft@1.5")
 	public IComputerAccess lastPC;
 
 	@ModDependentField(modId="ThermalExpansion")
@@ -166,14 +166,14 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	}
 	
 	@Override
-	@ModDependentMethod(modId="ComputerCraft")
+	@ModDependentMethod(modId="ComputerCraft@1.5")
 	public String getType() {
 		init();
 		return typeName;
 	}
 	
 	@Override
-	@ModDependentMethod(modId="ComputerCraft")
+	@ModDependentMethod(modId="ComputerCraft@1.5")
 	public String[] getMethodNames() {
 		init();
 		LinkedList<String> list = new LinkedList<String>();
@@ -187,7 +187,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	}
 
 	@Override
-	@ModDependentMethod(modId="ComputerCraft")
+	@ModDependentMethod(modId="ComputerCraft@1.5")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int methodId, Object[] arguments) throws Exception {
 		if(getCPipe() == null) throw new InternalError("Pipe is not a LogisticsPipe");
 		init();
@@ -484,14 +484,14 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	}
 
 	@Override
-	@ModDependentMethod(modId="ComputerCraft")
+	@ModDependentMethod(modId="ComputerCraft@1.5")
 	public boolean canAttachToSide(int side) {
 		//All Sides are valid
 		return true;
 	}
 
 	@Override
-	@ModDependentMethod(modId="ComputerCraft")
+	@ModDependentMethod(modId="ComputerCraft@1.5")
 	public void attach(IComputerAccess computer) {
 		ForgeDirection ori = SimpleServiceLocator.ccProxy.getOrientation(computer, this);
 		connections.put(computer, ori);
@@ -499,7 +499,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	}
 
 	@Override
-	@ModDependentMethod(modId="ComputerCraft")
+	@ModDependentMethod(modId="ComputerCraft@1.5")
 	public void detach(IComputerAccess computer) {
 		connections.remove(computer);
 	}

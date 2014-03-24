@@ -8,6 +8,7 @@ import java.util.Set;
 
 import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.utils.ModStatusHelper;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
@@ -153,7 +154,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 							throw new RuntimeException("The Arrays have to be of the same size.");
 						}
 						for(int i=0;i<modId.size();i++) {
-							if(!Loader.isModLoaded(modId.get(i))) {
+							if(!ModStatusHelper.isModLoaded(modId.get(i))) {
 								interfacesToClearA.add(interfacePath.get(i));
 								interfacesToClearB.add(interfacePath.get(i));
 								for(String inter:node.interfaces) {
@@ -178,7 +179,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 					if(a.desc.equals("Llogisticspipes/asm/ModDependentMethod;")) {
 						if(a.values.size() == 2 && a.values.get(0).equals("modId")) {
 							String modId = a.values.get(1).toString();
-							if(!Loader.isModLoaded(modId)) {
+							if(!ModStatusHelper.isModLoaded(modId)) {
 								methodsToRemove.add(m);
 								break;
 							}
@@ -211,7 +212,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 							String modId = a.values.get(1).toString();
 							final String newName = a.values.get(3).toString();
 							final String version = a.values.get(5).toString();
-							boolean loaded = Loader.isModLoaded(modId);
+							boolean loaded = ModStatusHelper.isModLoaded(modId);
 							if(loaded && !version.equals("")) {
 								ModContainer mod = Loader.instance().getIndexedModList().get(modId);
 								if(mod != null) {
@@ -257,7 +258,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 					if(a.desc.equals("Llogisticspipes/asm/ModDependentField;")) {
 						if(a.values.size() == 2 && a.values.get(0).equals("modId")) {
 							String modId = a.values.get(1).toString();
-							if(!Loader.isModLoaded(modId)) {
+							if(!ModStatusHelper.isModLoaded(modId)) {
 								fieldsToRemove.add(f);
 								break;
 							}

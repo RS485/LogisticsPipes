@@ -30,6 +30,7 @@ import logisticspipes.proxy.mps.ModularPowersuitsProxy;
 import logisticspipes.proxy.nei.NEIProxy;
 import logisticspipes.proxy.te.ThermalExpansionProxy;
 import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
+import logisticspipes.utils.ModStatusHelper;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
@@ -42,14 +43,13 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.transport.TravelingItem;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class ProxyManager {
 
 	public static void load() {
-		if(Loader.isModLoaded("Forestry")) {
+		if(ModStatusHelper.isModLoaded("Forestry")) {
 			SimpleServiceLocator.setForestryProxy(new ForestryProxy());
 			LogisticsPipes.log.info("Loaded ForestryProxy");
 		} else {
@@ -86,7 +86,7 @@ public class ProxyManager {
 			});
 			LogisticsPipes.log.info("Loaded Forestry DummyProxy");
 		}
-		if(Loader.isModLoaded("IC2")) {
+		if(ModStatusHelper.isModLoaded("IC2")) {
 			SimpleServiceLocator.setElectricItemProxy(new IC2Proxy());
 			LogisticsPipes.log.info("Loaded IC2Proxy");
 		} else {
@@ -104,8 +104,8 @@ public class ProxyManager {
 			});
 			LogisticsPipes.log.info("Loaded IC2 DummyProxy");
 		}
-		if(Loader.isModLoaded("ComputerCraft")) {
-			if(Loader.isModLoaded("CCTurtle")) {
+		if(ModStatusHelper.isModLoaded("ComputerCraft@1.5")) {
+			if(ModStatusHelper.isModLoaded("CCTurtle@1.5")) {
 				SimpleServiceLocator.setCCProxy(new CCTurtleProxy());
 				LogisticsPipes.log.info("Loaded CCTurtleProxy");
 			} else {
@@ -128,7 +128,7 @@ public class ProxyManager {
 			LogisticsPipes.log.info("Loaded CC DummyProxy");
 		}
 		
-		if(Loader.isModLoaded("Thaumcraft")) {
+		if(ModStatusHelper.isModLoaded("Thaumcraft")) {
 			SimpleServiceLocator.setThaumCraftProxy(new ThaumCraftProxy());
 			LogisticsPipes.log.info("Loaded Thaumcraft Proxy");
 		} else {
@@ -142,7 +142,7 @@ public class ProxyManager {
 			LogisticsPipes.log.info("Loaded Thaumcraft DummyProxy");
 		}
 		
-		if(Loader.isModLoaded("ThermalExpansion")) {
+		if(ModStatusHelper.isModLoaded("ThermalExpansion")) {
 			SimpleServiceLocator.setThermalExpansionProxy(new ThermalExpansionProxy());
 			LogisticsPipes.log.info("Loaded ThermalExpansion Proxy");
 		} else {
@@ -161,7 +161,7 @@ public class ProxyManager {
 			LogisticsPipes.log.info("Loaded ThermalExpansion DummyProxy");
 		}
 		
-		if(Loader.isModLoaded("betterstorage")) {
+		if(ModStatusHelper.isModLoaded("betterstorage")) {
 			SimpleServiceLocator.setBetterStorageProxy(new BetterStorageProxy());
 			LogisticsPipes.log.info("Loaded BetterStorage Proxy");
 		} else {
@@ -171,7 +171,7 @@ public class ProxyManager {
 			LogisticsPipes.log.info("Loaded BetterStorage DummyProxy");
 		}
 		
-		if(Loader.isModLoaded("NotEnoughItems")) {
+		if(ModStatusHelper.isModLoaded("NotEnoughItems")) {
 			SimpleServiceLocator.setNEIProxy(new NEIProxy());
 			LogisticsPipes.log.info("Loaded NotEnoughItems Proxy");
 		} else {
@@ -183,7 +183,7 @@ public class ProxyManager {
 			LogisticsPipes.log.info("Loaded NotEnoughItems DummyProxy");
 		}
 
-		if(Loader.isModLoaded("powersuits")) {
+		if(ModStatusHelper.isModLoaded("powersuits")) {
 			SimpleServiceLocator.setMPSProxy(new ModularPowersuitsProxy());
 			LogisticsPipes.log.info("Loaded Modular Powersuits Proxy");
 		} else {
@@ -213,7 +213,7 @@ public class ProxyManager {
 			LogisticsPipes.log.info("Loaded Modular Powersuits DummyProxy");
 		}
 		
-		if(Loader.isModLoaded("factorization")) {
+		if(ModStatusHelper.isModLoaded("factorization")) {
 			SimpleServiceLocator.setFactorizationProxy(new FactorizationProxy());
 			LogisticsPipes.log.info("Loaded Factorization Proxy");
 		} else {
@@ -223,7 +223,7 @@ public class ProxyManager {
 			LogisticsPipes.log.info("Loaded Factorization DummyProxy");
 		}
 		
-		if(Loader.isModLoaded("BetterSignsMod") && MainProxy.isClient()) {
+		if(ModStatusHelper.isModLoaded("BetterSignsMod") && MainProxy.isClient()) {
 			SimpleServiceLocator.setBetterSignProxy(new BetterSignProxy());
 			LogisticsPipes.log.info("Loaded BetterSign Proxy");
 		} else {
@@ -235,7 +235,7 @@ public class ProxyManager {
 			LogisticsPipes.log.info("Loaded BetterSign DummyProxy");
 		}
 
-		if(Loader.isModLoaded("EnderIO")) {
+		if(ModStatusHelper.isModLoaded("EnderIO")) {
 			SimpleServiceLocator.setEnderIOProxy(new EnderIOProxy());
 			LogisticsPipes.log.info("Loaded EnderIO Proxy");
 		} else {

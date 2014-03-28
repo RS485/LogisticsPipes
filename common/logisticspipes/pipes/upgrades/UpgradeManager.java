@@ -56,11 +56,15 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		inv.readFromNBT(nbttagcompound, "UpgradeInventory_");
 		InventoryChanged(inv);
+		sneakyInv.readFromNBT(nbttagcompound, "SneakyUpgradeInventory_");
+		InventoryChanged(sneakyInv);
 	}
 	
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		inv.writeToNBT(nbttagcompound, "UpgradeInventory_");
 		InventoryChanged(inv);
+		sneakyInv.writeToNBT(nbttagcompound, "SneakyUpgradeInventory_");
+		InventoryChanged(sneakyInv);
 	}
 
 	private boolean updateModule(int slot, IPipeUpgrade[] upgrades, IInventory inv) {
@@ -253,6 +257,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	
 	public void dropUpgrades() {
 		inv.dropContents(pipe.getWorld(), pipe.getX(), pipe.getY(), pipe.getZ());
+		sneakyInv.dropContents(pipe.getWorld(), pipe.getX(), pipe.getY(), pipe.getZ());
 	}
 
 	public boolean isSideDisconnected(ForgeDirection side) {

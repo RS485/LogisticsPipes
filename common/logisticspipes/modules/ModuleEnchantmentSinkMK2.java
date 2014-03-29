@@ -97,7 +97,7 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsGuiModule implements ICli
 		@Override
 		public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 			if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
-			if (_filterInventory.containsExcludeNBTItem(item.getIgnoringNBT())){
+			if (_filterInventory.containsExcludeNBTItem(item.getUndamaged().getIgnoringNBT())){
 				if(item.makeNormalStack(1).isItemEnchanted())
 				{
 					return _sinkReply;
@@ -189,6 +189,7 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsGuiModule implements ICli
 			List<ItemIdentifier> li= new ArrayList<ItemIdentifier>(mapIC.size());
 			li.addAll(mapIC.keySet());
 			for(ItemIdentifier id:mapIC.keySet()){
+				li.add(id.getUndamaged());
 				li.add(id.getUndamaged().getIgnoringNBT());
 			}
 			return li;
@@ -197,12 +198,11 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsGuiModule implements ICli
 		@Override
 		public boolean interestedInAttachedInventory() {		
 			return false;
-			// when we are default we are interested in everything anyway, otherwise we're only interested in our filter.
 		}
 
 		@Override
 		public boolean interestedInUndamagedID() {
-			return false;
+			return true;
 		}
 
 

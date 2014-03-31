@@ -214,7 +214,7 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsGuiModule implements ICli
 		@Override
 		@SideOnly(Side.CLIENT)
 		public Icon getIconTexture(IconRegister register) {
-			return register.registerIcon("logisticspipes:itemModule/ModuleEnchantmentSink");
+			return register.registerIcon("logisticspipes:itemModule/ModuleEnchantmentSinkMK2");
 		}
 		@Override
 		public boolean hasEffect() {

@@ -8,7 +8,7 @@
 
 package logisticspipes.gui.modules;
 
-import logisticspipes.modules.ModulePassiveSupplier;
+import logisticspipes.interfaces.IModuleSimpleFilter;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.utils.gui.DummyContainer;
@@ -18,15 +18,15 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiPassiveSupplier extends GuiWithPreviousGuiContainer {
+public class GuiSimpleFilter extends GuiWithPreviousGuiContainer {
 
-	private final ModulePassiveSupplier _supplier;
+	private final IModuleSimpleFilter _module;
 	
 	
-	public GuiPassiveSupplier(IInventory playerInventory, CoreRoutedPipe pipe, ModulePassiveSupplier supplier, GuiScreen previousGui) {
+	public GuiSimpleFilter(IInventory playerInventory, CoreRoutedPipe pipe, IModuleSimpleFilter module, GuiScreen previousGui) {
 		super(null,pipe,previousGui);
-		_supplier = supplier;
-		DummyContainer dummy = new DummyContainer(playerInventory, _supplier.getFilterInventory());
+		_module = module;
+		DummyContainer dummy = new DummyContainer(playerInventory, _module.getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 
 		//Pipe slots
@@ -41,12 +41,14 @@ public class GuiPassiveSupplier extends GuiWithPreviousGuiContainer {
 	
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		fontRenderer.drawString(_supplier.getFilterInventory().getInvName(), 8, 6, 0x404040);
+		fontRenderer.drawString(_module.getFilterInventory().getInvName(), 8, 6, 0x404040);
 		fontRenderer.drawString("Inventory", 8, ySize - 92, 0x404040);
 	}
+
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/itemsink.png");
+	
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {	
+	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {		
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(TEXTURE);
 		int j = guiLeft;
@@ -56,6 +58,6 @@ public class GuiPassiveSupplier extends GuiWithPreviousGuiContainer {
 
 	@Override
 	public int getGuiID() {
-		return GuiIDs.GUI_Module_PassiveSupplier_ID;
+		return GuiIDs.GUI_Module_Simple_Filter_ID;
 	}
 }

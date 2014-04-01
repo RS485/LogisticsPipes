@@ -948,6 +948,12 @@ outer:
 				s.set(r.getSimpleID());
 			}
 		}
+		specifics = _globalSpecificInterests.get(item.getUndamaged().getIgnoringNBT());
+		if(specifics != null){
+			for(IRouter r:specifics){
+				s.set(r.getSimpleID());
+			}
+		}
 		return s;
 	}
 

@@ -6,6 +6,7 @@ public final class SinkReply {
 		DefaultRoute,
 		ModBasedItemSink,
 		OreDictItemSink,
+		EnchantmentItemSink,
 		Terminus,
 		APIARIST_BeeSink,
 		APIARIST_Analyser,
@@ -14,7 +15,7 @@ public final class SinkReply {
 		ElectricBuffer,
 		ElectricManager,
 	}
-	
+
 	public final FixedPriority fixedPriority;
 	public final int customPriority;
 	public final boolean isPassive;

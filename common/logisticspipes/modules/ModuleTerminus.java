@@ -6,11 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import logisticspipes.api.IRoutedPowerProvider;
-import logisticspipes.gui.hud.modules.HUDTerminatorModule;
+import logisticspipes.gui.hud.modules.HUDSimpleFilterModule;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IModuleInventoryReceive;
+import logisticspipes.interfaces.IModuleSimpleFilter;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
@@ -35,18 +36,15 @@ import net.minecraft.util.Icon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ModuleTerminus extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive {
+public class ModuleTerminus extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive, IModuleSimpleFilter {
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Terminated items", 1);
-	
-
-
 
 	private int slot;
 	
 	private IRoutedPowerProvider _power;
 	
-	private IHUDModuleRenderer HUD = new HUDTerminatorModule(this);
+	private IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	
@@ -75,7 +73,7 @@ public class ModuleTerminus extends LogisticsGuiModule implements IClientInforma
 
 	@Override
 	public int getGuiHandlerID() {
-		return GuiIDs.GUI_Module_Terminus_ID;
+		return GuiIDs.GUI_Module_Simple_Filter_ID;
 	}
 	
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.Terminus, 0, true, false, 2, 0);

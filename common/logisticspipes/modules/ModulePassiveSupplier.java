@@ -6,12 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import logisticspipes.api.IRoutedPowerProvider;
-import logisticspipes.gui.hud.modules.HUDPassiveSupplier;
+import logisticspipes.gui.hud.modules.HUDSimpleFilterModule;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleInventoryReceive;
+import logisticspipes.interfaces.IModuleSimpleFilter;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
@@ -37,7 +38,7 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ModulePassiveSupplier extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
+public class ModulePassiveSupplier extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler, IModuleSimpleFilter {
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested items", 64);
 	private IInventoryProvider _invProvider;
@@ -47,7 +48,7 @@ public class ModulePassiveSupplier extends LogisticsGuiModule implements IClient
 
 
 	
-	private IHUDModuleRenderer HUD = new HUDPassiveSupplier(this);
+	private IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
 	
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	
@@ -87,7 +88,7 @@ public class ModulePassiveSupplier extends LogisticsGuiModule implements IClient
 
 	@Override
 	public int getGuiHandlerID() {
-		return GuiIDs.GUI_Module_PassiveSupplier_ID;
+		return GuiIDs.GUI_Module_Simple_Filter_ID;
 	}
 	
 	@Override

@@ -59,7 +59,7 @@ public class HUDPowerLevel extends BasicHUDGui implements IHeadUpDisplayRenderer
 
 	@Override
 	public boolean display(IHUDConfig config) {
-		return !junction.isInvalid() && config.isHUDPowerLevel();
+		return !junction.isHUDInvalid() && config.isHUDPowerLevel();
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.commands.abstracts.SubCommandHandler;
 import logisticspipes.commands.commands.debug.CloseCommand;
 import logisticspipes.commands.commands.debug.MeCommand;
+import logisticspipes.commands.commands.debug.RoutingTableCommand;
 import logisticspipes.commands.commands.debug.TargetCommand;
 import net.minecraft.command.ICommandSender;
 
@@ -33,5 +34,6 @@ public class DebugCommand extends SubCommandHandler {
 		this.registerSubCommands(new MeCommand());
 		this.registerSubCommands(new TargetCommand());
 		this.registerSubCommands(new CloseCommand());
+		this.registerSubCommands(new RoutingTableCommand());
 	}
 }

@@ -1,7 +1,5 @@
 package logisticspipes.network.packets.orderer;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,6 +8,8 @@ import logisticspipes.Configs;
 import logisticspipes.asm.ClientSideOnlyMethodContent;
 import logisticspipes.gui.orderer.GuiOrderer;
 import logisticspipes.gui.orderer.GuiRequestTable;
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import lombok.Getter;
@@ -57,7 +57,7 @@ public class MissingItems extends ModernPacket {
 		}
 	}
 	@Override
-	public void writeData(DataOutputStream data) throws IOException {
+	public void writeData(LPDataOutputStream data) throws IOException {
 		for(ItemIdentifierStack item:items) {
 			data.write(1);
 			item.write(data);
@@ -67,7 +67,7 @@ public class MissingItems extends ModernPacket {
 	}
 
 	@Override
-	public void readData(DataInputStream data) throws IOException {
+	public void readData(LPDataInputStream data) throws IOException {
 		while(data.read() != 0) {
 			items.add(ItemIdentifierStack.read(data));
 		}

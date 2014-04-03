@@ -14,6 +14,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import logisticspipes.interfaces.routing.IFilter;
+import logisticspipes.routing.debug.ExitRouteDebug;
 import net.minecraftforge.common.ForgeDirection;
 
 /**
@@ -28,7 +29,11 @@ public class ExitRoute implements Comparable<ExitRoute>{
 	public final IRouter destination;
 	public IRouter root;
 	public List<IFilter> filters = Collections.unmodifiableList(new ArrayList<IFilter>(0));
-	
+	/**
+	 * Used to store debug information. No use in the actual Routing table calculation
+	 */
+	public ExitRouteDebug debug = new ExitRouteDebug();
+
 	public ExitRoute(IRouter source, IRouter destination, ForgeDirection exitOrientation, ForgeDirection insertOrientation, int metric, EnumSet<PipeRoutingConnectionType> connectionDetails) {
 		this.destination = destination;
 		this.root = source;

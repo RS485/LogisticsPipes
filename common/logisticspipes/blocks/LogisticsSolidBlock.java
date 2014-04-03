@@ -2,7 +2,10 @@ package logisticspipes.blocks;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
+import logisticspipes.blocks.powertile.LogisticsBCPowerProviderTileEntity;
+import logisticspipes.blocks.powertile.LogisticsIC2PowerProviderTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
+import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.network.GuiIDs;
 import net.minecraft.block.BlockContainer;
@@ -25,8 +28,13 @@ public class LogisticsSolidBlock extends BlockContainer {
 	public static final int LOGISTICS_POWER_JUNCTION = 1;
 	public static final int LOGISTICS_SECURITY_STATION = 2;
 	public static final int LOGISTICS_AUTOCRAFTING_TABLE = 3;
+
+	//Power Provider
+	public static final int LOGISTICS_BC_POWERPROVIDER = 10;
+	public static final int LOGISTICS_RF_POWERPROVIDER = 11;
+	public static final int LOGISTICS_IC2_POWERPROVIDER = 12;
 	
-	private static final Icon[] icons = new Icon[13];
+	private static final Icon[] icons = new Icon[16];
 	
 	public LogisticsSolidBlock(int par1) {
 		super(par1, Material.iron);
@@ -55,20 +63,27 @@ public class LogisticsSolidBlock extends BlockContainer {
 			case LOGISTICS_AUTOCRAFTING_TABLE:
 				par5EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Auto_Crafting_ID, par1World, par2, par3, par4);
 				return true;
+			case LOGISTICS_BC_POWERPROVIDER:
+			case LOGISTICS_RF_POWERPROVIDER:
+			case LOGISTICS_IC2_POWERPROVIDER:
+				par5EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Power_Provider_ID, par1World, par2, par3, par4);
+				return true;
 				default:break;
 			}
 		}
 		return false;
 	}
-/*
- *TODO: does this code need fixing?
+
 	@Override
-	public void onBlockPlacedBy(World par1World, int par2, int par3, int par4, EntityLiving par5EntityLiving, ItemStack itemStack) {
-		super.onBlockPlacedBy(par1World, par2, par3, par4, par5EntityLiving, itemStack);
-		TileEntity tile = par1World.getBlockTileEntity(par2, par3, par4);
+	public void onBlockPlacedBy(World world, int posX, int posY, int posZ, EntityLivingBase entity, ItemStack itemStack) {
+		super.onBlockPlacedBy(world, posX, posY, posZ, entity, itemStack);
+		TileEntity tile = world.getBlockTileEntity(posX, posY, posZ);
+		if(tile instanceof LogisticsCraftingTableTileEntity) {
+			((LogisticsCraftingTableTileEntity)tile).placedBy(entity);
+		}
 		if(tile instanceof IRotationProvider) {
-			double x = tile.xCoord - par5EntityLiving.posX;
-			double z = tile.zCoord - par5EntityLiving.posZ;
+			double x = tile.xCoord - entity.posX;
+			double z = tile.zCoord - entity.posZ;
 			double w = Math.atan2(x, z);
 			double halfPI = Math.PI / 2;
 			double halfhalfPI = halfPI / 2;
@@ -86,7 +101,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 				((IRotationProvider)tile).setRotation(3);
 			}
 		}
-	}*/
+	}
 
 	@Override
 	public void breakBlock(World par1World, int par2, int par3, int par4, int par5, int par6) {
@@ -122,6 +137,12 @@ public class LogisticsSolidBlock extends BlockContainer {
 	    		return new LogisticsSecurityTileEntity();
 			case LOGISTICS_AUTOCRAFTING_TABLE:
 				return new LogisticsCraftingTableTileEntity();
+			case LOGISTICS_BC_POWERPROVIDER:
+				return new LogisticsBCPowerProviderTileEntity();
+			case LOGISTICS_RF_POWERPROVIDER:
+				return new LogisticsRFPowerProviderTileEntity();
+			case LOGISTICS_IC2_POWERPROVIDER:
+				return new LogisticsIC2PowerProviderTileEntity();
         	default: 
         		return null;
         }
@@ -134,6 +155,9 @@ public class LogisticsSolidBlock extends BlockContainer {
 		case LOGISTICS_POWER_JUNCTION:
 		case LOGISTICS_SECURITY_STATION:
 		case LOGISTICS_AUTOCRAFTING_TABLE:
+		case LOGISTICS_BC_POWERPROVIDER:
+		case LOGISTICS_RF_POWERPROVIDER:
+		case LOGISTICS_IC2_POWERPROVIDER:
 			return par1;
 		}
 		return super.damageDropped(par1);
@@ -153,10 +177,8 @@ public class LogisticsSolidBlock extends BlockContainer {
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerIcons(IconRegister par1IconRegister)
-	{
-		for(int i=0;i<13;i++)
-		{
+	public void registerIcons(IconRegister par1IconRegister) {
+		for(int i=0;i<16;i++) {
 			icons[i]=par1IconRegister.registerIcon("logisticspipes:lpsolidblock/"+i);
 		}
 	}
@@ -243,17 +265,35 @@ public class LogisticsSolidBlock extends BlockContainer {
 			default: //Front
 				return icons[10];
 			}
+		case LOGISTICS_BC_POWERPROVIDER:
+			switch (side) {
+			case 1: //TOP
+				return icons[13];
+			case 0: //Bottom
+				return icons[5];
+			default: //Front
+				return icons[6];
+			}
+		case LOGISTICS_RF_POWERPROVIDER:
+			switch (side) {
+			case 1: //TOP
+				return icons[14];
+			case 0: //Bottom
+				return icons[5];
+			default: //Front
+				return icons[6];
+			}
+		case LOGISTICS_IC2_POWERPROVIDER:
+			switch (side) {
+			case 1: //TOP
+				return icons[15];
+			case 0: //Bottom
+				return icons[5];
+			default: //Front
+				return icons[6];
+			}
 		default:
 			return icons[0];
 		}
-	}
-
-	@Override
-	public void onBlockPlacedBy(World par1World, int x, int y, int z, EntityLivingBase par5EntityLivingBase, ItemStack par6ItemStack) {
-		TileEntity tile = par1World.getBlockTileEntity(x, y, z);
-		if(tile instanceof LogisticsCraftingTableTileEntity) {
-			((LogisticsCraftingTableTileEntity)tile).placedBy(par5EntityLivingBase);
-		}
-		super.onBlockPlacedBy(par1World, x, y, z, par5EntityLivingBase, par6ItemStack);
 	}
 }

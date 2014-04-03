@@ -40,7 +40,7 @@ public class ModularPowersuitsProxy implements IModularPowersuitsProxy {
 	IHUDConfig dummy = new IHUDConfig() {
 		@Override public boolean isHUDSatellite() {return false;}
 		@Override public boolean isHUDProvider() {return false;}
-		@Override public boolean isHUDPowerJunction() {return false;}
+		@Override public boolean isHUDPowerLevel() {return false;}
 		@Override public boolean isHUDInvSysCon() {return false;}
 		@Override public boolean isHUDCrafting() {return false;}
 		@Override public boolean isHUDChassie() {return false;}

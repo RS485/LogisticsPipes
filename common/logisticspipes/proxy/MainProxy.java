@@ -12,6 +12,7 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.pipe.ParticleFX;
 import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
 import logisticspipes.proxy.interfaces.IProxy;
+import logisticspipes.routing.debug.RoutingTableDebugUpdateThread;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.utils.PlayerCollectionList;
 import net.minecraft.client.Minecraft;
@@ -51,7 +52,7 @@ public class MainProxy {
         if(SimpleServiceLocator.ccProxy != null && SimpleServiceLocator.ccProxy.isLuaThread(thr)) {
         	return Side.SERVER;
         }
-        if ((thr instanceof ThreadMinecraftServer) || (thr instanceof ServerListenThread) || (thr instanceof RoutingTableUpdateThread))
+        if ((thr instanceof ThreadMinecraftServer) || (thr instanceof ServerListenThread) || (thr instanceof RoutingTableUpdateThread) || (thr instanceof RoutingTableDebugUpdateThread))
         {
             return Side.SERVER;
         }

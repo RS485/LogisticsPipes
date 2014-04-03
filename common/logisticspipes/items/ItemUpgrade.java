@@ -11,6 +11,7 @@ import logisticspipes.pipes.upgrades.FluidCraftingUpgrade;
 import logisticspipes.pipes.upgrades.FuzzyCraftingUpgrade;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
 import logisticspipes.pipes.upgrades.PatternUpgrade;
+import logisticspipes.pipes.upgrades.PowerTransportationUpgrade;
 import logisticspipes.pipes.upgrades.SpeedUpgrade;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeDOWN;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeEAST;
@@ -18,6 +19,12 @@ import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeNORTH;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeSOUTH;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeUP;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeWEST;
+import logisticspipes.pipes.upgrades.power.BCPowerSupplierUpgrade;
+import logisticspipes.pipes.upgrades.power.IC2EVPowerSupplierUpgrade;
+import logisticspipes.pipes.upgrades.power.IC2HVPowerSupplierUpgrade;
+import logisticspipes.pipes.upgrades.power.IC2LVPowerSupplierUpgrade;
+import logisticspipes.pipes.upgrades.power.IC2MVPowerSupplierUpgrade;
+import logisticspipes.pipes.upgrades.power.RFPowerSupplierUpgrade;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeDOWN;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeEAST;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeNORTH;
@@ -57,6 +64,15 @@ public class ItemUpgrade extends LogisticsItem {
 	public static final int CRAFTING_BYPRODUCT_EXTRACTOR = 23;
 	public static final int SUPPLIER_PATTERN = 24;
 	public static final int FUZZY_CRAFTING = 25;
+	
+	//Power Upgrades
+	public static final int POWER_TRANSPORTATION = 30;
+	public static final int POWER_BC_SUPPLIER = 31;
+	public static final int POWER_RF_SUPPLIER = 32;
+	public static final int POWER_IC2_LV_SUPPLIER = 33;
+	public static final int POWER_IC2_MV_SUPPLIER = 34;
+	public static final int POWER_IC2_HV_SUPPLIER = 35;
+	public static final int POWER_IC2_EV_SUPPLIER = 36;
 	
 	//Values
 	public static final int MAX_LIQUID_CRAFTER = 3;
@@ -139,6 +155,13 @@ public class ItemUpgrade extends LogisticsItem {
 		registerUpgrade(CRAFTING_BYPRODUCT_EXTRACTOR, "Crafting Byproduct Extraction Upgrade", CraftingByproductUpgrade.class, 16);
 		registerUpgrade(SUPPLIER_PATTERN, "Placement Rules Upgrade", PatternUpgrade.class, 17);
 		registerUpgrade(FUZZY_CRAFTING, "Fuzzy Crafting Upgrade", FuzzyCraftingUpgrade.class, 18);
+		registerUpgrade(POWER_TRANSPORTATION, "Power Transportation Upgrade", PowerTransportationUpgrade.class, 19);
+		registerUpgrade(POWER_BC_SUPPLIER, "BC Power Supplier Upgrade", BCPowerSupplierUpgrade.class, 20);
+		registerUpgrade(POWER_RF_SUPPLIER, "TE Power Supplier Upgrade", RFPowerSupplierUpgrade.class, 21);
+		registerUpgrade(POWER_IC2_LV_SUPPLIER, "IC2 LV Power Supplier Upgrade", IC2LVPowerSupplierUpgrade.class, 22);
+		registerUpgrade(POWER_IC2_MV_SUPPLIER, "IC2 MV Power Supplier Upgrade", IC2MVPowerSupplierUpgrade.class, 23);
+		registerUpgrade(POWER_IC2_HV_SUPPLIER, "IC2 HV Power Supplier Upgrade", IC2HVPowerSupplierUpgrade.class, 24);
+		registerUpgrade(POWER_IC2_EV_SUPPLIER, "IC2 EV Power Supplier Upgrade", IC2EVPowerSupplierUpgrade.class, 25);
 	}
 	
 	public void registerUpgrade(int id, String name, Class<? extends IPipeUpgrade> moduleClass, int textureId) {
@@ -208,7 +231,7 @@ public class ItemUpgrade extends LogisticsItem {
 
 	@Override
 	public void registerIcons(IconRegister par1IconRegister) {
-		icons=new Icon[19];
+		icons=new Icon[26];
 		icons[0]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyUP");
 		icons[1]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyDOWN");
 		icons[2]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyNORTH");
@@ -231,6 +254,13 @@ public class ItemUpgrade extends LogisticsItem {
 		icons[16]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/CraftingByproduct");
 		icons[17]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/PlacementRules");
 		icons[18]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/FuzzyCrafting");
+		icons[19]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransport");
+		icons[20]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportBC");
+		icons[21]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportTE");
+		icons[22]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-LV");
+		icons[23]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-MV");
+		icons[24]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-HV");
+		icons[25]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-EV");
 	}
 
 	@Override

@@ -1,8 +1,8 @@
 package logisticspipes.gui.hud;
 
-import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
+import logisticspipes.interfaces.IPowerLevelDisplay;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
@@ -10,11 +10,11 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-public class HUDPowerJunction extends BasicHUDGui implements IHeadUpDisplayRenderer {
+public class HUDPowerLevel extends BasicHUDGui implements IHeadUpDisplayRenderer {
 	
-	private final LogisticsPowerJunctionTileEntity junction;
+	private final IPowerLevelDisplay junction;
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/power_junction.png");
-	public HUDPowerJunction(LogisticsPowerJunctionTileEntity junction) {
+	public HUDPowerLevel(IPowerLevelDisplay junction) {
 		this.junction = junction;
 	}
 	
@@ -40,8 +40,8 @@ public class HUDPowerJunction extends BasicHUDGui implements IHeadUpDisplayRende
 		int level = 100 - junction.getChargeState();
 		drawTexturedModalRect(-49, -29 + (level * 59 / 100), 176, level * 59 / 100, 5, 59 - (level * 59 / 100));
 		mc.fontRenderer.drawString("Stored Energy:", -30, -15, 0x404040);
-		mc.fontRenderer.drawString(""+junction.getPowerLevel() + " LP", -30, -5, 0x404040);
-		mc.fontRenderer.drawString("/ "+junction.MAX_STORAGE + " LP", -30, 5, 0x404040);
+		mc.fontRenderer.drawString(BasicGuiHelper.getStringWithSpacesFromInteger(junction.getDisplayPowerLevel()) + " " + junction.getBrand(), -30, -5, 0x404040);
+		mc.fontRenderer.drawString("/ "+BasicGuiHelper.getStringWithSpacesFromInteger(junction.getMaxStorage()) + " " + junction.getBrand(), -30, 5, 0x404040);
 		GL11.glTranslatef(0.0F, 0.0F, 0.0015F);
 	}
 
@@ -59,7 +59,7 @@ public class HUDPowerJunction extends BasicHUDGui implements IHeadUpDisplayRende
 
 	@Override
 	public boolean display(IHUDConfig config) {
-		return !junction.isInvalid() && config.isHUDPowerJunction();
+		return !junction.isInvalid() && config.isHUDPowerLevel();
 	}
 
 	@Override

@@ -18,19 +18,23 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import logisticspipes.api.ILogisticsPowerProvider;
+import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.routing.IDirectRoutingConnection;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IPaintPath;
 import logisticspipes.routing.LaserData;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.utils.OneList;
+import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.transport.TileGenericPipe;
 
@@ -99,8 +103,9 @@ public class PathFinder {
 	private final HashMap<LPPosition, Integer> distances;
 	private final IPaintPath pathPainter;
 	private int pipesVisited;
-	
+
 	public List<Pair<ILogisticsPowerProvider,List<IFilter>>> powerNodes;
+	public List<Pair<ISubSystemPowerProvider,List<IFilter>>> subPowerProvider;
 	public HashMap<CoreRoutedPipe, ExitRoute> result;
 	
 	private HashMap<CoreRoutedPipe, ExitRoute> getConnectedRoutingPipes(IPipeInformationProvider startPipe, EnumSet<PipeRoutingConnectionType> connectionFlags, ForgeDirection side) {
@@ -136,6 +141,10 @@ public class PathFinder {
 			int size = 0;
 			for(Integer dis:distances.values()) {
 				size += dis;
+			}
+			
+			if(!rp.getUpgradeManager().hasPowerPassUpgrade()) {
+				connectionFlags.remove(PipeRoutingConnectionType.canPowerSubSystemFrom);
 			}
 			
 			foundPipes.put(rp, new ExitRoute(null,rp.getRouter(), ForgeDirection.UNKNOWN, side.getOpposite(), Math.max(1, size), connectionFlags));
@@ -175,15 +184,28 @@ public class PathFinder {
 			TileEntity tile = startPipe.getTile(direction);
 			
 			if (tile == null) continue;
-			if (root && tile instanceof ILogisticsPowerProvider) {
-				if(this.powerNodes==null) {
-					powerNodes = new ArrayList<Pair<ILogisticsPowerProvider,List<IFilter>>>();
+			if(OrientationsUtil.isSide(direction)) {
+				if (root && tile instanceof ILogisticsPowerProvider) {
+					if(this.powerNodes==null) {
+						powerNodes = new ArrayList<Pair<ILogisticsPowerProvider,List<IFilter>>>();
+					}
+					//If we are a FireWall pipe add our filter to the pipes
+					if(startPipe.isFirewallPipe()) {
+						powerNodes.add(new Pair<ILogisticsPowerProvider,List<IFilter>>((ILogisticsPowerProvider) tile, new OneList<IFilter>(startPipe.getFirewallFilter())));
+					} else {
+						powerNodes.add(new Pair<ILogisticsPowerProvider,List<IFilter>>((ILogisticsPowerProvider) tile, Collections.unmodifiableList(new ArrayList<IFilter>(0))));
+					}
 				}
-				//If we are a FireWall pipe add our filter to the pipes
-				if(startPipe.isFirewallPipe() && root) {
-					powerNodes.add(new Pair<ILogisticsPowerProvider,List<IFilter>>((ILogisticsPowerProvider) tile, new OneList<IFilter>(startPipe.getFirewallFilter())));
-				} else {
-					powerNodes.add(new Pair<ILogisticsPowerProvider,List<IFilter>>((ILogisticsPowerProvider) tile, Collections.unmodifiableList(new ArrayList<IFilter>(0))));
+				if(root && tile instanceof ISubSystemPowerProvider) {
+					if(this.subPowerProvider==null) {
+						subPowerProvider = new ArrayList<Pair<ISubSystemPowerProvider,List<IFilter>>>();
+					}
+					//If we are a FireWall pipe add our filter to the pipes
+					if(startPipe.isFirewallPipe()) {
+						subPowerProvider.add(new Pair<ISubSystemPowerProvider,List<IFilter>>((ISubSystemPowerProvider) tile, new OneList<IFilter>(startPipe.getFirewallFilter())));
+					} else {
+						subPowerProvider.add(new Pair<ISubSystemPowerProvider,List<IFilter>>((ISubSystemPowerProvider) tile, Collections.unmodifiableList(new ArrayList<IFilter>(0))));
+					}
 				}
 			}
 			connections.add(new Pair<TileEntity, ForgeDirection>(tile, direction));
@@ -204,6 +226,9 @@ public class PathFinder {
 						connections.add(new Pair<TileEntity, ForgeDirection>(pipe, direction));
 					}
 					continue;
+				}
+				if(!startPipe.getRoutingPipe().getUpgradeManager().hasPowerPassUpgrade()) {
+					nextConnectionFlags.remove(PipeRoutingConnectionType.canPowerSubSystemFrom);
 				}
 			}
 			
@@ -228,8 +253,12 @@ public class PathFinder {
 					//Don't go where we have been before
 					continue;
 				}
+				if(side != pair.getValue2() && !root) { //Only straight connections for subsystem power
+					nextConnectionFlags.remove(PipeRoutingConnectionType.canPowerSubSystemFrom);
+				}
 				if(isDirectConnection) {  //ISC doesn't pass power
 					nextConnectionFlags.remove(PipeRoutingConnectionType.canPowerFrom);
+					nextConnectionFlags.remove(PipeRoutingConnectionType.canPowerSubSystemFrom);
 				}
 				//Iron, obsidean and liquid pipes will separate networks
 				if(currentPipe.divideNetwork()) {
@@ -245,6 +274,7 @@ public class PathFinder {
 					}
 				}
 				if(currentPipe.isOnewayPipe()) {
+					nextConnectionFlags.remove(PipeRoutingConnectionType.canPowerSubSystemFrom);
 					if(!currentPipe.isOutputOpen(direction.getOpposite())) {
 						nextConnectionFlags.remove(PipeRoutingConnectionType.canRequestFrom);
 						nextConnectionFlags.remove(PipeRoutingConnectionType.canPowerFrom);
@@ -293,5 +323,25 @@ public class PathFinder {
 			}
 		}
 		return foundPipes;
+	}
+
+	public static int messureDistanceToNextRoutedPipe(LPPosition lpPosition, ForgeDirection exitOrientation, World world) {
+		int dis = 1;
+		TileEntity tile = lpPosition.getTileEntity(world);
+		if(tile instanceof LogisticsTileGenericPipe) {
+			tile = ((LogisticsTileGenericPipe)tile).getTile(exitOrientation);
+		}
+		if(tile == null) return 0;
+		IPipeInformationProvider info = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(tile);
+		while(info != null && !info.isRoutingPipe()) {
+			tile = info.getTile(exitOrientation);
+			if(tile == null) {
+				info = null;
+				continue;
+			}
+			info = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(tile);
+			dis++;
+		}
+		return dis;
 	}
 }

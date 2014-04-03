@@ -28,6 +28,7 @@ import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.interfaces.ISecurityProvider;
+import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
@@ -77,6 +78,7 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.crash.CrashReportCategory;
@@ -112,6 +114,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	}
 
 	protected boolean stillNeedReplace = true;
+	public boolean debugThisPipe = false;
 	
 	protected IRouter router;
 	protected String routerId;
@@ -128,6 +131,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	private int cachedItemID = -1;
 	private boolean blockRemove = false;
 	private boolean destroyByPlayer = false;
+	private PowerSupplierHandler powerHandler = new PowerSupplierHandler(this);
 	
 	public long delayTo = 0;
 	public int repeatFor = 0;
@@ -320,7 +324,9 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	 * Only Called Server Side
 	 * Only Called when the pipe is enabled
 	 */
-	public void enabledUpdateEntity() {}
+	public void enabledUpdateEntity() {
+		powerHandler.update();
+	}
 	
 	/***
 	 * Called Server and Client Side
@@ -479,6 +485,9 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		System.out.println("~~~~~~~~~~~~~~~POWER~~~~~~~~~~~~~~~~");
 		System.out.println(r.getPowerProvider());
 		System.out.println();
+		System.out.println("~~~~~~~~~~~SUBSYSTEMPOWER~~~~~~~~~~~");
+		System.out.println(r.getSubSystemPowerProvider());
+		System.out.println();
 		System.out.println("################END#################");
 		refreshConnectionAndRender(true);
 		System.out.print("");
@@ -626,18 +635,50 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			return getCenterTexture();
 		} else if ((router != null) && getRouter().isRoutedExit(connection)) {
 			return getRoutedTexture(connection);
-			
 		} else {
-			return getNonRoutedTexture(connection);
+			TextureType texture = getNonRoutedTexture(connection);
+			if(this.getUpgradeManager().hasBCPowerSupplierUpgrade() || this.getUpgradeManager().hasRFPowerSupplierUpgrade() || this.getUpgradeManager().getIC2PowerLevel() > 0) {
+				if(texture == Textures.LOGISTICSPIPE_NOTROUTED_TEXTURE) {
+					texture = Textures.LOGISTICSPIPE_NOTROUTED_POWERED_TEXTURE;
+				} else if(texture == Textures.LOGISTICSPIPE_LIQUID_TEXTURE) {
+					texture = Textures.LOGISTICSPIPE_LIQUID_POWERED_TEXTURE;
+				} else if(texture == Textures.LOGISTICSPIPE_POWERED_TEXTURE) {
+					texture = Textures.LOGISTICSPIPE_POWERED_POWERED_TEXTURE;
+				} else {
+					System.out.println("Unknown texture to power, :" + texture.fileName);
+					System.out.println(this.getClass());
+					System.out.println(connection);
+				}
+			}
+			return texture;
 		}
 	}
 	
-	public TextureType getRoutedTexture(ForgeDirection connection){
-		return Textures.LOGISTICSPIPE_ROUTED_TEXTURE;
+	public TextureType getRoutedTexture(ForgeDirection connection) {
+		if(getRouter().isSubPoweredExit(connection)) {
+			return Textures.LOGISTICSPIPE_SUBPOWER_TEXTURE;
+		} else {
+			return Textures.LOGISTICSPIPE_ROUTED_TEXTURE;
+		}
 	}
 	
-	public TextureType getNonRoutedTexture(ForgeDirection connection){
+	public TextureType getNonRoutedTexture(ForgeDirection connection) {
+		if(isPowerProvider(connection)) {
+			return Textures.LOGISTICSPIPE_POWERED_TEXTURE;
+		}
 		return Textures.LOGISTICSPIPE_NOTROUTED_TEXTURE;
+	}
+
+	private boolean isPowerProvider(ForgeDirection ori) {
+		TileEntity tilePipe = this.container.getTile(ori);
+		if(tilePipe == null || !SimpleServiceLocator.buildCraftProxy.canPipeConnect(this.container, tilePipe, ori)) {
+			return false;
+		}
+
+		if(tilePipe instanceof ILogisticsPowerProvider || tilePipe instanceof ISubSystemPowerProvider) {
+			return true;
+		}
+		return false;
 	}
 	
 	@Override
@@ -1000,11 +1041,16 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	}
 	
 	@Override
-	public boolean useEnergy(int amount){
+	public boolean useEnergy(int amount) {
 		return useEnergy(amount, null, true);
 	}
+	
+	public boolean useEnergy(int amount, boolean sparkles) {
+		return useEnergy(amount, null, sparkles);
+	}
+
 	@Override
-	public boolean canUseEnergy(int amount){
+	public boolean canUseEnergy(int amount) {
 		return canUseEnergy(amount,null);
 	}
 
@@ -1346,7 +1392,27 @@ outer:
 	}
 	
 	final void destroy(){ // no overide, put code in OnBlockRemoval
-	
+		
 	}
-	
+
+	public void handleBCPowerArival(float toSend) {
+		powerHandler.addBCPower(toSend);
+	}
+
+	public void handleRFPowerArival(float toSend) {
+		powerHandler.addRFPower(toSend);
+	}
+
+	public void handleIC2PowerArival(float toSend) {
+		powerHandler.addIC2Power(toSend);
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + " (" + this.getX() + ", " + this.getY() + ", " + this.getZ() + ")";
+	}
+
+	public LPPosition getLPPosition() {
+		return new LPPosition(this);
+	}
 }

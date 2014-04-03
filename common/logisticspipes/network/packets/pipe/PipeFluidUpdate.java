@@ -1,11 +1,11 @@
 package logisticspipes.network.packets.pipe;
 
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.BitSet;
 
-import logisticspipes.network.BitSetHelper;
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -38,17 +38,17 @@ public class PipeFluidUpdate extends CoordinatesPacket {
 	private DataInputStream dataStream;
 	
 	@Override
-	public void readData(DataInputStream data) throws IOException {
+	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);
-		delta = BitSetHelper.read(data);
+		delta = data.readBitSet();
 		this.setDataStream(data);
 	}
 
 	@Override
-	public void writeData(DataOutputStream data) throws IOException {
+	public void writeData(LPDataOutputStream data) throws IOException {
 		super.writeData(data);
 
-		BitSetHelper.write(data, delta);
+		data.writeBitSet(delta);
 
 		for (ForgeDirection dir : ForgeDirection.values()) {
 			FluidStack liquid = renderCache[dir.ordinal()];

@@ -1,0 +1,43 @@
+package logisticspipes.gui;
+
+import logisticspipes.blocks.powertile.LogisticsPowerProviderTileEntity;
+import logisticspipes.network.GuiIDs;
+import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
+
+import org.lwjgl.opengl.GL11;
+
+public class GuiPowerProvider extends KraphtBaseGuiScreen {
+
+	private final LogisticsPowerProviderTileEntity junction;
+	
+	public GuiPowerProvider(EntityPlayer player, LogisticsPowerProviderTileEntity junction) {
+		super(176, 166, 0, 0);
+		this.inventorySlots = junction.createContainer(player);
+		this.junction = junction;
+	}
+
+	@Override
+	public int getGuiID() {
+		return GuiIDs.GUI_Power_Provider_ID;
+	}
+	
+	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/power_junction.png");
+
+	@Override
+	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		mc.renderEngine.bindTexture(TEXTURE);
+		int j = guiLeft;
+		int k = guiTop;
+		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
+		int level = 100 - junction.getChargeState();
+		drawTexturedModalRect(j + 10, k + 11 + (level * 59 / 100), 176, level * 59 / 100, 5, 59 - (level * 59 / 100));
+		mc.fontRenderer.drawString("Logistics " + junction.getBrand() + " Power Provider", guiLeft + 25, guiTop + 8, 0x404040);
+		mc.fontRenderer.drawString("Stored Energy:", guiLeft + 40, guiTop + 25, 0x404040);
+		mc.fontRenderer.drawString(BasicGuiHelper.getStringWithSpacesFromInteger(junction.getDisplayPowerLevel()) + " " + junction.getBrand(), guiLeft + 40, guiTop + 35, 0x404040);
+		mc.fontRenderer.drawString("/ " + BasicGuiHelper.getStringWithSpacesFromInteger(junction.getMaxStorage()) + " " + junction.getBrand(), guiLeft + 40, guiTop + 45, 0x404040);
+	}
+}

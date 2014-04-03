@@ -48,7 +48,7 @@ public class GuiHUDSettings extends KraphtBaseGuiScreen {
 			this.buttonList.add(new GuiCheckBox(0, guiLeft + 30, guiTop +  10, 12, 12, config.isHUDChassie()));
 			this.buttonList.add(new GuiCheckBox(1, guiLeft + 30, guiTop +  30, 12, 12, config.isHUDCrafting()));
 			this.buttonList.add(new GuiCheckBox(2, guiLeft + 30, guiTop +  50, 12, 12, config.isHUDInvSysCon()));
-			this.buttonList.add(new GuiCheckBox(3, guiLeft + 30, guiTop +  70, 12, 12, config.isHUDPowerJunction()));
+			this.buttonList.add(new GuiCheckBox(3, guiLeft + 30, guiTop +  70, 12, 12, config.isHUDPowerLevel()));
 			this.buttonList.add(new GuiCheckBox(4, guiLeft + 30, guiTop +  90, 12, 12, config.isHUDProvider()));
 			this.buttonList.add(new GuiCheckBox(5, guiLeft + 30, guiTop + 110, 12, 12, config.isHUDSatellite()));
 		} else {

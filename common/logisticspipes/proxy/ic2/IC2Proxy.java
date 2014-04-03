@@ -2,6 +2,7 @@ package logisticspipes.proxy.ic2;
 
 import ic2.api.energy.event.EnergyTileLoadEvent;
 import ic2.api.energy.event.EnergyTileUnloadEvent;
+import ic2.api.energy.tile.IEnergySink;
 import ic2.api.energy.tile.IEnergyTile;
 import ic2.api.item.IElectricItem;
 import ic2.api.item.Items;
@@ -13,9 +14,11 @@ import logisticspipes.proxy.interfaces.IIC2Proxy;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.MinecraftForge;
 import buildcraft.BuildCraftCore;
 import buildcraft.BuildCraftSilicon;
+import buildcraft.transport.TileGenericPipe;
 
 
 public class IC2Proxy implements IIC2Proxy {
@@ -224,4 +227,24 @@ public class IC2Proxy implements IIC2Proxy {
 	@Override
 	public boolean hasIC2() {
 		return true;
+	}
+
+	@Override
+	public boolean acceptsEnergyFrom(TileEntity energy, TileEntity tile , ForgeDirection opposite) {
+		return ((IEnergySink)energy).acceptsEnergyFrom(tile, opposite);
+	}
+
+	@Override
+	public boolean isEnergySink(TileEntity tile) {
+		return tile instanceof IEnergySink;
+	}
+
+	@Override
+	public double demandedEnergyUnits(TileEntity tile) {
+		return ((IEnergySink)tile).demandedEnergyUnits();
+	}
+
+	@Override
+	public double injectEnergyUnits(TileEntity tile, ForgeDirection opposite, double d) {
+		return ((IEnergySink)tile).injectEnergyUnits(opposite, d);
 	}}

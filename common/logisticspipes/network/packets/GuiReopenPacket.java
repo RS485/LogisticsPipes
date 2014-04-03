@@ -1,10 +1,10 @@
 package logisticspipes.network.packets;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import lombok.Getter;
@@ -20,13 +20,13 @@ public class GuiReopenPacket extends CoordinatesPacket {
 	private int guiID;
 	
 	@Override
-	public void writeData(DataOutputStream data) throws IOException {
+	public void writeData(LPDataOutputStream data) throws IOException {
 		super.writeData(data);
 		data.writeInt(getGuiID());
 	}
 	
 	@Override
-	public void readData(DataInputStream data) throws IOException {
+	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);
 		guiID = data.readInt();
 	}

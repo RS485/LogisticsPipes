@@ -35,16 +35,6 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 			@Override
 			public boolean canPipeConnect(TileEntity tile, ForgeDirection dir) {
 				if(super.canPipeConnect(tile, dir)) return true;
-				if(tile instanceof ILogisticsPowerProvider) {
-					ForgeDirection ori = OrientationsUtil.getOrientationOfTilewithPipe(this, tile);
-					if(ori == null || ori == ForgeDirection.UNKNOWN) {
-						return false;
-					}
-					if(tile instanceof LogisticsPowerJunctionTileEntity && (ori == ForgeDirection.DOWN || ori == ForgeDirection.UP)) {
-						return false;
-					}
-					return true;
-				}
 				if(tile instanceof LogisticsSecurityTileEntity) {
 					ForgeDirection ori = OrientationsUtil.getOrientationOfTilewithPipe(this, tile);
 					if(ori == null || ori == ForgeDirection.UNKNOWN || ori == ForgeDirection.DOWN || ori == ForgeDirection.UP) {
@@ -61,9 +51,6 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 
 	@Override
 	public TextureType getNonRoutedTexture(ForgeDirection connection) {
-		if(isPowerProvider(connection)) {
-			return Textures.LOGISTICSPIPE_POWERED_TEXTURE;
-		}
 		if(isSecurityProvider(connection)) {
 			return Textures.LOGISTICSPIPE_SECURITY_TEXTURE;
 		}
@@ -85,18 +72,6 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 		}
 
 		if(tilePipe instanceof LogisticsPowerJunctionTileEntity) {
-			return true;
-		}
-		return false;
-	}
-
-	private boolean isPowerProvider(ForgeDirection ori) {
-		TileEntity tilePipe = this.container.getTile(ori);
-		if(tilePipe == null || !SimpleServiceLocator.buildCraftProxy.canPipeConnect(this.container, tilePipe, ori)) {
-			return false;
-		}
-
-		if(tilePipe instanceof ILogisticsPowerProvider) {
 			return true;
 		}
 		return false;
@@ -141,9 +116,6 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 		}
 	}
 */
-	private boolean isSideOrientation(ForgeDirection ori) {
-		return ori == ForgeDirection.EAST || ori == ForgeDirection.WEST || ori == ForgeDirection.SOUTH || ori == ForgeDirection.NORTH;
-	}
 
 	@Override
 	public void setTile(TileEntity tile) {

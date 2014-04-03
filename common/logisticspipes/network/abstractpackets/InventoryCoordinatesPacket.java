@@ -1,13 +1,12 @@
 package logisticspipes.network.abstractpackets;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import logisticspipes.network.SendNBTTagCompound;
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import lombok.Getter;
@@ -40,7 +39,7 @@ public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(DataOutputStream data) throws IOException {
+	public void writeData(LPDataOutputStream data) throws IOException {
 		super.writeData(data);
 		if(inventory != null) {
 			data.writeByte(0);
@@ -76,7 +75,7 @@ public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void readData(DataInputStream data) throws IOException {
+	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);
 		byte mode = data.readByte();
 		if(mode == 0) {
@@ -98,18 +97,18 @@ public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
 		}
 	}
 	
-	private void sendItemStack(ItemStack itemstack, DataOutputStream data) throws IOException {
+	private void sendItemStack(ItemStack itemstack, LPDataOutputStream data) throws IOException {
 		if (itemstack != null) {
 			data.writeInt(itemstack.itemID);
 			data.writeInt(itemstack.stackSize);
 			data.writeInt(itemstack.getItemDamage());
-			SendNBTTagCompound.writeNBTTagCompound(itemstack.getTagCompound(), data);
+			data.writeNBTTagCompound(itemstack.getTagCompound());
 		} else {
 			data.writeInt(0);
 		}
 	}
 	
-	private void sendItemIdentifierStack(ItemIdentifierStack item, DataOutputStream data) throws IOException {
+	private void sendItemIdentifierStack(ItemIdentifierStack item, LPDataOutputStream data) throws IOException {
 		if (item != null) {
 			item.write(data);
 		} else {
@@ -117,7 +116,7 @@ public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
 		}
 	}
 	
-	private ItemStack readItemStack(DataInputStream data) throws IOException {
+	private ItemStack readItemStack(LPDataInputStream data) throws IOException {
 		final int itemID = data.readInt();
 		if (itemID == 0) {
 			return null;
@@ -125,19 +124,19 @@ public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
 			int stackSize = data.readInt();
 			int damage = data.readInt();
 			ItemStack stack = new ItemStack(itemID, stackSize, damage);
-			stack.setTagCompound(SendNBTTagCompound.readNBTTagCompound(data));
+			stack.setTagCompound(data.readNBTTagCompound());
 			return stack;
 		}
 	}
 	
-	private ItemIdentifierStack readItemIdentifierStack(DataInputStream data) throws IOException {
+	private ItemIdentifierStack readItemIdentifierStack(LPDataInputStream data) throws IOException {
 		final int itemID = data.readInt();
 		if (itemID == 0) {
 			return null;
 		} else {
 			int stackSize = data.readInt();
 			int damage = data.readInt();
-			NBTTagCompound tag = SendNBTTagCompound.readNBTTagCompound(data);
+			NBTTagCompound tag = data.readNBTTagCompound();
 			return new ItemIdentifierStack(ItemIdentifier.get(itemID, damage, tag), stackSize);
 		}
 	}

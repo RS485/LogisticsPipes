@@ -15,6 +15,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
+import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatMessageComponent;
@@ -28,6 +29,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	private boolean blockSorting = false;
 	private boolean blockPower = true;
 	private boolean isBlocking = true;
+	private IFilter filter = null;
 	
 	public PipeItemsFirewall(int itemID) {
 		super(itemID);
@@ -86,37 +88,55 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	}
 	
 	public IFilter getFilter() {
-		return new IFilter() {
-			@Override
-			public boolean isBlocked() {
-				return isBlocking;
-			}
+		if(filter == null) {
+			filter = new IFilter() {
+				@Override
+				public boolean isBlocked() {
+					return isBlocking;
+				}
+	
+				@Override
+				public boolean isFilteredItem(ItemIdentifier item) {
+					return inv.containsUndamagedItem(item);
+				}
+	
+				@Override
+				public boolean blockProvider() {
+					return blockProvider;
+				}
+	
+				@Override
+				public boolean blockCrafting() {
+					return blockCrafer;
+				}
+	
+				@Override
+				public boolean blockRouting() {
+					return blockSorting;
+				}
+	
+				@Override
+				public boolean blockPower() {
+					return blockPower;
+				}
+	
+				@Override
+				public int hashCode() {
+					return PipeItemsFirewall.this.hashCode();
+				}
 
-			@Override
-			public boolean isFilteredItem(ItemIdentifier item) {
-				return inv.containsUndamagedItem(item);
-			}
+				@Override
+				public String toString() {
+					return super.toString() + " (" + PipeItemsFirewall.this.getX() + ", " + PipeItemsFirewall.this.getY() + ", " + PipeItemsFirewall.this.getZ() + ")";
+				}
 
-			@Override
-			public boolean blockProvider() {
-				return blockProvider;
-			}
-
-			@Override
-			public boolean blockCrafting() {
-				return blockCrafer;
-			}
-
-			@Override
-			public boolean blockRouting() {
-				return blockSorting;
-			}
-
-			@Override
-			public boolean blockPower() {
-				return blockPower;
-			}
-		};
+				@Override
+				public LPPosition getLPPosition() {
+					return PipeItemsFirewall.this.getLPPosition();
+				}
+			};
+		}
+		return filter;
 	}
 
 	public boolean isBlockProvider() {

@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -60,7 +58,6 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 	private RenderBlocks renderBlocks = new RenderBlocks();
 	
 	private class DisplayFluidList {
-
 		public int[] sideHorizontal = new int[LIQUID_STAGES];
 		public int[] sideVertical = new int[LIQUID_STAGES];
 		public int[] centerHorizontal = new int[LIQUID_STAGES];
@@ -81,20 +78,6 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 		if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
 			renderCraftingPipe((PipeItemsCraftingLogistics) pipe.pipe, x, y, z);
 		}
-		if(pipe.pipe instanceof PipeBlockRequestTable) {
-			try {
-				renderBlock((PipeBlockRequestTable) pipe.pipe, x, y, z);
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	private void renderBlock(PipeBlockRequestTable blockPipe, double x, double y, double z) {
-		GL11.glPushMatrix();
-		GL11.glTranslatef((float) x + 0.5F, (float) y + 0.5F, (float) z + 0.5F);
-		
-		GL11.glPopMatrix();
 	}
 	
 	private boolean needDistance(List<ForgeDirection> list) {

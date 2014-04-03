@@ -1,5 +1,6 @@
 package logisticspipes.commands.commands;
 
+import logisticspipes.commands.LogisticsPipesCommand;
 import logisticspipes.commands.abstracts.ICommandHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.RequestUpdateNamesPacket;
@@ -17,7 +18,7 @@ public class TransferNamesCommand implements ICommandHandler {
 	
 	@Override
 	public boolean isCommandUsableBy(ICommandSender sender) {
-		return sender instanceof Player;
+		return sender instanceof Player && LogisticsPipesCommand.isOP(sender);
 	}
 	
 	@Override

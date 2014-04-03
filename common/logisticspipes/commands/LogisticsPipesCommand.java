@@ -28,6 +28,11 @@ public class LogisticsPipesCommand extends CommandBase {
 	}
 
 	@Override
+	public boolean canCommandSenderUseCommand(ICommandSender par1iCommandSender) {
+		return true;
+	}
+
+	@Override
 	public String getCommandUsage(ICommandSender var1) {
 		return "/" + getCommandName() + " help";
 	}

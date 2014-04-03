@@ -101,6 +101,10 @@ public class ProxyManager {
 				@Override public boolean hasIC2() {return false;}
 				@Override public void registerToEneryNet(TileEntity tile) {}
 				@Override public void unregisterToEneryNet(TileEntity tile) {}
+				@Override public boolean acceptsEnergyFrom(TileEntity tile1, TileEntity tile2, ForgeDirection opposite) {return false;}
+				@Override public boolean isEnergySink(TileEntity tile) {return false;}
+				@Override public double demandedEnergyUnits(TileEntity tile) {return 0;}
+				@Override public double injectEnergyUnits(TileEntity tile, ForgeDirection opposite, double d) {return d;}
 			});
 			LogisticsPipes.log.info("Loaded IC2 DummyProxy");
 		}
@@ -157,6 +161,11 @@ public class ProxyManager {
 				@Override public void handleLPInternalConduitUpdate(LogisticsTileGenericPipe pipe) {}
 				@Override public boolean insertIntoConduit(TravelingItem arrivingItem, TileEntity tile, CoreRoutedPipe pipe) {return false;}
 				@Override public boolean isSideFree(TileEntity tile, int side) {return false;}
+				@Override public boolean isEnergyHandler(TileEntity tile) {return false;}
+				@Override public int getMaxEnergyStored(TileEntity tile, ForgeDirection opposite) {return 0;}
+				@Override public int getEnergyStored(TileEntity tile, ForgeDirection opposite) {return 0;}
+				@Override public boolean canInterface(TileEntity tile, ForgeDirection opposite) {return false;}
+				@Override public int receiveEnergy(TileEntity tile, ForgeDirection opposite, int i, boolean b) {return 0;}
 			});
 			LogisticsPipes.log.info("Loaded ThermalExpansion DummyProxy");
 		}
@@ -195,7 +204,7 @@ public class ProxyManager {
 					return new IHUDConfig() {
 						@Override public boolean isHUDSatellite() {return false;}
 						@Override public boolean isHUDProvider() {return false;}
-						@Override public boolean isHUDPowerJunction() {return false;}
+						@Override public boolean isHUDPowerLevel() {return false;}
 						@Override public boolean isHUDInvSysCon() {return false;}
 						@Override public boolean isHUDCrafting() {return false;}
 						@Override public boolean isHUDChassie() {return false;}

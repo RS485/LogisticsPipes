@@ -1,9 +1,9 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.MainProxy;
@@ -19,7 +19,7 @@ public class AskForOpenTarget extends ModernPacket {
 	}
 	
 	@Override
-	public void readData(DataInputStream data) throws IOException {}
+	public void readData(LPDataInputStream data) throws IOException {}
 
 	@Override
 	public void processPacket(EntityPlayer player) {
@@ -30,7 +30,7 @@ public class AskForOpenTarget extends ModernPacket {
 	}
 	
 	@Override
-	public void writeData(DataOutputStream data) throws IOException {}
+	public void writeData(LPDataOutputStream data) throws IOException {}
 	
 	@Override
 	public ModernPacket template() {

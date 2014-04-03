@@ -1,7 +1,5 @@
 package logisticspipes.network.packets.chassis;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 import logisticspipes.LogisticsPipes;
@@ -10,6 +8,8 @@ import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleProvider;
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -39,13 +39,13 @@ public class ChassisGUI extends CoordinatesPacket {
 	}
 	
 	@Override
-	public void writeData(DataOutputStream data) throws IOException {
+	public void writeData(LPDataOutputStream data) throws IOException {
 		data.writeInt(buttonID);
 		super.writeData(data);
 	}
 	
 	@Override
-	public void readData(DataInputStream data) throws IOException {
+	public void readData(LPDataInputStream data) throws IOException {
 		buttonID = data.readInt();
 		super.readData(data);
 	}

@@ -1,11 +1,11 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 
 import logisticspipes.interfaces.IInventoryUtil;
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
@@ -122,7 +122,7 @@ public class SlotFinderNumberPacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(DataOutputStream data) throws IOException {
+	public void writeData(LPDataOutputStream data) throws IOException {
 		super.writeData(data);
 		data.writeInt(inventorySlot);
 		data.writeInt(slot);
@@ -132,7 +132,7 @@ public class SlotFinderNumberPacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void readData(DataInputStream data) throws IOException {
+	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);
 		inventorySlot = data.readInt();
 		slot = data.readInt();

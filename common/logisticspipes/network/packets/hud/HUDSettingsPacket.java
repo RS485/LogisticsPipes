@@ -1,11 +1,11 @@
 package logisticspipes.network.packets.hud;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 import logisticspipes.hud.HUDConfig;
 import logisticspipes.interfaces.IHUDConfig;
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.SimpleServiceLocator;
 import lombok.Getter;
@@ -78,7 +78,7 @@ public class HUDSettingsPacket extends ModernPacket {
 				break;
 			case 3:
 				config.setHUDPowerJunction(state);
-				if(config.isHUDPowerJunction()) {
+				if(config.isHUDPowerLevel()) {
 					player.sendChatToPlayer(ChatMessageComponent.createFromText("Enabled Power Junction."));
 				} else {
 					player.sendChatToPlayer(ChatMessageComponent.createFromText("Disabled Power Junction."));
@@ -107,14 +107,14 @@ public class HUDSettingsPacket extends ModernPacket {
 	}
 
 	@Override
-	public void readData(DataInputStream data) throws IOException {
+	public void readData(LPDataInputStream data) throws IOException {
 		buttonId = data.readInt();
 		state = data.readBoolean();
 		slot = data.readInt();
 	}
 
 	@Override
-	public void writeData(DataOutputStream data) throws IOException {
+	public void writeData(LPDataOutputStream data) throws IOException {
 		data.writeInt(buttonId);
 		data.writeBoolean(state);
 		data.writeInt(slot);

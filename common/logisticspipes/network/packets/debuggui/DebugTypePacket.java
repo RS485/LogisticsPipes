@@ -2,14 +2,14 @@ package logisticspipes.network.packets.debuggui;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.ticks.DebugGuiTickHandler;
 import logisticspipes.ticks.DebugGuiTickHandler.VarType;
@@ -34,7 +34,7 @@ public class DebugTypePacket extends ModernPacket {
 	}
 	
 	@Override
-	public void readData(DataInputStream data) throws IOException {
+	public void readData(LPDataInputStream data) throws IOException {
 		int arraySize = data.readInt();
 		byte[] bytes = new byte[arraySize];
 		data.read(bytes);
@@ -63,7 +63,7 @@ public class DebugTypePacket extends ModernPacket {
 	}
 	
 	@Override
-	public void writeData(DataOutputStream data) throws IOException {
+	public void writeData(LPDataOutputStream data) throws IOException {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		ObjectOutput out = new ObjectOutputStream(bos);
 		out.writeObject(getToTransmit());

@@ -8,6 +8,7 @@ import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
+import logisticspipes.blocks.powertile.LogisticsPowerProviderTileEntity;
 import logisticspipes.gui.GuiCardManager;
 import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.gui.GuiCraftingPipe;
@@ -19,6 +20,7 @@ import logisticspipes.gui.GuiFreqCardContent;
 import logisticspipes.gui.GuiInvSysConnector;
 import logisticspipes.gui.GuiLogisticsCraftingTable;
 import logisticspipes.gui.GuiPowerJunction;
+import logisticspipes.gui.GuiPowerProvider;
 import logisticspipes.gui.GuiProviderPipe;
 import logisticspipes.gui.GuiRoutingStats;
 import logisticspipes.gui.GuiSatellitePipe;
@@ -433,6 +435,10 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_Power_Junction_ID:
 				if(!(tile instanceof LogisticsPowerJunctionTileEntity)) return null;
 				return ((LogisticsPowerJunctionTileEntity)tile).createContainer(player);
+
+			case GuiIDs.GUI_Power_Provider_ID:
+				if(!(tile instanceof LogisticsPowerProviderTileEntity)) return null;
+				return ((LogisticsPowerProviderTileEntity)tile).createContainer(player);
 				
 			case GuiIDs.GUI_HUD_Settings:
 				dummy = new DummyContainer(player.inventory, null);
@@ -879,6 +885,10 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_Power_Junction_ID:
 				if(!(tile instanceof LogisticsPowerJunctionTileEntity)) return null;
 				return new GuiPowerJunction(player, (LogisticsPowerJunctionTileEntity) tile);
+				
+			case GuiIDs.GUI_Power_Provider_ID:
+				if(!(tile instanceof LogisticsPowerProviderTileEntity)) return null;
+				return new GuiPowerProvider(player, (LogisticsPowerProviderTileEntity) tile);
 
 			case GuiIDs.GUI_HUD_Settings:
 				return new GuiHUDSettings(player, x);

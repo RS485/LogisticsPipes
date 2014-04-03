@@ -222,6 +222,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	
 	@Override
 	public void enabledUpdateEntity() {
+		super.enabledUpdateEntity();
 		
 		if(getWorld().getTotalWorldTime() % 6 == 0) {
 			updateInv(null);

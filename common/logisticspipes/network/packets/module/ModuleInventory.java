@@ -1,10 +1,10 @@
 package logisticspipes.network.packets.module;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 import logisticspipes.interfaces.IModuleInventoryReceive;
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.InventoryCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeLogisticsChassi;
@@ -43,13 +43,13 @@ public class ModuleInventory extends InventoryCoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(DataOutputStream data) throws IOException {
+	public void writeData(LPDataOutputStream data) throws IOException {
 		super.writeData(data);
 		data.writeInt(getSlot());
 	}
 
 	@Override
-	public void readData(DataInputStream data) throws IOException {
+	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);
 		setSlot(data.readInt());
 	}

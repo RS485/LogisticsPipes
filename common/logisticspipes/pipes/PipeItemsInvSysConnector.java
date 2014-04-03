@@ -70,6 +70,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	
 	@Override
 	public void enabledUpdateEntity() {
+		super.enabledUpdateEntity();
 		if(!init) {
 			if(hasConnectionUUID()) {
 				if(!SimpleServiceLocator.connectionManager.addDirectConnection(getConnectionUUID(), getRouter())) {

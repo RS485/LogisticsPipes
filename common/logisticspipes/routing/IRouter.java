@@ -13,10 +13,12 @@ import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.api.ILogisticsPowerProvider;
+import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraftforge.common.ForgeDirection;
 
@@ -28,8 +30,10 @@ public interface IRouter {
 	public void destroy();
 	public void update(boolean fullRefresh);
 	public void updateInterests(); // calls getInterests on the attached pipe, and updates the global cache.
-	
+
 	public boolean isRoutedExit(ForgeDirection connection);
+	public boolean isSubPoweredExit(ForgeDirection connection);
+	public int getDistanceToNextPowerPipe(ForgeDirection dir);
 	public boolean hasRoute(int id, boolean active, ItemIdentifier type);
 	public ForgeDirection getExitFor(int id, boolean active, ItemIdentifier type);
 	
@@ -44,8 +48,8 @@ public interface IRouter {
 	public LogisticsModule getLogisticsModule();
 	public void clearPipeCache();
 	
-	public IRouter getRouter(ForgeDirection insertOrientation);
 	public int getSimpleID();
+	public LPPosition getLPPosition();
 
 	/**
 	 * 
@@ -65,9 +69,12 @@ public interface IRouter {
 	
 	public void clearInterests();
 	public List<Pair<ILogisticsPowerProvider, List<IFilter>>> getPowerProvider();
+	public List<Pair<ISubSystemPowerProvider, List<IFilter>>> getSubSystemPowerProvider();
 	
 	public boolean isValidCache();
 	
 	//force-update LSA version in the network
 	public void forceLsaUpdate();
+	public List<ExitRoute> getRoutersOnSide(ForgeDirection direction);
+	public int getDimension();
 }

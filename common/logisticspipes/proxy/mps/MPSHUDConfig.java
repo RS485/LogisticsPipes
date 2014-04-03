@@ -37,7 +37,7 @@ public class MPSHUDConfig implements IHUDConfig {
 	}
 	
 	@Override
-	public boolean isHUDPowerJunction() {
+	public boolean isHUDPowerLevel() {
 		return configTag.getBoolean("HUDPowerJunction");
 	}
 	

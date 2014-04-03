@@ -6,6 +6,7 @@ import java.util.List;
 
 import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
@@ -22,8 +23,10 @@ import thermalexpansion.part.conduit.PropsConduit;
 import thermalexpansion.part.conduit.item.ConduitItem;
 import thermalexpansion.part.conduit.item.ConduitItem.routeInfo;
 import thermalexpansion.part.conduit.item.ItemRoute;
+import cofh.api.energy.IEnergyHandler;
 import cofh.api.transport.IEnderAttuned;
 import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ThermalExpansionProxy implements IThermalExpansionProxy {
 
@@ -192,5 +195,30 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 	public boolean isSideFree(TileEntity tile, int side) {
 		if(!Configs.TE_PIPE_SUPPORT) return false;
 		return ((IConduit)tile).getConduit().tile().occlusionTest(((IConduit)tile).getConduit().tile().partList(), PropsConduit.occlusions[side]);
+	}
+
+	@Override
+	public int getMaxEnergyStored(TileEntity tile, ForgeDirection opposite) {
+		return ((IEnergyHandler)tile).getMaxEnergyStored(opposite);
+	}
+
+	@Override
+	public boolean isEnergyHandler(TileEntity tile) {
+		return tile instanceof IEnergyHandler;
+	}
+
+	@Override
+	public int getEnergyStored(TileEntity tile, ForgeDirection opposite) {
+		return ((IEnergyHandler)tile).getEnergyStored(opposite);
+	}
+
+	@Override
+	public boolean canInterface(TileEntity tile, ForgeDirection opposite) {
+		return ((IEnergyHandler)tile).canInterface(opposite);
+	}
+
+	@Override
+	public int receiveEnergy(TileEntity tile, ForgeDirection opposite, int i, boolean b) {
+		return ((IEnergyHandler)tile).receiveEnergy(opposite, i, b);
 	}
 }

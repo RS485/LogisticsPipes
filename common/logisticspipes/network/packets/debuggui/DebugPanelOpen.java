@@ -1,9 +1,9 @@
 package logisticspipes.network.packets.debuggui;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.ticks.DebugGuiTickHandler;
 import lombok.Getter;
@@ -28,12 +28,12 @@ public class DebugPanelOpen extends ModernPacket {
 	}
 	
 	@Override
-	public void readData(DataInputStream data) throws IOException {
+	public void readData(LPDataInputStream data) throws IOException {
 		setName(data.readUTF());
 	}
 	
 	@Override
-	public void writeData(DataOutputStream data) throws IOException {
+	public void writeData(LPDataOutputStream data) throws IOException {
 		data.writeUTF(getName());
 	}
 	

@@ -1,11 +1,10 @@
 package logisticspipes.network.packets;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
-import logisticspipes.network.SendNBTTagCompound;
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeBlockRequestTable;
@@ -44,7 +43,7 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 	}
 	
 	@Override
-	public void writeData(DataOutputStream data) throws IOException {
+	public void writeData(LPDataOutputStream data) throws IOException {
 		super.writeData(data);
 		
 		data.writeInt(content.length);
@@ -57,14 +56,14 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 				data.writeInt(itemstack.itemID);
 				data.writeInt(itemstack.stackSize);
 				data.writeInt(itemstack.getItemDamage());
-				SendNBTTagCompound.writeNBTTagCompound(itemstack.getTagCompound(), data);
+				data.writeNBTTagCompound(itemstack.getTagCompound());
 			}
 		}
 		data.writeByte( -1); // mark packet end
 	}
 	
 	@Override
-	public void readData(DataInputStream data) throws IOException {
+	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);
 		
 		content = new ItemStack[data.readInt()];
@@ -76,7 +75,7 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 			int stackSize = data.readInt();
 			int damage = data.readInt();
 			ItemStack stack = new ItemStack(itemID, stackSize, damage);
-			stack.setTagCompound(SendNBTTagCompound.readNBTTagCompound(data));
+			stack.setTagCompound(data.readNBTTagCompound());
 			content[index] = stack;
 			index = data.readByte(); // read the next slot
 		}

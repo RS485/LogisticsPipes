@@ -1,10 +1,9 @@
 package logisticspipes.network.abstractpackets;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
-import logisticspipes.network.SendNBTTagCompound;
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -22,20 +21,20 @@ public abstract class ItemPacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(DataOutputStream data) throws IOException {
+	public void writeData(LPDataOutputStream data) throws IOException {
 		super.writeData(data);
 		if(getStack() != null) {
 			data.writeInt(getStack().itemID);
 			data.writeInt(getStack().stackSize);
 			data.writeInt(getStack().getItemDamage());
-			SendNBTTagCompound.writeNBTTagCompound(getStack().getTagCompound(), data);
+			data.writeNBTTagCompound(getStack().getTagCompound());
 		} else {
 			data.writeInt(0);
 		}
 	}
 
 	@Override
-	public void readData(DataInputStream data) throws IOException {
+	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);
 		
 		final int itemID = data.readInt();
@@ -43,7 +42,7 @@ public abstract class ItemPacket extends CoordinatesPacket {
 			int stackSize = data.readInt();
 			int damage = data.readInt();
 			setStack(new ItemStack(itemID, stackSize, damage));
-			getStack().setTagCompound(SendNBTTagCompound.readNBTTagCompound(data));
+			getStack().setTagCompound(data.readNBTTagCompound());
 		} else {
 			setStack(null);
 		}

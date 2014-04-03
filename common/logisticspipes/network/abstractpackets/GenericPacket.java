@@ -2,14 +2,14 @@ package logisticspipes.network.abstractpackets;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -26,7 +26,7 @@ public abstract class GenericPacket extends ModernPacket {
 	}
 
 	@Override
-	public void readData(DataInputStream data) throws IOException {
+	public void readData(LPDataInputStream data) throws IOException {
 		int size = data.readInt();
 		args = new Object[size];
 		for(int i=0; i < size;i++) {
@@ -46,7 +46,7 @@ public abstract class GenericPacket extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(DataOutputStream data) throws IOException {
+	public void writeData(LPDataOutputStream data) throws IOException {
 		data.writeInt(args.length);
 		for(int i=0; i<args.length;i++) {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();

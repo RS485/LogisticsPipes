@@ -1,11 +1,10 @@
 package logisticspipes.network.packets.cpipe;
 
-import net.minecraft.entity.player.EntityPlayer;
 import logisticspipes.network.abstractpackets.Integer2CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.MainProxy;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class CraftingFuzzyFlag extends Integer2CoordinatesPacket
 {

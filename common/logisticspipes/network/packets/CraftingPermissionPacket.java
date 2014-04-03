@@ -1,10 +1,10 @@
 package logisticspipes.network.packets;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.EnumSet;
 
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.recipes.CraftingDependency;
@@ -25,7 +25,7 @@ public class CraftingPermissionPacket extends ModernPacket {
 	}
 
 	@Override
-	public void readData(DataInputStream data) throws IOException {
+	public void readData(LPDataInputStream data) throws IOException {
 		enumSet = EnumSet.noneOf(CraftingDependency.class);
 		for(CraftingDependency type:CraftingDependency.values()) {
 			if(data.readBoolean()) {
@@ -40,7 +40,7 @@ public class CraftingPermissionPacket extends ModernPacket {
 	}
 	
 	@Override
-	public void writeData(DataOutputStream data) throws IOException {
+	public void writeData(LPDataOutputStream data) throws IOException {
 		for(CraftingDependency type:CraftingDependency.values()) {
 			data.writeBoolean(enumSet.contains(type));
 		}

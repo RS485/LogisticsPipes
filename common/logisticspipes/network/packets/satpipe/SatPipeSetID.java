@@ -1,9 +1,9 @@
 package logisticspipes.network.packets.satpipe;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeFluidSatellite;
@@ -31,13 +31,13 @@ public class SatPipeSetID extends CoordinatesPacket {
 	private int satID;
 
 	@Override
-	public void writeData(DataOutputStream data) throws IOException {
+	public void writeData(LPDataOutputStream data) throws IOException {
 		data.writeInt(satID);
 		super.writeData(data);
 	}
 
 	@Override
-	public void readData(DataInputStream data) throws IOException {
+	public void readData(LPDataInputStream data) throws IOException {
 		satID = data.readInt();
 		super.readData(data);
 	}

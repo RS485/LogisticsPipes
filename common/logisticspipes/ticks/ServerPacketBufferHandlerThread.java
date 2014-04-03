@@ -2,7 +2,6 @@ package logisticspipes.ticks;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
@@ -14,6 +13,7 @@ import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.BufferTransfer;
 import logisticspipes.proxy.MainProxy;
@@ -153,7 +153,7 @@ public class ServerPacketBufferHandlerThread {
 						}
 						if(flag) {
 							try {
-								PacketHandler.onPacketData(new DataInputStream(new ByteArrayInputStream(part.getValue2())), part.getValue1());
+								PacketHandler.onPacketData(new LPDataInputStream(new ByteArrayInputStream(part.getValue2())), part.getValue1());
 							} catch (IOException e) {
 								e.printStackTrace();
 							}

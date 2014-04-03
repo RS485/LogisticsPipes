@@ -9,11 +9,12 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
-import logisticspipes.gui.hud.HUDPowerJunction;
+import logisticspipes.gui.hud.HUDPowerLevel;
 import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
+import logisticspipes.interfaces.IPowerLevelDisplay;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.block.PowerJunctionLevel;
 import logisticspipes.network.packets.hud.HUDStartBlockWatchingPacket;
@@ -40,7 +41,7 @@ import dan200.computer.api.ILuaContext;
 import dan200.computer.api.IPeripheral;
 
 @ModDependentInterface(modId={"IC2", "ComputerCraft@1.5", "CoFHCore"}, interfacePath={"ic2.api.energy.tile.IEnergySink", "dan200.computer.api.IPeripheral", "cofh.api.energy.IEnergyHandler"})
-public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPowerReceptor, ILogisticsPowerProvider, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IPeripheral, IEnergyHandler {
+public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPowerReceptor, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IPeripheral, IEnergyHandler {
 
 	// true if it needs more power, turns off at full, turns on at 50%.
 	public boolean needMorePowerTriggerCheck = true;
@@ -52,7 +53,6 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	
 	private PowerHandler powerFramework;
 	
-	private PlayerCollectionList guiListener = new PlayerCollectionList();
 	
 	private int internalStorage = 0;
   	private int lastUpdateStorage = 0;
@@ -61,13 +61,14 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
   	private boolean addedToEnergyNet = false;
 	
 	private boolean init = false;
+	private PlayerCollectionList guiListener = new PlayerCollectionList();
 	private PlayerCollectionList watcherList = new PlayerCollectionList();
 	private IHeadUpDisplayRenderer HUD;
 	
 	public LogisticsPowerJunctionTileEntity() {
 		powerFramework = new PowerHandler(this, Type.STORAGE);
 		powerFramework.configure(1, 250, 1000, 750); // never triggers doWork, as this is just an energy store, and tick does the actual work.
-		HUD = new HUDPowerJunction(this);
+		HUD = new HUDPowerLevel(this);
 	}
 	@Override
 	public boolean useEnergy(int amount, List<Object> providersToIgnore) {
@@ -211,10 +212,24 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	@Override
 	public void doWork(PowerHandler p) {}
 
-
 	@Override
 	public int getPowerLevel() {
 		return internalStorage;
+	}
+
+	@Override
+	public int getDisplayPowerLevel() {
+		return getPowerLevel();
+	}
+
+	@Override
+	public String getBrand() {
+		return "LP";
+	}
+
+	@Override
+	public int getMaxStorage() {
+		return MAX_STORAGE;
 	}
 
 	public int getChargeState() {

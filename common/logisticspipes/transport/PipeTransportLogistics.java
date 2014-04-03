@@ -17,9 +17,12 @@ import java.util.Map.Entry;
 
 import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.api.ILogisticsPowerProvider;
+import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.interfaces.ISpecialInsertion;
+import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
@@ -30,6 +33,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.utils.InventoryHelper;
+import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
@@ -40,6 +44,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
+import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.transport.IPipeTile;
 import buildcraft.core.CoreConstants;
 import buildcraft.core.proxy.CoreProxy;
@@ -411,10 +416,20 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 	
 	@Override
 	public boolean canPipeConnect(TileEntity tile, ForgeDirection side) {
+		if(tile instanceof ILogisticsPowerProvider || tile instanceof ISubSystemPowerProvider) {
+			ForgeDirection ori = OrientationsUtil.getOrientationOfTilewithPipe(this, tile);
+			if(ori != null && ori != ForgeDirection.UNKNOWN) {
+				if((tile instanceof LogisticsPowerJunctionTileEntity || tile instanceof ISubSystemPowerProvider) && !OrientationsUtil.isSide(ori)) {
+					return false;
+				}
+				return true;
+			}
+		}
 		return super.canPipeConnect(tile, side)
 				|| SimpleServiceLocator.betterStorageProxy.isBetterStorageCrate(tile)
 				|| SimpleServiceLocator.factorizationProxy.isBarral(tile)
-				|| (Configs.TE_PIPE_SUPPORT && SimpleServiceLocator.thermalExpansionProxy.isItemConduit(tile) && SimpleServiceLocator.thermalExpansionProxy.isSideFree(tile, side.getOpposite().ordinal()));
+				|| (Configs.TE_PIPE_SUPPORT && SimpleServiceLocator.thermalExpansionProxy.isItemConduit(tile) && SimpleServiceLocator.thermalExpansionProxy.isSideFree(tile, side.getOpposite().ordinal()))
+				|| (this.getPipe().getUpgradeManager().hasBCPowerSupplierUpgrade() && tile instanceof IPowerReceptor);
 	}
 
 	/* --- IItemTravelHook --- */

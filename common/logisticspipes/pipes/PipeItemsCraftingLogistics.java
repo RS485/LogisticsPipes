@@ -277,6 +277,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 	@Override
 	public void enabledUpdateEntity() {
+		super.enabledUpdateEntity();
 		if (doContentUpdate) {
 			checkContentUpdate();
 		}

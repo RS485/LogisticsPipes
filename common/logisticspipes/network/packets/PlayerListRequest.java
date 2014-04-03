@@ -1,12 +1,12 @@
 package logisticspipes.network.packets;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.MainProxy;
@@ -44,9 +44,9 @@ public class PlayerListRequest extends ModernPacket {
 	}
 
 	@Override
-	public void readData(DataInputStream data) throws IOException {}
+	public void readData(LPDataInputStream data) throws IOException {}
 
 	@Override
-	public void writeData(DataOutputStream data) throws IOException {}
+	public void writeData(LPDataOutputStream data) throws IOException {}
 }
 

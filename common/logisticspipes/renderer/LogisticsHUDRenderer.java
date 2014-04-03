@@ -10,6 +10,7 @@ import java.util.List;
 import logisticspipes.Configs;
 import logisticspipes.api.IHUDArmor;
 import logisticspipes.hud.HUDConfig;
+import logisticspipes.interfaces.IDebugHUDProvider;
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
@@ -40,6 +41,8 @@ import cpw.mods.fml.client.FMLClientHandler;
 
 public class LogisticsHUDRenderer {
 
+	public IDebugHUDProvider debugHUD = null;
+	
 	private LinkedList<IHeadUpDisplayRendererProvider> list = new LinkedList<IHeadUpDisplayRendererProvider>();
 	private double lastXPos = 0;
 	private double lastYPos = 0;
@@ -209,13 +212,32 @@ public class LogisticsHUDRenderer {
 		boolean cursorHandled = false;
 		displayCross = false;
 		IHUDConfig config;
-		if(SimpleServiceLocator.mpsProxy.isMPSHelm(mc.thePlayer.inventory.armorInventory[3])) {
-			config = SimpleServiceLocator.mpsProxy.getConfigFor(mc.thePlayer.inventory.armorInventory[3]);
+		if(debugHUD == null) {
+			if(SimpleServiceLocator.mpsProxy.isMPSHelm(mc.thePlayer.inventory.armorInventory[3])) {
+				config = SimpleServiceLocator.mpsProxy.getConfigFor(mc.thePlayer.inventory.armorInventory[3]);
+			} else {
+				 config = new HUDConfig(mc.thePlayer.inventory.armorInventory[3]);
+			}
 		} else {
-			 config = new HUDConfig(mc.thePlayer.inventory.armorInventory[3]);
+			config = new IHUDConfig() {
+				@Override public boolean isHUDSatellite() {return false;}
+				@Override public boolean isHUDProvider() {return false;}
+				@Override public boolean isHUDPowerLevel() {return false;}
+				@Override public boolean isHUDInvSysCon() {return false;}
+				@Override public boolean isHUDCrafting() {return false;}
+				@Override public boolean isHUDChassie() {return false;}
+				@Override public void setHUDChassie(boolean state) {}
+				@Override public void setHUDCrafting(boolean state) {}
+				@Override public void setHUDInvSysCon(boolean state) {}
+				@Override public void setHUDPowerJunction(boolean state) {}
+				@Override public void setHUDProvider(boolean state) {}
+				@Override public void setHUDSatellite(boolean state) {}
+			};
 		}
 		IHeadUpDisplayRendererProvider thisIsLast = null;
-		for(IHeadUpDisplayRendererProvider renderer:list) {
+		List<IHeadUpDisplayRendererProvider> toUse = list;
+		if(debugHUD != null) toUse = debugHUD.getHUDs();
+		for(IHeadUpDisplayRendererProvider renderer:toUse) {
 			if(renderer.getRenderer() == null) continue;
 			if(renderer.getRenderer().display(config)) {
 				GL11.glPushMatrix();
@@ -577,7 +599,7 @@ public class LogisticsHUDRenderer {
 	}
 	
 	private boolean displayHUD() {
-		return playerWearsHUD() && FMLClientHandler.instance().getClient().currentScreen == null && FMLClientHandler.instance().getClient().gameSettings.thirdPersonView == 0 && !FMLClientHandler.instance().getClient().gameSettings.hideGUI;
+		return (playerWearsHUD() || debugHUD != null) && FMLClientHandler.instance().getClient().currentScreen == null && FMLClientHandler.instance().getClient().gameSettings.thirdPersonView == 0 && !FMLClientHandler.instance().getClient().gameSettings.hideGUI;
 	}
 	
 	public void resetLasers() {

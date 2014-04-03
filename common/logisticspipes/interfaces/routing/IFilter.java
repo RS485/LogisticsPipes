@@ -1,6 +1,7 @@
 package logisticspipes.interfaces.routing;
 
 import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.tuples.LPPosition;
 
 public interface IFilter {
 	boolean isBlocked();
@@ -9,4 +10,5 @@ public interface IFilter {
 	boolean blockCrafting();
 	boolean blockRouting();
 	boolean blockPower();
+	LPPosition getLPPosition();
 }

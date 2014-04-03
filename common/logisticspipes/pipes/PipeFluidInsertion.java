@@ -28,6 +28,7 @@ public class PipeFluidInsertion extends FluidRoutedPipe {
 
 	@Override
 	public void enabledUpdateEntity() {
+		super.enabledUpdateEntity();
 		List<Integer> tempJamList = new ArrayList<Integer>();
 		if(!localJamList.isEmpty()) {
 			List<Pair<Integer, Integer>> toRemove = new ArrayList<Pair<Integer, Integer>>();

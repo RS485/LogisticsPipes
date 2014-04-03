@@ -8,7 +8,7 @@ public interface IHUDConfig {
 	
 	public boolean isHUDInvSysCon();
 	
-	public boolean isHUDPowerJunction();
+	public boolean isHUDPowerLevel();
 	
 	public boolean isHUDProvider();
 	

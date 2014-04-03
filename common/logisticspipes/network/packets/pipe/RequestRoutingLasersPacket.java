@@ -68,6 +68,7 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 	}
 
 	private void handleRouteInDirection(final TileGenericPipe pipe, ForgeDirection dir, ArrayList<IRouter> connectedRouters, final List<LaserData> lasers, EnumSet<PipeRoutingConnectionType> connectionType) {
+		System.out.println("Size: " + connectedRouters.size());
 		lasers.add(new LaserData(pipe.xCoord, pipe.yCoord, pipe.zCoord, dir, connectionType).setStartPipe(firstPipe));
 		firstPipe = false;
 		HashMap<CoreRoutedPipe, ExitRoute> map = PathFinder.paintAndgetConnectedRoutingPipes(pipe, dir, Configs.LOGISTICS_DETECTION_COUNT, Configs.LOGISTICS_DETECTION_LENGTH, new IPaintPath() {
@@ -80,6 +81,7 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 		}, connectionType);
 		for(CoreRoutedPipe connectedPipe: map.keySet()) {
 			IRouter newRouter = connectedPipe.getRouter();
+			if(!connectedRouters.contains(newRouter)) continue;
 			connectedRouters.remove(newRouter);
 			HashMap<ForgeDirection, ArrayList<IRouter>> routers = new HashMap<ForgeDirection, ArrayList<IRouter>>();
 			Iterator<IRouter> iRouter = connectedRouters.iterator();

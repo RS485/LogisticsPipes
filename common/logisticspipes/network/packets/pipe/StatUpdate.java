@@ -1,10 +1,10 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -74,7 +74,7 @@ public class StatUpdate extends CoordinatesPacket {
 	}
 	
 	@Override
-	public void writeData(DataOutputStream data) throws IOException {
+	public void writeData(LPDataOutputStream data) throws IOException {
 		initData();
 		super.writeData(data);
 		data.writeInt(stat_session_sent);
@@ -87,7 +87,7 @@ public class StatUpdate extends CoordinatesPacket {
 	}
 
 	@Override
-	public void readData(DataInputStream data) throws IOException {
+	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);
 		stat_session_sent = data.readInt();
 		stat_session_recieved = data.readInt();

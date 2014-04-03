@@ -8,12 +8,14 @@ import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
+import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -112,7 +114,11 @@ public class ClientRouter implements IRouter {
 	public boolean isAt(int dimension, int xCoord, int yCoord, int zCoord){
 		return  _xCoord == xCoord && _yCoord == yCoord && _zCoord == zCoord;
 	}
-
+	
+	@Override
+	public LPPosition getLPPosition() {
+		return new LPPosition(_xCoord, _yCoord, _zCoord);
+	}
 
 	@Override
 	public UUID getId() {
@@ -133,11 +139,6 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public List<Pair<ILogisticsPowerProvider, List<IFilter>>> getPowerProvider() {
-		return null;
-	}
-
-	@Override
-	public IRouter getRouter(ForgeDirection insertOrientation) {
 		return null;
 	}
 
@@ -183,5 +184,43 @@ public class ClientRouter implements IRouter {
 	
 	@Override
 	public void forceLsaUpdate() {
+	}
+
+	@Override
+	public boolean isSubPoweredExit(ForgeDirection connection) {
+		return false;
+	}
+
+	@Override
+	public List<Pair<ISubSystemPowerProvider, List<IFilter>>> getSubSystemPowerProvider() {
+		return null;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder string = new StringBuilder("ServerRouter: {UUID: ");
+		string.append(this.getId());
+		string.append(", AT: (");
+		string.append(this._xCoord);
+		string.append(", ");
+		string.append(this._yCoord);
+		string.append(", ");
+		string.append(this._zCoord);
+		return string.append(")").toString();
+	}
+
+	@Override
+	public List<ExitRoute> getRoutersOnSide(ForgeDirection exitOrientation) {
+		return null;
+	}
+
+	@Override
+	public int getDimension() {
+		return 0;
+	}
+
+	@Override
+	public int getDistanceToNextPowerPipe(ForgeDirection dir) {
+		return 0;
 	}
 }

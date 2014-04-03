@@ -1,7 +1,6 @@
 package logisticspipes.network;
 
 import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -68,11 +67,11 @@ public class PacketHandler implements IPacketHandler {
 		if (packet.data == null) {
 			new Exception("Packet content has been null").printStackTrace();
 		}
-		final DataInputStream data = new DataInputStream(new ByteArrayInputStream(packet.data));
+		final LPDataInputStream data = new LPDataInputStream(new ByteArrayInputStream(packet.data));
 		onPacketData(data, player);
 	}
 
-	public static void onPacketData(final DataInputStream data, final Player player) throws IOException {
+	public static void onPacketData(final LPDataInputStream data, final Player player) throws IOException {
 		final int packetID = data.readInt();
 		final ModernPacket packet = PacketHandler.packetlist.get(packetID).template();
 		packet.readData(data);

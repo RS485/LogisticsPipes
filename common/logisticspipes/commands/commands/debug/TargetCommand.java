@@ -10,7 +10,7 @@ import net.minecraft.util.ChatMessageComponent;
 import cpw.mods.fml.common.network.Player;
 
 public class TargetCommand implements ICommandHandler {
-	
+
 	@Override
 	public String[] getNames() {
 		return new String[]{"target", "look", "watch"};

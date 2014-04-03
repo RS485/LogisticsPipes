@@ -42,6 +42,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 
 	@Override
 	public void enabledUpdateEntity() {
+		super.enabledUpdateEntity();
 		if (!manager.hasOrders() || getWorld().getTotalWorldTime() % 6 != 0) return;
 		
 		Triplet<FluidIdentifier, Integer, IRequestFluid> order = manager.getFirst();

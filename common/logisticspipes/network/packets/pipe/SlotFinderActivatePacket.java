@@ -1,9 +1,9 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.renderer.LogisticsGuiOverrenderer;
@@ -38,7 +38,7 @@ public class SlotFinderActivatePacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(DataOutputStream data) throws IOException {
+	public void writeData(LPDataOutputStream data) throws IOException {
 		super.writeData(data);
 		data.writeInt(tagetPosX);
 		data.writeInt(tagetPosY);
@@ -47,7 +47,7 @@ public class SlotFinderActivatePacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void readData(DataInputStream data) throws IOException {
+	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);
 		tagetPosX = data.readInt();
 		tagetPosY = data.readInt();

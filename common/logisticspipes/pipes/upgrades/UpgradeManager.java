@@ -10,12 +10,15 @@ import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.upgrades.power.BCPowerSupplierUpgrade;
+import logisticspipes.pipes.upgrades.power.IC2PowerSupplierUpgrade;
+import logisticspipes.pipes.upgrades.power.RFPowerSupplierUpgrade;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.gui.DummyContainer;
-import logisticspipes.utils.item.ItemIdentifierInventory;
+import logisticspipes.utils.item.SimpleStackInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -24,9 +27,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 
 public class UpgradeManager implements ISimpleInventoryEventHandler {
-
-	private ItemIdentifierInventory inv = new ItemIdentifierInventory(9, "UpgradeInventory", 16);
-	private ItemIdentifierInventory sneakyInv = new ItemIdentifierInventory(9, "SneakyUpgradeInventory", 1);
+	
+	private SimpleStackInventory inv = new SimpleStackInventory(9, "UpgradeInventory", 16);
+	private SimpleStackInventory sneakyInv = new SimpleStackInventory(9, "SneakyUpgradeInventory", 1);
 	private IPipeUpgrade[] upgrades = new IPipeUpgrade[8];
 	private IPipeUpgrade[] sneakyUpgrades = new IPipeUpgrade[9];
 	private CoreRoutedPipe pipe;
@@ -45,6 +48,10 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	private UUID uuid = null;
 	private String uuidS = null;
 	private boolean hasPatternUpgrade = false;
+	private boolean hasPowerPassUpgrade = false;
+	private boolean hasBCPowerUpgrade = false;
+	private boolean hasRFPowerUpgrade = false;
+	private int getIC2PowerLevel = 0;
 	
 	private boolean needsContainerPositionUpdate = false;
 	
@@ -105,6 +112,10 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		disconnectedSides.clear();
 		hasByproductExtractor = false;
 		hasPatternUpgrade = false;
+		hasPowerPassUpgrade = false;
+		hasBCPowerUpgrade = false;
+		hasRFPowerUpgrade = false;
+		getIC2PowerLevel = 0;
 		for(int i=0;i<upgrades.length;i++) {
 			IPipeUpgrade upgrade = upgrades[i];
 			if(upgrade instanceof SneakyUpgrade && sneakyOrientation == ForgeDirection.UNKNOWN && !isCombinedSneakyUpgrade) {
@@ -125,6 +136,14 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 				hasByproductExtractor = true;
 			} else if(upgrade instanceof PatternUpgrade) {
 				hasPatternUpgrade = true;
+			} else if(upgrade instanceof PowerTransportationUpgrade) {
+				hasPowerPassUpgrade = true;
+			} else if(upgrade instanceof BCPowerSupplierUpgrade) {
+				hasBCPowerUpgrade = true;
+			} else if(upgrade instanceof RFPowerSupplierUpgrade) {
+				hasRFPowerUpgrade = true;
+			} else if(upgrade instanceof IC2PowerSupplierUpgrade) {
+				getIC2PowerLevel = Math.max(getIC2PowerLevel, ((IC2PowerSupplierUpgrade)upgrade).getPowerLevel());
 			}
 		}
 		liquidCrafter = Math.min(liquidCrafter, ItemUpgrade.MAX_LIQUID_CRAFTER);
@@ -289,7 +308,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		return false;
 	}
 	
-	private boolean insertIntInv(EntityPlayer entityplayer, ItemIdentifierInventory inv, int sub) {
+	private boolean insertIntInv(EntityPlayer entityplayer, SimpleStackInventory inv, int sub) {
 		for(int i=0;i<inv.getSizeInventory() - sub;i++) {
 			ItemStack item = inv.getStackInSlot(i);
 			if(item == null) {
@@ -352,5 +371,21 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	
 	public boolean hasPatternUpgrade() {
 		return hasPatternUpgrade;
+	}
+
+	public boolean hasPowerPassUpgrade() {
+		return hasPowerPassUpgrade || hasBCPowerUpgrade || hasRFPowerUpgrade || getIC2PowerLevel > 0;
+	}
+	
+	public boolean hasBCPowerSupplierUpgrade() {
+		return hasBCPowerUpgrade;
+	}
+	
+	public boolean hasRFPowerSupplierUpgrade() {
+		return hasRFPowerUpgrade;
+	}
+	
+	public int getIC2PowerLevel() {
+		return getIC2PowerLevel;
 	}
 }

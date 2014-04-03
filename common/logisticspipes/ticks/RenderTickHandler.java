@@ -8,6 +8,7 @@ import java.util.List;
 
 import logisticspipes.renderer.LogisticsGuiOverrenderer;
 import logisticspipes.renderer.LogisticsHUDRenderer;
+import logisticspipes.routing.debug.ClientViewController;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 
@@ -72,6 +73,7 @@ public class RenderTickHandler implements ITickHandler {
 			if(LogisticsGuiOverrenderer.getInstance().isCompatibleGui()) {
 				LogisticsGuiOverrenderer.getInstance().preRender();
 			}
+			ClientViewController.instance().tick();
 		}
 	}
 

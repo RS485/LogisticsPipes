@@ -14,12 +14,14 @@ import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.pipes.PipeItemsFirewall;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.CCHelper;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCQueued;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.proxy.te.LPConduitItem;
+import logisticspipes.renderer.LogisticsTileRenderController;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.security.PermissionException;
 import logisticspipes.ticks.QueuedTasks;
@@ -34,6 +36,9 @@ import net.minecraftforge.common.ForgeDirection;
 import thermalexpansion.part.conduit.ConduitBase;
 import buildcraft.transport.TileGenericPipe;
 import cofh.api.transport.IItemConduit;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import dan200.computer.api.IComputerAccess;
 import dan200.computer.api.ILuaContext;
 import dan200.computer.api.IPeripheral;
@@ -50,6 +55,9 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	private HashMap<Integer, String> commandMap = new HashMap<Integer, String>();
 	private Map<Integer, Method> commands = new LinkedHashMap<Integer, Method>();
 	private String typeName = "";
+	
+	@SideOnly(Side.CLIENT)
+	private LogisticsTileRenderController renderController;
 
 	@ModDependentField(modId="ComputerCraft@1.5")
 	public IComputerAccess lastPC;
@@ -60,6 +68,9 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	public LogisticsTileGenericPipe() {
 		if(SimpleServiceLocator.ccProxy.isCC()) {
 			connections = new HashMap<IComputerAccess, ForgeDirection>();
+		}
+		if(FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+			renderController = new LogisticsTileRenderController(this);
 		}
 	}
 	
@@ -89,6 +100,9 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	public void updateEntity() {
 		SimpleServiceLocator.thermalExpansionProxy.handleLPInternalConduitUpdate(this);
 		super.updateEntity();
+		if(FMLCommonHandler.instance().getSide() == Side.CLIENT && MainProxy.isClient(worldObj)) {
+			renderController.onUpdate();
+		}
 	}
 
 	@Override
@@ -562,6 +576,16 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 		return localConduit[side];
 	}
 
+	@SideOnly(Side.CLIENT)
+	public void addLaser(ForgeDirection dir, float length, int color, boolean reverse, boolean renderBall) {
+		renderController.addLaser(dir, length, color, reverse, renderBall);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public LogisticsTileRenderController getRenderController() {
+		return renderController;
+	}
+
 	/* IPipeInformationProvider */
 	
 	@Override
@@ -586,7 +610,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 
 	@Override
 	public boolean isInitialised() { //TODO: check for more ???
-		return initialized;
+		return initialized && !this.getRoutingPipe().stillNeedReplace();
 	}
 
 	@Override

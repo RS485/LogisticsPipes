@@ -418,7 +418,7 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 
 	public void refreshDestinationInformation() {
 		IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(destinationint); 
-		if (destinationRouter.getPipe() != null && destinationRouter.getPipe() instanceof CoreRoutedPipe){
+		if (destinationRouter != null && destinationRouter.getPipe() instanceof CoreRoutedPipe){
 			((CoreRoutedPipe)destinationRouter.getPipe()).refreshItem(this);
 		}
 	}

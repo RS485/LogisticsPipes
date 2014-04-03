@@ -1,6 +1,7 @@
 package logisticspipes.proxy.te;
 
 import java.lang.reflect.Field;
+import java.util.concurrent.Callable;
 
 import logisticspipes.Configs;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
@@ -10,6 +11,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouterManager;
 import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.routing.RoutedEntityItemSaveHandler;
+import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.SimpleStackInventory;
 import logisticspipes.utils.tuples.LPPosition;
@@ -45,7 +47,14 @@ public class LPConduitItem extends ConduitItem {
 		this.side = side;
 		this.dir = ForgeDirection.VALID_DIRECTIONS[side];
 		setSides();
-		GridTickHandler.tickConduitToAdd.add(this);
+		QueuedTasks.queueTask(new Callable<Object>() {
+			@Override
+			public Object call() throws Exception {
+				GridTickHandler.tickConduitToAdd.add(LPConduitItem.this);
+				return null;
+			}
+			
+		});
 	}
 
 	private void setSides() {

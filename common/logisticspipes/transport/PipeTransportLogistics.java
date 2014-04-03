@@ -8,7 +8,6 @@
 
 package logisticspipes.transport;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -43,6 +42,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.transport.IPipeTile;
@@ -50,53 +50,45 @@ import buildcraft.core.CoreConstants;
 import buildcraft.core.proxy.CoreProxy;
 import buildcraft.transport.IItemTravelingHook;
 import buildcraft.transport.PipeTransportItems;
+import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.TransportConstants;
 import buildcraft.transport.TravelingItem;
 
 public class PipeTransportLogistics extends PipeTransportItems implements IItemTravelingHook {
 
 	private final int _bufferTimeOut = 20 * 2; //2 Seconds
-//	private CoreRoutedPipe _pipe = null;
 	private final HashMap<ItemStack,Pair<Integer /* Time */, Integer /* BufferCounter */>> _itemBuffer = new HashMap<ItemStack, Pair<Integer, Integer>>(); 
-//	private Chunk chunk;
-	
-	private static Field toLoad;
+	private Chunk chunk;
 	
 	public PipeTransportLogistics() {
 		allowBouncing = true;
 		travelHook = this;
 	}
-/*
+
 	@Override
 	public void initialize() {
 		super.initialize();
 		if(MainProxy.isServer(getWorld())) {
 			//cache chunk for marking dirty
-//			chunk = getWorld().getChunkFromBlockCoords(xCoord, zCoord);
+			chunk = getWorld().getChunkFromBlockCoords(container.xCoord, container.zCoord);
 		}
 	}
-/*
+
 	public void markChunkModified(TileEntity tile) {
 		if(tile != null && chunk != null) {
 			//items are crossing a chunk boundary, mark both chunks modified
-			if(xCoord >> 4 != tile.xCoord >> 4 || zCoord >> 4 != tile.zCoord >> 4) {
+			if(container.xCoord >> 4 != tile.xCoord >> 4 || container.zCoord >> 4 != tile.zCoord >> 4) {
 				chunk.isModified = true;
 				if(tile instanceof TileGenericPipe && ((TileGenericPipe) tile).pipe != null && ((TileGenericPipe) tile).pipe.transport instanceof PipeTransportLogistics && ((PipeTransportLogistics)((TileGenericPipe) tile).pipe.transport).chunk != null) {
 					((PipeTransportLogistics)((TileGenericPipe) tile).pipe.transport).chunk.isModified = true;
 				} else {
-					getWorld().updateTileEntityChunkAndDoNothing(tile.xCoord, tile.yCoord, tile.zCoord, tile);
+					getWorld().getChunkFromChunkCoords(tile.xCoord, tile.zCoord).isModified = true;
 				}
 			}
 		}
 	}
-	
-*/
-	//TODO revert this change only if that cast shows up on a profile. otherwise this decreases memory use
+
 	private CoreRoutedPipe getPipe() {
-/*		if (_pipe == null){
-			_pipe = (CoreRoutedPipe) container.pipe;
-		}
-		return _pipe;*/
 		return (CoreRoutedPipe)container.pipe;
 	}
 	
@@ -437,6 +429,7 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 	/* --- IItemTravelHook --- */
 	@Override
 	public boolean endReached(PipeTransportItems pipe, TravelingItem data, TileEntity tile) {
+		this.markChunkModified(tile);
 		return handleTileReached(data, tile);
 	}
 

@@ -278,6 +278,7 @@ public class LogisticsPipes {
 		LogisticsEventListener eventListener = new LogisticsEventListener();
 		MinecraftForge.EVENT_BUS.register(eventListener);
 		GameRegistry.registerPlayerTracker(eventListener);
+		NetworkRegistry.instance().registerConnectionHandler(eventListener);
 		NetworkRegistry.instance().registerChatListener(new LPChatListener());
 		textures.registerBlockIcons(null);
 		

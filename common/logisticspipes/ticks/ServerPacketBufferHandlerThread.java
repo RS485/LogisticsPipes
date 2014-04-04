@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -34,6 +35,8 @@ public class ServerPacketBufferHandlerThread {
 		private final HashMap<Player, byte[]> serverBuffer = new HashMap<Player, byte[]>();
 		//used to cork the compressor so we can queue up a whole bunch of packets at once
 		private boolean pause = false;
+		//Clear content on next tick
+		private Queue<Player> playersToClear = new LinkedList<Player>();
 
 		public ServerCompressorThread() {
 			super("LogisticsPipes Packet Compressor Server");
@@ -88,6 +91,15 @@ public class ServerPacketBufferHandlerThread {
 						} catch (InterruptedException e) {}
 					}
 				}
+				synchronized(playersToClear) {
+					Player player = null;
+					do {
+						player = playersToClear.poll();
+						if(player != null) {
+							serverBuffer.remove(player);
+						}
+					} while(player != null);
+				}
 			}
 		}
 
@@ -115,6 +127,15 @@ public class ServerPacketBufferHandlerThread {
 				}
 			}
 		}
+
+		public void clear(Player player) {
+			synchronized(serverList) {
+				serverList.remove(player);
+			}
+			synchronized(playersToClear) {
+				playersToClear.add(player);
+			}
+		}
 	}
 	private final ServerCompressorThread serverCompressorThread = new ServerCompressorThread();
 
@@ -125,6 +146,8 @@ public class ServerPacketBufferHandlerThread {
 		private final HashMap<Player, byte[]> ByteBuffer = new HashMap<Player, byte[]>();
 		//FIFO for deserialized C->S packets, decompressor adds, tickEnd removes
 		private final LinkedList<Pair<Player,byte[]>> PacketBuffer = new LinkedList<Pair<Player,byte[]>>();
+		//Clear content on next tick
+		private Queue<Player> playersToClear = new LinkedList<Player>();
 
 		public ServerDecompressorThread() {
 			super("LogisticsPipes Packet Decompressor Server");
@@ -240,6 +263,15 @@ public class ServerPacketBufferHandlerThread {
 						} catch (InterruptedException e) {}
 					}
 				}
+				synchronized(playersToClear) {
+					Player player = null;
+					do {
+						player = playersToClear.poll();
+						if(player != null) {
+							ByteBuffer.remove(player);
+						}
+					} while(player != null);
+				}
 			}
 		}
 
@@ -252,6 +284,15 @@ public class ServerPacketBufferHandlerThread {
 				}
 				list.addLast(content);
 				queue.notify();
+			}
+		}
+
+		public void clear(Player player) {
+			synchronized(queue) {
+				queue.remove(player);
+			}
+			synchronized(playersToClear) {
+				playersToClear.add(player);
 			}
 		}
 	}
@@ -297,4 +338,9 @@ public class ServerPacketBufferHandlerThread {
         }
         return out.toByteArray();
     }
+	
+	public void clear(Player player) {
+		this.serverCompressorThread.clear(player);
+		this.serverDecompressorThread.clear(player);
+	}
 }

@@ -31,6 +31,8 @@ public class ClientPacketBufferHandlerThread {
 		private byte[] clientBuffer = new byte[]{};
 		//used to cork the compressor so we can queue up a whole bunch of packets at once
 		private boolean pause = false;
+		//Clear content on next tick
+		private boolean clear = false;
 
 		public ClientCompressorThread() {
 			super("LogisticsPipes Packet Compressor Client");
@@ -79,6 +81,10 @@ public class ClientPacketBufferHandlerThread {
 						} catch (InterruptedException e) {}
 					}
 				}
+				if(clear) {
+					clear = false;
+					clientBuffer = new byte[]{};
+				}
 			}
 		}
 
@@ -101,6 +107,13 @@ public class ClientPacketBufferHandlerThread {
 				}
 			}
 		}
+
+		public void clear() {
+			clear = true; 
+			synchronized(clientList) {
+				clientList.clear();
+			}
+		}
 	}
 	private final ClientCompressorThread clientCompressorThread = new ClientCompressorThread();
 
@@ -111,6 +124,8 @@ public class ClientPacketBufferHandlerThread {
 		private byte[] ByteBuffer = new byte[]{};
 		//FIFO for deserialized S->C packets, decompressor adds, tickEnd removes
 		private final LinkedList<Pair<Player,byte[]>> PacketBuffer = new LinkedList<Pair<Player,byte[]>>();
+		//Clear content on next tick
+		private boolean clear = false;
 
 		public ClientDecompressorThread() {
 			super("LogisticsPipes Packet Decompressor Client");
@@ -196,6 +211,10 @@ public class ClientPacketBufferHandlerThread {
 						} catch (InterruptedException e) {}
 					}
 				}
+				if(clear) {
+					clear = false;
+					ByteBuffer = new byte[]{};
+				}
 			}
 		}
 
@@ -203,6 +222,13 @@ public class ClientPacketBufferHandlerThread {
 			synchronized(queue) {
 				queue.addLast(content);
 				queue.notify();
+			}
+		}
+
+		public void clear() {
+			clear = true;
+			synchronized(queue) {
+				queue.clear();
 			}
 		}
 	}
@@ -248,4 +274,9 @@ public class ClientPacketBufferHandlerThread {
         }
         return out.toByteArray();
     }
+	
+	public void clear() {
+		clientCompressorThread.clear();
+		clientDecompressorThread.clear();
+	}
 }

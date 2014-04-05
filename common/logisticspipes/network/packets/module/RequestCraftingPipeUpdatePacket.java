@@ -4,9 +4,7 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.cpipe.CPipeSatelliteImportBack;
-import logisticspipes.network.packets.pipe.PipeUpdate;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.entity.player.EntityPlayer;
@@ -29,13 +27,13 @@ public class RequestCraftingPipeUpdatePacket extends CoordinatesPacket {
 		if(pipe == null) {
 			return;
 		}
-		if( !(pipe.pipe instanceof CoreRoutedPipe)) return;
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PipeUpdate.class).setPayload(((CoreRoutedPipe) pipe.pipe).getLogisticsNetworkPacket()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
-		if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
-			if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(((PipeItemsCraftingLogistics) pipe.pipe).getDummyInventory()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player) player);
-			}
+		if(!(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
+			Thread.dumpStack();
+			return;
 		}
+		PipeItemsCraftingLogistics cpipe = (PipeItemsCraftingLogistics) pipe.pipe;
+		MainProxy.sendPacketToPlayer(cpipe.getCPipePacket(), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(((PipeItemsCraftingLogistics) pipe.pipe).getDummyInventory()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player) player);
 	}
 }
 

@@ -60,12 +60,12 @@ import logisticspipes.network.packets.orderer.OrdererManagerContent;
 import logisticspipes.network.packets.pipe.CraftingPipePriorityDownPacket;
 import logisticspipes.network.packets.pipe.CraftingPipePriorityUpPacket;
 import logisticspipes.network.packets.pipe.CraftingPipeStackMovePacket;
+import logisticspipes.network.packets.pipe.CraftingPipeUpdatePacket;
 import logisticspipes.network.packets.pipe.CraftingPriority;
 import logisticspipes.network.packets.pipe.FluidCraftingAdvancedSatelliteId;
 import logisticspipes.network.packets.pipe.FluidCraftingAmount;
 import logisticspipes.network.packets.pipe.FluidCraftingPipeAdvancedSatelliteNextPacket;
 import logisticspipes.network.packets.pipe.FluidCraftingPipeAdvancedSatellitePrevPacket;
-import logisticspipes.network.packets.pipe.PipeUpdate;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -699,7 +699,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		if(dir.ordinal() < 6) {
 			if(craftingSigns[dir.ordinal()] != b) {
 				craftingSigns[dir.ordinal()] = b;
-				final ModernPacket packetA = PacketHandler.getPacket(PipeUpdate.class).setPayload(getLogisticsNetworkPacket()).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
+				final ModernPacket packetA = this.getCPipePacket();
 				final ModernPacket packetB = PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(getDummyInventory()).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 				if(player != null) {
 					MainProxy.sendPacketToPlayer(packetA, (Player)player);
@@ -714,32 +714,39 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		return false;
 	}
 	
+	public ModernPacket getCPipePacket() {
+		return PacketHandler.getPacket(CraftingPipeUpdatePacket.class).setAmount(amount).setLiquidSatelliteIdArray(liquidSatelliteIdArray).setLiquidSatelliteId(liquidSatelliteId).setCraftingSigns(craftingSigns).setSatelliteId(satelliteId).setAdvancedSatelliteIdArray(advancedSatelliteIdArray).setFuzzyCraftingFlagArray(fuzzyCraftingFlagArray).setPriority(priority).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
+	}
+	
+	public void handleCraftingUpdatePacket(CraftingPipeUpdatePacket packet) {
+		amount = packet.getAmount();
+		liquidSatelliteIdArray = packet.getLiquidSatelliteIdArray();
+		liquidSatelliteId = packet.getLiquidSatelliteId();
+		craftingSigns = packet.getCraftingSigns();
+		satelliteId = packet.getSatelliteId();
+		advancedSatelliteIdArray = packet.getAdvancedSatelliteIdArray();
+		fuzzyCraftingFlagArray = packet.getFuzzyCraftingFlagArray();
+		priority = packet.getPriority();
+	}
+	
 	// from PipeItemsCraftingLogistics
 	protected ItemIdentifierInventory _dummyInventory = new ItemIdentifierInventory(11, "Requested items", 127);
 	protected ItemIdentifierInventory _liquidInventory = new ItemIdentifierInventory(ItemUpgrade.MAX_LIQUID_CRAFTER, "Fluid items", 1, true);
 	
-	@TileNetworkData(staticSize=ItemUpgrade.MAX_LIQUID_CRAFTER)
 	protected int[] amount = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
-	@TileNetworkData(staticSize=ItemUpgrade.MAX_LIQUID_CRAFTER)
-	public int liquidSatelliteIdArray[] = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
-	@TileNetworkData
+	public int[] liquidSatelliteIdArray = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
 	public int liquidSatelliteId = 0;
 
-	@TileNetworkData(staticSize=6)
 	public boolean[] craftingSigns = new boolean[6];
 	
 	protected final DelayQueue< DelayedGeneric<ItemIdentifierStack>> _lostItems = new DelayQueue< DelayedGeneric<ItemIdentifierStack>>();
 	
-	@TileNetworkData
 	public int satelliteId = 0;
 
-	@TileNetworkData(staticSize=9)
-	public int advancedSatelliteIdArray[] = new int[9];
+	public int[] advancedSatelliteIdArray = new int[9];
 	
-	@TileNetworkData(staticSize = 9)
-	public int fuzzyCraftingFlagArray[] = new int[9];
+	public int[] fuzzyCraftingFlagArray = new int[9];
 
-	@TileNetworkData
 	public int priority = 0;
 
 	/* ** SATELLITE CODE ** */

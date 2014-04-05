@@ -1,6 +1,5 @@
 package logisticspipes.network;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -67,7 +66,7 @@ public class PacketHandler implements IPacketHandler {
 		if (packet.data == null) {
 			new Exception("Packet content has been null").printStackTrace();
 		}
-		final LPDataInputStream data = new LPDataInputStream(new ByteArrayInputStream(packet.data));
+		final LPDataInputStream data = new LPDataInputStream(packet.data);
 		onPacketData(data, player);
 	}
 

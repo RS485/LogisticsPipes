@@ -136,7 +136,6 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 		return HUD;
 	}
 
-
 	@Override
 	public void startWatching() {
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
@@ -152,7 +151,6 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 		if(mode == 1) {
 			localModeWatchers.add(player);
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID((this).satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-//TODO Must be handled manualy
 			MainProxy.sendPacketToPlayer(packet, (Player)player);
 			updateInv(true);
 		} else {
@@ -176,7 +174,6 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	
 	protected final Map<FluidIdentifier, Integer> _lostItems = new HashMap<FluidIdentifier, Integer>();
 
-	@TileNetworkData
 	public int satelliteId;
 
 	@Override
@@ -227,11 +224,9 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 		ensureAllSatelliteStatus();
 		if (MainProxy.isClient(player.worldObj)) {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeNext.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-//TODO Must be handled manualy
 			MainProxy.sendPacketToServer(packet);
 		} else {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-//TODO Must be handled manualy
 			MainProxy.sendPacketToPlayer(packet, (Player)player);
 		}
 		updateWatchers();
@@ -241,14 +236,10 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 		satelliteId = findId(-1);
 		ensureAllSatelliteStatus();
 		if (MainProxy.isClient(player.worldObj)) {
-			final ModernPacket packet = PacketHandler
-					.getPacket(SatPipePrev.class).setPosX(getX())
-					.setPosY(getY()).setPosZ(getZ());
-//TODO Must be handled manualy
+			final ModernPacket packet = PacketHandler.getPacket(SatPipePrev.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 			MainProxy.sendPacketToServer(packet);
 		} else {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-//TODO Must be handled manualy
 			MainProxy.sendPacketToPlayer(packet,(Player) player);
 		}
 		updateWatchers();
@@ -273,7 +264,6 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 		if (MainProxy.isServer(entityplayer.worldObj)) {
 			// Send the satellite id when opening gui
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-//TODO Must be handled manualy
 			MainProxy.sendPacketToPlayer(packet, (Player)entityplayer);
 			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SatelitePipe_ID, getWorld(), getX(), getY(), getZ());
 		}

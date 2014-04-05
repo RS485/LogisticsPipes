@@ -49,15 +49,14 @@ public abstract class ModernPacket {
 	
 	public void create() {
 		if(data != null) return; //PacketBuffer already created
-		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-		LPDataOutputStream dataStream = new LPDataOutputStream(bytes);
+		LPDataOutputStream dataStream = new LPDataOutputStream();
 		try {
 			dataStream.writeInt(getId());
 			writeData(dataStream);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		data = bytes.toByteArray();
+		data = dataStream.toByteArray();
 	}
 	
 	public abstract void readData(LPDataInputStream data) throws IOException;

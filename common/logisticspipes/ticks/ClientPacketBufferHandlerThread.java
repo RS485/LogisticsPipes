@@ -154,7 +154,7 @@ public class ClientPacketBufferHandlerThread {
 						}
 						if(flag) {
 							try {
-								PacketHandler.onPacketData(new LPDataInputStream(new ByteArrayInputStream(part.getValue2())), part.getValue1());
+								PacketHandler.onPacketData(new LPDataInputStream(part.getValue2()), part.getValue1());
 							} catch (IOException e) {
 								e.printStackTrace();
 							}

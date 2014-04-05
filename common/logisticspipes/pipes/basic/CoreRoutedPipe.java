@@ -46,8 +46,6 @@ import logisticspipes.modules.LogisticsGuiModule;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.PacketPayload;
-import logisticspipes.network.TilePacketWrapper;
 import logisticspipes.network.packets.pipe.RequestRoutingLasersPacket;
 import logisticspipes.network.packets.pipe.StatUpdate;
 import logisticspipes.pipefxhandlers.Particles;
@@ -197,12 +195,6 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 
 	public UpgradeManager getUpgradeManager() {
 		return upgradeManager;
-	}
-	
-	public PacketPayload getLogisticsNetworkPacket() {
-		PacketPayload payload = new TilePacketWrapper(new Class[] { container.getClass(), transport.getClass(), this.getClass()}).toPayload(getX(), getY(), getZ(), new Object[] { container, transport, this });
-
-		return payload;
 	}
 	
 	public void queueRoutedItem(IRoutedItem routedItem, ForgeDirection from) {

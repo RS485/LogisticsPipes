@@ -63,7 +63,6 @@ import logisticspipes.modules.ModuleFluidSupplier;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModuleOreDictItemSink;
-import logisticspipes.modules.ModulePassiveSupplier;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.network.packets.gui.GuiArgument;

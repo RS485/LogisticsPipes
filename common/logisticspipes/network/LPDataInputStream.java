@@ -1,8 +1,8 @@
 package logisticspipes.network;
 
+import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.EnumSet;
@@ -21,9 +21,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 
 public class LPDataInputStream extends DataInputStream {
-
-	public LPDataInputStream(InputStream inputstream) {
-		super(inputstream);
+	
+	public LPDataInputStream(byte[] inputBytes) throws IOException {
+		super(new ByteArrayInputStream(inputBytes));
 	}
 	
 	public ForgeDirection readForgeDirection() throws IOException {
@@ -111,5 +111,22 @@ public class LPDataInputStream extends DataInputStream {
 			return CompressedStreamTools.decompress(array);
 		}
 		
+	}
+	
+	public boolean[] readBooleanArray() throws IOException {
+		boolean[] array = new boolean[this.readByte()];
+		BitSet set = this.readBitSet();
+		for(int i=0;i<array.length;i++) {
+			array[i] = set.get(i);
+		}
+		return array;
+	}
+	
+	public int[] readIntegerArray() throws IOException {
+		int[] array = new int[this.readByte()];
+		for(int i=0;i<array.length;i++) {
+			array[i] = this.readInt();
+		}
+		return array;
 	}
 }

@@ -43,9 +43,9 @@ import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.hud.HUDStartWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopWatchingPacket;
-import logisticspipes.network.packets.module.RequestPipeUpdatePacket;
+import logisticspipes.network.packets.pipe.ChassiOrientationPacket;
 import logisticspipes.network.packets.pipe.ChassiePipeModuleContent;
-import logisticspipes.network.packets.pipe.PipeUpdate;
+import logisticspipes.network.packets.pipe.RequestChassiOrientationPacket;
 import logisticspipes.network.packets.pipe.SendQueueContent;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -70,6 +70,7 @@ import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
+import lombok.Getter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -79,7 +80,6 @@ import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
-import buildcraft.core.network.TileNetworkData;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.Player;
@@ -92,8 +92,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	private boolean switchOrientationOnTick = true;
 	private boolean init = false;
 
-	// from baseLogicChassi
-	@TileNetworkData
+	@Getter
 	public ForgeDirection orientation = ForgeDirection.UNKNOWN;
 
 	private boolean convertFromMeta = false;
@@ -149,8 +148,14 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 		}
 		if(orientation != oldOrientation) {
 			clearCache();
-			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), PacketHandler.getPacket(PipeUpdate.class).setPayload(getLogisticsNetworkPacket()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), PacketHandler.getPacket(ChassiOrientationPacket.class).setDir(orientation).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 			refreshRender(true);
+		}
+	}
+
+	public void setClientOrientation(ForgeDirection dir) {
+		if(MainProxy.isClient(getWorld())) {
+			orientation = dir;
 		}
 	}
 
@@ -419,7 +424,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 		if(!init) {
 			init = true;
 			if(MainProxy.isClient(this.getWorld())) {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestPipeUpdatePacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestChassiOrientationPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 			}
 		}
 	}

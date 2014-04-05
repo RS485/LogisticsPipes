@@ -1,8 +1,8 @@
 package logisticspipes.network;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.BitSet;
 import java.util.EnumSet;
 
@@ -17,8 +17,11 @@ import net.minecraftforge.common.ForgeDirection;
 
 public class LPDataOutputStream extends DataOutputStream {
 
-	public LPDataOutputStream(OutputStream outputstream) {
-		super(outputstream);
+	private final ByteArrayOutputStream byteStream;
+	
+	public LPDataOutputStream() {
+		super(new ByteArrayOutputStream());
+		byteStream = (ByteArrayOutputStream) out;
 	}
 	
 	public void writeForgeDirection(ForgeDirection dir) throws IOException {
@@ -90,5 +93,25 @@ public class LPDataOutputStream extends DataOutputStream {
 			this.writeShort((short)var3.length);
 			this.write(var3);
 		}
+	}
+	
+	public void writeBooleanArray(boolean[] array) throws IOException {
+		this.writeByte(array.length);
+		BitSet set = new BitSet();
+		for(int i=0;i<array.length;i++) {
+			set.set(i, array[i]);
+		}
+		writeBitSet(set);
+	}
+	
+	public void writeIntegerArray(int[] array) throws IOException {
+		this.writeByte(array.length);
+		for(int i=0;i<array.length;i++) {
+			this.writeInt(array[i]);
+		}
+	}
+
+	public byte[] toByteArray() {
+		return byteStream.toByteArray();
 	}
 }

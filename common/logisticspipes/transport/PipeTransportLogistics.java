@@ -264,6 +264,9 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 	
 	//called from endReached, return false to let BC transport handle the item.
 	protected boolean handleTileReached(TravelingItem arrivingItem, TileEntity tile) {
+		if (MainProxy.isServer(getWorld()) && (arrivingItem instanceof RoutedEntityItem) && ((RoutedEntityItem)arrivingItem).getArrived()) {
+			getPipe().notifyOfItemArival((RoutedEntityItem) arrivingItem);
+		}
 		if(this.getPipe() instanceof FluidRoutedPipe) {
 			if(((FluidRoutedPipe)this.getPipe()).endReached(arrivingItem, tile)) {
 				return true;
@@ -276,9 +279,6 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 			}
 		}
 		//((PipeTransportLogistics)pipe).markChunkModified(tile);
-		if (MainProxy.isServer(getWorld()) && (arrivingItem instanceof RoutedEntityItem) && ((RoutedEntityItem)arrivingItem).getArrived()) {
-			getPipe().notifyOfItemArival((RoutedEntityItem) arrivingItem);
-		}
 		boolean isSpecialConnectionInformationTransition = false;
 		if (!CoreProxy.proxy.isRenderWorld(getWorld())) {
 			if(SimpleServiceLocator.specialtileconnection.needsInformationTransition(tile)) {

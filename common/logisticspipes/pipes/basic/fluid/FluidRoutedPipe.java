@@ -204,7 +204,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 					filled = tank.fill(dir.getOpposite(), liquid.copy(), true);
 					liquid.amount -= filled;
 					if (liquid.amount != 0) continue;
-					return false;
+					return true;
 				}
 				//Try inserting the liquid into the pipe side tank
 				filled = ((PipeFluidTransportLogistics)this.transport).sideTanks[data.output.ordinal()].fill(liquid, true);

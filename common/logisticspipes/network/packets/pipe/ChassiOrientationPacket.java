@@ -24,7 +24,7 @@ public class ChassiOrientationPacket extends CoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(!(pipe.pipe instanceof PipeLogisticsChassi)) return;
+		if(pipe == null || !(pipe.pipe instanceof PipeLogisticsChassi)) return;
 		((PipeLogisticsChassi)pipe.pipe).setClientOrientation(dir);
 	}
 	

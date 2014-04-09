@@ -339,8 +339,13 @@ public class ServerPacketBufferHandlerThread {
         return out.toByteArray();
     }
 	
-	public void clear(Player player) {
-		this.serverCompressorThread.clear(player);
-		this.serverDecompressorThread.clear(player);
+	public void clear(final Player player) {
+		new Thread() {
+			@Override
+			public void run() {
+				serverCompressorThread.clear(player);
+				serverDecompressorThread.clear(player);
+			}
+		}.start();
 	}
 }

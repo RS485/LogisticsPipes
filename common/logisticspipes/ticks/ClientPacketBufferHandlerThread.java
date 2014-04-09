@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.LinkedList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -33,6 +35,8 @@ public class ClientPacketBufferHandlerThread {
 		private boolean pause = false;
 		//Clear content on next tick
 		private boolean clear = false;
+		
+		private Lock clearLock = new ReentrantLock();
 
 		public ClientCompressorThread() {
 			super("LogisticsPipes Packet Compressor Client");
@@ -50,11 +54,13 @@ public class ClientPacketBufferHandlerThread {
 							DataOutputStream data = new DataOutputStream(out);
 							data.write(clientBuffer);
 							LinkedList<Packet250CustomPayload> packets = clientList;
+							clearLock.lock();
 							for(Packet250CustomPayload packet:packets) {
 								data.writeInt(packet.data.length);
 								data.write(packet.data);
 							}
 							packets.clear();
+							clearLock.unlock();
 							clientBuffer = out.toByteArray();
 						}
 					}
@@ -109,10 +115,15 @@ public class ClientPacketBufferHandlerThread {
 		}
 
 		public void clear() {
-			clear = true; 
-			synchronized(clientList) {
-				clientList.clear();
-			}
+			clear = true;
+			new Thread() {
+				@Override
+				public void run() {
+					clearLock.lock();
+					clientList.clear();
+					clearLock.unlock();
+				}
+			}.start();
 		}
 	}
 	private final ClientCompressorThread clientCompressorThread = new ClientCompressorThread();
@@ -227,9 +238,7 @@ public class ClientPacketBufferHandlerThread {
 
 		public void clear() {
 			clear = true;
-			synchronized(queue) {
-				queue.clear();
-			}
+			queue.clear();
 		}
 	}
 	private final ClientDecompressorThread clientDecompressorThread = new ClientDecompressorThread();

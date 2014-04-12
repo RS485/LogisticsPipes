@@ -1,6 +1,7 @@
 package logisticspipes.proxy.te;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
 import logisticspipes.Configs;
@@ -121,11 +122,15 @@ public class LPConduitItem extends ConduitItem {
 
 	@Override
 	public routeInfo canRouteItem(ItemStack stack, boolean isSelf, int maxTransferSize) {
-		routeInfo route = new routeInfo();
-		route.canRoute = true;
-		route.stackSize = 0;
-		route.side = 0;
-		return route;
+		if(SimpleServiceLocator.logisticsManager.hasDestination(ItemIdentifier.get(stack), true, this.pipe.getRoutingPipe().getRouter().getSimpleID(), new ArrayList<Integer>()) != null) {
+			routeInfo route = new routeInfo();
+			route.canRoute = true;
+			route.stackSize = 0;
+			route.side = 0;
+			return route;
+		} else {
+			return noRoute;
+		}
 	}
 	
 	public routeInfo canRouteLPItem(ItemStack stack, NBTTagCompound data, ItemRoute aRoute) {

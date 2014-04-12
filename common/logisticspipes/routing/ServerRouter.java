@@ -902,7 +902,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	@Override
 	public ForgeDirection getExitFor(int id, boolean active, ItemIdentifier type) {
 		ensureRouteTableIsUpToDate(true);
-		if(this.getRouteTable().get(id) == null) return ForgeDirection.UNKNOWN;
+		if(this.getRouteTable().size() <= id || this.getRouteTable().get(id) == null) return ForgeDirection.UNKNOWN;
 outer:
 		for(ExitRoute exit: this.getRouteTable().get(id)) {
 			if(exit.containsFlag(PipeRoutingConnectionType.canRouteTo)) {

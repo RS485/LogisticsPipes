@@ -73,5 +73,4 @@ public class PipeFluidExtractor extends PipeFluidInsertion {
 	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_LIQUID_EXTRACTOR;
 	}
-
 }

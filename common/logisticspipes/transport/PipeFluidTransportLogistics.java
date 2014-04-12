@@ -5,6 +5,7 @@ import java.util.BitSet;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.pipe.PipeFluidUpdate;
+import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -36,40 +37,38 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 		if(from.ordinal() < ForgeDirection.VALID_DIRECTIONS.length) {
 			return sideTanks[from.ordinal()].fill(resource, doFill);
 		} else {
-			return 0;//internalTank.fill(resource, doFill);
+			return 0;
 		}
+	}
+
+	private FluidRoutedPipe getFluidPipe() {
+		return (FluidRoutedPipe) this.getPipe();
 	}
 
 	@Override
 	public boolean canFill(ForgeDirection from, Fluid fluid) {
-		// TODO Auto-generated method stub
-		return true;
+		return getPipe().isFluidPipe() && getFluidPipe().canReceiveFluid();
 	}
-
-
 
 	@Override
 	public boolean canDrain(ForgeDirection from, Fluid fluid) {
-		return true;
-//		return (sideTanks[from.ordinal()].getFluid().fluidID==fluid.getID() && drain(from,fluid.)
+		return false;
 	}
+
 	@Override
 	public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
 		if(from.ordinal() < ForgeDirection.VALID_DIRECTIONS.length) {
 			return sideTanks[from.ordinal()].drain(maxDrain, doDrain);
 		} else {
-			return null;//internalTank.drain(maxDrain, doDrain);
+			return null;
 		}
 	}
 
-
-
 	@Override
-	public FluidStack drain(ForgeDirection from, FluidStack resource,
-			boolean doDrain) {
-		if (!(sideTanks[from.ordinal()].getFluid().isFluidEqual(resource)))
+	public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
+		if (sideTanks[from.ordinal()].getFluid() == null || !(sideTanks[from.ordinal()].getFluid().isFluidEqual(resource))) {
 			return new FluidStack(resource.fluidID,0);
-		
+		}
 		return drain(from,resource.amount,doDrain);
 	}
 
@@ -78,7 +77,7 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 		if(from.ordinal() < ForgeDirection.VALID_DIRECTIONS.length) {
 			return new FluidTankInfo[]{new FluidTankInfo(sideTanks[from.ordinal()])};
 		} else {
-			return null;//new IFluidTank[]{internalTank};
+			return null;
 		}
 	}
 
@@ -109,14 +108,6 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 		internalTank.writeToNBT(subTag);
 		nbttagcompound.setTag("tank[middle]", subTag);
 	}
-
-	
-	/*
-	@Override
-	public boolean allowsConnect(PipeTransport with) {
-		return super.allowsConnect(with) || with instanceof LogisitcsFluidConnectionTransport;
-	}
-	*/
 
 	public int getInnerCapacity() {
 		return 10000;
@@ -280,9 +271,4 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 	protected boolean isItemExitable(ItemStack stack) {
 		return true;
 	}
-
-
-
-
-
 }

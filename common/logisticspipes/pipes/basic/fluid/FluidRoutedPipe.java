@@ -187,6 +187,8 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	
 	public abstract boolean canInsertToTanks();
 	
+	public abstract boolean canReceiveFluid();
+	
 	public boolean endReached(TravelingItem data, TileEntity tile) {
 		if(canInsertToTanks() && MainProxy.isServer(getWorld())) {
 			if(!(data instanceof IRoutedItem) || data.getItemStack() == null || !(data.getItemStack().getItem() instanceof LogisticsFluidContainer)) return false;

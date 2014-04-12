@@ -248,4 +248,8 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 		return l1;
 	}
 
+	@Override
+	public boolean canReceiveFluid() {
+		return false;
+	}
 }

@@ -96,4 +96,9 @@ public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 	public void guiClosedByPlayer(EntityPlayer player) {
 		guiOpenedBy.remove(player);
 	}
+
+	@Override
+	public boolean canReceiveFluid() {
+		return false;
+	}
 }

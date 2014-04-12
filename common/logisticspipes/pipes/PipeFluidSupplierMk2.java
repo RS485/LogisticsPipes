@@ -259,4 +259,9 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 		}
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidSupplierAmount.class).setInteger(amount).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
 	}
+
+	@Override
+	public boolean canReceiveFluid() {
+		return false;
+	}
 }

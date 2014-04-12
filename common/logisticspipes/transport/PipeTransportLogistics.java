@@ -88,7 +88,7 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 		}
 	}
 
-	private CoreRoutedPipe getPipe() {
+	protected CoreRoutedPipe getPipe() {
 		return (CoreRoutedPipe)container.pipe;
 	}
 	

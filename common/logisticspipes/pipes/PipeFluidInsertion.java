@@ -118,4 +118,8 @@ public class PipeFluidInsertion extends FluidRoutedPipe {
 		return false;
 	}
 
+	@Override
+	public boolean canReceiveFluid() {
+		return true;
+	}
 }

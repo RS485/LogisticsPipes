@@ -54,4 +54,8 @@ public class PipeFluidRequestLogistics extends FluidRoutedPipe implements IReque
 		return true;
 	}
 
+	@Override
+	public boolean canReceiveFluid() {
+		return false;
+	}
 }

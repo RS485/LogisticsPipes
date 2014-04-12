@@ -310,4 +310,9 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	public void liquidNotInserted(FluidIdentifier item, int amount) {
 		this.liquidLost(item, amount);
 	}
+
+	@Override
+	public boolean canReceiveFluid() {
+		return false;
+	}
 }

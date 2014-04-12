@@ -42,7 +42,7 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public void update(boolean fullRefresh) {
+	public void update(boolean doFullRefresh, CoreRoutedPipe pipe) {
 		
 	}
 
@@ -223,4 +223,7 @@ public class ClientRouter implements IRouter {
 	public int getDistanceToNextPowerPipe(ForgeDirection dir) {
 		return 0;
 	}
+
+	@Override
+	public void queueTask(int i, IRouterQueuedTask callable) {}
 }

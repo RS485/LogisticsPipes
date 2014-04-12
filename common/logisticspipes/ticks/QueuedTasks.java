@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.concurrent.Callable;
 
 import logisticspipes.proxy.MainProxy;
+import lombok.Getter;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
 
@@ -12,6 +13,8 @@ public class QueuedTasks implements ITickHandler {
 	
 	@SuppressWarnings("rawtypes")
 	private static LinkedList<Callable> queue = new LinkedList<Callable>();
+	@Getter
+	private static int	globalTick;
 	
 	// called on server shutdown only.
 	public static void clearAllTasks() {
@@ -30,6 +33,7 @@ public class QueuedTasks implements ITickHandler {
 	@SuppressWarnings({"rawtypes" })
 	@Override
 	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
+		globalTick++;
 		Callable call = null;
 		while(!queue.isEmpty()) {
 			synchronized (queue) {

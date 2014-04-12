@@ -39,7 +39,7 @@ public class InvSysConResistance extends IntegerCoordinatesPacket {
 			if(pipe.pipe instanceof PipeItemsInvSysConnector) {
 				PipeItemsInvSysConnector invCon = (PipeItemsInvSysConnector) pipe.pipe;
 				invCon.resistance = getInteger();
-				invCon.getRouter().update(true);
+				invCon.getRouter().update(true, invCon);
 			}
 		}
 	}

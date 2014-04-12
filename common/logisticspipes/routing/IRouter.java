@@ -28,7 +28,7 @@ public interface IRouter {
 		public void doTo(IRouter that);
 	}
 	public void destroy();
-	public void update(boolean fullRefresh);
+	public void update(boolean doFullRefresh, CoreRoutedPipe pipe);
 	public void updateInterests(); // calls getInterests on the attached pipe, and updates the global cache.
 
 	public boolean isRoutedExit(ForgeDirection connection);
@@ -77,4 +77,5 @@ public interface IRouter {
 	public void forceLsaUpdate();
 	public List<ExitRoute> getRoutersOnSide(ForgeDirection direction);
 	public int getDimension();
+	public void queueTask(int i, IRouterQueuedTask callable);
 }

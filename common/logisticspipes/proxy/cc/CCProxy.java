@@ -84,4 +84,13 @@ public class CCProxy implements ICCProxy {
 		if(tile.currentPC == null) return -1;
 		return tile.currentPC.getID();
 	}
+
+	@Override
+	public void handleMesssage(int computerId, Object message, LogisticsTileGenericPipe tile, int sourceId) {
+		for(IComputerAccess computer: tile.connections.keySet()) {
+			if(computer.getID() == computerId) {
+				computer.queueEvent(CCConstants.LP_CC_MESSAGE_EVENT, new Object[]{sourceId, message});
+			}
+		}
+	}
 }

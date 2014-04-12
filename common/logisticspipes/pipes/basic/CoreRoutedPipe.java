@@ -11,6 +11,7 @@ package logisticspipes.pipes.basic;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,12 +55,14 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.buildcraft.gates.ActionDisableLogistics;
+import logisticspipes.proxy.cc.CCConstants;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCDirectCall;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.IRouterQueuedTask;
 import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.security.PermissionException;
@@ -362,7 +365,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			}
 		}
 		//update router before ticking logic/transport
-		getRouter().update(getWorld().getTotalWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
+		getRouter().update(getWorld().getTotalWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit, this);
 		getUpgradeManager().securityTick();
 		super.updateEntity();
 		
@@ -1245,29 +1248,16 @@ outer:
 
 	@Override
 	public final int getX() {
-		//TODO: what if container is null; pipes don't have a coord any more.
-/*		if(this.container == null) {
-			return getX();
-		}*/
 		return this.container.xCoord;
 	}
 
 	@Override
 	public final int getY() {
-		/*
-		if(this.container == null) {
-			return getY();
-		}*/
 		return this.container.yCoord;
 	}
 
 	@Override
 	public final int getZ() {
-		/*
-		if(this.container == null) {
-			return getZ();
-		}
-		*/
 		return this.container.zCoord;
 	}
 
@@ -1377,6 +1367,60 @@ outer:
 			return sec.getAllowCC(id);
 		}
 		return true;
+	}
+	
+	@CCCommand(description="Sends a message to the givven computerId over the LP network. Event: " + CCConstants.LP_CC_MESSAGE_EVENT)
+	@CCDirectCall
+	public void sendMessage(final Double computerId, final Object message) {
+		int sourceId = -1;
+		if(this.container instanceof LogisticsTileGenericPipe) {
+			sourceId = SimpleServiceLocator.ccProxy.getLastCCID((LogisticsTileGenericPipe)this.container);
+		}
+		final int fSourceId = sourceId;
+		BitSet set = new BitSet(ServerRouter.getBiggestSimpleID());
+		for(ExitRoute exit:this.getRouter().getIRoutersByCost()) {
+			if(exit.destination != null && !set.get(exit.destination.getSimpleID())) {
+				exit.destination.queueTask(10, new IRouterQueuedTask() {
+					@Override
+					public void call(CoreRoutedPipe pipe, IRouter router) {
+						pipe.handleMesssage((int) ((double) computerId), message, fSourceId);
+					}
+				});
+				set.set(exit.destination.getSimpleID());
+			}
+		}
+	}
+	
+	@CCCommand(description="Sends a broadcast message to all Computer connected to this LP network. Event: " + CCConstants.LP_CC_BROADCAST_EVENT)
+	@CCDirectCall
+	public void sendBroadcast(final String message) {
+		int sourceId = -1;
+		if(this.container instanceof LogisticsTileGenericPipe) {
+			sourceId = SimpleServiceLocator.ccProxy.getLastCCID((LogisticsTileGenericPipe)this.container);
+		}
+		final int fSourceId = sourceId;
+		BitSet set = new BitSet(ServerRouter.getBiggestSimpleID());
+		for(ExitRoute exit:this.getRouter().getIRoutersByCost()) {
+			if(exit.destination != null && !set.get(exit.destination.getSimpleID())) {
+				exit.destination.queueTask(10, new IRouterQueuedTask() {
+					@Override
+					public void call(CoreRoutedPipe pipe, IRouter router) {
+						pipe.handleBroadcast(message, fSourceId);
+					}
+				});
+				set.set(exit.destination.getSimpleID());
+			}
+		}
+	}
+	
+	private void handleMesssage(int computerId, Object message, int sourceId) {
+		if(this.container instanceof LogisticsTileGenericPipe) {
+			((LogisticsTileGenericPipe)this.container).handleMesssage(computerId, message, sourceId);
+		}
+	}
+	
+	private void handleBroadcast(String message, int sourceId) {
+		this.queueEvent(CCConstants.LP_CC_BROADCAST_EVENT, new Object[]{sourceId, message});
 	}
 	
 	// from logic

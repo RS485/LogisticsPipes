@@ -58,7 +58,7 @@ public class LPTilePipeWrapper implements ILuaObject {
 					if(!method.isAnnotationPresent(CCCommand.class)) continue;
 					for(Class<?> param:method.getParameterTypes()) {
 						if(!param.getName().startsWith("java")) {
-							throw new InternalError("Internal Excption (Code: 2)");
+							throw new InternalError("Internal Excption (Code: 2), [" + param.getName() + "]");
 						}
 					}
 					commandMap.put(i, method.getName());
@@ -75,6 +75,7 @@ public class LPTilePipeWrapper implements ILuaObject {
 		Class<?> args[] = method.getParameterTypes();
 		if(arguments.length != args.length) return false;
 		for(int i=0; i<arguments.length; i++) {
+			if(args[i].equals(Object.class)) continue; //Object can take anything
 			if(!arguments[i].getClass().equals(args[i])) return false;
 		}
 		return true;

@@ -12,4 +12,5 @@ public interface ICCProxy {
 	public void setTurtleConnect(boolean flag, LogisticsTileGenericPipe logisticsTileGenericPipe);
 	public boolean getTurtleConnect(LogisticsTileGenericPipe logisticsTileGenericPipe);
 	public int getLastCCID(LogisticsTileGenericPipe logisticsTileGenericPipe);
+	public void handleMesssage(int computerId, Object message, LogisticsTileGenericPipe tile, int sourceId);
 }

@@ -159,6 +159,10 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	public void queueEvent(String event, Object[] arguments) {
 		SimpleServiceLocator.ccProxy.queueEvent(event, arguments, this);
 	}
+
+	public void handleMesssage(int computerId, Object message, int sourceId) {
+		SimpleServiceLocator.ccProxy.handleMesssage(computerId, message, this, sourceId);
+	}
 	
 	public void setTurtleConnect(boolean flag) {
 		SimpleServiceLocator.ccProxy.setTurtleConnect(flag, this);

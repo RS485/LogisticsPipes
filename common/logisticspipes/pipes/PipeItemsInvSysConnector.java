@@ -80,7 +80,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 				if(CRP != null) {
 					CRP.refreshRender(true);
 				}
-				getRouter().update(true);
+				getRouter().update(true, this);
 				this.refreshRender(true);
 				init = true;
 				idbuffer = getConnectionUUID();

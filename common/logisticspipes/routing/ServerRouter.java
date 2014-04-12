@@ -16,6 +16,7 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,6 +38,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.pathfinder.PathFinder;
+import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.utils.OneList;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -171,6 +173,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	private boolean destroied = false;
 	
 	private WeakReference<CoreRoutedPipe> _myPipeCache=null;
+	private LinkedList<Pair<Integer, IRouterQueuedTask>> queue = new LinkedList<Pair<Integer,IRouterQueuedTask>>();
 	@Override
 	public void clearPipeCache(){_myPipeCache=null;}
 	
@@ -862,8 +865,8 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	}
 	
 	@Override
-	public void update(boolean doFullRefresh){	
-		
+	public void update(boolean doFullRefresh, CoreRoutedPipe pipe){	
+		handleQueuedTasks(pipe);
 		updateInterests();
 		if (doFullRefresh) {
 			boolean blockNeedsUpdate = checkAdjacentUpdate();
@@ -871,7 +874,6 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 				updateAdjacentAndLsa(); // also calls checkAdjacentUpdate() by default;
 			}
 			ensureRouteTableIsUpToDate(false);
-			CoreRoutedPipe pipe = getPipe();
 			if (pipe != null) {
 				pipe.refreshRender(false);
 			}
@@ -879,6 +881,15 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		}
 		if (Configs.MULTI_THREAD_NUMBER > 0) {
 			ensureRouteTableIsUpToDate(false);
+		}
+	}
+	
+	private void handleQueuedTasks(CoreRoutedPipe pipe) {
+		while(!queue.isEmpty()) {
+			Pair<Integer, IRouterQueuedTask> element = queue.poll();
+			if(element.getValue1() > QueuedTasks.getGlobalTick()) {
+				element.getValue2().call(pipe, this);
+			}
 		}
 	}
 
@@ -1140,6 +1151,11 @@ outer:
 	@Override
 	public int getDimension() {
 		return _dimension;
+	}
+
+	@Override
+	public void queueTask(int i, IRouterQueuedTask callable) {
+		this.queue.add(new Pair<Integer, IRouterQueuedTask> (i + QueuedTasks.getGlobalTick(), callable));
 	}
 }
 

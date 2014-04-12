@@ -8,8 +8,7 @@
 
 package logisticspipes.utils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IInventoryUtil;
@@ -18,11 +17,11 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 
 public class InventoryUtilFactory {
-	private final List<SpecialInventoryHandler> handler = new ArrayList<SpecialInventoryHandler>();
+	private final LinkedList<SpecialInventoryHandler> handler = new LinkedList<SpecialInventoryHandler>();
 
 	public void registerHandler(SpecialInventoryHandler invHandler) {
 		if(invHandler.init()) {
-			handler.add(invHandler);
+			handler.addLast(invHandler);
 			LogisticsPipes.log.info("Loaded SpecialInventoryHandler: " + invHandler.getClass().getCanonicalName());
 		} else {
 			LogisticsPipes.log.warning("Could not load SpecialInventoryHandler: " + invHandler.getClass().getCanonicalName());

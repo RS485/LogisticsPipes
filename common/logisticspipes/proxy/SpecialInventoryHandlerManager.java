@@ -27,11 +27,14 @@ public class SpecialInventoryHandlerManager {
 			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new AEInterfaceInventoryHandler());
 		}
 
+		if(Loader.isModLoaded("JABBA")) {
+			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new AEInterfaceInventoryHandler());
+		}
+
 		try {
 			Class.forName("powercrystals.minefactoryreloaded.api.IDeepStorageUnit");
 			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new DSUInventoryHandler());
 		} catch(ClassNotFoundException e) {
 		}
-
 	}
 }

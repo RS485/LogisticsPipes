@@ -37,6 +37,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	private IRecipe cache;
 	private EntityPlayer fake;
 	private int delay = 0;
+	private int tick = 0;
 	
 	public PipeBlockRequestTable(int itemID) {
 		super(itemID);
@@ -57,6 +58,16 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 			}
 		}
 		return true;
+	}
+
+	
+
+	@Override
+	public void ignoreDisableUpdateEntity() {
+		super.ignoreDisableUpdateEntity();
+		if(tick++ == 5) {
+			this.getWorld().markBlockForRenderUpdate(this.getX(), this.getY(), this.getZ());
+		}
 	}
 
 	@Override

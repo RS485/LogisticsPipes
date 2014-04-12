@@ -79,8 +79,8 @@ public class LPConduitItem extends ConduitItem {
 	}
 	
 	public void updateLPStatus() {
-		if(tick++ % 20 == 5) {
-			pipe.getWorld().notifyBlockChange(pipe.getX(), pipe.getY(), pipe.getZ(), pipe.getWorld().getBlockId(pipe.getX(), pipe.getY(), pipe.getZ()));
+		if(tick++ == 5) {
+			pipe.getWorld().markBlockForRenderUpdate(pipe.getX(), pipe.getY(), pipe.getZ());
 		}
 	}
 	

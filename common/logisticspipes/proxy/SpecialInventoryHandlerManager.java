@@ -6,6 +6,7 @@ import logisticspipes.proxy.specialinventoryhandler.BarrelInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.CrateInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.DSUInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.DigitalChestHandler;
+import logisticspipes.proxy.specialinventoryhandler.JABBAInventoryHandler;
 import cpw.mods.fml.common.Loader;
 
 public class SpecialInventoryHandlerManager {
@@ -28,7 +29,7 @@ public class SpecialInventoryHandlerManager {
 		}
 
 		if(Loader.isModLoaded("JABBA")) {
-			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new AEInterfaceInventoryHandler());
+			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new JABBAInventoryHandler());
 		}
 
 		try {

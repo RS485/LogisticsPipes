@@ -46,7 +46,7 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 	public int itemCount(ItemIdentifier itemIdent) {
 		ItemStack items = _tile.getStoredItemType();
 		if(items != null && ItemIdentifier.get(items) == itemIdent)
-			return items.stackSize - (_hideOnePerStack?1:0);
+			return (_tile.isCreative() ? (int) (Math.pow(2, 20)) : (items.stackSize - (_hideOnePerStack ? 1:0)));
 		return 0;
 	}
 
@@ -56,14 +56,19 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 		if(items == null || ItemIdentifier.get(items) != itemIdent) {
 			return null;
 		}
+		if(_tile.isCreative()) {
+			return itemIdent.makeNormalStack(count);
+		}
 		if(_hideOnePerStack)
 			items.stackSize--;
 		if(count >= items.stackSize) {
 			_tile.setStoredItemCount((_hideOnePerStack?1:0));
+			_tile.onInventoryChanged();
 			return items;
 		}
 		ItemStack newItems = items.splitStack(count);
 		_tile.setStoredItemCount(items.stackSize+(_hideOnePerStack?1:0));
+		_tile.onInventoryChanged();
 		return newItems;
 		
 	}
@@ -83,7 +88,7 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 		HashMap<ItemIdentifier, Integer> result = new HashMap<ItemIdentifier, Integer>();
 		ItemStack items = _tile.getStoredItemType();
 		if(items != null && items.stackSize > 0) {
-			result.put(ItemIdentifier.get(items), items.stackSize-(_hideOnePerStack?1:0));
+			result.put(ItemIdentifier.get(items), _tile.isCreative() ? (int) (Math.pow(2, 20)) : items.stackSize-(_hideOnePerStack?1:0));
 		}
 		return result;
 	}
@@ -143,10 +148,12 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 			if(stack.stackSize <= _tile.getMaxStoredCount()) {
 				_tile.setStoredItemType(stack, stack.stackSize);
 				st.stackSize = stack.stackSize;
+				_tile.onInventoryChanged();
 				return st;
 			} else {
 				_tile.setStoredItemType(stack, _tile.getMaxStoredCount());
 				st.stackSize = _tile.getMaxStoredCount();
+				_tile.onInventoryChanged();
 				return st;
 			}
 		}
@@ -156,10 +163,16 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 		if(stack.stackSize <= _tile.getMaxStoredCount() - items.stackSize) {
 			_tile.setStoredItemCount(items.stackSize + stack.stackSize);
 			st.stackSize = stack.stackSize;
+			_tile.onInventoryChanged();
 			return st;
 		} else {
 			_tile.setStoredItemCount(_tile.getMaxStoredCount());
-			st.stackSize = _tile.getMaxStoredCount() - items.stackSize;
+			if(!_tile.isVoid()) {
+				st.stackSize = _tile.getMaxStoredCount() - items.stackSize;
+			} else {
+				st.stackSize = stack.stackSize;
+			}
+			_tile.onInventoryChanged();
 			return st;
 		}
 	}

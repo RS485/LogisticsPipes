@@ -5,7 +5,6 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 
 import logisticspipes.utils.gui.KraphtBaseGuiScreen.Colors;
-
 import net.minecraft.client.gui.FontRenderer;
 
 import org.lwjgl.input.Keyboard;

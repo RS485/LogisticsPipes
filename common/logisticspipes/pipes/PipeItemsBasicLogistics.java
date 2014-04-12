@@ -9,7 +9,6 @@ package logisticspipes.pipes;
 import java.util.Set;
 import java.util.TreeSet;
 
-import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.modules.LogisticsModule;

@@ -2,9 +2,9 @@ package logisticspipes.proxy.bettersign;
 
 import java.lang.reflect.Field;
 
+import logisticspipes.proxy.interfaces.IBetterSignProxy;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelSign;
-import logisticspipes.proxy.interfaces.IBetterSignProxy;
 
 public class BetterSignProxy implements IBetterSignProxy {
 

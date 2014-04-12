@@ -6,7 +6,6 @@ import java.util.List;
 
 import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
-import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
@@ -26,7 +25,6 @@ import thermalexpansion.part.conduit.item.ItemRoute;
 import cofh.api.energy.IEnergyHandler;
 import cofh.api.transport.IEnderAttuned;
 import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ThermalExpansionProxy implements IThermalExpansionProxy {
 

@@ -18,7 +18,6 @@ import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.MinecraftForge;
 import buildcraft.BuildCraftCore;
 import buildcraft.BuildCraftSilicon;
-import buildcraft.transport.TileGenericPipe;
 
 
 public class IC2Proxy implements IIC2Proxy {

@@ -10,7 +10,6 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.bettersign.BetterSignProxy;
 import logisticspipes.proxy.bs.BetterStorageProxy;
 import logisticspipes.proxy.cc.CCProxy;
-import logisticspipes.proxy.cc.CCTurtleProxy;
 import logisticspipes.proxy.enderio.EnderIOProxy;
 import logisticspipes.proxy.factorization.FactorizationProxy;
 import logisticspipes.proxy.forestry.ForestryProxy;
@@ -108,21 +107,15 @@ public class ProxyManager {
 			});
 			LogisticsPipes.log.info("Loaded IC2 DummyProxy");
 		}
-		if(ModStatusHelper.isModLoaded("ComputerCraft@1.5")) {
-			if(ModStatusHelper.isModLoaded("CCTurtle@1.5")) {
-				SimpleServiceLocator.setCCProxy(new CCTurtleProxy());
-				LogisticsPipes.log.info("Loaded CCTurtleProxy");
-			} else {
-				SimpleServiceLocator.setCCProxy(new CCProxy());
-				LogisticsPipes.log.info("Loaded CCProxy");
-			}
+		if(ModStatusHelper.isModLoaded("ComputerCraft@1.6")) {
+			SimpleServiceLocator.setCCProxy(new CCProxy());
+			LogisticsPipes.log.info("Loaded CCProxy");
 		} else {
 			//DummyProxy
 			SimpleServiceLocator.setCCProxy(new ICCProxy() {
 				@Override public boolean isTurtle(TileEntity tile) {return false;}
 				@Override public boolean isComputer(TileEntity tile) {return false;}
 				@Override public boolean isCC() {return false;}
-				@Override public ForgeDirection getOrientation(Object computer, TileEntity tile) {return ForgeDirection.UNKNOWN;}
 				@Override public boolean isLuaThread(Thread thread) {return false;}
 				@Override public void queueEvent(String event, Object[] arguments, LogisticsTileGenericPipe logisticsTileGenericPipe) {}
 				@Override public void setTurtleConnect(boolean flag, LogisticsTileGenericPipe logisticsTileGenericPipe) {}

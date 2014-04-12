@@ -2,50 +2,120 @@ package logisticspipes.proxy.cc;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
+import logisticspipes.LogisticsPipes;
+import logisticspipes.asm.ModDependentMethod;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
+import logisticspipes.proxy.cc.interfaces.CCDirectCall;
 import logisticspipes.proxy.cc.interfaces.CCQueued;
+import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.security.PermissionException;
 import logisticspipes.ticks.QueuedTasks;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.ILuaObject;
 
-public class CCCommandWrapper implements ILuaObject {
+public class LPTilePipeWrapper implements ILuaObject {
 	
-	private CCInfos info;
-	private Object object;
-
-	public CCCommandWrapper(CCInfos info2, Object object2) {
-		info = info2;
-		object = object2;
+	protected final LogisticsTileGenericPipe pipe;
+	
+	private boolean init = false;
+	private HashMap<Integer, String> commandMap = new HashMap<Integer, String>();
+	private Map<Integer, Method> commands = new LinkedHashMap<Integer, Method>();
+	protected String typeName = "";
+	
+	public LPTilePipeWrapper(LogisticsTileGenericPipe pipe) {
+		this.pipe = pipe;
 	}
 
+	private CCType getType(Class<?> clazz) {
+		while(true) {
+			CCType type = clazz.getAnnotation(CCType.class);
+			if(type != null) return type;
+			if(clazz.getSuperclass() == Object.class) return null;
+			clazz = clazz.getSuperclass();
+		}
+	}
+	
+	private void init() {
+		if(!init) {
+			init = true;
+			CoreRoutedPipe pipe = this.pipe.getCPipe();
+			if(pipe == null) return;
+			CCType type = getType(pipe.getClass());
+			if(type == null) return;
+			typeName = type.name();
+			int i = 0;
+			Class<?> clazz = pipe.getClass();
+			while(true) {
+				for(Method method:clazz.getDeclaredMethods()) {
+					if(!method.isAnnotationPresent(CCCommand.class)) continue;
+					for(Class<?> param:method.getParameterTypes()) {
+						if(!param.getName().startsWith("java")) {
+							throw new InternalError("Internal Excption (Code: 2)");
+						}
+					}
+					commandMap.put(i, method.getName());
+					commands.put(i, method);
+					i++;
+				}
+				if(clazz.getSuperclass() == Object.class) break;
+				clazz = clazz.getSuperclass();
+			}
+		}
+	}
+	
+	private boolean argumentsMatch(Method method, Object[] arguments) {
+		Class<?> args[] = method.getParameterTypes();
+		if(arguments.length != args.length) return false;
+		for(int i=0; i<arguments.length; i++) {
+			if(!arguments[i].getClass().equals(args[i])) return false;
+		}
+		return true;
+	}
+	
+	public String getType() {
+		init();
+		return typeName;
+	}
+	
 	@Override
+	@ModDependentMethod(modId="ComputerCraft@1.6")
 	public String[] getMethodNames() {
+		init();
 		LinkedList<String> list = new LinkedList<String>();
 		list.add("help");
 		list.add("commandHelp");
 		list.add("getType");
-		for(int i=0;i<info.commandMap.size();i++) {
-			list.add(info.commandMap.get(i));
+		for(int i=0;i<commandMap.size();i++) {
+			list.add(commandMap.get(i));
 		}
 		return list.toArray(new String[list.size()]);
 	}
-
+	
 	@Override
+	@ModDependentMethod(modId="ComputerCraft@1.6")
 	public Object[] callMethod(ILuaContext context, int methodId, Object[] arguments) throws Exception {
+		if(this.pipe.getCPipe() == null) throw new InternalError("Pipe is not a LogisticsPipe");
+		init();
+		
+		//help
 		if(methodId == 0) {
 			StringBuilder help = new StringBuilder();
 			StringBuilder head = new StringBuilder();
 			StringBuilder head2 = new StringBuilder();
-			head.append("Type: ");
-			head.append(info.type);
+			head.append("PipeType: ");
+			head.append(typeName);
 			head.append("\n");
 			head2.append("Commands: \n");
-			for(Integer num:info.commands.keySet()) {
-				Method method = info.commands.get(num);
+			for(Integer num:commands.keySet()) {
+				Method method = commands.get(num);
 				StringBuilder command = new StringBuilder();
 				if(help.length() != 0) {
 					command.append("\n");
@@ -55,10 +125,15 @@ public class CCCommandWrapper implements ILuaObject {
 					command.append(" ");
 				}
 				command.append(number);
-				if(method.isAnnotationPresent(CCQueued.class)) {
-					command.append(" Q");
+				if(method.isAnnotationPresent(CCDirectCall.class)) {
+					command.append("D");
 				} else {
-					command.append("  ");
+					command.append(" ");
+				}
+				if(method.isAnnotationPresent(CCQueued.class)) {
+					command.append("Q");
+				} else {
+					command.append(" ");
 				}
 				command.append(": ");
 				command.append(method.getName());
@@ -121,12 +196,14 @@ public class CCCommandWrapper implements ILuaObject {
 			return new Object[]{new StringBuilder().append(head).append(head2).append(help).toString()};
 		}
 		methodId--;
+		
+		//commandHelp
 		if(methodId == 0) {
 			if(arguments.length != 1) return new Object[]{"Wrong Argument Count"};
 			if(!(arguments[0] instanceof Double)) return new Object[]{"Wrong Argument Type"};
 			Integer number = (int) Math.floor(((Double)arguments[0]));
-			if(!info.commands.containsKey(number)) return new Object[]{"No command with that index"};
-			Method method = info.commands.get(number);
+			if(!commands.containsKey(number)) return new Object[]{"No command with that index"};
+			Method method = commands.get(number);
 			StringBuilder help = new StringBuilder();
 			help.append("---------------------------------\n");
 			help.append("Command: ");
@@ -154,17 +231,17 @@ public class CCCommandWrapper implements ILuaObject {
 			help.append(method.getAnnotation(CCCommand.class).description());
 			return new Object[]{help.toString()};
 		}
-
 		methodId--;
+		
+		//getType
 		if(methodId == 0) {
-			return CCHelper.createArray(CCHelper.getAnswer(info.type));
+			return CCHelper.createArray(CCHelper.getAnswer(getType()));
 		}
 		methodId--;
-		String name = info.commandMap.get(methodId);
 		
+		String name = commandMap.get(methodId);
 		Method match = null;
-		
-		for(Method method:info.commands.values()) {
+		for(Method method:commands.values()) {
 			if(!method.getName().equalsIgnoreCase(name)) continue;
 			if(!argumentsMatch(method, arguments)) continue;
 			match = method;
@@ -175,7 +252,7 @@ public class CCCommandWrapper implements ILuaObject {
 			StringBuilder error = new StringBuilder();
 			error.append("No such method.");
 			boolean handled = false;
-			for(Method method:info.commands.values()) {
+			for(Method method:commands.values()) {
 				if(!method.getName().equalsIgnoreCase(name)) continue;
 				if(handled) {
 					error.append("\n");
@@ -201,13 +278,24 @@ public class CCCommandWrapper implements ILuaObject {
 			}
 			throw new UnsupportedOperationException(error.toString());
 		}
+
+		if(match.getAnnotation(CCDirectCall.class) != null) {
+			if(this.pipe.currentPC == null) {
+				throw new PermissionException();
+			}
+		}
+		
+		if(match.getAnnotation(CCCommand.class).needPermission()) {
+			this.pipe.getCPipe().checkCCAccess();
+		}
 		
 		if(match.getAnnotation(CCQueued.class) != null) {
 			final Method m = match;
 			String prefunction = null;
 			if(!(prefunction = match.getAnnotation(CCQueued.class).prefunction()).equals("")) {
-				if(object != null) {
-					Class<?> clazz = object.getClass();
+				//CoreRoutedPipe pipe = getCPipe();
+				if(pipe != null) {
+					Class<?> clazz = pipe.getClass();
 					while(true) {
 						for(Method method:clazz.getDeclaredMethods()) {
 							if(method.getName().equals(prefunction)) {
@@ -215,7 +303,7 @@ public class CCCommandWrapper implements ILuaObject {
 									throw new InternalError("Internal Excption (Code: 3)");
 								}
 								try {
-									method.invoke(object, new Object[]{});
+									method.invoke(pipe, new Object[]{});
 								} catch(InvocationTargetException e) {
 									if(e.getTargetException() instanceof Exception) {
 										throw (Exception) e.getTargetException();
@@ -239,7 +327,7 @@ public class CCCommandWrapper implements ILuaObject {
 				@Override
 				public Object call() throws Exception {
 					try {
-						Object result = m.invoke(object, a);
+						Object result = m.invoke(pipe, a);
 						if(result != null) {
 							resultArray[0] = result;
 						}
@@ -262,7 +350,8 @@ public class CCCommandWrapper implements ILuaObject {
 				count++;
 			}
 			if(count >= 199) {
-				new Exception("Took too long (" + m.getName() + "," + object.getClass().getName() + ")").printStackTrace();
+				CoreRoutedPipe pipe = this.pipe.getCPipe();
+				LogisticsPipes.log.warning("CC call " + m.getName() + " on " + pipe.getClass().getName() + " at (" + this.pipe.xCoord + "," + this.pipe.yCoord + "," + this.pipe.zCoord + ") took too long.");
 				throw new Exception("Took too long");
 			}
 			if(m.getReturnType().equals(Void.class)) {
@@ -276,7 +365,7 @@ public class CCCommandWrapper implements ILuaObject {
 		}
 		Object result;
 		try {
-			result = match.invoke(object, arguments);
+			result = match.invoke(this.pipe.pipe, arguments);
 		} catch(InvocationTargetException e) {
 			if(e.getTargetException() instanceof Exception) {
 				throw (Exception) e.getTargetException();
@@ -284,14 +373,5 @@ public class CCCommandWrapper implements ILuaObject {
 			throw e;
 		}
 		return CCHelper.createArray(CCHelper.getAnswer(result));
-	}
-	
-	private boolean argumentsMatch(Method method, Object[] arguments) {
-		int i=0;
-		for(Class<?> args:method.getParameterTypes()) {
-			if(!arguments[i].getClass().equals(args)) return false;
-			i++;
-		}
-		return true;
 	}
 }

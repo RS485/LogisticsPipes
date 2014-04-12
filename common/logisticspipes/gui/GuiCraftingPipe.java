@@ -355,7 +355,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 	}
 	
 	@Override
-	protected boolean isPointInRegion(int x, int y, int par3, int par4, int par5, int par6) {
+	public boolean isPointInRegion(int x, int y, int par3, int par4, int par5, int par6) {
 		if(!isAdvancedSat && liquidCrafter != 0) {
 			if(_pipe.liquidSatelliteId == 0) {
 				if(-(liquidCrafter * 40) < x && x < 0) {

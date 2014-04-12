@@ -37,7 +37,7 @@
 	<property name="bc.version"           value="4.2.2"/>
 	<property name="forestry.version"     value="2.3.0.0"/>
 	<property name="ic2.version"          value="2.0.143-experimental"/>
-	<property name="cc.version"           value="1.56"/>
+	<property name="cc.version"           value="1.62"/>
 	<property name="thaumcraft.version"   value="4.0.0"/>
 	<property name="lombok.version"       value="0.11.8"/>
 	<property name="jarjar.version"       value="1.4"/>

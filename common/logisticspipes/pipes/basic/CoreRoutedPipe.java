@@ -55,6 +55,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.buildcraft.gates.ActionDisableLogistics;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
+import logisticspipes.proxy.cc.interfaces.CCDirectCall;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.ExitRoute;
@@ -1313,6 +1314,7 @@ outer:
 	}
 
 	@CCCommand(description="Sets the TurtleConnect flag for this Turtle on this LogisticsPipe")
+	@CCDirectCall
 	public void setTurtleConnect(Boolean flag) {
 		if(this.container instanceof LogisticsTileGenericPipe) {
 			((LogisticsTileGenericPipe)this.container).setTurtleConnect(flag);
@@ -1320,6 +1322,7 @@ outer:
 	}
 
 	@CCCommand(description="Returns the TurtleConnect flag for this Turtle on this LogisticsPipe")
+	@CCDirectCall
 	public boolean getTurtleConnect() {
 		if(this.container instanceof LogisticsTileGenericPipe) {
 			return ((LogisticsTileGenericPipe)this.container).getTurtleConnect();
@@ -1406,5 +1409,9 @@ outer:
 
 	public LPPosition getLPPosition() {
 		return new LPPosition(this);
+	}
+
+	public WorldUtil getWorldUtil() {
+		return new WorldUtil(this.getWorld(), this.getX(), this.getY(), this.getZ());
 	}
 }

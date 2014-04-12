@@ -36,11 +36,11 @@ import buildcraft.api.power.PowerHandler;
 import buildcraft.api.power.PowerHandler.PowerReceiver;
 import buildcraft.api.power.PowerHandler.Type;
 import cofh.api.energy.IEnergyHandler;
-import dan200.computer.api.IComputerAccess;
-import dan200.computer.api.ILuaContext;
-import dan200.computer.api.IPeripheral;
+import dan200.computercraft.api.lua.ILuaContext;
+import dan200.computercraft.api.peripheral.IComputerAccess;
+import dan200.computercraft.api.peripheral.IPeripheral;
 
-@ModDependentInterface(modId={"IC2", "ComputerCraft@1.5", "CoFHCore"}, interfacePath={"ic2.api.energy.tile.IEnergySink", "dan200.computer.api.IPeripheral", "cofh.api.energy.IEnergyHandler"})
+@ModDependentInterface(modId={"IC2", "ComputerCraft@1.6", "CoFHCore"}, interfacePath={"ic2.api.energy.tile.IEnergySink", "dan200.computercraft.api.peripheral.IPeripheral", "cofh.api.energy.IEnergyHandler"})
 public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPowerReceptor, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IPeripheral, IEnergyHandler {
 
 	// true if it needs more power, turns off at full, turns on at 50%.
@@ -354,35 +354,35 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	}
 	
 	@Override
-	@ModDependentMethod(modId="ComputerCraft@1.5")
+	@ModDependentMethod(modId="ComputerCraft@1.6")
 	public String getType() {
-	return "LogisticsPowerJunction";
+		return "LogisticsPowerJunction";
 	}
 	
 	@Override
-	@ModDependentMethod(modId="ComputerCraft@1.5")
+	@ModDependentMethod(modId="ComputerCraft@1.6")
 	public String[] getMethodNames() {
-	return new String[]{"getPowerLevel"};
+		return new String[]{"getPowerLevel"};
 	}
 	
 	@Override
-	@ModDependentMethod(modId="ComputerCraft@1.5")
+	@ModDependentMethod(modId="ComputerCraft@1.6")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws Exception {
-	return new Object[]{this.getPowerLevel()};
+		return new Object[]{this.getPowerLevel()};
 	}
 	
 	@Override
-	@ModDependentMethod(modId="ComputerCraft@1.5")
-	public boolean canAttachToSide(int side) {
-	return true;
+	@ModDependentMethod(modId="ComputerCraft@1.6")
+	public boolean equals(IPeripheral other) {
+		return this.equals((Object) other);
 	}
 	
 	@Override
-	@ModDependentMethod(modId="ComputerCraft@1.5")
+	@ModDependentMethod(modId="ComputerCraft@1.6")
 	public void attach(IComputerAccess computer) {}
 	
 	@Override
-	@ModDependentMethod(modId="ComputerCraft@1.5")
+	@ModDependentMethod(modId="ComputerCraft@1.6")
 	public void detach(IComputerAccess computer) {}
 	
 	@Override

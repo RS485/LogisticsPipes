@@ -101,7 +101,7 @@ public class CCCommandWrapper implements ILuaObject {
 				page.append(head2.toString());
 				pageNumber--;
 				int from = pageNumber * 11;
-				int to = pageNumber * 11 + 10;
+				int to = pageNumber * 11 + 11;
 				for(int i=from;i<to;i++) {
 					if(i < lines.length) {
 						page.append(lines[i]);

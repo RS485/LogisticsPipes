@@ -52,6 +52,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	private boolean hasBCPowerUpgrade = false;
 	private boolean hasRFPowerUpgrade = false;
 	private int getIC2PowerLevel = 0;
+	private boolean	hasCCRemoteControlUpgrade = false;
 	
 	private boolean needsContainerPositionUpdate = false;
 	
@@ -116,6 +117,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		hasBCPowerUpgrade = false;
 		hasRFPowerUpgrade = false;
 		getIC2PowerLevel = 0;
+		hasCCRemoteControlUpgrade = false;
 		for(int i=0;i<upgrades.length;i++) {
 			IPipeUpgrade upgrade = upgrades[i];
 			if(upgrade instanceof SneakyUpgrade && sneakyOrientation == ForgeDirection.UNKNOWN && !isCombinedSneakyUpgrade) {
@@ -144,6 +146,8 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 				hasRFPowerUpgrade = true;
 			} else if(upgrade instanceof IC2PowerSupplierUpgrade) {
 				getIC2PowerLevel = Math.max(getIC2PowerLevel, ((IC2PowerSupplierUpgrade)upgrade).getPowerLevel());
+			} else if(upgrade instanceof CCRemoteControlUpgrade) {
+				hasCCRemoteControlUpgrade = true;
 			}
 		}
 		liquidCrafter = Math.min(liquidCrafter, ItemUpgrade.MAX_LIQUID_CRAFTER);
@@ -387,5 +391,9 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	
 	public int getIC2PowerLevel() {
 		return getIC2PowerLevel;
+	}
+
+	public boolean hasCCRemoteControlUpgrade() {
+		return hasCCRemoteControlUpgrade;
 	}
 }

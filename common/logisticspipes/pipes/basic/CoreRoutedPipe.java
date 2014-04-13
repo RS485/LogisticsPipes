@@ -27,6 +27,7 @@ import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.api.IRoutedPowerProvider;
+import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.interfaces.ISecurityProvider;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
@@ -56,6 +57,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.buildcraft.gates.ActionDisableLogistics;
 import logisticspipes.proxy.cc.CCConstants;
+import logisticspipes.proxy.cc.LPTilePipeWrapper;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCDirectCall;
 import logisticspipes.proxy.cc.interfaces.CCType;
@@ -106,6 +108,7 @@ import buildcraft.transport.TravelingItem;
 import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import dan200.computercraft.api.lua.ILuaObject;
 
 @CCType(name = "LogisticsPipes:Normal")
 public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IRoutedPowerProvider {
@@ -1298,9 +1301,21 @@ outer:
 	}
 	
 	/* --- CCCommands --- */
-	@CCCommand(description="Returns the Router UUID as an integer; all pipes have a unique ID")
+	@CCCommand(description="Returns the Router UUID as an integer; all pipes have a unique ID (runtime stable)")
 	public int getRouterId() {
 		return getRouter().getSimpleID();
+	}
+	
+	@CCCommand(description="Returns the Router UUID; all pipes have a unique ID (lifetime stable)")
+	public String getRouterUUID() {
+		return getRouter().getId().toString();
+	}
+	
+	@CCCommand(description="Returns the Router UUID for the givvin router Id")
+	public String getRouterUUID(Double id) {
+		IRouter router = SimpleServiceLocator.routerManager.getRouter((int)((double)id));
+		if(router == null) return null;
+		return router.getId().toString();
 	}
 
 	@CCCommand(description="Sets the TurtleConnect flag for this Turtle on this LogisticsPipe")
@@ -1411,6 +1426,20 @@ outer:
 				set.set(exit.destination.getSimpleID());
 			}
 		}
+	}
+	
+	@CCCommand(description="Returns the access to the pipe of the givven router UUID")
+	@ModDependentMethod(modId="ComputerCraft@1.6")
+	@CCDirectCall
+	public ILuaObject getPipeForUUID(String sUuid) throws PermissionException {
+		if(!getUpgradeManager().hasCCRemoteControlUpgrade()) throw new PermissionException();
+		UUID uuid = UUID.fromString(sUuid);
+		int id = SimpleServiceLocator.routerManager.getIDforUUID(uuid);
+		IRouter router = SimpleServiceLocator.routerManager.getRouter(id);
+		if(router == null) return null;
+		CoreRoutedPipe pipe = router.getPipe();
+		if(!(pipe.container instanceof LogisticsTileGenericPipe)) return null;
+		return new LPTilePipeWrapper((LogisticsTileGenericPipe)pipe.container);
 	}
 	
 	private void handleMesssage(int computerId, Object message, int sourceId) {

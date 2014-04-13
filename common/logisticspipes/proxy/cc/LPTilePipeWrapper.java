@@ -117,6 +117,7 @@ public class LPTilePipeWrapper implements ILuaObject {
 			head2.append("Commands: \n");
 			for(Integer num:commands.keySet()) {
 				Method method = commands.get(num);
+				//if(method.isAnnotationPresent(CCDirectCall.class)) continue;
 				StringBuilder command = new StringBuilder();
 				if(help.length() != 0) {
 					command.append("\n");
@@ -126,6 +127,7 @@ public class LPTilePipeWrapper implements ILuaObject {
 					command.append(" ");
 				}
 				command.append(number);
+				command.append(" ");
 				if(method.isAnnotationPresent(CCDirectCall.class)) {
 					command.append("D");
 				} else {
@@ -177,7 +179,7 @@ public class LPTilePipeWrapper implements ILuaObject {
 				page.append(head2.toString());
 				pageNumber--;
 				int from = pageNumber * 11;
-				int to = pageNumber * 11 + 10;
+				int to = pageNumber * 11 + 11;
 				for(int i=from;i<to;i++) {
 					if(i < lines.length) {
 						page.append(lines[i]);

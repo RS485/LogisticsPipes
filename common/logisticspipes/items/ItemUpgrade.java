@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.pipes.upgrades.AdvancedSatelliteUpgrade;
+import logisticspipes.pipes.upgrades.CCRemoteControlUpgrade;
 import logisticspipes.pipes.upgrades.CombinedSneakyUpgrade;
 import logisticspipes.pipes.upgrades.CraftingByproductUpgrade;
 import logisticspipes.pipes.upgrades.FluidCraftingUpgrade;
@@ -73,6 +74,9 @@ public class ItemUpgrade extends LogisticsItem {
 	public static final int POWER_IC2_MV_SUPPLIER = 34;
 	public static final int POWER_IC2_HV_SUPPLIER = 35;
 	public static final int POWER_IC2_EV_SUPPLIER = 36;
+	
+	//Various
+	public static final int CC_REMOTE_CONTROL = 40;
 	
 	//Values
 	public static final int MAX_LIQUID_CRAFTER = 3;
@@ -162,6 +166,7 @@ public class ItemUpgrade extends LogisticsItem {
 		registerUpgrade(POWER_IC2_MV_SUPPLIER, "IC2 MV Power Supplier Upgrade", IC2MVPowerSupplierUpgrade.class, 23);
 		registerUpgrade(POWER_IC2_HV_SUPPLIER, "IC2 HV Power Supplier Upgrade", IC2HVPowerSupplierUpgrade.class, 24);
 		registerUpgrade(POWER_IC2_EV_SUPPLIER, "IC2 EV Power Supplier Upgrade", IC2EVPowerSupplierUpgrade.class, 25);
+		registerUpgrade(CC_REMOTE_CONTROL, "CC Remote Control Upgrade", CCRemoteControlUpgrade.class, 26);
 	}
 	
 	public void registerUpgrade(int id, String name, Class<? extends IPipeUpgrade> moduleClass, int textureId) {
@@ -231,7 +236,7 @@ public class ItemUpgrade extends LogisticsItem {
 
 	@Override
 	public void registerIcons(IconRegister par1IconRegister) {
-		icons=new Icon[26];
+		icons=new Icon[27];
 		icons[0]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyUP");
 		icons[1]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyDOWN");
 		icons[2]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyNORTH");
@@ -261,6 +266,7 @@ public class ItemUpgrade extends LogisticsItem {
 		icons[23]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-MV");
 		icons[24]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-HV");
 		icons[25]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-EV");
+		icons[26]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/CCRemoteControl");
 	}
 
 	@Override

@@ -122,6 +122,7 @@ public class ProxyManager {
 				@Override public boolean getTurtleConnect(LogisticsTileGenericPipe logisticsTileGenericPipe) {return false;}
 				@Override public int getLastCCID(LogisticsTileGenericPipe logisticsTileGenericPipe) {return 0;}
 				@Override public void handleMesssage(int computerId, Object message, LogisticsTileGenericPipe tile, int sourceId) {}
+				@Override public void addCraftingRecipes() {}
 			});
 			LogisticsPipes.log.info("Loaded CC DummyProxy");
 		}
@@ -160,6 +161,7 @@ public class ProxyManager {
 				@Override public int getEnergyStored(TileEntity tile, ForgeDirection opposite) {return 0;}
 				@Override public boolean canInterface(TileEntity tile, ForgeDirection opposite) {return false;}
 				@Override public int receiveEnergy(TileEntity tile, ForgeDirection opposite, int i, boolean b) {return 0;}
+				@Override public void addCraftingRecipes() {}
 			});
 			LogisticsPipes.log.info("Loaded ThermalExpansion DummyProxy");
 		}

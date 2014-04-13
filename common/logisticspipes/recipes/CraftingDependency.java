@@ -23,7 +23,8 @@ public enum CraftingDependency {
 	High_Tech_Modules(Active_Modules),
 	Upgrades(DistanceRequest),
 	Basic_Liquid(DistanceRequest),
-	Active_Liquid(Upgrades, Basic_Liquid);
+	Active_Liquid(Upgrades, Basic_Liquid),
+	Power_Distribution(Upgrades);
 	
 	private CraftingDependency[] dependencies;
 	private List<ItemStack> results = new ArrayList<ItemStack>();

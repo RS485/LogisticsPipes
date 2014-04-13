@@ -2,6 +2,7 @@ package logisticspipes.recipes;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemModule;
+import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.modules.LogisticsModule;
 import net.minecraft.block.Block;
@@ -12,46 +13,47 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import buildcraft.BuildCraftCore;
+import buildcraft.BuildCraftEnergy;
 import buildcraft.BuildCraftSilicon;
 import buildcraft.BuildCraftTransport;
 
 public class RecipeManager {
+	public static class LocalCraftingManager {
+		private CraftingManager craftingManager = CraftingManager.getInstance();
+		public LocalCraftingManager() {}
+		@SuppressWarnings("unchecked")
+		public void addRecipe(ItemStack stack, CraftingDependency dependent, Object... objects) {
+			craftingManager.getRecipeList().add(new LPShapedOreRecipe(stack, dependent, objects));
+		}
+		@SuppressWarnings("unchecked")
+		public void addOrdererRecipe(ItemStack stack, String dye, ItemStack orderer) {
+			craftingManager.getRecipeList().add(new ShapelessOreRecipe(stack, new Object[] {dye, orderer}) {
+				@Override
+				public ItemStack getCraftingResult(InventoryCrafting var1) {
+					ItemStack result = super.getCraftingResult(var1);
+					for(int i=0;i<var1.getInventoryStackLimit();i++) {
+						ItemStack stack = var1.getStackInSlot(i);
+						if(stack != null && stack.getItem() instanceof RemoteOrderer) {
+							result.setTagCompound(stack.getTagCompound());
+							break;
+						}
+					}
+					return result;
+				}
+			});
+		}
+		@SuppressWarnings("unchecked")
+		public void addShapelessRecipe(ItemStack stack, CraftingDependency dependent, Object... objects) {
+			craftingManager.getRecipeList().add(new LPShapelessOreRecipe(stack, dependent, objects));
+		}
+		@SuppressWarnings("unchecked")
+		public void addShapelessResetRecipe(int itemID, int meta) {
+			craftingManager.getRecipeList().add(new ShapelessResetRecipe(itemID, meta));
+		}
+	};
+	public static LocalCraftingManager craftingManager = new LocalCraftingManager();
 	
 	public static void loadRecipes() {
-		class LocalCraftingManager {
-			private CraftingManager craftingManager = CraftingManager.getInstance();
-			@SuppressWarnings("unchecked")
-			public void addRecipe(ItemStack stack, CraftingDependency dependent, Object... objects) {
-				craftingManager.getRecipeList().add(new LPShapedOreRecipe(stack, dependent, objects));
-			}
-			@SuppressWarnings("unchecked")
-			public void addOrdererRecipe(ItemStack stack, String dye, ItemStack orderer) {
-				craftingManager.getRecipeList().add(new ShapelessOreRecipe(stack, new Object[] {dye, orderer}) {
-					@Override
-					public ItemStack getCraftingResult(InventoryCrafting var1) {
-						ItemStack result = super.getCraftingResult(var1);
-						for(int i=0;i<var1.getInventoryStackLimit();i++) {
-							ItemStack stack = var1.getStackInSlot(i);
-							if(stack != null && stack.getItem() instanceof RemoteOrderer) {
-								result.setTagCompound(stack.getTagCompound());
-								break;
-							}
-						}
-						return result;
-					}
-				});
-			}
-			@SuppressWarnings("unchecked")
-			public void addShapelessRecipe(ItemStack stack, CraftingDependency dependent, Object... objects) {
-				craftingManager.getRecipeList().add(new LPShapelessOreRecipe(stack, dependent, objects));
-			}
-			@SuppressWarnings("unchecked")
-			public void addShapelessResetRecipe(int itemID, int meta) {
-				craftingManager.getRecipeList().add(new ShapelessResetRecipe(itemID, meta));
-			}
-		};
-		LocalCraftingManager craftingManager = new LocalCraftingManager();
-		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsFluidSupplierPipeMk1, 1), CraftingDependency.DistanceRequest, new Object[] {
 			"lPl",
 			" B ",
@@ -910,6 +912,30 @@ public class RecipeManager {
 			"PrP", 
 			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
 			Character.valueOf('r'), Item.netherQuartz, 
+			Character.valueOf('P'), Item.paper
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 4, ItemUpgrade.POWER_TRANSPORTATION), CraftingDependency.Power_Distribution, new Object[] { 
+			false, 
+			"PRP", 
+			"CGC", 
+			"PLP", 
+			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
+			Character.valueOf('R'), Block.blockRedstone, 
+			Character.valueOf('G'), Block.glowStone, 
+			Character.valueOf('L'), Block.blockLapis, 
+			Character.valueOf('P'), Item.paper
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_BC_SUPPLIER), CraftingDependency.Power_Distribution, new Object[] { 
+			false, 
+			"PEP", 
+			"CTC", 
+			"PGP", 
+			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
+			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
+			Character.valueOf('E'), new ItemStack(BuildCraftEnergy.engineBlock, 1, 1), 
+			Character.valueOf('T'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_TRANSPORTATION), 
 			Character.valueOf('P'), Item.paper
 		});
 		

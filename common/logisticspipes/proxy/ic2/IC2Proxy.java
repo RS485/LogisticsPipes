@@ -9,8 +9,11 @@ import ic2.api.item.Items;
 import ic2.api.recipe.Recipes;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemModule;
+import logisticspipes.items.ItemUpgrade;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
+import logisticspipes.recipes.CraftingDependency;
+import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -195,6 +198,50 @@ public class IC2Proxy implements IIC2Proxy {
 			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
 			Character.valueOf('r'), Item.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+		});
+		
+		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_LV_SUPPLIER), new Object[] { 
+			"PSP", 
+			"OBO", 
+			"PTP", 
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_TRANSPORTATION),
+			Character.valueOf('S'), Items.getItem("energyStorageUpgrade"), 
+			Character.valueOf('O'), Items.getItem("overclockerUpgrade"), 
+			Character.valueOf('T'), Items.getItem("transformerUpgrade"), 
+			Character.valueOf('P'), Item.paper
+		});
+		
+		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_MV_SUPPLIER), new Object[] { 
+			"PSP", 
+			"OBO", 
+			"PTP", 
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_LV_SUPPLIER),
+			Character.valueOf('S'), Items.getItem("energyStorageUpgrade"), 
+			Character.valueOf('O'), Items.getItem("overclockerUpgrade"), 
+			Character.valueOf('T'), Items.getItem("transformerUpgrade"), 
+			Character.valueOf('P'), Item.paper
+		});
+		
+		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_HV_SUPPLIER), new Object[] { 
+			"PSP", 
+			"OBO", 
+			"PTP", 
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_MV_SUPPLIER),
+			Character.valueOf('S'), Items.getItem("energyStorageUpgrade"), 
+			Character.valueOf('O'), Items.getItem("overclockerUpgrade"), 
+			Character.valueOf('T'), Items.getItem("transformerUpgrade"), 
+			Character.valueOf('P'), Item.paper
+		});
+		
+		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_EV_SUPPLIER), new Object[] { 
+			"PSP", 
+			"OBO", 
+			"PTP", 
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_HV_SUPPLIER),
+			Character.valueOf('S'), Items.getItem("energyStorageUpgrade"), 
+			Character.valueOf('O'), Items.getItem("overclockerUpgrade"), 
+			Character.valueOf('T'), Items.getItem("transformerUpgrade"), 
+			Character.valueOf('P'), Item.paper
 		});
 	}
 	

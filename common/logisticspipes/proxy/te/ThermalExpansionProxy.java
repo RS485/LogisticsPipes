@@ -6,16 +6,23 @@ import java.util.List;
 
 import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.items.ItemUpgrade;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
+import logisticspipes.recipes.CraftingDependency;
+import logisticspipes.recipes.RecipeManager;
+import logisticspipes.recipes.RecipeManager.LocalCraftingManager;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
+import thermalexpansion.block.TEBlocks;
 import thermalexpansion.block.tesseract.TileTesseract;
+import thermalexpansion.item.TEItems;
 import thermalexpansion.part.conduit.ConduitBase;
 import thermalexpansion.part.conduit.IConduit;
 import thermalexpansion.part.conduit.PropsConduit;
@@ -218,5 +225,21 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 	@Override
 	public int receiveEnergy(TileEntity tile, ForgeDirection opposite, int i, boolean b) {
 		return ((IEnergyHandler)tile).receiveEnergy(opposite, i, b);
+	}
+
+	@Override
+	public void addCraftingRecipes() {
+		LocalCraftingManager craftingManager = RecipeManager.craftingManager;
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_RF_SUPPLIER), CraftingDependency.Power_Distribution, new Object[] { 
+			false, 
+			"PEP", 
+			"RBR", 
+			"PTP", 
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_TRANSPORTATION),
+			Character.valueOf('P'), Item.paper, 
+			Character.valueOf('E'), new ItemStack(TEBlocks.blockDynamo, 1, 0), 
+			Character.valueOf('T'), TEItems.powerCoilSilver, 
+			Character.valueOf('R'), TEItems.powerCoilGold
+		});
 	}
 }

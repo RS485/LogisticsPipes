@@ -2,9 +2,19 @@ package logisticspipes.proxy.cc;
 
 import java.lang.reflect.Field;
 
+import logisticspipes.LogisticsPipes;
+import logisticspipes.items.ItemUpgrade;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.interfaces.ICCProxy;
+import logisticspipes.recipes.CraftingDependency;
+import logisticspipes.recipes.RecipeManager;
+import logisticspipes.recipes.RecipeManager.LocalCraftingManager;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import buildcraft.BuildCraftSilicon;
+import dan200.computercraft.ComputerCraft;
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.shared.computer.blocks.TileComputer;
@@ -92,5 +102,22 @@ public class CCProxy implements ICCProxy {
 				computer.queueEvent(CCConstants.LP_CC_MESSAGE_EVENT, new Object[]{sourceId, message});
 			}
 		}
+	}
+
+	@Override
+	public void addCraftingRecipes() {
+		LocalCraftingManager craftingManager = RecipeManager.craftingManager;
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CC_REMOTE_CONTROL), CraftingDependency.Upgrades, new Object[] { 
+			false, 
+			"rTr", 
+			"WCM", 
+			"rKr", 
+			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3),
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('T'), Block.torchRedstoneActive, 
+			Character.valueOf('W'), new ItemStack(ComputerCraft.Blocks.peripheral, 1, 1), 
+			Character.valueOf('M'), new ItemStack(ComputerCraft.Blocks.cable, 1, 1), 
+			Character.valueOf('K'), new ItemStack(ComputerCraft.Blocks.cable, 1, 0)
+		});
 	}
 }

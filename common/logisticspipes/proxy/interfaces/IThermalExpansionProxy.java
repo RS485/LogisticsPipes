@@ -24,4 +24,5 @@ public interface IThermalExpansionProxy {
 	public boolean canInterface(TileEntity tile, ForgeDirection opposite);
 	public int receiveEnergy(TileEntity tile, ForgeDirection opposite, int i, boolean b);
 	public boolean isTE();
+	public void addCraftingRecipes();
 }

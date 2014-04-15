@@ -306,7 +306,7 @@ public class LPTilePipeWrapper implements ILuaObject {
 									throw new InternalError("Internal Excption (Code: 3)");
 								}
 								try {
-									method.invoke(pipe, new Object[]{});
+									method.invoke(pipe.pipe, new Object[]{});
 								} catch(InvocationTargetException e) {
 									if(e.getTargetException() instanceof Exception) {
 										throw (Exception) e.getTargetException();
@@ -330,7 +330,7 @@ public class LPTilePipeWrapper implements ILuaObject {
 				@Override
 				public Object call() throws Exception {
 					try {
-						Object result = m.invoke(pipe, a);
+						Object result = m.invoke(pipe.pipe, a);
 						if(result != null) {
 							resultArray[0] = result;
 						}

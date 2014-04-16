@@ -2,8 +2,10 @@ package logisticspipes.asm;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import logisticspipes.Configs;
@@ -33,13 +35,17 @@ import cpw.mods.fml.relauncher.Side;
 
 public class LogisticsClassTransformer implements IClassTransformer {
 
-	private List<String> interfacesToClearA = new ArrayList<String>();
-	private List<String> interfacesToClearB = new ArrayList<String>();
+	public List<String> interfacesToClearA = new ArrayList<String>();
+	public List<String> interfacesToClearB = new ArrayList<String>();
 	private LaunchClassLoader cl = (LaunchClassLoader)LogisticsClassTransformer.class.getClassLoader();
 	private Field negativeResourceCache;
 	private Field invalidClasses;
 	
+	public Map<String, byte[]> cachedClasses = new HashMap<String, byte[]>();
+	public static LogisticsClassTransformer instance;
+	
 	public LogisticsClassTransformer() {
+		instance = this;
 		try {
 			negativeResourceCache = LaunchClassLoader.class.getDeclaredField("negativeResourceCache");
 			negativeResourceCache.setAccessible(true);
@@ -57,7 +63,14 @@ public class LogisticsClassTransformer implements IClassTransformer {
 	@Override
 	public byte[] transform(String name, String transformedName, byte[] bytes) {
 		try {
+			if(cachedClasses.containsKey(name)) {
+				interfacesToClearA.add(name);
+			}
 			clearNegativeInterfaceCache();
+			if(cachedClasses.containsKey(name)) {
+				return cachedClasses.get(name);
+			}
+			if(bytes == null) return null;
 			if(name.equals("buildcraft.transport.PipeTransportItems")) {
 				Configs.load();
 				if(Configs.TE_PIPE_SUPPORT) {

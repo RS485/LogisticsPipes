@@ -9,6 +9,7 @@ import logisticspipes.commands.commands.DummyCommand;
 import logisticspipes.commands.commands.DumpCommand;
 import logisticspipes.commands.commands.NBTDebugCommand;
 import logisticspipes.commands.commands.NameLookupCommand;
+import logisticspipes.commands.commands.ProxyCommand;
 import logisticspipes.commands.commands.RoutingThreadCommand;
 import logisticspipes.commands.commands.TransferNamesCommand;
 import logisticspipes.commands.commands.VersionCommand;
@@ -34,17 +35,18 @@ public class MainCommandHandler extends SubCommandHandler {
 	
 	@Override
 	public void registerSubCommands() {
-		this.registerSubCommands(new DummyCommand());
-		this.registerSubCommands(new VersionCommand());
-		this.registerSubCommands(new ChangelogCommand());
-		this.registerSubCommands(new NBTDebugCommand());
-		this.registerSubCommands(new RoutingThreadCommand());
-		this.registerSubCommands(new TransferNamesCommand());
-		this.registerSubCommands(new NameLookupCommand());
-		this.registerSubCommands(new DumpCommand());
-		this.registerSubCommands(new BypassCommand());
-		this.registerSubCommands(new WatchCommand());
-		this.registerSubCommands(new DebugCommand());
-		this.registerSubCommands(new ClearCommand());
+		this.registerSubCommand(new DummyCommand());
+		this.registerSubCommand(new VersionCommand());
+		this.registerSubCommand(new ChangelogCommand());
+		this.registerSubCommand(new NBTDebugCommand());
+		this.registerSubCommand(new RoutingThreadCommand());
+		this.registerSubCommand(new TransferNamesCommand());
+		this.registerSubCommand(new NameLookupCommand());
+		this.registerSubCommand(new DumpCommand());
+		this.registerSubCommand(new BypassCommand());
+		this.registerSubCommand(new WatchCommand());
+		this.registerSubCommand(new DebugCommand());
+		this.registerSubCommand(new ProxyCommand());
+		this.registerSubCommand(new ClearCommand());
 	}
 }

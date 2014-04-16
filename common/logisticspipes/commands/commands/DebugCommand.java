@@ -31,9 +31,9 @@ public class DebugCommand extends SubCommandHandler {
 
 	@Override
 	public void registerSubCommands() {
-		this.registerSubCommands(new MeCommand());
-		this.registerSubCommands(new TargetCommand());
-		this.registerSubCommands(new CloseCommand());
-		this.registerSubCommands(new RoutingTableCommand());
+		this.registerSubCommand(new MeCommand());
+		this.registerSubCommand(new TargetCommand());
+		this.registerSubCommand(new CloseCommand());
+		this.registerSubCommand(new RoutingTableCommand());
 	}
 }

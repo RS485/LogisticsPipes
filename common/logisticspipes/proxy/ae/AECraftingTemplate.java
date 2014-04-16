@@ -17,12 +17,15 @@ import appeng.api.me.util.InterfaceCraftingResponse;
 
 public class AECraftingTemplate extends CraftingTemplate {
 	ITileInterfaceApi _interface;
-	public AECraftingTemplate(ITileInterfaceApi _interface, ICraftItems crafter,
-			int priority) {
+	
+	public AECraftingTemplate(ITileInterfaceApi _interface, ICraftItems crafter, int priority) {
 		super(null, crafter, priority);
 		this._interface = _interface;
 	}
-	public AECraftingTemplate(ItemIdentifierStack result, ICraftItems crafter, int priority) {super( result,  crafter, priority);}
+	
+	public AECraftingTemplate(ItemIdentifierStack result, ICraftItems crafter, int priority) {
+		super( result,  crafter, priority);
+	}
 	
 	
 	@Override

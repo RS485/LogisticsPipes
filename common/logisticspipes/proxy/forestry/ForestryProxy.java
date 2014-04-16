@@ -35,22 +35,15 @@ import forestry.api.recipes.RecipeManagers;
 
 public class ForestryProxy implements IForestryProxy {
 	
-	public ForestryProxy() {
-		boolean initsuccessful = false;
-		try {
-			analyserClass = Class.forName("forestry.core.gadgets.TileAnalyzer");
-			Class<?> stringUtil = Class.forName("forestry.core.utils.StringUtil");
-			localize = stringUtil.getDeclaredMethod("localize", new Class[]{String.class});
-			localize.setAccessible(true);
-			propolis = ItemInterface.getItem("propolis").getItem();
-			pollen = ItemInterface.getItem("pollen").getItem();
-			honey = FluidRegistry.getFluidStack("honey", 1500);
-			root = (IBeeRoot) AlleleManager.alleleRegistry.getSpeciesRoot("rootBees");
-			initsuccessful = true;
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		has_all = initsuccessful;
+	public ForestryProxy() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
+		analyserClass = Class.forName("forestry.core.gadgets.TileAnalyzer");
+		Class<?> stringUtil = Class.forName("forestry.core.utils.StringUtil");
+		localize = stringUtil.getDeclaredMethod("localize", new Class[]{String.class});
+		localize.setAccessible(true);
+		propolis = ItemInterface.getItem("propolis").getItem();
+		pollen = ItemInterface.getItem("pollen").getItem();
+		honey = FluidRegistry.getFluidStack("honey", 1500);
+		root = (IBeeRoot) AlleleManager.alleleRegistry.getSpeciesRoot("rootBees");
 	}
 	
 	private Class<?> analyserClass;
@@ -58,7 +51,6 @@ public class ForestryProxy implements IForestryProxy {
 	private Item propolis;
 	private Item pollen;
 	private FluidStack honey;
-	private final boolean has_all;
 	private IBeeRoot root;
 
 	/**
@@ -78,7 +70,6 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public boolean isBee(ItemStack item) {
-		if(!has_all) return false;
 		return root.isMember(item);
 	}
 
@@ -111,7 +102,6 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public boolean isTileAnalyser(TileEntity tile) {
-		if(!has_all) return false;
 		try {
 			if(analyserClass.isAssignableFrom(tile.getClass())) {
 				return true;
@@ -123,15 +113,6 @@ public class ForestryProxy implements IForestryProxy {
 	}
 
 	/**
-	 * Checks if Forestry compat was successfully initialized.
-	 * @return Boolean, true if Forestry was initialized without any problems.
-	 */
-	@Override
-	public boolean forestryEnabled() {
-		return has_all;
-	}
-
-	/**
 	 * Checks if passed string allele was discovered by the player in passed world.
 	 * @param allele The allele as a String.
 	 * @param world The world to check in.
@@ -139,7 +120,6 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public boolean isKnownAlleleId(String allele, World world) {
-		if(!has_all) return false;
 		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele) instanceof IAlleleBeeSpecies)) return false;
 		if(!((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele)).isSecret()) return true;
 		return root.getBreedingTracker(world, MainProxy.proxy.getClientPlayer().username).isDiscovered((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele));
@@ -152,7 +132,6 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public String getAlleleName(String uid) {
-		if(!has_all) return "";
 		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleSpecies)) return "";
 		return ((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid)).getName();
 	}
@@ -194,7 +173,6 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public String getNextAlleleId(String uid, World world) {
-		if(!has_all) return "";
 		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleBeeSpecies)) {
 			return getFirstValidAllele(world);
 		}
@@ -219,7 +197,6 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public String getPrevAlleleId(String uid, World world) {
-		if(!has_all) return "";
 		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleBeeSpecies)) {
 			return getLastValidAllele(world);
 		}
@@ -380,7 +357,6 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public String getForestryTranslation(String input) {
-		if(!has_all) return input;
 		try {
 			return (String) localize.invoke(null, new Object[]{input.toLowerCase()});
 		} catch (Exception e) {
@@ -395,8 +371,6 @@ public class ForestryProxy implements IForestryProxy {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void addCraftingRecipes() {
-		if(!has_all) return;
-		
 		/* Carpenter recipes */
 		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
 			"CGC", 
@@ -564,7 +538,6 @@ public class ForestryProxy implements IForestryProxy {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public Icon getIconIndexForAlleleId(String uid, int phase) {
-		if(!has_all) return null;
 		IAllele bSpecies = forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid);
 		if (!(bSpecies instanceof IAlleleBeeSpecies))
 			bSpecies = root.getDefaultTemplate()[forestry.api.apiculture.EnumBeeChromosome.SPECIES.ordinal()];
@@ -580,7 +553,6 @@ public class ForestryProxy implements IForestryProxy {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public int getColorForAlleleId(String uid, int phase) {
-		if(!has_all) return 16777215;
 		if (!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleBeeSpecies))
 			return 16777215;
 		IAlleleBeeSpecies species = (IAlleleBeeSpecies) forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid);

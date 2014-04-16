@@ -8,12 +8,8 @@ public class FactorizationProxy implements IFactorizationProxy {
 	public static final String barelClassPath = "factorization.weird.TileEntityDayBarrel";
 	private Class<?> barrelClass;
 	
-	public FactorizationProxy() {
-		try {
-			barrelClass = Class.forName(barelClassPath);
-		} catch(Exception e) {
-			throw new RuntimeException(e);
-		}
+	public FactorizationProxy() throws ClassNotFoundException {
+		barrelClass = Class.forName(barelClassPath);
 	}
 	
 	@Override

@@ -22,7 +22,7 @@ public abstract class SubCommandHandler implements ICommandHandler {
 	
 	public abstract void registerSubCommands();
 	
-	protected final void registerSubCommands(ICommandHandler newHandler) {
+	protected final void registerSubCommand(ICommandHandler newHandler) {
 		List<String> newCommands = Arrays.asList(newHandler.getNames());
 		for(ICommandHandler handler:subCommands) {
 			for(String command:handler.getNames()) {

@@ -56,7 +56,6 @@ public class MorePageDisplay {
 	
 	public void append(String input, boolean flag) {
 		content.add(new StringConnected(input, flag));
-		System.out.println("Adding: " + input);
 	}
 	
 	public boolean isTerminated() {

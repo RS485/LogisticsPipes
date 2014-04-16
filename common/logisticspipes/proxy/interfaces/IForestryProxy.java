@@ -10,8 +10,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public interface IForestryProxy {
 	
-	public abstract boolean forestryEnabled();
-
 	public abstract boolean isBee(ItemStack item);
 	
 	public abstract boolean isBee(ItemIdentifier item);

@@ -24,14 +24,10 @@ public class CCProxy implements ICCProxy {
 	
 	private Field target;
 	
-	public CCProxy() {
+	public CCProxy() throws NoSuchFieldException, SecurityException {
 		ComputerCraftAPI.registerPeripheralProvider(new LPPeripheralProvider());
-		try {
-			target = Thread.class.getDeclaredField("target");
-			target.setAccessible(true);
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
+		target = Thread.class.getDeclaredField("target");
+		target.setAccessible(true);
 	}
 	
 	@Override

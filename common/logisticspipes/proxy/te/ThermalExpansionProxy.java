@@ -6,6 +6,7 @@ import java.util.List;
 
 import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -15,6 +16,7 @@ import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
 import logisticspipes.recipes.CraftingDependency;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.RecipeManager.LocalCraftingManager;
+import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -236,6 +238,17 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 			"RBR", 
 			"PTP", 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_TRANSPORTATION),
+			Character.valueOf('P'), Item.paper, 
+			Character.valueOf('E'), new ItemStack(TEBlocks.blockDynamo, 1, 0), 
+			Character.valueOf('T'), TEItems.powerCoilSilver, 
+			Character.valueOf('R'), TEItems.powerCoilGold
+		});
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_RF_POWERPROVIDER), CraftingDependency.Power_Distribution, new Object[] { 
+			false, 
+			"PEP", 
+			"RBR", 
+			"PTP", 
+			Character.valueOf('B'), Block.blockRedstone,
 			Character.valueOf('P'), Item.paper, 
 			Character.valueOf('E'), new ItemStack(TEBlocks.blockDynamo, 1, 0), 
 			Character.valueOf('T'), TEItems.powerCoilSilver, 

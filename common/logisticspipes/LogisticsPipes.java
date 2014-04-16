@@ -404,6 +404,11 @@ public class LogisticsPipes {
 		
 		LogisticsBrokenItem = new LogisticsBrokenItem(Configs.ITEM_BROKEN_ID);
 		LogisticsBrokenItem.setUnlocalizedName("brokenItem");
+
+		//Blocks
+		LogisticsSolidBlock = new LogisticsSolidBlock(Configs.LOGISTICS_SOLID_BLOCK_ID);
+		GameRegistry.registerBlock(LogisticsSolidBlock, LogisticsSolidBlockItem.class, null);
+		LogisticsSolidBlock.setUnlocalizedName("logisticsSolidBlock");
 		
 		SimpleServiceLocator.buildCraftProxy.registerPipes(event.getSide());
 		
@@ -423,7 +428,7 @@ public class LogisticsPipes {
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsFluidContainer,1,0), "en_US", "Logistics Fluid Container");
 		
 		LanguageRegistry.instance().addStringLocalization("itemGroup.Logistics_Pipes", "en_US", "Logistics Pipes");
-		
+
 		SimpleServiceLocator.IC2Proxy.addCraftingRecipes();
 		SimpleServiceLocator.forestryProxy.addCraftingRecipes();
 		SimpleServiceLocator.thaumCraftProxy.addCraftingRecipes();
@@ -440,11 +445,6 @@ public class LogisticsPipes {
 			SimpleServiceLocator.addCraftingRecipeProvider(new ImmibisCraftingTableMk2());
 		
 		SolderingStationRecipes.loadRecipe();
-		
-		//Blocks
-		LogisticsSolidBlock = new LogisticsSolidBlock(Configs.LOGISTICS_SOLID_BLOCK_ID);
-		GameRegistry.registerBlock(LogisticsSolidBlock, LogisticsSolidBlockItem.class, null);
-		LogisticsSolidBlock.setUnlocalizedName("logisticsSolidBlock");
 		
 		MainProxy.proxy.registerTileEntities();
 

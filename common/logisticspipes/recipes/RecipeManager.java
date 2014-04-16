@@ -1,6 +1,8 @@
 package logisticspipes.recipes;
 
+import forestry.apiculture.render.BeeItemRenderer;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.RemoteOrderer;
@@ -703,6 +705,18 @@ public class RecipeManager {
 			Character.valueOf('C'), Block.workbench,
 			Character.valueOf('S'), Block.chest,
 			Character.valueOf('G'), BuildCraftCore.stoneGearItem
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_BC_POWERPROVIDER), CraftingDependency.Power_Distribution, new Object[] { 
+			false, 
+			"PEP", 
+			"CTC", 
+			"PGP", 
+			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
+			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
+			Character.valueOf('E'), new ItemStack(BuildCraftEnergy.engineBlock, 1, 1), 
+			Character.valueOf('T'), Block.blockRedstone, 
+			Character.valueOf('P'), Item.paper
 		});
 		
 		craftingManager.addShapelessRecipe(new ItemStack(LogisticsPipes.LogisticsUpgradeManager, 1), CraftingDependency.Upgrades, new Object[] { 

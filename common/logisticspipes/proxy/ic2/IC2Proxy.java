@@ -8,10 +8,12 @@ import ic2.api.item.IElectricItem;
 import ic2.api.item.Items;
 import ic2.api.recipe.Recipes;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
+import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -236,6 +238,17 @@ public class IC2Proxy implements IIC2Proxy {
 			"OBO", 
 			"PTP", 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_HV_SUPPLIER),
+			Character.valueOf('S'), Items.getItem("energyStorageUpgrade"), 
+			Character.valueOf('O'), Items.getItem("overclockerUpgrade"), 
+			Character.valueOf('T'), Items.getItem("transformerUpgrade"), 
+			Character.valueOf('P'), Item.paper
+		});
+		
+		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_IC2_POWERPROVIDER), new Object[] { 
+			"PSP", 
+			"OBO", 
+			"PTP", 
+			Character.valueOf('B'), Block.blockRedstone,
 			Character.valueOf('S'), Items.getItem("energyStorageUpgrade"), 
 			Character.valueOf('O'), Items.getItem("overclockerUpgrade"), 
 			Character.valueOf('T'), Items.getItem("transformerUpgrade"), 

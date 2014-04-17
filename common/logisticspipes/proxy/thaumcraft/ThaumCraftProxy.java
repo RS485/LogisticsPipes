@@ -22,6 +22,8 @@ import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.lib.research.ScanManager;
 import buildcraft.BuildCraftSilicon;
 import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ThaumCraftProxy implements IThaumCraftProxy {
 	
@@ -50,6 +52,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 	 * @param gui The Gui screen to render on.
 	 */
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void renderAspectsDown(ItemStack item, int x, int y, GuiScreen gui) {
 		GL11.glPushMatrix();
 		AspectList tags = getTagsForStack(item);
@@ -71,7 +74,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 	 * @param stack The stack to get ObjectTags for.
 	 * @return ObjectTags containing all of the aspects for stack.
 	 */
-	public AspectList getTagsForStack(ItemStack stack) {
+	private AspectList getTagsForStack(ItemStack stack) {
 		if (stack == null) return new AspectList();
 		AspectList ot = ThaumcraftApiHelper.getObjectAspects(stack);
 		ot = ThaumcraftApiHelper.getBonusObjectTags(stack, ot);
@@ -85,7 +88,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 	 * @param y
 	 * @param gui The gui to render on.
 	 */
-	public void renderAspectAt(Aspect tag, int x, int y, GuiScreen gui, int amount) {
+	private void renderAspectAt(Aspect tag, int x, int y, GuiScreen gui, int amount) {
 		if(!(tag instanceof Aspect)) return;
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		UtilsFX.bindTexture("textures/aspects/_back.png");
@@ -124,6 +127,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 	 * @param gui The GuiScreen to render on.
 	 */
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void renderAspectsInGrid(List<String> etagIDs, int x, int y, int legnth, int width, GuiScreen gui) {
 		if (etagIDs.size() == 0) return;
 		int xshift = x;

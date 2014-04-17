@@ -2,6 +2,9 @@ package logisticspipes.proxy.bettersign;
 
 import java.lang.reflect.Field;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 import logisticspipes.proxy.interfaces.IBetterSignProxy;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelSign;
@@ -12,6 +15,7 @@ public class BetterSignProxy implements IBetterSignProxy {
 	private Field signStickHorizontal = null;
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void hideSignSticks(ModelSign model) {
 		if(signStickVertical == null) {
 			try {

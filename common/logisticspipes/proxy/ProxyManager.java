@@ -109,8 +109,8 @@ public class ProxyManager {
 		SimpleServiceLocator.setThaumCraftProxy(LogisticsProxyHandler.getWrapped("Thaumcraft", IThaumCraftProxy.class, ThaumCraftProxy.class, new IThaumCraftProxy() {
 			@Override public boolean isScannedObject(ItemStack stack, String playerName) {return false;}
 			@Override public List<String> getListOfTagsForStack(ItemStack stack) {return null;}
-			@Override public void renderAspectsDown(ItemStack item, int x, int y, GuiScreen gui) {}
-			@Override public void renderAspectsInGrid(List<String> eTags, int x, int y, int legnth, int width, GuiScreen gui) {}
+			@Override @SideOnly(Side.CLIENT) public void renderAspectsDown(ItemStack item, int x, int y, GuiScreen gui) {}
+			@Override @SideOnly(Side.CLIENT) public void renderAspectsInGrid(List<String> eTags, int x, int y, int legnth, int width, GuiScreen gui) {}
 			@Override public void addCraftingRecipes() {}
 		}));
 		
@@ -172,7 +172,7 @@ public class ProxyManager {
 		}));
 		
 		SimpleServiceLocator.setBetterSignProxy(LogisticsProxyHandler.getWrapped("BetterSignsMod", IBetterSignProxy.class, BetterSignProxy.class, new IBetterSignProxy() {
-			@Override public void hideSignSticks(ModelSign model) {
+			@Override @SideOnly(Side.CLIENT) public void hideSignSticks(ModelSign model) {
 				model.signStick.showModel = false;
 			}
 		}));

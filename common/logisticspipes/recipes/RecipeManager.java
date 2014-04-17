@@ -1,6 +1,5 @@
 package logisticspipes.recipes;
 
-import forestry.apiculture.render.BeeItemRenderer;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.items.ItemModule;

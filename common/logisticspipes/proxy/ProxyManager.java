@@ -138,7 +138,7 @@ public class ProxyManager {
 		}));
 		
 		SimpleServiceLocator.setNEIProxy(LogisticsProxyHandler.getWrapped("NotEnoughItems", INEIProxy.class, NEIProxy.class, new INEIProxy() {
-			@Override public int getWidthForList(List<String> data, FontRenderer fontRenderer) {return 0;}
+			@Override @SideOnly(Side.CLIENT) public int getWidthForList(List<String> data, FontRenderer fontRenderer) {return 0;}
 			@Override public List<String> getInfoForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver) {return new ArrayList<String>(0);}
 			@Override public ItemStack getItemForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver) {return null;}
 		}));

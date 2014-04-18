@@ -30,8 +30,7 @@ public class LogisticsItem extends Item {
 	@Override
     @SideOnly(Side.CLIENT)
     public void registerIcons(IconRegister par1IconRegister) {
-		if(this.itemIcon == null)
-			this.itemIcon = par1IconRegister.registerIcon("logisticspipes:"+getUnlocalizedName().replace("item.",""));
+		this.itemIcon = par1IconRegister.registerIcon("logisticspipes:"+getUnlocalizedName().replace("item.",""));
 	}
 
 	@Override

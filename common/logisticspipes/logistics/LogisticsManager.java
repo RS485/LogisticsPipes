@@ -106,6 +106,7 @@ public class LogisticsManager implements ILogisticsManager {
 			result = new Triplet<Integer, SinkReply, List<IFilter>>(null, null, null);
 		}
 		
+outer:
 		for (ExitRoute candidateRouter : validDestinations){
 			if (excludeSource) {
 				if(candidateRouter.destination.getId().equals(sourceRouter.getId())) continue;
@@ -117,7 +118,7 @@ public class LogisticsManager implements ILogisticsManager {
 			if(used.get(candidateRouter.destination.getSimpleID())) continue;
 			
 			for(IFilter filter:candidateRouter.filters) {
-				if(filter.blockRouting() || (filter.isBlocked() == filter.isFilteredItem(stack))) continue;
+				if(filter.blockRouting() || (filter.isBlocked() == filter.isFilteredItem(stack))) continue outer;
 			}
 
 			used.set(candidateRouter.destination.getSimpleID());

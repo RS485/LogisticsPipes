@@ -1,15 +1,23 @@
 package logisticspipes;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import logisticspipes.interfaces.IItemAdvancedExistance;
+import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.GuiReopenPacket;
+import logisticspipes.network.packets.chassis.ChestGuiClosed;
+import logisticspipes.network.packets.chassis.ChestGuiOpened;
+import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
@@ -17,10 +25,14 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.LogisticsGuiOverrenderer;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.ticks.VersionChecker;
+import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.QuickSortChestMarkerStorage;
 import logisticspipes.utils.PlayerCollectionList;
+import logisticspipes.utils.WorldUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -30,6 +42,7 @@ import net.minecraft.network.packet.NetHandler;
 import net.minecraft.network.packet.Packet1Login;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraftforge.client.event.GuiOpenEvent;
@@ -73,9 +86,12 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 		}
 	}
 	
+	public static final WeakHashMap<EntityPlayer, List<WeakReference<ModuleQuickSort>>> chestQuickSortConnection = new WeakHashMap<EntityPlayer, List<WeakReference<ModuleQuickSort>>>();
+	
 	@ForgeSubscribe
 	public void onPlayerInteract(final PlayerInteractEvent event) {
 		if(MainProxy.isServer(event.entityPlayer.worldObj)) {
+			chestQuickSortConnection.remove(event.entityPlayer);
 			if(event.action == Action.LEFT_CLICK_BLOCK) {
 				final TileEntity tile = event.entityPlayer.worldObj.getBlockTileEntity(event.x, event.y, event.z);
 				if(tile instanceof LogisticsTileGenericPipe) {
@@ -90,6 +106,29 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 						} else {
 							((CoreRoutedPipe)((LogisticsTileGenericPipe)tile).pipe).setDestroyByPlayer();
 						}
+					}
+				}
+			}
+			if(event.action == Action.RIGHT_CLICK_BLOCK) {
+				final TileEntity tile = event.entityPlayer.worldObj.getBlockTileEntity(event.x, event.y, event.z);
+				if(tile instanceof TileEntityChest || SimpleServiceLocator.ironChestProxy.isIronChest(tile)) {
+					List<WeakReference<ModuleQuickSort>> list = new ArrayList<WeakReference<ModuleQuickSort>>();
+					for(AdjacentTile adj:new WorldUtil(tile).getAdjacentTileEntities()) {
+						if(adj.tile instanceof LogisticsTileGenericPipe) {
+							if(((LogisticsTileGenericPipe)adj.tile).pipe instanceof PipeLogisticsChassi) {
+								if(((PipeLogisticsChassi)((LogisticsTileGenericPipe)adj.tile).pipe).getOrientation() == adj.orientation.getOpposite()) {
+									PipeLogisticsChassi chassi = (PipeLogisticsChassi)((LogisticsTileGenericPipe)adj.tile).pipe;
+									for(int i=0;i<chassi.getChassiSize();i++) {
+										if(chassi.getLogisticsModule().getSubModule(i) instanceof ModuleQuickSort) {
+											list.add(new WeakReference<ModuleQuickSort>((ModuleQuickSort) chassi.getLogisticsModule().getSubModule(i)));
+										}
+									}
+								}
+							}
+						}
+					}
+					if(!list.isEmpty()) {
+						chestQuickSortConnection.put(event.entityPlayer, list);
 					}
 				}
 			}
@@ -176,6 +215,7 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 
 	@Getter(lazy=true)
 	private static final Queue<GuiEntry> guiPos = new LinkedList<GuiEntry>();
+	private boolean isQuickSortWatcherGui = false;
 
 	//Handle GuiRepoen
 	@ForgeSubscribe
@@ -187,7 +227,7 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 				if(part.isActive()) {
 					part = getGuiPos().poll();
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiReopenPacket.class).setGuiID(part.getGuiID()).setPosX(part.getXCoord()).setPosY(part.getYCoord()).setPosZ(part.getZCoord()));
-					LogisticsGuiOverrenderer.getInstance().setActive(false);
+					LogisticsGuiOverrenderer.getInstance().setOverlaySlotActive(false);
 				}
 			} else {
 				GuiEntry part = getGuiPos().peek();
@@ -195,7 +235,18 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 			}
 		}
 		if(event.gui == null) {
-			LogisticsGuiOverrenderer.getInstance().setActive(false);
+			LogisticsGuiOverrenderer.getInstance().setOverlaySlotActive(false);
+			if(isQuickSortWatcherGui) {
+				QuickSortChestMarkerStorage.getInstance().disable();
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(ChestGuiClosed.class));
+				isQuickSortWatcherGui = false;
+			}
+		} else {
+			if(event.gui instanceof GuiChest || SimpleServiceLocator.ironChestProxy.isChestGui(event.gui)) {
+				QuickSortChestMarkerStorage.getInstance().enable();
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(ChestGuiOpened.class));
+				isQuickSortWatcherGui = true;
+			}
 		}
 	}
 

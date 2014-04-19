@@ -13,6 +13,7 @@ import logisticspipes.proxy.cc.CCProxy;
 import logisticspipes.proxy.enderio.EnderIOProxy;
 import logisticspipes.proxy.factorization.FactorizationProxy;
 import logisticspipes.proxy.forestry.ForestryProxy;
+import logisticspipes.proxy.ic.IronChestProxy;
 import logisticspipes.proxy.ic2.IC2Proxy;
 import logisticspipes.proxy.interfaces.IBetterSignProxy;
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
@@ -21,6 +22,7 @@ import logisticspipes.proxy.interfaces.IEnderIOProxy;
 import logisticspipes.proxy.interfaces.IFactorizationProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
+import logisticspipes.proxy.interfaces.IIronChestProxy;
 import logisticspipes.proxy.interfaces.IModularPowersuitsProxy;
 import logisticspipes.proxy.interfaces.INEIProxy;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
@@ -182,6 +184,11 @@ public class ProxyManager {
 			@Override public boolean isHyperCube(TileEntity tile) {return false;}
 			@Override public List<TileEntity> getConnectedHyperCubes(TileEntity tile) {return new ArrayList<TileEntity>(0);}
 			@Override public boolean isEnderIO() {return false;}
+		}));
+		
+		SimpleServiceLocator.setIronChestProxy(LogisticsProxyHandler.getWrapped("IronChest", IIronChestProxy.class, IronChestProxy.class, new IIronChestProxy() {
+			@Override public boolean isIronChest(TileEntity tile) {return false;}
+			@Override public @SideOnly(Side.CLIENT) boolean isChestGui(GuiScreen gui) {return false;}
 		}));
 	}
 }

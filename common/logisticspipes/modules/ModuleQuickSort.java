@@ -10,18 +10,23 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.modules.QuickSortState;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
+import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Icon;
+import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -38,9 +43,11 @@ public class ModuleQuickSort extends LogisticsModule {
 	private ISendRoutedItem _itemSender;
 	private IRoutedPowerProvider _power;
 
-
+	private PlayerCollectionList _watchingPlayer = new PlayerCollectionList();
+	private int lastPosSend = 0;
 
 	private IWorldProvider _world;
+	private int _slot;
 
 	public ModuleQuickSort() {}
 
@@ -70,7 +77,6 @@ public class ModuleQuickSort extends LogisticsModule {
 
 	@Override
 	public void tick() {
-
 		if (--currentTick > 0) return;
 		if(stalled)
 			currentTick = stalledDelay;
@@ -169,9 +175,11 @@ public class ModuleQuickSort extends LogisticsModule {
 				slot = invUtil.getStackInSlot(lastStackLookedAt);
 				if(lastStackLookedAt == lastSuceededStack) {
 					stalled = true;
+					send();
 					return; // then we have been around the list without sending, halt for now
 				}
 			}
+			send();
 	
 			// begin duplicate code
 			List<Integer> jamList = new LinkedList<Integer>();
@@ -241,8 +249,22 @@ public class ModuleQuickSort extends LogisticsModule {
 		}
 	}
 
+	private void send() {
+		if(lastPosSend != lastStackLookedAt) {
+			lastPosSend = lastStackLookedAt;
+			for(EntityPlayer player: _watchingPlayer.players()) {
+				sendPacketTo(player);
+			}
+		}
+	}
+
+	private void sendPacketTo(EntityPlayer player) {
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(QuickSortState.class).setInteger2(lastPosSend).setInteger(_slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player) player);
+	}
+
 	@Override 
 	public void registerSlot(int slot) {
+		_slot = slot;
 	}
 	
 	@Override 
@@ -287,5 +309,14 @@ public class ModuleQuickSort extends LogisticsModule {
 	@SideOnly(Side.CLIENT)
 	public Icon getIconTexture(IconRegister register) {
 		return register.registerIcon("logisticspipes:itemModule/ModuleQuickSort");
+	}
+
+	public void addWatchingPlayer(EntityPlayer player) {
+		_watchingPlayer.add(player);
+		sendPacketTo(player);
+	}
+
+	public void removeWatchingPlayer(EntityPlayer player) {
+		_watchingPlayer.remove(player);
 	}
 }

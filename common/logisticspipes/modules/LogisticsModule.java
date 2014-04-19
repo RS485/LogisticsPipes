@@ -114,4 +114,9 @@ public abstract class LogisticsModule implements ISaveState {
 	public boolean hasGui() {
 		return false;
 	}
+
+	@Override
+	public String toString() {
+		return (new StringBuilder()).append(getClass().getSimpleName()).append("@").append("(").append(getX()).append(", ").append(getY()).append(", ").append(getZ()).append(")").toString();
+	}
 }

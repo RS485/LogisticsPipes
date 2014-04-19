@@ -64,6 +64,6 @@ public class SlotFinderActivatePacket extends CoordinatesPacket {
 		LogisticsGuiOverrenderer.getInstance().setTargetPosY(getTagetPosY());
 		LogisticsGuiOverrenderer.getInstance().setTargetPosZ(getTagetPosZ());
 		LogisticsGuiOverrenderer.getInstance().setSlot(getSlot());
-		LogisticsGuiOverrenderer.getInstance().setActive(true);
+		LogisticsGuiOverrenderer.getInstance().setOverlaySlotActive(true);
 	}
 }

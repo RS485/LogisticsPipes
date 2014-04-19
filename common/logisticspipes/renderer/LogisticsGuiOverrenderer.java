@@ -44,7 +44,7 @@ public class LogisticsGuiOverrenderer {
 	@Setter
 	private int slot;
 	@Setter
-	private boolean isActive;
+	private boolean isOverlaySlotActive;
 	
 	private LogisticsGuiOverrenderer() {
 		try {
@@ -65,7 +65,7 @@ public class LogisticsGuiOverrenderer {
 	}
 	
 	public void preRender() {
-		if(isActive) {
+		if(isOverlaySlotActive) {
 			// Save Mouse Pos
 			oldX = Mouse.getX();
 			oldY = Mouse.getY();
@@ -97,7 +97,7 @@ public class LogisticsGuiOverrenderer {
 				if(LogisticsPipes.DEBUG) e.printStackTrace();
 			}
 		}
-		if(isActive) {
+		if(isOverlaySlotActive) {
 			GuiContainer gui = (GuiContainer) FMLClientHandler.instance().getClient().currentScreen;
 			int guiTop = gui.guiTop;
 			int guiLeft = gui.guiLeft;
@@ -117,7 +117,7 @@ public class LogisticsGuiOverrenderer {
 						MainProxy.sendPacketToServer(PacketHandler.getPacket(SlotFinderNumberPacket.class).setInventorySlot(slot.slotNumber).setSlot(this.slot).setPipePosX(pipePosX).setPipePosY(pipePosY).setPipePosZ(pipePosZ).setPosX(targetPosX).setPosY(targetPosY).setPosZ(targetPosZ));
 						clicked = false;
 						FMLClientHandler.instance().getClient().thePlayer.closeScreen();
-						isActive = false;
+						isOverlaySlotActive = false;
 					}
 					break;
 				}

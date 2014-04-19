@@ -22,12 +22,23 @@ public class WorldUtil {
 	private int _z;
 	
 	private World _worldObj;
-	
+
 	public WorldUtil(World worldObj, int x, int y, int z) {
 		this._worldObj = worldObj;
 		this._x = x;
 		this._y = y;
 		this._z = z;
+	}
+
+	public WorldUtil(TileEntity tile) {
+		this._worldObj = tile.worldObj;
+		this._x = tile.xCoord;
+		this._y = tile.yCoord;
+		this._z = tile.zCoord;
+	}
+
+	public LinkedList<AdjacentTile> getAdjacentTileEntities() {
+		return getAdjacentTileEntities(false);
 	}
 
 	public LinkedList<AdjacentTile> getAdjacentTileEntities(boolean flag) {

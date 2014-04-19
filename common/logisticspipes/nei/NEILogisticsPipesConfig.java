@@ -30,6 +30,8 @@ public class NEILogisticsPipesConfig implements IConfigureNEI {
 			added = true;
 		}
 		
+		GuiContainerManager.addDrawHandler(new DrawHandler());
+		
 		MultiItemRange main = new MultiItemRange();
 		main.add(LogisticsPipes.LogisticsNetworkMonitior);
 		main.add(LogisticsPipes.LogisticsRemoteOrderer);

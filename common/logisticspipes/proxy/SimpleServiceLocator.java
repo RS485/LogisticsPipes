@@ -23,6 +23,7 @@ import logisticspipes.proxy.interfaces.IEnderIOProxy;
 import logisticspipes.proxy.interfaces.IFactorizationProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
+import logisticspipes.proxy.interfaces.IIronChestProxy;
 import logisticspipes.proxy.interfaces.IModularPowersuitsProxy;
 import logisticspipes.proxy.interfaces.INEIProxy;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
@@ -171,5 +172,10 @@ public final class SimpleServiceLocator {
 	public static IEnderIOProxy enderIOProxy;
 	public static void setEnderIOProxy(IEnderIOProxy proxy) {
 		enderIOProxy = proxy;
+	}
+	
+	public static IIronChestProxy ironChestProxy;
+	public static void setIronChestProxy(IIronChestProxy proxy) {
+		ironChestProxy = proxy;
 	}
 }

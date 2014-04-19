@@ -52,7 +52,7 @@
 	<target name="download">
 		<mkdir dir="${download.dir}"/>
 
-		<get src="http://files.minecraftforge.net/minecraftforge/minecraftforge-src-${mc.version}-${forge.version}.zip" dest="${download.dir}" usetimestamp="True"/>
+		<get src="${downloadserver.full}minecraftforge-src-${mc.version}-${forge.version}.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}buildcraft-src-${bc.version}.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}forestry-api-${forestry.version}.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}industrialcraft-2-api_${ic2.version}.zip" dest="${download.dir}" usetimestamp="True"/>

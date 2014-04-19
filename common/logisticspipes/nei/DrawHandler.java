@@ -3,6 +3,7 @@ package logisticspipes.nei;
 import java.util.List;
 
 import logisticspipes.utils.QuickSortChestMarkerStorage;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
@@ -29,7 +30,7 @@ public class DrawHandler implements IContainerDrawHandler {
 			if(QuickSortChestMarkerStorage.getInstance().isActivated()) {
 				for(Slot slot: ((List<Slot>) gui.inventorySlots.inventorySlots)) {
 					if(QuickSortChestMarkerStorage.getInstance().getMarker().contains(slot.slotNumber)) {
-						gui.mc.renderEngine.bindTexture(WIDGITS);
+						Minecraft.getMinecraft().renderEngine.bindTexture(WIDGITS);
 						gui.drawTexturedModalRect(slot.xDisplayPosition - 3, slot.yDisplayPosition - 3, 1, 23, 22, 22);
 					}
 				}

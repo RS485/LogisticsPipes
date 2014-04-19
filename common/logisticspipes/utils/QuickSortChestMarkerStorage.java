@@ -18,7 +18,9 @@ public class QuickSortChestMarkerStorage {
 	private boolean isActivated = false;
 	
 	public void setSlots(int x, int y, int z, int slot, int pos) {
-		marker.put(new Quartet<Integer, Integer, Integer, Integer>(x, y, z, slot), pos);
+		if(isActivated) {
+			marker.put(new Quartet<Integer, Integer, Integer, Integer>(x, y, z, slot), pos);
+		}
 	}
 	
 	public void enable() {

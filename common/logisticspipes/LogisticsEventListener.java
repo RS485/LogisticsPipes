@@ -26,8 +26,8 @@ import logisticspipes.renderer.LogisticsGuiOverrenderer;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.ticks.VersionChecker;
 import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.QuickSortChestMarkerStorage;
 import logisticspipes.utils.PlayerCollectionList;
+import logisticspipes.utils.QuickSortChestMarkerStorage;
 import logisticspipes.utils.WorldUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -91,7 +91,6 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 	@ForgeSubscribe
 	public void onPlayerInteract(final PlayerInteractEvent event) {
 		if(MainProxy.isServer(event.entityPlayer.worldObj)) {
-			chestQuickSortConnection.remove(event.entityPlayer);
 			if(event.action == Action.LEFT_CLICK_BLOCK) {
 				final TileEntity tile = event.entityPlayer.worldObj.getBlockTileEntity(event.x, event.y, event.z);
 				if(tile instanceof LogisticsTileGenericPipe) {
@@ -215,7 +214,6 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 
 	@Getter(lazy=true)
 	private static final Queue<GuiEntry> guiPos = new LinkedList<GuiEntry>();
-	private boolean isQuickSortWatcherGui = false;
 
 	//Handle GuiRepoen
 	@ForgeSubscribe
@@ -236,17 +234,12 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 		}
 		if(event.gui == null) {
 			LogisticsGuiOverrenderer.getInstance().setOverlaySlotActive(false);
-			if(isQuickSortWatcherGui) {
-				QuickSortChestMarkerStorage.getInstance().disable();
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(ChestGuiClosed.class));
-				isQuickSortWatcherGui = false;
-			}
+		}
+		if(event.gui instanceof GuiChest || SimpleServiceLocator.ironChestProxy.isChestGui(event.gui)) {
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(ChestGuiOpened.class));
 		} else {
-			if(event.gui instanceof GuiChest || SimpleServiceLocator.ironChestProxy.isChestGui(event.gui)) {
-				QuickSortChestMarkerStorage.getInstance().enable();
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(ChestGuiOpened.class));
-				isQuickSortWatcherGui = true;
-			}
+			QuickSortChestMarkerStorage.getInstance().disable();
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(ChestGuiClosed.class));
 		}
 	}
 

@@ -29,6 +29,7 @@ public class ChestGuiClosed extends ModernPacket {
 			if(module == null) continue;
 			module.removeWatchingPlayer(player);
 		}
+		LogisticsEventListener.chestQuickSortConnection.remove(player);
 	}
 
 	@Override

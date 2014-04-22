@@ -10,6 +10,7 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
@@ -113,5 +114,12 @@ public class LPDataOutputStream extends DataOutputStream {
 
 	public byte[] toByteArray() {
 		return byteStream.toByteArray();
+	}
+
+	public void writeItemIdentifierStack(ItemIdentifierStack stack) throws IOException {
+		this.writeInt(stack.getItem().itemID);
+		this.writeInt(stack.getStackSize());
+		this.writeInt(stack.getItem().itemDamage);
+		this.writeNBTTagCompound(stack.getItem().tag);
 	}
 }

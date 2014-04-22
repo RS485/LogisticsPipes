@@ -13,6 +13,8 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
@@ -128,5 +130,13 @@ public class LPDataInputStream extends DataInputStream {
 			array[i] = this.readInt();
 		}
 		return array;
+	}
+	
+	public ItemIdentifierStack readItemIdentifierStack() throws IOException {
+		int itemID = this.readInt();
+		int stacksize = this.readInt();
+		int damage = this.readInt();
+		NBTTagCompound tag = this.readNBTTagCompound();
+		return new ItemIdentifierStack(ItemIdentifier.get(itemID, damage, tag), stacksize);
 	}
 }

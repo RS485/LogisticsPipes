@@ -59,12 +59,12 @@ public class ComponentList extends ModernPacket {
 	public void writeData(LPDataOutputStream data) throws IOException {
 		for(ItemIdentifierStack item:used) {
 			data.write(1);
-			item.write(data);
+			data.writeItemIdentifierStack(item);
 		}
 		data.write(0);
 		for(ItemIdentifierStack item:missing) {
 			data.write(1);
-			item.write(data);
+			data.writeItemIdentifierStack(item);
 		}
 		data.write(0);
 	}
@@ -72,10 +72,10 @@ public class ComponentList extends ModernPacket {
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		while(data.read() != 0) {
-			used.add(ItemIdentifierStack.read(data));
+			used.add(data.readItemIdentifierStack());
 		}
 		while(data.read() != 0) {
-			missing.add(ItemIdentifierStack.read(data));
+			missing.add(data.readItemIdentifierStack());
 		}
 	}
 }

@@ -6,6 +6,7 @@ import java.util.Collection;
 
 import logisticspipes.Configs;
 import logisticspipes.asm.ClientSideOnlyMethodContent;
+import logisticspipes.commands.chathelper.ChatColor;
 import logisticspipes.gui.orderer.GuiOrderer;
 import logisticspipes.gui.orderer.GuiRequestTable;
 import logisticspipes.network.LPDataInputStream;
@@ -47,20 +48,20 @@ public class MissingItems extends ModernPacket {
 			((GuiRequestTable)FMLClientHandler.instance().getClient().currentScreen).handleRequestAnswer(getItems(), isFlag(), (GuiRequestTable)FMLClientHandler.instance().getClient().currentScreen, player);
 		} else if(isFlag()) {
 			for(ItemIdentifierStack item:items){
-				player.addChatMessage("Missing: " + item.getFriendlyName());
+				player.addChatMessage(ChatColor.RED + "Missing: " + item.getFriendlyName());
 			}
 		} else {
 			for(ItemIdentifierStack item:items) {
-				player.addChatMessage("Requested: " + item.getFriendlyName());
+				player.addChatMessage(ChatColor.GREEN + "Requested: " + item.getFriendlyName());
 			}
-			player.addChatMessage("Request successful!");
+			player.addChatMessage(ChatColor.GREEN + "Request successful!");
 		}
 	}
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
 		for(ItemIdentifierStack item:items) {
 			data.write(1);
-			item.write(data);
+			data.writeItemIdentifierStack(item);
 		}
 		data.write(0);
 		data.writeBoolean(isFlag());
@@ -69,7 +70,7 @@ public class MissingItems extends ModernPacket {
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		while(data.read() != 0) {
-			items.add(ItemIdentifierStack.read(data));
+			items.add(data.readItemIdentifierStack());
 		}
 		setFlag(data.readBoolean());
 	}

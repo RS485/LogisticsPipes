@@ -33,14 +33,14 @@ public abstract class RequestPacket extends CoordinatesPacket {
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
 		super.writeData(data);
-		stack.write(data);
+		data.writeItemIdentifierStack(stack);
 		data.writeInt(dimension);
 	}
 
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);
-		stack = ItemIdentifierStack.read(data);
+		stack = data.readItemIdentifierStack();
 		dimension = data.readInt();
 	}
 }

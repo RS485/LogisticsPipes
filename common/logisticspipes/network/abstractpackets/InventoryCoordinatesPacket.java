@@ -110,7 +110,7 @@ public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
 	
 	private void sendItemIdentifierStack(ItemIdentifierStack item, LPDataOutputStream data) throws IOException {
 		if (item != null) {
-			item.write(data);
+			data.writeItemIdentifierStack(item);
 		} else {
 			data.writeInt(0);
 		}

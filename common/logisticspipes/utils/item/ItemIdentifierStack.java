@@ -130,21 +130,6 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 		return getStackSize() + " " + _item.getFriendlyName();
 	}
 	
-	public void write(LPDataOutputStream data) throws IOException {
-		data.writeInt(_item.itemID);
-		data.writeInt(getStackSize());
-		data.writeInt(_item.itemDamage);
-		data.writeNBTTagCompound(_item.tag);
-	}
-	
-	public static ItemIdentifierStack read(LPDataInputStream data) throws IOException {
-		int itemID = data.readInt();
-		int stacksize = data.readInt();
-		int damage = data.readInt();
-		NBTTagCompound tag = data.readNBTTagCompound();
-		return new ItemIdentifierStack(ItemIdentifier.get(itemID, damage, tag), stacksize);
-	}
-	
 	public static LinkedList<ItemIdentifierStack> getListFromInventory(IInventory inv) {
 		return getListFromInventory(inv, false);
 	}

@@ -1,4 +1,4 @@
-package thermalexpansion.block.tesseract;
+package thermalexpansion.block.ender;
 
 import java.util.List;
 

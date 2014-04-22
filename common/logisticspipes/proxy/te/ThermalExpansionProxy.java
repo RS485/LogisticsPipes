@@ -23,7 +23,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import thermalexpansion.block.TEBlocks;
-import thermalexpansion.block.tesseract.TileTesseract;
+import thermalexpansion.block.ender.TileTesseract;
 import thermalexpansion.item.TEItems;
 import thermalexpansion.part.conduit.ConduitBase;
 import thermalexpansion.part.conduit.IConduit;
@@ -46,7 +46,7 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
-			String expectedTEVersion = "3.0.0.2";
+			String expectedTEVersion = "3.0.0.5";
 			if(TEVersion != null) {
 				if(!TEVersion.contains(expectedTEVersion)) {
 					throw new RuntimeException("The TE Version '" + TEVersion + "' is not supported by this LP version when you have TE Conduit support enabled. Please use '" + expectedTEVersion + "'");
@@ -201,7 +201,7 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 	@Override
 	public boolean isSideFree(TileEntity tile, int side) {
 		if(!Configs.TE_PIPE_SUPPORT) return false;
-		return ((IConduit)tile).getConduit().tile().occlusionTest(((IConduit)tile).getConduit().tile().partList(), PropsConduit.occlusions[side]);
+		return ((IConduit)tile).getConduit().tile().occlusionTest(((IConduit)tile).getConduit().tile().partList(), PropsConduit.CONDUIT_OCCLUSION[side]);
 	}
 
 	@Override

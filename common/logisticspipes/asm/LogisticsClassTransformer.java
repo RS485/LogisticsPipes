@@ -10,6 +10,7 @@ import java.util.Set;
 
 import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.asm.bc.ClassPipeTransportItemsHandler;
 import logisticspipes.utils.ModStatusHelper;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.LaunchClassLoader;
@@ -18,7 +19,6 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
@@ -72,10 +72,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			}
 			if(bytes == null) return null;
 			if(name.equals("buildcraft.transport.PipeTransportItems")) {
-				Configs.load();
-				if(Configs.TE_PIPE_SUPPORT) {
-					return handlePipeTransportItems(bytes);
-				}
+				return ClassPipeTransportItemsHandler.handlePipeTransportItems(bytes);
 			}
 			if(name.equals("thermalexpansion.part.conduit.ConduitBase")) {
 				Configs.load();
@@ -287,42 +284,6 @@ public class LogisticsClassTransformer implements IClassTransformer {
 		}
 		if(!changed && methodsToRemove.isEmpty() && fieldsToRemove.isEmpty()) {
 			return bytes;
-		}
-		ClassWriter writer = new ClassWriter(0);
-		node.accept(writer);
-		return writer.toByteArray();
-	}
-	
-	private byte[] handlePipeTransportItems(byte[] bytes) {
-		final ClassNode node = new ClassNode();
-		ClassReader reader = new ClassReader(bytes);
-		reader.accept(node, 0);
-		for(MethodNode m:node.methods) {
-			if(m.name.equals("readFromNBT")) {
-				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
-
-					// logisticspipes.asm.LogisticsASMHookClass.clearInvalidFluidContainers(items);
-					@Override
-					public void visitInsn(int opcode) {
-						if(opcode == Opcodes.RETURN) {
-							AbstractInsnNode instruction_1 = null;
-							AbstractInsnNode instruction_2 = null;
-							instructions.remove(instruction_2 = instructions.getLast());
-							instructions.remove(instruction_1 = instructions.getLast());
-							Label l = new Label();
-							this.visitLabel(l);
-							this.visitVarInsn(Opcodes.ALOAD, 0);
-							this.visitFieldInsn(Opcodes.GETFIELD, "buildcraft/transport/PipeTransportItems", "items", "Lbuildcraft/transport/TravelerSet;");
-							this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/LogisticsASMHookClass", "clearInvalidFluidContainers", "(Lbuildcraft/transport/TravelerSet;)V");
-							instructions.add(instruction_1);
-							instructions.add(instruction_2);							
-						}
-						super.visitInsn(opcode);
-					}
-				};
-				m.accept(mv);
-				node.methods.set(node.methods.indexOf(m), mv);
-			}
 		}
 		ClassWriter writer = new ClassWriter(0);
 		node.accept(writer);

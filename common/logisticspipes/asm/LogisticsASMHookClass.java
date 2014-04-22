@@ -7,6 +7,7 @@ import java.util.Iterator;
 
 import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.proxy.SimpleServiceLocator;
 import net.minecraft.item.ItemStack;
 import buildcraft.transport.TravelerSet;
@@ -33,7 +34,7 @@ public class LogisticsASMHookClass {
         	while(iterator.hasNext()) {
         		TravelingItem item = iterator.next();
         		ItemStack stack = item.getItemStack();
-        		if(stack != null && SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(stack) == null) {
+        		if(stack != null && stack.getItem() instanceof LogisticsFluidContainer && SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(stack) == null) {
         			iterator.remove();
         		}
         	}

@@ -12,6 +12,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.VersionNotSupportedException;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
 import logisticspipes.recipes.CraftingDependency;
 import logisticspipes.recipes.RecipeManager;
@@ -49,7 +50,7 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 			String expectedTEVersion = "3.0.0.5";
 			if(TEVersion != null) {
 				if(!TEVersion.contains(expectedTEVersion)) {
-					throw new RuntimeException("The TE Version '" + TEVersion + "' is not supported by this LP version when you have TE Conduit support enabled. Please use '" + expectedTEVersion + "'");
+					throw new VersionNotSupportedException("TE", TEVersion, expectedTEVersion, " when you have TE Conduit support enabled");
 				}
 			} else {
 				LogisticsPipes.log.info("Couldn't check the TE Version.");

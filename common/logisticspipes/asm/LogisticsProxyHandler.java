@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.proxy.VersionNotSupportedException;
 import logisticspipes.proxy.interfaces.IProxyController;
 import logisticspipes.utils.ModStatusHelper;
 import net.minecraft.launchwrapper.IClassTransformer;
@@ -53,6 +54,9 @@ public class LogisticsProxyHandler {
 		try {
 			return getWrappedException(modId, interfaze, proxyClazz, dummyProxy);
 		} catch(Exception e) {
+			if(e instanceof RuntimeException) {
+				throw (RuntimeException) e;
+			}
 			throw new RuntimeException(e);
 		}
 	}
@@ -231,7 +235,10 @@ public class LogisticsProxyHandler {
 		if(ModStatusHelper.isModLoaded(modId)) {
 			try {
 				proxy = proxyClazz.newInstance();
-			} catch(Exception e) {
+			} catch(Throwable e) {
+				if(e instanceof VersionNotSupportedException) {
+					throw (VersionNotSupportedException) e;
+				}
 				e.printStackTrace();
 			}
 		} else {
@@ -279,7 +286,7 @@ public class LogisticsProxyHandler {
 		Label l0 = new Label();
 		Label l1 = new Label();
 		Label l2 = new Label();
-		mv.visitTryCatchBlock(l0, l1, l2, "java/lang/Exception");
+		mv.visitTryCatchBlock(l0, l1, l2, "java/lang/Throwable");
 		Label l3 = new Label();
 		mv.visitLabel(l3);
 		mv.visitVarInsn(ALOAD, 0);
@@ -294,12 +301,12 @@ public class LogisticsProxyHandler {
 		mv.visitLabel(l1);
 		mv.visitInsn(returnType);
 		mv.visitLabel(l2);
-		mv.visitFrame(Opcodes.F_SAME1, 0, null, 1, new Object[] { "java/lang/Exception" });
+		mv.visitFrame(Opcodes.F_SAME1, 0, null, 1, new Object[] { "java/lang/Throwable" });
 		mv.visitVarInsn(ASTORE, eIndex);
 		Label l5 = new Label();
 		mv.visitLabel(l5);
 		mv.visitVarInsn(ALOAD, eIndex);
-		mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Exception", "printStackTrace", "()V");
+		mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Throwable", "printStackTrace", "()V");
 		mv.visitVarInsn(ALOAD, 0);
 		mv.visitMethodInsn(INVOKESPECIAL, className, "error", "()V");
 		mv.visitLabel(l4);
@@ -315,7 +322,7 @@ public class LogisticsProxyHandler {
 		mv.visitLabel(l8);
 		mv.visitLocalVariable("this", "L" + className + ";", null, l3, l8, 0);
 		addParameterVars(mv, method, l3, l8);
-		mv.visitLocalVariable("e", "Ljava/lang/Exception;", null, l5, l4, eIndex);
+		mv.visitLocalVariable("e", "Ljava/lang/Throwable;", null, l5, l4, eIndex);
 		mv.visitMaxs(0, 0);
 		mv.visitEnd();
 	}

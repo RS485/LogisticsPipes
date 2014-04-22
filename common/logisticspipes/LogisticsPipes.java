@@ -43,6 +43,7 @@ import logisticspipes.proxy.ProxyManager;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.SpecialInventoryHandlerManager;
 import logisticspipes.proxy.SpecialTankHandlerManager;
+import logisticspipes.proxy.VersionNotSupportedException;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.recipeproviders.AssemblyAdvancedWorkbench;
 import logisticspipes.proxy.recipeproviders.AssemblyTable;
@@ -240,7 +241,7 @@ public class LogisticsPipes {
 		String expectedBCVersion = "4.2.2";
 		if(BCVersion != null) {
 			if(!BCVersion.equals("@VERSION@") && !BCVersion.contains(expectedBCVersion)) {
-				throw new RuntimeException("The BC Version '" + BCVersion + "' is not supported by this LP version. Please use '" + expectedBCVersion + "'");
+				throw new VersionNotSupportedException("BC", BCVersion, expectedBCVersion, "");
 			}
 		} else {
 			log.info("Couldn't check the BC Version.");

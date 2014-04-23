@@ -78,13 +78,13 @@ public class InjectItemHook {
 				}
 			}
 
-			if (stackCount > pipe.MAX_PIPE_STACKS) {
+			if (stackCount > PipeTransportItems.MAX_PIPE_STACKS) {
 				BCLog.logger.log(Level.WARNING, String.format("Pipe exploded at %d,%d,%d because it had too many stacks: %d", pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord, stackCount));
 				destroyPipe(pipe);
 				return;
 			}
 
-			if (numItems > pipe.MAX_PIPE_ITEMS) {
+			if (numItems > PipeTransportItems.MAX_PIPE_ITEMS) {
 				BCLog.logger.log(Level.WARNING, String.format("Pipe exploded at %d,%d,%d because it had too many items: %d", pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord, numItems));
 				destroyPipe(pipe);
 			}

@@ -187,7 +187,9 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 	public void modeChanged() {
 		if(_world != null) {
 			if(MainProxy.isServer(_world.getWorld())) {
-				MainProxy.sendToPlayerList(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(slot).setInteger(getExtractMode()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+				if(getY() >= 0) {
+					MainProxy.sendToPlayerList(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(slot).setInteger(getExtractMode()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+				}
 			} else {
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(slot).setInteger(getExtractMode()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 			}

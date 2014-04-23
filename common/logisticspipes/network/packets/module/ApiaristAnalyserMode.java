@@ -7,6 +7,7 @@ import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.DummyWorldProvider;
 import logisticspipes.utils.gui.DummyModuleContainer;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
@@ -40,7 +41,8 @@ public class ApiaristAnalyserMode extends Integer2CoordinatesPacket {
 					DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
 					if(dummy.getModule() instanceof ModuleApiaristAnalyser) {
 						ModuleApiaristAnalyser module = (ModuleApiaristAnalyser) dummy.getModule();
-						module.setExtractMode(getInteger2());
+						module.registerHandler(null, null, new DummyWorldProvider(player.worldObj), null);
+						module.setExtractMode(getInteger());
 					}
 				}
 				return;

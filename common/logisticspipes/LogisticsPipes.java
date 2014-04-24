@@ -113,7 +113,6 @@ import cpw.mods.fml.relauncher.Side;
 		dependencies = "required-after:Forge@[9.10.1.850,);" +
 				"required-after:BuildCraft|Core;" +
 				"required-after:BuildCraft|Transport;" +
-				"required-after:BuildCraft|Builders;" +
 				"required-after:BuildCraft|Silicon;" +
 				"after:IC2;" +
 				"after:Forestry;" +

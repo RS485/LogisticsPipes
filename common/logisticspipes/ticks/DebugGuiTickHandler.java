@@ -34,7 +34,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 
-import logisticspipes.commands.chathelper.ChatColor;
 import logisticspipes.commands.chathelper.LPChatListener;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.OpenChatGui;
@@ -48,6 +47,7 @@ import logisticspipes.network.packets.debuggui.DebugTypePacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.string.ChatColor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;

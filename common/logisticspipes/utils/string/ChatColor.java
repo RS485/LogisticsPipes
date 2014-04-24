@@ -1,4 +1,4 @@
-package logisticspipes.commands.chathelper;
+package logisticspipes.utils.string;
 
 public enum ChatColor {
     /**

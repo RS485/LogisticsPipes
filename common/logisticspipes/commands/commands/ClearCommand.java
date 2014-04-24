@@ -1,7 +1,7 @@
 package logisticspipes.commands.commands;
 
 import logisticspipes.commands.abstracts.ICommandHandler;
-import logisticspipes.commands.chathelper.ChatColor;
+import logisticspipes.utils.string.ChatColor;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ChatMessageComponent;
 

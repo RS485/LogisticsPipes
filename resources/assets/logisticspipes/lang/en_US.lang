@@ -1,5 +1,10 @@
 # Master language file
 
+# Insert %c and the name found in logisticspipes.utils.string.ChatColor to add colors
+# Example '%cYELLOW ' (The space behind will be removed)
+
+# Pipes
+
 item.PipeItemsBasicLogistics=Basic Logistics Pipe
 item.PipeItemsBasicLogistics.tip1=Type: Passive push destination
 item.PipeItemsBasicLogistics.tip2= - Routes items around the network.
@@ -142,3 +147,93 @@ item.PipeFluidRequestLogistics=Logistics Fluid Request Pipe
 item.PipeFluidExtractor=Logistics Fluid Extractor Pipe
 item.PipeFluidSatellite=Logistics Fluid Satellite Pipe
 item.PipeBlockRequestTable=Logistics Request Table
+
+# Modules
+
+#TODO: Add shift tooltip information
+item.ModuleBlank=Blank Module
+item.ModuleItemSink=ItemSink module
+item.ModulePassiveSupplier=Passive Supplier module
+item.ModuleExtractor=Extractor module
+item.ModulePolymorphicItemSink=Polymorphic ItemSink module
+item.ModuleQuickSort=QuickSort module
+item.ModuleTerminus=Terminus module
+item.ModuleAdvancedExtractor=Advanced Extractor module
+item.ModuleExtractorMk2=Extractor MK2 module
+item.ModuleAdvancedExtractorMK2=Advanced Extractor MK2
+item.ModuleExtractorMk3=Extractor MK3 module
+item.ModuleAdvancedExtractorMK3=Advanced Extractor MK3
+item.ModuleProvider=Provider module
+item.ModuleProviderMk2=Provider module MK2
+item.ModuleElectricManager=Electric Manager module
+item.ModuleElectricBuffer=Electric Buffer module
+item.ModuleApiaristAnalyser=Bee Analyzer module
+item.ModuleApiaristSink=BeeSink module
+item.ModuleApiaristRefiller=Apiary Refiller module
+item.ModuleApiaristTerminus=Drone Terminus module
+item.ModuleModBasedItemSink=Mod Based ItemSink module
+item.ModuleOreDictItemSink=OreDict ItemSink module
+item.ModuleThaumicAspectSink=Thaumic AspectSink module
+item.ModuleEnchantmentSink=Enchantment Sink module
+item.ModuleEnchantmentSinkMK2=Enchantment Sink module MK2
+
+# Items
+
+item.brokenItem=Logistics Broken Item
+item.logisticsFluidContainer=Logistics Fluid Container
+item.upgradeManagerItem=Upgrade Manager
+item.HUDbow=Logistics HUD Bow
+item.HUDglass=Logistics HUD Glass
+item.HUDnosebridge=Logistics HUD Nose Bridge
+item.NanoHopper=Nano Hopper
+item.logisticsItemCard=Logistics Item Card
+item.itemDisk=Logistics Disk
+item.networkMonitorItem=Network monitor
+item.CraftingSignCreator=Crafting Sign Creator
+item.logisticsHUDGlasses=Logistics HUD Glasses
+item.remoteOrdererItem=Remote Orderer
+
+# Upgrades
+
+item.SneakyUpgradeUP=Sneaky Upgrade (UP)
+item.SneakyUpgradeDOWN=Sneaky Upgrade (DOWN)
+item.SneakyUpgradeNORTH=Sneaky Upgrade (NORTH)
+item.SneakyUpgradeSOUTH=Sneaky Upgrade (SOUTH)
+item.SneakyUpgradeEAST=Sneaky Upgrade (EAST)
+item.SneakyUpgradeWEST=Sneaky Upgrade (WEST)
+item.CombinedSneakyUpgrade=Sneaky Combination Upgrade
+item.SpeedUpgrade=Item Speed Upgrade
+item.ConnectionUpgradeUP=Disconnection Upgrade (UP)
+item.ConnectionUpgradeDOWN=Disconnection Upgrade (DOWN)
+item.ConnectionUpgradeNORTH=Disconnection Upgrade (NORTH)
+item.ConnectionUpgradeSOUTH=Disconnection Upgrade (SOUTH)
+item.ConnectionUpgradeEAST=Disconnection Upgrade (EAST)
+item.ConnectionUpgradeWEST=Disconnection Upgrade (WEST)
+item.AdvancedSatelliteUpgrade=Advanced Satellite Upgrade
+item.FluidCraftingUpgrade=Fluid Crafting Upgrade
+item.CraftingByproductUpgrade=Crafting Byproduct Extraction Upgrade
+item.PatternUpgrade=Placement Rules Upgrade
+item.FuzzyCraftingUpgrade=Fuzzy Crafting Upgrade
+item.PowerTransportationUpgrade=Power Transportation Upgrade
+item.BCPowerSupplierUpgrade=BC Power Supplier Upgrade
+item.RFPowerSupplierUpgrade=TE Power Supplier Upgrade
+item.IC2LVPowerSupplierUpgrade=IC2 LV Power Supplier Upgrade
+item.IC2MVPowerSupplierUpgrade=IC2 MV Power Supplier Upgrade
+item.IC2HVPowerSupplierUpgrade=IC2 HV Power Supplier Upgrade
+item.IC2EVPowerSupplierUpgrade=IC2 EV Power Supplier Upgrade
+item.CCRemoteControlUpgrade=CC Remote Control Upgrade
+
+# Blocks
+
+tile.solderingstation=Soldering Station
+tile.logisticspowerjunction=Logistics Power Junction
+tile.logisticssecuritystation=Logistics Security Station
+tile.logisticscraftingtable=Logistics Crafting Table
+tile.logisticsbcpowerprovider=Logistics BC Power Provider
+tile.logisticstepowerprovider=Logistics TE Power Provider
+tile.logisticsic2powerprovider=Logistics IC2 Power Provider
+
+# Misc
+
+itemGroup.Logistics_Pipes=Logistics Pipes
+misc.holdshift=<Hold %cYELLOW %cITALIC Shift %cRESET %cGRAY for details>

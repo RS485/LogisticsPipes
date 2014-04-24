@@ -6,10 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.asm.ClientSideOnlyMethodContent;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.OpenChatGui;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.string.ChatColor;
+import logisticspipes.utils.string.StringUtil;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.network.packet.NetHandler;
 import net.minecraft.network.packet.Packet3Chat;
@@ -86,6 +89,12 @@ public class LPChatListener implements IChatListener {
 			if(realMessage.startsWith("%LPADDTOSENDMESSAGE%")) {
 				addSendMessages(realMessage.substring(20));
 				message.message = null;
+			}
+			if(realMessage.contains("LPDISPLAYMISSING") && LogisticsPipes.DEBUG) {
+				System.out.println("LIST:");
+				for(String key:StringUtil.untranslatedStrings) {
+					System.out.println(key);
+				}
 			}
 		}
 		return message;

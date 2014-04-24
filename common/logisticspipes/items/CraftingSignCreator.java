@@ -13,28 +13,21 @@ import net.minecraftforge.common.ForgeDirection;
 import buildcraft.transport.Pipe;
 
 public class CraftingSignCreator extends LogisticsItem {
-
+	
 	public CraftingSignCreator(int i) {
 		super(i);
 		this.setMaxStackSize(1);
 		this.setMaxDamage(250);
 	}
-
+	
 	@Override
-	public boolean onItemUseFirst(ItemStack itemStack, EntityPlayer player, World world, int x, int y, int z, int sideinput, float hitX, float hitY, float hitZ) 
-    {	
+	public boolean onItemUseFirst(ItemStack itemStack, EntityPlayer player, World world, int x, int y, int z, int sideinput, float hitX, float hitY, float hitZ) {
 		if(MainProxy.isClient(world)) return false;
-		if(itemStack.getItemDamage() > this.getMaxDamage() || itemStack.stackSize == 0) {
-			return false;
-		}
+		if(itemStack.getItemDamage() > this.getMaxDamage() || itemStack.stackSize == 0) { return false; }
 		TileEntity tile = world.getBlockTileEntity(x, y, z);
-		if(!(tile instanceof LogisticsTileGenericPipe)) {
-			return false;
-		}
-		Pipe pipe = ((LogisticsTileGenericPipe)tile).pipe;
-		if(pipe == null) {
-			return false;
-		}
+		if(!(tile instanceof LogisticsTileGenericPipe)) { return false; }
+		Pipe<?> pipe = ((LogisticsTileGenericPipe)tile).pipe;
+		if(pipe == null) { return false; }
 		if(!(pipe instanceof CoreRoutedPipe)) {
 			itemStack.damageItem(10, player);
 			return true;
@@ -52,12 +45,11 @@ public class CraftingSignCreator extends LogisticsItem {
 				}
 			}
 		}
-        return true;
-    }
-
+		return true;
+	}
+	
 	@Override
-	public CreativeTabs getCreativeTab()
-    {
-        return CreativeTabs.tabTools;
-    }
+	public CreativeTabs getCreativeTab() {
+		return CreativeTabs.tabTools;
+	}
 }

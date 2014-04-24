@@ -6,13 +6,13 @@ import java.util.Collection;
 
 import logisticspipes.Configs;
 import logisticspipes.asm.ClientSideOnlyMethodContent;
-import logisticspipes.commands.chathelper.ChatColor;
 import logisticspipes.gui.orderer.GuiOrderer;
 import logisticspipes.gui.orderer.GuiRequestTable;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.string.ChatColor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

@@ -8,15 +8,11 @@
 
 package logisticspipes.items;
 
-import java.text.MessageFormat;
 import java.util.List;
 
+import logisticspipes.utils.string.StringUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-
-import org.lwjgl.input.Keyboard;
-
-import buildcraft.core.utils.Localization;
 import buildcraft.transport.ItemPipe;
 import buildcraft.transport.Pipe;
 
@@ -24,10 +20,15 @@ import buildcraft.transport.Pipe;
  * A logistics pipe Item
  */
 public class ItemLogisticsPipe extends ItemPipe {
-	public ItemLogisticsPipe(int key, Class<? extends Pipe> clas) {
+	public ItemLogisticsPipe(int key, Class<? extends Pipe<?>> clas) {
 		super(key);
 		//setCreativeTab(LogisticsPipes.LPCreativeTab);
 		//setUnlocalizedName(clas.getSimpleName());
+	}
+
+	@Override
+	public String getItemDisplayName(ItemStack itemstack) {
+		return StringUtil.translate(getUnlocalizedName(itemstack));
 	}
 
 	/**
@@ -41,17 +42,6 @@ public class ItemLogisticsPipe extends ItemPipe {
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean flags) {
-		if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-			String baseKey = MessageFormat.format("{0}.tip", getUnlocalizedName());
-			String key = baseKey + 1;
-			String translation = Localization.get(key);
-			int i = 1;
-
-			while(translation != key) {
-				list.add(translation);
-				key = baseKey + ++i;
-				translation = Localization.get(key);
-			}
-		}
+		StringUtil.addShiftAddition(stack, list);
 	}
 }

@@ -32,6 +32,7 @@ import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeNORTH;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeSOUTH;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeUP;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeWEST;
+import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -84,14 +85,12 @@ public class ItemUpgrade extends LogisticsItem {
 	List<Upgrade> upgrades = new ArrayList<Upgrade>();
 	private Icon[] icons;
 	private class Upgrade {
-		private String name;
 		private int id;
 		private Class<? extends IPipeUpgrade> upgradeClass;
 		private int textureIndex = -1;
 
-		private Upgrade(int id, String name, Class<? extends IPipeUpgrade> moduleClass, int textureIndex) {
+		private Upgrade(int id, Class<? extends IPipeUpgrade> moduleClass, int textureIndex) {
 			this.id = id;
-			this.name = name;
 			this.upgradeClass = moduleClass;
 			this.textureIndex = textureIndex;
 		}
@@ -124,10 +123,6 @@ public class ItemUpgrade extends LogisticsItem {
 			return id;
 		}
 		
-		private String getName() {
-			return name;
-		}
-		
 		private int getTextureIndex() {
 			return textureIndex;
 		}
@@ -139,45 +134,45 @@ public class ItemUpgrade extends LogisticsItem {
 	}
 	
 	public void loadUpgrades() {
-		registerUpgrade(SNEAKY_UP, "Sneaky Upgrade (UP)", SneakyUpgradeUP.class,0);
-		registerUpgrade(SNEAKY_DOWN, "Sneaky Upgrade (DOWN)", SneakyUpgradeDOWN.class,1);
-		registerUpgrade(SNEAKY_NORTH, "Sneaky Upgrade (NORTH)", SneakyUpgradeNORTH.class,2);
-		registerUpgrade(SNEAKY_SOUTH, "Sneaky Upgrade (SOUTH)", SneakyUpgradeSOUTH.class,3);
-		registerUpgrade(SNEAKY_EAST, "Sneaky Upgrade (EAST)", SneakyUpgradeEAST.class,4);
-		registerUpgrade(SNEAKY_WEST, "Sneaky Upgrade (WEST)", SneakyUpgradeWEST.class,5);
-		registerUpgrade(SNEAKY_COMBINATION, "Sneaky Combination Upgrade", CombinedSneakyUpgrade.class,6);
-		registerUpgrade(SPEED, "Item Speed Upgrade", SpeedUpgrade.class, 7);
-		registerUpgrade(CONNECTION_UP, "Disconnection Upgrade (UP)", ConnectionUpgradeUP.class, 8);
-		registerUpgrade(CONNECTION_DOWN, "Disconnection Upgrade (DOWN)", ConnectionUpgradeDOWN.class, 9);
-		registerUpgrade(CONNECTION_NORTH, "Disconnection Upgrade (NORTH)", ConnectionUpgradeNORTH.class, 10);
-		registerUpgrade(CONNECTION_SOUTH, "Disconnection Upgrade (SOUTH)", ConnectionUpgradeSOUTH.class, 11);
-		registerUpgrade(CONNECTION_EAST, "Disconnection Upgrade (EAST)", ConnectionUpgradeEAST.class, 12);
-		registerUpgrade(CONNECTION_WEST, "Disconnection Upgrade (WEST)", ConnectionUpgradeWEST.class, 13);
-
-		registerUpgrade(ADVANCED_SAT_CRAFTINGPIPE, "Advanced Satellite Upgrade", AdvancedSatelliteUpgrade.class, 14);
-		registerUpgrade(LIQUID_CRAFTING, "Fluid Crafting Upgrade", FluidCraftingUpgrade.class, 15);
-		registerUpgrade(CRAFTING_BYPRODUCT_EXTRACTOR, "Crafting Byproduct Extraction Upgrade", CraftingByproductUpgrade.class, 16);
-		registerUpgrade(SUPPLIER_PATTERN, "Placement Rules Upgrade", PatternUpgrade.class, 17);
-		registerUpgrade(FUZZY_CRAFTING, "Fuzzy Crafting Upgrade", FuzzyCraftingUpgrade.class, 18);
-		registerUpgrade(POWER_TRANSPORTATION, "Power Transportation Upgrade", PowerTransportationUpgrade.class, 19);
-		registerUpgrade(POWER_BC_SUPPLIER, "BC Power Supplier Upgrade", BCPowerSupplierUpgrade.class, 20);
-		registerUpgrade(POWER_RF_SUPPLIER, "TE Power Supplier Upgrade", RFPowerSupplierUpgrade.class, 21);
-		registerUpgrade(POWER_IC2_LV_SUPPLIER, "IC2 LV Power Supplier Upgrade", IC2LVPowerSupplierUpgrade.class, 22);
-		registerUpgrade(POWER_IC2_MV_SUPPLIER, "IC2 MV Power Supplier Upgrade", IC2MVPowerSupplierUpgrade.class, 23);
-		registerUpgrade(POWER_IC2_HV_SUPPLIER, "IC2 HV Power Supplier Upgrade", IC2HVPowerSupplierUpgrade.class, 24);
-		registerUpgrade(POWER_IC2_EV_SUPPLIER, "IC2 EV Power Supplier Upgrade", IC2EVPowerSupplierUpgrade.class, 25);
-		registerUpgrade(CC_REMOTE_CONTROL, "CC Remote Control Upgrade", CCRemoteControlUpgrade.class, 26);
+		registerUpgrade(SNEAKY_UP, SneakyUpgradeUP.class, 0);
+		registerUpgrade(SNEAKY_DOWN, SneakyUpgradeDOWN.class, 1);
+		registerUpgrade(SNEAKY_NORTH, SneakyUpgradeNORTH.class, 2);
+		registerUpgrade(SNEAKY_SOUTH, SneakyUpgradeSOUTH.class, 3);
+		registerUpgrade(SNEAKY_EAST, SneakyUpgradeEAST.class, 4);
+		registerUpgrade(SNEAKY_WEST, SneakyUpgradeWEST.class, 5);
+		registerUpgrade(SNEAKY_COMBINATION, CombinedSneakyUpgrade.class, 6);
+		registerUpgrade(SPEED, SpeedUpgrade.class, 7);
+		registerUpgrade(CONNECTION_UP, ConnectionUpgradeUP.class, 8);
+		registerUpgrade(CONNECTION_DOWN, ConnectionUpgradeDOWN.class, 9);
+		registerUpgrade(CONNECTION_NORTH, ConnectionUpgradeNORTH.class, 10);
+		registerUpgrade(CONNECTION_SOUTH, ConnectionUpgradeSOUTH.class, 11);
+		registerUpgrade(CONNECTION_EAST, ConnectionUpgradeEAST.class, 12);
+		registerUpgrade(CONNECTION_WEST, ConnectionUpgradeWEST.class, 13);
+		
+		registerUpgrade(ADVANCED_SAT_CRAFTINGPIPE, AdvancedSatelliteUpgrade.class, 14);
+		registerUpgrade(LIQUID_CRAFTING, FluidCraftingUpgrade.class, 15);
+		registerUpgrade(CRAFTING_BYPRODUCT_EXTRACTOR, CraftingByproductUpgrade.class, 16);
+		registerUpgrade(SUPPLIER_PATTERN, PatternUpgrade.class, 17);
+		registerUpgrade(FUZZY_CRAFTING, FuzzyCraftingUpgrade.class, 18);
+		registerUpgrade(POWER_TRANSPORTATION, PowerTransportationUpgrade.class, 19);
+		registerUpgrade(POWER_BC_SUPPLIER, BCPowerSupplierUpgrade.class, 20);
+		registerUpgrade(POWER_RF_SUPPLIER, RFPowerSupplierUpgrade.class, 21);
+		registerUpgrade(POWER_IC2_LV_SUPPLIER, IC2LVPowerSupplierUpgrade.class, 22);
+		registerUpgrade(POWER_IC2_MV_SUPPLIER, IC2MVPowerSupplierUpgrade.class, 23);
+		registerUpgrade(POWER_IC2_HV_SUPPLIER, IC2HVPowerSupplierUpgrade.class, 24);
+		registerUpgrade(POWER_IC2_EV_SUPPLIER, IC2EVPowerSupplierUpgrade.class, 25);
+		registerUpgrade(CC_REMOTE_CONTROL, CCRemoteControlUpgrade.class, 26);
 	}
 	
-	public void registerUpgrade(int id, String name, Class<? extends IPipeUpgrade> moduleClass, int textureId) {
+	public void registerUpgrade(int id, Class<? extends IPipeUpgrade> moduleClass, int textureId) {
 		boolean flag = true;
 		for(Upgrade upgrade:upgrades) {
 			if(upgrade.getId() == id) {
 				flag = false;
 			}
 		}
-		if(!"".equals(name) && flag) {
-			upgrades.add(new Upgrade(id,name,moduleClass,textureId));
+		if(flag) {
+			upgrades.add(new Upgrade(id,moduleClass,textureId));
 		} else if(!flag) {
 			throw new UnsupportedOperationException("Someting went wrong while registering a new Logistics Pipe Upgrade. (Id " + id + " already in use)");
 		} else {
@@ -225,13 +220,18 @@ public class ItemUpgrade extends LogisticsItem {
 	}
 
 	@Override
-	public String getItemDisplayName(ItemStack itemstack) {
+	public String getUnlocalizedName(ItemStack itemstack) {
 		for(Upgrade upgrade:upgrades) {
 			if(itemstack.getItemDamage() == upgrade.getId()) {
-				return upgrade.getName();
+				return "item." + upgrade.getIPipeUpgradeClass().getSimpleName();
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public String getItemDisplayName(ItemStack itemstack) {
+		return StringUtil.translate(getUnlocalizedName(itemstack));
 	}
 
 	@Override

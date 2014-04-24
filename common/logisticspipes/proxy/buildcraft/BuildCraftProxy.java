@@ -220,10 +220,6 @@ public class BuildCraftProxy {
 		LogisticsDisableAction = new ActionDisableLogistics(700);
 	}
 
-	public void registerLocalization() {
-		Localization.addLocalization("/lang/logisticspipes/", "en_US");
-	}
-
 	public void registerPipes(Side side) {
 		LogisticsPipes.LogisticsBasicPipe = createPipe(Configs.LOGISTICSPIPE_BASIC_ID, PipeItemsBasicLogistics.class, "Basic Logistics Pipe", side);
 		LogisticsPipes.LogisticsRequestPipeMk1 = createPipe(Configs.LOGISTICSPIPE_REQUEST_ID, PipeItemsRequestLogistics.class, "Request Logistics Pipe", side);

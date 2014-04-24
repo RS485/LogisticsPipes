@@ -98,14 +98,12 @@ public class ItemModule extends LogisticsItem {
 	private List<Module> modules = new ArrayList<Module>();
 
 	private class Module {
-		private String name;
 		private int id;
 		private Class<? extends LogisticsModule> moduleClass;
 		private Icon moduleIcon = null;
 
-		private Module(int id, String name, Class<? extends LogisticsModule> moduleClass) {
+		private Module(int id, Class<? extends LogisticsModule> moduleClass) {
 			this.id = id;
-			this.name = name;
 			this.moduleClass = moduleClass;
 		}
 
@@ -137,10 +135,6 @@ public class ItemModule extends LogisticsItem {
 			return id;
 		}
 
-		private String getName() {
-			return name;
-		}
-
 		private Icon getIcon() {
 			return moduleIcon;
 		}
@@ -168,42 +162,42 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	public void loadModules() {
-		registerModule(BLANK					, "Blank module"				, null);
-		registerModule(ITEMSINK					, "ItemSink module"				, ModuleItemSink.class);
-		registerModule(PASSIVE_SUPPLIER			, "Passive Supplier module"		, ModulePassiveSupplier.class);
-		registerModule(EXTRACTOR				, "Extractor module"			, ModuleExtractor.class);
-		registerModule(POLYMORPHIC_ITEMSINK		, "Polymorphic ItemSink module"	, ModulePolymorphicItemSink.class);
-		registerModule(QUICKSORT				, "QuickSort module"			, ModuleQuickSort.class);
-		registerModule(TERMINUS					, "Terminus module"				, ModuleTerminus.class);
-		registerModule(ADVANCED_EXTRACTOR		, "Advanced Extractor module"	, ModuleAdvancedExtractor.class);
-		registerModule(EXTRACTOR_MK2			, "Extractor MK2 module"		, ModuleExtractorMk2.class);
-		registerModule(ADVANCED_EXTRACTOR_MK2	, "Advanced Extractor MK2"		, ModuleAdvancedExtractorMK2.class);
-		registerModule(EXTRACTOR_MK3			, "Extractor MK3 module"		, ModuleExtractorMk3.class);
-		registerModule(ADVANCED_EXTRACTOR_MK3	, "Advanced Extractor MK3"		, ModuleAdvancedExtractorMK3.class);
-		registerModule(PROVIDER					, "Provider module"				, ModuleProvider.class);
-		registerModule(PROVIDER_MK2				, "Provider module MK2"			, ModuleProviderMk2.class);
-		registerModule(ELECTRICMANAGER			, "Electric Manager module"		, ModuleElectricManager.class);
-		registerModule(ELECTRICBUFFER			, "Electric Buffer module"		, ModuleElectricBuffer.class);
-		registerModule(BEEANALYZER				, "Bee Analyzer module"			, ModuleApiaristAnalyser.class);
-		registerModule(BEESINK					, "BeeSink module"				, ModuleApiaristSink.class);
-		registerModule(APIARISTREFILLER			, "Apiary Refiller module"		, ModuleApiaristRefiller.class);
-		registerModule(APIARISTTERMINUS			, "Drone Terminus module"		, ModuleApiaristTerminus.class);
-		registerModule(MODBASEDITEMSINK			, "Mod Based ItemSink module"	, ModuleModBasedItemSink.class);
-		registerModule(OREDICTITEMSINK			, "OreDict ItemSink module"		, ModuleOreDictItemSink.class);
-		registerModule(THAUMICASPECTSINK		, "Thaumic AspectSink module"	, ModuleThaumicAspectSink.class);
-		registerModule(ENCHANTMENTSINK			, "Enchantment Sink module"		, ModuleEnchantmentSink.class);
-		registerModule(ENCHANTMENTSINK_MK2		, "Enchantment Sink module MK2"	, ModuleEnchantmentSinkMK2.class);
+		registerModule(BLANK					, null);
+		registerModule(ITEMSINK					, ModuleItemSink.class);
+		registerModule(PASSIVE_SUPPLIER			, ModulePassiveSupplier.class);
+		registerModule(EXTRACTOR				, ModuleExtractor.class);
+		registerModule(POLYMORPHIC_ITEMSINK		, ModulePolymorphicItemSink.class);
+		registerModule(QUICKSORT				, ModuleQuickSort.class);
+		registerModule(TERMINUS					, ModuleTerminus.class);
+		registerModule(ADVANCED_EXTRACTOR		, ModuleAdvancedExtractor.class);
+		registerModule(EXTRACTOR_MK2			, ModuleExtractorMk2.class);
+		registerModule(ADVANCED_EXTRACTOR_MK2	, ModuleAdvancedExtractorMK2.class);
+		registerModule(EXTRACTOR_MK3			, ModuleExtractorMk3.class);
+		registerModule(ADVANCED_EXTRACTOR_MK3	, ModuleAdvancedExtractorMK3.class);
+		registerModule(PROVIDER					, ModuleProvider.class);
+		registerModule(PROVIDER_MK2				, ModuleProviderMk2.class);
+		registerModule(ELECTRICMANAGER			, ModuleElectricManager.class);
+		registerModule(ELECTRICBUFFER			, ModuleElectricBuffer.class);
+		registerModule(BEEANALYZER				, ModuleApiaristAnalyser.class);
+		registerModule(BEESINK					, ModuleApiaristSink.class);
+		registerModule(APIARISTREFILLER			, ModuleApiaristRefiller.class);
+		registerModule(APIARISTTERMINUS			, ModuleApiaristTerminus.class);
+		registerModule(MODBASEDITEMSINK			, ModuleModBasedItemSink.class);
+		registerModule(OREDICTITEMSINK			, ModuleOreDictItemSink.class);
+		registerModule(THAUMICASPECTSINK		, ModuleThaumicAspectSink.class);
+		registerModule(ENCHANTMENTSINK			, ModuleEnchantmentSink.class);
+		registerModule(ENCHANTMENTSINK_MK2		, ModuleEnchantmentSinkMK2.class);
 	}
 
-	public void registerModule(int id, String name, Class<? extends LogisticsModule> moduleClass) {
+	public void registerModule(int id, Class<? extends LogisticsModule> moduleClass) {
 		boolean flag = true;
 		for(Module module:modules) {
 			if(module.getId() == id) {
 				flag = false;
 			}
 		}
-		if(!"".equals(name) && flag) {
-			modules.add(new Module(id,name,moduleClass));
+		if(flag) {
+			modules.add(new Module(id,moduleClass));
 		} else if(!flag) {
 			throw new UnsupportedOperationException("Someting went wrong while registering a new Logistics Pipe Module. (Id " + id + " already in use)");
 		} else {
@@ -295,12 +289,15 @@ public class ItemModule extends LogisticsItem {
 		}
 		return null;
 	}
-
+	
 	@Override
-	public String getItemDisplayName(ItemStack itemstack) {
+	public String getUnlocalizedName(ItemStack itemstack) {
 		for(Module module:modules) {
 			if(itemstack.getItemDamage() == module.getId()) {
-				return module.getName();
+				if(module.getILogisticsModuleClass() == null) {
+					return "item.ModuleBlank";
+				}
+				return "item." + module.getILogisticsModuleClass().getSimpleName();
 			}
 		}
 		return null;
@@ -314,7 +311,7 @@ public class ItemModule extends LogisticsItem {
 			module.registerModuleIcon(par1IconRegister);
 		}
 	}
-	
+
 	@Override
 	public Icon getIconFromDamage(int i) {
 		// should set and store TextureIndex with this object.

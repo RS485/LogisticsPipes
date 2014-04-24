@@ -5,12 +5,11 @@ import java.util.List;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class LogisticsSolidBlockItem extends ItemBlock {
 
@@ -20,25 +19,29 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
-	public String getItemDisplayName(ItemStack stack) {
+	public String getUnlocalizedName(ItemStack stack) {
 		switch (stack.getItemDamage()) {
-		case LogisticsSolidBlock.SOLDERING_STATION:
-			return "Soldering Station";
-		case LogisticsSolidBlock.LOGISTICS_POWER_JUNCTION:
-			return "Logistics Power Junction";
-		case LogisticsSolidBlock.LOGISTICS_SECURITY_STATION:
-			return "Logistics Security Station";
-		case LogisticsSolidBlock.LOGISTICS_AUTOCRAFTING_TABLE:
-			return "Logistics Crafting Table";
-		case LogisticsSolidBlock.LOGISTICS_BC_POWERPROVIDER:
-			return "Logistics BC Power Provider";
-		case LogisticsSolidBlock.LOGISTICS_RF_POWERPROVIDER:
-			return "Logistics TE Power Provider";
-		case LogisticsSolidBlock.LOGISTICS_IC2_POWERPROVIDER:
-			return "Logistics IC2 Power Provider";
-		}
-		return super.getItemDisplayName(stack);
+			case LogisticsSolidBlock.SOLDERING_STATION:
+				return "tile.solderingstation";
+			case LogisticsSolidBlock.LOGISTICS_POWER_JUNCTION:
+				return "tile.logisticspowerjunction";
+			case LogisticsSolidBlock.LOGISTICS_SECURITY_STATION:
+				return "tile.logisticssecuritystation";
+			case LogisticsSolidBlock.LOGISTICS_AUTOCRAFTING_TABLE:
+				return "tile.logisticscraftingtable";
+			case LogisticsSolidBlock.LOGISTICS_BC_POWERPROVIDER:
+				return "tile.logisticsbcpowerprovider";
+			case LogisticsSolidBlock.LOGISTICS_RF_POWERPROVIDER:
+				return "tile.logisticstepowerprovider";
+			case LogisticsSolidBlock.LOGISTICS_IC2_POWERPROVIDER:
+				return "tile.logisticsic2powerprovider";
+			}
+		return super.getUnlocalizedName(stack);
+	}
+
+	@Override
+	public String getItemDisplayName(ItemStack itemstack) {
+		return StringUtil.translate(getUnlocalizedName(itemstack));
 	}
 
 	@Override

@@ -2,9 +2,9 @@ package logisticspipes.commands.commands.proxy;
 
 import logisticspipes.asm.LogisticsProxyHandler;
 import logisticspipes.commands.abstracts.ICommandHandler;
-import logisticspipes.commands.chathelper.ChatColor;
 import logisticspipes.commands.chathelper.MorePageDisplay;
 import logisticspipes.proxy.interfaces.IProxyController;
+import logisticspipes.utils.string.ChatColor;
 import net.minecraft.command.ICommandSender;
 
 public class ListCommand implements ICommandHandler {

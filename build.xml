@@ -225,8 +225,6 @@
 		<delete dir="${minecraftsrc.dir}/logisticspipes"/>
 		<!-- and textures -->
 		<delete dir="${minecraftsrc.dir}/assets/logisticspipes"/>
-		<!-- and lang -->
-		<delete dir="${minecraftsrc.dir}/lang/logisticspipes"/>
 
 		<!-- Copy LP source -->
 		<copy todir="${minecraftsrc.dir}">
@@ -239,11 +237,7 @@
 		<copy todir="${minecraftsrc.dir}/assets">
 			<fileset dir="${src.dir}/resources/assets"/>
 		</copy>
-		<!-- and lang -->
-		<copy todir="${minecraftsrc.dir}/lang">
-			<fileset dir="${src.dir}/resources/lang"/>
-		</copy>
-
+		
 		<echo message="Loading FingerPrint"/>
 		<if>
 			<available file="${sign.dir}/.fingerprint"/>

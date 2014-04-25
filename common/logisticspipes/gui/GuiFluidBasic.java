@@ -5,6 +5,7 @@ import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.string.StringUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 
@@ -39,7 +40,7 @@ public class GuiFluidBasic extends KraphtBaseGuiScreen {
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		if(inventorySlots.getSlot(0).getStack() == null) {
-			mc.fontRenderer.drawString("Empty", 50, 18, 0x404040);
+			mc.fontRenderer.drawString(StringUtil.translate("gui.fluidbasic.Empty"), 50, 18, 0x404040);
 		} else {
 			mc.fontRenderer.drawString(ItemIdentifier.get(inventorySlots.getSlot(0).getStack()).getFriendlyName(), 50, 18, 0x404040);
 		}

@@ -263,3 +263,5 @@ gui.firewall.Providing=Providing
 gui.firewall.Crafting=Crafting
 gui.firewall.Sorting=Sorting
 gui.firewall.Powerflow=Powerflow
+
+gui.fluidbasic.Empty=Empty

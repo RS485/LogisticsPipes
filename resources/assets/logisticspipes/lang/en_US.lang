@@ -289,3 +289,8 @@ gui.invsyscon.Resistance=Resistance
 
 gui.powerjunction.LogisticsPowerJunction=Logistics Power Junction
 gui.powerjunction.StoredEnergy=Stored Energy
+
+gui.powerprovider.LogisticsMJPowerProvider=Logistics MJ Power Provider
+gui.powerprovider.LogisticsEUPowerProvider=Logistics EU Power Provider
+gui.powerprovider.LogisticsRFPowerProvider=Logistics RF Power Provider
+gui.powerprovider.StoredEnergy=Stored Energy

@@ -4,12 +4,14 @@ import logisticspipes.blocks.powertile.LogisticsPowerProviderTileEntity;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import logisticspipes.utils.string.StringUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
 public class GuiPowerProvider extends KraphtBaseGuiScreen {
+	private static final String PREFIX = "gui.powerprovider.";
 
 	private final LogisticsPowerProviderTileEntity junction;
 	
@@ -35,8 +37,8 @@ public class GuiPowerProvider extends KraphtBaseGuiScreen {
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 		int level = 100 - junction.getChargeState();
 		drawTexturedModalRect(j + 10, k + 11 + (level * 59 / 100), 176, level * 59 / 100, 5, 59 - (level * 59 / 100));
-		mc.fontRenderer.drawString("Logistics " + junction.getBrand() + " Power Provider", guiLeft + 25, guiTop + 8, 0x404040);
-		mc.fontRenderer.drawString("Stored Energy:", guiLeft + 40, guiTop + 25, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Logistics" + junction.getBrand() + "PowerProvider"), guiLeft + 25, guiTop + 8, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "StoredEnergy") + ":", guiLeft + 40, guiTop + 25, 0x404040);
 		mc.fontRenderer.drawString(BasicGuiHelper.getStringWithSpacesFromInteger(junction.getDisplayPowerLevel()) + " " + junction.getBrand(), guiLeft + 40, guiTop + 35, 0x404040);
 		mc.fontRenderer.drawString("/ " + BasicGuiHelper.getStringWithSpacesFromInteger(junction.getMaxStorage()) + " " + junction.getBrand(), guiLeft + 40, guiTop + 45, 0x404040);
 	}

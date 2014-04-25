@@ -266,7 +266,6 @@ gui.firewall.Powerflow=Powerflow
 
 gui.fluidbasic.Empty=Empty
 
-gui.fluidsuppliermk2.=
 gui.fluidsuppliermk2.Inventory=Inventory
 gui.fluidsuppliermk2.Fluid=Fluid
 gui.fluidsuppliermk2.Partialrequests=Partial requests
@@ -279,3 +278,11 @@ gui.fluidsupplier.Inventory=Inventory
 gui.fluidsupplier.Partialrequests=Partial requests
 gui.fluidsupplier.Yes=Yes
 gui.fluidsupplier.No=No
+
+gui.invsyscon.No=No
+gui.invsyscon.Refresh=Refresh
+gui.invsyscon.Save=Save
+gui.invsyscon.InventorySystemConnector=Inventory System Connector
+gui.invsyscon.ConnectionCard=Connection Card
+gui.invsyscon.Waitingfor=Waiting for
+gui.invsyscon.Resistance=Resistance

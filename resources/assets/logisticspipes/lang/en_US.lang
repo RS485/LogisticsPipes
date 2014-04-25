@@ -237,3 +237,19 @@ tile.logisticsic2powerprovider=Logistics IC2 Power Provider
 
 itemGroup.Logistics_Pipes=Logistics Pipes
 misc.holdshift=<Hold %cYELLOW %cITALIC Shift %cRESET %cGRAY for details>
+
+# GUI
+
+gui.crafting.Inputs=Inputs
+gui.crafting.Inventory=Inventory
+gui.crafting.Import=Import
+gui.crafting.Open=Open
+gui.crafting.Output=Output
+gui.crafting.Satellite=Satellite
+gui.crafting.Off=Off
+gui.crafting.Priority=Priority
+gui.crafting.Extra=Extra
+gui.crafting.OreDict=OreDict
+gui.crafting.IgnDamage=IgnDamage
+gui.crafting.IgnNBT=IgnNBT
+gui.crafting.OrePrefix=OrePrefix

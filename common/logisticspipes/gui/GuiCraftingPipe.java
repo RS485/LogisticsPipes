@@ -15,12 +15,14 @@ import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.SmallGuiButton;
+import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 
 public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvider {
+	private static final String PREFIX = "gui.crafting.";
 
 	private final PipeItemsCraftingLogistics _pipe;
 	private final EntityPlayer _player;
@@ -100,8 +102,8 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 		if(!isAdvancedSat) {
 			buttonList.add(normalButtonArray[0] = new SmallGuiButton(0, (width-xSize) / 2 + 155, (height - ySize) / 2 + 50, 10,10, ">"));
 			buttonList.add(normalButtonArray[1] = new SmallGuiButton(1, (width-xSize) / 2 + 120, (height - ySize) / 2 + 50, 10,10, "<"));
-			buttonList.add(normalButtonArray[2] = new SmallGuiButton(3, (width-xSize) / 2 + 39, (height - ySize) / 2 + 50, 37,10, "Import"));
-			buttonList.add(normalButtonArray[3] = new SmallGuiButton(4, (width-xSize) / 2 + 6, (height - ySize) / 2 + 50, 28,10, "Open"));
+			buttonList.add(normalButtonArray[2] = new SmallGuiButton(3, (width-xSize) / 2 + 39, (height - ySize) / 2 + 50, 37,10, StringUtil.translate(PREFIX + "Import")));
+			buttonList.add(normalButtonArray[3] = new SmallGuiButton(4, (width-xSize) / 2 + 6, (height - ySize) / 2 + 50, 28,10, StringUtil.translate(PREFIX + "Open")));
 			for(int i = 0; i < 6; i++) {
 				buttonList.add(buttonarray[i] = new SmallGuiButton(5 + i, (width-xSize) / 2 + 11 + 18 * i, (height - ySize) / 2 + 35, 10,10, ">"));
 				buttonarray[i].drawButton = false;
@@ -117,8 +119,8 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 				buttonList.add(advancedSatButtonArray[i][0] = new SmallGuiButton(30 + i, (width-xSize) / 2 + 10 + 18 * i, (height - ySize) / 2 + 40, 15,10, "/\\"));
 				buttonList.add(advancedSatButtonArray[i][1] = new SmallGuiButton(40 + i, (width-xSize) / 2 + 10 + 18 * i, (height - ySize) / 2 + 70, 15,10, "\\/"));
 			}
-			buttonList.add(normalButtonArray[2] = new SmallGuiButton(3, (width-xSize) / 2 + 39, (height - ySize) / 2 + 100, 37,10, "Import"));
-			buttonList.add(normalButtonArray[3] = new SmallGuiButton(4, (width-xSize) / 2 + 6, (height - ySize) / 2 + 100, 28,10, "Open"));
+			buttonList.add(normalButtonArray[2] = new SmallGuiButton(3, (width-xSize) / 2 + 39, (height - ySize) / 2 + 100, 37,10, StringUtil.translate(PREFIX + "Import")));
+			buttonList.add(normalButtonArray[3] = new SmallGuiButton(4, (width-xSize) / 2 + 6, (height - ySize) / 2 + 100, 28,10, StringUtil.translate(PREFIX + "Open")));
 			buttonList.add(normalButtonArray[4] = new SmallGuiButton(20, (width-xSize) / 2 + 155, (height - ySize) / 2 + 105, 10,10, ">"));
 			buttonList.add(normalButtonArray[5] = new SmallGuiButton(21, (width-xSize) / 2 + 120, (height - ySize) / 2 + 105, 10,10, "<"));
 		}
@@ -220,29 +222,29 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		fontRenderer.drawString("Inputs", 18, 7, 0x404040);
-		fontRenderer.drawString("Inventory", 10, ySize - 93, 0x404040);
+		fontRenderer.drawString(StringUtil.translate(PREFIX + "Inputs"), 18, 7, 0x404040);
+		fontRenderer.drawString(StringUtil.translate(PREFIX + "Inventory"), 10, ySize - 93, 0x404040);
 		
 		if(!isAdvancedSat) {
-			fontRenderer.drawString("Output", 77, 40, 0x404040);
-			fontRenderer.drawString("Satellite", 123, 7, 0x404040);
+			fontRenderer.drawString(StringUtil.translate(PREFIX + "Output"), 77, 40, 0x404040);
+			fontRenderer.drawString(StringUtil.translate(PREFIX + "Satellite"), 123, 7, 0x404040);
 			if (_pipe.satelliteId == 0) {
-				fontRenderer.drawString("Off", 135, 52, 0x404040);
+				fontRenderer.drawString(StringUtil.translate(PREFIX + "Off"), 135, 52, 0x404040);
 			} else {
 				fontRenderer.drawString(""+_pipe.satelliteId , 146 - fontRenderer.getStringWidth(""+_pipe.satelliteId) , 52, 0x404040);
 			}
-			fontRenderer.drawString("Priority:" , 123 , 75, 0x404040);
+			fontRenderer.drawString(StringUtil.translate(PREFIX + "Priority") + ":" , 123 , 75, 0x404040);
 			fontRenderer.drawString(""+_pipe.priority , 143 - (fontRenderer.getStringWidth(""+_pipe.priority) / 2) , 87, 0x404040);
 		} else {
 			for(int i=0; i<9;i++) {
 				if (_pipe.advancedSatelliteIdArray[i] == 0) {
-					fontRenderer.drawString("Off", 10 + (i * 18), 57, 0x404040);
+					fontRenderer.drawString(StringUtil.translate(PREFIX + "Off"), 10 + (i * 18), 57, 0x404040);
 				} else {
 					fontRenderer.drawString(""+_pipe.advancedSatelliteIdArray[i] , 20 - fontRenderer.getStringWidth(""+_pipe.advancedSatelliteIdArray[i]) + (i * 18), 57, 0x404040);
 				}
 			}
-			fontRenderer.drawString("Output", 77, 90, 0x404040);
-			fontRenderer.drawString("Priority:" , 123 , 95, 0x404040);
+			fontRenderer.drawString(StringUtil.translate(PREFIX + "Output"), 77, 90, 0x404040);
+			fontRenderer.drawString(StringUtil.translate(PREFIX + "Priority") + ":" , 123 , 95, 0x404040);
 			fontRenderer.drawString(""+_pipe.priority , 143 - (fontRenderer.getStringWidth(""+_pipe.priority) / 2) , 107, 0x404040);
 		}
 		
@@ -256,7 +258,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			if(isAdvancedSat) {
 				if(_pipe.liquidSatelliteIdArray[i] == 0) {
 					drawRect(liquidLeft + 1, 13, liquidLeft + 40, 142, 0xAA8B8B8B);
-					fontRenderer.drawString("Off", liquidLeft + 13, 149, 0x404040);
+					fontRenderer.drawString(StringUtil.translate(PREFIX + "Off"), liquidLeft + 13, 149, 0x404040);
 					for(int j=0;j<8;j++) {
 						liquidGuiParts[i][j].enabled = false;
 					}
@@ -271,7 +273,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 		if(!isAdvancedSat && liquidCrafter != 0) {
 			if(_pipe.liquidSatelliteId == 0) {
 				drawRect(-(liquidCrafter * 40) + 1, 13, 0, 142, 0xAA8B8B8B);
-				fontRenderer.drawString("Off", -(liquidCrafter * 40) / 2 - 7, 149, 0x404040);
+				fontRenderer.drawString(StringUtil.translate(PREFIX + "Off"), -(liquidCrafter * 40) / 2 - 7, 149, 0x404040);
 				for(int i=0;i<liquidCrafter;i++) {
 					for(int j=0;j<8;j++) {
 						liquidGuiParts[i][j].enabled = false;
@@ -295,7 +297,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			}
 		}
 		if(hasByproductExtractor) {
-			fontRenderer.drawString("Extra", xSize - 35, 88, 0x404040);
+			fontRenderer.drawString(StringUtil.translate(PREFIX + "Extra"), xSize - 35, 88, 0x404040);
 		}
 		
 		if(isFuzzy)
@@ -320,10 +322,10 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			int posY = 18 + 16;
 			BasicGuiHelper.drawGuiBackGround(mc, posX, posY, posX + 60, posY + 52, zLevel, true, true, true, true, true);
 			int flag = this._pipe.fuzzyCraftingFlagArray[fuzzyPanelSelection];
-			fontRenderer.drawString("OreDict", posX + 4, posY + 4, ((flag & 0x1) == 0 ? 0x404040 : 0xFF4040));
-			fontRenderer.drawString("IgnDamage", posX + 4, posY + 14, ((flag & 0x2) == 0 ? 0x404040 : 0x40FF40));
-			fontRenderer.drawString("IgnNBT", posX + 4, posY + 26, ((flag & 0x4) == 0 ? 0x404040 : 0x4040FF));
-			fontRenderer.drawString("OrePrefix", posX + 4, posY + 38, ((flag & 0x8) == 0 ? 0x404040 : 0x7F7F40));
+			fontRenderer.drawString(StringUtil.translate(PREFIX + "OreDict"), posX + 4, posY + 4, ((flag & 0x1) == 0 ? 0x404040 : 0xFF4040));
+			fontRenderer.drawString(StringUtil.translate(PREFIX + "IgnDamage"), posX + 4, posY + 14, ((flag & 0x2) == 0 ? 0x404040 : 0x40FF40));
+			fontRenderer.drawString(StringUtil.translate(PREFIX + "IgnNBT"), posX + 4, posY + 26, ((flag & 0x4) == 0 ? 0x404040 : 0x4040FF));
+			fontRenderer.drawString(StringUtil.translate(PREFIX + "OrePrefix"), posX + 4, posY + 38, ((flag & 0x8) == 0 ? 0x404040 : 0x7F7F40));
 		}
 		
 		for(int i = 0; i < 9; i++)

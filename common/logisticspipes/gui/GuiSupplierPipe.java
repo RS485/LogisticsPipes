@@ -23,6 +23,7 @@ import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
+import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
@@ -31,8 +32,8 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 public class GuiSupplierPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerProvider {
+	private static final String PREFIX = "gui.supplierpipe.";
 	
-	private IInventory dummyInventory;
 	private PipeItemsSupplierLogistics logic; 
 	private final boolean hasPatternUpgrade;
 	
@@ -58,7 +59,6 @@ public class GuiSupplierPipe extends KraphtBaseGuiScreen implements IGuiIDHandle
 		}
 		this.inventorySlots = dummy; 
 		logic.slotArray = slots;
-		this.dummyInventory = dummyInventory;
 		this.logic = logic;
 		xSize = 194;
 		ySize = 186;
@@ -66,13 +66,15 @@ public class GuiSupplierPipe extends KraphtBaseGuiScreen implements IGuiIDHandle
 	
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		String name = dummyInventory.getInvName();
+		String name = "";
 		if(hasPatternUpgrade) {
-			name = "Items to keep in the specified slots";
+			name = StringUtil.translate(PREFIX + "TargetInvPattern");
+		} else {
+			name = StringUtil.translate(PREFIX + "TargetInv");
 		}
 		fontRenderer.drawString(name, xSize / 2 - fontRenderer.getStringWidth(name)/2, 6, 0x404040);
-		fontRenderer.drawString("Inventory", 18, ySize - 102, 0x404040);
-		fontRenderer.drawString("Request Mode:", xSize - 140, ySize - 112, 0x404040);
+		fontRenderer.drawString(StringUtil.translate(PREFIX + "Inventory"), 18, ySize - 102, 0x404040);
+		fontRenderer.drawString(StringUtil.translate(PREFIX + "RequestMode"), xSize - 140, ySize - 112, 0x404040);
 		if(hasPatternUpgrade) {
 			for(int i = 0; i < 9;i++) {
 				fontRenderer.drawString(Integer.toString(logic.slotArray[i]), 22 + i * 18, 55, 0x404040);

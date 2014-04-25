@@ -77,7 +77,7 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 
 	// import from PipeItemsSupplierLogistics
 	
-	private ItemIdentifierInventory dummyInventory = new ItemIdentifierInventory(9, "Items to keep stocked", 127);
+	private ItemIdentifierInventory dummyInventory = new ItemIdentifierInventory(9, "", 127);
 	
 	private final HashMap<ItemIdentifier, Integer> _requestedItems = new HashMap<ItemIdentifier, Integer>();
 	

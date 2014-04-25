@@ -1081,10 +1081,12 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		boolean found = false;
 		for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
 			for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
-				if (provider.canOpenGui(tile.tile)) {
-					found = true;
-					break;
-				}
+				try {
+					if (provider.canOpenGui(tile.tile)) {
+						found = true;
+						break;
+					}
+				} catch(Throwable ignored) {/* Ignore all errors */}
 			}
 
 			if (!found)
@@ -1112,8 +1114,9 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			final WorldUtil worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
 			for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
 				for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
-					if (provider.importRecipe(tile.tile, _dummyInventory))
-						break;
+					try {
+						if (provider.importRecipe(tile.tile, _dummyInventory)) break;
+					} catch(Throwable ignored) {/* Ignore all errors */}
 				}
 			}
 			// Send inventory as packet

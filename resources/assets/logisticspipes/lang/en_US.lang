@@ -343,3 +343,7 @@ gui.supplierpipe.TargetInv=Items to keep stocked
 gui.supplierpipe.TargetInvPattern=Items to keep in the specified slots
 gui.supplierpipe.Inventory=Inventory
 gui.supplierpipe.RequestMode=Request Mode
+
+gui.upgrademanager.Upgrades=Upgrades
+gui.upgrademanager.Inventory=Inventory
+gui.upgrademanager.SneakyUpgrades=Sneaky Upgrades

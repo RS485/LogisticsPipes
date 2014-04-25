@@ -573,6 +573,8 @@ public class DummyContainer extends Container {
 			return currentlyEquippedStack;
 		}
 		
+		if(slot instanceof DummySlot) ((DummySlot)slot).setRedirectCall(true);
+		
 		if(currentlyEquippedStack == null) {
 			if(slot.getStack() != null && mouseButton == 1) {
 				ItemStack tstack = slot.getStack();
@@ -586,6 +588,7 @@ public class DummyContainer extends Container {
 			} else {
 				slot.putStack(null);
 			}
+			if(slot instanceof DummySlot) ((DummySlot)slot).setRedirectCall(false);
 			return currentlyEquippedStack;
 		}
 		
@@ -598,6 +601,7 @@ public class DummyContainer extends Container {
 				tstack.stackSize = slot.getSlotStackLimit();
 			}
 			slot.putStack(tstack);
+			if(slot instanceof DummySlot) ((DummySlot)slot).setRedirectCall(false);
 			return currentlyEquippedStack;
 		}
 		
@@ -619,6 +623,7 @@ public class DummyContainer extends Container {
 				if(tstack.stackSize <= 0) tstack = null;
 				slot.putStack(tstack);
 			}
+			if(slot instanceof DummySlot) ((DummySlot)slot).setRedirectCall(false);
 			return currentlyEquippedStack;
 		}
 		
@@ -627,6 +632,7 @@ public class DummyContainer extends Container {
 			tstack.stackSize = slot.getSlotStackLimit();
 		}
 		slot.putStack(tstack);
+		if(slot instanceof DummySlot) ((DummySlot)slot).setRedirectCall(false);
 		return currentlyEquippedStack;
 	}
 	

@@ -1,5 +1,7 @@
 package logisticspipes.logisticspipes;
 
+import logisticspipes.utils.string.StringUtil;
+
 public enum ExtractionMode {
 	Normal,
 	LeaveFirst,
@@ -24,23 +26,9 @@ public enum ExtractionMode {
 		return Normal;
 	}
 
+	private static final String PREFIX = "misc.extractionmode.";
+
 	public String getExtractionModeString() {
-		switch(this){
-			case Normal:
-				return "Normal";
-			case LeaveFirst:
-				return "Leave 1st stack";
-			case LeaveLast: 
-				return "Leave last stack";
-			case LeaveFirstAndLast:
-				return "Leave first & last stack";
-			case Leave1PerStack:
-				return "Leave 1 item per stack";
-			case Leave1PerType:
-				return "Leave 1 item per type";
-			default:
-				return "Unknown!";
-		}
+		return StringUtil.translate(PREFIX + this.name());
 	}
-	
 }

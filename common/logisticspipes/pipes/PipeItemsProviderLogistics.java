@@ -436,7 +436,7 @@ outer:
 	}
 
 	// import from logic
-	private ItemIdentifierInventory providingInventory = new ItemIdentifierInventory(9, "Items to provide (or empty for all)", 1);
+	private ItemIdentifierInventory providingInventory = new ItemIdentifierInventory(9, "", 1);
 	private boolean _filterIsExclude;
 	private ExtractionMode _extractionMode = ExtractionMode.Normal;
 

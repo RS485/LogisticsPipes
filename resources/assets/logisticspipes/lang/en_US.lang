@@ -237,6 +237,12 @@ tile.logisticsic2powerprovider=Logistics IC2 Power Provider
 
 itemGroup.Logistics_Pipes=Logistics Pipes
 misc.holdshift=<Hold %cYELLOW %cITALIC Shift %cRESET %cGRAY for details>
+misc.extractionmode.Normal=Normal
+misc.extractionmode.LeaveFirst=Leave 1st stack
+misc.extractionmode.LeaveLast=Leave last stack
+misc.extractionmode.LeaveFirstAndLast=Leave first & last stack
+misc.extractionmode.Leave1PerStack=Leave 1 item per stack
+misc.extractionmode.Leave1PerType=Leave 1 item per type
 
 # GUI
 
@@ -294,3 +300,10 @@ gui.powerprovider.LogisticsMJPowerProvider=Logistics MJ Power Provider
 gui.powerprovider.LogisticsEUPowerProvider=Logistics EU Power Provider
 gui.powerprovider.LogisticsRFPowerProvider=Logistics RF Power Provider
 gui.powerprovider.StoredEnergy=Stored Energy
+
+gui.providerpipe.TargetInv=Items to provide (or empty for all)
+gui.providerpipe.Inventory=Inventory
+gui.providerpipe.Mode=Mode
+gui.providerpipe.Exclude=Exclude
+gui.providerpipe.Include=Include
+gui.providerpipe.Switch=Switch

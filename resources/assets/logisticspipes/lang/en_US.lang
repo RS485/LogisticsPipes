@@ -265,3 +265,12 @@ gui.firewall.Sorting=Sorting
 gui.firewall.Powerflow=Powerflow
 
 gui.fluidbasic.Empty=Empty
+
+gui.fluidsuppliermk2.=
+gui.fluidsuppliermk2.Inventory=Inventory
+gui.fluidsuppliermk2.Fluid=Fluid
+gui.fluidsuppliermk2.Partialrequests=Partial requests
+gui.fluidsuppliermk2.Yes=Yes
+gui.fluidsuppliermk2.No=No
+gui.fluidsuppliermk2.TargetInv=Fluid to keep stocked
+

@@ -8,6 +8,7 @@ import logisticspipes.network.packets.block.PowerJunctionCheatPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
@@ -15,6 +16,7 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 public class GuiPowerJunction extends KraphtBaseGuiScreen {
+	private static final String PREFIX = "gui.powerjunction.";
 
 	private final LogisticsPowerJunctionTileEntity junction;
 	
@@ -46,8 +48,8 @@ public class GuiPowerJunction extends KraphtBaseGuiScreen {
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 		int level = 100 - junction.getChargeState();
 		drawTexturedModalRect(j + 10, k + 11 + (level * 59 / 100), 176, level * 59 / 100, 5, 59 - (level * 59 / 100));
-		mc.fontRenderer.drawString("Logistics Power Junction", guiLeft + 30, guiTop + 8, 0x404040);
-		mc.fontRenderer.drawString("Stored Energy:", guiLeft + 40, guiTop + 23, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "LogisticsPowerJunction"), guiLeft + 30, guiTop + 8, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "StoredEnergy") + ":", guiLeft + 40, guiTop + 23, 0x404040);
 		mc.fontRenderer.drawString(BasicGuiHelper.getStringWithSpacesFromInteger(junction.getPowerLevel()) + " LP", guiLeft + 40, guiTop + 33, 0x404040);
 		mc.fontRenderer.drawString("/ " + BasicGuiHelper.getStringWithSpacesFromInteger(junction.MAX_STORAGE) + " LP", guiLeft + 40, guiTop + 43, 0x404040);
 		mc.fontRenderer.drawString("1 MJ = 5 LP", guiLeft + 30, guiTop + 58, 0x404040);

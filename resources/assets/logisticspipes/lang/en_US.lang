@@ -286,3 +286,6 @@ gui.invsyscon.InventorySystemConnector=Inventory System Connector
 gui.invsyscon.ConnectionCard=Connection Card
 gui.invsyscon.Waitingfor=Waiting for
 gui.invsyscon.Resistance=Resistance
+
+gui.powerjunction.LogisticsPowerJunction=Logistics Power Junction
+gui.powerjunction.StoredEnergy=Stored Energy

@@ -253,3 +253,13 @@ gui.crafting.OreDict=OreDict
 gui.crafting.IgnDamage=IgnDamage
 gui.crafting.IgnNBT=IgnNBT
 gui.crafting.OrePrefix=OrePrefix
+
+gui.firewall.Blocked=Blocked
+gui.firewall.Allowed=Allowed
+gui.firewall.Firewall=Firewall
+gui.firewall.Filter=Filter
+gui.firewall.Filtereditemsare=Filtered items are
+gui.firewall.Providing=Providing
+gui.firewall.Crafting=Crafting
+gui.firewall.Sorting=Sorting
+gui.firewall.Powerflow=Powerflow

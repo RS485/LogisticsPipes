@@ -1,155 +1,246 @@
 # Russian language file
 
-item.PipeItemsBasicLogistics=\u0411\u0430\u0437\u043E\u0432\u0430\u044F \u043B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0442\u0440\u0443\u0431\u0430
-item.PipeItemsBasicLogistics.tip1=\u0422\u0438\u043F: Passive push destination
-item.PipeItemsBasicLogistics.tip2= - "\u0412\u0440\u0430\u0449\u0430\u0435\u0442" \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u044B \u0432\u043E\u043A\u0440\u0443\u0433 \u0441\u0435\u0442\u0438.
-item.PipeItemsBasicLogistics.tip3= - \u041F\u0435\u0440\u0435\u043C\u0435\u0449\u0430\u0435\u0442 \u043E\u043F\u0440\u0435\u0434\u0435\u043B\u0451\u043D\u043D\u044B\u0435 \u0442\u0438\u043F\u044B \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u043E\u0432 \u0432 \u0441\u0443\u043D\u0434\u0443\u043A\u0438.
-item.PipeItemsBasicLogistics.tip4= - \u041C\u043E\u0436\u0435\u0442 \u0431\u044B\u0442\u044C \u043D\u0430\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435\u043C \u043F\u043E \u0443\u043C\u043E\u043B\u0447\u0430\u043D\u0438\u044E.
+# Pipes
+item.PipeItemsBasicLogistics=Базовая логическая труба
+item.PipeItemsBasicLogistics.tip1=Тип: Passive push destination
+item.PipeItemsBasicLogistics.tip2= - "Вращает" предметы вокруг сети.
+item.PipeItemsBasicLogistics.tip3= - Перемещает определённые типы предметов в сундуки.
+item.PipeItemsBasicLogistics.tip4= - Может быть направлением по умолчанию.
 
-item.PipeItemsRequestLogistics=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0442\u0440\u0443\u0431\u0430 \u0437\u0430\u043F\u0440\u043E\u0441\u043E\u0432
-item.PipeItemsRequestLogistics.tip1=\u0422\u0438\u043F: \u0410\u043A\u0442\u0438\u0432\u043D\u044B\u0439 \u0437\u0430\u043F\u0440\u043E\u0441\u0447\u0438\u043A
-item.PipeItemsRequestLogistics.tip2= - \u041F\u043E\u0437\u0432\u043E\u043B\u044F\u0435\u0442 \u0432\u0440\u0443\u0447\u043D\u0443\u044E \u0437\u0430\u043F\u0440\u0430\u0448\u0438\u0432\u0430\u0442\u044C \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u044B
-item.PipeItemsRequestLogistics.tip3= - \u041F\u0440\u0435\u0434\u043C\u0435\u0442\u044B \u043C\u043E\u0433\u0443\u0442 \u0438\u0441\u0445\u043E\u0434\u0438\u0442\u044C \u043E\u0442 \u043B\u044E\u0431\u043E\u0439 \u0442\u0440\u0443\u0431\u044B-\u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0430
-item.PipeItemsRequestLogistics.tip4= - \u041F\u043E\u0441\u0442\u0430\u0432\u044C\u0442\u0435 \u0441\u0443\u043D\u0434\u0443\u043A \u043D\u0430 \u0442\u0440\u0443\u0431\u0443, \u0447\u0442\u043E\u0431\u044B \u043B\u043E\u0432\u0438\u0442\u044C \u0432\u044B\u0445\u043E\u0434\u044F\u0449\u0438\u0435 \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u044B.
+item.PipeItemsRequestLogistics=Логическая труба запросов
+item.PipeItemsRequestLogistics.tip1=Тип: Активный запросчик
+item.PipeItemsRequestLogistics.tip2= - Позволяет вручную запрашивать предметы
+item.PipeItemsRequestLogistics.tip3= - Предметы могут исходить от любой трубы-источника
+item.PipeItemsRequestLogistics.tip4= - Поставьте сундук на трубу, чтобы ловить выходящие предметы.
 
-item.PipeItemsRequestLogisticsMk2=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0442\u0440\u0443\u0431\u0430 \u0437\u0430\u043F\u0440\u043E\u0441\u043E\u0432 Mk2
-item.PipeItemsRequestLogisticsMk2.tip1=\u0422\u0438\u043F: \u0410\u043A\u0442\u0438\u0432\u043D\u044B\u0439 \u0437\u0430\u043F\u0440\u043E\u0441\u0447\u0438\u043A
-item.PipeItemsRequestLogisticsMk2.tip2= - \u0411\u044B\u0441\u0442\u0440\u0435\u0435, \u0447\u0435\u043C Mk1
-item.PipeItemsRequestLogisticsMk2.tip3= - \u041F\u043E\u0437\u0432\u043E\u043B\u044F\u0435\u0442 \u0432\u0440\u0443\u0447\u043D\u0443\u044E \u0437\u0430\u043F\u0440\u0430\u0448\u0438\u0432\u0430\u0442\u044C \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u044B
-item.PipeItemsRequestLogisticsMk2.tip4= - \u041F\u0440\u0435\u0434\u043C\u0435\u0442\u044B \u043C\u043E\u0433\u0443\u0442 \u0438\u0441\u0445\u043E\u0434\u0438\u0442\u044C \u043E\u0442 \u043B\u044E\u0431\u043E\u0439 \u0442\u0440\u0443\u0431\u044B-\u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0430
-item.PipeItemsRequestLogisticsMk2.tip5= - \u041F\u043E\u0441\u0442\u0430\u0432\u044C\u0442\u0435 \u0441\u0443\u043D\u0434\u0443\u043A \u043D\u0430 \u0442\u0440\u0443\u0431\u0443,
-item.PipeItemsRequestLogisticsMk2.tip6=   \u0447\u0442\u043E\u0431\u044B \u043B\u043E\u0432\u0438\u0442\u044C \u0432\u044B\u0445\u043E\u0434\u044F\u0449\u0438\u0435 \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u044B.
+item.PipeItemsRequestLogisticsMk2=Логическая труба запросов Mk2
+item.PipeItemsRequestLogisticsMk2.tip1=Тип: Активный запросчик
+item.PipeItemsRequestLogisticsMk2.tip2= - Быстрее, чем Mk1
+item.PipeItemsRequestLogisticsMk2.tip3= - Позволяет вручную запрашивать предметы
+item.PipeItemsRequestLogisticsMk2.tip4= - Предметы могут исходить от любой трубы-источника
+item.PipeItemsRequestLogisticsMk2.tip5= - Поставьте сундук на трубу,
+item.PipeItemsRequestLogisticsMk2.tip6=   чтобы ловить выходящие предметы.
 
-item.PipeItemsProviderLogistics=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0442\u0440\u0443\u0431\u0430-\u043F\u0440\u043E\u0432\u0430\u0439\u0434\u0435\u0440
-item.PipeItemsProviderLogistics.tip1=\u0422\u0438\u043F: \u0418\u0441\u0442\u043E\u0447\u043D\u0438\u043A \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u043E\u0432
-item.PipeItemsProviderLogistics.tip2= - \u041F\u0440\u0438\u0441\u043E\u0435\u0434\u0438\u043D\u044F\u0435\u0442\u0441\u044F \u043A \u0438\u043D\u0432\u0435\u043D\u0442\u0430\u0440\u044E
-item.PipeItemsProviderLogistics.tip3= - \u041F\u043E\u0441\u044B\u043B\u0430\u0435\u0442 16 \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u043E\u0432 \u0432 \u0441\u0435\u0442\u044C \u043F\u043E \u0437\u0430\u043F\u0440\u043E\u0441\u0443
-item.PipeItemsProviderLogistics.tip4= - \u0418\u0433\u043D\u043E\u0440\u0438\u0440\u0443\u0435\u0442 \u0442\u0440\u0443\u0431\u044B \u0441\u043D\u0430\u0431\u0436\u0435\u043D\u0438\u044F \u043D\u0430 \u0442\u043E\u043C \u0436\u0435 \u0431\u043B\u043E\u043A\u0435.
+item.PipeItemsProviderLogistics=Логическая труба-провайдер
+item.PipeItemsProviderLogistics.tip1=Тип: Источник предметов
+item.PipeItemsProviderLogistics.tip2= - Присоединяется к инвентарю
+item.PipeItemsProviderLogistics.tip3= - Посылает 16 предметов в сеть по запросу
+item.PipeItemsProviderLogistics.tip4= - Игнорирует трубы снабжения на том же блоке.
 
-item.PipeItemsProviderLogisticsMk2=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0442\u0440\u0443\u0431\u0430-\u043F\u0440\u043E\u0432\u0430\u0439\u0434\u0435\u0440 Mk2
-item.PipeItemsProviderLogisticsMk2.tip1=\u0422\u0438\u043F: \u0418\u0441\u0442\u043E\u0447\u043D\u0438\u043A \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u043E\u0432
-item.PipeItemsProviderLogisticsMk2.tip2= - \u041F\u0440\u0438\u0441\u043E\u0435\u0434\u0438\u043D\u044F\u0435\u0442\u0441\u044F \u043A \u0438\u043D\u0432\u0435\u043D\u0442\u0430\u0440\u044E
-item.PipeItemsProviderLogisticsMk2.tip3= - \u041F\u043E\u0441\u044B\u043B\u0430\u0435\u0442 \u0441\u0442\u0430\u043A \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u043E\u0432 \u0432 \u0441\u0435\u0442\u044C \u043F\u043E \u0437\u0430\u043F\u0440\u043E\u0441\u0443
+item.PipeItemsProviderLogisticsMk2=Логическая труба-провайдер Mk2
+item.PipeItemsProviderLogisticsMk2.tip1=Тип: Источник предметов
+item.PipeItemsProviderLogisticsMk2.tip2= - Присоединяется к инвентарю
+item.PipeItemsProviderLogisticsMk2.tip3= - Посылает стак предметов в сеть по запросу
 
-item.PipeItemsCraftingLogistics=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u043A\u0440\u0430\u0444\u0442-\u0442\u0440\u0443\u0431\u0430
-item.PipeItemsCraftingLogistics.tip1=\u0422\u0438\u043F: \u0410\u043A\u0442\u0438\u0432\u043D\u044B\u0439 \u0437\u0430\u043F\u0440\u043E\u0441\u0447\u0438\u043A + \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A
-item.PipeItemsCraftingLogistics.tip2= - \u0421\u043E\u0437\u0434\u0430\u0451\u0442 \u043E\u0434\u0438\u043D \u043F\u0440\u0435\u0434\u043C\u0435\u0442 \u0437\u0430 \u0440\u0430\u0437.
-item.PipeItemsCraftingLogistics.tip3= - \u041F\u0440\u0438\u0441\u043E\u0435\u0434\u0438\u043D\u044F\u0435\u0442\u0441\u044F \u043A \u0430\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u043E\u043C\u0443 \u0432\u0435\u0440\u0441\u0442\u0430\u043A\u0443.
-item.PipeItemsCraftingLogistics.tip4= - \u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u043E\u0437\u0434\u0430\u0451\u0442 \u043F\u0440\u0435\u0434\u043C\u0435\u0442 \u0432\u043D\u0443\u0442\u0440\u0438, \u043F\u043E \u0437\u0430\u043F\u0440\u043E\u0441\u0443.
-item.PipeItemsCraftingLogistics.tip5= - \u041C\u043E\u0436\u0435\u0442 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C \u0432\u0442\u043E\u0440\u0438\u0447\u043D\u0443\u044E \u043B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0443\u044E \u0442\u0440\u0443\u0431\u0443,
-item.PipeItemsCraftingLogistics.tip6=   \u0447\u0442\u043E\u0431\u044B \u043E\u0442\u043F\u0440\u0430\u0432\u043B\u044F\u0442\u044C \u0432\u0445\u043E\u0434\u043D\u044B\u0435 \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u044B \u0432 \u0434\u0440\u0443\u0433\u043E\u0435 \u043C\u0435\u0441\u0442\u043E.
+item.PipeItemsCraftingLogistics=Логическая крафт-труба
+item.PipeItemsCraftingLogistics.tip1=Тип: Активный запросчик + источник
+item.PipeItemsCraftingLogistics.tip2= - Создаёт один предмет за раз.
+item.PipeItemsCraftingLogistics.tip3= - Присоединяется к автоматическому верстаку.
+item.PipeItemsCraftingLogistics.tip4= - Автоматически создаёт предмет внутри, по запросу.
+item.PipeItemsCraftingLogistics.tip5= - Может использовать вторичную логическую трубу,
+item.PipeItemsCraftingLogistics.tip6=   чтобы отправлять входные предметы в другое место.
 
-item.PipeItemsCraftingLogisticsMk2=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u043A\u0440\u0430\u0444\u0442-\u0442\u0440\u0443\u0431\u0430 Mk2
-item.PipeItemsCraftingLogisticsMk2.tip1=\u0422\u0438\u043F: \u0410\u043A\u0442\u0438\u0432\u043D\u044B\u0439 \u0437\u0430\u043F\u0440\u043E\u0441\u0447\u0438\u043A + \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A
-item.PipeItemsCraftingLogisticsMk2.tip2= - \u0421\u043E\u0437\u0434\u0430\u0451\u0442 16 \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u043E\u0432 \u0437\u0430 \u0440\u0430\u0437.
-item.PipeItemsCraftingLogisticsMk2.tip3= - \u041F\u0440\u0438\u0441\u043E\u0435\u0434\u0438\u043D\u044F\u0435\u0442\u0441\u044F \u043A \u0430\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u043E\u043C\u0443 \u0432\u0435\u0440\u0441\u0442\u0430\u043A\u0443.
-item.PipeItemsCraftingLogisticsMk2.tip4= - \u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u043E\u0437\u0434\u0430\u0451\u0442 \u043F\u0440\u0435\u0434\u043C\u0435\u0442 \u0432\u043D\u0443\u0442\u0440\u0438, \u043F\u043E \u0437\u0430\u043F\u0440\u043E\u0441\u0443.
-item.PipeItemsCraftingLogisticsMk2.tip5= - \u041C\u043E\u0436\u0435\u0442 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C \u0432\u0442\u043E\u0440\u0438\u0447\u043D\u0443\u044E \u043B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0443\u044E \u0442\u0440\u0443\u0431\u0443,
-item.PipeItemsCraftingLogisticsMk2.tip6=   \u0447\u0442\u043E\u0431\u044B \u043E\u0442\u043F\u0440\u0430\u0432\u043B\u044F\u0442\u044C \u0432\u0445\u043E\u0434\u043D\u044B\u0435 \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u044B \u0432 \u0434\u0440\u0443\u0433\u043E\u0435 \u043C\u0435\u0441\u0442\u043E.
+item.PipeItemsCraftingLogisticsMk2=Логическая крафт-труба Mk2
+item.PipeItemsCraftingLogisticsMk2.tip1=Тип: Активный запросчик + источник
+item.PipeItemsCraftingLogisticsMk2.tip2= - Создаёт 16 предметов за раз.
+item.PipeItemsCraftingLogisticsMk2.tip3= - Присоединяется к автоматическому верстаку.
+item.PipeItemsCraftingLogisticsMk2.tip4= - Автоматически создаёт предмет внутри, по запросу.
+item.PipeItemsCraftingLogisticsMk2.tip5= - Может использовать вторичную логическую трубу,
+item.PipeItemsCraftingLogisticsMk2.tip6=   чтобы отправлять входные предметы в другое место.
 
-item.PipeItemsCraftingLogisticsMk3=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u043A\u0440\u0430\u0444\u0442-\u0442\u0440\u0443\u0431\u0430 Mk3
-item.PipeItemsCraftingLogisticsMk3.tip1=\u0422\u0438\u043F: \u0410\u043A\u0442\u0438\u0432\u043D\u044B\u0439 \u0437\u0430\u043F\u0440\u043E\u0441\u0447\u0438\u043A + \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A
-item.PipeItemsCraftingLogisticsMk3.tip2= - \u0421\u043E\u0437\u0434\u0430\u0451\u0442 \u0441\u0442\u0430\u043A \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u043E\u0432 \u0437\u0430 \u0440\u0430\u0437.
-item.PipeItemsCraftingLogisticsMk3.tip3= - \u041F\u0440\u0438\u0441\u043E\u0435\u0434\u0438\u043D\u044F\u0435\u0442\u0441\u044F \u043A \u0430\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u043E\u043C\u0443 \u0432\u0435\u0440\u0441\u0442\u0430\u043A\u0443.
-item.PipeItemsCraftingLogisticsMk3.tip4= - \u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u043E\u0437\u0434\u0430\u0451\u0442 \u043F\u0440\u0435\u0434\u043C\u0435\u0442 \u0432\u043D\u0443\u0442\u0440\u0438, \u043F\u043E \u0437\u0430\u043F\u0440\u043E\u0441\u0443.
-item.PipeItemsCraftingLogisticsMk3.tip5= - \u041C\u043E\u0436\u0435\u0442 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C \u0432\u0442\u043E\u0440\u0438\u0447\u043D\u0443\u044E \u043B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0443\u044E \u0442\u0440\u0443\u0431\u0443,
-item.PipeItemsCraftingLogisticsMk3.tip6=   \u0447\u0442\u043E\u0431\u044B \u043E\u0442\u043F\u0440\u0430\u0432\u043B\u044F\u0442\u044C \u0432\u0445\u043E\u0434\u043D\u044B\u0435 \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u044B \u0432 \u0434\u0440\u0443\u0433\u043E\u0435 \u043C\u0435\u0441\u0442\u043E.
+item.PipeItemsCraftingLogisticsMk3=Логическая крафт-труба Mk3
+item.PipeItemsCraftingLogisticsMk3.tip1=Тип: Активный запросчик + источник
+item.PipeItemsCraftingLogisticsMk3.tip2= - Создаёт стак предметов за раз.
+item.PipeItemsCraftingLogisticsMk3.tip3= - Присоединяется к автоматическому верстаку.
+item.PipeItemsCraftingLogisticsMk3.tip4= - Автоматически создаёт предмет внутри, по запросу.
+item.PipeItemsCraftingLogisticsMk3.tip5= - Может использовать вторичную логическую трубу,
+item.PipeItemsCraftingLogisticsMk3.tip6=   чтобы отправлять входные предметы в другое место.
 
-item.PipeItemsSatelliteLogistics=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0432\u0442\u043E\u0440\u0438\u0447\u043D\u0430\u044F \u0442\u0440\u0443\u0431\u0430
-item.PipeItemsSatelliteLogistics.tip1=\u0422\u0438\u043F: Active request destination
-item.PipeItemsSatelliteLogistics.tip2= - \u041A\u0440\u0430\u0444\u0442-\u0442\u0440\u0443\u0431\u0430 \u043C\u043E\u0436\u0435\u0442 \u043E\u0442\u043F\u0440\u0430\u0432\u043B\u044F\u0442\u044C
-item.PipeItemsSatelliteLogistics.tip3=   \u0434\u043E\u043F\u043E\u043B\u043D\u0438\u0442\u0435\u043B\u044C\u043D\u044B\u0435 \u0432\u0445\u043E\u0434\u043D\u044B\u0435 \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u044B \u0441\u044E\u0434\u0430
-item.PipeItemsSatelliteLogistics.tip4= - \u0418\u0441\u043F\u043E\u043B\u044C\u0437\u0443\u0435\u0442\u0441\u044F \u0434\u043B\u044F \u043E\u0442\u043F\u0440\u0430\u0432\u043A\u0438 \u043D\u0435\u0441\u0442\u0430\u043A\u0430\u044E\u0449\u0438\u0445\u0441\u044F
-item.PipeItemsSatelliteLogistics.tip5=   \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u043E\u0432 \u0434\u043E \u0441\u0443\u043D\u0434\u0443\u043A\u0430 \u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0438\u043C \u0437\u0430 \u0432\u0435\u0440\u0441\u0442\u0430\u043A\u043E\u043C.
+item.PipeItemsSatelliteLogistics=Логическая вторичная труба
+item.PipeItemsSatelliteLogistics.tip1=Тип: Active request destination
+item.PipeItemsSatelliteLogistics.tip2= - Крафт-труба может отправлять
+item.PipeItemsSatelliteLogistics.tip3=   дополнительные входные предметы сюда
+item.PipeItemsSatelliteLogistics.tip4= - Используется для отправки нестакающихся
+item.PipeItemsSatelliteLogistics.tip5=   предметов до сундука следующим за верстаком.
 
-item.PipeItemsSupplierLogistics=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0442\u0440\u0443\u0431\u0430 \u0441\u043D\u0430\u0431\u0436\u0435\u043D\u0438\u044F
-item.PipeItemsSupplierLogistics.tip1=\u0422\u0438\u043F: \u0410\u043A\u0442\u0438\u0432\u043D\u044B\u0439 \u0437\u0430\u043F\u0440\u043E\u0441\u0447\u0438\u043A \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u043E\u0432
-item.PipeItemsSupplierLogistics.tip2= - \u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0437\u0430\u043F\u043E\u043B\u043D\u044F\u0435\u0442 \u0441\u0443\u043D\u0434\u0443\u043A \u0438\u043B\u0438 \u043C\u0430\u0448\u0438\u043D\u0443
-item.PipeItemsSupplierLogistics.tip3= - \u041C\u043E\u0436\u0435\u0442\u0435 \u043F\u043E\u043B\u0443\u0447\u0430\u0442\u044C \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u044B \u0438\u0437 \u043B\u044E\u0431\u043E\u0433\u043E
-item.PipeItemsSupplierLogistics.tip4=   \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0430 \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u043E\u0432.
-item.PipeItemsSupplierLogistics.tip5= - \u0418\u0433\u043D\u043E\u0440\u0438\u0440\u0443\u0435\u0442 \u0442\u0440\u0443\u0431\u044B-\u043F\u0440\u043E\u0432\u0430\u0439\u0434\u0435\u0440\u044B \u043D\u0430 \u0442\u043E\u043C \u0436\u0435 \u0431\u043B\u043E\u043A\u0435.
+item.PipeItemsSupplierLogistics=Логическая труба снабжения
+item.PipeItemsSupplierLogistics.tip1=Тип: Активный запросчик предметов
+item.PipeItemsSupplierLogistics.tip2= - Автоматически заполняет сундук или машину
+item.PipeItemsSupplierLogistics.tip3= - Можете получать предметы из любого
+item.PipeItemsSupplierLogistics.tip4=   источника предметов.
+item.PipeItemsSupplierLogistics.tip5= - Игнорирует трубы-провайдеры на том же блоке.
 
-item.PipeItemsBuilderSupplierLogistics=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0442\u0440\u0443\u0431\u0430 \u0441\u043D\u0430\u0431\u0436\u0435\u043D\u0438\u044F \u0434\u043B\u044F \u0441\u0442\u0440\u043E\u0438\u0442\u0435\u043B\u044F
-item.PipeItemsBuilderSupplierLogistics.tip1=\u0422\u0438\u043F: \u0410\u043A\u0442\u0438\u0432\u043D\u044B\u0439 \u0437\u0430\u043F\u0440\u043E\u0441\u0447\u0438\u043A \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u043E\u0432
-item.PipeItemsBuilderSupplierLogistics.tip2= - \u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0437\u0430\u043F\u043E\u043B\u043D\u044F\u0435\u0442 \u0441\u0442\u0440\u043E\u0438\u0442\u0435\u043B\u044C \u0432\u0441\u0435\u043C\u0438 \u043D\u0435\u043E\u0431\u0445\u043E\u0434\u0438\u043C\u044B\u043C\u0438 \u043C\u0430\u0442\u0435\u0440\u0438\u0430\u043B\u0430\u043C\u0438
+item.PipeItemsBuilderSupplierLogistics=Логическая труба снабжения для строителя
+item.PipeItemsBuilderSupplierLogistics.tip1=Тип: Активный запросчик предметов
+item.PipeItemsBuilderSupplierLogistics.tip2= - Автоматически заполняет строитель всеми необходимыми материалами
 
-item.PipeLogisticsChassiMk1=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u043E\u0435 \u0448\u0430\u0441\u0441\u0438 Mk1
-item.PipeLogisticsChassiMk1.tip1=\u0422\u0438\u043F: \u0421\u043C\u0435\u0448\u0430\u043D\u043D\u044B\u0439
-item.PipeLogisticsChassiMk1.tip2= - \u041C\u043E\u0436\u0435\u0442 \u0441\u043E\u0434\u0435\u0440\u0436\u0430\u0442\u044C 1 \u043C\u043E\u0434\u0443\u043B\u044C.
+item.PipeLogisticsChassiMk1=Логическое шасси Mk1
+item.PipeLogisticsChassiMk1.tip1=Тип: Смешанный
+item.PipeLogisticsChassiMk1.tip2= - Может содержать 1 модуль.
 
-item.PipeLogisticsChassiMk2=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u043E\u0435 \u0448\u0430\u0441\u0441\u0438 Mk2
-item.PipeLogisticsChassiMk2.tip1=\u0422\u0438\u043F: \u0421\u043C\u0435\u0448\u0430\u043D\u043D\u044B\u0439
-item.PipeLogisticsChassiMk2.tip2= - \u041C\u043E\u0436\u0435\u0442 \u0441\u043E\u0434\u0435\u0440\u0436\u0430\u0442\u044C 2 \u043C\u043E\u0434\u0443\u043B\u044F.
+item.PipeLogisticsChassiMk2=Логическое шасси Mk2
+item.PipeLogisticsChassiMk2.tip1=Тип: Смешанный
+item.PipeLogisticsChassiMk2.tip2= - Может содержать 2 модуля.
 
-item.PipeLogisticsChassiMk3=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u043E\u0435 \u0448\u0430\u0441\u0441\u0438 Mk3
-item.PipeLogisticsChassiMk3.tip1=\u0422\u0438\u043F: \u0421\u043C\u0435\u0448\u0430\u043D\u043D\u044B\u0439
-item.PipeLogisticsChassiMk3.tip2= - \u041C\u043E\u0436\u0435\u0442 \u0441\u043E\u0434\u0435\u0440\u0436\u0430\u0442\u044C 3 \u043C\u043E\u0434\u0443\u043B\u044F.
+item.PipeLogisticsChassiMk3=Логическое шасси Mk3
+item.PipeLogisticsChassiMk3.tip1=Тип: Смешанный
+item.PipeLogisticsChassiMk3.tip2= - Может содержать 3 модуля.
 
-item.PipeLogisticsChassiMk4=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u043E\u0435 \u0448\u0430\u0441\u0441\u0438 Mk4
-item.PipeLogisticsChassiMk4.tip1=\u0422\u0438\u043F: \u0421\u043C\u0435\u0448\u0430\u043D\u043D\u044B\u0439
-item.PipeLogisticsChassiMk4.tip2= - \u041C\u043E\u0436\u0435\u0442 \u0441\u043E\u0434\u0435\u0440\u0436\u0430\u0442\u044C 4 \u043C\u043E\u0434\u0443\u043B\u044F.
+item.PipeLogisticsChassiMk4=Логическое шасси Mk4
+item.PipeLogisticsChassiMk4.tip1=Тип: Смешанный
+item.PipeLogisticsChassiMk4.tip2= - Может содержать 4 модуля.
 
-item.PipeLogisticsChassiMk5=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u043E\u0435 \u0448\u0430\u0441\u0441\u0438 Mk5
-item.PipeLogisticsChassiMk5.tip1=\u0422\u0438\u043F: \u0421\u043C\u0435\u0448\u0430\u043D\u043D\u044B\u0439
-item.PipeLogisticsChassiMk5.tip2= - \u041C\u043E\u0436\u0435\u0442 \u0441\u043E\u0434\u0435\u0440\u0436\u0430\u0442\u044C 8 \u043C\u043E\u0434\u0443\u043B\u0435\u0439.
+item.PipeLogisticsChassiMk5=Логическое шасси Mk5
+item.PipeLogisticsChassiMk5.tip1=Тип: Смешанный
+item.PipeLogisticsChassiMk5.tip2= - Может содержать 8 модулей.
 
-item.PipeItemsRemoteOrdererLogistics=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0442\u0440\u0443\u0431\u0430 \u0434\u0438\u0441\u0442\u0430\u043D\u0446\u0438\u043E\u043D\u043D\u044B\u0445 \u0437\u0430\u043F\u0440\u043E\u0441\u043E\u0432
-item.PipeItemsRemoteOrdererLogistics.tip1=\u0422\u0438\u043F: \u0410\u043A\u0442\u0438\u0432\u043D\u044B\u0439 \u0437\u0430\u043F\u0440\u043E\u0441\u0447\u0438\u043A
-item.PipeItemsRemoteOrdererLogistics.tip2= - \u041F\u043E\u0437\u0432\u043E\u043B\u044F\u0435\u0442 \u0432\u0440\u0443\u0447\u043D\u0443\u044E \u0437\u0430\u043F\u0440\u0430\u0448\u0438\u0432\u0430\u0442\u044C \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u044B *\u0443\u0434\u0430\u043B\u0451\u043D\u043D\u043E*
-item.PipeItemsRemoteOrdererLogistics.tip3= - \u041C\u043E\u0436\u0435\u0442 \u0432\u044B\u0442\u0430\u0449\u0438\u0442\u044C \u0438\u0437 \u043B\u044E\u0431\u043E\u0433\u043E \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0430 \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u043E\u0432
-item.PipeItemsRemoteOrdererLogistics.tip4= - \u0412\u044B \u0434\u043E\u043B\u0436\u043D\u044B \u0449\u0451\u043B\u043A\u043D\u0443\u0442\u044C \u043F\u0440\u0430\u0432\u043E\u0439 \u043A\u043D\u043E\u043F\u043A\u043E\u0439 \u043C\u044B\u0448\u0438
-item.PipeItemsRemoteOrdererLogistics.tip5=   \u0443\u0434\u0430\u043B\u0451\u043D\u043D\u044B\u0439 \u0437\u0430\u043F\u0440\u043E\u0441 \u043D\u0430 \u044D\u0442\u043E\u0439 \u0442\u0440\u0443\u0431\u0435.
+item.PipeItemsRemoteOrdererLogistics=Логическая труба дистанционных запросов
+item.PipeItemsRemoteOrdererLogistics.tip1=Тип: Активный запросчик
+item.PipeItemsRemoteOrdererLogistics.tip2= - Позволяет вручную запрашивать предметы *удалённо*
+item.PipeItemsRemoteOrdererLogistics.tip3= - Может вытащить из любого источника предметов
+item.PipeItemsRemoteOrdererLogistics.tip4= - Вы должны щёлкнуть правой кнопкой мыши
+item.PipeItemsRemoteOrdererLogistics.tip5=   удалённый запрос на этой трубе.
 
-item.PipeItemsApiaristAnalyser=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0442\u0440\u0443\u0431\u0430-\u0430\u043D\u0430\u043B\u0438\u0437\u0430\u0442\u043E\u0440 \u043F\u0447\u0451\u043B
-item.PipeItemsApiaristAnalyser.tip1=\u0422\u0438\u043F: \u041F\u0430\u0441\u0441\u0438\u0432\u043D\u043E\u0435 \u043D\u0430\u0437\u043D\u0430\u0447\u0435\u043D\u0438\u0435
-item.PipeItemsApiaristAnalyser.tip2= - \u041F\u0430\u0441\u0441\u0438\u0432\u043D\u043E\u0435 \u043D\u0430\u0437\u043D\u0430\u0447\u0435\u043D\u0438\u0435 \u0434\u043B\u044F \u043D\u0435-\u0430\u043D\u0430\u043B\u0438\u0437\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0445 \u043F\u0447\u0451\u043B
-item.PipeItemsApiaristAnalyser.tip3= - \u041F\u043E\u0437\u0432\u043E\u043B\u044F\u0435\u0442 \u0430\u043D\u0430\u043B\u0438\u0437\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u0430\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438
+item.PipeItemsApiaristAnalyser=Логическая труба-анализатор пчёл
+item.PipeItemsApiaristAnalyser.tip1=Тип: Пассивное назначение
+item.PipeItemsApiaristAnalyser.tip2= - Пассивное назначение для не-анализированных пчёл
+item.PipeItemsApiaristAnalyser.tip3= - Позволяет анализировать автоматически
 
-item.PipeItemsApiaristSink=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F BeeSink \u0442\u0440\u0443\u0431\u0430
-item.PipeItemsApiaristSink.tip1=\u0422\u0438\u043F: \u041F\u0430\u0441\u0441\u0438\u0432\u043D\u043E\u0435 \u043D\u0430\u0437\u043D\u0430\u0447\u0435\u043D\u0438\u0435
-item.PipeItemsApiaristSink.tip2= - \u041F\u0430\u0441\u0441\u0438\u0432\u043D\u043E\u0435 \u043D\u0430\u0437\u043D\u0430\u0447\u0435\u043D\u0438\u0435 \u0434\u043B\u044F \u0430\u043D\u0430\u043B\u0438\u0437\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0445 \u043F\u0447\u0451\u043B
-item.PipeItemsApiaristSink.tip3= - \u041C\u043E\u0436\u0435\u0442 \u0444\u0438\u043B\u044C\u0442\u0440\u043E\u0432\u0430\u0442\u044C \u043D\u0430 \u043E\u0441\u043D\u043E\u0432\u0435 \u0433\u0435\u043D\u0435\u0442\u0438\u0447\u0435\u0441\u043A\u0438\u0445 \u0441\u0432\u043E\u0439\u0441\u0442\u0432 \u0438 \u0433\u0435\u043D\u043E\u043C\u0430.
+item.PipeItemsApiaristSink=Логическая BeeSink труба
+item.PipeItemsApiaristSink.tip1=Тип: Пассивное назначение
+item.PipeItemsApiaristSink.tip2= - Пассивное назначение для анализированных пчёл
+item.PipeItemsApiaristSink.tip3= - Может фильтровать на основе генетических свойств и генома.
 
-item.PipeItemsInvSysConnector=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0438\u0439 \u0438\u043D\u0432\u0435\u043D\u0442\u043E\u0440\u043D\u044B\u0439 \u0441\u0438\u0441\u0442\u0435\u043C\u043D\u044B\u0439 \u043A\u043E\u043D\u043D\u0435\u043A\u0442\u043E\u0440
-item.PipeItemsInvSysConnector.tip1=\u0422\u0438\u043F: \u041C\u043E\u0441\u0442
-item.PipeItemsInvSysConnector.tip2= - \u0421\u043E\u0435\u0434\u0438\u043D\u044F\u0435\u0442 \u0434\u0432\u0435 \u043B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0438\u0435 \u0441\u0435\u0442\u0438 \u0432\u043C\u0435\u0441\u0442\u0435
-item.PipeItemsInvSysConnector.tip3=   \u0447\u0435\u0440\u0435\u0437 \u043E\u0431\u0449\u0438\u0439 \u0438\u043D\u0432\u0435\u043D\u0442\u0430\u0440\u044C
-item.PipeItemsInvSysConnector.tip4= - \u041E\u0431\u044B\u0447\u043D\u043E \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u0443\u0435\u0442\u0441\u044F \u0432\u043C\u0435\u0441\u0442\u0435 \u0441 \u044D\u043D\u0434\u0435\u0440 \u0441\u0443\u043D\u0434\u0443\u043A\u043E\u043C, \u043D\u043E \u0432\u044B
-item.PipeItemsInvSysConnector.tip5=   \u0442\u0430\u043A\u0436\u0435 \u043C\u043E\u0436\u0435\u0442\u0435 \u043F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u043B\u043E\u0433\u0438\u043A\u0443 \u0441 \u043F\u043E\u0435\u0437\u0434\u0430\u043C\u0438...
+item.PipeItemsInvSysConnector=Логический инвенторный системный коннектор
+item.PipeItemsInvSysConnector.tip1=Тип: Мост
+item.PipeItemsInvSysConnector.tip2= - Соединяет две логические сети вместе
+item.PipeItemsInvSysConnector.tip3=   через общий инвентарь
+item.PipeItemsInvSysConnector.tip4= - Обычно используется вместе с эндер сундуком, но вы
+item.PipeItemsInvSysConnector.tip5=   также можете получить логику с поездами...
 
-item.PipeItemsSystemEntranceLogistics=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0441\u0438\u0441\u0442\u0435\u043C\u043D\u0430\u044F \u0432\u0445\u043E\u0434\u043D\u0430\u044F \u0442\u0440\u0443\u0431\u0430
-item.PipeItemsSystemEntranceLogistics.tip1=\u0422\u0438\u043F: \u041C\u0430\u0440\u0448\u0440\u0443\u0442\u0438\u0437\u0430\u0442\u043E\u0440
-item.PipeItemsSystemEntranceLogistics.tip2= - \u041F\u043E\u0441\u044B\u043B\u0430\u0435\u0442 \u043D\u0435-\u043C\u0430\u0440\u0448\u0440\u0443\u0442\u0438\u0437\u0438\u0440\u0443\u0435\u043C\u044B\u0435 \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u044B
-item.PipeItemsSystemEntranceLogistics.tip3=   \u043A \u0441\u043E\u043E\u0442\u0432\u0435\u0442\u0441\u0442\u0432\u0443\u044E\u0449\u0435\u0439 \u0442\u0440\u0443\u0431\u0435 \u043D\u0430\u0437\u043D\u0430\u0447\u0435\u043D\u0438\u044F.
-item.PipeItemsSystemEntranceLogistics.tip4= - \u041E\u0431\u0435 \u0432\u0445\u043E\u0434\u043D\u0430\u044F \u0442\u0440\u0443\u0431\u0430 \u0438 \u0442\u0440\u0443\u0431\u0430 \u043D\u0430\u0437\u043D\u0430\u0447\u0435\u043D\u0438\u044F
-item.PipeItemsSystemEntranceLogistics.tip5=   \u0434\u043E\u043B\u0436\u043D\u044B \u0431\u044B\u0442\u044C \u0441\u0432\u044F\u0437\u0430\u043D\u044B \u0435\u0434\u0438\u043D\u043E\u0439 \u0447\u0430\u0441\u0442\u043E\u0442\u043D\u043E\u0439 \u043A\u0430\u0440\u0442\u043E\u0439.
+item.PipeItemsSystemEntranceLogistics=Логическая системная входная труба
+item.PipeItemsSystemEntranceLogistics.tip1=Тип: Маршрутизатор
+item.PipeItemsSystemEntranceLogistics.tip2= - Посылает не-маршрутизируемые предметы
+item.PipeItemsSystemEntranceLogistics.tip3=   к соответствующей трубе назначения.
+item.PipeItemsSystemEntranceLogistics.tip4= - Обе входная труба и труба назначения
+item.PipeItemsSystemEntranceLogistics.tip5=   должны быть связаны единой частотной картой.
 
-item.PipeItemsSystemDestinationLogistics=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0441\u0438\u0441\u0442\u0435\u043C\u043D\u0430\u044F \u0442\u0440\u0443\u0431\u0430 \u043D\u0430\u0437\u043D\u0430\u0447\u0435\u043D\u0438\u044F
-item.PipeItemsSystemDestinationLogistics.tip1=\u0422\u0438\u043F: \u041E\u0441\u043E\u0431\u043E\u0435 \u043D\u0430\u0437\u043D\u0430\u0447\u0435\u043D\u0438\u0435
-item.PipeItemsSystemDestinationLogistics.tip2= - \u041F\u043E\u043B\u0443\u0447\u0430\u0435\u0442 \u043D\u0435-\u043C\u0430\u0440\u0448\u0440\u0443\u0442\u0438\u0437\u0438\u0440\u0443\u0435\u043C\u044B\u0435 \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u044B \u0438\u0437
-item.PipeItemsSystemDestinationLogistics.tip3=   \u0441\u043E\u043E\u0442\u0432\u0435\u0442\u0441\u0442\u0432\u0443\u044E\u0449\u0435\u0439 \u0432\u0445\u043E\u0434\u043D\u043E\u0439 \u0442\u0440\u0443\u0431\u044B
-item.PipeItemsSystemDestinationLogistics.tip4= - \u041E\u0431\u0435 \u0432\u0445\u043E\u0434\u043D\u0430\u044F \u0442\u0440\u0443\u0431\u0430 \u0438 \u0442\u0440\u0443\u0431\u0430 \u043D\u0430\u0437\u043D\u0430\u0447\u0435\u043D\u0438\u044F
-item.PipeItemsSystemDestinationLogistics.tip5=   \u0434\u043E\u043B\u0436\u043D\u044B \u0431\u044B\u0442\u044C \u0441\u0432\u044F\u0437\u0430\u043D\u044B \u0435\u0434\u0438\u043D\u043E\u0439 \u0447\u0430\u0441\u0442\u043E\u0442\u043D\u043E\u0439 \u043A\u0430\u0440\u0442\u043E\u0439.
+item.PipeItemsSystemDestinationLogistics=Логическая системная труба назначения
+item.PipeItemsSystemDestinationLogistics.tip1=Тип: Особое назначение
+item.PipeItemsSystemDestinationLogistics.tip2= - Получает не-маршрутизируемые предметы из
+item.PipeItemsSystemDestinationLogistics.tip3=   соответствующей входной трубы
+item.PipeItemsSystemDestinationLogistics.tip4= - Обе входная труба и труба назначения
+item.PipeItemsSystemDestinationLogistics.tip5=   должны быть связаны единой частотной картой.
 
-item.PipeItemsFirewall=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0431\u0440\u0430\u043D\u0434\u043C\u0430\u0443\u044D\u0440\u043D\u0430\u044F \u0442\u0440\u0443\u0431\u0430
-item.PipeItemsFirewall.tip1=\u0422\u0438\u043F: \u0424\u0438\u043B\u044C\u0442\u0440 \u0437\u0430\u043F\u0440\u043E\u0441\u0430
-item.PipeItemsFirewall.tip2= - \u041F\u043E\u0437\u0432\u043E\u043B\u044F\u0435\u0442 \u043F\u043E\u0434\u043A\u043B\u044E\u0447\u0430\u0442\u044C "\u0432\u0440\u0430\u0436\u0434\u0435\u0431\u043D\u044B\u0435" \u0441\u0435\u0442\u0438,
-item.PipeItemsFirewall.tip3=   \u043F\u043E\u0437\u0432\u043E\u043B\u044F\u044F \u043F\u0440\u0438 \u044D\u0442\u043E\u043C \u043F\u0440\u043E\u0445\u043E\u0434\u0438\u0442\u044C \u0442\u043E\u043B\u044C\u043A\u043E
-item.PipeItemsFirewall.tip4=   \u043E\u043F\u0440\u0435\u0434\u0435\u043B\u0451\u043D\u043D\u044B\u043C \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u0430\u043C
+item.PipeItemsFirewall=Логическая брандмауэрная труба
+item.PipeItemsFirewall.tip1=Тип: Фильтр запроса
+item.PipeItemsFirewall.tip2= - Позволяет подключать "враждебные" сети,
+item.PipeItemsFirewall.tip3=   позволяя при этом проходить только
+item.PipeItemsFirewall.tip4=   определённым предметам
 
-item.PipeItemsFluidSupplier=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0442\u0440\u0443\u0431\u0430 \u0441\u043D\u0430\u0431\u0436\u0435\u043D\u0438\u044F \u0434\u043B\u044F \u0436\u0438\u0434\u043A\u043E\u0441\u0442\u043D\u043E\u0433\u043E \u043A\u043E\u043D\u0442\u0435\u0439\u043D\u0435\u0440\u0430
-item.PipeItemsFluidSupplier.tip1= - \u0418\u0441\u043F\u043E\u043B\u044C\u0437\u0443\u0435\u0442 \u0432\u0451\u0434\u0440\u0430 \u0438\u043B\u0438 \u0434\u0440\u0443\u0433\u0438\u0435 \u0451\u043C\u043A\u043E\u0441\u0442\u0438 \u0441 \u0436\u0438\u0434\u043A\u043E\u0441\u0442\u044C\u044E,
-item.PipeItemsFluidSupplier.tip2=   \u0447\u0442\u043E\u0431\u044B \u0437\u0430\u043F\u043E\u043B\u043D\u0438\u0442\u044C \u043F\u043E\u0434\u043A\u043B\u044E\u0447\u0451\u043D\u043D\u044B\u0439 \u043A\u043E\u043D\u0442\u0435\u0439\u043D\u0435\u0440
-item.PipeItemsFluidSupplier.tip3= - \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u0443\u0435\u0442\u0441\u044F \u0434\u043B\u044F \u043C\u0430\u0448\u0438\u043D,
-item.PipeItemsFluidSupplier.tip4=   \u043A\u043E\u0442\u043E\u0440\u044B\u0435 \u0430\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u043E\u043F\u0443\u0441\u0442\u043E\u0448\u0430\u044E\u0442 \u043F\u0440\u0435\u0434\u043E\u0441\u0442\u0430\u0432\u043B\u0435\u043D\u043D\u044B\u0435 \u043A\u043E\u043D\u0442\u0435\u0439\u043D\u0435\u0440\u044B
-item.PipeFluidSupplierMk2=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0436\u0438\u0434\u043A\u043E\u0441\u0442\u043D\u0430\u044F \u0442\u0440\u0443\u0431\u0430 \u0441\u043D\u0430\u0431\u0436\u0435\u043D\u0438\u044F
-item.PipeFluidSupplierMk2.tip1=\u0422\u044F\u043D\u0435\u0442 \u0436\u0438\u0434\u043A\u043E\u0441\u0442\u0438 \u0438\u0437 
-item.PipeFluidSupplierMk2.tip2=\u043B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u043E\u0439 \u0436\u0438\u0434\u043A\u043E\u0441\u0442\u043D\u043E\u0439 \u043F\u0440\u043E\u0432\u043E\u0434\u044F\u0449\u0435\u0439 \u0442\u0440\u0443\u0431\u044B
-item.LogisticsFluidConnectorPipe=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0436\u0438\u0434\u043A\u043E\u0441\u0442\u043D\u0430\u044F \u0442\u0440\u0443\u0431\u0430-\u043A\u043E\u043D\u043D\u0435\u043A\u0442\u043E\u0440
-item.PipeFluidBasic=\u0411\u0430\u0437\u043E\u0432\u0430\u044F \u043B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0436\u0438\u0434\u043A\u043E\u0441\u0442\u043D\u0430\u044F \u0442\u0440\u0443\u0431\u0430
-item.PipeFluidInsertion=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0436\u0438\u0434\u043A\u043E\u0441\u0442\u043D\u0430\u044F \u0432\u0432\u043E\u0434\u044F\u0449\u0430\u044F \u0442\u0440\u0443\u0431\u0430
-item.PipeFluidProvider=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0436\u0438\u0434\u043A\u043E\u0441\u0442\u043D\u0430\u044F \u0442\u0440\u0443\u0431\u0430-\u043F\u0440\u043E\u0432\u0430\u0439\u0434\u0435\u0440
-item.PipeFluidRequestLogistics=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0436\u0438\u0434\u043A\u043E\u0441\u0442\u043D\u0430\u044F \u0442\u0440\u0443\u0431\u0430 \u0437\u0430\u043F\u0440\u043E\u0441\u043E\u0432
-item.PipeFluidExtractor=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0436\u0438\u0434\u043A\u043E\u0441\u0442\u043D\u0430\u044F \u0438\u0437\u0432\u043B\u0435\u043A\u0430\u044E\u0449\u0430\u044F \u0442\u0440\u0443\u0431\u0430
-item.PipeFluidSatellite=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0436\u0438\u0434\u043A\u043E\u0441\u0442\u043D\u0430\u044F \u0432\u0442\u043E\u0440\u0438\u0447\u043D\u0430\u044F \u0442\u0440\u0443\u0431\u0430
-item.PipeBlockRequestTable=\u041B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0438\u0439 \u0441\u0442\u043E\u043B \u0437\u0430\u043F\u0440\u043E\u0441\u043E\u0432
+item.PipeItemsFluidSupplier=Логическая труба снабжения для жидкостного контейнера
+item.PipeItemsFluidSupplier.tip1= - Использует вёдра или другие ёмкости с жидкостью,
+item.PipeItemsFluidSupplier.tip2=   чтобы заполнить подключённый контейнер
+item.PipeItemsFluidSupplier.tip3= - используется для машин,
+item.PipeItemsFluidSupplier.tip4=   которые автоматически опустошают предоставленные контейнеры
+item.PipeFluidSupplierMk2=Логическая жидкостная труба снабжения
+item.PipeFluidSupplierMk2.tip1=Тянет жидкости из 
+item.PipeFluidSupplierMk2.tip2=логической жидкостной проводящей трубы
+item.LogisticsFluidConnectorPipe=Логическая жидкостная труба-коннектор
+item.PipeFluidBasic=Базовая логическая жидкостная труба
+item.PipeFluidInsertion=Логическая жидкостная вводящая труба
+item.PipeFluidProvider=Логическая жидкостная труба-провайдер
+item.PipeFluidRequestLogistics=Логическая жидкостная труба запросов
+item.PipeFluidExtractor=Логическая жидкостная извлекающая труба
+item.PipeFluidSatellite=Логическая жидкостная вторичная труба
+item.PipeBlockRequestTable=Логический стол запросов
+
+# Modules
+
+#TODO: Add shift tooltip information
+item.ModuleBlank=Пустой модуль
+item.ModuleItemSink=IМодуль temSink
+item.ModulePassiveSupplier=Пассивный модуль снабжения
+item.ModuleExtractor=Extractor module
+item.ModulePolymorphicItemSink=Polymorphic ItemSink module
+item.ModuleQuickSort=QuickSort module
+item.ModuleTerminus=Terminus module
+item.ModuleAdvancedExtractor=Advanced Extractor module
+item.ModuleExtractorMk2=Extractor MK2 module
+item.ModuleAdvancedExtractorMK2=Advanced Extractor MK2
+item.ModuleExtractorMk3=Extractor MK3 module
+item.ModuleAdvancedExtractorMK3=Advanced Extractor MK3
+item.ModuleProvider=Provider module
+item.ModuleProviderMk2=Provider module MK2
+item.ModuleElectricManager=Electric Manager module
+item.ModuleElectricBuffer=Electric Buffer module
+item.ModuleApiaristAnalyser=Bee Analyzer module
+item.ModuleApiaristSink=BeeSink module
+item.ModuleApiaristRefiller=Apiary Refiller module
+item.ModuleApiaristTerminus=Drone Terminus module
+item.ModuleModBasedItemSink=Mod Based ItemSink module
+item.ModuleOreDictItemSink=OreDict ItemSink module
+item.ModuleThaumicAspectSink=Thaumic AspectSink module
+item.ModuleEnchantmentSink=Enchantment Sink module
+item.ModuleEnchantmentSinkMK2=Enchantment Sink module MK2
+
+# Items
+
+item.brokenItem=Logistics Broken Item
+item.logisticsFluidContainer=Logistics Fluid Container
+item.upgradeManagerItem=Upgrade Manager
+item.HUDbow=Logistics HUD Bow
+item.HUDglass=Logistics HUD Glass
+item.HUDnosebridge=Logistics HUD Nose Bridge
+item.NanoHopper=Nano Hopper
+item.logisticsItemCard=Logistics Item Card
+item.itemDisk=Logistics Disk
+item.networkMonitorItem=Network monitor
+item.CraftingSignCreator=Crafting Sign Creator
+item.logisticsHUDGlasses=Logistics HUD Glasses
+item.remoteOrdererItem=Remote Orderer
+
+# Upgrades
+
+item.SneakyUpgradeUP=Sneaky Upgrade (UP)
+item.SneakyUpgradeDOWN=Sneaky Upgrade (DOWN)
+item.SneakyUpgradeNORTH=Sneaky Upgrade (NORTH)
+item.SneakyUpgradeSOUTH=Sneaky Upgrade (SOUTH)
+item.SneakyUpgradeEAST=Sneaky Upgrade (EAST)
+item.SneakyUpgradeWEST=Sneaky Upgrade (WEST)
+item.CombinedSneakyUpgrade=Sneaky Combination Upgrade
+item.SpeedUpgrade=Item Speed Upgrade
+item.ConnectionUpgradeUP=Disconnection Upgrade (UP)
+item.ConnectionUpgradeDOWN=Disconnection Upgrade (DOWN)
+item.ConnectionUpgradeNORTH=Disconnection Upgrade (NORTH)
+item.ConnectionUpgradeSOUTH=Disconnection Upgrade (SOUTH)
+item.ConnectionUpgradeEAST=Disconnection Upgrade (EAST)
+item.ConnectionUpgradeWEST=Disconnection Upgrade (WEST)
+item.AdvancedSatelliteUpgrade=Advanced Satellite Upgrade
+item.FluidCraftingUpgrade=Fluid Crafting Upgrade
+item.CraftingByproductUpgrade=Crafting Byproduct Extraction Upgrade
+item.PatternUpgrade=Placement Rules Upgrade
+item.FuzzyCraftingUpgrade=Fuzzy Crafting Upgrade
+item.PowerTransportationUpgrade=Power Transportation Upgrade
+item.BCPowerSupplierUpgrade=BC Power Supplier Upgrade
+item.RFPowerSupplierUpgrade=TE Power Supplier Upgrade
+item.IC2LVPowerSupplierUpgrade=IC2 LV Power Supplier Upgrade
+item.IC2MVPowerSupplierUpgrade=IC2 MV Power Supplier Upgrade
+item.IC2HVPowerSupplierUpgrade=IC2 HV Power Supplier Upgrade
+item.IC2EVPowerSupplierUpgrade=IC2 EV Power Supplier Upgrade
+item.CCRemoteControlUpgrade=CC Remote Control Upgrade
+
+# Blocks
+
+tile.solderingstation=Паяльная станция
+tile.logisticspowerjunction=Энергетическое хранилище
+tile.logisticssecuritystation=Станция безопасности
+tile.logisticscraftingtable=Сборочный стол
+tile.logisticsbcpowerprovider=Провайдер BC-энергии
+tile.logisticstepowerprovider=Провайдер TE-энергии
+tile.logisticsic2powerprovider=Провайдер IC2-энергии
+
+# Misc
+
+itemGroup.Logistics_Pipes=Логистические трубы
+misc.holdshift=<Hold %cYELLOW %cITALIC Shift %cRESET %cGRAY for details>

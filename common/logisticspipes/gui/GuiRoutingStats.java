@@ -15,9 +15,11 @@ import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.string.StringUtil;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class GuiRoutingStats extends KraphtBaseGuiScreen {
+	private static final String PREFIX = "gui.routingstats.";
 	
 	private IRouter _router;
 	public GuiRoutingStats(IRouter router, EntityPlayer entityPlayer) {
@@ -36,11 +38,11 @@ public class GuiRoutingStats extends KraphtBaseGuiScreen {
 		int sessionxCenter = 85;
 		int lifetimexCenter = 130;
 		
-		fontRenderer.drawString("Session", sessionxCenter - fontRenderer.getStringWidth("Session") / 2, 40, 0x303030);
-		fontRenderer.drawString("Lifetime", lifetimexCenter - fontRenderer.getStringWidth("Lifetime") / 2, 40, 0x303030);
-		fontRenderer.drawString("Sent:", 60 - fontRenderer.getStringWidth("Sent:"), 55, 0x303030);
-		fontRenderer.drawString("Recieved:", 60 - fontRenderer.getStringWidth("Recieved:"), 70, 0x303030);
-		fontRenderer.drawString("Relayed:", 60 - fontRenderer.getStringWidth("Relayed:"), 85, 0x303030);
+		fontRenderer.drawString(StringUtil.translate(PREFIX + "Session"), sessionxCenter - fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "Session")) / 2, 40, 0x303030);
+		fontRenderer.drawString(StringUtil.translate(PREFIX + "Lifetime"), lifetimexCenter - fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "Lifetime")) / 2, 40, 0x303030);
+		fontRenderer.drawString(StringUtil.translate(PREFIX + "Sent") + ":", 60 - fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "Sent") + ":"), 55, 0x303030);
+		fontRenderer.drawString(StringUtil.translate(PREFIX + "Recieved") + ":", 60 - fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "Recieved") + ":"), 70, 0x303030);
+		fontRenderer.drawString(StringUtil.translate(PREFIX + "Relayed") + ":", 60 - fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "Relayed") + ":"), 85, 0x303030);
 		CoreRoutedPipe pipe = _router.getPipe();
 		fontRenderer.drawString(pipe.stat_session_sent+"", sessionxCenter - fontRenderer.getStringWidth(pipe.stat_session_sent+"")/2, 55, 0x303030);
 		fontRenderer.drawString(pipe.stat_session_recieved+"", sessionxCenter - fontRenderer.getStringWidth(pipe.stat_session_recieved+"")/2, 70, 0x303030);
@@ -50,12 +52,12 @@ public class GuiRoutingStats extends KraphtBaseGuiScreen {
 		fontRenderer.drawString(pipe.stat_lifetime_recieved+"", lifetimexCenter - fontRenderer.getStringWidth(pipe.stat_lifetime_recieved+"")/2, 70, 0x303030);
 		fontRenderer.drawString(pipe.stat_lifetime_relayed+"", lifetimexCenter - fontRenderer.getStringWidth(pipe.stat_lifetime_relayed+"")/2, 85, 0x303030);
 		
-		fontRenderer.drawString("RoutingTableSize:", 110 - fontRenderer.getStringWidth("RoutingTableSize:"), 120, 0x303030);
+		fontRenderer.drawString(StringUtil.translate(PREFIX + "RoutingTableSize") + ":", 110 - fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "RoutingTableSize") + ":"), 120, 0x303030);
 				
 		fontRenderer.drawString(pipe.server_routing_table_size+"", 130 - fontRenderer.getStringWidth(pipe.server_routing_table_size+"")/2, 120, 0x303030);
 				
 		
-		String escString = "Press <ESC> to exit"; 
+		String escString = StringUtil.translate(PREFIX + "exit"); 
 		fontRenderer.drawString(escString, (170 - fontRenderer.getStringWidth(escString)) / 2, 180, 0x404040);
 	}
 

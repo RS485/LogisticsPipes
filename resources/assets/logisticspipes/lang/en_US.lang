@@ -307,3 +307,11 @@ gui.providerpipe.Mode=Mode
 gui.providerpipe.Exclude=Exclude
 gui.providerpipe.Include=Include
 gui.providerpipe.Switch=Switch
+
+gui.routingstats.Session=Session
+gui.routingstats.Lifetime=Lifetime
+gui.routingstats.Sent=Sent
+gui.routingstats.Recieved=Recieved
+gui.routingstats.Relayed=Relayed
+gui.routingstats.RoutingTableSize=RoutingTableSize
+gui.routingstats.exit=Press <ESC> to exit

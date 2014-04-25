@@ -13,6 +13,7 @@ import logisticspipes.network.packets.pipe.FluidSupplierMode;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.IInventory;
@@ -21,8 +22,8 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 public class GuiFluidSupplierPipe extends GuiContainer implements IGuiIDHandlerProvider {
+	private static final String PREFIX = "gui.fluidsupplier.";
 	
-	private IInventory dummyInventory;
 	private PipeItemsFluidSupplier logic; 
 	
 	public GuiFluidSupplierPipe(IInventory playerInventory, IInventory dummyInventory, PipeItemsFluidSupplier logic) {
@@ -42,7 +43,6 @@ public class GuiFluidSupplierPipe extends GuiContainer implements IGuiIDHandlerP
 		}
 		this.inventorySlots = dummy; 
 
-		this.dummyInventory = dummyInventory;
 		this.logic = logic;
 		xSize = 194;
 		ySize = 186;
@@ -50,9 +50,9 @@ public class GuiFluidSupplierPipe extends GuiContainer implements IGuiIDHandlerP
 	
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		fontRenderer.drawString(dummyInventory.getInvName(), xSize / 2 - fontRenderer.getStringWidth(dummyInventory.getInvName())/2, 6, 0x404040);
-		fontRenderer.drawString("Inventory", 18, ySize - 102, 0x404040);
-		fontRenderer.drawString("Partial requests:", xSize - 140, ySize - 112, 0x404040);
+		fontRenderer.drawString(StringUtil.translate(PREFIX + "TargetInv"), xSize / 2 - fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "TargetInv"))/2, 6, 0x404040);
+		fontRenderer.drawString(StringUtil.translate(PREFIX + "Inventory"), 18, ySize - 102, 0x404040);
+		fontRenderer.drawString(StringUtil.translate(PREFIX + "Partialrequests") + ":", xSize - 140, ySize - 112, 0x404040);
 	}
 	
 	protected static final ResourceLocation SUPPLIER = new ResourceLocation("logisticspipes", "textures/gui/supplier.png");
@@ -71,7 +71,7 @@ public class GuiFluidSupplierPipe extends GuiContainer implements IGuiIDHandlerP
 	public void initGui() {
 		super.initGui();
        buttonList.clear();
-       buttonList.add(new GuiButton(0, width / 2 + 45, height / 2 - 25, 30, 20, logic.isRequestingPartials() ? "Yes" : "No"));
+       buttonList.add(new GuiButton(0, width / 2 + 45, height / 2 - 25, 30, 20, logic.isRequestingPartials() ? StringUtil.translate(PREFIX + "Yes") : StringUtil.translate(PREFIX + "No")));
 
 	}
 
@@ -79,7 +79,7 @@ public class GuiFluidSupplierPipe extends GuiContainer implements IGuiIDHandlerP
 	protected void actionPerformed(GuiButton guibutton) {
 		if (guibutton.id == 0){
 			logic.setRequestingPartials(!logic.isRequestingPartials());
-			((GuiButton)buttonList.get(0)).displayString = logic.isRequestingPartials() ? "Yes" : "No";
+			((GuiButton)buttonList.get(0)).displayString = logic.isRequestingPartials() ? StringUtil.translate(PREFIX + "Yes") : StringUtil.translate(PREFIX + "No");
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidSupplierMode.class).setInteger((logic.isRequestingPartials() ? 1 : 0)).setPosX(logic.getX()).setPosY(logic.getY()).setPosZ(logic.getZ()));
 		}
 		super.actionPerformed(guibutton);

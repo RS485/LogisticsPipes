@@ -274,3 +274,8 @@ gui.fluidsuppliermk2.Yes=Yes
 gui.fluidsuppliermk2.No=No
 gui.fluidsuppliermk2.TargetInv=Fluid to keep stocked
 
+gui.fluidsupplier.TargetInv=Fluids to keep stocked
+gui.fluidsupplier.Inventory=Inventory
+gui.fluidsupplier.Partialrequests=Partial requests
+gui.fluidsupplier.Yes=Yes
+gui.fluidsupplier.No=No

@@ -315,3 +315,26 @@ gui.routingstats.Recieved=Recieved
 gui.routingstats.Relayed=Relayed
 gui.routingstats.RoutingTableSize=RoutingTableSize
 gui.routingstats.exit=Press <ESC> to exit
+
+gui.satellite.SatelliteID=Satellite ID
+
+gui.securitystation.Open=Open
+gui.securitystation.EditTable=Edit Table
+gui.securitystation.Authorize=Authorize
+gui.securitystation.Deauthorize=Deauthorize
+gui.securitystation.SecurityStation=Security Station
+gui.securitystation.allowCCAccess=Allow ComputerCraft Access
+gui.securitystation.excludeIDs=Excluded ComputerCraft IDs
+gui.securitystation.pipeRemove=Allow automated Pipe remove
+gui.securitystation.Player=Player
+gui.securitystation.SecurityCards=Security Cards
+gui.securitystation.Inventory=Inventory
+gui.securitystation.popup.ccAccess.Remove=Remove
+gui.securitystation.popup.ccAccess.Add=Add
+gui.securitystation.popup.player.Close=Close
+gui.securitystation.popup.player.Player=Player
+gui.securitystation.popup.player.ConfigureSettings=Configure Settings
+gui.securitystation.popup.player.ActiveRequesting=Active Requesting
+gui.securitystation.popup.player.UpgradePipes=Upgrade Pipes
+gui.securitystation.popup.player.CheckNetwork=Check Network
+gui.securitystation.popup.player.RemovePipes=Remove Pipes

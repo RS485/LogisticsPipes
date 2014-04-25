@@ -11,12 +11,14 @@ import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen.Colors;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
+import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.gui.GuiButton;
 
 import org.lwjgl.input.Keyboard;
 
 public class GuiEditCCAccessTable extends SubGuiScreen {
-
+	private static final String PREFIX = "gui.securitystation.popup.ccAccess.";
+	
 	private final LogisticsSecurityTileEntity _tile;
 	
 	private String searchinput1 = "0";
@@ -44,8 +46,8 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 		this.buttonList.clear();
 		this.buttonList.add(new GuiButton(0, guiLeft + 10, guiTop + 119, 30, 20, "-"));
 		this.buttonList.add(new GuiButton(1, guiLeft + 110, guiTop + 119, 30, 20, "+"));
-		this.buttonList.add(new SmallGuiButton(2, guiLeft + 30, guiTop + 107, 40, 10, "Remove"));
-		this.buttonList.add(new SmallGuiButton(3, guiLeft + 80, guiTop + 107, 40, 10, "Add"));
+		this.buttonList.add(new SmallGuiButton(2, guiLeft + 30, guiTop + 107, 40, 10, StringUtil.translate(PREFIX + "Remove")));
+		this.buttonList.add(new SmallGuiButton(3, guiLeft + 80, guiTop + 107, 40, 10, StringUtil.translate(PREFIX + "Add")));
 		this.buttonList.add(new SmallGuiButton(4, guiLeft + 87, guiTop + 4, 10, 10, "<"));
 		this.buttonList.add(new SmallGuiButton(5, guiLeft + 130, guiTop + 4, 10, 10, ">"));
 	}

@@ -12,6 +12,7 @@ import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
+import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -88,7 +89,7 @@ public class GuiSatellitePipe extends GuiContainer implements IGuiIDHandlerProvi
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		fontRenderer.drawString("Satellite ID", 33, 10, 0x404040);
+		fontRenderer.drawString(StringUtil.translate("gui.satellite.SatelliteID"), 33, 10, 0x404040);
 		if(_satellite != null) {
 			fontRenderer.drawString(_satellite.satelliteId+"", 59 - fontRenderer.getStringWidth(_satellite.satelliteId+"")/2, 31, 0x404040);
 		}

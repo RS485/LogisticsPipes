@@ -1121,6 +1121,10 @@ outer:
 		return stillNeedReplace;
 	}
 	
+	public boolean initialInit() {
+		return _initialInit;
+	}
+	
 	@Override
 	public int compareTo(IRequestItems other){
 		return this.getID()-other.getID();

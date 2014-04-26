@@ -161,7 +161,7 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 		}
 		
 		ForgeDirection value;
-		if(this.getPipe().stillNeedReplace()){
+		if(this.getPipe().stillNeedReplace() || this.getPipe().initialInit()) {
 			routedItem.setDoNotBuffer(false);
 			value = ForgeDirection.UNKNOWN;
 		} else

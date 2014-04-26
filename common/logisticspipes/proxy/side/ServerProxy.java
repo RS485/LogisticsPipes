@@ -1,6 +1,7 @@
 package logisticspipes.proxy.side;
 
 import java.io.File;
+import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
@@ -19,8 +20,11 @@ import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.Configuration;
@@ -249,6 +253,20 @@ public class ServerProxy implements IProxy {
 		// TODO Auto-generated method stub
 		
 	}
-	
-	
+
+	@Override
+	@SuppressWarnings("rawtypes")
+	public void sendBroadCast(String message) {
+		MinecraftServer server = FMLServerHandler.instance().getServer();
+		if(server != null && MinecraftServer.getServerConfigurationManager(server) != null) {
+			List list = MinecraftServer.getServerConfigurationManager(server).playerEntityList;
+			if(list != null && !list.isEmpty()) {
+				for(Object obj:list) {
+					if(obj instanceof EntityPlayerMP) {
+						((EntityPlayerMP)obj).sendChatToPlayer(ChatMessageComponent.createFromText("Server: " + message));
+					}
+				}
+			}
+		}
+	}
 }

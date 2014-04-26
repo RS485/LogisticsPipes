@@ -1,14 +1,14 @@
 package logisticspipes.commands.commands;
 
 import logisticspipes.commands.abstracts.SubCommandHandler;
-import logisticspipes.commands.commands.proxy.ListCommand;
+import logisticspipes.commands.commands.wrapper.ListCommand;
 import net.minecraft.command.ICommandSender;
 
-public class ProxyCommand extends SubCommandHandler {
+public class WrapperCommand extends SubCommandHandler {
 	
 	@Override
 	public String[] getNames() {
-		return new String[]{"proxy"};
+		return new String[]{"wrapper"};
 	}
 
 	@Override
@@ -18,7 +18,7 @@ public class ProxyCommand extends SubCommandHandler {
 
 	@Override
 	public String[] getDescription() {
-		return new String[]{"proxy controll commands"};
+		return new String[]{"wrapper controll commands"};
 	}
 
 	@Override

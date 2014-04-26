@@ -24,12 +24,14 @@ import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.textures.Textures;
 import logisticspipes.utils.item.ItemIdentifier;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
@@ -187,6 +189,13 @@ public class ClientProxy implements IProxy {
 			} else {
 				Textures.LPpipeIconProvider.setIcon(index, par1IconRegister.registerIcon("logisticspipes:"+override1.replace("pipes/", "pipes/overlay_gen/")+"/"+override2.replace("pipes/status_overlay/","")));
 			}
+		}
+	}
+
+	@Override
+	public void sendBroadCast(String message) {
+		if(Minecraft.getMinecraft().thePlayer != null) {
+			Minecraft.getMinecraft().thePlayer.sendChatToPlayer(ChatMessageComponent.createFromText("Client: " + message));
 		}
 	}
 }

@@ -15,6 +15,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.commands.LogisticsPipesCommand;
 import logisticspipes.commands.chathelper.LPChatListener;
@@ -81,10 +82,8 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.InventoryUtilFactory;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.LaunchClassLoader;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.client.registry.RenderingRegistry;
@@ -101,7 +100,6 @@ import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.FMLInjectionData;
 import cpw.mods.fml.relauncher.Side;
@@ -418,15 +416,14 @@ public class LogisticsPipes {
 		SimpleServiceLocator.thaumCraftProxy.addCraftingRecipes();
 		SimpleServiceLocator.ccProxy.addCraftingRecipes();
 		SimpleServiceLocator.thermalExpansionProxy.addCraftingRecipes();
-		SimpleServiceLocator.addCraftingRecipeProvider(new AutoWorkbench());
-		SimpleServiceLocator.addCraftingRecipeProvider(new AssemblyAdvancedWorkbench());
-		SimpleServiceLocator.addCraftingRecipeProvider(new AssemblyTable());
+
+		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Factory", "AutoWorkbench", AutoWorkbench.class));
+		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Silicon", "AssemblyAdvancedWorkbench", AssemblyAdvancedWorkbench.class));
+		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Silicon", "AssemblyTable", AssemblyTable.class));
+		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("Railcraft", "RollingMachine", RollingMachine.class));
+		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("Tubestuff", "ImmibisCraftingTableMk2", ImmibisCraftingTableMk2.class));
 		SimpleServiceLocator.addCraftingRecipeProvider(new SolderingStation());
 		SimpleServiceLocator.addCraftingRecipeProvider(new LogisticsCraftingTable());
-		if (RollingMachine.load())
-			SimpleServiceLocator.addCraftingRecipeProvider(new RollingMachine());
-		if(ImmibisCraftingTableMk2.load())
-			SimpleServiceLocator.addCraftingRecipeProvider(new ImmibisCraftingTableMk2());
 		
 		SolderingStationRecipes.loadRecipe();
 		

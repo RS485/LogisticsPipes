@@ -9,7 +9,7 @@ import logisticspipes.commands.commands.DummyCommand;
 import logisticspipes.commands.commands.DumpCommand;
 import logisticspipes.commands.commands.NBTDebugCommand;
 import logisticspipes.commands.commands.NameLookupCommand;
-import logisticspipes.commands.commands.ProxyCommand;
+import logisticspipes.commands.commands.WrapperCommand;
 import logisticspipes.commands.commands.RoutingThreadCommand;
 import logisticspipes.commands.commands.TransferNamesCommand;
 import logisticspipes.commands.commands.VersionCommand;
@@ -46,7 +46,7 @@ public class MainCommandHandler extends SubCommandHandler {
 		this.registerSubCommand(new BypassCommand());
 		this.registerSubCommand(new WatchCommand());
 		this.registerSubCommand(new DebugCommand());
-		this.registerSubCommand(new ProxyCommand());
+		this.registerSubCommand(new WrapperCommand());
 		this.registerSubCommand(new ClearCommand());
 	}
 }

@@ -12,18 +12,12 @@ import net.minecraft.world.World;
 
 public class RollingMachine implements ICraftingRecipeProvider {
 
-	private static Class<?> tileRollingMachineClass;
-	private static Method getCraftMatrixMethod;
+	private Class<?> tileRollingMachineClass;
+	private Method getCraftMatrixMethod;
 
-	public static boolean load() {
-		try {
-			tileRollingMachineClass = Class.forName("mods.railcraft.common.blocks.machine.alpha.TileRollingMachine");
-			getCraftMatrixMethod = tileRollingMachineClass.getMethod("getCraftMatrix");
-		} catch (Exception ex) {
-			LogisticsPipes.log.fine("Necessary classes from Railcraft were not found");
-			return false;
-		}
-		return true;
+	public RollingMachine() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
+		tileRollingMachineClass = Class.forName("mods.railcraft.common.blocks.machine.alpha.TileRollingMachine");
+		getCraftMatrixMethod = tileRollingMachineClass.getMethod("getCraftMatrix");
 	}
 
 	@Override

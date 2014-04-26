@@ -22,4 +22,5 @@ public interface IProxy {
 	public void sendNameUpdateRequest(Player player);
 	public int getDimensionForWorld(World world);
 	public LogisticsTileGenericPipe getPipeInDimensionAt(int dimension, int x, int y, int z, EntityPlayer player);
+	public void sendBroadCast(String message);
 }

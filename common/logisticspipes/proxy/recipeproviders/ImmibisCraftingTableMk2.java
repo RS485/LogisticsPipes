@@ -15,16 +15,10 @@ import net.minecraft.tileentity.TileEntity;
 
 public class ImmibisCraftingTableMk2 implements ICraftingRecipeProvider {
 
-	private static Class<?> tileAutoCraftingMk2;
+	private Class<?> tileAutoCraftingMk2;
 	
-	public static boolean load() {
-		try {
-			tileAutoCraftingMk2 = Class.forName("mods.immibis.tubestuff.TileAutoCraftingMk2");
-			return true;
-		} catch (Exception e) {
-			LogisticsPipes.log.fine("Necessary classes from Tubestuff were not found");
-		}
-		return false;
+	public ImmibisCraftingTableMk2() throws ClassNotFoundException {
+		tileAutoCraftingMk2 = Class.forName("mods.immibis.tubestuff.TileAutoCraftingMk2");
 	}
 	
 	@Override

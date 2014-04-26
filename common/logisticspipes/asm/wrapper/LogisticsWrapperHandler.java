@@ -1,9 +1,10 @@
-package logisticspipes.asm;
+package logisticspipes.asm.wrapper;
 
 import static org.objectweb.asm.Opcodes.ACC_FINAL;
 import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
 import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
 import static org.objectweb.asm.Opcodes.ACC_SUPER;
+import static org.objectweb.asm.Opcodes.ACONST_NULL;
 import static org.objectweb.asm.Opcodes.ALOAD;
 import static org.objectweb.asm.Opcodes.ARETURN;
 import static org.objectweb.asm.Opcodes.ASTORE;
@@ -13,9 +14,8 @@ import static org.objectweb.asm.Opcodes.FLOAD;
 import static org.objectweb.asm.Opcodes.FRETURN;
 import static org.objectweb.asm.Opcodes.GETFIELD;
 import static org.objectweb.asm.Opcodes.GETSTATIC;
-import static org.objectweb.asm.Opcodes.ICONST_0;
-import static org.objectweb.asm.Opcodes.ICONST_1;
-import static org.objectweb.asm.Opcodes.IFEQ;
+import static org.objectweb.asm.Opcodes.GOTO;
+import static org.objectweb.asm.Opcodes.IF_ACMPNE;
 import static org.objectweb.asm.Opcodes.ILOAD;
 import static org.objectweb.asm.Opcodes.INVOKEINTERFACE;
 import static org.objectweb.asm.Opcodes.INVOKESPECIAL;
@@ -27,7 +27,6 @@ import static org.objectweb.asm.Opcodes.PUTFIELD;
 import static org.objectweb.asm.Opcodes.RETURN;
 import static org.objectweb.asm.Opcodes.V1_6;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -35,11 +34,9 @@ import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.VersionNotSupportedException;
-import logisticspipes.proxy.interfaces.IProxyController;
+import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.utils.ModStatusHelper;
-import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
-import net.minecraft.launchwrapper.LaunchClassLoader;
 
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
@@ -47,38 +44,63 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-public class LogisticsProxyHandler {
-	public static List<IProxyController> proxyController = new ArrayList<IProxyController>();
+public class LogisticsWrapperHandler {
+	public static List<AbstractWrapper> wrapperController = new ArrayList<AbstractWrapper>();
+	private static Method m_defineClass = null;
 	
-	public static <T> T getWrapped(String modId, Class<T> interfaze, Class<? extends T> proxyClazz, T dummyProxy) {
-		try {
-			return getWrappedException(modId, interfaze, proxyClazz, dummyProxy);
-		} catch(Exception e) {
-			if(e instanceof RuntimeException) {
-				throw (RuntimeException) e;
+	public static ICraftingRecipeProvider getWrappedRecipeProvider(String modId, String name, Class<? extends ICraftingRecipeProvider> providerClass) {
+		ICraftingRecipeProvider provider = null;
+		Throwable e = null; 
+		if(ModStatusHelper.isModLoaded(modId)) {
+			try {
+				provider = providerClass.newInstance();
+			} catch(Exception e1) {
+				if(e instanceof VersionNotSupportedException) {
+					throw (VersionNotSupportedException) e;
+				}
+				e1.printStackTrace();
+				e = e1;
+			} catch(NoClassDefFoundError e1) {
+				e1.printStackTrace();
+				e = e1;
 			}
-			throw new RuntimeException(e);
 		}
+		CraftingRecipeProviderWrapper instance = new CraftingRecipeProviderWrapper(provider, name);
+		if(provider != null) {
+			LogisticsPipes.log.info("Loaded " + name + " RecipeProvider");
+		} else {
+			if(e != null) {
+				((AbstractWrapper)instance).setState(WrapperState.Exception);
+				((AbstractWrapper)instance).setReason(e);
+				LogisticsPipes.log.info("Couldn't loaded " + name + " RecipeProvider");
+			} else {
+				LogisticsPipes.log.info("Didn't loaded " + name + " RecipeProvider");
+				((AbstractWrapper)instance).setState(WrapperState.ModMissing);
+			}
+		}
+		instance.setModId(modId);
+		wrapperController.add(instance);
+		return instance;
 	}
 	
 	@SuppressWarnings("unchecked")
-	private static <T> T getWrappedException(String modId, Class<T> interfaze, Class<? extends T> proxyClazz, T dummyProxy) throws NoSuchFieldException, SecurityException, ClassNotFoundException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
+	public static <T> T getWrappedProxy(String modId, Class<T> interfaze, Class<? extends T> proxyClazz, T dummyProxy) throws NoSuchFieldException, SecurityException, ClassNotFoundException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
 		String fieldName = interfaze.getName().replace('.', '/');
 		String proxyName = interfaze.getSimpleName().substring(1);
 		if(!proxyName.endsWith("Proxy")) {
 			throw new RuntimeException("UnuportedProxyName: " + proxyName);
 		}
 		proxyName = proxyName.substring(0, proxyName.length() - 5);
-		String className = "logisticspipes/asm/proxywrapper/" + proxyName + "ProxyWrapper";
+		String className = "logisticspipes/asm/wrapper/" + proxyName + "ProxyWrapper";
 		String classFile = interfaze.getSimpleName().substring(1) + "Wrapper.java";
 		ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 		
-		cw.visit(V1_6, ACC_PUBLIC + ACC_SUPER, className, null, "java/lang/Object", new String[] { fieldName, "logisticspipes/proxy/interfaces/IProxyController" });
+		cw.visit(V1_6, ACC_PUBLIC + ACC_SUPER, className, null, "logisticspipes/asm/wrapper/AbstractWrapper", new String[] { fieldName });
 		
 		cw.visitSource(classFile, null);
 		
 		{
-			FieldVisitor fv = cw.visitField(ACC_PRIVATE + ACC_FINAL, "proxy", "L" + fieldName + ";", null, null);
+			FieldVisitor fv = cw.visitField(ACC_PRIVATE, "proxy", "L" + fieldName + ";", null, null);
 			fv.visitEnd();
 		}
 		{
@@ -86,181 +108,141 @@ public class LogisticsProxyHandler {
 			fv.visitEnd();
 		}
 		{
-			FieldVisitor fv = cw.visitField(ACC_PRIVATE, "enabled", "Z", null, null);
-			fv.visitEnd();
-		}
-		{
-			FieldVisitor fv = cw.visitField(ACC_PRIVATE, "reason", "Ljava/lang/String;", null, null);
-			fv.visitEnd();
-		}
-		{
 			MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "(L" + fieldName + ";L" + fieldName + ";)V", null, null);
 			mv.visitCode();
 			Label l0 = new Label();
 			mv.visitLabel(l0);
+			mv.visitLineNumber(11, l0);
 			mv.visitVarInsn(ALOAD, 0);
-			mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V");
+			mv.visitMethodInsn(INVOKESPECIAL, "logisticspipes/asm/wrapper/AbstractWrapper", "<init>", "()V");
 			Label l1 = new Label();
 			mv.visitLabel(l1);
-			mv.visitVarInsn(ALOAD, 0);
-			mv.visitInsn(ICONST_1);
-			mv.visitFieldInsn(PUTFIELD, className, "enabled", "Z");
-			Label l2 = new Label();
-			mv.visitLabel(l2);
+			mv.visitLineNumber(12, l1);
 			mv.visitVarInsn(ALOAD, 0);
 			mv.visitVarInsn(ALOAD, 1);
 			mv.visitFieldInsn(PUTFIELD, className, "dummyProxy", "L" + fieldName + ";");
-			Label l3 = new Label();
-			mv.visitLabel(l3);
+			Label l2 = new Label();
+			mv.visitLabel(l2);
+			mv.visitLineNumber(13, l2);
 			mv.visitVarInsn(ALOAD, 0);
 			mv.visitVarInsn(ALOAD, 2);
 			mv.visitFieldInsn(PUTFIELD, className, "proxy", "L" + fieldName + ";");
+			Label l3 = new Label();
+			mv.visitLabel(l3);
+			mv.visitLineNumber(14, l3);
+			mv.visitInsn(RETURN);
 			Label l4 = new Label();
 			mv.visitLabel(l4);
-			mv.visitInsn(RETURN);
-			Label l5 = new Label();
-			mv.visitLabel(l5);
-			mv.visitLocalVariable("this", "L" + className + ";", null, l0, l5, 0);
-			mv.visitLocalVariable("dProxy", "L" + fieldName + ";", null, l0, l5, 1);
-			mv.visitLocalVariable("iProxy", "L" + fieldName + ";", null, l0, l5, 2);
+			mv.visitLocalVariable("this", "L" + className + ";", null, l0, l4, 0);
+			mv.visitLocalVariable("dProxy", "L" + fieldName + ";", null, l0, l4, 1);
+			mv.visitLocalVariable("iProxy", "L" + fieldName + ";", null, l0, l4, 2);
 			mv.visitMaxs(2, 3);
 			mv.visitEnd();
 		}
+		int lineAddition = 100;
 		for(Method method: interfaze.getMethods()) {
-			addMethod(cw, method, fieldName, className);
+			addProxyMethod(cw, method, fieldName, className, lineAddition);
+			lineAddition += 10;
 		}
 		{
-			MethodVisitor mv = cw.visitMethod(ACC_PRIVATE, "error", "()V", null, null);
+			MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "onDisable", "()V", null, null);
 			mv.visitCode();
 			Label l0 = new Label();
 			mv.visitLabel(l0);
-			mv.visitFieldInsn(GETSTATIC, "logisticspipes/LogisticsPipes", "log", "Ljava/util/logging/Logger;");
-			mv.visitLdcInsn("Disabled " +  proxyName + "Proxy for Mod: " + modId);
-			mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/logging/Logger", "severe", "(Ljava/lang/String;)V");
+			mv.visitLineNumber(21, l0);
+			mv.visitVarInsn(ALOAD, 0);
+			mv.visitInsn(ACONST_NULL);
+			mv.visitFieldInsn(PUTFIELD, className, "proxy", "L" + fieldName + ";");
 			Label l1 = new Label();
 			mv.visitLabel(l1);
-			mv.visitVarInsn(ALOAD, 0);
-			mv.visitInsn(ICONST_0);
-			mv.visitFieldInsn(PUTFIELD, className, "enabled", "Z");
-			Label l2 = new Label();
-			mv.visitLabel(l2);
-			mv.visitInsn(RETURN);
-			Label l3 = new Label();
-			mv.visitLabel(l3);
-			mv.visitLocalVariable("this", "L" + className + ";", null, l0, l3, 0);
-			mv.visitMaxs(2, 1);
-			mv.visitEnd();
-		}
-		{
-			MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "setEnabled", "(Z)V", null, null);
-			mv.visitCode();
-			Label l0 = new Label();
-			mv.visitLabel(l0);
-			mv.visitVarInsn(ALOAD, 0);
-			mv.visitVarInsn(ILOAD, 1);
-			mv.visitFieldInsn(PUTFIELD, className, "enabled", "Z");
-			Label l1 = new Label();
-			mv.visitLabel(l1);
+			mv.visitLineNumber(22, l1);
 			mv.visitInsn(RETURN);
 			Label l2 = new Label();
 			mv.visitLabel(l2);
 			mv.visitLocalVariable("this", "L" + className + ";", null, l0, l2, 0);
-			mv.visitLocalVariable("flag", "Z", null, l0, l2, 1);
-			mv.visitMaxs(2, 2);
+			mv.visitMaxs(2, 1);
 			mv.visitEnd();
 		}
-		{
-			MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "isEnabled", "()Z", null, null);
-			mv.visitCode();
-			Label l0 = new Label();
-			mv.visitLabel(l0);
-			mv.visitVarInsn(ALOAD, 0);
-			mv.visitFieldInsn(GETFIELD, className, "enabled", "Z");
-			mv.visitInsn(IRETURN);
-			Label l1 = new Label();
-			mv.visitLabel(l1);
-			mv.visitLocalVariable("this", "L" + className + ";", null, l0, l1, 0);
-			mv.visitMaxs(1, 1);
-			mv.visitEnd();
-		}
-		{
-			MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "getReason", "()Ljava/lang/String;", null, null);
-			mv.visitCode();
-			Label l0 = new Label();
-			mv.visitLabel(l0);
-			mv.visitVarInsn(ALOAD, 0);
-			mv.visitFieldInsn(GETFIELD, className, "reason", "Ljava/lang/String;");
-			mv.visitInsn(ARETURN);
-			Label l1 = new Label();
-			mv.visitLabel(l1);
-			mv.visitLocalVariable("this", "L" + className + ";", null, l0, l1, 0);
-			mv.visitMaxs(1, 1);
-			mv.visitEnd();
-		}
-		{
-			MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "getProxyName", "()Ljava/lang/String;", null, null);
-			mv.visitCode();
-			Label l0 = new Label();
-			mv.visitLabel(l0);
-			mv.visitLdcInsn(proxyName);
-			mv.visitInsn(ARETURN);
-			Label l1 = new Label();
-			mv.visitLabel(l1);
-			mv.visitLocalVariable("this", "L" + className + ";", null, l0, l1, 0);
-			mv.visitMaxs(1, 1);
-			mv.visitEnd();
-		}
+		addGetName(cw, className, proxyName);
+		addGetTypeName(cw, className, "Proxy");
 		cw.visitEnd();
 		
 		String lookfor = className.replace('/', '.');
 		
-		byte[] data = cw.toByteArray();
+		Class<?> clazz = loadClass(cw.toByteArray(), lookfor);
 		
-		Field f = LaunchClassLoader.class.getDeclaredField("transformers");
-		f.setAccessible(true);
-		List<IClassTransformer> tmp = (List<IClassTransformer>) f.get(Launch.classLoader);
-	    List<IClassTransformer> list = new ArrayList<IClassTransformer>(1);
-	    list.add(LogisticsClassTransformer.instance);
-		f.set(Launch.classLoader, list); // Fix ClassTransformer who don't ignore a null byte array
-
-		LogisticsClassTransformer.instance.cachedClasses.put(lookfor, data);
-		LogisticsClassTransformer.instance.interfacesToClearA.add(lookfor);
-		LogisticsClassTransformer.instance.clearNegativeInterfaceCache();
-		
-		Class<?> clazz = Launch.classLoader.findClass(lookfor);
-
-		f.set(Launch.classLoader, tmp);
 		T proxy = null;
-		boolean isDummy = false;
+		Throwable e = null; 
 		if(ModStatusHelper.isModLoaded(modId)) {
 			try {
 				proxy = proxyClazz.newInstance();
-			} catch(Throwable e) {
+			} catch(Exception e1) {
 				if(e instanceof VersionNotSupportedException) {
 					throw (VersionNotSupportedException) e;
 				}
-				e.printStackTrace();
+				e1.printStackTrace();
+				e = e1;
+			} catch(NoClassDefFoundError e1) {
+				e1.printStackTrace();
+				e = e1;
 			}
-		} else {
-			isDummy = true;
 		}
 		T instance = (T) clazz.getConstructor(new Class<?>[]{interfaze, interfaze}).newInstance(dummyProxy, proxy);
-		if(isDummy) {
-			Field reason = clazz.getDeclaredField("reason");
-			reason.setAccessible(true);
-			reason.set(instance, "dummy");
-		}
 		if(proxy != null) {
 			LogisticsPipes.log.info("Loaded " + proxyName + "Proxy");
 		} else {
-			((IProxyController)instance).setEnabled(false);
 			LogisticsPipes.log.info("Loaded " + proxyName + " DummyProxy");
+			if(e != null) {
+				((AbstractWrapper)instance).setState(WrapperState.Exception);
+				((AbstractWrapper)instance).setReason(e);
+			} else {
+				((AbstractWrapper)instance).setState(WrapperState.ModMissing);
+			}
 		}
-		proxyController.add((IProxyController) instance);
+		((AbstractWrapper)instance).setModId(modId);
+		wrapperController.add((AbstractWrapper) instance);
 		return instance;
 	}
 	
-	private static void addMethod(ClassWriter cw, Method method, String fieldName, String className) {
+	private static Class<?> loadClass(byte[] data, String lookfor) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		if(m_defineClass == null) {
+			m_defineClass = ClassLoader.class.getDeclaredMethod("defineClass", byte[].class, int.class, int.class);
+			m_defineClass.setAccessible(true);
+		}
+		return (Class<?>) m_defineClass.invoke(Launch.classLoader, data, 0, data.length);
+	}
+	
+	private static void addGetTypeName(ClassWriter cw, String className, String type) {
+		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "getTypeName", "()Ljava/lang/String;", null, null);
+		mv.visitCode();
+		Label l0 = new Label();
+		mv.visitLabel(l0);
+		mv.visitLineNumber(31, l0);
+		mv.visitLdcInsn(type);
+		mv.visitInsn(ARETURN);
+		Label l1 = new Label();
+		mv.visitLabel(l1);
+		mv.visitLocalVariable("this", "L" + className + ";", null, l0, l1, 0);
+		mv.visitMaxs(1, 1);
+		mv.visitEnd();
+	}
+
+	private static void addGetName(ClassWriter cw, String className, String proxyName) {
+		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "getName", "()Ljava/lang/String;", null, null);
+		mv.visitCode();
+		Label l0 = new Label();
+		mv.visitLabel(l0);
+		mv.visitLineNumber(41, l0);
+		mv.visitLdcInsn(proxyName);
+		mv.visitInsn(ARETURN);
+		Label l1 = new Label();
+		mv.visitLabel(l1);
+		mv.visitLocalVariable("this", "L" + className + ";", null, l0, l1, 0);
+		mv.visitMaxs(1, 1);
+		mv.visitEnd();
+	}
+
+	private static void addProxyMethod(ClassWriter cw, Method method, String fieldName, String className, int lineAddition) {
 		Class<?> retclazz = method.getReturnType();
 		int eIndex = 1;
 		StringBuilder desc = new StringBuilder("(");
@@ -286,14 +268,19 @@ public class LogisticsProxyHandler {
 		Label l0 = new Label();
 		Label l1 = new Label();
 		Label l2 = new Label();
-		mv.visitTryCatchBlock(l0, l1, l2, "java/lang/Throwable");
+		mv.visitTryCatchBlock(l0, l1, l2, "java/lang/Exception");
 		Label l3 = new Label();
-		mv.visitLabel(l3);
-		mv.visitVarInsn(ALOAD, 0);
-		mv.visitFieldInsn(GETFIELD, className, "enabled", "Z");
+		mv.visitTryCatchBlock(l0, l1, l3, "java/lang/NoClassDefFoundError");
 		Label l4 = new Label();
-		mv.visitJumpInsn(IFEQ, l4);
+		mv.visitLabel(l4);
+		mv.visitLineNumber(lineAddition + 1, l4);
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitFieldInsn(GETFIELD, className, "state", "Llogisticspipes/asm/wrapper/WrapperState;");
+		mv.visitFieldInsn(GETSTATIC, "logisticspipes/asm/wrapper/WrapperState", "Enabled", "Llogisticspipes/asm/wrapper/WrapperState;");
+		Label l5 = new Label();
+		mv.visitJumpInsn(IF_ACMPNE, l5);
 		mv.visitLabel(l0);
+		mv.visitLineNumber(lineAddition + 2, l0);
 		mv.visitVarInsn(ALOAD, 0);
 		mv.visitFieldInsn(GETFIELD, className, "proxy", "L" + fieldName + ";");
 		addMethodParameterLoad(mv, method);
@@ -301,28 +288,42 @@ public class LogisticsProxyHandler {
 		mv.visitLabel(l1);
 		mv.visitInsn(returnType);
 		mv.visitLabel(l2);
-		mv.visitFrame(Opcodes.F_SAME1, 0, null, 1, new Object[] { "java/lang/Throwable" });
+		mv.visitLineNumber(lineAddition + 3, l2);
+		mv.visitFrame(Opcodes.F_SAME1, 0, null, 1, new Object[] { "java/lang/Exception" });
 		mv.visitVarInsn(ASTORE, eIndex);
-		Label l5 = new Label();
-		mv.visitLabel(l5);
-		mv.visitVarInsn(ALOAD, eIndex);
-		mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Throwable", "printStackTrace", "()V");
+		Label l6 = new Label();
+		mv.visitLabel(l6);
+		mv.visitLineNumber(lineAddition + 4, l6);
 		mv.visitVarInsn(ALOAD, 0);
-		mv.visitMethodInsn(INVOKESPECIAL, className, "error", "()V");
-		mv.visitLabel(l4);
+		mv.visitVarInsn(ALOAD, eIndex);
+		mv.visitMethodInsn(INVOKEVIRTUAL, className, "handleException", "(Ljava/lang/Throwable;)V");
+		Label l7 = new Label();
+		mv.visitLabel(l7);
+		mv.visitJumpInsn(GOTO, l5);
+		mv.visitLabel(l3);
+		mv.visitLineNumber(lineAddition + 5, l3);
+		mv.visitFrame(Opcodes.F_SAME1, 0, null, 1, new Object[] { "java/lang/NoClassDefFoundError" });
+		mv.visitVarInsn(ASTORE, eIndex);
+		Label l8 = new Label();
+		mv.visitLabel(l8);
+		mv.visitLineNumber(lineAddition + 6, l8);
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitVarInsn(ALOAD, eIndex);
+		mv.visitMethodInsn(INVOKEVIRTUAL, className, "handleException", "(Ljava/lang/Throwable;)V");
+		mv.visitLabel(l5);
+		mv.visitLineNumber(lineAddition + 7, l5);
 		mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
 		mv.visitVarInsn(ALOAD, 0);
 		mv.visitFieldInsn(GETFIELD, className, "dummyProxy", "L" + fieldName + ";");
 		addMethodParameterLoad(mv, method);
 		mv.visitMethodInsn(INVOKEINTERFACE, fieldName, method.getName(), desc.toString());
-		Label l7 = new Label();
-		mv.visitLabel(l7);
 		mv.visitInsn(returnType);
-		Label l8 = new Label();
-		mv.visitLabel(l8);
-		mv.visitLocalVariable("this", "L" + className + ";", null, l3, l8, 0);
-		addParameterVars(mv, method, l3, l8);
-		mv.visitLocalVariable("e", "Ljava/lang/Throwable;", null, l5, l4, eIndex);
+		Label l9 = new Label();
+		mv.visitLabel(l9);
+		mv.visitLocalVariable("this", "L" + className + ";", null, l4, l9, 0);
+		addParameterVars(mv, method, l4, l9);
+		mv.visitLocalVariable("e", "Ljava/lang/Exception;", null, l6, l7, eIndex);
+		mv.visitLocalVariable("e", "Ljava/lang/NoClassDefFoundError;", null, l8, l5, eIndex);
 		mv.visitMaxs(0, 0);
 		mv.visitEnd();
 	}

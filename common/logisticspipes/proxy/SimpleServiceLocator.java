@@ -94,9 +94,7 @@ public final class SimpleServiceLocator {
 	
 	public static LinkedList<ICraftingRecipeProvider> craftingRecipeProviders = new LinkedList<ICraftingRecipeProvider>();
 	public static void addCraftingRecipeProvider(ICraftingRecipeProvider provider) {
-		if (!craftingRecipeProviders.contains(provider)) {
-			craftingRecipeProviders.add(provider);
-		}
+		craftingRecipeProviders.add(provider);
 	}
 
 	public static SpecialPipeConnection specialpipeconnection;

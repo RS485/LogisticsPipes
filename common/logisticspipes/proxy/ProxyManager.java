@@ -3,7 +3,7 @@ package logisticspipes.proxy;
 import java.util.ArrayList;
 import java.util.List;
 
-import logisticspipes.asm.LogisticsProxyHandler;
+import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -47,9 +47,19 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class ProxyManager {
-
+	public static <T> T getWrappedProxy(String modId, Class<T> interfaze, Class<? extends T> proxyClazz, T dummyProxy) {
+		try {
+			return LogisticsWrapperHandler.getWrappedProxy(modId, interfaze, proxyClazz, dummyProxy);
+		} catch(Exception e) {
+			if(e instanceof RuntimeException) {
+				throw (RuntimeException) e;
+			}
+			throw new RuntimeException(e);
+		}
+	}
+	
 	public static void load() {
-		SimpleServiceLocator.setForestryProxy(LogisticsProxyHandler.getWrapped("Forestry", IForestryProxy.class, ForestryProxy.class, new IForestryProxy() {
+		SimpleServiceLocator.setForestryProxy(getWrappedProxy("Forestry", IForestryProxy.class, ForestryProxy.class, new IForestryProxy() {
 			@Override public boolean isBee(ItemStack item) {return false;}
 			@Override public boolean isBee(ItemIdentifier item) {return false;}
 			@Override public boolean isAnalysedBee(ItemStack item) {return false;}
@@ -79,7 +89,7 @@ public class ProxyManager {
 			@Override @SideOnly(Side.CLIENT) public Icon getIconFromTextureManager(String name) {return null;}
 		}));
 		
-		SimpleServiceLocator.setElectricItemProxy(LogisticsProxyHandler.getWrapped("IC2", IIC2Proxy.class, IC2Proxy.class, new IIC2Proxy() {
+		SimpleServiceLocator.setElectricItemProxy(getWrappedProxy("IC2", IIC2Proxy.class, IC2Proxy.class, new IIC2Proxy() {
 			@Override public boolean isElectricItem(ItemStack stack) {return false;}
 			@Override public boolean isSimilarElectricItem(ItemStack stack, ItemStack template) {return false;}
 			@Override public boolean isFullyCharged(ItemStack stack) {return false;}
@@ -95,7 +105,7 @@ public class ProxyManager {
 			@Override public double injectEnergyUnits(TileEntity tile, ForgeDirection opposite, double d) {return d;}
 		}));
 		
-		SimpleServiceLocator.setCCProxy(LogisticsProxyHandler.getWrapped("ComputerCraft@1.6", ICCProxy.class, CCProxy.class, new ICCProxy() {
+		SimpleServiceLocator.setCCProxy(getWrappedProxy("ComputerCraft@1.6", ICCProxy.class, CCProxy.class, new ICCProxy() {
 			@Override public boolean isTurtle(TileEntity tile) {return false;}
 			@Override public boolean isComputer(TileEntity tile) {return false;}
 			@Override public boolean isCC() {return false;}
@@ -108,7 +118,7 @@ public class ProxyManager {
 			@Override public void addCraftingRecipes() {}
 		}));
 		
-		SimpleServiceLocator.setThaumCraftProxy(LogisticsProxyHandler.getWrapped("Thaumcraft", IThaumCraftProxy.class, ThaumCraftProxy.class, new IThaumCraftProxy() {
+		SimpleServiceLocator.setThaumCraftProxy(getWrappedProxy("Thaumcraft", IThaumCraftProxy.class, ThaumCraftProxy.class, new IThaumCraftProxy() {
 			@Override public boolean isScannedObject(ItemStack stack, String playerName) {return false;}
 			@Override public List<String> getListOfTagsForStack(ItemStack stack) {return null;}
 			@Override @SideOnly(Side.CLIENT) public void renderAspectsDown(ItemStack item, int x, int y, GuiScreen gui) {}
@@ -116,7 +126,7 @@ public class ProxyManager {
 			@Override public void addCraftingRecipes() {}
 		}));
 		
-		SimpleServiceLocator.setThermalExpansionProxy(LogisticsProxyHandler.getWrapped("ThermalExpansion", IThermalExpansionProxy.class, ThermalExpansionProxy.class, new IThermalExpansionProxy() {
+		SimpleServiceLocator.setThermalExpansionProxy(getWrappedProxy("ThermalExpansion", IThermalExpansionProxy.class, ThermalExpansionProxy.class, new IThermalExpansionProxy() {
 			@Override public boolean isTesseract(TileEntity tile) {return false;}
 			@Override public boolean isTE() {return false;}
 			@Override public List<TileEntity> getConnectedTesseracts(TileEntity tile) {return new ArrayList<TileEntity>(0);}
@@ -135,17 +145,17 @@ public class ProxyManager {
 			@Override public void addCraftingRecipes() {}
 		}));
 		
-		SimpleServiceLocator.setBetterStorageProxy(LogisticsProxyHandler.getWrapped("betterstorage", IBetterStorageProxy.class, BetterStorageProxy.class, new IBetterStorageProxy() {
+		SimpleServiceLocator.setBetterStorageProxy(getWrappedProxy("betterstorage", IBetterStorageProxy.class, BetterStorageProxy.class, new IBetterStorageProxy() {
 			@Override public boolean isBetterStorageCrate(TileEntity tile) {return false;}
 		}));
 		
-		SimpleServiceLocator.setNEIProxy(LogisticsProxyHandler.getWrapped("NotEnoughItems", INEIProxy.class, NEIProxy.class, new INEIProxy() {
+		SimpleServiceLocator.setNEIProxy(getWrappedProxy("NotEnoughItems", INEIProxy.class, NEIProxy.class, new INEIProxy() {
 			@Override @SideOnly(Side.CLIENT) public int getWidthForList(List<String> data, FontRenderer fontRenderer) {return 0;}
 			@Override public List<String> getInfoForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver) {return new ArrayList<String>(0);}
 			@Override public ItemStack getItemForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver) {return null;}
 		}));
 		
-		SimpleServiceLocator.setMPSProxy(LogisticsProxyHandler.getWrapped("powersuits", IModularPowersuitsProxy.class, ModularPowersuitsProxy.class, new IModularPowersuitsProxy() {
+		SimpleServiceLocator.setMPSProxy(getWrappedProxy("powersuits", IModularPowersuitsProxy.class, ModularPowersuitsProxy.class, new IModularPowersuitsProxy() {
 			@Override public boolean isMPSHelm(ItemStack stack) {return false;}
 			@Override public void initModules() {}
 			@Override public boolean hasActiveHUDModule(ItemStack stack) {return false;}
@@ -169,24 +179,24 @@ public class ProxyManager {
 			@Override public boolean hasHelmHUDInstalled(ItemStack stack) {return false;}
 		}));
 		
-		SimpleServiceLocator.setFactorizationProxy(LogisticsProxyHandler.getWrapped("factorization", IFactorizationProxy.class, FactorizationProxy.class, new IFactorizationProxy() {
+		SimpleServiceLocator.setFactorizationProxy(getWrappedProxy("factorization", IFactorizationProxy.class, FactorizationProxy.class, new IFactorizationProxy() {
 			@Override public boolean isBarral(TileEntity tile) {return false;}
 		}));
 		
-		SimpleServiceLocator.setBetterSignProxy(LogisticsProxyHandler.getWrapped("BetterSignsMod", IBetterSignProxy.class, BetterSignProxy.class, new IBetterSignProxy() {
+		SimpleServiceLocator.setBetterSignProxy(getWrappedProxy("BetterSignsMod", IBetterSignProxy.class, BetterSignProxy.class, new IBetterSignProxy() {
 			@Override @SideOnly(Side.CLIENT) public void hideSignSticks(ModelSign model) {
 				model.signStick.showModel = false;
 			}
 		}));
 		
-		SimpleServiceLocator.setEnderIOProxy(LogisticsProxyHandler.getWrapped("EnderIO", IEnderIOProxy.class, EnderIOProxy.class, new IEnderIOProxy() {
+		SimpleServiceLocator.setEnderIOProxy(getWrappedProxy("EnderIO", IEnderIOProxy.class, EnderIOProxy.class, new IEnderIOProxy() {
 			@Override public boolean isSendAndReceive(TileEntity tile) {return false;}
 			@Override public boolean isHyperCube(TileEntity tile) {return false;}
 			@Override public List<TileEntity> getConnectedHyperCubes(TileEntity tile) {return new ArrayList<TileEntity>(0);}
 			@Override public boolean isEnderIO() {return false;}
 		}));
 		
-		SimpleServiceLocator.setIronChestProxy(LogisticsProxyHandler.getWrapped("IronChest", IIronChestProxy.class, IronChestProxy.class, new IIronChestProxy() {
+		SimpleServiceLocator.setIronChestProxy(getWrappedProxy("IronChest", IIronChestProxy.class, IronChestProxy.class, new IIronChestProxy() {
 			@Override public boolean isIronChest(TileEntity tile) {return false;}
 			@Override public @SideOnly(Side.CLIENT) boolean isChestGui(GuiScreen gui) {return false;}
 		}));

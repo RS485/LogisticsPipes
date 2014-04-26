@@ -65,9 +65,10 @@ public class PacketHandler implements IPacketHandler {
 	public void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player) {
 		if (packet.data == null) {
 			new Exception("Packet content has been null").printStackTrace();
+		} else {
+			final LPDataInputStream data = new LPDataInputStream(packet.data);
+			onPacketData(data, player);
 		}
-		final LPDataInputStream data = new LPDataInputStream(packet.data);
-		onPacketData(data, player);
 	}
 
 	public static void onPacketData(final LPDataInputStream data, final Player player) throws IOException {

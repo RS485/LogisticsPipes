@@ -1,346 +1,347 @@
 #zh_CN
-#by wiki.mcbbc.com
+#by wiki.mcbbc.com/Team TF
+
 
 # Pipes
 
-item.PipeItemsBasicLogistics=\u57fa\u7840\u7269\u6d41\u7ba1\u9053
-item.PipeItemsBasicLogistics.tip1=\u7c7b\u578b: \u88ab\u52a8\u578b\u76ee\u7684\u5730\u63a8\u9001
-item.PipeItemsBasicLogistics.tip2= - \u4e3a\u7f51\u7edc\u4e2d\u7684\u7269\u54c1\u5b9a\u4f4d
-item.PipeItemsBasicLogistics.tip3= - \u5c06\u6307\u5b9a\u7269\u54c1\u653e\u5165\u7bb1\u5b50
-item.PipeItemsBasicLogistics.tip4= - \u53ef\u4ee5\u4f5c\u4e3a\u9ed8\u8ba4\u7684\u8def\u7531
+item.PipeItemsBasicLogistics=基础物流管道
+item.PipeItemsBasicLogistics.tip1=类型：被动推送目标
+item.PipeItemsBasicLogistics.tip2= - 为网络中的物品定位
+item.PipeItemsBasicLogistics.tip3= - 将指定物品放入箱子
+item.PipeItemsBasicLogistics.tip4= - 可以作为默认的路由
 
-item.PipeItemsRequestLogistics=\u8bf7\u6c42\u7269\u6d41\u7ba1\u9053
-item.PipeItemsRequestLogistics.tip1=\u7c7b\u578b: \u4e3b\u52a8\u578b\u8bf7\u6c42
-item.PipeItemsRequestLogistics.tip2= - \u5141\u8bb8\u4f60\u624b\u52a8\u7533\u8bf7\u8bf7\u6c42\u7269\u54c1
-item.PipeItemsRequestLogistics.tip3= - \u53ef\u4ee5\u4ece\u4efb\u610f\u7269\u54c1\u6e90\u83b7\u5f97\u7269\u54c1
-item.PipeItemsRequestLogistics.tip4= - \u5728\u7ba1\u9053\u4e0a\u653e\u7f6e\u7bb1\u5b50\u53ef\u6536\u7eb3\u8bf7\u6c42\u51fa\u7684\u7269\u54c1
+item.PipeItemsRequestLogistics=请求物流管道
+item.PipeItemsRequestLogistics.tip1=类型：主动请求
+item.PipeItemsRequestLogistics.tip2= - 允许你手动申请请求物品
+item.PipeItemsRequestLogistics.tip3= - 可以从任意物品源获得物品
+item.PipeItemsRequestLogistics.tip4= - 在管道上放置箱子可收纳请求出的物品
 
-item.PipeItemsRequestLogisticsMk2=\u8bf7\u6c42\u7269\u6d41\u7ba1\u9053 Mk2
-item.PipeItemsRequestLogisticsMk2.tip1=\u7c7b\u578b: \u4e3b\u52a8\u578b\u8bf7\u6c42
-item.PipeItemsRequestLogisticsMk2.tip2= - \u6bd4Mk1\u578b\u66f4\u5feb
-item.PipeItemsRequestLogisticsMk2.tip3= - \u5141\u8bb8\u4f60\u624b\u52a8\u7533\u8bf7\u8bf7\u6c42\u7269\u54c1
-item.PipeItemsRequestLogisticsMk2.tip4= - \u53ef\u4ee5\u4ece\u4efb\u610f\u7269\u54c1\u6e90\u83b7\u5f97\u7269\u54c1
-item.PipeItemsRequestLogisticsMk2.tip5= - \u5728\u7ba1\u9053\u4e0a\u653e\u7f6e\u7bb1\u5b50\u53ef\u6536\u7eb3\u8bf7\u6c42\u51fa\u7684\u7269\u54c1
+item.PipeItemsRequestLogisticsMk2=请求物流管道Mk2
+item.PipeItemsRequestLogisticsMk2.tip1=类型：主动请求
+item.PipeItemsRequestLogisticsMk2.tip2= - 比Mk1快!
+item.PipeItemsRequestLogisticsMk2.tip3= - 允许你手动申请请求物品
+item.PipeItemsRequestLogisticsMk2.tip4= - 可以从任意物品源获得物品
+item.PipeItemsRequestLogisticsMk2.tip5= - 在管道上放置箱子可收纳请求出的物品
 
-item.PipeItemsProviderLogistics=\u4f9b\u5e94\u7269\u6d41\u7ba1\u9053
-item.PipeItemsProviderLogistics.tip1=\u7c7b\u578b: \u7269\u54c1\u6e90
-item.PipeItemsProviderLogistics.tip2= - \u4f9d\u9644\u67d0\u4e2a\u5bb9\u5668
-item.PipeItemsProviderLogistics.tip3= - \u5f53\u6709\u8bf7\u6c42\u65f6\u5411\u7269\u6d41\u7f51\u7edc\u4e2d\u53d1\u900116\u4e2a\u7269\u54c1
+item.PipeItemsProviderLogistics=供应物流管道
+item.PipeItemsProviderLogistics.tip1=类型：物品来源
+item.PipeItemsProviderLogistics.tip2= - 依附某个容器
+item.PipeItemsProviderLogistics.tip3= - 当有请求时从物流网络中发16个物品
 
-item.PipeItemsProviderLogisticsMk2=\u4f9b\u5e94\u7269\u6d41\u7ba1\u9053 Mk2
-item.PipeItemsProviderLogisticsMk2.tip1=\u7c7b\u578b: \u7269\u54c1\u6e90
-item.PipeItemsProviderLogisticsMk2.tip2= - \u4f9d\u9644\u67d0\u4e2a\u5bb9\u5668
-item.PipeItemsProviderLogisticsMk2.tip3= - \u5f53\u6709\u8bf7\u6c42\u65f6\u5411\u7269\u6d41\u7f51\u7edc\u4e2d\u53d1\u9001\u4e00\u4e2a\u5806\u53e0\u7684\u7269\u54c1
-item.PipeItemsProviderLogistics.tip4= - \u5ffd\u7565\u540c\u4e00\u683c\u7684\u8865\u7ed9\u7ba1\u9053.
+item.PipeItemsProviderLogisticsMk2=供应物流管Mk2
+item.PipeItemsProviderLogisticsMk2.tip1=类型：物品来源
+item.PipeItemsProviderLogisticsMk2.tip2= - 依附某个容器
+item.PipeItemsProviderLogisticsMk2.tip3= - 当有请求时向物流网络中发送一个组的物品
+item.PipeItemsProviderLogistics.tip4= - 忽略同一格的补给管道
 
-item.PipeItemsCraftingLogistics=\u5408\u6210\u7269\u6d41\u7ba1\u9053
-item.PipeItemsCraftingLogistics.tip1=\u7c7b\u578b: \u4e3b\u52a8\u578b\u8bf7\u6c42 + \u7269\u54c1\u6e90
-item.PipeItemsCraftingLogistics.tip2= - \u4e00\u6b21\u5408\u62101\u4ef6\u7269\u54c1
-item.PipeItemsCraftingLogistics.tip3= - \u4f9d\u9644\u5728\u81ea\u52a8\u5408\u6210\u53f0\u4e0a
-item.PipeItemsCraftingLogistics.tip4= - \u5f53\u6709\u8bf7\u6c42\u65f6\u81ea\u52a8\u5408\u6210\u5bf9\u5e94\u7684\u7269\u54c1
-item.PipeItemsCraftingLogistics.tip5= - \u53ef\u4ee5\u901a\u8fc7\u536b\u661f\u5f0f\u5408\u6210\u8f85\u52a9\u7269\u6d41\u7ba1\u9053\u6765\u63d0\u4f9b\u5408\u6210\u6750\u6599
+item.PipeItemsCraftingLogistics=合成物流管道
+item.PipeItemsCraftingLogistics.tip1=类型：主动提供+物品来源
+item.PipeItemsCraftingLogistics.tip2= - 一次合1件物品
+item.PipeItemsCraftingLogistics.tip3= - 依附在自动合成台上
+item.PipeItemsCraftingLogistics.tip4= - 当有请求时自动合成对应的物品
+item.PipeItemsCraftingLogistics.tip5= - 可以通过附属合成辅助物流管道来提供合成材料
 
-item.PipeItemsCraftingLogisticsMk2=\u5408\u6210\u7269\u6d41\u7ba1\u9053 Mk2
-item.PipeItemsCraftingLogisticsMk2.tip1=\u7c7b\u578b: \u4e3b\u52a8\u578b\u8bf7\u6c42 + \u7269\u54c1\u6e90
-item.PipeItemsCraftingLogisticsMk2.tip2= - \u4e00\u6b21\u5408\u621016\u4ef6\u7269\u54c1
-item.PipeItemsCraftingLogisticsMk2.tip3= - \u4f9d\u9644\u5728\u81ea\u52a8\u5408\u6210\u53f0\u4e0a
-item.PipeItemsCraftingLogisticsMk2.tip4= - \u5f53\u6709\u8bf7\u6c42\u65f6\u81ea\u52a8\u5408\u6210\u5bf9\u5e94\u7684\u7269\u54c1
-item.PipeItemsCraftingLogisticsMk2.tip5= - \u53ef\u4ee5\u901a\u8fc7\u536b\u661f\u5f0f\u5408\u6210\u8f85\u52a9\u7269\u6d41\u7ba1\u9053\u6765\u63d0\u4f9b\u5408\u6210\u6750\u6599
+item.PipeItemsCraftingLogisticsMk2=合成物流管Mk2!
+item.PipeItemsCraftingLogisticsMk2.tip1=类型：主动提供+物品来源
+item.PipeItemsCraftingLogisticsMk2.tip2= - 一次合16件物品
+item.PipeItemsCraftingLogisticsMk2.tip3= - 依附在自动合成台上
+item.PipeItemsCraftingLogisticsMk2.tip4= - 当有请求时自动合成对应的物品
+item.PipeItemsCraftingLogisticsMk2.tip5= - 可以通过卫星式合成辅助物流管道来提供合成材料
 
-item.PipeItemsCraftingLogisticsMk3=\u5408\u6210\u7269\u6d41\u7ba1\u9053 Mk3
-item.PipeItemsCraftingLogisticsMk3.tip1=\u7c7b\u578b: \u4e3b\u52a8\u578b\u8bf7\u6c42 + \u7269\u54c1\u6e90
-item.PipeItemsCraftingLogisticsMk3.tip2= - \u4e00\u6b21\u5408\u6210\u4e00\u5806\u53e0\u7684\u7269\u54c1
-item.PipeItemsCraftingLogisticsMk3.tip3= - \u4f9d\u9644\u5728\u81ea\u52a8\u5408\u6210\u53f0\u4e0a
-item.PipeItemsCraftingLogisticsMk3.tip4= - \u5f53\u6709\u8bf7\u6c42\u65f6\u81ea\u52a8\u5408\u6210\u5bf9\u5e94\u7684\u7269\u54c1
-item.PipeItemsCraftingLogisticsMk3.tip5= - \u53ef\u4ee5\u901a\u8fc7\u536b\u661f\u5f0f\u5408\u6210\u8f85\u52a9\u7269\u6d41\u7ba1\u9053\u6765\u63d0\u4f9b\u5408\u6210\u6750\u6599
+item.PipeItemsCraftingLogisticsMk3=合成物流管Mk3!
+item.PipeItemsCraftingLogisticsMk3.tip1=类型：主动提供+物品来源
+item.PipeItemsCraftingLogisticsMk3.tip2= - 一次合成一组的物品
+item.PipeItemsCraftingLogisticsMk3.tip3= - 依附在自动合成台上
+item.PipeItemsCraftingLogisticsMk3.tip4= - 当有请求时自动合成对应的物品
+item.PipeItemsCraftingLogisticsMk3.tip5= - 可以通过卫星式合成辅助物流管道来提供合成材料
 
-item.PipeItemsSatelliteLogistics=\u536b\u661f\u5f0f\u5408\u6210\u8f85\u52a9\u7269\u6d41\u7ba1\u9053
-item.PipeItemsSatelliteLogistics.tip1=\u7c7b\u578b: \u4e3b\u52a8\u578b\u8bf7\u6c42 + \u76ee\u7684\u5730\u5b9a\u4f4d
-item.PipeItemsSatelliteLogistics.tip2= - \u4e00\u79cd\u53ef\u4ee5\u5c06\u7269\u54c1\u53d1\u9001\u81f3\u5408\u6210\u680f\u5185\u7684\u7ba1\u9053
-item.PipeItemsSatelliteLogistics.tip3= - \u8fde\u63a5\u5728\u5408\u6210\u53f0\u8fb9\u7684\u7bb1\u5b50\u4e0a
-item.PipeItemsSatelliteLogistics.tip4=   \u7528\u4e8e\u53d1\u9001\u4e0d\u53ef\u5806\u53e0\u7684\u7269\u54c1
+item.PipeItemsSatelliteLogistics=附属合成辅助物流管道
+item.PipeItemsSatelliteLogistics.tip1=类型：主动推送目标
+item.PipeItemsSatelliteLogistics.tip2= - 一种可以将物品发送至合成栏内的管道
+item.PipeItemsSatelliteLogistics.tip3= - 连接在合成台边的箱子上
+item.PipeItemsSatelliteLogistics.tip4=   用于发送不可堆叠的物品
 
-item.PipeItemsSupplierLogistics=\u8865\u7ed9\u7269\u6d41\u7ba1\u9053
-item.PipeItemsSupplierLogistics.tip1=\u7c7b\u578b: \u4e3b\u52a8\u578b\u8bf7\u6c42
-item.PipeItemsSupplierLogistics.tip2= - \u81ea\u52a8\u586b\u5145\u7bb1\u5b50\u548c\u673a\u5668
-item.PipeItemsSupplierLogistics.tip3= - \u53ef\u4ee5\u4ece\u4efb\u610f\u7269\u54c1\u6e90\u83b7\u5f97\u7269\u54c1
-item.PipeItemsSupplierLogistics.tip4= - \u5ffd\u7565\u540c\u4e00\u683c\u7684\u4f9b\u5e94\u7ba1\u9053.
+item.PipeItemsSupplierLogistics=补给物流管道
+item.PipeItemsSupplierLogistics.tip1=注定提供物品
+item.PipeItemsSupplierLogistics.tip2= - 自动填充箱子和机器
+item.PipeItemsSupplierLogistics.tip3= - 可以从任意物品源获得物品
+item.PipeItemsSupplierLogistics.tip4= - 忽略同一格的供应管道
 
-item.PipeItemsBuilderSupplierLogistics=\u5efa\u9020\u673a\u8865\u7ed9\u7269\u6d41\u7ba1\u9053
-item.PipeItemsBuilderSupplierLogistics.tip1=\u7c7b\u578b: \u4e3b\u52a8\u578b\u8bf7\u6c42
-item.PipeItemsBuilderSupplierLogistics.tip2= - \u81ea\u52a8\u586b\u5145\u5efa\u9020\u673a\u6240\u9700\u6750\u6599
+item.PipeItemsBuilderSupplierLogistics=建造补给物流管道
+item.PipeItemsBuilderSupplierLogistics.tip1=主动请求物品
+item.PipeItemsBuilderSupplierLogistics.tip2= - 自动填充建造机所需材料
 
-item.PipeLogisticsChassiMk1=\u7269\u6d41\u5e95\u76d8Mk1
-item.PipeLogisticsChassiMk1.tip1=\u7c7b\u578b: \u6df7\u5408
-item.PipeLogisticsChassiMk1.tip2= - \u53ef\u4ee5\u5bb9\u7eb31\u4e2a\u6a21\u5757
+item.PipeLogisticsChassiMk1=物流底盘Mk1
+item.PipeLogisticsChassiMk1.tip1=类型：混合
+item.PipeLogisticsChassiMk1.tip2= - 可以容纳1个模块
 
-item.PipeLogisticsChassiMk2=\u7269\u6d41\u5e95\u76d8Mk2
-item.PipeLogisticsChassiMk2.tip1=\u7c7b\u578b: \u6df7\u5408
-item.PipeLogisticsChassiMk2.tip2= - \u53ef\u4ee5\u5bb9\u7eb32\u4e2a\u6a21\u5757
+item.PipeLogisticsChassiMk2=物流底盘Mk2
+item.PipeLogisticsChassiMk2.tip1=类型：混合
+item.PipeLogisticsChassiMk2.tip2= - 可以容纳2个模块
 
-item.PipeLogisticsChassiMk3=\u7269\u6d41\u5e95\u76d8Mk3
-item.PipeLogisticsChassiMk3.tip1=\u7c7b\u578b: \u6df7\u5408
-item.PipeLogisticsChassiMk3.tip2= - \u53ef\u4ee5\u5bb9\u7eb33\u4e2a\u6a21\u5757
+item.PipeLogisticsChassiMk3=物流底盘Mk3
+item.PipeLogisticsChassiMk3.tip1=类型：混合
+item.PipeLogisticsChassiMk3.tip2= - 可以容纳3个模块
 
-item.PipeLogisticsChassiMk4=\u7269\u6d41\u5e95\u76d8Mk4
-item.PipeLogisticsChassiMk4.tip1=\u7c7b\u578b: \u6df7\u5408
-item.PipeLogisticsChassiMk4.tip2= - \u53ef\u4ee5\u5bb9\u7eb34\u4e2a\u6a21\u5757
+item.PipeLogisticsChassiMk4=物流底盘Mk4
+item.PipeLogisticsChassiMk4.tip1=类型：混合
+item.PipeLogisticsChassiMk4.tip2= - 可以容纳4个模块
 
-item.PipeLogisticsChassiMk5=\u7269\u6d41\u5e95\u76d8Mk5
-item.PipeLogisticsChassiMk5.tip1=\u7c7b\u578b: \u6df7\u5408
-item.PipeLogisticsChassiMk5.tip2= - \u53ef\u4ee5\u5bb9\u7eb38\u4e2a\u6a21\u5757
+item.PipeLogisticsChassiMk5=物流底盘Mk5
+item.PipeLogisticsChassiMk5.tip1=类型：混合
+item.PipeLogisticsChassiMk5.tip2= - 可以容纳8个模块
 
-item.PipeItemsRemoteOrdererLogistics=\u8fdc\u7a0b\u63d0\u8d27\u7269\u6d41\u7ba1\u9053
-item.PipeItemsRemoteOrdererLogistics.tip1=\u7c7b\u578b: \u4e3b\u52a8\u578b\u8bf7\u6c42
-item.PipeItemsRemoteOrdererLogistics.tip2= - \u5141\u8bb8\u4f60\u624b\u52a8\u7533\u8bf7\u8bf7\u6c42\u7269\u54c1 *\u8fdc\u7a0b*
-item.PipeItemsRemoteOrdererLogistics.tip3= - \u53ef\u4ee5\u4ece\u4efb\u610f\u7269\u54c1\u6e90\u83b7\u5f97\u7269\u54c1
-item.PipeItemsRemoteOrdererLogistics.tip4= - \u4f60\u5fc5\u987b\u53f3\u51fb\u7ba1\u9053\u4e2d\u7684\u8fdc\u7a0b\u8981\u6c42
+item.PipeItemsRemoteOrdererLogistics=远程提货物流管道
+item.PipeItemsRemoteOrdererLogistics.tip1=类型：主动提供
+item.PipeItemsRemoteOrdererLogistics.tip2= - 允许你手动申请请求物品*远程*
+item.PipeItemsRemoteOrdererLogistics.tip3= - 可以从任意物品源获得物品
+item.PipeItemsRemoteOrdererLogistics.tip4= - 你必须右击管道中的远程要求
 
-item.PipeItemsApiaristAnalyser=\u871c\u8702\u5206\u6790\u7269\u6d41\u7ba1\u9053
-item.PipeItemsApiaristAnalyser.tip1=\u7c7b\u578b: \u88ab\u52a8\u578b\u76ee\u7684\u5730\u5b9a\u4f4d
-item.PipeItemsApiaristAnalyser.tip2= - \u4e00\u79cd\u4e3a\u672a\u5206\u6790\u7684\u871c\u8702\u5b9a\u4f4d\u7684\u88ab\u52a8\u578b\u76ee\u7684\u5730\u7ba1\u9053
-item.PipeItemsApiaristAnalyser.tip3= - \u5141\u8bb8\u7528\u4e8e\u81ea\u52a8\u5206\u6790
+item.PipeItemsApiaristAnalyser=蜜蜂分析物流管道
+item.PipeItemsApiaristAnalyser.tip1=类型：被动目标
+item.PipeItemsApiaristAnalyser.tip2= - 一种为未分析的蜜蜂定位的被动型目的地管道
+item.PipeItemsApiaristAnalyser.tip3= - 允许用于自动分析
 
-item.PipeItemsApiaristSink=\u871c\u8702\u6536\u7eb3\u7269\u6d41\u7ba1\u9053
-item.PipeItemsApiaristSink.tip1=\u7c7b\u578b: \u88ab\u52a8\u578b\u76ee\u7684\u5730\u5b9a\u4f4d
-item.PipeItemsApiaristSink.tip2= - \u4e00\u79cd\u4e3a\u5206\u6790\u8fc7\u7684\u871c\u8702\u5b9a\u4f4d\u7684\u88ab\u52a8\u578b\u76ee\u7684\u5730\u7ba1\u9053
-item.PipeItemsApiaristSink.tip3= - \u53ef\u57fa\u4e8e\u9057\u4f20\u7279\u6027\u548c\u57fa\u56e0\u7ec4\u8fdb\u884c\u8fc7\u6ee4\u3002
+item.PipeItemsApiaristSink=蜜蜂收纳物流管道
+item.PipeItemsApiaristSink.tip1=类型：被动目标
+item.PipeItemsApiaristSink.tip2= - 一种为分析过的蜜蜂定位的被动型目的地管道
+item.PipeItemsApiaristSink.tip3= - 可基于遗传特性和基因组进行过滤。
 
-item.PipeItemsInvSysConnector=\u7269\u6d41\u7269\u54c1\u680f\u7cfb\u7edf\u63a7\u5236\u5668
-item.PipeItemsInvSysConnector.tip1=\u7c7b\u578b: \u6865\u63a5
-item.PipeItemsInvSysConnector.tip2= - \u901a\u8fc7\u5171\u4eab\u7269\u54c1\u680f
-item.PipeItemsInvSysConnector.tip3=   \u5c06\u4e24\u4e2a\u7269\u6d41\u7f51\u7edc\u8fde\u63a5\u5230\u4e00\u8d77
-item.PipeItemsInvSysConnector.tip4= - \u901a\u5e38\u7528\u4e8e\u672b\u5f71\u7bb1\u5b50\u4f46\u662f
-item.PipeItemsInvSysConnector.tip5=   \u4f60\u4e5f\u53ef\u4ee5\u5bcc\u6709\u6280\u5de7\u5730\u8bbe\u8ba1\u5230\u77ff\u8f66\u4e0a...
+item.PipeItemsInvSysConnector=物流物品栏系统控制器
+item.PipeItemsInvSysConnector.tip1=类型：桥接
+item.PipeItemsInvSysConnector.tip2= - 通过共享物品栏
+item.PipeItemsInvSysConnector.tip3=   将两个物流网络连接到一起
+item.PipeItemsInvSysConnector.tip4= - 通常用于末影箱子但是
+item.PipeItemsInvSysConnector.tip5=   你也可以富有技巧地设计用到矿车...
 
-item.PipeItemsSystemEntranceLogistics=\u7269\u6d41\u7cfb\u7edf\u5165\u53e3\u7ba1\u9053
-item.PipeItemsSystemEntranceLogistics.tip1=\u7c7b\u578b: \u8def\u7531
-item.PipeItemsSystemEntranceLogistics.tip2= - \u5c06\u4e00\u4e2a\u672a\u5b9a\u4f4d\u8def\u7531\u8fc7\u7684\u7269\u54c1\u53d1\u9001\u5230\u4e00\u4e2a\u5339\u914d\u597d\u7684
-item.PipeItemsSystemEntranceLogistics.tip3=   \u76ee\u7684\u5730\u5b9a\u4f4d\u7ba1\u9053
-item.PipeItemsSystemEntranceLogistics.tip4= - \u5165\u53e3\u548c\u76ee\u7684\u5730\u5b9a\u4f4d\u7ba1\u9053\u90fd
-item.PipeItemsSystemEntranceLogistics.tip5=   \u5fc5\u987b\u5171\u4eab\u76f8\u540c\u7684\u7f16\u7801\u9891\u7387\u5361\u7247
+item.PipeItemsSystemEntranceLogistics=物流系统入口管道
+item.PipeItemsSystemEntranceLogistics.tip1=类型：路由器
+item.PipeItemsSystemEntranceLogistics.tip2= - 将一个未定位路由过的物品发送到一个匹配好的
+item.PipeItemsSystemEntranceLogistics.tip3=   目的地定位管道
+item.PipeItemsSystemEntranceLogistics.tip4= - 入口和目的地定位管道都
+item.PipeItemsSystemEntranceLogistics.tip5=   必须共享相同的编码频率卡片
 
-item.PipeItemsSystemDestinationLogistics=\u7269\u6d41\u7cfb\u7edf\u76ee\u7684\u5730\u5b9a\u4f4d\u7ba1\u9053
-item.PipeItemsSystemDestinationLogistics.tip1=\u7c7b\u578b: \u7279\u6b8a\u76ee\u7684\u5730\u5b9a\u4f4d
-item.PipeItemsSystemDestinationLogistics.tip2= - \u4ece\u5339\u914d\u597d\u7684\u5165\u53e3\u7ba1\u9053\u63a5\u6536
-item.PipeItemsSystemDestinationLogistics.tip3=   \u672a\u88ab\u5b9a\u4f4d\u5bfc\u822a\u7684\u7269\u54c1
-item.PipeItemsSystemDestinationLogistics.tip4= - B\u5165\u53e3\u548c\u76ee\u7684\u5730\u5b9a\u4f4d\u7ba1\u9053\u90fd
-item.PipeItemsSystemDestinationLogistics.tip5=   \u5fc5\u987b\u5171\u4eab\u76f8\u540c\u7684\u7f16\u7801\u9891\u7387\u5361\u7247
+item.PipeItemsSystemDestinationLogistics=物流系统目的地定位管道
+item.PipeItemsSystemDestinationLogistics.tip1=类型：特殊目标
+item.PipeItemsSystemDestinationLogistics.tip2= - 从匹配好的入口管道接收
+item.PipeItemsSystemDestinationLogistics.tip3=   未被定位导航的物品
+item.PipeItemsSystemDestinationLogistics.tip4= - B入口和目的地定位管道都
+item.PipeItemsSystemDestinationLogistics.tip5=   必须共享相同的编码频率卡片
 
-item.PipeItemsFirewall=\u7269\u6d41\u9632\u706b\u5899\u7ba1\u9053
-item.PipeItemsFirewall.tip1=\u7c7b\u578b: \u9700\u6c42\u8fc7\u6ee4
-item.PipeItemsFirewall.tip2= - \u5141\u8bb8\u8fde\u63a5\u5230\u98ce\u9669\u7f51\u7edc\u4e2d
-item.PipeItemsFirewall.tip3=   \u8fde\u63a5\u65f6\u4ec5\u5141\u8bb8\u67d0\u4e9b\u7269\u54c1\u901a\u8fc7
+item.PipeItemsFirewall=物流防火墙管道
+item.PipeItemsFirewall.tip1=类型：请求过滤
+item.PipeItemsFirewall.tip2= - 允许连接到风险网络中
+item.PipeItemsFirewall.tip3=   连接时仅允许某些物品通过
 
-item.PipeItemsFluidSupplier=\u7269\u6d41\u6db2\u4f53\u8865\u7ed9\u7ba1\u9053 Mk1
-item.PipeItemsFluidSupplier.tip1=\u4f7f\u7528\u6876\u6216\u5176\u4ed6\u6db2\u4f53\u5bb9\u5668\u586b\u5145\u8fde\u63a5\u7684\u6c34\u69fd
-item.PipeItemsFluidSupplier.tip2= - \u7528\u4e8e\u81ea\u52a8\u6e05\u7a7a\u5668\u4f9b\u5e94\u5bb9\u5668\u7684\u673a\u5668
-item.PipeFluidSupplierMk2=\u7269\u6d41\u6db2\u4f53\u8865\u7ed9\u7ba1\u9053 Mk2
-item.PipeFluidSupplierMk2.tip1=\u4ece\u7269\u6d41\u6db2\u4f53\u4f9b\u5e94\u7ba1\u9053\u4e2d\u83b7\u53d6\u6db2\u4f53
-item.LogisticsFluidConnectorPipe=\u7269\u6d41\u6db2\u4f53\u8fde\u63a5\u7ba1\u9053
-item.PipeFluidBasic=\u7269\u6d41\u6db2\u4f53\u57fa\u7840\u7ba1\u9053
-item.PipeFluidInsertion=\u7269\u6d41\u6db2\u4f53\u63d2\u5165
-item.PipeFluidProvider=\u7269\u6d41\u6db2\u4f53\u4f9b\u5e94\u7ba1\u9053
-item.PipeFluidRequestLogistics=\u7269\u6d41\u6db2\u4f53\u8bf7\u6c42\u7ba1\u9053
-item.PipeFluidExtractor=\u7269\u6d41\u6db2\u4f53\u62bd\u53d6\u7ba1\u9053
-item.PipeFluidSatellite=\u7269\u6d41\u6db2\u4f53\u536b\u661f\u5f0f\u5408\u6210\u8f85\u52a9\u7269\u6d41\u7ba1\u9053
-item.PipeBlockRequestTable=\u8bf7\u6c42\u7269\u6d41\u684c
+item.PipeItemsFluidSupplier=物流液体补给管道
+item.PipeItemsFluidSupplier.tip1=使用桶或其他液体容器填充连接的水槽
+item.PipeItemsFluidSupplier.tip2= - 用于自动清空器供应容器的机器
+item.PipeFluidSupplierMk2=物流液体补给管道Mk2!
+item.PipeFluidSupplierMk2.tip1=从物流液体供应管道中获取液体
+item.LogisticsFluidConnectorPipe=物流液体连接管道
+item.PipeFluidBasic=物流液体基础管道
+item.PipeFluidInsertion=物流液体插入
+item.PipeFluidProvider=物流液体供应管道
+item.PipeFluidRequestLogistics=物流液体请求管道
+item.PipeFluidExtractor=物流液体抽取管道
+item.PipeFluidSatellite=物流液体卫星式合成辅助物流管道
+item.PipeBlockRequestTable=请求物流桌
 
 # Modules
 
-#TODO: \u6309\u4f4f\u6f5c\u884c\u952e\u4ee5\u83b7\u5f97\u66f4\u591a\u4fe1\u606f
-item.ModuleBlank=\u7a7a\u767d\u6a21\u5757
-item.ModuleItemSink=\u7269\u54c1\u6536\u7eb3\u6a21\u5757
-item.ModulePassiveSupplier=\u88ab\u52a8\u8865\u7ed9\u6a21\u5757
-item.ModuleExtractor=\u63d0\u53d6\u5668\u6a21\u5757
-item.ModulePolymorphicItemSink=\u540c\u7c7b\u7269\u54c1\u6536\u7eb3\u6a21\u5757
-item.ModuleQuickSort=\u6392\u5e8f\u53d1\u9001\u6a21\u5757
-item.ModuleTerminus=\u7ec8\u7aef\u6a21\u5757
-item.ModuleAdvancedExtractor=\u9ad8\u7ea7\u63d0\u53d6\u5668\u6a21\u5757
-item.ModuleExtractorMk2=\u63d0\u53d6\u5668\u6a21\u5757MK2
-item.ModuleAdvancedExtractorMK2=\u9ad8\u7ea7\u63d0\u53d6\u5668\u6a21\u5757MK2
-item.ModuleExtractorMk3=MK3\u63d0\u53d6\u5668\u6a21\u5757
-item.ModuleAdvancedExtractorMK3=\u9ad8\u7ea7\u63d0\u53d6\u5668\u6a21\u5757MK3
-item.ModuleProvider=\u4f9b\u5e94\u5668\u6a21\u5757
-item.ModuleProviderMk2=\u4f9b\u5e94\u5668\u6a21\u5757MK2
-item.ModuleElectricManager=\u7535\u529b\u7ba1\u7406\u6a21\u5757
-item.ModuleElectricBuffer=\u7535\u529b\u7f13\u51b2\u6a21\u5757
-item.ModuleApiaristAnalyser=\u871c\u8702\u5206\u6790\u6a21\u5757
-item.ModuleApiaristSink=\u871c\u8702\u6536\u7eb3\u6a21\u5757
-item.ModuleApiaristRefiller=\u517b\u8702\u704c\u6ce8\u6a21\u5757
-item.ModuleApiaristTerminus=\u96c4\u5cf0\u7ec8\u7aef\u6a21\u5757
-item.ModuleModBasedItemSink=\u6a21\u7ec4\u7269\u54c1\u6536\u7eb3\u6a21\u5757
-item.ModuleOreDictItemSink=\u77ff\u7269\u8f9e\u5178\u6536\u7eb3\u6a21\u5757
-item.ModuleThaumicAspectSink=\u795e\u79d8\u8981\u7d20\u6536\u7eb3\u6a21\u5757
-item.ModuleEnchantmentSink=\u9644\u9b54\u6536\u7eb3\u6a21\u5757
-item.ModuleEnchantmentSinkMK2=\u9644\u9b54\u6536\u7eb3\u6a21\u5757MK2
+#TODO: 按住潜行键以获得更多信息
+item.ModuleBlank=空白模块
+item.ModuleItemSink=物品收纳模块
+item.ModulePassiveSupplier=被动补给模块
+item.ModuleExtractor=提取器模块
+item.ModulePolymorphicItemSink=同类物品收纳模块
+item.ModuleQuickSort=排序发送模块
+item.ModuleTerminus=终端模块
+item.ModuleAdvancedExtractor=高级提取器模块
+item.ModuleExtractorMk2=提取器模块Mk2
+item.ModuleAdvancedExtractorMK2=高级提取器模块Mk2
+item.ModuleExtractorMk3=提取器模块MK3
+item.ModuleAdvancedExtractorMK3=高级提取器模块MK3
+item.ModuleProvider=供应器模块
+item.ModuleProviderMk2=供应器模块Mk2
+item.ModuleElectricManager=电力管理模块
+item.ModuleElectricBuffer=电力缓冲模块
+item.ModuleApiaristAnalyser=蜜蜂分析模块
+item.ModuleApiaristSink=蜜蜂收纳模块
+item.ModuleApiaristRefiller=养蜂灌注模块
+item.ModuleApiaristTerminus=雄峰终端模块
+item.ModuleModBasedItemSink=模组物品收纳模块
+item.ModuleOreDictItemSink=矿物辞典收纳模块
+item.ModuleThaumicAspectSink=神秘要素收纳模块
+item.ModuleEnchantmentSink=附魔收纳模块
+item.ModuleEnchantmentSinkMK2=附魔收纳模块Mk2
 # Items
 
-item.brokenItem.name=\u7269\u6d41\u635f\u574f\u7269\u54c1
-item.logisticsFluidContainer=\u7269\u6d41\u6db2\u4f53\u5bb9\u5668
-item.upgradeManagerItem=\u5347\u7ea7\u7ba1\u7406\u5668
-item.HUDbow=\u7269\u6d41HUD\u773c\u955c\u955c\u67b6
-item.HUDglass=\u7269\u6d41HUD\u773c\u955c
-item.HUDnosebridge=\u7269\u6d41HUD\u773c\u955c\u955c\u6846
-item.NanoHopper=\u7eb3\u7c73\u6f0f\u6597
-item.logisticsItemCard=\u7269\u6d41\u7269\u54c1\u5361\u7247
-item.itemDisk=\u7269\u6d41\u76d8
-item.networkMonitorItem.name=\u7f51\u7edc\u76d1\u89c6\u5668
-item.CraftingSignCreator=\u5408\u6210\u6807\u8bb0\u8d34\u724c\u5668
-item.logisticsHUDGlasses=\u7269\u6d41HUD\u773c\u955c\u955c\u7247
-item.remoteOrdererItem.name=\u8fdc\u7a0b\u8bf7\u6c42\u5668
+item.brokenItem.name=物流损坏物品
+item.logisticsFluidContainer=物流液体容器
+item.upgradeManagerItem=升级管理器
+item.HUDbow=物流HUD弓
+item.HUDglass=物流HUD玻璃
+item.HUDnosebridge=物流HUD鼻梁
+item.NanoHopper=纳米漏斗
+item.logisticsItemCard=物流物品卡片
+item.itemDisk=物流盘
+item.networkMonitorItem.name=网络监视器
+item.CraftingSignCreator=合成标记贴牌器
+item.logisticsHUDGlasses=物流HUD玻璃
+item.remoteOrdererItem.name=远程请求器
 
 # Upgrades
 
-item.SneakyUpgradeUP=\u9009\u62e9\u8fde\u63a5\u5347\u7ea7(\u4e0a\u65b9)
-item.SneakyUpgradeDOWN=\u9009\u62e9\u8fde\u63a5\u5347\u7ea7(\u4e0b\u65b9)
-item.SneakyUpgradeNORTH=\u9009\u62e9\u8fde\u63a5\u5347\u7ea7(\u5317\u65b9)
-item.SneakyUpgradeSOUTH=\u9009\u62e9\u8fde\u63a5\u5347\u7ea7(\u5357\u65b9)
-item.SneakyUpgradeEAST=\u9009\u62e9\u8fde\u63a5\u5347\u7ea7(\u4e1c\u65b9)
-item.SneakyUpgradeWEST=\u9009\u62e9\u8fde\u63a5\u5347\u7ea7(\u897f\u65b9)
-item.CombinedSneakyUpgrade=\u591a\u9009\u8fde\u63a5\u5347\u7ea7
-item.SpeedUpgrade=\u7269\u54c1\u52a0\u901f\u5347\u7ea7
-item.ConnectionUpgradeUP=\u9009\u62e9\u65ad\u5f00\u5347\u7ea7(\u4e0a\u65b9)
-item.ConnectionUpgradeDOWN=\u9009\u62e9\u65ad\u5f00\u5347\u7ea7(\u4e0b\u65b9)
-item.ConnectionUpgradeNORTH=\u9009\u62e9\u65ad\u5f00\u5347\u7ea7(\u5317\u65b9)
-item.ConnectionUpgradeSOUTH=\u9009\u62e9\u65ad\u5f00\u5347\u7ea7(\u5357\u65b9)
-item.ConnectionUpgradeEAST=\u9009\u62e9\u65ad\u5f00\u5347\u7ea7(\u4e1c\u65b9)
-item.ConnectionUpgradeWEST=\u9009\u62e9\u65ad\u5f00\u5347\u7ea7(\u897f\u65b9)
-item.AdvancedSatelliteUpgrade=\u9ad8\u7ea7\u536b\u661f\u5347\u7ea7
-item.FluidCraftingUpgrade=\u6db2\u4f53\u5408\u6210\u5347\u7ea7
-item.CraftingByproductUpgrade=\u526f\u4ea7\u54c1\u63d0\u53d6\u5347\u7ea7
-item.PatternUpgrade=\u653e\u7f6e\u89c4\u5219\u5347\u7ea7
-item.FuzzyCraftingUpgrade=\u6a21\u7cca\u5408\u6210\u5347\u7ea7
-item.PowerTransportationUpgrade=\u80fd\u91cf\u8fd0\u8f93\u5347\u7ea7
-item.BCPowerSupplierUpgrade=BC\u80fd\u91cf\u8865\u7ed9\u5668\u5347\u7ea7
-item.RFPowerSupplierUpgrade=TE\u80fd\u91cf\u8865\u7ed9\u5668\u5347\u7ea7
-item.IC2LVPowerSupplierUpgrade=IC2\u4f4e\u538b\u80fd\u91cf\u8865\u7ed9\u5668\u5347\u7ea7
-item.IC2MVPowerSupplierUpgrade=IC2\u4e2d\u538b\u80fd\u91cf\u8865\u7ed9\u5668\u5347\u7ea7
-item.IC2HVPowerSupplierUpgrade=IC2\u9ad8\u538b\u80fd\u91cf\u8865\u7ed9\u5668\u5347\u7ea7
-item.IC2EVPowerSupplierUpgrade=IC2\u8d85\u9ad8\u538b\u80fd\u91cf\u8865\u7ed9\u5668\u5347\u7ea7
-item.CCRemoteControlUpgrade=CC\u9065\u63a7\u5347\u7ea7
+item.SneakyUpgradeUP=选择连接升级（上）
+item.SneakyUpgradeDOWN=选择连接升级（下）
+item.SneakyUpgradeNORTH=选择连接升级（北）
+item.SneakyUpgradeSOUTH=选择连接升级（南）
+item.SneakyUpgradeEAST=选择连接升级（东）
+item.SneakyUpgradeWEST=选择连接升级（西）
+item.CombinedSneakyUpgrade=多选连接升级
+item.SpeedUpgrade=物品加速升级
+item.ConnectionUpgradeUP=选择断开升级（上）
+item.ConnectionUpgradeDOWN=选择断开升级（下）
+item.ConnectionUpgradeNORTH=选择断开升级（北）
+item.ConnectionUpgradeSOUTH=选择断开升级（南）
+item.ConnectionUpgradeEAST=选择断开升级（东）
+item.ConnectionUpgradeWEST=选择断开升级（西）
+item.AdvancedSatelliteUpgrade=高级卫星升级
+item.FluidCraftingUpgrade=液体合成升级
+item.CraftingByproductUpgrade=副产品提取升级
+item.PatternUpgrade=放置规则升级
+item.FuzzyCraftingUpgrade=模糊合成升级
+item.PowerTransportationUpgrade=能量运输升级
+item.BCPowerSupplierUpgrade=BC能量补给器升级
+item.RFPowerSupplierUpgrade=TE能量补给器升级
+item.IC2LVPowerSupplierUpgrade=IC2低压能量补给器升级
+item.IC2MVPowerSupplierUpgrade=IC2中压能量补给器升级
+item.IC2HVPowerSupplierUpgrade=IC2高压能量补给器升级
+item.IC2EVPowerSupplierUpgrade=IC2超高压能量补给器升级
+item.CCRemoteControlUpgrade=CC遥控升级
 
 # Blocks
 
-tile.solderingstation=\u710a\u63a5\u53f0
-tile.logisticspowerjunction=\u7269\u6d41\u80fd\u6e90\u4e2d\u67a2
-tile.logisticssecuritystation=\u7269\u6d41\u5b89\u5168\u7ad9
-tile.logisticscraftingtable=\u7269\u6d41\u5408\u6210\u684c
-tile.logisticsbcpowerprovider=\u7269\u6d41BC\u80fd\u91cf\u4f9b\u5e94\u5668
-tile.logisticstepowerprovider=\u7269\u6d41TE\u80fd\u91cf\u4f9b\u5e94\u5668
-tile.logisticsic2powerprovider=\u7269\u6d41IC2\u80fd\u91cf\u4f9b\u5e94\u5668
+tile.solderingstation=焊接台
+tile.logisticspowerjunction=物流能源中枢
+tile.logisticssecuritystation=物流安全站
+tile.logisticscraftingtable=物流合成桌
+tile.logisticsbcpowerprovider=物䆼能量供应器
+tile.logisticstepowerprovider=物错误的Unicode字符串!
+tile.logisticsic2powerprovider=物错误的Unicode字符串!
 
 # Misc
 
-itemGroup.Logistics_Pipes=\u7269\u6d41\u7ba1\u9053
-misc.holdshift=<\u6309\u4f4f %cYELLOW %cITALIC \u6f5c\u884c\u952e %cRESET %cGRAY \u4ee5\u83b7\u53d6\u66f4\u591a\u4fe1\u606f>
-misc.extractionmode.Normal=\u6b63\u5e38
-misc.extractionmode.LeaveFirst=\u7559\u4e0b\u7b2c\u4e00\u7ec4\u7269\u54c1
-misc.extractionmode.LeaveLast=\u7559\u4e0b\u6700\u540e\u4e00\u7ec4\u7269\u54c1
-misc.extractionmode.LeaveFirstAndLast=\u7559\u4e0b\u7b2c\u4e00\u548c\u6700\u540e\u4e00\u7ec4\u7269\u54c1
-misc.extractionmode.Leave1PerStack=\u6bcf\u7ec4\u7269\u54c1\u7559\u4e00\u4e2a
-misc.extractionmode.Leave1PerType=\u6bcf\u79cd\u7269\u54c1\u7559\u4e00\u4e2a
+itemGroup.Logistics_Pipes=物流管道
+misc.holdshift=<按住 %cYELLOW %cITALIC Shift %cRESET %cGRAY 查看更多信息>
+misc.extractionmode.Normal=正常
+misc.extractionmode.LeaveFirst=留下第一组物品
+misc.extractionmode.LeaveLast=留下最后一组物品
+misc.extractionmode.LeaveFirstAndLast=留下第一和最后一组物品
+misc.extractionmode.Leave1PerStack=每组物品留一个
+misc.extractionmode.Leave1PerType=每种物品留一个
 
 # GUI
 
-gui.crafting.Inputs=\u8f93\u5165
-gui.crafting.Inventory=\u7269\u54c1\u680f
-gui.crafting.Import=\u5bfc\u5165
-gui.crafting.Open=\u6253\u5f00
-gui.crafting.Output=\u5bfc\u51fa
-gui.crafting.Satellite=\u9644\u5c5e\u7269
-gui.crafting.Off=\u5173
-gui.crafting.Priority=\u4f18\u5148\u7ea7
-gui.crafting.Extra=\u526f\u4ea7\u7269
-gui.crafting.OreDict=\u77ff\u7269\u8bcd\u5178
-gui.crafting.IgnDamage=\u5ffd\u7565\u635f\u8017
-gui.crafting.IgnNBT=\u5ffd\u7565\u4e\u42\u54
-gui.crafting.OrePrefix=\u5339\u914d\u540c\u7c7b
+gui.crafting.Inputs=输入
+gui.crafting.Inventory=物品栏
+gui.crafting.Import=导入
+gui.crafting.Open=打开
+gui.crafting.Output=导出
+gui.crafting.Satellite=附属物
+gui.crafting.Off=关
+gui.crafting.Priority=优先级
+gui.crafting.Extra=副产物
+gui.crafting.OreDict=矿物词典
+gui.crafting.IgnDamage=忽略损耗
+gui.crafting.IgnNBT=忽略NBT
+gui.crafting.OrePrefix=匹配同类
 
-gui.firewall.Blocked=\u963b\u6b62
-gui.firewall.Allowed=\u5141\u8bb8
-gui.firewall.Firewall=\u9632\u706b\u5899
-gui.firewall.Filter=\u8fc7\u6ee4\u5668
-gui.firewall.Filtereditemsare=\u88ab\u8fc7\u6ee4\u7684\u7269\u54c1\u4e3a
-gui.firewall.Providing=\u63d0\u4f9b
-gui.firewall.Crafting=\u5408\u6210
-gui.firewall.Sorting=\u5206\u7c7b
-gui.firewall.Powerflow=\u80fd\u91cf\u6d41\u91cf
+gui.firewall.Blocked=阻止
+gui.firewall.Allowed=允许
+gui.firewall.Firewall=防火墙
+gui.firewall.Filter=过滤器
+gui.firewall.Filtereditemsare=被过滤的物品为
+gui.firewall.Providing=提供
+gui.firewall.Crafting=合成
+gui.firewall.Sorting=分类
+gui.firewall.Powerflow=能量流量
 
-gui.fluidbasic.Empty=\u7a7a
+gui.fluidbasic.Empty=空
 
-gui.fluidsuppliermk2.Inventory=\u7269\u54c1\u680f
-gui.fluidsuppliermk2.Fluid=\u6d41\u4f53
-gui.fluidsuppliermk2.Partialrequests=\u90e8\u5206\u8bf7\u6c42
-gui.fluidsuppliermk2.Yes=\u662f
-gui.fluidsuppliermk2.No=\u5426
-gui.fluidsuppliermk2.TargetInv=\u4fdd\u6301\u6d41\u4f53\u5e93\u5b58
+gui.fluidsuppliermk2.Inventory=物品栏
+gui.fluidsuppliermk2.Fluid=流体
+gui.fluidsuppliermk2.Partialrequests=部分请求
+gui.fluidsuppliermk2.Yes=是
+gui.fluidsuppliermk2.No=否
+gui.fluidsuppliermk2.TargetInv=保持流体库存
 
-gui.fluidsupplier.TargetInv=\u4fdd\u6301\u6d41\u4f53\u5e93\u5b58
-gui.fluidsupplier.Inventory=\u7269\u54c1\u680f
-gui.fluidsupplier.Partialrequests=\u5c40\u90e8\u8bf7\u6c42
-gui.fluidsupplier.Yes=\u662f
-gui.fluidsupplier.No=\u5426
+gui.fluidsupplier.TargetInv=保持流体库存
+gui.fluidsupplier.Inventory=物品栏
+gui.fluidsupplier.Partialrequests=局部请求
+gui.fluidsupplier.Yes=是
+gui.fluidsupplier.No=否
 
-gui.invsyscon.No=\u5426
-gui.invsyscon.Refresh=\u5237\u65b0
-gui.invsyscon.Save=\u4fdd\u5b58
-gui.invsyscon.InventorySystemConnector=\u5e76\u7f51
-gui.invsyscon.ConnectionCard=\u8fde\u63a5\u5361
-gui.invsyscon.Waitingfor=\u7b49\u5f85
-gui.invsyscon.Resistance=\u4f18\u5148\u5ea6\uff08\u8d8a\u5c0f\u8d8a\u4f18\u5148\uff09
+gui.invsyscon.No=否
+gui.invsyscon.Refresh=刷新
+gui.invsyscon.Save=保存
+gui.invsyscon.InventorySystemConnector=并网
+gui.invsyscon.ConnectionCard=连接卡
+gui.invsyscon.Waitingfor=等待
+gui.invsyscon.Resistance=优先度（越小越优先）
 
-gui.powerjunction.LogisticsPowerJunction=\u7269\u6d41\u80fd\u91cf\u63a5\u5934
-gui.powerjunction.StoredEnergy=\u5b58\u50a8\u80fd\u91cf
+gui.powerjunction.LogisticsPowerJunction=物流能量接头
+gui.powerjunction.StoredEnergy=存储能量
 
-gui.powerprovider.LogisticsMJPowerProvider=\u7269\u6d41\u4d\u4a\u80fd\u91cf\u63d0\u4f9b
-gui.powerprovider.LogisticsEUPowerProvider=\u7269\u6d41\u45\u55\u80fd\u91cf\u63d0\u4f9b
-gui.powerprovider.LogisticsRFPowerProvider=\u7269\u6d41\u52\u46\u80fd\u91cf\u63d0\u4f9b
-gui.powerprovider.StoredEnergy=\u5b58\u50a8\u80fd\u91cf
+gui.powerprovider.LogisticsMJPowerProvider=物流MJ能量提供
+gui.powerprovider.LogisticsEUPowerProvider=物流EU能量提供
+gui.powerprovider.LogisticsRFPowerProvider=物流RF能量提供
+gui.powerprovider.StoredEnergy=存储能量
 
-gui.providerpipe.TargetInv=\u63d0\u4f9b\u7269\u54c1\u28\u6216\u8005\u7a7a\u7740\u63d0\u4f9b\u6240\u6709\u7269\u54c1\u29
-gui.providerpipe.Inventory=\u7269\u54c1\u680f
-gui.providerpipe.Mode=\u6a21\u5f0f
-gui.providerpipe.Exclude=\u6392\u9664
-gui.providerpipe.Include=\u5305\u542b
-gui.providerpipe.Switch=\u8f6c\u6362
+gui.providerpipe.TargetInv=提供物品(或者空着提供所有物品)
+gui.providerpipe.Inventory=物品栏
+gui.providerpipe.Mode=模式
+gui.providerpipe.Exclude=排除
+gui.providerpipe.Include=包含
+gui.providerpipe.Switch=转换
 
-gui.routingstats.Session=\u4f1a\u8bdd
-gui.routingstats.Lifetime=\u671f\u9650
-gui.routingstats.Sent=\u5df2\u9001\u51fa
-gui.routingstats.Recieved=\u5df2\u63a5\u53d7
-gui.routingstats.Relayed=\u88ab\u4e2d\u7ee7\u7684
-gui.routingstats.RoutingTableSize=\u8def\u7531\u8868\u5c3a\u5bf8
-gui.routingstats.exit=\u6309\u3c\u45\u53\u43\u3e\u9000\u51fa
+gui.routingstats.Session=会话
+gui.routingstats.Lifetime=期限
+gui.routingstats.Sent=已送出
+gui.routingstats.Recieved=已接受
+gui.routingstats.Relayed=被中继的
+gui.routingstats.RoutingTableSize=路由表尺寸
+gui.routingstats.exit=按<ESC>退出
 
-gui.satellite.SatelliteID=\u9644\u5c5e\u7269\u49\u44
+gui.satellite.SatelliteID=附属物ID
 
-gui.securitystation.Open=\u6253\u5f00
-gui.securitystation.EditTable=\u7f16\u8f91\u53f0
-gui.securitystation.Authorize=\u6388\u6743
-gui.securitystation.Deauthorize=\u89e3\u9664\u6388\u6743
-gui.securitystation.SecurityStation=\u5b89\u5168\u7ad9
-gui.securitystation.allowCCAccess=\u8fd0\u884c\u4f7f\u7528\u7535\u8111\u6d\u6f\u64
-gui.securitystation.excludeIDs=\u88ab\u6392\u9664\u7684\u7535\u8111\u6d\u6f\u64\u7684\u7269\u54c1\u49\u44\u73
-gui.securitystation.pipeRemove=\u5141\u8bb8\u81ea\u52a8\u5316\u7ba1\u9053\u79fb\u9664
-gui.securitystation.Player=\u73a9\u5bb6
-gui.securitystation.SecurityCards=\u5b89\u5168\u5361
-gui.securitystation.Inventory=\u7269\u54c1\u680f
-gui.securitystation.popup.ccAccess.Remove=\u79fb\u9664
-gui.securitystation.popup.ccAccess.Add=\u6dfb\u52a0
-gui.securitystation.popup.player.Close=\u5173\u95ed
-gui.securitystation.popup.player.Player=\u73a9\u5bb6
-gui.securitystation.popup.player.ConfigureSettings=\u4fee\u6539\u8bbe\u7f6e
-gui.securitystation.popup.player.ActiveRequesting=\u4e3b\u52a8\u8bf7\u6c42
-gui.securitystation.popup.player.UpgradePipes=\u5347\u7ea7\u7ba1\u9053
-gui.securitystation.popup.player.CheckNetwork=\u68c0\u67e5\u7f51\u7edc
-gui.securitystation.popup.player.RemovePipes=\u79fb\u9664\u7ba1\u9053
+gui.securitystation.Open=打开
+gui.securitystation.EditTable=编辑台
+gui.securitystation.Authorize=授权
+gui.securitystation.Deauthorize=解除授权
+gui.securitystation.SecurityStation=安全站
+gui.securitystation.allowCCAccess=运行使用电脑mod
+gui.securitystation.excludeIDs=被排除的电脑mod的物品IDs
+gui.securitystation.pipeRemove=允许自动化管道移除
+gui.securitystation.Player=玩家
+gui.securitystation.SecurityCards=安全卡
+gui.securitystation.Inventory=物品栏
+gui.securitystation.popup.ccAccess.Remove=移除
+gui.securitystation.popup.ccAccess.Add=添加
+gui.securitystation.popup.player.Close=关闭
+gui.securitystation.popup.player.Player=玩家
+gui.securitystation.popup.player.ConfigureSettings=修改设置
+gui.securitystation.popup.player.ActiveRequesting=主动请求
+gui.securitystation.popup.player.UpgradePipes=升级管道
+gui.securitystation.popup.player.CheckNetwork=检查网络
+gui.securitystation.popup.player.RemovePipes=移除管道
 
-gui.supplierpipe.TargetInv=\u4fdd\u6301\u7269\u54c1\u5e93\u5b58
-gui.supplierpipe.TargetInvPattern=\u7269\u54c1\u4fdd\u5b58\u5728\u7279\u5b9a\u7684\u69fd\u91cc
-gui.supplierpipe.Inventory=\u7269\u54c1\u680f
-gui.supplierpipe.RequestMode=\u8bf7\u6c42\u6a21\u5f0f
+gui.supplierpipe.TargetInv=保持物品库存
+gui.supplierpipe.TargetInvPattern=物品保存在特定的槽里
+gui.supplierpipe.Inventory=物品栏
+gui.supplierpipe.RequestMode=请求模式
 
-gui.upgrademanager.Upgrades=\u5347\u7ea7
-gui.upgrademanager.Inventory=\u7269\u54c1\u680f
-gui.upgrademanager.SneakyUpgrades=\u9009\u62e9\u8fde\u63a5\u5347\u7ea7ea7
+gui.upgrademanager.Upgrades=升级
+gui.upgrademanager.Inventory=物品栏
+gui.upgrademanager.SneakyUpgrades=选择连接升级

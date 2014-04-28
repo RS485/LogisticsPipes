@@ -131,10 +131,13 @@ public class RequestTree extends RequestTreeNode {
 		public workWeightedSorter(double distanceWeight){this.distanceWeight=distanceWeight;}
 		@Override
 		public int compare(ExitRoute o1, ExitRoute o2) {
-			double c=0;
+			int c=0;
 			if(o1.destination.getPipe() instanceof IHavePriority) {
 				if(o2.destination.getPipe() instanceof IHavePriority) {
 					c = ((IHavePriority)o2.destination.getCachedPipe()).getPriority() - ((IHavePriority)o1.destination.getCachedPipe()).getPriority();
+					if(c != 0) {
+						return c;
+					}
 				} else {
 					return -1;
 				}
@@ -143,29 +146,22 @@ public class RequestTree extends RequestTreeNode {
 					return 1;
 				}
 			}
-			if(c != 0) {
-				return (int)c;
-			}
-			int flip = 1; // for enforcing consistancy of a<b vs b>a;
-			if((o1.destination.getSimpleID() - o2.destination.getSimpleID()) < 0) {
-				flip = -1;
-				ExitRoute o_temp = o1;
-				o1 = o2;
-				o2 = o_temp;
-				
-			}
-				
-			c = o1.destination.getCachedPipe().getLoadFactor() - o2.destination.getCachedPipe().getLoadFactor();
+
+			//GetLoadFactor*64 should be an integer anyway.
+			c = Math.floor(o1.destination.getCachedPipe().getLoadFactor()*64) - Math.Floor(o2.destination.getCachedPipe().getLoadFactor()*64);
 			if(distanceWeight != 0) {
-				c += (o1.distanceToDestination - o2.distanceToDestination) * distanceWeight;
+				c += (Math.floor(o1.distanceToDestination*64) - Math.floor(o2.distanceToDestination*64)) * distanceWeight;
 			}
-			if(c==0) {
-				return -flip; // lowest ID first, of same distance.
+			/*
+			if (c < 0) 
+			{
+			   return -Math.ceil(-c);
 			}
-			if(c>0)
-				return (int)(c+0.5)*flip; //round up
 			else
-				return (int)(c-0.5)*flip; //round down
+			{
+			   return Math.ceil(c);
+			}*/
+			return c;
 		}
 		
 	}

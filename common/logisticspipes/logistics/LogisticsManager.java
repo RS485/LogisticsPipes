@@ -71,7 +71,7 @@ public class LogisticsManager implements ILogisticsManager {
 			}
 		}
 		Collections.sort(validDestinations);
-		Triplet<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, sourceRouter, validDestinations, true, routerIDsToExclude, new BitSet(ServerRouter.getBiggestSimpleID()), null, allowDefault);
+		Triplet<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, sourceRouter, validDestinations, true, routerIDsToExclude, null, allowDefault);
 
 		if (search.getValue2() == null) return null;
 
@@ -92,16 +92,14 @@ public class LogisticsManager implements ILogisticsManager {
 	@Override
 	public Triplet<Integer, SinkReply, List<IFilter>> hasDestinationWithMinPriority(ItemIdentifier stack, int sourceRouter, boolean excludeSource, FixedPriority priority) {
 		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouter)) return null;
-		Triplet<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, SimpleServiceLocator.routerManager.getRouter(sourceRouter), SimpleServiceLocator.routerManager.getRouter(sourceRouter).getIRoutersByCost(), excludeSource, new ArrayList<Integer>(), new BitSet(ServerRouter.getBiggestSimpleID()), null, true);
+		Triplet<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, SimpleServiceLocator.routerManager.getRouter(sourceRouter), SimpleServiceLocator.routerManager.getRouter(sourceRouter).getIRoutersByCost(), excludeSource, new ArrayList<Integer>(), null, true);
 		if (search.getValue2() == null) return null;
 		if (search.getValue2().fixedPriority.ordinal() < priority.ordinal()) return null;
 		return search;
 	}
 
 
-	private Triplet<Integer, SinkReply, List<IFilter>> getBestReply(ItemIdentifier stack, IRouter sourceRouter, List<ExitRoute> validDestinations, boolean excludeSource, List<Integer> jamList, BitSet layer, Triplet<Integer, SinkReply, List<IFilter>> result, boolean allowDefault) {
-		BitSet used = (BitSet) layer.clone();
-
+	private Triplet<Integer, SinkReply, List<IFilter>> getBestReply(ItemIdentifier stack, IRouter sourceRouter, List<ExitRoute> validDestinations, boolean excludeSource, List<Integer> jamList, Triplet<Integer, SinkReply, List<IFilter>> result, boolean allowDefault) {
 		if(result == null) {
 			result = new Triplet<Integer, SinkReply, List<IFilter>>(null, null, null);
 		}
@@ -115,14 +113,10 @@ outer:
 
 			if(!candidateRouter.containsFlag(PipeRoutingConnectionType.canRouteTo)) continue;
 
-			if(used.get(candidateRouter.destination.getSimpleID())) continue;
-			
 			for(IFilter filter:candidateRouter.filters) {
 				if(filter.blockRouting() || (filter.isBlocked() == filter.isFilteredItem(stack))) continue outer;
 			}
 
-			used.set(candidateRouter.destination.getSimpleID());
-			
 			SinkReply reply = canSink(candidateRouter.destination,sourceRouter,excludeSource,stack,result.getValue2(), false,allowDefault);
 					
 			if (reply == null) continue;
@@ -217,7 +211,7 @@ outer:
 			}
 			return item;
 		} else {
-			Triplet<Integer, SinkReply, List<IFilter>> bestReply = getBestReply(item.getIDStack().getItem(), sourceRouter, validDestinations, excludeSource, item.getJamList(), new BitSet(ServerRouter.getBiggestSimpleID()), null, true);	
+			Triplet<Integer, SinkReply, List<IFilter>> bestReply = getBestReply(item.getIDStack().getItem(), sourceRouter, validDestinations, excludeSource, item.getJamList(), null, true);	
 			if (bestReply.getValue1() != null && bestReply.getValue1() != 0){
 				item.setDestination(bestReply.getValue1());
 				if (bestReply.getValue2().isPassive){

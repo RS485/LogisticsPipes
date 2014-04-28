@@ -1,5 +1,6 @@
 package logisticspipes.logisticspipes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.api.IRoutedPowerProvider;
@@ -10,8 +11,10 @@ import logisticspipes.modules.LogisticsGuiModule;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.proxy.cc.CCSinkResponder;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Icon;
@@ -170,6 +173,17 @@ public class ChassiModule extends LogisticsGuiModule{
 				return true;
 		}
 		return false;
+	}
+
+	@Override
+	public List<CCSinkResponder> queueCCSinkEvent(ItemIdentifierStack item) {
+		List<CCSinkResponder> list = new ArrayList<CCSinkResponder>();
+		for (LogisticsModule module : _modules){
+			if(module != null) {
+				list.addAll(module.queueCCSinkEvent(item));
+			}
+		}
+		return list;
 	}
 
 	@Override

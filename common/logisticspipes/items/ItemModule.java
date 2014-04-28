@@ -18,6 +18,8 @@ import logisticspipes.modules.ModuleApiaristAnalyser;
 import logisticspipes.modules.ModuleApiaristRefiller;
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleApiaristTerminus;
+import logisticspipes.modules.ModuleCCBasedItemSink;
+import logisticspipes.modules.ModuleCCBasedQuickSort;
 import logisticspipes.modules.ModuleElectricBuffer;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleEnchantmentSink;
@@ -39,6 +41,7 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -75,6 +78,9 @@ public class ItemModule extends LogisticsItem {
 	public static final int APIARISTTERMINUS = 11;
 	public static final int MODBASEDITEMSINK = 12;
 	public static final int OREDICTITEMSINK = 13;
+	public static final int CC_BASED_QUICKSORT = 14;
+	public static final int CC_BASED_ITEMSINK = 15;
+	
 	public static final int THAUMICASPECTSINK = 30;
 	public static final int ENCHANTMENTSINK = 31;
 
@@ -187,6 +193,8 @@ public class ItemModule extends LogisticsItem {
 		registerModule(THAUMICASPECTSINK		, ModuleThaumicAspectSink.class);
 		registerModule(ENCHANTMENTSINK			, ModuleEnchantmentSink.class);
 		registerModule(ENCHANTMENTSINK_MK2		, ModuleEnchantmentSinkMK2.class);
+		registerModule(CC_BASED_QUICKSORT		, ModuleCCBasedQuickSort.class);
+		registerModule(CC_BASED_ITEMSINK		, ModuleCCBasedItemSink.class);
 	}
 
 	public void registerModule(int id, Class<? extends LogisticsModule> moduleClass) {
@@ -229,7 +237,7 @@ public class ItemModule extends LogisticsItem {
 
 	private void openConfigGui(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World) {
 		LogisticsModule module = getModuleForItem(par1ItemStack, null, null, null, null, null);
-		if(module != null && module instanceof LogisticsGuiModule) {
+		if(module != null && module.hasGui()) {
 			if(par1ItemStack != null && par1ItemStack.stackSize > 0) {
 				par2EntityPlayer.openGui(LogisticsPipes.instance, -1, par3World, ((LogisticsGuiModule)module).getGuiHandlerID(), -1 ,par2EntityPlayer.inventory.currentItem);
 			}
@@ -329,9 +337,9 @@ public class ItemModule extends LogisticsItem {
 	@Override
 	public void addInformation(ItemStack itemStack, EntityPlayer player, List list, boolean flag) {
 		if(itemStack.hasTagCompound()) {
-			if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-				NBTTagCompound nbt = itemStack.getTagCompound();
-				if(nbt.hasKey("informationList")) {
+			NBTTagCompound nbt = itemStack.getTagCompound();
+			if(nbt.hasKey("informationList")) {
+				if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
 					NBTTagList nbttaglist = nbt.getTagList("informationList");
 					for(int i=0;i<nbttaglist.tagCount();i++) {
 						NBTBase nbttag = nbttaglist.tagAt(i);
@@ -364,8 +372,14 @@ public class ItemModule extends LogisticsItem {
 							list.add(data);
 						}
 					}
+				} else {
+					list.add(StringUtil.translate(StringUtil.KEY_HOLDSHIFT));
 				}
+			} else {
+				StringUtil.addShiftAddition(itemStack, list);
 			}
+		} else {
+			StringUtil.addShiftAddition(itemStack, list);
 		}
 	}
 }

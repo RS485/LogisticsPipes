@@ -30,24 +30,24 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ModuleQuickSort extends LogisticsModule {
+public class ModuleQuickSort extends LogisticsGuiModule {
 
-	private final int stalledDelay = 24;
-	private final int normalDelay = 6;
-	private int currentTick = 0;
-	private boolean stalled;
-	private int lastStackLookedAt = 0;
-	private int lastSuceededStack = 0;
+	protected final int stalledDelay = 24;
+	protected final int normalDelay = 6;
+	protected int currentTick = 0;
+	protected boolean stalled;
+	protected int lastStackLookedAt = 0;
+	protected int lastSuceededStack = 0;
 
-	private IInventoryProvider _invProvider;
-	private ISendRoutedItem _itemSender;
-	private IRoutedPowerProvider _power;
+	protected IInventoryProvider _invProvider;
+	protected ISendRoutedItem _itemSender;
+	protected IRoutedPowerProvider _power;
 
 	private PlayerCollectionList _watchingPlayer = new PlayerCollectionList();
 	private int lastPosSend = 0;
 
-	private IWorldProvider _world;
-	private int _slot;
+	protected IWorldProvider _world;
+	protected int _slot;
 
 	public ModuleQuickSort() {}
 
@@ -249,7 +249,7 @@ public class ModuleQuickSort extends LogisticsModule {
 		}
 	}
 
-	private void send() {
+	protected void send() {
 		if(lastPosSend != lastStackLookedAt) {
 			lastPosSend = lastStackLookedAt;
 			for(EntityPlayer player: _watchingPlayer.players()) {
@@ -268,18 +268,20 @@ public class ModuleQuickSort extends LogisticsModule {
 	}
 	
 	@Override 
-	public final int getX() {
+	public int getX() {
 		return this._power.getX();
 	}
+	
 	@Override 
-	public final int getY() {
+	public int getY() {
 		return this._power.getY();
 	}
 	
 	@Override 
-	public final int getZ() {
+	public int getZ() {
 		return this._power.getZ();
 	}
+	
 	@Override
 	public boolean hasGenericInterests() {
 		return false;
@@ -318,5 +320,15 @@ public class ModuleQuickSort extends LogisticsModule {
 
 	public void removeWatchingPlayer(EntityPlayer player) {
 		_watchingPlayer.remove(player);
+	}
+
+	@Override
+	public int getGuiHandlerID() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean hasGui() {
+		return false;
 	}
 }

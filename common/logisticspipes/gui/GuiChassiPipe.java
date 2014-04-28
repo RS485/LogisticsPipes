@@ -88,7 +88,7 @@ public class GuiChassiPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerP
 			if(module == null || _chassiPipe.getLogisticsModule().getSubModule(i) == null) {
 				((SmallGuiButton)buttonList.get(i)).drawButton = false;
 			} else {
-				((SmallGuiButton)buttonList.get(i)).drawButton = _chassiPipe.getLogisticsModule().getSubModule(i) instanceof LogisticsGuiModule;
+				((SmallGuiButton)buttonList.get(i)).drawButton = _chassiPipe.getLogisticsModule().getSubModule(i).hasGui();
 			}
 		}
 	}
@@ -118,7 +118,7 @@ public class GuiChassiPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerP
 			if(module == null || _chassiPipe.getLogisticsModule().getSubModule(i) == null) {
 				((SmallGuiButton)buttonList.get(i)).drawButton = false;
 			} else {
-				((SmallGuiButton)buttonList.get(i)).drawButton = _chassiPipe.getLogisticsModule().getSubModule(i) instanceof LogisticsGuiModule;
+				((SmallGuiButton)buttonList.get(i)).drawButton = _chassiPipe.getLogisticsModule().getSubModule(i).hasGui();
 			}
 		}
 		if (_chassiPipe.getChassiSize() > 0) {

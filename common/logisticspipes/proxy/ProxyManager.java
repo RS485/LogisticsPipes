@@ -116,6 +116,7 @@ public class ProxyManager {
 			@Override public int getLastCCID(LogisticsTileGenericPipe logisticsTileGenericPipe) {return 0;}
 			@Override public void handleMesssage(int computerId, Object message, LogisticsTileGenericPipe tile, int sourceId) {}
 			@Override public void addCraftingRecipes() {}
+			@Override public Object getAnswer(Object object) {return object;}
 		}));
 		
 		SimpleServiceLocator.setThaumCraftProxy(getWrappedProxy("Thaumcraft", IThaumCraftProxy.class, ThaumCraftProxy.class, new IThaumCraftProxy() {

@@ -374,6 +374,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 				LogisticsModule current = _module.getModule(i);
 				LogisticsModule next = ((ItemModule)stack.getItem()).getModuleForItem(stack, _module.getModule(i), this, this, this, this);
 				next.registerSlot(i);
+				next.registerCCEventQueuer(this);
 				if (current != next){
 					_module.installModule(i, next);
 					if(!MainProxy.isClient()) {

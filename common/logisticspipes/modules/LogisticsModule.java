@@ -1,16 +1,21 @@
 package logisticspipes.modules;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import logisticspipes.api.IRoutedPowerProvider;
+import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.ISaveState;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.proxy.cc.CCSinkResponder;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.util.Icon;
 import cpw.mods.fml.relauncher.Side;
@@ -110,6 +115,12 @@ public abstract class LogisticsModule implements ISaveState {
 		return false;
 	}
 
+	public List<CCSinkResponder> queueCCSinkEvent(ItemIdentifierStack item) {
+		return new ArrayList<CCSinkResponder>(0);
+	}
+	
+	public void registerCCEventQueuer(IQueueCCEvent eventQueuer) {}
+	
 	@CCCommand(description="Returns if the Pipe has a gui")
 	public boolean hasGui() {
 		return false;
@@ -119,4 +130,5 @@ public abstract class LogisticsModule implements ISaveState {
 	public String toString() {
 		return (new StringBuilder()).append(getClass().getSimpleName()).append("@").append("(").append(getX()).append(", ").append(getY()).append(", ").append(getZ()).append(")").toString();
 	}
+
 }

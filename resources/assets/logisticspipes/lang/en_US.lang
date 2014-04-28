@@ -176,6 +176,8 @@ item.ModuleOreDictItemSink=OreDict ItemSink module
 item.ModuleThaumicAspectSink=Thaumic AspectSink module
 item.ModuleEnchantmentSink=Enchantment Sink module
 item.ModuleEnchantmentSinkMK2=Enchantment Sink module MK2
+item.ModuleCCBasedItemSink=CC Based ItemSink module
+item.ModuleCCBasedQuickSort=CC Based QuickSort module
 
 # Items
 

@@ -32,6 +32,7 @@ import logisticspipes.gui.hud.GuiHUDSettings;
 import logisticspipes.gui.modules.GuiAdvancedExtractor;
 import logisticspipes.gui.modules.GuiApiaristAnalyser;
 import logisticspipes.gui.modules.GuiApiaristSink;
+import logisticspipes.gui.modules.GuiCCBasedQuickSort;
 import logisticspipes.gui.modules.GuiElectricManager;
 import logisticspipes.gui.modules.GuiExtractor;
 import logisticspipes.gui.modules.GuiFluidSupplier;
@@ -58,6 +59,7 @@ import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleApiaristAnalyser;
 import logisticspipes.modules.ModuleApiaristSink;
+import logisticspipes.modules.ModuleCCBasedQuickSort;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleFluidSupplier;
 import logisticspipes.modules.ModuleItemSink;
@@ -72,6 +74,7 @@ import logisticspipes.network.packets.module.ModuleBasedItemSinkList;
 import logisticspipes.network.packets.module.OreDictItemSinkList;
 import logisticspipes.network.packets.module.ThaumicAspectsSinkList;
 import logisticspipes.network.packets.modules.BeeModule;
+import logisticspipes.network.packets.modules.CCBasedQuickSortMode;
 import logisticspipes.network.packets.modules.ExtractorModuleMode;
 import logisticspipes.network.packets.modules.ItemSinkDefault;
 import logisticspipes.network.packets.pipe.FluidSupplierMode;
@@ -737,6 +740,17 @@ public class GuiHandler implements IGuiHandler {
 					if(!(((DummyModuleContainer)dummy).getModule() instanceof ModuleApiaristAnalyser)) return null;
 					return dummy;
 				}
+			
+			case GuiIDs.GUI_Module_CC_Based_QuickSort_ID:
+				if(slot >= 0) {
+					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleCCBasedQuickSort)) return null;
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CCBasedQuickSortMode.class).setInteger2(slot).setInteger(((ModuleCCBasedQuickSort)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot)).getTimeout()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
+					return new DummyContainer(player.inventory, null);
+				} else {
+					dummy = new DummyModuleContainer(player, z);
+					if(!(((DummyModuleContainer)dummy).getModule() instanceof ModuleCCBasedQuickSort)) return null;
+					return dummy;
+				}
 				
 			default:break;
 			}
@@ -841,7 +855,6 @@ public class GuiHandler implements IGuiHandler {
 				return new GuiElectricManager(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleElectricManager) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule(), FMLClientHandler.instance().getClient().currentScreen, 0);				
 				
 			case GuiIDs.GUI_RoutingStats_ID:
-				//TODO: what was this supposed to be?
 				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) return null;
 				return new GuiRoutingStats(((CoreRoutedPipe)pipe.pipe).getRouter(), player);
 			
@@ -1107,8 +1120,24 @@ public class GuiHandler implements IGuiHandler {
 					if(!(module instanceof ModuleApiaristAnalyser)) return null;
 					return new GuiApiaristAnalyser((ModuleApiaristAnalyser) module, null, null, player.inventory);
 				}
-
 				
+			case GuiIDs.GUI_Module_CC_Based_QuickSort_ID:
+				if(slot >= 0) {
+					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleCCBasedQuickSort)) return null;
+					return new GuiCCBasedQuickSort(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleCCBasedQuickSort)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot), FMLClientHandler.instance().getClient().currentScreen, slot);
+				} else {
+					ItemStack item = player.inventory.mainInventory[z];
+					if(item == null) return null;
+					LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, new IWorldProvider() {
+						@Override
+						public World getWorld() {
+							return world;
+						}}, null);
+					module.registerSlot(-1-z);
+					ItemModuleInformationManager.readInformation(item, module);
+					if(!(module instanceof ModuleCCBasedQuickSort)) return null;
+					return new GuiCCBasedQuickSort(player.inventory, null, (ModuleCCBasedQuickSort) module, FMLClientHandler.instance().getClient().currentScreen, slot);
+				}
 				
 			default:break;
 			}

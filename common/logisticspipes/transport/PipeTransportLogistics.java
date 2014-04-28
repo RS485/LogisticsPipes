@@ -23,6 +23,7 @@ import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.interfaces.ISpecialInsertion;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.logisticspipes.IRoutedItem;
+import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -300,7 +301,7 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 				//last chance for chassi to back out
 				if(arrivingItem instanceof IRoutedItem) {
 					IRoutedItem routed = (IRoutedItem) arrivingItem;
-					if (!getPipe().getTransportLayer().stillWantItem(routed)) {
+					if (routed.getTransportMode() != TransportMode.Active && !getPipe().getTransportLayer().stillWantItem(routed)) {
 						reverseItem(arrivingItem);
 						return true;
 					}

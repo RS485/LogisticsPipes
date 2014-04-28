@@ -3,6 +3,7 @@ package logisticspipes.proxy.cc;
 import java.lang.reflect.Field;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.items.ItemModule;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.interfaces.ICCProxy;
@@ -115,5 +116,34 @@ public class CCProxy implements ICCProxy {
 			Character.valueOf('M'), new ItemStack(ComputerCraft.Blocks.cable, 1, 1), 
 			Character.valueOf('K'), new ItemStack(ComputerCraft.Blocks.cable, 1, 0)
 		});
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.CC_BASED_ITEMSINK), CraftingDependency.Upgrades, new Object[] { 
+			false, 
+			"rTr", 
+			"WCM", 
+			"rKr", 
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ITEMSINK),
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('T'), Block.torchRedstoneActive, 
+			Character.valueOf('W'), new ItemStack(ComputerCraft.Blocks.peripheral, 1, 1), 
+			Character.valueOf('M'), new ItemStack(ComputerCraft.Blocks.cable, 1, 1), 
+			Character.valueOf('K'), new ItemStack(ComputerCraft.Blocks.cable, 1, 0)
+		});
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.CC_BASED_QUICKSORT), CraftingDependency.Upgrades, new Object[] { 
+			false, 
+			"rTr", 
+			"WCM", 
+			"rKr", 
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.QUICKSORT),
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('T'), Block.torchRedstoneActive, 
+			Character.valueOf('W'), new ItemStack(ComputerCraft.Blocks.peripheral, 1, 1), 
+			Character.valueOf('M'), new ItemStack(ComputerCraft.Blocks.cable, 1, 1), 
+			Character.valueOf('K'), new ItemStack(ComputerCraft.Blocks.cable, 1, 0)
+		});
+	}
+
+	@Override
+	public Object getAnswer(Object object) {
+		return CCHelper.getAnswer(object);
 	}
 }

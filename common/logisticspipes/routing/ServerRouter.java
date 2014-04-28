@@ -1056,6 +1056,7 @@ outer:
 				s.set(r.getSimpleID());
 			}
 		}
+		if(item == null) return s;
 		Set<IRouter> specifics = _globalSpecificInterests.get(item);
 		if(specifics != null){
 			for(IRouter r:specifics){

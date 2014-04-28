@@ -1,5 +1,7 @@
 package logisticspipes.pipes;
 
+import ibxm.Player;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -22,11 +24,9 @@ import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
-import buildcraft.transport.TileGenericPipe;
-import cpw.mods.fml.common.network.Player;
 
 public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFluid, IRequireReliableFluidTransport {
 

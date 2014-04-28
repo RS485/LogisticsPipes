@@ -8,6 +8,8 @@
 
 package logisticspipes.pipes;
 
+import ibxm.Player;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -44,10 +46,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeDirection;
-import buildcraft.api.core.Position;
-import buildcraft.transport.TileGenericPipe;
-import cpw.mods.fml.common.network.Player;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport, IHeadUpDisplayRendererProvider, IChestContentReceiver {
 	

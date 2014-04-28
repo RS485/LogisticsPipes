@@ -1,11 +1,10 @@
 package logisticspipes.proxy.interfaces;
 
+import ibxm.Player;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.item.ItemIdentifier;
-import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.network.Player;
 
 public interface IProxy {
 	public String getSide();

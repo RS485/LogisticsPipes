@@ -18,8 +18,6 @@ import logisticspipes.proxy.cc.interfaces.CCQueued;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.security.PermissionException;
 import logisticspipes.ticks.QueuedTasks;
-import dan200.computercraft.api.lua.ILuaContext;
-import dan200.computercraft.api.lua.ILuaObject;
 
 public class LPTilePipeWrapper implements ILuaObject {
 	

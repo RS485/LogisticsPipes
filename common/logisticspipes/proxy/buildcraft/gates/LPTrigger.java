@@ -1,14 +1,10 @@
 package logisticspipes.proxy.buildcraft.gates;
 
+import javax.swing.Icon;
+
 import logisticspipes.textures.Textures;
-import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Icon;
-import net.minecraftforge.common.ForgeDirection;
-import buildcraft.api.gates.ActionManager;
-import buildcraft.api.gates.ITrigger;
-import buildcraft.api.gates.ITriggerParameter;
-import buildcraft.api.gates.TriggerParameter;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public abstract class LPTrigger implements ITrigger {
 	protected final int legacyId;

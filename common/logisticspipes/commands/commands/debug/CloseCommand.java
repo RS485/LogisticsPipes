@@ -1,10 +1,10 @@
 package logisticspipes.commands.commands.debug;
 
+import ibxm.Player;
 import logisticspipes.commands.abstracts.ICommandHandler;
 import logisticspipes.ticks.DebugGuiTickHandler;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.common.network.Player;
 
 public class CloseCommand implements ICommandHandler {
 	

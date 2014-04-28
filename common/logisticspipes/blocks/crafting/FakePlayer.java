@@ -2,7 +2,6 @@ package logisticspipes.blocks.crafting;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.ChunkCoordinates;
 
 public class FakePlayer extends EntityPlayer {

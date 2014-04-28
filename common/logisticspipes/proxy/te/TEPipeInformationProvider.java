@@ -8,7 +8,7 @@ import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import thermalexpansion.part.conduit.IConduit;
 import thermalexpansion.part.conduit.item.ConduitItem;
 

@@ -7,12 +7,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
-import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.pipes.PipeItemsDiamond;
-import buildcraft.transport.pipes.PipeItemsIron;
-import buildcraft.transport.pipes.PipeItemsObsidian;
-import buildcraft.transport.pipes.PipeStructureCobblestone;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class BCPipeInformationProvider implements IPipeInformationProvider {
 	

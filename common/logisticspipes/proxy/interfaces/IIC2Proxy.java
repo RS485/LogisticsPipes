@@ -2,7 +2,7 @@ package logisticspipes.proxy.interfaces;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public interface IIC2Proxy {
 

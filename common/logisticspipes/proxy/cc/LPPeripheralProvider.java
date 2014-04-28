@@ -3,9 +3,7 @@ package logisticspipes.proxy.cc;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
-import dan200.computercraft.api.peripheral.IPeripheral;
-import dan200.computercraft.api.peripheral.IPeripheralProvider;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class LPPeripheralProvider implements IPeripheralProvider {
 	@Override

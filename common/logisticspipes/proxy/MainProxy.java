@@ -1,5 +1,7 @@
 package logisticspipes.proxy;
 
+import ibxm.Player;
+
 import java.io.File;
 import java.util.WeakHashMap;
 
@@ -17,15 +19,11 @@ import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.utils.PlayerCollectionList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.server.ServerListenThread;
-import net.minecraft.server.ThreadMinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 
 public class MainProxy {

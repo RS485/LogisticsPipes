@@ -1,11 +1,10 @@
 package logisticspipes.commands.commands.debug;
 
+import ibxm.Player;
 import logisticspipes.commands.abstracts.ICommandHandler;
 import logisticspipes.ticks.DebugGuiTickHandler;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatMessageComponent;
-import cpw.mods.fml.common.network.Player;
 
 public class MeCommand implements ICommandHandler {
 	

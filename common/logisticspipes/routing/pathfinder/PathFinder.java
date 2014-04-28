@@ -35,8 +35,7 @@ import logisticspipes.utils.tuples.Pair;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
-import buildcraft.transport.TileGenericPipe;
+import net.minecraftforge.common.util.ForgeDirection;
 
 
 /**

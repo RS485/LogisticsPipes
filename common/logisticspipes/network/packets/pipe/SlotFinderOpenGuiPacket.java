@@ -1,5 +1,7 @@
 package logisticspipes.network.packets.pipe;
 
+import ibxm.Player;
+
 import java.io.IOException;
 
 import logisticspipes.interfaces.ISpecialInsertion;
@@ -21,8 +23,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import buildcraft.transport.TileGenericPipe;
-import cpw.mods.fml.common.network.Player;
 
 @Accessors(chain=true)
 public class SlotFinderOpenGuiPacket extends CoordinatesPacket {

@@ -1,5 +1,6 @@
 package logisticspipes.network.packets.module;
 
+import ibxm.Player;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.network.GuiIDs;
@@ -12,7 +13,6 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyModuleContainer;
 import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.common.network.Player;
 
 public class AdvancedExtractorSneakyGuiPacket extends IntegerCoordinatesPacket {
 

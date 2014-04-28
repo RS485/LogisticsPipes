@@ -1,5 +1,7 @@
 package logisticspipes.network.packets.routingdebug;
 
+import ibxm.Player;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -26,8 +28,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatMessageComponent;
-import cpw.mods.fml.common.network.Player;
 
 @Accessors(chain = true)
 public class RoutingUpdateTargetResponse extends ModernPacket {

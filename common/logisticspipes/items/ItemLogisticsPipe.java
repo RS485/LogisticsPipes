@@ -13,8 +13,6 @@ import java.util.List;
 import logisticspipes.utils.string.StringUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import buildcraft.transport.ItemPipe;
-import buildcraft.transport.Pipe;
 
 /**
  * A logistics pipe Item

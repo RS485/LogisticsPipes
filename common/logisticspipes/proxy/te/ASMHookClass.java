@@ -4,7 +4,7 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.RoutedEntityItem;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import thermalexpansion.block.conduit.BlockConduit;
 import thermalexpansion.part.conduit.ConduitBase;
 import thermalexpansion.part.conduit.item.ConduitItem;

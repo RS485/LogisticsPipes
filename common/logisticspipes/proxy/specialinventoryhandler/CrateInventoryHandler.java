@@ -13,7 +13,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class CrateInventoryHandler extends SpecialInventoryHandler {
 

@@ -5,8 +5,8 @@ import java.util.List;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeDirection;
-import buildcraft.transport.TravelingItem;
+import net.minecraftforge.common.util.ForgeDirection;
+import thermalexpansion.part.conduit.item.TravelingItem;
 
 public interface IThermalExpansionProxy {
 	public boolean isTesseract(TileEntity tile);

@@ -7,8 +7,8 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.PipeRoutingConnectionType;
-import net.minecraftforge.common.ForgeDirection;
-import buildcraft.transport.TravelingItem;
+import net.minecraftforge.common.util.ForgeDirection;
+import thermalexpansion.part.conduit.item.TravelingItem;
 
 public class EntrencsTransport extends PipeTransportLogistics {
 	

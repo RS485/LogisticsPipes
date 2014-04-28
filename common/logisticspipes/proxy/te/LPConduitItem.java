@@ -20,15 +20,12 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import thermalexpansion.part.conduit.ConduitBase;
 import thermalexpansion.part.conduit.GridTickHandler;
 import thermalexpansion.part.conduit.IConduit;
 import thermalexpansion.part.conduit.item.ConduitItem;
 import thermalexpansion.part.conduit.item.ItemRoute;
-import buildcraft.api.core.Position;
-import buildcraft.transport.BlockGenericPipe;
-import buildcraft.transport.PipeTransportItems;
 
 public class LPConduitItem extends ConduitItem {
 	public static boolean dontCheckRoutes = false;

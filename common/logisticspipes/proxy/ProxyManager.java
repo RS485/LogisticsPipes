@@ -3,6 +3,8 @@ package logisticspipes.proxy;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.Icon;
+
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -38,11 +40,10 @@ import net.minecraft.client.model.ModelSign;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Icon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
-import buildcraft.transport.TravelingItem;
+import net.minecraftforge.common.util.ForgeDirection;
+import thermalexpansion.part.conduit.item.TravelingItem;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

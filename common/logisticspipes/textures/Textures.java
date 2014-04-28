@@ -1,12 +1,11 @@
 package logisticspipes.textures;
 
+import javax.swing.Icon;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import logisticspipes.textures.provider.LPPipeIconProvider;
-import net.minecraft.client.renderer.texture.IconRegister;
-import net.minecraft.util.Icon;
-import buildcraft.api.core.IIconProvider;
 import cpw.mods.fml.common.FMLCommonHandler;
 
 public class Textures {

@@ -12,9 +12,7 @@ import java.util.LinkedList;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
-import buildcraft.api.core.Position;
-import buildcraft.transport.TileGenericPipe;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class WorldUtil {
 	private int _x;

@@ -2,10 +2,10 @@ package logisticspipes.items;
 
 import java.util.List;
 
-import net.minecraft.client.renderer.texture.IconRegister;
+import javax.swing.Icon;
+
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
 
 public class ItemParts extends LogisticsItem {
 	private Icon[] _icons;

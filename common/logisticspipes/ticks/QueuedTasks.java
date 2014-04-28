@@ -6,8 +6,6 @@ import java.util.concurrent.Callable;
 
 import logisticspipes.proxy.MainProxy;
 import lombok.Getter;
-import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.TickType;
 
 public class QueuedTasks implements ITickHandler {
 	

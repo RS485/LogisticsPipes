@@ -3,6 +3,8 @@ package logisticspipes.logisticspipes;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.Icon;
+
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ISendRoutedItem;
@@ -15,9 +17,7 @@ import logisticspipes.proxy.cc.CCSinkResponder;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.Icon;
 
 public class ChassiModule extends LogisticsGuiModule{
 	

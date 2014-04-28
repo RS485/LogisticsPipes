@@ -1,5 +1,7 @@
 package logisticspipes.pipes;
 
+import ibxm.Player;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map.Entry;
@@ -45,11 +47,8 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatMessageComponent;
-import net.minecraftforge.common.ForgeDirection;
-import buildcraft.api.core.Position;
-import buildcraft.transport.TravelingItem;
-import cpw.mods.fml.common.network.Player;
+import net.minecraftforge.common.util.ForgeDirection;
+import thermalexpansion.part.conduit.item.TravelingItem;
 
 public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectRoutingConnection, IHeadUpDisplayRendererProvider, IOrderManagerContentReceiver{
 	

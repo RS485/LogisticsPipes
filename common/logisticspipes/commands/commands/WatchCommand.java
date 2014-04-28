@@ -6,7 +6,6 @@ import logisticspipes.commands.abstracts.ICommandHandler;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.ticks.Watchdog;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatMessageComponent;
 
 public class WatchCommand implements ICommandHandler {
 	

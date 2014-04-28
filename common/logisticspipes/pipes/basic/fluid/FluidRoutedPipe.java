@@ -21,14 +21,11 @@ import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidHandler;
-import buildcraft.core.IMachine;
-import buildcraft.transport.PipeTransportItems;
-import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.TravelingItem;
+import thermalexpansion.part.conduit.item.TravelingItem;
 
 public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 

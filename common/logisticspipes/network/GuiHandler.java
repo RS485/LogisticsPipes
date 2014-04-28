@@ -1,5 +1,7 @@
 package logisticspipes.network;
 
+import ibxm.Player;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -111,7 +113,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.IGuiHandler;
-import cpw.mods.fml.common.network.Player;
 
 public class GuiHandler implements IGuiHandler {
 	

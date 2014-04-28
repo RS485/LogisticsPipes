@@ -1,5 +1,7 @@
 package logisticspipes.network.packets.chassis;
 
+import ibxm.Player;
+
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -12,7 +14,6 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.common.network.Player;
 
 public class ChestGuiOpened extends ModernPacket {
 	

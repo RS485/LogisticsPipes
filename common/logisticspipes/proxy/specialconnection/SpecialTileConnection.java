@@ -5,7 +5,7 @@ import java.util.List;
 
 import logisticspipes.interfaces.routing.ISpecialTileConnection;
 import net.minecraft.tileentity.TileEntity;
-import buildcraft.transport.TravelingItem;
+import thermalexpansion.part.conduit.item.TravelingItem;
 
 public class SpecialTileConnection {
 	

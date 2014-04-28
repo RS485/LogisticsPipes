@@ -1,5 +1,7 @@
 package logisticspipes.network.packets.module;
 
+import ibxm.Player;
+
 import java.io.IOException;
 
 import logisticspipes.asm.ClientSideOnlyMethodContent;
@@ -17,7 +19,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.network.Player;
 
 @Accessors(chain=true)
 public class SupplierPipeLimitedPacket extends CoordinatesPacket {

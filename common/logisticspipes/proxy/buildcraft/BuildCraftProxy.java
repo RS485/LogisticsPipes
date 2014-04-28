@@ -72,23 +72,8 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.common.ForgeDirection;
-import buildcraft.BuildCraftTransport;
-import buildcraft.api.gates.ActionManager;
-import buildcraft.api.gates.IAction;
-import buildcraft.api.gates.ITrigger;
-import buildcraft.api.tools.IToolWrench;
-import buildcraft.core.inventory.InvUtils;
-import buildcraft.core.utils.Localization;
-import buildcraft.core.utils.Utils;
-import buildcraft.transport.BlockGenericPipe;
-import buildcraft.transport.ItemPipe;
-import buildcraft.transport.Pipe;
-import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.TransportProxy;
-import buildcraft.transport.TransportProxyClient;
-import buildcraft.transport.TravelingItem;
-import buildcraft.transport.render.PipeRendererTESR;
+import net.minecraftforge.common.util.ForgeDirection;
+import thermalexpansion.part.conduit.item.TravelingItem;
 import cpw.mods.fml.relauncher.Side;
 
 public class BuildCraftProxy {

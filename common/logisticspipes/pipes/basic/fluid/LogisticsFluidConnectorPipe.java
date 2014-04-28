@@ -1,10 +1,9 @@
 package logisticspipes.pipes.basic.fluid;
 
+import java.nio.channels.Pipe;
+
 import logisticspipes.textures.Textures;
-import net.minecraftforge.common.ForgeDirection;
-import buildcraft.api.core.IIconProvider;
-import buildcraft.transport.Pipe;
-import buildcraft.transport.PipeTransportFluids;
+import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

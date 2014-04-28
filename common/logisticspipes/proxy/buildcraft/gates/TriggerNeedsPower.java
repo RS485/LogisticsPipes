@@ -4,8 +4,7 @@ import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeDirection;
-import buildcraft.api.gates.ITriggerParameter;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class TriggerNeedsPower extends LPTrigger{
 

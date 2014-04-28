@@ -1,5 +1,7 @@
 package logisticspipes.network.packets.debuggui;
 
+import ibxm.Player;
+
 import java.io.IOException;
 
 import logisticspipes.network.LPDataInputStream;
@@ -10,7 +12,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.common.network.Player;
 
 @Accessors(chain = true)
 public class DebugExpandPart extends ModernPacket {

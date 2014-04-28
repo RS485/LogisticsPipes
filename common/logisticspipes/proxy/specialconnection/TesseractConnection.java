@@ -7,10 +7,8 @@ import logisticspipes.interfaces.routing.ISpecialTileConnection;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeDirection;
-import buildcraft.api.core.Position;
-import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.TravelingItem;
+import net.minecraftforge.common.util.ForgeDirection;
+import thermalexpansion.part.conduit.item.TravelingItem;
 
 public class TesseractConnection implements ISpecialTileConnection {
 	

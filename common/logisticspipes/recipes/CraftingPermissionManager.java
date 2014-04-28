@@ -1,5 +1,7 @@
 package logisticspipes.recipes;
 
+import ibxm.Player;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -20,7 +22,6 @@ import net.minecraft.inventory.ContainerPlayer;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
-import cpw.mods.fml.common.network.Player;
 
 public class CraftingPermissionManager {
 	private Map<String, Pair<Long, EnumSet<CraftingDependency>>> serverCache = new HashMap<String, Pair<Long, EnumSet<CraftingDependency>>>();

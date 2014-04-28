@@ -1,6 +1,6 @@
 package logisticspipes.interfaces;
 
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public interface ISneakyDirectionReceiver {
 	public ForgeDirection getSneakyDirection();

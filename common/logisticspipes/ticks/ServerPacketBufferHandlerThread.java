@@ -1,5 +1,7 @@
 package logisticspipes.ticks;
 
+import ibxm.Player;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -19,11 +21,7 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.BufferTransfer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.tuples.Pair;
-import net.minecraft.network.packet.Packet250CustomPayload;
-import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.TickType;
-import cpw.mods.fml.common.network.Player;
-import cpw.mods.fml.common.registry.TickRegistry;
+import net.minecraft.network.PacketBuffer;
 import cpw.mods.fml.relauncher.Side;
 
 public class ServerPacketBufferHandlerThread {

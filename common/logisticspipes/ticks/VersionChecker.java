@@ -13,7 +13,6 @@ import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 
 import com.google.gson.Gson;
-import com.google.gson.internal.StringMap;
 
 public class VersionChecker extends Thread {
 

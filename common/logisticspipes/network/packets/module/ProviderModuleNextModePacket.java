@@ -1,5 +1,6 @@
 package logisticspipes.network.packets.module;
 
+import ibxm.Player;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
@@ -10,7 +11,6 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyModuleContainer;
 import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.common.network.Player;
 
 public class ProviderModuleNextModePacket extends IntegerCoordinatesPacket {
 

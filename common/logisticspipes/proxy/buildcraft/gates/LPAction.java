@@ -9,11 +9,9 @@
 
 package logisticspipes.proxy.buildcraft.gates;
 
+import javax.swing.Icon;
+
 import logisticspipes.textures.Textures;
-import net.minecraft.client.renderer.texture.IconRegister;
-import net.minecraft.util.Icon;
-import buildcraft.api.gates.ActionManager;
-import buildcraft.api.gates.IAction;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

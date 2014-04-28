@@ -1,5 +1,7 @@
 package logisticspipes.commands.chathelper;
 
+import ibxm.Player;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,12 +16,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtil;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.network.packet.NetHandler;
-import net.minecraft.network.packet.Packet3Chat;
-import net.minecraft.util.ChatMessageComponent;
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.network.IChatListener;
-import cpw.mods.fml.common.network.Player;
 
 public class LPChatListener implements IChatListener {
 

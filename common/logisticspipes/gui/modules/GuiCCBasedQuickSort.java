@@ -1,7 +1,5 @@
 package logisticspipes.gui.modules;
 
-import org.lwjgl.input.Keyboard;
-
 import logisticspipes.modules.ModuleCCBasedQuickSort;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
@@ -14,6 +12,8 @@ import logisticspipes.utils.gui.SmallGuiButton;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
+
+import org.lwjgl.input.Keyboard;
 
 public class GuiCCBasedQuickSort extends GuiWithPreviousGuiContainer {
 	

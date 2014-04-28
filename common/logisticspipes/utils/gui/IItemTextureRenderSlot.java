@@ -1,7 +1,8 @@
 package logisticspipes.utils.gui;
 
+import javax.swing.Icon;
+
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.Icon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

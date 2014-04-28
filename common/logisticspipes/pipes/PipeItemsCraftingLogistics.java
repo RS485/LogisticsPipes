@@ -8,6 +8,8 @@
 
 package logisticspipes.pipes;
 
+import ibxm.Player;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -106,16 +108,10 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.ForgeDirection;
-import buildcraft.api.core.Position;
-import buildcraft.api.inventory.ISpecialInventory;
-import buildcraft.core.CoreConstants;
-import buildcraft.transport.PipeTransportItems;
-import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.TransportConstants;
-import buildcraft.transport.TravelingItem;
+import net.minecraftforge.common.util.ForgeDirection;
+import sun.rmi.transport.TransportConstants;
+import thermalexpansion.part.conduit.item.TravelingItem;
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.network.Player;
 
 @CCType(name = "LogisticsPipes:Crafting")
 public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraftItems, IRequireReliableTransport, IHeadUpDisplayRendererProvider, IChangeListener, IOrderManagerContentReceiver, IHavePriority {

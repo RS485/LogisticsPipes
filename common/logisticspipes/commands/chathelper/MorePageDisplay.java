@@ -1,5 +1,7 @@
 package logisticspipes.commands.chathelper;
 
+import ibxm.Player;
+
 import java.util.ArrayList;
 
 import logisticspipes.network.PacketHandler;
@@ -7,8 +9,6 @@ import logisticspipes.network.packets.OpenChatGui;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.string.ChatColor;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatMessageComponent;
-import cpw.mods.fml.common.network.Player;
 
 public class MorePageDisplay {
 	

@@ -16,10 +16,6 @@ import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.IScheduledTickHandler;
-import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.SingleIntervalHandler;
-import cpw.mods.fml.common.TickType;
 
 public class RenderTickHandler implements ITickHandler {
 

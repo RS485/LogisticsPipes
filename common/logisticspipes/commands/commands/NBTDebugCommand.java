@@ -1,13 +1,12 @@
 package logisticspipes.commands.commands;
 
+import ibxm.Player;
 import logisticspipes.commands.LogisticsPipesCommand;
 import logisticspipes.commands.abstracts.ICommandHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.ActivateNBTDebug;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatMessageComponent;
-import cpw.mods.fml.common.network.Player;
 
 public class NBTDebugCommand implements ICommandHandler {
 	

@@ -14,10 +14,7 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import buildcraft.BuildCraftSilicon;
 import dan200.computercraft.ComputerCraft;
-import dan200.computercraft.api.ComputerCraftAPI;
-import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.shared.computer.blocks.TileComputer;
 import dan200.computercraft.shared.turtle.blocks.TileTurtle;
 

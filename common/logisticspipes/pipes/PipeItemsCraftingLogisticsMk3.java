@@ -1,5 +1,7 @@
 package logisticspipes.pipes;
 
+import ibxm.Player;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,13 +26,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.ForgeDirection;
-import buildcraft.api.core.Position;
-import buildcraft.core.CoreConstants;
-import buildcraft.transport.PipeTransportItems;
-import buildcraft.transport.TransportConstants;
-import buildcraft.transport.TravelingItem;
-import cpw.mods.fml.common.network.Player;
+import net.minecraftforge.common.util.ForgeDirection;
+import sun.rmi.transport.TransportConstants;
+import thermalexpansion.part.conduit.item.TravelingItem;
 
 public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2 implements ISimpleInventoryEventHandler, IChestContentReceiver {
 	

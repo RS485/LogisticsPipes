@@ -7,9 +7,6 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.item.ItemStack;
-import buildcraft.api.gates.ITriggerParameter;
-import buildcraft.transport.ITriggerPipe;
-import buildcraft.transport.Pipe;
 
 public class TriggerHasDestination extends LPTrigger implements ITriggerPipe {
 

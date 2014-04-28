@@ -2,9 +2,8 @@ package logisticspipes.textures.provider;
 
 import java.util.ArrayList;
 
-import net.minecraft.client.renderer.texture.IconRegister;
-import net.minecraft.util.Icon;
-import buildcraft.api.core.IIconProvider;
+import javax.swing.Icon;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

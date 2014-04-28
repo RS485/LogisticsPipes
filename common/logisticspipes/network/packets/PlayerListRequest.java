@@ -1,5 +1,7 @@
 package logisticspipes.network.packets;
 
+import ibxm.Player;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -13,7 +15,6 @@ import logisticspipes.proxy.MainProxy;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.DimensionManager;
-import cpw.mods.fml.common.network.Player;
 
 @Accessors(chain=true)
 public class PlayerListRequest extends ModernPacket {

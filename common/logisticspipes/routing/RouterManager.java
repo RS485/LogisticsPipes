@@ -8,6 +8,8 @@
 
 package logisticspipes.routing;
 
+import ibxm.Player;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,7 +27,6 @@ import logisticspipes.network.packets.block.SecurityStationAuthorizedList;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.common.network.Player;
 
 
 public class RouterManager implements IRouterManager, IDirectConnectionManager, ISecurityStationManager {

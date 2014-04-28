@@ -1,5 +1,7 @@
 package logisticspipes.pipes;
 
+import ibxm.Player;
+
 import java.util.BitSet;
 
 import logisticspipes.LogisticsPipes;
@@ -18,8 +20,6 @@ import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatMessageComponent;
-import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsFirewall extends CoreRoutedPipe {
 

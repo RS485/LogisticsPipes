@@ -1,10 +1,7 @@
 package logisticspipes.proxy.cc;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import net.minecraftforge.common.ForgeDirection;
-import dan200.computercraft.api.lua.ILuaContext;
-import dan200.computercraft.api.peripheral.IComputerAccess;
-import dan200.computercraft.api.peripheral.IPeripheral;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class LPPeripheralTilePipeWrapper extends LPTilePipeWrapper implements IPeripheral {
 

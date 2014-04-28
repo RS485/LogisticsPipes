@@ -9,8 +9,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
-import buildcraft.transport.Pipe;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class CraftingSignCreator extends LogisticsItem {
 	

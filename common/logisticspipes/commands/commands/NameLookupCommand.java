@@ -4,7 +4,6 @@ import logisticspipes.commands.abstracts.ICommandHandler;
 import logisticspipes.commands.exception.MissingArgumentException;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatMessageComponent;
 
 public class NameLookupCommand implements ICommandHandler {
 	

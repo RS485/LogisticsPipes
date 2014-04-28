@@ -27,15 +27,9 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
-import buildcraft.BuildCraftCore;
-import buildcraft.api.core.Position;
-import buildcraft.core.proxy.CoreProxy;
-import buildcraft.transport.PipeTransportItems;
-import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.TravelingItem;
-import buildcraft.transport.pipes.events.PipeEventItem;
+import thermalexpansion.part.conduit.item.TravelingItem;
 
 public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 

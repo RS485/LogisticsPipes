@@ -8,7 +8,7 @@
 
 package logisticspipes.logisticspipes;
 
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 
 /**
  * This class is responsible for handling items arriving at its destination

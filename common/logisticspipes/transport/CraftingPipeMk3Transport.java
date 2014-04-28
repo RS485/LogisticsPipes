@@ -1,7 +1,7 @@
 package logisticspipes.transport;
 
 import logisticspipes.pipes.PipeItemsCraftingLogisticsMk3;
-import buildcraft.transport.TravelingItem;
+import thermalexpansion.part.conduit.item.TravelingItem;
 
 public class CraftingPipeMk3Transport extends PipeTransportLogistics {
 	

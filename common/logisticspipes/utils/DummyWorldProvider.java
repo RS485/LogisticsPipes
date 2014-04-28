@@ -1,7 +1,7 @@
 package logisticspipes.utils;
 
-import net.minecraft.world.World;
 import logisticspipes.interfaces.IWorldProvider;
+import net.minecraft.world.World;
 
 public class DummyWorldProvider implements IWorldProvider {
 

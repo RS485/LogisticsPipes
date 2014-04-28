@@ -1,5 +1,6 @@
 package logisticspipes.network.packets.module;
 
+import ibxm.Player;
 import logisticspipes.interfaces.ISneakyDirectionReceiver;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
@@ -10,8 +11,7 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyModuleContainer;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.common.ForgeDirection;
-import cpw.mods.fml.common.network.Player;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class ExtractorModuleDirectionPacket extends IntegerCoordinatesPacket {
 

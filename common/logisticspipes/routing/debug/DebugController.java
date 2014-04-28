@@ -1,5 +1,7 @@
 package logisticspipes.routing.debug;
 
+import ibxm.Player;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,8 +34,6 @@ import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.ticks.QueuedTasks;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatMessageComponent;
-import cpw.mods.fml.common.network.Player;
 
 public class DebugController implements IRoutingDebugAdapter {
 	private static HashMap<ICommandSender, DebugController> instances = new HashMap<ICommandSender, DebugController>();

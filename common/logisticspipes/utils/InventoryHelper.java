@@ -4,10 +4,6 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.tileentity.TileEntityChest;
-import buildcraft.api.inventory.ISpecialInventory;
-import buildcraft.core.inventory.ITransactor;
-import buildcraft.core.inventory.TransactorSimple;
-import buildcraft.core.inventory.TransactorSpecial;
 
 public class InventoryHelper {
 	//BC getInventory with fixed doublechest halves ordering.

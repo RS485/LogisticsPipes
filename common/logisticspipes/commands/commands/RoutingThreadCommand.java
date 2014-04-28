@@ -3,7 +3,6 @@ package logisticspipes.commands.commands;
 import logisticspipes.commands.abstracts.ICommandHandler;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatMessageComponent;
 
 public class RoutingThreadCommand implements ICommandHandler {
 	

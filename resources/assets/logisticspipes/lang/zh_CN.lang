@@ -41,14 +41,14 @@ item.PipeItemsCraftingLogistics.tip3= - 依附在自动合成台上
 item.PipeItemsCraftingLogistics.tip4= - 当有请求时自动合成对应的物品
 item.PipeItemsCraftingLogistics.tip5= - 可以通过卫星式合成辅助物流管道来提供合成材料
 
-item.PipeItemsCraftingLogisticsMk2=合成物流管道Mk2!
+item.PipeItemsCraftingLogisticsMk2=合成物流管道Mk2
 item.PipeItemsCraftingLogisticsMk2.tip1=类型：主动提供+物品源
 item.PipeItemsCraftingLogisticsMk2.tip2= - 一次合16件物品
 item.PipeItemsCraftingLogisticsMk2.tip3= - 依附在自动合成台上
 item.PipeItemsCraftingLogisticsMk2.tip4= - 当有请求时自动合成对应的物品
 item.PipeItemsCraftingLogisticsMk2.tip5= - 可以通过卫星式合成辅助物流管道来提供合成材料
 
-item.PipeItemsCraftingLogisticsMk3=合成物流管道Mk3!
+item.PipeItemsCraftingLogisticsMk3=合成物流管道Mk3
 item.PipeItemsCraftingLogisticsMk3.tip1=类型：主动提供+物品源
 item.PipeItemsCraftingLogisticsMk3.tip2= - 一次合成一组的物品
 item.PipeItemsCraftingLogisticsMk3.tip3= - 依附在自动合成台上
@@ -136,11 +136,11 @@ item.PipeItemsFirewall.tip3=   连接时仅允许某些物品通过
 item.PipeItemsFluidSupplier=物流液体补给管道
 item.PipeItemsFluidSupplier.tip1=使用桶或其他液体容器填充连接的水槽
 item.PipeItemsFluidSupplier.tip2= - 用于自动清空器供应容器的机器
-item.PipeFluidSupplierMk2=物流液体补给管道Mk2!
+item.PipeFluidSupplierMk2=物流液体补给管道Mk2
 item.PipeFluidSupplierMk2.tip1=从物流液体供应管道中获取液体
 item.LogisticsFluidConnectorPipe=物流液体连接管道
 item.PipeFluidBasic=物流液体基础管道
-item.PipeFluidInsertion=物流液体流入管道
+item.PipeFluidInsertion=物流液体插入管道
 item.PipeFluidProvider=物流液体供应管道
 item.PipeFluidRequestLogistics=物流液体请求管道
 item.PipeFluidExtractor=物流液体抽取管道
@@ -161,7 +161,7 @@ item.ModuleAdvancedExtractor=高级提取器模块
 item.ModuleExtractorMk2=提取器模块Mk2
 item.ModuleAdvancedExtractorMK2=高级提取器模块Mk2
 item.ModuleExtractorMk3=提取器模块MK3
-item.ModuleAdvancedExtractorMK3=高级提取器模块MK3
+item.ModuleAdvancedExtractorMK3=高级提取器模块Mk3
 item.ModuleProvider=供应器模块
 item.ModuleProviderMk2=供应器模块Mk2
 item.ModuleElectricManager=电力管理模块
@@ -175,6 +175,9 @@ item.ModuleOreDictItemSink=矿物辞典收纳模块
 item.ModuleThaumicAspectSink=神秘要素收纳模块
 item.ModuleEnchantmentSink=附魔收纳模块
 item.ModuleEnchantmentSinkMK2=附魔收纳模块Mk2
+item.ModuleCCBasedItemSink=基于CC的物品收纳模块
+item.ModuleCCBasedQuickSort=基于CC的排序发送模块
+
 # Items
 
 item.brokenItem.name=物流损坏物品
@@ -193,20 +196,20 @@ item.remoteOrdererItem.name=远程请求器
 
 # Upgrades
 
-item.SneakyUpgradeUP=选择连接升级（上）
-item.SneakyUpgradeDOWN=选择连接升级（下）
-item.SneakyUpgradeNORTH=选择连接升级（北）
-item.SneakyUpgradeSOUTH=选择连接升级（南）
-item.SneakyUpgradeEAST=选择连接升级（东）
-item.SneakyUpgradeWEST=选择连接升级（西）
+item.SneakyUpgradeUP=选择连接升级(上)
+item.SneakyUpgradeDOWN=选择连接升级(下)
+item.SneakyUpgradeNORTH=选择连接升级(北)
+item.SneakyUpgradeSOUTH=选择连接升级(南)
+item.SneakyUpgradeEAST=选择连接升级(东)
+item.SneakyUpgradeWEST=选择连接升级(西)
 item.CombinedSneakyUpgrade=多选连接升级
 item.SpeedUpgrade=物品加速升级
-item.ConnectionUpgradeUP=选择断开升级（上）
-item.ConnectionUpgradeDOWN=选择断开升级（下）
-item.ConnectionUpgradeNORTH=选择断开升级（北）
-item.ConnectionUpgradeSOUTH=选择断开升级（南）
-item.ConnectionUpgradeEAST=选择断开升级（东）
-item.ConnectionUpgradeWEST=选择断开升级（西）
+item.ConnectionUpgradeUP=选择断开升级(上)
+item.ConnectionUpgradeDOWN=选择断开升级(下)
+item.ConnectionUpgradeNORTH=选择断开升级(北)
+item.ConnectionUpgradeSOUTH=选择断开升级(南)
+item.ConnectionUpgradeEAST=选择断开升级(东)
+item.ConnectionUpgradeWEST=选择断开升级(西)
 item.AdvancedSatelliteUpgrade=高级卫星升级
 item.FluidCraftingUpgrade=液体合成升级
 item.CraftingByproductUpgrade=副产品提取升级

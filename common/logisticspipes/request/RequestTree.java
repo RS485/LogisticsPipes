@@ -148,7 +148,7 @@ public class RequestTree extends RequestTreeNode {
 			}
 
 			//GetLoadFactor*64 should be an integer anyway.
-			c = Math.floor(o1.destination.getCachedPipe().getLoadFactor()*64) - Math.Floor(o2.destination.getCachedPipe().getLoadFactor()*64);
+			c = Math.floor(o1.destination.getCachedPipe().getLoadFactor()*64) - Math.floor(o2.destination.getCachedPipe().getLoadFactor()*64);
 			if(distanceWeight != 0) {
 				c += (Math.floor(o1.distanceToDestination*64) - Math.floor(o2.distanceToDestination*64)) * distanceWeight;
 			}

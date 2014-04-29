@@ -1,5 +1,6 @@
 package logisticspipes.blocks.powertile;
 
+import ic2.api.energy.tile.IEnergySink;
 import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.pipes.basic.CoreRoutedPipe;

@@ -29,6 +29,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 import sun.rmi.transport.TransportConstants;
 import thermalexpansion.part.conduit.item.TravelingItem;
+import buildcraft.core.CoreConstants;
+import buildcraft.transport.PipeTransportItems;
 
 public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2 implements ISimpleInventoryEventHandler, IChestContentReceiver {
 	

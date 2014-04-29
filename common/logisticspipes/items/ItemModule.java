@@ -56,6 +56,7 @@ import net.minecraft.world.World;
 
 import org.lwjgl.input.Keyboard;
 
+import buildcraft.transport.BlockGenericPipe;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

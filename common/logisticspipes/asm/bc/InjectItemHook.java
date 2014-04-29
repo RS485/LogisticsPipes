@@ -6,6 +6,15 @@ import logisticspipes.logisticspipes.IRoutedItem;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
 import thermalexpansion.part.conduit.item.TravelingItem;
+import buildcraft.BuildCraftTransport;
+import buildcraft.core.DefaultProps;
+import buildcraft.core.utils.BCLog;
+import buildcraft.core.utils.BlockUtil;
+import buildcraft.core.utils.MathUtils;
+import buildcraft.transport.IPipeTransportItemsHook;
+import buildcraft.transport.PipeTransportItems;
+import buildcraft.transport.pipes.events.PipeEventItem;
+import buildcraft.transport.utils.TransportUtils;
 
 public class InjectItemHook {
 	public static void handleInjectItem(PipeTransportItems pipe, TravelingItem item, ForgeDirection inputOrientation) {

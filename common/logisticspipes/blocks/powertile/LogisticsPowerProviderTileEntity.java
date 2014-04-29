@@ -274,7 +274,7 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 
 	@Override
 	public boolean isHUDExistent() {
-		return getWorld().getBlockTileEntity(xCoord, yCoord, zCoord) == this;
+		return getWorld().getTileEntity(xCoord, yCoord, zCoord) == this;
 	}
 	
 	@Override

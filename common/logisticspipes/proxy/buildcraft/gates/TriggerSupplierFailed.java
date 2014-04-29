@@ -11,6 +11,7 @@ package logisticspipes.proxy.buildcraft.gates;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
+import buildcraft.api.gates.ITriggerParameter;
 
 public class TriggerSupplierFailed extends LPTrigger implements ITriggerPipe{
 

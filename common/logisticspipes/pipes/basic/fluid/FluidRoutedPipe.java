@@ -26,6 +26,9 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidHandler;
 import thermalexpansion.part.conduit.item.TravelingItem;
+import buildcraft.core.IMachine;
+import buildcraft.transport.PipeTransportItems;
+import buildcraft.transport.TileGenericPipe;
 
 public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 

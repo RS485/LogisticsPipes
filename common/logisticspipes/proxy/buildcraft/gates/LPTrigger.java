@@ -5,6 +5,10 @@ import javax.swing.Icon;
 import logisticspipes.textures.Textures;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
+import buildcraft.api.gates.ActionManager;
+import buildcraft.api.gates.ITrigger;
+import buildcraft.api.gates.ITriggerParameter;
+import buildcraft.api.gates.TriggerParameter;
 
 public abstract class LPTrigger implements ITrigger {
 	protected final int legacyId;

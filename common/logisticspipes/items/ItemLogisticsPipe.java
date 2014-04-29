@@ -13,19 +13,18 @@ import java.util.List;
 import logisticspipes.utils.string.StringUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import buildcraft.transport.ItemPipe;
 
 /**
  * A logistics pipe Item
  */
 public class ItemLogisticsPipe extends ItemPipe {
-	public ItemLogisticsPipe(int key, Class<? extends Pipe<?>> clas) {
-		super(key);
-		//setCreativeTab(LogisticsPipes.LPCreativeTab);
-		//setUnlocalizedName(clas.getSimpleName());
+	public ItemLogisticsPipe() {
+		super();
 	}
 
 	@Override
-	public String getItemDisplayName(ItemStack itemstack) {
+	public String getItemStackDisplayName(ItemStack itemstack) {
 		return StringUtil.translate(getUnlocalizedName(itemstack));
 	}
 

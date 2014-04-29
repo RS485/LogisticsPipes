@@ -1,14 +1,13 @@
 package logisticspipes.textures;
 
-import javax.swing.Icon;
-
+import buildcraft.api.core.IIconProvider;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import logisticspipes.textures.provider.LPPipeIconProvider;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.util.IIcon;
 import cpw.mods.fml.common.FMLCommonHandler;
-import forestry.api.core.IIconProvider;
 
 public class Textures {
 	private int index = 0;
@@ -82,19 +81,19 @@ public class Textures {
 	public static TextureType LOGISTICSPIPE_LIQUID_EXTRACTOR				= empty;
 	public static TextureType LOGISTICSPIPE_LIQUID_SATELLITE				= empty;
 	
-	public static Icon LOGISTICS_REQUEST_TABLE[]							= new Icon[0];
+	public static IIcon LOGISTICS_REQUEST_TABLE[]							= new IIcon[0];
 	
 	public static int LOGISTICSPIPE_LIQUID_CONNECTOR						= 0;
-	public static Icon LOGISTICSACTIONTRIGGERS_DISABLED ;
-	public static Icon LOGISTICSACTIONTRIGGERS_CRAFTING_ICON;
-	public static Icon LOGISTICSACTIONTRIGGERS_TEXTURE_FILE;
-	public static Icon LOGISTICSACTIONTRIGGERS_NEEDS_POWER_ICON;
-	public static Icon LOGISTICSACTIONTRIGGERS_SUPPLIER_FAILED_ICON;
-	public static Icon[] LOGISTICS_UPGRADES_DISCONECT_ICONINDEX;
-	public static Icon[] LOGISTICS_UPGRADES_SNEAKY_ICONINDEX;
-	public static Icon[] LOGISTICS_UPGRADES_ICONINDEX;
-	public static Icon LOGISTICSITEMS_ITEMHUD_ICON;
-	public static Icon LOGISTICSITEMTEXTURE_FOR_DISK;
+	public static IIcon LOGISTICSACTIONTRIGGERS_DISABLED ;
+	public static IIcon LOGISTICSACTIONTRIGGERS_CRAFTING_ICON;
+	public static IIcon LOGISTICSACTIONTRIGGERS_TEXTURE_FILE;
+	public static IIcon LOGISTICSACTIONTRIGGERS_NEEDS_POWER_ICON;
+	public static IIcon LOGISTICSACTIONTRIGGERS_SUPPLIER_FAILED_ICON;
+	public static IIcon[] LOGISTICS_UPGRADES_DISCONECT_ICONINDEX;
+	public static IIcon[] LOGISTICS_UPGRADES_SNEAKY_ICONINDEX;
+	public static IIcon[] LOGISTICS_UPGRADES_ICONINDEX;
+	public static IIcon LOGISTICSITEMS_ITEMHUD_ICON;
+	public static IIcon LOGISTICSITEMTEXTURE_FOR_DISK;
 	
 	// Standalone pipes
 	public static String				LOGISTICSPIPE_TEXTURE_FILE						= "pipes/basic";
@@ -223,7 +222,7 @@ public class Textures {
 		LOGISTICSPIPE_CHASSI5_TEXTURE 				= registerTexture(par1IconRegister, LOGISTICSPIPE_CHASSI5_TEXTURE_FILE);
 		
 		if(MainProxy.isClient() && par1IconRegister != null) {
-			LOGISTICS_REQUEST_TABLE = new Icon[5];
+			LOGISTICS_REQUEST_TABLE = new IIcon[5];
 			for(int i = 0;i < 5;i++) {
 				LOGISTICS_REQUEST_TABLE[i] = par1IconRegister.registerIcon("logisticspipes:requesttable/"+i);
 			}

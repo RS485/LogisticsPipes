@@ -36,6 +36,14 @@ import net.minecraftforge.fluids.FluidStack;
 
 import org.lwjgl.opengl.GL11;
 
+import buildcraft.BuildCraftCore;
+import buildcraft.BuildCraftCore.RenderMode;
+import buildcraft.core.CoreConstants;
+import buildcraft.core.render.FluidRenderer;
+import buildcraft.core.render.RenderEntityBlock;
+import buildcraft.core.render.RenderEntityBlock.RenderInfo;
+import buildcraft.transport.render.PipeRendererTESR;
+
 public class LogisticsRenderPipe extends PipeRendererTESR {
 
 	final static private int LIQUID_STAGES = 40;

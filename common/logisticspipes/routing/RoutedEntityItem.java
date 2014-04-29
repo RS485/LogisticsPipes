@@ -29,7 +29,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
-import thermalexpansion.part.conduit.item.TravelingItem;
+import buildcraft.BuildCraftCore;
+import buildcraft.core.proxy.CoreProxy;
+import buildcraft.transport.PipeTransportItems;
+import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TravelingItem.InsertionHandler;
+import buildcraft.transport.pipes.events.PipeEventItem;
 
 public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 

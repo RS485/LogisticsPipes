@@ -107,6 +107,7 @@ import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -123,7 +124,7 @@ public class GuiHandler implements IGuiHandler {
 		
 		TileEntity tile = null;
 		if(y != -1) {
-			tile = world.getBlockTileEntity(x, y, z);
+			tile = world.getTileEntity(x, y, z);
 		}
 		LogisticsTileGenericPipe pipe = null;
 		if(tile instanceof LogisticsTileGenericPipe) {
@@ -395,7 +396,7 @@ public class GuiHandler implements IGuiHandler {
 					@Override
 					public boolean isStackAllowed(ItemStack itemStack) {
 						if(itemStack == null) return false;
-						if(itemStack.itemID != LogisticsPipes.LogisticsItemCard.itemID) return false;
+						if(itemStack.getItem() != LogisticsPipes.LogisticsItemCard) return false;
 						if(itemStack.getItemDamage() != LogisticsItemCard.FREQ_CARD) return false;
 						return true;
 					}
@@ -484,7 +485,7 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_Security_Station_ID:
 				if(!(tile instanceof LogisticsSecurityTileEntity)) return null;
 				dummy = new DummyContainer(player, null, ((LogisticsSecurityTileEntity)tile));
-				dummy.addRestrictedSlot(0, ((LogisticsSecurityTileEntity)tile).inv, 50, 50, -1);
+				dummy.addRestrictedSlot(0, ((LogisticsSecurityTileEntity)tile).inv, 50, 50, (Item)null);
 				dummy.addNormalSlotsForPlayerInventory(10, 210);
 				return dummy;
 
@@ -762,7 +763,7 @@ public class GuiHandler implements IGuiHandler {
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer player, final World world, int x, int y, int z) {
 		
-		TileEntity tile = world.getBlockTileEntity(x, y, z);
+		TileEntity tile = world.getTileEntity(x, y, z);
 		LogisticsTileGenericPipe pipe = null;
 		if(tile instanceof LogisticsTileGenericPipe) {
 			pipe = (LogisticsTileGenericPipe)tile;

@@ -12,12 +12,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
+import buildcraft.transport.TravelingItem;
+
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
-import thermalexpansion.part.conduit.item.TravelingItem;
 
 /**
  * This interface describes the actions that must be available on an item that is considered routed

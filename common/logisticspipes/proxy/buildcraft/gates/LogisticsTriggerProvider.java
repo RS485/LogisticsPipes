@@ -19,6 +19,9 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
+import buildcraft.api.gates.ITrigger;
+import buildcraft.api.gates.ITriggerProvider;
+import buildcraft.transport.Gate;
 
 public class LogisticsTriggerProvider implements ITriggerProvider {
 

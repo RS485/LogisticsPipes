@@ -4,6 +4,11 @@ import logisticspipes.transport.PipeFluidTransportLogistics;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.IFluidHandler;
+import buildcraft.core.IMachine;
+import buildcraft.transport.BlockGenericPipe;
+import buildcraft.transport.Pipe;
+import buildcraft.transport.PipeTransportFluids;
+import buildcraft.transport.TileGenericPipe;
 
 public class LogisitcsFluidConnectionTransport extends PipeTransportFluids {
 	@Override

@@ -2,20 +2,21 @@ package logisticspipes.textures.provider;
 
 import java.util.ArrayList;
 
-import javax.swing.Icon;
-
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.util.IIcon;
+import buildcraft.api.core.IIconProvider;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class LPPipeIconProvider implements IIconProvider {
-	public ArrayList<Icon> icons = new ArrayList<Icon>();
+	public ArrayList<IIcon> icons = new ArrayList<IIcon>();
 	
 	@Override
-	public Icon getIcon(int iconIndex) {
+	public IIcon getIcon(int iconIndex) {
 		return icons.get(iconIndex);
 	}
 	
-	public void setIcon(int index, Icon icon) {
+	public void setIcon(int index, IIcon icon) {
 		while(icons.size() < index + 1) {
 			icons.add(null);
 		}
@@ -24,5 +25,5 @@ public class LPPipeIconProvider implements IIconProvider {
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerIcons(IconRegister iconRegister) {}
+	public void registerIcons(IIconRegister iconRegister) {}
 }

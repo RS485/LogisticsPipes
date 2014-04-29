@@ -111,6 +111,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 import sun.rmi.transport.TransportConstants;
 import thermalexpansion.part.conduit.item.TravelingItem;
+import buildcraft.api.inventory.ISpecialInventory;
+import buildcraft.core.CoreConstants;
+import buildcraft.transport.PipeTransportItems;
+import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.FMLClientHandler;
 
 @CCType(name = "LogisticsPipes:Crafting")

@@ -5,6 +5,7 @@ import java.util.List;
 
 import logisticspipes.interfaces.ISpecialTankHandler;
 import net.minecraft.tileentity.TileEntity;
+import buildcraft.factory.TileTank;
 
 public class BuildCraftTankHandler implements ISpecialTankHandler {
 

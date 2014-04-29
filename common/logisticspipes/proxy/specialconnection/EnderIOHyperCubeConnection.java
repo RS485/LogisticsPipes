@@ -10,6 +10,7 @@ import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import thermalexpansion.part.conduit.item.TravelingItem;
+import buildcraft.transport.TileGenericPipe;
 
 public class EnderIOHyperCubeConnection implements ISpecialTileConnection {
 	

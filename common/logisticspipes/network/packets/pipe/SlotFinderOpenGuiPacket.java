@@ -23,6 +23,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import buildcraft.transport.TileGenericPipe;
 
 @Accessors(chain=true)
 public class SlotFinderOpenGuiPacket extends CoordinatesPacket {

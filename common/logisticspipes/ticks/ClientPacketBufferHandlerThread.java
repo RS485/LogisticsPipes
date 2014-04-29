@@ -19,7 +19,6 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.BufferTransfer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.tuples.Pair;
-import net.minecraft.network.PacketBuffer;
 import cpw.mods.fml.relauncher.Side;
 
 public class ClientPacketBufferHandlerThread {

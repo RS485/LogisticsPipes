@@ -9,6 +9,7 @@ import logisticspipes.network.packets.OpenChatGui;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.string.ChatColor;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.util.ChatComponentText;
 
 public class MorePageDisplay {
 	
@@ -28,7 +29,7 @@ public class MorePageDisplay {
 		}
 		LPChatListener.register(this, name.getCommandSenderName());
 		name.getCommandSenderName();
-		name.sendChatToPlayer(ChatMessageComponent.createFromText("%LPSTORESENDMESSAGE%"));
+		name.addChatMessage(new ChatComponentText("%LPSTORESENDMESSAGE%"));
 	}
 	
 	public MorePageDisplay(String[] header, ICommandSender name) {
@@ -40,7 +41,7 @@ public class MorePageDisplay {
 		}
 		LPChatListener.register(this, name.getCommandSenderName());
 		name.getCommandSenderName();
-		name.sendChatToPlayer(ChatMessageComponent.createFromText("%LPSTORESENDMESSAGE%"));
+		name.addChatMessage(new ChatComponentText("%LPSTORESENDMESSAGE%"));
 	}
 	
 	public int getRow() {
@@ -141,14 +142,14 @@ public class MorePageDisplay {
 		if(terminated) return false;
 		if(input.equalsIgnoreCase("exit") || input.equalsIgnoreCase("quit") || input.equalsIgnoreCase("q") || input.equalsIgnoreCase("e")) {
 			terminated = true;
-			sender.sendChatToPlayer(ChatMessageComponent.createFromText("%LPCLEARCHAT%"));
+			sender.addChatMessage(new ChatComponentText("%LPCLEARCHAT%"));
 			for(Object zeilenobject: header.toArray()) {
 				if( !(zeilenobject instanceof String)) continue;
-				sender.sendChatToPlayer(ChatMessageComponent.createFromText(replaceMeta((String) zeilenobject, 0, -1)));
+				sender.addChatMessage(new ChatComponentText(replaceMeta((String) zeilenobject, 0, -1)));
 			}
 			clearscreen(sender, 19 - header.size());
-			sender.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.AQUA + "Pageview: " + ChatColor.RED + "Exit."));
-			sender.sendChatToPlayer(ChatMessageComponent.createFromText("%LPRESTORESENDMESSAGE%"));
+			sender.addChatMessage(new ChatComponentText(ChatColor.AQUA + "Pageview: " + ChatColor.RED + "Exit."));
+			sender.addChatMessage(new ChatComponentText("%LPRESTORESENDMESSAGE%"));
 		} else if(input.equalsIgnoreCase("next") || input.equalsIgnoreCase("nex") || input.equalsIgnoreCase("n")) {
 			if(currentpage > (currentpagecount - 1)) {
 				display(sender, 0);
@@ -169,21 +170,21 @@ public class MorePageDisplay {
 				display(sender, toNumber(input));
 			} else {
 				display(sender, currentpage, true);
-				sender.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.AQUA + "Pageview:" + ChatColor.RED + " Not a valid number."));
+				sender.addChatMessage(new ChatComponentText(ChatColor.AQUA + "Pageview:" + ChatColor.RED + " Not a valid number."));
 			}
 		} else if(input.equalsIgnoreCase("reprint")) {
 			display(sender, currentpage);
 		} else if(input.equalsIgnoreCase("all")) {
 			display(sender, currentpage, false, true, 0);
 		} else if(input.startsWith("save ")) {
-			sender.sendChatToPlayer(ChatMessageComponent.createFromText("%LPADDTOSENDMESSAGE%" + input.substring(5)));
+			sender.addChatMessage(new ChatComponentText("%LPADDTOSENDMESSAGE%" + input.substring(5)));
 			display(sender, currentpage, true, false, 1);
-			sender.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.AQUA + "Added '" + ChatColor.YELLOW + input.substring(5) + ChatColor.AQUA + "' to your chat history."));
+			sender.addChatMessage(new ChatComponentText(ChatColor.AQUA + "Added '" + ChatColor.YELLOW + input.substring(5) + ChatColor.AQUA + "' to your chat history."));
 			printLastLine(sender, false);
 			if(sender instanceof Player) MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) sender);
 		} else if(input.equals("save")) {
 			display(sender, currentpage, true, false, 2);
-			sender.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.AQUA + "Add an command after the '" + ChatColor.YELLOW + "save " + ChatColor.AQUA + "' and it will be added to your chat history."));
+			sender.addChatMessage(new ChatComponentText(ChatColor.AQUA + "Add an command after the '" + ChatColor.YELLOW + "save " + ChatColor.AQUA + "' and it will be added to your chat history."));
 			printLastLine(sender, false);
 			if(sender instanceof Player) MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) sender);
 		} else {
@@ -214,7 +215,7 @@ public class MorePageDisplay {
 	
 	private void clearscreen(ICommandSender sender, int count) {
 		for(int i = 0; i < count; i++) {
-			sender.sendChatToPlayer(ChatMessageComponent.createFromText(""));
+			sender.addChatMessage(new ChatComponentText(""));
 		}
 	}
 	
@@ -227,7 +228,7 @@ public class MorePageDisplay {
 	}
 	
 	public void printLastLine(ICommandSender sender, boolean flag) {
-		sender.sendChatToPlayer(ChatMessageComponent.createFromText(
+		sender.addChatMessage(new ChatComponentText(
 				(flag ? "! " : "") + 
 				ChatColor.AQUA + "Pageview:" + 
 				ChatColor.WHITE + " Enter " + 
@@ -266,7 +267,7 @@ public class MorePageDisplay {
 	
 	public void display(ICommandSender sender, int page, boolean flag, boolean all, int linesub) {
 		if(terminated) return;
-		sender.sendChatToPlayer(ChatMessageComponent.createFromText("%LPCLEARCHAT%"));
+		sender.addChatMessage(new ChatComponentText("%LPCLEARCHAT%"));
 		int count = row - header.size() - 1 - linesub;
 		page = (page > 0 && !all ? page : 1);
 		currentpage = page;
@@ -275,14 +276,14 @@ public class MorePageDisplay {
 		if(all) count = -2;
 		for(Object zeilenobject: header.toArray()) {
 			if( !(zeilenobject instanceof String)) continue;
-			sender.sendChatToPlayer(ChatMessageComponent.createFromText(replaceMeta((String) zeilenobject, page, count)));
+			sender.addChatMessage(new ChatComponentText(replaceMeta((String) zeilenobject, page, count)));
 		}
 		int currentPage = 0;
 		int lineOnCurentPage = 0;
 		int doneLines = 0;
 		for(int i = 0; i < content.size(); i++, lineOnCurentPage++) {
 			if(all) {
-				sender.sendChatToPlayer(ChatMessageComponent.createFromText(content.get(i).content));
+				sender.addChatMessage(new ChatComponentText(content.get(i).content));
 			} else {
 				int I;
 				for(I = i; I < (content.size() - 1) && content.get(I + 1).connected; I++);
@@ -292,7 +293,7 @@ public class MorePageDisplay {
 					lineOnCurentPage = 0;
 				}
 				if(page == currentPage + 1) {
-					sender.sendChatToPlayer(ChatMessageComponent.createFromText(content.get(i).content));
+					sender.addChatMessage(new ChatComponentText(content.get(i).content));
 					doneLines = lineOnCurentPage;
 				}
 			}

@@ -11,6 +11,7 @@ import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.proxy.SimpleServiceLocator;
 import net.minecraft.item.ItemStack;
 import thermalexpansion.part.conduit.item.TravelingItem;
+import buildcraft.transport.TravelerSet;
 
 
 public class LogisticsASMHookClass {

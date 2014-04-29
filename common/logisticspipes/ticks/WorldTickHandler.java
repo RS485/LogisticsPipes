@@ -13,6 +13,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import thermalexpansion.part.conduit.item.TravelingItem;
+import buildcraft.BuildCraftTransport;
+import buildcraft.core.ITileBufferHolder;
+import buildcraft.transport.PipeTransportItems;
+import buildcraft.transport.TileGenericPipe;
 
 public class WorldTickHandler implements ITickHandler {
 	

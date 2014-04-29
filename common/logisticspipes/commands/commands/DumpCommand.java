@@ -4,6 +4,7 @@ import logisticspipes.commands.LogisticsPipesCommand;
 import logisticspipes.commands.abstracts.ICommandHandler;
 import logisticspipes.ticks.Watchdog;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.util.ChatComponentText;
 
 public class DumpCommand implements ICommandHandler {
 	
@@ -25,6 +26,6 @@ public class DumpCommand implements ICommandHandler {
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
 		Watchdog.dump(false, false, true);
-		sender.sendChatToPlayer(ChatMessageComponent.createFromText("Dump Created"));
+		sender.addChatMessage(new ChatComponentText("Dump Created"));
 	}
 }

@@ -5,6 +5,10 @@ import logisticspipes.proxy.MainProxy;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import buildcraft.api.power.IPowerReceptor;
+import buildcraft.api.power.PowerHandler;
+import buildcraft.api.power.PowerHandler.PowerReceiver;
+import buildcraft.api.power.PowerHandler.Type;
 
 public class LogisticsBCPowerProviderTileEntity extends LogisticsPowerProviderTileEntity implements IPowerReceptor {
 	

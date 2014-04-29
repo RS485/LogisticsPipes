@@ -5,6 +5,7 @@ import logisticspipes.commands.abstracts.ICommandHandler;
 import logisticspipes.ticks.DebugGuiTickHandler;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ChatComponentText;
 
 public class MeCommand implements ICommandHandler {
 	
@@ -26,6 +27,6 @@ public class MeCommand implements ICommandHandler {
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
 		DebugGuiTickHandler.instance().startWatchingOf(sender, (Player)sender);
-		sender.sendChatToPlayer(ChatMessageComponent.createFromText("Starting SelfDebuging"));
+		sender.addChatMessage(new ChatComponentText("Starting SelfDebuging"));
 	}
 }

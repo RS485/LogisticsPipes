@@ -2,6 +2,7 @@ package logisticspipes.proxy.buildcraft.gates;
 
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
+import buildcraft.api.gates.ITriggerParameter;
 
 public class TriggerCrafting extends LPTrigger implements ITriggerPipe {
 

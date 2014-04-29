@@ -11,7 +11,6 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
-import net.minecraft.server.MinecraftServer;
 import cpw.mods.fml.common.FMLCommonHandler;
 
 public class LogisticsPipesCommand extends CommandBase {
@@ -61,6 +60,6 @@ public class LogisticsPipesCommand extends CommandBase {
 	}
 	
 	public static boolean isOP(ICommandSender sender) {
-		return MinecraftServer.getServerConfigurationManager(FMLCommonHandler.instance().getMinecraftServerInstance()).getOps().contains(sender.getCommandSenderName().toLowerCase()) || (FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() && !FMLCommonHandler.instance().getMinecraftServerInstance().isServerInOnlineMode());
+		return FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().getOps().contains(sender.getCommandSenderName().toLowerCase()) || (FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() && !FMLCommonHandler.instance().getMinecraftServerInstance().isServerInOnlineMode());
 	}
 }

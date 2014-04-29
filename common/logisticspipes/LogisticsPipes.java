@@ -258,7 +258,7 @@ public class LogisticsPipes {
 		if(event.getSide().isClient()) {
 			//SimpleServiceLocator.buildCraftProxy.registerLocalization();
 		}
-		NetworkRegistry.instance().registerGuiHandler(LogisticsPipes.instance, new GuiHandler());
+		NetworkRegistry.INSTANCE.registerGuiHandler(LogisticsPipes.instance, new GuiHandler());
 		if(event.getSide().equals(Side.CLIENT)) {
 			TickRegistry.registerTickHandler(new RenderTickHandler(), Side.CLIENT);
 		}

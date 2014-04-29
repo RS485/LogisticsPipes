@@ -5,6 +5,9 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
+import buildcraft.transport.BlockGenericPipe;
+import buildcraft.transport.PipeRenderState;
+import buildcraft.transport.render.PipeRendererWorld;
 
 public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
 

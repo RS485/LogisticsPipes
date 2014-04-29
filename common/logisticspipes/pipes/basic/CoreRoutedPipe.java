@@ -8,10 +8,7 @@
 
 package logisticspipes.pipes.basic;
 
-import ibxm.Player;
-
 import java.lang.reflect.Field;
-import java.nio.channels.Pipe;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -92,6 +89,7 @@ import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -99,9 +97,16 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
-import thermalexpansion.part.conduit.item.TravelingItem;
+import buildcraft.BuildCraftTransport;
+import buildcraft.api.gates.IAction;
+import buildcraft.core.CoreConstants;
+import buildcraft.transport.Pipe;
+import buildcraft.transport.PipeTransportItems;
+import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TravelingItem;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import dan200.computercraft.api.lua.ILuaObject;
 
 @CCType(name = "LogisticsPipes:Normal")
 public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IRoutedPowerProvider, IQueueCCEvent {
@@ -163,12 +168,12 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	protected int throttleTime = 20;
 	private int throttleTimeLeft = 20 + new Random().nextInt(Configs.LOGISTICS_DETECTION_FREQUENCY);
 	
-	public CoreRoutedPipe(int itemID) {
-		this(new PipeTransportLogistics(), itemID);
+	public CoreRoutedPipe(Item item) {
+		this(new PipeTransportLogistics(), item);
 	}
 
-	public CoreRoutedPipe(PipeTransportLogistics transport, int itemID) {
-		super(transport, itemID);
+	public CoreRoutedPipe(PipeTransportLogistics transport, Item item) {
+		super(transport, item);
 		//this.logic = logic;
 		((PipeTransportItems) transport).allowBouncing = true;
 		
@@ -213,15 +218,15 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	public int sendQueueChanged(boolean force) {return 0;}
 	
 	private void sendRoutedItem(IRoutedItem routedItem, ForgeDirection from){
-		Position p = new Position(this.getX() + 0.5F, this.getY() + CoreConstants.PIPE_MIN_POS, this.getZ() + 0.5F, from);
+		LPPosition p = new LPPosition(this.getX() + 0.5F, this.getY() + CoreConstants.PIPE_MIN_POS, this.getZ() + 0.5F);
 		if(from == ForgeDirection.DOWN) {
-			p.moveForwards(0.24F);
+			p.moveForward(from, 0.24F);
 		} else if(from == ForgeDirection.UP) {
-			p.moveForwards(0.74F);
+			p.moveForward(from, 0.74F);
 		} else {
-			p.moveForwards(0.49F);
+			p.moveForward(from, 0.49F);
 		}
-		routedItem.SetPosition(p.x, p.y, p.z);
+		routedItem.SetPosition(p.getXD(), p.getYD(), p.getZD());
 		((PipeTransportItems) transport).injectItem(routedItem.getTravelingItem(), from.getOpposite());
 		
 		IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(routedItem.getDestination(),false);
@@ -258,7 +263,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	private boolean checkTileEntity(boolean force) {
 		if(getWorld().getTotalWorldTime() % 10 == 0 || force) {
 			if(!(this.container instanceof LogisticsTileGenericPipe)) {
-				TileEntity tile = getWorld().getBlockTileEntity(getX(), getY(), getZ());
+				TileEntity tile = getWorld().getTileEntity(getX(), getY(), getZ());
 				if(tile != this.container) {
 					LogisticsPipes.log.severe("LocalCodeError");
 				}
@@ -334,7 +339,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		} else {
 			if(stillNeedReplace) {
 				stillNeedReplace = false;
-				getWorld().notifyBlockChange(getX(), getY(), getZ(), getWorld().getBlockId(getX(), getY(), getZ()));
+				getWorld().notifyBlockChange(getX(), getY(), getZ(), getWorld().getBlock(getX(), getY(), getZ()));
 				/* TravelingItems are just held by a pipe, they don't need to know their world
 				 * for(Triplet<IRoutedItem, ForgeDirection, ItemSendMode> item : _sendQueue) {
 					//assign world to any entityitem we created in readfromnbt
@@ -519,9 +524,9 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 				@Override
 				public Object call() throws Exception {
 					tileCache.validate();
-					worldCache.setBlock(xCache, yCache, zCache, BuildCraftTransport.genericPipeBlock.blockID);
-					worldCache.setBlockTileEntity(xCache, yCache, zCache, tileCache);
-					worldCache.notifyBlockChange(xCache, yCache, zCache, BuildCraftTransport.genericPipeBlock.blockID);
+					worldCache.setBlock(xCache, yCache, zCache, BuildCraftTransport.genericPipeBlock);
+					worldCache.setTileEntity(xCache, yCache, zCache, tileCache);
+					worldCache.notifyBlockChange(xCache, yCache, zCache, BuildCraftTransport.genericPipeBlock);
 					blockRemove = false;
 					return null;
 				}
@@ -694,14 +699,14 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		}
 		NBTTagCompound upgradeNBT = new NBTTagCompound();
 		upgradeManager.writeToNBT(upgradeNBT);
-		nbttagcompound.setCompoundTag("upgradeManager", upgradeNBT);
+		nbttagcompound.setTag("upgradeManager", upgradeNBT);
 
 		NBTTagList sendqueue = new NBTTagList();
 		for(Triplet<IRoutedItem, ForgeDirection, ItemSendMode> p : _sendQueue) {
 			NBTTagCompound tagentry = new NBTTagCompound();
 			NBTTagCompound tagentityitem = new NBTTagCompound();
 			p.getValue1().getTravelingItem().writeToNBT(tagentityitem);
-			tagentry.setCompoundTag("entityitem", tagentityitem);
+			tagentry.setTag("entityitem", tagentityitem);
 			tagentry.setByte("from", (byte)(p.getValue2().ordinal()));
 			tagentry.setByte("mode", (byte)(p.getValue3().ordinal()));
 			sendqueue.appendTag(tagentry);
@@ -726,12 +731,11 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		upgradeManager.readFromNBT(nbttagcompound.getCompoundTag("upgradeManager"));
 
 		_sendQueue.clear();
-		NBTTagList sendqueue = nbttagcompound.getTagList("sendqueue");
+		NBTTagList sendqueue = nbttagcompound.getTagList("sendqueue", nbttagcompound.getId());
 		for(int i = 0; i < sendqueue.tagCount(); i++) {
-			NBTTagCompound tagentry = (NBTTagCompound)sendqueue.tagAt(i);
+			NBTTagCompound tagentry = sendqueue.getCompoundTagAt(i);
 			NBTTagCompound tagentityitem = tagentry.getCompoundTag("entityitem");
-			TravelingItem entity = new TravelingItem();
-			entity.readFromNBT(tagentityitem);
+			TravelingItem entity = TravelingItem.make(tagentityitem);
 			IRoutedItem routeditem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(entity);
 			ForgeDirection from = ForgeDirection.values()[tagentry.getByte("from")];
 			ItemSendMode mode = ItemSendMode.values()[tagentry.getByte("mode")];

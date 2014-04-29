@@ -14,6 +14,7 @@ import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import buildcraft.transport.TileGenericPipe;
 
 public class WorldUtil {
 	private int _x;

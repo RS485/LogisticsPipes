@@ -8,6 +8,11 @@ import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.pipes.PipeItemsDiamond;
+import buildcraft.transport.pipes.PipeItemsIron;
+import buildcraft.transport.pipes.PipeItemsObsidian;
+import buildcraft.transport.pipes.PipeStructureCobblestone;
 
 public class BCPipeInformationProvider implements IPipeInformationProvider {
 	

@@ -4,6 +4,8 @@ import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import buildcraft.core.recipes.AssemblyRecipeManager.AssemblyRecipe;
+import buildcraft.silicon.TileAssemblyTable;
 
 public class AssemblyTable implements ICraftingRecipeProvider {
 	@Override

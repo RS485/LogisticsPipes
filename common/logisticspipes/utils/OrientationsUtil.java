@@ -2,6 +2,7 @@ package logisticspipes.utils;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
+import buildcraft.transport.PipeTransport;
 
 public class OrientationsUtil {
 	public static ForgeDirection getOrientationOfTilewithPipe(PipeTransport pipe,TileEntity tile) {

@@ -70,6 +70,6 @@ processResources {
     }
 }
 dependencies {
-    compile files("mods/buildcraft-5.0.3.0.jar")
+    compile files("build/download/buildcraft-5.0.5.jar")
     compile 'org.projectlombok:lombok:1.12.4'
 }

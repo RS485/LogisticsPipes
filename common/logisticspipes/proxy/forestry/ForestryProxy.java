@@ -18,8 +18,21 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import buildcraft.BuildCraftCore;
+import buildcraft.BuildCraftSilicon;
+import buildcraft.BuildCraftTransport;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import forestry.api.apiculture.EnumBeeChromosome;
+import forestry.api.apiculture.EnumBeeType;
+import forestry.api.apiculture.IAlleleBeeSpecies;
+import forestry.api.apiculture.IBeeRoot;
+import forestry.api.core.ForestryAPI;
+import forestry.api.core.ItemInterface;
+import forestry.api.genetics.AlleleManager;
+import forestry.api.genetics.IAllele;
+import forestry.api.genetics.IAlleleSpecies;
+import forestry.api.recipes.RecipeManagers;
 
 public class ForestryProxy implements IForestryProxy {
 	

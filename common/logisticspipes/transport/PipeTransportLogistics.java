@@ -47,6 +47,13 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.util.ForgeDirection;
 import sun.rmi.transport.TransportConstants;
 import thermalexpansion.part.conduit.item.TravelingItem;
+import buildcraft.api.power.IPowerReceptor;
+import buildcraft.api.transport.IPipeTile;
+import buildcraft.core.CoreConstants;
+import buildcraft.core.proxy.CoreProxy;
+import buildcraft.transport.IItemTravelingHook;
+import buildcraft.transport.PipeTransportItems;
+import buildcraft.transport.TileGenericPipe;
 
 public class PipeTransportLogistics extends PipeTransportItems implements IItemTravelingHook {
 

@@ -1,5 +1,11 @@
 package logisticspipes.proxy.ic2;
 
+import ic2.api.energy.event.EnergyTileLoadEvent;
+import ic2.api.energy.event.EnergyTileUnloadEvent;
+import ic2.api.energy.tile.IEnergySink;
+import ic2.api.energy.tile.IEnergyTile;
+import ic2.api.item.IElectricItem;
+import ic2.api.recipe.Recipes;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.items.ItemModule;
@@ -13,6 +19,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
+import buildcraft.BuildCraftCore;
+import buildcraft.BuildCraftSilicon;
 
 
 public class IC2Proxy implements IIC2Proxy {

@@ -26,6 +26,8 @@ import thermalexpansion.part.conduit.GridTickHandler;
 import thermalexpansion.part.conduit.IConduit;
 import thermalexpansion.part.conduit.item.ConduitItem;
 import thermalexpansion.part.conduit.item.ItemRoute;
+import buildcraft.transport.BlockGenericPipe;
+import buildcraft.transport.PipeTransportItems;
 
 public class LPConduitItem extends ConduitItem {
 	public static boolean dontCheckRoutes = false;

@@ -9,6 +9,8 @@ import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
 
+import buildcraft.BuildCraftTransport;
+
 public class LogisticsPipeBlockRenderer implements IItemRenderer {
 	private void renderBlockItem(RenderBlocks render, ItemStack item, float translateX, float translateY, float translateZ) {
 		Tessellator tessellator = Tessellator.instance;

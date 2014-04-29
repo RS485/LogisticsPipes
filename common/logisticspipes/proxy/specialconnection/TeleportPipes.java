@@ -9,6 +9,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.ISpecialPipedConnection;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
+import buildcraft.transport.TileGenericPipe;
 
 /** Support for teleport pipes **/
 public class TeleportPipes implements ISpecialPipedConnection {

@@ -4,6 +4,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.commands.abstracts.ICommandHandler;
 import logisticspipes.ticks.VersionChecker;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.util.ChatComponentText;
 import cpw.mods.fml.common.Mod;
 
 public class VersionCommand implements ICommandHandler {
@@ -25,10 +26,10 @@ public class VersionCommand implements ICommandHandler {
 	
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
-		sender.sendChatToPlayer(ChatMessageComponent.createFromText(String.format("LogisticsPipes %s for Minecraft %s.", LogisticsPipes.class.getAnnotation(Mod.class).version(), LogisticsPipes.MCVersion)));
+		sender.addChatMessage(new ChatComponentText(String.format("LogisticsPipes %s for Minecraft %s.", LogisticsPipes.class.getAnnotation(Mod.class).version(), LogisticsPipes.MCVersion)));
     	if(VersionChecker.hasNewVersion) {
-    		sender.sendChatToPlayer(ChatMessageComponent.createFromText("Your LogisticsPipes version is outdated. The newest version is #" + VersionChecker.newVersion + "."));
-    		sender.sendChatToPlayer(ChatMessageComponent.createFromText("Use \"/logisticspipes changelog\" to see a changelog."));
+    		sender.addChatMessage(new ChatComponentText("Your LogisticsPipes version is outdated. The newest version is #" + VersionChecker.newVersion + "."));
+    		sender.addChatMessage(new ChatComponentText("Use \"/logisticspipes changelog\" to see a changelog."));
         }
 	}
 }

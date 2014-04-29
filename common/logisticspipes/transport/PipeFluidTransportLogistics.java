@@ -15,6 +15,8 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
+import buildcraft.BuildCraftCore;
+import buildcraft.api.core.SafeTimeTracker;
 
 public class PipeFluidTransportLogistics extends PipeTransportLogistics implements IFluidHandler {
 

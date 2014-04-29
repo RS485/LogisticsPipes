@@ -6,6 +6,7 @@ import logisticspipes.commands.abstracts.ICommandHandler;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.ticks.Watchdog;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.util.ChatComponentText;
 
 public class WatchCommand implements ICommandHandler {
 	
@@ -30,6 +31,6 @@ public class WatchCommand implements ICommandHandler {
 		LogisticsPipes.WATCHDOG = true;
 		Configs.WATCHDOG_CLIENT = true;
 		Configs.WATCHDOG_SERVER = true;
-    	sender.sendChatToPlayer(ChatMessageComponent.createFromText("Starting Watchdog"));
+    	sender.addChatMessage(new ChatComponentText("Starting Watchdog"));
 	}
 }

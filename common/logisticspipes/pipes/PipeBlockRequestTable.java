@@ -282,18 +282,21 @@ outer:
 		if (_transportLayer == null) {
 			_transportLayer = new TransportLayer() {
 				@Override
-				public boolean stillWantItem(IRoutedItem item) {
+				public void handleItem(IRoutedItem item) {
 					PipeBlockRequestTable.this.notifyOfItemArival((RoutedEntityItem)item);
 					if(item.getItemStack() != null) {
 						ItemStack stack = item.getItemStack();
 						stack.stackSize = inv.addCompressed(stack, false);
 						item.setItemStack(stack);
 					}
-					return false;
 				}
 				@Override
 				public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection denyed) {
 					return null;
+				}
+				@Override
+				public boolean stillWantItem(IRoutedItem item) {
+					return false;
 				}
 			};
 		}

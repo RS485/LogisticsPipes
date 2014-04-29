@@ -6,7 +6,7 @@ public class FinalNBTTagCompound extends NBTTagCompound {
 	private final int hashcode;
 	
 	public FinalNBTTagCompound(NBTTagCompound base) {
-		super(base.getName().isEmpty() ? "tag" : base.getName());
+		super();
 		this.tagMap = base.tagMap;
 		hashcode = super.hashCode();
 	}

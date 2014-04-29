@@ -86,17 +86,11 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 	}
 
 	public ItemStack unsafeMakeNormalStack(){
-		ItemStack stack = new ItemStack(_item.itemID, this.getStackSize(), _item.itemDamage);
-		stack.setTagCompound(_item.tag);
-		return stack;
+		return _item.unsafeMakeNormalStack(stackSize);
 	}
 
 	public ItemStack makeNormalStack(){
-		ItemStack stack = new ItemStack(_item.itemID, this.getStackSize(), _item.itemDamage);
-		if(_item.tag != null) {
-			stack.setTagCompound((NBTTagCompound)_item.tag.copy());
-		}
-		return stack;
+		return _item.makeNormalStack(stackSize);
 	}
 	
 	@Override

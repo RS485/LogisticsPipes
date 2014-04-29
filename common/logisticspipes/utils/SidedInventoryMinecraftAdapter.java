@@ -91,8 +91,8 @@ public final class SidedInventoryMinecraftAdapter implements IInventory {
 	}
 
 	@Override
-	public String getInvName() {
-		return _sidedInventory.getInvName();
+	public String getInventoryName() {
+		return _sidedInventory.getInventoryName();
 	}
 
 	@Override
@@ -101,8 +101,8 @@ public final class SidedInventoryMinecraftAdapter implements IInventory {
 	}
 
 	@Override
-	public void onInventoryChanged() {
-		_sidedInventory.onInventoryChanged();
+	public void markDirty() {
+		_sidedInventory.markDirty();
 	}
 
 	@Override
@@ -111,13 +111,13 @@ public final class SidedInventoryMinecraftAdapter implements IInventory {
 	}
 
 	@Override
-	public void openChest() {
-		_sidedInventory.openChest();
+	public void openInventory() {
+		_sidedInventory.openInventory();
 	}
 
 	@Override
-	public void closeChest() {
-		_sidedInventory.closeChest();
+	public void closeInventory() {
+		_sidedInventory.closeInventory();
 	}
 
 
@@ -127,8 +127,8 @@ public final class SidedInventoryMinecraftAdapter implements IInventory {
 	}
 
 	@Override
-	public boolean isInvNameLocalized() {
-		return _sidedInventory.isInvNameLocalized();
+	public boolean hasCustomInventoryName() {
+		return _sidedInventory.hasCustomInventoryName();
 	}
 
 	@Override

@@ -135,7 +135,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 	}
 
 	@Override
-	public String getInvName() {
+	public String getInventoryName() {
 		return _name;
 	}
 
@@ -145,7 +145,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 	}
 
 	@Override
-	public void onInventoryChanged() {
+	public void markDirty() {
 		updateContents();
 		for (ISimpleInventoryEventHandler handler : _listener){
 			handler.InventoryChanged(this);
@@ -156,10 +156,10 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 	public boolean isUseableByPlayer(EntityPlayer entityplayer) {return false;}
 
 	@Override
-	public void openChest() {}
+	public void openInventory() {}
 
 	@Override
-	public void closeChest() {}
+	public void closeInventory() {}
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
@@ -167,21 +167,16 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 	}
 	
 	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {
-		NBTTagList nbttaglist = nbttagcompound.getTagList(prefix + "items");
+		NBTTagList nbttaglist = nbttagcompound.getTagList(prefix + "items", nbttagcompound.getId());
     	
     	for (int j = 0; j < nbttaglist.tagCount(); ++j) {    		
-    		NBTTagCompound nbttagcompound2 = (NBTTagCompound) nbttaglist.tagAt(j);
+    		NBTTagCompound nbttagcompound2 = nbttaglist.getCompoundTagAt(j);
     		int index = nbttagcompound2.getInteger("index");
     		if(index < _contents.length) {
     			ItemStack stack = ItemStack.loadItemStackFromNBT(nbttagcompound2);
     			if(stack != null) {
 					ItemIdentifierStack itemstack = ItemIdentifierStack.getFromStack(stack);
-					if(!isValidStack(itemstack)) {
-						FluidIdentifier fluid = FluidIdentifier.convertFromID(itemstack.getItem().itemID);
-						if(fluid != null) {
-							_contents [index] = fluid.getItemIdentifier().makeStack(1);
-						}
-					} else {
+					if(isValidStack(itemstack)) {
 						_contents [index] = itemstack;
 					}
     			}
@@ -264,7 +259,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 			_contents[i] = stack;
 			i++;
 		}
-		onInventoryChanged();
+		markDirty();
 	}
 	
 	private int tryAddToSlot(int i, ItemStack stack, int realstacklimit) {
@@ -326,7 +321,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 			int added = tryAddToSlot(i, stack, stacklimit);
 			stack.stackSize -= added;
 		}
-		onInventoryChanged();
+		markDirty();
 		return stack.stackSize;
 	}
 
@@ -379,8 +374,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 	}
 
 	@Override
-	public boolean isInvNameLocalized() {
-		// TODO ?
+	public boolean hasCustomInventoryName() {
 		return true;
 	}
 

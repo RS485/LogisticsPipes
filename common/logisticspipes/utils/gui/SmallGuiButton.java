@@ -34,10 +34,7 @@ public class SmallGuiButton extends GuiButton {
 	@Override
 	public void drawButton(Minecraft minecraft, int i, int j)
     {
-        if(!drawButton)
-        {
-            return;
-        }
+        if(!visible) return;
         FontRenderer fontrenderer = minecraft.fontRenderer;
         minecraft.renderEngine.bindTexture(TEXTURE);
        // GL11.glBindTexture(3553 /*GL_TEXTURE_2D*/, minecraft.renderEngine.getTexture("/gui/gui.png"));

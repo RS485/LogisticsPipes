@@ -476,7 +476,7 @@ public class DummyContainer extends Container {
 		if(slot == null || (!(slot instanceof DummySlot) && !(slot instanceof UnmodifiableSlot) && !(slot instanceof FluidSlot) && !(slot instanceof ColorSlot) && !(slot instanceof HandelableSlot))) {
 			ItemStack stack1 = superSlotClick(slotId, mouseButton, isShift, entityplayer);
 			ItemStack stack2 = slot.getStack();
-			if(stack2 != null && stack2.getItem().itemID == LogisticsPipes.ModuleItem.itemID) {
+			if(stack2 != null && stack2.getItem() == LogisticsPipes.ModuleItem) {
 				if(entityplayer instanceof EntityPlayerMP && MainProxy.isServer(entityplayer.worldObj)) {
 					((EntityPlayerMP)entityplayer).sendSlotContents(this, slotId, stack2);
 				}
@@ -699,7 +699,7 @@ public class DummyContainer extends Container {
 	public void putStackInSlot(int par1, ItemStack par2ItemStack) {
 		if(inventorySlots.isEmpty()) {
 			_playerInventory.setInventorySlotContents(par1, par2ItemStack);
-			_playerInventory.onInventoryChanged();
+			_playerInventory.markDirty();
 			return;
 		}
 		super.putStackInSlot(par1, par2ItemStack);

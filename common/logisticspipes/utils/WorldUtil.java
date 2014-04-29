@@ -10,6 +10,7 @@ package logisticspipes.utils;
 
 import java.util.LinkedList;
 
+import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -29,7 +30,7 @@ public class WorldUtil {
 	}
 
 	public WorldUtil(TileEntity tile) {
-		this._worldObj = tile.worldObj;
+		this._worldObj = tile.getWorldObj();
 		this._x = tile.xCoord;
 		this._y = tile.yCoord;
 		this._z = tile.zCoord;
@@ -43,7 +44,7 @@ public class WorldUtil {
 		LinkedList<AdjacentTile> foundTiles = new LinkedList<AdjacentTile>();
 		TileEntity tilePipe = null;
 		if(flag) {
-			tilePipe = _worldObj.getBlockTileEntity(_x, _y, _z);
+			tilePipe = _worldObj.getTileEntity(_x, _y, _z);
 		}
 		for (ForgeDirection o : ForgeDirection.values()) {
 			if (o == ForgeDirection.UNKNOWN) continue;
@@ -67,8 +68,8 @@ public class WorldUtil {
 	}
 	
 	public TileEntity getAdjacentTileEntitie(ForgeDirection direction) {
-		Position p = new Position(_x, _y, _z, direction);
-		p.moveForwards(1);
-		return _worldObj.getBlockTileEntity((int)p.x, (int)p.y, (int)p.z);
+		LPPosition p = new LPPosition(_x, _y, _z);
+		p.moveForward(direction);
+		return p.getTileEntity(_worldObj);
 	}
 }

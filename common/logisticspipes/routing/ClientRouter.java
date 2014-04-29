@@ -92,7 +92,7 @@ public class ClientRouter implements IRouter {
 		if(worldObj == null) {
 			return null;
 		}
-		TileEntity tile = worldObj.getBlockTileEntity(_xCoord, _yCoord, _zCoord);
+		TileEntity tile = worldObj.getTileEntity(_xCoord, _yCoord, _zCoord);
 		
 		if (!(tile instanceof LogisticsTileGenericPipe)) return null;
 		LogisticsTileGenericPipe pipe = (LogisticsTileGenericPipe) tile;

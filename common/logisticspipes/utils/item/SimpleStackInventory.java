@@ -70,7 +70,7 @@ public class SimpleStackInventory implements IInventory, ISaveState {
 	}
 
 	@Override
-	public String getInvName() {
+	public String getInventoryName() {
 		return _name;
 	}
 
@@ -80,7 +80,7 @@ public class SimpleStackInventory implements IInventory, ISaveState {
 	}
 
 	@Override
-	public void onInventoryChanged() {
+	public void markDirty() {
 		for (ISimpleInventoryEventHandler handler : _listener){
 			handler.InventoryChanged(this);
 		}
@@ -90,10 +90,10 @@ public class SimpleStackInventory implements IInventory, ISaveState {
 	public boolean isUseableByPlayer(EntityPlayer entityplayer) {return false;}
 
 	@Override
-	public void openChest() {}
+	public void openInventory() {}
 
 	@Override
-	public void closeChest() {}
+	public void closeInventory() {}
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
@@ -101,10 +101,10 @@ public class SimpleStackInventory implements IInventory, ISaveState {
 	}
 	
 	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {
-		NBTTagList nbttaglist = nbttagcompound.getTagList(prefix + "items");
+		NBTTagList nbttaglist = nbttagcompound.getTagList(prefix + "items", nbttagcompound.getId());
     	
     	for (int j = 0; j < nbttaglist.tagCount(); ++j) {    		
-    		NBTTagCompound nbttagcompound2 = (NBTTagCompound) nbttaglist.tagAt(j);
+    		NBTTagCompound nbttagcompound2 = nbttaglist.getCompoundTagAt(j);
     		int index = nbttagcompound2.getInteger("index");
     		if(index < _contents.length) {
     			_contents [index] = ItemStack.loadItemStackFromNBT(nbttagcompound2);
@@ -223,13 +223,8 @@ public class SimpleStackInventory implements IInventory, ISaveState {
 			int added = tryAddToSlot(i, stack, stacklimit);
 			stack.stackSize -= added;
 		}
-		onInventoryChanged();
+		markDirty();
 		return stack.stackSize;
-	}
-
-	@Override
-	public boolean isInvNameLocalized() {
-		return true;
 	}
 
 	@Override
@@ -239,5 +234,10 @@ public class SimpleStackInventory implements IInventory, ISaveState {
 
 	public void clearInventorySlotContents(int i) {
 		_contents[i] = null;	
+	}
+
+	@Override
+	public boolean hasCustomInventoryName() {
+		return true;
 	}
 }

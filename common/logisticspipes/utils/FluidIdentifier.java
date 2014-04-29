@@ -265,16 +265,4 @@ public class FluidIdentifier {
 	public ItemIdentifier getItemIdentifier() {
 		return ItemIdentifier.get(SimpleServiceLocator.logisticsFluidManager.getFluidContainer(makeFluidStack(0)));
 	}
-
-	public static FluidIdentifier convertFromID(int id) {
-		Fluid f = null;
-		for(Fluid fluid:FluidRegistry.getRegisteredFluids().values()) {
-			if(fluid.getBlockID() == id) {
-				f = fluid;
-				break;
-			}
-		}
-		if(f == null) return null;
-		return get(f);
-	}
 }

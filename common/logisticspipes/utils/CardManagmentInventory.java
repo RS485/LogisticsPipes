@@ -24,7 +24,7 @@ public class CardManagmentInventory implements IInventory {
 		if(card != null) {
 			NBTTagCompound nbt = card.getTagCompound();
 			if(nbt == null) {
-				nbt = new NBTTagCompound("tag");
+				nbt = new NBTTagCompound();
 			}
 			NBTTagCompound colors = nbt.getCompoundTag("colors");
 			if(colors == null) {
@@ -42,7 +42,7 @@ public class CardManagmentInventory implements IInventory {
 			
 			Colors color = Colors.values()[colorCode];
 			
-			nbt.setCompoundTag("colors", colors);
+			nbt.setTag("colors", colors);
 			card.setTagCompound(nbt);
 			inv.setInventorySlotContents(3, card);
 			
@@ -84,7 +84,7 @@ public class CardManagmentInventory implements IInventory {
 		if(card != null) {
 			NBTTagCompound nbt = card.getTagCompound();
 			if(nbt == null) {
-				nbt = new NBTTagCompound("tag");
+				nbt = new NBTTagCompound();
 			}
 			NBTTagCompound colors = nbt.getCompoundTag("colors");
 			if(colors == null) {
@@ -92,19 +92,19 @@ public class CardManagmentInventory implements IInventory {
 			}
 			int slot = i - 4;
 			colors.setInteger("color:" + slot, Colors.getColor(itemstack).ordinal());
-			nbt.setCompoundTag("colors", colors);
+			nbt.setTag("colors", colors);
 			card.setTagCompound(nbt);
 			inv.setInventorySlotContents(3, card);
 		}
 	}
 
 	@Override
-	public String getInvName() {
+	public String getInventoryName() {
 		return "Card Managment Inventory";
 	}
 
 	@Override
-	public boolean isInvNameLocalized() {
+	public boolean hasCustomInventoryName() {
 		return false;
 	}
 
@@ -114,18 +114,18 @@ public class CardManagmentInventory implements IInventory {
 	}
 
 	@Override
-	public void onInventoryChanged() {}
-
-	@Override
 	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
 		return true;
 	}
 
 	@Override
-	public void openChest() {}
+	public void markDirty() {}
 
 	@Override
-	public void closeChest() {}
+	public void openInventory() {}
+
+	@Override
+	public void closeInventory() {}
 
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack itemstack) {

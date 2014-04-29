@@ -5,8 +5,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import javax.swing.Icon;
-
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen.Colors;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -18,6 +16,8 @@ import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ForgeHooksClient;
 
@@ -197,7 +197,7 @@ public class BasicGuiHelper {
 		}
 	}
 	
-	public static void drawToolTip(int posX, int posY, List<String> msg, int color, boolean forceminecraft) {
+	public static void drawToolTip(int posX, int posY, List<String> msg, EnumChatFormatting rarityColor, boolean forceminecraft) {
 		try {
 			if(forceminecraft) {
 				throw new Exception();
@@ -211,7 +211,7 @@ public class BasicGuiHelper {
 			Class<?> GuiManager = Class.forName("codechicken.nei.GuiManager");
 			Method drawMultilineTip = GuiManager.getDeclaredMethod("drawMultilineTip", new Class[]{int.class, int.class, List.class, int.class});
 			
-			drawMultilineTip.invoke(GuiManagerObject, new Object[]{posX, posY, msg, color});
+			drawMultilineTip.invoke(GuiManagerObject, new Object[]{posX, posY, msg, rarityColor});
 		} catch(Exception e) {
 			try {
 				//Use minecraft vanilla code
@@ -264,7 +264,7 @@ public class BasicGuiHelper {
 
 	                    if (var18 == 0)
 	                    {
-	                        var19 = "\u00a7" + Integer.toHexString(color) + var19;
+	                        var19 = "\u00a7" + rarityColor.getFormattingCode() + var19;
 	                    }
 	                    else
 	                    {
@@ -423,7 +423,7 @@ public class BasicGuiHelper {
 	private static final ResourceLocation ITEMS = new ResourceLocation("textures/atlas/items.png");
 	
 
-    public static void renderIconAt(Minecraft mc, int x, int y, float zLevel, Icon icon) {
+    public static void renderIconAt(Minecraft mc, int x, int y, float zLevel, IIcon icon) {
     	if(icon == null) return;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
     	mc.renderEngine.bindTexture(ITEMS);
@@ -442,7 +442,7 @@ public class BasicGuiHelper {
     	mc.renderEngine.bindTexture(ITEMS);
     	
 		for (int i = 0; i < SimpleServiceLocator.forestryProxy.getRenderPassesForAlleleId(id); i++) {
-			Icon icon = SimpleServiceLocator.forestryProxy.getIconIndexForAlleleId(id, i);
+			IIcon icon = SimpleServiceLocator.forestryProxy.getIconIndexForAlleleId(id, i);
 			if(icon == null) continue;
 	        int color = SimpleServiceLocator.forestryProxy.getColorForAlleleId(id, i);
 	        float colorR = (color >> 16 & 0xFF) / 255.0F;

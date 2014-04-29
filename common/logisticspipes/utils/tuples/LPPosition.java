@@ -58,7 +58,7 @@ public class LPPosition extends Triplet<Double, Double, Double> {
 	}
 	
 	public TileEntity getTileEntity(World world) {
-		return world.getBlockTileEntity(getX(), getY(), getZ());
+		return world.getTileEntity(getX(), getY(), getZ());
 	}
 	
 	public void moveForward(ForgeDirection dir, double steps) {

@@ -6,7 +6,9 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import logisticspipes.textures.provider.LPPipeIconProvider;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import cpw.mods.fml.common.FMLCommonHandler;
+import forestry.api.core.IIconProvider;
 
 public class Textures {
 	private int index = 0;
@@ -160,7 +162,7 @@ public class Textures {
 	public static LPPipeIconProvider	LPpipeIconProvider;
 
 	//this gets called with null par1IconRegister from preinit, and later with non-null from textureprestitch
-	public void registerBlockIcons(IconRegister par1IconRegister) {
+	public void registerBlockIcons(IIconRegister par1IconRegister) {
 		//Register Empty Texture for slot 0
 		MainProxy.proxy.addLogisticsPipesOverride(par1IconRegister, 0, "empty", "", true);
 		MainProxy.proxy.addLogisticsPipesOverride(par1IconRegister, 1, "empty", "", true);
@@ -232,11 +234,11 @@ public class Textures {
 		}
 	}
 	
-	public void registerItemIcons(IconRegister par1IconRegister) {
+	public void registerItemIcons(IIconRegister par1IconRegister) {
 		LPactionIconProvider.registerIcons(par1IconRegister);
 	}
 	
-	private TextureType registerTexture(IconRegister par1IconRegister, String fileName) {
+	private TextureType registerTexture(IIconRegister par1IconRegister, String fileName) {
 		return registerTexture(par1IconRegister, fileName, 1);
 	}
 	/**
@@ -245,7 +247,7 @@ public class Textures {
 	 * @param flag - 2 - register single texture without overlay, 1/0 register with overlay
 	 */
 	
-	private TextureType registerTexture(IconRegister par1IconRegister, String fileName, int flag) {
+	private TextureType registerTexture(IIconRegister par1IconRegister, String fileName, int flag) {
 		TextureType texture = new TextureType();
 			texture.normal = index++;
 			texture.powered=texture.normal;
@@ -266,7 +268,7 @@ public class Textures {
 		return texture;
 	}
 	
-	private int registerSingleTexture(IconRegister par1IconRegister, String fileName) {
+	private int registerSingleTexture(IIconRegister par1IconRegister, String fileName) {
 		int texture = index++;
 		if(FMLCommonHandler.instance().getEffectiveSide().isClient()) {
 			MainProxy.proxy.addLogisticsPipesOverride(par1IconRegister, texture, fileName, LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE,true);

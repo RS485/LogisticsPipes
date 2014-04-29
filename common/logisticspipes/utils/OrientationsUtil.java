@@ -92,7 +92,7 @@ public class OrientationsUtil {
 			default:
 				break;
 		}
-		return tile.worldObj.getBlockTileEntity(x, y, z);
+		return tile.getWorldObj().getTileEntity(x, y, z);
 	}
 
 	public static boolean isSide(ForgeDirection ori) {

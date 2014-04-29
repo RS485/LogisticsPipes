@@ -99,6 +99,8 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		this.uniqueID = uniqueID;
 	}
 	
+	private Item itemCache;
+	
 	public final int itemID;
 	public final int itemDamage;
 	public final FinalNBTTagCompound tag;
@@ -135,7 +137,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 			}
 			FinalNBTTagCompound finaltag = new FinalNBTTagCompound((NBTTagCompound)tag.copy());
 			ItemIdentifier unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, finaltag, getUnusedId());
-			checkNBTbadness(unknownItem, tag);
 			itemNBTList.put(finaltag,unknownItem);
 			_itemIdentifierIdCache.put(unknownItem.uniqueID, unknownItem);
 			return(unknownItem);
@@ -146,7 +147,8 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		if (itemStack == null && allowNullsForTesting){
 			return null;
 		}
-		return get(itemStack.itemID, itemStack.getItemDamage(), itemStack.stackTagCompound);
+		int id = Item.getIdFromItem(itemStack.getItem());
+		return get(id, itemStack.getItemDamage(), itemStack.stackTagCompound);
 	}
 	
 	public static ItemIdentifier getUndamaged(ItemStack itemStack) {
@@ -154,15 +156,23 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 			return null;
 		}
 		int itemDamage = 0;
-		if (!Item.itemsList[itemStack.itemID].isDamageable()) {
+		if (!itemStack.getItem().isDamageable()) {
 			itemDamage = itemStack.getItemDamage();
 		}
-		return get(itemStack.itemID, itemDamage, itemStack.stackTagCompound);
+		int id = Item.getIdFromItem(itemStack.getItem());
+		return get(id, itemDamage, itemStack.stackTagCompound);
+	}
+
+	public Item getItem() {
+		if(itemCache != null) {
+			itemCache = getItem();
+		}
+		return itemCache;
 	}
 
 	public ItemIdentifier getUndamaged() {
 		if(_IDIgnoringDamage==null){
-			if (!Item.itemsList[this.itemID].isDamageable()) {
+			if (!getItem().isDamageable()) {
 				_IDIgnoringDamage = this;
 			} else {
 				_IDIgnoringDamage = get(this.itemID, 0, this.tag);
@@ -172,8 +182,10 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	}
 
 	public static ItemIdentifier getIgnoringNBT(ItemStack itemStack) {
-		return get(itemStack.itemID, itemStack.getItemDamage(), null);
+		int id = Item.getIdFromItem(itemStack.getItem());
+		return get(id, itemStack.getItemDamage(), null);
 	}
+
 	public ItemIdentifier getIgnoringNBT() {
 		if(this._IDIgnoringNBT==null){
 			_IDIgnoringNBT= get(itemID, itemDamage, null);			
@@ -196,20 +208,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	private static boolean isIdUsed(int id) {
 		return _itemIdentifierIdCache.containsKey(id);
 	}
-	/*
-	private static boolean tagsequal(NBTTagCompound tag1, NBTTagCompound tag2) {
-		if(tag1 == null && tag2 == null) {
-			return true;
-		}
-		if(tag1 == null) {
-			return false;
-		}
-		if(tag2 == null) {
-			return false;
-		}
-		return tag1.equals(tag2);
-	}
-	*/
 
 	public static void tick() {
 		if(init) return;
@@ -240,32 +238,32 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	/* Instance Methods */
 	
 	public String getDebugName() {
-		if (Item.itemsList[itemID] != null)	{
-			return Item.itemsList[itemID].getUnlocalizedName() + "(ID: " + itemID + ", Damage: " + itemDamage + ")";
+		if (getItem() != null)	{
+			return getItem().getUnlocalizedName() + "(ID: " + itemID + ", Damage: " + itemDamage + ")";
 		}
 		return "<item not found>";
 	}
 	
 	public boolean isValid() {
-		return Item.itemsList[itemID] != null;
+		return getItem() != null;
 	}
 
 	private String getName(int id,ItemStack stack) {
 		String name = "???";
 		try {
-			name = Item.itemsList[id].getItemDisplayName(stack);
+			name = Item.getItemById(id).getItemStackDisplayName(stack);
 			if(name == null) {
 				throw new Exception();
 			}
 		} catch(Exception e) {
 			try {
-				name = Item.itemsList[id].getUnlocalizedName(stack);
+				name = Item.getItemById(id).getUnlocalizedName(stack);
 				if(name == null) {
 					throw new Exception();
 				}
 			} catch(Exception e1) {
 				try {
-					name = Item.itemsList[id].getUnlocalizedName();
+					name = Item.getItemById(id).getUnlocalizedName();
 					if(name == null) {
 						throw new Exception();
 					}
@@ -278,14 +276,14 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	}
 	
 	public String getFriendlyName() {
-		if (Item.itemsList[itemID] != null) {
-			return getName(itemID,this.unsafeMakeNormalStack(1));
+		if (getItem() != null) {
+			return getName(itemID, this.unsafeMakeNormalStack(1));
 		}
 		return "<Item name not found>";
 	}
 	
 	public String getFriendlyNameCC() {
-		if (Item.itemsList[itemID] != null) {
+		if (getItem() != null) {
 			return MainProxy.proxy.getName(this);
 		}
 		return "<Item name not found>";
@@ -312,13 +310,13 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	}
 	
 	public ItemStack unsafeMakeNormalStack(int stackSize){
-		ItemStack stack = new ItemStack(this.itemID, stackSize, this.itemDamage);
+		ItemStack stack = new ItemStack(getItem(), stackSize, this.itemDamage);
 		stack.setTagCompound(this.tag);
 		return stack;
 	}
 
 	public ItemStack makeNormalStack(int stackSize){
-		ItemStack stack = new ItemStack(this.itemID, stackSize, this.itemDamage);
+		ItemStack stack = new ItemStack(getItem(), stackSize, this.itemDamage);
 		if(this.tag != null) {
 			stack.setTagCompound((NBTTagCompound)this.tag.copy());
 		}
@@ -326,29 +324,21 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	}
 	
 	public int getMaxStackSize() {
-		if(Item.itemsList[this.itemID].isDamageable() && this.itemDamage > 0) {
+		if(getItem().isDamageable() && this.itemDamage > 0) {
 			return 1;
 		}
-		int limit = Item.itemsList[this.itemID].getItemStackLimit();
+		int limit = getItem().getItemStackLimit(this.makeNormalStack(1));
 		return limit < 64 ? limit : 64;
 	}
 	
 	public boolean fuzzyMatch(ItemStack stack) {
-		if(stack.itemID != this.itemID) return false;
+		if(stack.getItem() != this.getItem()) return false;
 		if(stack.getItemDamage() != this.itemDamage) return false;
 		return true;
 	}
 	
 	public int getId() {
 		return uniqueID;
-	}
-	
-	public String getNBTTagCompoundName() {
-		if(tag != null) {
-			return tag.getName();
-		} else {
-			return null;
-		}
 	}
 	
 	public Map<Object, Object> getNBTTagCompoundAsMap() {
@@ -391,39 +381,33 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		}
 		if(nbt instanceof NBTTagByte) {
 			HashMap<Object, Object> map = new HashMap<Object, Object>();
-			map.put("name", nbt.getName());
 			map.put("type", "NBTTagByte");
-			map.put("value", ((NBTTagByte)nbt).data);
+			map.put("value", ((NBTTagByte)nbt).func_150290_f());
 			return map;
 		} else if(nbt instanceof NBTTagByteArray) {
 			HashMap<Object, Object> map = new HashMap<Object, Object>();
-			map.put("name", nbt.getName());
 			map.put("type", "NBTTagByteArray");
-			map.put("value", getArrayAsMap(((NBTTagByteArray)nbt).byteArray));
+			map.put("value", getArrayAsMap(((NBTTagByteArray)nbt).func_150292_c()));
 			return map;
 		} else if(nbt instanceof NBTTagDouble) {
 			HashMap<Object, Object> map = new HashMap<Object, Object>();
-			map.put("name", nbt.getName());
 			map.put("type", "NBTTagDouble");
-			map.put("value", ((NBTTagDouble)nbt).data);
+			map.put("value", ((NBTTagDouble)nbt).func_150286_g());
 			return map;
 		} else if(nbt instanceof NBTTagFloat) {
 			HashMap<Object, Object> map = new HashMap<Object, Object>();
-			map.put("name", nbt.getName());
 			map.put("type", "NBTTagFloat");
-			map.put("value", ((NBTTagFloat)nbt).data);
+			map.put("value", ((NBTTagFloat)nbt).func_150288_h());
 			return map;
 		} else if(nbt instanceof NBTTagInt) {
 			HashMap<Object, Object> map = new HashMap<Object, Object>();
-			map.put("name", nbt.getName());
 			map.put("type", "NBTTagInt");
-			map.put("value", ((NBTTagInt)nbt).data);
+			map.put("value", ((NBTTagInt)nbt).func_150287_d());
 			return map;
 		} else if(nbt instanceof NBTTagIntArray) {
 			HashMap<Object, Object> map = new HashMap<Object, Object>();
-			map.put("name", nbt.getName());
 			map.put("type", "NBTTagIntArray");
-			map.put("value", getArrayAsMap(((NBTTagIntArray)nbt).intArray));
+			map.put("value", getArrayAsMap(((NBTTagIntArray)nbt).func_150302_c()));
 			return map;
 		} else if(nbt instanceof NBTTagList) {
 			List internal = ((NBTTagList)nbt).tagList;
@@ -436,7 +420,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 				i++;
 			}
 			HashMap<Object, Object> map = new HashMap<Object, Object>();
-			map.put("name", nbt.getName());
 			map.put("type", "NBTTagList");
 			map.put("value", content);
 			return map;
@@ -454,28 +437,24 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 				i++;
 			}
 			HashMap<Object, Object> map = new HashMap<Object, Object>();
-			map.put("name", nbt.getName());
 			map.put("type", "NBTTagCompound");
 			map.put("value", content);
 			map.put("keys", keys);
 			return map;
 		} else if(nbt instanceof NBTTagLong) {
 			HashMap<Object, Object> map = new HashMap<Object, Object>();
-			map.put("name", nbt.getName());
 			map.put("type", "NBTTagLong");
-			map.put("value", ((NBTTagLong)nbt).data);
+			map.put("value", ((NBTTagLong)nbt).func_150291_c());
 			return map;
 		} else if(nbt instanceof NBTTagShort) {
 			HashMap<Object, Object> map = new HashMap<Object, Object>();
-			map.put("name", nbt.getName());
 			map.put("type", "NBTTagShort");
-			map.put("value", ((NBTTagShort)nbt).data);
+			map.put("value", ((NBTTagShort)nbt).func_150289_e());
 			return map;
 		} else if(nbt instanceof NBTTagString) {
 			HashMap<Object, Object> map = new HashMap<Object, Object>(); 
-			map.put("name", nbt.getName());
 			map.put("type", "NBTTagString");
-			map.put("value", ((NBTTagString)nbt).data);
+			map.put("value", ((NBTTagString)nbt).func_150285_a_());
 			return map;
 		} else {
 			throw new UnsupportedOperationException("Unsupported NBTBase of type:" + nbt.getClass().getName());
@@ -528,54 +507,5 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 
 	public boolean isDamagable() {
 		return this.makeNormalStack(0).getItem().isDamageable();
-	}
-
-	private static void checkNBTbadness(ItemIdentifier item, NBTBase nbt) {
-		if((item.getMaxStackSize() > 1 || LogisticsPipes.DEBUG) && nbt.getName().isEmpty()) {
-			if (!_badTags.contains(item.getIgnoringNBT())) {
-				_badTags.add(item.getIgnoringNBT());
-				LogisticsPipes.log.warning("Bad item " + item.getDebugName()
-						+ " : Root NBTTag has no name");
-			}
-		}
-		try {
-			String s = checkNBTbadness_recurse(nbt);
-			if(s != null) {
-				LogisticsPipes.log.warning("Bad item " + item.getDebugName() + " : " + s);
-			}
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
-	private static String checkNBTbadness_recurse(NBTBase nbt) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-		if(nbt instanceof NBTTagList) {
-			NBTTagList l = (NBTTagList) nbt;
-			for(int i = 0; i < l.tagCount(); i++) {
-				NBTBase b = l.tagAt(i);
-				if(!b.getName().equals("")) {
-					return "NBTTagList containing named tag " + b.getName();
-				}
-				String ret = checkNBTbadness_recurse(b);
-				if(ret != null)
-					return ret;
-			}
-		} else if(nbt instanceof NBTTagCompound) {
-			@SuppressWarnings("unchecked")
-			Map<String, NBTBase> internal = ((NBTTagCompound)nbt).tagMap;
-			for(Entry<String, NBTBase> e : internal.entrySet()) {
-				String k = e.getKey();
-				NBTBase v = e.getValue();
-				if(k == null || k.equals("")) {
-					return "NBTTagCompound containing empty key";
-				}
-				if(!k.equals(v.getName())) {
-					return "NBTTagCompound key " + k + " doesn't match value name " + v;
-				}
-				String ret = checkNBTbadness_recurse(v);
-				if(ret != null)
-					return ret;
-			}
-		}
-		return null;
 	}
 }

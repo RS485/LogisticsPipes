@@ -18,6 +18,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.inventory.Container;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.input.Mouse;
@@ -175,7 +176,7 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 						if(slot.getToolTipText() != null && !slot.getToolTipText().equals("")) {
 							ArrayList<String> list = new ArrayList<String>();
 							list.add(slot.getToolTipText());
-							BasicGuiHelper.drawToolTip(par1, par2, list, 0xf, false);
+							BasicGuiHelper.drawToolTip(par1, par2, list, EnumChatFormatting.WHITE, false);
 						}
 					}
 				}

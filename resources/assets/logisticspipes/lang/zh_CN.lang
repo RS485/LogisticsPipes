@@ -189,6 +189,7 @@ item.HUDnosebridge=物流HUD眼镜镜框
 item.NanoHopper=纳米漏斗
 item.logisticsItemCard=物流物品卡片
 item.itemDisk=物流盘
+item.networkMonitorItem=网络监视器
 item.networkMonitorItem.name=网络监视器
 item.CraftingSignCreator=合成标记贴牌器
 item.logisticsHUDGlasses=物流HUD眼镜

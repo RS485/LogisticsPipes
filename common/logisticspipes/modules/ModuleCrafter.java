@@ -23,158 +23,99 @@ import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-//IHUDModuleHandler, 
-public class ModuleCrafter extends LogisticsModule{
+public class ModuleCrafter extends LogisticsModule {
 	
-	//private final SimpleInventory _filterInventory = new SimpleInventory(9, "Requested items", 1);
-	/*private boolean _isDefaultRoute;
-	private int slot = 0;
-
-
-*/
-	
-//	private IHUDModuleRenderer HUD = new HUDItemSink(this);
-	private final PipeItemsCraftingLogistics pipe;
-//	private IRoutedPowerProvider _power;
-	
-//	private final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
+	private final PipeItemsCraftingLogistics	pipe;
 	
 	public ModuleCrafter(PipeItemsCraftingLogistics parent) {
-		pipe=parent;
-	}
-
-	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
-//		_power = powerprovider;
-	}
-
-
-	@Override 
-	public void registerSlot(int slot) {
+		pipe = parent;
 	}
 	
-	@Override 
+	@Override
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {}
+	
+	@Override
+	public void registerSlot(int slot) {}
+	
+	@Override
 	public final int getX() {
 		return this.pipe.getX();
 	}
-	@Override 
+	
+	@Override
 	public final int getY() {
 		return this.pipe.getY();
 	}
 	
-	@Override 
+	@Override
 	public final int getZ() {
 		return this.pipe.getZ();
 	}
 	
-	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0);
-//	private static final SinkReply _sinkReplyDefault = new SinkReply(FixedPriority.DefaultRoute, 0, true, true, 1, 0);
+	private static final SinkReply	_sinkReply	= new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0);
+	
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
-		//if(pipe.getSpecificInterests().contains(item))
-			return new SinkReply(_sinkReply, spaceFor(item));
-		//return null;
+		return new SinkReply(_sinkReply, spaceFor(item));
 	}
-
-	private int spaceFor(ItemIdentifier item){
-		int count=0;
-		WorldUtil wUtil = new WorldUtil(pipe.getWorld(),pipe.getX(),pipe.getY(),pipe.getZ());
-		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
-			if (!(tile.tile instanceof IInventory)) continue;
-			if (tile.tile instanceof TileGenericPipe) continue;
-			IInventory base = (IInventory) tile.tile;
-			if (base instanceof net.minecraft.inventory.ISidedInventory) {
-				base = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) base, tile.orientation.getOpposite(),false);
+	
+	protected int spaceFor(ItemIdentifier item) {
+		int count = 0;
+		WorldUtil wUtil = new WorldUtil(pipe.getWorld(), pipe.getX(), pipe.getY(), pipe.getZ());
+		for(AdjacentTile tile: wUtil.getAdjacentTileEntities(true)) {
+			if(!(tile.tile instanceof IInventory)) continue;
+			if(tile.tile instanceof TileGenericPipe) continue;
+			IInventory base = (IInventory)tile.tile;
+			if(base instanceof net.minecraft.inventory.ISidedInventory) {
+				base = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory)base, tile.orientation.getOpposite(), false);
 			}
-			IInventoryUtil inv =SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(base);
+			IInventoryUtil inv = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(base);
 			count += inv.roomForItem(item, 9999);
 		}
 		return count;
 	}
 	
 	@Override
-	public LogisticsModule getSubModule(int slot) {return null;}
-
-	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
-	//	_filterInventory.readFromNBT(nbttagcompound, "");
-	//	setDefaultRoute(nbttagcompound.getBoolean("defaultdestination"));
+	public LogisticsModule getSubModule(int slot) {
+		return null;
 	}
-
+	
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
-    //	_filterInventory.writeToNBT(nbttagcompound, "");
-    //	nbttagcompound.setBoolean("defaultdestination", isDefaultRoute());
-	}
-
+	public void readFromNBT(NBTTagCompound nbttagcompound) {}
+	
+	@Override
+	public void writeToNBT(NBTTagCompound nbttagcompound) {}
+	
 	@Override
 	public void tick() {}
-
-/*
-	@Override
-	public void startWatching() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).setInteger(slot));
-	}
-
-	@Override
-	public void stopWatching() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).setInteger(slot));
-	}
-
-	@Override
-	public void startWatching(EntityPlayer player) {
-		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).setSlot(slot).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)), (Player)player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ItemSinkDefault.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).setInteger1(slot).setInteger2(isDefaultRoute() ? 1 : 0), (Player)player);
-	}
-
-	@Override
-	public void stopWatching(EntityPlayer player) {
-		localModeWatchers.remove(player);
-	}
-
-	@Override
-	public void InventoryChanged(SimpleInventory inventory) {
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).setSlot(slot).setIdentList(ItemIdentifierStack.getListFromInventory(inventory)), localModeWatchers);
-	}
-
-	@Override
-	public IHUDModuleRenderer getRenderer() {
-		return HUD;
-	}
-
-	@Override
-	public void handleInvContent(Collection<ItemIdentifierStack> list) {
-		_filterInventory.handleItemIdentifierList(list);
-	}*/
-
+	
 	@Override
 	public boolean hasGenericInterests() {
 		return false;
 	}
-
+	
 	@Override
 	public Collection<ItemIdentifier> getSpecificInterests() {
 		return pipe.getSpecificInterests();
 	}
-
+	
 	@Override
-	public boolean interestedInAttachedInventory() {		
+	public boolean interestedInAttachedInventory() {
 		return false;
 		// when we are default we are interested in everything anyway, otherwise we're only interested in our filter.
 	}
-
+	
 	@Override
 	public boolean interestedInUndamagedID() {
 		return false;
 	}
-
+	
 	@Override
 	public boolean recievePassive() {
 		return false;
 	}
-
+	
 	@Override
 	@SideOnly(Side.CLIENT)
 	public Icon getIconTexture(IconRegister register) {

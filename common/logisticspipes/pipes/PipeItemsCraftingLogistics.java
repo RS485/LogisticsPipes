@@ -1020,18 +1020,18 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		while (lostItem != null) {
 			
 			ItemIdentifierStack stack = lostItem.get();
-			if( hasOrder()) { 
+			if(hasOrder()) { 
 				SinkReply reply = LogisticsManager.canSink(getRouter(), null, true, stack.getItem(), null, true,true);
-				if(reply == null || reply.maxNumberOfItems <1) {
+				if(reply == null || reply.maxNumberOfItems < 1) {
+					_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(stack, 5000));
 					lostItem = _lostItems.poll();
-					//iterator.remove(); // if we have no space for this and nothing to do, don't bother re-requesting the item.
 					continue;
 				}
 			}
 			int received = RequestTree.requestPartial(stack, (CoreRoutedPipe) container.pipe);
 			if(received < stack.getStackSize()) {
 				stack.setStackSize(stack.getStackSize() - received);
-				_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(stack,5000));
+				_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(stack, 5000));
 			}
 			lostItem = _lostItems.poll();
 		}
@@ -1043,7 +1043,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 	@Override
 	public void itemLost(ItemIdentifierStack item) {
-		_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(item,5000));
+		_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(item, 5000));
 	}
 
 	public void openAttachedGui(EntityPlayer player) {

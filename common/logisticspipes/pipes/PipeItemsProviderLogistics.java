@@ -47,6 +47,8 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.LogisticsOrder;
+import logisticspipes.routing.LogisticsOrder.RequestType;
 import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.textures.Textures;
@@ -59,7 +61,6 @@ import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.Pair;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -79,7 +80,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	public final LinkedList<ItemIdentifierStack> itemListOrderer = new LinkedList<ItemIdentifierStack>();
 	private final HUDProvider HUD = new HUDProvider(this);
 	
-	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager(this);
+	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager(RequestType.PROVIDER, this);
 	private boolean doContentUpdate = true;
 		
 	public PipeItemsProviderLogistics(int itemID) {
@@ -236,13 +237,13 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 
 		int itemsleft = itemsToExtract();
 		int stacksleft = stacksToExtract();
-		Pair<ItemIdentifierStack,IRequestItems> firstOrder = null;
-		Pair<ItemIdentifierStack,IRequestItems> order = null;
+		LogisticsOrder firstOrder = null;
+		LogisticsOrder order = null;
 		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders() && (firstOrder == null || firstOrder != order)) {
 			if(firstOrder == null)
 				firstOrder = order;
 			order = _orderManager.peekAtTopRequest();
-			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getSimpleID());
+			int sent = sendStack(order.getItem(), itemsleft, order.getDestination().getRouter().getSimpleID());
 			if(sent < 0) break;
 			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, getX(), getY(), getZ(), this.getWorld(), 3);
 			stacksleft -= 1;
@@ -273,9 +274,9 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	}
 	
 	@Override
-	public void fullFill(LogisticsPromise promise, IRequestItems destination) {
-		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination);
+	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination) {
 		MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, getX(), getY(), getZ(), this.getWorld(), 2);
+		return _orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination);
 	}
 
 	@Override

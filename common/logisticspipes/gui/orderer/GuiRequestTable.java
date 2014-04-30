@@ -1,7 +1,10 @@
 package logisticspipes.gui.orderer;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -17,6 +20,7 @@ import logisticspipes.network.packets.orderer.RequestSubmitListPacket;
 import logisticspipes.network.packets.orderer.RequestSubmitPacket;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.routing.LogisticsOrder;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
@@ -26,15 +30,25 @@ import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import logisticspipes.utils.gui.SearchBar;
 import logisticspipes.utils.gui.SmallGuiButton;
+import logisticspipes.utils.gui.extention.GuiExtention;
+import logisticspipes.utils.gui.extention.GuiExtentionController;
+import logisticspipes.utils.gui.extention.GuiExtentionController.Side;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.string.ChatColor;
+import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.tuples.Pair;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
 public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch, ISpecialItemRenderer {
 
@@ -57,6 +71,9 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 	private boolean showRequest = true;
 	private int	startLeft;
 	private int	startXSize;
+	
+	private GuiExtentionController extentionController = new GuiExtentionController(Side.LEFT);
+	private BitSet handledExtention = new BitSet();
 	
 	public GuiRequestTable(EntityPlayer entityPlayer, PipeBlockRequestTable table) {
 		super(410, 240, 0, 0);
@@ -103,6 +120,7 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 			reHide = true;
 		}
 		super.initGui();
+		extentionController.setMaxBottom(bottom);
 
 		buttonList.clear();
 		buttonList.add(new GuiButton(0, right - 55, bottom - 25, 50,20,"Request")); // Request
@@ -198,6 +216,110 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 			drawRect(guiLeft + 164 + a, guiTop + 65 - a, guiLeft + 166 + a, guiTop + 67 - a, Colors.DarkGrey);
 		}
 		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 20, guiTop + 150);
+		for(final Entry<Integer, Pair<ItemIdentifierStack, List<LogisticsOrder>>> entry:_table.watchedRequests.entrySet()) {
+			if(!handledExtention.get(entry.getKey())) {
+				handledExtention.set(entry.getKey());
+				extentionController.addExtention(new GuiExtention() {
+					
+					private Map<Pair<Integer, Integer>, LogisticsOrder> ordererPosition = new HashMap<Pair<Integer, Integer>, LogisticsOrder>();
+					private int height;
+					private int width = 4;
+					
+					@Override
+					public void renderForground(int left, int top) {
+						if(!_table.watchedRequests.containsKey(entry.getKey())) {
+							extentionController.removeExtention(this);
+							return;
+						}
+						ordererPosition.clear();
+						GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+						OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);
+						GL11.glEnable(GL11.GL_LIGHTING);
+						GL11.glEnable(GL11.GL_DEPTH_TEST);
+						RenderHelper.enableGUIStandardItemLighting();
+						ItemStack stack = entry.getValue().getValue1().makeNormalStack();
+						itemRenderer.renderItemAndEffectIntoGUI(fontRenderer, getMC().renderEngine, stack, left + 5, top + 5);
+						itemRenderer.renderItemOverlayIntoGUI(fontRenderer, getMC().renderEngine, stack, left + 5, top + 5, "");
+						String s = StringUtil.getFormatedStackSize(stack.stackSize);
+						GL11.glDisable(GL11.GL_LIGHTING);
+						GL11.glDisable(GL11.GL_DEPTH_TEST);
+						itemRenderer.zLevel = 0.0F;
+		
+						// Draw number
+						fontRenderer.drawStringWithShadow(s, left + 22 - fontRenderer.getStringWidth(s), top + 14, 16777215);
+						if(this.isFullyExtended()) {
+							String ident = "ID: " + Integer.toString(entry.getKey());
+							fontRenderer.drawStringWithShadow(ident, left + 30, top + 10, 16777215);
+							int x = left + 6;
+							int y = top + 25;
+							int line = 1;
+							int cacheFinalW = getFinalWidth();
+							width = 4;
+							for(LogisticsOrder order: entry.getValue().getValue2()) {
+								stack = order.getItem().makeNormalStack();
+								if(stack.stackSize <= 0) continue;
+								GL11.glEnable(GL11.GL_LIGHTING);
+								GL11.glEnable(GL11.GL_DEPTH_TEST);
+								RenderHelper.enableGUIStandardItemLighting();
+								itemRenderer.renderItemAndEffectIntoGUI(fontRenderer, getMC().renderEngine, stack, x, y);
+								itemRenderer.renderItemOverlayIntoGUI(fontRenderer, getMC().renderEngine, stack, x, y, "");
+								s = StringUtil.getFormatedStackSize(stack.stackSize);
+								GL11.glDisable(GL11.GL_LIGHTING);
+								GL11.glDisable(GL11.GL_DEPTH_TEST);
+								itemRenderer.zLevel = 0.0F;
+								
+								// Draw number
+								fontRenderer.drawStringWithShadow(s, x + 17 - fontRenderer.getStringWidth(s), y + 9, 16777215);
+								ordererPosition.put(new Pair<Integer, Integer>(x, y), order);
+								x += 18;
+								if(x > left + cacheFinalW - 18) {
+									x = left + 6;
+									y += 18;
+								}
+								if(line++ % (4 * 4) == 0) {
+									width++;
+								}
+							}
+							height = y - 26;
+							if(x == left + 6) {
+								height -= 18;
+							}
+						}
+						RenderHelper.disableStandardItemLighting();
+					}
+					
+					@Override
+					public int getFinalWidth() {
+						return Math.max(80, width * 18 + 8);
+					}
+					
+					@Override
+					public int getFinalHeight() {
+						return Math.max(50, height);
+					}
+
+					@Override
+					public void handleMouseOverAt(int xPos, int yPos) {
+						if(isFullyExtended()) {
+							for(Pair<Integer, Integer> key:ordererPosition.keySet()) {
+								if(xPos >= key.getValue1() && xPos < key.getValue1() + 18 && yPos >= key.getValue2() && yPos < key.getValue2() + 18) {
+									LogisticsOrder order = ordererPosition.get(key);
+									List<String> list = new ArrayList<String>();
+									list.add(ChatColor.BLUE + "Request Type: " + ChatColor.YELLOW + order.getType().name());
+									list.add(ChatColor.BLUE + "Send to Router ID: " + ChatColor.YELLOW + order.getRouterId());
+									BasicGuiHelper.displayItemToolTip(new Object[]{xPos - 10, yPos, order.getItem().makeNormalStack(), true, list}, zLevel, guiLeft, guiTop, false, false);
+								}
+							}
+						} else {
+							List<String> list = new ArrayList<String>();
+							list.add(ChatColor.BLUE + "Request ID: " + ChatColor.YELLOW + entry.getKey());
+							BasicGuiHelper.displayItemToolTip(new Object[]{xPos - 10, yPos, entry.getValue().getValue1().makeNormalStack(), true, list}, zLevel, guiLeft, guiTop, false, false);
+						}
+					}
+				});
+			}
+		}
+		extentionController.render(guiLeft, guiTop);
 	}
 
 	public void refreshItems() {
@@ -325,6 +447,9 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 	public void drawGuiContainerForegroundLayer(int par1, int par2) {
 		if(super.hasSubGui()) return;
 		BasicGuiHelper.displayItemToolTip(itemDisplay.getToolTip(), this, this.zLevel, guiLeft, guiTop);
+		if(par1 < guiLeft) {
+			extentionController.mouseOver(par1, par2);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -361,6 +486,9 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 		if(showRequest) {
 			itemDisplay.handleClick(i, j, k);
 			search.handleClick(i, j, k);
+		}
+		if(i < guiLeft) {
+			extentionController.mouseClicked(i, j, k);
 		}
 		super.mouseClicked(i, j, k);
 	}

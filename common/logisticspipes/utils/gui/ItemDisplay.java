@@ -12,6 +12,7 @@ import logisticspipes.interfaces.ISpecialItemRenderer;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen.Colors;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.string.StringUtil;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -197,19 +198,8 @@ public class ItemDisplay {
 					renderer.specialItemRendering(itemIdentifierStack.getItem(), x, y);
 				}
 
-				String s;
-				if (itemstack.stackSize == 1) {
-					s = "";
-				} else if (itemstack.stackSize < 1000) {
-					s = itemstack.stackSize + "";
-				} else if (itemstack.stackSize < 100000) {
-					s = itemstack.stackSize / 1000 + "K";
-				} else if (itemstack.stackSize < 1000000) {
-					s = "0M" + itemstack.stackSize / 100000;
-				} else {
-					s = itemstack.stackSize / 1000000 + "M";
-				}
-
+				String s = StringUtil.getFormatedStackSize(itemstack.stackSize);
+				
 				FontRenderer font = itemstack.getItem().getFontRenderer(itemstack);
 				if (font == null)
 					font = fontRenderer;

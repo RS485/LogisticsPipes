@@ -25,6 +25,7 @@ import logisticspipes.request.RequestTree.workWeightedSorter;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsExtraPromise;
+import logisticspipes.routing.LogisticsOrder;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.ServerRouter;
@@ -206,13 +207,19 @@ public class RequestTreeNode {
 		}
 	}
 
-	protected void fullFill() {
+	protected List<LogisticsOrder> fullFill() {
+		List<LogisticsOrder> list = new ArrayList<LogisticsOrder>();
+		List<LogisticsOrder> delay = new ArrayList<LogisticsOrder>();
 		for(RequestTreeNode subNode:subRequests) {
-			subNode.fullFill();
+			delay.addAll(subNode.fullFill());
 		}
 		for(LogisticsPromise promise:promises) {
-			promise.sender.fullFill(promise, target);
+			LogisticsOrder result = promise.sender.fullFill(promise, target);
+			if(result != null) {
+				list.add(result);
+			}
 		}
+		list.addAll(delay);
 		for(LogisticsPromise promise:extrapromises) {
 			if(promise.sender instanceof ICraftItems) {
 				((ICraftItems)promise.sender).registerExtras(promise);
@@ -226,6 +233,7 @@ public class RequestTreeNode {
 		for(FluidRequestTreeNode subNode:liquidSubRequests) {
 			subNode.fullFill();
 		}
+		return list;
 	}
 
 	protected void buildMissingMap(Map<ItemIdentifier,Integer> missing) {

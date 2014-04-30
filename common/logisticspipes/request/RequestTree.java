@@ -14,6 +14,7 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.FluidLogisticsPromise;
 import logisticspipes.routing.LogisticsExtraPromise;
+import logisticspipes.routing.LogisticsOrder;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.FinalPair;
 import logisticspipes.utils.FluidIdentifier;
@@ -77,8 +78,8 @@ public class RequestTree extends RequestTreeNode {
 		return extras;
 	}
 
-	protected void fullFillAll() {
-		fullFill();
+	protected List<LogisticsOrder> fullFillAll() {
+		return fullFill();
 	}
 	
 	public void sendMissingMessage(RequestLog log) {
@@ -197,9 +198,9 @@ public class RequestTree extends RequestTreeNode {
 	public static int request(ItemIdentifierStack item, IRequestItems requester, RequestLog log, boolean acceptPartial, boolean simulateOnly, boolean logMissing, boolean logUsed, EnumSet<ActiveRequestType> requestFlags) {
 		RequestTree tree = new RequestTree(item, requester, null, requestFlags);
 		if(!simulateOnly &&(tree.isDone() || ((tree.getPromiseItemCount() > 0) && acceptPartial))) {
-			tree.fullFillAll();
+			List<LogisticsOrder> list = tree.fullFillAll();
 			if(log != null) {
-				log.handleSucessfullRequestOf(item.getItem(), item.getStackSize());
+				log.handleSucessfullRequestOf(item.getItem(), item.getStackSize(), list);
 			}
 			return tree.getPromiseItemCount();
 		} else {
@@ -239,9 +240,10 @@ public class RequestTree extends RequestTreeNode {
 	private static int requestFluid(FluidIdentifier liquid, int amount, IRequestFluid pipe, RequestLog log, boolean acceptPartial) {
 		FluidRequestTreeNode request = new FluidRequestTreeNode(liquid, amount, pipe, null);
 		if(request.isDone() || acceptPartial) {
+			//TODO add control for Liquid
 			request.fullFill();
 			if(log != null) {
-				log.handleSucessfullRequestOf(request.getFluid().getItemIdentifier(), request.getAmount());
+				log.handleSucessfullRequestOf(request.getFluid().getItemIdentifier(), request.getAmount(), null);
 			}
 			return request.getPromiseFluidAmount();
 		} else {

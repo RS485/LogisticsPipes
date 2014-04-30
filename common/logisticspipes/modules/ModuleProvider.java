@@ -35,6 +35,8 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.LogisticsOrder;
+import logisticspipes.routing.LogisticsOrder.RequestType;
 import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.PlayerCollectionList;
@@ -42,7 +44,6 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.Pair;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -59,7 +60,7 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 	protected ISendRoutedItem _itemSender;
 	protected IRoutedPowerProvider _power;
 	
-	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager();
+	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager(RequestType.PROVIDER);
 	
 	private List<ILegacyActiveModule> _previousLegacyModules = new LinkedList<ILegacyActiveModule>();
 
@@ -147,13 +148,13 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 		checkUpdate(null);
 		int itemsleft = itemsToExtract();
 		int stacksleft = stacksToExtract();
-		Pair<ItemIdentifierStack,IRequestItems> firstOrder = null;
-		Pair<ItemIdentifierStack,IRequestItems> order = null;
+		LogisticsOrder firstOrder = null;
+		LogisticsOrder order = null;
 		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders() && (firstOrder == null || firstOrder != order)) {
 			if(firstOrder == null)
 				firstOrder = order;
 			order = _orderManager.peekAtTopRequest();
-			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getSimpleID());
+			int sent = sendStack(order.getItem(), itemsleft, order.getDestination().getRouter().getSimpleID());
 			if(sent < 0) break;
 			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, getX(), getY(), getZ(), _world.getWorld(), 3);
 			stacksleft -= 1;
@@ -193,8 +194,8 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 	}
 
 	@Override
-	public void fullFill(LogisticsPromise promise, IRequestItems destination) {
-		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination);
+	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination) {
+		return _orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination);
 	}
 
 	private int getAvailableItemCount(ItemIdentifier item) {

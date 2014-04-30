@@ -95,4 +95,20 @@ public class StringUtil {
 			}
 		}
 	}
+
+	public static String getFormatedStackSize(int stackSize) {
+		String s;
+		if (stackSize == 1) {
+			s = "";
+		} else if (stackSize < 1000) {
+			s = stackSize + "";
+		} else if (stackSize < 100000) {
+			s = stackSize / 1000 + "K";
+		} else if (stackSize < 1000000) {
+			s = "0M" + stackSize / 100000;
+		} else {
+			s = stackSize / 1000000 + "M";
+		}
+		return s;
+	}
 }

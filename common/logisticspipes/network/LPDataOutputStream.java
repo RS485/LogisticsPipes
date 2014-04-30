@@ -5,10 +5,12 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.BitSet;
 import java.util.EnumSet;
+import java.util.List;
 
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.LogisticsOrder;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
@@ -121,5 +123,23 @@ public class LPDataOutputStream extends DataOutputStream {
 		this.writeInt(stack.getStackSize());
 		this.writeInt(stack.getItem().itemDamage);
 		this.writeNBTTagCompound(stack.getItem().tag);
+	}
+	
+	public <T> void writeList(List<T> list, IWriteListObject<T> handler) throws IOException {
+		this.writeInt(list.size());
+		for(int i=0;i<list.size();i++) {
+			handler.writeObject(this, list.get(i));
+		}
+	}
+
+	public void writeOrder(LogisticsOrder order) throws IOException {
+		this.writeItemIdentifierStack(order.getItem());
+		this.writeInt(order.getDestination().getRouter().getSimpleID());
+		this.writeBoolean(order.isFinished());
+		this.writeEnum(order.getType());
+	}
+	
+	public <T extends Enum<T>> void writeEnum(T object) throws IOException {
+		this.writeInt(object.ordinal());
 	}
 }

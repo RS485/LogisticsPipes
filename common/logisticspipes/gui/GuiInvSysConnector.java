@@ -107,7 +107,7 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 	        int mouseY = this.height - Mouse.getY() * this.height / mc.displayHeight - 1;
 			
 			if(x < mouseX && mouseX < x + 18 && y < mouseY && mouseY < y + 18) {
-				BasicGuiHelper.displayItemToolTip(new Object[]{mouseX,mouseY,st,true}, this, zLevel, guiLeft, guiTop, false, false);
+				BasicGuiHelper.displayItemToolTip(new Object[]{mouseX,mouseY,st,true}, zLevel, guiLeft, guiTop, false, false);
 			}
 			
 			column++;

@@ -139,6 +139,7 @@ public class MainProxy {
 	}
 	
 	public static void sendToPlayerList(ModernPacket packet, PlayerCollectionList players) {
+		if(players.isEmpty()) return;
 		packet.create();
 		if(packet.isCompressable() || needsToBeCompressed(packet)) {
 			for(EntityPlayer player:players.players()) {

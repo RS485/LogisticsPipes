@@ -512,7 +512,7 @@ public class GuiHandler implements IGuiHandler {
 				
 			case GuiIDs.GUI_Request_Table_ID:
 				if(pipe == null || !(pipe.pipe instanceof PipeBlockRequestTable)) return null;
-				dummy = new DummyContainer(player.inventory, ((PipeBlockRequestTable)pipe.pipe).matrix);
+				dummy = new DummyContainer(player, ((PipeBlockRequestTable)pipe.pipe).matrix, (PipeBlockRequestTable)pipe.pipe);
 				int i = 0;
 				for(int Y = 0;Y < 3;Y++) {
 					for(int X = 0;X < 9;X++) {

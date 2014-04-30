@@ -15,6 +15,12 @@ public final class SinkReply {
 		ElectricBuffer,
 		ElectricManager,
 	}
+	
+	public enum BufferMode {
+		NONE,
+		BUFFERED,
+		DESTINATION_BUFFERED,
+	}
 
 	public final FixedPriority fixedPriority;
 	public final int customPriority;
@@ -22,6 +28,7 @@ public final class SinkReply {
 	public final boolean isDefault;
 	public final int energyUse;
 	public final int maxNumberOfItems;
+	public final BufferMode bufferMode;
 	
 	public SinkReply(FixedPriority fixedPriority, int customPriority, boolean isPassive, boolean isDefault, int energyUse, int maxNumberOfItems) {
 		this.fixedPriority = fixedPriority;
@@ -30,15 +37,26 @@ public final class SinkReply {
 		this.isDefault = isDefault;
 		this.energyUse = energyUse;
 		this.maxNumberOfItems = maxNumberOfItems;
+		this.bufferMode = BufferMode.NONE;
 	}
 	
-	public SinkReply(SinkReply base, int maxNumberOfItems)
-	{
+	public SinkReply(SinkReply base, int maxNumberOfItems) {
 		this.fixedPriority = base.fixedPriority;
 		this.customPriority = base.customPriority;
 		this.isPassive = base.isPassive;
 		this.isDefault = base.isDefault;
 		this.energyUse = base.energyUse;
 		this.maxNumberOfItems = maxNumberOfItems;
+		this.bufferMode = BufferMode.NONE;
+	}
+	
+	public SinkReply(SinkReply base, int maxNumberOfItems, BufferMode bufferMode) {
+		this.fixedPriority = base.fixedPriority;
+		this.customPriority = base.customPriority;
+		this.isPassive = base.isPassive;
+		this.isDefault = base.isDefault;
+		this.energyUse = base.energyUse;
+		this.maxNumberOfItems = maxNumberOfItems;
+		this.bufferMode = bufferMode;
 	}
 }

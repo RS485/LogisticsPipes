@@ -8,6 +8,8 @@
 
 package logisticspipes.routing;
 
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import logisticspipes.interfaces.IChangeListener;
@@ -18,7 +20,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.world.World;
 
-public class LogisticsOrderManager {
+public class LogisticsOrderManager implements Iterable<LogisticsOrder> {
 	
 	private final RequestType	type;
 	
@@ -124,5 +126,12 @@ public class LogisticsOrderManager {
 		}
 		return itemCount;
 	}
-	
+
+	/**
+	 * DON'T MODIFY TROUGH THIS ONLY READ THE VALUES
+	 */
+	@Override
+	public Iterator<LogisticsOrder> iterator() {
+		return Collections.unmodifiableList(this._orders).iterator();
+	}
 }

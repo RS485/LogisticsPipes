@@ -52,15 +52,15 @@ public class ModuleCrafter extends LogisticsModule {
 		return this.pipe.getZ();
 	}
 	
-	private static final SinkReply	_sinkReply	= new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0);
+	protected static final SinkReply	_sinkReply	= new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0);
 	
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
-		return new SinkReply(_sinkReply, spaceFor(item));
+		return new SinkReply(_sinkReply, spaceFor(item, includeInTransit));
 	}
 	
-	protected int spaceFor(ItemIdentifier item) {
+	protected int spaceFor(ItemIdentifier item, boolean includeInTransit) {
 		int count = 0;
 		WorldUtil wUtil = new WorldUtil(pipe.getWorld(), pipe.getX(), pipe.getY(), pipe.getZ());
 		for(AdjacentTile tile: wUtil.getAdjacentTileEntities(true)) {
@@ -72,6 +72,9 @@ public class ModuleCrafter extends LogisticsModule {
 			}
 			IInventoryUtil inv = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(base);
 			count += inv.roomForItem(item, 9999);
+		}
+		if(includeInTransit) {
+			count -= pipe.countOnRoute(item);
 		}
 		return count;
 	}

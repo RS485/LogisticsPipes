@@ -57,10 +57,10 @@ public class ModuleSatelite extends LogisticsModule{
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
-		return new SinkReply(_sinkReply, spaceFor(item));
+		return new SinkReply(_sinkReply, spaceFor(item, includeInTransit));
 	}
 
-	private int spaceFor(ItemIdentifier item){
+	private int spaceFor(ItemIdentifier item, boolean includeInTransit) {
 		int count=0;
 		WorldUtil wUtil = new WorldUtil(pipe.getWorld(),pipe.getX(),pipe.getY(),pipe.getZ());
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
@@ -72,6 +72,9 @@ public class ModuleSatelite extends LogisticsModule{
 			}
 			IInventoryUtil inv =SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(base);
 			count += inv.roomForItem(item, 9999);
+		}
+		if(includeInTransit) {
+			count -= pipe.countOnRoute(item);
 		}
 		return count;
 	}

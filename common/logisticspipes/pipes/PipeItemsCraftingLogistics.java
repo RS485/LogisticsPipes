@@ -95,10 +95,12 @@ import logisticspipes.utils.IHavePriority;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SinkReply;
+import logisticspipes.utils.SinkReply.BufferMode;
 import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.block.Block;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
@@ -282,6 +284,12 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			checkContentUpdate();
 		}
 		
+		if(hasOrder()) {
+			cacheAreAllOrderesToBuffer();
+		} else {
+			cachedAreAllOrderesToBuffer = false;
+		}
+		
 		if (getWorld().getTotalWorldTime() % 6 != 0) return;
 
 		waitingForCraft = false;
@@ -342,6 +350,28 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			// send the new crafted items to the destination
 			ItemIdentifier extractedID = ItemIdentifier.get(extracted);
 			while (extracted.stackSize > 0) {
+				if(nextOrder.getItem().getItem() != extractedID) {
+					LogisticsOrder startOrder = nextOrder;
+					do {
+						_orderManager.deferSend();
+						nextOrder = _orderManager.peekAtTopRequest();
+					} while(nextOrder.getItem().getItem() != extractedID && startOrder != nextOrder);
+					if(startOrder == nextOrder) {
+						int numtosend = Math.min(extracted.stackSize, extractedID.getMaxStackSize());
+						if(numtosend == 0)
+							break;
+						stacksleft -= 1;
+						itemsleft -= numtosend;
+						ItemStack stackToSend = extracted.splitStack(numtosend);
+						//Route the unhandled item
+						LPPosition entityPos = new LPPosition(tile.tile.xCoord + 0.5, tile.tile.yCoord + CoreConstants.PIPE_MIN_POS, tile.tile.zCoord + 0.5);
+						entityPos.moveForward(tile.orientation.getOpposite(), 0.5);
+						TravelingItem entityItem = new TravelingItem(entityPos.getXD(), entityPos.getYD(), entityPos.getZD(), stackToSend);
+						entityItem.setSpeed(TransportConstants.PIPE_NORMAL_SPEED * Configs.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
+						((PipeTransportItems) transport).injectItem(entityItem, tile.orientation.getOpposite());
+						continue;
+					}
+				}
 				int numtosend = Math.min(extracted.stackSize, extractedID.getMaxStackSize());
 				numtosend = Math.min(numtosend, nextOrder.getItem().getStackSize()); 
 				if(numtosend == 0)
@@ -350,24 +380,25 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 				itemsleft -= numtosend;
 				ItemStack stackToSend = extracted.splitStack(numtosend);
 				if (processingOrder) {
+					SinkReply reply = LogisticsManager.canSink(nextOrder.getDestination().getRouter(), null, true, ItemIdentifier.get(stackToSend), null, true, false);
+					boolean defersend = false;
+					if(reply == null || reply.bufferMode != BufferMode.NONE || reply.maxNumberOfItems < 1) {
+						defersend = true;
+						if(this.debugThisPipe) {
+							System.out.print("");
+						}
+					}
 					IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stackToSend);
 					item.setDestination(nextOrder.getDestination().getRouter().getSimpleID());
 					item.setTransportMode(TransportMode.Active);
 					super.queueRoutedItem(item, tile.orientation);
-					_orderManager.sendSuccessfull(stackToSend.stackSize, false);
+					_orderManager.sendSuccessfull(stackToSend.stackSize, defersend);
 					if(_orderManager.hasOrders()){
 						nextOrder = _orderManager.peekAtTopRequest(); // fetch but not remove.
 					} else {
 						processingOrder = false;
 						if(!_extras.isEmpty())
 						nextOrder = _extras.getFirst();
-					}
-					if(nextOrder.getItem().getItem() != extractedID) {
-						//TODO
-						if(LogisticsPipes.DEBUG) {
-							throw new UnsupportedOperationException("Unable to handle overflow");
-						}
-						new UnsupportedOperationException("Unable to handle overflow").printStackTrace();
 					}
 				} else {
 					removeExtras(numtosend,nextOrder.getItem().getItem());
@@ -382,6 +413,23 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 				}
 			}
 		}
+	}
+	
+	private boolean cachedAreAllOrderesToBuffer;
+	
+	public boolean areAllOrderesToBuffer() {
+		return cachedAreAllOrderesToBuffer;
+	}
+	
+	public void cacheAreAllOrderesToBuffer() {
+		boolean result = true;
+		for(LogisticsOrder order:_orderManager) {
+			SinkReply reply = LogisticsManager.canSink(order.getDestination().getRouter(), null, true, order.getItem().getItem(), null, true, false);
+			if(reply != null && reply.bufferMode != BufferMode.BUFFERED && reply.maxNumberOfItems >= 1) {
+				result = false;
+			}
+		}
+		cachedAreAllOrderesToBuffer = result;
 	}
 	
 	private void removeExtras(int numToSend, ItemIdentifier item) {
@@ -1021,7 +1069,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			
 			ItemIdentifierStack stack = lostItem.get();
 			if(hasOrder()) { 
-				SinkReply reply = LogisticsManager.canSink(getRouter(), null, true, stack.getItem(), null, true,true);
+				SinkReply reply = LogisticsManager.canSink(getRouter(), null, true, stack.getItem(), null, true, true);
 				if(reply == null || reply.maxNumberOfItems < 1) {
 					_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(stack, 5000));
 					lostItem = _lostItems.poll();

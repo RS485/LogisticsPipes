@@ -8,6 +8,7 @@ import logisticspipes.pipes.upgrades.AdvancedSatelliteUpgrade;
 import logisticspipes.pipes.upgrades.CCRemoteControlUpgrade;
 import logisticspipes.pipes.upgrades.CombinedSneakyUpgrade;
 import logisticspipes.pipes.upgrades.CraftingByproductUpgrade;
+import logisticspipes.pipes.upgrades.CraftingMonitoringUpgrade;
 import logisticspipes.pipes.upgrades.FluidCraftingUpgrade;
 import logisticspipes.pipes.upgrades.FuzzyCraftingUpgrade;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
@@ -78,6 +79,7 @@ public class ItemUpgrade extends LogisticsItem {
 	
 	//Various
 	public static final int CC_REMOTE_CONTROL = 40;
+	public static final int CRAFTING_MONITORING = 41;
 	
 	//Values
 	public static final int MAX_LIQUID_CRAFTER = 3;
@@ -162,6 +164,7 @@ public class ItemUpgrade extends LogisticsItem {
 		registerUpgrade(POWER_IC2_HV_SUPPLIER, IC2HVPowerSupplierUpgrade.class, 24);
 		registerUpgrade(POWER_IC2_EV_SUPPLIER, IC2EVPowerSupplierUpgrade.class, 25);
 		registerUpgrade(CC_REMOTE_CONTROL, CCRemoteControlUpgrade.class, 26);
+		registerUpgrade(CRAFTING_MONITORING, CraftingMonitoringUpgrade.class, 27);
 	}
 	
 	public void registerUpgrade(int id, Class<? extends IPipeUpgrade> moduleClass, int textureId) {
@@ -236,7 +239,7 @@ public class ItemUpgrade extends LogisticsItem {
 
 	@Override
 	public void registerIcons(IconRegister par1IconRegister) {
-		icons=new Icon[27];
+		icons=new Icon[28];
 		icons[0]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyUP");
 		icons[1]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyDOWN");
 		icons[2]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyNORTH");
@@ -267,6 +270,7 @@ public class ItemUpgrade extends LogisticsItem {
 		icons[24]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-HV");
 		icons[25]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-EV");
 		icons[26]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/CCRemoteControl");
+		icons[27]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/CraftingMonitoring");
 	}
 
 	@Override

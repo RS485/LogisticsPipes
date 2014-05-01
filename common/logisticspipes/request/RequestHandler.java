@@ -20,7 +20,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTree.ActiveRequestType;
-import logisticspipes.routing.LogisticsOrder;
+import logisticspipes.routing.LinkedLogisticsOrderList;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -56,7 +56,7 @@ public class RequestHandler {
 			}
 
 			@Override
-			public void handleSucessfullRequestOf(ItemIdentifier item, int count, List<LogisticsOrder> parts) {
+			public void handleSucessfullRequestOf(ItemIdentifier item, int count, LinkedLogisticsOrderList parts) {
 				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(1);
 				coll.add(new ItemIdentifierStack(item, count));
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(false), (Player)player);
@@ -86,7 +86,7 @@ public class RequestHandler {
 			}
 
 			@Override
-			public void handleSucessfullRequestOf(ItemIdentifier item, int count, List<LogisticsOrder> parts) {}
+			public void handleSucessfullRequestOf(ItemIdentifier item, int count, LinkedLogisticsOrderList parts) {}
 			
 			@Override
 			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {
@@ -155,7 +155,7 @@ public class RequestHandler {
 			}
 			
 			@Override
-			public void handleSucessfullRequestOf(ItemIdentifier item, int count, List<LogisticsOrder> parts) {}
+			public void handleSucessfullRequestOf(ItemIdentifier item, int count, LinkedLogisticsOrderList parts) {}
 			
 			@Override
 			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {
@@ -195,7 +195,7 @@ public class RequestHandler {
 			}
 			
 			@Override
-			public void handleSucessfullRequestOf(ItemIdentifier item, int count, List<LogisticsOrder> parts) {}
+			public void handleSucessfullRequestOf(ItemIdentifier item, int count, LinkedLogisticsOrderList parts) {}
 			
 			@Override
 			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {
@@ -232,7 +232,7 @@ public class RequestHandler {
 			}
 
 			@Override
-			public void handleSucessfullRequestOf(ItemIdentifier item, int count, List<LogisticsOrder> parts) {
+			public void handleSucessfullRequestOf(ItemIdentifier item, int count, LinkedLogisticsOrderList parts) {
 				status[0] = "DONE";
 				List<Pair<ItemIdentifier, Integer>> itemList = new LinkedList<Pair<ItemIdentifier, Integer>>();
 				itemList.add(new Pair<ItemIdentifier,Integer>(item, count));
@@ -267,7 +267,7 @@ public class RequestHandler {
 			}
 
 			@Override
-			public void handleSucessfullRequestOf(ItemIdentifier item, int count, List<LogisticsOrder> parts) {
+			public void handleSucessfullRequestOf(ItemIdentifier item, int count, LinkedLogisticsOrderList parts) {
 				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(1);
 				coll.add(new ItemIdentifierStack(item, count));
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(false), (Player)player);

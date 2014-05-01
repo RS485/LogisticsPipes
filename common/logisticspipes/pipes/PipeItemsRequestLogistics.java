@@ -29,7 +29,7 @@ import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.request.RequestHandler;
 import logisticspipes.request.RequestLog;
 import logisticspipes.request.RequestTree;
-import logisticspipes.routing.LogisticsOrder;
+import logisticspipes.routing.LinkedLogisticsOrderList;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
@@ -140,7 +140,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 			}
 
 			@Override
-			public void handleSucessfullRequestOf(ItemIdentifier item, int count, List<LogisticsOrder> parts) {}
+			public void handleSucessfullRequestOf(ItemIdentifier item, int count, LinkedLogisticsOrderList parts) {}
 
 			@Override
 			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {
@@ -184,7 +184,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 			}
 
 			@Override
-			public void handleSucessfullRequestOf(ItemIdentifier item, int count, List<LogisticsOrder> parts) {}
+			public void handleSucessfullRequestOf(ItemIdentifier item, int count, LinkedLogisticsOrderList parts) {}
 
 			@Override
 			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {}

@@ -15,7 +15,7 @@ public class OrderWatchRemovePacket extends IntegerCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe tile = this.getPipe(player.worldObj);
-		if(tile.pipe instanceof IRequestWatcher) {
+		if(tile != null && tile.pipe instanceof IRequestWatcher) {
 			((IRequestWatcher)tile.pipe).handleClientSideRemove(getInteger());
 		}
 	}

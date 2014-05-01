@@ -10,6 +10,7 @@ import java.util.List;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.LinkedLogisticsOrderList;
 import logisticspipes.routing.LogisticsOrder;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -136,10 +137,24 @@ public class LPDataOutputStream extends DataOutputStream {
 		this.writeItemIdentifierStack(order.getItem());
 		this.writeInt(order.getDestination().getRouter().getSimpleID());
 		this.writeBoolean(order.isFinished());
+		this.writeBoolean(order.isInProgress());
 		this.writeEnum(order.getType());
 	}
 	
 	public <T extends Enum<T>> void writeEnum(T object) throws IOException {
 		this.writeInt(object.ordinal());
+	}
+
+	public void writeLinkedLogisticsOrderList(LinkedLogisticsOrderList orders) throws IOException {
+		this.writeList(orders, new IWriteListObject<LogisticsOrder>() {
+			@Override
+			public void writeObject(LPDataOutputStream data, LogisticsOrder order) throws IOException {
+				data.writeOrder(order);
+			}});
+		this.writeList(orders.getSubOrders(), new IWriteListObject<LinkedLogisticsOrderList>() {
+			@Override
+			public void writeObject(LPDataOutputStream data, LinkedLogisticsOrderList order) throws IOException {
+				data.writeLinkedLogisticsOrderList(order);
+			}});
 	}
 }

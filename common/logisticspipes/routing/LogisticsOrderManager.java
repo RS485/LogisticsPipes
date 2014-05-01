@@ -66,7 +66,7 @@ public class LogisticsOrderManager implements Iterable<LogisticsOrder> {
 	}
 	
 	public LogisticsOrder peekAtTopRequest() {
-		return _orders.getFirst();
+		return _orders.getFirst().setInProgress(true);
 	}
 	
 	public void sendSuccessfull(int number, boolean defersend) {
@@ -74,8 +74,10 @@ public class LogisticsOrderManager implements Iterable<LogisticsOrder> {
 		if(_orders.getFirst().getItem().getStackSize() <= 0) {
 			LogisticsOrder order = _orders.removeFirst();
 			order.setFinished(true);
+			order.setInProgress(false);
 		} else if(defersend) {
-			_orders.add(_orders.removeFirst());
+			_orders.add(_orders.removeFirst().setInProgress(false));
+			_orders.getFirst().setInProgress(true);
 		}
 		listen();
 	}
@@ -85,12 +87,17 @@ public class LogisticsOrderManager implements Iterable<LogisticsOrder> {
 		if(!_orders.isEmpty()) {
 			LogisticsOrder order = _orders.removeFirst();
 			order.setFinished(true);
+			order.setInProgress(false);
+		}
+		if(!_orders.isEmpty()) {
+			_orders.getFirst().setInProgress(true);
 		}
 		listen();
 	}
 	
 	public void deferSend() {
-		_orders.add(_orders.removeFirst());
+		_orders.add(_orders.removeFirst().setInProgress(false));
+		_orders.getFirst().setInProgress(true);
 		listen();
 	}
 	

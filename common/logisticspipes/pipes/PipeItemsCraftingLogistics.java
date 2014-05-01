@@ -384,9 +384,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 					boolean defersend = false;
 					if(reply == null || reply.bufferMode != BufferMode.NONE || reply.maxNumberOfItems < 1) {
 						defersend = true;
-						if(this.debugThisPipe) {
-							System.out.print("");
-						}
 					}
 					IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stackToSend);
 					item.setDestination(nextOrder.getDestination().getRouter().getSimpleID());

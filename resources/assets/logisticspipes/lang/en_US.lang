@@ -224,6 +224,7 @@ item.IC2MVPowerSupplierUpgrade=IC2 MV Power Supplier Upgrade
 item.IC2HVPowerSupplierUpgrade=IC2 HV Power Supplier Upgrade
 item.IC2EVPowerSupplierUpgrade=IC2 EV Power Supplier Upgrade
 item.CCRemoteControlUpgrade=CC Remote Control Upgrade
+item.CraftingMonitoringUpgrade=Crafting Monitoring Upgrade
 
 # Blocks
 

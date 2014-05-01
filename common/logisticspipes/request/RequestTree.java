@@ -13,8 +13,8 @@ import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.FluidLogisticsPromise;
+import logisticspipes.routing.LinkedLogisticsOrderList;
 import logisticspipes.routing.LogisticsExtraPromise;
-import logisticspipes.routing.LogisticsOrder;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.FinalPair;
 import logisticspipes.utils.FluidIdentifier;
@@ -78,7 +78,7 @@ public class RequestTree extends RequestTreeNode {
 		return extras;
 	}
 
-	protected List<LogisticsOrder> fullFillAll() {
+	protected LinkedLogisticsOrderList fullFillAll() {
 		return fullFill();
 	}
 	
@@ -198,7 +198,7 @@ public class RequestTree extends RequestTreeNode {
 	public static int request(ItemIdentifierStack item, IRequestItems requester, RequestLog log, boolean acceptPartial, boolean simulateOnly, boolean logMissing, boolean logUsed, EnumSet<ActiveRequestType> requestFlags) {
 		RequestTree tree = new RequestTree(item, requester, null, requestFlags);
 		if(!simulateOnly &&(tree.isDone() || ((tree.getPromiseItemCount() > 0) && acceptPartial))) {
-			List<LogisticsOrder> list = tree.fullFillAll();
+			LinkedLogisticsOrderList list = tree.fullFillAll();
 			if(log != null) {
 				log.handleSucessfullRequestOf(item.getItem(), item.getStackSize(), list);
 			}

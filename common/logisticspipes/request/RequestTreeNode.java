@@ -24,6 +24,7 @@ import logisticspipes.request.RequestTree.ActiveRequestType;
 import logisticspipes.request.RequestTree.workWeightedSorter;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.LinkedLogisticsOrderList;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.LogisticsOrder;
 import logisticspipes.routing.LogisticsPromise;
@@ -207,11 +208,10 @@ public class RequestTreeNode {
 		}
 	}
 
-	protected List<LogisticsOrder> fullFill() {
-		List<LogisticsOrder> list = new ArrayList<LogisticsOrder>();
-		List<LogisticsOrder> delay = new ArrayList<LogisticsOrder>();
+	protected LinkedLogisticsOrderList fullFill() {
+		LinkedLogisticsOrderList list = new LinkedLogisticsOrderList();
 		for(RequestTreeNode subNode:subRequests) {
-			delay.addAll(subNode.fullFill());
+			list.getSubOrders().add(subNode.fullFill());
 		}
 		for(LogisticsPromise promise:promises) {
 			LogisticsOrder result = promise.sender.fullFill(promise, target);
@@ -219,7 +219,6 @@ public class RequestTreeNode {
 				list.add(result);
 			}
 		}
-		list.addAll(delay);
 		for(LogisticsPromise promise:extrapromises) {
 			if(promise.sender instanceof ICraftItems) {
 				((ICraftItems)promise.sender).registerExtras(promise);

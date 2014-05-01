@@ -952,6 +952,19 @@ public class RecipeManager {
 			Character.valueOf('P'), Item.paper
 		});
 		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CRAFTING_MONITORING), CraftingDependency.Upgrades, new Object[] { 
+			false, 
+			"RLR", 
+			"aCb", 
+			"RPR", 
+			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3),
+			Character.valueOf('P'), new ItemStack(LogisticsPipes.LogisticsCraftingPipeMk2, 1, 0), 
+			Character.valueOf('R'), Item.redstone,
+			Character.valueOf('L'), "dyeBlue",
+			Character.valueOf('a'), "dyeGreen",
+			Character.valueOf('b'), "dyeYellow"
+		});
+		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsFluidConnectorPipe, 4), CraftingDependency.Basic_Liquid, new Object[] {
 			"GPG",
 			"gLg",

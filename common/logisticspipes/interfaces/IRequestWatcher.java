@@ -1,12 +1,10 @@
 package logisticspipes.interfaces;
 
-import java.util.List;
-
-import logisticspipes.routing.LogisticsOrder;
+import logisticspipes.routing.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
 public interface IRequestWatcher {
-	public void handleOrderList(ItemIdentifierStack stack, List<LogisticsOrder> orders);
-	public void handleClientSideListInfo(int id, ItemIdentifierStack stack, List<LogisticsOrder> orders);
+	public void handleOrderList(ItemIdentifierStack stack, LinkedLogisticsOrderList orders);
+	public void handleClientSideListInfo(int id, ItemIdentifierStack stack, LinkedLogisticsOrderList orders);
 	public void handleClientSideRemove(int id);
 }

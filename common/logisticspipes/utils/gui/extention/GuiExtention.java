@@ -14,10 +14,8 @@ public abstract class GuiExtention {
 	private int currentXPos=0;
 	@Getter
 	private int currentYPos=0;
-	
-	@Getter
-	@Setter(value=AccessLevel.PACKAGE)
-	private boolean disabled;
+	private int targetYPos=0;
+	private boolean init = true;
 
 	public abstract int getFinalWidth();
 	public abstract int getFinalHeight();
@@ -25,7 +23,15 @@ public abstract class GuiExtention {
 
 	public final void update(int xPos, int yPos) {
 		currentXPos = xPos;
-		currentYPos = yPos;
+		if(yPos > currentYPos + 1 && !init) {
+			currentYPos += 2;
+		} else if(yPos < currentYPos - 1 && !init) {
+			currentYPos -= 2;
+		} else {
+			currentYPos = yPos;
+		}
+		targetYPos = yPos;
+		init = false;
 		if(extending) {
 			if(currentH < getFinalHeight()) {
 				currentH += 4;
@@ -68,7 +74,11 @@ public abstract class GuiExtention {
 	}
 	
 	public boolean isFullyExtended() {
-		return currentW == getFinalWidth() && currentH == getFinalHeight();
+		return currentW == getFinalWidth() && currentH == getFinalHeight() && targetYPos == currentYPos;
+	}
+	
+	public boolean isFullyRetracted() {
+		return currentW == getMinimumWidth() && currentH == getMinimumHeight() && targetYPos == currentYPos;
 	}
 	
 	public void handleMouseOverAt(int xPos, int yPos) {}

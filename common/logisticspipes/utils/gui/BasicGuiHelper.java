@@ -184,25 +184,19 @@ public class BasicGuiHelper {
 					Minecraft mc = FMLClientHandler.instance().getClient();
 					ItemStack var22 = (ItemStack) tooltip[2];
 					
-					List<String> tooltipList = new LinkedList<String>();
-					
 					List<String> var24 = var22.getTooltip(mc.thePlayer, mc.gameSettings.advancedItemTooltips);
-					tooltipList.add(var24.get(0));
-					var24.remove(0);
-					
-					if(tooltip.length > 4) {
-						tooltipList.addAll((List<String>) tooltip[4]);
-					}
-					
-	                if((Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) && (tooltip.length < 4 || Boolean.valueOf((Boolean)tooltip[3]))) {
-	    				var24.add(1, "\u00a77" + ((ItemStack)tooltip[2]).stackSize);	
+
+	                if(tooltip.length > 4) {
+	                	var24.addAll(1, (List<String>) tooltip[4]);
 					}
 	                
-	                tooltipList.addAll(var24);
+	                if((Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) && (tooltip.length < 4 || Boolean.valueOf((Boolean)tooltip[3]))) {
+	    				var24.add(1, "\u00a77" + ((ItemStack)tooltip[2]).stackSize);
+					}
 	                
 	                int var11 = ((Integer)tooltip[0]).intValue() - (forceAdd ? 0 : guiLeft) + 12;
 	                int var12 = ((Integer)tooltip[1]).intValue() - (forceAdd ? 0 : guiTop) - 12;
-	                drawToolTip(var11, var12, tooltipList, var22.getRarity().rarityColor, forceminecraft);
+	                drawToolTip(var11, var12, var24, var22.getRarity().rarityColor, forceminecraft);
 	            }
 	            catch(Exception e1) {}
 		}

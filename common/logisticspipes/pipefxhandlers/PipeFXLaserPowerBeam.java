@@ -52,7 +52,7 @@ public class PipeFXLaserPowerBeam extends EntityFX {
 		this.random = RAND.nextFloat() * RAND.nextInt(10);
 		dir = dir.getOpposite();
 		this.yaw = ((float)(Math.atan2(dir.offsetX, dir.offsetZ) * 180.0D / Math.PI));
-		this.pitch = ((float)(Math.atan2(dir.offsetY, MathHelper.sqrt_double(dir.offsetX + dir.offsetZ)) * 180.0D / Math.PI));
+		this.pitch = ((float)(Math.atan2(dir.offsetY, MathHelper.sqrt_double(dir.offsetX * dir.offsetX + dir.offsetZ * dir.offsetZ)) * 180.0D / Math.PI));
 		this.particleMaxAge = 0;
 		EntityLivingBase renderentity = FMLClientHandler.instance().getClient().renderViewEntity;
 		int visibleDistance = 50;

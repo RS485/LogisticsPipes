@@ -1,19 +1,23 @@
 # Russian language file
 
+# Insert %c and the name found in logisticspipes.utils.string.ChatColor to add colors
+# Example '%cYELLOW ' (The space behind will be removed)
+
 # Pipes
-item.PipeItemsBasicLogistics=Базовая логическая труба
+
+item.PipeItemsBasicLogistics=Базовая логистическая труба
 item.PipeItemsBasicLogistics.tip1=Тип: Passive push destination
 item.PipeItemsBasicLogistics.tip2= - "Вращает" предметы вокруг сети.
 item.PipeItemsBasicLogistics.tip3= - Перемещает определённые типы предметов в сундуки.
 item.PipeItemsBasicLogistics.tip4= - Может быть направлением по умолчанию.
 
-item.PipeItemsRequestLogistics=Логическая труба запросов
+item.PipeItemsRequestLogistics=Логистическая труба запросов
 item.PipeItemsRequestLogistics.tip1=Тип: Активный запросчик
 item.PipeItemsRequestLogistics.tip2= - Позволяет вручную запрашивать предметы
 item.PipeItemsRequestLogistics.tip3= - Предметы могут исходить от любой трубы-источника
 item.PipeItemsRequestLogistics.tip4= - Поставьте сундук на трубу, чтобы ловить выходящие предметы.
 
-item.PipeItemsRequestLogisticsMk2=Логическая труба запросов Mk2
+item.PipeItemsRequestLogisticsMk2=Логистическая труба запросов Mk2
 item.PipeItemsRequestLogisticsMk2.tip1=Тип: Активный запросчик
 item.PipeItemsRequestLogisticsMk2.tip2= - Быстрее, чем Mk1
 item.PipeItemsRequestLogisticsMk2.tip3= - Позволяет вручную запрашивать предметы
@@ -21,18 +25,18 @@ item.PipeItemsRequestLogisticsMk2.tip4= - Предметы могут исход
 item.PipeItemsRequestLogisticsMk2.tip5= - Поставьте сундук на трубу,
 item.PipeItemsRequestLogisticsMk2.tip6=   чтобы ловить выходящие предметы.
 
-item.PipeItemsProviderLogistics=Логическая труба-провайдер
+item.PipeItemsProviderLogistics=Логистическая труба-провайдер
 item.PipeItemsProviderLogistics.tip1=Тип: Источник предметов
 item.PipeItemsProviderLogistics.tip2= - Присоединяется к инвентарю
 item.PipeItemsProviderLogistics.tip3= - Посылает 16 предметов в сеть по запросу
 item.PipeItemsProviderLogistics.tip4= - Игнорирует трубы снабжения на том же блоке.
 
-item.PipeItemsProviderLogisticsMk2=Логическая труба-провайдер Mk2
+item.PipeItemsProviderLogisticsMk2=Логистическая труба-провайдер Mk2
 item.PipeItemsProviderLogisticsMk2.tip1=Тип: Источник предметов
 item.PipeItemsProviderLogisticsMk2.tip2= - Присоединяется к инвентарю
 item.PipeItemsProviderLogisticsMk2.tip3= - Посылает стак предметов в сеть по запросу
 
-item.PipeItemsCraftingLogistics=Логическая крафт-труба
+item.PipeItemsCraftingLogistics=Логистическая труба создания
 item.PipeItemsCraftingLogistics.tip1=Тип: Активный запросчик + источник
 item.PipeItemsCraftingLogistics.tip2= - Создаёт один предмет за раз.
 item.PipeItemsCraftingLogistics.tip3= - Присоединяется к автоматическому верстаку.
@@ -40,7 +44,7 @@ item.PipeItemsCraftingLogistics.tip4= - Автоматически создаё�
 item.PipeItemsCraftingLogistics.tip5= - Может использовать вторичную логическую трубу,
 item.PipeItemsCraftingLogistics.tip6=   чтобы отправлять входные предметы в другое место.
 
-item.PipeItemsCraftingLogisticsMk2=Логическая крафт-труба Mk2
+item.PipeItemsCraftingLogisticsMk2=Логистическая труба создания Mk2
 item.PipeItemsCraftingLogisticsMk2.tip1=Тип: Активный запросчик + источник
 item.PipeItemsCraftingLogisticsMk2.tip2= - Создаёт 16 предметов за раз.
 item.PipeItemsCraftingLogisticsMk2.tip3= - Присоединяется к автоматическому верстаку.
@@ -48,7 +52,7 @@ item.PipeItemsCraftingLogisticsMk2.tip4= - Автоматически созда
 item.PipeItemsCraftingLogisticsMk2.tip5= - Может использовать вторичную логическую трубу,
 item.PipeItemsCraftingLogisticsMk2.tip6=   чтобы отправлять входные предметы в другое место.
 
-item.PipeItemsCraftingLogisticsMk3=Логическая крафт-труба Mk3
+item.PipeItemsCraftingLogisticsMk3=Логистическая труба создания Mk3
 item.PipeItemsCraftingLogisticsMk3.tip1=Тип: Активный запросчик + источник
 item.PipeItemsCraftingLogisticsMk3.tip2= - Создаёт стак предметов за раз.
 item.PipeItemsCraftingLogisticsMk3.tip3= - Присоединяется к автоматическому верстаку.
@@ -56,191 +60,301 @@ item.PipeItemsCraftingLogisticsMk3.tip4= - Автоматически созда
 item.PipeItemsCraftingLogisticsMk3.tip5= - Может использовать вторичную логическую трубу,
 item.PipeItemsCraftingLogisticsMk3.tip6=   чтобы отправлять входные предметы в другое место.
 
-item.PipeItemsSatelliteLogistics=Логическая вторичная труба
+item.PipeItemsSatelliteLogistics=Логистическая вторичная труба
 item.PipeItemsSatelliteLogistics.tip1=Тип: Active request destination
-item.PipeItemsSatelliteLogistics.tip2= - Крафт-труба может отправлять
+item.PipeItemsSatelliteLogistics.tip2= - труба создания может отправлять
 item.PipeItemsSatelliteLogistics.tip3=   дополнительные входные предметы сюда
 item.PipeItemsSatelliteLogistics.tip4= - Используется для отправки нестакающихся
 item.PipeItemsSatelliteLogistics.tip5=   предметов до сундука следующим за верстаком.
 
-item.PipeItemsSupplierLogistics=Логическая труба снабжения
+item.PipeItemsSupplierLogistics=Логистическая труба снабжения
 item.PipeItemsSupplierLogistics.tip1=Тип: Активный запросчик предметов
 item.PipeItemsSupplierLogistics.tip2= - Автоматически заполняет сундук или машину
 item.PipeItemsSupplierLogistics.tip3= - Можете получать предметы из любого
 item.PipeItemsSupplierLogistics.tip4=   источника предметов.
 item.PipeItemsSupplierLogistics.tip5= - Игнорирует трубы-провайдеры на том же блоке.
 
-item.PipeItemsBuilderSupplierLogistics=Логическая труба снабжения для строителя
+item.PipeItemsBuilderSupplierLogistics=Логистическая труба снабжения для строителя
 item.PipeItemsBuilderSupplierLogistics.tip1=Тип: Активный запросчик предметов
 item.PipeItemsBuilderSupplierLogistics.tip2= - Автоматически заполняет строитель всеми необходимыми материалами
 
-item.PipeLogisticsChassiMk1=Логическое шасси Mk1
+item.PipeLogisticsChassiMk1=Логистическое шасси Mk1
 item.PipeLogisticsChassiMk1.tip1=Тип: Смешанный
 item.PipeLogisticsChassiMk1.tip2= - Может содержать 1 модуль.
 
-item.PipeLogisticsChassiMk2=Логическое шасси Mk2
+item.PipeLogisticsChassiMk2=Логистическое шасси Mk2
 item.PipeLogisticsChassiMk2.tip1=Тип: Смешанный
 item.PipeLogisticsChassiMk2.tip2= - Может содержать 2 модуля.
 
-item.PipeLogisticsChassiMk3=Логическое шасси Mk3
+item.PipeLogisticsChassiMk3=Логистическое шасси Mk3
 item.PipeLogisticsChassiMk3.tip1=Тип: Смешанный
 item.PipeLogisticsChassiMk3.tip2= - Может содержать 3 модуля.
 
-item.PipeLogisticsChassiMk4=Логическое шасси Mk4
+item.PipeLogisticsChassiMk4=Логистическое шасси Mk4
 item.PipeLogisticsChassiMk4.tip1=Тип: Смешанный
 item.PipeLogisticsChassiMk4.tip2= - Может содержать 4 модуля.
 
-item.PipeLogisticsChassiMk5=Логическое шасси Mk5
+item.PipeLogisticsChassiMk5=Логистическое шасси Mk5
 item.PipeLogisticsChassiMk5.tip1=Тип: Смешанный
 item.PipeLogisticsChassiMk5.tip2= - Может содержать 8 модулей.
 
-item.PipeItemsRemoteOrdererLogistics=Логическая труба дистанционных запросов
+item.PipeItemsRemoteOrdererLogistics=Логистическая труба дистанционных запросов
 item.PipeItemsRemoteOrdererLogistics.tip1=Тип: Активный запросчик
 item.PipeItemsRemoteOrdererLogistics.tip2= - Позволяет вручную запрашивать предметы *удалённо*
 item.PipeItemsRemoteOrdererLogistics.tip3= - Может вытащить из любого источника предметов
 item.PipeItemsRemoteOrdererLogistics.tip4= - Вы должны щёлкнуть правой кнопкой мыши
 item.PipeItemsRemoteOrdererLogistics.tip5=   удалённый запрос на этой трубе.
 
-item.PipeItemsApiaristAnalyser=Логическая труба-анализатор пчёл
+item.PipeItemsApiaristAnalyser=Логистическая труба-анализатор пчёл
 item.PipeItemsApiaristAnalyser.tip1=Тип: Пассивное назначение
 item.PipeItemsApiaristAnalyser.tip2= - Пассивное назначение для не-анализированных пчёл
 item.PipeItemsApiaristAnalyser.tip3= - Позволяет анализировать автоматически
 
-item.PipeItemsApiaristSink=Логическая BeeSink труба
+item.PipeItemsApiaristSink=Логистическая BeeSink труба
 item.PipeItemsApiaristSink.tip1=Тип: Пассивное назначение
 item.PipeItemsApiaristSink.tip2= - Пассивное назначение для анализированных пчёл
 item.PipeItemsApiaristSink.tip3= - Может фильтровать на основе генетических свойств и генома.
 
-item.PipeItemsInvSysConnector=Логический инвенторный системный коннектор
+item.PipeItemsInvSysConnector=Логистический инвентарный системный коннектор
 item.PipeItemsInvSysConnector.tip1=Тип: Мост
 item.PipeItemsInvSysConnector.tip2= - Соединяет две логические сети вместе
 item.PipeItemsInvSysConnector.tip3=   через общий инвентарь
 item.PipeItemsInvSysConnector.tip4= - Обычно используется вместе с эндер сундуком, но вы
 item.PipeItemsInvSysConnector.tip5=   также можете получить логику с поездами...
 
-item.PipeItemsSystemEntranceLogistics=Логическая системная входная труба
+item.PipeItemsSystemEntranceLogistics=Логистическая системная входная труба
 item.PipeItemsSystemEntranceLogistics.tip1=Тип: Маршрутизатор
 item.PipeItemsSystemEntranceLogistics.tip2= - Посылает не-маршрутизируемые предметы
 item.PipeItemsSystemEntranceLogistics.tip3=   к соответствующей трубе назначения.
 item.PipeItemsSystemEntranceLogistics.tip4= - Обе входная труба и труба назначения
 item.PipeItemsSystemEntranceLogistics.tip5=   должны быть связаны единой частотной картой.
 
-item.PipeItemsSystemDestinationLogistics=Логическая системная труба назначения
+item.PipeItemsSystemDestinationLogistics=Логистическая системная труба назначения
 item.PipeItemsSystemDestinationLogistics.tip1=Тип: Особое назначение
 item.PipeItemsSystemDestinationLogistics.tip2= - Получает не-маршрутизируемые предметы из
 item.PipeItemsSystemDestinationLogistics.tip3=   соответствующей входной трубы
 item.PipeItemsSystemDestinationLogistics.tip4= - Обе входная труба и труба назначения
 item.PipeItemsSystemDestinationLogistics.tip5=   должны быть связаны единой частотной картой.
 
-item.PipeItemsFirewall=Логическая брандмауэрная труба
+item.PipeItemsFirewall=Логистическая брандмауэрная труба
 item.PipeItemsFirewall.tip1=Тип: Фильтр запроса
 item.PipeItemsFirewall.tip2= - Позволяет подключать "враждебные" сети,
 item.PipeItemsFirewall.tip3=   позволяя при этом проходить только
 item.PipeItemsFirewall.tip4=   определённым предметам
 
-item.PipeItemsFluidSupplier=Логическая труба снабжения для жидкостного контейнера
+item.PipeItemsFluidSupplier=Логистическая труба снабжения для жидкостного контейнера
 item.PipeItemsFluidSupplier.tip1= - Использует вёдра или другие ёмкости с жидкостью,
 item.PipeItemsFluidSupplier.tip2=   чтобы заполнить подключённый контейнер
 item.PipeItemsFluidSupplier.tip3= - используется для машин,
 item.PipeItemsFluidSupplier.tip4=   которые автоматически опустошают предоставленные контейнеры
-item.PipeFluidSupplierMk2=Логическая жидкостная труба снабжения
+item.PipeFluidSupplierMk2=Логистическая жидкостная труба снабжения
 item.PipeFluidSupplierMk2.tip1=Тянет жидкости из 
 item.PipeFluidSupplierMk2.tip2=логической жидкостной проводящей трубы
-item.LogisticsFluidConnectorPipe=Логическая жидкостная труба-коннектор
-item.PipeFluidBasic=Базовая логическая жидкостная труба
-item.PipeFluidInsertion=Логическая жидкостная вводящая труба
-item.PipeFluidProvider=Логическая жидкостная труба-провайдер
-item.PipeFluidRequestLogistics=Логическая жидкостная труба запросов
-item.PipeFluidExtractor=Логическая жидкостная извлекающая труба
-item.PipeFluidSatellite=Логическая жидкостная вторичная труба
-item.PipeBlockRequestTable=Логический стол запросов
+item.LogisticsFluidConnectorPipe=Логистическая жидкостная труба-коннектор
+item.PipeFluidBasic=Базовая логистическая жидкостная труба
+item.PipeFluidInsertion=Логистическая жидкостная вводящая труба
+item.PipeFluidProvider=Логистическая жидкостная труба-провайдер
+item.PipeFluidRequestLogistics=Логистическая жидкостная труба запросов
+item.PipeFluidExtractor=Логистическая жидкостная извлекающая труба
+item.PipeFluidSatellite=Логистическая жидкостная вторичная труба
+item.PipeBlockRequestTable=Логистический стол запросов
 
 # Modules
 
 #TODO: Add shift tooltip information
 item.ModuleBlank=Пустой модуль
-item.ModuleItemSink=IМодуль temSink
+item.ModuleItemSink=ItemSink модуль
 item.ModulePassiveSupplier=Пассивный модуль снабжения
-item.ModuleExtractor=Extractor module
-item.ModulePolymorphicItemSink=Polymorphic ItemSink module
-item.ModuleQuickSort=QuickSort module
+item.ModuleExtractor=Извлекающий модуль
+item.ModulePolymorphicItemSink=Полиморфный ItemSink модуль
+item.ModuleQuickSort=Модуль быстрой сортировки
 item.ModuleTerminus=Terminus module
-item.ModuleAdvancedExtractor=Advanced Extractor module
-item.ModuleExtractorMk2=Extractor MK2 module
-item.ModuleAdvancedExtractorMK2=Advanced Extractor MK2
-item.ModuleExtractorMk3=Extractor MK3 module
-item.ModuleAdvancedExtractorMK3=Advanced Extractor MK3
-item.ModuleProvider=Provider module
-item.ModuleProviderMk2=Provider module MK2
-item.ModuleElectricManager=Electric Manager module
-item.ModuleElectricBuffer=Electric Buffer module
-item.ModuleApiaristAnalyser=Bee Analyzer module
-item.ModuleApiaristSink=BeeSink module
-item.ModuleApiaristRefiller=Apiary Refiller module
+item.ModuleAdvancedExtractor=Продвинутый извлекающий модуль
+item.ModuleExtractorMk2=Извлекающий модуль MK2
+item.ModuleAdvancedExtractorMK2=Продвинутый извлекающий модуль MK2
+item.ModuleExtractorMk3=Извлекающий модуль MK3
+item.ModuleAdvancedExtractorMK3=Продвинутый извлекающий модуль MK3
+item.ModuleProvider=Поставляющий модуль
+item.ModuleProviderMk2=Поставляющий модуль MK2
+item.ModuleElectricManager=Модуль управления электричеством
+item.ModuleElectricBuffer=Модуль электрического буфера
+item.ModuleApiaristAnalyser=Модуль-анализатор пчёл
+item.ModuleApiaristSink=BeeSink модуль
+item.ModuleApiaristRefiller=Модуль-заправщик пасеки
 item.ModuleApiaristTerminus=Drone Terminus module
 item.ModuleModBasedItemSink=Mod Based ItemSink module
-item.ModuleOreDictItemSink=OreDict ItemSink module
-item.ModuleThaumicAspectSink=Thaumic AspectSink module
+item.ModuleOreDictItemSink=OreDict ItemSink модуль
+item.ModuleThaumicAspectSink=Таум-AspectSink модуль
 item.ModuleEnchantmentSink=Enchantment Sink module
 item.ModuleEnchantmentSinkMK2=Enchantment Sink module MK2
 
 # Items
 
-item.brokenItem=Logistics Broken Item
-item.logisticsFluidContainer=Logistics Fluid Container
-item.upgradeManagerItem=Upgrade Manager
-item.HUDbow=Logistics HUD Bow
-item.HUDglass=Logistics HUD Glass
+item.brokenItem=Логистический сломанный предмет
+item.logisticsFluidContainer=Логистический жидкостный контейнер
+item.upgradeManagerItem=Менеджер по улучшениям
+item.HUDbow=Логистический HUD лука
+item.HUDglass=Логистический HUD стекла
 item.HUDnosebridge=Logistics HUD Nose Bridge
-item.NanoHopper=Nano Hopper
-item.logisticsItemCard=Logistics Item Card
-item.itemDisk=Logistics Disk
-item.networkMonitorItem=Network monitor
+item.NanoHopper=Нано загрузочная воронка
+item.logisticsItemCard=Логистическая предметная карта
+item.itemDisk=Логистический диск
+item.networkMonitorItem=Сетевой монитор
 item.CraftingSignCreator=Crafting Sign Creator
-item.logisticsHUDGlasses=Logistics HUD Glasses
-item.remoteOrdererItem=Remote Orderer
+item.logisticsHUDGlasses=Логистический HUD очков
+item.remoteOrdererItem=Удалённый запросчик
 
 # Upgrades
 
-item.SneakyUpgradeUP=Sneaky Upgrade (UP)
-item.SneakyUpgradeDOWN=Sneaky Upgrade (DOWN)
-item.SneakyUpgradeNORTH=Sneaky Upgrade (NORTH)
-item.SneakyUpgradeSOUTH=Sneaky Upgrade (SOUTH)
-item.SneakyUpgradeEAST=Sneaky Upgrade (EAST)
-item.SneakyUpgradeWEST=Sneaky Upgrade (WEST)
-item.CombinedSneakyUpgrade=Sneaky Combination Upgrade
-item.SpeedUpgrade=Item Speed Upgrade
-item.ConnectionUpgradeUP=Disconnection Upgrade (UP)
-item.ConnectionUpgradeDOWN=Disconnection Upgrade (DOWN)
-item.ConnectionUpgradeNORTH=Disconnection Upgrade (NORTH)
-item.ConnectionUpgradeSOUTH=Disconnection Upgrade (SOUTH)
-item.ConnectionUpgradeEAST=Disconnection Upgrade (EAST)
-item.ConnectionUpgradeWEST=Disconnection Upgrade (WEST)
-item.AdvancedSatelliteUpgrade=Advanced Satellite Upgrade
-item.FluidCraftingUpgrade=Fluid Crafting Upgrade
+item.SneakyUpgradeUP=Скрытое улучшение (ВВЕРХ)
+item.SneakyUpgradeDOWN=Скрытое улучшение (ВНИЗ)
+item.SneakyUpgradeNORTH=Скрытое улучшение (СЕВЕР)
+item.SneakyUpgradeSOUTH=Скрытое улучшение (ЮГ)
+item.SneakyUpgradeEAST=Скрытое улучшение (ВОСТОК)
+item.SneakyUpgradeWEST=Скрытое улучшение (ЗАПАД)
+item.CombinedSneakyUpgrade=Скрытое комбинированное улучшение
+item.SpeedUpgrade=Улучшение: Скорость предметов
+item.ConnectionUpgradeUP=Разъединяющие улучшение (ВВЕРХ)
+item.ConnectionUpgradeDOWN=Разъединяющие улучшение (ВНИЗ)
+item.ConnectionUpgradeNORTH=Разъединяющие улучшение (СЕВЕР)
+item.ConnectionUpgradeSOUTH=Разъединяющие улучшение (ЮГ)
+item.ConnectionUpgradeEAST=Разъединяющие улучшение (ВОСТОК)
+item.ConnectionUpgradeWEST=Разъединяющие улучшение (ЗАПАД)
+item.AdvancedSatelliteUpgrade=Продвинутое вторичное улучшение
+item.FluidCraftingUpgrade=Улучшение: Создание жидкости
 item.CraftingByproductUpgrade=Crafting Byproduct Extraction Upgrade
-item.PatternUpgrade=Placement Rules Upgrade
-item.FuzzyCraftingUpgrade=Fuzzy Crafting Upgrade
-item.PowerTransportationUpgrade=Power Transportation Upgrade
-item.BCPowerSupplierUpgrade=BC Power Supplier Upgrade
-item.RFPowerSupplierUpgrade=TE Power Supplier Upgrade
-item.IC2LVPowerSupplierUpgrade=IC2 LV Power Supplier Upgrade
-item.IC2MVPowerSupplierUpgrade=IC2 MV Power Supplier Upgrade
-item.IC2HVPowerSupplierUpgrade=IC2 HV Power Supplier Upgrade
-item.IC2EVPowerSupplierUpgrade=IC2 EV Power Supplier Upgrade
-item.CCRemoteControlUpgrade=CC Remote Control Upgrade
+item.PatternUpgrade=Улучшение: Правила размещения
+item.FuzzyCraftingUpgrade=Улучшение: Нечёткое создание
+item.PowerTransportationUpgrade=Улучшение: Транспортировка энергии
+item.BCPowerSupplierUpgrade=Улучшение: Снабжение BC-энергией
+item.RFPowerSupplierUpgrade=Улучшение: Снабжение TE-энергией
+item.IC2LVPowerSupplierUpgrade=Улучшение: Снабжение энергией НН IC2
+item.IC2MVPowerSupplierUpgrade=Улучшение: Снабжение энергией СН IC2
+item.IC2HVPowerSupplierUpgrade=Улучшение: Снабжение энергией ВН IC2
+item.IC2EVPowerSupplierUpgrade=Улучшение: Снабжение энергией СВН IC2
+item.CCRemoteControlUpgrade=Улучшение: Удалённый CC контроль
 
 # Blocks
 
 tile.solderingstation=Паяльная станция
-tile.logisticspowerjunction=Энергетическое хранилище
-tile.logisticssecuritystation=Станция безопасности
-tile.logisticscraftingtable=Сборочный стол
-tile.logisticsbcpowerprovider=Провайдер BC-энергии
-tile.logisticstepowerprovider=Провайдер TE-энергии
-tile.logisticsic2powerprovider=Провайдер IC2-энергии
+tile.logisticspowerjunction=Логистическое энергетическое хранилище
+tile.logisticssecuritystation=Логистическая станция безопасности
+tile.logisticscraftingtable=Логистический сборочный стол
+tile.logisticsbcpowerprovider=Логистический провайдер BC-энергии
+tile.logisticstepowerprovider=Логистический провайдер TE-энергии
+tile.logisticsic2powerprovider=Логистический провайдер IC2-энергии
 
 # Misc
 
-itemGroup.Logistics_Pipes=Логистические трубы
-misc.holdshift=<Hold %cYELLOW %cITALIC Shift %cRESET %cGRAY for details>
+itemGroup.Logistics_Pipes=Logistics Pipes
+misc.holdshift=<Удерживайте %cYELLOW %cITALIC shift %cRESET %cGRAY для деталей>
+misc.extractionmode.Normal=Нормальный
+misc.extractionmode.LeaveFirst=Оставлять 1-ый стак
+misc.extractionmode.LeaveLast=Оставлять последний стак
+misc.extractionmode.LeaveFirstAndLast=Оставлять первый и последний стак
+misc.extractionmode.Leave1PerStack=Оставлять 1 предмет за стак
+misc.extractionmode.Leave1PerType=Оставлять 1 предмет за тип
+
+# GUI
+
+gui.crafting.Inputs=Inputs
+gui.crafting.Inventory=Инвентарь
+gui.crafting.Import=Импортировать
+gui.crafting.Open=Открыть
+gui.crafting.Output=Output
+gui.crafting.Satellite=Satellite
+gui.crafting.Off=Откл.
+gui.crafting.Priority=Приоритет
+gui.crafting.Extra=Extra
+gui.crafting.OreDict=OreDict
+gui.crafting.IgnDamage=IgnDamage
+gui.crafting.IgnNBT=IgnNBT
+gui.crafting.OrePrefix=OrePrefix
+
+gui.firewall.Blocked=Заблокирован
+gui.firewall.Allowed=Разрешён
+gui.firewall.Firewall=Брандмауэр
+gui.firewall.Filter=Фильтр
+gui.firewall.Filtereditemsare=Предметы отфильтрованы как
+gui.firewall.Providing=Предоставление
+gui.firewall.Crafting=Создание
+gui.firewall.Sorting=Сортировка
+gui.firewall.Powerflow=Powerflow
+
+gui.fluidbasic.Empty=Пусто
+
+gui.fluidsuppliermk2.Inventory=Инвентарь
+gui.fluidsuppliermk2.Fluid=Жидкость
+gui.fluidsuppliermk2.Partialrequests=Частичные запросы
+gui.fluidsuppliermk2.Yes=Да
+gui.fluidsuppliermk2.No=Нет
+gui.fluidsuppliermk2.TargetInv=Fluid to keep stocked
+
+gui.fluidsupplier.TargetInv=Fluids to keep stocked
+gui.fluidsupplier.Inventory=Инвентарь
+gui.fluidsupplier.Partialrequests=Частичные запросы
+gui.fluidsupplier.Yes=Да
+gui.fluidsupplier.No=Нет
+
+gui.invsyscon.No=Нет
+gui.invsyscon.Refresh=Обновить
+gui.invsyscon.Save=Сохранить
+gui.invsyscon.InventorySystemConnector=Инвентарный системный коннектор
+gui.invsyscon.ConnectionCard=Карта соединения
+gui.invsyscon.Waitingfor=В ожидании
+gui.invsyscon.Resistance=Сопротивление
+
+gui.powerjunction.LogisticsPowerJunction=Логистическое энергетическое хранилище
+gui.powerjunction.StoredEnergy=Накоплено энергии
+
+gui.powerprovider.LogisticsMJPowerProvider=Логистический провайдер МЖ-энергии
+gui.powerprovider.LogisticsEUPowerProvider=Логистический провайдер еЭ-энергии
+gui.powerprovider.LogisticsRFPowerProvider=Логистический провайдер РФ-энергии
+gui.powerprovider.StoredEnergy=Накоплено энергии
+
+gui.providerpipe.TargetInv=Items to provide (or empty for all)
+gui.providerpipe.Inventory=Инвентарь
+gui.providerpipe.Mode=Режим
+gui.providerpipe.Exclude=Исключать
+gui.providerpipe.Include=Включать
+gui.providerpipe.Switch=Переключить
+
+gui.routingstats.Session=Сессия
+gui.routingstats.Lifetime=Lifetime
+gui.routingstats.Sent=Sent
+gui.routingstats.Recieved=Recieved
+gui.routingstats.Relayed=Relayed
+gui.routingstats.RoutingTableSize=RoutingTableSize
+gui.routingstats.exit=Нажмите <ESC>, чтобы выйти
+
+gui.satellite.SatelliteID=Satellite ID
+
+gui.securitystation.Open=Открыть
+gui.securitystation.EditTable=Редактировать стол
+gui.securitystation.Authorize=Авторизовать
+gui.securitystation.Deauthorize=Деавторизовать
+gui.securitystation.SecurityStation=Станция безопасности
+gui.securitystation.allowCCAccess=Разрешить доступ ComputerCraft
+gui.securitystation.excludeIDs=Исключить идентификаторы ComputerCraft
+gui.securitystation.pipeRemove=Разрешить автоматическое удаление трубы
+gui.securitystation.Player=Игрок
+gui.securitystation.SecurityCards=Карты безопасности
+gui.securitystation.Inventory=Инвентарь
+gui.securitystation.popup.ccAccess.Remove=Удалить
+gui.securitystation.popup.ccAccess.Add=Добавить
+gui.securitystation.popup.player.Close=Закрыть
+gui.securitystation.popup.player.Player=Игрок
+gui.securitystation.popup.player.ConfigureSettings=Настройки
+gui.securitystation.popup.player.ActiveRequesting=Active Requesting
+gui.securitystation.popup.player.UpgradePipes=Улучшить трубы
+gui.securitystation.popup.player.CheckNetwork=Проверить сеть
+gui.securitystation.popup.player.RemovePipes=Удалить трубы
+
+gui.supplierpipe.TargetInv=Items to keep stocked
+gui.supplierpipe.TargetInvPattern=Items to keep in the specified slots
+gui.supplierpipe.Inventory=Инвентарь
+gui.supplierpipe.RequestMode=Режим запроса
+
+gui.upgrademanager.Upgrades=Улучшения
+gui.upgrademanager.Inventory=Инвентарь
+gui.upgrademanager.SneakyUpgrades=Скрытые улучшения

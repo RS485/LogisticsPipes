@@ -224,6 +224,7 @@ item.IC2MVPowerSupplierUpgrade=IC2中压能量补给器升级
 item.IC2HVPowerSupplierUpgrade=IC2高压能量补给器升级
 item.IC2EVPowerSupplierUpgrade=IC2超高压能量补给器升级
 item.CCRemoteControlUpgrade=CC遥控升级
+item.CraftingMonitoringUpgrade=合成监视升级
 
 # Blocks
 

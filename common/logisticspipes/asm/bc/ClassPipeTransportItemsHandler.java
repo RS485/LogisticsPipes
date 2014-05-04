@@ -19,7 +19,7 @@ import org.objectweb.asm.tree.MethodNode;
 public class ClassPipeTransportItemsHandler {
 	
 	private static void insertNewInjectItemMethod(ClassNode node) {
-		MethodVisitor mv = node.visitMethod(ACC_PUBLIC, "injectItem", "(Lbuildcraft/transport/TravelingItem;Lnet/minecraftforge/common/ForgeDirection;)V", null, null);
+		MethodVisitor mv = node.visitMethod(ACC_PUBLIC, "injectItem", "(Lbuildcraft/transport/TravelingItem;Lnet/minecraftforge/common/util/ForgeDirection;)V", null, null);
 		mv.visitCode();
 		Label l0 = new Label();
 		mv.visitLabel(l0);
@@ -27,7 +27,7 @@ public class ClassPipeTransportItemsHandler {
 		mv.visitVarInsn(ALOAD, 0);
 		mv.visitVarInsn(ALOAD, 1);
 		mv.visitVarInsn(ALOAD, 2);
-		mv.visitMethodInsn(INVOKESTATIC, "logisticspipes/asm/bc/InjectItemHook", "handleInjectItem", "(Lbuildcraft/transport/PipeTransportItems;Lbuildcraft/transport/TravelingItem;Lnet/minecraftforge/common/ForgeDirection;)V");
+		mv.visitMethodInsn(INVOKESTATIC, "logisticspipes/asm/bc/InjectItemHook", "handleInjectItem", "(Lbuildcraft/transport/PipeTransportItems;Lbuildcraft/transport/TravelingItem;Lnet/minecraftforge/common/util/ForgeDirection;)V");
 		Label l1 = new Label();
 		mv.visitLabel(l1);
 		mv.visitLineNumber(158, l1);
@@ -36,7 +36,7 @@ public class ClassPipeTransportItemsHandler {
 		mv.visitLabel(l2);
 		mv.visitLocalVariable("this", "Lbuildcraft/transport/PipeTransportItems;", null, l0, l2, 0);
 		mv.visitLocalVariable("item", "Lbuildcraft/transport/TravelingItem;", null, l0, l2, 1);
-		mv.visitLocalVariable("inputOrientation", "Lnet/minecraftforge/common/ForgeDirection;", null, l0, l2, 2);
+		mv.visitLocalVariable("inputOrientation", "Lnet/minecraftforge/common/util/ForgeDirection;", null, l0, l2, 2);
 		mv.visitMaxs(3, 3);
 		mv.visitEnd();
 	}

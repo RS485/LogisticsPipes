@@ -21,12 +21,6 @@ public abstract class TransportLayer {
 	public abstract boolean stillWantItem(IRoutedItem item);
 	public abstract ForgeDirection itemArrived(IRoutedItem item, ForgeDirection denyed);
 	
-//	public void SendItem(TravelingItem data){
-//		
-//	}
-//	
-//	public void ItemLost(TravelingItem data){
-//		
-//	}
-
+	public void handleItem(IRoutedItem item) {}
+	
 }

@@ -57,6 +57,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.request.RequestTreeNode;
+import logisticspipes.routing.LogisticsOrder;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
@@ -508,21 +509,21 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	}
 
 	@Override
-	public void fullFill(LogisticsPromise promise, IRequestItems destination) {
+	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination) {
 		if (!isEnabled()){
-			return;
+			return null;
 		}
-		for (int i = 0; i < this.getChassiSize(); i++){
+		for (int i = 0; i < this.getChassiSize(); i++) {
 			LogisticsModule x = _module.getSubModule(i);
 			if (x instanceof ILegacyActiveModule){
-				ILegacyActiveModule y = (ILegacyActiveModule)x;
+				ILegacyActiveModule y = (ILegacyActiveModule) x;
 				if(y.filterAllowsItem(promise.item)) {
-					y.fullFill(promise, destination);
 					MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, getX(), getY(), getZ(), this.getWorld(), 2);
-					return;
+					return y.fullFill(promise, destination);
 				}
 			}
 		}
+		return null;
 	}
 
 	@Override

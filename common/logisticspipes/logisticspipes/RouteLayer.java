@@ -48,6 +48,8 @@ public class RouteLayer {
 		//Is the destination ourself? Deliver it
 		if (item.getDestinationUUID().equals(_router.getId())){
 			
+			_transport.handleItem(item);
+			
 			if (item.getTransportMode() != TransportMode.Active && !_transport.stillWantItem(item)) {
 				return getOrientationForItem(SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleID(), true), null);
 			}

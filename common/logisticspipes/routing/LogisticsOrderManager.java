@@ -1,35 +1,40 @@
-/** 
+/**
  * Copyright (c) Krapht, 2011
  * 
- * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public 
+ * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
 package logisticspipes.routing;
 
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import logisticspipes.interfaces.IChangeListener;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.routing.LogisticsOrder.RequestType;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.Pair;
 import net.minecraft.world.World;
 
-
-public class LogisticsOrderManager {
+public class LogisticsOrderManager implements Iterable<LogisticsOrder> {
 	
-	public LogisticsOrderManager() {}
+	private final RequestType	type;
 	
-	public LogisticsOrderManager(IChangeListener listener) {
+	public LogisticsOrderManager(RequestType type) {
+		this.type = type;
+	}
+	
+	public LogisticsOrderManager(RequestType type, IChangeListener listener) {
+		this(type);
 		this.listener = listener;
 	}
 	
-	//private LinkedList<LogisticsRequest> _orders = new LinkedList<LogisticsRequest>();
-	private LinkedList<Pair<ItemIdentifierStack,IRequestItems>> _orders = new LinkedList<Pair<ItemIdentifierStack,IRequestItems>>();
-	private IChangeListener listener = null;
+	private LinkedList<LogisticsOrder>	_orders		= new LinkedList<LogisticsOrder>();
+	private IChangeListener				listener	= null;
 	
 	private void listen() {
 		if(listener != null) {
@@ -38,16 +43,16 @@ public class LogisticsOrderManager {
 	}
 	
 	public LinkedList<ItemIdentifierStack> getContentList(World world) {
-		if(MainProxy.isClient(world) || _orders.size()==0) return new LinkedList<ItemIdentifierStack>();
+		if(MainProxy.isClient(world) || _orders.size() == 0) return new LinkedList<ItemIdentifierStack>();
 		LinkedList<ItemIdentifierStack> list = new LinkedList<ItemIdentifierStack>();
-		for (Pair<ItemIdentifierStack,IRequestItems> request : _orders){
-			addToList(request.getValue1(),list);
+		for(LogisticsOrder request: _orders) {
+			addToList(request.getItem(), list);
 		}
 		return list;
 	}
-
+	
 	private static void addToList(ItemIdentifierStack stack, LinkedList<ItemIdentifierStack> list) {
-		for(ItemIdentifierStack ident:list) {
+		for(ItemIdentifierStack ident: list) {
 			if(ident.getItem().equals(stack.getItem())) {
 				ident.setStackSize(ident.getStackSize() + stack.getStackSize());
 				return;
@@ -56,64 +61,84 @@ public class LogisticsOrderManager {
 		list.addLast(stack.clone());
 	}
 	
-	public boolean hasOrders(){
+	public boolean hasOrders() {
 		return _orders.size() > 0;
 	}
 	
-	public Pair<ItemIdentifierStack,IRequestItems> peekAtTopRequest(){
-		return _orders.getFirst();
+	public LogisticsOrder peekAtTopRequest() {
+		return _orders.getFirst().setInProgress(true);
 	}
 	
 	public void sendSuccessfull(int number, boolean defersend) {
-		_orders.getFirst().getValue1().setStackSize(_orders.getFirst().getValue1().getStackSize() - number);
-		if (_orders.getFirst().getValue1().getStackSize() <= 0){
-			_orders.removeFirst();
+		_orders.getFirst().getItem().setStackSize(_orders.getFirst().getItem().getStackSize() - number);
+		if(_orders.getFirst().getItem().getStackSize() <= 0) {
+			LogisticsOrder order = _orders.removeFirst();
+			order.setFinished(true);
+			order.setInProgress(false);
 		} else if(defersend) {
-			_orders.add(_orders.removeFirst());
+			_orders.add(_orders.removeFirst().setInProgress(false));
+			_orders.getFirst().setInProgress(true);
 		}
 		listen();
 	}
-
+	
 	public void sendFailed() {
-		_orders.getFirst().getValue2().itemCouldNotBeSend(_orders.getFirst().getValue1());
-		if (!_orders.isEmpty()){
-			_orders.removeFirst();
+		_orders.getFirst().getDestination().itemCouldNotBeSend(_orders.getFirst().getItem());
+		if(!_orders.isEmpty()) {
+			LogisticsOrder order = _orders.removeFirst();
+			order.setFinished(true);
+			order.setInProgress(false);
+		}
+		if(!_orders.isEmpty()) {
+			_orders.getFirst().setInProgress(true);
 		}
 		listen();
 	}
-
+	
 	public void deferSend() {
-		_orders.add(_orders.removeFirst());
+		_orders.add(_orders.removeFirst().setInProgress(false));
+		_orders.getFirst().setInProgress(true);
 		listen();
 	}
-
-	public void addOrder(ItemIdentifierStack stack, IRequestItems requester) {
-		for (Pair<ItemIdentifierStack,IRequestItems> request : _orders){
-			if (request.getValue1().getItem() == stack.getItem() && request.getValue2() == requester) {
-				stack.setStackSize(stack.getStackSize() + request.getValue1().getStackSize());
+	
+	public LogisticsOrder addOrder(ItemIdentifierStack stack, IRequestItems requester) {
+		/*
+		for (LogisticsOrder request : _orders){
+			if (request.getItem().getItem() == stack.getItem() && request.getDestination() == requester) {
+				stack.setStackSize(stack.getStackSize() + request.getItem().getStackSize());
 				_orders.remove(request);
 				break;
 			}
 		}
-		_orders.addLast(new Pair<ItemIdentifierStack,IRequestItems>(stack, requester));
+		*/
+		LogisticsOrder order = new LogisticsOrder(stack, requester, this.type);
+		_orders.addLast(order);
 		listen();
+		return order;
 	}
 	
-	public int totalItemsCountInOrders(ItemIdentifier item){
+	public int totalItemsCountInOrders(ItemIdentifier item) {
 		int itemCount = 0;
-		for (Pair<ItemIdentifierStack,IRequestItems> request : _orders){
-			if (request.getValue1().getItem() != item) continue;
-			itemCount += request.getValue1().getStackSize();
+		for(LogisticsOrder request: _orders) {
+			if(request.getItem().getItem() != item) continue;
+			itemCount += request.getItem().getStackSize();
+		}
+		return itemCount;
+	}
+	
+	public int totalItemsCountInAllOrders() {
+		int itemCount = 0;
+		for(LogisticsOrder request: _orders) {
+			itemCount += request.getItem().getStackSize();
 		}
 		return itemCount;
 	}
 
-	public int totalItemsCountInAllOrders(){
-		int itemCount = 0;
-		for (Pair<ItemIdentifierStack,IRequestItems> request : _orders){
-			itemCount += request.getValue1().getStackSize();
-		}
-		return itemCount;
+	/**
+	 * DON'T MODIFY TROUGH THIS ONLY READ THE VALUES
+	 */
+	@Override
+	public Iterator<LogisticsOrder> iterator() {
+		return Collections.unmodifiableList(this._orders).iterator();
 	}
-	
 }

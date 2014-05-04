@@ -10,6 +10,8 @@ import logisticspipes.Configs;
 import logisticspipes.gui.hud.HUDCraftingMK3;
 import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
+import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.ModuleCrafterMK3;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.hud.ChestContent;
 import logisticspipes.proxy.MainProxy;
@@ -164,5 +166,10 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	@Override
 	public IHeadUpDisplayRenderer getRenderer() {
 		return HUD;
+	}
+
+	@Override
+	public LogisticsModule getLogisticsModule() {
+		return new ModuleCrafterMK3(this);
 	}
 }

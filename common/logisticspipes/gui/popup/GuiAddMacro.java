@@ -361,7 +361,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		super.drawScreen(par1, par2, par3);
 		
 		if(!this.hasSubGui()) {
-			BasicGuiHelper.displayItemToolTip(tooltip, this, 300, guiLeft, guiTop, true, false);
+			BasicGuiHelper.displayItemToolTip(tooltip, 300, guiLeft, guiTop, true, false);
 		}
 	}
 

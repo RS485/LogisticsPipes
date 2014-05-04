@@ -12,6 +12,9 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.LinkedLogisticsOrderList;
+import logisticspipes.routing.LogisticsOrder;
+import logisticspipes.routing.LogisticsOrder.RequestType;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -138,5 +141,46 @@ public class LPDataInputStream extends DataInputStream {
 		int damage = this.readInt();
 		NBTTagCompound tag = this.readNBTTagCompound();
 		return new ItemIdentifierStack(ItemIdentifier.get(itemID, damage, tag), stacksize);
+	}
+	
+	public <T> List<T> readList(IReadListObject<T> handler) throws IOException {
+		int size = this.readInt();
+		List<T> list = new ArrayList<T>(size);
+		for(int i=0;i<size;i++) {
+			list.add(handler.readObject(this));
+		}
+		return list;
+	}
+
+	public LogisticsOrder readOrder() throws IOException {
+		ItemIdentifierStack stack = this.readItemIdentifierStack();
+		int routerId = this.readInt();
+		boolean finished = this.readBoolean();
+		boolean inProgress = this.readBoolean();
+		RequestType type = this.readEnum(RequestType.class);
+		LogisticsOrder order = new LogisticsOrder(stack, null, type);
+		order.setFinished(finished);
+		order.setRouterId(routerId);
+		order.setInProgress(inProgress);
+		return order;
+	}
+	
+	public <T extends Enum<T>> T readEnum(Class<T> clazz) throws IOException {
+		return clazz.getEnumConstants()[this.readInt()];
+	}
+
+	public LinkedLogisticsOrderList readLinkedLogisticsOrderList() throws IOException {
+		LinkedLogisticsOrderList list = new LinkedLogisticsOrderList();
+		list.addAll(this.readList(new IReadListObject<LogisticsOrder>() {
+			@Override
+			public LogisticsOrder readObject(LPDataInputStream data) throws IOException {
+				return data.readOrder();
+			}}));
+		list.getSubOrders().addAll(this.readList(new IReadListObject<LinkedLogisticsOrderList>() {
+			@Override
+			public LinkedLogisticsOrderList readObject(LPDataInputStream data) throws IOException {
+				return data.readLinkedLogisticsOrderList();
+			}}));
+		return list;
 	}
 }

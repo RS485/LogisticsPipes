@@ -3,6 +3,7 @@ package logisticspipes.utils.gui;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -172,26 +173,31 @@ public class BasicGuiHelper {
 	private static float zLevel;
 	
 	public static void displayItemToolTip(Object[] tooltip, Gui gui, float pzLevel, int guiLeft, int guiTop) {
-		displayItemToolTip(tooltip, gui, pzLevel, guiLeft, guiTop, false, false);
+		displayItemToolTip(tooltip, pzLevel, guiLeft, guiTop, false, false);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static void displayItemToolTip(Object[] tooltip, Gui gui, float pzLevel, int guiLeft, int guiTop, boolean forceminecraft, boolean forceAdd) {		
+	public static void displayItemToolTip(Object[] tooltip, float pzLevel, int guiLeft, int guiTop, boolean forceminecraft, boolean forceAdd) {		
 		zLevel = pzLevel;
 		if(tooltip != null) {
 				try {
 					//Use minecraft vanilla code
 					Minecraft mc = FMLClientHandler.instance().getClient();
 					ItemStack var22 = (ItemStack) tooltip[2];
+					
 					List<String> var24 = var22.getTooltip(mc.thePlayer, mc.gameSettings.advancedItemTooltips);
 
+	                if(tooltip.length > 4) {
+	                	var24.addAll(1, (List<String>) tooltip[4]);
+					}
+	                
 	                if((Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) && (tooltip.length < 4 || Boolean.valueOf((Boolean)tooltip[3]))) {
-	    				var24.add(1, "\u00a77" + ((ItemStack)tooltip[2]).stackSize);	
+	    				var24.add(1, "\u00a77" + ((ItemStack)tooltip[2]).stackSize);
 					}
 	                
 	                int var11 = ((Integer)tooltip[0]).intValue() - (forceAdd ? 0 : guiLeft) + 12;
 	                int var12 = ((Integer)tooltip[1]).intValue() - (forceAdd ? 0 : guiTop) - 12;
-	                drawToolTip(var11, var12,var24,var22.getRarity().rarityColor, forceminecraft);
+	                drawToolTip(var11, var12, var24, var22.getRarity().rarityColor, forceminecraft);
 	            }
 	            catch(Exception e1) {}
 		}

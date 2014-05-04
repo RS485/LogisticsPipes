@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
+import logisticspipes.interfaces.IRequestWatcher;
 import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.orderer.ComponentList;
@@ -21,6 +22,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTree.ActiveRequestType;
+import logisticspipes.routing.LinkedLogisticsOrderList;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -37,7 +39,7 @@ public class RequestHandler {
 		CraftOnly;
 	}
 	
-	public static void request(final EntityPlayer player, final ItemIdentifierStack stack, CoreRoutedPipe pipe) {
+	public static void request(final EntityPlayer player, final ItemIdentifierStack stack, final CoreRoutedPipe pipe) {
 		if(!pipe.useEnergy(5)) {
 			player.sendChatToPlayer(ChatMessageComponent.createFromText("No Energy"));
 			return;
@@ -54,10 +56,13 @@ public class RequestHandler {
 			}
 
 			@Override
-			public void handleSucessfullRequestOf(ItemIdentifier item, int count) {
+			public void handleSucessfullRequestOf(ItemIdentifier item, int count, LinkedLogisticsOrderList parts) {
 				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(1);
 				coll.add(new ItemIdentifierStack(item, count));
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(false), (Player)player);
+				if(pipe instanceof IRequestWatcher) {
+					((IRequestWatcher)pipe).handleOrderList(item.makeStack(count), parts);
+				}
 			}
 			
 			@Override
@@ -81,7 +86,7 @@ public class RequestHandler {
 			}
 
 			@Override
-			public void handleSucessfullRequestOf(ItemIdentifier item, int count) {}
+			public void handleSucessfullRequestOf(ItemIdentifier item, int count, LinkedLogisticsOrderList parts) {}
 			
 			@Override
 			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {
@@ -150,7 +155,7 @@ public class RequestHandler {
 			}
 			
 			@Override
-			public void handleSucessfullRequestOf(ItemIdentifier item, int count) {}
+			public void handleSucessfullRequestOf(ItemIdentifier item, int count, LinkedLogisticsOrderList parts) {}
 			
 			@Override
 			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {
@@ -190,7 +195,7 @@ public class RequestHandler {
 			}
 			
 			@Override
-			public void handleSucessfullRequestOf(ItemIdentifier item, int count) {}
+			public void handleSucessfullRequestOf(ItemIdentifier item, int count, LinkedLogisticsOrderList parts) {}
 			
 			@Override
 			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {
@@ -227,7 +232,7 @@ public class RequestHandler {
 			}
 
 			@Override
-			public void handleSucessfullRequestOf(ItemIdentifier item, int count) {
+			public void handleSucessfullRequestOf(ItemIdentifier item, int count, LinkedLogisticsOrderList parts) {
 				status[0] = "DONE";
 				List<Pair<ItemIdentifier, Integer>> itemList = new LinkedList<Pair<ItemIdentifier, Integer>>();
 				itemList.add(new Pair<ItemIdentifier,Integer>(item, count));
@@ -262,7 +267,7 @@ public class RequestHandler {
 			}
 
 			@Override
-			public void handleSucessfullRequestOf(ItemIdentifier item, int count) {
+			public void handleSucessfullRequestOf(ItemIdentifier item, int count, LinkedLogisticsOrderList parts) {
 				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(1);
 				coll.add(new ItemIdentifierStack(item, count));
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(false), (Player)player);

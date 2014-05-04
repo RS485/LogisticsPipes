@@ -82,6 +82,8 @@ import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsExtraPromise;
+import logisticspipes.routing.LogisticsOrder;
+import logisticspipes.routing.LogisticsOrder.RequestType;
 import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.textures.Textures;
@@ -95,11 +97,12 @@ import logisticspipes.utils.IHavePriority;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SinkReply;
+import logisticspipes.utils.SinkReply.BufferMode;
 import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.block.Block;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
@@ -120,14 +123,14 @@ import cpw.mods.fml.client.FMLClientHandler;
 @CCType(name = "LogisticsPipes:Crafting")
 public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraftItems, IRequireReliableTransport, IHeadUpDisplayRendererProvider, IChangeListener, IOrderManagerContentReceiver, IHavePriority {
 
-	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager(this);
+	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager(RequestType.CRAFTING, this);
 
 	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
 	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<ItemIdentifierStack>();
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	private final HUDCrafting HUD = new HUDCrafting(this);
 	
-	public final LinkedList<Pair<ItemIdentifierStack, IRequestItems>> _extras = new LinkedList<Pair<ItemIdentifierStack, IRequestItems>>();
+	public final LinkedList<LogisticsOrder> _extras = new LinkedList<LogisticsOrder>();
 	private boolean init = false;
 	private boolean doContentUpdate = true;
 	
@@ -281,6 +284,12 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			checkContentUpdate();
 		}
 		
+		if(hasOrder()) {
+			cacheAreAllOrderesToBuffer();
+		} else {
+			cachedAreAllOrderesToBuffer = false;
+		}
+		
 		if (getWorld().getTotalWorldTime() % 6 != 0) return;
 
 		waitingForCraft = false;
@@ -307,7 +316,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		int itemsleft = itemsToExtract();
 		int stacksleft = stacksToExtract();
 		while (itemsleft > 0 && stacksleft > 0 && (_orderManager.hasOrders() || !_extras.isEmpty())) {
-			Pair<ItemIdentifierStack, IRequestItems> nextOrder;
+			LogisticsOrder nextOrder;
 			boolean processingOrder=false;
 			if(_orderManager.hasOrders()){
 				nextOrder = _orderManager.peekAtTopRequest(); // fetch but not remove.
@@ -315,22 +324,22 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			} else {
 				nextOrder = _extras.getFirst(); // fetch but not remove.
 			}
-			int maxtosend = Math.min(itemsleft, nextOrder.getValue1().getStackSize());
-			maxtosend = Math.min(nextOrder.getValue1().getItem().getMaxStackSize(), maxtosend);
+			int maxtosend = Math.min(itemsleft, nextOrder.getItem().getStackSize());
+			maxtosend = Math.min(nextOrder.getItem().getItem().getMaxStackSize(), maxtosend);
 			// retrieve the new crafted items
 			ItemStack extracted = null;
 			AdjacentTile tile = null;
 			for (Iterator<AdjacentTile> it = crafters.iterator(); it.hasNext();) {
 				tile = it.next();
 				if (tile.tile instanceof LogisticsCraftingTableTileEntity) {
-					extracted = extractFromLogisticsCraftingTable((LogisticsCraftingTableTileEntity)tile.tile, nextOrder.getValue1().getItem(), maxtosend);
+					extracted = extractFromLogisticsCraftingTable((LogisticsCraftingTableTileEntity)tile.tile, nextOrder.getItem().getItem(), maxtosend);
 				} else if (tile.tile instanceof ISpecialInventory) {
-					extracted = extractFromISpecialInventory((ISpecialInventory) tile.tile, nextOrder.getValue1().getItem(), maxtosend);
+					extracted = extractFromISpecialInventory((ISpecialInventory) tile.tile, nextOrder.getItem().getItem(), maxtosend);
 				} else if (tile.tile instanceof net.minecraft.inventory.ISidedInventory) {
 					IInventory sidedadapter = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) tile.tile, ForgeDirection.UNKNOWN,true);
-					extracted = extractFromIInventory(sidedadapter, nextOrder.getValue1().getItem(), maxtosend);
+					extracted = extractFromIInventory(sidedadapter, nextOrder.getItem().getItem(), maxtosend);
 				} else if (tile.tile instanceof IInventory) {
-					extracted = extractFromIInventory((IInventory)tile.tile, nextOrder.getValue1().getItem(), maxtosend);
+					extracted = extractFromIInventory((IInventory)tile.tile, nextOrder.getItem().getItem(), maxtosend);
 				}
 				if (extracted != null && extracted.stackSize > 0) {
 					break;
@@ -341,19 +350,46 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			// send the new crafted items to the destination
 			ItemIdentifier extractedID = ItemIdentifier.get(extracted);
 			while (extracted.stackSize > 0) {
+				if(nextOrder.getItem().getItem() != extractedID) {
+					LogisticsOrder startOrder = nextOrder;
+					do {
+						_orderManager.deferSend();
+						nextOrder = _orderManager.peekAtTopRequest();
+					} while(nextOrder.getItem().getItem() != extractedID && startOrder != nextOrder);
+					if(startOrder == nextOrder) {
+						int numtosend = Math.min(extracted.stackSize, extractedID.getMaxStackSize());
+						if(numtosend == 0)
+							break;
+						stacksleft -= 1;
+						itemsleft -= numtosend;
+						ItemStack stackToSend = extracted.splitStack(numtosend);
+						//Route the unhandled item
+						LPPosition entityPos = new LPPosition(tile.tile.xCoord + 0.5, tile.tile.yCoord + CoreConstants.PIPE_MIN_POS, tile.tile.zCoord + 0.5);
+						entityPos.moveForward(tile.orientation.getOpposite(), 0.5);
+						TravelingItem entityItem = new TravelingItem(entityPos.getXD(), entityPos.getYD(), entityPos.getZD(), stackToSend);
+						entityItem.setSpeed(TransportConstants.PIPE_NORMAL_SPEED * Configs.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
+						((PipeTransportItems) transport).injectItem(entityItem, tile.orientation.getOpposite());
+						continue;
+					}
+				}
 				int numtosend = Math.min(extracted.stackSize, extractedID.getMaxStackSize());
-				numtosend = Math.min(numtosend, nextOrder.getValue1().getStackSize()); 
+				numtosend = Math.min(numtosend, nextOrder.getItem().getStackSize()); 
 				if(numtosend == 0)
 					break;
 				stacksleft -= 1;
 				itemsleft -= numtosend;
 				ItemStack stackToSend = extracted.splitStack(numtosend);
 				if (processingOrder) {
+					SinkReply reply = LogisticsManager.canSink(nextOrder.getDestination().getRouter(), null, true, ItemIdentifier.get(stackToSend), null, true, false);
+					boolean defersend = false;
+					if(reply == null || reply.bufferMode != BufferMode.NONE || reply.maxNumberOfItems < 1) {
+						defersend = true;
+					}
 					IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stackToSend);
-					item.setDestination(nextOrder.getValue2().getRouter().getSimpleID());
+					item.setDestination(nextOrder.getDestination().getRouter().getSimpleID());
 					item.setTransportMode(TransportMode.Active);
 					super.queueRoutedItem(item, tile.orientation);
-					_orderManager.sendSuccessfull(stackToSend.stackSize, false);
+					_orderManager.sendSuccessfull(stackToSend.stackSize, defersend);
 					if(_orderManager.hasOrders()){
 						nextOrder = _orderManager.peekAtTopRequest(); // fetch but not remove.
 					} else {
@@ -361,9 +397,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 						if(!_extras.isEmpty())
 						nextOrder = _extras.getFirst();
 					}
-					
 				} else {
-					removeExtras(numtosend,nextOrder.getValue1().getItem());
+					removeExtras(numtosend,nextOrder.getItem().getItem());
 
 					Position p = new Position(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, tile.orientation);
 					LogisticsPipes.requestLog.info(stackToSend.stackSize + " extras dropped, " + countExtras() + " remaining");
@@ -377,10 +412,27 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		}
 	}
 	
+	private boolean cachedAreAllOrderesToBuffer;
+	
+	public boolean areAllOrderesToBuffer() {
+		return cachedAreAllOrderesToBuffer;
+	}
+	
+	public void cacheAreAllOrderesToBuffer() {
+		boolean result = true;
+		for(LogisticsOrder order:_orderManager) {
+			SinkReply reply = LogisticsManager.canSink(order.getDestination().getRouter(), null, true, order.getItem().getItem(), null, true, false);
+			if(reply != null && reply.bufferMode != BufferMode.BUFFERED && reply.maxNumberOfItems >= 1) {
+				result = false;
+			}
+		}
+		cachedAreAllOrderesToBuffer = result;
+	}
+	
 	private void removeExtras(int numToSend, ItemIdentifier item) {
-		Iterator<Pair<ItemIdentifierStack, IRequestItems>> i = _extras.iterator();
+		Iterator<LogisticsOrder> i = _extras.iterator();
 		while(i.hasNext()){
-			ItemIdentifierStack e = i.next().getValue1();
+			ItemIdentifierStack e = i.next().getItem();
 			if(e.getItem()== item) {
 				if(numToSend >= e.getStackSize()) {
 					numToSend -= e.getStackSize();
@@ -400,8 +452,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		if(_extras == null)
 			return 0;
 		int count = 0;
-		for(Pair<ItemIdentifierStack, IRequestItems> e : _extras){
-			count += e.getValue1().getStackSize();
+		for(LogisticsOrder e : _extras){
+			count += e.getItem().getStackSize();
 		}
 		return count;
 	}
@@ -434,9 +486,9 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			if(filter.isBlocked() == filter.isFilteredItem(requestedItem.getUndamaged()) || filter.blockProvider()) return;
 		}
 		int remaining = 0;
-		for(Pair<ItemIdentifierStack, IRequestItems> extra:_extras){
-			if(extra.getValue1().getItem()==requestedItem){
-				remaining += extra.getValue1().getStackSize();
+		for(LogisticsOrder extra:_extras){
+			if(extra.getItem().getItem()==requestedItem){
+				remaining += extra.getItem().getStackSize();
 			}
 				
 		}
@@ -557,18 +609,18 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 
 	@Override
-	public void fullFill(LogisticsPromise promise, IRequestItems destination) {
+	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination) {
 		if (promise instanceof LogisticsExtraPromise) {
 			removeExtras(promise.numberOfItems, promise.item);
 		}
-		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination);
 		MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, getX(), getY(), getZ(), this.getWorld(), 2);
+		return _orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination);
 	}
 
 	@Override
 	public void registerExtras(LogisticsPromise promise) {		
 		ItemIdentifierStack stack = new ItemIdentifierStack(promise.item,promise.numberOfItems);
-		_extras.add(new Pair<ItemIdentifierStack, IRequestItems>(stack,null));
+		_extras.add(new LogisticsOrder(stack, null, RequestType.EXTRA));
 		LogisticsPipes.requestLog.info(stack.getStackSize() + " extras registered");
 	}
 
@@ -1013,18 +1065,18 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		while (lostItem != null) {
 			
 			ItemIdentifierStack stack = lostItem.get();
-			if( hasOrder()) { 
-				SinkReply reply = LogisticsManager.canSink(getRouter(), null, true, stack.getItem(), null, true,true);
-				if(reply == null || reply.maxNumberOfItems <1) {
+			if(hasOrder()) { 
+				SinkReply reply = LogisticsManager.canSink(getRouter(), null, true, stack.getItem(), null, true, true);
+				if(reply == null || reply.maxNumberOfItems < 1) {
+					_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(stack, 5000));
 					lostItem = _lostItems.poll();
-					//iterator.remove(); // if we have no space for this and nothing to do, don't bother re-requesting the item.
 					continue;
 				}
 			}
 			int received = RequestTree.requestPartial(stack, (CoreRoutedPipe) container.pipe);
 			if(received < stack.getStackSize()) {
 				stack.setStackSize(stack.getStackSize() - received);
-				_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(stack,5000));
+				_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(stack, 5000));
 			}
 			lostItem = _lostItems.poll();
 		}
@@ -1036,7 +1088,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 	@Override
 	public void itemLost(ItemIdentifierStack item) {
-		_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(item,5000));
+		_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(item, 5000));
 	}
 
 	public void openAttachedGui(EntityPlayer player) {

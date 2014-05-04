@@ -1,34 +1,53 @@
 package logisticspipes.pipes;
 
-import javax.swing.Icon;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import cpw.mods.fml.common.network.Player;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.AutoCraftingInventory;
+import logisticspipes.interfaces.IGuiOpenControler;
+import logisticspipes.interfaces.IRequestWatcher;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.orderer.OrderWatchRemovePacket;
+import logisticspipes.network.packets.orderer.OrdererWatchPacket;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.routing.LinkedLogisticsOrderList;
+import logisticspipes.routing.LogisticsOrder;
 import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.CraftingUtil;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
+import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.item.SimpleStackInventory;
+import logisticspipes.utils.tuples.Pair;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.SlotCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.Icon;
+import net.minecraftforge.common.ForgeDirection;
+import cpw.mods.fml.common.network.Player;
 
-public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements ISimpleInventoryEventHandler {
+public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements ISimpleInventoryEventHandler, IRequestWatcher, IGuiOpenControler {
 
 	public SimpleStackInventory inv = new SimpleStackInventory(27, "Crafting Resources", 64);
 	public ItemIdentifierInventory matrix = new ItemIdentifierInventory(9, "Crafting Matrix", 1);
@@ -39,6 +58,10 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	private int delay = 0;
 	private int tick = 0;
 	
+	private PlayerCollectionList localGuiWatcher = new PlayerCollectionList();
+	public Map<Integer, Pair<ItemIdentifierStack, LinkedLogisticsOrderList>> watchedRequests = new HashMap<Integer, Pair<ItemIdentifierStack, LinkedLogisticsOrderList>>();
+	private int localLastUsedWatcherId = 0;
+
 	public PipeBlockRequestTable(int itemID) {
 		super(itemID);
 		matrix.addListener(this);
@@ -60,14 +83,47 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		return true;
 	}
 
-	
-
 	@Override
 	public void ignoreDisableUpdateEntity() {
 		super.ignoreDisableUpdateEntity();
 		if(tick++ == 5) {
 			this.getWorld().markBlockForRenderUpdate(this.getX(), this.getY(), this.getZ());
 		}
+		if(MainProxy.isClient(getWorld())) return;
+		//XXX TODO Cuurently DEV ONLY
+		if(!LogisticsPipes.DEBUG) return;
+		if(tick % 5 == 0 && !localGuiWatcher.isEmpty()) {
+			checkForExpired();
+			if(getUpgradeManager().hasCraftingMonitoringUpgrade()) {
+				for(Entry<Integer, Pair<ItemIdentifierStack, LinkedLogisticsOrderList>> entry:watchedRequests.entrySet()) {
+					MainProxy.sendToPlayerList(PacketHandler.getPacket(OrdererWatchPacket.class).setOrders(entry.getValue().getValue2()).setStack(entry.getValue().getValue1()).setInteger(entry.getKey()).setTilePos(this.container), localGuiWatcher);
+				}
+			}
+		} else if(tick % 20 == 0) {
+			checkForExpired();
+		}
+	}
+
+	private void checkForExpired() {
+		Iterator<Entry<Integer, Pair<ItemIdentifierStack, LinkedLogisticsOrderList>>> iter = watchedRequests.entrySet().iterator();
+		while(iter.hasNext()) {
+			Entry<Integer, Pair<ItemIdentifierStack, LinkedLogisticsOrderList>> entry = iter.next();
+			if(isDone(entry.getValue().getValue2())) {
+				MainProxy.sendToPlayerList(PacketHandler.getPacket(OrderWatchRemovePacket.class).setInteger(entry.getKey()).setTilePos(this.container), localGuiWatcher);
+				iter.remove();
+			}
+		}
+	}
+
+	private boolean isDone(LinkedLogisticsOrderList orders) {
+		boolean isDone = true;
+		for(LogisticsOrder order:orders) {
+			if(!order.isFinished()) isDone = false;
+		}
+		for(LinkedLogisticsOrderList orderList:orders.getSubOrders()) {
+			if(!isDone(orderList)) isDone = false;
+		}
+		return isDone;
 	}
 
 	@Override
@@ -282,21 +338,63 @@ outer:
 		if (_transportLayer == null) {
 			_transportLayer = new TransportLayer() {
 				@Override
-				public boolean stillWantItem(IRoutedItem item) {
+				public void handleItem(IRoutedItem item) {
 					PipeBlockRequestTable.this.notifyOfItemArival((RoutedEntityItem)item);
 					if(item.getItemStack() != null) {
 						ItemStack stack = item.getItemStack();
 						stack.stackSize = inv.addCompressed(stack, false);
 						item.setItemStack(stack);
 					}
-					return false;
 				}
 				@Override
 				public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection denyed) {
 					return null;
 				}
+				@Override
+				public boolean stillWantItem(IRoutedItem item) {
+					return false;
+				}
 			};
 		}
 		return _transportLayer;
+	}
+
+	@Override
+	public void handleOrderList(ItemIdentifierStack stack, LinkedLogisticsOrderList orders) {
+		if(!getUpgradeManager().hasCraftingMonitoringUpgrade()) return;
+		watchedRequests.put(++localLastUsedWatcherId, new Pair<ItemIdentifierStack, LinkedLogisticsOrderList>(stack, orders));
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(OrdererWatchPacket.class).setOrders(orders).setStack(stack).setInteger(localLastUsedWatcherId).setTilePos(this.container), localGuiWatcher);
+	}
+
+	@Override
+	public void guiOpenedByPlayer(EntityPlayer player) {
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrderWatchRemovePacket.class).setInteger(-1).setTilePos(this.container), (Player)player);
+		localGuiWatcher.add(player);
+		for(Entry<Integer, Pair<ItemIdentifierStack, LinkedLogisticsOrderList>> entry:watchedRequests.entrySet()) {
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererWatchPacket.class).setOrders(entry.getValue().getValue2()).setStack(entry.getValue().getValue1()).setInteger(entry.getKey()).setTilePos(this.container), (Player) player);
+		}
+	}
+
+	@Override
+	public void guiClosedByPlayer(EntityPlayer player) {
+		localGuiWatcher.remove(player);
+	}
+
+	@Override
+	public void handleClientSideListInfo(int id, ItemIdentifierStack stack, LinkedLogisticsOrderList orders) {
+		if(MainProxy.isClient(getWorld())) {
+			watchedRequests.put(id, new Pair<ItemIdentifierStack, LinkedLogisticsOrderList>(stack, orders));
+		}
+	}
+
+	@Override
+	public void handleClientSideRemove(int id) {
+		if(MainProxy.isClient(getWorld())) {
+			if(id == -1) {
+				watchedRequests.clear();
+			} else {
+				watchedRequests.remove(id);
+			}
+		}
 	}
 }

@@ -13,12 +13,13 @@ import java.util.Map;
 
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.LogisticsOrder;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.item.ItemIdentifier;
 
 public interface IProvideItems {
 	public void canProvide(RequestTreeNode tree, int donePromisses, List<IFilter> filter);
-	public void fullFill(LogisticsPromise promise, IRequestItems destination);
+	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination);
 	public void getAllItems(Map<ItemIdentifier, Integer> list, List<IFilter> filter);
 	public IRouter getRouter();
 }

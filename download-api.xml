@@ -14,16 +14,16 @@
 	<property name="downloadserver.dir"   value="external/"/>
 	<property name="downloadserver.full"  value="${downloadserver}/${downloadserver.dir}"/>
 
-	<property name="forestry.version"     value="2.3.0.0"/>
-	<property name="ic2.version"          value="2.0.143-experimental"/>
+	<property name="forestry.version"     value="2.4.0.0-711"/>
+	<property name="ic2.version"          value="2.1.476-experimental"/>
 	<property name="cc.version"           value="1.62"/>
 	<property name="thaumcraft.version"   value="4.0.0"/>
 
 	<target name="download">
 		<mkdir dir="${download.dir}"/>
 		<echo message="Download started"/>
-		<get src="${downloadserver.full}forestry-api-${forestry.version}.zip" dest="${download.dir}" usetimestamp="True"/>
-		<get src="${downloadserver.full}industrialcraft-2-api_${ic2.version}.zip" dest="${download.dir}" usetimestamp="True"/>
+		<get src="${downloadserver.full}forestry-${forestry.version}-api.zip" dest="${download.dir}" usetimestamp="True"/>
+		<get src="${downloadserver.full}industrialcraft-2-${ic2.version}-api.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}ComputerCraftAPI${cc.version}.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}Thaumcraft${thaumcraft.version}-API.zip" dest="${download.dir}" usetimestamp="True"/>
 		<echo message="Download finished"/>
@@ -55,6 +55,8 @@
 		</unzip>
 
 		<echo message="Unpacking finished"/>
+
+		<delete dir="${api.dir}"/>
 
 		<!-- Copy Forestry API source -->
 		<copy todir="${api.dir}">

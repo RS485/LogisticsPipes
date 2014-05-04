@@ -17,7 +17,7 @@
 	<property name="forestry.filename"     value="forestry_1.7.2-2.4.1.15-api.zip"/>
 	<property name="ic2.filename"          value="industrialcraft-2-2.1.476-experimental-api.zip"/>
 	<property name="cc.filename"           value="ComputerCraftAPI1.62.zip"/>
-	<property name="thaumcraft.filename"   value="Thaumcraft4.0.0-API.zip"/>
+	<property name="thaumcraft.filename"   value="thaumcraft-api-87fd8a.zip"/>
 
 	<target name="download">
 		<mkdir dir="${download.dir}"/>
@@ -82,7 +82,7 @@
 		<echo message="Copied CC API"/>
 
 		<!-- Copy ThaumCraft API source -->
-		<copy todir="${api.dir}/thaumcraft">
+		<copy todir="${api.dir}">
 			<fileset dir="${thaumcraft.dir}"/>
 		</copy>
 

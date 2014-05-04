@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.swing.Icon;
 
+import buildcraft.transport.Pipe;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.ISendRoutedItem;
@@ -44,6 +45,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtil;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -52,6 +54,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
 import org.lwjgl.input.Keyboard;
@@ -105,7 +108,7 @@ public class ItemModule extends LogisticsItem {
 	private class Module {
 		private int id;
 		private Class<? extends LogisticsModule> moduleClass;
-		private Icon moduleIcon = null;
+		private IIcon moduleIcon = null;
 
 		private Module(int id, Class<? extends LogisticsModule> moduleClass) {
 			this.id = id;
@@ -140,12 +143,12 @@ public class ItemModule extends LogisticsItem {
 			return id;
 		}
 
-		private Icon getIcon() {
+		private IIcon getIcon() {
 			return moduleIcon;
 		}
 
 		@SideOnly(Side.CLIENT)
-		private void registerModuleIcon(IIconRegister par1IconRegister) {
+		private void registerModuleIcon(IIconRegister par1IIconRegister) {
 			if(moduleClass == null) {
 				this.moduleIcon = par1IIconRegister.registerIcon("logisticspipes:" + getUnlocalizedName().replace("item.","") + "/blank");
 			} else {
@@ -266,7 +269,7 @@ public class ItemModule extends LogisticsItem {
 		if(MainProxy.isServer(par2EntityPlayer.worldObj)) {
 			TileEntity tile = par3World.getTileEntity(par4, par5, par6);
 			if(tile instanceof LogisticsTileGenericPipe) {
-				if (par2EntityPlayer.username.equals("ComputerCraft")) { //Allow turtle to place modules in pipes.
+				if (par2EntityPlayer.getDisplayName().equals("ComputerCraft")) { //Allow turtle to place modules in pipes.
 					Pipe<?> pipe = BlockGenericPipe.getPipe(par3World, par4, par5, par6);
 					if (BlockGenericPipe.isValid(pipe)){
 						pipe.blockActivated(par2EntityPlayer);
@@ -281,7 +284,7 @@ public class ItemModule extends LogisticsItem {
 
 	public LogisticsModule getModuleForItem(ItemStack itemStack, LogisticsModule currentModule, IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider power){
 		if (itemStack == null) return null;
-		if (itemStack.itemID != this.itemID) return null;
+		if (itemStack.getItem() != this) return null;
 		for(Module module:modules) {
 			if(itemStack.getItemDamage() == module.getId()) {
 				if(module.getILogisticsModuleClass() == null) return null;
@@ -312,7 +315,7 @@ public class ItemModule extends LogisticsItem {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister par1IconRegister) {
+	public void registerIcons(IIconRegister par1IIconRegister) {
 		if(modules.size()<=0) return;
 		for(Module module:modules) {
 			module.registerModuleIcon(par1IIconRegister);

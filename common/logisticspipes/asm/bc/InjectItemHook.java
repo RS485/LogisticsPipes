@@ -30,7 +30,7 @@ public class InjectItemHook {
 		readjustPosition(pipe, item);
 
 
-		if (!pipe.container.worldObj.isRemote) {
+		if (!pipe.container.getWorldObj().isRemote) {
 			item.output = pipe.resolveDestination(item);
 		}
 
@@ -45,7 +45,7 @@ public class InjectItemHook {
 
 		pipe.items.scheduleAdd(item);
 
-		if (!pipe.container.worldObj.isRemote) {
+		if (!pipe.container.getWorldObj().isRemote) {
 			sendItemPacket(pipe, item);
 
 			int stackCount = 0;
@@ -90,12 +90,12 @@ public class InjectItemHook {
 	}
 
 	private static void destroyPipe(PipeTransportItems pipe) {
-		BlockUtil.explodeBlock(pipe.container.worldObj, pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord);
-		pipe.container.worldObj.setBlockToAir(pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord);
+		BlockUtil.explodeBlock(pipe.container.getWorldObj(), pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord);
+		pipe.container.getWorldObj().setBlockToAir(pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord);
 	}
 
 	private static void sendItemPacket(PipeTransportItems pipe, TravelingItem data) {
-		int dimension = pipe.container.worldObj.provider.dimensionId;
+		int dimension = pipe.container.getWorldObj().provider.dimensionId;
 		PacketDispatcher.sendPacketToAllAround(pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord, DefaultProps.PIPE_CONTENTS_RENDER_DIST, dimension, pipe.createItemPacket(data));
 	}
 

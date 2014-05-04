@@ -179,7 +179,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		uuidS = null;
 		ItemStack stack = inv.getStackInSlot(8);
 		if(stack == null) return;
-		if(stack.itemID != LogisticsPipes.LogisticsItemCard.itemID || stack.getItemDamage() != LogisticsItemCard.SEC_CARD) return;
+		if(stack.getItem() != LogisticsPipes.LogisticsItemCard || stack.getItemDamage() != LogisticsItemCard.SEC_CARD) return;
 		if(!stack.hasTagCompound()) return;
 		if(!stack.getTagCompound().hasKey("UUID")) return;
 		uuid = UUID.fromString(stack.getTagCompound().getString("UUID"));
@@ -235,7 +235,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 				@Override
 				public boolean isStackAllowed(ItemStack itemStack) {
 					if(itemStack == null) return false;
-					if(itemStack.itemID == LogisticsPipes.UpgradeItem.itemID) {
+					if(itemStack.getItem() == LogisticsPipes.UpgradeItem) {
 						if(!LogisticsPipes.UpgradeItem.getUpgradeForItem(itemStack, null).isAllowed(pipe)) return false;
 					} else {
 						return false;
@@ -249,7 +249,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 			@Override
 			public boolean isStackAllowed(ItemStack itemStack) {
 				if(itemStack == null) return false;
-				if(itemStack.itemID != LogisticsPipes.LogisticsItemCard.itemID) return false;
+				if(itemStack.getItem() != LogisticsPipes.LogisticsItemCard) return false;
 				if(itemStack.getItemDamage() != LogisticsItemCard.SEC_CARD) return false;
 				if(!SimpleServiceLocator.securityStationManager.isAuthorized(UUID.fromString(itemStack.getTagCompound().getString("UUID")))) return false;
 				return true;
@@ -262,7 +262,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 				@Override
 				public boolean isStackAllowed(ItemStack itemStack) {
 					if(itemStack == null) return false;
-					if(itemStack.itemID == LogisticsPipes.UpgradeItem.itemID) {
+					if(itemStack.getItem() == LogisticsPipes.UpgradeItem) {
 						IPipeUpgrade upgrade = LogisticsPipes.UpgradeItem.getUpgradeForItem(itemStack, null);
 						if(!(upgrade instanceof SneakyUpgrade)) return false;
 						if(!upgrade.isAllowed(pipe)) return false;
@@ -292,7 +292,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	}
 
 	public boolean tryIserting(World world, EntityPlayer entityplayer) {
-		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.UpgradeItem.itemID) {
+		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.UpgradeItem) {
 			if(MainProxy.isClient(world)) return true;
 			IPipeUpgrade upgrade = LogisticsPipes.UpgradeItem.getUpgradeForItem(entityplayer.getCurrentEquippedItem(), null);
 			if(upgrade.isAllowed(pipe)) {
@@ -304,7 +304,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 				if(insertIntInv(entityplayer, inv, 1)) return true;
 			}
 		}
-		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.LogisticsItemCard.itemID && entityplayer.getCurrentEquippedItem().getItemDamage() == LogisticsItemCard.SEC_CARD) {
+		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsItemCard && entityplayer.getCurrentEquippedItem().getItemDamage() == LogisticsItemCard.SEC_CARD) {
 			if(MainProxy.isClient(world)) return true;
 			if(inv.getStackInSlot(8) == null) {
 				ItemStack newItem=entityplayer.getCurrentEquippedItem().splitStack(1);

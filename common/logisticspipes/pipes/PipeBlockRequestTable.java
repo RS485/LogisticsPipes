@@ -43,6 +43,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.Icon;
 import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.common.network.Player;
@@ -170,7 +171,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		return Textures.empty_2;
 	}
 
-	public Icon getTextureFor(int l) {
+	public IIcon getTextureFor(int l) {
 		ForgeDirection dir = ForgeDirection.getOrientation(l);
 		switch(dir) {
 			case UP:

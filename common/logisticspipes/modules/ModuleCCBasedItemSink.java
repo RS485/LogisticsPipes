@@ -16,9 +16,11 @@ import logisticspipes.utils.OneList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.nbt.NBTTagCompound;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.util.IIcon;
 
 public class ModuleCCBasedItemSink extends LogisticsModule {
 	
@@ -108,7 +110,7 @@ public class ModuleCCBasedItemSink extends LogisticsModule {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public Icon getIconTexture(IIconRegister register) {
+	public IIcon getIconTexture(IIconRegister register) {
 		return register.registerIcon("logisticspipes:itemModule/ModuleCCBasedItemSink");
 	}
 }

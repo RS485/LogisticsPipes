@@ -72,11 +72,11 @@ public class GuiHUDSettings extends KraphtBaseGuiScreen {
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		if(SimpleServiceLocator.mpsProxy.isMPSHand(player.inventory.getStackInSlot(slot))) {
-			if(player.inventory.armorItemInSlot(3) == null || (!SimpleServiceLocator.mpsProxy.isMPSHelm(player.inventory.armorItemInSlot(3)) && player.inventory.armorItemInSlot(3).itemID != LogisticsPipes.LogisticsHUDArmor.itemID)) {
+			if(player.inventory.armorItemInSlot(3) == null || (!SimpleServiceLocator.mpsProxy.isMPSHelm(player.inventory.armorItemInSlot(3)) && player.inventory.armorItemInSlot(3).getItem() != LogisticsPipes.LogisticsHUDArmor)) {
 				this.mc.thePlayer.closeScreen();
 			}
 		} else {
-			if(player.inventory.getStackInSlot(slot) == null || player.inventory.getStackInSlot(slot).itemID != LogisticsPipes.LogisticsHUDArmor.itemID) {
+			if(player.inventory.getStackInSlot(slot) == null || player.inventory.getStackInSlot(slot).getItem() != LogisticsPipes.LogisticsHUDArmor) {
 				this.mc.thePlayer.closeScreen();
 			}
 		}

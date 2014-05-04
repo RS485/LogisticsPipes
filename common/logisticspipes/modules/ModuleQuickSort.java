@@ -25,11 +25,13 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.Pair;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.util.IIcon;
 
 public class ModuleQuickSort extends LogisticsGuiModule {
 
@@ -310,7 +312,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public Icon getIconTexture(IIconRegister register) {
+	public IIcon getIconTexture(IIconRegister register) {
 		return register.registerIcon("logisticspipes:itemModule/ModuleQuickSort");
 	}
 

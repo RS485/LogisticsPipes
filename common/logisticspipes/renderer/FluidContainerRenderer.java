@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.fluids.FluidStack;
@@ -127,7 +128,7 @@ public class FluidContainerRenderer implements IItemRenderer {
 
         GL11.glColor4f(f, f1, f2, 1.0F);
 
-        Icon icon = liquid.getFluid().getIcon();
+        IIcon icon = liquid.getFluid().getIcon();
         if(icon != null) {
             renderIcon(5, 2, icon, 6, 12, 0);
             if(type == ItemRenderType.ENTITY) {
@@ -144,7 +145,7 @@ public class FluidContainerRenderer implements IItemRenderer {
 		GL11.glPopMatrix();
 	}
 
-    public void renderIcon(int x, int y, Icon par3Icon, int width, int height, double zLevel)
+    public void renderIcon(int x, int y, IIcon par3Icon, int width, int height, double zLevel)
     {
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads();

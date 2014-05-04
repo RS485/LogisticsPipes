@@ -4,8 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.Icon;
-
 import logisticspipes.pipes.upgrades.AdvancedSatelliteUpgrade;
 import logisticspipes.pipes.upgrades.CCRemoteControlUpgrade;
 import logisticspipes.pipes.upgrades.CombinedSneakyUpgrade;
@@ -36,8 +34,10 @@ import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeSOUTH;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeUP;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeWEST;
 import logisticspipes.utils.string.StringUtil;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 
 public class ItemUpgrade extends LogisticsItem {
 
@@ -85,7 +85,7 @@ public class ItemUpgrade extends LogisticsItem {
 	public static final int MAX_LIQUID_CRAFTER = 3;
 
 	List<Upgrade> upgrades = new ArrayList<Upgrade>();
-	private Icon[] icons;
+	private IIcon[] icons;
 	private class Upgrade {
 		private int id;
 		private Class<? extends IPipeUpgrade> upgradeClass;
@@ -207,7 +207,7 @@ public class ItemUpgrade extends LogisticsItem {
 	
 	public IPipeUpgrade getUpgradeForItem(ItemStack itemStack, IPipeUpgrade currentUpgrade){
 		if (itemStack == null) return null;
-		if (itemStack.itemID != this.itemID) return null;
+		if (itemStack.getItem() != this) return null;
 		for(Upgrade upgrade:upgrades) {
 			if(itemStack.getItemDamage() == upgrade.getId()) {
 				if(upgrade.getIPipeUpgradeClass() == null) return null;
@@ -238,8 +238,8 @@ public class ItemUpgrade extends LogisticsItem {
 	}
 
 	@Override
-	public void registerIcons(IIconRegister par1IconRegister) {
-		icons=new Icon[28];
+	public void registerIcons(IIconRegister par1IIconRegister) {
+		icons=new IIcon[28];
 		icons[0]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyUP");
 		icons[1]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyDOWN");
 		icons[2]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyNORTH");
@@ -274,7 +274,7 @@ public class ItemUpgrade extends LogisticsItem {
 	}
 
 	@Override
-	public Icon getIconFromDamage(int i) {
+	public IIcon getIconFromDamage(int i) {
 
 		for(Upgrade upgrade:upgrades) {
 			if(upgrade.getId() == i) {

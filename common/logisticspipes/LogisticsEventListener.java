@@ -1,5 +1,6 @@
 package logisticspipes;
 
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import ibxm.Player;
 
 import java.io.IOException;
@@ -55,7 +56,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class LogisticsEventListener implements IPlayerTracker, IConnectionHandler {
 	
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void onEntitySpawn(EntityJoinWorldEvent event) {
 		if(event != null && event.entity instanceof EntityItem && event.entity.worldObj != null && !event.entity.worldObj.isRemote) {
 			ItemStack stack = ((EntityItem)event.entity).getEntityItem(); //Get ItemStack
@@ -68,7 +69,7 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 	/*
 	 * subscribe forge pre stich event to register common texture
 	 */
-	@ForgeSubscribe
+	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void textureHook(TextureStitchEvent.Pre event) throws IOException{
 		if (event.map.textureType == 1) {
@@ -81,7 +82,7 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 	
 	public static final WeakHashMap<EntityPlayer, List<WeakReference<ModuleQuickSort>>> chestQuickSortConnection = new WeakHashMap<EntityPlayer, List<WeakReference<ModuleQuickSort>>>();
 	
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void onPlayerInteract(final PlayerInteractEvent event) {
 		if(MainProxy.isServer(event.entityPlayer.worldObj)) {
 			if(event.action == Action.LEFT_CLICK_BLOCK) {
@@ -129,7 +130,7 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 
 	public static HashMap<Integer, Long> WorldLoadTime = new HashMap<Integer, Long>();
 	
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void WorldLoad(WorldEvent.Load event) {
 		if(MainProxy.isServer(event.world)) {
 			int dim = MainProxy.getDimensionForWorld(event.world);
@@ -143,7 +144,7 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 		}
 	}
 
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void WorldUnload(WorldEvent.Unload event) {
 		if(MainProxy.isServer(event.world)) {
 			int dim = MainProxy.getDimensionForWorld(event.world);
@@ -155,7 +156,7 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 
 	int taskCount = 0;
 	
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void watchChunk(Watch event) {
 		if(!watcherList.containsKey(event.chunk)) {
 			watcherList.put(event.chunk, new PlayerCollectionList());
@@ -163,7 +164,7 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 		watcherList.get(event.chunk).add(event.player);
 	}
 	
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void unWatchChunk(UnWatch event) {
 		if(watcherList.containsKey(event.chunk)) {
 			watcherList.get(event.chunk).remove(event.player);
@@ -209,7 +210,7 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 	private static final Queue<GuiEntry> guiPos = new LinkedList<GuiEntry>();
 
 	//Handle GuiRepoen
-	@ForgeSubscribe
+	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void onGuiOpen(GuiOpenEvent event) {
 		if(!getGuiPos().isEmpty()) {

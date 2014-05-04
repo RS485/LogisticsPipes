@@ -16,6 +16,8 @@ import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.IAction;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.util.IIcon;
 
 public abstract  class LPAction implements IAction {
 
@@ -62,7 +64,7 @@ public abstract  class LPAction implements IAction {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public Icon getIcon() {
+	public IIcon getIcon() {
 		return Textures.LPactionIconProvider.getIcon(getIconIndex());
 	}
 	

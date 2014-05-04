@@ -12,11 +12,13 @@ import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.network.GuiIDs;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
@@ -34,7 +36,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 	public static final int LOGISTICS_RF_POWERPROVIDER = 11;
 	public static final int LOGISTICS_IC2_POWERPROVIDER = 12;
 	
-	private static final Icon[] icons = new Icon[16];
+	private static final IIcon[] icons = new IIcon[16];
 	
 	public LogisticsSolidBlock(int par1) {
 		super(par1, Material.iron);
@@ -165,7 +167,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public Icon getBlockTexture(IBlockAccess access, int x, int y, int z, int side) {
+	public IIcon getBlockTexture(IBlockAccess access, int x, int y, int z, int side) {
 		int meta = access.getBlockMetadata(x, y, z);
 		TileEntity tile = access.getTileEntity(x, y, z);
 		if(tile instanceof IRotationProvider) {
@@ -177,13 +179,13 @@ public class LogisticsSolidBlock extends BlockContainer {
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister par1IconRegister) {
+	public void registerIcons(IIconRegister par1IIconRegister) {
 		for(int i=0;i<16;i++) {
 			icons[i]=par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/"+i);
 		}
 	}
 	
-	private Icon getRotatedTexture(int meta, int side, int rotation, int front) {
+	private IIcon getRotatedTexture(int meta, int side, int rotation, int front) {
 		switch (meta) {
 		case SOLDERING_STATION:
 			if(front == 0) {

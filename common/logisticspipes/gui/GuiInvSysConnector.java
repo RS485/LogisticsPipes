@@ -43,7 +43,7 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 			@Override
 			public boolean isStackAllowed(ItemStack itemStack) {
 				if(itemStack == null) return false;
-				if(itemStack.itemID != LogisticsPipes.LogisticsItemCard.itemID) return false;
+				if(itemStack.getItem() != LogisticsPipes.LogisticsItemCard) return false;
 				if(itemStack.getItemDamage() != LogisticsItemCard.FREQ_CARD) return false;
 				return true;
 			}

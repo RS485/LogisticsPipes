@@ -3,7 +3,9 @@ package logisticspipes.proxy.buildcraft.gates;
 import javax.swing.Icon;
 
 import logisticspipes.textures.Textures;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
 import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.ITrigger;
@@ -56,7 +58,7 @@ public abstract class LPTrigger implements ITrigger {
 
 
 	@Override
-	public Icon getIcon() {
+	public IIcon getIcon() {
 		return Textures.LPactionIconProvider.getIcon(getIconIndex());
 	}
 

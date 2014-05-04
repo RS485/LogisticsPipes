@@ -8,6 +8,7 @@ import logisticspipes.items.ItemModule;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
@@ -100,7 +101,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 		UtilsFX.drawTexturedQuadFull(0, 0, gui.zLevel);
 		GL11.glDisable(3042);
 		GL11.glPopMatrix();
-		if(Thaumcraft.proxy.playerKnowledge.hasDiscoveredAspect(mc.thePlayer.username, tag)) {
+		if(Thaumcraft.proxy.playerKnowledge.hasDiscoveredAspect(mc.thePlayer.getDisplayName(), tag)) {
 			UtilsFX.drawTag(x, y, tag, amount, 0, gui.zLevel);
 		} else {
 			UtilsFX.bindTexture("textures/aspects/_unknown.png");
@@ -167,8 +168,8 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 
 	@Override
 	public void addCraftingRecipes() {
-		
-		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.THAUMICASPECTSINK), new Object[] { 
+
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.THAUMICASPECTSINK), new Object[] {
 			"wGe", 
 			"rBr", 
 			"fra", 
@@ -178,7 +179,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 			Character.valueOf('a'), new ItemStack(itemShard, 1, 0), 
 			
 			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
-			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
 		

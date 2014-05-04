@@ -10,10 +10,12 @@ import logisticspipes.items.ItemModule;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.utils.item.ItemIdentifier;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -123,7 +125,7 @@ public class ForestryProxy implements IForestryProxy {
 	public boolean isKnownAlleleId(String allele, World world) {
 		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele) instanceof IAlleleBeeSpecies)) return false;
 		if(!((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele)).isSecret()) return true;
-		return root.getBreedingTracker(world, MainProxy.proxy.getClientPlayer().username).isDiscovered((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele));
+		return root.getBreedingTracker(world, MainProxy.proxy.getClientPlayer().getDisplayName()).isDiscovered((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele));
 	}
 
 	/**
@@ -379,7 +381,7 @@ public class ForestryProxy implements IForestryProxy {
 			"CrC", 
 			Character.valueOf('C'), propolis,
 			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
-			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('r'), Items.redstone,
 		});
 		
 		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
@@ -388,7 +390,7 @@ public class ForestryProxy implements IForestryProxy {
 			"CrC", 
 			Character.valueOf('C'), propolis,
 			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
-			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('r'), Items.redstone,
 		});
 		
 		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEESINK), new Object[] { 
@@ -396,7 +398,7 @@ public class ForestryProxy implements IForestryProxy {
 			"r r", 
 			"CrC", 
 			Character.valueOf('C'), propolis,
-			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('r'), Items.redstone,
 		});
 				
 		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTREFILLER), new Object[] {
@@ -406,7 +408,7 @@ public class ForestryProxy implements IForestryProxy {
 			Character.valueOf('p'), pollen,
 			Character.valueOf('C'), propolis,
 			Character.valueOf('w'), BuildCraftTransport.pipeItemsWood,
-			Character.valueOf('r'), Item.redstone,
+			Character.valueOf('r'), Items.redstone,
 		});
 		
 		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTTERMINUS), new Object[] { 
@@ -416,7 +418,7 @@ public class ForestryProxy implements IForestryProxy {
 			Character.valueOf('C'), "dyeBlack",
 			Character.valueOf('D'), "dyePurple",
 			Character.valueOf('G'), pollen, 
-			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('r'), Items.redstone,
 		});
 		
 		
@@ -427,7 +429,7 @@ public class ForestryProxy implements IForestryProxy {
 			"CrC", 
 			Character.valueOf('C'), propolis,
 			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
-			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('r'), Items.redstone,
 		});
 		
 		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0), new ItemStack(LogisticsPipes.LogisticsApiaristAnalyzerPipe, 1, 0), new Object[] { 
@@ -436,7 +438,7 @@ public class ForestryProxy implements IForestryProxy {
 			"CrC", 
 			Character.valueOf('C'), propolis,
 			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
-			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('r'), Items.redstone,
 		});
 		
 		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0), new ItemStack(LogisticsPipes.LogisticsApiaristSinkPipe, 1, 0), new Object[] { 
@@ -444,7 +446,7 @@ public class ForestryProxy implements IForestryProxy {
 			"r r", 
 			"CrC", 
 			Character.valueOf('C'), propolis,
-			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('r'), Items.redstone,
 		});
 		
 		if (Configs.MANDATORY_CARPENTER_RECIPES) return;
@@ -456,7 +458,7 @@ public class ForestryProxy implements IForestryProxy {
 			"CrC", 
 			Character.valueOf('C'), propolis,
 			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
-			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
 		
@@ -466,7 +468,7 @@ public class ForestryProxy implements IForestryProxy {
 			"CrC", 
 			Character.valueOf('C'), propolis,
 			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
-			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
 		
@@ -475,7 +477,7 @@ public class ForestryProxy implements IForestryProxy {
 			"rBr", 
 			"CrC", 
 			Character.valueOf('C'), propolis,
-			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ITEMSINK)
 		});
 		
@@ -486,7 +488,7 @@ public class ForestryProxy implements IForestryProxy {
 			Character.valueOf('p'), pollen,
 			Character.valueOf('C'), propolis,
 			Character.valueOf('w'), BuildCraftTransport.pipeItemsWood,
-			Character.valueOf('r'), Item.redstone,
+			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK),
 		});
 
@@ -497,7 +499,7 @@ public class ForestryProxy implements IForestryProxy {
 			Character.valueOf('C'), "dyeBlack",
 			Character.valueOf('D'), "dyePurple",
 			Character.valueOf('G'), pollen, 
-			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		}));
 		
@@ -507,7 +509,7 @@ public class ForestryProxy implements IForestryProxy {
 			"CrC", 
 			Character.valueOf('C'), propolis,
 			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
-			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)
 		});
 		
@@ -517,7 +519,7 @@ public class ForestryProxy implements IForestryProxy {
 			"CrC", 
 			Character.valueOf('C'), propolis,
 			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
-			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)
 		});
 		
@@ -526,7 +528,7 @@ public class ForestryProxy implements IForestryProxy {
 			"rBr", 
 			"CrC", 
 			Character.valueOf('C'), propolis,
-			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)
 		});
 	}
@@ -538,7 +540,7 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	@SideOnly(Side.CLIENT)
-	public Icon getIconIndexForAlleleId(String uid, int phase) {
+	public IIcon getIconIndexForAlleleId(String uid, int phase) {
 		IAllele bSpecies = forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid);
 		if (!(bSpecies instanceof IAlleleBeeSpecies))
 			bSpecies = root.getDefaultTemplate()[forestry.api.apiculture.EnumBeeChromosome.SPECIES.ordinal()];
@@ -573,7 +575,7 @@ public class ForestryProxy implements IForestryProxy {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public Icon getIconFromTextureManager(String name) {
+	public IIcon getIconFromTextureManager(String name) {
 		return ForestryAPI.textureManager.getDefault(name);
 	}
 }

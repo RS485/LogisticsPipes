@@ -8,6 +8,7 @@ import net.machinemuse.api.moduletrigger.IToggleableModule;
 import net.machinemuse.powersuits.common.ModularPowersuits;
 import net.machinemuse.powersuits.powermodule.PowerModuleBase;
 import net.machinemuse.utils.MuseCommonStrings;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.ItemStack;
 
 public class LogisticsPipesHUDModule extends PowerModuleBase implements IToggleableModule {

@@ -10,6 +10,8 @@ package logisticspipes.proxy.buildcraft.gates;
 
 import java.util.LinkedList;
 
+import buildcraft.api.transport.IPipeTile;
+import buildcraft.transport.Pipe;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
@@ -26,7 +28,7 @@ import buildcraft.transport.Gate;
 public class LogisticsTriggerProvider implements ITriggerProvider {
 
 	@Override
-	public LinkedList<ITrigger> getPipeTriggers(IPipe pipe) {
+	public LinkedList<ITrigger> getPipeTriggers(IPipeTile pipe) {
 		if (pipe instanceof PipeItemsSupplierLogistics || pipe instanceof PipeItemsFluidSupplier) {
 			LinkedList<ITrigger> triggers = new LinkedList<ITrigger>();
 			triggers.add(BuildCraftProxy.LogisticsFailedTrigger);
@@ -40,7 +42,7 @@ public class LogisticsTriggerProvider implements ITriggerProvider {
 		if(pipe instanceof CoreRoutedPipe) {
 			LinkedList<ITrigger> triggers = new LinkedList<ITrigger>();
 			//Only show this conditional on Gates that can accept parameters
-			if (pipe.hasGate() && pipe instanceof Pipe && ((Pipe<?>) pipe).gate.kind == Gate.GateKind.AND_4 || ((Pipe<?>) pipe).gate.kind == Gate.GateKind.OR_4) {
+			if (((CoreRoutedPipe) pipe).hasGate() && pipe instanceof Pipe && ((Pipe<?>) pipe).gate.kind == Gate.GateKind.AND_4 || ((Pipe<?>) pipe).gate.kind == Gate.GateKind.OR_4) {
 				triggers.add(BuildCraftProxy.LogisticsHasDestinationTrigger);
 			}
 			return triggers;

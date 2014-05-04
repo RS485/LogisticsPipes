@@ -4,11 +4,13 @@ import java.util.List;
 
 import javax.swing.Icon;
 
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 
 public class ItemParts extends LogisticsItem {
-	private Icon[] _icons;
+	private IIcon[] _icons;
 	public ItemParts(int par1) {
 		super(par1);
 		this.setHasSubtypes(true);
@@ -16,7 +18,7 @@ public class ItemParts extends LogisticsItem {
 	@Override
 	public void registerIcons(IIconRegister iconreg)
 	{
-		_icons=new Icon[4];
+		_icons=new IIcon[4];
 		for(int i=0;i<4;i++)
 		{
 			_icons[i]=iconreg.registerIcon("logisticspipes:"+getUnlocalizedName().replace("item.", "")+"/"+i);

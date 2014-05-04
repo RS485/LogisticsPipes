@@ -6,13 +6,15 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.string.StringUtil;
+import net.minecraft.block.Block;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 
 public class LogisticsSolidBlockItem extends ItemBlock {
 
-	public LogisticsSolidBlockItem(int par1) {
+	public LogisticsSolidBlockItem(Block par1) {
 		super(par1);
 		this.setHasSubtypes(true);
 	}
@@ -70,5 +72,5 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 	}
 
 	@Override
-	public void registerIcons(IIconRegister par1IconRegister) {}
+	public void registerIcons(IIconRegister par1IIconRegister) {}
 }

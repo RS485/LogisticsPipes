@@ -27,6 +27,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
@@ -179,7 +180,7 @@ public class ClientProxy implements IProxy {
 	// BuildCraft method end
 
 	@Override
-	public void addLogisticsPipesOverride(IIconRegister par1IconRegister, int index, String override1, String override2, boolean flag) {
+	public void addLogisticsPipesOverride(IIconRegister par1IIconRegister, int index, String override1, String override2, boolean flag) {
 		if(par1IIconRegister != null) {
 			if(flag) {
 				Textures.LPpipeIconProvider.setIcon(index, par1IIconRegister.registerIcon("logisticspipes:"+override1));

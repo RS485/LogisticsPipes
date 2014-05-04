@@ -5,6 +5,7 @@ import logisticspipes.api.IHUDArmor;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.string.StringUtil;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -65,7 +66,7 @@ public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor 
 	}
 	
 	@Override
-	public void registerIcons(IIconRegister par1IconRegister) {
+	public void registerIcons(IIconRegister par1IIconRegister) {
 		itemIcon = par1IIconRegister.registerIcon("logisticspipes:" + getUnlocalizedName().replace("item.", ""));
 	}
 	

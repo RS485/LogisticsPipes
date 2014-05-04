@@ -14,26 +14,24 @@ import logisticspipes.pipes.PipeItemsRemoteOrdererLogistics;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.string.StringUtil;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
 import org.lwjgl.input.Keyboard;
 
 public class RemoteOrderer extends Item {
-	final static Icon[]	_icons	= new Icon[17];
-	
-	public RemoteOrderer(int id) {
-		super(id);
-	}
+	final static IIcon[]	_icons	= new IIcon[17];
 	
 	@Override
-	public void registerIcons(IIconRegister par1IconRegister) {
+	public void registerIcons(IIconRegister par1IIconRegister) {
 		for(int i = 0; i < 17; i++) {
 			_icons[i] = par1IIconRegister.registerIcon("logisticspipes:" + getUnlocalizedName().replace("item.", "") + "/" + i);
 		}
@@ -45,7 +43,7 @@ public class RemoteOrderer extends Item {
 	}
 	
 	@Override
-	public Icon getIconFromDamage(int par1) {
+	public IIcon getIconFromDamage(int par1) {
 		if(par1 > 16) par1 = 0;
 		return _icons[par1];
 	}
@@ -54,7 +52,7 @@ public class RemoteOrderer extends Item {
 	@Override
 	public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean flag) {
 		// Add special tooltip in tribute to DireWolf
-		if(itemstack != null && itemstack.itemID == LogisticsPipes.LogisticsRemoteOrderer.itemID) {
+		if(itemstack != null && itemstack.getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
 			if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
 				list.add("a.k.a \"Requesting Tool\" - DW20");
 			}

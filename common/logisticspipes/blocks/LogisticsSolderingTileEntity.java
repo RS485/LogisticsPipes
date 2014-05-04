@@ -23,6 +23,8 @@ import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -66,7 +68,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 						});
 			}
 		}
-		dummy.addRestrictedSlot(9, this, 107, 17, Item.ingotIron.itemID);
+		dummy.addRestrictedSlot(9, this, 107, 17, Items.iron_ingot);
 		dummy.addRestrictedSlot(10, this, 141, 47, -1);
 		dummy.addRestrictedSlot(11, this, 9, 9, new ISlotCheck() {
 			@Override
@@ -86,12 +88,12 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 		if(allowed == null) {
 			return stack == null;
 		}
-		return stack.itemID == allowed.itemID && stack.getItemDamage() == allowed.getItemDamage();
+		return stack.getItem() == allowed.getItem() && stack.getItemDamage() == allowed.getItemDamage();
 	}
 	
 	public boolean areStacksEmpty() {
 		for(int i=0; i<9;i++) {
-			if(inv.getStackInSlot(i) != null && inv.getStackInSlot(i).itemID != 0) {
+			if(inv.getStackInSlot(i) != null) {
 				return false;
 			}
 		}
@@ -105,7 +107,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	public ItemStack[] getRecipeForTaget(ItemStack target) {
 		if(target == null) return null;
 		for(SolderingStationRecipe recipe:SolderingStationRecipes.getRecipes()) {
-			if(target.itemID == recipe.result.itemID && target.getItemDamage() == recipe.result.getItemDamage()) {
+			if(target.getItem() == recipe.result.getItem() && target.getItemDamage() == recipe.result.getItemDamage()) {
 				return recipe.source;
 			}
 		}
@@ -119,7 +121,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	public ItemStack getTargetForTaget(ItemStack target) {
 		if(target == null) return null;
 		for(SolderingStationRecipe recipe:SolderingStationRecipes.getRecipes()) {
-			if(target.itemID == recipe.result.itemID && target.getItemDamage() == recipe.result.getItemDamage()) {
+			if(target.getItem() == recipe.result.getItem() && target.getItemDamage() == recipe.result.getItemDamage()) {
 				return recipe.result;
 			}
 		}
@@ -142,7 +144,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	}
 	
 	private boolean itemEquals(ItemStack var1, ItemStack var2) {
-		return var1.itemID == var2.itemID && var1.getItemDamage() == var2.getItemDamage();
+		return var1.getItem() == var2.getItem() && var1.getItemDamage() == var2.getItemDamage();
 	}
 	
 	public ItemStack getTagetForRecipe(boolean remove) {
@@ -388,10 +390,10 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	public int addItem(ItemStack stack, boolean doAdd, ForgeDirection from) {
 		if(stack == null) return 0;
 		if(stack.getItem() == null) return 0;
-		if (stack.getItem() == Item.ingotIron) {
+		if (stack.getItem() == Items.iron_ingot) {
 			ItemStack iron = inv.getStackInSlot(9);
 			if (iron == null) {
-				iron = new ItemStack(Item.ingotIron, 0, 0);
+				iron = new ItemStack(Items.iron_ingot, 0, 0);
 				inv.setInventorySlotContents(9, iron);
 			}
 			int freespace = 64 - iron.stackSize;
@@ -417,7 +419,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 				i++;
 				continue;
 			}
-			if(stack.itemID == itemstack.itemID && stack.getItemDamage() == itemstack.getItemDamage()) {
+			if(stack.getItem() == itemstack.getItem() && stack.getItemDamage() == itemstack.getItemDamage()) {
 				availableslots++;
 				ItemStack slot = inv.getStackInSlot(i);
 				if(slot != null) {
@@ -442,7 +444,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 				i++;
 				continue;
 			}
-			if(stack.itemID == itemstack.itemID && stack.getItemDamage() == itemstack.getItemDamage()) {
+			if(stack.getItem() == itemstack.getItem() && stack.getItemDamage() == itemstack.getItemDamage()) {
 				if(itemsperslot == 0 && itemsextra == 0) {
 					inv.clearInventorySlotContents(i);
 				} else {

@@ -86,11 +86,11 @@ public class LPConduitItem extends ConduitItem {
 	
 	@Override
 	public void onNeighborChanged() {
-		if(MainProxy.isClient(pipe.worldObj)) return;
+		if(MainProxy.isClient(pipe.getWorldObj())) return;
 		boolean wasNode = false;
 		LPPosition pos = new LPPosition((TileEntity)pipe);
 		pos.moveForward(dir);
-		TileEntity curTile = pos.getTileEntity(pipe.worldObj);
+		TileEntity curTile = pos.getTileEntity(pipe.getWorldObj());
 		int oldType = sideType[side];
 		sideType[side] = 0;
 		if(curTile != null) {

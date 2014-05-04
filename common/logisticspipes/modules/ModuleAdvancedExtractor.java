@@ -1,15 +1,11 @@
 package logisticspipes.modules;
 
-import ibxm.Player;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import javax.swing.Icon;
 
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.gui.hud.modules.HUDAdvancedExtractor;
@@ -40,11 +36,12 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.IIcon;
 import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -221,8 +218,8 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 		for (int i = 0; i < this._filterInventory.getSizeInventory(); i++) {
 
 			ItemStack stack = this._filterInventory.getStackInSlot(i);
-			if ((stack != null) && (stack.itemID == item.itemID)) {
-				if (Item.itemsList[item.itemID].isDamageable()) {
+			if ((stack != null) && (stack.getItem() == item.getItem())) {
+				if (item.getItem().isDamageable()) {
 					return areItemsIncluded();
 				}
 				if (stack.getItemDamage() == item.getItemDamage()) {
@@ -346,7 +343,7 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public Icon getIconTexture(IIconRegister register) {
+	public IIcon getIconTexture(IIconRegister register) {
 		return register.registerIcon("logisticspipes:itemModule/ModuleAdvancedExtractor");
 	}
 }

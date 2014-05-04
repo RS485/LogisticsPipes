@@ -97,7 +97,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	private IInventory getRawInventory(ForgeDirection ori) {
 		Position pos = new Position(this.getX(), this.getY(), this.getZ(), ori);
 		pos.moveForwards(1);
-		TileEntity tile = this.getWorld().getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
+		TileEntity tile = this.getWorld().getTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
 		if (tile instanceof TileGenericPipe) return null;
 		if (!(tile instanceof IInventory)) return null;
 		return InventoryHelper.getInventory((IInventory) tile);

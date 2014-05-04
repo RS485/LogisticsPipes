@@ -10,7 +10,7 @@ import dan200.computercraft.api.peripheral.IPeripheralProvider;
 public class LPPeripheralProvider implements IPeripheralProvider {
 	@Override
 	public IPeripheral getPeripheral(World world, int x, int y, int z, int side) {
-		TileEntity tile = world.getBlockTileEntity(x, y, z);
+		TileEntity tile = world.getTileEntity(x, y, z);
 		if(tile instanceof IPeripheral) {
 			if(tile.getClass().getPackage().getName().startsWith("logisticspipes")) {
 				return (IPeripheral)tile;

@@ -110,7 +110,7 @@ public class RemoteOrderer extends Item {
 		int dim = stack.stackTagCompound.getInteger("connectedPipe-world-dim");
 		World world = DimensionManager.getWorld(dim);
 		if(world == null) { return null; }
-		TileEntity tile = world.getBlockTileEntity(stack.stackTagCompound.getInteger("connectedPipe-x"), stack.stackTagCompound.getInteger("connectedPipe-y"), stack.stackTagCompound.getInteger("connectedPipe-z"));
+		TileEntity tile = world.getTileEntity(stack.stackTagCompound.getInteger("connectedPipe-x"), stack.stackTagCompound.getInteger("connectedPipe-y"), stack.stackTagCompound.getInteger("connectedPipe-z"));
 		if(!(tile instanceof LogisticsTileGenericPipe)) { return null; }
 		Pipe<?> pipe = ((LogisticsTileGenericPipe)tile).pipe;
 		if(pipe instanceof PipeItemsRemoteOrdererLogistics) { return (PipeItemsRemoteOrdererLogistics)pipe; }

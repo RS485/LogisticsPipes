@@ -46,7 +46,7 @@ public class WorldTickHandler implements ITickHandler {
 				World world = tile.worldObj;
 
 				//TE or its chunk might've gone away while we weren't looking
-				TileEntity tilecheck = world.getBlockTileEntity(x, y, z);
+				TileEntity tilecheck = world.getTileEntity(x, y, z);
 				if(tilecheck != tile) {
 					localList.remove(0);
 					continue;

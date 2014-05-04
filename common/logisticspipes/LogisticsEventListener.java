@@ -85,7 +85,7 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 	public void onPlayerInteract(final PlayerInteractEvent event) {
 		if(MainProxy.isServer(event.entityPlayer.worldObj)) {
 			if(event.action == Action.LEFT_CLICK_BLOCK) {
-				final TileEntity tile = event.entityPlayer.worldObj.getBlockTileEntity(event.x, event.y, event.z);
+				final TileEntity tile = event.entityPlayer.worldObj.getTileEntity(event.x, event.y, event.z);
 				if(tile instanceof LogisticsTileGenericPipe) {
 					if(((LogisticsTileGenericPipe)tile).pipe instanceof CoreRoutedPipe) {
 						if(!((CoreRoutedPipe)((LogisticsTileGenericPipe)tile).pipe).canBeDestroyedByPlayer(event.entityPlayer)) {
@@ -102,7 +102,7 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 				}
 			}
 			if(event.action == Action.RIGHT_CLICK_BLOCK) {
-				final TileEntity tile = event.entityPlayer.worldObj.getBlockTileEntity(event.x, event.y, event.z);
+				final TileEntity tile = event.entityPlayer.worldObj.getTileEntity(event.x, event.y, event.z);
 				if(tile instanceof TileEntityChest || SimpleServiceLocator.ironChestProxy.isIronChest(tile)) {
 					List<WeakReference<ModuleQuickSort>> list = new ArrayList<WeakReference<ModuleQuickSort>>();
 					for(AdjacentTile adj:new WorldUtil(tile).getAdjacentTileEntities()) {

@@ -23,7 +23,7 @@ public class CraftingSignCreator extends LogisticsItem {
 	public boolean onItemUseFirst(ItemStack itemStack, EntityPlayer player, World world, int x, int y, int z, int sideinput, float hitX, float hitY, float hitZ) {
 		if(MainProxy.isClient(world)) return false;
 		if(itemStack.getItemDamage() > this.getMaxDamage() || itemStack.stackSize == 0) { return false; }
-		TileEntity tile = world.getBlockTileEntity(x, y, z);
+		TileEntity tile = world.getTileEntity(x, y, z);
 		if(!(tile instanceof LogisticsTileGenericPipe)) { return false; }
 		Pipe<?> pipe = ((LogisticsTileGenericPipe)tile).pipe;
 		if(pipe == null) { return false; }

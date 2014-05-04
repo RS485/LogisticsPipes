@@ -82,7 +82,7 @@ public class RoutingUpdateTargetResponse extends ModernPacket {
 			player.sendChatToPlayer(ChatMessageComponent.createFromText("Checking Block at: x:" + x + " y:" + y + " z:" + z));
 			int id = player.worldObj.getBlockId(x, y, z);
 			player.sendChatToPlayer(ChatMessageComponent.createFromText("Found Block with Id: " + id));
-			final TileEntity tile = player.worldObj.getBlockTileEntity(x, y, z);
+			final TileEntity tile = player.worldObj.getTileEntity(x, y, z);
 			if(tile == null) {
 				player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.RED + "No TileEntity found"));
 			} else if (!(tile instanceof LogisticsTileGenericPipe)) {

@@ -75,7 +75,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 			return null;
 		}
 
-		final TileEntity tile = world.getBlockTileEntity(getPosX(), getPosY(), getPosZ());
+		final TileEntity tile = world.getTileEntity(getPosX(), getPosY(), getPosZ());
 		if(tile != null) {
 			if(!(clazz.isAssignableFrom(tile.getClass()))) {
 				if(LogisticsPipes.DEBUG) {

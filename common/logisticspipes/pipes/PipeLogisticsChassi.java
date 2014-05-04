@@ -164,7 +164,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 		if (getRouter().isRoutedExit(connection)) return false;
 		Position pos = new Position(getX(), getY(), getZ(), connection);
 		pos.moveForwards(1.0);
-		TileEntity tile = getWorld().getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
+		TileEntity tile = getWorld().getTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
 
 		if (tile == null) return false;
 		if (tile instanceof TileGenericPipe) return false;

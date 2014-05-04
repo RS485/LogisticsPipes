@@ -77,7 +77,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 	@Override
 	public void onBlockPlacedBy(World world, int posX, int posY, int posZ, EntityLivingBase entity, ItemStack itemStack) {
 		super.onBlockPlacedBy(world, posX, posY, posZ, entity, itemStack);
-		TileEntity tile = world.getBlockTileEntity(posX, posY, posZ);
+		TileEntity tile = world.getTileEntity(posX, posY, posZ);
 		if(tile instanceof LogisticsCraftingTableTileEntity) {
 			((LogisticsCraftingTableTileEntity)tile).placedBy(entity);
 		}
@@ -105,7 +105,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 
 	@Override
 	public void breakBlock(World par1World, int par2, int par3, int par4, int par5, int par6) {
-		TileEntity tile = par1World.getBlockTileEntity(par2, par3, par4);
+		TileEntity tile = par1World.getTileEntity(par2, par3, par4);
 		if(tile instanceof LogisticsSolderingTileEntity) {
 			((LogisticsSolderingTileEntity)tile).onBlockBreak();
 		}
@@ -167,7 +167,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 	@SideOnly(Side.CLIENT)
 	public Icon getBlockTexture(IBlockAccess access, int x, int y, int z, int side) {
 		int meta = access.getBlockMetadata(x, y, z);
-		TileEntity tile = access.getBlockTileEntity(x, y, z);
+		TileEntity tile = access.getTileEntity(x, y, z);
 		if(tile instanceof IRotationProvider) {
 			return getRotatedTexture(meta, side, ((IRotationProvider)tile).getRotation(), ((IRotationProvider)tile).getFrontTexture());
 		} else {

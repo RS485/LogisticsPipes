@@ -107,7 +107,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 			Position pos = new Position(this.container);
 			pos.orientation = ori;
 			pos.moveForwards(1);
-			TileEntity tile = this.getWorld().getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
+			TileEntity tile = this.getWorld().getTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
 			if(tile != null) {
 				if(SimpleServiceLocator.forestryProxy.isTileAnalyser(tile)) {
 					return ori;

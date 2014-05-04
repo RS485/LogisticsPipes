@@ -264,7 +264,7 @@ public class ItemModule extends LogisticsItem {
 	@Override
 	public boolean onItemUse(final ItemStack par1ItemStack, final EntityPlayer par2EntityPlayer, final World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10) {
 		if(MainProxy.isServer(par2EntityPlayer.worldObj)) {
-			TileEntity tile = par3World.getBlockTileEntity(par4, par5, par6);
+			TileEntity tile = par3World.getTileEntity(par4, par5, par6);
 			if(tile instanceof LogisticsTileGenericPipe) {
 				if (par2EntityPlayer.username.equals("ComputerCraft")) { //Allow turtle to place modules in pipes.
 					Pipe<?> pipe = BlockGenericPipe.getPipe(par3World, par4, par5, par6);

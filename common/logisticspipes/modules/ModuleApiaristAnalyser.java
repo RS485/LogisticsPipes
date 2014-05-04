@@ -25,11 +25,14 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.Pair;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.util.IIcon;
+
 public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClientInformationProvider, IModuleWatchReciver {
 
 	private IInventoryProvider _invProvider;
@@ -220,7 +223,7 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public Icon getIconTexture(IIconRegister register) {
+	public IIcon getIconTexture(IIconRegister register) {
 		return register.registerIcon("logisticspipes:itemModule/ModuleApiaristAnalyser");
 	}
 }

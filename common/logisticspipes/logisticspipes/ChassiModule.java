@@ -17,6 +17,7 @@ import logisticspipes.proxy.cc.CCSinkResponder;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class ChassiModule extends LogisticsGuiModule{

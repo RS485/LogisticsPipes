@@ -23,6 +23,7 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.PriorityBlockingQueue;
 
+import buildcraft.api.core.IIconProvider;
 import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;

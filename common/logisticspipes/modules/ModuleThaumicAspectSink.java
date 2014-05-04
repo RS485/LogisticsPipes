@@ -213,7 +213,7 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public Icon getIconTexture(IconRegister register) {
+	public Icon getIconTexture(IIconRegister register) {
 		return register.registerIcon("logisticspipes:itemModule/ModuleThaumicAspectSink");
 	}
 }

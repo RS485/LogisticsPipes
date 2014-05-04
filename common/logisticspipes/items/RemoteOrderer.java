@@ -33,9 +33,9 @@ public class RemoteOrderer extends Item {
 	}
 	
 	@Override
-	public void registerIcons(IconRegister par1IconRegister) {
+	public void registerIcons(IIconRegister par1IconRegister) {
 		for(int i = 0; i < 17; i++) {
-			_icons[i] = par1IconRegister.registerIcon("logisticspipes:" + getUnlocalizedName().replace("item.", "") + "/" + i);
+			_icons[i] = par1IIconRegister.registerIcon("logisticspipes:" + getUnlocalizedName().replace("item.", "") + "/" + i);
 		}
 	}
 	

@@ -40,7 +40,7 @@ public class LogisticsPipesHUDModule extends PowerModuleBase implements ITogglea
 	}
 	
 	@Override
-	public void registerIcon(IconRegister register) {
+	public void registerIcon(IIconRegister register) {
 		icon = register.registerIcon("logisticspipes:logisticsHUDGlasses");
 	}
 	

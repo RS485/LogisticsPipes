@@ -145,13 +145,13 @@ public class ItemModule extends LogisticsItem {
 		}
 
 		@SideOnly(Side.CLIENT)
-		private void registerModuleIcon(IconRegister par1IconRegister) {
+		private void registerModuleIcon(IIconRegister par1IconRegister) {
 			if(moduleClass == null) {
-				this.moduleIcon = par1IconRegister.registerIcon("logisticspipes:" + getUnlocalizedName().replace("item.","") + "/blank");
+				this.moduleIcon = par1IIconRegister.registerIcon("logisticspipes:" + getUnlocalizedName().replace("item.","") + "/blank");
 			} else {
 				try {
 					LogisticsModule instance = moduleClass.newInstance();
-					this.moduleIcon = instance.getIconTexture(par1IconRegister);
+					this.moduleIcon = instance.getIconTexture(par1IIconRegister);
 				} catch (InstantiationException e) {
 					e.printStackTrace();
 				} catch (IllegalAccessException e) {
@@ -312,10 +312,10 @@ public class ItemModule extends LogisticsItem {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerIcons(IconRegister par1IconRegister) {
+	public void registerIcons(IIconRegister par1IconRegister) {
 		if(modules.size()<=0) return;
 		for(Module module:modules) {
-			module.registerModuleIcon(par1IconRegister);
+			module.registerModuleIcon(par1IIconRegister);
 		}
 	}
 

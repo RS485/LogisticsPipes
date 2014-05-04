@@ -44,7 +44,7 @@ public abstract  class LPAction implements IAction {
 	}
 	
 	@Override
-	public void registerIcons(IconRegister iconRegister) {
+	public void registerIcons(IIconRegister iconRegister) {
 		// TODO Auto-generated method stub
 		Textures.LPactionIconProvider.registerIcons(iconRegister);
 		

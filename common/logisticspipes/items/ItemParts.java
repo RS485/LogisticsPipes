@@ -14,7 +14,7 @@ public class ItemParts extends LogisticsItem {
 		this.setHasSubtypes(true);
 	}
 	@Override
-	public void registerIcons(IconRegister iconreg)
+	public void registerIcons(IIconRegister iconreg)
 	{
 		_icons=new Icon[4];
 		for(int i=0;i<4;i++)

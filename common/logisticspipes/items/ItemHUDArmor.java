@@ -65,8 +65,8 @@ public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor 
 	}
 	
 	@Override
-	public void registerIcons(IconRegister par1IconRegister) {
-		itemIcon = par1IconRegister.registerIcon("logisticspipes:" + getUnlocalizedName().replace("item.", ""));
+	public void registerIcons(IIconRegister par1IconRegister) {
+		itemIcon = par1IIconRegister.registerIcon("logisticspipes:" + getUnlocalizedName().replace("item.", ""));
 	}
 	
 	@Override

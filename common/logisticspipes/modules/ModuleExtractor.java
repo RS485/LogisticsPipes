@@ -306,7 +306,7 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public Icon getIconTexture(IconRegister register) {
+	public Icon getIconTexture(IIconRegister register) {
 		return register.registerIcon("logisticspipes:itemModule/ModuleExtractor");
 	}
 }

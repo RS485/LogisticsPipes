@@ -33,7 +33,7 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 
 	@Override
     @SideOnly(Side.CLIENT)
-	public void registerIcons(IconRegister iconReg) {
+	public void registerIcons(IIconRegister iconReg) {
 		this.itemIcon = iconReg.registerIcon("logisticspipes:liquids/empty");
 	}
 	

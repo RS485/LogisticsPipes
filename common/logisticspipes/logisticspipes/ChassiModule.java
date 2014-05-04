@@ -187,7 +187,7 @@ public class ChassiModule extends LogisticsGuiModule{
 	}
 
 	@Override
-	public Icon getIconTexture(IconRegister register) {
+	public Icon getIconTexture(IIconRegister register) {
 		//Not Needed
 		return null;
 	}

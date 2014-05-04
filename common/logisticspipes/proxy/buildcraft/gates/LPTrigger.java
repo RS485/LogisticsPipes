@@ -62,7 +62,7 @@ public abstract class LPTrigger implements ITrigger {
 
 
 	@Override
-	public void registerIcons(IconRegister iconRegister) {
+	public void registerIcons(IIconRegister iconRegister) {
 		Textures.LPactionIconProvider.registerIcons(iconRegister);	
 	}
 }

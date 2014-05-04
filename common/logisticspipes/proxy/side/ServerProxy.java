@@ -246,7 +246,7 @@ public class ServerProxy implements IProxy {
 	}
 	// BuildCraft method end
 	@Override
-	public void addLogisticsPipesOverride(IconRegister par1IconRegister, int index, String override1,
+	public void addLogisticsPipesOverride(IIconRegister par1IconRegister, int index, String override1,
 			String override2, boolean flag) {
 		// TODO Auto-generated method stub
 		

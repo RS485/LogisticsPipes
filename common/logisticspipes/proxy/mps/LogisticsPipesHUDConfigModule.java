@@ -46,7 +46,7 @@ public class LogisticsPipesHUDConfigModule extends PowerModuleBase implements IR
 	}
 	
 	@Override
-	public void registerIcon(IconRegister register) {
+	public void registerIcon(IIconRegister register) {
 		icon = register.registerIcon("logisticspipes:logisticsHUDGlasses");
 	}
 	

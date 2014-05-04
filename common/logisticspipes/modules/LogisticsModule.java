@@ -104,7 +104,7 @@ public abstract class LogisticsModule implements ISaveState {
 	 * @return
 	 */
 	@SideOnly(Side.CLIENT)
-	public abstract Icon getIconTexture(IconRegister register);
+	public abstract Icon getIconTexture(IIconRegister register);
 	
 	/**
 	 * Returns whether the module should be displayed the effect when as an item.

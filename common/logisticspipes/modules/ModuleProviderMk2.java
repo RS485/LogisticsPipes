@@ -29,7 +29,7 @@ public class ModuleProviderMk2 extends ModuleProvider {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public Icon getIconTexture(IconRegister register) {
+	public Icon getIconTexture(IIconRegister register) {
 		return register.registerIcon("logisticspipes:itemModule/ModuleProviderMk2");
 	}
 }

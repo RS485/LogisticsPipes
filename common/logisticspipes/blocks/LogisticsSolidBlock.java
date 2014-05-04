@@ -177,9 +177,9 @@ public class LogisticsSolidBlock extends BlockContainer {
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerIcons(IconRegister par1IconRegister) {
+	public void registerIcons(IIconRegister par1IconRegister) {
 		for(int i=0;i<16;i++) {
-			icons[i]=par1IconRegister.registerIcon("logisticspipes:lpsolidblock/"+i);
+			icons[i]=par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/"+i);
 		}
 	}
 	

@@ -70,5 +70,5 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 	}
 
 	@Override
-	public void registerIcons(IconRegister par1IconRegister) {}
+	public void registerIcons(IIconRegister par1IconRegister) {}
 }

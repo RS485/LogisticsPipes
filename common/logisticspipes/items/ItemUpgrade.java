@@ -238,39 +238,39 @@ public class ItemUpgrade extends LogisticsItem {
 	}
 
 	@Override
-	public void registerIcons(IconRegister par1IconRegister) {
+	public void registerIcons(IIconRegister par1IconRegister) {
 		icons=new Icon[28];
-		icons[0]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyUP");
-		icons[1]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyDOWN");
-		icons[2]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyNORTH");
-		icons[3]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakySOUTH");
-		icons[4]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyEAST");
-		icons[5]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyWEST");
-		icons[6]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyCombination");
+		icons[0]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyUP");
+		icons[1]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyDOWN");
+		icons[2]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyNORTH");
+		icons[3]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakySOUTH");
+		icons[4]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyEAST");
+		icons[5]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyWEST");
+		icons[6]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyCombination");
 		
-		icons[7]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/Speed");
+		icons[7]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/Speed");
 		
-		icons[8]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/DisUP");
-		icons[9]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/DisDOWN");
-		icons[10]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/DisNORTH");
-		icons[11]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/DisSOUTH");
-		icons[12]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/DisEAST");
-		icons[13]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/DisWEST");
+		icons[8]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/DisUP");
+		icons[9]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/DisDOWN");
+		icons[10]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/DisNORTH");
+		icons[11]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/DisSOUTH");
+		icons[12]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/DisEAST");
+		icons[13]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/DisWEST");
 
-		icons[14]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/Satelite");
-		icons[15]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/FluidCrafting");
-		icons[16]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/CraftingByproduct");
-		icons[17]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/PlacementRules");
-		icons[18]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/FuzzyCrafting");
-		icons[19]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransport");
-		icons[20]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportBC");
-		icons[21]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportTE");
-		icons[22]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-LV");
-		icons[23]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-MV");
-		icons[24]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-HV");
-		icons[25]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-EV");
-		icons[26]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/CCRemoteControl");
-		icons[27]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/CraftingMonitoring");
+		icons[14]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/Satelite");
+		icons[15]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/FluidCrafting");
+		icons[16]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/CraftingByproduct");
+		icons[17]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/PlacementRules");
+		icons[18]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/FuzzyCrafting");
+		icons[19]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransport");
+		icons[20]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportBC");
+		icons[21]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportTE");
+		icons[22]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-LV");
+		icons[23]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-MV");
+		icons[24]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-HV");
+		icons[25]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-EV");
+		icons[26]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/CCRemoteControl");
+		icons[27]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/CraftingMonitoring");
 	}
 
 	@Override

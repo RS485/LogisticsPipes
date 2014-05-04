@@ -104,7 +104,7 @@ public class ModuleApiaristTerminus extends LogisticsModule {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public Icon getIconTexture(IconRegister register) {
+	public Icon getIconTexture(IIconRegister register) {
 		return register.registerIcon("logisticspipes:itemModule/ModuleApiaristTerminus");
 	}
 }

@@ -24,7 +24,7 @@ public class ModuleExtractorMk2 extends ModuleExtractor{
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public Icon getIconTexture(IconRegister register) {
+	public Icon getIconTexture(IIconRegister register) {
 		return register.registerIcon("logisticspipes:itemModule/ModuleExtractorMk2");
 	}
 }

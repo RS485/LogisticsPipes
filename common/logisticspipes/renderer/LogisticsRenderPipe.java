@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.swing.Icon;
 
+import buildcraft.transport.Pipe;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;

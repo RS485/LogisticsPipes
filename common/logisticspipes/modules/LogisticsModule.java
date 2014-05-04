@@ -20,6 +20,8 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.util.IIcon;
 
 @CCType(name="LogisticsModule")
 public abstract class LogisticsModule implements ISaveState {
@@ -104,7 +106,7 @@ public abstract class LogisticsModule implements ISaveState {
 	 * @return
 	 */
 	@SideOnly(Side.CLIENT)
-	public abstract Icon getIconTexture(IIconRegister register);
+	public abstract IIcon getIconTexture(IIconRegister register);
 	
 	/**
 	 * Returns whether the module should be displayed the effect when as an item.

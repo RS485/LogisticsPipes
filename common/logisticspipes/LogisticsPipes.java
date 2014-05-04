@@ -142,7 +142,7 @@ public class LogisticsPipes {
 		PacketHandler.intialize();
 	}
 	
-	@Instance("LogisticsPipes|Main")
+	@Instance("LogisticsPipes")
 	public static LogisticsPipes instance;
 	
 	//Network CHannel

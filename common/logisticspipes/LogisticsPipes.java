@@ -103,7 +103,7 @@ import cpw.mods.fml.relauncher.FMLInjectionData;
 import cpw.mods.fml.relauncher.Side;
 
 @Mod(
-		modid = "LogisticsPipes|Main",
+		modid = "LogisticsPipes",
 		name = "Logistics Pipes",
 		version = "%VERSION%",
 		/* %------------CERTIFICATE-SUM-----------% */

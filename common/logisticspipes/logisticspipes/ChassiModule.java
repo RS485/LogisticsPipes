@@ -19,6 +19,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.IIcon;
 
 public class ChassiModule extends LogisticsGuiModule{
 	
@@ -188,7 +189,7 @@ public class ChassiModule extends LogisticsGuiModule{
 	}
 
 	@Override
-	public Icon getIconTexture(IIconRegister register) {
+	public IIcon getIconTexture(IIconRegister register) {
 		//Not Needed
 		return null;
 	}

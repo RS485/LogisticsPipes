@@ -20,6 +20,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.util.IIcon;
 
 public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 
@@ -69,7 +70,7 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 		
 		@Override
 		@SideOnly(Side.CLIENT)
-		public Icon getTextureIcon() {
+		public IIcon getTextureIcon() {
 			if(setting.filterType == null) return null;
 			return SimpleServiceLocator.forestryProxy.getIconFromTextureManager("analyzer/" + setting.filterType.icon);
 		}
@@ -311,7 +312,7 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 
 		@Override
 		@SideOnly(Side.CLIENT)
-		public Icon getTextureIcon() {
+		public IIcon getTextureIcon() {
 			return null;
 		}
 		

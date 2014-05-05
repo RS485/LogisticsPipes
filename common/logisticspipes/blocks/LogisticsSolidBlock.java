@@ -118,7 +118,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 	}
 
 	@Override
-	public Icon getIcon(int side, int meta) {
+	public IIcon getIcon(int side, int meta) {
 		return getRotatedTexture(meta, side, 2, 0);
 	}
 	

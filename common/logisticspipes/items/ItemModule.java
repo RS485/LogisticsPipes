@@ -323,7 +323,7 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	@Override
-	public Icon getIconFromDamage(int i) {
+	public IIcon getIconFromDamage(int i) {
 		// should set and store TextureIndex with this object.
 		for(Module module:modules) {
 			if(module.getId() == i) {

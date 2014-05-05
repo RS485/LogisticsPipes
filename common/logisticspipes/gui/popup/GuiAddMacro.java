@@ -3,7 +3,7 @@ package logisticspipes.gui.popup;
 import java.util.LinkedList;
 import java.util.List;
 
-import logisticspipes.gui.orderer.NormalMk2GuiOrderer;
+import logisticspipes.interfaces.IDiskProvider;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.orderer.DiscContent;
 import logisticspipes.proxy.MainProxy;
@@ -15,6 +15,7 @@ import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -25,7 +26,7 @@ import org.lwjgl.opengl.GL11;
 
 public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 
-	private NormalMk2GuiOrderer mainGui;
+	private final IDiskProvider diskProvider;
 	private int mousePosX = 0;
 	private int mousePosY = 0;
 	private int mousebutton = 0;
@@ -50,9 +51,9 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 	private int nameWidth = 122;
 	private int searchWidth = 138;
 	
-	public GuiAddMacro(NormalMk2GuiOrderer mainGui, String macroName) {
+	public GuiAddMacro(IDiskProvider diskProvider, String macroName) {
 		super(200, 200, 0, 0);
-		this.mainGui = mainGui;
+		this.diskProvider = diskProvider;
 		name1 = macroName;
 		loadMacroItems();
 	}
@@ -63,7 +64,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		}
 		NBTTagList inventar = null;
 
-		NBTTagList list = this.mainGui.getDisk().getTagCompound().getTagList("macroList");
+		NBTTagList list = this.diskProvider.getDisk().getTagCompound().getTagList("macroList");
 		for(int i = 0; i < list.tagCount(); i++) {
 			NBTTagCompound tag = (NBTTagCompound) list.tagAt(i);
 			String name = tag.getString("name");
@@ -137,12 +138,11 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 	}
 	
 	@Override
-	public void drawScreen(int par1, int par2, float par3){
+	public void drawScreen(int par1, int par2, float par3) {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, false);
-		
 		fontRenderer.drawString("Add Macro", guiLeft + fontRenderer.getStringWidth("Add Macro") / 2, guiTop + 6, 0x404040);
 		
-		maxPageAll = (int) Math.floor((getSearchedItemNumber(mainGui.itemDisplay._allItems) - 1)  / 45F);
+		maxPageAll = (int) Math.floor((getSearchedItemNumber(diskProvider.getItemDisplay()._allItems) - 1)  / 45F);
 		if(maxPageAll == -1) maxPageAll = 0;
 		if (pageAll > maxPageAll){
 			pageAll = maxPageAll;
@@ -240,7 +240,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		drawRect(guiLeft + 6, guiTop + 16, right - 12, bottom - 84, BasicGuiHelper.ConvertEnumToColor(Colors.MiddleGrey));
 		drawRect(guiLeft + 6, bottom - 52, right - 12, bottom - 32, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey));
 		
-		for(ItemIdentifierStack itemStack : mainGui.itemDisplay._allItems) {
+		for(ItemIdentifierStack itemStack : diskProvider.getItemDisplay()._allItems) {
 			ItemIdentifier item = itemStack.getItem();
 			if(!itemSearched(item)) continue;
 			ppi++;
@@ -322,7 +322,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 			}
 		}
 
-		BasicGuiHelper.renderItemIdentifierStackListIntoGui(mainGui.itemDisplay._allItems, this, pageAll, guiLeft + 10, guiTop + 18, 9, 45, panelxSize, panelySize, mc, false, false);
+		BasicGuiHelper.renderItemIdentifierStackListIntoGui(diskProvider.getItemDisplay()._allItems, this, pageAll, guiLeft + 10, guiTop + 18, 9, 45, panelxSize, panelySize, mc, false, false);
 
 		ppi = 0;
 		column = 0;
@@ -451,7 +451,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 				}
 
 				boolean flag = false;
-				NBTTagList list = this.mainGui.getDisk().getTagCompound().getTagList("macroList");
+				NBTTagList list = this.diskProvider.getDisk().getTagCompound().getTagList("macroList");
 
 				for(int i = 0; i < list.tagCount(); i++) {
 					NBTTagCompound tag = (NBTTagCompound) list.tagAt(i);
@@ -468,8 +468,8 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 					nbt.setTag("inventar", inventar);
 					list.appendTag(nbt);
 				}
-				this.mainGui.getDisk().getTagCompound().setTag("macroList", list);
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(DiscContent.class).setStack(mainGui.pipe.getDisk()).setPosX(mainGui.pipe.getX()).setPosY(mainGui.pipe.getY()).setPosZ(mainGui.pipe.getZ()));
+				this.diskProvider.getDisk().getTagCompound().setTag("macroList", list);
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(DiscContent.class).setStack(diskProvider.getDisk()).setPosX(diskProvider.getX()).setPosY(diskProvider.getY()).setPosZ(diskProvider.getZ()));
 				this.exitGui();
 			} else if(macroItems.size() != 0) {
 				this.setSubGui(new GuiMessagePopup("Please enter a name"));

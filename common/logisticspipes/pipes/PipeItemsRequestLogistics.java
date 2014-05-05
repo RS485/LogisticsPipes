@@ -143,7 +143,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 			public void handleSucessfullRequestOf(ItemIdentifier item, int count, LinkedLogisticsOrderList parts) {}
 
 			@Override
-			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {
+			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items, LinkedLogisticsOrderList parts) {
 				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
 					Integer count = used.get(e.getKey());
 					if(count == null)
@@ -187,7 +187,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 			public void handleSucessfullRequestOf(ItemIdentifier item, int count, LinkedLogisticsOrderList parts) {}
 
 			@Override
-			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {}
+			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items, LinkedLogisticsOrderList parts) {}
 		});
 		List<ItemStack> missingList = new ArrayList<ItemStack>(missing.size());
 		for(Entry<ItemIdentifier,Integer>e:missing.entrySet()) {

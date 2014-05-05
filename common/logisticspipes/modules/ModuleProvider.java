@@ -144,6 +144,7 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 
 	@Override
 	public void tick() {
+		//if(true) return;
 		if (++currentTick < ticksToAction) return;
 		currentTick = 0;
 		checkUpdate(null);

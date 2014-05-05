@@ -61,14 +61,11 @@ public class SubGuiScreen extends GuiScreen implements ISubGuiControler {
 		super.drawScreen(par1, par2, par3);
 		if(subGui != null) {
 			GL11.glTranslatef(0.0F, 0.0F, 1.0F);
-			if(!subGui.hasSubGui()) {
-		        GL11.glDisable(GL11.GL_DEPTH_TEST);
-				super.drawDefaultBackground();
-		        GL11.glEnable(GL11.GL_DEPTH_TEST);
-			}
-	        GL11.glEnable(GL11.GL_DEPTH_TEST);
-			subGui.drawScreen(par1, par2, par3);
 	        GL11.glDisable(GL11.GL_DEPTH_TEST);
+			if(!subGui.hasSubGui()) {
+				super.drawDefaultBackground();
+			}
+			subGui.drawScreen(par1, par2, par3);
 			GL11.glTranslatef(0.0F, 0.0F, -1.0F);
 		}
 	}

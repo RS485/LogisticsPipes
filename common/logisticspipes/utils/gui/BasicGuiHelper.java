@@ -200,6 +200,7 @@ public class BasicGuiHelper {
 	            }
 	            catch(Exception e1) {}
 		}
+		zLevel = 0;
 	}
 	
 	public static void drawToolTip(int posX, int posY, List<String> msg, int color, boolean forceminecraft) {
@@ -251,6 +252,7 @@ public class BasicGuiHelper {
         			GL11.glDisable(2929 /*GL_DEPTH_TEST*/);	
         			zLevel = 300.0F;
 	                int var15 = -267386864;
+	                
 	                drawGradientRect(var11 - 3, var12 - 4, var11 + var10 + 3, var12 - 3, var15, var15);
 	                drawGradientRect(var11 - 3, var12 + var14 + 3, var11 + var10 + 3, var12 + var14 + 4, var15, var15);
 	                drawGradientRect(var11 - 3, var12 - 3, var11 + var10 + 3, var12 + var14 + 3, var15, var15);
@@ -263,6 +265,7 @@ public class BasicGuiHelper {
 	                drawGradientRect(var11 - 3, var12 - 3, var11 + var10 + 3, var12 - 3 + 1, var16, var16);
 	                drawGradientRect(var11 - 3, var12 + var14 + 2, var11 + var10 + 3, var12 + var14 + 3, var17, var17);
 
+	                
 	                for (int var18 = 0; var18 < var24.size(); ++var18)
 	                {
 	                    String var19 = var24.get(var18);
@@ -298,6 +301,7 @@ public class BasicGuiHelper {
 	
     private static void drawGradientRect(int par1, int par2, int par3, int par4, int par5, int par6)
     {
+    	zLevel = 0;
         float var7 = (par5 >> 24 & 255) / 255.0F;
         float var8 = (par5 >> 16 & 255) / 255.0F;
         float var9 = (par5 >> 8 & 255) / 255.0F;
@@ -382,6 +386,7 @@ public class BasicGuiHelper {
 	}
 
     public static void drawSlotBackground(Minecraft mc, int x, int y) {
+    	zLevel = 0;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(SLOT);
 		
@@ -398,6 +403,7 @@ public class BasicGuiHelper {
 	
 
     public static void drawBigSlotBackground(Minecraft mc, int x, int y) {
+    	zLevel = 0;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(BIGSLOT);
 		
@@ -413,6 +419,7 @@ public class BasicGuiHelper {
 	private static final ResourceLocation SMALLSLOT = new ResourceLocation("logisticspipes", "textures/gui/slot-small.png");
 	
     public static void drawSmallSlotBackground(Minecraft mc, int x, int y) {
+    	zLevel = 0;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(SMALLSLOT);
 		

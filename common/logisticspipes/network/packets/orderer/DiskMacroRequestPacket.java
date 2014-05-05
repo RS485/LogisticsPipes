@@ -2,6 +2,7 @@ package logisticspipes.network.packets.orderer;
 
 import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.request.RequestHandler;
@@ -42,7 +43,28 @@ public class DiskMacroRequestPacket extends IntegerCoordinatesPacket {
 			for(int i = 0;i < list.tagCount();i++) {
 				if(i == getInteger()) {
 					NBTTagCompound itemlist = (NBTTagCompound) list.tagAt(i);
-					RequestHandler.requestMacrolist(itemlist, (PipeItemsRequestLogisticsMk2)pipe.pipe,player);
+					RequestHandler.requestMacrolist(itemlist, (PipeItemsRequestLogisticsMk2)pipe.pipe, player);
+					break;
+				}
+			}
+		}
+		if(pipe.pipe instanceof PipeBlockRequestTable) {
+			if(((PipeBlockRequestTable)pipe.pipe).getDisk() == null) {
+				return;
+			}
+			if(!((PipeBlockRequestTable)pipe.pipe).getDisk().hasTagCompound()) {
+				return;
+			}
+			NBTTagCompound nbt = ((PipeBlockRequestTable)pipe.pipe).getDisk().getTagCompound();
+			if(!nbt.hasKey("macroList")) {
+				NBTTagList list = new NBTTagList();
+				nbt.setTag("macroList", list);
+			}
+			NBTTagList list = nbt.getTagList("macroList");
+			for(int i = 0;i < list.tagCount();i++) {
+				if(i == getInteger()) {
+					NBTTagCompound itemlist = (NBTTagCompound) list.tagAt(i);
+					RequestHandler.requestMacrolist(itemlist, (PipeBlockRequestTable)pipe.pipe, player);
 					break;
 				}
 			}

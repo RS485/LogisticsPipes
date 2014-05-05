@@ -1,6 +1,6 @@
 package logisticspipes.gui.popup;
 
-import logisticspipes.gui.orderer.NormalMk2GuiOrderer;
+import logisticspipes.interfaces.IDiskProvider;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.orderer.DiscContent;
 import logisticspipes.network.packets.orderer.DiskMacroRequestPacket;
@@ -26,18 +26,18 @@ public class GuiDiskPopup extends SubGuiScreen {
 	private int mouseY = 0;
 	private String name1;
 	private String name2;
-	private NormalMk2GuiOrderer mainGui;
 	private int scroll = 0;
 	private int selected = -1;
+	private final IDiskProvider diskProvider;
 	
 	private final int searchWidth = 120;
 	
-	public GuiDiskPopup(NormalMk2GuiOrderer mainGui) {
+	public GuiDiskPopup(IDiskProvider diskProvider) {
 		super(150, 200, 0, 0);
-		this.mainGui = mainGui;
+		this.diskProvider = diskProvider;
 		name2 = "";
-		if(mainGui.getDisk().hasTagCompound()) {
-			name1 = mainGui.getDisk().getTagCompound().getString("name");
+		if(diskProvider.getDisk().hasTagCompound()) {
+			name1 = diskProvider.getDisk().getTagCompound().getString("name");
 		} else {
 			name1 = "Disk";
 		}
@@ -65,13 +65,14 @@ public class GuiDiskPopup extends SubGuiScreen {
 	
 	private void writeDiskName() {
 		editname = false;
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskSetNamePacket.class).setString(name1 + name2).setPosX(mainGui.pipe.getX()).setPosY(mainGui.pipe.getY()).setPosZ(mainGui.pipe.getZ()));
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskSetNamePacket.class).setString(name1 + name2).setPosX(diskProvider.getX()).setPosY(diskProvider.getY()).setPosZ(diskProvider.getZ()));
 		NBTTagCompound nbt = new NBTTagCompound("tag");
-		if(mainGui.getDisk().hasTagCompound()) {
-			nbt = mainGui.getDisk().getTagCompound();
+		if(diskProvider.getDisk().hasTagCompound()) {
+			nbt = diskProvider.getDisk().getTagCompound();
 		}
 		nbt.setString("name", name1 + name2);
-		mainGui.getDisk().setTagCompound(nbt);
+		diskProvider.getDisk().setTagCompound(nbt);
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(DiscContent.class).setStack(diskProvider.getDisk()).setPosX(diskProvider.getX()).setPosY(diskProvider.getY()).setPosZ(diskProvider.getZ()));
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -107,10 +108,10 @@ public class GuiDiskPopup extends SubGuiScreen {
 		
 		drawRect(guiLeft + 6, guiTop + 46, right - 6, bottom - 30, BasicGuiHelper.ConvertEnumToColor(Colors.MiddleGrey));
 		
-		NBTTagCompound nbt = mainGui.getDisk().getTagCompound();
+		NBTTagCompound nbt = diskProvider.getDisk().getTagCompound();
 		if(nbt == null) {
-			mainGui.getDisk().setTagCompound(new NBTTagCompound("tag"));
-			nbt = mainGui.getDisk().getTagCompound();
+			diskProvider.getDisk().setTagCompound(new NBTTagCompound("tag"));
+			nbt = diskProvider.getDisk().getTagCompound();
 		}
 		
 		if(!nbt.hasKey("macroList")) {
@@ -174,14 +175,14 @@ public class GuiDiskPopup extends SubGuiScreen {
 	}
 
 	private void handleRequest() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskMacroRequestPacket.class).setInteger(selected).setPosX(mainGui.pipe.getX()).setPosY(mainGui.pipe.getY()).setPosZ(mainGui.pipe.getZ()));
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskMacroRequestPacket.class).setInteger(selected).setPosX(diskProvider.getX()).setPosY(diskProvider.getY()).setPosZ(diskProvider.getZ()));
 	}
 
 	private void handleDelete() {
-		NBTTagCompound nbt = mainGui.getDisk().getTagCompound();
+		NBTTagCompound nbt = diskProvider.getDisk().getTagCompound();
 		if(nbt == null) {
-			mainGui.getDisk().setTagCompound(new NBTTagCompound("tag"));
-			nbt = mainGui.getDisk().getTagCompound();
+			diskProvider.getDisk().setTagCompound(new NBTTagCompound("tag"));
+			nbt = diskProvider.getDisk().getTagCompound();
 		}
 
 		if(!nbt.hasKey("macroList")) {
@@ -199,12 +200,12 @@ public class GuiDiskPopup extends SubGuiScreen {
 		}
 		selected = -1;
 		nbt.setTag("macroList", listnew);
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(DiscContent.class).setStack(mainGui.pipe.getDisk()).setPosX(mainGui.pipe.getX()).setPosY(mainGui.pipe.getY()).setPosZ(mainGui.pipe.getZ()));
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(DiscContent.class).setStack(diskProvider.getDisk()).setPosX(diskProvider.getX()).setPosY(diskProvider.getY()).setPosZ(diskProvider.getZ()));
 	}
 
 	private void handleAddEdit() {
 		String macroname = "";
-		NBTTagCompound nbt = mainGui.getDisk().getTagCompound();
+		NBTTagCompound nbt = diskProvider.getDisk().getTagCompound();
 		if(nbt != null) {
 			if(nbt.hasKey("macroList")) {
 				NBTTagList list = nbt.getTagList("macroList");
@@ -214,7 +215,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 				}
 			}
 		}
-		this.setSubGui(new GuiAddMacro(mainGui, macroname));
+		this.setSubGui(new GuiAddMacro(diskProvider, macroname));
 	}
 
 	@Override

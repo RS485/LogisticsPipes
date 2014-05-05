@@ -9,12 +9,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import logisticspipes.Configs;
+import logisticspipes.gui.popup.GuiDiskPopup;
 import logisticspipes.gui.popup.GuiRequestPopup;
 import logisticspipes.gui.popup.RequestMonitorPopup;
+import logisticspipes.interfaces.IDiskProvider;
 import logisticspipes.interfaces.ISlotClick;
 import logisticspipes.interfaces.ISpecialItemRenderer;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.orderer.DiskRequestConectPacket;
 import logisticspipes.network.packets.orderer.OrdererRefreshRequestPacket;
 import logisticspipes.network.packets.orderer.RequestComponentPacket;
 import logisticspipes.network.packets.orderer.RequestSubmitListPacket;
@@ -32,6 +35,7 @@ import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import logisticspipes.utils.gui.SearchBar;
 import logisticspipes.utils.gui.SmallGuiButton;
+import logisticspipes.utils.gui.KraphtBaseGuiScreen.Colors;
 import logisticspipes.utils.gui.extention.GuiExtention;
 import logisticspipes.utils.gui.extention.GuiExtentionController;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -39,6 +43,7 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtil;
 import logisticspipes.utils.tuples.Pair;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -51,7 +56,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch, ISpecialItemRenderer {
+public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch, ISpecialItemRenderer, IDiskProvider {
 
 	private enum DisplayOptions {
 		Both,
@@ -61,6 +66,7 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 
 	protected DisplayOptions displayOptions = DisplayOptions.Both;
 	public final PipeBlockRequestTable _table;
+	private SmallGuiButton Macrobutton;
 
 	public final EntityPlayer _entityPlayer;
 	public ItemDisplay itemDisplay;
@@ -106,6 +112,7 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 			}
 		});
 		dummy.addNormalSlot(0, _table.toSortInv, guiLeft + 164, guiTop + 51);
+		dummy.addNormalSlot(0, _table.diskInv, guiLeft + 164, guiTop + 25);
 		dummy.addNormalSlotsForPlayerInventory(20, 150);
 		this.inventorySlots = dummy;
 		refreshItems();
@@ -144,10 +151,15 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 		buttonList.add(new SmallGuiButton(15, guiLeft + 108, guiTop + 53, 15, 10, "++")); // +10
 		buttonList.add(new SmallGuiButton(16, guiLeft + 96, guiTop + 64, 26, 10, "+++")); // +64
 		
-		buttonList.add(new SmallGuiButton(17, guiLeft + 173, guiTop + 5, 36, 10, "Hide")); // +64
+		buttonList.add(new SmallGuiButton(17, guiLeft + 173, guiTop + 5, 36, 10, "Hide")); // Hide
+		buttonList.add(Macrobutton = new SmallGuiButton(18, right - 55, bottom - 60, 50, 10, "Disk"));
+		Macrobutton.enabled = false;
 
 		if(search == null) search = new SearchBar(fontRenderer, this, guiLeft + 205, bottom - 78, 200, 15);
+		search.reposition(guiLeft + 205, bottom - 78, 200, 15);
+		
 		if(itemDisplay == null) itemDisplay = new ItemDisplay(this, fontRenderer, this, this, guiLeft + 205, guiTop + 18, 200, ySize - 100, new int[]{1,10,64,64}, true);
+		itemDisplay.reposition(guiLeft + 205, guiTop + 18, 200, ySize - 100);
 		
 		startLeft = guiLeft;
 		startXSize = xSize;
@@ -169,6 +181,9 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 	@Override
 	public void drawGuiContainerBackgroundLayer(float f, int i, int j) {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right - (showRequest ? 0 : 105), bottom, zLevel, true);
+
+		drawRect(guiLeft + 162, guiTop + 23, guiLeft + 182, guiTop + 43, Colors.Black);
+		drawRect(guiLeft + 164, guiTop + 25, guiLeft + 180, guiTop + 41, Colors.DarkGrey);
 		
 		if(showRequest) {
 			fontRenderer.drawString(_title, guiLeft + 180 + fontRenderer.getStringWidth(_title) / 2, guiTop + 6, 0x404040);
@@ -452,9 +467,13 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 			for(int i=0; i< 13;i++) {
 				((GuiButton)buttonList.get(i)).drawButton = showRequest;
 			}
+			Macrobutton.drawButton = showRequest;
 			orderIdForButton = -1;
 		} else if(guibutton.id == 100) {
 			this.setSubGui(new RequestMonitorPopup(_table, orderIdForButton));
+		} else if (guibutton.id == 18) {
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskRequestConectPacket.class).setPosX(_table.getX()).setPosY(_table.getY()).setPosZ(_table.getZ()));
+			this.setSubGui(new GuiDiskPopup(this));
 		}
 	}
 
@@ -481,7 +500,9 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 	}
 
 	@Override
-	public void specialItemRendering(ItemIdentifier item, int x, int y) {}
+	public void specialItemRendering(ItemIdentifier item, int x, int y) {
+		//TODO Render Thaumcraft aspects 
+	}
 	
 	@Override
 	public void drawGuiContainerForegroundLayer(int par1, int par2) {
@@ -490,6 +511,7 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 		if(par1 < guiLeft) {
 			extentionController.mouseOver(par1, par2);
 		}
+		Macrobutton.enabled = _table.diskInv.getStackInSlot(0) != null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -581,5 +603,30 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 	public void resetSubGui() {
 		super.resetSubGui();
 		refreshItems();
+	}
+
+	@Override
+	public ItemStack getDisk() {
+		return _table.diskInv.getStackInSlot(0);
+	}
+
+	@Override
+	public int getX() {
+		return _table.getX();
+	}
+
+	@Override
+	public int getY() {
+		return _table.getY();
+	}
+
+	@Override
+	public int getZ() {
+		return _table.getZ();
+	}
+
+	@Override
+	public ItemDisplay getItemDisplay() {
+		return itemDisplay;
 	}
 }

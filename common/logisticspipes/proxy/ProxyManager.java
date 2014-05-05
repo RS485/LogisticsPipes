@@ -10,6 +10,7 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.bettersign.BetterSignProxy;
 import logisticspipes.proxy.bs.BetterStorageProxy;
 import logisticspipes.proxy.cc.CCProxy;
+import logisticspipes.proxy.enderchest.EnderStorageProxy;
 import logisticspipes.proxy.enderio.EnderIOProxy;
 import logisticspipes.proxy.factorization.FactorizationProxy;
 import logisticspipes.proxy.forestry.ForestryProxy;
@@ -19,6 +20,7 @@ import logisticspipes.proxy.interfaces.IBetterSignProxy;
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.IEnderIOProxy;
+import logisticspipes.proxy.interfaces.IEnderStorageProxy;
 import logisticspipes.proxy.interfaces.IFactorizationProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
@@ -32,6 +34,7 @@ import logisticspipes.proxy.nei.NEIProxy;
 import logisticspipes.proxy.te.ThermalExpansionProxy;
 import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 import logisticspipes.utils.item.ItemIdentifier;
+import net.minecraft.block.Block;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.model.ModelSign;
@@ -196,10 +199,15 @@ public class ProxyManager {
 			@Override public List<TileEntity> getConnectedHyperCubes(TileEntity tile) {return new ArrayList<TileEntity>(0);}
 			@Override public boolean isEnderIO() {return false;}
 		}));
-		
+
 		SimpleServiceLocator.setIronChestProxy(getWrappedProxy("IronChest", IIronChestProxy.class, IronChestProxy.class, new IIronChestProxy() {
 			@Override public boolean isIronChest(TileEntity tile) {return false;}
 			@Override public @SideOnly(Side.CLIENT) boolean isChestGui(GuiScreen gui) {return false;}
+		}));
+		
+		SimpleServiceLocator.setEnderStorageProxy(getWrappedProxy("EnderStorage", IEnderStorageProxy.class, EnderStorageProxy.class, new IEnderStorageProxy() {
+			@Override public boolean isEnderChestBlock(Block block) {return false;}
+			@Override public void openEnderChest(World world, int x, int y, int z, EntityPlayer player) {}
 		}));
 	}
 }

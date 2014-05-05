@@ -82,10 +82,10 @@ import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsExtraPromise;
-import logisticspipes.routing.LogisticsOrder;
-import logisticspipes.routing.LogisticsOrder.RequestType;
-import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
+import logisticspipes.routing.order.IOrderInfoProvider.RequestType;
+import logisticspipes.routing.order.LogisticsOrder;
+import logisticspipes.routing.order.LogisticsOrderManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
@@ -389,7 +389,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 					item.setDestination(nextOrder.getDestination().getRouter().getSimpleID());
 					item.setTransportMode(TransportMode.Active);
 					super.queueRoutedItem(item, tile.orientation);
-					_orderManager.sendSuccessfull(stackToSend.stackSize, defersend);
+					_orderManager.sendSuccessfull(stackToSend.stackSize, defersend, item);
 					if(_orderManager.hasOrders()){
 						nextOrder = _orderManager.peekAtTopRequest(); // fetch but not remove.
 					} else {

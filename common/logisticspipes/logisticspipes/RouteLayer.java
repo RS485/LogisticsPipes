@@ -8,6 +8,7 @@ package logisticspipes.logisticspipes;
 
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -50,6 +51,11 @@ public class RouteLayer {
 			
 			_transport.handleItem(item);
 			
+			if(item.getDistanceTracker() != null) {
+				item.getDistanceTracker().setCurrentDistanceToTarget(0);
+				item.getDistanceTracker().setDestinationReached();
+			}
+			
 			if (item.getTransportMode() != TransportMode.Active && !_transport.stillWantItem(item)) {
 				return getOrientationForItem(SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleID(), true), null);
 			}
@@ -64,7 +70,15 @@ public class RouteLayer {
 		if (!_router.hasRoute(item.getDestination(), item.getTransportMode() == TransportMode.Active, item.getIDStack().getItem())){
 			return ForgeDirection.UNKNOWN;
 		}
+		
 		//Which direction should we send it
-		return _router.getExitFor(item.getDestination(), item.getTransportMode() == TransportMode.Active, item.getIDStack().getItem());
+		ExitRoute exit = _router.getExitFor(item.getDestination(), item.getTransportMode() == TransportMode.Active, item.getIDStack().getItem());
+		if(exit == null) return ForgeDirection.UNKNOWN;
+		
+		if(item.getDistanceTracker() != null) {
+			item.getDistanceTracker().setCurrentDistanceToTarget(exit.blockDistance);
+		}
+		
+		return exit.exitOrientation;
 	}
 }

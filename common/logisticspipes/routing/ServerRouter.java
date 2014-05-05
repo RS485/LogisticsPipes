@@ -44,6 +44,7 @@ import logisticspipes.utils.OneList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Quartet;
 import logisticspipes.utils.tuples.Triplet;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -73,7 +74,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	}
 	
 	protected class LSA {
-		public HashMap<IRouter, Triplet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>>> neighboursWithMetric;
+		public HashMap<IRouter, Quartet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>> neighboursWithMetric;
 		public List<Pair<ILogisticsPowerProvider,List<IFilter>>> power;
 		public ArrayList<Pair<ISubSystemPowerProvider, List<IFilter>>>	subSystemPower;
 	}
@@ -217,7 +218,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		this._zCoord = zCoord;
 		clearPipeCache();
 		_myLsa = new LSA();
-		_myLsa.neighboursWithMetric = new HashMap<IRouter, Triplet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>>>();
+		_myLsa.neighboursWithMetric = new HashMap<IRouter, Quartet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>>();
 		_myLsa.power = new ArrayList<Pair<ILogisticsPowerProvider,List<IFilter>>>();
 		SharedLSADatabasewriteLock.lock(); // any time after we claim the SimpleID, the database could be accessed at that index
 		simpleID = claimSimpleID();
@@ -482,9 +483,9 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	}
 
 	private void SendNewLSA() {
-		HashMap<IRouter, Triplet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>>> neighboursWithMetric = new HashMap<IRouter, Triplet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>>>();
+		HashMap<IRouter, Quartet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>> neighboursWithMetric = new HashMap<IRouter, Quartet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>>();
 		for (Entry<IRouter, ExitRoute> adjacent : _adjacentRouter.entrySet()){
-			neighboursWithMetric.put(adjacent.getKey(), new Triplet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>>(adjacent.getValue().distanceToDestination, adjacent.getValue().connectionDetails, adjacent.getValue().filters));
+			neighboursWithMetric.put(adjacent.getKey(), new Quartet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>(adjacent.getValue().distanceToDestination, adjacent.getValue().connectionDetails, adjacent.getValue().filters, adjacent.getValue().blockDistance));
 		}
 		ArrayList<Pair<ILogisticsPowerProvider,List<IFilter>>> power = null;
 		if(_powerAdjacent != null){
@@ -532,7 +533,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		List<ExitRoute> routeCosts = new ArrayList<ExitRoute>(routingTableSize);
 		
 		//Add the current Router
-		routeCosts.add(new ExitRoute(this,this, ForgeDirection.UNKNOWN, ForgeDirection.UNKNOWN,0,EnumSet.allOf(PipeRoutingConnectionType.class)));
+		routeCosts.add(new ExitRoute(this, this, ForgeDirection.UNKNOWN, ForgeDirection.UNKNOWN,0,EnumSet.allOf(PipeRoutingConnectionType.class), 0));
 		
 		ArrayList<Pair<ILogisticsPowerProvider,List<IFilter>>> powerTable;
 		if(_powerAdjacent != null)
@@ -563,7 +564,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			ExitRoute currentE = pipe.getValue();
 			IRouter newRouter = pipe.getKey();
 			if(newRouter != null) {
-				ExitRoute newER = new ExitRoute(newRouter, newRouter, currentE.distanceToDestination, currentE.connectionDetails, currentE.filters, new ArrayList<IFilter>(0));
+				ExitRoute newER = new ExitRoute(newRouter, newRouter, currentE.distanceToDestination, currentE.connectionDetails, currentE.filters, new ArrayList<IFilter>(0), currentE.blockDistance);
 				candidatesCost.add(newER);
 				debug.newCanidate(newER);
 			}
@@ -667,14 +668,15 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 					}
 				}
 			}
-		    Iterator<Entry<IRouter, Triplet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>>>> it = lsa.neighboursWithMetric.entrySet().iterator();
+		    Iterator<Entry<IRouter, Quartet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>>> it = lsa.neighboursWithMetric.entrySet().iterator();
 		    while (it.hasNext()) {
-		    	Entry<IRouter, Triplet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>>> newCandidate = it.next();
+		    	Entry<IRouter, Quartet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>> newCandidate = it.next();
 				int candidateCost = lowestCostNode.distanceToDestination + newCandidate.getValue().getValue1();
+				int blockDistance = lowestCostNode.blockDistance + newCandidate.getValue().getValue4();
 				EnumSet<PipeRoutingConnectionType> newCT = lowestCostNode.getFlags();
 				newCT.retainAll(newCandidate.getValue().getValue2());
 				if(!newCT.isEmpty()) {
-					ExitRoute next = new ExitRoute(lowestCostNode.root, newCandidate.getKey(), candidateCost, newCT, lowestCostNode.filters, newCandidate.getValue().getValue3());
+					ExitRoute next = new ExitRoute(lowestCostNode.root, newCandidate.getKey(), candidateCost, newCT, lowestCostNode.filters, newCandidate.getValue().getValue3(), blockDistance);
 					next.debug.isTraced = lowestCostNode.debug.isTraced;
 					candidatesCost.add(next);
 					debug.newCanidate(next);
@@ -714,7 +716,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		ArrayList<List<ExitRoute>> routeTable = new ArrayList<List<ExitRoute>>(ServerRouter.getBiggestSimpleID()+1);
 		while (simpleID >= routeTable.size())
 			routeTable.add(null);
-		routeTable.set(simpleID, new OneList<ExitRoute>(new ExitRoute(this,this, ForgeDirection.UNKNOWN, ForgeDirection.UNKNOWN,0,EnumSet.allOf(PipeRoutingConnectionType.class))));
+		routeTable.set(simpleID, new OneList<ExitRoute>(new ExitRoute(this, this, ForgeDirection.UNKNOWN, ForgeDirection.UNKNOWN,0,EnumSet.allOf(PipeRoutingConnectionType.class), 0)));
 
 		Iterator<ExitRoute> itr = routeCosts.iterator();
 		while (itr.hasNext()) {
@@ -911,9 +913,9 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	}
 
 	@Override
-	public ForgeDirection getExitFor(int id, boolean active, ItemIdentifier type) {
+	public ExitRoute getExitFor(int id, boolean active, ItemIdentifier type) {
 		ensureRouteTableIsUpToDate(true);
-		if(this.getRouteTable().size() <= id || this.getRouteTable().get(id) == null) return ForgeDirection.UNKNOWN;
+		if(this.getRouteTable().size() <= id || this.getRouteTable().get(id) == null) return null;
 outer:
 		for(ExitRoute exit: this.getRouteTable().get(id)) {
 			if(exit.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
@@ -924,10 +926,10 @@ outer:
 						if((filter.blockProvider() && filter.blockCrafting()) || filter.isBlocked() == filter.isFilteredItem(type)) continue outer;
 					}
 				}
-				return exit.exitOrientation;
+				return exit;
 			}
 		}
-		return ForgeDirection.UNKNOWN;
+		return null;
 	}
 	
 	@Override

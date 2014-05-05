@@ -63,11 +63,11 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public ForgeDirection getExitFor(int id, boolean flag, ItemIdentifier item) {
+	public ExitRoute getExitFor(int id, boolean flag, ItemIdentifier item) {
 		if(LogisticsPipes.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
-		return ForgeDirection.UNKNOWN;
+		return null;
 	}
 
 	@Override

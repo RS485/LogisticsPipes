@@ -8,7 +8,7 @@ import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.routing.LinkedLogisticsOrderList;
+import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import lombok.Getter;
 import lombok.Setter;

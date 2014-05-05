@@ -147,7 +147,7 @@ public class PathFinder {
 				connectionFlags.remove(PipeRoutingConnectionType.canPowerSubSystemFrom);
 			}
 			
-			foundPipes.put(rp, new ExitRoute(null,rp.getRouter(), ForgeDirection.UNKNOWN, side.getOpposite(), Math.max(1, size), connectionFlags));
+			foundPipes.put(rp, new ExitRoute(null,rp.getRouter(), ForgeDirection.UNKNOWN, side.getOpposite(), Math.max(1, size), connectionFlags, distances.size()));
 			
 			return foundPipes;
 		}

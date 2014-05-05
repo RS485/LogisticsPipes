@@ -22,9 +22,9 @@ import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.routing.LinkedLogisticsOrderList;
-import logisticspipes.routing.LogisticsOrder;
 import logisticspipes.routing.RoutedEntityItem;
+import logisticspipes.routing.order.IOrderInfoProvider;
+import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
@@ -91,9 +91,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 			this.getWorld().markBlockForRenderUpdate(this.getX(), this.getY(), this.getZ());
 		}
 		if(MainProxy.isClient(getWorld())) return;
-		//XXX TODO Cuurently DEV ONLY
-		if(!LogisticsPipes.DEBUG) return;
-		if(tick % 5 == 0 && !localGuiWatcher.isEmpty()) {
+		if(tick % 2 == 0 && !localGuiWatcher.isEmpty()) {
 			checkForExpired();
 			if(getUpgradeManager().hasCraftingMonitoringUpgrade()) {
 				for(Entry<Integer, Pair<ItemIdentifierStack, LinkedLogisticsOrderList>> entry:watchedRequests.entrySet()) {
@@ -118,8 +116,9 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 
 	private boolean isDone(LinkedLogisticsOrderList orders) {
 		boolean isDone = true;
-		for(LogisticsOrder order:orders) {
+		for(IOrderInfoProvider order:orders) {
 			if(!order.isFinished()) isDone = false;
+			if(!order.getProgresses().isEmpty()) isDone = false;
 		}
 		for(LinkedLogisticsOrderList orderList:orders.getSubOrders()) {
 			if(!isDone(orderList)) isDone = false;
@@ -363,6 +362,7 @@ outer:
 	@Override
 	public void handleOrderList(ItemIdentifierStack stack, LinkedLogisticsOrderList orders) {
 		if(!getUpgradeManager().hasCraftingMonitoringUpgrade()) return;
+		orders.setWatched();
 		watchedRequests.put(++localLastUsedWatcherId, new Pair<ItemIdentifierStack, LinkedLogisticsOrderList>(stack, orders));
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(OrdererWatchPacket.class).setOrders(orders).setStack(stack).setInteger(localLastUsedWatcherId).setTilePos(this.container), localGuiWatcher);
 	}

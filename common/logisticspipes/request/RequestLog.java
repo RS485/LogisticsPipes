@@ -2,7 +2,7 @@ package logisticspipes.request;
 
 import java.util.Map;
 
-import logisticspipes.routing.LinkedLogisticsOrderList;
+import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifier;
 
 public interface RequestLog {

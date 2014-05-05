@@ -25,6 +25,7 @@ public class ExitRoute implements Comparable<ExitRoute>{
 	public ForgeDirection insertOrientation;
 	public int distanceToDestination;
 	public final int destinationDistanceToRoot;
+	public final int blockDistance;
 	public final EnumSet<PipeRoutingConnectionType> connectionDetails;
 	public final IRouter destination;
 	public IRouter root;
@@ -34,7 +35,7 @@ public class ExitRoute implements Comparable<ExitRoute>{
 	 */
 	public ExitRouteDebug debug = new ExitRouteDebug();
 
-	public ExitRoute(IRouter source, IRouter destination, ForgeDirection exitOrientation, ForgeDirection insertOrientation, int metric, EnumSet<PipeRoutingConnectionType> connectionDetails) {
+	public ExitRoute(IRouter source, IRouter destination, ForgeDirection exitOrientation, ForgeDirection insertOrientation, int metric, EnumSet<PipeRoutingConnectionType> connectionDetails, int blockDistance) {
 		this.destination = destination;
 		this.root = source;
 		this.exitOrientation = exitOrientation;
@@ -50,6 +51,7 @@ public class ExitRoute implements Comparable<ExitRoute>{
 		} else {
 			this.destinationDistanceToRoot=Integer.MAX_VALUE;
 		}
+		this.blockDistance = blockDistance;
 	}
 
 	@Override
@@ -96,8 +98,8 @@ public class ExitRoute implements Comparable<ExitRoute>{
 		return c;
 	}
 
-	public ExitRoute(IRouter source, IRouter destination, int distance, EnumSet<PipeRoutingConnectionType> enumSet, List<IFilter> filterA, List<IFilter> filterB) {
-		this(source, destination, ForgeDirection.UNKNOWN, ForgeDirection.UNKNOWN, distance, enumSet);
+	public ExitRoute(IRouter source, IRouter destination, int distance, EnumSet<PipeRoutingConnectionType> enumSet, List<IFilter> filterA, List<IFilter> filterB, int blockDistance) {
+		this(source, destination, ForgeDirection.UNKNOWN, ForgeDirection.UNKNOWN, distance, enumSet, blockDistance);
 		List<IFilter> filter = new ArrayList<IFilter>(filterA.size() + filterB.size());
 		filter.addAll(filterA);
 		filter.addAll(filterB);

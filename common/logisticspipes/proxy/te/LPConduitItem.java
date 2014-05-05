@@ -9,6 +9,7 @@ import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouterManager;
 import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.routing.RoutedEntityItemSaveHandler;
@@ -144,7 +145,9 @@ public class LPConduitItem extends ConduitItem {
 			handler.readFromNBT(data);
 			IRouterManager rm = SimpleServiceLocator.routerManager;
 			int destinationint = rm.getIDforUUID(handler.destinationUUID);
-			ForgeDirection orientation = pipe.getRoutingPipe().getRouter().getExitFor(destinationint, handler.transportMode == TransportMode.Active, ItemIdentifier.get(stack));
+			ExitRoute exit = pipe.getRoutingPipe().getRouter().getExitFor(destinationint, handler.transportMode == TransportMode.Active, ItemIdentifier.get(stack));
+			if(exit == null) return noRoute;
+			ForgeDirection orientation = exit.exitOrientation;
 			if((side == orientation.ordinal() || orientation == ForgeDirection.UNKNOWN) && !pipe.getRoutingPipe().getRouter().getId().equals(handler.destinationUUID)) {
 				return noRoute;
 			}

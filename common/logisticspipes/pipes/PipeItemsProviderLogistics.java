@@ -49,10 +49,10 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.LogisticsOrder;
-import logisticspipes.routing.LogisticsOrder.RequestType;
-import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
+import logisticspipes.routing.order.IOrderInfoProvider.RequestType;
+import logisticspipes.routing.order.LogisticsOrder;
+import logisticspipes.routing.order.LogisticsOrderManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.AdjacentTile;
@@ -180,7 +180,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 			routedItem.setTransportMode(TransportMode.Active);
 			super.queueRoutedItem(routedItem, tile.orientation);
 			
-			_orderManager.sendSuccessfull(sent, defersend);
+			_orderManager.sendSuccessfull(sent, defersend, routedItem);
 			return sent;
 		}
 		_orderManager.sendFailed();

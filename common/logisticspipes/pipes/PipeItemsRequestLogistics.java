@@ -29,7 +29,7 @@ import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.request.RequestHandler;
 import logisticspipes.request.RequestLog;
 import logisticspipes.request.RequestTree;
-import logisticspipes.routing.LinkedLogisticsOrderList;
+import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;

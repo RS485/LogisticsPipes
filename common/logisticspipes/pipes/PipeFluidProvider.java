@@ -16,7 +16,7 @@ import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.FluidRequestTreeNode;
 import logisticspipes.routing.FluidLogisticsPromise;
-import logisticspipes.routing.LogisticsFluidOrderManager;
+import logisticspipes.routing.order.LogisticsFluidOrderManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.FluidIdentifier;

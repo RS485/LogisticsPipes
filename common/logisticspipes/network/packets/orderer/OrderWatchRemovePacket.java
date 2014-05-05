@@ -24,4 +24,9 @@ public class OrderWatchRemovePacket extends IntegerCoordinatesPacket {
 	public ModernPacket template() {
 		return new OrderWatchRemovePacket(getId());
 	}
+
+	@Override
+	public boolean isCompressable() {
+		return true;
+	}
 }

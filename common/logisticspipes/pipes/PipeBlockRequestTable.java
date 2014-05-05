@@ -50,6 +50,7 @@ import cpw.mods.fml.common.network.Player;
 
 public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements ISimpleInventoryEventHandler, IRequestWatcher, IGuiOpenControler {
 
+	public SimpleStackInventory diskInv = new SimpleStackInventory(1, "Disk Slot", 1);
 	public SimpleStackInventory inv = new SimpleStackInventory(27, "Crafting Resources", 64);
 	public ItemIdentifierInventory matrix = new ItemIdentifierInventory(9, "Crafting Matrix", 1);
 	public ItemIdentifierInventory resultInv = new ItemIdentifierInventory(1, "Crafting Result", 1);
@@ -152,7 +153,17 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 
 	@Override
 	public void openGui(EntityPlayer entityplayer) {
-		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Request_Table_ID, this.getWorld(), this.getX() , this.getY(), this.getZ());
+		boolean flag = true;
+		if(diskInv.getStackInSlot(0) == null) {
+			if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem().equals(LogisticsPipes.LogisticsItemDisk)) {
+				diskInv.setInventorySlotContents(0, entityplayer.getCurrentEquippedItem());
+				entityplayer.inventory.setInventorySlotContents(entityplayer.inventory.currentItem, null);
+		        flag = false;
+			}
+		}
+		if(flag) {
+			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Request_Table_ID, this.getWorld(), this.getX() , this.getY(), this.getZ());
+		}
 	}
 	
 	@Override
@@ -194,6 +205,8 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	public void onAllowedRemoval() {
 		if(MainProxy.isServer(this.getWorld())) {
 			inv.dropContents(getWorld(), getX(), getY(), getZ());
+			toSortInv.dropContents(getWorld(), getX(), getY(), getZ());
+			diskInv.dropContents(getWorld(), getX(), getY(), getZ());
 		}
 	}
 	
@@ -316,6 +329,7 @@ outer:
 		inv.readFromNBT(par1nbtTagCompound, "inv");
 		matrix.readFromNBT(par1nbtTagCompound, "matrix");
 		toSortInv.readFromNBT(par1nbtTagCompound, "toSortInv");
+		diskInv.readFromNBT(par1nbtTagCompound, "diskInv");
 		//TODO NPEs on world load
 		//cacheRecipe();
 	}
@@ -326,6 +340,7 @@ outer:
 		inv.writeToNBT(par1nbtTagCompound, "inv");
 		matrix.writeToNBT(par1nbtTagCompound, "matrix");
 		toSortInv.writeToNBT(par1nbtTagCompound, "toSortInv");
+		diskInv.writeToNBT(par1nbtTagCompound, "diskInv");
 	}
 
 	@Override
@@ -397,5 +412,9 @@ outer:
 				watchedRequests.remove(id);
 			}
 		}
+	}
+
+	public ItemStack getDisk() {
+		return diskInv.getStackInSlot(0);
 	}
 }

@@ -228,9 +228,12 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glDepthFunc(GL11.GL_LEQUAL);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		this.drawVerticalLine(innerLeftSide - mapX + 110, innerTopSide - mapY - 197, innerTopSide - mapY - 180, 0xff00ff00);
-		renderLinkedOrderListLines(_table.watchedRequests.get(this.orderId).getValue2(), innerLeftSide - mapX + 102, innerTopSide - mapY - 180);
-		for(Float progress:_table.watchedRequests.get(this.orderId).getValue2().getProgresses()) {
+		LinkedLogisticsOrderList list = _table.watchedRequests.get(this.orderId).getValue2();
+		if(!list.isEmpty()) {
+			this.drawVerticalLine(innerLeftSide - mapX + 110, innerTopSide - mapY - 197, innerTopSide - mapY - 180, 0xff00ff00);
+		}
+		renderLinkedOrderListLines(list, innerLeftSide - mapX + 102, innerTopSide - mapY - 180);
+		for(Float progress:list.getProgresses()) {
 			int pos = (int) (29.0F * progress.floatValue());
 			this.drawProgressPoint(innerLeftSide - mapX + 110, innerTopSide - mapY - 197 + pos, 0xff00ff00);
 		}
@@ -243,10 +246,15 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		GL11.glEnable(GL11.GL_COLOR_MATERIAL);
 		GL11.glColor4f(0.7F, 0.7F, 0.7F, 1.0F);
 		this.mc.getTextureManager().bindTexture(achievementTextures);
-		this.drawTexturedModalRect(innerLeftSide - mapX + 97, innerTopSide - mapY - 220, 0, 202, 26, 26);
 		String s = Integer.toString(orderId);
-		fontRenderer.drawStringWithShadow(s, innerLeftSide - mapX + 111 - fontRenderer.getStringWidth(s) / 2, innerTopSide - mapY - 210, 16777215);
-		renderLinkedOrderListItems(_table.watchedRequests.get(this.orderId).getValue2(), innerLeftSide - mapX + 102, innerTopSide - mapY - 180, par1, par2);
+		if(!list.isEmpty()) {
+			this.drawTexturedModalRect(innerLeftSide - mapX + 97, innerTopSide - mapY - 220, 0, 202, 26, 26);
+			fontRenderer.drawStringWithShadow(s, innerLeftSide - mapX + 111 - fontRenderer.getStringWidth(s) / 2, innerTopSide - mapY - 210, 16777215);
+		} else {
+			this.drawTexturedModalRect(innerLeftSide - mapX + 97, innerTopSide - mapY - 162, 0, 202, 26, 26);
+			fontRenderer.drawStringWithShadow(s, innerLeftSide - mapX + 111 - fontRenderer.getStringWidth(s) / 2, innerTopSide - mapY - 152, 16777215);
+		}
+		renderLinkedOrderListItems(list, innerLeftSide - mapX + 102, innerTopSide - mapY - 180, par1, par2);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_BLEND);
 
@@ -310,6 +318,9 @@ public class RequestMonitorPopup extends SubGuiScreen {
 	
 	private void renderLinkedOrderListLines(LinkedLogisticsOrderList list, int xPos, int yPos) {
 		int size = list.size();
+		if(list.isEmpty()) {
+			size = 1;
+		}
 		int startLeft = -(size - 1) * (30 / 2) + xPos;
 		yPos += 13;
 		int left = startLeft;
@@ -320,10 +331,14 @@ public class RequestMonitorPopup extends SubGuiScreen {
 			}
 			startLeft += 30;
 		}
-		this.drawHorizontalLine(left + 8, startLeft - 22, yPos - 13, 0xff00ff00);
+		if(!list.isEmpty()) {
+			this.drawHorizontalLine(left + 8, startLeft - 22, yPos - 13, 0xff00ff00);
+		}
 		if(!list.getSubOrders().isEmpty()) {
-			this.drawHorizontalLine(left + 8, startLeft - 22, yPos + 28, 0xff00ff00);
-			startLeft -= 30;
+			if(!list.isEmpty()) {
+				this.drawHorizontalLine(left + 8, startLeft - 22, yPos + 28, 0xff00ff00);
+				startLeft -= 30;
+			}
 			this.drawVerticalLine(left + ((startLeft - left) / 2) + 8, yPos + 28, yPos + 38, 0xff00ff00);
 			startLeft = xPos + 20 - list.getSubTreeRootSize() * (40 / 2);
 			left = startLeft;

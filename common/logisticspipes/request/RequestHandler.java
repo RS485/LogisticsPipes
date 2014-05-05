@@ -66,7 +66,7 @@ public class RequestHandler {
 			}
 			
 			@Override
-			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {}
+			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items, LinkedLogisticsOrderList parts) {}
 		});
 	}
 	
@@ -89,7 +89,7 @@ public class RequestHandler {
 			public void handleSucessfullRequestOf(ItemIdentifier item, int count, LinkedLogisticsOrderList parts) {}
 			
 			@Override
-			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {
+			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items, LinkedLogisticsOrderList parts) {
 				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
 					Integer count = used.get(e.getKey());
 					if(count == null)
@@ -158,7 +158,7 @@ public class RequestHandler {
 			public void handleSucessfullRequestOf(ItemIdentifier item, int count, LinkedLogisticsOrderList parts) {}
 			
 			@Override
-			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {
+			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items, LinkedLogisticsOrderList parts) {
 				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(items.size());
 				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
 					coll.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
@@ -168,13 +168,13 @@ public class RequestHandler {
 		},RequestTree.defaultRequestFlags);
 	}
 
-	public static void requestMacrolist(NBTTagCompound itemlist, CoreRoutedPipe requester, final EntityPlayer player) {
+	public static void requestMacrolist(NBTTagCompound itemlist, final CoreRoutedPipe requester, final EntityPlayer player) {
 		if(!requester.useEnergy(5)) {
 			player.sendChatToPlayer(ChatMessageComponent.createFromText("No Energy"));
 			return;
 		}
 		NBTTagList list = itemlist.getTagList("inventar");
-		List<ItemIdentifierStack> transaction = new ArrayList<ItemIdentifierStack>(list.tagCount());
+		final List<ItemIdentifierStack> transaction = new ArrayList<ItemIdentifierStack>(list.tagCount());
 		for(int i = 0;i < list.tagCount();i++) {
 			NBTTagCompound itemnbt = (NBTTagCompound) list.tagAt(i);
 			NBTTagCompound itemNBTContent = itemnbt.getCompoundTag("nbt");
@@ -198,12 +198,15 @@ public class RequestHandler {
 			public void handleSucessfullRequestOf(ItemIdentifier item, int count, LinkedLogisticsOrderList parts) {}
 			
 			@Override
-			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {
+			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items, LinkedLogisticsOrderList parts) {
 				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(items.size());
 				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
 					coll.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
 				}
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(false), (Player)player);
+				if(requester instanceof IRequestWatcher) {
+					((IRequestWatcher)requester).handleOrderList(transaction.get(0), parts);
+				}
 			}
 		},RequestTree.defaultRequestFlags);
 	}
@@ -240,7 +243,7 @@ public class RequestHandler {
 			}
 			
 			@Override
-			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {}
+			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items, LinkedLogisticsOrderList parts) {}
 		},false, false,true,false,requestFlags);
 		return status;
 	}
@@ -274,7 +277,7 @@ public class RequestHandler {
 			}
 			
 			@Override
-			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {}
+			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items, LinkedLogisticsOrderList parts) {}
 		});
 	}
 }

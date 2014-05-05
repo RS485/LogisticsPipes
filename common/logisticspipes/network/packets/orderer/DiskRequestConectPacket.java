@@ -4,6 +4,7 @@ import ibxm.Player;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
@@ -34,6 +35,14 @@ public class DiskRequestConectPacket extends CoordinatesPacket {
 				}
 			}
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DiscContent.class).setStack(((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
+		}
+		if(pipe.pipe instanceof PipeBlockRequestTable) {
+			if(((PipeBlockRequestTable)pipe.pipe).diskInv.getStackInSlot(0) != null) {
+				if(!((PipeBlockRequestTable)pipe.pipe).diskInv.getStackInSlot(0).hasTagCompound()) {
+					((PipeBlockRequestTable)pipe.pipe).diskInv.getStackInSlot(0).setTagCompound(new NBTTagCompound("tag"));
+				}
+			}
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DiscContent.class).setStack(((PipeBlockRequestTable)pipe.pipe).diskInv.getStackInSlot(0)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
 		}
 	}
 }

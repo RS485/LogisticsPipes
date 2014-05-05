@@ -92,7 +92,7 @@ public class RequestTree extends RequestTreeNode {
 		Map<ItemIdentifier,Integer> used = new HashMap<ItemIdentifier,Integer>();
 		Map<ItemIdentifier,Integer> missing = new HashMap<ItemIdentifier,Integer>();
 		buildUsedMap(used, missing);
-		log.handleSucessfullRequestOfList(used);
+		log.handleSucessfullRequestOfList(used, new LinkedLogisticsOrderList());
 		log.handleMissingItems(missing);
 	}
 
@@ -182,9 +182,9 @@ public class RequestTree extends RequestTreeNode {
 			isDone = isDone && node.isDone();
 		}
 		if(isDone) {
-			tree.fullFillAll();
+			LinkedLogisticsOrderList list = tree.fullFillAll();
 			if(log != null) {
-				log.handleSucessfullRequestOfList(messages);
+				log.handleSucessfullRequestOfList(messages, list);
 			}
 			return true;
 		} else {

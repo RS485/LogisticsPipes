@@ -534,6 +534,7 @@ public class GuiHandler implements IGuiHandler {
 					}
 				});
 				dummy.addNormalSlot(0, ((PipeBlockRequestTable)pipe.pipe).toSortInv, 0, 0);
+				dummy.addNormalSlot(0, ((PipeBlockRequestTable)pipe.pipe).diskInv, 0, 0);
 				dummy.addNormalSlotsForPlayerInventory(0, 0);
 				return dummy;
 

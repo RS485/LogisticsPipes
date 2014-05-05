@@ -2,6 +2,7 @@ package logisticspipes.network.packets.orderer;
 
 import logisticspipes.network.abstractpackets.ItemPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,6 +26,9 @@ public class DiscContent extends ItemPacket {
 		}
 		if(tile.pipe instanceof PipeItemsRequestLogisticsMk2) {
 			((PipeItemsRequestLogisticsMk2)tile.pipe).setDisk(getStack());
+		}
+		if(tile.pipe instanceof PipeBlockRequestTable) {
+			((PipeBlockRequestTable)tile.pipe).diskInv.setInventorySlotContents(0, getStack());
 		}
 	}
 }

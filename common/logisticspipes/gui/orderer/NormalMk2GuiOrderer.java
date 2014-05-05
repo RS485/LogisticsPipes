@@ -1,12 +1,14 @@
 package logisticspipes.gui.orderer;
 
 import logisticspipes.gui.popup.GuiDiskPopup;
+import logisticspipes.interfaces.IDiskProvider;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.orderer.DiskDropPacket;
 import logisticspipes.network.packets.orderer.DiskRequestConectPacket;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.client.gui.GuiButton;
@@ -16,7 +18,7 @@ import net.minecraft.item.ItemStack;
 
 import org.lwjgl.opengl.GL11;
 
-public class NormalMk2GuiOrderer extends NormalGuiOrderer {
+public class NormalMk2GuiOrderer extends NormalGuiOrderer implements IDiskProvider {
 	
 	public PipeItemsRequestLogisticsMk2 pipe;
 	private SmallGuiButton Macrobutton;
@@ -81,5 +83,25 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 			SimpleServiceLocator.thaumCraftProxy.renderAspectsDown(item.unsafeMakeNormalStack(1), -20, 10, this);
 		}
 		GL11.glPopAttrib();
+	}
+
+	@Override
+	public int getX() {
+		return pipe.getX();
+	}
+
+	@Override
+	public int getY() {
+		return pipe.getY();
+	}
+
+	@Override
+	public int getZ() {
+		return pipe.getZ();
+	}
+
+	@Override
+	public ItemDisplay getItemDisplay() {
+		return itemDisplay;
 	}
 }

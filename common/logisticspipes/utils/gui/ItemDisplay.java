@@ -51,7 +51,7 @@ public class ItemDisplay {
 	private final KraphtBaseGuiScreen screen;
 	private final ISpecialItemRenderer renderer;
 	private final RenderItem itemRenderer = new RenderItem();
-	private final int left, top, height, width;
+	private int left, top, height, width;
 	private final int[] amountChangeMode;
 	private final boolean shiftPageChange;
 	private final Minecraft mc = FMLClientHandler.instance().getClient();
@@ -69,6 +69,13 @@ public class ItemDisplay {
     	this.amountChangeMode = amountChangeMode;
     	this.shiftPageChange = shiftPageChange;
     }
+	
+	public void reposition(int left, int top, int width, int height) {
+		this.left = left;
+    	this.top = top;
+    	this.width = width;
+    	this.height = height;
+	}
 	
 	public void setItemList(Collection<ItemIdentifierStack> allItems) {
 		listbyserver = true;

@@ -230,7 +230,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			p.moveForwards(0.49F);
 		}
 		routedItem.SetPosition(p.x, p.y, p.z);
-		((PipeTransportItems) transport).injectItem(routedItem.getTravelingItem(), from.getOpposite());
+		((PipeTransportLogistics) transport).injectItem(routedItem, from.getOpposite());
 		
 		IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(routedItem.getDestination(),false);
 		if(r != null) {
@@ -708,7 +708,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		for(Triplet<IRoutedItem, ForgeDirection, ItemSendMode> p : _sendQueue) {
 			NBTTagCompound tagentry = new NBTTagCompound();
 			NBTTagCompound tagentityitem = new NBTTagCompound();
-			p.getValue1().getTravelingItem().writeToNBT(tagentityitem);
+			p.getValue1().writeToNBT(tagentityitem);
 			tagentry.setCompoundTag("entityitem", tagentityitem);
 			tagentry.setByte("from", (byte)(p.getValue2().ordinal()));
 			tagentry.setByte("mode", (byte)(p.getValue3().ordinal()));

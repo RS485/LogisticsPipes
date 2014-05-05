@@ -6,8 +6,8 @@ import java.util.Map;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.request.RequestTreeNode;
-import logisticspipes.routing.LogisticsOrder;
 import logisticspipes.routing.LogisticsPromise;
+import logisticspipes.routing.order.LogisticsOrder;
 import logisticspipes.utils.item.ItemIdentifier;
 
 public interface ILegacyActiveModule {

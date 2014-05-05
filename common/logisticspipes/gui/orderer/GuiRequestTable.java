@@ -21,8 +21,8 @@ import logisticspipes.network.packets.orderer.RequestSubmitListPacket;
 import logisticspipes.network.packets.orderer.RequestSubmitPacket;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.routing.LinkedLogisticsOrderList;
-import logisticspipes.routing.LogisticsOrder;
+import logisticspipes.routing.order.IOrderInfoProvider;
+import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
@@ -186,13 +186,6 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 			search.renderSearchBar();
 			
 			itemDisplay.renderItemArea(zLevel);
-			
-			/*
-			drawRect(guiLeft + 180, guiTop + 11, guiLeft + 200, guiTop + 6, Colors.DarkGrey);
-			for(int a = 0; a < 10;a++) {
-				drawRect(guiLeft + 202 - a, guiTop + 8 - a, guiLeft + 203 - a, guiTop + 10 + a, Colors.DarkGrey);
-			}
-			*/
 		}
 		
 		
@@ -223,11 +216,12 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 				handledExtention.set(entry.getKey());
 				extentionController.addExtention(new GuiExtention() {
 					
-					private Map<Pair<Integer, Integer>, LogisticsOrder> ordererPosition = new HashMap<Pair<Integer, Integer>, LogisticsOrder>();
+					private Map<Pair<Integer, Integer>, IOrderInfoProvider> ordererPosition = new HashMap<Pair<Integer, Integer>, IOrderInfoProvider>();
 					private int height;
 					private int width = 4;
 					private GuiButton localControlledButton;
 					
+					@SuppressWarnings("unchecked")
 					@Override
 					public void renderForground(int left, int top) {
 						if(!_table.watchedRequests.containsKey(entry.getKey())) {
@@ -264,13 +258,13 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 								buttonList.add(localControlledButton);
 								orderIdForButton = entry.getKey();
 							}
-							List<LogisticsOrder> list = entry.getValue().getValue2().getList();
+							List<IOrderInfoProvider> list = entry.getValue().getValue2().getList();
 							calculateSize(left, top, list);
 							String ident = "ID: " + Integer.toString(entry.getKey());
 							fontRenderer.drawStringWithShadow(ident, left + 25, top + 7, 16777215);
 							int x = left + 6;
 							int y = top + 25;
-							for(LogisticsOrder order: list) {
+							for(IOrderInfoProvider order: list) {
 								stack = order.getItem().makeNormalStack();
 								if(stack.stackSize <= 0) continue;
 								GL11.glEnable(GL11.GL_LIGHTING);
@@ -293,7 +287,7 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 								}
 							}
 						} else if(isExtending()) {
-							List<LogisticsOrder> list = entry.getValue().getValue2().getList();
+							List<IOrderInfoProvider> list = entry.getValue().getValue2().getList();
 							calculateSize(left, top, list);
 						}
 						if(!isFullyExtended() && localControlledButton != null) {
@@ -304,19 +298,19 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 						RenderHelper.disableStandardItemLighting();
 					}
 					
-					private void calculateSize(int left, int top, List<LogisticsOrder> list) {
+					private void calculateSize(int left, int top, List<IOrderInfoProvider> list) {
 						int x = left + 6;
 						int y = 50;
 						int line = 1;
 						width = 4;
-						for(LogisticsOrder order: list) {
+						for(IOrderInfoProvider order: list) {
 							ItemStack stack = order.getItem().makeNormalStack();
 							if(stack.stackSize <= 0) continue;
 							if(line++ % (4 * 4) == 0) {
 								width++;
 							}
 						}
-						for(LogisticsOrder order: list) {
+						for(IOrderInfoProvider order: list) {
 							ItemStack stack = order.getItem().makeNormalStack();
 							if(stack.stackSize <= 0) continue;
 							x += 18;
@@ -346,7 +340,7 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 						if(isFullyExtended()) {
 							for(Pair<Integer, Integer> key:ordererPosition.keySet()) {
 								if(xPos >= key.getValue1() && xPos < key.getValue1() + 18 && yPos >= key.getValue2() && yPos < key.getValue2() + 18) {
-									LogisticsOrder order = ordererPosition.get(key);
+									IOrderInfoProvider order = ordererPosition.get(key);
 									List<String> list = new ArrayList<String>();
 									list.add(ChatColor.BLUE + "Request Type: " + ChatColor.YELLOW + order.getType().name());
 									list.add(ChatColor.BLUE + "Send to Router ID: " + ChatColor.YELLOW + order.getRouterId());

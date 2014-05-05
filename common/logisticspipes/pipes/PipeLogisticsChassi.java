@@ -55,8 +55,8 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.request.RequestTreeNode;
-import logisticspipes.routing.LogisticsOrder;
 import logisticspipes.routing.LogisticsPromise;
+import logisticspipes.routing.order.LogisticsOrder;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
@@ -291,7 +291,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	}
 
 	@Override
-	public void sendStack(ItemStack stack, Pair<Integer, SinkReply> reply, ItemSendMode mode) {
+	public IRoutedItem sendStack(ItemStack stack, Pair<Integer, SinkReply> reply, ItemSendMode mode) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stack);
 		itemToSend.setDestination(reply.getValue1());
 		if (reply.getValue2().isPassive){
@@ -302,14 +302,16 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 			}
 		}
 		super.queueRoutedItem(itemToSend, getPointedOrientation(), mode);
+		return itemToSend;
 	}
 
 	@Override
-	public void sendStack(ItemStack stack, int destination, ItemSendMode mode) {
+	public IRoutedItem sendStack(ItemStack stack, int destination, ItemSendMode mode) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stack);
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(TransportMode.Active);
 		super.queueRoutedItem(itemToSend, getPointedOrientation(), mode);
+		return itemToSend;
 	}
 
 

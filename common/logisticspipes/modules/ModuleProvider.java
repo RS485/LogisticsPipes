@@ -25,6 +25,7 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
@@ -35,10 +36,10 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.LogisticsOrder;
-import logisticspipes.routing.LogisticsOrder.RequestType;
-import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
+import logisticspipes.routing.order.IOrderInfoProvider.RequestType;
+import logisticspipes.routing.order.LogisticsOrder;
+import logisticspipes.routing.order.LogisticsOrderManager;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -277,8 +278,8 @@ outer:
 		int sent = removed.stackSize;
 		_power.useEnergy(sent * neededEnergy());
 
-		_itemSender.sendStack(removed, destination, itemSendMode());
-		_orderManager.sendSuccessfull(sent, defersend);
+		IRoutedItem sendedItem = _itemSender.sendStack(removed, destination, itemSendMode());
+		_orderManager.sendSuccessfull(sent, defersend, sendedItem);
 		return sent;
 	}
 	

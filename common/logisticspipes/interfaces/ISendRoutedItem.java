@@ -2,6 +2,7 @@ package logisticspipes.interfaces;
 
 import java.util.List;
 
+import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.SinkReply;
@@ -13,6 +14,6 @@ public interface ISendRoutedItem {
 	int getSourceID();
 	IRouter getRouter();
 	Pair<Integer, SinkReply> hasDestination(ItemIdentifier stack, boolean allowDefault, List<Integer> routerIDsToExclude);
-	void sendStack(ItemStack stack, Pair<Integer, SinkReply> reply, ItemSendMode mode);
-	void sendStack(ItemStack stack, int destination, ItemSendMode mode);
+	IRoutedItem sendStack(ItemStack stack, Pair<Integer, SinkReply> reply, ItemSendMode mode);
+	IRoutedItem sendStack(ItemStack stack, int destination, ItemSendMode mode);
 }

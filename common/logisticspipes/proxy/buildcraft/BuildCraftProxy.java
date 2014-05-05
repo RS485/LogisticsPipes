@@ -188,6 +188,10 @@ public class BuildCraftProxy {
 		}
 		return (RoutedEntityItem) itemData; 
 	}
+
+	public TravelingItem GetTravelingItem(IRoutedItem item) {
+		return (RoutedEntityItem) item; 
+	}
 	
 	public boolean isRoutedItem(TravelingItem item) {
 		return (item instanceof RoutedEntityItem);

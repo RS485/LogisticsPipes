@@ -35,7 +35,7 @@ public interface IRouter {
 	public boolean isSubPoweredExit(ForgeDirection connection);
 	public int getDistanceToNextPowerPipe(ForgeDirection dir);
 	public boolean hasRoute(int id, boolean active, ItemIdentifier type);
-	public ForgeDirection getExitFor(int id, boolean active, ItemIdentifier type);
+	public ExitRoute getExitFor(int id, boolean active, ItemIdentifier type);
 	
 	public List<List<ExitRoute>> getRouteTable();
 	public List<ExitRoute> getIRoutersByCost();

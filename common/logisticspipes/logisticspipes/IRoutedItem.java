@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.order.IDistanceTracker;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
-import buildcraft.transport.TravelingItem;
 
 /**
  * This interface describes the actions that must be available on an item that is considered routed
@@ -57,9 +57,6 @@ public interface IRoutedItem {
 	public ItemStack getItemStack();
 	public void setItemStack(ItemStack item);
 	
-	public TravelingItem getTravelingItem();
-	public TravelingItem getNewTravelingItem();
-	
 	public void setArrived(boolean flag);
 	public boolean getArrived();
 	
@@ -83,4 +80,9 @@ public interface IRoutedItem {
 
 	public NBTTagCompound getNBTData();
 	public void loadFromNBT(NBTTagCompound data);
+	
+	public void writeToNBT(NBTTagCompound tagentityitem);
+
+	public void setDistanceTracker(IDistanceTracker tracker);
+	public IDistanceTracker getDistanceTracker();
 }

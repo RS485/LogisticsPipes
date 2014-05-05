@@ -111,4 +111,12 @@ public class StringUtil {
 		}
 		return s;
 	}
+
+	public static String toPercent(double value) {
+		if(value > 1) value = 1;
+		if(value < 0) value = 0;
+		value *= 100;
+		int percent = (int) value;
+		return Integer.toString(percent) + "%";
+	}
 }

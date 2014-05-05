@@ -82,7 +82,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 	}
 
 	@Override
-	public void sendStack(ItemStack stack, Pair<Integer, SinkReply> reply, ItemSendMode mode) {
+	public IRoutedItem sendStack(ItemStack stack, Pair<Integer, SinkReply> reply, ItemSendMode mode) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stack);
 		itemToSend.setDestination(reply.getValue1());
 		if (reply.getValue2().isPassive){
@@ -93,14 +93,16 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 			}
 		}
 		super.queueRoutedItem(itemToSend, getPointedOrientation(), mode);
+		return itemToSend;
 	}
 
 	@Override
-	public void sendStack(ItemStack stack, int destination, ItemSendMode mode) {
+	public IRoutedItem sendStack(ItemStack stack, int destination, ItemSendMode mode) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stack);
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(TransportMode.Active);
 		super.queueRoutedItem(itemToSend, getPointedOrientation(), mode);
+		return itemToSend;
 	}
 
 	private ForgeDirection getPointedOrientation() {

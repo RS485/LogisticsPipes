@@ -97,7 +97,7 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 	public void updateEntity() {
 		super.updateEntity();
 		if (!_itemBuffer.isEmpty()){
-			List<IRoutedItem> toAdd = new LinkedList<IRoutedItem>();
+			List<TravelingItem> toAdd = new LinkedList<TravelingItem>();
 			Iterator<Entry<ItemStack, Pair<Integer, Integer>>> iterator = _itemBuffer.entrySet().iterator();
 			while (iterator.hasNext()){
 				Entry<ItemStack, Pair<Integer, Integer>> next = iterator.next();
@@ -105,16 +105,15 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 				if (currentTimeOut > 0){
 					next.getValue().setValue1(currentTimeOut - 1);
 				} else {
-					TravelingItem item = new TravelingItem(this.getPipe().getX()+ 0.5F, this.getPipe().getY() + CoreConstants.PIPE_MIN_POS - 0.1, this.getPipe().getZ() + 0.5, next.getKey());
-					IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(item);
+					RoutedEntityItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(new TravelingItem(this.getPipe().getX()+ 0.5F, this.getPipe().getY() + CoreConstants.PIPE_MIN_POS - 0.1, this.getPipe().getZ() + 0.5, next.getKey()));
 					routedItem.setDoNotBuffer(true);
 					routedItem.setBufferCounter(next.getValue().getValue2() + 1);
 					toAdd.add(routedItem);
 					iterator.remove();
 				}
 			}
-			for(IRoutedItem item:toAdd) {
-				this.injectItem(item.getTravelingItem(), ForgeDirection.UP);
+			for(TravelingItem item:toAdd) {
+				this.injectItem(item, ForgeDirection.UP);
 			}
 		}
 	}
@@ -131,6 +130,10 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 	@Override
 	public void injectItem(TravelingItem item, ForgeDirection inputOrientation) {
 		super.injectItem(SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(item), inputOrientation);
+	}
+
+	public void injectItem(IRoutedItem item, ForgeDirection inputOrientation) {
+		super.injectItem(SimpleServiceLocator.buildCraftProxy.GetTravelingItem(item), inputOrientation);
 	}
 
 	@Override

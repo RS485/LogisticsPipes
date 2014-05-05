@@ -20,6 +20,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.routing.order.IDistanceTracker;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.entity.item.EntityItem;
@@ -55,7 +56,7 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 	private boolean _doNotBuffer;
 	private TransportMode _transportMode = TransportMode.Unknown;
 	private List<Integer> jamlist = new ArrayList<Integer>();
-	
+	private IDistanceTracker tracker = null;
 	
 	public RoutedEntityItem(TravelingItem entityItem) {
 		super(entityItem.id);
@@ -248,11 +249,6 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 	}
 
 	@Override
-	public TravelingItem getTravelingItem() {
-		return this;
-	}
-
-	@Override
 	public void setArrived(boolean flag) {
 		this.arrived = flag;
 	}
@@ -305,20 +301,6 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 	@Override
 	public TransportMode getTransportMode() {
 		return this._transportMode;
-	}
-
-	@Override
-	public TravelingItem getNewTravelingItem() {
-		if(getItemStack().getItem() instanceof LogisticsFluidContainer) {
-			throw new UnsupportedOperationException("Can't change FluidContainer to TravelingItem");
-		}
-		TravelingItem newItem = new TravelingItem();
-		newItem.setItemStack(getItemStack());
-		newItem.setContainer(container);
-		newItem.setPosition(xCoord, yCoord, zCoord);
-		newItem.setSpeed(speed);
-		newItem.setItemStack(item);
-		return newItem;
 	}
 
 	@Override
@@ -421,5 +403,15 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 		if (destinationRouter != null && destinationRouter.getPipe() instanceof CoreRoutedPipe){
 			((CoreRoutedPipe)destinationRouter.getPipe()).refreshItem(this);
 		}
+	}
+
+	@Override
+	public void setDistanceTracker(IDistanceTracker tracker) {
+		this.tracker = tracker;
+	}
+
+	@Override
+	public IDistanceTracker getDistanceTracker() {
+		return tracker;
 	}
 }

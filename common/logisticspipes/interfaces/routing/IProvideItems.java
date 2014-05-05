@@ -13,8 +13,8 @@ import java.util.Map;
 
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.LogisticsOrder;
 import logisticspipes.routing.LogisticsPromise;
+import logisticspipes.routing.order.LogisticsOrder;
 import logisticspipes.utils.item.ItemIdentifier;
 
 public interface IProvideItems {

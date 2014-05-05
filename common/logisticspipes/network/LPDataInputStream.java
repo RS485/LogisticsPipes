@@ -12,10 +12,11 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.LinkedLogisticsOrderList;
-import logisticspipes.routing.LogisticsOrder;
-import logisticspipes.routing.LogisticsOrder.RequestType;
 import logisticspipes.routing.PipeRoutingConnectionType;
+import logisticspipes.routing.order.ClientSideOrderInfo;
+import logisticspipes.routing.order.IOrderInfoProvider;
+import logisticspipes.routing.order.IOrderInfoProvider.RequestType;
+import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
@@ -43,12 +44,14 @@ public class LPDataInputStream extends DataInputStream {
 		EnumSet<PipeRoutingConnectionType> connectionDetails = this.readEnumSet(PipeRoutingConnectionType.class);
 		int distanceToDestination = this.readInt();
 		int destinationDistanceToRoot = this.readInt();
-		int length = this.readInt();
-		List<LPPosition> positions = new ArrayList<LPPosition>(length);
-		for(int i=0;i<length;i++) {
-			positions.add(this.readLPPosition());
-		}
-		ExitRoute e = new ExitRoute(root, destination, exitOri, insertOri, destinationDistanceToRoot, connectionDetails);
+		int blockDistance = this.readInt();
+		List<LPPosition> positions = this.readList(new IReadListObject<LPPosition>() {
+			@Override
+			public LPPosition readObject(LPDataInputStream data) throws IOException {
+				return data.readLPPosition();
+			}
+		});
+		ExitRoute e = new ExitRoute(root, destination, exitOri, insertOri, destinationDistanceToRoot, connectionDetails, blockDistance);
 		e.distanceToDestination = distanceToDestination;
 		e.debug.filterPosition = positions;
 		e.debug.toStringNetwork = this.readUTF();
@@ -152,17 +155,18 @@ public class LPDataInputStream extends DataInputStream {
 		return list;
 	}
 
-	public LogisticsOrder readOrder() throws IOException {
+	public IOrderInfoProvider readOrder() throws IOException {
 		ItemIdentifierStack stack = this.readItemIdentifierStack();
 		int routerId = this.readInt();
-		boolean finished = this.readBoolean();
+		boolean isFinished = this.readBoolean();
 		boolean inProgress = this.readBoolean();
 		RequestType type = this.readEnum(RequestType.class);
-		LogisticsOrder order = new LogisticsOrder(stack, null, type);
-		order.setFinished(finished);
-		order.setRouterId(routerId);
-		order.setInProgress(inProgress);
-		return order;
+		List<Float> list = this.readList(new IReadListObject<Float>() {
+			@Override
+			public Float readObject(LPDataInputStream data) throws IOException {
+				return data.readFloat();
+			}});
+		return new ClientSideOrderInfo(stack, isFinished, type, inProgress, routerId, list);
 	}
 	
 	public <T extends Enum<T>> T readEnum(Class<T> clazz) throws IOException {
@@ -171,9 +175,9 @@ public class LPDataInputStream extends DataInputStream {
 
 	public LinkedLogisticsOrderList readLinkedLogisticsOrderList() throws IOException {
 		LinkedLogisticsOrderList list = new LinkedLogisticsOrderList();
-		list.addAll(this.readList(new IReadListObject<LogisticsOrder>() {
+		list.addAll(this.readList(new IReadListObject<IOrderInfoProvider>() {
 			@Override
-			public LogisticsOrder readObject(LPDataInputStream data) throws IOException {
+			public IOrderInfoProvider readObject(LPDataInputStream data) throws IOException {
 				return data.readOrder();
 			}}));
 		list.getSubOrders().addAll(this.readList(new IReadListObject<LinkedLogisticsOrderList>() {

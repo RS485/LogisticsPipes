@@ -1,6 +1,6 @@
 package logisticspipes.interfaces;
 
-import logisticspipes.routing.LinkedLogisticsOrderList;
+import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
 public interface IRequestWatcher {

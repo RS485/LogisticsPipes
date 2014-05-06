@@ -29,7 +29,6 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
-import sun.rmi.transport.TransportConstants;
 import thermalexpansion.part.conduit.item.TravelingItem;
 import buildcraft.core.CoreConstants;
 import buildcraft.transport.PipeTransportItems;

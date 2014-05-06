@@ -112,7 +112,6 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
-import sun.rmi.transport.TransportConstants;
 import thermalexpansion.part.conduit.item.TravelingItem;
 import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.core.CoreConstants;

@@ -89,6 +89,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		this._table = table;
 		this.orderId = orderId;
 		this.guiMapY = -200;
+		Mouse.getDWheel(); //Reset DWheel on GUI open
 	}
 	
 	@Override

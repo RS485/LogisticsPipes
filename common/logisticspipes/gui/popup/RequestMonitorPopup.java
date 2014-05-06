@@ -250,10 +250,10 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		String s = Integer.toString(orderId);
 		if(!list.isEmpty()) {
 			this.drawTexturedModalRect(innerLeftSide - mapX + 97, innerTopSide - mapY - 220, 0, 202, 26, 26);
-			fontRenderer.drawStringWithShadow(s, innerLeftSide - mapX + 111 - fontRenderer.getStringWidth(s) / 2, innerTopSide - mapY - 210, 16777215);
+			mc.fontRenderer.drawStringWithShadow(s, innerLeftSide - mapX + 111 - mc.fontRenderer.getStringWidth(s) / 2, innerTopSide - mapY - 210, 16777215);
 		} else {
 			this.drawTexturedModalRect(innerLeftSide - mapX + 97, innerTopSide - mapY - 162, 0, 202, 26, 26);
-			fontRenderer.drawStringWithShadow(s, innerLeftSide - mapX + 111 - fontRenderer.getStringWidth(s) / 2, innerTopSide - mapY - 152, 16777215);
+			mc.fontRenderer.drawStringWithShadow(s, innerLeftSide - mapX + 111 - mc.fontRenderer.getStringWidth(s) / 2, innerTopSide - mapY - 152, 16777215);
 		}
 		renderLinkedOrderListItems(list, innerLeftSide - mapX + 102, innerTopSide - mapY - 180, par1, par2);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -398,13 +398,13 @@ public class RequestMonitorPopup extends SubGuiScreen {
 	private void renderItemAt(ItemIdentifierStack item, int x, int y) {
 		renderitem.renderItemAndEffectIntoGUI(this.mc.fontRenderer, this.mc.getTextureManager(), item.makeNormalStack(), x, y);
 		if(guiLeft < x && x < guiLeft + xSize - 16 && guiTop < y && y < guiTop + ySize - 16) {
-			renderitem.renderItemOverlayIntoGUI(fontRenderer, this.mc.renderEngine, item.makeNormalStack(), x, y, "");
+			renderitem.renderItemOverlayIntoGUI(mc.fontRenderer, this.mc.renderEngine, item.makeNormalStack(), x, y, "");
 			String s = StringUtil.getFormatedStackSize(item.getStackSize());
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 			renderitem.zLevel = 0.0F;
 			// Draw number
-			fontRenderer.drawStringWithShadow(s, x + 17 - fontRenderer.getStringWidth(s), y + 9, 16777215);
+			mc.fontRenderer.drawStringWithShadow(s, x + 17 - mc.fontRenderer.getStringWidth(s), y + 9, 16777215);
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 			GL11.glEnable(GL11.GL_LIGHTING);
 		}

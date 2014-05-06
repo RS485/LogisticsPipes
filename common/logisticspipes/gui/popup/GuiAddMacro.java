@@ -140,7 +140,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 	@Override
 	public void drawScreen(int par1, int par2, float par3) {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, false);
-		fontRenderer.drawString("Add Macro", guiLeft + fontRenderer.getStringWidth("Add Macro") / 2, guiTop + 6, 0x404040);
+		mc.fontRenderer.drawString("Add Macro", guiLeft + mc.fontRenderer.getStringWidth("Add Macro") / 2, guiTop + 6, 0x404040);
 		
 		maxPageAll = (int) Math.floor((getSearchedItemNumber(diskProvider.getItemDisplay()._allItems) - 1)  / 45F);
 		if(maxPageAll == -1) maxPageAll = 0;
@@ -149,10 +149,10 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		}
 		
 		String pageString1 = "Page " + (pageAll + 1) + " / " + (maxPageAll + 1);
-		fontRenderer.drawString(pageString1, right - 47 - fontRenderer.getStringWidth(pageString1) / 2 , guiTop + 6 , 0x404040);
+		mc.fontRenderer.drawString(pageString1, right - 47 - mc.fontRenderer.getStringWidth(pageString1) / 2 , guiTop + 6 , 0x404040);
 		
 		
-		fontRenderer.drawString("Macro Items", guiLeft + fontRenderer.getStringWidth("Add Macro") / 2, guiTop + 136, 0x404040);
+		mc.fontRenderer.drawString("Macro Items", guiLeft + mc.fontRenderer.getStringWidth("Add Macro") / 2, guiTop + 136, 0x404040);
 		
 		maxPageMacro = (int) Math.floor((getSearchedItemNumber(macroItems) - 1)  / 9F);
 		if(maxPageMacro == -1) maxPageMacro = 0;
@@ -161,10 +161,10 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		}
 		
 		String pageString2 = "Page " + (pageMacro + 1) + " / " + (maxPageMacro + 1);
-		fontRenderer.drawString(pageString2, right - 47 - fontRenderer.getStringWidth(pageString2) / 2 , guiTop + 136 , 0x404040);
+		mc.fontRenderer.drawString(pageString2, right - 47 - mc.fontRenderer.getStringWidth(pageString2) / 2 , guiTop + 136 , 0x404040);
 		
 		
-		fontRenderer.drawString("Search:", guiLeft + 8, guiTop + 122, 0x404040);
+		mc.fontRenderer.drawString("Search:", guiLeft + 8, guiTop + 122, 0x404040);
 		
 		if(editsearch) {
 			drawRect(guiLeft + 50, bottom - 66, right - 10, bottom - 83, BasicGuiHelper.ConvertEnumToColor(Colors.Black));
@@ -174,10 +174,10 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		}
 		drawRect(guiLeft + 52, bottom - 68, right - 12, bottom - 81, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey));
 		
-		fontRenderer.drawString(Search1 + Search2, guiLeft + 55, guiTop + 122, 0xFFFFFF);
+		mc.fontRenderer.drawString(Search1 + Search2, guiLeft + 55, guiTop + 122, 0xFFFFFF);
 		
 		if(editsearch) {
-			int linex = guiLeft + 55 + fontRenderer.getStringWidth(Search1);
+			int linex = guiLeft + 55 + mc.fontRenderer.getStringWidth(Search1);
 			if(System.currentTimeMillis() - oldSystemTime > 500) {
 				displaycursor = !displaycursor;
 				oldSystemTime = System.currentTimeMillis();
@@ -189,7 +189,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		
 		
 		
-		fontRenderer.drawString("Name:", guiLeft + 8, bottom - 20, 0x404040);
+		mc.fontRenderer.drawString("Name:", guiLeft + 8, bottom - 20, 0x404040);
 		
 		if(editname) {
 			drawRect(guiLeft + 36, bottom - 8, right - 40, bottom - 25, BasicGuiHelper.ConvertEnumToColor(Colors.Black));
@@ -199,10 +199,10 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		}
 		drawRect(guiLeft + 38, bottom - 10, right - 42, bottom - 23, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey));
 		
-		fontRenderer.drawString(name1 + name2, guiLeft + 41, bottom - 20, 0xFFFFFF);
+		mc.fontRenderer.drawString(name1 + name2, guiLeft + 41, bottom - 20, 0xFFFFFF);
 
 		if(editname) {
-			int linex = guiLeft + 41 + fontRenderer.getStringWidth(name1);
+			int linex = guiLeft + 41 + mc.fontRenderer.getStringWidth(name1);
 			if(System.currentTimeMillis() - oldSystemTime > 500) {
 				displaycursor = !displaycursor;
 				oldSystemTime = System.currentTimeMillis();
@@ -495,7 +495,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 					name1 = name1.substring(0, name1.length() - 1);
 				return;
 			} else if (Character.isLetterOrDigit(c) || c == ' ') {
-				if (fontRenderer.getStringWidth(name1 + c + name2) <= nameWidth) {
+				if (mc.fontRenderer.getStringWidth(name1 + c + name2) <= nameWidth) {
 					name1 += c;
 				}
 				return;
@@ -534,7 +534,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 					Search1 = Search1.substring(0, Search1.length() - 1);
 				return;
 			} else if (Character.isLetterOrDigit(c) || c == ' ') {
-				if (fontRenderer.getStringWidth(Search1 + c + Search2) <= searchWidth) {
+				if (mc.fontRenderer.getStringWidth(Search1 + c + Search2) <= searchWidth) {
 					Search1 += c;
 				}
 				return;

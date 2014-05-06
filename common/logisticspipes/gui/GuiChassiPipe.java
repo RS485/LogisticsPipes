@@ -121,22 +121,22 @@ public class GuiChassiPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerP
 			}
 		}
 		if (_chassiPipe.getChassiSize() > 0) {
-			fontRenderer.drawString(getModuleName(0), 40, 14, 0x404040);
+			mc.fontRenderer.drawString(getModuleName(0), 40, 14, 0x404040);
 		}
 		if (_chassiPipe.getChassiSize() > 1) {
-			fontRenderer.drawString(getModuleName(1), 40, 34, 0x404040);
+			mc.fontRenderer.drawString(getModuleName(1), 40, 34, 0x404040);
 		}
 		if (_chassiPipe.getChassiSize() > 2) {
-			fontRenderer.drawString(getModuleName(2), 40, 54, 0x404040);
+			mc.fontRenderer.drawString(getModuleName(2), 40, 54, 0x404040);
 		}
 		if (_chassiPipe.getChassiSize() > 3) {
-			fontRenderer.drawString(getModuleName(3), 40, 74, 0x404040);
+			mc.fontRenderer.drawString(getModuleName(3), 40, 74, 0x404040);
 		}
 		if (_chassiPipe.getChassiSize() > 4) {
-			fontRenderer.drawString(getModuleName(4), 40, 94, 0x404040);
-			fontRenderer.drawString(getModuleName(5), 40, 114, 0x404040);
-			fontRenderer.drawString(getModuleName(6), 40, 134, 0x404040);
-			fontRenderer.drawString(getModuleName(7), 40, 154, 0x404040);
+			mc.fontRenderer.drawString(getModuleName(4), 40, 94, 0x404040);
+			mc.fontRenderer.drawString(getModuleName(5), 40, 114, 0x404040);
+			mc.fontRenderer.drawString(getModuleName(6), 40, 134, 0x404040);
+			mc.fontRenderer.drawString(getModuleName(7), 40, 154, 0x404040);
 		}
 	}
 	

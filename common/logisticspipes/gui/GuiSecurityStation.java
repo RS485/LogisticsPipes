@@ -131,19 +131,19 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 175);
 		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 81, guiTop + 140);
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "SecurityStation"), guiLeft + 105, guiTop + 10, 0x404040);
-		fontRenderer.drawString(_tile.getSecId() == null ? "null" : _tile.getSecId().toString(), guiLeft + 32, guiTop + 25, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "SecurityStation"), guiLeft + 105, guiTop + 10, 0x404040);
+		mc.fontRenderer.drawString(_tile.getSecId() == null ? "null" : _tile.getSecId().toString(), guiLeft + 32, guiTop + 25, 0x404040);
 		if(SimpleServiceLocator.ccProxy.isCC() || LogisticsPipes.DEBUG) {
-			fontRenderer.drawString(StringUtil.translate(PREFIX + "allowCCAccess") + ":", guiLeft + 10, guiTop + 46, 0x404040);
-			fontRenderer.drawString(StringUtil.translate(PREFIX + "excludeIDs") + ":", guiLeft + 10, guiTop + 61, 0x404040);
+			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "allowCCAccess") + ":", guiLeft + 10, guiTop + 46, 0x404040);
+			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "excludeIDs") + ":", guiLeft + 10, guiTop + 61, 0x404040);
 		}
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "pipeRemove") + ":", guiLeft + 10, guiTop + 78, 0x404040);
-		//fontRenderer.drawString("---------------------------------------------", guiLeft + 5, guiTop + 90, 0x404040);
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "Player") + ":", guiLeft + 180, guiTop + 127, 0x404040);
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "SecurityCards") + ":", guiLeft + 10, guiTop + 127, 0x404040);
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "Inventory") + ":", guiLeft + 10, guiTop + 163, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "pipeRemove") + ":", guiLeft + 10, guiTop + 78, 0x404040);
+		//mc.fontRenderer.drawString("---------------------------------------------", guiLeft + 5, guiTop + 90, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Player") + ":", guiLeft + 180, guiTop + 127, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "SecurityCards") + ":", guiLeft + 10, guiTop + 127, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Inventory") + ":", guiLeft + 10, guiTop + 163, 0x404040);
 		
-		addition = (fontRenderer.getStringWidth(searchinput1 + searchinput2) - 82);
+		addition = (mc.fontRenderer.getStringWidth(searchinput1 + searchinput2) - 82);
 		
 		if(addition < 0) {
 			addition = 0;
@@ -158,9 +158,9 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 		}
 		drawRect(guiLeft + 182, bottom - 118, right - 10 + addition, bottom - 105, Colors.DarkGrey);
 		
-		fontRenderer.drawString(searchinput1 + searchinput2, guiLeft + 185, bottom - 115, 0xFFFFFF);
+		mc.fontRenderer.drawString(searchinput1 + searchinput2, guiLeft + 185, bottom - 115, 0xFFFFFF);
 		if(editsearch) {
-			int linex = guiLeft + 185 + fontRenderer.getStringWidth(searchinput1);
+			int linex = guiLeft + 185 + mc.fontRenderer.getStringWidth(searchinput1);
 			if(System.currentTimeMillis() - oldSystemTime > 500) {
 				displaycursor = !displaycursor;
 				oldSystemTime = System.currentTimeMillis();
@@ -189,7 +189,7 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 		int pos = bottom - 95;
 		for(String player:players) {
 			if(player.contains(searchinput1 + searchinput2)) {
-				fontRenderer.drawString(player, guiLeft + 180, pos, 0x404040);
+				mc.fontRenderer.drawString(player, guiLeft + 180, pos, 0x404040);
 				pos += 11;
 			}
 			//Check mouse click
@@ -200,7 +200,7 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 				searchinput2 = "";
 			}
 			if(pos > bottom - 12) {
-				fontRenderer.drawString("...", guiLeft + 180, pos - 5, 0x404040);
+				mc.fontRenderer.drawString("...", guiLeft + 180, pos - 5, 0x404040);
 				break;
 			}
 		}
@@ -240,7 +240,7 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 					searchinput1 = searchinput1.substring(0, searchinput1.length() - 1);
 				return;
 			} else if (Character.isLetterOrDigit(c) || c == ' ') {
-				if (fontRenderer.getStringWidth(searchinput1 + c + searchinput2) <= searchWidth) {
+				if (mc.fontRenderer.getStringWidth(searchinput1 + c + searchinput2) <= searchWidth) {
 					searchinput1 += c;
 				}
 				return;

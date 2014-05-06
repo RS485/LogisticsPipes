@@ -78,9 +78,9 @@ public class GuiItemSink extends GuiWithPreviousGuiContainer {
 	
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		fontRenderer.drawString(_itemSink.getFilterInventory().getInvName(), 8, 6, 0x404040);
-		fontRenderer.drawString("Inventory", 8, ySize - 92, 0x404040);
-		fontRenderer.drawString("Default route:", 65, 45, 0x404040);
+		mc.fontRenderer.drawString(_itemSink.getFilterInventory().getInvName(), 8, 6, 0x404040);
+		mc.fontRenderer.drawString("Inventory", 8, ySize - 92, 0x404040);
+		mc.fontRenderer.drawString("Default route:", 65, 45, 0x404040);
 	}
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/itemsink.png");
 	@Override

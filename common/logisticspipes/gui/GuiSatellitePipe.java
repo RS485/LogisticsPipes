@@ -89,12 +89,12 @@ public class GuiSatellitePipe extends GuiContainer implements IGuiIDHandlerProvi
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		fontRenderer.drawString(StringUtil.translate("gui.satellite.SatelliteID"), 33, 10, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate("gui.satellite.SatelliteID"), 33, 10, 0x404040);
 		if(_satellite != null) {
-			fontRenderer.drawString(_satellite.satelliteId+"", 59 - fontRenderer.getStringWidth(_satellite.satelliteId+"")/2, 31, 0x404040);
+			mc.fontRenderer.drawString(_satellite.satelliteId+"", 59 - mc.fontRenderer.getStringWidth(_satellite.satelliteId+"")/2, 31, 0x404040);
 		}
 		if(_liquidSatellite != null) {
-			fontRenderer.drawString(_liquidSatellite.satelliteId+"", 59 - fontRenderer.getStringWidth(_liquidSatellite.satelliteId+"")/2, 31, 0x404040);
+			mc.fontRenderer.drawString(_liquidSatellite.satelliteId+"", 59 - mc.fontRenderer.getStringWidth(_liquidSatellite.satelliteId+"")/2, 31, 0x404040);
 		}
 	}
 	

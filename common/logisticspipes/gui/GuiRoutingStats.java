@@ -33,32 +33,32 @@ public class GuiRoutingStats extends KraphtBaseGuiScreen {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 
 		String pipeName = ItemIdentifier.get(_router.getPipe().itemID, 0, null).getFriendlyName();
-		fontRenderer.drawString(pipeName, (170 - fontRenderer.getStringWidth(pipeName))/2, 10, 0x83601c);
+		mc.fontRenderer.drawString(pipeName, (170 - mc.fontRenderer.getStringWidth(pipeName))/2, 10, 0x83601c);
 		
 		int sessionxCenter = 85;
 		int lifetimexCenter = 130;
 		
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "Session"), sessionxCenter - fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "Session")) / 2, 40, 0x303030);
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "Lifetime"), lifetimexCenter - fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "Lifetime")) / 2, 40, 0x303030);
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "Sent") + ":", 60 - fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "Sent") + ":"), 55, 0x303030);
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "Recieved") + ":", 60 - fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "Recieved") + ":"), 70, 0x303030);
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "Relayed") + ":", 60 - fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "Relayed") + ":"), 85, 0x303030);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Session"), sessionxCenter - mc.fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "Session")) / 2, 40, 0x303030);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Lifetime"), lifetimexCenter - mc.fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "Lifetime")) / 2, 40, 0x303030);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Sent") + ":", 60 - mc.fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "Sent") + ":"), 55, 0x303030);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Recieved") + ":", 60 - mc.fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "Recieved") + ":"), 70, 0x303030);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Relayed") + ":", 60 - mc.fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "Relayed") + ":"), 85, 0x303030);
 		CoreRoutedPipe pipe = _router.getPipe();
-		fontRenderer.drawString(pipe.stat_session_sent+"", sessionxCenter - fontRenderer.getStringWidth(pipe.stat_session_sent+"")/2, 55, 0x303030);
-		fontRenderer.drawString(pipe.stat_session_recieved+"", sessionxCenter - fontRenderer.getStringWidth(pipe.stat_session_recieved+"")/2, 70, 0x303030);
-		fontRenderer.drawString(pipe.stat_session_relayed+"", sessionxCenter - fontRenderer.getStringWidth(pipe.stat_session_relayed+"")/2, 85, 0x303030);
+		mc.fontRenderer.drawString(pipe.stat_session_sent+"", sessionxCenter - mc.fontRenderer.getStringWidth(pipe.stat_session_sent+"")/2, 55, 0x303030);
+		mc.fontRenderer.drawString(pipe.stat_session_recieved+"", sessionxCenter - mc.fontRenderer.getStringWidth(pipe.stat_session_recieved+"")/2, 70, 0x303030);
+		mc.fontRenderer.drawString(pipe.stat_session_relayed+"", sessionxCenter - mc.fontRenderer.getStringWidth(pipe.stat_session_relayed+"")/2, 85, 0x303030);
 		
-		fontRenderer.drawString(pipe.stat_lifetime_sent+"", lifetimexCenter - fontRenderer.getStringWidth(pipe.stat_lifetime_sent+"")/2, 55, 0x303030);
-		fontRenderer.drawString(pipe.stat_lifetime_recieved+"", lifetimexCenter - fontRenderer.getStringWidth(pipe.stat_lifetime_recieved+"")/2, 70, 0x303030);
-		fontRenderer.drawString(pipe.stat_lifetime_relayed+"", lifetimexCenter - fontRenderer.getStringWidth(pipe.stat_lifetime_relayed+"")/2, 85, 0x303030);
+		mc.fontRenderer.drawString(pipe.stat_lifetime_sent+"", lifetimexCenter - mc.fontRenderer.getStringWidth(pipe.stat_lifetime_sent+"")/2, 55, 0x303030);
+		mc.fontRenderer.drawString(pipe.stat_lifetime_recieved+"", lifetimexCenter - mc.fontRenderer.getStringWidth(pipe.stat_lifetime_recieved+"")/2, 70, 0x303030);
+		mc.fontRenderer.drawString(pipe.stat_lifetime_relayed+"", lifetimexCenter - mc.fontRenderer.getStringWidth(pipe.stat_lifetime_relayed+"")/2, 85, 0x303030);
 		
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "RoutingTableSize") + ":", 110 - fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "RoutingTableSize") + ":"), 120, 0x303030);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "RoutingTableSize") + ":", 110 - mc.fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "RoutingTableSize") + ":"), 120, 0x303030);
 				
-		fontRenderer.drawString(pipe.server_routing_table_size+"", 130 - fontRenderer.getStringWidth(pipe.server_routing_table_size+"")/2, 120, 0x303030);
+		mc.fontRenderer.drawString(pipe.server_routing_table_size+"", 130 - mc.fontRenderer.getStringWidth(pipe.server_routing_table_size+"")/2, 120, 0x303030);
 				
 		
 		String escString = StringUtil.translate(PREFIX + "exit"); 
-		fontRenderer.drawString(escString, (170 - fontRenderer.getStringWidth(escString)) / 2, 180, 0x404040);
+		mc.fontRenderer.drawString(escString, (170 - mc.fontRenderer.getStringWidth(escString)) / 2, 180, 0x404040);
 	}
 
 	@Override

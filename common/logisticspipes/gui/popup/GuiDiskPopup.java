@@ -93,7 +93,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		
-		fontRenderer.drawStringWithShadow("Disk", xCenter - (fontRenderer.getStringWidth("Disk") / 2), guiTop + 10, 0xFFFFFF);
+		mc.fontRenderer.drawStringWithShadow("Disk", xCenter - (mc.fontRenderer.getStringWidth("Disk") / 2), guiTop + 10, 0xFFFFFF);
 		
 		//NameInput
 		if(editname) {
@@ -104,7 +104,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 		}
 		drawRect(guiLeft + 12, guiTop + 30, right - 12, guiTop + 43, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey));
 		
-		fontRenderer.drawString(name1 + name2, guiLeft + 15, guiTop + 33, 0xFFFFFF);
+		mc.fontRenderer.drawString(name1 + name2, guiLeft + 15, guiTop + 33, 0xFFFFFF);
 		
 		drawRect(guiLeft + 6, guiTop + 46, right - 6, bottom - 30, BasicGuiHelper.ConvertEnumToColor(Colors.MiddleGrey));
 		
@@ -141,7 +141,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 			}
 			NBTTagCompound entry = (NBTTagCompound) list.tagAt(i);
 			String name = entry.getString("name");
-			fontRenderer.drawString(name, guiLeft + 10, guiTop + 50 + ((i - scroll) * 10), 0xFFFFFF);
+			mc.fontRenderer.drawString(name, guiLeft + 10, guiTop + 50 + ((i - scroll) * 10), 0xFFFFFF);
 		}
 		
 		if(!flag) {
@@ -149,7 +149,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 		}
 		
 		if(editname) {
-			int linex = guiLeft + 15 + fontRenderer.getStringWidth(name1);
+			int linex = guiLeft + 15 + mc.fontRenderer.getStringWidth(name1);
 			if(System.currentTimeMillis() - oldSystemTime > 500) {
 				displaycursor = !displaycursor;
 				oldSystemTime = System.currentTimeMillis();
@@ -252,7 +252,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 					name1 = name1.substring(0, name1.length() - 1);
 				return;
 			} else if (Character.isLetterOrDigit(c) || c == ' ') {
-				if (fontRenderer.getStringWidth(name1 + c + name2) <= searchWidth) {
+				if (mc.fontRenderer.getStringWidth(name1 + c + name2) <= searchWidth) {
 					name1 += c;
 				}
 				return;

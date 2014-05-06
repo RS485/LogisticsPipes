@@ -51,7 +51,7 @@ public class GuiRequestPopup extends SubGuiScreen {
 		if(mWidth == 0) {
 			int lWidth = 0;
 			for(String msg:text) {
-				int tWidth = this.fontRenderer.getStringWidth(msg);
+				int tWidth = this.mc.fontRenderer.getStringWidth(msg);
 				if(tWidth > lWidth) {
 					lWidth = tWidth;
 				}
@@ -62,9 +62,9 @@ public class GuiRequestPopup extends SubGuiScreen {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		for(int i=0;i < this.text.length;i++) {
 			if(this.text[i] == null) continue;
-			String msg = BasicGuiHelper.getCuttedString(this.text[i], mWidth - 10, this.fontRenderer);
-			int stringWidth = this.fontRenderer.getStringWidth(msg);
-			this.fontRenderer.drawString(msg, xCenter - (stringWidth / 2), guiTop + 10 + (i * 10), 0x404040);
+			String msg = BasicGuiHelper.getCuttedString(this.text[i], mWidth - 10, this.mc.fontRenderer);
+			int stringWidth = this.mc.fontRenderer.getStringWidth(msg);
+			this.mc.fontRenderer.drawString(msg, xCenter - (stringWidth / 2), guiTop + 10 + (i * 10), 0x404040);
 		}
 		super.drawScreen(par1, par2, par3);
 	}

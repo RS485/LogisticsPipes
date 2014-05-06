@@ -100,10 +100,10 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		buttonList.add(new SmallGuiButton(11, xCenter + 26, bottom - 15, 26, 10, "+++")); // +64
 		buttonList.add(new GuiCheckBox(8, guiLeft + 9, bottom - 60, 14, 14, Configs.DISPLAY_POPUP)); // Popup
 
-		if(search == null) search = new SearchBar(fontRenderer, this, guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
+		if(search == null) search = new SearchBar(mc.fontRenderer, this, guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
 		search.reposition(guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
 		
-		if(itemDisplay == null) itemDisplay = new ItemDisplay(this, fontRenderer, this, this, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[]{1,10,64,64}, true);
+		if(itemDisplay == null) itemDisplay = new ItemDisplay(this, mc.fontRenderer, this, this, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[]{1,10,64,64}, true);
 		itemDisplay.reposition(guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100);
 	}
 	
@@ -116,14 +116,14 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 	public void drawGuiContainerBackgroundLayer(float f, int i, int j) {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 
-		fontRenderer.drawString(_title, guiLeft + fontRenderer.getStringWidth(_title) / 2, guiTop + 6, 0x404040);
+		mc.fontRenderer.drawString(_title, guiLeft + mc.fontRenderer.getStringWidth(_title) / 2, guiTop + 6, 0x404040);
 		itemDisplay.renderPageNumber(right - 47, guiTop + 6);
 		
 		
 		if(buttonList.get(9) instanceof GuiCheckBox && ((GuiCheckBox)buttonList.get(9)).getState()) {
-			fontRenderer.drawString("Popup", guiLeft + 25 , bottom - 56, 0x404040);
+			mc.fontRenderer.drawString("Popup", guiLeft + 25 , bottom - 56, 0x404040);
 		} else {
-			fontRenderer.drawString("Popup", guiLeft + 25 , bottom - 56, 0xA0A0A0);
+			mc.fontRenderer.drawString("Popup", guiLeft + 25 , bottom - 56, 0xA0A0A0);
 		}
 		
 		itemDisplay.renderAmount(xCenter, bottom - 24, getStackAmount());

@@ -86,9 +86,9 @@ public class GuiCCBasedQuickSort extends GuiWithPreviousGuiContainer {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		fontRenderer.drawString("Timeout Timer", xSize / 2 - fontRenderer.getStringWidth("Timeout Timer") / 2, 10, 0x404040);
+		mc.fontRenderer.drawString("Timeout Timer", xSize / 2 - mc.fontRenderer.getStringWidth("Timeout Timer") / 2, 10, 0x404040);
 		String timeoutString = Integer.toString(_sortModule.getTimeout()) + " ticks";
-		fontRenderer.drawString(timeoutString, xSize / 2 - fontRenderer.getStringWidth(timeoutString) / 2, 30, 0x404040);
+		mc.fontRenderer.drawString(timeoutString, xSize / 2 - mc.fontRenderer.getStringWidth(timeoutString) / 2, 30, 0x404040);
 	}
 	
 	@Override

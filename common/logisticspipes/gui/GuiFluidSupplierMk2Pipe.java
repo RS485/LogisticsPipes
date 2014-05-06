@@ -46,13 +46,13 @@ public class GuiFluidSupplierMk2Pipe extends GuiContainer implements IGuiIDHandl
 	
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "TargetInv"), xSize / 2 - fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "TargetInv"))/2, 6, 0x404040);
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "Inventory"), 15, ySize - 95, 0x404040);
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "Fluid") + ":", 25, 22, 0x404040);
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "Partialrequests") + ":", xSize - 140, ySize - 109, 0x404040);
-		fontRenderer.drawString(Integer.toString(logic.getAmount()), xSize / 2, 22, 0x404040);
-		fontRenderer.drawString("+", 32, 39, 0x404040);
-		fontRenderer.drawString("-", 32, 50, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "TargetInv"), xSize / 2 - mc.fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "TargetInv"))/2, 6, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Inventory"), 15, ySize - 95, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Fluid") + ":", 25, 22, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Partialrequests") + ":", xSize - 140, ySize - 109, 0x404040);
+		mc.fontRenderer.drawString(Integer.toString(logic.getAmount()), xSize / 2, 22, 0x404040);
+		mc.fontRenderer.drawString("+", 32, 39, 0x404040);
+		mc.fontRenderer.drawString("-", 32, 50, 0x404040);
 	}
 	
 	@Override

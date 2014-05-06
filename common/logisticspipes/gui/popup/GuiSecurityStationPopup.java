@@ -42,12 +42,12 @@ public class GuiSecurityStationPopup extends SubGuiScreen {
 	@Override
 	public void drawScreen(int par1, int par2, float par3) {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "Player") + ": " + activeSetting.name, guiLeft + 10, guiTop + 10, 0x404040);
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "ConfigureSettings") + ": ", guiLeft + 10, guiTop + 30, 0x404040);
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "ActiveRequesting") + ": ", guiLeft + 10, guiTop + 45, 0x404040);
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "UpgradePipes") + ": ", guiLeft + 10, guiTop + 60, 0x404040);
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "CheckNetwork") + ": ", guiLeft + 10, guiTop + 75, 0x404040);
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "RemovePipes") + ": ", guiLeft + 10, guiTop + 90, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Player") + ": " + activeSetting.name, guiLeft + 10, guiTop + 10, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "ConfigureSettings") + ": ", guiLeft + 10, guiTop + 30, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "ActiveRequesting") + ": ", guiLeft + 10, guiTop + 45, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "UpgradePipes") + ": ", guiLeft + 10, guiTop + 60, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "CheckNetwork") + ": ", guiLeft + 10, guiTop + 75, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "RemovePipes") + ": ", guiLeft + 10, guiTop + 90, 0x404040);
 		super.drawScreen(par1, par2, par3);
 	}
 

@@ -155,10 +155,10 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 		buttonList.add(Macrobutton = new SmallGuiButton(18, right - 55, bottom - 60, 50, 10, "Disk"));
 		Macrobutton.enabled = false;
 
-		if(search == null) search = new SearchBar(fontRenderer, this, guiLeft + 205, bottom - 78, 200, 15);
+		if(search == null) search = new SearchBar(mc.fontRenderer, this, guiLeft + 205, bottom - 78, 200, 15);
 		search.reposition(guiLeft + 205, bottom - 78, 200, 15);
 		
-		if(itemDisplay == null) itemDisplay = new ItemDisplay(this, fontRenderer, this, this, guiLeft + 205, guiTop + 18, 200, ySize - 100, new int[]{1,10,64,64}, true);
+		if(itemDisplay == null) itemDisplay = new ItemDisplay(this, mc.fontRenderer, this, this, guiLeft + 205, guiTop + 18, 200, ySize - 100, new int[]{1,10,64,64}, true);
 		itemDisplay.reposition(guiLeft + 205, guiTop + 18, 200, ySize - 100);
 		
 		startLeft = guiLeft;
@@ -186,14 +186,14 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 		drawRect(guiLeft + 164, guiTop + 25, guiLeft + 180, guiTop + 41, Colors.DarkGrey);
 		
 		if(showRequest) {
-			fontRenderer.drawString(_title, guiLeft + 180 + fontRenderer.getStringWidth(_title) / 2, guiTop + 6, 0x404040);
+			mc.fontRenderer.drawString(_title, guiLeft + 180 + mc.fontRenderer.getStringWidth(_title) / 2, guiTop + 6, 0x404040);
 			itemDisplay.renderPageNumber(right - 47, guiTop + 6);
 			
 			
 			if(buttonList.get(9) instanceof GuiCheckBox && ((GuiCheckBox)buttonList.get(9)).getState()) {
-				fontRenderer.drawString("Popup", guiLeft + 225 , bottom - 56, 0x404040);
+				mc.fontRenderer.drawString("Popup", guiLeft + 225 , bottom - 56, 0x404040);
 			} else {
-				fontRenderer.drawString("Popup", guiLeft + 225 , bottom - 56, 0xA0A0A0);
+				mc.fontRenderer.drawString("Popup", guiLeft + 225 , bottom - 56, 0xA0A0A0);
 			}
 			
 			itemDisplay.renderAmount(right - 103, bottom - 24, getStackAmount());
@@ -214,7 +214,7 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 				BasicGuiHelper.drawSlotBackground(mc, guiLeft + (x * 18) + 19, guiTop + (y * 18) + 14);
 			}
 		}
-		fontRenderer.drawString("Sort:", guiLeft + 136, guiTop + 55, 0xffffff);
+		mc.fontRenderer.drawString("Sort:", guiLeft + 136, guiTop + 55, 0xffffff);
 		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 100, guiTop + 32);
 		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 163, guiTop + 50);
 		drawRect(guiLeft + 75, guiTop + 38, guiLeft + 95, guiTop + 43, Colors.DarkGrey);
@@ -255,15 +255,15 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 						GL11.glEnable(GL11.GL_DEPTH_TEST);
 						RenderHelper.enableGUIStandardItemLighting();
 						ItemStack stack = entry.getValue().getValue1().makeNormalStack();
-						itemRenderer.renderItemAndEffectIntoGUI(fontRenderer, getMC().renderEngine, stack, left + 5, top + 5);
-						itemRenderer.renderItemOverlayIntoGUI(fontRenderer, getMC().renderEngine, stack, left + 5, top + 5, "");
+						itemRenderer.renderItemAndEffectIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5);
+						itemRenderer.renderItemOverlayIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5, "");
 						String s = StringUtil.getFormatedStackSize(stack.stackSize);
 						GL11.glDisable(GL11.GL_LIGHTING);
 						GL11.glDisable(GL11.GL_DEPTH_TEST);
 						itemRenderer.zLevel = 0.0F;
 		
 						// Draw number
-						fontRenderer.drawStringWithShadow(s, left + 22 - fontRenderer.getStringWidth(s), top + 14, 16777215);
+						mc.fontRenderer.drawStringWithShadow(s, left + 22 - mc.fontRenderer.getStringWidth(s), top + 14, 16777215);
 						if(this.isFullyExtended()) {
 							if(localControlledButton == null || orderIdForButton != entry.getKey()) {
 								if(localControlledButton != null) {
@@ -276,7 +276,7 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 							List<IOrderInfoProvider> list = entry.getValue().getValue2().getList();
 							calculateSize(left, top, list);
 							String ident = "ID: " + Integer.toString(entry.getKey());
-							fontRenderer.drawStringWithShadow(ident, left + 25, top + 7, 16777215);
+							mc.fontRenderer.drawStringWithShadow(ident, left + 25, top + 7, 16777215);
 							int x = left + 6;
 							int y = top + 25;
 							for(IOrderInfoProvider order: list) {
@@ -285,15 +285,15 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 								GL11.glEnable(GL11.GL_LIGHTING);
 								GL11.glEnable(GL11.GL_DEPTH_TEST);
 								RenderHelper.enableGUIStandardItemLighting();
-								itemRenderer.renderItemAndEffectIntoGUI(fontRenderer, getMC().renderEngine, stack, x, y);
-								itemRenderer.renderItemOverlayIntoGUI(fontRenderer, getMC().renderEngine, stack, x, y, "");
+								itemRenderer.renderItemAndEffectIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, x, y);
+								itemRenderer.renderItemOverlayIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, x, y, "");
 								s = StringUtil.getFormatedStackSize(stack.stackSize);
 								GL11.glDisable(GL11.GL_LIGHTING);
 								GL11.glDisable(GL11.GL_DEPTH_TEST);
 								itemRenderer.zLevel = 0.0F;
 								
 								// Draw number
-								fontRenderer.drawStringWithShadow(s, x + 17 - fontRenderer.getStringWidth(s), y + 9, 16777215);
+								mc.fontRenderer.drawStringWithShadow(s, x + 17 - mc.fontRenderer.getStringWidth(s), y + 9, 16777215);
 								ordererPosition.put(new Pair<Integer, Integer>(x, y), order);
 								x += 18;
 								if(x > left + getFinalWidth() - 18) {

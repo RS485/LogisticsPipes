@@ -72,12 +72,12 @@ public class GuiSupplierPipe extends KraphtBaseGuiScreen implements IGuiIDHandle
 		} else {
 			name = StringUtil.translate(PREFIX + "TargetInv");
 		}
-		fontRenderer.drawString(name, xSize / 2 - fontRenderer.getStringWidth(name)/2, 6, 0x404040);
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "Inventory"), 18, ySize - 102, 0x404040);
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "RequestMode"), xSize - 140, ySize - 112, 0x404040);
+		mc.fontRenderer.drawString(name, xSize / 2 - mc.fontRenderer.getStringWidth(name)/2, 6, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Inventory"), 18, ySize - 102, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "RequestMode"), xSize - 140, ySize - 112, 0x404040);
 		if(hasPatternUpgrade) {
 			for(int i = 0; i < 9;i++) {
-				fontRenderer.drawString(Integer.toString(logic.slotArray[i]), 22 + i * 18, 55, 0x404040);
+				mc.fontRenderer.drawString(Integer.toString(logic.slotArray[i]), 22 + i * 18, 55, 0x404040);
 			}
 		}
 	}

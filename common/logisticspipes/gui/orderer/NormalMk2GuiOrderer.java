@@ -46,7 +46,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer implements IDiskProvid
 		drawRect(right - 37, bottom - 45, right - 21, bottom - 29, Colors.DarkGrey);
 		
 		if(pipe.getDisk() != null) {
-			renderItem.renderItemIntoGUI(fontRenderer, mc.renderEngine, pipe.getDisk(), right - 37, bottom - 45);
+			renderItem.renderItemIntoGUI(mc.fontRenderer, mc.renderEngine, pipe.getDisk(), right - 37, bottom - 45);
 			Macrobutton.enabled = true;
 		} else {
 			Macrobutton.enabled = false;

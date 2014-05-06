@@ -31,10 +31,10 @@ public class GuiUpgradeManager extends KraphtBaseGuiScreen {
 	
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "Upgrades"), 8, 6, 0x404040);
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "Inventory"), 8, ySize - 92, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Upgrades"), 8, 6, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Inventory"), 8, ySize - 92, 0x404040);
 		if(upgrade.hasCombinedSneakyUpgrade()) {
-			fontRenderer.drawString(StringUtil.translate(PREFIX + "SneakyUpgrades"), 8, 47, 0x404040);
+			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "SneakyUpgrades"), 8, 47, 0x404040);
 		}
 	}
 

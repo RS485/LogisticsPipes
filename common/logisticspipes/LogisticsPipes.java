@@ -121,10 +121,6 @@ import cpw.mods.fml.relauncher.Side;
 				"after:AppliedEnergistics;" +
 				"after:ThermalExpansion;" +
 				"after:BetterStorage")
-@NetworkMod(
-		channels = {LogisticsPipes.LOGISTICS_PIPES_CHANNEL_NAME},
-		packetHandler = PacketHandler.class,
-		clientSideRequired = true)
 public class LogisticsPipes {
 
 	public LogisticsPipes() {

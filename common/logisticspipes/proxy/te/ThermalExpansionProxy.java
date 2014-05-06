@@ -18,6 +18,8 @@ import logisticspipes.recipes.CraftingDependency;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.RecipeManager.LocalCraftingManager;
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -92,7 +94,7 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 	@Override
 	public void handleLPInternalConduitChunkUnload(LogisticsTileGenericPipe pipe) {
 		if(!Configs.TE_PIPE_SUPPORT) return;
-		if(MainProxy.isClient(pipe.worldObj)) return;
+		if(MainProxy.isClient(pipe.getWorldObj())) return;
 		for(int i=0;i<6;i++) {
 			LPConduitItem conduit = pipe.getTEConduit(i);
 			if(conduit.gridBase != null) {
@@ -239,7 +241,7 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 			"RBR", 
 			"PTP", 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_TRANSPORTATION),
-			Character.valueOf('P'), Item.paper, 
+			Character.valueOf('P'), Items.paper,
 			Character.valueOf('E'), new ItemStack(TEBlocks.blockDynamo, 1, 0), 
 			Character.valueOf('T'), TEItems.powerCoilSilver, 
 			Character.valueOf('R'), TEItems.powerCoilGold
@@ -249,8 +251,8 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 			"PEP", 
 			"RBR", 
 			"PTP", 
-			Character.valueOf('B'), Block.blockRedstone,
-			Character.valueOf('P'), Item.paper, 
+			Character.valueOf('B'), Blocks.redstone_block,
+			Character.valueOf('P'), Items.paper,
 			Character.valueOf('E'), new ItemStack(TEBlocks.blockDynamo, 1, 0), 
 			Character.valueOf('T'), TEItems.powerCoilSilver, 
 			Character.valueOf('R'), TEItems.powerCoilGold

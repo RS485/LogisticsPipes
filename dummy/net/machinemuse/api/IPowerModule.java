@@ -1,10 +1,10 @@
 package net.machinemuse.api;
 
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 
 public interface IPowerModule {
 
-	public abstract void registerIcon(IconRegister registry);
+	public abstract void registerIcon(IIconRegister registry);
 
 	public abstract String getCategory();
 

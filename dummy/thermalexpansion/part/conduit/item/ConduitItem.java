@@ -6,7 +6,7 @@ import java.util.List;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import thermalexpansion.part.conduit.ConduitBase;
 import thermalexpansion.part.conduit.Grid;
 

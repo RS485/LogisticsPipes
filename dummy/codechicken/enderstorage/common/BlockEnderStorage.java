@@ -7,12 +7,12 @@ import net.minecraft.world.World;
 
 public class BlockEnderStorage extends BlockContainer {
 	
-	protected BlockEnderStorage(int par1, Material par2Material) {
-		super(par1, par2Material);
+	protected BlockEnderStorage(Material par2Material) {
+		super(par2Material);
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World world) {
+	public TileEntity createNewTileEntity(World world, int i) {
 		return null;
 	}
 }

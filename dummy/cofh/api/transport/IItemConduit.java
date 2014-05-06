@@ -1,7 +1,7 @@
 package cofh.api.transport;
 
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public abstract interface IItemConduit {
 	public abstract ItemStack insertItem(ForgeDirection paramForgeDirection, ItemStack paramItemStack);

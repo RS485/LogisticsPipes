@@ -4,13 +4,13 @@ import java.util.List;
 
 import net.machinemuse.api.IModularItem;
 import net.machinemuse.api.IPowerModule;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 
 public abstract class PowerModuleBase implements IPowerModule {
 
-    protected Icon icon;
+    protected IIcon icon;
     
 	public PowerModuleBase(List<IModularItem> singletonList) {}
 
@@ -22,7 +22,7 @@ public abstract class PowerModuleBase implements IPowerModule {
     public abstract String getTextureFile();
 
 	@Override
-	public void registerIcon(IconRegister registry) {
+	public void registerIcon(IIconRegister registry) {
 		// TODO Auto-generated method stub
 		
 	}

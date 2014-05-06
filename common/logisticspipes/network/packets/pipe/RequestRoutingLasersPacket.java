@@ -62,7 +62,7 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 				handleRouteInDirection(tile, dir, routers.get(dir), lasers, EnumSet.allOf(PipeRoutingConnectionType.class));
 			}
 			lasers = compressLasers(lasers);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingLaserPacket.class).setLasers(lasers), (Player) player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingLaserPacket.class).setLasers(lasers), player);
 		}
 	}
 

@@ -22,6 +22,7 @@ import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidTankInfo;
@@ -32,8 +33,8 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 
 	private boolean _lastRequestFailed = false;
 
-	public PipeFluidSupplierMk2(int ItemID) {
-		super(ItemID);
+	public PipeFluidSupplierMk2(Item item) {
+		super(item);
 		throttleTime = 100;
 	}
 

@@ -5,14 +5,15 @@ import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 
 public class PipeItemsApiaristSink extends CoreRoutedPipe {
 	
 	private ModuleApiaristSink sinkModule;
 
-	public PipeItemsApiaristSink(int itemID) {
-		super(itemID);
+	public PipeItemsApiaristSink(Item item) {
+		super(item);
 		sinkModule = new ModuleApiaristSink();
 		sinkModule.registerHandler(null, null, this, this);
 	}

@@ -6,6 +6,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
+import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
@@ -19,8 +20,8 @@ public class PipeFluidExtractor extends PipeFluidInsertion {
 	private static final int flowRate = 500;
 	private static final int energyPerFlow = 5;
 	
-	public PipeFluidExtractor(int itemID) {
-		super(itemID);
+	public PipeFluidExtractor(Item item) {
+		super(item);
 	}
 
 	@Override

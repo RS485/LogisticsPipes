@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
@@ -53,7 +54,7 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 			
 			if(itemstack != null) {
 				data.writeByte(i);
-				data.writeInt(itemstack.itemID);
+				data.writeInt(Item.getIdFromItem(itemstack.getItem()));
 				data.writeInt(itemstack.stackSize);
 				data.writeInt(itemstack.getItemDamage());
 				data.writeNBTTagCompound(itemstack.getTagCompound());
@@ -74,7 +75,7 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 			final int itemID = data.readInt();
 			int stackSize = data.readInt();
 			int damage = data.readInt();
-			ItemStack stack = new ItemStack(itemID, stackSize, damage);
+			ItemStack stack = new ItemStack(Item.getItemById(itemID), stackSize, damage);
 			stack.setTagCompound(data.readNBTTagCompound());
 			content[index] = stack;
 			index = data.readByte(); // read the next slot

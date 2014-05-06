@@ -29,6 +29,7 @@ import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 
 import org.lwjgl.input.Keyboard;
 
@@ -60,7 +61,7 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 	public GuiSecurityStation(LogisticsSecurityTileEntity tile, EntityPlayer player) {
 		super(280, 260, 0, 0);
 		DummyContainer dummy = new DummyContainer(player.inventory, tile.inv);
-		dummy.addRestrictedSlot(0, tile.inv, 82, 141, -1);
+		dummy.addRestrictedSlot(0, tile.inv, 82, 141, (Item)null);
 		dummy.addNormalSlotsForPlayerInventory(10, 175);
 		this.inventorySlots = dummy;
 		_tile = tile;
@@ -73,17 +74,17 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 		super.initGui();
 		this.buttonList.clear();
 			this.buttonList.add(new GuiButton(0, guiLeft + 10, guiTop + 179, 30, 20, "--"));
-			((GuiButton)this.buttonList.get(0)).drawButton = false;
+			((GuiButton)this.buttonList.get(0)).visible = false;
 		this.buttonList.add(new GuiButton(1, guiLeft + 10, guiTop + 139, 30, 20, "-"));
 		this.buttonList.add(new GuiButton(2, guiLeft + 45, guiTop + 139, 30, 20, "+"));
 			this.buttonList.add(new GuiButton(3, guiLeft + 140, guiTop + 179, 30, 20, "++"));
-			((GuiButton)this.buttonList.get(3)).drawButton = false;
+			((GuiButton)this.buttonList.get(3)).visible = false;
 		this.buttonList.add(new SmallGuiButton(4, guiLeft + 241, guiTop + 217, 30, 10, StringUtil.translate(PREFIX + "Open")));
 		this.buttonList.add(new GuiCheckBox(5, guiLeft + 160, guiTop + 42, 16, 16, _tile.allowCC));
 		this.buttonList.add(new SmallGuiButton(6, guiLeft + 162, guiTop + 60, 60, 10, StringUtil.translate(PREFIX + "EditTable")));
 		if(!SimpleServiceLocator.ccProxy.isCC() && !LogisticsPipes.DEBUG) {
-			((GuiButton)this.buttonList.get(5)).drawButton = false;
-			((GuiButton)this.buttonList.get(6)).drawButton = false;
+			((GuiButton)this.buttonList.get(5)).visible = false;
+			((GuiButton)this.buttonList.get(6)).visible = false;
 		}
 		this.buttonList.add(new GuiButton(7, guiLeft + 55, guiTop + 95, 70, 20, StringUtil.translate(PREFIX + "Authorize")));
 		this.buttonList.add(new GuiButton(8, guiLeft + 175, guiTop + 95, 70, 20, StringUtil.translate(PREFIX + "Deauthorize")));

@@ -68,17 +68,17 @@ public class ChassisGUI extends CoordinatesPacket {
 		
 		player.openGui(LogisticsPipes.instance,((LogisticsGuiModule) cassiPipe.getLogisticsModule().getSubModule(getButtonID())).getGuiHandlerID() + (100 * (getButtonID() + 1)), player.worldObj, getPosX(), getPosY(), getPosZ());
 		if(cassiPipe.getLogisticsModule().getSubModule(getButtonID()) instanceof ModuleItemSink) {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ItemSinkDefault.class).setInteger2(getButtonID()).setInteger((((ModuleItemSink) cassiPipe.getLogisticsModule().getSubModule(getButtonID())).isDefaultRoute() ? 1 : 0)).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ItemSinkDefault.class).setInteger2(getButtonID()).setInteger((((ModuleItemSink) cassiPipe.getLogisticsModule().getSubModule(getButtonID())).isDefaultRoute() ? 1 : 0)).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
 		}
 		if(cassiPipe.getLogisticsModule().getSubModule(getButtonID()) instanceof ModuleExtractor) {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(getButtonID()).setInteger((((ModuleExtractor) cassiPipe.getLogisticsModule().getSubModule(getButtonID())).getSneakyDirection().ordinal())).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(getButtonID()).setInteger((((ModuleExtractor) cassiPipe.getLogisticsModule().getSubModule(getButtonID())).getSneakyDirection().ordinal())).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
 		}
 		if(cassiPipe.getLogisticsModule().getSubModule(getButtonID()) instanceof ModuleProvider) {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleInclude.class).setInteger((((ModuleProvider) cassiPipe.getLogisticsModule().getSubModule(getButtonID())).isExcludeFilter() ? 1 : 0)).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setInteger((((ModuleProvider) cassiPipe.getLogisticsModule().getSubModule(getButtonID())).getExtractionMode().ordinal())).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleInclude.class).setInteger((((ModuleProvider) cassiPipe.getLogisticsModule().getSubModule(getButtonID())).isExcludeFilter() ? 1 : 0)).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setInteger((((ModuleProvider) cassiPipe.getLogisticsModule().getSubModule(getButtonID())).getExtractionMode().ordinal())).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
 		}
 		if(cassiPipe.getLogisticsModule().getSubModule(getButtonID()) instanceof ModuleAdvancedExtractor) {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(AdvancedExtractorInclude.class).setInteger2(getButtonID()).setInteger((((ModuleAdvancedExtractor) cassiPipe.getLogisticsModule().getSubModule(getButtonID())).areItemsIncluded() ? 1 : 0)).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(AdvancedExtractorInclude.class).setInteger2(getButtonID()).setInteger((((ModuleAdvancedExtractor) cassiPipe.getLogisticsModule().getSubModule(getButtonID())).areItemsIncluded() ? 1 : 0)).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
 		}
 	}
 	

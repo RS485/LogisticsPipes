@@ -23,6 +23,7 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -36,8 +37,8 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 	
 	LogisticsFluidOrderManager manager = new LogisticsFluidOrderManager();
 	
-	public PipeFluidProvider(int itemID) {
-		super(itemID);
+	public PipeFluidProvider(Item item) {
+		super(item);
 	}
 
 	@Override

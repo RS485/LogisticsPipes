@@ -216,9 +216,9 @@ public class ModuleApiaristSink extends LogisticsGuiModule implements INBTPacket
 		for(int i=0; i < filter.length; i++) {
 			NBTTagCompound filterNBT = new NBTTagCompound();
 			filter[i].writeToNBT(filterNBT);
-			filters.setCompoundTag(""+i, filterNBT);
+			filters.setTag(""+i, filterNBT);
 		}
-		nbttagcompound.setCompoundTag("filters", filters);
+		nbttagcompound.setTag("filters", filters);
 	}
 
 	@Override

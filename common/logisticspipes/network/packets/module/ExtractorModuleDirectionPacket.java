@@ -33,7 +33,7 @@ public class ExtractorModuleDirectionPacket extends IntegerCoordinatesPacket {
 				if(dummy.getModule() instanceof ISneakyDirectionReceiver) {
 					final ISneakyDirectionReceiver module = (ISneakyDirectionReceiver) dummy.getModule();
 					module.setSneakyDirection(ForgeDirection.getOrientation(value));
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(-1).setInteger(module.getSneakyDirection().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(-1).setInteger(module.getSneakyDirection().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
 				}
 			}
 			return;
@@ -53,14 +53,14 @@ public class ExtractorModuleDirectionPacket extends IntegerCoordinatesPacket {
 			if(piperouted.getLogisticsModule() instanceof ISneakyDirectionReceiver) {
 				final ISneakyDirectionReceiver module = (ISneakyDirectionReceiver) piperouted.getLogisticsModule();
 				module.setSneakyDirection(ForgeDirection.getOrientation(value));
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(-1).setInteger(module.getSneakyDirection().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(-1).setInteger(module.getSneakyDirection().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
 				return;
 			}
 		} else {
 			if(piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ISneakyDirectionReceiver) {
 				final ISneakyDirectionReceiver module = (ISneakyDirectionReceiver) piperouted.getLogisticsModule().getSubModule(slot - 1);
 				module.setSneakyDirection(ForgeDirection.getOrientation(value));
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(slot - 1).setInteger(module.getSneakyDirection().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(slot - 1).setInteger(module.getSneakyDirection().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
 				return;
 			}
 		}

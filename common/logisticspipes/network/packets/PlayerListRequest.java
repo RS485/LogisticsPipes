@@ -40,7 +40,7 @@ public class PlayerListRequest extends ModernPacket {
 				list.add(names.substring(0, names.length() - 4));
 			}
 		}
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PlayerList.class).setStringList(list), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PlayerList.class).setStringList(list), player);
 	}
 
 	@Override

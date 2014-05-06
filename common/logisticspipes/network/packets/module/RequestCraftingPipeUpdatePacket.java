@@ -31,8 +31,8 @@ public class RequestCraftingPipeUpdatePacket extends CoordinatesPacket {
 			return;
 		}
 		PipeItemsCraftingLogistics cpipe = (PipeItemsCraftingLogistics) pipe.pipe;
-		MainProxy.sendPacketToPlayer(cpipe.getCPipePacket(), (Player) player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(((PipeItemsCraftingLogistics) pipe.pipe).getDummyInventory()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player) player);
+		MainProxy.sendPacketToPlayer(cpipe.getCPipePacket(), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(((PipeItemsCraftingLogistics) pipe.pipe).getDummyInventory()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), player);
 	}
 }
 

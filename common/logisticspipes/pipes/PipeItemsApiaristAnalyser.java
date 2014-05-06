@@ -21,9 +21,11 @@ import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -33,8 +35,8 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 
 	private ModuleApiaristAnalyser analyserModule;
 
-	public PipeItemsApiaristAnalyser(int itemID) {
-		super(itemID);
+	public PipeItemsApiaristAnalyser(Item item) {
+		super(item);
 		analyserModule = new ModuleApiaristAnalyser();
 		analyserModule.registerHandler(this, this, this, this);
 	}
@@ -106,10 +108,9 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 
 	private ForgeDirection getPointedOrientation() {
 		for(ForgeDirection ori:ForgeDirection.values()) {
-			Position pos = new Position(this.container);
-			pos.orientation = ori;
-			pos.moveForwards(1);
-			TileEntity tile = this.getWorld().getTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
+			LPPosition pos = new LPPosition(this.container);
+			pos.moveForward(ori);
+			TileEntity tile = pos.getTileEntity(this.getWorld());
 			if(tile != null) {
 				if(SimpleServiceLocator.forestryProxy.isTileAnalyser(tile)) {
 					return ori;

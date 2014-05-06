@@ -36,6 +36,7 @@ import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeWEST;
 import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 
@@ -198,7 +199,7 @@ public class ItemUpgrade extends LogisticsItem {
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List) {
+	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
 		for(Upgrade upgrade:upgrades) {
 			par3List.add(new ItemStack(this, 1, upgrade.getId()));
 		}
@@ -232,7 +233,7 @@ public class ItemUpgrade extends LogisticsItem {
 	}
 
 	@Override
-	public String getItemDisplayName(ItemStack itemstack) {
+	public String getItemStackDisplayName(ItemStack itemstack) {
 		return StringUtil.translate(getUnlocalizedName(itemstack));
 	}
 

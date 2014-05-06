@@ -15,6 +15,7 @@ import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.tuples.Pair;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerHandler.PowerReceiver;
+import buildcraft.api.power.PowerHandler.Type;
 
 public class PowerSupplierHandler {
 	private final static float INTERNAL_BC_BUFFER_MAX = 1000;
@@ -37,7 +38,7 @@ public class PowerSupplierHandler {
 			WorldUtil worldUtil = new WorldUtil(this.pipe.getWorld(), this.pipe.getX(), this.pipe.getY(), this.pipe.getZ());
 			LinkedList<AdjacentTile> adjacent = worldUtil.getAdjacentTileEntities(false);
 			float globalNeed = 0;
-			float[] need = new float[adjacent.size()];
+			double[] need = new double[adjacent.size()];
 			int i=0;
 			for(AdjacentTile adTile:adjacent) {
 				if(adTile.tile instanceof IPowerReceptor && this.pipe.canPipeConnect(adTile.tile, adTile.orientation)) {
@@ -56,7 +57,7 @@ public class PowerSupplierHandler {
 						PowerReceiver receptor = ((IPowerReceptor)adTile.tile).getPowerReceiver(adTile.orientation.getOpposite());
 						if(receptor != null) {
 							if(internal_BC_Buffer + 1 < need[i] * fullfillable) return;
-							float used = receptor.receiveEnergy(Type.PIPE, need[i] * fullfillable, adTile.orientation);
+							double used = receptor.receiveEnergy(Type.PIPE, need[i] * fullfillable, adTile.orientation);
 							if(used > 0) {
 								MainProxy.sendPacketToAllWatchingChunk(this.pipe.getX(), this.pipe.getZ(), MainProxy.getDimensionForWorld(this.pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(LogisticsPowerProviderTileEntity.BC_COLOR).setPos(this.pipe.getLPPosition()).setRenderBall(true).setDir(adTile.orientation).setLength(0.5F));
 								internal_BC_Buffer -= used;

@@ -15,7 +15,6 @@ import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -64,12 +63,12 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		}
 		NBTTagList inventar = null;
 
-		NBTTagList list = this.diskProvider.getDisk().getTagCompound().getTagList("macroList");
+		NBTTagList list = this.diskProvider.getDisk().getTagCompound().getTagList("macroList", 10);
 		for(int i = 0; i < list.tagCount(); i++) {
-			NBTTagCompound tag = (NBTTagCompound) list.tagAt(i);
+			NBTTagCompound tag = (NBTTagCompound) list.getCompoundTagAt(i);
 			String name = tag.getString("name");
 			if(name.equals(name1 + name2)) {
-				inventar = tag.getTagList("inventar");
+				inventar = tag.getTagList("inventar", 10);
 				break;
 			}
 		}
@@ -77,7 +76,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 			return;
 		}
 		for(int i = 0; i < inventar.tagCount(); i++) {
-			NBTTagCompound itemNBT = (NBTTagCompound) inventar.tagAt(i);
+			NBTTagCompound itemNBT = (NBTTagCompound) inventar.getCompoundTagAt(i);
 			int itemID = itemNBT.getInteger("id");
 			int itemData = itemNBT.getInteger("data");
 			NBTTagCompound tag = null;
@@ -444,17 +443,17 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 					itemNBT.setInteger("id", stack.getItem().itemID);
 					itemNBT.setInteger("data", stack.getItem().itemDamage);
 					if(stack.getItem().tag != null) {
-						itemNBT.setCompoundTag("nbt", stack.getItem().tag);
+						itemNBT.setTag("nbt", stack.getItem().tag);
 					}
 					itemNBT.setInteger("amount", stack.getStackSize());
 					inventar.appendTag(itemNBT);
 				}
 
 				boolean flag = false;
-				NBTTagList list = this.diskProvider.getDisk().getTagCompound().getTagList("macroList");
+				NBTTagList list = this.diskProvider.getDisk().getTagCompound().getTagList("macroList", 10);
 
 				for(int i = 0; i < list.tagCount(); i++) {
-					NBTTagCompound tag = (NBTTagCompound) list.tagAt(i);
+					NBTTagCompound tag = (NBTTagCompound) list.getCompoundTagAt(i);
 					String name = tag.getString("name");
 					if(name.equals(name1 + name2)) {
 						flag = true;

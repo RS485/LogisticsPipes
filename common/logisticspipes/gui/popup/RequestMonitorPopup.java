@@ -7,12 +7,12 @@ import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiSmallButton;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -97,7 +97,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 	public void initGui() {
 		super.initGui();
 		buttonList.clear();
-		this.buttonList.add(new GuiSmallButton(0, this.width / 2 - 40, this.height / 2 + 74, 80, 20, "Close"));
+		this.buttonList.add(new SmallGuiButton(0, this.width / 2 - 40, this.height / 2 + 74, 80, 20, "Close"));
 	}
 	
 	@Override

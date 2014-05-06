@@ -8,18 +8,19 @@
 
 package logisticspipes.pipes;
 
+import net.minecraft.item.Item;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
 
 public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 	
-	public PipeItemsCraftingLogisticsMk2(int itemID) {
-		super(itemID);
+	public PipeItemsCraftingLogisticsMk2(Item item) {
+		super(item);
 	}
 
-	public PipeItemsCraftingLogisticsMk2(PipeTransportLogistics transport, int itemID) {
-		super(transport, itemID);
+	public PipeItemsCraftingLogisticsMk2(PipeTransportLogistics transport, Item item) {
+		super(transport, item);
 	}
 
 	@Override

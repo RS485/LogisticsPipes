@@ -9,6 +9,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -16,8 +17,8 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 	
 	private ItemStack disk;
 	
-	public PipeItemsRequestLogisticsMk2(int itemID) {
-		super(itemID);
+	public PipeItemsRequestLogisticsMk2(Item item) {
+		super(item);
 	}
 
 	@Override
@@ -57,7 +58,7 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 		if(disk != null) {
 			NBTTagCompound itemNBT = new NBTTagCompound();
 			disk.writeToNBT(itemNBT);
-			nbttagcompound.setCompoundTag("Disk", itemNBT);
+			nbttagcompound.setTag("Disk", itemNBT);
 		}
 	}
 	
@@ -66,11 +67,8 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 		super.readFromNBT(nbttagcompound);
 		if(nbttagcompound.hasKey("Disk")) {
 			NBTTagCompound item = nbttagcompound.getCompoundTag("Disk");
-			disk = new ItemStack(LogisticsPipes.LogisticsItemDisk,1);
+			disk = new ItemStack(LogisticsPipes.LogisticsItemDisk, 1);
 			disk.readFromNBT(item);
-			if(disk.itemID == 0) {
-				disk = null;
-			}
 		}
 	}
 	

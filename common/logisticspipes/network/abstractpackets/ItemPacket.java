@@ -7,6 +7,7 @@ import logisticspipes.network.LPDataOutputStream;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 @Accessors(chain=true)
@@ -24,7 +25,7 @@ public abstract class ItemPacket extends CoordinatesPacket {
 	public void writeData(LPDataOutputStream data) throws IOException {
 		super.writeData(data);
 		if(getStack() != null) {
-			data.writeInt(getStack().itemID);
+			data.writeInt(Item.getIdFromItem(getStack().getItem()));
 			data.writeInt(getStack().stackSize);
 			data.writeInt(getStack().getItemDamage());
 			data.writeNBTTagCompound(getStack().getTagCompound());
@@ -41,7 +42,7 @@ public abstract class ItemPacket extends CoordinatesPacket {
 		if(itemID != 0) {
 			int stackSize = data.readInt();
 			int damage = data.readInt();
-			setStack(new ItemStack(itemID, stackSize, damage));
+			setStack(new ItemStack(Item.getItemById(itemID), stackSize, damage));
 			getStack().setTagCompound(data.readNBTTagCompound());
 		} else {
 			setStack(null);

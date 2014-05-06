@@ -72,7 +72,7 @@ public class DebugGuiTickHandler implements ITickHandler, Serializable, TreeExpa
 	transient private JScrollPane treeView;
 	transient private VarType clientType;
 	
-	transient private Map<Player, ServerGuiSetting> serverInfo = new HashMap<Player, ServerGuiSetting>();
+	transient private Map<EntityPlayer, ServerGuiSetting> serverInfo = new HashMap<EntityPlayer, ServerGuiSetting>();
 	
 	@Data
 	public class ServerGuiSetting implements Serializable {
@@ -164,7 +164,7 @@ public class DebugGuiTickHandler implements ITickHandler, Serializable, TreeExpa
 		public transient final MethodPart type;
 	}
 	
-	public void startWatchingOf(Object object, Player player) {
+	public void startWatchingOf(Object object, EntityPlayer player) {
 		if(object == null) {
 			return;
 		}
@@ -455,7 +455,7 @@ outer:
 		}
 	}
 
-	public void expandGuiAt(Integer[] tree, Player player) {
+	public void expandGuiAt(Integer[] tree, EntityPlayer player) {
 		ServerGuiSetting info = serverInfo.get(player);
 		if(info == null) return;
 		VarType pos = info.var;
@@ -526,7 +526,7 @@ outer:
 		}
 	}
 	
-	private VarType handleUpdate(VarType type, Player player, LinkedList<Integer> path, Object newObject, ParentVarType parent) {
+	private VarType handleUpdate(VarType type, EntityPlayer player, LinkedList<Integer> path, Object newObject, ParentVarType parent) {
 		boolean isModified = false;
 		if(type instanceof BasicVarType) {
 			BasicVarType bType = (BasicVarType) type;
@@ -626,7 +626,7 @@ outer:
 		}
 	}
 
-	public void handleVarChangePacket(Integer[] path, String content, Player player) {
+	public void handleVarChangePacket(Integer[] path, String content, EntityPlayer player) {
 		ServerGuiSetting info = serverInfo.get(player);
 		VarType pos = info.var;
 		for(int i=1;i<path.length - 1;i++) {
@@ -722,12 +722,12 @@ outer:
 					public Boolean call() throws Exception {
 						player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.GREEN + "Starting debuging of TileEntity: " + ChatColor.BLUE + ChatColor.UNDERLINE + tile.getClass().getSimpleName()));
 						DebugGuiTickHandler.this.startWatchingOf(tile, player);
-						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) player);
+						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
 						return true;
 					}
 				}, player);
 				player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.AQUA + "Start debuging of TileEntity: " + ChatColor.BLUE + ChatColor.UNDERLINE + tile.getClass().getSimpleName() + ChatColor.AQUA + "? " + ChatColor.RESET + "<" + ChatColor.GREEN + "yes" + ChatColor.RESET + "/" + ChatColor.RED + "no" + ChatColor.RESET + ">"));
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
 			}
 		} else if(mode == TargetMode.Entity) {
 			int entityId = (Integer) additions[0];
@@ -740,12 +740,12 @@ outer:
 					public Boolean call() throws Exception {
 						player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.GREEN + "Starting debuging of Entity: " + ChatColor.BLUE + ChatColor.UNDERLINE + entitiy.getClass().getSimpleName()));
 						DebugGuiTickHandler.this.startWatchingOf(entitiy, player);
-						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) player);
+						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
 						return true;
 					}
 				}, player);
 				player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.AQUA + "Start debuging of Entity: " + ChatColor.BLUE + ChatColor.UNDERLINE + entitiy.getClass().getSimpleName() + ChatColor.AQUA + "? " + ChatColor.RESET + "<" + ChatColor.GREEN + "yes" + ChatColor.RESET + "/" + ChatColor.RED + "no" + ChatColor.RESET + ">"));
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
 			}
 		}
 	}

@@ -38,6 +38,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import buildcraft.transport.TileGenericPipe;
@@ -46,8 +47,8 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 
 	private boolean _lastRequestFailed = false;
 		
-	public PipeItemsSupplierLogistics(int itemID) {
-		super(itemID);
+	public PipeItemsSupplierLogistics(Item item) {
+		super(item);
 		throttleTime = 100;
 	}
 	
@@ -111,8 +112,8 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 		//pause = true; //Pause until GUI is closed //TODO Find a way to handle this
 		if(MainProxy.isServer(entityplayer.worldObj)) {
 			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SupplierPipe_ID, getWorld(), getX(), getY(), getZ());
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setHasPatternUpgrade(getUpgradeManager().hasPatternUpgrade()).setInteger((getUpgradeManager().hasPatternUpgrade() ? getPatternMode() : getSupplyMode()).ordinal()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)entityplayer);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeLimitedPacket.class).setLimited(isLimited()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)entityplayer);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setHasPatternUpgrade(getUpgradeManager().hasPatternUpgrade()).setInteger((getUpgradeManager().hasPatternUpgrade() ? getPatternMode() : getSupplyMode()).ordinal()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), entityplayer);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeLimitedPacket.class).setLimited(isLimited()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), entityplayer);
 		}
 	}
 	

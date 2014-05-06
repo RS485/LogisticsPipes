@@ -2,9 +2,9 @@ package logisticspipes.items;
 
 import java.util.List;
 
-
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 
@@ -49,7 +49,7 @@ public class ItemParts extends LogisticsItem {
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List) {
+	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
 		par3List.add(new ItemStack(this, 1, 0));
 		par3List.add(new ItemStack(this, 1, 1));
 		par3List.add(new ItemStack(this, 1, 2));

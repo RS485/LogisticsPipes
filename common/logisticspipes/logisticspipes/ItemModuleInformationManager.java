@@ -9,7 +9,6 @@ import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
@@ -34,10 +33,10 @@ public class ItemModuleInformationManager {
 			 NBTTagList list = new NBTTagList();
 			String info1 = "Please reopen the window";
 			String info2 = "to see the information.";
-    		list.appendTag(new NBTTagString(null ,info1));
-    		list.appendTag(new NBTTagString(null ,info2));
+    		list.appendTag(new NBTTagString(info1));
+    		list.appendTag(new NBTTagString(info2));
     		if(!itemStack.hasTagCompound()) {
-            	itemStack.setTagCompound(new NBTTagCompound("tag"));
+            	itemStack.setTagCompound(new NBTTagCompound());
             }
     		NBTTagCompound stacktag = itemStack.getTagCompound();
     		stacktag.setTag("informationList", list);
@@ -45,16 +44,16 @@ public class ItemModuleInformationManager {
     		return;
 		}
         if(!itemStack.hasTagCompound()) {
-        	itemStack.setTagCompound(new NBTTagCompound("tag"));
+        	itemStack.setTagCompound(new NBTTagCompound());
         }
         NBTTagCompound stacktag = itemStack.getTagCompound();
-        stacktag.setCompoundTag("moduleInformation", nbt);
+        stacktag.setTag("moduleInformation", nbt);
         if(module instanceof IClientInformationProvider) {
         	List<String> information = ((IClientInformationProvider)module).getClientInformation();
         	if(information.size() > 0) {
         		NBTTagList list = new NBTTagList();
         		for(String info:information) {
-        			list.appendTag(new NBTTagString(null ,info));
+        			list.appendTag(new NBTTagString(info));
         		}
         		stacktag.setTag("informationList", list);
         	}
@@ -70,7 +69,6 @@ public class ItemModuleInformationManager {
 				NBTTagCompound moduleInformation = nbt.getCompoundTag("moduleInformation");
 				module.readFromNBT(moduleInformation);
 			}
-			
 		}
 	}
 	
@@ -78,13 +76,12 @@ public class ItemModuleInformationManager {
 		if(itemStack == null) return;
 		if(itemStack.hasTagCompound()) {
 			NBTTagCompound nbt = itemStack.getTagCompound();
-			Collection<?> collection = nbt.getTags();
-			nbt = new NBTTagCompound("tag");
-			for(Object obj:collection) {
-				if(obj instanceof NBTBase) {
-					if(!Filter.contains(((NBTBase)obj).getName())) {
-						nbt.setTag(((NBTBase)obj).getName(), ((NBTBase)obj));
-					}
+			@SuppressWarnings("unchecked")
+			Collection<String> collection = nbt.tagMap.keySet();
+			nbt = new NBTTagCompound();
+			for(String key:collection) {
+				if(!Filter.contains(key)) {
+					nbt.setTag(key, nbt.getTag(key));
 				}
 			}
 			itemStack.setTagCompound(nbt);

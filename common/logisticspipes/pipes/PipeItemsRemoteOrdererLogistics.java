@@ -10,12 +10,13 @@ import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public class PipeItemsRemoteOrdererLogistics extends CoreRoutedPipe implements IRequestItems {
 
-	public PipeItemsRemoteOrdererLogistics(int itemID) {
-		super(itemID);
+	public PipeItemsRemoteOrdererLogistics(Item item) {
+		super(item);
 	}
 
 	@Override

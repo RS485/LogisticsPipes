@@ -20,6 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.FinalNBTTagCompound;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockFire;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
@@ -109,6 +111,16 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	private ItemIdentifier _IDIgnoringDamage=null;
 
 	public static boolean allowNullsForTesting;
+	
+	public static ItemIdentifier get(Item itemID, int itemUndamagableDamage, NBTTagCompound tag)	{
+		int id = Item.getIdFromItem(itemID);
+		return get(id, itemUndamagableDamage, tag);
+	}
+
+	public static ItemIdentifier get(Block block, int itemUndamagableDamage, NBTTagCompound tag) {
+		int id = Block.getIdFromBlock(block);
+		return get(id, itemUndamagableDamage, tag);
+	}
 	
 	public static ItemIdentifier get(int itemID, int itemUndamagableDamage, NBTTagCompound tag)	{
 		ItemKey itemKey = new ItemKey(itemID, itemUndamagableDamage);

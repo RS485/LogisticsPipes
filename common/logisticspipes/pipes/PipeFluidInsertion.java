@@ -11,6 +11,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.tuples.Pair;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -22,8 +23,8 @@ public class PipeFluidInsertion extends FluidRoutedPipe {
 	private int[] nextSendMax = new int[ForgeDirection.VALID_DIRECTIONS.length];
 	private int[] nextSendMin = new int[ForgeDirection.VALID_DIRECTIONS.length];
 	
-	public PipeFluidInsertion(int itemID) {
-		super(itemID);
+	public PipeFluidInsertion(Item item) {
+		super(item);
 	}
 
 	@Override

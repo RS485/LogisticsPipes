@@ -1013,7 +1013,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	public void connectionUpdate() {
 		if(container != null && !stillNeedReplace) {
 			container.scheduleNeighborChange();
-			getWorld().notifyBlockChange(getX(), getY(), getZ(), getWorld().getBlockId(getX(), getY(), getZ()));
+			getWorld().notifyBlockChange(getX(), getY(), getZ(), getWorld().getBlock(getX(), getY(), getZ()));
 		}
 	}
 	

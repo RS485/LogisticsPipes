@@ -47,6 +47,7 @@ import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -229,7 +230,7 @@ public class ItemModule extends LogisticsItem {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List) {
+	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
 		for(Module module:modules) {
 			par3List.add(new ItemStack(this, 1, module.getId()));
 		}
@@ -340,13 +341,13 @@ public class ItemModule extends LogisticsItem {
 			NBTTagCompound nbt = itemStack.getTagCompound();
 			if(nbt.hasKey("informationList")) {
 				if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-					NBTTagList nbttaglist = nbt.getTagList("informationList");
+					NBTTagList nbttaglist = nbt.getTagList("informationList", 8);
 					for(int i=0;i<nbttaglist.tagCount();i++) {
-						NBTBase nbttag = nbttaglist.tagAt(i);
-						String data = ((NBTTagString)nbttag).data;
+						Object nbttag = nbttaglist.tagList.get(i);
+						String data = ((NBTTagString)nbttag).func_150285_a_();
 						if(data.equals("<inventory>") && i + 1 < nbttaglist.tagCount()) {
-							nbttag = nbttaglist.tagAt(i + 1);
-							data = ((NBTTagString)nbttag).data;
+							nbttag = nbttaglist.tagList.get(i + 1);
+							data = ((NBTTagString)nbttag).func_150285_a_();
 							if(data.startsWith("<that>")) {
 								String prefix = data.substring(6);
 								NBTTagCompound module = nbt.getCompoundTag("moduleInformation");

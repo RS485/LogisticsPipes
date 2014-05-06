@@ -1,5 +1,6 @@
 package logisticspipes.items;
 
+import buildcraft.transport.Pipe;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;

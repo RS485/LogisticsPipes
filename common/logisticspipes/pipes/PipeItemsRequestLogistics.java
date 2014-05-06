@@ -36,6 +36,7 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 @CCType(name = "LogisticsPipes:Request")
@@ -43,8 +44,8 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 	
 	private final LinkedList<Map<ItemIdentifier, Integer>> _history = new LinkedList<Map<ItemIdentifier,Integer>>(); 
 
-	public PipeItemsRequestLogistics(int itemID) {
-		super(itemID);
+	public PipeItemsRequestLogistics(Item item) {
+		super(item);
 	}
 
 	@Override
@@ -126,7 +127,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 	public SimulationResult simulateRequest(ItemStack wanted) {
 		final Map<ItemIdentifier,Integer> used = new HashMap<ItemIdentifier,Integer>();
 		final Map<ItemIdentifier,Integer> missing = new HashMap<ItemIdentifier,Integer>();
-		RequestTree.simulate(ItemIdentifier.get(wanted.itemID, wanted.getItemDamage(), wanted.getTagCompound()).makeStack(wanted.stackSize), this, new RequestLog() {
+		RequestTree.simulate(ItemIdentifier.get(wanted).makeStack(wanted.stackSize), this, new RequestLog() {
 			@Override
 			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
 				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
@@ -170,7 +171,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 	@Override
 	public List<ItemStack> performRequest(ItemStack wanted) {
 		final Map<ItemIdentifier,Integer> missing = new HashMap<ItemIdentifier,Integer>();
-		RequestTree.request(ItemIdentifier.get(wanted.itemID, wanted.getItemDamage(), wanted.getTagCompound()).makeStack(wanted.stackSize), this, new RequestLog() {
+		RequestTree.request(ItemIdentifier.get(wanted).makeStack(wanted.stackSize), this, new RequestLog() {
 			@Override
 			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
 				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {

@@ -23,12 +23,12 @@ public class GuiCardManager extends KraphtBaseGuiScreen {
 				Cinv.close(player, (int)player.posX, (int)player.posY, (int)player.posZ);
 			}
 		});
-		dummy.addRestrictedSlot(0, Cinv, 21, 21, LogisticsPipes.ModuleItem.itemID);
-		dummy.addRestrictedSlot(1, Cinv, 61, 21, LogisticsPipes.ModuleItem.itemID);
+		dummy.addRestrictedSlot(0, Cinv, 21, 21, LogisticsPipes.ModuleItem);
+		dummy.addRestrictedSlot(1, Cinv, 61, 21, LogisticsPipes.ModuleItem);
 		dummy.addRestrictedSlot(2, Cinv, 41, 58, new ISlotCheck() {
 			@Override public boolean isStackAllowed(ItemStack itemStack) {return false;}
 		});
-		dummy.addRestrictedSlot(3, Cinv, 121, 39, LogisticsPipes.LogisticsItemCard.itemID);
+		dummy.addRestrictedSlot(3, Cinv, 121, 39, LogisticsPipes.LogisticsItemCard);
 		for(int i=4;i<7;i++) {
 			dummy.addColorSlot(i, Cinv, 101, 21 + (i - 4) * 18);
 		}

@@ -7,6 +7,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -67,7 +68,7 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 	
 	@Override
 	@SuppressWarnings("rawtypes")
-	public void getSubItems(int par1, CreativeTabs ct, List list) {
+	public void getSubItems(Item par1, CreativeTabs ct, List list) {
 		//Don't add to creative in any way
 	}
 }

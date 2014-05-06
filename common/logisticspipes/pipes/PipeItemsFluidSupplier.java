@@ -34,16 +34,16 @@ import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
-import thermalexpansion.part.conduit.item.TravelingItem;
 import buildcraft.transport.IItemTravelingHook;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TravelingItem;
 
 public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport, IItemTravelingHook{
 
 	private boolean _lastRequestFailed = false;
 	
-	public PipeItemsFluidSupplier(int itemID) {
+	public PipeItemsFluidSupplier(Item item) {
 		super(new PipeTransportLogistics() {
 
 			@Override
@@ -57,7 +57,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 				}
 				return false;
 			}
-		}, itemID);
+		}, item);
 		((PipeTransportItems) transport).travelHook = this;
 
 		throttleTime = 100;

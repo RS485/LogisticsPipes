@@ -40,7 +40,7 @@ public class DebugSetVarContent extends ModernPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		try {
-			DebugGuiTickHandler.instance().handleVarChangePacket(path, content, (Player) player);
+			DebugGuiTickHandler.instance().handleVarChangePacket(path, content, player);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

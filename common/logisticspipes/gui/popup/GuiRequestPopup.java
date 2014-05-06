@@ -23,9 +23,9 @@ public class GuiRequestPopup extends SubGuiScreen {
 			if(o instanceof String) {
 				textArray.add((String)o);
 			} else if(o instanceof Collection<?>) {
-				for(Object oZwei:(Collection<?>)o) {
-					if(oZwei instanceof ItemIdentifierStack) {
-						textArray.add(((ItemIdentifierStack)oZwei).getFriendlyName());
+				for(Object oTwo:(Collection<?>)o) {
+					if(oTwo instanceof ItemIdentifierStack) {
+						textArray.add(((ItemIdentifierStack)oTwo).getFriendlyName());
 					}
 				}
 			} else {

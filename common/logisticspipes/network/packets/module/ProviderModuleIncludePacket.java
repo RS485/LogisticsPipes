@@ -31,7 +31,7 @@ public class ProviderModuleIncludePacket extends IntegerCoordinatesPacket {
 				if(dummy.getModule() instanceof ModuleProvider) {
 					final ModuleProvider module = (ModuleProvider) dummy.getModule();
 					module.setFilterExcluded(!module.isExcludeFilter());
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleInclude.class).setInteger(module.isExcludeFilter() ? 1 : 0).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleInclude.class).setInteger(module.isExcludeFilter() ? 1 : 0).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
 				}
 			}
 			return;
@@ -51,14 +51,14 @@ public class ProviderModuleIncludePacket extends IntegerCoordinatesPacket {
 			if(piperouted.getLogisticsModule() instanceof ModuleProvider) {
 				final ModuleProvider module = (ModuleProvider) piperouted.getLogisticsModule();
 				module.setFilterExcluded( !module.isExcludeFilter());
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleInclude.class).setInteger(module.isExcludeFilter() ? 1 : 0).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleInclude.class).setInteger(module.isExcludeFilter() ? 1 : 0).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
 				return;
 			}
 		} else {
 			if(piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ModuleProvider) {
 				final ModuleProvider module = (ModuleProvider) piperouted.getLogisticsModule().getSubModule(slot - 1);
 				module.setFilterExcluded( !module.isExcludeFilter());
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleInclude.class).setInteger((module.isExcludeFilter() ? 1 : 0)).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleInclude.class).setInteger((module.isExcludeFilter() ? 1 : 0)).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
 				return;
 			}
 		}

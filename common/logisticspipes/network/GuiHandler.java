@@ -363,12 +363,12 @@ public class GuiHandler implements IGuiHandler {
 					}
 				});
 				for(int i=0;i<2;i++) {
-					dummy.addRestrictedSlot(i, Cinv, 0, 0, LogisticsPipes.ModuleItem.itemID);
+					dummy.addRestrictedSlot(i, Cinv, 0, 0, LogisticsPipes.ModuleItem);
 				}
 				dummy.addRestrictedSlot(2, Cinv, 0, 0, new ISlotCheck() {
 					@Override public boolean isStackAllowed(ItemStack itemStack) {return false;}
 				});
-				dummy.addRestrictedSlot(3, Cinv, 0, 0, LogisticsPipes.LogisticsItemCard.itemID);
+				dummy.addRestrictedSlot(3, Cinv, 0, 0, LogisticsPipes.LogisticsItemCard);
 				for(int i=4;i<10;i++) {
 					dummy.addColorSlot(i, Cinv, 0, 0);
 				}
@@ -426,7 +426,7 @@ public class GuiHandler implements IGuiHandler {
 					@Override
 					public boolean isStackAllowed(ItemStack itemStack) {
 						if(itemStack == null) return false;
-						if(itemStack.itemID != LogisticsPipes.LogisticsItemCard.itemID) return false;
+						if(itemStack.getItem() != LogisticsPipes.LogisticsItemCard) return false;
 						if(itemStack.getItemDamage() != LogisticsItemCard.FREQ_CARD) return false;
 						return true;
 					}

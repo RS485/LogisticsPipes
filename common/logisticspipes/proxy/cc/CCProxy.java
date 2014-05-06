@@ -10,8 +10,8 @@ import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.recipes.CraftingDependency;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.RecipeManager.LocalCraftingManager;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import buildcraft.BuildCraftSilicon;
@@ -110,8 +110,8 @@ public class CCProxy implements ICCProxy {
 			"WCM", 
 			"rKr", 
 			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3),
-			Character.valueOf('r'), Item.redstone, 
-			Character.valueOf('T'), Block.torchRedstoneActive, 
+			Character.valueOf('r'), Items.redstone, 
+			Character.valueOf('T'), Blocks.redstone_torch, 
 			Character.valueOf('W'), new ItemStack(ComputerCraft.Blocks.peripheral, 1, 1), 
 			Character.valueOf('M'), new ItemStack(ComputerCraft.Blocks.cable, 1, 1), 
 			Character.valueOf('K'), new ItemStack(ComputerCraft.Blocks.cable, 1, 0)
@@ -122,8 +122,8 @@ public class CCProxy implements ICCProxy {
 			"WCM", 
 			"rKr", 
 			Character.valueOf('C'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ITEMSINK),
-			Character.valueOf('r'), Item.redstone, 
-			Character.valueOf('T'), Block.torchRedstoneActive, 
+			Character.valueOf('r'), Items.redstone, 
+			Character.valueOf('T'), Blocks.redstone_torch, 
 			Character.valueOf('W'), new ItemStack(ComputerCraft.Blocks.peripheral, 1, 1), 
 			Character.valueOf('M'), new ItemStack(ComputerCraft.Blocks.cable, 1, 1), 
 			Character.valueOf('K'), new ItemStack(ComputerCraft.Blocks.cable, 1, 0)
@@ -134,8 +134,8 @@ public class CCProxy implements ICCProxy {
 			"WCM", 
 			"rKr", 
 			Character.valueOf('C'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.QUICKSORT),
-			Character.valueOf('r'), Item.redstone, 
-			Character.valueOf('T'), Block.torchRedstoneActive, 
+			Character.valueOf('r'), Items.redstone, 
+			Character.valueOf('T'), Blocks.redstone_torch, 
 			Character.valueOf('W'), new ItemStack(ComputerCraft.Blocks.peripheral, 1, 1), 
 			Character.valueOf('M'), new ItemStack(ComputerCraft.Blocks.cable, 1, 1), 
 			Character.valueOf('K'), new ItemStack(ComputerCraft.Blocks.cable, 1, 0)

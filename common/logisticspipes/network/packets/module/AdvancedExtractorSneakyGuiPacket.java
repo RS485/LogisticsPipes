@@ -33,7 +33,7 @@ public class AdvancedExtractorSneakyGuiPacket extends IntegerCoordinatesPacket {
 				if(dummy.getModule() instanceof ModuleAdvancedExtractor) {
 					player.closeScreen();
 					player.openGui(LogisticsPipes.instance, GuiIDs.GUI_Module_Extractor_ID + (100 * getInteger()), player.worldObj, getPosX(), getPosY(), getPosZ());
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(-1).setInteger(((ModuleAdvancedExtractor) dummy.getModule()).getSneakyDirection().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(-1).setInteger(((ModuleAdvancedExtractor) dummy.getModule()).getSneakyDirection().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
 				}
 			}
 			return;
@@ -53,14 +53,14 @@ public class AdvancedExtractorSneakyGuiPacket extends IntegerCoordinatesPacket {
 			if(piperouted.getLogisticsModule() instanceof ModuleAdvancedExtractor) {
 				final ModuleAdvancedExtractor module = (ModuleAdvancedExtractor) piperouted.getLogisticsModule();
 				player.openGui(LogisticsPipes.instance, GuiIDs.GUI_Module_Extractor_ID + (100 * getInteger()), player.worldObj, getPosX(), getPosY(), getPosZ());
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(-1).setInteger(module.getSneakyDirection().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(-1).setInteger(module.getSneakyDirection().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
 				return;
 			}
 		} else {
 			if(piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ModuleAdvancedExtractor) {
 				final ModuleAdvancedExtractor module = (ModuleAdvancedExtractor) piperouted.getLogisticsModule().getSubModule(slot - 1);
 				player.openGui(LogisticsPipes.instance, GuiIDs.GUI_Module_Extractor_ID + (100 * getInteger()), player.worldObj, getPosX(), getPosY(), getPosZ());
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(slot - 1).setInteger(module.getSneakyDirection().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(slot - 1).setInteger(module.getSneakyDirection().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
 				return;
 			}
 		}

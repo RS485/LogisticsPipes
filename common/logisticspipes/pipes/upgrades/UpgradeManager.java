@@ -342,7 +342,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 
 	public void insetSecurityID(UUID id) {
 		ItemStack stack = new ItemStack(LogisticsPipes.LogisticsItemCard, 1, LogisticsItemCard.SEC_CARD);
-		stack.setTagCompound(new NBTTagCompound("tag"));
+		stack.setTagCompound(new NBTTagCompound());
 		stack.getTagCompound().setString("UUID", id.toString());
 		inv.setInventorySlotContents(8, stack);
 		InventoryChanged(inv);

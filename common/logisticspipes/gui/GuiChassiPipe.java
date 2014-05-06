@@ -85,9 +85,9 @@ public class GuiChassiPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerP
 			if(_moduleInventory == null) continue;
 			ItemStack module = _moduleInventory.getStackInSlot(i);
 			if(module == null || _chassiPipe.getLogisticsModule().getSubModule(i) == null) {
-				((SmallGuiButton)buttonList.get(i)).drawButton = false;
+				((SmallGuiButton)buttonList.get(i)).visible = false;
 			} else {
-				((SmallGuiButton)buttonList.get(i)).drawButton = _chassiPipe.getLogisticsModule().getSubModule(i).hasGui();
+				((SmallGuiButton)buttonList.get(i)).visible = _chassiPipe.getLogisticsModule().getSubModule(i).hasGui();
 			}
 		}
 	}
@@ -115,9 +115,9 @@ public class GuiChassiPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerP
 		for (int i = 0; i < _chassiPipe.getChassiSize(); i++) {
 			ItemStack module = _moduleInventory.getStackInSlot(i);
 			if(module == null || _chassiPipe.getLogisticsModule().getSubModule(i) == null) {
-				((SmallGuiButton)buttonList.get(i)).drawButton = false;
+				((SmallGuiButton)buttonList.get(i)).visible = false;
 			} else {
-				((SmallGuiButton)buttonList.get(i)).drawButton = _chassiPipe.getLogisticsModule().getSubModule(i).hasGui();
+				((SmallGuiButton)buttonList.get(i)).visible = _chassiPipe.getLogisticsModule().getSubModule(i).hasGui();
 			}
 		}
 		if (_chassiPipe.getChassiSize() > 0) {

@@ -9,6 +9,7 @@ import logisticspipes.utils.string.StringUtil;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 
@@ -41,7 +42,7 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 	}
 
 	@Override
-	public String getItemDisplayName(ItemStack itemstack) {
+	public String getItemStackDisplayName(ItemStack itemstack) {
 		return StringUtil.translate(getUnlocalizedName(itemstack));
 	}
 
@@ -57,7 +58,7 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List) {
+	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
 		par3List.add(new ItemStack(this,1,LogisticsSolidBlock.SOLDERING_STATION));
 		par3List.add(new ItemStack(this,1,LogisticsSolidBlock.LOGISTICS_POWER_JUNCTION));
 		par3List.add(new ItemStack(this,1,LogisticsSolidBlock.LOGISTICS_SECURITY_STATION));

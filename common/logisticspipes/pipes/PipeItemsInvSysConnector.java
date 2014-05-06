@@ -39,10 +39,12 @@ import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Quartet;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -62,8 +64,8 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	private HUDInvSysConnector HUD = new HUDInvSysConnector(this);
 	private UUID idbuffer = UUID.randomUUID();
 	
-	public PipeItemsInvSysConnector(int itemID) {
-		super(new TransportInvConnection(), itemID);
+	public PipeItemsInvSysConnector(Item item) {
+		super(new TransportInvConnection(), item);
 	}
 	
 	@Override
@@ -273,9 +275,9 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	
 	private boolean inventoryConnected() {
 		for (int i = 0; i < 6; i++)	{
-			Position p = new Position(getX(), getY(), getZ(), ForgeDirection.values()[i]);
-			p.moveForwards(1);
-			TileEntity tile = getWorld().getTileEntity((int) p.x, (int) p.y, (int) p.z);
+			LPPosition p = new LPPosition(getX(), getY(), getZ());
+			p.moveForward(ForgeDirection.values()[i]);
+			TileEntity tile = p.getTileEntity(getWorld());
 			if(tile instanceof IInventory) {
 				return true;
 			}
@@ -320,9 +322,9 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	
 	public boolean isConnectedInv(TileEntity tile) {
 		for (int i = 0; i < 6; i++)	{
-			Position p = new Position(getX(), getY(), getZ(), ForgeDirection.values()[i]);
-			p.moveForwards(1);
-			TileEntity lTile = getWorld().getTileEntity((int) p.x, (int) p.y, (int) p.z);
+			LPPosition p = new LPPosition(getX(), getY(), getZ());
+			p.moveForward(ForgeDirection.values()[i]);
+			TileEntity lTile = p.getTileEntity(getWorld());
 			if(lTile instanceof IInventory) {
 				if(lTile == tile) {
 					return true;

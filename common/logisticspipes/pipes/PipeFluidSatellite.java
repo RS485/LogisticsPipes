@@ -37,6 +37,7 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -51,8 +52,8 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
 	private final HUDSatellite HUD = new HUDSatellite(this);
 	
-	public PipeFluidSatellite(int itemID) {
-		super(itemID);
+	public PipeFluidSatellite(Item item) {
+		super(item);
 		throttleTime = 40;
 	}
 
@@ -239,7 +240,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 			MainProxy.sendPacketToServer(packet);
 		} else {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-			MainProxy.sendPacketToPlayer(packet,(Player) player);
+			MainProxy.sendPacketToPlayer(packet,player);
 		}
 		updateWatchers();
 	}
@@ -263,7 +264,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 		if (MainProxy.isServer(entityplayer.worldObj)) {
 			// Send the satellite id when opening gui
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-			MainProxy.sendPacketToPlayer(packet, (Player)entityplayer);
+			MainProxy.sendPacketToPlayer(packet, entityplayer);
 			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SatelitePipe_ID, getWorld(), getX(), getY(), getZ());
 		}
 	}

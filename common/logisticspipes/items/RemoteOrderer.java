@@ -3,7 +3,6 @@ package logisticspipes.items;
 
 import java.util.List;
 
-
 import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.GuiIDs;
@@ -25,6 +24,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
 import org.lwjgl.input.Keyboard;
+
+import buildcraft.transport.Pipe;
 
 public class RemoteOrderer extends Item {
 	final static IIcon[]	_icons	= new IIcon[17];
@@ -75,7 +76,7 @@ public class RemoteOrderer extends Item {
 				if(pipe.getWorld() != par3EntityPlayer.worldObj) energyUse += 2500;
 				energyUse += Math.sqrt(Math.pow(pipe.getX() - par3EntityPlayer.posX, 2) + Math.pow(pipe.getY() - par3EntityPlayer.posY, 2) + Math.pow(pipe.getZ() - par3EntityPlayer.posZ, 2));
 				if(pipe.useEnergy(energyUse)) {
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RequestPipeDimension.class).setInteger(MainProxy.getDimensionForWorld(pipe.getWorld())), (Player)par3EntityPlayer);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RequestPipeDimension.class).setInteger(MainProxy.getDimensionForWorld(pipe.getWorld())), par3EntityPlayer);
 					par3EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, pipe.getWorld(), pipe.getX(), pipe.getY(), pipe.getZ());
 					
 				}
@@ -121,14 +122,14 @@ public class RemoteOrderer extends Item {
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List) {
+	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
 		for(int i = 0; i < 17; i++) {
 			par3List.add(new ItemStack(par1, 1, i));
 		}
 	}
 	
 	@Override
-	public String getItemDisplayName(ItemStack itemstack) {
+	public String getItemStackDisplayName(ItemStack itemstack) {
 		return StringUtil.translate(getUnlocalizedName(itemstack));
 	}
 }

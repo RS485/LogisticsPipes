@@ -107,6 +107,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -134,13 +135,13 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	
 	public boolean waitingForCraft = false;
 	
-	public PipeItemsCraftingLogistics(int itemID) {
-		super(itemID);
+	public PipeItemsCraftingLogistics(Item item) {
+		super(item);
 		throttleTime = 40;
 	}
 	
-	public PipeItemsCraftingLogistics(PipeTransportLogistics transport, int itemID) {
-		super(transport, itemID);
+	public PipeItemsCraftingLogistics(PipeTransportLogistics transport, Item item) {
+		super(transport, item);
 		throttleTime = 40;
 	}
 
@@ -1048,7 +1049,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 							amount,
 							((CoreRoutedPipe)this.container.pipe).getUpgradeManager().hasByproductExtractor(),
 							((CoreRoutedPipe)this.container.pipe).getUpgradeManager().isFuzzyCrafter()}),
-							(Player) entityplayer);
+							entityplayer);
 			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_CRAFTINGPIPE_ID, getWorld(), getX(), getY(), getZ());
 		}
 	}

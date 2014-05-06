@@ -49,7 +49,7 @@ public class GuiThaumicAspectSink extends GuiWithPreviousGuiContainer {
 
 	@Override
 	protected void actionPerformed(GuiButton par1GuiButton) {
-		if(par1GuiButton.id == 0 && tmpInv.getStackInSlot(0) != null && SimpleServiceLocator.thaumCraftProxy.isScannedObject(tmpInv.getStackInSlot(0), mc.thePlayer.username)) {
+		if(par1GuiButton.id == 0 && tmpInv.getStackInSlot(0) != null && SimpleServiceLocator.thaumCraftProxy.isScannedObject(tmpInv.getStackInSlot(0), mc.thePlayer.getDisplayName())) {
 			_module.handleItem(tmpInv.getStackInSlot(0));
 			tmpInv.clearInventorySlotContents(0);
 		} else if(par1GuiButton.id == 1) {
@@ -64,7 +64,7 @@ public class GuiThaumicAspectSink extends GuiWithPreviousGuiContainer {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, false);
 		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 7, guiTop + 100);
 		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 78, guiTop + 7);
-		if(tmpInv.getStackInSlot(0) != null && SimpleServiceLocator.thaumCraftProxy.isScannedObject(tmpInv.getStackInSlot(0), mc.thePlayer.username)) {
+		if(tmpInv.getStackInSlot(0) != null && SimpleServiceLocator.thaumCraftProxy.isScannedObject(tmpInv.getStackInSlot(0), mc.thePlayer.getDisplayName())) {
 			((GuiButton)buttonList.get(0)).displayString = "Inject";
 		} else {
 			((GuiButton)buttonList.get(0)).displayString = "...";
@@ -97,7 +97,7 @@ public class GuiThaumicAspectSink extends GuiWithPreviousGuiContainer {
 
 		
 		if (tmpInv.getStackInSlot(0) != null) {
-			if(SimpleServiceLocator.thaumCraftProxy.isScannedObject(tmpInv.getStackInSlot(0), mc.thePlayer.username)) {
+			if(SimpleServiceLocator.thaumCraftProxy.isScannedObject(tmpInv.getStackInSlot(0), mc.thePlayer.getDisplayName())) {
 				SimpleServiceLocator.thaumCraftProxy.renderAspectsDown(tmpInv.getStackInSlot(0), guiLeft + 175, guiTop + 8, this);
 			}
 		}

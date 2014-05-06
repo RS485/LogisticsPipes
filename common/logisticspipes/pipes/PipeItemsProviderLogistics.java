@@ -64,6 +64,7 @@ import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import buildcraft.transport.TileGenericPipe;
@@ -83,12 +84,12 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager(RequestType.PROVIDER, this);
 	private boolean doContentUpdate = true;
 		
-	public PipeItemsProviderLogistics(int itemID) {
-		super(itemID);
+	public PipeItemsProviderLogistics(Item item) {
+		super(item);
 	}
 	
-	public PipeItemsProviderLogistics(int itemID, LogisticsOrderManager logisticsOrderManager) {
-		this(itemID);
+	public PipeItemsProviderLogistics(Item item, LogisticsOrderManager logisticsOrderManager) {
+		this(item);
 		_orderManager = logisticsOrderManager;
 	}
 	
@@ -446,8 +447,8 @@ outer:
 		if(MainProxy.isServer(entityplayer.worldObj)) {
 			//GuiProxy.openGuiProviderPipe(entityplayer.inventory, providingInventory, this);
 			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_ProviderPipe_ID, getWorld(), getX(), getY(), getZ());
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeMode.class).setInteger(getExtractionMode().ordinal()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)entityplayer);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeInclude.class).setInteger(isExcludeFilter() ? 1 : 0).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)entityplayer);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeMode.class).setInteger(getExtractionMode().ordinal()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), entityplayer);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeInclude.class).setInteger(isExcludeFilter() ? 1 : 0).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), entityplayer);
 		}	
 	}
 	

@@ -35,7 +35,6 @@ import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import logisticspipes.utils.gui.SearchBar;
 import logisticspipes.utils.gui.SmallGuiButton;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen.Colors;
 import logisticspipes.utils.gui.extention.GuiExtention;
 import logisticspipes.utils.gui.extention.GuiExtentionController;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -43,7 +42,6 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtil;
 import logisticspipes.utils.tuples.Pair;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -173,7 +171,7 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 			((GuiButton)buttonList.get(16)).xPosition += 90;
 			((SmallGuiButton)buttonList.get(16)).displayString = "Show";
 			for(int i=0; i< 13;i++) {
-				((GuiButton)buttonList.get(i)).drawButton = false;
+				((GuiButton)buttonList.get(i)).visible = false;
 			}
 		}
 	}
@@ -255,12 +253,12 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 						GL11.glEnable(GL11.GL_DEPTH_TEST);
 						RenderHelper.enableGUIStandardItemLighting();
 						ItemStack stack = entry.getValue().getValue1().makeNormalStack();
-						itemRenderer.renderItemAndEffectIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5);
-						itemRenderer.renderItemOverlayIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5, "");
+						itemRender.renderItemAndEffectIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5);
+						itemRender.renderItemOverlayIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5, "");
 						String s = StringUtil.getFormatedStackSize(stack.stackSize);
 						GL11.glDisable(GL11.GL_LIGHTING);
 						GL11.glDisable(GL11.GL_DEPTH_TEST);
-						itemRenderer.zLevel = 0.0F;
+						itemRender.zLevel = 0.0F;
 		
 						// Draw number
 						mc.fontRenderer.drawStringWithShadow(s, left + 22 - mc.fontRenderer.getStringWidth(s), top + 14, 16777215);
@@ -285,12 +283,12 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 								GL11.glEnable(GL11.GL_LIGHTING);
 								GL11.glEnable(GL11.GL_DEPTH_TEST);
 								RenderHelper.enableGUIStandardItemLighting();
-								itemRenderer.renderItemAndEffectIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, x, y);
-								itemRenderer.renderItemOverlayIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, x, y, "");
+								itemRender.renderItemAndEffectIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, x, y);
+								itemRender.renderItemOverlayIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, x, y, "");
 								s = StringUtil.getFormatedStackSize(stack.stackSize);
 								GL11.glDisable(GL11.GL_LIGHTING);
 								GL11.glDisable(GL11.GL_DEPTH_TEST);
-								itemRenderer.zLevel = 0.0F;
+								itemRender.zLevel = 0.0F;
 								
 								// Draw number
 								mc.fontRenderer.drawStringWithShadow(s, x + 17 - mc.fontRenderer.getStringWidth(s), y + 9, 16777215);
@@ -465,9 +463,9 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 			}
 			((SmallGuiButton)buttonList.get(16)).displayString = showRequest ? "Hide" : "Show";
 			for(int i=0; i< 13;i++) {
-				((GuiButton)buttonList.get(i)).drawButton = showRequest;
+				((GuiButton)buttonList.get(i)).visible = showRequest;
 			}
-			Macrobutton.drawButton = showRequest;
+			Macrobutton.visible = showRequest;
 			orderIdForButton = -1;
 		} else if(guibutton.id == 100) {
 			this.setSubGui(new RequestMonitorPopup(_table, orderIdForButton));

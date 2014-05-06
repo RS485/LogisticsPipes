@@ -32,6 +32,8 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
@@ -42,7 +44,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 	public final List<String> oreList = new LinkedList<String>();
 	//map of ItemID:<set of damagevalues>, empty set if wildcard damage
-	private Map<Integer, Set<Integer>> oreItemIdMap;
+	private Map<Item, Set<Integer>> oreItemIdMap;
 	private int slot = 0;
 
 	private IHUDModuleRenderer HUD = new HUDOreDictItemSink(this);
@@ -121,7 +123,7 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 	public LogisticsModule getSubModule(int slot) {return null;}
 
 	private void buildOreItemIdMap() {
-		oreItemIdMap = new TreeMap<Integer, Set<Integer>>();
+		oreItemIdMap = new TreeMap<Item, Set<Integer>>();
 		oreHudList = new ArrayList<ItemIdentifierStack>(oreList.size());
 		for(String orename : oreList) {
 			if(orename == null || orename.equals(""))
@@ -133,13 +135,13 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 					if(stackForHud == null)
 						stackForHud = stack;
 					if(stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
-						oreItemIdMap.put(stack.itemID, new TreeSet<Integer>());
+						oreItemIdMap.put(stack.getItem(), new TreeSet<Integer>());
 					} else {
-						Set<Integer> damageSet = oreItemIdMap.get(stack.itemID);
+						Set<Integer> damageSet = oreItemIdMap.get(stack.getItem());
 						if(damageSet == null) {
 							damageSet = new TreeSet<Integer>();
 							damageSet.add(stack.getItemDamage());
-							oreItemIdMap.put(stack.itemID, damageSet);
+							oreItemIdMap.put(stack.getItem(), damageSet);
 						} else if (!damageSet.isEmpty()) {
 							damageSet.add(stack.getItemDamage());
 						}
@@ -152,7 +154,7 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 					t.setItemDamage(0);
 				oreHudList.add(new ItemIdentifierStack(ItemIdentifier.get(t), 1));
 			} else {
-				oreHudList.add(new ItemIdentifierStack(ItemIdentifier.get(Block.fire.blockID, 0, null), 1));
+				oreHudList.add(new ItemIdentifierStack(ItemIdentifier.get(Blocks.fire, 0, null), 1));
 			}
 		}
 	}

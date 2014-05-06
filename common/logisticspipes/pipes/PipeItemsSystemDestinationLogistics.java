@@ -13,14 +13,15 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 
 	public ItemIdentifierInventory inv = new ItemIdentifierInventory(1, "Freq Slot", 1);
 	
-	public PipeItemsSystemDestinationLogistics(int itemID) {
-		super(itemID);
+	public PipeItemsSystemDestinationLogistics(Item item) {
+		super(item);
 	}
 
 	@Override

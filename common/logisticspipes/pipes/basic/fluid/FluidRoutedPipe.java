@@ -19,23 +19,24 @@ import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.tuples.Pair;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidHandler;
-import thermalexpansion.part.conduit.item.TravelingItem;
 import buildcraft.core.IMachine;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TravelingItem;
 
 public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 
 	private WorldUtil worldUtil;
 	
-	public FluidRoutedPipe(int itemID) {
-		super(new PipeFluidTransportLogistics(), itemID);
+	public FluidRoutedPipe(Item item) {
+		super(new PipeFluidTransportLogistics(), item);
 	}
 	
 	@Override

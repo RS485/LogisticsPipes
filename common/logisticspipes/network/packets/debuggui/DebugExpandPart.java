@@ -35,7 +35,7 @@ public class DebugExpandPart extends ModernPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		try {
-			DebugGuiTickHandler.instance().expandGuiAt(tree, (Player) player);
+			DebugGuiTickHandler.instance().expandGuiAt(tree, player);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

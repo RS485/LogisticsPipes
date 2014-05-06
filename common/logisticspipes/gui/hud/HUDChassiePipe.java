@@ -159,7 +159,7 @@ public class HUDChassiePipe extends BasicHUDGui {
 		if(!config.isHUDChassie()) return false;
 		for(int i=0;i<moduleInventory.getSizeInventory();i++) {
 			ItemStack stack = moduleInventory.getStackInSlot(i);
-			if(stack != null && stack.itemID != 0) {
+			if(stack != null) {
 				return true;
 			}
 		}

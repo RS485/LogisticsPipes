@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -99,7 +100,7 @@ public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
 	
 	private void sendItemStack(ItemStack itemstack, LPDataOutputStream data) throws IOException {
 		if (itemstack != null) {
-			data.writeInt(itemstack.itemID);
+			data.writeInt(Item.getIdFromItem(itemstack.getItem()));
 			data.writeInt(itemstack.stackSize);
 			data.writeInt(itemstack.getItemDamage());
 			data.writeNBTTagCompound(itemstack.getTagCompound());
@@ -123,7 +124,7 @@ public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
 		} else {
 			int stackSize = data.readInt();
 			int damage = data.readInt();
-			ItemStack stack = new ItemStack(itemID, stackSize, damage);
+			ItemStack stack = new ItemStack(Item.getItemById(itemID), stackSize, damage);
 			stack.setTagCompound(data.readNBTTagCompound());
 			return stack;
 		}

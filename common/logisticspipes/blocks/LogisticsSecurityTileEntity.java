@@ -92,9 +92,9 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 
 	@Override
 	public void guiOpenedByPlayer(EntityPlayer player) {
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationCC.class).setInteger(allowCC?1:0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player) player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationAutoDestroy.class).setInteger(allowAutoDestroy?1:0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player) player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationId.class).setUuid(getSecId()).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationCC.class).setInteger(allowCC?1:0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationAutoDestroy.class).setInteger(allowAutoDestroy?1:0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationId.class).setUuid(getSecId()).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), player);
 		SimpleServiceLocator.securityStationManager.sendClientAuthorizationList();
 		listener.add(player);
 	}

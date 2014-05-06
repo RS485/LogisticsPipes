@@ -15,7 +15,7 @@ public class EnderStorageProxy implements IEnderStorageProxy {
 
 	@Override
 	public void openEnderChest(World world, int x, int y, int z, EntityPlayer player) {
-		TileFrequencyOwner tile = (TileFrequencyOwner) world.getBlockTileEntity(x, y, z);
+		TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(x, y, z);
 		tile.activate(player, 0);
 	}
 }

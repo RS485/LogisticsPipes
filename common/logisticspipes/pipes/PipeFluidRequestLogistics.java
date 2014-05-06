@@ -10,11 +10,12 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.FluidIdentifier;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 
 public class PipeFluidRequestLogistics extends FluidRoutedPipe implements IRequestFluid {
 
-	public PipeFluidRequestLogistics(int itemID) {
-		super(itemID);
+	public PipeFluidRequestLogistics(Item item) {
+		super(item);
 	}
 	
 	public void openGui(EntityPlayer entityplayer) {

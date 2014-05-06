@@ -2,12 +2,13 @@ package logisticspipes.pipes;
 
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 
 public class PipeLogisticsChassiMk4 extends PipeLogisticsChassi{
 
-	public PipeLogisticsChassiMk4(int itemID) {
-		super(itemID);
+	public PipeLogisticsChassiMk4(Item item) {
+		super(item);
 	}
 
 	@Override

@@ -243,7 +243,7 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 
 	@Override
 	public void playerLoggedIn(Player player, NetHandler netHandler, INetworkManager manager) {
-		SimpleServiceLocator.serverBufferHandler.clear((Player) player);
+		SimpleServiceLocator.serverBufferHandler.clear(player);
 	}
 
 	@Override

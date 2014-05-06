@@ -32,7 +32,7 @@ public class GuiRoutingStats extends KraphtBaseGuiScreen {
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 
-		String pipeName = ItemIdentifier.get(_router.getPipe().itemID, 0, null).getFriendlyName();
+		String pipeName = ItemIdentifier.get(_router.getPipe().item, 0, null).getFriendlyName();
 		mc.fontRenderer.drawString(pipeName, (170 - mc.fontRenderer.getStringWidth(pipeName))/2, 10, 0x83601c);
 		
 		int sessionxCenter = 85;

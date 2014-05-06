@@ -25,12 +25,14 @@ import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
-import thermalexpansion.part.conduit.item.TravelingItem;
 import buildcraft.core.CoreConstants;
 import buildcraft.transport.PipeTransportItems;
+import buildcraft.transport.TransportConstants;
+import buildcraft.transport.TravelingItem;
 
 public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2 implements ISimpleInventoryEventHandler, IChestContentReceiver {
 	
@@ -39,8 +41,8 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	public List<ItemIdentifierStack> bufferList = new LinkedList<ItemIdentifierStack>();
 	private HUDCraftingMK3 HUD = new HUDCraftingMK3(this);
 	
-	public PipeItemsCraftingLogisticsMk3(int itemID) {
-		super(new CraftingPipeMk3Transport(), itemID);
+	public PipeItemsCraftingLogisticsMk3(Item item) {
+		super(new CraftingPipeMk3Transport(), item);
 		((CraftingPipeMk3Transport)transport).pipe = this;
 		inv.addListener(this);
 	}
@@ -99,7 +101,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 			sendBuffer();
 		}
 		if(change) {
-			inv.onInventoryChanged();
+			inv.markDirty();
 		}
 	}
 
@@ -107,16 +109,15 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 		for(int i=0;i<inv.getSizeInventory();i++) {
 			ItemStack stackToSend = inv.getStackInSlot(i);
 			if(stackToSend==null) continue;
-			Position p = new Position(container.xCoord, container.yCoord, container.zCoord, null);
-			Position entityPos = new Position(p.x + 0.5, p.y + CoreConstants.PIPE_MIN_POS, p.z + 0.5, ForgeDirection.UNKNOWN);
-			TravelingItem entityItem = new TravelingItem(entityPos.x, entityPos.y, entityPos.z, stackToSend);
-			entityItem.setSpeed(TransportConstants.PIPE_NORMAL_SPEED * Configs.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
-			((PipeTransportItems) transport).injectItem(entityItem, entityPos.orientation);
+			for(ForgeDirection dir:ForgeDirection.VALID_DIRECTIONS) {
+				if(container.isPipeConnected(dir)) {
+					container.injectItem(stackToSend, true, dir);
+					break;
+				}
+			}
 			inv.clearInventorySlotContents(i);
 			break;
 		}
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

@@ -79,7 +79,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer implements IDiskProvid
 	@Override
 	public void specialItemRendering(ItemIdentifier item, int x, int y) {
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-		if(SimpleServiceLocator.thaumCraftProxy.isScannedObject(item.unsafeMakeNormalStack(1), mc.thePlayer.username)) {
+		if(SimpleServiceLocator.thaumCraftProxy.isScannedObject(item.unsafeMakeNormalStack(1), mc.thePlayer.getDisplayName())) {
 			SimpleServiceLocator.thaumCraftProxy.renderAspectsDown(item.unsafeMakeNormalStack(1), -20, 10, this);
 		}
 		GL11.glPopAttrib();

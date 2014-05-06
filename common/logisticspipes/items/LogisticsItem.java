@@ -56,7 +56,7 @@ public class LogisticsItem extends Item {
 	}
 
 	@Override
-	public String getItemDisplayName(ItemStack itemstack) {
+	public String getItemStackDisplayName(ItemStack itemstack) {
 		return StringUtil.translate(getUnlocalizedName(itemstack));
 	}
 }

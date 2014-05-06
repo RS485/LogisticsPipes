@@ -66,7 +66,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 	private void writeDiskName() {
 		editname = false;
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskSetNamePacket.class).setString(name1 + name2).setPosX(diskProvider.getX()).setPosY(diskProvider.getY()).setPosZ(diskProvider.getZ()));
-		NBTTagCompound nbt = new NBTTagCompound("tag");
+		NBTTagCompound nbt = new NBTTagCompound();
 		if(diskProvider.getDisk().hasTagCompound()) {
 			nbt = diskProvider.getDisk().getTagCompound();
 		}
@@ -110,7 +110,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 		
 		NBTTagCompound nbt = diskProvider.getDisk().getTagCompound();
 		if(nbt == null) {
-			diskProvider.getDisk().setTagCompound(new NBTTagCompound("tag"));
+			diskProvider.getDisk().setTagCompound(new NBTTagCompound());
 			nbt = diskProvider.getDisk().getTagCompound();
 		}
 		
@@ -119,7 +119,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 			nbt.setTag("macroList", list);
 		}
 		
-		NBTTagList list = nbt.getTagList("macroList");
+		NBTTagList list = nbt.getTagList("macroList", 10);
 		
 		if(scroll + 12 > list.tagCount()) {
 			scroll = list.tagCount() - 12;
@@ -139,7 +139,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 				drawRect(guiLeft + 8, guiTop + 48 + ((i - scroll) * 10), right - 8, guiTop + 59 + ((i - scroll) * 10), BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey));
 				flag = true;
 			}
-			NBTTagCompound entry = (NBTTagCompound) list.tagAt(i);
+			NBTTagCompound entry = (NBTTagCompound) list.getCompoundTagAt(i);
 			String name = entry.getString("name");
 			mc.fontRenderer.drawString(name, guiLeft + 10, guiTop + 50 + ((i - scroll) * 10), 0xFFFFFF);
 		}
@@ -181,7 +181,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 	private void handleDelete() {
 		NBTTagCompound nbt = diskProvider.getDisk().getTagCompound();
 		if(nbt == null) {
-			diskProvider.getDisk().setTagCompound(new NBTTagCompound("tag"));
+			diskProvider.getDisk().setTagCompound(new NBTTagCompound());
 			nbt = diskProvider.getDisk().getTagCompound();
 		}
 
@@ -190,12 +190,12 @@ public class GuiDiskPopup extends SubGuiScreen {
 			nbt.setTag("macroList", list);
 		}
 
-		NBTTagList list = nbt.getTagList("macroList");
+		NBTTagList list = nbt.getTagList("macroList", 10);
 		NBTTagList listnew = new NBTTagList();
 
 		for(int i = 0;i < list.tagCount();i++) {
 			if(i != selected) {
-				listnew.appendTag(list.tagAt(i));
+				listnew.appendTag(list.getCompoundTagAt(i));
 			}
 		}
 		selected = -1;
@@ -208,9 +208,9 @@ public class GuiDiskPopup extends SubGuiScreen {
 		NBTTagCompound nbt = diskProvider.getDisk().getTagCompound();
 		if(nbt != null) {
 			if(nbt.hasKey("macroList")) {
-				NBTTagList list = nbt.getTagList("macroList");
+				NBTTagList list = nbt.getTagList("macroList", 10);
 				if(selected != -1 && selected < list.tagCount()) {
-					NBTTagCompound entry = (NBTTagCompound) list.tagAt(selected);
+					NBTTagCompound entry = (NBTTagCompound) list.getCompoundTagAt(selected);
 					macroname = entry.getString("name");
 				}
 			}

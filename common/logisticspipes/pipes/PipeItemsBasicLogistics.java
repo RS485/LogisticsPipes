@@ -21,6 +21,7 @@ import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -28,7 +29,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	
 	private ModuleItemSink itemSinkModule;
 
-	public PipeItemsBasicLogistics(int itemID) {
+	public PipeItemsBasicLogistics(Item item) {
 		super(new PipeTransportLogistics() {
 
 			@Override
@@ -43,7 +44,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 				}
 				return false;
 			}
-		}, itemID);
+		}, item);
 		itemSinkModule = new ModuleItemSink();
 		itemSinkModule.registerHandler(null, null, this, this);
 	}

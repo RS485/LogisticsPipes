@@ -260,7 +260,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 	}
 
 	private void sendPacketTo(EntityPlayer player) {
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(QuickSortState.class).setInteger2(lastPosSend).setInteger(_slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(QuickSortState.class).setInteger2(lastPosSend).setInteger(_slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), player);
 	}
 
 	@Override 

@@ -31,7 +31,7 @@ public class ProviderModuleNextModePacket extends IntegerCoordinatesPacket {
 				if(dummy.getModule() instanceof ModuleProvider) {
 					final ModuleProvider module = (ModuleProvider) dummy.getModule();
 					module.nextExtractionMode();
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setInteger(module.getExtractionMode().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setInteger(module.getExtractionMode().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
 				}
 			}
 			return;
@@ -51,14 +51,14 @@ public class ProviderModuleNextModePacket extends IntegerCoordinatesPacket {
 			if(piperouted.getLogisticsModule() instanceof ModuleProvider) {
 				final ModuleProvider module = (ModuleProvider) piperouted.getLogisticsModule();
 				module.nextExtractionMode();
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setInteger(module.getExtractionMode().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setInteger(module.getExtractionMode().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
 				return;
 			}
 		} else {
 			if(piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ModuleProvider) {
 				final ModuleProvider module = (ModuleProvider) piperouted.getLogisticsModule().getSubModule(slot - 1);
 				module.nextExtractionMode();
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setInteger(module.getExtractionMode().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setInteger(module.getExtractionMode().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
 				return;
 			}
 		}

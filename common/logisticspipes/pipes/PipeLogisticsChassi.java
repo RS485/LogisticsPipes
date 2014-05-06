@@ -70,11 +70,13 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
 import lombok.Getter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -101,8 +103,8 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	private HUDChassiePipe HUD;
 
-	public PipeLogisticsChassi(int itemID) {
-		super(itemID);
+	public PipeLogisticsChassi(Item item) {
+		super(item);
 		_moduleInventory = new ItemIdentifierInventory(getChassiSize(), "Chassi pipe", 1);
 		_moduleInventory.addListener(this);
 		_module = new ChassiModule(getChassiSize(), this);
@@ -161,9 +163,9 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	private boolean isValidOrientation(ForgeDirection connection){
 		if (connection == ForgeDirection.UNKNOWN) return false;
 		if (getRouter().isRoutedExit(connection)) return false;
-		Position pos = new Position(getX(), getY(), getZ(), connection);
-		pos.moveForwards(1.0);
-		TileEntity tile = getWorld().getTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
+		LPPosition pos = new LPPosition(getX(), getY(), getZ());
+		pos.moveForward(connection);
+		TileEntity tile = pos.getTileEntity(getWorld());
 
 		if (tile == null) return false;
 		if (tile instanceof TileGenericPipe) return false;

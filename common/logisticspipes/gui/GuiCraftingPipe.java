@@ -106,7 +106,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			buttonList.add(normalButtonArray[3] = new SmallGuiButton(4, (width - xSize) / 2 + 6, (height - ySize) / 2 + 50, 28, 10, StringUtil.translate(PREFIX + "Open")));
 			for(int i = 0; i < 6; i++) {
 				buttonList.add(buttonarray[i] = new SmallGuiButton(5 + i, (width - xSize) / 2 + 11 + 18 * i, (height - ySize) / 2 + 35, 10, 10, ">"));
-				buttonarray[i].drawButton = false;
+				buttonarray[i].visible = false;
 			}
 			buttonList.add(normalButtonArray[4] = new SmallGuiButton(20, (width - xSize) / 2 + 155, (height - ySize) / 2 + 85, 10, 10, ">"));
 			buttonList.add(normalButtonArray[5] = new SmallGuiButton(21, (width - xSize) / 2 + 120, (height - ySize) / 2 + 85, 10, 10, "<"));
@@ -363,7 +363,8 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 	}
 	
 	@Override
-	public boolean isPointInRegion(int x, int y, int par3, int par4, int par5, int par6) {
+	//isPointInRegion
+	public boolean func_146978_c(int x, int y, int par3, int par4, int par5, int par6) {
 		if(!isAdvancedSat && liquidCrafter != 0) {
 			if(_pipe.liquidSatelliteId == 0) {
 				if(-(liquidCrafter * 40) < x && x < 0) {
@@ -380,7 +381,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 				
 			}
 		}
-		return super.isPointInRegion(x, y, par3, par4, par5, par6);
+		return super.func_146978_c(x, y, par3, par4, par5, par6);
 	}
 	
 	@Override

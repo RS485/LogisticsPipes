@@ -1,6 +1,5 @@
 package logisticspipes.renderer;
 
-import javax.swing.Icon;
 
 import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.items.LogisticsItemCard;

@@ -1,6 +1,5 @@
 package logisticspipes.blocks;
 
-import javax.swing.Icon;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;

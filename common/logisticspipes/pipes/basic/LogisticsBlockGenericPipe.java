@@ -3,7 +3,6 @@ package logisticspipes.pipes.basic;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.Icon;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.asm.ModDependentMethodName;

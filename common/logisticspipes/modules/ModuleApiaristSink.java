@@ -2,7 +2,6 @@ package logisticspipes.modules;
 
 import java.util.List;
 
-import javax.swing.Icon;
 
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.ISendRoutedItem;

@@ -3,7 +3,6 @@ package logisticspipes.items;
 
 import java.util.List;
 
-import javax.swing.Icon;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.GuiIDs;

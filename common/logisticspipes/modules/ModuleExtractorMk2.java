@@ -1,6 +1,5 @@
 package logisticspipes.modules;
 
-import javax.swing.Icon;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

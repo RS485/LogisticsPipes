@@ -2,7 +2,6 @@ package logisticspipes.proxy.forestry;
 
 import java.lang.reflect.Method;
 
-import javax.swing.Icon;
 
 import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;

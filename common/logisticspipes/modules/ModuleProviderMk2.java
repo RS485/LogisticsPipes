@@ -1,6 +1,5 @@
 package logisticspipes.modules;
 
-import javax.swing.Icon;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import cpw.mods.fml.relauncher.Side;

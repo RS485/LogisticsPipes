@@ -2,7 +2,6 @@ package logisticspipes.modules;
 
 import java.util.Collection;
 
-import javax.swing.Icon;
 
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IInventoryUtil;

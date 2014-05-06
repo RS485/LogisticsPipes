@@ -6,7 +6,6 @@ import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.Icon;
 
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.gui.hud.modules.HUDModBasedItemSink;

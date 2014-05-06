@@ -9,7 +9,6 @@
 
 package logisticspipes.proxy.buildcraft.gates;
 
-import javax.swing.Icon;
 
 import logisticspipes.textures.Textures;
 import buildcraft.api.gates.ActionManager;

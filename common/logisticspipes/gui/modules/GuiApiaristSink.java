@@ -1,6 +1,5 @@
 package logisticspipes.gui.modules;
 
-import javax.swing.Icon;
 
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleApiaristSink.FilterType;

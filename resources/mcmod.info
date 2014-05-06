@@ -8,7 +8,7 @@
     "mcversion": "%MCVERSION%",
     "url": "http://www.minecraftforum.net/topic/1831791-",
     "updateUrl": "",
-    "authors": [ "RS485", "LP Team" ],
+    "authorList": [ "RS485", "LP Team" ],
     "credits": "Contributors: https://github.com/RS485/LogisticsPipes/contributors . Original code and idea made by Krapht. Thanks!",
     "logoFile": "",
     "screenshots": [],

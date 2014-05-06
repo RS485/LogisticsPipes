@@ -150,7 +150,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 		if(mode == 1) {
 			localModeWatchers.add(player);
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID((this).satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-			MainProxy.sendPacketToPlayer(packet, (Player)player);
+			MainProxy.sendPacketToPlayer(packet, player);
 			updateInv(true);
 		} else {
 			super.playerStartWatching(player, mode);
@@ -226,7 +226,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 			MainProxy.sendPacketToServer(packet);
 		} else {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-			MainProxy.sendPacketToPlayer(packet, (Player)player);
+			MainProxy.sendPacketToPlayer(packet, player);
 		}
 		updateWatchers();
 	}

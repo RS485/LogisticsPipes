@@ -1,7 +1,13 @@
 package logisticspipes.network;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.MessageToMessageCodec;
+import io.netty.util.AttributeKey;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,15 +16,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.Level;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.proxy.MainProxy;
 import lombok.SneakyThrows;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.INetHandler;
 
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 
-public class PacketHandler implements IPacketHandler {
+import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.common.network.FMLIndexedMessageToMessageCodec;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.internal.FMLProxyPacket;
+
+public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernPacket> {
 
 	public static List<ModernPacket> packetlist;
 
@@ -31,9 +46,13 @@ public class PacketHandler implements IPacketHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	@SneakyThrows({ IOException.class, InvocationTargetException.class, IllegalAccessException.class, InstantiationException.class })
+	@SneakyThrows({ IOException.class, InvocationTargetException.class, IllegalAccessException.class, InstantiationException.class, NoSuchFieldException.class, SecurityException.class })
 	// Suppression+sneakiness because these shouldn't ever fail, and if they do, it needs to fail.
 	public static final void intialize() {
+		Field FINBOUNDPACKETTRACKER = FMLIndexedMessageToMessageCodec.class.getDeclaredField("INBOUNDPACKETTRACKER");
+		FINBOUNDPACKETTRACKER.setAccessible(true);
+		INBOUNDPACKETTRACKER = (AttributeKey<ThreadLocal<FMLProxyPacket>>) FINBOUNDPACKETTRACKER.get(null);
+		
 		final List<ClassInfo> classes = new ArrayList<ClassInfo>(ClassPath.from(PacketHandler.class.getClassLoader()).getTopLevelClassesRecursive("logisticspipes.network.packets"));
 		Collections.sort(classes, new Comparator<ClassInfo>() {
 			@Override
@@ -55,28 +74,44 @@ public class PacketHandler implements IPacketHandler {
 			currentid++;
 		}
 	}
-
-	@SneakyThrows(IOException.class)
+	
+	protected static AttributeKey<ThreadLocal<FMLProxyPacket>>	INBOUNDPACKETTRACKER;
+	
 	@Override
-	public void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player) {
-		if (packet.data == null) {
-			new Exception("Packet content has been null").printStackTrace();
-		} else {
-			final LPDataInputStream data = new LPDataInputStream(packet.data);
-			onPacketData(data, player);
+	protected void encode(ChannelHandlerContext ctx, ModernPacket msg, List<Object> out) throws Exception {
+		ByteBuf buffer = Unpooled.buffer();
+		buffer.writeInt(msg.getId());
+		msg.writeData(new LPDataOutputStream(buffer));
+		FMLProxyPacket proxy = new FMLProxyPacket(buffer.copy(), ctx.channel().attr(NetworkRegistry.FML_CHANNEL).get());
+		FMLProxyPacket old = ctx.attr(INBOUNDPACKETTRACKER).get().get();
+		if(old != null) {
+			proxy.setDispatcher(old.getDispatcher());
 		}
+		out.add(proxy);
 	}
-
-	public static void onPacketData(final LPDataInputStream data, final Player player) throws IOException {
-		final int packetID = data.readInt();
+	
+	@Override
+	protected void decode(ChannelHandlerContext ctx, FMLProxyPacket msg, List<Object> out) throws Exception {
+		INetHandler netHandler = (INetHandler)ctx.channel().attr(NetworkRegistry.NET_HANDLER).get();
+		EntityPlayer player = MainProxy.proxy.getEntityPlayerFromNetHandler(netHandler);
+		ByteBuf payload = msg.payload();
+		int packetID = payload.readInt();
 		final ModernPacket packet = PacketHandler.packetlist.get(packetID).template();
-		packet.readData(data);
+		packet.readData(new LPDataInputStream(payload));
 		try {
-			packet.processPacket((EntityPlayer) player);
+			packet.processPacket(player);
 		} catch(Exception e) {
 			LogisticsPipes.log.severe(packet.getClass().getName());
 			LogisticsPipes.log.severe(packet.toString());
 			throw new RuntimeException(e);
 		}
+		ctx.attr(INBOUNDPACKETTRACKER).get().set(msg);
+		out.add(packet);
+	}
+	
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+		FMLLog.log(Level.ERROR, cause, "LogisticsPipes PacketHandler exception caught");
+		super.exceptionCaught(ctx, cause);
 	}
 }

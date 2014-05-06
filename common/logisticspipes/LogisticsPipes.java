@@ -240,6 +240,9 @@ public class LogisticsPipes {
 			log.info("Couldn't check the BC Version.");
 		}
 		
+		//Register Network channels
+		MainProxy.createChannels();
+		
 		RouterManager manager = new RouterManager();
 		SimpleServiceLocator.setRouterManager(manager);
 		SimpleServiceLocator.setDirectConnectionManager(manager);

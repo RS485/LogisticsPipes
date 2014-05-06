@@ -232,7 +232,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 		}
 		NBTTagCompound nbt = new NBTTagCompound();
 		setting.writeToNBT(nbt);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationOpenPlayer.class).setTag(nbt), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationOpenPlayer.class).setTag(nbt), player);
 	}
 
 	public void saveNewSecuritySettings(NBTTagCompound tag) {
@@ -286,7 +286,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 			list.appendTag(new NBTTagInt("" + i, i));
 		}
 		tag.setTag("list", list);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationCCIDs.class).setTag(tag).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationCCIDs.class).setTag(tag).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), player);
 	}
 
 	public void handleListPacket(NBTTagCompound tag) {

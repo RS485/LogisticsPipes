@@ -13,8 +13,11 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.BufferTransfer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.tuples.Pair;
@@ -24,7 +27,7 @@ public class ClientPacketBufferHandlerThread {
 
 	private class ClientCompressorThread extends Thread {
 		//list of C->S packets to be serialized and compressed
-		private final LinkedList<Packet250CustomPayload> clientList = new LinkedList<Packet250CustomPayload>();
+		private final LinkedList<ModernPacket> clientList = new LinkedList<ModernPacket>();
 		//serialized but still uncompressed C->S data
 		private byte[] clientBuffer = new byte[]{};
 		//used to cork the compressor so we can queue up a whole bunch of packets at once
@@ -49,9 +52,9 @@ public class ClientPacketBufferHandlerThread {
 							ByteArrayOutputStream out = new ByteArrayOutputStream();
 							DataOutputStream data = new DataOutputStream(out);
 							data.write(clientBuffer);
-							LinkedList<Packet250CustomPayload> packets = clientList;
+							LinkedList<ModernPacket> packets = clientList;
 							clearLock.lock();
-							for(Packet250CustomPayload packet:packets) {
+							for(ModernPacket packet:packets) {
 								data.writeInt(packet.data.length);
 								data.write(packet.data);
 							}
@@ -90,13 +93,11 @@ public class ClientPacketBufferHandlerThread {
 			}
 		}
 
-		public void addPacketToCompressor(Packet250CustomPayload packet) {
-			if(packet.channel.equals("BCLP")) {
-				synchronized(clientList) {
-					clientList.add(packet);
-					if(!pause) {
-						clientList.notify();
-					}
+		public void addPacketToCompressor(ModernPacket packet) {
+			synchronized(clientList) {
+				clientList.add(packet);
+				if(!pause) {
+					clientList.notify();
 				}
 			}
 		}
@@ -130,7 +131,7 @@ public class ClientPacketBufferHandlerThread {
 		//decompressed serialized S->C data
 		private byte[] ByteBuffer = new byte[]{};
 		//FIFO for deserialized S->C packets, decompressor adds, tickEnd removes
-		private final LinkedList<Pair<Player,byte[]>> PacketBuffer = new LinkedList<Pair<Player,byte[]>>();
+		private final LinkedList<Pair<EntityPlayer, byte[]>> PacketBuffer = new LinkedList<Pair<EntityPlayer, byte[]>>();
 		//Clear content on next tick
 		private boolean clear = false;
 
@@ -208,7 +209,7 @@ public class ClientPacketBufferHandlerThread {
 					byte[] packet = Arrays.copyOfRange(ByteBuffer, 4, size + 4);
 					ByteBuffer = Arrays.copyOfRange(ByteBuffer, size + 4, ByteBuffer.length);
 					synchronized (PacketBuffer) {
-						PacketBuffer.add(new Pair<Player,byte[]>((Player) MainProxy.proxy.getClientPlayer(),packet));
+						PacketBuffer.add(new Pair<EntityPlayer, byte[]>(MainProxy.proxy.getClientPlayer(), packet));
 					}
 				}
 				synchronized(queue) {
@@ -246,7 +247,7 @@ public class ClientPacketBufferHandlerThread {
 		clientCompressorThread.setPause(flag);
 	}
 
-	public void addPacketToCompressor(Packet250CustomPayload packet) {
+	public void addPacketToCompressor(ModernPacket packet) {
 		clientCompressorThread.addPacketToCompressor(packet);
 	}
 

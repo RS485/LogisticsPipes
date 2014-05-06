@@ -34,7 +34,7 @@ public class BufferTransfer extends ModernPacket {
 		if(MainProxy.isClient(player.worldObj)) {
 			SimpleServiceLocator.clientBufferHandler.handlePacket(content);
 		} else {
-			SimpleServiceLocator.serverBufferHandler.handlePacket(content, (Player)player);
+			SimpleServiceLocator.serverBufferHandler.handlePacket(content, player);
 		}
 	}
 

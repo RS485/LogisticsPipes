@@ -23,11 +23,14 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
+import net.minecraft.network.INetHandler;
+import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.config.Configuration;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.server.FMLServerHandler;
@@ -82,19 +85,19 @@ public class ServerProxy implements IProxy {
 	private String tryGetName(ItemIdentifier item) {
 		String name = "???";
 		try {
-			name = Item.itemsList[item.itemID].getItemDisplayName(item.unsafeMakeNormalStack(1));
+			name = item.getItem().getItemStackDisplayName(item.unsafeMakeNormalStack(1));
 			if(name == null) {
 				throw new Exception();
 			}
 		} catch(Exception e) {
 			try {
-				name = Item.itemsList[item.itemID].getUnlocalizedName(item.unsafeMakeNormalStack(1));
+				name = item.getItem().getUnlocalizedName(item.unsafeMakeNormalStack(1));
 				if(name == null) {
 					throw new Exception();
 				}
 			} catch(Exception e1) {
 				try {
-					name = Item.itemsList[item.itemID].getUnlocalizedName();
+					name = item.getItem().getUnlocalizedName();
 					if(name == null) {
 						throw new Exception();
 					}
@@ -183,7 +186,7 @@ public class ServerProxy implements IProxy {
 	}
 
 	@Override
-	public void sendNameUpdateRequest(Player player) {
+	public void sendNameUpdateRequest(EntityPlayer player) {
 		for(String category:langDatabase.getCategoryNames()) {
 			if(!category.startsWith("itemNames.")) continue;
 			String name = langDatabase.get(category, "name", "").getString();
@@ -197,8 +200,7 @@ public class ServerProxy implements IProxy {
 				}
 				int id = Integer.valueOf(itemPart);
 				int meta = Integer.valueOf(metaPart);
-				//SimpleServiceLocator.serverBufferHandler.addPacketToCompressor((Packet250CustomPayload) new PacketNameUpdatePacket(ItemIdentifier.get(id, meta, null), "-").getPacket(), player);
-				SimpleServiceLocator.serverBufferHandler.addPacketToCompressor(PacketHandler.getPacket(UpdateName.class).setIdent(ItemIdentifier.get(id, meta, null)).setName("-").getPacket(), player);
+				SimpleServiceLocator.serverBufferHandler.addPacketToCompressor(PacketHandler.getPacket(UpdateName.class).setIdent(ItemIdentifier.get(id, meta, null)).setName("-"), player);
 			}
 		}
 	}
@@ -256,8 +258,8 @@ public class ServerProxy implements IProxy {
 	@SuppressWarnings("rawtypes")
 	public void sendBroadCast(String message) {
 		MinecraftServer server = FMLServerHandler.instance().getServer();
-		if(server != null && MinecraftServer.getServerConfigurationManager(server) != null) {
-			List list = MinecraftServer.getServerConfigurationManager(server).playerEntityList;
+		if(server != null && server.getConfigurationManager() != null) {
+			List list = server.getConfigurationManager().playerEntityList;
 			if(list != null && !list.isEmpty()) {
 				for(Object obj:list) {
 					if(obj instanceof EntityPlayerMP) {
@@ -266,5 +268,11 @@ public class ServerProxy implements IProxy {
 				}
 			}
 		}
+	}
+	
+	@Override
+	public EntityPlayer getEntityPlayerFromNetHandler(INetHandler handler) {
+		if(handler instanceof NetHandlerPlayServer) return ((NetHandlerPlayServer)handler).playerEntity;
+		return null;
 	}
 }

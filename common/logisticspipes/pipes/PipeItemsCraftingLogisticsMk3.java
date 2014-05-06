@@ -151,7 +151,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		super.playerStartWatching(player, mode);
 		if(mode == 1) {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ChestContent.class).setIdentList(ItemIdentifierStack.getListFromInventory(inv, true)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ChestContent.class).setIdentList(ItemIdentifierStack.getListFromInventory(inv, true)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), player);
 		}
 	}
 

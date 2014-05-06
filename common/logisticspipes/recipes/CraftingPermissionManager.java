@@ -109,6 +109,6 @@ public class CraftingPermissionManager {
 	
 	public void sendCraftingPermissionsToPlayer(EntityPlayer player) {
 		EnumSet<CraftingDependency> set = getEnumSet(player.getEntityName());
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingPermissionPacket.class).setEnumSet(set), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingPermissionPacket.class).setEnumSet(set), player);
 	}
 }

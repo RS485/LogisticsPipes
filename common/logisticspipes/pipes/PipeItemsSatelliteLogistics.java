@@ -143,7 +143,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 			localModeWatchers.add(player);
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 //TODO Must be handled manualy
-			MainProxy.sendPacketToPlayer(packet, (Player)player);
+			MainProxy.sendPacketToPlayer(packet, player);
 			updateInv(true);
 		} else {
 			super.playerStartWatching(player, mode);
@@ -230,7 +230,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		} else {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 //TODO Must be handled manualy
-			MainProxy.sendPacketToPlayer(packet, (Player)player);
+			MainProxy.sendPacketToPlayer(packet, player);
 		}
 		updateWatchers();
 	}

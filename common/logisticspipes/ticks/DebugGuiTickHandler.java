@@ -721,7 +721,7 @@ outer:
 					@Override
 					public Boolean call() throws Exception {
 						player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.GREEN + "Starting debuging of TileEntity: " + ChatColor.BLUE + ChatColor.UNDERLINE + tile.getClass().getSimpleName()));
-						DebugGuiTickHandler.this.startWatchingOf(tile, (Player)player);
+						DebugGuiTickHandler.this.startWatchingOf(tile, player);
 						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) player);
 						return true;
 					}
@@ -739,7 +739,7 @@ outer:
 					@Override
 					public Boolean call() throws Exception {
 						player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.GREEN + "Starting debuging of Entity: " + ChatColor.BLUE + ChatColor.UNDERLINE + entitiy.getClass().getSimpleName()));
-						DebugGuiTickHandler.this.startWatchingOf(entitiy, (Player)player);
+						DebugGuiTickHandler.this.startWatchingOf(entitiy, player);
 						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) player);
 						return true;
 					}

@@ -39,7 +39,7 @@ public class SupplierPipeLimitedPacket extends CoordinatesPacket {
 		if(MainProxy.isClient(player.worldObj)) {
 			refresh();
 		} else {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeLimitedPacket.class).setLimited(isLimited()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeLimitedPacket.class).setLimited(isLimited()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
 		}
 	}
 	

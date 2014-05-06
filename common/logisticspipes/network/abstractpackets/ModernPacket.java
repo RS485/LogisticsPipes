@@ -2,7 +2,6 @@ package logisticspipes.network.abstractpackets;
 
 import java.io.IOException;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import lombok.Getter;
@@ -20,10 +19,10 @@ public abstract class ModernPacket {
 	@Getter
 	@Setter
 	private boolean compressable;
-	
+	/*
 	@Getter
 	protected String channel;
-	
+	*/
 	@Getter
 	private final int id;
 
@@ -31,10 +30,10 @@ public abstract class ModernPacket {
 	private byte[] data = null;
 
 	public ModernPacket(int id) {
-		this.channel = LogisticsPipes.LOGISTICS_PIPES_CHANNEL_NAME;
+		//this.channel = LogisticsPipes.LOGISTICS_PIPES_CHANNEL_NAME;
 		this.id = id;
 	}
-
+/*
 	public Packet250CustomPayload getPacket() {
 		if(data == null) throw new RuntimeException("The packet needs to be created() first;");
 		Packet250CustomPayload packet = new Packet250CustomPayload();
@@ -44,7 +43,7 @@ public abstract class ModernPacket {
 		packet.isChunkDataPacket = isChunkDataPacket();
 		return packet;
 	}
-	
+
 	public void create() {
 		if(data != null) return; //PacketBuffer already created
 		LPDataOutputStream dataStream = new LPDataOutputStream();
@@ -56,6 +55,7 @@ public abstract class ModernPacket {
 		}
 		data = dataStream.toByteArray();
 	}
+*/
 	
 	public abstract void readData(LPDataInputStream data) throws IOException;
 	public abstract void processPacket(EntityPlayer player);

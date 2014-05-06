@@ -318,7 +318,7 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager, 
 	
 	@Override
 	public void sendClientAuthorizationList(EntityPlayer player) {
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationAuthorizedList.class).setStringList(this._authorized), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationAuthorizedList.class).setStringList(this._authorized), player);
 	}
 
 	@Override

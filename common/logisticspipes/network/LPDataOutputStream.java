@@ -1,5 +1,8 @@
 package logisticspipes.network;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufOutputStream;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -26,6 +29,11 @@ public class LPDataOutputStream extends DataOutputStream {
 	public LPDataOutputStream() {
 		super(new ByteArrayOutputStream());
 		byteStream = (ByteArrayOutputStream) out;
+	}
+	
+	public LPDataOutputStream(ByteBuf outBytes) throws IOException {
+		super(new ByteBufOutputStream(outBytes));
+		byteStream = null;
 	}
 	
 	public void writeForgeDirection(ForgeDirection dir) throws IOException {

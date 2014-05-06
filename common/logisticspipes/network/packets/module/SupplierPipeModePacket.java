@@ -44,7 +44,7 @@ public class SupplierPipeModePacket extends CoordinatesPacket {
 				mode=0;
 			logic.setSupplyMode(SupplyMode.values()[mode]);
 		}
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setHasPatternUpgrade(logic.getUpgradeManager().hasPatternUpgrade()).setInteger(mode).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setHasPatternUpgrade(logic.getUpgradeManager().hasPatternUpgrade()).setInteger(mode).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
 	}
 }
 

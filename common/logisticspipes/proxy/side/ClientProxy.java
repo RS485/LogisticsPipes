@@ -29,7 +29,10 @@ import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.network.INetHandler;
+import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
@@ -97,19 +100,19 @@ public class ClientProxy implements IProxy {
 	public String getName(ItemIdentifier item) {
 		String name = "???";
 		try {
-			name = Item.itemsList[item.itemID].getItemDisplayName(item.unsafeMakeNormalStack(1));
+			name = item.getItem().getItemStackDisplayName(item.unsafeMakeNormalStack(1));
 			if(name == null) {
 				throw new Exception();
 			}
 		} catch(Exception e) {
 			try {
-				name = Item.itemsList[item.itemID].getUnlocalizedName(item.unsafeMakeNormalStack(1));
+				name = item.getItem().getUnlocalizedName(item.unsafeMakeNormalStack(1));
 				if(name == null) {
 					throw new Exception();
 				}
 			} catch(Exception e1) {
 				try {
-					name = Item.itemsList[item.itemID].getUnlocalizedName();
+					name = item.getItem().getUnlocalizedName();
 					if(name == null) {
 						throw new Exception();
 					}
@@ -131,7 +134,7 @@ public class ClientProxy implements IProxy {
 		//Not Client Side
 	}
 	@Override
-	public void sendNameUpdateRequest(Player player) {
+	public void sendNameUpdateRequest(EntityPlayer player) {
 		//Not Client Side
 	}
 
@@ -194,5 +197,13 @@ public class ClientProxy implements IProxy {
 		if(Minecraft.getMinecraft().thePlayer != null) {
 			Minecraft.getMinecraft().thePlayer.sendChatToPlayer(ChatMessageComponent.createFromText("Client: " + message));
 		}
+	}
+
+	@Override
+	public EntityPlayer getEntityPlayerFromNetHandler(INetHandler handler) {
+        if(handler instanceof NetHandlerPlayServer)
+            return ((NetHandlerPlayServer)handler).playerEntity;
+        else
+            return Minecraft.getMinecraft().thePlayer;
 	}
 }

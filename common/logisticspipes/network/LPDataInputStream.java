@@ -1,6 +1,8 @@
 package logisticspipes.network;
 
-import java.io.ByteArrayInputStream;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
+
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,9 +29,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class LPDataInputStream extends DataInputStream {
-	
-	public LPDataInputStream(byte[] inputBytes) throws IOException {
-		super(new ByteArrayInputStream(inputBytes));
+
+	public LPDataInputStream(ByteBuf inputBytes) throws IOException {
+		super(new ByteBufInputStream(inputBytes));
 	}
 	
 	public ForgeDirection readForgeDirection() throws IOException {

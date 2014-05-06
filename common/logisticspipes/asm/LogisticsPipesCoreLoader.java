@@ -6,16 +6,15 @@ import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 
 public class LogisticsPipesCoreLoader implements IFMLLoadingPlugin {
 	@Override
-	public String[] getLibraryRequestClass() {
-		return null;
-	}
-	
-	@Override
 	public String[] getASMTransformerClass() {
 		return new String[]{
-				"logisticspipes.asm.LogisticsClassTransformer",
-				"logisticspipes.asm.LogisticsAccessTransformer"
+				"logisticspipes.asm.LogisticsClassTransformer"
 				};
+	}
+
+	@Override
+	public String getAccessTransformerClass() {
+		return "logisticspipes.asm.LogisticsAccessTransformer";
 	}
 	
 	@Override

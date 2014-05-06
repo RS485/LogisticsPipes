@@ -5,7 +5,6 @@ import java.util.logging.Level;
 import logisticspipes.logisticspipes.IRoutedItem;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
-import thermalexpansion.part.conduit.item.TravelingItem;
 import buildcraft.BuildCraftTransport;
 import buildcraft.core.DefaultProps;
 import buildcraft.core.utils.BCLog;
@@ -13,6 +12,8 @@ import buildcraft.core.utils.BlockUtil;
 import buildcraft.core.utils.MathUtils;
 import buildcraft.transport.IPipeTransportItemsHook;
 import buildcraft.transport.PipeTransportItems;
+import buildcraft.transport.TravelingItem;
+import buildcraft.transport.network.PacketPipeTransportTraveler;
 import buildcraft.transport.pipes.events.PipeEventItem;
 import buildcraft.transport.utils.TransportUtils;
 
@@ -43,10 +44,10 @@ public class InjectItemHook {
 		if (event.cancelled)
 			return;
 
-		pipe.items.scheduleAdd(item);
+		pipe.items.add(item);
 
 		if (!pipe.container.getWorldObj().isRemote) {
-			sendItemPacket(pipe, item);
+			sendTravelerPacket(pipe, item, false);
 
 			int stackCount = 0;
 			int numItems = 0;
@@ -94,9 +95,9 @@ public class InjectItemHook {
 		pipe.container.getWorldObj().setBlockToAir(pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord);
 	}
 
-	private static void sendItemPacket(PipeTransportItems pipe, TravelingItem data) {
-		int dimension = pipe.container.getWorldObj().provider.dimensionId;
-		PacketDispatcher.sendPacketToAllAround(pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord, DefaultProps.PIPE_CONTENTS_RENDER_DIST, dimension, pipe.createItemPacket(data));
+	private void sendTravelerPacket(PipeTransportItems pipe, TravelingItem data, boolean forceStackRefresh) {
+		PacketPipeTransportTraveler packet = new PacketPipeTransportTraveler(data, forceStackRefresh);
+		BuildCraftTransport.instance.sendToPlayers(packet, pipe.container.getWorldObj(), pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord, DefaultProps.PIPE_CONTENTS_RENDER_DIST);
 	}
 
 	private static void readjustPosition(PipeTransportItems pipe, TravelingItem item) {

@@ -1,6 +1,5 @@
 package logisticspipes.commands.commands;
 
-import ibxm.Player;
 import logisticspipes.commands.LogisticsPipesCommand;
 import logisticspipes.commands.abstracts.ICommandHandler;
 import logisticspipes.network.PacketHandler;

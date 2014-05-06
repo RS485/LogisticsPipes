@@ -1,6 +1,5 @@
 package logisticspipes.proxy.interfaces;
 
-import ibxm.Player;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.client.renderer.texture.IIconRegister;

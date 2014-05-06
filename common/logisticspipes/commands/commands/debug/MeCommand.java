@@ -1,6 +1,5 @@
 package logisticspipes.commands.commands.debug;
 
-import ibxm.Player;
 import logisticspipes.commands.abstracts.ICommandHandler;
 import logisticspipes.ticks.DebugGuiTickHandler;
 import net.minecraft.command.ICommandSender;

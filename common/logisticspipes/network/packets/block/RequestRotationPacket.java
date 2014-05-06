@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.block;
 
-import ibxm.Player;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;

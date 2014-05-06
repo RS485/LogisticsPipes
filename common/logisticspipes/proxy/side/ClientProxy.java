@@ -1,6 +1,5 @@
 package logisticspipes.proxy.side;
 
-import ibxm.Player;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;

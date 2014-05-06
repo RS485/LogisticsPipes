@@ -1,6 +1,5 @@
 package logisticspipes.commands.chathelper;
 
-import ibxm.Player;
 
 import java.util.ArrayList;
 

@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.module;
 
-import ibxm.Player;
 import logisticspipes.interfaces.ISneakyDirectionReceiver;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;

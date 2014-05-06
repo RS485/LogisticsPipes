@@ -1,6 +1,5 @@
 package logisticspipes.network;
 
-import ibxm.Player;
 
 import java.util.HashMap;
 import java.util.Map;

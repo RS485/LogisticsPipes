@@ -1,6 +1,5 @@
 package logisticspipes.network;
 
-import ibxm.Player;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;

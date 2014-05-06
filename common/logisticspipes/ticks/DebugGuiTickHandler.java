@@ -1,6 +1,5 @@
 package logisticspipes.ticks;
 
-import ibxm.Player;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;

@@ -1,6 +1,5 @@
 package logisticspipes.request;
 
-import ibxm.Player;
 
 import java.util.ArrayList;
 import java.util.Collection;

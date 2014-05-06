@@ -1,6 +1,5 @@
 package logisticspipes.recipes;
 
-import ibxm.Player;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

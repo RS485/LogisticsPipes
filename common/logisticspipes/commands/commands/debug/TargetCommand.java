@@ -1,6 +1,5 @@
 package logisticspipes.commands.commands.debug;
 
-import ibxm.Player;
 import logisticspipes.commands.abstracts.ICommandHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.debuggui.DebugAskForTarget;

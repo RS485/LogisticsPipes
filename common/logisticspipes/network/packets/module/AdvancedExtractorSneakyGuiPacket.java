@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.module;
 
-import ibxm.Player;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.network.GuiIDs;

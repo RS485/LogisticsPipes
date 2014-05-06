@@ -8,7 +8,6 @@
 
 package logisticspipes.pipes;
 
-import ibxm.Player;
 
 import java.util.ArrayList;
 import java.util.Collection;

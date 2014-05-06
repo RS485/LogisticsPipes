@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.pipe;
 
-import ibxm.Player;
 
 import java.util.ArrayList;
 import java.util.EnumSet;

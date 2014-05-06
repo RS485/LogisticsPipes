@@ -1,6 +1,5 @@
 package logisticspipes.pipes;
 
-import ibxm.Player;
 
 import java.util.BitSet;
 

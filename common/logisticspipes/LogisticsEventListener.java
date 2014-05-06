@@ -1,7 +1,6 @@
 package logisticspipes;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import ibxm.Player;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;

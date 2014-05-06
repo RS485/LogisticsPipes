@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.chassis;
 
-import ibxm.Player;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;

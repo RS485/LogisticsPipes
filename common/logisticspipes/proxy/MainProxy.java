@@ -1,6 +1,5 @@
 package logisticspipes.proxy;
 
-import ibxm.Player;
 
 import java.io.File;
 import java.util.WeakHashMap;

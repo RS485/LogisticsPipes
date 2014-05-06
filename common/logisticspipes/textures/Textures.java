@@ -161,7 +161,7 @@ public class Textures {
 	public static LPPipeIconProvider	LPpipeIconProvider;
 
 	//this gets called with null par1IIconRegister from preinit, and later with non-null from textureprestitch
-	public void registerBlockIcons(IIconRegister par1IconRegister) {
+	public void registerBlockIcons(IIconRegister par1IIconRegister) {
 		//Register Empty Texture for slot 0
 		MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, 0, "empty", "", true);
 		MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, 1, "empty", "", true);
@@ -233,11 +233,11 @@ public class Textures {
 		}
 	}
 	
-	public void registerItemIcons(IIconRegister par1IconRegister) {
+	public void registerItemIcons(IIconRegister par1IIconRegister) {
 		LPactionIconProvider.registerIcons(par1IIconRegister);
 	}
 	
-	private TextureType registerTexture(IIconRegister par1IconRegister, String fileName) {
+	private TextureType registerTexture(IIconRegister par1IIconRegister, String fileName) {
 		return registerTexture(par1IIconRegister, fileName, 1);
 	}
 	/**
@@ -246,7 +246,7 @@ public class Textures {
 	 * @param flag - 2 - register single texture without overlay, 1/0 register with overlay
 	 */
 	
-	private TextureType registerTexture(IIconRegister par1IconRegister, String fileName, int flag) {
+	private TextureType registerTexture(IIconRegister par1IIconRegister, String fileName, int flag) {
 		TextureType texture = new TextureType();
 			texture.normal = index++;
 			texture.powered=texture.normal;
@@ -267,7 +267,7 @@ public class Textures {
 		return texture;
 	}
 	
-	private int registerSingleTexture(IIconRegister par1IconRegister, String fileName) {
+	private int registerSingleTexture(IIconRegister par1IIconRegister, String fileName) {
 		int texture = index++;
 		if(FMLCommonHandler.instance().getEffectiveSide().isClient()) {
 			MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, texture, fileName, LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE,true);

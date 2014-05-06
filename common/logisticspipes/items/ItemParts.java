@@ -10,8 +10,7 @@ import net.minecraft.util.IIcon;
 
 public class ItemParts extends LogisticsItem {
 	private IIcon[] _icons;
-	public ItemParts(int par1) {
-		super(par1);
+	public ItemParts() {
 		this.setHasSubtypes(true);
 	}
 	@Override

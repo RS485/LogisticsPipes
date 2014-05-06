@@ -4,6 +4,7 @@ package logisticspipes.items;
 import java.util.List;
 
 
+import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
@@ -51,7 +52,7 @@ public class RemoteOrderer extends Item {
 	public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean flag) {
 		// Add special tooltip in tribute to DireWolf
 		if(itemstack != null && itemstack.getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
-			if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+			if((Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) && Configs.EASTER_EGGS) {
 				list.add("a.k.a \"Requesting Tool\" - DW20");
 			}
 		}

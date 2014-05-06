@@ -37,8 +37,8 @@ public class LogisticsSolidBlock extends BlockContainer {
 	
 	private static final IIcon[] icons = new IIcon[16];
 	
-	public LogisticsSolidBlock(int par1) {
-		super(par1, Material.iron);
+	public LogisticsSolidBlock() {
+		super(Material.iron);
 		this.setCreativeTab(CreativeTabs.tabBlock);
 		this.setHardness(6.0F);
 	}

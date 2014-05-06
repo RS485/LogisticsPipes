@@ -130,8 +130,7 @@ public class ItemUpgrade extends LogisticsItem {
 		}
 	}
 	
-	public ItemUpgrade(int i) {
-		super(i);
+	public ItemUpgrade() {
 		this.hasSubtypes = true;
 	}
 	

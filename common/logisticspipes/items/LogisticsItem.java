@@ -23,8 +23,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.util.IIcon;
 
 public class LogisticsItem extends Item {
-	
-	public LogisticsItem(int i, IIcon icon) {
+
+    public LogisticsItem(){}
+
+	public LogisticsItem(IIcon icon) {
 		this.itemIcon = icon;
 	}
 

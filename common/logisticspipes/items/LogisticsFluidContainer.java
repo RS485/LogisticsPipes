@@ -17,10 +17,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvancedExistance {
 	static int capacity = 8000;
-	
-	public LogisticsFluidContainer(int i) {
-		super(i);
-	}
 
 	@Override
 	public boolean canExistInNormalInventory(ItemStack stack) {

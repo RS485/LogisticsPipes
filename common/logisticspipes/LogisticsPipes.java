@@ -81,6 +81,7 @@ import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.InventoryUtilFactory;
 import net.minecraft.block.Block;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.LaunchClassLoader;
@@ -322,7 +323,7 @@ public class LogisticsPipes {
 			int day = calendar.get(Calendar.DAY_OF_MONTH);
 			int month = calendar.get(Calendar.MONTH);
 			if (month == Calendar.OCTOBER && day == 1) { //GUIpsp's birthday.
-				Item.slimeBall.setTextureName("logisticspipes:eastereggs/guipsp");
+				Items.slime_ball.setTextureName("logisticspipes:eastereggs/guipsp");
 			}
 		}
 	}
@@ -345,19 +346,19 @@ public class LogisticsPipes {
 			renderer = new FluidContainerRenderer();
 		}
 		
-		LogisticsNetworkMonitior = new LogisticsNetworkManager(Configs.LOGISTICSNETWORKMONITOR_ID);
+		LogisticsNetworkMonitior = new LogisticsNetworkManager();
 		LogisticsNetworkMonitior.setUnlocalizedName("networkMonitorItem");
 		
-		LogisticsItemCard = new LogisticsItemCard(Configs.ITEM_CARD_ID);
+		LogisticsItemCard = new LogisticsItemCard();
 		LogisticsItemCard.setUnlocalizedName("logisticsItemCard");
 		if(isClient) {
-			MinecraftForgeClient.registerItemRenderer(LogisticsItemCard.itemID, (FluidContainerRenderer)renderer);
+			MinecraftForgeClient.registerItemRenderer(LogisticsItemCard, (FluidContainerRenderer)renderer);
 		}
 		
-		LogisticsRemoteOrderer = new RemoteOrderer(Configs.LOGISTICSREMOTEORDERER_ID);
+		LogisticsRemoteOrderer = new RemoteOrderer();
 		LogisticsRemoteOrderer.setUnlocalizedName("remoteOrdererItem");
 
-		LogisticsCraftingSignCreator = new CraftingSignCreator(Configs.LOGISTICSCRAFTINGSIGNCREATOR_ID);
+		LogisticsCraftingSignCreator = new CraftingSignCreator();
 		LogisticsCraftingSignCreator.setUnlocalizedName("CraftingSignCreator");
 		
 		int renderIndex;
@@ -366,40 +367,40 @@ public class LogisticsPipes {
 		} else {
 			renderIndex = 0;
 		}
-		LogisticsHUDArmor = new ItemHUDArmor(Configs.ITEM_HUD_ID, renderIndex);
+		LogisticsHUDArmor = new ItemHUDArmor(renderIndex);
 		LogisticsHUDArmor.setUnlocalizedName("logisticsHUDGlasses");
 		
-		LogisticsParts = new ItemParts(Configs.ITEM_PARTS_ID);
+		LogisticsParts = new ItemParts();
 		LogisticsParts.setUnlocalizedName("logisticsParts");
 		
 		SimpleServiceLocator.buildCraftProxy.registerTrigger();
 		
-		ModuleItem = new ItemModule(Configs.ITEM_MODULE_ID);
+		ModuleItem = new ItemModule();
 		ModuleItem.setUnlocalizedName("itemModule");
 		ModuleItem.loadModules();
 		
-		LogisticsItemDisk = new ItemDisk(Configs.ITEM_DISK_ID);
+		LogisticsItemDisk = new ItemDisk();
 		LogisticsItemDisk.setUnlocalizedName("itemDisk");
 
-		UpgradeItem = new ItemUpgrade(Configs.ITEM_UPGRADE_ID);
+		UpgradeItem = new ItemUpgrade();
 		UpgradeItem.setUnlocalizedName("itemUpgrade");
 		UpgradeItem.loadUpgrades();
 		
 		//TODO make it visible in creative search
-		LogisticsUpgradeManager = new LogisticsItem(Configs.ITEM_UPGRADE_MANAGER_ID);
+		LogisticsUpgradeManager = new LogisticsItem();
 		LogisticsUpgradeManager.setUnlocalizedName("upgradeManagerItem");
 		
-		LogisticsFluidContainer = new LogisticsFluidContainer(Configs.ITEM_LIQUID_CONTAINER_ID);
+		LogisticsFluidContainer = new LogisticsFluidContainer();
 		LogisticsFluidContainer.setUnlocalizedName("logisticsFluidContainer");
 		if(isClient) {
-			MinecraftForgeClient.registerItemRenderer(LogisticsFluidContainer.itemID, (FluidContainerRenderer)renderer);
+			MinecraftForgeClient.registerItemRenderer(LogisticsFluidContainer, (FluidContainerRenderer)renderer);
 		}
 		
-		LogisticsBrokenItem = new LogisticsBrokenItem(Configs.ITEM_BROKEN_ID);
+		LogisticsBrokenItem = new LogisticsBrokenItem();
 		LogisticsBrokenItem.setUnlocalizedName("brokenItem");
 
 		//Blocks
-		LogisticsSolidBlock = new LogisticsSolidBlock(Configs.LOGISTICS_SOLID_BLOCK_ID);
+		LogisticsSolidBlock = new LogisticsSolidBlock();
 		GameRegistry.registerBlock(LogisticsSolidBlock, LogisticsSolidBlockItem.class, null);
 		LogisticsSolidBlock.setUnlocalizedName("logisticsSolidBlock");
 		

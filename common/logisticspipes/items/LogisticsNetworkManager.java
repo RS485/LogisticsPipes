@@ -9,10 +9,6 @@ import net.minecraft.world.World;
 
 public class LogisticsNetworkManager extends LogisticsItem {
 
-	public LogisticsNetworkManager(int i) {
-		super(i);
-	}
-
 	@Override
 	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer) {
 		if(par3EntityPlayer.isSneaking()) {

@@ -163,8 +163,7 @@ public class ItemModule extends LogisticsItem {
 		}
 	}
 
-	public ItemModule(int i) {
-		super(i);
+	public ItemModule() {
 		this.hasSubtypes = true;
 	}
 

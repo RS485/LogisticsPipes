@@ -8,10 +8,6 @@ import net.minecraft.item.ItemStack;
 
 
 public class ItemDisk extends LogisticsItem {
-
-	public ItemDisk(int i) {
-		super(i);
-	}
 	
 	@Override
 	public int getItemStackLimit()

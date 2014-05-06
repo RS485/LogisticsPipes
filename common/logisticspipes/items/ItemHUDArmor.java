@@ -18,8 +18,8 @@ import net.minecraftforge.common.ISpecialArmor;
 
 public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor {
 	
-	public ItemHUDArmor(int par1, int renderIndex) {
-		super(par1, EnumArmorMaterial.CHAIN, renderIndex, 0);
+	public ItemHUDArmor(int renderIndex) {
+		super(ArmorMaterial.CHAIN, renderIndex, 0);
 	}
 	
 	@Override

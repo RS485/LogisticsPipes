@@ -8,6 +8,7 @@
 
 package logisticspipes.proxy.buildcraft.gates;
 
+import buildcraft.transport.Pipe;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;

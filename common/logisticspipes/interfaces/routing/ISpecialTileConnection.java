@@ -2,6 +2,7 @@ package logisticspipes.interfaces.routing;
 
 import java.util.List;
 
+import buildcraft.transport.TravelingItem;
 import net.minecraft.tileentity.TileEntity;
 
 public interface ISpecialTileConnection {

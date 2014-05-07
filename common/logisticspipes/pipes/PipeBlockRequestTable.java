@@ -2,11 +2,8 @@ package logisticspipes.pipes;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import cpw.mods.fml.common.network.Player;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.AutoCraftingInventory;
@@ -44,11 +41,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.Icon;
 import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.common.network.Player;
 
 public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements ISimpleInventoryEventHandler, IRequestWatcher, IGuiOpenControler {
 

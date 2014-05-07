@@ -2,6 +2,7 @@ package logisticspipes.proxy.buildcraft.gates;
 
 import java.util.ArrayList;
 
+import buildcraft.transport.Pipe;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;

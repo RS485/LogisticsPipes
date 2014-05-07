@@ -1,5 +1,6 @@
 package logisticspipes.transport;
 
+import buildcraft.transport.TravelingItem;
 import logisticspipes.pipes.PipeItemsCraftingLogisticsMk3;
 
 public class CraftingPipeMk3Transport extends PipeTransportLogistics {

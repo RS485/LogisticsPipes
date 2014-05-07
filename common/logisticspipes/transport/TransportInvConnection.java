@@ -1,5 +1,6 @@
 package logisticspipes.transport;
 
+import buildcraft.transport.TravelingItem;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;

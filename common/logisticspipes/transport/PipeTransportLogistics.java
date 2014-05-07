@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import buildcraft.transport.*;
 import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
@@ -49,9 +50,6 @@ import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.transport.IPipeTile;
 import buildcraft.core.CoreConstants;
 import buildcraft.core.proxy.CoreProxy;
-import buildcraft.transport.IItemTravelingHook;
-import buildcraft.transport.PipeTransportItems;
-import buildcraft.transport.TileGenericPipe;
 
 public class PipeTransportLogistics extends PipeTransportItems implements IItemTravelingHook {
 

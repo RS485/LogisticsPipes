@@ -1,5 +1,6 @@
 package logisticspipes.proxy.buildcraft.gates;
 
+import buildcraft.transport.Pipe;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import buildcraft.api.gates.ITriggerParameter;

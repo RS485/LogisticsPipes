@@ -1,5 +1,6 @@
 package logisticspipes.transport;
 
+import buildcraft.transport.TravelingItem;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.PipeItemsSystemDestinationLogistics;
 import logisticspipes.pipes.PipeItemsSystemEntranceLogistics;

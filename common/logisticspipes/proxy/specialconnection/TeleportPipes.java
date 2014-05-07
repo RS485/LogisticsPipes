@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import buildcraft.transport.Pipe;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.ISpecialPipedConnection;
 import logisticspipes.proxy.SimpleServiceLocator;

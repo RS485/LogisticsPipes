@@ -2,6 +2,7 @@ package logisticspipes.proxy.interfaces;
 
 import java.util.List;
 
+import buildcraft.transport.TravelingItem;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.tileentity.TileEntity;

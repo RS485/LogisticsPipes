@@ -23,7 +23,7 @@ public class PlayerCollectionList {
 			} else if(playerReference.get().isDead) {
 				remove = true;
 			} else if(playerReference.get() instanceof EntityPlayerMP) {
-				if(((EntityPlayerMP)playerReference.get()).playerNetServerHandler.connectionClosed) {
+				if(!((EntityPlayerMP)playerReference.get()).playerNetServerHandler.netManager.isChannelOpen()) {
 					remove = true;
 				}
 			}

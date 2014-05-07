@@ -81,7 +81,7 @@ public class LogisticsTileRenderController {
 		if(powerLasersBeam.containsKey(new LaserKey(dir, color))) {
 			powerLasersBeam.get(new LaserKey(dir, color)).timeout = LASER_TIMEOUT_TICKS;
 		} else {
-			PipeFXLaserPowerBeam fx = new PipeFXLaserPowerBeam(pipe.worldObj, new LPPosition((TileEntity)pipe), length, dir, color, this.pipe).setReverse(reverse);
+			PipeFXLaserPowerBeam fx = new PipeFXLaserPowerBeam(pipe.getWorldObj(), new LPPosition((TileEntity)pipe), length, dir, color, this.pipe).setReverse(reverse);
 			powerLasersBeam.put(new LaserKey(dir, color), new LaserBeamData(length, LASER_TIMEOUT_TICKS, fx));
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
@@ -89,7 +89,7 @@ public class LogisticsTileRenderController {
 			if(powerLasersBall.containsKey(color)) {
 				powerLasersBall.get(color).timeout = LASER_TIMEOUT_TICKS;
 			} else {
-				PipeFXLaserPowerBall fx = new PipeFXLaserPowerBall(pipe.worldObj, new LPPosition((TileEntity)pipe), color, this.pipe);
+				PipeFXLaserPowerBall fx = new PipeFXLaserPowerBall(pipe.getWorldObj(), new LPPosition((TileEntity)pipe), color, this.pipe);
 				powerLasersBall.put(color, new LaserBallData(length, LASER_TIMEOUT_TICKS, fx));
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}

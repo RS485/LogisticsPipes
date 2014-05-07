@@ -51,7 +51,7 @@ public class RequestUpdateNamesPacket extends ModernPacket {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(UpdateName.class).setIdent(item).setName(item.getFriendlyName()));
 		}
 		SimpleServiceLocator.clientBufferHandler.setPause(false);
-		FMLClientHandler.instance().getClient().thePlayer.addChatMessage("Names in send Queue");
+		FMLClientHandler.instance().getClient().thePlayer.sendChatMessage("Names in send Queue");
 	}
 
 	@Override

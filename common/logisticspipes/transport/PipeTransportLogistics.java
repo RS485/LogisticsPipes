@@ -45,7 +45,6 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.util.ForgeDirection;
-import thermalexpansion.part.conduit.item.TravelingItem;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.transport.IPipeTile;
 import buildcraft.core.CoreConstants;

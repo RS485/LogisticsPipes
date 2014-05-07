@@ -20,6 +20,7 @@ import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatComponentTranslation;
 
 public class PipeItemsFirewall extends CoreRoutedPipe {
 
@@ -47,7 +48,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_FIREWALL, getWorld(), getX(), getY(), getZ());
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), entityplayer);
 			} else {
-				entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
+				entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
 			}
 		}
 		return true;

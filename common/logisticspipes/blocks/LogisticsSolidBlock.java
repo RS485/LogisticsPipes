@@ -9,6 +9,7 @@ import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.network.GuiIDs;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -105,7 +106,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 	}
 
 	@Override
-	public void breakBlock(World par1World, int par2, int par3, int par4, int par5, int par6) {
+	public void breakBlock(World par1World, int par2, int par3, int par4, Block par5, int par6) {
 		TileEntity tile = par1World.getTileEntity(par2, par3, par4);
 		if(tile instanceof LogisticsSolderingTileEntity) {
 			((LogisticsSolderingTileEntity)tile).onBlockBreak();
@@ -119,12 +120,6 @@ public class LogisticsSolidBlock extends BlockContainer {
 	@Override
 	public IIcon getIcon(int side, int meta) {
 		return getRotatedTexture(meta, side, 2, 0);
-	}
-	
-	@Override
-	public TileEntity createNewTileEntity(World var1) {
-		new UnsupportedOperationException("Please call createNewTileEntity(World,int) instead of createNewTileEntity(World).").printStackTrace();
-		return createTileEntity(var1, 0);
 	}
 	
 	@Override

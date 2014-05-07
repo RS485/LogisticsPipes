@@ -174,6 +174,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return get(id, itemDamage, itemStack.stackTagCompound);
 	}
 
+	//TODO Check if we can cache it this way around of if we have to cache the id and have a hard reference to the Item class.
 	public Item getItem() {
 		if(itemCache != null) {
 			itemCache = getItem();

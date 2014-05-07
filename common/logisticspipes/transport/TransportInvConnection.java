@@ -4,7 +4,6 @@ import logisticspipes.pipes.PipeItemsInvSysConnector;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import thermalexpansion.part.conduit.item.TravelingItem;
 
 public class TransportInvConnection extends PipeTransportLogistics {
 	

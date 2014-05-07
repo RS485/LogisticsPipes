@@ -6,6 +6,7 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.ActivateNBTDebug;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 
 public class NBTDebugCommand implements ICommandHandler {
@@ -17,7 +18,7 @@ public class NBTDebugCommand implements ICommandHandler {
 	
 	@Override
 	public boolean isCommandUsableBy(ICommandSender sender) {
-		return sender instanceof Player && LogisticsPipesCommand.isOP(sender);
+		return sender instanceof EntityPlayer && LogisticsPipesCommand.isOP(sender);
 	}
 	
 	@Override
@@ -28,6 +29,6 @@ public class NBTDebugCommand implements ICommandHandler {
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
 		sender.addChatMessage(new ChatComponentText("Trying to Enable NBTDebug"));
-    	MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ActivateNBTDebug.class), (Player)sender);
+    	MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ActivateNBTDebug.class), (EntityPlayer)sender);
 	}
 }

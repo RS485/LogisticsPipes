@@ -179,7 +179,7 @@ public class FluidContainerRenderer implements IItemRenderer {
 			dummyEntityItem.hoverStart = 0;
             GL11.glScalef(2F, 2F, 2F);
             GL11.glRotatef(((((EntityItem)data[1]).age) / 20.0F + ((EntityItem)data[1]).hoverStart) * (180F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
-			renderItem.doRenderItem(dummyEntityItem, 0, 0, 0, 0, 0);
+			renderItem.doRender(dummyEntityItem, 0, 0, 0, 0, 0);
 			GL11.glPopMatrix();
 		}
 		useThis = true;

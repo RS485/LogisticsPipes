@@ -112,7 +112,6 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
-import thermalexpansion.part.conduit.item.TravelingItem;
 import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.core.CoreConstants;
 import buildcraft.transport.PipeTransportItems;
@@ -1142,7 +1141,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 				found = (tile.tile instanceof IInventory && !(tile.tile instanceof TileGenericPipe));
 
 			if (found) {
-				Block block = getWorld().getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord) < Block.blocksList.length ? Block.blocksList[getWorld().getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord)] : null;
+				Block block = getWorld().getBlock(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord);
 				if(block != null) {
 					if(block.onBlockActivated(getWorld(), tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, player, 0, 0, 0, 0)){
 						break;

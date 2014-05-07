@@ -490,7 +490,7 @@ outer:
 	@Override
 	public void tickStart(EnumSet<TickType> type, Object... tickData) {}
 
-	public void closeWatchingFrom(Player sender) {
+	public void closeWatchingFrom(EntityPlayer sender) {
 		serverInfo.remove(sender);
 	}
 	

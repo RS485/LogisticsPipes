@@ -12,7 +12,6 @@ import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import thermalexpansion.part.conduit.item.TravelingItem;
 import buildcraft.BuildCraftTransport;
 import buildcraft.core.ITileBufferHolder;
 import buildcraft.transport.PipeTransportItems;

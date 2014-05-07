@@ -11,11 +11,11 @@ public class LoadingHelper {
 			GuiContainerManager.addTooltipHandler(new DebugHelper());
 			NEILogisticsPipesConfig.added = true;
 			if(FMLClientHandler.instance().getClient() != null && FMLClientHandler.instance().getClient().thePlayer != null) {
-				FMLClientHandler.instance().getClient().thePlayer.addChatMessage("Enabled.");
+				FMLClientHandler.instance().getClient().thePlayer.sendChatMessage("Enabled.");
 			}
 		} else if(NEILogisticsPipesConfig.added) {
 			if(FMLClientHandler.instance().getClient() != null && FMLClientHandler.instance().getClient().thePlayer != null) {
-				FMLClientHandler.instance().getClient().thePlayer.addChatMessage("Already enabled.");
+				FMLClientHandler.instance().getClient().thePlayer.sendChatMessage("Already enabled.");
 			}
 		}
 	}

@@ -20,6 +20,7 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LaserData;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.pathfinder.PathFinder;
+import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -112,18 +113,18 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 		while(iLasers.hasNext()) {
 			boolean compressed = false;
 			LaserData data = iLasers.next();
-			Position next = new Position(data.getPosX(), data.getPosY(), data.getPosZ(), data.getDir());
-			next.moveForwards(data.getLength());
+			LPPosition next = new LPPosition(data.getPosX(), data.getPosY(), data.getPosZ());
+			next.moveForward(data.getDir(), data.getLength());
 			boolean found = false;
 			do {
 				found = false;
 				Iterator<LaserData> iOptions = options.iterator();
 				while(iOptions.hasNext()) {
 					LaserData d = iOptions.next();
-					if(d.getPosX() == (int)next.x && d.getPosY() == (int)next.y && d.getPosZ() == (int)next.z) {
+					if(d.getPosX() == next.getX() && d.getPosY() == next.getY() && d.getPosZ() == next.getZ()) {
 						if(data.getDir().equals(d.getDir()) && data.getConnectionType().equals(d.getConnectionType())) {
 							data.setLength(data.getLength() + d.getLength());
-							next.moveForwards(d.getLength());
+							next.moveForward(data.getDir(), d.getLength());
 							found = true;
 							iOptions.remove();
 							lasers.remove(d);

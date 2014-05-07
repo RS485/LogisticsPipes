@@ -12,6 +12,7 @@ import net.machinemuse.api.moduletrigger.IRightClickModule;
 import net.machinemuse.powersuits.common.ModularPowersuits;
 import net.machinemuse.powersuits.powermodule.PowerModuleBase;
 import net.machinemuse.utils.MuseCommonStrings;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;

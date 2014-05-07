@@ -80,6 +80,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.transport.TileGenericPipe;
@@ -469,19 +470,19 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 				if (settings == null || settings.openGui) {
 					((PipeLogisticsChassi)this.container.pipe).nextOrientation();
 				} else {
-					entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
+					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
 				}
 			}
 			SimpleServiceLocator.buildCraftProxy.wrenchUsed(entityplayer, this.getX(), this.getY(), this.getZ());
 			return true;
 		}
 		
-		if(!entityplayer.isSneaking() && entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.ModuleItem.itemID && entityplayer.getCurrentEquippedItem().getItemDamage() != ItemModule.BLANK) {
+		if(!entityplayer.isSneaking() && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.ModuleItem && entityplayer.getCurrentEquippedItem().getItemDamage() != ItemModule.BLANK) {
 			if(MainProxy.isServer(getWorld())) {
 				if (settings == null || settings.openGui) {
 					return tryInsertingModule(entityplayer);
 				} else {
-					entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
+					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
 				}
 			}
 			return true;

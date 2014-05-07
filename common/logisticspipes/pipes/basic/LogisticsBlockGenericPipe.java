@@ -9,6 +9,7 @@ import logisticspipes.asm.ModDependentMethodName;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.textures.Textures;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -25,18 +26,18 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class LogisticsBlockGenericPipe extends BlockGenericPipe {
 
-	public LogisticsBlockGenericPipe(int i) {
-		super(i);
+	public LogisticsBlockGenericPipe() {
+		super();
 	}
 
 	@Override
-	public ArrayList<ItemStack> getBlockDropped(World world, int x, int y, int z, int metadata, int fortune) {
-		ArrayList<ItemStack> result = super.getBlockDropped(world, x, y, z, metadata, fortune);
+	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
+		ArrayList<ItemStack> result = super.getDrops(world, x, y, z, metadata, fortune);
 		if(result == null)
 			return null;
 		for(int i=0;i<result.size();i++) {
 			ItemStack stack = result.get(i);
-			if(stack.itemID == LogisticsPipes.LogisticsBrokenItem.itemID) {
+			if(stack.getItem() == LogisticsPipes.LogisticsBrokenItem) {
 				result.remove(i);
 				i--;
 			}
@@ -46,13 +47,13 @@ public class LogisticsBlockGenericPipe extends BlockGenericPipe {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getBlockTexture(IBlockAccess iblockaccess, int i, int j, int k, int l) {
+	public IIcon func_149673_e(IBlockAccess iblockaccess, int i, int j, int k, int l) {
 		TileEntity tile = iblockaccess.getTileEntity(i, j, k);
 		if(tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe)tile).pipe instanceof PipeBlockRequestTable) {
 			PipeBlockRequestTable table = (PipeBlockRequestTable) ((LogisticsTileGenericPipe)tile).pipe;
 			return table.getTextureFor(l);
 		}
-		return super.getBlockTexture(iblockaccess, i, j, k, l);
+		return super.func_149673_e(iblockaccess, i, j, k, l);
 	}
 	
 	@Override
@@ -172,7 +173,7 @@ public class LogisticsBlockGenericPipe extends BlockGenericPipe {
 		return par1Vec3 == null ? false : par1Vec3.xCoord >= this.minX && par1Vec3.xCoord <= this.maxX && par1Vec3.yCoord >= this.minY && par1Vec3.yCoord <= this.maxY;
 	}
 
-    public static Icon getRequestTableTextureFromSide(int l) {
+    public static IIcon getRequestTableTextureFromSide(int l) {
     	ForgeDirection dir = ForgeDirection.getOrientation(l);
 		switch(dir) {
 			case UP:

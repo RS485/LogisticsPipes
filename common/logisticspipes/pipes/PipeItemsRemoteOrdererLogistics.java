@@ -12,6 +12,7 @@ import logisticspipes.textures.Textures.TextureType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentTranslation;
 
 public class PipeItemsRemoteOrdererLogistics extends CoreRoutedPipe implements IRequestItems {
 
@@ -31,9 +32,9 @@ public class PipeItemsRemoteOrdererLogistics extends CoreRoutedPipe implements I
 				if (settings == null || settings.openRequest) {
 					ItemStack orderer = entityplayer.getCurrentEquippedItem();
 					RemoteOrderer.connectToPipe(orderer, this);
-					entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Connected to pipe"));
+					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.connectedtopipe"));
 				} else {
-					entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
+					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
 				}
 			}
 			return true;

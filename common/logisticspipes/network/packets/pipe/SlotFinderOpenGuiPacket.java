@@ -79,7 +79,7 @@ public class SlotFinderOpenGuiPacket extends CoordinatesPacket {
 				found = (tile.tile instanceof IInventory && !(tile.tile instanceof TileGenericPipe));
 
 			if (found) {
-				Block block = player.worldObj.getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord) < Block.blocksList.length ? Block.blocksList[player.worldObj.getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord)] : null;
+				Block block = player.worldObj.getBlock(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord);
 				if(SimpleServiceLocator.enderStorageProxy.isEnderChestBlock(block)) {
 					SimpleServiceLocator.enderStorageProxy.openEnderChest(player.worldObj, tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, player);
 					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class).setTagetPosX(tile.tile.xCoord).setTagetPosY(tile.tile.yCoord).setTagetPosZ(tile.tile.zCoord).setSlot(getSlot()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);

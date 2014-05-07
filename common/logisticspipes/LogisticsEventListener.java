@@ -41,6 +41,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
@@ -71,10 +72,10 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void textureHook(TextureStitchEvent.Pre event) throws IOException{
-		if (event.map.textureType == 1) {
+		if (event.map.getTextureType() == 1) {
 			LogisticsPipes.textures.registerItemIcons(event.map);
 		}
-		if (event.map.textureType == 0) {
+		if (event.map.getTextureType() == 0) {
 			LogisticsPipes.textures.registerBlockIcons(event.map);
 		}
 	}
@@ -90,7 +91,7 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 					if(((LogisticsTileGenericPipe)tile).pipe instanceof CoreRoutedPipe) {
 						if(!((CoreRoutedPipe)((LogisticsTileGenericPipe)tile).pipe).canBeDestroyedByPlayer(event.entityPlayer)) {
 							event.setCanceled(true);
-							event.entityPlayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission Denied"));
+							event.entityPlayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
 							((LogisticsTileGenericPipe)tile).scheduleNeighborChange();
 							event.entityPlayer.worldObj.markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
 							((CoreRoutedPipe)((LogisticsTileGenericPipe)tile).pipe).delayTo = System.currentTimeMillis() + 200;

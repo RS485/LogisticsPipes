@@ -3,7 +3,6 @@ package logisticspipes.interfaces.routing;
 import java.util.List;
 
 import net.minecraft.tileentity.TileEntity;
-import thermalexpansion.part.conduit.item.TravelingItem;
 
 public interface ISpecialTileConnection {
 	public boolean init();

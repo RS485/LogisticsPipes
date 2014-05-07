@@ -23,7 +23,6 @@ import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
@@ -36,6 +35,7 @@ import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerHandler;
 import buildcraft.api.power.PowerHandler.PowerReceiver;
+import buildcraft.api.power.PowerHandler.Type;
 
 public class LogisticsSolderingTileEntity extends TileEntity implements IPowerReceptor, ISpecialInventory, IGuiOpenControler, IRotationProvider {
 	
@@ -69,7 +69,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 			}
 		}
 		dummy.addRestrictedSlot(9, this, 107, 17, Items.iron_ingot);
-		dummy.addRestrictedSlot(10, this, 141, 47, -1);
+		dummy.addRestrictedSlot(10, this, 141, 47, (Item)null);
 		dummy.addRestrictedSlot(11, this, 9, 9, new ISlotCheck() {
 			@Override
 			public boolean isStackAllowed(ItemStack itemStack) {
@@ -313,8 +313,8 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 			inv.clearInventorySlotContents(9);
 		}
 
-		inv.onInventoryChanged();
-		super.onInventoryChanged();
+		inv.markDirty();
+		super.markDirty();
 		updateInventory();
 
 		return true;
@@ -362,8 +362,8 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	}
 
 	@Override
-	public String getInvName() {
-		return inv.getInvName();
+	public String getInventoryName() {
+		return inv.getInventoryName();
 	}
 
 	@Override
@@ -377,13 +377,13 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	}
 
 	@Override
-	public void openChest() {
-		inv.openChest();
+	public void openInventory() {
+		inv.openInventory();
 	}
 
 	@Override
-	public void closeChest() {
-		inv.closeChest();
+	public void closeInventory() {
+		inv.closeInventory();
 	}
 
 	@Override
@@ -400,8 +400,8 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 			int toAdd = Math.min(stack.stackSize, freespace);
 			if (doAdd) {
 				iron.stackSize += toAdd;
-				inv.onInventoryChanged();
-				super.onInventoryChanged();
+				inv.markDirty();
+				super.markDirty();
 			}
 			if (iron.stackSize == 0) {
 				inv.clearInventorySlotContents(9);
@@ -462,8 +462,8 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 			}
 			i++;
 		}
-		inv.onInventoryChanged();
-		super.onInventoryChanged();
+		inv.markDirty();
+		super.markDirty();
 		return toadd;
 	}
 
@@ -472,8 +472,8 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 		ItemStack[] tmp = new ItemStack[] { inv.getStackInSlot(10) };
 		if (doRemove) {
 			inv.clearInventorySlotContents(10);
-			inv.onInventoryChanged();
-			super.onInventoryChanged();
+			inv.markDirty();
+			super.markDirty();
 		}
 		return tmp;
 	}
@@ -512,22 +512,18 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	}
 
 	@Override
-	public boolean isInvNameLocalized() {
-		// TODO Auto-generated method stub
+	public boolean hasCustomInventoryName() {
 		return false;
 	}
 
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
-	public void func_85027_a(CrashReportCategory par1CrashReportCategory) {
-		super.func_85027_a(par1CrashReportCategory);
+	public void func_145828_a(CrashReportCategory par1CrashReportCategory) {
+		super.func_145828_a(par1CrashReportCategory);
 		par1CrashReportCategory.addCrashSection("LP-Version", LogisticsPipes.VERSION);
 	}
-
-
 }

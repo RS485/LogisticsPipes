@@ -6,8 +6,8 @@ import logisticspipes.gui.GuiSolderingStation;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.recipes.SolderingStationRecipes.SolderingStationRecipe;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import codechicken.nei.NEIServerUtils;
 import codechicken.nei.PositionedStack;
@@ -30,7 +30,7 @@ public class NEISolderingStationRecipeManager extends ShapedRecipeHandler {
 				shape.ingredients.add(stack);
 			}
 		}
-		PositionedStack stack = new PositionedStack(new ItemStack(Item.ingotIron,1), 102, 6);
+		PositionedStack stack = new PositionedStack(new ItemStack(Items.iron_ingot, 1), 102, 6);
 		stack.setMaxSize(1);
 		shape.ingredients.add(stack);
 		shape.result.relx = 136;

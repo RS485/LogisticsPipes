@@ -247,6 +247,27 @@ misc.extractionmode.LeaveFirstAndLast=Leave first & last stack
 misc.extractionmode.Leave1PerStack=Leave 1 item per stack
 misc.extractionmode.Leave1PerType=Leave 1 item per type
 
+
+
+#Misc Chat messages
+
+lp.chat.slotnotfound=Couldn't find that slot internaly. Sorry. Please try again.
+lp.chat.permissiondenied=Permission denied
+lp.chat.connectedtopipe=Connected to pipe
+lp.misc.noenergy=No Energy
+lp.hud.config.chassie.enabled=Enabled Chassie.
+lp.hud.config.chassie.disabled=Disabled Chassie.
+lp.hud.config.crafting.enabled=Enabled Crafting.
+lp.hud.config.crafting.disabled=Disabled Crafting.
+lp.hud.config.invsyscon.enabled=Enabled InvSysCon.
+lp.hud.config.invsyscon.disabled=Disabled InvSysCon.
+lp.hud.config.powerjunction.enabled=Enabled Power Junction.
+lp.hud.config.powerjunction.disabled=Disabled Power Junction.
+lp.hud.config.provider.enabled=Enabled Provider.
+lp.hud.config.provider.disabled=Disabled Provider.
+lp.hud.config.satellite.enabled=Enabled Satellite.
+lp.hud.config.satellite.disabled=Disabled Satellite.
+
 # GUI
 
 gui.crafting.Inputs=Inputs

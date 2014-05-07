@@ -144,7 +144,7 @@ public class GuiChassiPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerP
 		if (this._moduleInventory == null) return "";
 		if (this._moduleInventory.getStackInSlot(slot) == null) return "";
 		if (!(this._moduleInventory.getStackInSlot(slot).getItem() instanceof ItemModule)) return "";
-		return ((ItemModule)this._moduleInventory.getStackInSlot(slot).getItem()).getItemDisplayName(this._moduleInventory.getStackInSlot(slot));
+		return ((ItemModule)this._moduleInventory.getStackInSlot(slot).getItem()).getItemStackDisplayName(this._moduleInventory.getStackInSlot(slot));
 	}
 	
 	@Override

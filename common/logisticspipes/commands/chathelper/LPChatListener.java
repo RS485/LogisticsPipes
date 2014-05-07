@@ -29,12 +29,12 @@ public class LPChatListener implements IChatListener {
 		if(tasks.containsKey(handler.getPlayer().getCommandSenderName())){
 			if(message.message.startsWith("/")) {
 				handler.getPlayer().sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.RED + "You need to answer the question, before you can use any other command"));
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) handler.getPlayer());
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), handler.getPlayer());
 			} else {
 				if(!message.message.equalsIgnoreCase("true") && !message.message.equalsIgnoreCase("false") && !message.message.equalsIgnoreCase("on") && !message.message.equalsIgnoreCase("off") && !message.message.equalsIgnoreCase("0") && !message.message.equalsIgnoreCase("1") && !message.message.equalsIgnoreCase("no") && !message.message.equalsIgnoreCase("yes")){
 					handler.getPlayer().sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.RED + "Not a valid answer."));
 					handler.getPlayer().sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.AQUA + "Please enter " + ChatColor.RESET + "<" + ChatColor.GREEN + "yes" + ChatColor.RESET + "/" + ChatColor.RED + "no " + ChatColor.RESET + "| " + ChatColor.GREEN + "true" + ChatColor.RESET + "/" + ChatColor.RED + "flase " + ChatColor.RESET + "| " + ChatColor.GREEN + "on" + ChatColor.RESET + "/" + ChatColor.RED + "off " + ChatColor.RESET + "| " + ChatColor.GREEN + "1" + ChatColor.RESET + "/" + ChatColor.RED + "0" + ChatColor.RESET + ">"));
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) handler.getPlayer());
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), handler.getPlayer());
 				} else {
 					boolean flag = message.message.equalsIgnoreCase("true") || message.message.equalsIgnoreCase("on") || message.message.equalsIgnoreCase("1") || message.message.equalsIgnoreCase("yes");
 					if(!handleAnswer(flag, handler.getPlayer())) {
@@ -47,7 +47,7 @@ public class LPChatListener implements IChatListener {
 			if(!morePageDisplays.get(handler.getPlayer().getCommandSenderName()).isTerminated()) {
 				if(message.message.startsWith("/")) {
 					handler.getPlayer().sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.RED+"Exit "+ChatColor.AQUA+"PageView"+ChatColor.RED+" first!"));
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) handler.getPlayer());
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), handler.getPlayer());
 					message.message = "/lp dummy";
 				} else {
 					if(morePageDisplays.get(handler.getPlayer().getCommandSenderName()).handleChat(message.message, handler.getPlayer())) {

@@ -39,9 +39,11 @@ import logisticspipes.utils.tuples.Pair;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.SlotCrafting;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.Icon;
@@ -64,8 +66,8 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	public Map<Integer, Pair<ItemIdentifierStack, LinkedLogisticsOrderList>> watchedRequests = new HashMap<Integer, Pair<ItemIdentifierStack, LinkedLogisticsOrderList>>();
 	private int localLastUsedWatcherId = 0;
 
-	public PipeBlockRequestTable(int itemID) {
-		super(itemID);
+	public PipeBlockRequestTable(Item item) {
+		super(item);
 		matrix.addListener(this);
 	}
 
@@ -79,7 +81,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 			if(settings == null || settings.openGui) {
 				openGui(entityplayer);
 			} else {
-				entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
+				entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
 			}
 		}
 		return true;
@@ -189,8 +191,8 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 			case DOWN:
 				return Textures.LOGISTICS_REQUEST_TABLE[1];
 			default:
-				if(this.container.getRenderState().pipeConnectionMatrix.isConnected(dir)) {
-					if (this.container.getRenderState().textureMatrix.getTextureIndex(dir) == 1) {
+				if(this.container.renderState.pipeConnectionMatrix.isConnected(dir)) {
+					if (this.container.renderState.textureMatrix.getTextureIndex(dir) == 1) {
 						return Textures.LOGISTICS_REQUEST_TABLE[2];
 					} else {
 						return Textures.LOGISTICS_REQUEST_TABLE[3];

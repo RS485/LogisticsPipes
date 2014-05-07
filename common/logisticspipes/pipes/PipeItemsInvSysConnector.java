@@ -48,8 +48,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraftforge.common.util.ForgeDirection;
-import thermalexpansion.part.conduit.item.TravelingItem;
 
 public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectRoutingConnection, IHeadUpDisplayRendererProvider, IOrderManagerContentReceiver{
 	
@@ -209,7 +209,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 			if (settings == null || settings.openGui) {
 				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Inv_Sys_Connector_ID, getWorld(), getX(), getY(), getZ());
 			} else {
-				entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
+				entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
 			}
 		}
 		return true;

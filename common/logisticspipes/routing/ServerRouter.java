@@ -348,7 +348,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		if(changed) {
 			CoreRoutedPipe pipe = getPipe();
 			if (pipe != null) {
-				pipe.getWorld().notifyBlocksOfNeighborChange(pipe.getX(), pipe.getY(), pipe.getZ(), pipe.getWorld().getBlockId(pipe.getX(), pipe.getY(), pipe.getZ()));
+				pipe.getWorld().notifyBlocksOfNeighborChange(pipe.getX(), pipe.getY(), pipe.getZ(), pipe.getWorld().getBlock(pipe.getX(), pipe.getY(), pipe.getZ()));
 				pipe.refreshConnectionAndRender(false);
 			}
 			adjacentChanged = true;

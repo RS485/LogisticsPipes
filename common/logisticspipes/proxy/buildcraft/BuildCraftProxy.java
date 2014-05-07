@@ -182,6 +182,12 @@ public class BuildCraftProxy {
 	public void dropItems(World world, ItemStack stack, int x, int y, int z) {
 		InvUtils.dropItems(world, stack, x, y, z);
 	}
+	
+	//TODO
+	/*
+	 * Save all routing information into another field that is than added to the TravelingItem form BC (or TE)
+	 * Don't extend the TravalingItem to store all information. Just extend it to link the new Routing information field (and save those informaiton).
+	 */
 
 	public RoutedEntityItem GetOrCreateRoutedItem(TravelingItem itemData) {
 		if (!isRoutedItem(itemData)) {

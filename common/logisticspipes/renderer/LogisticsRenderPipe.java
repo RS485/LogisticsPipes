@@ -23,6 +23,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.IItemRenderer;
@@ -66,8 +67,8 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float f) {
-		super.renderTileEntityAt(tileentity, x, y, z, f);
+	public void func_147500_a(TileEntity tileentity, double x, double y, double z, float f) {
+		super.func_147500_a(tileentity, x, y, z, f);
 		if (BuildCraftCore.render == RenderMode.NoDynamic) return;
 		if(!(tileentity instanceof LogisticsTileGenericPipe)) return;
 		LogisticsTileGenericPipe pipe = ((LogisticsTileGenericPipe) tileentity);
@@ -101,7 +102,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 		if(!pipe.getCraftingSigns().isEmpty()) {
 			List<ForgeDirection> list = pipe.getCraftingSigns();
 			for(ForgeDirection dir:list) {
-				if(pipe.container.getRenderState().pipeConnectionMatrix.isConnected(dir)) {
+				if(pipe.container.renderState.pipeConnectionMatrix.isConnected(dir)) {
 					continue;
 				}
 				GL11.glPushMatrix();
@@ -170,7 +171,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 	}
 	
 	private void renderSignLabel(PipeItemsCraftingLogistics pipe, float var12) {
-        FontRenderer var17 = this.getFontRenderer();
+        FontRenderer var17 = this.func_147498_b();
         if(pipe != null) {
     		List<ItemIdentifierStack> craftables = pipe.getCraftedItems();
 
@@ -222,7 +223,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 		    	        GL11.glEnable(GL11.GL_LIGHT1);
 		    	        GL11.glEnable(GL11.GL_COLOR_MATERIAL);
 		        	}
-			   } else if(item instanceof ItemBlock && RenderBlocks.renderItemIn3d(Block.blocksList[item.itemID].getRenderType())) {
+			   } else if(item instanceof ItemBlock && RenderBlocks.renderItemIn3d(Block.getBlockFromItem(item).getRenderType())) {
 		            GL11.glScalef(0.20F, -0.20F, -0.01F);
 		            
 			        GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
@@ -235,7 +236,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 			        GL11.glDisable(GL11.GL_LIGHT1);
 			        GL11.glDisable(GL11.GL_COLOR_MATERIAL);
 
-			        renderBlocks.renderBlockAsItem(Block.blocksList[item.itemID], itemstack.getItemDamage(), 1.0F);
+			        renderBlocks.renderBlockAsItem(Block.getBlockFromItem(item), itemstack.getItemDamage(), 1.0F);
 
 			        GL11.glEnable(GL11.GL_LIGHTING);
 			        GL11.glEnable(GL11.GL_LIGHT0);
@@ -255,7 +256,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 		            {
 		                for (int var14 = 0; var14 < item.getRenderPasses(itemstack.getItemDamage()); ++var14)
 		                {
-		                    Icon var15 = item.getIconFromDamageForRenderPass(itemstack.getItemDamage(), var14);
+		                    IIcon var15 = item.getIconFromDamageForRenderPass(itemstack.getItemDamage(), var14);
 		                    renderItem(var15);
 		                }
 		            }
@@ -278,14 +279,14 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 			    GL11.glScalef(var12, var12, var12);
 			    
 		        try {
-		        	name = item.getItemDisplayName(itemstack);
+		        	name = item.getItemStackDisplayName(itemstack);
 		        } catch(Exception e) {
 		        	try {
 		        		name = item.getUnlocalizedName();
 		        	} catch(Exception e1) {}
 		        }
-		        
-		        var17.drawString("ID: "+String.valueOf(item.itemID), -var17.getStringWidth("ID: "+String.valueOf(item.itemID)) / 2, 0 * 10 - 4 * 5, 0);
+		        //TODO What Information should be displayed instead
+		        //var17.drawString("ID: " + String.valueOf(item.itemID), -var17.getStringWidth("ID: "+String.valueOf(item.itemID)) / 2, 0 * 10 - 4 * 5, 0);
 		        if(pipe.satelliteId != 0) {
 		        	var17.drawString("Sat ID: "+String.valueOf(pipe.satelliteId), -var17.getStringWidth("Sat ID: "+String.valueOf(pipe.satelliteId)) / 2, 1 * 10 - 4 * 5, 0);
 		        }
@@ -305,7 +306,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 	    }
 	}
 	
-	private void renderItem(Icon par3Icon) {
+	private void renderItem(IIcon par3Icon) {
 		if(par3Icon == null) return;
 		int par1 = 0;
 		int par2 = 0;
@@ -373,7 +374,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 			FluidStack fluidStack = trans.renderCache[i];
 
 			if (fluidStack != null && fluidStack.amount > 0) {
-				DisplayFluidList d = getListFromBuffer(fluidStack, pipe.container.worldObj);
+				DisplayFluidList d = getListFromBuffer(fluidStack, pipe.container.getWorldObj());
 
 				if (d == null) {
 					continue;
@@ -418,7 +419,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 		FluidStack fluidStack = trans.renderCache[ForgeDirection.UNKNOWN.ordinal()];
 
 		if (fluidStack != null && fluidStack.amount > 0) {
-			DisplayFluidList d = getListFromBuffer(fluidStack, pipe.container.worldObj);
+			DisplayFluidList d = getListFromBuffer(fluidStack, pipe.container.getWorldObj());
 
 			if (d != null) {
 				//XXX int stage = (int) ((float) fluidStack.amount / (float) (trans.getCapacity()) * (LIQUID_STAGES - 1));
@@ -465,11 +466,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 		RenderInfo block = new RenderInfo();
 
 		Fluid fluid = FluidRegistry.getFluid(liquidId);
-		if (fluid.getBlockID() > 0) {
-			block.baseBlock = Block.blocksList[fluid.getBlockID()];
-		} else {
-			block.baseBlock = Block.waterStill;
-		}
+		block.baseBlock = fluid.getBlock();
 		block.texture = fluid.getStillIcon();
 
 		float size = CoreConstants.PIPE_MAX_POS - CoreConstants.PIPE_MIN_POS;

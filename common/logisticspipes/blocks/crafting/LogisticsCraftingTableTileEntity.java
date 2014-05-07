@@ -182,12 +182,12 @@ outer:
 	}
 
 	@Override
-	public String getInvName() {
+	public String getInventoryName() {
 		return "LogisticsCraftingTable";
 	}
 
 	@Override
-	public boolean isInvNameLocalized() {
+	public boolean hasCustomInventoryName() {
 		return false;
 	}
 
@@ -202,10 +202,10 @@ outer:
 	}
 
 	@Override
-	public void openChest() {}
+	public void openInventory() {}
 
 	@Override
-	public void closeChest() {}
+	public void closeInventory() {}
 
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
@@ -220,7 +220,8 @@ outer:
 
 	public void placedBy(EntityLivingBase par5EntityLivingBase) {
 		if(par5EntityLivingBase instanceof EntityPlayer) {
-			placedBy = par5EntityLivingBase.getEntityName();
+			//TODO change to GameProfile based Identification
+			placedBy = ((EntityPlayer)par5EntityLivingBase).getDisplayName();
 		}
 	}
 }

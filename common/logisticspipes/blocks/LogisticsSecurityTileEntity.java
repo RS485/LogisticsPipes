@@ -35,6 +35,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -141,7 +142,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 		allowAutoDestroy = par1nbtTagCompound.getBoolean("allowAutoDestroy");
 		inv.readFromNBT(par1nbtTagCompound);
 		settingsList.clear();
-		NBTTagList list = par1nbtTagCompound.getTagList("settings");
+		NBTTagList list = par1nbtTagCompound.getTagList("settings", 10);
 		while(list.tagCount() > 0) {
 			NBTBase base = list.removeTag(0);
 			String name = ((NBTTagCompound)base).getString("name");
@@ -151,10 +152,10 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 			settingsList.put(name, settings);
 		}
 		excludedCC.clear();
-		list = par1nbtTagCompound.getTagList("excludedCC");
+		list = par1nbtTagCompound.getTagList("excludedCC", 3);
 		while(list.tagCount() > 0) {
 			NBTBase base = list.removeTag(0);
-			excludedCC.add(((NBTTagInt)base).data);
+			excludedCC.add(((NBTTagInt)base).func_150287_d());
 		}
 	}
 
@@ -171,14 +172,13 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 			nbt.setString("name", entry.getKey());
 			NBTTagCompound value = new NBTTagCompound();
 			entry.getValue().writeToNBT(value);
-			nbt.setCompoundTag("content", value);
+			nbt.setTag("content", value);
 			list.appendTag(nbt);
 		}
 		par1nbtTagCompound.setTag("settings", list);
 		list = new NBTTagList();
-		int count = 0;
 		for(Integer i:excludedCC) {
-			list.appendTag(new NBTTagInt("Part: " + count++, i));
+			list.appendTag(new NBTTagInt(i));
 		}
 		par1nbtTagCompound.setTag("excludedCC", list);
 	}
@@ -193,19 +193,19 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 			break;
 		case 2: //+
 			if(!useEnergy(10)) {
-				player.sendChatToPlayer(ChatMessageComponent.createFromText("No Energy"));
+				player.addChatComponentMessage(new ChatComponentTranslation("lp.misc.noenergy"));
 				return;
 			}
 			if(inv.getStackInSlot(0) == null) {
 				ItemStack stack = new ItemStack(LogisticsPipes.LogisticsItemCard, 1, LogisticsItemCard.SEC_CARD);
-				stack.setTagCompound(new NBTTagCompound("tag"));
+				stack.setTagCompound(new NBTTagCompound());
 				stack.getTagCompound().setString("UUID", getSecId().toString());
 				inv.setInventorySlotContents(0, stack);
 			} else {
 				ItemStack slot=inv.getStackInSlot(0);
 				if(slot.stackSize < 64) {
 					slot.stackSize++;
-					slot.setTagCompound(new NBTTagCompound("tag"));
+					slot.setTagCompound(new NBTTagCompound());
 					slot.getTagCompound().setString("UUID", getSecId().toString());
 					inv.setInventorySlotContents(0, slot);
 				}
@@ -213,11 +213,11 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 			break;
 		case 3: //++
 			if(!useEnergy(640)) {
-				player.sendChatToPlayer(ChatMessageComponent.createFromText("No Energy"));
+				player.addChatComponentMessage(new ChatComponentTranslation("lp.misc.noenergy"));
 				return;
 			}
 			ItemStack stack = new ItemStack(LogisticsPipes.LogisticsItemCard, 64, LogisticsItemCard.SEC_CARD);
-			stack.setTagCompound(new NBTTagCompound("tag"));
+			stack.setTagCompound(new NBTTagCompound());
 			stack.getTagCompound().setString("UUID", getSecId().toString());
 			inv.setInventorySlotContents(0, stack);
 			break;
@@ -247,13 +247,14 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	public SecuritySettings getSecuritySettingsForPlayer(EntityPlayer entityplayer, boolean usePower) {
 		if(byPassed.contains(entityplayer)) return allowAll;
 		if(usePower && !useEnergy(10)) {
-			entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("No Energy"));
+			entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.misc.noenergy"));
 			return new SecuritySettings("No Energy");
 		}
-		SecuritySettings setting = settingsList.get(entityplayer.username);
+		SecuritySettings setting = settingsList.get(entityplayer.getDisplayName());
+		//TODO Change to GameProfile based Authentication
 		if(setting == null) {
-			setting = new SecuritySettings(entityplayer.username);
-			settingsList.put(entityplayer.username, setting);
+			setting = new SecuritySettings(entityplayer.getDisplayName());
+			settingsList.put(entityplayer.getDisplayName(), setting);
 		}
 		return setting;
 	}
@@ -283,7 +284,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 		NBTTagCompound tag = new NBTTagCompound();
 		NBTTagList list = new NBTTagList();
 		for(Integer i:excludedCC) {
-			list.appendTag(new NBTTagInt("" + i, i));
+			list.appendTag(new NBTTagInt(i));
 		}
 		tag.setTag("list", list);
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationCCIDs.class).setTag(tag).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), player);
@@ -291,10 +292,10 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 
 	public void handleListPacket(NBTTagCompound tag) {
 		excludedCC.clear();
-		NBTTagList list = tag.getTagList("list");
+		NBTTagList list = tag.getTagList("list", 3);
 		while(list.tagCount() > 0) {
 			NBTBase base = list.removeTag(0);
-			excludedCC.add(((NBTTagInt)base).data);
+			excludedCC.add(((NBTTagInt)base).func_150287_d());
 		}
 	}
 
@@ -330,8 +331,8 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	}
 
 	@Override
-	public void func_85027_a(CrashReportCategory par1CrashReportCategory) {
-		super.func_85027_a(par1CrashReportCategory);
+	public void func_145828_a(CrashReportCategory par1CrashReportCategory) {
+		super.func_145828_a(par1CrashReportCategory);
 		par1CrashReportCategory.addCrashSection("LP-Version", LogisticsPipes.VERSION);
 	}
 	

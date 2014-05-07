@@ -24,6 +24,6 @@ public class CloseCommand implements ICommandHandler {
 	
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
-		DebugGuiTickHandler.instance().closeWatchingFrom((Player) sender);
+		DebugGuiTickHandler.instance().closeWatchingFrom((EntityPlayer) sender);
 	}
 }

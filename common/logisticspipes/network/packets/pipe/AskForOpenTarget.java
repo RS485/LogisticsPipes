@@ -9,6 +9,7 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class AskForOpenTarget extends ModernPacket {
@@ -23,7 +24,7 @@ public class AskForOpenTarget extends ModernPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		MovingObjectPosition box = FMLClientHandler.instance().getClient().objectMouseOver;
-		if(box.typeOfHit == EnumMovingObjectType.TILE) {
+		if(box.typeOfHit == MovingObjectType.BLOCK) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SlotFinderActivatePacket.class).setTagetPosX(box.blockX).setTagetPosY(box.blockY).setTagetPosZ(box.blockZ));	
 		}
 	}

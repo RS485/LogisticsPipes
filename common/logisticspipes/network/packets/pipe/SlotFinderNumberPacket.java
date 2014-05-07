@@ -17,11 +17,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraftforge.common.util.ForgeDirection;
 
 @Accessors(chain=true)
@@ -69,7 +71,7 @@ public class SlotFinderNumberPacket extends CoordinatesPacket {
 			}
 		}
 		if(result == null) {
-			player.sendChatToPlayer(ChatMessageComponent.createFromText("Couldn't find that slot internaly. Sorry. Please try again."));
+			player.addChatComponentMessage(new ChatComponentTranslation("lp.chat.slotnotfound"));
 		}
 		int resultIndex = -1;
 		if(resultIndex == -1) {
@@ -82,8 +84,8 @@ public class SlotFinderNumberPacket extends CoordinatesPacket {
 					}
 				}
 			} else {
-				ItemStack dummyStack = new ItemStack(1, 0, 0);
-				NBTTagCompound nbt = new NBTTagCompound("tag");
+				ItemStack dummyStack = new ItemStack(Blocks.stone, 0, 0);
+				NBTTagCompound nbt = new NBTTagCompound();
 				nbt.setBoolean("LPStackFinderBoolean", true); //Make it unique
 				dummyStack.setTagCompound(nbt);
 				result.putStack(dummyStack);
@@ -107,7 +109,7 @@ public class SlotFinderNumberPacket extends CoordinatesPacket {
 			}
 		}
 		if(resultIndex == -1) {
-			player.sendChatToPlayer(ChatMessageComponent.createFromText("Couldn't find that slot externaly. Sorry. Please try again."));
+			player.addChatComponentMessage(new ChatComponentTranslation("lp.chat.slotnotfound"));
 		} else {
 			//Copy pipe to coordinates to use the getPipe method
 			setPosX(getPipePosX());

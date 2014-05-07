@@ -4,6 +4,7 @@ import ic2.api.energy.event.EnergyTileLoadEvent;
 import ic2.api.energy.event.EnergyTileUnloadEvent;
 import ic2.api.energy.tile.IEnergySink;
 import ic2.api.energy.tile.IEnergyTile;
+import ic2.api.item.IC2Items;
 import ic2.api.item.IElectricItem;
 import ic2.api.recipe.Recipes;
 import logisticspipes.LogisticsPipes;
@@ -12,9 +13,8 @@ import logisticspipes.items.ItemModule;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
-import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.MinecraftForge;
@@ -42,8 +42,8 @@ public class IC2Proxy implements IIC2Proxy {
 	@Override
 	public boolean isSimilarElectricItem(ItemStack stack, ItemStack template) {
 		if (stack == null || template == null || !isElectricItem(template)) return false;
-		if (((IElectricItem) template.getItem()).getEmptyItemId(stack) == stack.itemID) return true;
-		if (((IElectricItem) template.getItem()).getChargedItemId(stack) == stack.itemID) return true;
+		if (((IElectricItem) template.getItem()).getEmptyItem(stack) == stack.getItem()) return true;
+		if (((IElectricItem) template.getItem()).getChargedItem(stack) == stack.getItem()) return true;
 		return false;
 	}
 
@@ -75,7 +75,7 @@ public class IC2Proxy implements IIC2Proxy {
 	@Override
 	public boolean isFullyCharged(ItemStack stack) {
 		if (!isElectricItem(stack)) return false;
-		if (((IElectricItem) stack.getItem()).getChargedItemId(stack) != stack.itemID) return false;
+		if (((IElectricItem) stack.getItem()).getChargedItem(stack) != stack.getItem()) return false;
 		int charge = getCharge(stack);
 		int maxCharge = getMaxCharge(stack);
 		return charge == maxCharge;
@@ -88,7 +88,7 @@ public class IC2Proxy implements IIC2Proxy {
 	@Override
 	public boolean isFullyDischarged(ItemStack stack) {
 		if (!isElectricItem(stack)) return false;
-		if (((IElectricItem) stack.getItem()).getEmptyItemId(stack) != stack.itemID) return false;
+		if (((IElectricItem) stack.getItem()).getEmptyItem(stack) != stack.getItem()) return false;
 		int charge = getCharge(stack);
 		return charge == 0;
 	}
@@ -100,7 +100,7 @@ public class IC2Proxy implements IIC2Proxy {
 	@Override
 	public boolean isPartiallyCharged(ItemStack stack) {
 		if (!isElectricItem(stack)) return false;
-		if (((IElectricItem) stack.getItem()).getChargedItemId(stack) != stack.itemID) return false;
+		if (((IElectricItem) stack.getItem()).getChargedItem(stack) != stack.getItem()) return false;
 		int charge = getCharge(stack);
 		int maxCharge = getMaxCharge(stack);
 		return charge != maxCharge;
@@ -115,9 +115,9 @@ public class IC2Proxy implements IIC2Proxy {
 			"CGC", 
 			"rBr", 
 			"CrC", 
-			Character.valueOf('C'), Items.getItem("advancedCircuit"),
+			Character.valueOf('C'), IC2Items.getItem("advancedCircuit"),
 			Character.valueOf('G'), BuildCraftCore.goldGearItem,
-			Character.valueOf('r'), Item.redstone,
+			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
 		
@@ -125,9 +125,9 @@ public class IC2Proxy implements IIC2Proxy {
 			" G ", 
 			"rBr", 
 			"CrC", 
-			Character.valueOf('C'), Items.getItem("advancedCircuit"),
+			Character.valueOf('C'), IC2Items.getItem("advancedCircuit"),
 			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
-			Character.valueOf('r'), Item.redstone,
+			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
 
@@ -136,10 +136,10 @@ public class IC2Proxy implements IIC2Proxy {
 			"CGD", 
 			"rBr", 
 			"DrC", 
-			Character.valueOf('C'), Items.getItem("electronicCircuit"),
-			Character.valueOf('D'), Items.getItem("reBattery"),
+			Character.valueOf('C'), IC2Items.getItem("electronicCircuit"),
+			Character.valueOf('D'), IC2Items.getItem("reBattery"),
 			Character.valueOf('G'), BuildCraftCore.goldGearItem,
-			Character.valueOf('r'), Item.redstone,
+			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
 		
@@ -147,10 +147,10 @@ public class IC2Proxy implements IIC2Proxy {
 			"CGD", 
 			"rBr", 
 			"DrC", 
-			Character.valueOf('C'), Items.getItem("electronicCircuit"),
-			Character.valueOf('D'), Items.getItem("chargedReBattery"),
+			Character.valueOf('C'), IC2Items.getItem("electronicCircuit"),
+			Character.valueOf('D'), IC2Items.getItem("chargedReBattery"),
 			Character.valueOf('G'), BuildCraftCore.goldGearItem,
-			Character.valueOf('r'), Item.redstone,
+			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
 		
@@ -158,11 +158,11 @@ public class IC2Proxy implements IIC2Proxy {
 			"CGc", 
 			"rBr", 
 			"DrC", 
-			Character.valueOf('C'), Items.getItem("electronicCircuit"),
-			Character.valueOf('c'), Items.getItem("reBattery"),
-			Character.valueOf('D'), Items.getItem("chargedReBattery"),
+			Character.valueOf('C'), IC2Items.getItem("electronicCircuit"),
+			Character.valueOf('c'), IC2Items.getItem("reBattery"),
+			Character.valueOf('D'), IC2Items.getItem("chargedReBattery"),
 			Character.valueOf('G'), BuildCraftCore.goldGearItem,
-			Character.valueOf('r'), Item.redstone,
+			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
 		
@@ -170,11 +170,11 @@ public class IC2Proxy implements IIC2Proxy {
 			"CGc", 
 			"rBr", 
 			"DrC", 
-			Character.valueOf('C'), Items.getItem("electronicCircuit"),
-			Character.valueOf('c'), Items.getItem("chargedReBattery"),
-			Character.valueOf('D'), Items.getItem("reBattery"),
+			Character.valueOf('C'), IC2Items.getItem("electronicCircuit"),
+			Character.valueOf('c'), IC2Items.getItem("chargedReBattery"),
+			Character.valueOf('D'), IC2Items.getItem("reBattery"),
 			Character.valueOf('G'), BuildCraftCore.goldGearItem,
-			Character.valueOf('r'), Item.redstone,
+			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
 
@@ -182,10 +182,10 @@ public class IC2Proxy implements IIC2Proxy {
 			" G ", 
 			"rBr", 
 			"DrC", 
-			Character.valueOf('C'), Items.getItem("electronicCircuit"),
-			Character.valueOf('D'), Items.getItem("reBattery"),
+			Character.valueOf('C'), IC2Items.getItem("electronicCircuit"),
+			Character.valueOf('D'), IC2Items.getItem("reBattery"),
 			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
-			Character.valueOf('r'), Item.redstone,
+			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
 		
@@ -193,10 +193,10 @@ public class IC2Proxy implements IIC2Proxy {
 			" G ", 
 			"rBr", 
 			"DrC", 
-			Character.valueOf('C'), Items.getItem("electronicCircuit"),
-			Character.valueOf('D'), Items.getItem("chargedReBattery"),
+			Character.valueOf('C'), IC2Items.getItem("electronicCircuit"),
+			Character.valueOf('D'), IC2Items.getItem("chargedReBattery"),
 			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
-			Character.valueOf('r'), Item.redstone,
+			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
 		
@@ -205,10 +205,10 @@ public class IC2Proxy implements IIC2Proxy {
 			"OBO", 
 			"PTP", 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_TRANSPORTATION),
-			Character.valueOf('S'), Items.getItem("energyStorageUpgrade"), 
-			Character.valueOf('O'), Items.getItem("overclockerUpgrade"), 
-			Character.valueOf('T'), Items.getItem("transformerUpgrade"), 
-			Character.valueOf('P'), Item.paper
+			Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), 
+			Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), 
+			Character.valueOf('T'), IC2Items.getItem("transformerUpgrade"), 
+			Character.valueOf('P'), Items.paper
 		});
 		
 		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_MV_SUPPLIER), new Object[] { 
@@ -216,10 +216,10 @@ public class IC2Proxy implements IIC2Proxy {
 			"OBO", 
 			"PTP", 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_LV_SUPPLIER),
-			Character.valueOf('S'), Items.getItem("energyStorageUpgrade"), 
-			Character.valueOf('O'), Items.getItem("overclockerUpgrade"), 
-			Character.valueOf('T'), Items.getItem("transformerUpgrade"), 
-			Character.valueOf('P'), Item.paper
+			Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), 
+			Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), 
+			Character.valueOf('T'), IC2Items.getItem("transformerUpgrade"), 
+			Character.valueOf('P'), Items.paper
 		});
 		
 		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_HV_SUPPLIER), new Object[] { 
@@ -227,10 +227,10 @@ public class IC2Proxy implements IIC2Proxy {
 			"OBO", 
 			"PTP", 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_MV_SUPPLIER),
-			Character.valueOf('S'), Items.getItem("energyStorageUpgrade"), 
-			Character.valueOf('O'), Items.getItem("overclockerUpgrade"), 
-			Character.valueOf('T'), Items.getItem("transformerUpgrade"), 
-			Character.valueOf('P'), Item.paper
+			Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), 
+			Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), 
+			Character.valueOf('T'), IC2Items.getItem("transformerUpgrade"), 
+			Character.valueOf('P'), Items.paper
 		});
 		
 		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_EV_SUPPLIER), new Object[] { 
@@ -238,21 +238,21 @@ public class IC2Proxy implements IIC2Proxy {
 			"OBO", 
 			"PTP", 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_HV_SUPPLIER),
-			Character.valueOf('S'), Items.getItem("energyStorageUpgrade"), 
-			Character.valueOf('O'), Items.getItem("overclockerUpgrade"), 
-			Character.valueOf('T'), Items.getItem("transformerUpgrade"), 
-			Character.valueOf('P'), Item.paper
+			Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), 
+			Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), 
+			Character.valueOf('T'), IC2Items.getItem("transformerUpgrade"), 
+			Character.valueOf('P'), Items.paper
 		});
 		
 		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_IC2_POWERPROVIDER), new Object[] { 
 			"PSP", 
 			"OBO", 
 			"PTP", 
-			Character.valueOf('B'), Block.blockRedstone,
-			Character.valueOf('S'), Items.getItem("energyStorageUpgrade"), 
-			Character.valueOf('O'), Items.getItem("overclockerUpgrade"), 
-			Character.valueOf('T'), Items.getItem("transformerUpgrade"), 
-			Character.valueOf('P'), Item.paper
+			Character.valueOf('B'), Blocks.redstone_block,
+			Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), 
+			Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), 
+			Character.valueOf('T'), IC2Items.getItem("transformerUpgrade"), 
+			Character.valueOf('P'), Items.paper
 		});
 	}
 	
@@ -262,7 +262,7 @@ public class IC2Proxy implements IIC2Proxy {
 	*/
 	@Override
 	public void registerToEneryNet(TileEntity tile) {
-		if(MainProxy.isServer(tile.worldObj)) {
+		if(MainProxy.isServer(tile.getWorldObj())) {
 			MinecraftForge.EVENT_BUS.post(new EnergyTileLoadEvent((IEnergyTile) tile));
 		}
 	}
@@ -273,7 +273,7 @@ public class IC2Proxy implements IIC2Proxy {
 	*/
 	@Override
 	public void unregisterToEneryNet(TileEntity tile) {
-		if(MainProxy.isServer(tile.worldObj)) {
+		if(MainProxy.isServer(tile.getWorldObj())) {
 			MinecraftForge.EVENT_BUS.post(new EnergyTileUnloadEvent((IEnergyTile) tile));
 		}
 	}

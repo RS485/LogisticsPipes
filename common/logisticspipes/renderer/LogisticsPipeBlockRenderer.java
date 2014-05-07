@@ -15,7 +15,7 @@ public class LogisticsPipeBlockRenderer implements IItemRenderer {
 	private void renderBlockItem(RenderBlocks render, ItemStack item, float translateX, float translateY, float translateZ) {
 		Tessellator tessellator = Tessellator.instance;
 
-		Block block = Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID];
+		Block block = BuildCraftTransport.genericPipeBlock;
 		
 		block.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 		block.setBlockBoundsForItemRender();

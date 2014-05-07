@@ -88,9 +88,9 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	}
 
 	@Override
-	public void func_85027_a(CrashReportCategory par1CrashReportCategory) {
+	public void func_145828_a(CrashReportCategory par1CrashReportCategory) {
 		try {
-			super.func_85027_a(par1CrashReportCategory);
+			super.func_145828_a(par1CrashReportCategory);
 		} catch(Exception e) {
 			if(LogisticsPipes.DEBUG) {
 				e.printStackTrace();

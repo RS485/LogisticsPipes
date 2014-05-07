@@ -30,6 +30,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.GuiIngameForge;
 
@@ -281,7 +282,7 @@ public class LogisticsHUDRenderer {
 		
 		GL11.glPushMatrix();
 		MovingObjectPosition box = mc.objectMouseOver;
-		if(box != null && box.typeOfHit == EnumMovingObjectType.TILE) {
+		if(box != null && box.typeOfHit == MovingObjectType.BLOCK) {
 			if(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 				progress = Math.min(progress + (2 * Math.max(1, (int) Math.floor((System.currentTimeMillis() - last) / 50.0D))), 100);
 			} else {

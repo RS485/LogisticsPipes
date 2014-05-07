@@ -38,6 +38,7 @@ import logisticspipes.utils.tuples.Pair;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentTranslation;
 
 @CCType(name = "LogisticsPipes:Request")
 public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IRequestItems, IRequestAPI {
@@ -68,7 +69,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 			if (settings == null || settings.openRequest) {
 				openGui(entityplayer);
 			} else {
-				entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
+				entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
 			}
 		}
 		return true;

@@ -311,8 +311,8 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	}
 	
 	@Override
-	public void func_85027_a(CrashReportCategory par1CrashReportCategory) {
-		super.func_85027_a(par1CrashReportCategory);
+	public void func_145828_a(CrashReportCategory par1CrashReportCategory) {
+		super.func_145828_a(par1CrashReportCategory);
 		par1CrashReportCategory.addCrashSection("LP-Version", LogisticsPipes.VERSION);
 	}
 

@@ -35,6 +35,7 @@ import java.util.List;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.VersionNotSupportedException;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
+import logisticspipes.proxy.interfaces.IGenericProgressProvider;
 import logisticspipes.utils.ModStatusHelper;
 import net.minecraft.launchwrapper.Launch;
 
@@ -47,6 +48,41 @@ import org.objectweb.asm.Opcodes;
 public class LogisticsWrapperHandler {
 	public static List<AbstractWrapper> wrapperController = new ArrayList<AbstractWrapper>();
 	private static Method m_defineClass = null;
+	
+	public static IGenericProgressProvider getWrappedProgressProvider(String modId, String name, Class<? extends IGenericProgressProvider> providerClass) {
+		IGenericProgressProvider provider = null;
+		Throwable e = null; 
+		if(ModStatusHelper.isModLoaded(modId)) {
+			try {
+				provider = providerClass.newInstance();
+			} catch(Exception e1) {
+				if(e instanceof VersionNotSupportedException) {
+					throw (VersionNotSupportedException) e;
+				}
+				e1.printStackTrace();
+				e = e1;
+			} catch(NoClassDefFoundError e1) {
+				e1.printStackTrace();
+				e = e1;
+			}
+		}
+		GenericProgressProviderWrapper instance = new GenericProgressProviderWrapper(provider, modId + ": " + name);
+		if(provider != null) {
+			LogisticsPipes.log.info("Loaded " + name + " ProgressProvider");
+		} else {
+			if(e != null) {
+				((AbstractWrapper)instance).setState(WrapperState.Exception);
+				((AbstractWrapper)instance).setReason(e);
+				LogisticsPipes.log.info("Couldn't loaded " + name + " ProgressProvider");
+			} else {
+				LogisticsPipes.log.info("Didn't loaded " + name + " ProgressProvider");
+				((AbstractWrapper)instance).setState(WrapperState.ModMissing);
+			}
+		}
+		instance.setModId(modId);
+		wrapperController.add(instance);
+		return instance;
+	}
 	
 	public static ICraftingRecipeProvider getWrappedRecipeProvider(String modId, String name, Class<? extends ICraftingRecipeProvider> providerClass) {
 		ICraftingRecipeProvider provider = null;

@@ -31,6 +31,9 @@ public class LogisticsOrder implements IOrderInfoProvider {
 	private boolean inProgress;
 	@Getter
 	private boolean isWatched = false;
+	@Getter
+	@Setter
+	private byte machineProgress = 0;
 	private List<IDistanceTracker> trackers = new ArrayList<IDistanceTracker>();
 	
 	public LogisticsOrder(ItemIdentifierStack item, IRequestItems destination, RequestType type) {

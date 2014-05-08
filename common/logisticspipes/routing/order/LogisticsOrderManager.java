@@ -140,6 +140,16 @@ public class LogisticsOrderManager implements Iterable<LogisticsOrder> {
 		return itemCount;
 	}
 
+	public void setMachineProgress(byte progress) {
+		if(_orders.isEmpty()) return;
+		_orders.getFirst().setMachineProgress(progress);
+	}
+
+	public boolean isFirstOrderWatched() {
+		if(_orders.isEmpty()) return false;
+		return _orders.getFirst().isWatched();
+	}
+
 	/**
 	 * DON'T MODIFY TROUGH THIS ONLY READ THE VALUES
 	 */

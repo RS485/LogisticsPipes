@@ -21,4 +21,5 @@ public interface IOrderInfoProvider {
 	void setWatched();
 	
 	List<Float> getProgresses();
+	byte getMachineProgress();
 }

@@ -8,6 +8,7 @@
 
 package logisticspipes.pipes;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -109,6 +110,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 import buildcraft.api.inventory.ISpecialInventory;
@@ -133,6 +135,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public final LinkedList<LogisticsOrder> _extras = new LinkedList<LogisticsOrder>();
 	private boolean init = false;
 	private boolean doContentUpdate = true;
+	private WeakReference<TileEntity> lastAccessedCrafter = new WeakReference<TileEntity>(null);
 	
 	public boolean waitingForCraft = false;
 	
@@ -284,8 +287,16 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			checkContentUpdate();
 		}
 		
-		if(hasOrder()) {
+		if(_orderManager.hasOrders()) {
 			cacheAreAllOrderesToBuffer();
+			if(_orderManager.isFirstOrderWatched()) {
+				TileEntity tile = lastAccessedCrafter.get();
+				if(tile != null) {
+					_orderManager.setMachineProgress(SimpleServiceLocator.machineProgressProvider.getProgressForTile(tile));
+				} else {
+					_orderManager.setMachineProgress((byte) 0);
+				}
+			}
 		} else {
 			cachedAreAllOrderesToBuffer = false;
 		}
@@ -346,7 +357,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 				}
 			}
 			if(extracted == null || extracted.stackSize == 0) break;
-			
+			lastAccessedCrafter = new WeakReference<TileEntity>(tile.tile);
 			// send the new crafted items to the destination
 			ItemIdentifier extractedID = ItemIdentifier.get(extracted);
 			while (extracted.stackSize > 0) {
@@ -643,10 +654,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	@Override
 	public ItemSendMode getItemSendMode() {
 		return ItemSendMode.Normal;
-	}
-	
-	public boolean hasOrder() {
-		return _orderManager.hasOrders();
 	}
 	
 	@Override
@@ -1065,7 +1072,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		while (lostItem != null) {
 			
 			ItemIdentifierStack stack = lostItem.get();
-			if(hasOrder()) { 
+			if(_orderManager.hasOrders()) { 
 				SinkReply reply = LogisticsManager.canSink(getRouter(), null, true, stack.getItem(), null, true, true);
 				if(reply == null || reply.maxNumberOfItems < 1) {
 					_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(stack, 5000));

@@ -296,6 +296,11 @@ public class RequestMonitorPopup extends SubGuiScreen {
 			this.drawTexturedModalRect(startLeft - 5, yPos - 5, 0, 202, 26, 26);
 			GL11.glColor4f(0.7F, 0.7F, 0.7F, 1.0F);
 			renderItemAt(list.get(i).getItem(), startLeft, yPos);
+			if(list.get(i).isInProgress() && list.get(i).getMachineProgress() != 0) {
+				drawRect(startLeft - 4, yPos + 20, startLeft + 20, yPos + 24, 0xff000000);
+				drawRect(startLeft - 3, yPos + 21, startLeft + 19, yPos + 23, 0xffffffff);
+				drawRect(startLeft - 3, yPos + 21, startLeft - 3 + (22 * list.get(i).getMachineProgress() / 100), yPos + 23, 0xffff0000);
+			}
 			if(startLeft - 10 < par1 && par1 < startLeft + 20 && yPos - 6 < par2 && par2 < yPos + 20) {
 				if(guiLeft < par1 && par1 < guiLeft + xSize - 16 && guiTop < par2 && par2 < guiTop + ySize - 16) {
 					IOrderInfoProvider order = list.get(i);

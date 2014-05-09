@@ -34,7 +34,7 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 	
 	@Override
 	public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
-		if(from.ordinal() < ForgeDirection.VALID_DIRECTIONS.length) {
+		if(from.ordinal() < ForgeDirection.VALID_DIRECTIONS.length && getFluidPipe().canReceiveFluid()) {
 			return sideTanks[from.ordinal()].fill(resource, doFill);
 		} else {
 			return 0;

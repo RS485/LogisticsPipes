@@ -84,7 +84,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 								while(drained.amount < amountToSend) {
 									FluidStack addition = ((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), amountToSend - drained.amount, false);
 									if(drained != null && order.getValue1() == FluidIdentifier.get(drained)) {
-										addition = ((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), amountToSend - drained.amount, false);
+										addition = ((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), amountToSend - drained.amount, true);
 										drained.amount += addition.amount;
 									} else {
 										break;

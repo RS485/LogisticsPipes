@@ -232,9 +232,9 @@ tile.solderingstation=Soldering Station
 tile.logisticspowerjunction=Logistics Power Junction
 tile.logisticssecuritystation=Logistics Security Station
 tile.logisticscraftingtable=Logistics Crafting Table
-tile.logisticsbcpowerprovider=Logistics BC Power Provider
-tile.logisticstepowerprovider=Logistics TE Power Provider
-tile.logisticsic2powerprovider=Logistics IC2 Power Provider
+tile.logisticsbcpowerprovider=Logistics MJ Power Provider
+tile.logisticsic2powerprovider=Logistics EU Power Provider
+tile.logisticstepowerprovider=Logistics RF Power Provider
 
 # Misc
 
@@ -255,8 +255,8 @@ lp.chat.slotnotfound=Couldn't find that slot internaly. Sorry. Please try again.
 lp.chat.permissiondenied=Permission denied
 lp.chat.connectedtopipe=Connected to pipe
 lp.misc.noenergy=No Energy
-lp.hud.config.chassie.enabled=Enabled Chassie.
-lp.hud.config.chassie.disabled=Disabled Chassie.
+lp.hud.config.chassie.enabled=Enabled Chassis.
+lp.hud.config.chassie.disabled=Disabled Chassis.
 lp.hud.config.crafting.enabled=Enabled Crafting.
 lp.hud.config.crafting.disabled=Disabled Crafting.
 lp.hud.config.invsyscon.enabled=Enabled InvSysCon.

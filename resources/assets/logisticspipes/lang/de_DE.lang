@@ -176,6 +176,8 @@ item.ModuleOreDictItemSink=OreDictionary-ItemSink-Modul
 item.ModuleThaumicAspectSink=Thaumisches Aspektmodul
 item.ModuleEnchantmentSink=Verzauberungsmodul
 item.ModuleEnchantmentSinkMK2=Verzauberungsmodul Mk2
+item.ModuleCCBasedItemSink=CC-basiertes ItemSink-Modul
+item.ModuleCCBasedQuickSort=CC-basiertes QuickSort-Modul
 
 # Items
 
@@ -191,7 +193,7 @@ item.itemDisk=Logistische Platte
 item.networkMonitorItem=Netzwerkmonitor
 item.CraftingSignCreator=Fertigungsschildkreierer
 item.logisticsHUDGlasses=Logistische HUD-Brille
-item.remoteOrdererItem=Fernbesteller
+item.remoteOrdererItem=Funkbesteller
 
 # Upgrades
 
@@ -222,18 +224,150 @@ item.IC2MVPowerSupplierUpgrade=IC2-MS-Energie-Versorger-Upgrade
 item.IC2HVPowerSupplierUpgrade=IC2-HS-Energie-Versorger-Upgrade
 item.IC2EVPowerSupplierUpgrade=IC2-ES-Energie-Versorger-Upgrade
 item.CCRemoteControlUpgrade=CC-Fernsteuer-Upgrade
+item.CraftingMonitoringUpgrade=Fertigunsanzeige-Upgrade
 
 # Blocks
 
 tile.solderingstation=Lötstation
-tile.logisticspowerjunction=Logistische Energierelais
+tile.logisticspowerjunction=Logistisches Energierelais
 tile.logisticssecuritystation=Logistische Sicherheitsstation
 tile.logisticscraftingtable=Logistische Werkbank
-tile.logisticsbcpowerprovider=Logistischer BC-Energieanbieter
-tile.logisticstepowerprovider=Logistischer TE-Energieanbieter
-tile.logisticsic2powerprovider=Logistischer IC2-Energieanbieter
+tile.logisticsbcpowerprovider=Logistischer MJ-Energieanbieter
+tile.logisticsic2powerprovider=Logistischer EU-Energieanbieter
+tile.logisticstepowerprovider=Logistischer RF-Energieanbieter
 
 # Misc
 
 itemGroup.Logistics_Pipes=Logistics Pipes
 misc.holdshift=<Halte %cYELLOW %cITALIC Shift %cRESET %cGRAY für Details>
+misc.extractionmode.Normal=Normal
+misc.extractionmode.LeaveFirst=1. Stack halten
+misc.extractionmode.LeaveLast=Letzten Stack halten
+misc.extractionmode.LeaveFirstAndLast=Ersten&letzten Stack halten
+misc.extractionmode.Leave1PerStack=1 Item pro Stack halten
+misc.extractionmode.Leave1PerType=1 Item pro Typ halten
+
+
+
+#Misc Chat messages
+
+lp.chat.slotnotfound=Konnte diesen Slot intern nicht finden. Sorry, Bitte versuche es erneut.
+lp.chat.permissiondenied=Zugriff verweigert
+lp.chat.connectedtopipe=Mit Rohr verbunden
+lp.misc.noenergy=Keine Energie
+lp.hud.config.chassie.enabled=Gehäuse aktiviert.
+lp.hud.config.chassie.disabled=Gehäuse deaktiviert.
+lp.hud.config.crafting.enabled=Fertigung aktiviert.
+lp.hud.config.crafting.disabled=Fertigung deaktiviert.
+lp.hud.config.invsyscon.enabled=InvSysKon aktiviert.
+lp.hud.config.invsyscon.disabled=InvSysKCon aktiviert.
+lp.hud.config.powerjunction.enabled=Energierelais aktiviert.
+lp.hud.config.powerjunction.disabled=Energierelais deaktiviert.
+lp.hud.config.provider.enabled=Anbieter aktiviert.
+lp.hud.config.provider.disabled=Anbieter deaktiviert.
+lp.hud.config.satellite.enabled=Satellit aktiviert.
+lp.hud.config.satellite.disabled=Satellit deaktiviert.
+
+# GUI
+
+gui.crafting.Inputs=Inputs
+gui.crafting.Inventory=Inventar
+gui.crafting.Import=Import
+gui.crafting.Open=Öffnen
+gui.crafting.Output=Output
+gui.crafting.Satellite=Satellit
+gui.crafting.Off=Aus
+gui.crafting.Priority=Prioritäa
+gui.crafting.Extra=Extra
+gui.crafting.OreDict=OreDict
+gui.crafting.IgnDamage=IgnDamage
+gui.crafting.IgnNBT=IgnNBT
+gui.crafting.OrePrefix=OrePrefix
+
+gui.firewall.Blocked=Blockiert
+gui.firewall.Allowed=Erlaubt
+gui.firewall.Firewall=Firewall
+gui.firewall.Filter=Filter
+gui.firewall.Filtereditemsare=Gefilterte Items sind
+gui.firewall.Providing=Anbieten
+gui.firewall.Crafting=Fertigen
+gui.firewall.Sorting=Sortieren
+gui.firewall.Powerflow=Energiefluss
+
+gui.fluidbasic.Empty=Leer
+
+gui.fluidsuppliermk2.Inventory=Inventar
+gui.fluidsuppliermk2.Fluid=Flüssigk.
+gui.fluidsuppliermk2.Partialrequests=Teilweise Bestellen
+gui.fluidsuppliermk2.Yes=Ja
+gui.fluidsuppliermk2.No=Nein
+gui.fluidsuppliermk2.TargetInv=Versorgt zu haltende Flüssigkeit
+
+gui.fluidsupplier.TargetInv=Versorgt zu haltende Flüssigkeiten
+gui.fluidsupplier.Inventory=Inventar
+gui.fluidsupplier.Partialrequests=Teilweise Bestellen
+gui.fluidsupplier.Yes=Ja
+gui.fluidsupplier.No=Nein
+
+gui.invsyscon.No=Nein
+gui.invsyscon.Refresh=Neu laden
+gui.invsyscon.Save=Speichern
+gui.invsyscon.InventorySystemConnector=Inventarsystemkonnektor
+gui.invsyscon.ConnectionCard=Verbindungskarte
+gui.invsyscon.Waitingfor=Warten für
+gui.invsyscon.Resistance=Resistenz
+
+gui.powerjunction.LogisticsPowerJunction=Logistisches Energierelais
+gui.powerjunction.StoredEnergy=Gespeicherte Energie
+
+gui.powerprovider.LogisticsMJPowerProvider=Logistischer MJ-Energieanbieter
+gui.powerprovider.LogisticsEUPowerProvider=Logistischer EU-Energieanbieter
+gui.powerprovider.LogisticsRFPowerProvider=Logistischer RF-Energieanbieter
+gui.powerprovider.StoredEnergy=Gespeicherte Energie
+
+gui.providerpipe.TargetInv=Anzubietende Items (oder leer für alles)
+gui.providerpipe.Inventory=Inventar
+gui.providerpipe.Mode=Modus
+gui.providerpipe.Exclude=Ausschließlich
+gui.providerpipe.Include=Einschließlich
+gui.providerpipe.Switch=Schalten
+
+gui.routingstats.Session=Session
+gui.routingstats.Lifetime=Laufzeit
+gui.routingstats.Sent=Gesendet
+gui.routingstats.Recieved=Empfangen
+gui.routingstats.Relayed=Übertragen
+gui.routingstats.RoutingTableSize=Routenplangröße
+gui.routingstats.exit=Drücke <ESC> zum schließen
+
+gui.satellite.SatelliteID=Satelliten-ID
+
+gui.securitystation.Open=Öffnen
+gui.securitystation.EditTable=Tabelle bearbeiten
+gui.securitystation.Authorize=Authorisieren
+gui.securitystation.Deauthorize=Deauthorisieren
+gui.securitystation.SecurityStation=Sicherheitsstation
+gui.securitystation.allowCCAccess=ComputerCraft-Zugriff erlauben
+gui.securitystation.excludeIDs=Ausgeschlossene ComputerCraft-IDs
+gui.securitystation.pipeRemove=Automatische Rohrentfernung erlauben
+gui.securitystation.Player=Spieler
+gui.securitystation.SecurityCards=Sicherheitskarten
+gui.securitystation.Inventory=Inventar
+gui.securitystation.popup.ccAccess.Remove=Entfernen
+gui.securitystation.popup.ccAccess.Add=Hinzufügen
+gui.securitystation.popup.player.Close=Schließen
+gui.securitystation.popup.player.Player=Spieler
+gui.securitystation.popup.player.ConfigureSettings=Einstellungen
+gui.securitystation.popup.player.ActiveRequesting=Aktives Bestellen
+gui.securitystation.popup.player.UpgradePipes=Rohre upgraden
+gui.securitystation.popup.player.CheckNetwork=Netzwerk prüfen
+gui.securitystation.popup.player.RemovePipes=Rohre entfernen
+
+gui.supplierpipe.TargetInv=Versorgt zu haltende Items
+gui.supplierpipe.TargetInvPattern=In den spezifizierten Slots zu haltende Items
+gui.supplierpipe.Inventory=Inventar
+gui.supplierpipe.RequestMode=Bestellmodus
+
+gui.upgrademanager.Upgrades=Upgrades
+gui.upgrademanager.Inventory=Inventar
+gui.upgrademanager.SneakyUpgrades=Sneaky-Upgrades

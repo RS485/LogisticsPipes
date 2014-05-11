@@ -145,7 +145,7 @@ item.PipeFluidProvider=物流液体供应管道
 item.PipeFluidRequestLogistics=物流液体请求管道
 item.PipeFluidExtractor=物流液体抽取管道
 item.PipeFluidSatellite=物流液体卫星式合成辅助物流管道
-item.PipeBlockRequestTable=请求物流桌
+item.PipeBlockRequestTable=物流请求桌
 
 # Modules
 
@@ -294,17 +294,17 @@ gui.invsyscon.Save=保存
 gui.invsyscon.InventorySystemConnector=并网
 gui.invsyscon.ConnectionCard=连接卡
 gui.invsyscon.Waitingfor=等待
-gui.invsyscon.Resistance=优先度（越小越优先）
+gui.invsyscon.Resistance=优先度(越小越优先)
 
-gui.powerjunction.LogisticsPowerJunction=物流能量接头
+gui.powerjunction.LogisticsPowerJunction=物流能源中枢
 gui.powerjunction.StoredEnergy=存储能量
 
-gui.powerprovider.LogisticsMJPowerProvider=物流MJ能量提供
-gui.powerprovider.LogisticsEUPowerProvider=物流EU能量提供
-gui.powerprovider.LogisticsRFPowerProvider=物流RF能量提供
+gui.powerprovider.LogisticsMJPowerProvider=物流MJ能量供应器
+gui.powerprovider.LogisticsEUPowerProvider=物流EU能量供应器
+gui.powerprovider.LogisticsRFPowerProvider=物流RF能量供应器
 gui.powerprovider.StoredEnergy=存储能量
 
-gui.providerpipe.TargetInv=提供物品(或者空着提供所有物品)
+gui.providerpipe.TargetInv=供应物品(或者空着提供所有物品)
 gui.providerpipe.Inventory=物品栏
 gui.providerpipe.Mode=模式
 gui.providerpipe.Exclude=排除
@@ -319,15 +319,15 @@ gui.routingstats.Relayed=被中继的
 gui.routingstats.RoutingTableSize=路由表尺寸
 gui.routingstats.exit=按<ESC>退出
 
-gui.satellite.SatelliteID=卫星式物ID
+gui.satellite.SatelliteID=卫星式ID
 
 gui.securitystation.Open=打开
 gui.securitystation.EditTable=编辑台
 gui.securitystation.Authorize=授权
 gui.securitystation.Deauthorize=解除授权
 gui.securitystation.SecurityStation=安全站
-gui.securitystation.allowCCAccess=运行使用电脑mod
-gui.securitystation.excludeIDs=被排除的电脑mod的物品IDs
+gui.securitystation.allowCCAccess=允许使用ComputerCraft
+gui.securitystation.excludeIDs=被排除的ComputerCraft IDs
 gui.securitystation.pipeRemove=允许自动化管道移除
 gui.securitystation.Player=玩家
 gui.securitystation.SecurityCards=安全卡

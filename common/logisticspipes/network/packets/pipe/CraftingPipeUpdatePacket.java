@@ -57,6 +57,7 @@ public class CraftingPipeUpdatePacket extends CoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
+		if(pipe == null) return;
 		if(!(pipe.pipe instanceof PipeItemsCraftingLogistics)) return;
 		((PipeItemsCraftingLogistics)pipe.pipe).handleCraftingUpdatePacket(this);
 	}

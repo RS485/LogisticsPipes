@@ -19,7 +19,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.DelayQueue;
 
-import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.gui.hud.HUDCrafting;
@@ -101,7 +100,6 @@ import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.block.Block;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
@@ -112,13 +110,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
-import buildcraft.api.core.Position;
 import buildcraft.api.inventory.ISpecialInventory;
-import buildcraft.core.CoreConstants;
-import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.TransportConstants;
-import buildcraft.transport.TravelingItem;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.Player;
 
@@ -375,11 +368,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 						itemsleft -= numtosend;
 						ItemStack stackToSend = extracted.splitStack(numtosend);
 						//Route the unhandled item
-						LPPosition entityPos = new LPPosition(tile.tile.xCoord + 0.5, tile.tile.yCoord + CoreConstants.PIPE_MIN_POS, tile.tile.zCoord + 0.5);
-						entityPos.moveForward(tile.orientation.getOpposite(), 0.5);
-						TravelingItem entityItem = new TravelingItem(entityPos.getXD(), entityPos.getYD(), entityPos.getZD(), stackToSend);
-						entityItem.setSpeed(TransportConstants.PIPE_NORMAL_SPEED * Configs.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
-						((PipeTransportItems) transport).injectItem(entityItem, tile.orientation.getOpposite());
+						transport.sendItem(stackToSend);
 						continue;
 					}
 				}
@@ -396,7 +385,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 					if(reply == null || reply.bufferMode != BufferMode.NONE || reply.maxNumberOfItems < 1) {
 						defersend = true;
 					}
-					IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stackToSend);
+					IRoutedItem item = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stackToSend);
 					item.setDestination(nextOrder.getDestination().getRouter().getSimpleID());
 					item.setTransportMode(TransportMode.Active);
 					super.queueRoutedItem(item, tile.orientation);
@@ -410,14 +399,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 					}
 				} else {
 					removeExtras(numtosend,nextOrder.getItem().getItem());
-
-					Position p = new Position(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, tile.orientation);
-					LogisticsPipes.requestLog.info(stackToSend.stackSize + " extras dropped, " + countExtras() + " remaining");
- 					Position entityPos = new Position(p.x + 0.5, p.y + CoreConstants.PIPE_MIN_POS, p.z + 0.5, p.orientation.getOpposite());
-					entityPos.moveForwards(0.5);
-					TravelingItem entityItem = new TravelingItem(entityPos.x, entityPos.y, entityPos.z, stackToSend);
-					entityItem.setSpeed(TransportConstants.PIPE_NORMAL_SPEED * Configs.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
-					((PipeTransportItems) transport).injectItem(entityItem, entityPos.orientation);
+					transport.sendItem(stackToSend);
 				}
 			}
 		}

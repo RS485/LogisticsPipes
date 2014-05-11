@@ -8,13 +8,10 @@
 
 package logisticspipes.utils.item;
 
-import java.io.IOException;
 import java.util.Comparator;
 import java.util.LinkedList;
 
 import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.inventory.IInventory;
@@ -88,6 +85,10 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 		this.stackSize = stackSize;
 	}
 
+	public void lowerStackSize(int stackSize) {
+		this.stackSize -= stackSize;
+	}
+
 	public ItemStack unsafeMakeNormalStack(){
 		ItemStack stack = new ItemStack(_item.itemID, this.getStackSize(), _item.itemDamage);
 		stack.setTagCompound(_item.tag);
@@ -156,14 +157,14 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 			} else {
 				boolean added = false;
 				for(ItemIdentifierStack stack:list) {
-					if(stack.getItem().equals(ItemIdentifierStack.getFromStack(part.getValue1().getItemStack()).getItem())) {
-						stack.setStackSize(stack.getStackSize() + part.getValue1().getItemStack().stackSize);
+					if(stack.getItem().equals(part.getValue1().getItemIdentifierStack().getItem())) {
+						stack.setStackSize(stack.getStackSize() + part.getValue1().getItemIdentifierStack().stackSize);
 						added = true;
 						break;
 					}
 				}
 				if(!added) {
-					list.add(ItemIdentifierStack.getFromStack(part.getValue1().getItemStack()));
+					list.add(part.getValue1().getItemIdentifierStack().clone());
 				}
 			}
 		}

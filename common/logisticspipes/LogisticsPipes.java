@@ -84,6 +84,7 @@ import logisticspipes.ticks.Watchdog;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.InventoryUtilFactory;
+import logisticspipes.utils.RoutedItemHelper;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.launchwrapper.IClassTransformer;
@@ -261,6 +262,7 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setSpecialTankHandler(new SpecialTankHandler());
 		SimpleServiceLocator.setCraftingPermissionManager(new CraftingPermissionManager());
 		SimpleServiceLocator.setMachineProgressProvider(new MachineProgressProvider());
+		SimpleServiceLocator.setRoutedItemHelper(new RoutedItemHelper());
 		
 		if(event.getSide().isClient()) {
 			//SimpleServiceLocator.buildCraftProxy.registerLocalization();

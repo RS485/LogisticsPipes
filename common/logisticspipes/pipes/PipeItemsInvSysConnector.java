@@ -26,9 +26,11 @@ import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.transport.TransportInvConnection;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryHelper;
@@ -149,7 +151,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	}
 
 	public void sendStack(ItemStack stack, int destination, ForgeDirection dir, TransportMode mode) {
-		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stack);
+		IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(mode);
 		super.queueRoutedItem(itemToSend, dir);
@@ -335,17 +337,14 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		return false;
 	}
 	
-	public void handleItemEnterInv(TravelingItem arrivingItem, TileEntity tile) {
+	public void handleItemEnterInv(ItemIdentifierStack item, ItemRoutingInformation info, TileEntity tile) {
 		if(isConnectedInv(tile)) {
-			if(arrivingItem instanceof IRoutedItem) {
-				IRoutedItem routed = (IRoutedItem)arrivingItem;
-				if(hasRemoteConnection()) {
-					CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
-					if(CRP instanceof IDirectRoutingConnection) {
-						IDirectRoutingConnection pipe = (IDirectRoutingConnection) CRP;
-						pipe.addItem(ItemIdentifier.get(routed.getItemStack()), routed.getItemStack().stackSize, routed.getDestination(), routed.getTransportMode());
-						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), this.getWorld(), 4);
-					}
+			if(hasRemoteConnection()) {
+				CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
+				if(CRP instanceof IDirectRoutingConnection) {
+					IDirectRoutingConnection pipe = (IDirectRoutingConnection) CRP;
+					pipe.addItem(item.getItem(), item.getStackSize(), info.destinationint, info._transportMode);
+					MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), this.getWorld(), 4);
 				}
 			}
 		}

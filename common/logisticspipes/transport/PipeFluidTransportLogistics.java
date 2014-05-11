@@ -7,7 +7,7 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.pipe.PipeFluidUpdate;
 import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
 import logisticspipes.proxy.MainProxy;
-import net.minecraft.item.ItemStack;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
@@ -268,7 +268,7 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 	}
 
 	@Override
-	protected boolean isItemExitable(ItemStack stack) {
+	protected boolean isItemExitable(ItemIdentifierStack stack) {
 		return true;
 	}
 }

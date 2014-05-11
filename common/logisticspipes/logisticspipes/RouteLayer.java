@@ -36,7 +36,7 @@ public class RouteLayer {
 		}
 		
 		//If the destination is unknown / unroutable or it already arrived at its destination and somehow looped back		
-		if (item.getDestination() >= 0 && (!_router.hasRoute(item.getDestination(), item.getTransportMode() == TransportMode.Active, item.getIDStack().getItem()) || item.getArrived())){
+		if (item.getDestination() >= 0 && (!_router.hasRoute(item.getDestination(), item.getTransportMode() == TransportMode.Active, item.getItemIdentifierStack().getItem()) || item.getArrived())){
 			item = SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleID(), false);
 		}
 		
@@ -67,12 +67,12 @@ public class RouteLayer {
 		}
 		
 		//Do we now know the destination?
-		if (!_router.hasRoute(item.getDestination(), item.getTransportMode() == TransportMode.Active, item.getIDStack().getItem())){
+		if (!_router.hasRoute(item.getDestination(), item.getTransportMode() == TransportMode.Active, item.getItemIdentifierStack().getItem())){
 			return ForgeDirection.UNKNOWN;
 		}
 		
 		//Which direction should we send it
-		ExitRoute exit = _router.getExitFor(item.getDestination(), item.getTransportMode() == TransportMode.Active, item.getIDStack().getItem());
+		ExitRoute exit = _router.getExitFor(item.getDestination(), item.getTransportMode() == TransportMode.Active, item.getItemIdentifierStack().getItem());
 		if(exit == null) return ForgeDirection.UNKNOWN;
 		
 		if(item.getDistanceTracker() != null) {

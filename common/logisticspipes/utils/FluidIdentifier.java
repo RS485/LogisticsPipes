@@ -10,6 +10,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
@@ -120,15 +121,19 @@ public class FluidIdentifier {
 		return get(stack.fluidID, stack.tag);
 	}
 	
+	public static FluidIdentifier get(ItemIdentifier stack) {
+		return get(stack.makeStack(1));
+	}
+
 	public static FluidIdentifier get(ItemStack stack) {
+		return get(ItemIdentifierStack.getFromStack(stack));
+	}
+	
+	public static FluidIdentifier get(ItemIdentifierStack stack) {
 		FluidStack f = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(stack);
 		if(f == null)
 			return null;
 		return get(f);
-	}
-	
-	public static FluidIdentifier get(ItemIdentifier stack) {
-		return get(stack.unsafeMakeNormalStack(1));
 	}
 	
 	private static FluidIdentifier get(Fluid fluid) {
@@ -263,7 +268,7 @@ public class FluidIdentifier {
 	}
 
 	public ItemIdentifier getItemIdentifier() {
-		return ItemIdentifier.get(SimpleServiceLocator.logisticsFluidManager.getFluidContainer(makeFluidStack(0)));
+		return SimpleServiceLocator.logisticsFluidManager.getFluidContainer(makeFluidStack(0)).getItem();
 	}
 
 	public static FluidIdentifier convertFromID(int id) {

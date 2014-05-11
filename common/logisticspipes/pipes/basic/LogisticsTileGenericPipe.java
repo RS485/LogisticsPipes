@@ -14,6 +14,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.te.LPConduitItem;
 import logisticspipes.renderer.LogisticsTileRenderController;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
+import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.WorldUtil;
@@ -23,7 +24,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import thermalexpansion.part.conduit.ConduitBase;
+import buildcraft.api.core.Position;
+import buildcraft.transport.BlockGenericPipe;
+import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TravelingItem;
 import cofh.api.transport.IItemConduit;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -314,5 +319,20 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	@Override
 	public int getDistance() {
 		return 1;
+	}
+
+	public void acceptBCTravelingItem(TravelingItem item, ForgeDirection dir) {
+		((PipeTransportLogistics)this.pipe.transport).injectItem(item, dir);
+	}
+	
+	@Override
+	public int injectItem(ItemStack payload, boolean doAdd, ForgeDirection from) {
+		if (BlockGenericPipe.isValid(pipe) && pipe.transport instanceof PipeTransportLogistics && isPipeConnected(from)) {
+			if (doAdd && MainProxy.isServer(this.getWorldObj())) {
+				((PipeTransportLogistics) pipe.transport).injectItem(SimpleServiceLocator.routedItemHelper.createNewTravelItem(payload), from);
+			}
+			return payload.stackSize;
+		}
+		return 0;
 	}
 }

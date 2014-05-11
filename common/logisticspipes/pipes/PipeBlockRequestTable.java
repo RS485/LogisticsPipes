@@ -19,7 +19,6 @@ import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.security.SecuritySettings;
@@ -132,7 +131,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 				delay--;
 				return;
 			}
-			IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stack);
+			IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
 			SimpleServiceLocator.logisticsManager.assignDestinationFor(itemToSend, this.getRouter().getSimpleID(), false);
 			if(itemToSend.getDestinationUUID() != null) {
 				ForgeDirection dir = this.getRouteLayer().getOrientationForItem(itemToSend, null);
@@ -350,11 +349,10 @@ outer:
 			_transportLayer = new TransportLayer() {
 				@Override
 				public void handleItem(IRoutedItem item) {
-					PipeBlockRequestTable.this.notifyOfItemArival((RoutedEntityItem)item);
-					if(item.getItemStack() != null) {
-						ItemStack stack = item.getItemStack();
-						stack.stackSize = inv.addCompressed(stack, false);
-						item.setItemStack(stack);
+					PipeBlockRequestTable.this.notifyOfItemArival(item.getInfo());
+					if(item.getItemIdentifierStack() != null) {
+						ItemIdentifierStack stack = item.getItemIdentifierStack();
+						stack.setStackSize(inv.addCompressed(stack.makeNormalStack(), false));
 					}
 				}
 				@Override

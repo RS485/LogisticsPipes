@@ -17,10 +17,11 @@ import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
 import logisticspipes.recipes.CraftingDependency;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.RecipeManager.LocalCraftingManager;
+import logisticspipes.routing.ItemRoutingInformation;
+import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import thermalexpansion.block.TEBlocks;
@@ -131,26 +132,21 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 	}
 
 	@Override
-	public boolean insertIntoConduit(buildcraft.transport.TravelingItem arrivingItem, TileEntity tile, CoreRoutedPipe pipe) {
+	public boolean insertIntoConduit(LPTravelingItemServer arrivingItem, TileEntity tile, CoreRoutedPipe pipe) {
 		if(!Configs.TE_PIPE_SUPPORT) return false;
 		if(MainProxy.isClient(pipe.getWorld())) return true;
 		ConduitItem conduitItem = ((IConduit)tile).getConduitItem();
-		NBTTagCompound data = null;
-		if(SimpleServiceLocator.buildCraftProxy.isRoutedItem(arrivingItem)) {
-			data = SimpleServiceLocator.buildCraftProxy.GetRoutedItem(arrivingItem).getNBTData();
-			data.setInteger("LP_BC_TRAVELING_ID", arrivingItem.id);
-		}
-		return routeItem(conduitItem, arrivingItem.getItemStack(), data, arrivingItem.output);
+		return routeItem(conduitItem, arrivingItem.getItemIdentifierStack().makeNormalStack(), arrivingItem.getInfo(), arrivingItem.output);
 	}
 	
-	private boolean routeItem(ConduitItem conduit, ItemStack stack, NBTTagCompound data, ForgeDirection dir) {
+	private boolean routeItem(ConduitItem conduit, ItemStack stack, ItemRoutingInformation itemRoutingInformation, ForgeDirection dir) {
 		if(!Configs.TE_PIPE_SUPPORT) return false;
 		conduit.cacheRoutes();
 		routeInfo curInfo = null;
 		for(Iterator<ItemRoute> i = conduit.validOutputs.iterator(); i.hasNext();) {
 			ItemRoute aRoute = (ItemRoute)i.next();
-			if(data != null) {
-				int result = doRouteRoutedLPItem(aRoute, curInfo, stack, conduit, dir, data);
+			if(itemRoutingInformation != null) {
+				int result = doRouteRoutedLPItem(aRoute, curInfo, stack, conduit, dir, itemRoutingInformation);
 				if(result != -1) return true;
 			} else {
 				int result = conduit.doRouteItem(aRoute, curInfo, stack, dir.ordinal());
@@ -160,8 +156,8 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 		LPConduitItem.dontCheckRoutes = true;
 		for(Iterator<ItemRoute> i = conduit.validOutputs.iterator(); i.hasNext();) {
 			ItemRoute aRoute = (ItemRoute)i.next();
-			if(data != null) {
-				int result = doRouteRoutedLPItem(aRoute, curInfo, stack, conduit, dir, data);
+			if(itemRoutingInformation != null) {
+				int result = doRouteRoutedLPItem(aRoute, curInfo, stack, conduit, dir, itemRoutingInformation);
 				if(result != -1) {
 					LPConduitItem.dontCheckRoutes = false;
 					return true;
@@ -178,12 +174,12 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 		return false;
 	}
 	
-	private int doRouteRoutedLPItem(ItemRoute aRoute, routeInfo curInfo, ItemStack theItem, ConduitItem conduit, ForgeDirection dir, NBTTagCompound data) {
+	private int doRouteRoutedLPItem(ItemRoute aRoute, routeInfo curInfo, ItemStack theItem, ConduitItem conduit, ForgeDirection dir, ItemRoutingInformation itemRoutingInformation) {
 		if(!Configs.TE_PIPE_SUPPORT) return -1;
 		if(((ConduitBase)(aRoute.endPoint)).isNode) {
 			ItemStack stack = theItem.copy();
 			if(aRoute.endPoint instanceof LPConduitItem) {
-				curInfo = ((LPConduitItem)aRoute.endPoint).canRouteLPItem(stack, data, aRoute);
+				curInfo = ((LPConduitItem)aRoute.endPoint).canRouteLPItem(stack, itemRoutingInformation, aRoute);
 			}
 			if(curInfo != null && curInfo.canRoute) {
 				theItem = theItem.copy();
@@ -191,7 +187,7 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 				ItemRoute itemRoute = aRoute.copy();
 				itemRoute.pathDirections.add(Byte.valueOf(curInfo.side));
 				thermalexpansion.part.conduit.item.TravelingItem travelingItem = new thermalexpansion.part.conduit.item.TravelingItem(theItem, conduit.x(), conduit.y(), conduit.z(), itemRoute, dir.ordinal());
-				travelingItem.routedLPInfo = data;
+				travelingItem.routedLPInfo = itemRoutingInformation;
 				conduit.insertItem(travelingItem);
 				return curInfo.stackSize;
 			}

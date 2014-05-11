@@ -292,7 +292,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 
 	@Override
 	public IRoutedItem sendStack(ItemStack stack, Pair<Integer, SinkReply> reply, ItemSendMode mode) {
-		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stack);
+		IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
 		itemToSend.setDestination(reply.getValue1());
 		if (reply.getValue2().isPassive){
 			if (reply.getValue2().isDefault){
@@ -307,7 +307,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 
 	@Override
 	public IRoutedItem sendStack(ItemStack stack, int destination, ItemSendMode mode) {
-		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stack);
+		IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(TransportMode.Active);
 		super.queueRoutedItem(itemToSend, getPointedOrientation(), mode);

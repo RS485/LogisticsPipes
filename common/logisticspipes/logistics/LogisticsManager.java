@@ -191,7 +191,7 @@ outer:
 		//Wipe current destination
 		item.clearDestination();
 
-		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(item.getIDStack().getItem());
+		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(item.getItemIdentifierStack().getItem());
 		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(); // get the routing table 
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i+1)) {
 			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i,false);
@@ -204,14 +204,14 @@ outer:
 			}
 		}
 		Collections.sort(validDestinations);
-		if(item.getItemStack() != null && item.getItemStack().getItem() instanceof LogisticsFluidContainer) {
-			Pair<Integer, Integer> bestReply = SimpleServiceLocator.logisticsFluidManager.getBestReply(SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(item.getItemStack()), sourceRouter, item.getJamList());
+		if(item.getItemIdentifierStack() != null && item.getItemIdentifierStack().makeNormalStack().getItem() instanceof LogisticsFluidContainer) {
+			Pair<Integer, Integer> bestReply = SimpleServiceLocator.logisticsFluidManager.getBestReply(SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(item.getItemIdentifierStack()), sourceRouter, item.getJamList());
 			if (bestReply.getValue1() != null && bestReply.getValue1() != 0){
 				item.setDestination(bestReply.getValue1());
 			}
 			return item;
 		} else {
-			Triplet<Integer, SinkReply, List<IFilter>> bestReply = getBestReply(item.getIDStack().getItem(), sourceRouter, validDestinations, excludeSource, item.getJamList(), null, true);	
+			Triplet<Integer, SinkReply, List<IFilter>> bestReply = getBestReply(item.getItemIdentifierStack().getItem(), sourceRouter, validDestinations, excludeSource, item.getJamList(), null, true);	
 			if (bestReply.getValue1() != null && bestReply.getValue1() != 0){
 				item.setDestination(bestReply.getValue1());
 				if (bestReply.getValue2().isPassive){

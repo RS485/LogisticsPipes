@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,7 +39,6 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
-import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.logisticspipes.IAdjacentWorldAccess;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.ITrackStatistics;
@@ -66,7 +66,7 @@ import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.IRouterQueuedTask;
-import logisticspipes.routing.RoutedEntityItem;
+import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.security.PermissionException;
 import logisticspipes.security.SecuritySettings;
@@ -74,6 +74,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.ticks.WorldTickHandler;
+import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.FluidIdentifier;
@@ -89,7 +90,6 @@ import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
@@ -99,13 +99,9 @@ import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import buildcraft.BuildCraftTransport;
 import buildcraft.api.core.IIconProvider;
-import buildcraft.api.core.Position;
 import buildcraft.api.gates.IAction;
-import buildcraft.core.CoreConstants;
 import buildcraft.transport.Pipe;
-import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.TravelingItem;
 import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -144,7 +140,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	
 	protected RouteLayer _routeLayer;
 	protected TransportLayer _transportLayer;
-	protected final PriorityBlockingQueue<IRoutedItem> _inTransitToMe = new PriorityBlockingQueue<IRoutedItem>(10,new IRoutedItem.DelayComparator());
+	protected final PriorityBlockingQueue<ItemRoutingInformation> _inTransitToMe = new PriorityBlockingQueue<ItemRoutingInformation>(10, new ItemRoutingInformation.DelayComparator());
 	
 	private UpgradeManager upgradeManager = new UpgradeManager(this);
 	
@@ -160,7 +156,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	
 	protected final LinkedList<Triplet<IRoutedItem, ForgeDirection, ItemSendMode>> _sendQueue = new LinkedList<Triplet<IRoutedItem, ForgeDirection, ItemSendMode>>();
 	
-	protected final ArrayList<TravelingItem> queuedDataForUnroutedItems = new ArrayList<TravelingItem>();
+	protected final Map<ItemIdentifierStack, ItemRoutingInformation> queuedDataForUnroutedItems = new HashMap<ItemIdentifierStack, ItemRoutingInformation>();
 	
 	public final PlayerCollectionList watchers = new PlayerCollectionList();
 
@@ -177,8 +173,6 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 
 	public CoreRoutedPipe(PipeTransportLogistics transport, int itemID) {
 		super(transport, itemID);
-		//this.logic = logic;
-		((PipeTransportItems) transport).allowBouncing = true;
 		
 		pipecount++;
 		
@@ -220,41 +214,33 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	 */
 	public int sendQueueChanged(boolean force) {return 0;}
 	
-	private void sendRoutedItem(IRoutedItem routedItem, ForgeDirection from){
-		Position p = new Position(this.getX() + 0.5F, this.getY() + CoreConstants.PIPE_MIN_POS, this.getZ() + 0.5F, from);
-		if(from == ForgeDirection.DOWN) {
-			p.moveForwards(0.24F);
-		} else if(from == ForgeDirection.UP) {
-			p.moveForwards(0.74F);
-		} else {
-			p.moveForwards(0.49F);
-		}
-		routedItem.SetPosition(p.x, p.y, p.z);
-		((PipeTransportLogistics) transport).injectItem(routedItem, from.getOpposite());
+	private void sendRoutedItem(IRoutedItem routedItem, ForgeDirection from) {
 		
-		IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(routedItem.getDestination(),false);
+		((PipeTransportLogistics)transport).injectItem(routedItem, from.getOpposite());
+		
+		IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(routedItem.getDestination(), false);
 		if(r != null) {
 			CoreRoutedPipe pipe = r.getCachedPipe();
-			if(pipe !=null) // pipes can unload at inconvenient times ...
-				pipe.notifyOfSend(routedItem);
+			if(pipe != null) // pipes can unload at inconvenient times ...
+				pipe.notifyOfSend(routedItem.getInfo());
 			else {
-				//TODO: handle sending items to known chunk-unloaded destination?
+				// TODO: handle sending items to known chunk-unloaded destination?
 			}
 		} // should not be able to send to a non-existing router
-		//router.startTrackingRoutedItem((RoutedEntityItem) routedItem.getTravelingItem());
+			// router.startTrackingRoutedItem((RoutedEntityItem) routedItem.getTravelingItem());
 		MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.getX(), this.getY(), this.getZ(), this.getWorld(), 2);
 		stat_lifetime_sent++;
 		stat_session_sent++;
 		updateStats();
 	}
 	
-	private void notifyOfSend(IRoutedItem routedItem) {
+	private void notifyOfSend(ItemRoutingInformation routedItem) {
 		this._inTransitToMe.add(routedItem);
 		//LogisticsPipes.log.info("Sending: "+routedItem.getIDStack().getItem().getFriendlyName());
 	}
 
 	//When Recreating the Item from the TE version we have the same hashCode but a different instance so we need to refresh this
-	public void refreshItem(IRoutedItem routedItem) {
+	public void refreshItem(ItemRoutingInformation routedItem) {
 		if(this._inTransitToMe.contains(routedItem)) {
 			this._inTransitToMe.remove(routedItem);
 			this._inTransitToMe.add(routedItem);
@@ -362,10 +348,10 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		}
 
 		// remove old items _inTransit -- these should have arrived, but have probably been lost instead. In either case, it will allow a re-send so that another attempt to re-fill the inventory can be made.		
-		while(this._inTransitToMe.peek()!=null && this._inTransitToMe.peek().getTickToTimeOut()<=0){
-			final IRoutedItem p=_inTransitToMe.poll();
+		while(this._inTransitToMe.peek()!=null && this._inTransitToMe.peek().getTickToTimeOut() <= 0){
+			final ItemRoutingInformation p=_inTransitToMe.poll();
 			if (LogisticsPipes.DEBUG) {
-					LogisticsPipes.log.info("Timed Out: "+p.getIDStack().getFriendlyName() + " (" + p.hashCode() + ")");
+					LogisticsPipes.log.info("Timed Out: "+p.getItem().getFriendlyName() + " (" + p.hashCode() + ")");
 			}
 		}
 		//update router before ticking logic/transport
@@ -382,17 +368,15 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		ignoreDisableUpdateEntity();
 		_initialInit = false;
 		if (!_sendQueue.isEmpty()){
-			if(getItemSendMode() == ItemSendMode.Normal || !SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
+			if(getItemSendMode() == ItemSendMode.Normal) {
 				Triplet<IRoutedItem, ForgeDirection, ItemSendMode> itemToSend = _sendQueue.getFirst();
 				sendRoutedItem(itemToSend.getValue1(), itemToSend.getValue2());
 				_sendQueue.removeFirst();
-				if(SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
-					for(int i=0;i < 16 && !_sendQueue.isEmpty() && _sendQueue.getFirst().getValue3() == ItemSendMode.Fast;i++) {
-						if (!_sendQueue.isEmpty()){
-							itemToSend = _sendQueue.getFirst();
-							sendRoutedItem(itemToSend.getValue1(), itemToSend.getValue2());
-							_sendQueue.removeFirst();
-						}
+				for(int i=0;i < 16 && !_sendQueue.isEmpty() && _sendQueue.getFirst().getValue3() == ItemSendMode.Fast;i++) {
+					if (!_sendQueue.isEmpty()){
+						itemToSend = _sendQueue.getFirst();
+						sendRoutedItem(itemToSend.getValue1(), itemToSend.getValue2());
+						_sendQueue.removeFirst();
 					}
 				}
 				sendQueueChanged(false);
@@ -738,12 +722,10 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		for(int i = 0; i < sendqueue.tagCount(); i++) {
 			NBTTagCompound tagentry = (NBTTagCompound)sendqueue.tagAt(i);
 			NBTTagCompound tagentityitem = tagentry.getCompoundTag("entityitem");
-			TravelingItem entity = new TravelingItem();
-			entity.readFromNBT(tagentityitem);
-			IRoutedItem routeditem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(entity);
+			LPTravelingItemServer item = new LPTravelingItemServer(tagentityitem);
 			ForgeDirection from = ForgeDirection.values()[tagentry.getByte("from")];
 			ItemSendMode mode = ItemSendMode.values()[tagentry.getByte("mode")];
-			_sendQueue.add(new Triplet<IRoutedItem, ForgeDirection, ItemSendMode>(routeditem, from, mode));
+			_sendQueue.add(new Triplet<IRoutedItem, ForgeDirection, ItemSendMode>(item, from, mode));
 		}
 	}
 	
@@ -1187,18 +1169,16 @@ outer:
 		}
 	}
 
-	public void queueUnroutedItemInformation(TravelingItem data) {
-		if(data != null && data.getItemStack() != null) {
-			data.setItemStack(data.getItemStack().copy());
-			queuedDataForUnroutedItems.add(data);
+	public void queueUnroutedItemInformation(ItemIdentifierStack item, ItemRoutingInformation informaiton) {
+		if(item != null) {
+			queuedDataForUnroutedItems.put(item, informaiton);
 		}
 	}
 	
-	public TravelingItem getQueuedForItemStack(ItemStack stack) {
-		for(TravelingItem item:queuedDataForUnroutedItems) {
-			if(ItemIdentifierStack.getFromStack(item.getItemStack()).equals(ItemIdentifierStack.getFromStack(stack))) {
-				queuedDataForUnroutedItems.remove(item);
-				return item;
+	public ItemRoutingInformation getQueuedForItemStack(ItemIdentifierStack itemIdentifierStack) {
+		for(ItemIdentifierStack item:queuedDataForUnroutedItems.keySet()) {
+			if(item.equals(itemIdentifierStack)) {
+				return queuedDataForUnroutedItems.remove(item);
 			}
 		}
 		return null;
@@ -1212,14 +1192,14 @@ outer:
 		return 0.0;
 	}
 
-	public void notifyOfItemArival(RoutedEntityItem routedEntityItem) {
-		this._inTransitToMe.remove(routedEntityItem);
+	public void notifyOfItemArival(ItemRoutingInformation information) {
+		this._inTransitToMe.remove(information);
 		if (this instanceof IRequireReliableTransport) {
-			((IRequireReliableTransport)this).itemArrived(ItemIdentifierStack.getFromStack(routedEntityItem.getItemStack()));
+			((IRequireReliableTransport)this).itemArrived(information.getItem());
 		}
 		if (this instanceof IRequireReliableFluidTransport) {
-			ItemStack stack = routedEntityItem.getItemStack();
-			if(stack.getItem() instanceof LogisticsFluidContainer) {
+			ItemIdentifierStack stack = information.getItem();
+			if(stack.getItem().isFluidContainer()) {
 				FluidStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(stack);
 				((IRequireReliableFluidTransport)this).liquidArrived(FluidIdentifier.get(liquid), liquid.amount);				
 			}
@@ -1228,10 +1208,10 @@ outer:
 
 	public int countOnRoute(ItemIdentifier it) {
 		int count = 0;
-		for(Iterator<IRoutedItem> iter = _inTransitToMe.iterator();iter.hasNext();) {
-			IRoutedItem next = iter.next();
-			if(next.getIDStack().getItem() == it)
-				count += next.getIDStack().getStackSize();
+		for(Iterator<ItemRoutingInformation> iter = _inTransitToMe.iterator();iter.hasNext();) {
+			ItemRoutingInformation next = iter.next();
+			if(next.getItem().getItem() == it)
+				count += next.getItem().getStackSize();
 		}
 		return count;
 	}
@@ -1491,5 +1471,11 @@ outer:
 
 	public WorldUtil getWorldUtil() {
 		return new WorldUtil(this.getWorld(), this.getX(), this.getY(), this.getZ());
+	}
+
+	public void triggerDebug() {
+		if(this.debugThisPipe) {
+			System.out.print("");
+		}
 	}
 }

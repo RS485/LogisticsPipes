@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import logisticspipes.Configs;
 import logisticspipes.gui.hud.HUDCraftingMK3;
 import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
@@ -13,7 +12,6 @@ import logisticspipes.modules.ModuleCrafterMK3;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.hud.ChestContent;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.CraftingPipeMk3Transport;
@@ -27,11 +25,6 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
-import buildcraft.api.core.Position;
-import buildcraft.core.CoreConstants;
-import buildcraft.transport.PipeTransportItems;
-import buildcraft.transport.TransportConstants;
-import buildcraft.transport.TravelingItem;
 import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2 implements ISimpleInventoryEventHandler, IChestContentReceiver {
@@ -59,10 +52,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	
 	@Override
 	protected int stacksToExtract() {
-		if(SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
-			return 8;
-		}
-		return 2;
+		return 8;
 	}
 	
 	@Override
@@ -109,11 +99,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 		for(int i=0;i<inv.getSizeInventory();i++) {
 			ItemStack stackToSend = inv.getStackInSlot(i);
 			if(stackToSend==null) continue;
-			Position p = new Position(container.xCoord, container.yCoord, container.zCoord, null);
-			Position entityPos = new Position(p.x + 0.5, p.y + CoreConstants.PIPE_MIN_POS, p.z + 0.5, ForgeDirection.UNKNOWN);
-			TravelingItem entityItem = new TravelingItem(entityPos.x, entityPos.y, entityPos.z, stackToSend);
-			entityItem.setSpeed(TransportConstants.PIPE_NORMAL_SPEED * Configs.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
-			((PipeTransportItems) transport).injectItem(entityItem, entityPos.orientation);
+			transport.sendItem(stackToSend);
 			inv.clearInventorySlotContents(i);
 			break;
 		}

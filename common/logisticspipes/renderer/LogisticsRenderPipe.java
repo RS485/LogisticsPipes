@@ -7,8 +7,11 @@ import java.util.List;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeFluidTransportLogistics;
+import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -16,7 +19,10 @@ import net.minecraft.client.model.ModelSign;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -47,6 +53,9 @@ import buildcraft.transport.render.PipeRendererTESR;
 public class LogisticsRenderPipe extends PipeRendererTESR {
 
 	final static private int LIQUID_STAGES = 40;
+	final static private int MAX_ITEMS_TO_RENDER = 10;
+	private final EntityItem dummyEntityItem = new EntityItem(null);
+	private final RenderItem customRenderItem;
 
 	private final int[] angleY = { 0, 0, 270, 90, 0, 180 };
 	private final int[] angleZ = { 90, 270, 0, 0, 0, 0 };
@@ -63,11 +72,29 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 		public int[] centerHorizontal = new int[LIQUID_STAGES];
 		public int[] centerVertical = new int[LIQUID_STAGES];
 	}
+
+	public LogisticsRenderPipe() {
+		super();
+		customRenderItem = new RenderItem() {
+			@Override
+			public boolean shouldBob() {
+				return false;
+			}
+
+			@Override
+			public boolean shouldSpreadItems() {
+				return false;
+			}
+		};
+		customRenderItem.setRenderManager(RenderManager.instance);
+		dummyEntityItem.age = 0;
+		dummyEntityItem.hoverStart = 0;
+	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float f) {
-		super.renderTileEntityAt(tileentity, x, y, z, f);
+		super.renderTileEntityAt(tileentity, x, y, z, f); // Render Gates And Wires
 		if (BuildCraftCore.render == RenderMode.NoDynamic) return;
 		if(!(tileentity instanceof LogisticsTileGenericPipe)) return;
 		LogisticsTileGenericPipe pipe = ((LogisticsTileGenericPipe) tileentity);
@@ -75,9 +102,63 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 		if (pipe.pipe.transport instanceof PipeFluidTransportLogistics) {
 			renderFluids((Pipe<PipeFluidTransportLogistics>)pipe.pipe, x, y, z);
 		}
+		if (pipe.pipe.transport instanceof PipeTransportLogistics) {
+			renderSolids((Pipe<PipeTransportLogistics>)pipe.pipe, x, y, z, f);
+		}
 		if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
 			renderCraftingPipe((PipeItemsCraftingLogistics) pipe.pipe, x, y, z);
 		}
+	}
+
+	private void renderSolids(Pipe<PipeTransportLogistics> pipe, double x, double y, double z, float f) {
+		GL11.glPushMatrix();
+		GL11.glDisable(2896 /* GL_LIGHTING */);
+
+		float light = pipe.container.worldObj.getLightBrightness(pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord);
+
+		int count = 0;
+		for (LPTravelingItem item : pipe.transport.items) {
+			if (count >= MAX_ITEMS_TO_RENDER) {
+				break;
+			}
+			
+			LPPosition pos = new LPPosition(0.5D, 0.5D, 0.5D);
+			
+			if(item.getPosition() > 1 || item.getPosition() < 0) {
+				continue;
+			}
+			
+			float fPos = item.getPosition() + item.getSpeed() * f;
+			
+			if(fPos < 0.5) {
+				if(item.input == ForgeDirection.UNKNOWN) continue;
+				if(!pipe.container.getRenderState().pipeConnectionMatrix.isConnected(item.input)) continue;
+				pos.moveForward(item.input.getOpposite(), 0.5F - fPos);
+			} else {
+				if(item.output == ForgeDirection.UNKNOWN) continue;
+				if(!pipe.container.getRenderState().pipeConnectionMatrix.isConnected(item.output)) continue;
+				pos.moveForward(item.output, fPos - 0.5F);
+			}
+
+			if (item == null || item.getItemIdentifierStack() == null) continue;
+			if(item.getContainer().xCoord != pipe.container.xCoord || item.getContainer().yCoord != pipe.container.yCoord || item.getContainer().zCoord != pipe.container.zCoord) continue;
+			ItemStack itemstack = item.getItemIdentifierStack().makeNormalStack();
+			doRenderItem(itemstack, x + pos.getXD(), y + pos.getYD(), z + pos.getZD(), light);
+			count++;
+		}
+		
+		GL11.glEnable(2896 /* GL_LIGHTING */);
+		GL11.glPopMatrix();
+	}
+	
+	public void doRenderItem(ItemStack itemstack, double x, double y, double z, float light) {
+		float renderScale = 0.7f;
+		GL11.glPushMatrix();
+		GL11.glTranslatef((float) x, (float) y, (float) z);
+		GL11.glScalef(renderScale, renderScale, renderScale);
+		dummyEntityItem.setEntityItemStack(itemstack);
+		customRenderItem.doRenderItem(dummyEntityItem, 0, 0, 0, 0, 0);
+		GL11.glPopMatrix();
 	}
 	
 	private boolean needDistance(List<ForgeDirection> list) {

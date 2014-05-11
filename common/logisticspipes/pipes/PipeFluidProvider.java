@@ -21,9 +21,9 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
@@ -60,8 +60,8 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 						drained = ((ISpecialTankAccessHandler)handler).drainFrom(pair.getValue1(), order.getValue1(), amountToSend, true);
 						int amount = drained.amount;
 						amountToSend -= amount;
-						ItemStack stack = SimpleServiceLocator.logisticsFluidManager.getFluidContainer(drained);
-						IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stack);
+						ItemIdentifierStack stack = SimpleServiceLocator.logisticsFluidManager.getFluidContainer(drained);
+						IRoutedItem item = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
 						item.setDestination(order.getValue3().getRouter().getSimpleID());
 						item.setTransportMode(TransportMode.Active);
 						this.queueRoutedItem(item, pair.getValue2());
@@ -92,8 +92,8 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 								}
 								amount = drained.amount;
 								amountToSend -= amount;
-								ItemStack stack = SimpleServiceLocator.logisticsFluidManager.getFluidContainer(drained);
-								IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stack);
+								ItemIdentifierStack stack = SimpleServiceLocator.logisticsFluidManager.getFluidContainer(drained);
+								IRoutedItem item = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
 								item.setDestination(order.getValue3().getRouter().getSimpleID());
 								item.setTransportMode(TransportMode.Active);
 								this.queueRoutedItem(item, pair.getValue2());

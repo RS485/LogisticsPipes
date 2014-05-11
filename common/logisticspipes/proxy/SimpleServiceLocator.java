@@ -39,6 +39,7 @@ import logisticspipes.routing.pathfinder.PipeInformaitonManager;
 import logisticspipes.ticks.ClientPacketBufferHandlerThread;
 import logisticspipes.ticks.ServerPacketBufferHandlerThread;
 import logisticspipes.utils.InventoryUtilFactory;
+import logisticspipes.utils.RoutedItemHelper;
 
 public final class SimpleServiceLocator {
 	
@@ -187,6 +188,11 @@ public final class SimpleServiceLocator {
 	public static MachineProgressProvider machineProgressProvider;
 	public static void setMachineProgressProvider(MachineProgressProvider provider) {
 		machineProgressProvider = provider;
+	}
+	
+	public static RoutedItemHelper routedItemHelper;
+	public static void setRoutedItemHelper(RoutedItemHelper helper) {
+		routedItemHelper = helper;
 	}
 	
 }

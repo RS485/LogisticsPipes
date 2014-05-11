@@ -1,10 +1,13 @@
 package logisticspipes.ticks;
 
 import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.Callable;
 
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.transport.LPTravelingItem;
+import logisticspipes.utils.tuples.Pair;
 import lombok.Getter;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
@@ -48,6 +51,16 @@ public class QueuedTasks implements ITickHandler {
 			}
 		}
 		MainProxy.proxy.tick();
+		synchronized(LPTravelingItem.forceKeep) {
+			Iterator<Pair<Integer, Object>> iter = LPTravelingItem.forceKeep.iterator();
+			while(iter.hasNext()) {
+				Pair<Integer, Object> pair = iter.next();
+				pair.setValue1(pair.getValue1() - 1);
+				if(pair.getValue1() < 0) {
+					iter.remove();
+				}
+			}
+		}
 	}
 
 	@Override

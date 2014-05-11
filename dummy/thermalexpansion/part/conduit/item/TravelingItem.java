@@ -1,7 +1,7 @@
 package thermalexpansion.part.conduit.item;
 
+import logisticspipes.routing.ItemRoutingInformation;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 
 public class TravelingItem {
 	public ItemStack	stack;
@@ -10,6 +10,6 @@ public class TravelingItem {
 	/*
 	 * Added By LP to Store the Original Destination
 	 */
-	public NBTTagCompound routedLPInfo;
+	public ItemRoutingInformation routedLPInfo;
 	public TravelingItem(ItemStack theItem, int xCoord, int yCoord, int zCoord, ItemRoute itemPath, int oldDirection) {}
 }

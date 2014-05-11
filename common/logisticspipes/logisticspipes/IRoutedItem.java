@@ -13,9 +13,10 @@ import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.order.IDistanceTracker;
+import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
 
@@ -25,14 +26,6 @@ import net.minecraftforge.common.ForgeDirection;
  */
 public interface IRoutedItem {
 	
-	public class DelayComparator implements Comparator<IRoutedItem> {
-
-		@Override
-		public int compare(IRoutedItem o1, IRoutedItem o2) {
-			return (int)(o2.getTimeOut()-o1.getTimeOut()); // cast will never overflow because the delta is in 1/20ths of a second.
-		}
-	
-	}
 	public enum TransportMode {
 		Unknown,
 		Default,
@@ -53,36 +46,22 @@ public interface IRoutedItem {
 
 	public int getBufferCounter();
 	public void setBufferCounter(int counter);
-
-	public ItemStack getItemStack();
-	public void setItemStack(ItemStack item);
 	
 	public void setArrived(boolean flag);
 	public boolean getArrived();
 	
-	public void split(int itemsToTake, ForgeDirection orientation);
-	public void SetPosition(double x, double y, double z);
-	
 	public void addToJamList(IRouter router);
 	public List<Integer> getJamList();
 	
-	public IRoutedItem getCopy();
 	public void checkIDFromUUID();
-	ItemIdentifierStack getIDStack();
+	ItemIdentifierStack getItemIdentifierStack();
 
-	// how many ticks until this times out
-	public long getTickToTimeOut();
-	// the world tick in which getTickToTimeOut returns 0.
-	public long getTimeOut();
-
-//FIXME: not sure when/if this will be called correctly
-	void remove();
-
-	public NBTTagCompound getNBTData();
-	public void loadFromNBT(NBTTagCompound data);
-	
+	public void readFromNBT(NBTTagCompound data);
 	public void writeToNBT(NBTTagCompound tagentityitem);
 
 	public void setDistanceTracker(IDistanceTracker tracker);
 	public IDistanceTracker getDistanceTracker();
+	
+	public ItemRoutingInformation getInfo();
+	void split(int itemsToTake, ForgeDirection orientation);
 }

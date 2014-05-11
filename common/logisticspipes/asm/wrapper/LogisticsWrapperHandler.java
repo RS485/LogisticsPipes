@@ -213,8 +213,8 @@ public class LogisticsWrapperHandler {
 			try {
 				proxy = proxyClazz.newInstance();
 			} catch(Exception e1) {
-				if(e instanceof VersionNotSupportedException) {
-					throw (VersionNotSupportedException) e;
+				if(e1 instanceof VersionNotSupportedException) {
+					throw (VersionNotSupportedException) e1;
 				}
 				e1.printStackTrace();
 				e = e1;

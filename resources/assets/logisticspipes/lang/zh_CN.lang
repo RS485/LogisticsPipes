@@ -180,7 +180,7 @@ item.ModuleCCBasedQuickSort=基于CC的排序发送模块
 
 # Items
 
-item.brokenItem.name=物流损坏物品
+item.brokenItem=物流损坏物品
 item.logisticsFluidContainer=物流液体容器
 item.upgradeManagerItem=升级管理器
 item.HUDbow=物流HUD眼镜镜架

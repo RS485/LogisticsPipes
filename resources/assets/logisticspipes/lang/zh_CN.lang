@@ -299,9 +299,9 @@ gui.invsyscon.Resistance=优先度(越小越优先)
 gui.powerjunction.LogisticsPowerJunction=物流能源中枢
 gui.powerjunction.StoredEnergy=存储能量
 
-gui.powerprovider.LogisticsMJPowerProvider=物流MJ能量供应器
-gui.powerprovider.LogisticsEUPowerProvider=物流EU能量供应器
-gui.powerprovider.LogisticsRFPowerProvider=物流RF能量供应器
+gui.powerprovider.LogisticsMJPowerProvider=物流BC能量供应器
+gui.powerprovider.LogisticsEUPowerProvider=物流IC2能量供应器
+gui.powerprovider.LogisticsRFPowerProvider=物流TE能量供应器
 gui.powerprovider.StoredEnergy=存储能量
 
 gui.providerpipe.TargetInv=供应物品(或者空着提供所有物品)

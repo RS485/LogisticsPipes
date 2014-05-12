@@ -541,8 +541,8 @@ public class PipeTransportLogistics extends PipeTransport {
 	private void moveSolids() {
 		items.flush();
 		for(LPTravelingItem item: items) {
-			if(item.lastTicked >= QueuedTasks.getGlobalTick()) continue;
-			item.lastTicked = QueuedTasks.getGlobalTick();
+			if(item.lastTicked >= MainProxy.getGlobalTick()) continue;
+			item.lastTicked = MainProxy.getGlobalTick();
 			item.setPosition(item.getPosition() + item.getSpeed());
 			if(endReached(item)) {
 				if(item.output == ForgeDirection.UNKNOWN) {

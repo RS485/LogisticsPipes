@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.order.IDistanceTracker;
-import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,9 +31,8 @@ public class ItemRoutingInformation {
 	public TransportMode _transportMode = TransportMode.Unknown;
 	public List<Integer> jamlist = new ArrayList<Integer>();
 	public IDistanceTracker tracker = null;
-	// Delayed
-	//TODO
-    private final long delay = 640 + QueuedTasks.getGlobalTick();
+	
+    private final long delay = 640 + MainProxy.getGlobalTick();
 	
 	@Getter
 	@Setter
@@ -72,7 +71,6 @@ public class ItemRoutingInformation {
 
 	// how many ticks until this times out
 	public long getTickToTimeOut() {
-		//TODO
-		return delay - QueuedTasks.getGlobalTick();
+		return delay - MainProxy.getGlobalTick();
 	}
 }

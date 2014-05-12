@@ -18,6 +18,7 @@ import logisticspipes.pipefxhandlers.providers.EntityRedSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityVioletSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityWhiteSparkleFXProvider;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;
@@ -197,5 +198,13 @@ public class ClientProxy implements IProxy {
 		if(Minecraft.getMinecraft().thePlayer != null) {
 			Minecraft.getMinecraft().thePlayer.sendChatToPlayer(ChatMessageComponent.createFromText("Client: " + message));
 		}
+	}
+
+	@Override
+	public void tickServer() {}
+
+	@Override
+	public void tickClient() {
+		MainProxy.addTick();
 	}
 }

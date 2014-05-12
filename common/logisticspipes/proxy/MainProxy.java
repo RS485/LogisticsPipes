@@ -15,6 +15,7 @@ import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.routing.debug.RoutingTableDebugUpdateThread;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.utils.PlayerCollectionList;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.ServerListenThread;
@@ -32,6 +33,8 @@ public class MainProxy {
 	
 	@SidedProxy(clientSide="logisticspipes.proxy.side.ClientProxy", serverSide="logisticspipes.proxy.side.ServerProxy")
 	public static IProxy proxy;
+	@Getter
+	private static int	globalTick;
 	
 	private static WeakHashMap<Thread, Side> threadSideMap = new WeakHashMap<Thread, Side>();
 	
@@ -195,6 +198,10 @@ public class MainProxy {
 
 	public static File getLPFolder() {
 		return new File(DimensionManager.getCurrentSaveRootDirectory(), "LogisticsPipes");
+	}
+
+	public static void addTick() {
+		globalTick++;
 	}
 }
 

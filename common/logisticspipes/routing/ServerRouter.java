@@ -36,16 +36,15 @@ import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.pathfinder.PathFinder;
-import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.utils.OneList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Quartet;
-import logisticspipes.utils.tuples.Triplet;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -889,7 +888,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	private void handleQueuedTasks(CoreRoutedPipe pipe) {
 		while(!queue.isEmpty()) {
 			Pair<Integer, IRouterQueuedTask> element = queue.poll();
-			if(element.getValue1() > QueuedTasks.getGlobalTick()) {
+			if(element.getValue1() > MainProxy.getGlobalTick()) {
 				element.getValue2().call(pipe, this);
 			}
 		}
@@ -1158,7 +1157,7 @@ outer:
 
 	@Override
 	public void queueTask(int i, IRouterQueuedTask callable) {
-		this.queue.add(new Pair<Integer, IRouterQueuedTask> (i + QueuedTasks.getGlobalTick(), callable));
+		this.queue.add(new Pair<Integer, IRouterQueuedTask> (i + MainProxy.getGlobalTick(), callable));
 	}
 }
 

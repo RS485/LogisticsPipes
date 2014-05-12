@@ -11,13 +11,13 @@ item.PipeItemsBasicLogistics.tip3= - 将指定物品放入箱子
 item.PipeItemsBasicLogistics.tip4= - 可以作为默认的路由
 
 item.PipeItemsRequestLogistics=请求物流管道
-item.PipeItemsRequestLogistics.tip1=类型：主动请求
+item.PipeItemsRequestLogistics.tip1=类型:主动请求
 item.PipeItemsRequestLogistics.tip2= - 允许你手动申请请求物品
 item.PipeItemsRequestLogistics.tip3= - 可以从任意物品源获得物品
 item.PipeItemsRequestLogistics.tip4= - 在管道上放置箱子可收纳请求出的物品
 
 item.PipeItemsRequestLogisticsMk2=请求物流管道Mk2
-item.PipeItemsRequestLogisticsMk2.tip1=类型：主动请求
+item.PipeItemsRequestLogisticsMk2.tip1=类型:主动请求
 item.PipeItemsRequestLogisticsMk2.tip2= - 比Mk1快!
 item.PipeItemsRequestLogisticsMk2.tip3= - 允许你手动申请请求物品
 item.PipeItemsRequestLogisticsMk2.tip4= - 可以从任意物品源获得物品
@@ -35,28 +35,28 @@ item.PipeItemsProviderLogisticsMk2.tip3= - 当有请求时向物流网络中发�
 item.PipeItemsProviderLogistics.tip4= - 忽略同一格的补给管道
 
 item.PipeItemsCraftingLogistics=合成物流管道
-item.PipeItemsCraftingLogistics.tip1=类型：主动提供+物品源
+item.PipeItemsCraftingLogistics.tip1=类型:主动提供+物品源
 item.PipeItemsCraftingLogistics.tip2= - 一次合1件物品
 item.PipeItemsCraftingLogistics.tip3= - 依附在自动合成台上
 item.PipeItemsCraftingLogistics.tip4= - 当有请求时自动合成对应的物品
 item.PipeItemsCraftingLogistics.tip5= - 可以通过卫星式合成辅助物流管道来提供合成材料
 
 item.PipeItemsCraftingLogisticsMk2=合成物流管道Mk2
-item.PipeItemsCraftingLogisticsMk2.tip1=类型：主动提供+物品源
+item.PipeItemsCraftingLogisticsMk2.tip1=类型:主动提供+物品源
 item.PipeItemsCraftingLogisticsMk2.tip2= - 一次合16件物品
 item.PipeItemsCraftingLogisticsMk2.tip3= - 依附在自动合成台上
 item.PipeItemsCraftingLogisticsMk2.tip4= - 当有请求时自动合成对应的物品
 item.PipeItemsCraftingLogisticsMk2.tip5= - 可以通过卫星式合成辅助物流管道来提供合成材料
 
 item.PipeItemsCraftingLogisticsMk3=合成物流管道Mk3
-item.PipeItemsCraftingLogisticsMk3.tip1=类型：主动提供+物品源
+item.PipeItemsCraftingLogisticsMk3.tip1=类型:主动提供+物品源
 item.PipeItemsCraftingLogisticsMk3.tip2= - 一次合成一组的物品
 item.PipeItemsCraftingLogisticsMk3.tip3= - 依附在自动合成台上
 item.PipeItemsCraftingLogisticsMk3.tip4= - 当有请求时自动合成对应的物品
 item.PipeItemsCraftingLogisticsMk3.tip5= - 可以通过卫星式合成辅助物流管道来提供合成材料
 
 item.PipeItemsSatelliteLogistics=卫星式合成辅助物流管道
-item.PipeItemsSatelliteLogistics.tip1=类型：主动推送目标
+item.PipeItemsSatelliteLogistics.tip1=类型:主动推送目标
 item.PipeItemsSatelliteLogistics.tip2= - 一种可以将物品发送至合成栏内的管道
 item.PipeItemsSatelliteLogistics.tip3= - 连接在合成台边的箱子上
 item.PipeItemsSatelliteLogistics.tip4=   用于发送不可堆叠的物品
@@ -72,64 +72,64 @@ item.PipeItemsBuilderSupplierLogistics.tip1=主动请求物品
 item.PipeItemsBuilderSupplierLogistics.tip2= - 自动填充建造机所需材料
 
 item.PipeLogisticsChassiMk1=物流底盘Mk1
-item.PipeLogisticsChassiMk1.tip1=类型：混合
+item.PipeLogisticsChassiMk1.tip1=类型:混合
 item.PipeLogisticsChassiMk1.tip2= - 可以容纳1个模块
 
 item.PipeLogisticsChassiMk2=物流底盘Mk2
-item.PipeLogisticsChassiMk2.tip1=类型：混合
+item.PipeLogisticsChassiMk2.tip1=类型:混合
 item.PipeLogisticsChassiMk2.tip2= - 可以容纳2个模块
 
 item.PipeLogisticsChassiMk3=物流底盘Mk3
-item.PipeLogisticsChassiMk3.tip1=类型：混合
+item.PipeLogisticsChassiMk3.tip1=类型:混合
 item.PipeLogisticsChassiMk3.tip2= - 可以容纳3个模块
 
 item.PipeLogisticsChassiMk4=物流底盘Mk4
-item.PipeLogisticsChassiMk4.tip1=类型：混合
+item.PipeLogisticsChassiMk4.tip1=类型:混合
 item.PipeLogisticsChassiMk4.tip2= - 可以容纳4个模块
 
 item.PipeLogisticsChassiMk5=物流底盘Mk5
-item.PipeLogisticsChassiMk5.tip1=类型：混合
+item.PipeLogisticsChassiMk5.tip1=类型:混合
 item.PipeLogisticsChassiMk5.tip2= - 可以容纳8个模块
 
 item.PipeItemsRemoteOrdererLogistics=远程提货物流管道
-item.PipeItemsRemoteOrdererLogistics.tip1=类型：主动提供
+item.PipeItemsRemoteOrdererLogistics.tip1=类型:主动提供
 item.PipeItemsRemoteOrdererLogistics.tip2= - 允许你手动申请请求物品*远程*
 item.PipeItemsRemoteOrdererLogistics.tip3= - 可以从任意物品源获得物品
 item.PipeItemsRemoteOrdererLogistics.tip4= - 你必须右击管道中的远程要求
 
 item.PipeItemsApiaristAnalyser=蜜蜂分析物流管道
-item.PipeItemsApiaristAnalyser.tip1=类型：被动目标
+item.PipeItemsApiaristAnalyser.tip1=类型:被动目标
 item.PipeItemsApiaristAnalyser.tip2= - 一种为未分析的蜜蜂定位的被动型目的地管道
 item.PipeItemsApiaristAnalyser.tip3= - 允许用于自动分析
 
 item.PipeItemsApiaristSink=蜜蜂收纳物流管道
-item.PipeItemsApiaristSink.tip1=类型：被动目标
+item.PipeItemsApiaristSink.tip1=类型:被动目标
 item.PipeItemsApiaristSink.tip2= - 一种为分析过的蜜蜂定位的被动型目的地管道
-item.PipeItemsApiaristSink.tip3= - 可基于遗传特性和基因组进行过滤。
+item.PipeItemsApiaristSink.tip3= - 可基于遗传特性和基因组进行过滤.
 
 item.PipeItemsInvSysConnector=物流物品栏系统控制器
-item.PipeItemsInvSysConnector.tip1=类型：桥接
+item.PipeItemsInvSysConnector.tip1=类型:桥接
 item.PipeItemsInvSysConnector.tip2= - 通过共享物品栏
 item.PipeItemsInvSysConnector.tip3=   将两个物流网络连接到一起
 item.PipeItemsInvSysConnector.tip4= - 通常用于末影箱子但是
 item.PipeItemsInvSysConnector.tip5=   你也可以富有技巧地设计用到矿车...
 
 item.PipeItemsSystemEntranceLogistics=物流系统入口管道
-item.PipeItemsSystemEntranceLogistics.tip1=类型：路由器
+item.PipeItemsSystemEntranceLogistics.tip1=类型:路由器
 item.PipeItemsSystemEntranceLogistics.tip2= - 将一个未定位路由过的物品发送到一个匹配好的
 item.PipeItemsSystemEntranceLogistics.tip3=   目的地定位管道
 item.PipeItemsSystemEntranceLogistics.tip4= - 入口和目的地定位管道都
 item.PipeItemsSystemEntranceLogistics.tip5=   必须共享相同的编码频率卡片
 
 item.PipeItemsSystemDestinationLogistics=物流系统目的地定位管道
-item.PipeItemsSystemDestinationLogistics.tip1=类型：特殊目标
+item.PipeItemsSystemDestinationLogistics.tip1=类型:特殊目标
 item.PipeItemsSystemDestinationLogistics.tip2= - 从匹配好的入口管道接收
 item.PipeItemsSystemDestinationLogistics.tip3=   未被定位导航的物品
 item.PipeItemsSystemDestinationLogistics.tip4= - B入口和目的地定位管道都
 item.PipeItemsSystemDestinationLogistics.tip5=   必须共享相同的编码频率卡片
 
 item.PipeItemsFirewall=物流防火墙管道
-item.PipeItemsFirewall.tip1=类型：请求过滤
+item.PipeItemsFirewall.tip1=类型:请求过滤
 item.PipeItemsFirewall.tip2= - 允许连接到风险网络中
 item.PipeItemsFirewall.tip3=   连接时仅允许某些物品通过
 

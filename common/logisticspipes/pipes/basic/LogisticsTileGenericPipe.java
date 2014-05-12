@@ -324,6 +324,13 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	public void acceptBCTravelingItem(TravelingItem item, ForgeDirection dir) {
 		((PipeTransportLogistics)this.pipe.transport).injectItem(item, dir);
 	}
+
+	/**
+	 * Used to determine where BC items can go.
+	 */
+	public boolean isBCPipeConnected(TileGenericPipe container, ForgeDirection o) {
+		return container.isPipeConnected(o);
+	}
 	
 	@Override
 	public int injectItem(ItemStack payload, boolean doAdd, ForgeDirection from) {

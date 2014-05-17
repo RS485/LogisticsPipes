@@ -33,6 +33,7 @@ public class ItemAmountSignUpdatePacket extends Integer2CoordinatesPacket {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld());
 		if(pipe == null) return;
 		IPipeSign sign = ((CoreRoutedPipe)pipe.pipe).getPipeSign(ForgeDirection.getOrientation(getInteger()));
+		if(sign == null) return;
 		((ItemAmountPipeSign)sign).amount = getInteger2();
 		((ItemAmountPipeSign)sign).itemTypeInv.setInventorySlotContents(0, stack);
 	}

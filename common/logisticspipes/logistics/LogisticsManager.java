@@ -333,4 +333,35 @@ outer2:
 		}
 		return craftableItems;
 	}
+
+	@Override
+	public int getAmountFor(ItemIdentifier itemType, List<ExitRoute> validDestinations) {
+		// TODO: Replace this entire function wiht a fetch from the pre-built arrays (path incoming later)
+		List<Map<ItemIdentifier, Integer>> items = new ArrayList<Map<ItemIdentifier, Integer>>(ServerRouter.getBiggestSimpleID());
+		for(int i = 0; i < ServerRouter.getBiggestSimpleID(); i++)
+			items.add(new HashMap<ItemIdentifier, Integer>());
+		BitSet used = new BitSet(ServerRouter.getBiggestSimpleID());
+		outer:
+		for(ExitRoute r: validDestinations) {
+			if(r == null) continue;
+			if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
+			if(!(r.destination.getPipe() instanceof IProvideItems)) continue;
+			for(IFilter filter: r.filters) {
+				if(filter.blockProvider()) continue outer;
+			}
+			IProvideItems provider = (IProvideItems)r.destination.getPipe();
+			provider.getAllItems(items.get(r.destination.getSimpleID()), r.filters);
+			used.set(r.destination.getSimpleID(), true);
+		}
+		// TODO: Fix this doubly nested list
+		int amount = 0;
+		for(Map<ItemIdentifier, Integer> allItems: items) {
+			for(Entry<ItemIdentifier, Integer> item: allItems.entrySet()) {
+				if(item.getKey() == itemType) {
+					amount += item.getValue();
+				}
+			}
+		}
+		return amount;
+	}
 }

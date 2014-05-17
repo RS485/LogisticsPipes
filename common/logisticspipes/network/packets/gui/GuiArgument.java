@@ -30,7 +30,7 @@ public class GuiArgument extends GenericPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		GuiHandler.argumentQueue.put(getGuiID(), getArgs());
+		GuiHandler.argumentQueueClient.put(getGuiID(), getArgs());
 	}
 
 	@Override

@@ -11,14 +11,12 @@ import java.io.ObjectOutputStream;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Accessors(chain=true)
 public abstract class GenericPacket extends ModernPacket {
 	
 	@Getter
-	@Setter
 	private Object[] args;
 	
 	public GenericPacket(int id) {
@@ -57,5 +55,10 @@ public abstract class GenericPacket extends ModernPacket {
 			data.writeInt(bytes.length);
 			data.write(bytes);
 		}
+	}
+	
+	public GenericPacket setArgs(Object... input) {
+		args = input;
+		return this;
 	}
 }

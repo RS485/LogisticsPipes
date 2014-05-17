@@ -23,6 +23,7 @@ public class GuiIDs {
 	public static final int GUI_Module_Advanced_Extractor_ID = 27;
 	public static final int GUI_Module_Apiarist_Sink_ID = 28;
 	public static final int GUI_Module_ModBased_ItemSink_ID = 29;
+	
 	public static final int GUI_Module_ElectricManager_ID = 40;
 	public static final int GUI_Module_Thaumic_AspectSink_ID = 41;
 	public static final int GUI_Module_Apiarist_Analyzer = 42;
@@ -47,6 +48,7 @@ public class GuiIDs {
 
 	public static final int GUI_Upgrade_Manager = 60;
 	public static final int GUI_Item_Manager = 61;
+	public static final int GUI_Item_Amount_Sign = 62;
 
 	//SubModules 
 	//All IDS above 120 and so on...

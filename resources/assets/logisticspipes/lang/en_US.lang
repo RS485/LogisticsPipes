@@ -191,7 +191,8 @@ item.NanoHopper=Nano Hopper
 item.logisticsItemCard=Logistics Item Card
 item.itemDisk=Logistics Disk
 item.networkMonitorItem=Network monitor
-item.CraftingSignCreator=Crafting Sign Creator
+item.ItemPipeSignCreator.0=Crafting Sign Creator
+item.ItemPipeSignCreator.1=Item Amount Sign Creator
 item.logisticsHUDGlasses=Logistics HUD Glasses
 item.remoteOrdererItem=Remote Orderer
 

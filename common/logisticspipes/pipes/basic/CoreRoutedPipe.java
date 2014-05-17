@@ -39,6 +39,7 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
+import logisticspipes.items.ItemPipeSignCreator;
 import logisticspipes.logisticspipes.IAdjacentWorldAccess;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.ITrackStatistics;
@@ -49,9 +50,13 @@ import logisticspipes.modules.LogisticsGuiModule;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.packets.pipe.PipeSignTypes;
 import logisticspipes.network.packets.pipe.RequestRoutingLasersPacket;
+import logisticspipes.network.packets.pipe.RequestSignPacket;
 import logisticspipes.network.packets.pipe.StatUpdate;
 import logisticspipes.pipefxhandlers.Particles;
+import logisticspipes.pipes.signs.IPipeSign;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -166,6 +171,8 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	// from BaseRoutingLogic
 	protected int throttleTime = 20;
 	private int throttleTimeLeft = 20 + new Random().nextInt(Configs.LOGISTICS_DETECTION_FREQUENCY);
+	
+	protected IPipeSign[] signItem = new IPipeSign[6];
 	
 	public CoreRoutedPipe(int itemID) {
 		this(new PipeTransportLogistics(), itemID);
@@ -304,6 +311,9 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	 */
 	public void firstInitialiseTick() {
 		getRouter();
+		if(MainProxy.isClient(getWorld())) {
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSignPacket.class).setTilePos(container));
+		}
 	}
 	
 	/*** 
@@ -312,6 +322,11 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	 */
 	public void enabledUpdateEntity() {
 		powerHandler.update();
+		for(int i=0;i<6;i++) {
+			if(signItem[i] != null) {
+				signItem[i].updateServerSide();
+			}
+		}
 	}
 	
 	/***
@@ -699,6 +714,26 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			sendqueue.appendTag(tagentry);
 		}
 		nbttagcompound.setTag("sendqueue", sendqueue);
+		
+		for(int i=0;i<6;i++) {
+			if(signItem[i] != null) {
+				nbttagcompound.setBoolean("PipeSign_" + i, true);
+				int signType = -1;
+				List<Class<? extends IPipeSign>> typeClasses = ItemPipeSignCreator.signTypes;
+				for(int j=0;j<typeClasses.size();j++) {
+					if(typeClasses.get(j) == signItem[i].getClass()) {
+						signType = j;
+						break;
+					}
+				}
+				nbttagcompound.setInteger("PipeSign_" + i + "_type", signType);
+				NBTTagCompound tag = new NBTTagCompound();
+				signItem[i].writeToNBT(tag);
+				nbttagcompound.setTag("PipeSign_" + i + "_tags", tag);
+			} else {
+				nbttagcompound.setBoolean("PipeSign_" + i, false);
+			}
+		}
 	}
 	
 	@Override
@@ -726,6 +761,21 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			ForgeDirection from = ForgeDirection.values()[tagentry.getByte("from")];
 			ItemSendMode mode = ItemSendMode.values()[tagentry.getByte("mode")];
 			_sendQueue.add(new Triplet<IRoutedItem, ForgeDirection, ItemSendMode>(item, from, mode));
+		}
+		for(int i=0;i<6;i++) {
+			if(nbttagcompound.getBoolean("PipeSign_" + i)) {
+				int type = nbttagcompound.getInteger("PipeSign_" + i + "_type");
+				Class<? extends IPipeSign> typeClass = ItemPipeSignCreator.signTypes.get(type);
+				try {
+					signItem[i] = typeClass.newInstance();
+					signItem[i].init(this, ForgeDirection.getOrientation(i));
+					signItem[i].readFromNBT(nbttagcompound.getCompoundTag("PipeSign_" + i + "_tags"));
+				} catch(InstantiationException e) {
+					throw new RuntimeException(e);
+				} catch(IllegalAccessException e) {
+					throw new RuntimeException(e);
+				}
+			}
 		}
 	}
 	
@@ -1471,6 +1521,109 @@ outer:
 
 	public WorldUtil getWorldUtil() {
 		return new WorldUtil(this.getWorld(), this.getX(), this.getY(), this.getZ());
+	}
+
+	public void addPipeSign(ForgeDirection dir, IPipeSign type, EntityPlayer player) {
+		if(dir.ordinal() < 6) {
+			if(signItem[dir.ordinal()] == null) {
+				signItem[dir.ordinal()] = type;
+				signItem[dir.ordinal()].init(this, dir);
+			}
+			if(container != null) {
+				sendSignData(player);
+			}
+		}
+	}
+	
+	public void sendSignData(EntityPlayer player) {
+		List<Integer> types = new ArrayList<Integer>();
+		for(int i=0;i<6;i++) {
+			if(signItem[i] == null) {
+				types.add(-1);
+			} else {
+				List<Class<? extends IPipeSign>> typeClasses = ItemPipeSignCreator.signTypes;
+				for(int j=0;j<typeClasses.size();j++) {
+					if(typeClasses.get(j) == signItem[i].getClass()) {
+						types.add(j);
+						break;
+					}
+				}
+			}
+		}
+		ModernPacket packet = PacketHandler.getPacket(PipeSignTypes.class).setTypes(types).setTilePos(container);
+		MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), packet);
+		MainProxy.sendPacketToPlayer(packet, (Player) player);
+		for(int i=0;i<6;i++) {
+			if(signItem[i] != null) {
+				packet = signItem[i].getPacket();
+				if(packet != null) {
+					MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), packet);
+					MainProxy.sendPacketToPlayer(packet, (Player) player);
+				}
+			}
+		}
+		this.refreshRender(false);
+	}
+	
+	public void removePipeSign(ForgeDirection dir, EntityPlayer player) {
+		if(dir.ordinal() < 6) {
+			signItem[dir.ordinal()] = null;
+		}
+		sendSignData(player);
+	}
+	
+	public boolean hasPipeSign(ForgeDirection dir) {
+		if(dir.ordinal() < 6) {
+			return signItem[dir.ordinal()] != null;
+		}
+		return false;
+	}
+	
+	public void activatePipeSign(ForgeDirection dir, EntityPlayer player) {
+		if(dir.ordinal() < 6) {
+			if(signItem[dir.ordinal()] != null) {
+				signItem[dir.ordinal()].activate(player);
+			}
+		}
+	}
+	
+	public List<Pair<ForgeDirection, IPipeSign>> getPipeSigns() {
+		List<Pair<ForgeDirection, IPipeSign>> list = new ArrayList<Pair<ForgeDirection, IPipeSign>>();
+		for(int i=0;i<6;i++) {
+			if(signItem[i] != null) {
+				list.add(new Pair<ForgeDirection, IPipeSign>(ForgeDirection.getOrientation(i), signItem[i]));
+			}
+		}
+		return list;
+	}
+
+	public void handleSignPacket(List<Integer> types) {
+		if(!MainProxy.isClient(getWorld())) return;
+		for(int i=0;i<6;i++) {
+			int integer = types.get(i);
+			if(integer >= 0) {
+				Class<? extends IPipeSign> type = ItemPipeSignCreator.signTypes.get(integer);
+				if(signItem[i] == null || signItem[i].getClass() != type) {
+					try {
+						signItem[i] = type.newInstance();
+						signItem[i].init(this, ForgeDirection.getOrientation(i));
+					} catch(InstantiationException e) {
+						throw new RuntimeException(e);
+					} catch(IllegalAccessException e) {
+						throw new RuntimeException(e);
+					}
+				}
+			} else {
+				signItem[i] = null;
+			}
+		}
+	}
+
+	public IPipeSign getPipeSign(ForgeDirection dir) {
+		if(dir.ordinal() < 6) {
+			return signItem[dir.ordinal()];
+		}
+		return null;
 	}
 
 	public void triggerDebug() {

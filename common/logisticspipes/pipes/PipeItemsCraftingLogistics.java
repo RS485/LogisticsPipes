@@ -68,6 +68,7 @@ import logisticspipes.network.packets.pipe.FluidCraftingPipeAdvancedSatelliteNex
 import logisticspipes.network.packets.pipe.FluidCraftingPipeAdvancedSatellitePrevPacket;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.signs.CraftingPipeSign;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
@@ -441,16 +442,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		}
 	}
 
-	private int countExtras(){
-		if(_extras == null)
-			return 0;
-		int count = 0;
-		for(LogisticsOrder e : _extras){
-			count += e.getItem().getStackSize();
-		}
-		return count;
-	}
-
 	@Override
 	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_CRAFTER_TEXTURE;
@@ -724,7 +715,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public int getPriority() {
 		return priority;
 	}
-
+	
+	/*
 	public List<ForgeDirection> getCraftingSigns() {
 		List<ForgeDirection> list = new ArrayList<ForgeDirection>();
 		for(int i=0;i<6;i++) {
@@ -753,16 +745,16 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		}
 		return false;
 	}
+	*/
 	
 	public ModernPacket getCPipePacket() {
-		return PacketHandler.getPacket(CraftingPipeUpdatePacket.class).setAmount(amount).setLiquidSatelliteIdArray(liquidSatelliteIdArray).setLiquidSatelliteId(liquidSatelliteId).setCraftingSigns(craftingSigns).setSatelliteId(satelliteId).setAdvancedSatelliteIdArray(advancedSatelliteIdArray).setFuzzyCraftingFlagArray(fuzzyCraftingFlagArray).setPriority(priority).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
+		return PacketHandler.getPacket(CraftingPipeUpdatePacket.class).setAmount(amount).setLiquidSatelliteIdArray(liquidSatelliteIdArray).setLiquidSatelliteId(liquidSatelliteId).setSatelliteId(satelliteId).setAdvancedSatelliteIdArray(advancedSatelliteIdArray).setFuzzyCraftingFlagArray(fuzzyCraftingFlagArray).setPriority(priority).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 	}
 	
 	public void handleCraftingUpdatePacket(CraftingPipeUpdatePacket packet) {
 		amount = packet.getAmount();
 		liquidSatelliteIdArray = packet.getLiquidSatelliteIdArray();
 		liquidSatelliteId = packet.getLiquidSatelliteId();
-		craftingSigns = packet.getCraftingSigns();
 		satelliteId = packet.getSatelliteId();
 		advancedSatelliteIdArray = packet.getAdvancedSatelliteIdArray();
 		fuzzyCraftingFlagArray = packet.getFuzzyCraftingFlagArray();
@@ -777,7 +769,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public int[] liquidSatelliteIdArray = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
 	public int liquidSatelliteId = 0;
 
-	public boolean[] craftingSigns = new boolean[6];
+	//@Deprecated
+	//public boolean[] craftingSigns = new boolean[6];
 	
 	protected final DelayQueue< DelayedGeneric<ItemIdentifierStack>> _lostItems = new DelayQueue< DelayedGeneric<ItemIdentifierStack>>();
 	
@@ -987,9 +980,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		for(int i=0;i<9;i++) {
 			fuzzyCraftingFlagArray[i] = nbttagcompound.getByte("fuzzyCraftingFlag" + i);
 		}
-		for(int i=0;i<6;i++) {
-			craftingSigns[i] = nbttagcompound.getBoolean("craftingSigns" + i);
-		}
 		if(nbttagcompound.hasKey("FluidAmount")) {
 			amount = nbttagcompound.getIntArray("FluidAmount");
 		}
@@ -1003,6 +993,12 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			liquidSatelliteIdArray[i] = nbttagcompound.getInteger("liquidSatelliteIdArray" + i);
 		}
 		liquidSatelliteId = nbttagcompound.getInteger("liquidSatelliteId");
+		
+		for(int i=0;i<6;i++) {
+			if(nbttagcompound.getBoolean("craftingSigns" + i)) {
+				this.addPipeSign(ForgeDirection.getOrientation(i), new CraftingPipeSign(), null);
+			}
+		}
 	}
 
 	@Override
@@ -1018,9 +1014,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		}
 		for(int i=0;i<9;i++) {
 			nbttagcompound.setByte("fuzzyCraftingFlag" + i, (byte)fuzzyCraftingFlagArray[i]);
-		}
-		for(int i=0;i<6;i++) {
-			nbttagcompound.setBoolean("craftingSigns" + i, craftingSigns[i]);
 		}
 		for(int i=0;i<ItemUpgrade.MAX_LIQUID_CRAFTER;i++) {
 			nbttagcompound.setInteger("liquidSatelliteIdArray" + i, liquidSatelliteIdArray[i]);
@@ -1353,5 +1346,14 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			fuzzyCraftingFlagArray[slot] ^= 1 << flag;
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingFuzzyFlag.class).setInteger2(fuzzyCraftingFlagArray[slot]).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
 		}
+	}
+
+	public boolean hasCraftingSign() {
+		for(int i=0;i<6;i++) {
+			if(signItem[i] instanceof CraftingPipeSign) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

@@ -19,7 +19,7 @@ import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.commands.LogisticsPipesCommand;
 import logisticspipes.commands.chathelper.LPChatListener;
-import logisticspipes.items.CraftingSignCreator;
+import logisticspipes.items.ItemPipeSignCreator;
 import logisticspipes.items.ItemDisk;
 import logisticspipes.items.ItemHUDArmor;
 import logisticspipes.items.ItemModule;
@@ -370,8 +370,9 @@ public class LogisticsPipes {
 		LogisticsRemoteOrderer = new RemoteOrderer(Configs.LOGISTICSREMOTEORDERER_ID);
 		LogisticsRemoteOrderer.setUnlocalizedName("remoteOrdererItem");
 
-		LogisticsCraftingSignCreator = new CraftingSignCreator(Configs.LOGISTICSCRAFTINGSIGNCREATOR_ID);
-		LogisticsCraftingSignCreator.setUnlocalizedName("CraftingSignCreator");
+		ItemPipeSignCreator.registerPipeSignTypes();
+		LogisticsCraftingSignCreator = new ItemPipeSignCreator(Configs.LOGISTICSCRAFTINGSIGNCREATOR_ID);
+		LogisticsCraftingSignCreator.setUnlocalizedName("ItemPipeSignCreator");
 		
 		int renderIndex;
 		if(isClient) {

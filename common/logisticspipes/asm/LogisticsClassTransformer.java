@@ -66,7 +66,10 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			if(cachedClasses.containsKey(name)) {
 				interfacesToClearA.add(name);
 			}
-			clearNegativeInterfaceCache();
+			Thread thread = Thread.currentThread();
+			if(thread.getName().equals("Minecraft main thread") || thread.getName().equals("main") || thread.getName().equals("Server thread")) { //Only clear when called from the main thread to avoid ConcurrentModificationException on start
+				clearNegativeInterfaceCache();
+			}
 			if(cachedClasses.containsKey(name)) {
 				return cachedClasses.get(name);
 			}

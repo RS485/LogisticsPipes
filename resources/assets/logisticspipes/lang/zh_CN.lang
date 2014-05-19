@@ -191,6 +191,7 @@ item.logisticsItemCard=物流物品卡片
 item.itemDisk=物流盘
 item.networkMonitorItem=网络监视器
 item.networkMonitorItem.name=网络监视器
+item.logisticsHUDGlasses=物流HUD眼镜
 item.ItemPipeSignCreator.0=合成标记贴牌器
 item.ItemPipeSignCreator.1=物品总量贴牌器
 item.remoteOrdererItem=远程请求器

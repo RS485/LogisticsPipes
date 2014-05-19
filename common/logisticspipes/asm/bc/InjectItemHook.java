@@ -2,9 +2,7 @@ package logisticspipes.asm.bc;
 
 import java.util.logging.Level;
 
-import cpw.mods.fml.common.network.PacketDispatcher;
-
-import logisticspipes.logisticspipes.IRoutedItem;
+import logisticspipes.proxy.buildcraft.LPRoutedBCTravelingItem;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.BuildCraftTransport;
@@ -17,6 +15,7 @@ import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TravelingItem;
 import buildcraft.transport.pipes.events.PipeEventItem;
 import buildcraft.transport.utils.TransportUtils;
+import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class InjectItemHook {
 	public static void handleInjectItem(PipeTransportItems pipe, TravelingItem item, ForgeDirection inputOrientation) {
@@ -53,7 +52,7 @@ public class InjectItemHook {
 			int stackCount = 0;
 			int numItems = 0;
 			for (TravelingItem travellingItem : pipe.items) {
-				if(!(travellingItem instanceof IRoutedItem)) {
+				if(!(travellingItem instanceof LPRoutedBCTravelingItem)) {
 					ItemStack stack = travellingItem.getItemStack();
 					if (stack != null && stack.stackSize > 0) {
 						numItems += stack.stackSize;
@@ -69,7 +68,7 @@ public class InjectItemHook {
 			stackCount = 0;
 			numItems = 0;
 			for (TravelingItem travellingItem : pipe.items) {
-				if(!(travellingItem instanceof IRoutedItem)) {
+				if(!(travellingItem instanceof LPRoutedBCTravelingItem)) {
 					ItemStack stack = travellingItem.getItemStack();
 					if (stack != null && stack.stackSize > 0) {
 						numItems += stack.stackSize;

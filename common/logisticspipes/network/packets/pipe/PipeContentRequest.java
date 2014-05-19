@@ -24,8 +24,6 @@ public class PipeContentRequest extends IntegerPacket {
 		if(ref != null) item = ref.get();
 		if(item != null) {
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PipeContentPacket.class).setItem(item.getItemIdentifierStack()).setTravelId(item.getId()), (Player) player);
-		} else {
-			System.out.println("Couldn't find The item inside the Map");
 		}
 	}
 	

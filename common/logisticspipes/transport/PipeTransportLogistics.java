@@ -153,7 +153,7 @@ public class PipeTransportLogistics extends PipeTransport {
 		
 		item.input = inputOrientation;
 		
-		if(item.getPosition() >= 1.0F) {
+		while(item.getPosition() >= 1.0F) {
 			item.setPosition(item.getPosition() - 1.0F);
 		}
 		
@@ -166,6 +166,8 @@ public class PipeTransportLogistics extends PipeTransport {
 				dropItem((LPTravelingItemServer)item);
 				return;
 			}
+		} else {
+			item.output = ForgeDirection.UNKNOWN;
 		}
 		
 		items.scheduleAdd(item);

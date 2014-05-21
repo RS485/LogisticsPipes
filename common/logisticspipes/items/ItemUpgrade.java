@@ -12,6 +12,7 @@ import logisticspipes.pipes.upgrades.CraftingMonitoringUpgrade;
 import logisticspipes.pipes.upgrades.FluidCraftingUpgrade;
 import logisticspipes.pipes.upgrades.FuzzyCraftingUpgrade;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
+import logisticspipes.pipes.upgrades.OpaqueUpgrade;
 import logisticspipes.pipes.upgrades.PatternUpgrade;
 import logisticspipes.pipes.upgrades.PowerTransportationUpgrade;
 import logisticspipes.pipes.upgrades.SpeedUpgrade;
@@ -80,6 +81,7 @@ public class ItemUpgrade extends LogisticsItem {
 	//Various
 	public static final int CC_REMOTE_CONTROL = 40;
 	public static final int CRAFTING_MONITORING = 41;
+	public static final int OPAQUE_UPGRADE = 42;
 	
 	//Values
 	public static final int MAX_LIQUID_CRAFTER = 3;
@@ -165,6 +167,7 @@ public class ItemUpgrade extends LogisticsItem {
 		registerUpgrade(POWER_IC2_EV_SUPPLIER, IC2EVPowerSupplierUpgrade.class, 25);
 		registerUpgrade(CC_REMOTE_CONTROL, CCRemoteControlUpgrade.class, 26);
 		registerUpgrade(CRAFTING_MONITORING, CraftingMonitoringUpgrade.class, 27);
+		registerUpgrade(OPAQUE_UPGRADE, OpaqueUpgrade.class, 28);
 	}
 	
 	public void registerUpgrade(int id, Class<? extends IPipeUpgrade> moduleClass, int textureId) {
@@ -239,7 +242,7 @@ public class ItemUpgrade extends LogisticsItem {
 
 	@Override
 	public void registerIcons(IconRegister par1IconRegister) {
-		icons=new Icon[28];
+		icons=new Icon[29];
 		icons[0]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyUP");
 		icons[1]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyDOWN");
 		icons[2]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyNORTH");
@@ -271,6 +274,7 @@ public class ItemUpgrade extends LogisticsItem {
 		icons[25]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-EV");
 		icons[26]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/CCRemoteControl");
 		icons[27]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/CraftingMonitoring");
+		icons[28]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/OpaqueUpgrade");
 	}
 
 	@Override

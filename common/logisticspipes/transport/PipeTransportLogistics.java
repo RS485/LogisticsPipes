@@ -40,7 +40,6 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.LPRoutedBCTravelingItem;
 import logisticspipes.routing.ItemRoutingInformation;
-import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemClient;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.InventoryHelper;
@@ -172,7 +171,7 @@ public class PipeTransportLogistics extends PipeTransport {
 		
 		items.scheduleAdd(item);
 		
-		if(MainProxy.isServer(container.worldObj)) {
+		if(MainProxy.isServer(container.worldObj) && !getPipe().isOpaque()) {
 			sendItemPacket((LPTravelingItemServer)item);
 		}
 	}
@@ -208,8 +207,9 @@ public class PipeTransportLogistics extends PipeTransport {
 		}
 		
 		items.unscheduleRemoval(item);
-		
-		sendItemPacket((LPTravelingItemServer)item);
+		if(!getPipe().isOpaque()) {
+			sendItemPacket((LPTravelingItemServer)item);
+		}
 	}
 	
 	public ForgeDirection resolveDestination(LPTravelingItemServer data) {

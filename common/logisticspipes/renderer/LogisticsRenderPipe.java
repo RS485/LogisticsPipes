@@ -43,8 +43,6 @@ import net.minecraftforge.fluids.FluidStack;
 
 import org.lwjgl.opengl.GL11;
 
-import buildcraft.BuildCraftCore;
-import buildcraft.BuildCraftCore.RenderMode;
 import buildcraft.core.CoreConstants;
 import buildcraft.core.render.FluidRenderer;
 import buildcraft.core.render.RenderEntityBlock;
@@ -97,15 +95,16 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 	@Override
 	public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float f) {
 		super.renderTileEntityAt(tileentity, x, y, z, f); // Render Gates And Wires
-		if(BuildCraftCore.render == RenderMode.NoDynamic) return;
 		if(!(tileentity instanceof LogisticsTileGenericPipe)) return;
 		LogisticsTileGenericPipe pipe = ((LogisticsTileGenericPipe)tileentity);
 		if(pipe.pipe == null) return;
-		if(pipe.pipe.transport instanceof PipeFluidTransportLogistics) {
-			renderFluids((Pipe<PipeFluidTransportLogistics>)pipe.pipe, x, y, z);
-		}
-		if(pipe.pipe.transport instanceof PipeTransportLogistics) {
-			renderSolids((Pipe<PipeTransportLogistics>)pipe.pipe, x, y, z, f);
+		if(!pipe.isOpaque()) {
+			if(pipe.pipe.transport instanceof PipeFluidTransportLogistics) {
+				renderFluids((Pipe<PipeFluidTransportLogistics>)pipe.pipe, x, y, z);
+			}
+			if(pipe.pipe.transport instanceof PipeTransportLogistics) {
+				renderSolids((Pipe<PipeTransportLogistics>)pipe.pipe, x, y, z, f);
+			}
 		}
 		if(pipe.pipe instanceof CoreRoutedPipe) {
 			renderPipePipe((CoreRoutedPipe)pipe.pipe, x, y, z);

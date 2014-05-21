@@ -104,6 +104,8 @@ public class Configs {
 	
 	public static boolean TE_PIPE_SUPPORT = false;
 	
+	public static boolean OPAQUE = false;
+	
 	private static boolean loaded = false;
 	public static void load() {
 		if(loaded) return;
@@ -396,6 +398,13 @@ public class Configs {
 						"TEPipeSupport",
 						TE_PIPE_SUPPORT,
 						"Enable Support for TE conduits to allow them to connect LP pipes." + NEW_LINE + "This feature MODIFIES TE. That means that bugs inside TE could be caused by LP." + NEW_LINE + "DON'T REPORT BUGS TO TE WITH THIS FEATURE ENABLED.")
+				.getBoolean(false);
+		
+		OPAQUE = CONFIGURATION
+				.get(Configuration.CATEGORY_GENERAL,
+						"OpaquePipes",
+						OPAQUE,
+						"Render every LP pipe opaque.")
 				.getBoolean(false);
 		
 		EASTER_EGGS = CONFIGURATION

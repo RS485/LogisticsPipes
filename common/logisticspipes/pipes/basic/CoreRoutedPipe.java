@@ -8,6 +8,9 @@
 
 package logisticspipes.pipes.basic;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -105,6 +108,7 @@ import net.minecraftforge.fluids.FluidStack;
 import buildcraft.BuildCraftTransport;
 import buildcraft.api.core.IIconProvider;
 import buildcraft.api.gates.IAction;
+import buildcraft.core.network.IClientState;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
@@ -113,7 +117,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import dan200.computercraft.api.lua.ILuaObject;
 
 @CCType(name = "LogisticsPipes:Normal")
-public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IRoutedPowerProvider, IQueueCCEvent {
+public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implements IClientState, IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IRoutedPowerProvider, IQueueCCEvent {
 
 	public enum ItemSendMode {
 		Normal,
@@ -173,6 +177,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	private int throttleTimeLeft = 20 + new Random().nextInt(Configs.LOGISTICS_DETECTION_FREQUENCY);
 	
 	protected IPipeSign[] signItem = new IPipeSign[6];
+	private boolean isOpaqueClientSide = false;
 	
 	public CoreRoutedPipe(int itemID) {
 		this(new PipeTransportLogistics(), itemID);
@@ -1629,6 +1634,24 @@ outer:
 	public void triggerDebug() {
 		if(this.debugThisPipe) {
 			System.out.print("");
+		}
+	}
+
+	@Override
+	public void writeData(DataOutputStream data) throws IOException {
+		data.writeBoolean(isOpaque());
+	}
+
+	@Override
+	public void readData(DataInputStream data) throws IOException {
+		isOpaqueClientSide = data.readBoolean();
+	}
+
+	public boolean isOpaque() {
+		if(MainProxy.isClient(getWorld())) {
+			return Configs.OPAQUE || isOpaqueClientSide;
+		} else {
+			return Configs.OPAQUE || this.getUpgradeManager().isOpaque();
 		}
 	}
 }

@@ -340,4 +340,8 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 		}
 		return 0;
 	}
+	
+	public boolean isOpaque() {
+		return getCPipe().isOpaque();
+	}
 }

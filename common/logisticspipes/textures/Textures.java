@@ -80,6 +80,7 @@ public class Textures {
 	public static TextureType LOGISTICSPIPE_LIQUID_REQUEST					= empty;
 	public static TextureType LOGISTICSPIPE_LIQUID_EXTRACTOR				= empty;
 	public static TextureType LOGISTICSPIPE_LIQUID_SATELLITE				= empty;
+	public static TextureType LOGISTICSPIPE_OPAQUE_TEXTURE					= empty;
 	
 	public static Icon LOGISTICS_REQUEST_TABLE[]							= new Icon[0];
 	
@@ -138,6 +139,7 @@ public class Textures {
 	public static String				LOGISTICSPIPE_POWERED_POWERED_TEXTURE_FILE		= "pipes/status_overlay/powered_powered";
 	public static String				LOGISTICSPIPE_SECURITY_TEXTURE_FILE				= "pipes/status_overlay/security";
 	public static String				LOGISTICSPIPE_SUBPOWER_TEXTURE_FILE				= "pipes/status_overlay/subpower";
+	public static String				LOGISTICSPIPE_OPAQUE_TEXTURE_FILE				= "pipes/status_overlay/opaque";
 	
 	// Chassi pipes
 	public static String				LOGISTICSPIPE_CHASSI1_TEXTURE_FILE				= "pipes/chassi/chassi_mk1";
@@ -180,6 +182,7 @@ public class Textures {
 		LOGISTICSPIPE_ROUTED_POWERED_TEXTURE		= registerTexture(par1IconRegister, LOGISTICSPIPE_ROUTED_POWERED_TEXTURE_FILE, 2);
 		LOGISTICSPIPE_NOTROUTED_POWERED_TEXTURE		= registerTexture(par1IconRegister, LOGISTICSPIPE_NOTROUTED_POWERED_TEXTURE_FILE, 2);
 		LOGISTICSPIPE_SUBPOWER_TEXTURE 				= registerTexture(par1IconRegister, LOGISTICSPIPE_SUBPOWER_TEXTURE_FILE, 2);
+		LOGISTICSPIPE_OPAQUE_TEXTURE 				= registerTexture(par1IconRegister, LOGISTICSPIPE_OPAQUE_TEXTURE_FILE, 2);
 		LOGISTICSPIPE_REQUESTER_TEXTURE 			= registerTexture(par1IconRegister, LOGISTICSPIPE_REQUESTER_TEXTURE_FILE);
 		LOGISTICSPIPE_CRAFTER_TEXTURE				= registerTexture(par1IconRegister, LOGISTICSPIPE_CRAFTER_TEXTURE_FILE);
 		LOGISTICSPIPE_SATELLITE_TEXTURE 			= registerTexture(par1IconRegister, LOGISTICSPIPE_SATELLITE_TEXTURE_FILE);

@@ -49,6 +49,7 @@ public class Textures {
 	public static TextureType LOGISTICSPIPE_ROUTED_POWERED_TEXTURE			= empty;
 	public static TextureType LOGISTICSPIPE_NOTROUTED_POWERED_TEXTURE		= empty;
 	public static TextureType LOGISTICSPIPE_LIQUID_POWERED_TEXTURE			= empty;
+	public static TextureType LOGISTICSPIPE_DIRECTION_POWERED_TEXTURE		= empty;
 	public static TextureType LOGISTICSPIPE_SUBPOWER_TEXTURE				= empty;
 	public static TextureType LOGISTICSPIPE_POWERED_TEXTURE					= empty;
 	public static TextureType LOGISTICSPIPE_POWERED_POWERED_TEXTURE			= empty;
@@ -137,6 +138,7 @@ public class Textures {
 	public static String				LOGISTICSPIPE_LIQUID_POWERED_TEXTURE_FILE		= "pipes/status_overlay/liquid_connection_powered";
 	public static String				LOGISTICSPIPE_POWERED_TEXTURE_FILE				= "pipes/status_overlay/powered";
 	public static String				LOGISTICSPIPE_POWERED_POWERED_TEXTURE_FILE		= "pipes/status_overlay/powered_powered";
+	public static String				LOGISTICSPIPE_DIRECTION_POWERED_TEXTURE_FILE	= "pipes/status_overlay/direction_powered";
 	public static String				LOGISTICSPIPE_SECURITY_TEXTURE_FILE				= "pipes/status_overlay/security";
 	public static String				LOGISTICSPIPE_SUBPOWER_TEXTURE_FILE				= "pipes/status_overlay/subpower";
 	public static String				LOGISTICSPIPE_OPAQUE_TEXTURE_FILE				= "pipes/status_overlay/opaque";
@@ -176,6 +178,7 @@ public class Textures {
 		LOGISTICSPIPE_PROVIDER_TEXTURE 				= registerTexture(par1IconRegister, LOGISTICSPIPE_PROVIDER_TEXTURE_FILE);
 		LOGISTICSPIPE_POWERED_TEXTURE 				= registerTexture(par1IconRegister, LOGISTICSPIPE_POWERED_TEXTURE_FILE, 2);
 		LOGISTICSPIPE_POWERED_POWERED_TEXTURE 		= registerTexture(par1IconRegister, LOGISTICSPIPE_POWERED_POWERED_TEXTURE_FILE, 2);
+		LOGISTICSPIPE_DIRECTION_POWERED_TEXTURE 	= registerTexture(par1IconRegister, LOGISTICSPIPE_DIRECTION_POWERED_TEXTURE_FILE, 2);
 		LOGISTICSPIPE_SECURITY_TEXTURE 				= registerTexture(par1IconRegister, LOGISTICSPIPE_SECURITY_TEXTURE_FILE, 2);
 		LOGISTICSPIPE_ROUTED_TEXTURE            	= registerTexture(par1IconRegister, LOGISTICSPIPE_ROUTED_TEXTURE_FILE);
 		LOGISTICSPIPE_NOTROUTED_TEXTURE         	= registerTexture(par1IconRegister, LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE, 2);

@@ -648,6 +648,10 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 					texture = Textures.LOGISTICSPIPE_LIQUID_POWERED_TEXTURE;
 				} else if(texture.fileName.equals(Textures.LOGISTICSPIPE_POWERED_TEXTURE.fileName)) {
 					texture = Textures.LOGISTICSPIPE_POWERED_POWERED_TEXTURE;
+				} else if(texture.fileName.equals(Textures.LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE.fileName)) {
+					texture = Textures.LOGISTICSPIPE_NOTROUTED_POWERED_TEXTURE;
+				} else if(texture.fileName.equals(Textures.LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE.fileName)) {
+					texture = Textures.LOGISTICSPIPE_DIRECTION_POWERED_TEXTURE;
 				} else {
 					System.out.println("Unknown texture to power, :" + texture.fileName);
 					System.out.println(this.getClass());

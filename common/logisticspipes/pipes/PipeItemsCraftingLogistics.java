@@ -357,10 +357,12 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			while (extracted.stackSize > 0) {
 				if(nextOrder.getItem().getItem() != extractedID) {
 					LogisticsOrder startOrder = nextOrder;
-					do {
-						_orderManager.deferSend();
-						nextOrder = _orderManager.peekAtTopRequest();
-					} while(nextOrder.getItem().getItem() != extractedID && startOrder != nextOrder);
+					if(_orderManager.hasOrders()) {
+						do {
+							_orderManager.deferSend();
+							nextOrder = _orderManager.peekAtTopRequest();
+						} while(nextOrder.getItem().getItem() != extractedID && startOrder != nextOrder);
+					}
 					if(startOrder == nextOrder) {
 						int numtosend = Math.min(extracted.stackSize, extractedID.getMaxStackSize());
 						if(numtosend == 0)

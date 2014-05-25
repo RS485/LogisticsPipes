@@ -144,7 +144,7 @@ public class LogisticsPipes {
 			}
 		}
 		if(!found) {
-			throw new RuntimeException("LogisticsPipes could not find its classtransformer. If you are running MC from an IDE make sure to copy the 'LogisticsPipes_dummy.jar' to your mods folder. If you are running MC normal please report this as a bug at 'https://github.com/RS485/LogisticsPipes-Dev/issues'.");
+			throw new RuntimeException("LogisticsPipes could not find its class transformer. If you are running MC from an IDE make sure to copy the 'LogisticsPipes_dummy.jar' to your mods folder. If you are running MC normal please report this as a bug at 'https://github.com/RS485/LogisticsPipes/issues'.");
 		}
 		PacketHandler.intialize();
 	}

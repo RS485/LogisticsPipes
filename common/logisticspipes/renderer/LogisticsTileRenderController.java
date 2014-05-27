@@ -5,19 +5,22 @@ import java.util.Iterator;
 import java.util.Map;
 
 import logisticspipes.Configs;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.block.PowerPacketLaser;
 import logisticspipes.pipefxhandlers.PipeFXLaserPowerBall;
 import logisticspipes.pipefxhandlers.PipeFXLaserPowerBeam;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.tuples.LPPosition;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-@SideOnly(Side.CLIENT)
 public class LogisticsTileRenderController {
 	
 	private final LogisticsTileGenericPipe pipe;
@@ -37,7 +40,48 @@ public class LogisticsTileRenderController {
 	private class LaserBeamData {
 		final float length;
 		int timeout;
+		final boolean reverse;
+		boolean isDeadEntity() {
+			return false;
+		}
+		
+		void setDead() {}
+		
+		boolean sendPacket() {
+			return true;
+		}
+
+		void tick() {
+			timeout--;
+		}
+	}
+
+	private class LaserBeamDataClient extends LaserBeamData {
+		public LaserBeamDataClient(float length, int timeout, boolean reverse, ForgeDirection dir, int color) {
+			super(length, timeout, reverse);
+			this.entity = new PipeFXLaserPowerBeam(pipe.worldObj, new LPPosition((TileEntity)pipe), length, dir, color, LogisticsTileRenderController.this.pipe).setReverse(reverse);
+			Minecraft.getMinecraft().effectRenderer.addEffect(this.entity);
+			
+		}
+		@Getter
+		@SideOnly(Side.CLIENT)
 		final PipeFXLaserPowerBeam entity;
+		
+		boolean isDeadEntity() {
+			return entity == null || entity.isDead;
+		}
+		
+		void setDead() {
+			if(entity != null) {
+				entity.setDead();
+			}
+		}
+		
+		boolean sendPacket() {
+			return false;
+		}
+
+		void tick() {}
 	}
 	
 	@Data
@@ -45,31 +89,78 @@ public class LogisticsTileRenderController {
 	private class LaserBallData {
 		final float length;
 		int timeout;
-		final PipeFXLaserPowerBall entity;
+		boolean isDeadEntity() {
+			return false;
+		}
+		
+		void setDead() {}
+		
+		boolean sendPacket() {
+			return true;
+		}
+
+		void tick() {
+			timeout--;
+		}
 	}
-	
+
+	private class LaserBallDataClient extends LaserBallData {
+		public LaserBallDataClient(float length, int timeout, int color) {
+			super(length, timeout);
+			this.entity = new PipeFXLaserPowerBall(pipe.worldObj, new LPPosition((TileEntity)pipe), color, LogisticsTileRenderController.this.pipe);
+			Minecraft.getMinecraft().effectRenderer.addEffect(this.entity);
+		}
+		@Getter
+		@SideOnly(Side.CLIENT)
+		final PipeFXLaserPowerBall entity;
+		
+		boolean isDeadEntity() {
+			return entity == null || entity.isDead;
+		}
+		
+		void setDead() {
+			if(entity != null) {
+				entity.setDead();
+			}
+		}
+		
+		boolean sendPacket() {
+			return false;
+		}
+
+		void tick() {}
+	}
+
 	public LogisticsTileRenderController(LogisticsTileGenericPipe pipe) {
 		this.pipe = pipe;
 	}
 	
 	public void onUpdate() {
 		{
-			Iterator<LaserBeamData> iter = powerLasersBeam.values().iterator();
+			Iterator<LaserKey> iter = powerLasersBeam.keySet().iterator();
 			while(iter.hasNext()) {
-				LaserBeamData data = iter.next();
-				data.timeout -= 1;
-				if(data.timeout < 0 || data.entity == null || data.entity.isDead) {
-					if(data.entity != null) data.entity.setDead();
+				LaserKey key = iter.next();
+				LaserBeamData data = powerLasersBeam.get(key);
+				data.tick();
+				if(data.timeout < 0 || data.isDeadEntity()) {
+					data.setDead();
+					if(data.sendPacket()) {
+						MainProxy.sendPacketToAllWatchingChunk(this.pipe.getX(), this.pipe.getZ(), MainProxy.getDimensionForWorld(this.pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(key.color).setPos(pipe.getCPipe().getLPPosition()).setRenderBall(false).setDir(key.dir).setRemove(true));
+					}
 					iter.remove();
 				}
 			}
 		}{
-			Iterator<LaserBallData> iter = powerLasersBall.values().iterator();
+			Iterator<Integer> iter = powerLasersBall.keySet().iterator();
 			while(iter.hasNext()) {
-				LaserBallData data = iter.next();
-				data.timeout -= 1;
-				if(data.timeout < 0 || data.entity == null || data.entity.isDead) {
-					if(data.entity != null) data.entity.setDead();
+				Integer key = iter.next();
+				LaserBallData data = powerLasersBall.get(key);
+				data.tick();
+				if(data.timeout < 0 || data.isDeadEntity()) {
+					data.setDead();
+					if(data.sendPacket()) {
+						MainProxy.sendPacketToAllWatchingChunk(this.pipe.getX(), this.pipe.getZ(), MainProxy.getDimensionForWorld(this.pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(key).setPos(pipe.getCPipe().getLPPosition()).setRenderBall(true).setDir(ForgeDirection.UNKNOWN).setRemove(true));
+					}
 					iter.remove();
 				}
 			}
@@ -78,21 +169,65 @@ public class LogisticsTileRenderController {
 
 	public void addLaser(ForgeDirection dir, float length, int color, boolean reverse, boolean renderBall) {
 		if(!Configs.ENABLE_PARTICLE_FX) return; 
+		boolean sendPacket = false;
 		if(powerLasersBeam.containsKey(new LaserKey(dir, color))) {
 			powerLasersBeam.get(new LaserKey(dir, color)).timeout = LASER_TIMEOUT_TICKS;
 		} else {
-			PipeFXLaserPowerBeam fx = new PipeFXLaserPowerBeam(pipe.worldObj, new LPPosition((TileEntity)pipe), length, dir, color, this.pipe).setReverse(reverse);
-			powerLasersBeam.put(new LaserKey(dir, color), new LaserBeamData(length, LASER_TIMEOUT_TICKS, fx));
-			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			if(MainProxy.isClient(pipe.getWorldObj())) {
+				powerLasersBeam.put(new LaserKey(dir, color), new LaserBeamDataClient(length, LASER_TIMEOUT_TICKS, reverse, dir, color));
+			} else {
+				powerLasersBeam.put(new LaserKey(dir, color), new LaserBeamData(length, LASER_TIMEOUT_TICKS, reverse));
+				sendPacket = true;
+			}
 		}
 		if(renderBall) {
 			if(powerLasersBall.containsKey(color)) {
 				powerLasersBall.get(color).timeout = LASER_TIMEOUT_TICKS;
 			} else {
-				PipeFXLaserPowerBall fx = new PipeFXLaserPowerBall(pipe.worldObj, new LPPosition((TileEntity)pipe), color, this.pipe);
-				powerLasersBall.put(color, new LaserBallData(length, LASER_TIMEOUT_TICKS, fx));
-				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				if(MainProxy.isClient(pipe.getWorldObj())) {
+					powerLasersBall.put(color, new LaserBallDataClient(length, LASER_TIMEOUT_TICKS, color));
+				} else {
+					powerLasersBall.put(color, new LaserBallData(length, LASER_TIMEOUT_TICKS));
+					sendPacket = true;
+				}
 			}
+		}
+		if(sendPacket) {
+			MainProxy.sendPacketToAllWatchingChunk(this.pipe.getX(), this.pipe.getZ(), MainProxy.getDimensionForWorld(this.pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(color).setPos(pipe.getCPipe().getLPPosition()).setRenderBall(renderBall).setDir(dir).setLength(length).setReverse(reverse));
+		}
+	}
+	
+	public void removeLaser(ForgeDirection dir, int color, boolean isBall) {
+		if(!MainProxy.isClient(pipe.getWorldObj())) return;
+		if(!isBall) {
+			LaserKey key = new LaserKey(dir, color);
+			LaserBeamData beam = powerLasersBeam.get(key);
+			if(beam != null) {
+				beam.timeout = -1;
+				if(MainProxy.isClient(pipe.getWorldObj())) {
+					((LaserBeamDataClient)beam).entity.setDead();
+				}
+				powerLasersBeam.remove(key);
+			}
+		} else {
+			LaserBallData ball = powerLasersBall.get(color);
+			if(ball != null) {
+				ball.timeout = -1;
+				if(MainProxy.isClient(pipe.getWorldObj())) {
+					((LaserBallDataClient)ball).entity.setDead();
+				}
+				powerLasersBall.remove(color);
+			}
+		}
+	}
+	
+	public void sendInit() {
+		Iterator<LaserKey> iter = powerLasersBeam.keySet().iterator();
+		while(iter.hasNext()) {
+			LaserKey key = iter.next();
+			LaserBeamData data = powerLasersBeam.get(key);
+			boolean isBall = powerLasersBall.containsKey(key.color);
+			MainProxy.sendPacketToAllWatchingChunk(this.pipe.getX(), this.pipe.getZ(), MainProxy.getDimensionForWorld(this.pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(key.color).setPos(pipe.getCPipe().getLPPosition()).setRenderBall(isBall).setDir(key.dir).setLength(data.length).setReverse(data.reverse));
 		}
 	}
 }

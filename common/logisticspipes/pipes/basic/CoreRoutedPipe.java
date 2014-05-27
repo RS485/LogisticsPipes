@@ -677,7 +677,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		return Textures.LOGISTICSPIPE_NOTROUTED_TEXTURE;
 	}
 
-	private boolean isPowerProvider(ForgeDirection ori) {
+	protected boolean isPowerProvider(ForgeDirection ori) {
 		TileEntity tilePipe = this.container.getTile(ori);
 		if(tilePipe == null || !SimpleServiceLocator.buildCraftProxy.canPipeConnect(this.container, tilePipe, ori)) {
 			return false;

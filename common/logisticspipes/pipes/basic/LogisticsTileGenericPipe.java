@@ -21,6 +21,7 @@ import logisticspipes.utils.WorldUtil;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import thermalexpansion.part.conduit.ConduitBase;
@@ -28,9 +29,6 @@ import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.TravelingItem;
 import cofh.api.transport.IItemConduit;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
 @ModDependentInterface(modId={"CoFHCore"}, interfacePath={"cofh.api.transport.IItemConduit"})
@@ -38,7 +36,6 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 
 	public boolean turtleConnect[] = new boolean[7];
 	
-	@SideOnly(Side.CLIENT)
 	private LogisticsTileRenderController renderController;
 
 	@ModDependentField(modId="ComputerCraft@1.6")
@@ -50,12 +47,11 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	@ModDependentField(modId="ThermalExpansion")
 	public LPConduitItem[] localConduit;
 	
+	private boolean sendInitPacket = true;
+	
 	public LogisticsTileGenericPipe() {
 		if(SimpleServiceLocator.ccProxy.isCC()) {
 			connections = new HashMap<IComputerAccess, ForgeDirection>();
-		}
-		if(FMLCommonHandler.instance().getSide() == Side.CLIENT) {
-			renderController = new LogisticsTileRenderController(this);
 		}
 	}
 	
@@ -83,11 +79,22 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 
 	@Override
 	public void updateEntity() {
+		if(renderController == null) {
+			renderController = new LogisticsTileRenderController(this);
+		}
+		if(renderController != null && sendInitPacket) {
+			sendInitPacket = false;
+			renderController.sendInit();
+		}
 		SimpleServiceLocator.thermalExpansionProxy.handleLPInternalConduitUpdate(this);
 		super.updateEntity();
-		if(FMLCommonHandler.instance().getSide() == Side.CLIENT && MainProxy.isClient(worldObj)) {
-			renderController.onUpdate();
-		}
+		renderController.onUpdate();
+	}
+
+	@Override
+	public Packet getDescriptionPacket() {
+		sendInitPacket = true;
+		return super.getDescriptionPacket();
 	}
 
 	@Override
@@ -221,12 +228,14 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 		return localConduit[side];
 	}
 
-	@SideOnly(Side.CLIENT)
 	public void addLaser(ForgeDirection dir, float length, int color, boolean reverse, boolean renderBall) {
 		renderController.addLaser(dir, length, color, reverse, renderBall);
 	}
 
-	@SideOnly(Side.CLIENT)
+	public void removeLaser(ForgeDirection dir, int color, boolean isBall) {
+		renderController.removeLaser(dir, color, isBall);
+	}
+
 	public LogisticsTileRenderController getRenderController() {
 		return renderController;
 	}

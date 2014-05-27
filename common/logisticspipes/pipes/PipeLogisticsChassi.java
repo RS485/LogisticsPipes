@@ -180,9 +180,12 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_TEXTURE;
 	}
-
+	
 	@Override
 	public TextureType getRoutedTexture(ForgeDirection connection) {
+		if(getRouter().isSubPoweredExit(connection)) {
+			return Textures.LOGISTICSPIPE_SUBPOWER_TEXTURE;
+		}
 		return Textures.LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE;
 	}
 
@@ -190,6 +193,9 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	public TextureType getNonRoutedTexture(ForgeDirection connection) {
 		if (connection.equals(orientation)){
 			return Textures.LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE;
+		}
+		if(isPowerProvider(connection)) {
+			return Textures.LOGISTICSPIPE_POWERED_TEXTURE;
 		}
 		return Textures.LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE;
 	}

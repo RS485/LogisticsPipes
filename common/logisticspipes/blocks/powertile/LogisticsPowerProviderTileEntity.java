@@ -70,9 +70,6 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 	@Override
 	public void updateEntity() {
 		pauseRequesting = false;
-		if(MainProxy.isServer(worldObj) && this.getBrand().equals("EU")) {
-			System.out.print("");
-		}
 		if(!init) {
 			if(MainProxy.isClient(getWorld())) {
 				LogisticsHUDRenderer.instance().add(this);
@@ -106,7 +103,11 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 												for(IFilter filter:exit.filters) {
 													if(filter.blockPower()) continue outerRouters;
 												}
-												MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, sourceRouter.getDimension(), PacketHandler.getPacket(PowerPacketLaser.class).setColor(this.getLaserColor()).setPos(sourceRouter.getLPPosition()).setDir(adjacent.orientation.getOpposite()).setReverse(true).setLength(1));
+												//MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, sourceRouter.getDimension(), PacketHandler.getPacket(PowerPacketLaser.class).setColor(this.getLaserColor()).setPos(sourceRouter.getLPPosition()).setDir(adjacent.orientation.getOpposite()).setReverse(true).setLength(1));
+												CoreRoutedPipe pipe = sourceRouter.getPipe();
+												if(pipe != null && pipe.container instanceof LogisticsTileGenericPipe) {
+													((LogisticsTileGenericPipe)pipe.container).addLaser(adjacent.orientation.getOpposite(), 1, this.getLaserColor(), true, true);
+												}
 												sendPowerLaserPackets(sourceRouter, destinationRouter, exit.exitOrientation);
 												internalStorage -= toSend;
 												handlePower(destinationRouter.getPipe(), toSend);
@@ -138,7 +139,11 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 		for(ExitRoute exit:exits) {
 			if(exit.containsFlag(PipeRoutingConnectionType.canPowerSubSystemFrom)) { // Find only result (caused by only straight connections)
 				int distance = sourceRouter.getDistanceToNextPowerPipe(exit.exitOrientation);
-				MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, sourceRouter.getDimension(), PacketHandler.getPacket(PowerPacketLaser.class).setColor(this.getLaserColor()).setPos(sourceRouter.getLPPosition()).setDir(exit.exitOrientation).setRenderBall(true).setLength(distance));
+				//MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, sourceRouter.getDimension(), PacketHandler.getPacket(PowerPacketLaser.class).setColor(this.getLaserColor()).setPos(sourceRouter.getLPPosition()).setDir(exit.exitOrientation).setRenderBall(true).setLength(distance));
+				CoreRoutedPipe pipe = sourceRouter.getPipe();
+				if(pipe != null && pipe.container instanceof LogisticsTileGenericPipe) {
+					((LogisticsTileGenericPipe)pipe.container).addLaser(exit.exitOrientation, distance, this.getLaserColor(), false, true);
+				}
 				sourceRouter = exit.destination; // Use new sourceRouter
 				if(sourceRouter == destinationRouter) return;
 				outerRouters:

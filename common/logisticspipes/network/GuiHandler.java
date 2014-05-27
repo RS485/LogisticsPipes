@@ -68,6 +68,7 @@ import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModuleOreDictItemSink;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.modules.ModuleThaumicAspectSink;
+import logisticspipes.network.packets.block.CraftingTableFuzzyFlagsInitPacket;
 import logisticspipes.network.packets.gui.GuiArgument;
 import logisticspipes.network.packets.module.ApiaristAnalyserMode;
 import logisticspipes.network.packets.module.ElectricManagetMode;
@@ -513,6 +514,8 @@ public class GuiHandler implements IGuiHandler {
 					}
 				}
 				dummy.addNormalSlotsForPlayerInventory(8, 135);
+				if(((LogisticsCraftingTableTileEntity)tile).isFuzzy())
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingTableFuzzyFlagsInitPacket.class).setCraftingTable((LogisticsCraftingTableTileEntity)tile), (Player)player);
 				return dummy;
 				
 			case GuiIDs.GUI_Request_Table_ID:

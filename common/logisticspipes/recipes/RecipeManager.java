@@ -706,6 +706,13 @@ public class RecipeManager {
 			Character.valueOf('G'), BuildCraftCore.stoneGearItem
 		});
 		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_FUZZYCRAFTING_TABLE), CraftingDependency.Basic, new Object[] { 
+			"Q",
+			"T",
+			Character.valueOf('T'), new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_AUTOCRAFTING_TABLE),
+			Character.valueOf('Q'), Item.netherQuartz
+		});
+		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_BC_POWERPROVIDER), CraftingDependency.Power_Distribution, new Object[] { 
 			false, 
 			"PEP", 

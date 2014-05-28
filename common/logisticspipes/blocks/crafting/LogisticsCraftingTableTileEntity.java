@@ -56,8 +56,14 @@ public class LogisticsCraftingTableTileEntity extends TileEntity implements ISim
 			}
 		}
 	}
+	
+	private boolean testFuzzy(ItemIdentifier item, ItemIdentifierStack item2, int slot) {
+		fuzzyFlags[slot].stack = item.makeStack(1);
+		return fuzzyFlags[slot].testItem(item2);
+	}
 
 	public ItemStack getOutput(ItemIdentifier wanted, IRoutedPowerProvider power) {
+		boolean isFuzzy = this.isFuzzy();
 		if(cache == null) {
 			cacheRecipe();
 			if(cache == null) return null;
@@ -75,7 +81,7 @@ outer:
 			for(int j=0;j<inv.getSizeInventory();j++) {
 				item = inv.getIDStackInSlot(j);
 				if(item == null) continue;
-				if(ident.equalsForCrafting(item.getItem())) {
+				if(isFuzzy ? (testFuzzy(ident, item, i)) : ident.equalsForCrafting(item.getItem())) {
 					if(item.getStackSize() > used[j]) {
 						used[j]++;
 						toUse[i] = j;

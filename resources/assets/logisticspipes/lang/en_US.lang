@@ -234,6 +234,7 @@ tile.solderingstation=Soldering Station
 tile.logisticspowerjunction=Logistics Power Junction
 tile.logisticssecuritystation=Logistics Security Station
 tile.logisticscraftingtable=Logistics Crafting Table
+tile.logisticsfuzzycraftingtable=Logistics Fuzzy Crafting Table
 tile.logisticsbcpowerprovider=Logistics BC Power Provider
 tile.logisticstepowerprovider=Logistics TE Power Provider
 tile.logisticsic2powerprovider=Logistics IC2 Power Provider

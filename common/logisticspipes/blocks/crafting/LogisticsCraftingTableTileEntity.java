@@ -262,10 +262,18 @@ outer:
 		if(integer < 0 || integer >= 9)
 			return;
 		if(MainProxy.isClient(this.getWorldObj())) {
-			this.fuzzyFlags[integer].use_od = (integer2 & 1) != 0;
-			this.fuzzyFlags[integer].ignore_dmg = (integer2 & 2) != 0;
-			this.fuzzyFlags[integer].ignore_nbt = (integer2 & 4) != 0;
-			this.fuzzyFlags[integer].use_category = (integer2 & 8) != 0;
+			if(pl == null) {
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingTableFuzzyFlagsModifyPacket.class)
+						.setInteger2(integer2)
+						.setInteger(integer)
+						.setTilePos(this)
+					);
+			} else {
+				this.fuzzyFlags[integer].use_od = (integer2 & 1) != 0;
+				this.fuzzyFlags[integer].ignore_dmg = (integer2 & 2) != 0;
+				this.fuzzyFlags[integer].ignore_nbt = (integer2 & 4) != 0;
+				this.fuzzyFlags[integer].use_category = (integer2 & 8) != 0;
+			}
 		} else {
 			if(integer2 == 0) this.fuzzyFlags[integer].use_od = !this.fuzzyFlags[integer].use_od;
 			if(integer2 == 1) this.fuzzyFlags[integer].ignore_dmg = !this.fuzzyFlags[integer].ignore_dmg;

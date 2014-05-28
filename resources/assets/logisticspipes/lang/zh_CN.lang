@@ -233,6 +233,7 @@ tile.solderingstation=焊接台
 tile.logisticspowerjunction=物流能源中枢
 tile.logisticssecuritystation=物流安全站
 tile.logisticscraftingtable=物流合成桌
+tile.logisticsfuzzycraftingtable=物流模糊合成桌
 tile.logisticsbcpowerprovider=物流BC能量供应器
 tile.logisticstepowerprovider=物流TE能量供应器
 tile.logisticsic2powerprovider=物流IC2能量供应器

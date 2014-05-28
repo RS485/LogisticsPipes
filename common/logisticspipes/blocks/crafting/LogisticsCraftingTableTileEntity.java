@@ -5,6 +5,7 @@ import logisticspipes.Configs;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.block.CraftingTableFuzzyFlagsModifyPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.CraftingRequirement;
@@ -279,14 +280,16 @@ outer:
 			if(integer2 == 1) this.fuzzyFlags[integer].ignore_dmg = !this.fuzzyFlags[integer].ignore_dmg;
 			if(integer2 == 2) this.fuzzyFlags[integer].ignore_nbt = !this.fuzzyFlags[integer].ignore_nbt;
 			if(integer2 == 3) this.fuzzyFlags[integer].use_category = !this.fuzzyFlags[integer].use_category;
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingTableFuzzyFlagsModifyPacket.class)
+			ModernPacket pak = PacketHandler.getPacket(CraftingTableFuzzyFlagsModifyPacket.class)
 					.setInteger2((fuzzyFlags[integer].use_od ? 1 : 0)
 							| (fuzzyFlags[integer].ignore_dmg ? 2 : 0)
 							| (fuzzyFlags[integer].ignore_nbt ? 4 : 0)
 							| (fuzzyFlags[integer].use_category ? 8 : 0))
 					.setInteger(integer)
-					.setTilePos(this)
-			, (Player)pl);
+					.setTilePos(this);
+			if(pl != null)
+				MainProxy.sendPacketToPlayer(pak, (Player)pl);
+			MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(worldObj), pak);
 		}
 	}
 }

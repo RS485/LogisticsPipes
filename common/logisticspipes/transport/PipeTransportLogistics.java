@@ -77,6 +77,7 @@ public class PipeTransportLogistics extends PipeTransport {
 	private final HashMap<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>>	_itemBuffer		= new HashMap<ItemIdentifierStack, Pair<Integer, Integer>>();
 	private Chunk																						chunk;
 	public LPItemList																					items = new LPItemList(this);;
+	public boolean 																						isRendering;
 	
 	@Override
 	public void initialize() {
@@ -84,6 +85,8 @@ public class PipeTransportLogistics extends PipeTransport {
 		if(MainProxy.isServer(getWorld())) {
 			// cache chunk for marking dirty
 			chunk = getWorld().getChunkFromBlockCoords(container.xCoord, container.zCoord);
+		} else {
+			isRendering = true;
 		}
 	}
 	
@@ -509,7 +512,11 @@ public class PipeTransportLogistics extends PipeTransport {
 	
 	@Override
 	public PipeType getPipeType() {
-		return PipeType.STRUCTURE; // Don't let BC render the Pipe content
+		if(isRendering) {
+			return PipeType.STRUCTURE; // Don't let BC render the Pipe content
+		} else {
+			return PipeType.ITEM;
+		}
 	}
 	
 	public void defaultReajustSpeed(TravelingItem item) {

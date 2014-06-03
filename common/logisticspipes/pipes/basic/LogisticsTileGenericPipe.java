@@ -353,4 +353,16 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	public boolean isOpaque() {
 		return getCPipe().isOpaque();
 	}
+
+	public void enableRendering() {
+		if(pipe.transport instanceof PipeTransportLogistics) {
+			((PipeTransportLogistics) pipe.transport).isRendering = true;
+		}
+	}
+
+	public void disableRendering() {
+		if(pipe.transport instanceof PipeTransportLogistics) {
+			((PipeTransportLogistics) pipe.transport).isRendering = false;
+		}
+	}
 }

@@ -162,8 +162,8 @@ outer:
 		inv.readFromNBT(par1nbtTagCompound, "inv");
 		matrix.readFromNBT(par1nbtTagCompound, "matrix");
 		placedBy = par1nbtTagCompound.getString("placedBy");
-		NBTTagList lst = par1nbtTagCompound.getTagList("fuzzyFlags");
-		if(lst != null) {
+		if(par1nbtTagCompound.hasKey("fuzzyFlags")) {
+			NBTTagList lst = par1nbtTagCompound.getTagList("fuzzyFlags");
 			for(int i = 0; i < 9; i++) {
 				NBTTagCompound comp = (NBTTagCompound) lst.tagAt(i);
 				fuzzyFlags[i].ignore_dmg = comp.getBoolean("ignore_dmg");

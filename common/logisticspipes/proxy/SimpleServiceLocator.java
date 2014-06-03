@@ -19,8 +19,8 @@ import logisticspipes.proxy.interfaces.IBetterSignProxy;
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
-import logisticspipes.proxy.interfaces.IEnderStorageProxy;
 import logisticspipes.proxy.interfaces.IEnderIOProxy;
+import logisticspipes.proxy.interfaces.IEnderStorageProxy;
 import logisticspipes.proxy.interfaces.IFactorizationProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
@@ -29,6 +29,7 @@ import logisticspipes.proxy.interfaces.IModularPowersuitsProxy;
 import logisticspipes.proxy.interfaces.INEIProxy;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
+import logisticspipes.proxy.progressprovider.MachineProgressProvider;
 import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
 import logisticspipes.proxy.specialconnection.SpecialTileConnection;
 import logisticspipes.proxy.specialtankhandler.SpecialTankHandler;
@@ -38,6 +39,7 @@ import logisticspipes.routing.pathfinder.PipeInformaitonManager;
 import logisticspipes.ticks.ClientPacketBufferHandlerThread;
 import logisticspipes.ticks.ServerPacketBufferHandlerThread;
 import logisticspipes.utils.InventoryUtilFactory;
+import logisticspipes.utils.RoutedItemHelper;
 
 public final class SimpleServiceLocator {
 	
@@ -182,4 +184,15 @@ public final class SimpleServiceLocator {
 	public static void setEnderStorageProxy(IEnderStorageProxy proxy) {
 		enderStorageProxy = proxy;
 	}
+	
+	public static MachineProgressProvider machineProgressProvider;
+	public static void setMachineProgressProvider(MachineProgressProvider provider) {
+		machineProgressProvider = provider;
+	}
+	
+	public static RoutedItemHelper routedItemHelper;
+	public static void setRoutedItemHelper(RoutedItemHelper helper) {
+		routedItemHelper = helper;
+	}
+	
 }

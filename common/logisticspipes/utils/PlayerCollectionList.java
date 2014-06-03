@@ -54,6 +54,10 @@ public class PlayerCollectionList {
 	public boolean isEmpty() {
 		return size() == 0;
 	}
+	
+	public boolean isEmptyWithoutCheck() {
+		return players.size() == 0;
+	}
 
 	public void add(EntityPlayer player) {
 		players.add(new EqualWeakReference<EntityPlayer>(player));

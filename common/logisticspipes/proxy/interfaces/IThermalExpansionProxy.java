@@ -5,6 +5,7 @@ import java.util.List;
 import buildcraft.transport.TravelingItem;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -16,7 +17,7 @@ public interface IThermalExpansionProxy {
 	public void handleLPInternalConduitRemove(LogisticsTileGenericPipe pipe);
 	public void handleLPInternalConduitNeighborChange(LogisticsTileGenericPipe pipe);
 	public void handleLPInternalConduitUpdate(LogisticsTileGenericPipe pipe);
-	public boolean insertIntoConduit(TravelingItem arrivingItem, TileEntity tile, CoreRoutedPipe pipe);
+	public boolean insertIntoConduit(LPTravelingItemServer arrivingItem, TileEntity tile, CoreRoutedPipe pipe);
 	public boolean isSideFree(TileEntity tile, int side);
 	public boolean isEnergyHandler(TileEntity tile);
 	public int getMaxEnergyStored(TileEntity tile, ForgeDirection opposite);

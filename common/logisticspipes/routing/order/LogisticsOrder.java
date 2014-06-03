@@ -31,6 +31,9 @@ public class LogisticsOrder implements IOrderInfoProvider {
 	private boolean inProgress;
 	@Getter
 	private boolean isWatched = false;
+	@Getter
+	@Setter
+	private byte machineProgress = 0;
 	private List<IDistanceTracker> trackers = new ArrayList<IDistanceTracker>();
 	
 	public LogisticsOrder(ItemIdentifierStack item, IRequestItems destination, RequestType type) {
@@ -57,7 +60,7 @@ public class LogisticsOrder implements IOrderInfoProvider {
 	public List<Float> getProgresses() {
 		List<Float> progresses = new ArrayList<Float>();
 		for(IDistanceTracker tracker:trackers) {
-			if(!tracker.hasReachedDestination()) {
+			if(!tracker.hasReachedDestination() && !tracker.isTimeout()) {
 				float f;
 				if(tracker.getInitialDistanceToTarget() != 0) {
 					f = ((float)tracker.getCurrentDistanceToTarget()) / ((float)tracker.getInitialDistanceToTarget());

@@ -1,13 +1,11 @@
 package logisticspipes.transport;
 
-import buildcraft.transport.TravelingItem;
-import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.PipeItemsSystemDestinationLogistics;
 import logisticspipes.pipes.PipeItemsSystemEntranceLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.PipeRoutingConnectionType;
+import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class EntrencsTransport extends PipeTransportLogistics {
@@ -15,9 +13,8 @@ public class EntrencsTransport extends PipeTransportLogistics {
 	public PipeItemsSystemEntranceLogistics pipe;
 	
 	@Override
-	public ForgeDirection resolveDestination(TravelingItem data) {
-		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetRoutedItem(data);
-		if(routedItem.getDestination() < 0 || routedItem.getArrived()) {
+	public ForgeDirection resolveDestination(LPTravelingItemServer data) {
+		if(data.getDestination() < 0 || data.getArrived()) {
 			if(pipe.getLocalFreqUUID() != null) {
 				if(pipe.useEnergy(5)) {
 					for(ExitRoute router:pipe.getRouter().getIRoutersByCost()) {
@@ -28,8 +25,8 @@ public class EntrencsTransport extends PipeTransportLogistics {
 							PipeItemsSystemDestinationLogistics dPipe = (PipeItemsSystemDestinationLogistics) lPipe;
 							if(dPipe.getTargetUUID() != null) {
 								if(dPipe.getTargetUUID().equals(pipe.getLocalFreqUUID())) {
-									routedItem.setDestination(dPipe.getRouter().getSimpleID());
-									routedItem.setArrived(false);
+									data.setDestination(dPipe.getRouter().getSimpleID());
+									data.setArrived(false);
 								}
 							}
 						}

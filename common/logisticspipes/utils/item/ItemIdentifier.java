@@ -18,6 +18,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.FinalNBTTagCompound;
 import net.minecraft.block.Block;
@@ -519,5 +520,9 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 
 	public boolean isDamagable() {
 		return this.makeNormalStack(0).getItem().isDamageable();
+	}
+
+	public boolean isFluidContainer() {
+		return Item.itemsList[this.itemID] instanceof LogisticsFluidContainer;
 	}
 }

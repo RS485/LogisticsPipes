@@ -1,8 +1,14 @@
 package logisticspipes.blocks.crafting;
 
+import cpw.mods.fml.common.network.Player;
 import logisticspipes.Configs;
 import logisticspipes.api.IRoutedPowerProvider;
+import logisticspipes.blocks.LogisticsSolidBlock;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.packets.block.CraftingTableFuzzyFlagsModifyPacket;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.CraftingRequirement;
 import logisticspipes.utils.CraftingUtil;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -15,6 +21,7 @@ import net.minecraft.inventory.SlotCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 
 public class LogisticsCraftingTableTileEntity extends TileEntity implements ISimpleInventoryEventHandler, IInventory {
@@ -22,12 +29,16 @@ public class LogisticsCraftingTableTileEntity extends TileEntity implements ISim
 	public ItemIdentifierInventory inv = new ItemIdentifierInventory(18, "Crafting Resources", 64);
 	public ItemIdentifierInventory matrix = new ItemIdentifierInventory(9, "Crafting Matrix", 1);
 	public ItemIdentifierInventory resultInv = new ItemIdentifierInventory(1, "Crafting Result", 1);
+	//just use CraftingRequirement to store flags; field "stack" is ignored
+	public CraftingRequirement[] fuzzyFlags = new CraftingRequirement[9];
 	private IRecipe cache;
 	private EntityPlayer fake;
 	private String placedBy = "";
 	
 	public LogisticsCraftingTableTileEntity() {
 		matrix.addListener(this);
+		for(int i = 0; i < 9; i++)
+			fuzzyFlags[i] = new CraftingRequirement();
 	}
 	
 	public void cacheRecipe() {
@@ -45,8 +56,14 @@ public class LogisticsCraftingTableTileEntity extends TileEntity implements ISim
 			}
 		}
 	}
+	
+	private boolean testFuzzy(ItemIdentifier item, ItemIdentifierStack item2, int slot) {
+		fuzzyFlags[slot].stack = item.makeStack(1);
+		return fuzzyFlags[slot].testItem(item2);
+	}
 
 	public ItemStack getOutput(ItemIdentifier wanted, IRoutedPowerProvider power) {
+		boolean isFuzzy = this.isFuzzy();
 		if(cache == null) {
 			cacheRecipe();
 			if(cache == null) return null;
@@ -64,7 +81,7 @@ outer:
 			for(int j=0;j<inv.getSizeInventory();j++) {
 				item = inv.getIDStackInSlot(j);
 				if(item == null) continue;
-				if(ident.equalsForCrafting(item.getItem())) {
+				if(isFuzzy ? (testFuzzy(ident, item, i)) : ident.equalsForCrafting(item.getItem())) {
 					if(item.getStackSize() > used[j]) {
 						used[j]++;
 						toUse[i] = j;
@@ -145,6 +162,16 @@ outer:
 		inv.readFromNBT(par1nbtTagCompound, "inv");
 		matrix.readFromNBT(par1nbtTagCompound, "matrix");
 		placedBy = par1nbtTagCompound.getString("placedBy");
+		if(par1nbtTagCompound.hasKey("fuzzyFlags")) {
+			NBTTagList lst = par1nbtTagCompound.getTagList("fuzzyFlags");
+			for(int i = 0; i < 9; i++) {
+				NBTTagCompound comp = (NBTTagCompound) lst.tagAt(i);
+				fuzzyFlags[i].ignore_dmg = comp.getBoolean("ignore_dmg");
+				fuzzyFlags[i].ignore_nbt = comp.getBoolean("ignore_nbt");
+				fuzzyFlags[i].use_od = comp.getBoolean("use_od");
+				fuzzyFlags[i].use_category = comp.getBoolean("use_category");
+			}
+		}
 		cacheRecipe();
 	}
 
@@ -154,6 +181,16 @@ outer:
 		inv.writeToNBT(par1nbtTagCompound, "inv");
 		matrix.writeToNBT(par1nbtTagCompound, "matrix");
 		par1nbtTagCompound.setString("placedBy", placedBy);
+		NBTTagList lst = new NBTTagList();
+		for(int i = 0; i < 9; i++) {
+			NBTTagCompound comp = new NBTTagCompound();
+			comp.setBoolean("ignore_dmg", fuzzyFlags[i].ignore_dmg);
+			comp.setBoolean("ignore_nbt", fuzzyFlags[i].ignore_nbt);
+			comp.setBoolean("use_od", fuzzyFlags[i].use_od);
+			comp.setBoolean("use_category", fuzzyFlags[i].use_category);
+			lst.appendTag(comp);
+		}
+		par1nbtTagCompound.setTag("fuzzyFlags", lst);
 	}
 
 	@Override
@@ -201,6 +238,10 @@ outer:
 		return true;
 	}
 
+	public boolean canUpdate() {
+		return false;
+	}
+
 	@Override
 	public void openInventory() {}
 
@@ -222,6 +263,44 @@ outer:
 		if(par5EntityLivingBase instanceof EntityPlayer) {
 			//TODO change to GameProfile based Identification
 			placedBy = ((EntityPlayer)par5EntityLivingBase).getDisplayName();
+		}
+	}
+	
+	public boolean isFuzzy() {
+		return worldObj.getBlockMetadata(xCoord, yCoord, zCoord) == LogisticsSolidBlock.LOGISTICS_FUZZYCRAFTING_TABLE;
+	}
+
+	public void handleFuzzyFlagsChange(int integer, int integer2, EntityPlayer pl) {
+		if(integer < 0 || integer >= 9)
+			return;
+		if(MainProxy.isClient(this.getWorldObj())) {
+			if(pl == null) {
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingTableFuzzyFlagsModifyPacket.class)
+						.setInteger2(integer2)
+						.setInteger(integer)
+						.setTilePos(this)
+					);
+			} else {
+				this.fuzzyFlags[integer].use_od = (integer2 & 1) != 0;
+				this.fuzzyFlags[integer].ignore_dmg = (integer2 & 2) != 0;
+				this.fuzzyFlags[integer].ignore_nbt = (integer2 & 4) != 0;
+				this.fuzzyFlags[integer].use_category = (integer2 & 8) != 0;
+			}
+		} else {
+			if(integer2 == 0) this.fuzzyFlags[integer].use_od = !this.fuzzyFlags[integer].use_od;
+			if(integer2 == 1) this.fuzzyFlags[integer].ignore_dmg = !this.fuzzyFlags[integer].ignore_dmg;
+			if(integer2 == 2) this.fuzzyFlags[integer].ignore_nbt = !this.fuzzyFlags[integer].ignore_nbt;
+			if(integer2 == 3) this.fuzzyFlags[integer].use_category = !this.fuzzyFlags[integer].use_category;
+			ModernPacket pak = PacketHandler.getPacket(CraftingTableFuzzyFlagsModifyPacket.class)
+					.setInteger2((fuzzyFlags[integer].use_od ? 1 : 0)
+							| (fuzzyFlags[integer].ignore_dmg ? 2 : 0)
+							| (fuzzyFlags[integer].ignore_nbt ? 4 : 0)
+							| (fuzzyFlags[integer].use_category ? 8 : 0))
+					.setInteger(integer)
+					.setTilePos(this);
+			if(pl != null)
+				MainProxy.sendPacketToPlayer(pak, (Player)pl);
+			MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(worldObj), pak);
 		}
 	}
 }

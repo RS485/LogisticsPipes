@@ -6,4 +6,6 @@ public interface IDistanceTracker {
 	public int getInitialDistanceToTarget();
 	public void setDestinationReached();
 	public boolean hasReachedDestination();
+	public void setDelay(long delay);
+	public boolean isTimeout();
 }

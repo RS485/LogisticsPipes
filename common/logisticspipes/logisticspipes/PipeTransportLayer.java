@@ -28,8 +28,8 @@ public class PipeTransportLayer extends TransportLayer{
 	
 	@Override
 	public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection denyed) {
-		if (item.getItemStack() != null){
-			_trackStatistics.recievedItem(item.getItemStack().stackSize);
+		if (item.getItemIdentifierStack() != null){
+			_trackStatistics.recievedItem(item.getItemIdentifierStack().getStackSize());
 		}
 		
 		LinkedList<AdjacentTile> adjacentEntities = _worldAccess.getConnectedEntities();

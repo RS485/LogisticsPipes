@@ -175,7 +175,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 			int sent = removed.stackSize;
 			useEnergy(sent * neededEnergy());
 
-			IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, removed);
+			IRoutedItem routedItem = SimpleServiceLocator.routedItemHelper.createNewTravelItem(removed);
 			routedItem.setDestination(destination);
 			routedItem.setTransportMode(TransportMode.Active);
 			super.queueRoutedItem(routedItem, tile.orientation);
@@ -190,7 +190,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	private IInventoryUtil getAdaptedInventoryUtil(AdjacentTile tile){
 		IInventory base = (IInventory) tile.tile;
 		if(base instanceof net.minecraft.inventory.ISidedInventory) {
-			base = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory)base, tile.orientation.getOpposite(),false);
+			base = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory)base, tile.orientation.getOpposite(), true);
 		}
 		ExtractionMode mode = getExtractionMode();
 		switch(mode){

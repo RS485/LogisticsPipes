@@ -5,6 +5,7 @@ import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.Colors;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
@@ -66,7 +67,7 @@ public class FluidContainerRenderer implements IItemRenderer {
 		GL11.glPushMatrix();
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		if (item.getItem() instanceof LogisticsFluidContainer) {
-			FluidStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(item);
+			FluidStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemIdentifierStack.getFromStack(item));
 			if ((type != ItemRenderType.INVENTORY && type != ItemRenderType.ENTITY) || liquid == null) {
 				doRenderItem(item, mc, type, data);
 				GL11.glPopMatrix();

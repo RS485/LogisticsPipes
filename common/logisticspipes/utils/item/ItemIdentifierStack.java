@@ -84,6 +84,10 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 		this.stackSize = stackSize;
 	}
 
+	public void lowerStackSize(int stackSize) {
+		this.stackSize -= stackSize;
+	}
+
 	public ItemStack unsafeMakeNormalStack(){
 		return _item.unsafeMakeNormalStack(stackSize);
 	}
@@ -146,14 +150,14 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 			} else {
 				boolean added = false;
 				for(ItemIdentifierStack stack:list) {
-					if(stack.getItem().equals(ItemIdentifierStack.getFromStack(part.getValue1().getItemStack()).getItem())) {
-						stack.setStackSize(stack.getStackSize() + part.getValue1().getItemStack().stackSize);
+					if(stack.getItem().equals(part.getValue1().getItemIdentifierStack().getItem())) {
+						stack.setStackSize(stack.getStackSize() + part.getValue1().getItemIdentifierStack().stackSize);
 						added = true;
 						break;
 					}
 				}
 				if(!added) {
-					list.add(ItemIdentifierStack.getFromStack(part.getValue1().getItemStack()));
+					list.add(part.getValue1().getItemIdentifierStack().clone());
 				}
 			}
 		}

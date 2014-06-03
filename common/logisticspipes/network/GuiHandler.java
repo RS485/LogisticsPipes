@@ -29,6 +29,7 @@ import logisticspipes.gui.GuiSecurityStation;
 import logisticspipes.gui.GuiSolderingStation;
 import logisticspipes.gui.GuiSupplierPipe;
 import logisticspipes.gui.GuiUpgradeManager;
+import logisticspipes.gui.ItemAmountSignCreationGui;
 import logisticspipes.gui.hud.GuiHUDSettings;
 import logisticspipes.gui.modules.GuiAdvancedExtractor;
 import logisticspipes.gui.modules.GuiApiaristAnalyser;
@@ -68,6 +69,7 @@ import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModuleOreDictItemSink;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.modules.ModuleThaumicAspectSink;
+import logisticspipes.network.packets.block.CraftingTableFuzzyFlagsInitPacket;
 import logisticspipes.network.packets.gui.GuiArgument;
 import logisticspipes.network.packets.module.ApiaristAnalyserMode;
 import logisticspipes.network.packets.module.ElectricManagetMode;
@@ -98,6 +100,7 @@ import logisticspipes.pipes.PipeItemsSystemEntranceLogistics;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.pipes.signs.ItemAmountPipeSign;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.CardManagmentInventory;
 import logisticspipes.utils.gui.DummyContainer;
@@ -111,12 +114,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.IGuiHandler;
 
 public class GuiHandler implements IGuiHandler {
-	
-	public final static Map<Integer, Object[]> argumentQueue = new HashMap<Integer, Object[]>();
+
+	public final static Map<Integer, Object[]> argumentQueueClient = new HashMap<Integer, Object[]>();
+	public final static Map<Integer, Object[]> argumentQueueServer = new HashMap<Integer, Object[]>();
 
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, final int x, final int y, final int z) {
@@ -144,6 +149,7 @@ public class GuiHandler implements IGuiHandler {
 			return getServerGuiElement(100 * -20 + x, player, world, 0, -1, z);
 		}
 		
+		Object[] args = argumentQueueServer.get(ID);
 		
 		if(ID < 120 && ID > 0) {
 			switch(ID) {
@@ -509,6 +515,8 @@ public class GuiHandler implements IGuiHandler {
 					}
 				}
 				dummy.addNormalSlotsForPlayerInventory(8, 135);
+				if(((LogisticsCraftingTableTileEntity)tile).isFuzzy())
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingTableFuzzyFlagsInitPacket.class).setCraftingTable((LogisticsCraftingTableTileEntity)tile), player);
 				return dummy;
 				
 			case GuiIDs.GUI_Request_Table_ID:
@@ -537,6 +545,14 @@ public class GuiHandler implements IGuiHandler {
 				dummy.addNormalSlotsForPlayerInventory(0, 0);
 				return dummy;
 
+			case GuiIDs.GUI_Item_Amount_Sign:
+				if(pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) return null;
+				ItemAmountPipeSign sign = ((ItemAmountPipeSign)((CoreRoutedPipe)pipe.pipe).getPipeSign((ForgeDirection)args[0]));
+				dummy = new DummyContainer(player.inventory, sign.itemTypeInv);
+				dummy.addDummySlot(0, 0, 0);
+				dummy.addNormalSlotsForPlayerInventory(0, 0);
+				return dummy;
+				
 			default:break;
 			}
 		} else {
@@ -785,7 +801,7 @@ public class GuiHandler implements IGuiHandler {
 			}
 		}
 		
-		Object[] args = argumentQueue.get(ID);
+		Object[] args = argumentQueueClient.get(ID);
 		
 		if(ID < 120 && ID > 0) {
 			switch(ID) {
@@ -936,6 +952,10 @@ public class GuiHandler implements IGuiHandler {
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeBlockRequestTable)) return null;
 				return new GuiRequestTable(player, ((PipeBlockRequestTable)pipe.pipe));
 			
+			case GuiIDs.GUI_Item_Amount_Sign:
+				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) return null;
+				return new ItemAmountSignCreationGui(player, (CoreRoutedPipe) pipe.pipe, (ForgeDirection)args[0]);
+				
 			default:break;
 			}
 		} else {

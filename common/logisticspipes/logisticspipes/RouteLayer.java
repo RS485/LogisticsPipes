@@ -7,9 +7,11 @@
 package logisticspipes.logisticspipes;
 
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
+import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import net.minecraftforge.common.util.ForgeDirection;
 
 /**
@@ -21,10 +23,12 @@ public class RouteLayer {
 
 	protected final IRouter _router;
 	private final TransportLayer _transport;
+	private final CoreRoutedPipe _pipe;
 	
-	public RouteLayer(IRouter router, TransportLayer transportLayer) {
+	public RouteLayer(IRouter router, TransportLayer transportLayer, CoreRoutedPipe pipe) {
 		_router = router;
 		_transport = transportLayer;
+		_pipe = pipe;
 	}
 	
 	public ForgeDirection getOrientationForItem(IRoutedItem item, ForgeDirection blocked){
@@ -33,11 +37,13 @@ public class RouteLayer {
 		//If a item has no destination, find one
 		if (item.getDestination() < 0) {
 			item = SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleID(), false);
+			_pipe.debug.log("No Destination, assigned new destination: (" + ((LPTravelingItemServer)item).getInfo());
 		}
 		
 		//If the destination is unknown / unroutable or it already arrived at its destination and somehow looped back		
-		if (item.getDestination() >= 0 && (!_router.hasRoute(item.getDestination(), item.getTransportMode() == TransportMode.Active, item.getIDStack().getItem()) || item.getArrived())){
+		if (item.getDestination() >= 0 && (!_router.hasRoute(item.getDestination(), item.getTransportMode() == TransportMode.Active, item.getItemIdentifierStack().getItem()) || item.getArrived())){
 			item = SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleID(), false);
+			_pipe.debug.log("Unreachable Destination, sssigned new destination: (" + ((LPTravelingItemServer)item).getInfo());
 		}
 		
 		item.checkIDFromUUID();
@@ -67,12 +73,12 @@ public class RouteLayer {
 		}
 		
 		//Do we now know the destination?
-		if (!_router.hasRoute(item.getDestination(), item.getTransportMode() == TransportMode.Active, item.getIDStack().getItem())){
+		if (!_router.hasRoute(item.getDestination(), item.getTransportMode() == TransportMode.Active, item.getItemIdentifierStack().getItem())){
 			return ForgeDirection.UNKNOWN;
 		}
 		
 		//Which direction should we send it
-		ExitRoute exit = _router.getExitFor(item.getDestination(), item.getTransportMode() == TransportMode.Active, item.getIDStack().getItem());
+		ExitRoute exit = _router.getExitFor(item.getDestination(), item.getTransportMode() == TransportMode.Active, item.getItemIdentifierStack().getItem());
 		if(exit == null) return ForgeDirection.UNKNOWN;
 		
 		if(item.getDistanceTracker() != null) {

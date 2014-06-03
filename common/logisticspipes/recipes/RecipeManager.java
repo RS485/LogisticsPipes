@@ -706,6 +706,13 @@ public class RecipeManager {
 			Character.valueOf('G'), BuildCraftCore.stoneGearItem
 		});
 		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_FUZZYCRAFTING_TABLE), CraftingDependency.Basic, new Object[] { 
+			"Q",
+			"T",
+			Character.valueOf('T'), new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_AUTOCRAFTING_TABLE),
+			Character.valueOf('Q'), Item.netherQuartz
+		});
+		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_BC_POWERPROVIDER), CraftingDependency.Power_Distribution, new Object[] { 
 			false, 
 			"PEP", 
@@ -963,6 +970,16 @@ public class RecipeManager {
 			Character.valueOf('L'), "dyeBlue",
 			Character.valueOf('a'), "dyeGreen",
 			Character.valueOf('b'), "dyeYellow"
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.OPAQUE_UPGRADE), CraftingDependency.Upgrades, new Object[] { 
+			false, 
+			"RbR", 
+			"bCb", 
+			"RbR", 
+			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
+			Character.valueOf('R'), Item.redstone, 
+			Character.valueOf('b'), dyes[15], 
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsFluidConnectorPipe, 4), CraftingDependency.Basic_Liquid, new Object[] {

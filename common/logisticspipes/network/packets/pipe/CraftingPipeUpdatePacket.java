@@ -14,7 +14,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
-//TODO split up into several packets ?
 @Accessors(chain=true)
 public class CraftingPipeUpdatePacket extends CoordinatesPacket {
 	
@@ -29,10 +28,6 @@ public class CraftingPipeUpdatePacket extends CoordinatesPacket {
 	@Getter
 	@Setter
 	private int liquidSatelliteId = 0;
-	
-	@Getter
-	@Setter
-	private boolean[] craftingSigns = new boolean[6];
 	
 	@Getter
 	@Setter
@@ -57,6 +52,7 @@ public class CraftingPipeUpdatePacket extends CoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
+		if(pipe == null) return;
 		if(!(pipe.pipe instanceof PipeItemsCraftingLogistics)) return;
 		((PipeItemsCraftingLogistics)pipe.pipe).handleCraftingUpdatePacket(this);
 	}
@@ -67,7 +63,6 @@ public class CraftingPipeUpdatePacket extends CoordinatesPacket {
 		data.writeIntegerArray(amount);
 		data.writeIntegerArray(liquidSatelliteIdArray);
 		data.writeInt(liquidSatelliteId);
-		data.writeBooleanArray(craftingSigns);
 		data.writeInt(satelliteId);
 		data.writeIntegerArray(advancedSatelliteIdArray);
 		data.writeIntegerArray(fuzzyCraftingFlagArray);
@@ -80,7 +75,6 @@ public class CraftingPipeUpdatePacket extends CoordinatesPacket {
 		amount = data.readIntegerArray();
 		liquidSatelliteIdArray = data.readIntegerArray();
 		liquidSatelliteId = data.readInt();
-		craftingSigns = data.readBooleanArray();
 		satelliteId = data.readInt();
 		advancedSatelliteIdArray = data.readIntegerArray();
 		fuzzyCraftingFlagArray = data.readIntegerArray();

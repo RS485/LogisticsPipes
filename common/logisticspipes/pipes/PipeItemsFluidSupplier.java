@@ -7,16 +7,14 @@ import java.util.Map.Entry;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
-import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTree;
-import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.FluidIdentifier;
@@ -34,18 +32,14 @@ import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
-import buildcraft.transport.IItemTravelingHook;
-import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.TravelingItem;
 
-public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport, IItemTravelingHook{
+public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport {
 
 	private boolean _lastRequestFailed = false;
 	
 	public PipeItemsFluidSupplier(Item item) {
 		super(new PipeTransportLogistics() {
-
 			@Override
 			public boolean canPipeConnect(TileEntity tile, ForgeDirection dir) {
 				if(super.canPipeConnect(tile, dir)) return true;
@@ -58,7 +52,6 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 				return false;
 			}
 		}, item);
-		((PipeTransportItems) transport).travelHook = this;
 
 		throttleTime = 100;
 	}
@@ -87,50 +80,30 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 		return ItemSendMode.Fast;
 	}
 
-
-	/* IItemTravelingHook */
-
-	@Override
-	public boolean endReached(PipeTransportItems pipe, TravelingItem data, TileEntity tile) {
-		//((PipeTransportLogistics)pipe).markChunkModified(tile);
-		if (MainProxy.isServer(getWorld()) && (data instanceof RoutedEntityItem) && ((RoutedEntityItem)data).getArrived()) {
-			notifyOfItemArival((RoutedEntityItem) data);
-		}
-		if (!(tile instanceof IFluidHandler)) return false;
-		if (tile instanceof TileGenericPipe) return false;
+	public void endReached(LPTravelingItemServer data, TileEntity tile) {
+		this.transport.markChunkModified(tile);
+		notifyOfItemArival(data.getInfo());
+		if (!(tile instanceof IFluidHandler)) return;
+		if (tile instanceof TileGenericPipe) return;
 		IFluidHandler container = (IFluidHandler) tile;
-		//container.getFluidSlots()[0].getFluidQty();
-		if (data == null) return false;
-		if (data.getItemStack() == null) return false ;
-		FluidStack liquidId = FluidContainerRegistry.getFluidForFilledItem(data.getItemStack());
-		if (liquidId == null) return false;
+		if (data == null) return;
+		if (data.getItemIdentifierStack() == null) return;
+		FluidStack liquidId = FluidContainerRegistry.getFluidForFilledItem(data.getItemIdentifierStack().makeNormalStack());
+		if (liquidId == null) return;
 		ForgeDirection orientation = data.output.getOpposite();
 		if(getUpgradeManager().hasSneakyUpgrade()) {
 			orientation = getUpgradeManager().getSneakyOrientation();
 		}
-		while (data.getItemStack().stackSize > 0 && container.fill(orientation, liquidId, false) == liquidId.amount && this.useEnergy(5)) {
+		while (data.getItemIdentifierStack().getStackSize() > 0 && container.fill(orientation, liquidId, false) == liquidId.amount && this.useEnergy(5)) {
 			container.fill(orientation, liquidId.copy(), true);
-			data.getItemStack().stackSize--;
-			if (data.getItemStack().itemID >= 0 && data.getItemStack().itemID < Item.itemsList.length){
-				Item item = Item.itemsList[data.getItemStack().itemID];
-				if (item.hasContainerItem()){
-					Item containerItem = item.getContainerItem();
-					IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, new ItemStack(containerItem, 1));
-					this.queueRoutedItem(itemToSend, data.output);
-				}
+			data.getItemIdentifierStack().lowerStackSize(1);
+			Item item = Item.itemsList[data.getItemIdentifierStack().getItem().itemID];
+			if (item.hasContainerItem()) {
+				Item containerItem = item.getContainerItem();
+				transport.sendItem(new ItemStack(containerItem, 1));
 			}
 		}
-		if (data.getItemStack().stackSize < 1){
-			((PipeTransportItems)this.transport).items.scheduleRemoval(data);
-		}
-		return true;
 	}
-
-	@Override
-	public void drop(PipeTransportItems pipe, TravelingItem data) {}
-
-	@Override
-	public void centerReached(PipeTransportItems pipe, TravelingItem data) {}
 	
 	@Override
 	public boolean hasGenericInterests() {

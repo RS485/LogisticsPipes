@@ -339,25 +339,27 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "OrePrefix"), posX + 4, posY + 38, ((flag & 0x8) == 0 ? 0x404040 : 0x7F7F40));
 		}
 		
-		for(int i = 0; i < 9; i++) {
-			int flag = this._pipe.fuzzyCraftingFlagArray[i];
-			int x1 = 8 + 18 * i;
-			int y1 = 18;
-			if((flag & 0x1) != 0) {
-				drawRect(x1 + 8, y1 - 1, x1 + 17, y1, 0xFFFF4040);
-				drawRect(x1 + 16, y1, x1 + 17, y1 + 8, 0xFFFF4040);
-			}
-			if((flag & 0x2) != 0) {
-				drawRect(x1 - 1, y1 - 1, x1 + 8, y1, 0xFF40FF40);
-				drawRect(x1 - 1, y1, x1, y1 + 8, 0xFF40FF40);
-			}
-			if((flag & 0x4) != 0) {
-				drawRect(x1 - 1, y1 + 16, x1 + 8, y1 + 17, 0xFF4040FF);
-				drawRect(x1 - 1, y1 + 8, x1, y1 + 17, 0xFF4040FF);
-			}
-			if((flag & 0x8) != 0) {
-				drawRect(x1 + 8, y1 + 16, x1 + 17, y1 + 17, 0xFF7F7F40);
-				drawRect(x1 + 16, y1 + 8, x1 + 17, y1 + 17, 0xFF7F7F40);
+		if(isFuzzy) {
+			for(int i = 0; i < 9; i++) {
+				int flag = this._pipe.fuzzyCraftingFlagArray[i];
+				int x1 = 8 + 18 * i;
+				int y1 = 18;
+				if((flag & 0x1) != 0) {
+					drawRect(x1 + 8, y1 - 1, x1 + 17, y1, 0xFFFF4040);
+					drawRect(x1 + 16, y1, x1 + 17, y1 + 8, 0xFFFF4040);
+				}
+				if((flag & 0x2) != 0) {
+					drawRect(x1 - 1, y1 - 1, x1 + 8, y1, 0xFF40FF40);
+					drawRect(x1 - 1, y1, x1, y1 + 8, 0xFF40FF40);
+				}
+				if((flag & 0x4) != 0) {
+					drawRect(x1 - 1, y1 + 16, x1 + 8, y1 + 17, 0xFF4040FF);
+					drawRect(x1 - 1, y1 + 8, x1, y1 + 17, 0xFF4040FF);
+				}
+				if((flag & 0x8) != 0) {
+					drawRect(x1 + 8, y1 + 16, x1 + 17, y1 + 17, 0xFF7F7F40);
+					drawRect(x1 + 16, y1 + 8, x1 + 17, y1 + 17, 0xFF7F7F40);
+				}
 			}
 		}
 	}

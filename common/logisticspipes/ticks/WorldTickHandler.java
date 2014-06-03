@@ -6,6 +6,7 @@ import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -29,8 +30,10 @@ public class WorldTickHandler implements ITickHandler {
 	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
 		LinkedList<TileGenericPipe> localList;
 		if(type.contains(TickType.CLIENT)) {
+			MainProxy.proxy.tickClient();
 			localList = clientPipesToReplace;
 		} else if(type.contains(TickType.SERVER)) {
+			MainProxy.proxy.tickServer();
 			localList = serverPipesToReplace;
 		} else {
 			System.out.println("not client, not server ... what is " + type);

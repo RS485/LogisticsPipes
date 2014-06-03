@@ -168,7 +168,8 @@ public class LPDataInputStream extends DataInputStream {
 			public Float readObject(LPDataInputStream data) throws IOException {
 				return data.readFloat();
 			}});
-		return new ClientSideOrderInfo(stack, isFinished, type, inProgress, routerId, list);
+		byte machineProgress = this.readByte();
+		return new ClientSideOrderInfo(stack, isFinished, type, inProgress, routerId, list, machineProgress);
 	}
 	
 	public <T extends Enum<T>> T readEnum(Class<T> clazz) throws IOException {

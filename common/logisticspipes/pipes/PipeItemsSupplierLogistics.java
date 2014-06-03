@@ -8,8 +8,9 @@
 
 package logisticspipes.pipes;
 
-
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -24,9 +25,11 @@ import logisticspipes.network.packets.module.SupplierPipeLimitedPacket;
 import logisticspipes.network.packets.modules.SupplierPipeMode;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.debug.StatusEntry;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTree;
+import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.AdjacentTile;
@@ -158,6 +161,7 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 	}
 
 	private void createPatternRequest(IInventoryUtil invUtil) {
+		debug.log("Supplier: Start calculating pattern request");
 		((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(false);
 		for(int i=0;i < 9;i++) {
 			ItemIdentifierStack needed = dummyInventory.getIDStackInSlot(i);
@@ -166,11 +170,12 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 			ItemStack stack = invUtil.getStackInSlot(slotArray[i]);
 			ItemIdentifierStack have = null;
 			if(stack != null) {
-				have = ItemIdentifierStack.getFromStack(stack);				
+				have = ItemIdentifierStack.getFromStack(stack);
 			}
 			int haveCount = 0;
 			if(have != null) {
 				if(have.getItem() != needed.getItem()) {
+					debug.log("Supplier: Slot for " + i + ", " + needed + " already taken by " + have);
 					((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(true);
 					continue;
 				}
@@ -185,8 +190,10 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 			int neededCount = needed.getStackSize() - haveCount;
 			if(neededCount < 1) continue;
 			
-			ItemIdentifierStack toRequest = new ItemIdentifierStack(needed.getItem(), needed.getStackSize() - haveCount);
+			ItemIdentifierStack toRequest = new ItemIdentifierStack(needed.getItem(), neededCount);
 			
+			debug.log("Supplier: Missing for slot " + i + ": " + toRequest);
+
 			if(!useEnergy(10)) {
 				break;
 			}
@@ -194,12 +201,20 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 			boolean success = false;
 
 			if(_patternMode != PatternMode.Full) {
+				debug.log("Supplier: Requesting partial: " + toRequest);
 				neededCount = RequestTree.requestPartial(toRequest, (IRequestItems) container.pipe);
+				debug.log("Supplier: Requested: " + toRequest.getItem().makeStack(neededCount));
 				if(neededCount > 0) {
 					success = true;
 				}
 			} else {
+				debug.log("Supplier: Requesting: " + toRequest);
 				success = RequestTree.request(toRequest, (IRequestItems) container.pipe, null);
+				if(success) {
+					debug.log("Supplier: Request success");
+				} else {
+					debug.log("Supplier: Request failed");
+				}
 			}
 			
 			if (success){
@@ -216,11 +231,15 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 	}
 
 	private void createSupplyRequest(IInventoryUtil invUtil) {
+		debug.log("Supplier: Start calculating supply request");
 		//How many do I want?
 		HashMap<ItemIdentifier, Integer> needed = new HashMap<ItemIdentifier, Integer>(dummyInventory.getItemsAndCount());
+		debug.log("Supplier: Needed: " + needed);
 		
 		//How many do I have?
 		Map<ItemIdentifier, Integer> have = invUtil.getItemsAndCount();
+		debug.log("Supplier: Have:   " + have);
+		
 		//How many do I have?
 		HashMap<ItemIdentifier, Integer> haveUndamaged = new HashMap<ItemIdentifier, Integer>();
 		for (Entry<ItemIdentifier, Integer> item : have.entrySet()){
@@ -260,6 +279,8 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 			}
 		}
 		
+		debug.log("Supplier: Missing:   " + needed);
+		
 		((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(false);
 
 		//Make request
@@ -274,20 +295,30 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 			boolean success = false;
 
 			if(_requestMode!=SupplyMode.Full) {
+				debug.log("Supplier: Requesting partial: " + need.getKey().makeStack(neededCount));
 				neededCount = RequestTree.requestPartial(need.getKey().makeStack(neededCount), (IRequestItems) container.pipe);
+				debug.log("Supplier: Requested: " + need.getKey().makeStack(neededCount));
 				if(neededCount > 0) {
 					success = true;
 				}
 			} else {
+				debug.log("Supplier: Requesting: " + need.getKey().makeStack(neededCount));
 				success = RequestTree.request(need.getKey().makeStack(neededCount), (IRequestItems) container.pipe, null);
+				if(success) {
+					debug.log("Supplier: Request success");
+				} else {
+					debug.log("Supplier: Request failed");
+				}
 			}
 			
 			if (success){
 				Integer currentRequest = _requestedItems.get(need.getKey());
 				if(currentRequest == null) {
 					_requestedItems.put(need.getKey(), neededCount);
+					debug.log("Supplier: Inserting Requested Items: " + neededCount);
 				} else {
 					_requestedItems.put(need.getKey(), currentRequest + neededCount);
+					debug.log("Supplier: Raising Requested Items from: " + currentRequest + " to: " + currentRequest + neededCount);
 				}
 			} else {
 				((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(true);
@@ -339,7 +370,11 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 		Integer count = _requestedItems.get(item.getItem());
 		if (count != null) {
 			_requestedItems.put(item.getItem(), Math.max(0, count - remaining));
+			debug.log("Supplier: Exact match. Still missing: " + _requestedItems.get(item.getItem()));
 			remaining -= count;
+			if(Math.max(0, count - remaining) == 0) {
+				_requestedItems.remove(item.getItem());
+			}
 		}
 		if(remaining <= 0) {
 			return;
@@ -349,7 +384,11 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 			if(e.getKey().itemID == item.getItem().itemID && e.getKey().itemDamage == item.getItem().itemDamage) {
 				int expected = e.getValue();
 				e.setValue(Math.max(0, expected - remaining));
+				debug.log("Supplier: Fuzzy match with" + e + ". Still missing: " + e.getValue());
 				remaining -= expected;
+				if(Math.max(0, expected - remaining) == 0) {
+					_requestedItems.remove(item.getItem());
+				}
 			}
 			if(remaining <= 0) {
 				return;
@@ -357,15 +396,18 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 		}
 		//we have no idea what this is, log it.
 		LogisticsPipes.requestLog.info("supplier got unexpected item " + item.toString());
+		debug.log("Supplier: supplier got unexpected item " + item.toString());
 	}
 
 	@Override
 	public void itemLost(ItemIdentifierStack item) {
+		debug.log("Supplier: Registered Item Lost: " + item);
 		decreaseRequested(item);
 	}
 
 	@Override
 	public void itemArrived(ItemIdentifierStack item) {
+		debug.log("Supplier: Registered Item Arrived: " + item);
 		decreaseRequested(item);
 		delayThrottle();
 	}
@@ -407,5 +449,19 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 	
 	public int getAmountForSlot(int i) {
 		return dummyInventory.getIDStackInSlot(i).getStackSize();
+	}
+
+	@Override
+	public void addStatusInformation(List<StatusEntry> status) {
+		super.addStatusInformation(status);
+		StatusEntry entry = new StatusEntry();
+		entry.name = "Requested Items";
+		entry.subEntry = new ArrayList<StatusEntry>();
+		for(Entry<ItemIdentifier, Integer> part:_requestedItems.entrySet()) {
+			StatusEntry subEntry = new StatusEntry();
+			subEntry.name = part.toString();
+			entry.subEntry.add(subEntry);
+		}
+		status.add(entry);
 	}
 }

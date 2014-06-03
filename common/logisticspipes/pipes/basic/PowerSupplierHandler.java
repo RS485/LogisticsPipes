@@ -6,9 +6,6 @@ import java.util.List;
 import logisticspipes.blocks.powertile.LogisticsPowerProviderTileEntity;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.network.PacketHandler;
-import logisticspipes.network.packets.block.PowerPacketLaser;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.WorldUtil;
@@ -59,7 +56,8 @@ public class PowerSupplierHandler {
 							if(internal_BC_Buffer + 1 < need[i] * fullfillable) return;
 							double used = receptor.receiveEnergy(Type.PIPE, need[i] * fullfillable, adTile.orientation);
 							if(used > 0) {
-								MainProxy.sendPacketToAllWatchingChunk(this.pipe.getX(), this.pipe.getZ(), MainProxy.getDimensionForWorld(this.pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(LogisticsPowerProviderTileEntity.BC_COLOR).setPos(this.pipe.getLPPosition()).setRenderBall(true).setDir(adTile.orientation).setLength(0.5F));
+								//MainProxy.sendPacketToAllWatchingChunk(this.pipe.getX(), this.pipe.getZ(), MainProxy.getDimensionForWorld(this.pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(LogisticsPowerProviderTileEntity.BC_COLOR).setPos(this.pipe.getLPPosition()).setRenderBall(true).setDir(adTile.orientation).setLength(0.5F));
+								((LogisticsTileGenericPipe)pipe.container).addLaser(adTile.orientation, 0.5F, LogisticsPowerProviderTileEntity.BC_COLOR, false, true);
 								internal_BC_Buffer -= used;
 							}
 							if(internal_BC_Buffer < 0) {
@@ -122,7 +120,8 @@ public class PowerSupplierHandler {
 						if(internal_RF_Buffer + 1 < need[i] * fullfillable) return;
 						int used = SimpleServiceLocator.thermalExpansionProxy.receiveEnergy(adTile.tile, adTile.orientation.getOpposite(), (int) (need[i] * fullfillable), false);
 						if(used > 0) {
-							MainProxy.sendPacketToAllWatchingChunk(this.pipe.getX(), this.pipe.getZ(), MainProxy.getDimensionForWorld(this.pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(LogisticsPowerProviderTileEntity.RF_COLOR).setPos(this.pipe.getLPPosition()).setRenderBall(true).setDir(adTile.orientation).setLength(0.5F));
+							//MainProxy.sendPacketToAllWatchingChunk(this.pipe.getX(), this.pipe.getZ(), MainProxy.getDimensionForWorld(this.pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(LogisticsPowerProviderTileEntity.RF_COLOR).setPos(this.pipe.getLPPosition()).setRenderBall(true).setDir(adTile.orientation).setLength(0.5F));
+							((LogisticsTileGenericPipe)pipe.container).addLaser(adTile.orientation, 0.5F, LogisticsPowerProviderTileEntity.RF_COLOR, false, true);
 							internal_RF_Buffer -= used;
 						}
 						if(internal_RF_Buffer < 0) {
@@ -186,7 +185,8 @@ public class PowerSupplierHandler {
 						double unUsed = SimpleServiceLocator.IC2Proxy.injectEnergyUnits(adTile.tile, adTile.orientation.getOpposite(), toUse);
 						double used = toUse - unUsed;
 						if(used > 0) {
-							MainProxy.sendPacketToAllWatchingChunk(this.pipe.getX(), this.pipe.getZ(), MainProxy.getDimensionForWorld(this.pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(LogisticsPowerProviderTileEntity.IC2_COLOR).setPos(this.pipe.getLPPosition()).setRenderBall(true).setDir(adTile.orientation).setLength(0.5F));
+							//MainProxy.sendPacketToAllWatchingChunk(this.pipe.getX(), this.pipe.getZ(), MainProxy.getDimensionForWorld(this.pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(LogisticsPowerProviderTileEntity.IC2_COLOR).setPos(this.pipe.getLPPosition()).setRenderBall(true).setDir(adTile.orientation).setLength(0.5F));
+							((LogisticsTileGenericPipe)pipe.container).addLaser(adTile.orientation, 0.5F, LogisticsPowerProviderTileEntity.IC2_COLOR, false, true);
 							internal_IC2_Buffer -= used;
 						}
 						if(internal_IC2_Buffer < 0) {

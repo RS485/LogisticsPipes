@@ -21,10 +21,10 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
@@ -61,8 +61,8 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 						drained = ((ISpecialTankAccessHandler)handler).drainFrom(pair.getValue1(), order.getValue1(), amountToSend, true);
 						int amount = drained.amount;
 						amountToSend -= amount;
-						ItemStack stack = SimpleServiceLocator.logisticsFluidManager.getFluidContainer(drained);
-						IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stack);
+						ItemIdentifierStack stack = SimpleServiceLocator.logisticsFluidManager.getFluidContainer(drained);
+						IRoutedItem item = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
 						item.setDestination(order.getValue3().getRouter().getSimpleID());
 						item.setTransportMode(TransportMode.Active);
 						this.queueRoutedItem(item, pair.getValue2());
@@ -82,10 +82,19 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 							FluidStack drained = ((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), amount, false);
 							if(drained != null && order.getValue1() == FluidIdentifier.get(drained)) {
 								drained = ((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), amount, true);
+								while(drained.amount < amountToSend) {
+									FluidStack addition = ((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), amountToSend - drained.amount, false);
+									if(addition != null && order.getValue1() == FluidIdentifier.get(addition)) {
+										addition = ((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), amountToSend - drained.amount, true);
+										drained.amount += addition.amount;
+									} else {
+										break;
+									}
+								}
 								amount = drained.amount;
 								amountToSend -= amount;
-								ItemStack stack = SimpleServiceLocator.logisticsFluidManager.getFluidContainer(drained);
-								IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stack);
+								ItemIdentifierStack stack = SimpleServiceLocator.logisticsFluidManager.getFluidContainer(drained);
+								IRoutedItem item = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
 								item.setDestination(order.getValue3().getRouter().getSimpleID());
 								item.setTransportMode(TransportMode.Active);
 								this.queueRoutedItem(item, pair.getValue2());
@@ -129,11 +138,15 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 					FluidStack liquid;
 					if((liquid = tank.fluid) != null && liquid.fluidID != 0) {
 						FluidIdentifier ident = FluidIdentifier.get(liquid);
-						if(map.containsKey(ident)) {
-							long addition = ((long)map.get(ident)) + tank.fluid.amount;
-							map.put(ident, addition > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) addition);
-						} else {
-							map.put(ident, tank.fluid.amount);
+						if(((IFluidHandler)pair.getValue1()).canDrain(pair.getValue2().getOpposite(), liquid.getFluid())) {
+							if(((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), 1, false) != null) {
+								if(map.containsKey(ident)) {
+									long addition = ((long)map.get(ident)) + tank.fluid.amount;
+									map.put(ident, addition > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) addition);
+								} else {
+									map.put(ident, tank.fluid.amount);
+								}
+							}
 						}
 					}
 				}
@@ -187,8 +200,12 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 					FluidStack liquid;
 					if((liquid = tank.fluid) != null) {
 						if(request.getFluid() == FluidIdentifier.get(liquid)) {
-							long addition = ((long) containedAmount) + liquid.amount;
-							containedAmount = addition > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) addition;
+							if(((IFluidHandler)pair.getValue1()).canDrain(pair.getValue2().getOpposite(), liquid.getFluid())) {
+								if(((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), 1, false) != null) {
+									long addition = ((long) containedAmount) + liquid.amount;
+									containedAmount = addition > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) addition;
+								}
+							}
 						}
 					}
 				}
@@ -240,8 +257,12 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 					if(tank == null) continue;
 					FluidStack liquid;
 					if((liquid = tank.fluid) != null && liquid.fluidID != 0) {
-						FluidIdentifier ident = FluidIdentifier.get(liquid);
-						l1.add(ident.getItemIdentifier());
+						if(((IFluidHandler)pair.getValue1()).canDrain(pair.getValue2().getOpposite(), liquid.getFluid())) {
+							if(((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), 1, false) != null) {
+								FluidIdentifier ident = FluidIdentifier.get(liquid);
+								l1.add(ident.getItemIdentifier());
+							}
+						}
 					}
 				}
 			}

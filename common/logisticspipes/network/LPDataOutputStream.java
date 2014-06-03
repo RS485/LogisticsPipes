@@ -154,6 +154,7 @@ public class LPDataOutputStream extends DataOutputStream {
 			public void writeObject(LPDataOutputStream data, Float object) throws IOException {
 				data.writeFloat(object);
 			}});
+		this.writeByte(order.getMachineProgress());
 	}
 	
 	public <T extends Enum<T>> void writeEnum(T object) throws IOException {

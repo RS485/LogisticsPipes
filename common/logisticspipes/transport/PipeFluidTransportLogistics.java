@@ -7,7 +7,7 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.pipe.PipeFluidUpdate;
 import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
 import logisticspipes.proxy.MainProxy;
-import net.minecraft.item.ItemStack;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
@@ -17,6 +17,7 @@ import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 import buildcraft.BuildCraftCore;
 import buildcraft.api.core.SafeTimeTracker;
+import buildcraft.core.utils.Utils;
 
 public class PipeFluidTransportLogistics extends PipeTransportLogistics implements IFluidHandler {
 
@@ -33,7 +34,7 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 	
 	@Override
 	public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
-		if(from.ordinal() < ForgeDirection.VALID_DIRECTIONS.length) {
+		if(from.ordinal() < ForgeDirection.VALID_DIRECTIONS.length && getFluidPipe().canReceiveFluid()) {
 			return sideTanks[from.ordinal()].fill(resource, doFill);
 		} else {
 			return 0;
@@ -267,7 +268,7 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 	}
 
 	@Override
-	protected boolean isItemExitable(ItemStack stack) {
+	protected boolean isItemExitable(ItemIdentifierStack stack) {
 		return true;
 	}
 }

@@ -8,7 +8,7 @@
 
 package logisticspipes.pipes;
 
-
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -19,7 +19,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.DelayQueue;
 
-import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.gui.hud.HUDCrafting;
@@ -69,12 +68,14 @@ import logisticspipes.network.packets.pipe.FluidCraftingPipeAdvancedSatelliteNex
 import logisticspipes.network.packets.pipe.FluidCraftingPipeAdvancedSatellitePrevPacket;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.signs.CraftingPipeSign;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCQueued;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
+import logisticspipes.proxy.interfaces.IFuzzyRecipeProvider;
 import logisticspipes.request.CraftingTemplate;
 import logisticspipes.request.RequestTree;
 import logisticspipes.request.RequestTreeNode;
@@ -101,7 +102,6 @@ import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.block.Block;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
@@ -111,10 +111,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.inventory.ISpecialInventory;
-import buildcraft.core.CoreConstants;
-import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.FMLClientHandler;
 
@@ -131,6 +130,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public final LinkedList<LogisticsOrder> _extras = new LinkedList<LogisticsOrder>();
 	private boolean init = false;
 	private boolean doContentUpdate = true;
+	private WeakReference<TileEntity> lastAccessedCrafter = new WeakReference<TileEntity>(null);
 	
 	public boolean waitingForCraft = false;
 	
@@ -282,8 +282,16 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			checkContentUpdate();
 		}
 		
-		if(hasOrder()) {
+		if(_orderManager.hasOrders()) {
 			cacheAreAllOrderesToBuffer();
+			if(_orderManager.isFirstOrderWatched()) {
+				TileEntity tile = lastAccessedCrafter.get();
+				if(tile != null) {
+					_orderManager.setMachineProgress(SimpleServiceLocator.machineProgressProvider.getProgressForTile(tile));
+				} else {
+					_orderManager.setMachineProgress((byte) 0);
+				}
+			}
 		} else {
 			cachedAreAllOrderesToBuffer = false;
 		}
@@ -344,16 +352,18 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 				}
 			}
 			if(extracted == null || extracted.stackSize == 0) break;
-			
+			lastAccessedCrafter = new WeakReference<TileEntity>(tile.tile);
 			// send the new crafted items to the destination
 			ItemIdentifier extractedID = ItemIdentifier.get(extracted);
 			while (extracted.stackSize > 0) {
 				if(nextOrder.getItem().getItem() != extractedID) {
 					LogisticsOrder startOrder = nextOrder;
-					do {
-						_orderManager.deferSend();
-						nextOrder = _orderManager.peekAtTopRequest();
-					} while(nextOrder.getItem().getItem() != extractedID && startOrder != nextOrder);
+					if(_orderManager.hasOrders()) {
+						do {
+							_orderManager.deferSend();
+							nextOrder = _orderManager.peekAtTopRequest();
+						} while(nextOrder.getItem().getItem() != extractedID && startOrder != nextOrder);
+					}
 					if(startOrder == nextOrder) {
 						int numtosend = Math.min(extracted.stackSize, extractedID.getMaxStackSize());
 						if(numtosend == 0)
@@ -362,11 +372,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 						itemsleft -= numtosend;
 						ItemStack stackToSend = extracted.splitStack(numtosend);
 						//Route the unhandled item
-						LPPosition entityPos = new LPPosition(tile.tile.xCoord + 0.5, tile.tile.yCoord + CoreConstants.PIPE_MIN_POS, tile.tile.zCoord + 0.5);
-						entityPos.moveForward(tile.orientation.getOpposite(), 0.5);
-						TravelingItem entityItem = new TravelingItem(entityPos.getXD(), entityPos.getYD(), entityPos.getZD(), stackToSend);
-						entityItem.setSpeed(TransportConstants.PIPE_NORMAL_SPEED * Configs.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
-						((PipeTransportItems) transport).injectItem(entityItem, tile.orientation.getOpposite());
+						transport.sendItem(stackToSend);
 						continue;
 					}
 				}
@@ -383,7 +389,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 					if(reply == null || reply.bufferMode != BufferMode.NONE || reply.maxNumberOfItems < 1) {
 						defersend = true;
 					}
-					IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stackToSend);
+					IRoutedItem item = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stackToSend);
 					item.setDestination(nextOrder.getDestination().getRouter().getSimpleID());
 					item.setTransportMode(TransportMode.Active);
 					super.queueRoutedItem(item, tile.orientation);
@@ -397,14 +403,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 					}
 				} else {
 					removeExtras(numtosend,nextOrder.getItem().getItem());
-
-					Position p = new Position(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, tile.orientation);
-					LogisticsPipes.requestLog.info(stackToSend.stackSize + " extras dropped, " + countExtras() + " remaining");
- 					Position entityPos = new Position(p.x + 0.5, p.y + CoreConstants.PIPE_MIN_POS, p.z + 0.5, p.orientation.getOpposite());
-					entityPos.moveForwards(0.5);
-					TravelingItem entityItem = new TravelingItem(entityPos.x, entityPos.y, entityPos.z, stackToSend);
-					entityItem.setSpeed(TransportConstants.PIPE_NORMAL_SPEED * Configs.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
-					((PipeTransportItems) transport).injectItem(entityItem, entityPos.orientation);
+					transport.sendItem(stackToSend);
 				}
 			}
 		}
@@ -444,16 +443,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 				}
 			}
 		}
-	}
-
-	private int countExtras(){
-		if(_extras == null)
-			return 0;
-		int count = 0;
-		for(LogisticsOrder e : _extras){
-			count += e.getItem().getStackSize();
-		}
-		return count;
 	}
 
 	@Override
@@ -643,10 +632,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		return ItemSendMode.Normal;
 	}
 	
-	public boolean hasOrder() {
-		return _orderManager.hasOrders();
-	}
-	
 	@Override
 	public int getTodo() {
 		return _orderManager.totalItemsCountInAllOrders();
@@ -733,7 +718,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public int getPriority() {
 		return priority;
 	}
-
+	
+	/*
 	public List<ForgeDirection> getCraftingSigns() {
 		List<ForgeDirection> list = new ArrayList<ForgeDirection>();
 		for(int i=0;i<6;i++) {
@@ -762,16 +748,16 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		}
 		return false;
 	}
+	*/
 	
 	public ModernPacket getCPipePacket() {
-		return PacketHandler.getPacket(CraftingPipeUpdatePacket.class).setAmount(amount).setLiquidSatelliteIdArray(liquidSatelliteIdArray).setLiquidSatelliteId(liquidSatelliteId).setCraftingSigns(craftingSigns).setSatelliteId(satelliteId).setAdvancedSatelliteIdArray(advancedSatelliteIdArray).setFuzzyCraftingFlagArray(fuzzyCraftingFlagArray).setPriority(priority).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
+		return PacketHandler.getPacket(CraftingPipeUpdatePacket.class).setAmount(amount).setLiquidSatelliteIdArray(liquidSatelliteIdArray).setLiquidSatelliteId(liquidSatelliteId).setSatelliteId(satelliteId).setAdvancedSatelliteIdArray(advancedSatelliteIdArray).setFuzzyCraftingFlagArray(fuzzyCraftingFlagArray).setPriority(priority).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 	}
 	
 	public void handleCraftingUpdatePacket(CraftingPipeUpdatePacket packet) {
 		amount = packet.getAmount();
 		liquidSatelliteIdArray = packet.getLiquidSatelliteIdArray();
 		liquidSatelliteId = packet.getLiquidSatelliteId();
-		craftingSigns = packet.getCraftingSigns();
 		satelliteId = packet.getSatelliteId();
 		advancedSatelliteIdArray = packet.getAdvancedSatelliteIdArray();
 		fuzzyCraftingFlagArray = packet.getFuzzyCraftingFlagArray();
@@ -786,7 +772,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public int[] liquidSatelliteIdArray = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
 	public int liquidSatelliteId = 0;
 
-	public boolean[] craftingSigns = new boolean[6];
+	//@Deprecated
+	//public boolean[] craftingSigns = new boolean[6];
 	
 	protected final DelayQueue< DelayedGeneric<ItemIdentifierStack>> _lostItems = new DelayQueue< DelayedGeneric<ItemIdentifierStack>>();
 	
@@ -996,9 +983,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		for(int i=0;i<9;i++) {
 			fuzzyCraftingFlagArray[i] = nbttagcompound.getByte("fuzzyCraftingFlag" + i);
 		}
-		for(int i=0;i<6;i++) {
-			craftingSigns[i] = nbttagcompound.getBoolean("craftingSigns" + i);
-		}
 		if(nbttagcompound.hasKey("FluidAmount")) {
 			amount = nbttagcompound.getIntArray("FluidAmount");
 		}
@@ -1012,6 +996,12 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			liquidSatelliteIdArray[i] = nbttagcompound.getInteger("liquidSatelliteIdArray" + i);
 		}
 		liquidSatelliteId = nbttagcompound.getInteger("liquidSatelliteId");
+		
+		for(int i=0;i<6;i++) {
+			if(nbttagcompound.getBoolean("craftingSigns" + i)) {
+				this.addPipeSign(ForgeDirection.getOrientation(i), new CraftingPipeSign(), null);
+			}
+		}
 	}
 
 	@Override
@@ -1027,9 +1017,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		}
 		for(int i=0;i<9;i++) {
 			nbttagcompound.setByte("fuzzyCraftingFlag" + i, (byte)fuzzyCraftingFlagArray[i]);
-		}
-		for(int i=0;i<6;i++) {
-			nbttagcompound.setBoolean("craftingSigns" + i, craftingSigns[i]);
 		}
 		for(int i=0;i<ItemUpgrade.MAX_LIQUID_CRAFTER;i++) {
 			nbttagcompound.setInteger("liquidSatelliteIdArray" + i, liquidSatelliteIdArray[i]);
@@ -1063,7 +1050,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		while (lostItem != null) {
 			
 			ItemIdentifierStack stack = lostItem.get();
-			if(hasOrder()) { 
+			if(_orderManager.hasOrders()) { 
 				SinkReply reply = LogisticsManager.canSink(getRouter(), null, true, stack.getItem(), null, true, true);
 				if(reply == null || reply.maxNumberOfItems < 1) {
 					_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(stack, 5000));
@@ -1159,10 +1146,16 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteImport.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 			MainProxy.sendPacketToServer(packet);
 		} else{
+			boolean fuzzyFlagsChanged = false;
 			final WorldUtil worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
 			for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
 				for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
-					if (provider.importRecipe(tile.tile, _dummyInventory)) break;
+					if (provider.importRecipe(tile.tile, _dummyInventory)) {
+						if (provider instanceof IFuzzyRecipeProvider) {
+							fuzzyFlagsChanged = ((IFuzzyRecipeProvider)provider).importFuzzyFlags(tile.tile, _dummyInventory, fuzzyCraftingFlagArray);
+						}
+						break;
+					}
 				}
 			}
 			// Send inventory as packet
@@ -1171,6 +1164,15 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 				MainProxy.sendPacketToPlayer(packet, player);
 			}
 			MainProxy.sendPacketToAllWatchingChunk(this.getX(), this.getZ(), MainProxy.getDimensionForWorld(getWorld()), packet);
+			
+			if(fuzzyFlagsChanged && this.getUpgradeManager().isFuzzyCrafter()) {
+				for (int i = 0; i < 9; i++) {
+					final ModernPacket pak = PacketHandler.getPacket(CraftingFuzzyFlag.class).setInteger2(fuzzyCraftingFlagArray[i]).setInteger(i).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
+					if(player != null)
+						MainProxy.sendPacketToPlayer(pak, (Player)player);
+					MainProxy.sendPacketToAllWatchingChunk(this.getX(), this.getZ(), MainProxy.getDimensionForWorld(getWorld()), pak);
+				}
+			}
 		}
 	}
 
@@ -1360,7 +1362,19 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		else
 		{
 			fuzzyCraftingFlagArray[slot] ^= 1 << flag;
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingFuzzyFlag.class).setInteger2(fuzzyCraftingFlagArray[slot]).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), player);
+			ModernPacket pak = PacketHandler.getPacket(CraftingFuzzyFlag.class).setInteger2(fuzzyCraftingFlagArray[slot]).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
+			if(player != null)
+				MainProxy.sendPacketToPlayer(pak, player);
+			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), pak);
 		}
+	}
+
+	public boolean hasCraftingSign() {
+		for(int i=0;i<6;i++) {
+			if(signItem[i] instanceof CraftingPipeSign) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

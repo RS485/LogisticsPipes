@@ -45,6 +45,10 @@ public class PowerPacketLaser extends ModernPacket {
 	@Getter
 	@Setter
 	private float length;
+	
+	@Getter
+	@Setter
+	private boolean remove = false;
 
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
@@ -54,13 +58,18 @@ public class PowerPacketLaser extends ModernPacket {
 		color = data.readInt();
 		reverse = data.readBoolean();
 		renderBall = data.readBoolean();
+		remove = data.readBoolean();
 	}
 	
 	@Override
 	public void processPacket(EntityPlayer player) {
 		TileEntity tile = pos.getTileEntity(MainProxy.getClientMainWorld());
 		if(tile instanceof LogisticsTileGenericPipe) {
-			((LogisticsTileGenericPipe)tile).addLaser(dir, getLength(), getColor(), isReverse(), isRenderBall());
+			if(remove) {
+				((LogisticsTileGenericPipe)tile).removeLaser(dir, getColor(), isRenderBall());
+			} else {
+				((LogisticsTileGenericPipe)tile).addLaser(dir, getLength(), getColor(), isReverse(), isRenderBall());
+			}
 		}
 	}
 	
@@ -72,6 +81,7 @@ public class PowerPacketLaser extends ModernPacket {
 		data.writeInt(color);
 		data.writeBoolean(reverse);
 		data.writeBoolean(renderBall);
+		data.writeBoolean(remove);
 	}
 	
 	@Override

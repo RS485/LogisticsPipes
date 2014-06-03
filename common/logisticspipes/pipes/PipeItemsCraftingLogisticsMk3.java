@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import logisticspipes.Configs;
 import logisticspipes.gui.hud.HUDCraftingMK3;
 import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
@@ -14,7 +13,6 @@ import logisticspipes.modules.ModuleCrafterMK3;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.hud.ChestContent;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.CraftingPipeMk3Transport;
@@ -29,10 +27,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.core.CoreConstants;
-import buildcraft.transport.PipeTransportItems;
-import buildcraft.transport.TransportConstants;
-import buildcraft.transport.TravelingItem;
 
 public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2 implements ISimpleInventoryEventHandler, IChestContentReceiver {
 	
@@ -59,10 +53,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	
 	@Override
 	protected int stacksToExtract() {
-		if(SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
-			return 8;
-		}
-		return 2;
+		return 8;
 	}
 	
 	@Override
@@ -109,12 +100,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 		for(int i=0;i<inv.getSizeInventory();i++) {
 			ItemStack stackToSend = inv.getStackInSlot(i);
 			if(stackToSend==null) continue;
-			for(ForgeDirection dir:ForgeDirection.VALID_DIRECTIONS) {
-				if(container.isPipeConnected(dir)) {
-					container.injectItem(stackToSend, true, dir);
-					break;
-				}
-			}
+			transport.sendItem(stackToSend);
 			inv.clearInventorySlotContents(i);
 			break;
 		}

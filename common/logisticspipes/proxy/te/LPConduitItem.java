@@ -11,15 +11,15 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouterManager;
-import logisticspipes.routing.RoutedEntityItem;
-import logisticspipes.routing.RoutedEntityItemSaveHandler;
+import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.ticks.QueuedTasks;
+import logisticspipes.transport.PipeTransportLogistics;
+import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.SimpleStackInventory;
 import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import thermalexpansion.part.conduit.ConduitBase;
@@ -133,7 +133,7 @@ public class LPConduitItem extends ConduitItem {
 		}
 	}
 	
-	public routeInfo canRouteLPItem(ItemStack stack, NBTTagCompound data, ItemRoute aRoute) {
+	public routeInfo canRouteLPItem(ItemStack stack, ItemRoutingInformation info, ItemRoute aRoute) {
 		if(dontCheckRoutes) {
 			routeInfo route = new routeInfo();
 			route.canRoute = true;
@@ -141,14 +141,12 @@ public class LPConduitItem extends ConduitItem {
 			route.side = 0;
 			return route;
 		} else {
-			RoutedEntityItemSaveHandler handler = new RoutedEntityItemSaveHandler(null);
-			handler.readFromNBT(data);
 			IRouterManager rm = SimpleServiceLocator.routerManager;
-			int destinationint = rm.getIDforUUID(handler.destinationUUID);
-			ExitRoute exit = pipe.getRoutingPipe().getRouter().getExitFor(destinationint, handler.transportMode == TransportMode.Active, ItemIdentifier.get(stack));
+			int destinationint = rm.getIDforUUID(info.destinationUUID);
+			ExitRoute exit = pipe.getRoutingPipe().getRouter().getExitFor(destinationint, info._transportMode == TransportMode.Active, ItemIdentifier.get(stack));
 			if(exit == null) return noRoute;
 			ForgeDirection orientation = exit.exitOrientation;
-			if((side == orientation.ordinal() || orientation == ForgeDirection.UNKNOWN) && !pipe.getRoutingPipe().getRouter().getId().equals(handler.destinationUUID)) {
+			if((side == orientation.ordinal() || orientation == ForgeDirection.UNKNOWN) && !pipe.getRoutingPipe().getRouter().getId().equals(info.destinationUUID)) {
 				return noRoute;
 			}
 			routeInfo route = new routeInfo();
@@ -176,17 +174,10 @@ public class LPConduitItem extends ConduitItem {
 			insertItem(ForgeDirection.VALID_DIRECTIONS[travelingItem.direction].getOpposite(), travelingItem.stack);
 		} else {
 			ForgeDirection from = ForgeDirection.VALID_DIRECTIONS[travelingItem.direction].getOpposite();
-			if (BlockGenericPipe.isValid(pipe.pipe) && pipe.pipe.transport instanceof PipeTransportItems) {
-				Position itemPos = new Position(pipe.xCoord + 0.5, pipe.yCoord + 0.5, pipe.zCoord + 0.5, from.getOpposite());
-				itemPos.moveBackwards(0.4);
-				buildcraft.transport.TravelingItem pipedItem = new buildcraft.transport.TravelingItem(travelingItem.routedLPInfo.getInteger("LP_BC_TRAVELING_ID"));
-				pipedItem.setPosition(itemPos.x, itemPos.y, itemPos.z);
-				pipedItem.setItemStack(travelingItem.stack.copy());
-				pipedItem.setContainer(pipe);
-				RoutedEntityItem item = new RoutedEntityItem(pipedItem);
-				item.loadFromNBT(travelingItem.routedLPInfo);
+			if (BlockGenericPipe.isValid(pipe.pipe) && pipe.pipe.transport instanceof PipeTransportLogistics) {
+				LPTravelingItemServer item = new LPTravelingItemServer(travelingItem.routedLPInfo);
 				item.refreshDestinationInformation();
-				((PipeTransportItems) pipe.pipe.transport).injectItem(item, itemPos.orientation);
+				((PipeTransportLogistics) pipe.pipe.transport).injectItem(item, from);
 			}
 		}
 	}

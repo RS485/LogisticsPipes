@@ -1,10 +1,13 @@
 package logisticspipes.routing.order;
 
+import logisticspipes.proxy.MainProxy;
+
 public class DistanceTracker implements IDistanceTracker {
 
 	private int currentDistance = 0;
 	private int initialDistance = 0;
 	private boolean endReached = false;
+	private long delay = 0;
 
 	@Override
 	public void setCurrentDistanceToTarget(int value) {
@@ -32,5 +35,15 @@ public class DistanceTracker implements IDistanceTracker {
 	@Override
 	public boolean hasReachedDestination() {
 		return endReached;
+	}
+
+	@Override
+	public void setDelay(long delay) {
+		this.delay = delay;
+	}
+
+	@Override
+	public boolean isTimeout() {
+		return delay != 0 && delay <= MainProxy.getGlobalTick();
 	}
 }

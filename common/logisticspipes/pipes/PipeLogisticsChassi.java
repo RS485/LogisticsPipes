@@ -181,9 +181,12 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_TEXTURE;
 	}
-
+	
 	@Override
 	public TextureType getRoutedTexture(ForgeDirection connection) {
+		if(getRouter().isSubPoweredExit(connection)) {
+			return Textures.LOGISTICSPIPE_SUBPOWER_TEXTURE;
+		}
 		return Textures.LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE;
 	}
 
@@ -191,6 +194,9 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	public TextureType getNonRoutedTexture(ForgeDirection connection) {
 		if (connection.equals(orientation)){
 			return Textures.LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE;
+		}
+		if(isPowerProvider(connection)) {
+			return Textures.LOGISTICSPIPE_POWERED_TEXTURE;
 		}
 		return Textures.LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE;
 	}
@@ -293,7 +299,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 
 	@Override
 	public IRoutedItem sendStack(ItemStack stack, Pair<Integer, SinkReply> reply, ItemSendMode mode) {
-		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stack);
+		IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
 		itemToSend.setDestination(reply.getValue1());
 		if (reply.getValue2().isPassive){
 			if (reply.getValue2().isDefault){
@@ -308,7 +314,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 
 	@Override
 	public IRoutedItem sendStack(ItemStack stack, int destination, ItemSendMode mode) {
-		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stack);
+		IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(TransportMode.Active);
 		super.queueRoutedItem(itemToSend, getPointedOrientation(), mode);

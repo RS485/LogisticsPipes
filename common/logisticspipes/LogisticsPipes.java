@@ -19,7 +19,7 @@ import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.commands.LogisticsPipesCommand;
 import logisticspipes.commands.chathelper.LPChatListener;
-import logisticspipes.items.CraftingSignCreator;
+import logisticspipes.items.ItemPipeSignCreator;
 import logisticspipes.items.ItemDisk;
 import logisticspipes.items.ItemHUDArmor;
 import logisticspipes.items.ItemModule;
@@ -46,6 +46,9 @@ import logisticspipes.proxy.SpecialInventoryHandlerManager;
 import logisticspipes.proxy.SpecialTankHandlerManager;
 import logisticspipes.proxy.VersionNotSupportedException;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
+import logisticspipes.proxy.forestry.ForestryProgressProvider;
+import logisticspipes.proxy.ic2.IC2ProgressProvider;
+import logisticspipes.proxy.progressprovider.MachineProgressProvider;
 import logisticspipes.proxy.recipeproviders.AssemblyAdvancedWorkbench;
 import logisticspipes.proxy.recipeproviders.AssemblyTable;
 import logisticspipes.proxy.recipeproviders.AutoWorkbench;
@@ -59,6 +62,7 @@ import logisticspipes.proxy.specialconnection.SpecialTileConnection;
 import logisticspipes.proxy.specialconnection.TeleportPipes;
 import logisticspipes.proxy.specialconnection.TesseractConnection;
 import logisticspipes.proxy.specialtankhandler.SpecialTankHandler;
+import logisticspipes.proxy.te.ThermalExpansionProgressProvider;
 import logisticspipes.recipes.CraftingPermissionManager;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
@@ -80,6 +84,7 @@ import logisticspipes.ticks.Watchdog;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.InventoryUtilFactory;
+import logisticspipes.utils.RoutedItemHelper;
 import net.minecraft.block.Block;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -134,7 +139,7 @@ public class LogisticsPipes {
 			}
 		}
 		if(!found) {
-			throw new RuntimeException("LogisticsPipes could not find its classtransformer. If you are running MC from an IDE make sure to copy the 'LogisticsPipes_dummy.jar' to your mods folder. If you are running MC normal please report this as a bug at 'https://github.com/RS485/LogisticsPipes-Dev/issues'.");
+			throw new RuntimeException("LogisticsPipes could not find its class transformer. If you are running MC from an IDE make sure to copy the 'LogisticsPipes_dummy.jar' to your mods folder. If you are running MC normal please report this as a bug at 'https://github.com/RS485/LogisticsPipes/issues'.");
 		}
 		PacketHandler.intialize();
 	}
@@ -254,6 +259,8 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setLogisticsFluidManager(new LogisticsFluidManager());
 		SimpleServiceLocator.setSpecialTankHandler(new SpecialTankHandler());
 		SimpleServiceLocator.setCraftingPermissionManager(new CraftingPermissionManager());
+		SimpleServiceLocator.setMachineProgressProvider(new MachineProgressProvider());
+		SimpleServiceLocator.setRoutedItemHelper(new RoutedItemHelper());
 		
 		if(event.getSide().isClient()) {
 			//SimpleServiceLocator.buildCraftProxy.registerLocalization();
@@ -361,7 +368,8 @@ public class LogisticsPipes {
 		LogisticsRemoteOrderer = new RemoteOrderer();
 		LogisticsRemoteOrderer.setUnlocalizedName("remoteOrdererItem");
 
-		LogisticsCraftingSignCreator = new CraftingSignCreator();
+		ItemPipeSignCreator.registerPipeSignTypes();
+		LogisticsCraftingSignCreator = new ItemPipeSignCreator();
 		LogisticsCraftingSignCreator.setUnlocalizedName("CraftingSignCreator");
 		
 		int renderIndex;
@@ -422,6 +430,10 @@ public class LogisticsPipes {
 		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("Tubestuff", "ImmibisCraftingTableMk2", ImmibisCraftingTableMk2.class));
 		SimpleServiceLocator.addCraftingRecipeProvider(new SolderingStation());
 		SimpleServiceLocator.addCraftingRecipeProvider(new LogisticsCraftingTable());
+		
+		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("Forestry", "Generic", ForestryProgressProvider.class));
+		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("ThermalExpansion", "Generic", ThermalExpansionProgressProvider.class));
+		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("IC2", "Generic", IC2ProgressProvider.class));
 		
 		SolderingStationRecipes.loadRecipe();
 		

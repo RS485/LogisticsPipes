@@ -1,7 +1,16 @@
 package logisticspipes.gui.popup;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.IntBuffer;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.routing.order.IOrderInfoProvider;
@@ -12,6 +21,7 @@ import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
@@ -21,6 +31,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -40,13 +51,15 @@ public class RequestMonitorPopup extends SubGuiScreen {
 			this.maxX = maxX;
 			this.maxY = maxY;
 		}
-		final float zoom;
-		final int bottomRenderBorder;
-		final int rightRenderBorder;
-		final int line;
-		final int moveY;
-		final int maxX;
-		final int maxY;
+		
+		final float	zoom;
+		final int	bottomRenderBorder;
+		final int	rightRenderBorder;
+		final int	line;
+		final int	moveY;
+		final int	maxX;
+		final int	maxY;
+		
 		ZOOM_LEVEL next() {
 			int id = this.ordinal();
 			if(id + 1 >= ZOOM_LEVEL.values().length) {
@@ -55,6 +68,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 				return ZOOM_LEVEL.values()[id + 1];
 			}
 		}
+		
 		ZOOM_LEVEL prev() {
 			int id = this.ordinal();
 			if(id - 1 < 0) {
@@ -81,15 +95,15 @@ public class RequestMonitorPopup extends SubGuiScreen {
 	private int								minX				= -800;
 	private int								maxX				= 800;
 	private ZOOM_LEVEL						zoom				= ZOOM_LEVEL.NORMAL;
-
-	private Object[]	tooltip = null;
+	
+	private Object[]						tooltip				= null;
 	
 	public RequestMonitorPopup(PipeBlockRequestTable table, int orderId) {
 		super(256, 202, 0, 0);
 		this._table = table;
 		this.orderId = orderId;
 		this.guiMapY = -200;
-		Mouse.getDWheel(); //Reset DWheel on GUI open
+		Mouse.getDWheel(); // Reset DWheel on GUI open
 	}
 	
 	@Override
@@ -97,13 +111,16 @@ public class RequestMonitorPopup extends SubGuiScreen {
 	public void initGui() {
 		super.initGui();
 		buttonList.clear();
-		this.buttonList.add(new SmallGuiButton(0, this.width / 2 - 40, this.height / 2 + 74, 80, 20, "Close"));
+		this.buttonList.add(new SmallGuiButton(0, this.width / 2 - 90, this.height / 2 + 74, 80, 20, "Close"));
+		this.buttonList.add(new SmallGuiButton(1, this.width / 2 + 10, this.height / 2 + 74, 80, 20, "Save as Image"));
 	}
 	
 	@Override
 	protected void actionPerformed(GuiButton button) {
 		if(button.id == 0) {
 			this.exitGui();
+		} else if(button.id == 1) {
+			saveTreeToImage();
 		}
 	}
 	
@@ -123,8 +140,8 @@ public class RequestMonitorPopup extends SubGuiScreen {
 				if(this.isMouseButtonDown == 0) {
 					this.isMouseButtonDown = 1;
 				} else {
-					this.guiMapX -= (double)(par1 - this.mouseX) * 1/zoom.zoom;
-					this.guiMapY -= (double)(par2 - this.mouseY) * 1/zoom.zoom;
+					this.guiMapX -= (double)(par1 - this.mouseX) * 1 / zoom.zoom;
+					this.guiMapY -= (double)(par2 - this.mouseY) * 1 / zoom.zoom;
 				}
 				
 				this.mouseX = par1;
@@ -134,7 +151,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		} else {
 			this.isMouseButtonDown = 0;
 		}
-
+		
 		if(guiMapY < minY) {
 			guiMapY = minY;
 		}
@@ -182,8 +199,153 @@ public class RequestMonitorPopup extends SubGuiScreen {
 			findLowest(sub, lowerLimit);
 		}
 		if(maxY < (lowerLimit + 10) * zoom.zoom) {
-			maxY = (int) ((lowerLimit + 10) * zoom.zoom) + zoom.maxY;
+			maxY = (int)((lowerLimit + 10) * zoom.zoom) + zoom.maxY;
 		}
+	}
+	
+	private void saveTreeToImage() {
+		int useWidth = mc.displayWidth;
+		int useHeight = mc.displayHeight;
+		int left = minX - (this.width / 2);
+		int top = minY;
+		int right = maxX - (this.width / 2);
+		int bottom = maxY;
+		
+		int k = useWidth * useHeight;
+		IntBuffer pixels = BufferUtils.createIntBuffer(k);
+		int[] intArray = new int[k];
+		
+		int imgPosX = 0;
+		int imgPosY = 0;
+		for(int x = left; x < right + this.width; x += this.width) {
+			imgPosY = 0;
+			for(int y = top; y < bottom + this.height; y += this.height) {
+				imgPosY += useHeight;
+			}
+			imgPosX += useWidth;
+		}
+		BufferedImage bufferedimage = new BufferedImage(imgPosX, imgPosY, 1);
+		
+		imgPosX = 0;
+		imgPosY = 0;
+		
+		//Clear everything
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+		GL11.glLoadIdentity();
+		mc.entityRenderer.setupOverlayRendering();
+		drawForSreenShot(0, 0);
+		
+		//Start Creating the Image
+		for(int x = left; x < right + this.width; x += this.width) {
+			imgPosY = 0;
+			for(int y = top; y < bottom + this.height; y += this.height) {
+				GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+				mc.entityRenderer.setupOverlayRendering();
+				drawForSreenShot(y, x);
+				pixels.clear();
+				GL11.glReadPixels(0, 0, useWidth, useHeight, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, pixels);
+				pixels.get(intArray);
+				mirror(intArray, useWidth, useHeight);
+				bufferedimage.setRGB(imgPosX, imgPosY, Math.min(useWidth, bufferedimage.getWidth() - imgPosX), Math.min(useHeight, bufferedimage.getHeight() - imgPosY), intArray, 0, useWidth);
+				imgPosY += useHeight;
+			}
+			imgPosX += useWidth;
+		}
+		saveImage(bufferedimage);
+	}
+
+	private void saveImage(BufferedImage bufferedimage) {
+		File screenShotsFolder = new File(Minecraft.getMinecraft().mcDataDir, "screenshots");
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
+		String s = dateFormat.format(new Date()).toString();
+		int i = 1;
+		while(true) {
+			File canidate = new File(screenShotsFolder, s + (i == 1 ? "" : "_" + i) + ".png");
+			if(!canidate.exists()) {
+				try {
+					ImageIO.write(bufferedimage, "png", canidate);
+					Minecraft.getMinecraft().thePlayer.sendChatMessage("Saved tree view as " + canidate.getName());
+				} catch(IOException e) {
+					e.printStackTrace();
+				}
+				return;
+			}
+			++i;
+		}
+	}
+	
+	private static void mirror(int[] par0ArrayOfInteger, int width, int height) {
+		int[] aint1 = new int[width];
+		int k = height / 2;
+		
+		for(int l = 0; l < k; ++l) {
+			System.arraycopy(par0ArrayOfInteger, l * width, aint1, 0, width);
+			System.arraycopy(par0ArrayOfInteger, (height - 1 - l) * width, par0ArrayOfInteger, l * width, width);
+			System.arraycopy(aint1, 0, par0ArrayOfInteger, (height - 1 - l) * width, width);
+		}
+	}
+	
+	private void drawForSreenShot(int top, int left) {
+		left *= -1;
+		top *= -1;
+		GL11.glPushMatrix();
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		GL11.glTranslated(0, 0, 100);
+		drawRect(0, 0, 10000, 10000, 0xff000000);
+		GL11.glColor4f(0.7F, 0.7F, 0.7F, 1.0F);
+		for(int yVar = 0; yVar * 16 < this.height; yVar++) {
+			for(int xVar = 0; xVar * 16 < this.width; xVar++) {
+				IIcon icon = Blocks.stone.getIcon(0, 0);
+				this.mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+				this.drawTexturedModelRectFromIcon(xVar * 16, yVar * 16, icon, 16, 16);
+			}
+		}
+		GL11.glTranslated(0, 0, 600);
+		
+		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+		GL11.glEnable(GL11.GL_COLOR_MATERIAL);
+		
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		LinkedLogisticsOrderList list = _table.watchedRequests.get(this.orderId).getValue2();
+		if(!list.isEmpty()) {
+			this.drawVerticalLine(left + 8, top + 0, top + 17, 0xff00ff00);
+		}
+		renderLinkedOrderListLines(list, left, top + 17);
+		for(Float progress: list.getProgresses()) {
+			int pos = (int)(29.0F * progress.floatValue());
+			this.drawProgressPoint(left + 8, top + pos, 0xff00ff00);
+		}
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glDisable(GL11.GL_BLEND);
+		
+		RenderHelper.enableGUIStandardItemLighting();
+		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+		GL11.glEnable(GL11.GL_COLOR_MATERIAL);
+		GL11.glColor4f(0.7F, 0.7F, 0.7F, 1.0F);
+		this.mc.getTextureManager().bindTexture(achievementTextures);
+		String s = Integer.toString(orderId);
+		if(!list.isEmpty()) {
+			this.drawTexturedModalRect(left - 5, top - 40 + 17, 0, 202, 26, 26);
+			mc.fontRenderer.drawStringWithShadow(s, left + 9 - mc.fontRenderer.getStringWidth(s) / 2, top - 30 + 17, 16777215);
+		} else {
+			this.drawTexturedModalRect(left - 5, top - 18 + 17, 0, 202, 26, 26);
+			mc.fontRenderer.drawStringWithShadow(s, left + 9 - mc.fontRenderer.getStringWidth(s) / 2, top - 18 + 10 + 17, 16777215);
+		}
+		renderLinkedOrderListItems(list, left, top + 17, 0, 0);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		GL11.glEnable(GL11.GL_BLEND);
+		
+		GL11.glPopMatrix();
+		this.zLevel = 0.0F;
+		GL11.glDepthFunc(GL11.GL_LEQUAL);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glEnable(GL11.GL_LIGHTING);
+		RenderHelper.disableStandardItemLighting();
 	}
 	
 	private void drawMap(int par1, int par2) {
@@ -193,14 +355,14 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		int leftSide = ((this.width - this.xSize) / 2);
 		int topSide = ((this.height - this.ySize) / 2);
 		
-		guiTop *= 1/zoom.zoom;
-		guiLeft *= 1/zoom.zoom;
-		xSize *= 1/zoom.zoom;
-		ySize *= 1/zoom.zoom;
-		leftSide *= 1/zoom.zoom;
-		topSide *= 1/zoom.zoom;
-		par1 *= 1/zoom.zoom;
-		par2 *= 1/zoom.zoom;
+		guiTop *= 1 / zoom.zoom;
+		guiLeft *= 1 / zoom.zoom;
+		xSize *= 1 / zoom.zoom;
+		ySize *= 1 / zoom.zoom;
+		leftSide *= 1 / zoom.zoom;
+		topSide *= 1 / zoom.zoom;
+		par1 *= 1 / zoom.zoom;
+		par2 *= 1 / zoom.zoom;
 		
 		int innerLeftSide = leftSide + 16;
 		int innerTopSide = topSide + 17;
@@ -234,8 +396,8 @@ public class RequestMonitorPopup extends SubGuiScreen {
 			this.drawVerticalLine(innerLeftSide - mapX + 110, innerTopSide - mapY - 197, innerTopSide - mapY - 180, 0xff00ff00);
 		}
 		renderLinkedOrderListLines(list, innerLeftSide - mapX + 102, innerTopSide - mapY - 180);
-		for(Float progress:list.getProgresses()) {
-			int pos = (int) (29.0F * progress.floatValue());
+		for(Float progress: list.getProgresses()) {
+			int pos = (int)(29.0F * progress.floatValue());
 			this.drawProgressPoint(innerLeftSide - mapX + 110, innerTopSide - mapY - 197 + pos, 0xff00ff00);
 		}
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -258,7 +420,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		renderLinkedOrderListItems(list, innerLeftSide - mapX + 102, innerTopSide - mapY - 180, par1, par2);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_BLEND);
-
+		
 		guiTop *= zoom.zoom;
 		guiLeft *= zoom.zoom;
 		xSize *= zoom.zoom;
@@ -266,7 +428,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		leftSide *= zoom.zoom;
 		topSide *= zoom.zoom;
 		
-		GL11.glScalef(1/zoom.zoom, 1/zoom.zoom, 1);
+		GL11.glScalef(1 / zoom.zoom, 1 / zoom.zoom, 1);
 		
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.mc.getTextureManager().bindTexture(achievementTextures);
@@ -296,13 +458,18 @@ public class RequestMonitorPopup extends SubGuiScreen {
 			this.drawTexturedModalRect(startLeft - 5, yPos - 5, 0, 202, 26, 26);
 			GL11.glColor4f(0.7F, 0.7F, 0.7F, 1.0F);
 			renderItemAt(list.get(i).getItem(), startLeft, yPos);
+			if(list.get(i).isInProgress() && list.get(i).getMachineProgress() != 0) {
+				drawRect(startLeft - 4, yPos + 20, startLeft + 20, yPos + 24, 0xff000000);
+				drawRect(startLeft - 3, yPos + 21, startLeft + 19, yPos + 23, 0xffffffff);
+				drawRect(startLeft - 3, yPos + 21, startLeft - 3 + (22 * list.get(i).getMachineProgress() / 100), yPos + 23, 0xffff0000);
+			}
 			if(startLeft - 10 < par1 && par1 < startLeft + 20 && yPos - 6 < par2 && par2 < yPos + 20) {
 				if(guiLeft < par1 && par1 < guiLeft + xSize - 16 && guiTop < par2 && par2 < guiTop + ySize - 16) {
 					IOrderInfoProvider order = list.get(i);
 					List<String> tooltipList = new ArrayList<String>();
 					tooltipList.add(ChatColor.BLUE + "Request Type: " + ChatColor.YELLOW + order.getType().name());
 					tooltipList.add(ChatColor.BLUE + "Send to Router ID: " + ChatColor.YELLOW + order.getRouterId());
-					tooltip = new Object[]{(int) (par1 * zoom.zoom - 10), (int) (par2 * zoom.zoom), order.getItem().makeNormalStack(), true, tooltipList};
+					tooltip = new Object[] { (int)(par1 * zoom.zoom - 10), (int)(par2 * zoom.zoom), order.getItem().makeNormalStack(), true, tooltipList };
 				}
 			}
 			startLeft += 30;
@@ -360,8 +527,8 @@ public class RequestMonitorPopup extends SubGuiScreen {
 	
 	private void drawPointFor(LinkedLogisticsOrderList list, int xPos, int yPos, int i, int startLeft) {
 		float totalLine = 10 + 1 + 10 + 1 + Math.abs(startLeft - (xPos + 20)) + 10 + 1 + 10;
-		for(Float point:list.getSubOrders().get(i).getProgresses()) {
-			int pos = (int) (totalLine * (1.0F - point));
+		for(Float point: list.getSubOrders().get(i).getProgresses()) {
+			int pos = (int)(totalLine * (1.0F - point));
 			if(pos < 13) {
 				int newSize = list.getSubOrders().get(i).size();
 				int newStartLeft = -(newSize - 1) * (30 / 2) + startLeft - 20;
@@ -389,9 +556,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 					this.drawProgressPoint(newStartLeft + 8, yPos + 16 - pos, 0xff00ff00);
 					newStartLeft += 30;
 				}
-				//this.drawProgressPoint(startLeft - 20 + 8, yPos + 38 + 12 - pos, 0xff00ff00);
-				//this.drawProgressPoint(xPos + 8, yPos + 16 - pos, 0xff00ff00);
-			} 
+			}
 		}
 	}
 	
@@ -419,7 +584,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		int line = zoom.line;
 		drawRect(par1, par3, par2 + 1, par3 + line, par4);
 	}
-
+	
 	protected void drawVerticalLine(int par1, int par2, int par3, int par4) {
 		if(par3 < par2) {
 			int i1 = par2;

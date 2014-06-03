@@ -33,6 +33,7 @@ import logisticspipes.proxy.mps.ModularPowersuitsProxy;
 import logisticspipes.proxy.nei.NEIProxy;
 import logisticspipes.proxy.te.ThermalExpansionProxy;
 import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
+import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.FontRenderer;
@@ -138,7 +139,7 @@ public class ProxyManager {
 			@Override public void handleLPInternalConduitRemove(LogisticsTileGenericPipe pipe) {}
 			@Override public void handleLPInternalConduitNeighborChange(LogisticsTileGenericPipe logisticsTileGenericPipe) {}
 			@Override public void handleLPInternalConduitUpdate(LogisticsTileGenericPipe pipe) {}
-			@Override public boolean insertIntoConduit(TravelingItem arrivingItem, TileEntity tile, CoreRoutedPipe pipe) {return false;}
+			@Override public boolean insertIntoConduit(LPTravelingItemServer arrivingItem, TileEntity tile, CoreRoutedPipe pipe) {return false;}
 			@Override public boolean isSideFree(TileEntity tile, int side) {return false;}
 			@Override public boolean isEnergyHandler(TileEntity tile) {return false;}
 			@Override public int getMaxEnergyStored(TileEntity tile, ForgeDirection opposite) {return 0;}

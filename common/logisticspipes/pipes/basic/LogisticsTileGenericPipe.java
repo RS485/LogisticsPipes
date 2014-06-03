@@ -14,28 +14,30 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.te.LPConduitItem;
 import logisticspipes.renderer.LogisticsTileRenderController;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
+import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import thermalexpansion.part.conduit.ConduitBase;
+import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TravelingItem;
 import cofh.api.transport.IItemConduit;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
 @ModDependentInterface(modId={"CoFHCore"}, interfacePath={"cofh.api.transport.IItemConduit"})
 public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeInformationProvider, IItemConduit {
-
+	
+	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
+	
 	public boolean turtleConnect[] = new boolean[7];
 	
-	@SideOnly(Side.CLIENT)
 	private LogisticsTileRenderController renderController;
 
 	@ModDependentField(modId="ComputerCraft@1.6")
@@ -47,12 +49,11 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	@ModDependentField(modId="ThermalExpansion")
 	public LPConduitItem[] localConduit;
 	
+	private boolean sendInitPacket = true;
+	
 	public LogisticsTileGenericPipe() {
 		if(SimpleServiceLocator.ccProxy.isCC()) {
 			connections = new HashMap<IComputerAccess, ForgeDirection>();
-		}
-		if(FMLCommonHandler.instance().getSide() == Side.CLIENT) {
-			renderController = new LogisticsTileRenderController(this);
 		}
 	}
 	
@@ -80,11 +81,22 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 
 	@Override
 	public void updateEntity() {
+		if(renderController == null) {
+			renderController = new LogisticsTileRenderController(this);
+		}
+		if(renderController != null && sendInitPacket) {
+			sendInitPacket = false;
+			renderController.sendInit();
+		}
 		SimpleServiceLocator.thermalExpansionProxy.handleLPInternalConduitUpdate(this);
 		super.updateEntity();
-		if(FMLCommonHandler.instance().getSide() == Side.CLIENT && MainProxy.isClient(worldObj)) {
-			renderController.onUpdate();
-		}
+		renderController.onUpdate();
+	}
+
+	@Override
+	public Packet getDescriptionPacket() {
+		sendInitPacket = true;
+		return super.getDescriptionPacket();
 	}
 
 	@Override
@@ -218,12 +230,14 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 		return localConduit[side];
 	}
 
-	@SideOnly(Side.CLIENT)
 	public void addLaser(ForgeDirection dir, float length, int color, boolean reverse, boolean renderBall) {
 		renderController.addLaser(dir, length, color, reverse, renderBall);
 	}
 
-	@SideOnly(Side.CLIENT)
+	public void removeLaser(ForgeDirection dir, int color, boolean isBall) {
+		renderController.removeLaser(dir, color, isBall);
+	}
+
 	public LogisticsTileRenderController getRenderController() {
 		return renderController;
 	}
@@ -314,5 +328,43 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	@Override
 	public int getDistance() {
 		return 1;
+	}
+
+	public void acceptBCTravelingItem(TravelingItem item, ForgeDirection dir) {
+		((PipeTransportLogistics)this.pipe.transport).injectItem(item, dir);
+	}
+
+	/**
+	 * Used to determine where BC items can go.
+	 */
+	public boolean isBCPipeConnected(TileGenericPipe container, ForgeDirection o) {
+		return container.isPipeConnected(o);
+	}
+	
+	@Override
+	public int injectItem(ItemStack payload, boolean doAdd, ForgeDirection from) {
+		if (BlockGenericPipe.isValid(pipe) && pipe.transport instanceof PipeTransportLogistics && isPipeConnected(from)) {
+			if (doAdd && MainProxy.isServer(this.getWorldObj())) {
+				((PipeTransportLogistics) pipe.transport).injectItem(SimpleServiceLocator.routedItemHelper.createNewTravelItem(payload), from);
+			}
+			return payload.stackSize;
+		}
+		return 0;
+	}
+	
+	public boolean isOpaque() {
+		return getCPipe().isOpaque();
+	}
+
+	public void enableRendering() {
+		if(pipe.transport instanceof PipeTransportLogistics) {
+			((PipeTransportLogistics) pipe.transport).isRendering = true;
+		}
+	}
+
+	public void disableRendering() {
+		if(pipe.transport instanceof PipeTransportLogistics) {
+			((PipeTransportLogistics) pipe.transport).isRendering = false;
+		}
 	}
 }

@@ -2,7 +2,9 @@ package logisticspipes.proxy.te;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.routing.RoutedEntityItem;
+import logisticspipes.routing.ItemRoutingInformation;
+import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import thermalexpansion.block.conduit.BlockConduit;
@@ -66,13 +68,25 @@ public class ASMHookClass {
 			ConduitItem itemC = conduit.getConduitItem();
 			for(TravelingItem item:itemC.myItems) {
 				if(item.routedLPInfo != null) {
-					buildcraft.transport.TravelingItem pipedItem = new buildcraft.transport.TravelingItem(item.routedLPInfo.getInteger("LP_BC_TRAVELING_ID"));
-					pipedItem.setItemStack(item.stack.copy());
-					RoutedEntityItem LPItem = new RoutedEntityItem(pipedItem);
-					LPItem.loadFromNBT(item.routedLPInfo);
-					LPItem.remove();
+					LPTravelingItemServer lpItem = new LPTravelingItemServer(item.routedLPInfo);
+					lpItem.itemWasLost();
 				}
 			}
+		}
+	}
+
+	public static void handleTETravelingItemSave(TravelingItem item, NBTTagCompound tag) {
+		if(item.routedLPInfo != null) {
+			NBTTagCompound nbt = new NBTTagCompound();
+			item.routedLPInfo.writeToNBT(nbt);
+			tag.setTag("LPRoutingInformation", nbt);
+		}
+	}
+	
+	public static void handleTETravelingItemLoad(TravelingItem item, NBTTagCompound tag) {
+		if(tag.hasKey("LPRoutingInformation")) {
+			item.routedLPInfo = new ItemRoutingInformation();
+			item.routedLPInfo.readFromNBT(tag.getCompoundTag("LPRoutingInformation"));
 		}
 	}
 }

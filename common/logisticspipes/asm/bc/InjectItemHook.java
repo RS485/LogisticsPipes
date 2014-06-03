@@ -2,7 +2,7 @@ package logisticspipes.asm.bc;
 
 import java.util.logging.Level;
 
-import logisticspipes.logisticspipes.IRoutedItem;
+import logisticspipes.proxy.buildcraft.LPRoutedBCTravelingItem;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.BuildCraftTransport;
@@ -52,7 +52,7 @@ public class InjectItemHook {
 			int stackCount = 0;
 			int numItems = 0;
 			for (TravelingItem travellingItem : pipe.items) {
-				if(!(travellingItem instanceof IRoutedItem)) {
+				if(!(travellingItem instanceof LPRoutedBCTravelingItem)) {
 					ItemStack stack = travellingItem.getItemStack();
 					if (stack != null && stack.stackSize > 0) {
 						numItems += stack.stackSize;
@@ -68,7 +68,7 @@ public class InjectItemHook {
 			stackCount = 0;
 			numItems = 0;
 			for (TravelingItem travellingItem : pipe.items) {
-				if(!(travellingItem instanceof IRoutedItem)) {
+				if(!(travellingItem instanceof LPRoutedBCTravelingItem)) {
 					ItemStack stack = travellingItem.getItemStack();
 					if (stack != null && stack.stackSize > 0) {
 						numItems += stack.stackSize;
@@ -95,7 +95,7 @@ public class InjectItemHook {
 		pipe.container.getWorldObj().setBlockToAir(pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord);
 	}
 
-	private void sendTravelerPacket(PipeTransportItems pipe, TravelingItem data, boolean forceStackRefresh) {
+	private static void sendTravelerPacket(PipeTransportItems pipe, TravelingItem data, boolean forceStackRefresh) {
 		PacketPipeTransportTraveler packet = new PacketPipeTransportTraveler(data, forceStackRefresh);
 		BuildCraftTransport.instance.sendToPlayers(packet, pipe.container.getWorldObj(), pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord, DefaultProps.PIPE_CONTENTS_RENDER_DIST);
 	}

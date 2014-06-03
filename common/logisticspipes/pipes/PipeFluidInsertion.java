@@ -10,6 +10,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeFluidTransportLogistics;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -74,8 +75,8 @@ public class PipeFluidInsertion extends FluidRoutedPipe {
 			}
 
 			FluidStack toSend = transport.sideTanks[dir.ordinal()].drain(result.getValue2(), true);
-			ItemStack liquidContainer = SimpleServiceLocator.logisticsFluidManager.getFluidContainer(toSend);
-			IRoutedItem routed = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, liquidContainer);
+			ItemIdentifierStack liquidContainer = SimpleServiceLocator.logisticsFluidManager.getFluidContainer(toSend);
+			IRoutedItem routed = SimpleServiceLocator.routedItemHelper.createNewTravelItem(liquidContainer);
 			routed.setDestination(result.getValue1());
 			routed.setTransportMode(TransportMode.Passive);
 			this.queueRoutedItem(routed, dir);

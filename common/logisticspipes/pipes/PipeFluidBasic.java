@@ -1,5 +1,6 @@
 package logisticspipes.pipes;
 
+import io.netty.buffer.ByteBuf;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IFluidSink;
 import logisticspipes.network.GuiIDs;

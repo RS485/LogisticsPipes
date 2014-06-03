@@ -31,6 +31,8 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 				return "tile.logisticssecuritystation";
 			case LogisticsSolidBlock.LOGISTICS_AUTOCRAFTING_TABLE:
 				return "tile.logisticscraftingtable";
+			case LogisticsSolidBlock.LOGISTICS_FUZZYCRAFTING_TABLE:
+				return "tile.logisticsfuzzycraftingtable";
 			case LogisticsSolidBlock.LOGISTICS_BC_POWERPROVIDER:
 				return "tile.logisticsbcpowerprovider";
 			case LogisticsSolidBlock.LOGISTICS_RF_POWERPROVIDER:
@@ -63,6 +65,7 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 		par3List.add(new ItemStack(this,1,LogisticsSolidBlock.LOGISTICS_POWER_JUNCTION));
 		par3List.add(new ItemStack(this,1,LogisticsSolidBlock.LOGISTICS_SECURITY_STATION));
 		par3List.add(new ItemStack(this,1,LogisticsSolidBlock.LOGISTICS_AUTOCRAFTING_TABLE));
+		par3List.add(new ItemStack(this,1,LogisticsSolidBlock.LOGISTICS_FUZZYCRAFTING_TABLE));
 		par3List.add(new ItemStack(this,1,LogisticsSolidBlock.LOGISTICS_BC_POWERPROVIDER));
 		if(SimpleServiceLocator.thermalExpansionProxy.isTE()) {
 			par3List.add(new ItemStack(this,1,LogisticsSolidBlock.LOGISTICS_RF_POWERPROVIDER));

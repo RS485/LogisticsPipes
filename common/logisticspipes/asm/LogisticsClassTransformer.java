@@ -66,13 +66,19 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			if(cachedClasses.containsKey(name)) {
 				interfacesToClearA.add(name);
 			}
-			clearNegativeInterfaceCache();
+			Thread thread = Thread.currentThread();
+			if(thread.getName().equals("Minecraft main thread") || thread.getName().equals("main") || thread.getName().equals("Server thread")) { //Only clear when called from the main thread to avoid ConcurrentModificationException on start
+				clearNegativeInterfaceCache();
+			}
 			if(cachedClasses.containsKey(name)) {
 				return cachedClasses.get(name);
 			}
 			if(bytes == null) return null;
 			if(name.equals("buildcraft.transport.PipeTransportItems")) {
 				return ClassPipeTransportItemsHandler.handlePipeTransportItems(bytes);
+			}
+			if(name.equals("buildcraft.transport.Pipe")) {
+				return handleBCPipeClass(bytes);
 			}
 			if(name.equals("thermalexpansion.part.conduit.ConduitBase")) {
 				Configs.load();
@@ -524,42 +530,22 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			}
 		}
 		if(add) {
-			node.fields.add(new FieldNode(Opcodes.ACC_PUBLIC, "routedLPInfo", "Lnet/minecraft/nbt/NBTTagCompound;", null, null));
+			node.fields.add(new FieldNode(Opcodes.ACC_PUBLIC, "routedLPInfo", "Llogisticspipes/routing/ItemRoutingInformation;", null, null));
 		}
 		for(MethodNode m:node.methods) {
 			if(m.name.equals("toNBT") && m.desc.equals("(Lnet/minecraft/nbt/NBTTagCompound;)V")) {
 				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
-					private STATE state = STATE.SEARCHING;
 
 					@Override
-					public void visitFieldInsn(int opcode, String owner, String name, String desc) {
-						if(state == STATE.SEARCHING && "thermalexpansion/part/conduit/item/TravelingItem".equals(owner) && "startZ".equals(node) && "I".equals(desc)) {
-							state = STATE.INSERTING;
-						}
-						super.visitFieldInsn(opcode, owner, name, desc);
+					public void visitCode() {
+						super.visitCode();
+						Label l0 = new Label();
+						this.visitLabel(l0);
+						this.visitVarInsn(Opcodes.ALOAD, 0);
+						this.visitVarInsn(Opcodes.ALOAD, 1);
+						this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/proxy/te/ASMHookClass", "handleTETravelingItemSave", "(Lthermalexpansion/part/conduit/item/TravelingItem;Lnet/minecraft/nbt/NBTTagCompound;)V");
 					}
-
-					@Override
-					public void visitLabel(Label label) {
-						if(state == STATE.INSERTING) {
-							Label l17 = new Label();
-							super.visitLabel(l17);
-							super.visitVarInsn(Opcodes.ALOAD, 0);
-							super.visitFieldInsn(Opcodes.GETFIELD, "thermalexpansion/part/conduit/item/TravelingItem", "routedLPInfo", "Lnet/minecraft/nbt/NBTTagCompound;");
-							Label l18 = new Label();
-							super.visitJumpInsn(Opcodes.IFNULL, l18);
-							Label l19 = new Label();
-							super.visitLabel(l19);
-							super.visitVarInsn(Opcodes.ALOAD, 1);
-							super.visitLdcInsn("LPRoutingInformation");
-							super.visitVarInsn(Opcodes.ALOAD, 0);
-							super.visitFieldInsn(Opcodes.GETFIELD, "thermalexpansion/part/conduit/item/TravelingItem", "routedLPInfo", "Lnet/minecraft/nbt/NBTTagCompound;");
-							super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "net/minecraft/nbt/NBTTagCompound", "setTag", "(Ljava/lang/String;Lnet/minecraft/nbt/NBTBase;)V");
-							super.visitLabel(l18);
-							state = STATE.DONE;
-						}
-						super.visitLabel(label);
-					}
+					
 				};
 				m.accept(mv);
 				node.methods.set(node.methods.indexOf(m), mv);
@@ -570,7 +556,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 
 					@Override
 					public void visitFieldInsn(int opcode, String owner, String name, String desc) {
-						if(state == STATE.SEARCHING && "thermalexpansion/part/conduit/item/TravelingItem".equals(owner) && "startZ".equals(node) && "I".equals(desc)) {
+						if(state == STATE.SEARCHING && "thermalexpansion/part/conduit/item/TravelingItem".equals(owner) && "startZ".equals(name) && "I".equals(desc)) {
 							state = STATE.INSERTING;
 						}
 						super.visitFieldInsn(opcode, owner, name, desc);
@@ -583,10 +569,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 							super.visitLabel(l23);
 							super.visitVarInsn(Opcodes.ALOAD, 0);
 							super.visitVarInsn(Opcodes.ALOAD, 1);
-							super.visitLdcInsn("LPRoutingInformation");
-							super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "net/minecraft/nbt/NBTTagCompound", "getTag", "(Ljava/lang/String;)Lnet/minecraft/nbt/NBTBase;");
-							super.visitTypeInsn(Opcodes.CHECKCAST, "net/minecraft/nbt/NBTTagCompound");
-							super.visitFieldInsn(Opcodes.PUTFIELD, "thermalexpansion/part/conduit/item/TravelingItem", "routedLPInfo", "Lnet/minecraft/nbt/NBTTagCompound;");
+							super.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/proxy/te/ASMHookClass", "handleTETravelingItemLoad", "(Lthermalexpansion/part/conduit/item/TravelingItem;Lnet/minecraft/nbt/NBTTagCompound;)V");
 							state = STATE.DONE;
 						}
 						super.visitLabel(label);
@@ -637,6 +620,33 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			}
 		}
 		ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+		node.accept(writer);
+		return writer.toByteArray();
+	}
+
+	private byte[] handleBCPipeClass(byte[] bytes) {
+		final ClassReader reader = new ClassReader(bytes);
+		final ClassNode node = new ClassNode();
+		reader.accept(node, 0);
+		for(MethodNode m:node.methods) {
+			if(m.name.equals("handlePipeEvent")) {
+				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+					@Override
+					public void visitTryCatchBlock(Label start, Label end, Label handler, String type) {
+						super.visitTryCatchBlock(start, end, handler, type);
+						Label l3 = new Label();
+						super.visitLabel(l3);
+						super.visitLineNumber(89, l3);
+						super.visitVarInsn(Opcodes.ALOAD, 1);
+						super.visitVarInsn(Opcodes.ALOAD, 0);
+						super.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/proxy/buildcraft/BCEventHandler", "handle", "(Lbuildcraft/transport/pipes/events/PipeEvent;Lbuildcraft/transport/Pipe;)V");
+					}
+				};
+				m.accept(mv);
+				node.methods.set(node.methods.indexOf(m), mv);
+			}
+		}
+		ClassWriter writer = new ClassWriter(0);
 		node.accept(writer);
 		return writer.toByteArray();
 	}

@@ -18,7 +18,6 @@ import java.util.Map;
 import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemLogisticsPipe;
-import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.PipeFluidBasic;
 import logisticspipes.pipes.PipeFluidExtractor;
@@ -61,7 +60,10 @@ import logisticspipes.proxy.buildcraft.gates.TriggerHasDestination;
 import logisticspipes.proxy.buildcraft.gates.TriggerNeedsPower;
 import logisticspipes.proxy.buildcraft.gates.TriggerSupplierFailed;
 import logisticspipes.renderer.LogisticsPipeBlockRenderer;
-import logisticspipes.routing.RoutedEntityItem;
+import logisticspipes.transport.LPTravelingItem;
+import logisticspipes.transport.LPTravelingItem.LPTravelingItemClient;
+import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
+import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -78,11 +80,13 @@ import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.IAction;
 import buildcraft.api.gates.ITrigger;
 import buildcraft.api.tools.IToolWrench;
+import buildcraft.core.CoreConstants;
 import buildcraft.core.inventory.InvUtils;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.ItemPipe;
 import buildcraft.transport.Pipe;
+import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.TransportProxy;
 import buildcraft.transport.TransportProxyClient;
@@ -188,35 +192,6 @@ public class BuildCraftProxy {
 	 * Save all routing information into another field that is than added to the TravelingItem form BC (or TE)
 	 * Don't extend the TravalingItem to store all information. Just extend it to link the new Routing information field (and save those informaiton).
 	 */
-
-	public RoutedEntityItem GetOrCreateRoutedItem(TravelingItem itemData) {
-		if (!isRoutedItem(itemData)) {
-			return new RoutedEntityItem(itemData);
-		}
-		return (RoutedEntityItem) itemData; 
-	}
-
-	public TravelingItem GetTravelingItem(IRoutedItem item) {
-		return (RoutedEntityItem) item; 
-	}
-	
-	public boolean isRoutedItem(TravelingItem item) {
-		return (item instanceof RoutedEntityItem);
-	}
-	
-	public IRoutedItem GetRoutedItem(TravelingItem item) {
-		return (IRoutedItem) item;
-	}
-	
-	public IRoutedItem CreateRoutedItem(TravelingItem item) {
-		return new RoutedEntityItem(item);
-	}
-
-	public IRoutedItem CreateRoutedItem(TileEntity container, ItemStack payload) {
-		TravelingItem entityItem = new TravelingItem( 0, 0, 0, payload);
-		entityItem.setContainer(container);
-		return CreateRoutedItem(entityItem);
-	}
 
 	public void registerTrigger() {
 		ActionManager.registerTriggerProvider(new LogisticsTriggerProvider());
@@ -337,12 +312,6 @@ public class BuildCraftProxy {
 			CraftingManager.getInstance().addShapelessRecipe(new ItemStack(toItem, j, fromData), obj);
 		}
 	}
-	
-	public boolean checkMaxItems() {
-		//TODO: where's this gone ....
-		return true;// 		BuildCraftTransport.instance.maxItemsInPipes >= 1000;
-	}
-
 
 	//IToolWrench interaction
 	public boolean isWrenchEquipped(EntityPlayer entityplayer) {
@@ -403,5 +372,38 @@ public class BuildCraftProxy {
 
 	public void registerPipeInformationProvider() {
 		SimpleServiceLocator.pipeInformaitonManager.registerProvider(TileGenericPipe.class, BCPipeInformationProvider.class);
+	}
+	
+	public boolean insertIntoBuildcraftPipe(TileEntity tile, LPTravelingItem item) {
+		if(tile instanceof TileGenericPipe) {
+			TileGenericPipe pipe = (TileGenericPipe)tile;
+			if(BlockGenericPipe.isValid(pipe.pipe) && pipe.pipe.transport instanceof PipeTransportItems) {
+				TravelingItem bcItem = null;
+				if(item instanceof LPTravelingItemServer) {
+					LPRoutedBCTravelingItem lpBCItem = new LPRoutedBCTravelingItem();
+					lpBCItem.setRoutingInformation(((LPTravelingItemServer)item).getInfo());
+					lpBCItem.saveToExtraNBTData();
+					bcItem = lpBCItem;
+				} else {
+					bcItem = new TravelingItem();
+				}
+				LPPosition p = new LPPosition(tile.xCoord + 0.5F, tile.yCoord + CoreConstants.PIPE_MIN_POS, tile.zCoord + 0.5F);
+				if(item.output.getOpposite() == ForgeDirection.DOWN) {
+					p.moveForward(item.output.getOpposite(), 0.24F);
+				} else if(item.output.getOpposite() == ForgeDirection.UP) {
+					p.moveForward(item.output.getOpposite(), 0.74F);
+				} else {
+					p.moveForward(item.output.getOpposite(), 0.49F);
+				}
+				bcItem.setPosition(p.getXD(), p.getYD(), p.getZD());
+				bcItem.setSpeed(item.getSpeed());
+				if(item.getItemIdentifierStack() != null) {
+					bcItem.setItemStack(item.getItemIdentifierStack().makeNormalStack());
+				}
+				((PipeTransportItems)pipe.pipe.transport).injectItem(bcItem, item.output);
+				return true;
+			}
+		}
+		return false;
 	}
 }

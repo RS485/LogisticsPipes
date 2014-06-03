@@ -21,14 +21,17 @@ public class ClientSideOrderInfo implements IOrderInfoProvider {
 	private final boolean isWatched = false;
 	@Getter
 	private final List<Float> progresses;
+	@Getter
+	private final byte machineProgress;
 	
-	public ClientSideOrderInfo(ItemIdentifierStack item, boolean isFinished, RequestType type, boolean inProgress, int routerId, List<Float> progresses) {
+	public ClientSideOrderInfo(ItemIdentifierStack item, boolean isFinished, RequestType type, boolean inProgress, int routerId, List<Float> progresses, byte machineProgress) {
 		this.item = item;
 		this.isFinished = isFinished;
 		this.type = type;
 		this.inProgress = inProgress;
 		this.routerId = routerId;
 		this.progresses = progresses;
+		this.machineProgress = machineProgress;
 	}
 	
 	//Ignore this call

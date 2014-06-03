@@ -1,7 +1,6 @@
 package logisticspipes.pipes;
 
 import net.minecraft.item.Item;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 
@@ -28,10 +27,7 @@ public class PipeItemsProviderLogisticsMk2 extends PipeItemsProviderLogistics {
 
 	@Override
 	protected int stacksToExtract() {
-		if(SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
-			return 8;
-		}
-		return 2;
+		return 8;
 	}
 	
 	@Override

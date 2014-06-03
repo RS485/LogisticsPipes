@@ -46,18 +46,18 @@ public class LogisticsFluidManager implements ILogisticsFluidManager {
 	}
 
 	@Override
-	public ItemStack getFluidContainer(FluidStack stack) {
+	public ItemIdentifierStack getFluidContainer(FluidStack stack) {
 		ItemStack item = new ItemStack(LogisticsPipes.LogisticsFluidContainer, 1);
 		NBTTagCompound nbt = new NBTTagCompound();
 		stack.writeToNBT(nbt);
 		item.setTagCompound(nbt);
-		return item;
+		return ItemIdentifierStack.getFromStack(item);
 	}
 
 	@Override
-	public FluidStack getFluidFromContainer(ItemStack stack) {
-		if(stack.getItem() instanceof LogisticsFluidContainer && stack.hasTagCompound()) {
-			return FluidStack.loadFluidStackFromNBT(stack.getTagCompound());
+	public FluidStack getFluidFromContainer(ItemIdentifierStack stack) {
+		if(stack.makeNormalStack().getItem() instanceof LogisticsFluidContainer && stack.getItem().tag != null) {
+			return FluidStack.loadFluidStackFromNBT(stack.getItem().tag);
 		}
 		return null;
 	}

@@ -49,6 +49,7 @@ public class Textures {
 	public static TextureType LOGISTICSPIPE_ROUTED_POWERED_TEXTURE			= empty;
 	public static TextureType LOGISTICSPIPE_NOTROUTED_POWERED_TEXTURE		= empty;
 	public static TextureType LOGISTICSPIPE_LIQUID_POWERED_TEXTURE			= empty;
+	public static TextureType LOGISTICSPIPE_DIRECTION_POWERED_TEXTURE		= empty;
 	public static TextureType LOGISTICSPIPE_SUBPOWER_TEXTURE				= empty;
 	public static TextureType LOGISTICSPIPE_POWERED_TEXTURE					= empty;
 	public static TextureType LOGISTICSPIPE_POWERED_POWERED_TEXTURE			= empty;
@@ -80,6 +81,7 @@ public class Textures {
 	public static TextureType LOGISTICSPIPE_LIQUID_REQUEST					= empty;
 	public static TextureType LOGISTICSPIPE_LIQUID_EXTRACTOR				= empty;
 	public static TextureType LOGISTICSPIPE_LIQUID_SATELLITE				= empty;
+	public static TextureType LOGISTICSPIPE_OPAQUE_TEXTURE					= empty;
 	
 	public static IIcon LOGISTICS_REQUEST_TABLE[]							= new IIcon[0];
 	
@@ -136,8 +138,10 @@ public class Textures {
 	public static String				LOGISTICSPIPE_LIQUID_POWERED_TEXTURE_FILE		= "pipes/status_overlay/liquid_connection_powered";
 	public static String				LOGISTICSPIPE_POWERED_TEXTURE_FILE				= "pipes/status_overlay/powered";
 	public static String				LOGISTICSPIPE_POWERED_POWERED_TEXTURE_FILE		= "pipes/status_overlay/powered_powered";
+	public static String				LOGISTICSPIPE_DIRECTION_POWERED_TEXTURE_FILE	= "pipes/status_overlay/direction_powered";
 	public static String				LOGISTICSPIPE_SECURITY_TEXTURE_FILE				= "pipes/status_overlay/security";
 	public static String				LOGISTICSPIPE_SUBPOWER_TEXTURE_FILE				= "pipes/status_overlay/subpower";
+	public static String				LOGISTICSPIPE_OPAQUE_TEXTURE_FILE				= "pipes/status_overlay/opaque";
 	
 	// Chassi pipes
 	public static String				LOGISTICSPIPE_CHASSI1_TEXTURE_FILE				= "pipes/chassi/chassi_mk1";
@@ -174,12 +178,14 @@ public class Textures {
 		LOGISTICSPIPE_PROVIDER_TEXTURE 				= registerTexture(par1IIconRegister, LOGISTICSPIPE_PROVIDER_TEXTURE_FILE);
 		LOGISTICSPIPE_POWERED_TEXTURE 				= registerTexture(par1IIconRegister, LOGISTICSPIPE_POWERED_TEXTURE_FILE, 2);
 		LOGISTICSPIPE_POWERED_POWERED_TEXTURE 		= registerTexture(par1IIconRegister, LOGISTICSPIPE_POWERED_POWERED_TEXTURE_FILE, 2);
+		LOGISTICSPIPE_DIRECTION_POWERED_TEXTURE 	= registerTexture(par1IIconRegister, LOGISTICSPIPE_DIRECTION_POWERED_TEXTURE_FILE, 2);
 		LOGISTICSPIPE_SECURITY_TEXTURE 				= registerTexture(par1IIconRegister, LOGISTICSPIPE_SECURITY_TEXTURE_FILE, 2);
 		LOGISTICSPIPE_ROUTED_TEXTURE            	= registerTexture(par1IIconRegister, LOGISTICSPIPE_ROUTED_TEXTURE_FILE);
 		LOGISTICSPIPE_NOTROUTED_TEXTURE         	= registerTexture(par1IIconRegister, LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE, 2);
 		LOGISTICSPIPE_ROUTED_POWERED_TEXTURE		= registerTexture(par1IIconRegister, LOGISTICSPIPE_ROUTED_POWERED_TEXTURE_FILE, 2);
 		LOGISTICSPIPE_NOTROUTED_POWERED_TEXTURE		= registerTexture(par1IIconRegister, LOGISTICSPIPE_NOTROUTED_POWERED_TEXTURE_FILE, 2);
 		LOGISTICSPIPE_SUBPOWER_TEXTURE 				= registerTexture(par1IIconRegister, LOGISTICSPIPE_SUBPOWER_TEXTURE_FILE, 2);
+		LOGISTICSPIPE_OPAQUE_TEXTURE 				= registerTexture(par1IIconRegister, LOGISTICSPIPE_OPAQUE_TEXTURE_FILE, 2);
 		LOGISTICSPIPE_REQUESTER_TEXTURE 			= registerTexture(par1IIconRegister, LOGISTICSPIPE_REQUESTER_TEXTURE_FILE);
 		LOGISTICSPIPE_CRAFTER_TEXTURE				= registerTexture(par1IIconRegister, LOGISTICSPIPE_CRAFTER_TEXTURE_FILE);
 		LOGISTICSPIPE_SATELLITE_TEXTURE 			= registerTexture(par1IIconRegister, LOGISTICSPIPE_SATELLITE_TEXTURE_FILE);
@@ -198,8 +204,7 @@ public class Textures {
 		LOGISTICSPIPE_ENTRANCE_TEXTURE 				= registerTexture(par1IIconRegister, LOGISTICSPIPE_ENTRANCE_TEXTURE_FILE);
 		LOGISTICSPIPE_DESTINATION_TEXTURE	 		= registerTexture(par1IIconRegister, LOGISTICSPIPE_DESTINATION_TEXTURE_FILE);
 		LOGISTICSPIPE_CRAFTERMK3_TEXTURE			= registerTexture(par1IIconRegister, LOGISTICSPIPE_CRAFTERMK3_TEXTURE_FILE);
-		LOGISTICSPIPE_FIREWALL_TEXTURE				= registerTexture(par1IIconRegister, LOGISTICSPIPE_FIREWALL_TEXTURE_FILE);
-		
+		LOGISTICSPIPE_FIREWALL_TEXTURE				= registerTexture(par1IIconRegister, LOGISTICSPIPE_FIREWALL_TEXTURE_FILE);		
 		//Fluid
 		LOGISTICSPIPE_LIQUID_TEXTURE 				= registerTexture(par1IIconRegister, LOGISTICSPIPE_LIQUID_TEXTURE_FILE, 2);
 		LOGISTICSPIPE_LIQUID_POWERED_TEXTURE		= registerTexture(par1IIconRegister, LOGISTICSPIPE_LIQUID_POWERED_TEXTURE_FILE, 2);

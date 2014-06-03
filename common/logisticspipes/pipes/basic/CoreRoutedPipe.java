@@ -8,10 +8,16 @@
 
 package logisticspipes.pipes.basic;
 
+import io.netty.buffer.ByteBuf;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,7 +45,7 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
-import logisticspipes.items.LogisticsFluidContainer;
+import logisticspipes.items.ItemPipeSignCreator;
 import logisticspipes.logisticspipes.IAdjacentWorldAccess;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.ITrackStatistics;
@@ -50,9 +56,15 @@ import logisticspipes.modules.LogisticsGuiModule;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.packets.pipe.PipeSignTypes;
 import logisticspipes.network.packets.pipe.RequestRoutingLasersPacket;
+import logisticspipes.network.packets.pipe.RequestSignPacket;
 import logisticspipes.network.packets.pipe.StatUpdate;
 import logisticspipes.pipefxhandlers.Particles;
+import logisticspipes.pipes.basic.debug.DebugLogController;
+import logisticspipes.pipes.basic.debug.StatusEntry;
+import logisticspipes.pipes.signs.IPipeSign;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -67,7 +79,7 @@ import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.IRouterQueuedTask;
-import logisticspipes.routing.RoutedEntityItem;
+import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.security.PermissionException;
 import logisticspipes.security.SecuritySettings;
@@ -75,6 +87,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.ticks.WorldTickHandler;
+import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.FluidIdentifier;
@@ -101,17 +114,15 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import buildcraft.BuildCraftTransport;
 import buildcraft.api.gates.IAction;
-import buildcraft.core.CoreConstants;
+import buildcraft.core.network.IClientState;
 import buildcraft.transport.Pipe;
-import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.TravelingItem;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import dan200.computercraft.api.lua.ILuaObject;
 
 @CCType(name = "LogisticsPipes:Normal")
-public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IRoutedPowerProvider, IQueueCCEvent {
+public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implements IClientState, IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IRoutedPowerProvider, IQueueCCEvent {
 
 	public enum ItemSendMode {
 		Normal,
@@ -119,7 +130,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	}
 
 	protected boolean stillNeedReplace = true;
-	public boolean debugThisPipe = false;
+	public DebugLogController debug = new DebugLogController(this);
 	
 	protected IRouter router;
 	protected String routerId;
@@ -143,7 +154,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	
 	protected RouteLayer _routeLayer;
 	protected TransportLayer _transportLayer;
-	protected final PriorityBlockingQueue<IRoutedItem> _inTransitToMe = new PriorityBlockingQueue<IRoutedItem>(10,new IRoutedItem.DelayComparator());
+	protected final PriorityBlockingQueue<ItemRoutingInformation> _inTransitToMe = new PriorityBlockingQueue<ItemRoutingInformation>(10, new ItemRoutingInformation.DelayComparator());
 	
 	private UpgradeManager upgradeManager = new UpgradeManager(this);
 	
@@ -159,7 +170,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	
 	protected final LinkedList<Triplet<IRoutedItem, ForgeDirection, ItemSendMode>> _sendQueue = new LinkedList<Triplet<IRoutedItem, ForgeDirection, ItemSendMode>>();
 	
-	protected final ArrayList<TravelingItem> queuedDataForUnroutedItems = new ArrayList<TravelingItem>();
+	protected final Map<ItemIdentifierStack, ItemRoutingInformation> queuedDataForUnroutedItems = new HashMap<ItemIdentifierStack, ItemRoutingInformation>();
 	
 	public final PlayerCollectionList watchers = new PlayerCollectionList();
 
@@ -170,14 +181,14 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	protected int throttleTime = 20;
 	private int throttleTimeLeft = 20 + new Random().nextInt(Configs.LOGISTICS_DETECTION_FREQUENCY);
 	
+	protected IPipeSign[] signItem = new IPipeSign[6];
+	private boolean isOpaqueClientSide = false;
 	public CoreRoutedPipe(Item item) {
 		this(new PipeTransportLogistics(), item);
 	}
 
 	public CoreRoutedPipe(PipeTransportLogistics transport, Item item) {
 		super(transport, item);
-		//this.logic = logic;
-		((PipeTransportItems) transport).allowBouncing = true;
 		
 		pipecount++;
 		
@@ -187,7 +198,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 
 	public RouteLayer getRouteLayer(){
 		if (_routeLayer == null){
-			_routeLayer = new RouteLayer(getRouter(), getTransportLayer());
+			_routeLayer = new RouteLayer(getRouter(), getTransportLayer(), this);
 		}
 		return _routeLayer;
 	}
@@ -219,41 +230,33 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	 */
 	public int sendQueueChanged(boolean force) {return 0;}
 	
-	private void sendRoutedItem(IRoutedItem routedItem, ForgeDirection from){
-		LPPosition p = new LPPosition(this.getX() + 0.5F, this.getY() + CoreConstants.PIPE_MIN_POS, this.getZ() + 0.5F);
-		if(from == ForgeDirection.DOWN) {
-			p.moveForward(from, 0.24F);
-		} else if(from == ForgeDirection.UP) {
-			p.moveForward(from, 0.74F);
-		} else {
-			p.moveForward(from, 0.49F);
-		}
-		routedItem.SetPosition(p.getXD(), p.getYD(), p.getZD());
-		((PipeTransportLogistics) transport).injectItem(routedItem, from.getOpposite());
+	private void sendRoutedItem(IRoutedItem routedItem, ForgeDirection from) {
 		
-		IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(routedItem.getDestination(),false);
+		((PipeTransportLogistics)transport).injectItem(routedItem, from.getOpposite());
+		
+		IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(routedItem.getDestination(), false);
 		if(r != null) {
 			CoreRoutedPipe pipe = r.getCachedPipe();
-			if(pipe !=null) // pipes can unload at inconvenient times ...
-				pipe.notifyOfSend(routedItem);
+			if(pipe != null) // pipes can unload at inconvenient times ...
+				pipe.notifyOfSend(routedItem.getInfo());
 			else {
-				//TODO: handle sending items to known chunk-unloaded destination?
+				// TODO: handle sending items to known chunk-unloaded destination?
 			}
 		} // should not be able to send to a non-existing router
-		//router.startTrackingRoutedItem((RoutedEntityItem) routedItem.getTravelingItem());
+			// router.startTrackingRoutedItem((RoutedEntityItem) routedItem.getTravelingItem());
 		MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.getX(), this.getY(), this.getZ(), this.getWorld(), 2);
 		stat_lifetime_sent++;
 		stat_session_sent++;
 		updateStats();
 	}
 	
-	private void notifyOfSend(IRoutedItem routedItem) {
+	private void notifyOfSend(ItemRoutingInformation routedItem) {
 		this._inTransitToMe.add(routedItem);
 		//LogisticsPipes.log.info("Sending: "+routedItem.getIDStack().getItem().getFriendlyName());
 	}
 
 	//When Recreating the Item from the TE version we have the same hashCode but a different instance so we need to refresh this
-	public void refreshItem(IRoutedItem routedItem) {
+	public void refreshItem(ItemRoutingInformation routedItem) {
 		if(this._inTransitToMe.contains(routedItem)) {
 			this._inTransitToMe.remove(routedItem);
 			this._inTransitToMe.add(routedItem);
@@ -317,6 +320,9 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	 */
 	public void firstInitialiseTick() {
 		getRouter();
+		if(MainProxy.isClient(getWorld())) {
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSignPacket.class).setTilePos(container));
+		}
 	}
 	
 	/*** 
@@ -325,6 +331,11 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	 */
 	public void enabledUpdateEntity() {
 		powerHandler.update();
+		for(int i=0;i<6;i++) {
+			if(signItem[i] != null) {
+				signItem[i].updateServerSide();
+			}
+		}
 	}
 	
 	/***
@@ -335,6 +346,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	
 	@Override
 	public final void updateEntity() {
+		debug.tick();
 		if(checkTileEntity(_initialInit)) {
 			stillNeedReplace = true;
 			return;
@@ -361,11 +373,12 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		}
 
 		// remove old items _inTransit -- these should have arrived, but have probably been lost instead. In either case, it will allow a re-send so that another attempt to re-fill the inventory can be made.		
-		while(this._inTransitToMe.peek()!=null && this._inTransitToMe.peek().getTickToTimeOut()<=0){
-			final IRoutedItem p=_inTransitToMe.poll();
+		while(this._inTransitToMe.peek()!=null && this._inTransitToMe.peek().getTickToTimeOut() <= 0){
+			final ItemRoutingInformation p=_inTransitToMe.poll();
 			if (LogisticsPipes.DEBUG) {
-					LogisticsPipes.log.info("Timed Out: "+p.getIDStack().getFriendlyName() + " (" + p.hashCode() + ")");
+				LogisticsPipes.log.info("Timed Out: "+p.getItem().getFriendlyName() + " (" + p.hashCode() + ")");
 			}
+			debug.log("Timed Out: "+p.getItem().getFriendlyName() + " (" + p.hashCode() + ")");
 		}
 		//update router before ticking logic/transport
 		getRouter().update(getWorld().getTotalWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit, this);
@@ -381,17 +394,15 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		ignoreDisableUpdateEntity();
 		_initialInit = false;
 		if (!_sendQueue.isEmpty()){
-			if(getItemSendMode() == ItemSendMode.Normal || !SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
+			if(getItemSendMode() == ItemSendMode.Normal) {
 				Triplet<IRoutedItem, ForgeDirection, ItemSendMode> itemToSend = _sendQueue.getFirst();
 				sendRoutedItem(itemToSend.getValue1(), itemToSend.getValue2());
 				_sendQueue.removeFirst();
-				if(SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
-					for(int i=0;i < 16 && !_sendQueue.isEmpty() && _sendQueue.getFirst().getValue3() == ItemSendMode.Fast;i++) {
-						if (!_sendQueue.isEmpty()){
-							itemToSend = _sendQueue.getFirst();
-							sendRoutedItem(itemToSend.getValue1(), itemToSend.getValue2());
-							_sendQueue.removeFirst();
-						}
+				for(int i=0;i < 16 && !_sendQueue.isEmpty() && _sendQueue.getFirst().getValue3() == ItemSendMode.Fast;i++) {
+					if (!_sendQueue.isEmpty()){
+						itemToSend = _sendQueue.getFirst();
+						sendRoutedItem(itemToSend.getValue1(), itemToSend.getValue2());
+						_sendQueue.removeFirst();
 					}
 				}
 				sendQueueChanged(false);
@@ -637,12 +648,16 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		} else {
 			TextureType texture = getNonRoutedTexture(connection);
 			if(this.getUpgradeManager().hasBCPowerSupplierUpgrade() || this.getUpgradeManager().hasRFPowerSupplierUpgrade() || this.getUpgradeManager().getIC2PowerLevel() > 0) {
-				if(texture == Textures.LOGISTICSPIPE_NOTROUTED_TEXTURE) {
+				if(texture.fileName.equals(Textures.LOGISTICSPIPE_NOTROUTED_TEXTURE.fileName)) {
 					texture = Textures.LOGISTICSPIPE_NOTROUTED_POWERED_TEXTURE;
-				} else if(texture == Textures.LOGISTICSPIPE_LIQUID_TEXTURE) {
+				} else if(texture.fileName.equals(Textures.LOGISTICSPIPE_LIQUID_TEXTURE.fileName)) {
 					texture = Textures.LOGISTICSPIPE_LIQUID_POWERED_TEXTURE;
-				} else if(texture == Textures.LOGISTICSPIPE_POWERED_TEXTURE) {
+				} else if(texture.fileName.equals(Textures.LOGISTICSPIPE_POWERED_TEXTURE.fileName)) {
 					texture = Textures.LOGISTICSPIPE_POWERED_POWERED_TEXTURE;
+				} else if(texture.fileName.equals(Textures.LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE.fileName)) {
+					texture = Textures.LOGISTICSPIPE_NOTROUTED_POWERED_TEXTURE;
+				} else if(texture.fileName.equals(Textures.LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE.fileName)) {
+					texture = Textures.LOGISTICSPIPE_DIRECTION_POWERED_TEXTURE;
 				} else {
 					System.out.println("Unknown texture to power, :" + texture.fileName);
 					System.out.println(this.getClass());
@@ -668,7 +683,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		return Textures.LOGISTICSPIPE_NOTROUTED_TEXTURE;
 	}
 
-	private boolean isPowerProvider(ForgeDirection ori) {
+	protected boolean isPowerProvider(ForgeDirection ori) {
 		TileEntity tilePipe = this.container.getTile(ori);
 		if(tilePipe == null || !SimpleServiceLocator.buildCraftProxy.canPipeConnect(this.container, tilePipe, ori)) {
 			return false;
@@ -714,6 +729,26 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			sendqueue.appendTag(tagentry);
 		}
 		nbttagcompound.setTag("sendqueue", sendqueue);
+		
+		for(int i=0;i<6;i++) {
+			if(signItem[i] != null) {
+				nbttagcompound.setBoolean("PipeSign_" + i, true);
+				int signType = -1;
+				List<Class<? extends IPipeSign>> typeClasses = ItemPipeSignCreator.signTypes;
+				for(int j=0;j<typeClasses.size();j++) {
+					if(typeClasses.get(j) == signItem[i].getClass()) {
+						signType = j;
+						break;
+					}
+				}
+				nbttagcompound.setInteger("PipeSign_" + i + "_type", signType);
+				NBTTagCompound tag = new NBTTagCompound();
+				signItem[i].writeToNBT(tag);
+				nbttagcompound.setTag("PipeSign_" + i + "_tags", tag);
+			} else {
+				nbttagcompound.setBoolean("PipeSign_" + i, false);
+			}
+		}
 	}
 	
 	@Override
@@ -737,11 +772,25 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		for(int i = 0; i < sendqueue.tagCount(); i++) {
 			NBTTagCompound tagentry = sendqueue.getCompoundTagAt(i);
 			NBTTagCompound tagentityitem = tagentry.getCompoundTag("entityitem");
-			TravelingItem entity = TravelingItem.make(tagentityitem);
-			IRoutedItem routeditem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(entity);
+			LPTravelingItemServer item = new LPTravelingItemServer(tagentityitem);
 			ForgeDirection from = ForgeDirection.values()[tagentry.getByte("from")];
 			ItemSendMode mode = ItemSendMode.values()[tagentry.getByte("mode")];
-			_sendQueue.add(new Triplet<IRoutedItem, ForgeDirection, ItemSendMode>(routeditem, from, mode));
+			_sendQueue.add(new Triplet<IRoutedItem, ForgeDirection, ItemSendMode>(item, from, mode));
+		}
+		for(int i=0;i<6;i++) {
+			if(nbttagcompound.getBoolean("PipeSign_" + i)) {
+				int type = nbttagcompound.getInteger("PipeSign_" + i + "_type");
+				Class<? extends IPipeSign> typeClass = ItemPipeSignCreator.signTypes.get(type);
+				try {
+					signItem[i] = typeClass.newInstance();
+					signItem[i].init(this, ForgeDirection.getOrientation(i));
+					signItem[i].readFromNBT(nbttagcompound.getCompoundTag("PipeSign_" + i + "_tags"));
+				} catch(InstantiationException e) {
+					throw new RuntimeException(e);
+				} catch(IllegalAccessException e) {
+					throw new RuntimeException(e);
+				}
+			}
 		}
 	}
 	
@@ -1185,18 +1234,16 @@ outer:
 		}
 	}
 
-	public void queueUnroutedItemInformation(TravelingItem data) {
-		if(data != null && data.getItemStack() != null) {
-			data.setItemStack(data.getItemStack().copy());
-			queuedDataForUnroutedItems.add(data);
+	public void queueUnroutedItemInformation(ItemIdentifierStack item, ItemRoutingInformation informaiton) {
+		if(item != null) {
+			queuedDataForUnroutedItems.put(item, informaiton);
 		}
 	}
 	
-	public TravelingItem getQueuedForItemStack(ItemStack stack) {
-		for(TravelingItem item:queuedDataForUnroutedItems) {
-			if(ItemIdentifierStack.getFromStack(item.getItemStack()).equals(ItemIdentifierStack.getFromStack(stack))) {
-				queuedDataForUnroutedItems.remove(item);
-				return item;
+	public ItemRoutingInformation getQueuedForItemStack(ItemIdentifierStack itemIdentifierStack) {
+		for(ItemIdentifierStack item:queuedDataForUnroutedItems.keySet()) {
+			if(item.equals(itemIdentifierStack)) {
+				return queuedDataForUnroutedItems.remove(item);
 			}
 		}
 		return null;
@@ -1210,14 +1257,14 @@ outer:
 		return 0.0;
 	}
 
-	public void notifyOfItemArival(RoutedEntityItem routedEntityItem) {
-		this._inTransitToMe.remove(routedEntityItem);
+	public void notifyOfItemArival(ItemRoutingInformation information) {
+		this._inTransitToMe.remove(information);
 		if (this instanceof IRequireReliableTransport) {
-			((IRequireReliableTransport)this).itemArrived(ItemIdentifierStack.getFromStack(routedEntityItem.getItemStack()));
+			((IRequireReliableTransport)this).itemArrived(information.getItem());
 		}
 		if (this instanceof IRequireReliableFluidTransport) {
-			ItemStack stack = routedEntityItem.getItemStack();
-			if(stack.getItem() instanceof LogisticsFluidContainer) {
+			ItemIdentifierStack stack = information.getItem();
+			if(stack.getItem().isFluidContainer()) {
 				FluidStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(stack);
 				((IRequireReliableFluidTransport)this).liquidArrived(FluidIdentifier.get(liquid), liquid.amount);				
 			}
@@ -1226,10 +1273,10 @@ outer:
 
 	public int countOnRoute(ItemIdentifier it) {
 		int count = 0;
-		for(Iterator<IRoutedItem> iter = _inTransitToMe.iterator();iter.hasNext();) {
-			IRoutedItem next = iter.next();
-			if(next.getIDStack().getItem() == it)
-				count += next.getIDStack().getStackSize();
+		for(Iterator<ItemRoutingInformation> iter = _inTransitToMe.iterator();iter.hasNext();) {
+			ItemRoutingInformation next = iter.next();
+			if(next.getItem().getItem() == it)
+				count += next.getItem().getStackSize();
 		}
 		return count;
 	}
@@ -1489,5 +1536,153 @@ outer:
 
 	public WorldUtil getWorldUtil() {
 		return new WorldUtil(this.getWorld(), this.getX(), this.getY(), this.getZ());
+	}
+
+	public void addPipeSign(ForgeDirection dir, IPipeSign type, EntityPlayer player) {
+		if(dir.ordinal() < 6) {
+			if(signItem[dir.ordinal()] == null) {
+				signItem[dir.ordinal()] = type;
+				signItem[dir.ordinal()].init(this, dir);
+			}
+			if(container != null) {
+				sendSignData(player);
+			}
+		}
+	}
+	
+	public void sendSignData(EntityPlayer player) {
+		List<Integer> types = new ArrayList<Integer>();
+		for(int i=0;i<6;i++) {
+			if(signItem[i] == null) {
+				types.add(-1);
+			} else {
+				List<Class<? extends IPipeSign>> typeClasses = ItemPipeSignCreator.signTypes;
+				for(int j=0;j<typeClasses.size();j++) {
+					if(typeClasses.get(j) == signItem[i].getClass()) {
+						types.add(j);
+						break;
+					}
+				}
+			}
+		}
+		ModernPacket packet = PacketHandler.getPacket(PipeSignTypes.class).setTypes(types).setTilePos(container);
+		MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), packet);
+		MainProxy.sendPacketToPlayer(packet, player);
+		for(int i=0;i<6;i++) {
+			if(signItem[i] != null) {
+				packet = signItem[i].getPacket();
+				if(packet != null) {
+					MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), packet);
+					MainProxy.sendPacketToPlayer(packet, player);
+				}
+			}
+		}
+		this.refreshRender(false);
+	}
+	
+	public void removePipeSign(ForgeDirection dir, EntityPlayer player) {
+		if(dir.ordinal() < 6) {
+			signItem[dir.ordinal()] = null;
+		}
+		sendSignData(player);
+	}
+	
+	public boolean hasPipeSign(ForgeDirection dir) {
+		if(dir.ordinal() < 6) {
+			return signItem[dir.ordinal()] != null;
+		}
+		return false;
+	}
+	
+	public void activatePipeSign(ForgeDirection dir, EntityPlayer player) {
+		if(dir.ordinal() < 6) {
+			if(signItem[dir.ordinal()] != null) {
+				signItem[dir.ordinal()].activate(player);
+			}
+		}
+	}
+	
+	public List<Pair<ForgeDirection, IPipeSign>> getPipeSigns() {
+		List<Pair<ForgeDirection, IPipeSign>> list = new ArrayList<Pair<ForgeDirection, IPipeSign>>();
+		for(int i=0;i<6;i++) {
+			if(signItem[i] != null) {
+				list.add(new Pair<ForgeDirection, IPipeSign>(ForgeDirection.getOrientation(i), signItem[i]));
+			}
+		}
+		return list;
+	}
+
+	public void handleSignPacket(List<Integer> types) {
+		if(!MainProxy.isClient(getWorld())) return;
+		for(int i=0;i<6;i++) {
+			int integer = types.get(i);
+			if(integer >= 0) {
+				Class<? extends IPipeSign> type = ItemPipeSignCreator.signTypes.get(integer);
+				if(signItem[i] == null || signItem[i].getClass() != type) {
+					try {
+						signItem[i] = type.newInstance();
+						signItem[i].init(this, ForgeDirection.getOrientation(i));
+					} catch(InstantiationException e) {
+						throw new RuntimeException(e);
+					} catch(IllegalAccessException e) {
+						throw new RuntimeException(e);
+					}
+				}
+			} else {
+				signItem[i] = null;
+			}
+		}
+	}
+
+	public IPipeSign getPipeSign(ForgeDirection dir) {
+		if(dir.ordinal() < 6) {
+			return signItem[dir.ordinal()];
+		}
+		return null;
+	}
+
+	public void triggerDebug() {
+		if(this.debug.debugThisPipe) {
+			System.out.print("");
+		}
+	}
+
+	@Override
+	public void writeData(ByteBuf data) {
+		data.writeBoolean(isOpaque());
+	}
+
+	@Override
+	public void readData(ByteBuf data) {
+		isOpaqueClientSide = data.readBoolean();
+	}
+
+	public boolean isOpaque() {
+		if(MainProxy.isClient(getWorld())) {
+			return Configs.OPAQUE || isOpaqueClientSide;
+		} else {
+			return Configs.OPAQUE || this.getUpgradeManager().isOpaque();
+		}
+	}
+
+	public void addStatusInformation(List<StatusEntry> status) {
+		StatusEntry entry = new StatusEntry();
+		entry.name = "Send Queue";
+		entry.subEntry = new ArrayList<StatusEntry>();
+		for(Triplet<IRoutedItem, ForgeDirection, ItemSendMode> part:_sendQueue) {
+			StatusEntry subEntry = new StatusEntry();
+			subEntry.name = part.toString();
+			entry.subEntry.add(subEntry);
+		}
+		status.add(entry);
+		entry = new StatusEntry();
+		entry.name = "In Transit To Me";
+		entry.subEntry = new ArrayList<StatusEntry>();
+		for(ItemRoutingInformation part:_inTransitToMe) {
+			StatusEntry subEntry = new StatusEntry();
+			subEntry.name = part.toString();
+			entry.subEntry.add(subEntry);
+		}
+		status.add(entry);
 	}
 }

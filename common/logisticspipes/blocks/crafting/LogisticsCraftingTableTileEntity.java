@@ -202,6 +202,11 @@ outer:
 	}
 
 	@Override
+	public boolean canUpdate() {
+		return false;
+	}
+
+	@Override
 	public void openChest() {}
 
 	@Override

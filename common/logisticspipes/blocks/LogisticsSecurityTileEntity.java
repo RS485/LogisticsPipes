@@ -338,6 +338,11 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	
 	public World getWorld() {
 		return this.getWorldObj();
-	
 	}
+
+	@Override
+	public boolean canUpdate() {
+		return false;
+	}
+	
 }

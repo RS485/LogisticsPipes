@@ -1,4 +1,4 @@
-package logisticspipes.network.packets.pipe;
+package logisticspipes.network.packets.debug;
 
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -7,9 +7,9 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatMessageComponent;
 
-public class PipeDebugResponse extends CoordinatesPacket {
+public class PipeDebugLogResponse extends CoordinatesPacket {
 	
-	public PipeDebugResponse(int id) {
+	public PipeDebugLogResponse(int id) {
 		super(id);
 	}
 
@@ -17,17 +17,18 @@ public class PipeDebugResponse extends CoordinatesPacket {
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe tile = this.getPipe(player.getEntityWorld());
 		if(tile != null) {
-			((CoreRoutedPipe) tile.pipe).debug.debugThisPipe = !((CoreRoutedPipe) tile.pipe).debug.debugThisPipe;
-			if(((CoreRoutedPipe) tile.pipe).debug.debugThisPipe) {
-				player.sendChatToPlayer(ChatMessageComponent.createFromText("Debug enabled on Server"));
-			} else {
-				player.sendChatToPlayer(ChatMessageComponent.createFromText("Debug disabled on Server"));
-			}
+			((CoreRoutedPipe) tile.pipe).debug.openForPlayer(player);
+			player.sendChatToPlayer(ChatMessageComponent.createFromText("Debug log enabled."));
 		}
 	}
 	
 	@Override
 	public ModernPacket template() {
-		return new PipeDebugResponse(getId());
+		return new PipeDebugLogResponse(getId());
+	}
+
+	@Override
+	public boolean isCompressable() {
+		return true;
 	}
 }

@@ -80,4 +80,11 @@ public class ItemRoutingInformation {
 			tracker.setDelay(delay);
 		}
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("(").append(item).append(", ").append(destinationint).append(", ").append(destinationUUID).append(", ").append(_transportMode).append(", ").append(jamlist).append(", ").append(delay).append(", ").append(tracker);
+		return builder.toString();
+	}
 }

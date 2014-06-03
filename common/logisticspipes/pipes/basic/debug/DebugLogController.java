@@ -1,0 +1,55 @@
+package logisticspipes.pipes.basic.debug;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.debug.SendNewLogLine;
+import logisticspipes.network.packets.debug.SendNewLogWindow;
+import logisticspipes.network.packets.debug.UpdateStatusEntries;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.PlayerCollectionList;
+import net.minecraft.entity.player.EntityPlayer;
+import cpw.mods.fml.common.network.Player;
+
+public class DebugLogController {
+	
+	private static int nextID = 0;
+	private final int ID = nextID++;
+	public final CoreRoutedPipe pipe;
+	public boolean debugThisPipe = false;
+	private List<StatusEntry> oldList = new ArrayList<StatusEntry>();
+	private PlayerCollectionList players = new PlayerCollectionList();
+	
+	public DebugLogController(CoreRoutedPipe pipe) {
+		this.pipe = pipe;
+	}
+	
+	public void log(String info) {
+		if(players.isEmptyWithoutCheck()) return;
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(SendNewLogLine.class).setWindowID(ID).setLine(info), players);
+	}
+	
+	public void tick() {
+		if(players.isEmpty()) return;
+		generateStatus();
+	}
+	
+	public void generateStatus() {
+		List<StatusEntry> status = new ArrayList<StatusEntry>();
+		pipe.addStatusInformation(status);
+		if(!status.equals(oldList)) {
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(UpdateStatusEntries.class).setWindowID(ID).setStatus(status), players);
+			oldList = status;
+		}
+	}
+	
+	public void openForPlayer(EntityPlayer player) {
+		players.add(player);
+		List<StatusEntry> status = new ArrayList<StatusEntry>();
+		pipe.addStatusInformation(status);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SendNewLogWindow.class).setWindowID(ID).setTitle(pipe.toString()), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(UpdateStatusEntries.class).setWindowID(ID).setStatus(status), (Player) player);
+	}
+}

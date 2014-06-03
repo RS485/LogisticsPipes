@@ -59,6 +59,8 @@ import logisticspipes.network.packets.pipe.RequestRoutingLasersPacket;
 import logisticspipes.network.packets.pipe.RequestSignPacket;
 import logisticspipes.network.packets.pipe.StatUpdate;
 import logisticspipes.pipefxhandlers.Particles;
+import logisticspipes.pipes.basic.debug.DebugLogController;
+import logisticspipes.pipes.basic.debug.StatusEntry;
 import logisticspipes.pipes.signs.IPipeSign;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
@@ -125,7 +127,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	}
 
 	protected boolean stillNeedReplace = true;
-	public boolean debugThisPipe = false;
+	public DebugLogController debug = new DebugLogController(this);
 	
 	protected IRouter router;
 	protected String routerId;
@@ -194,7 +196,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 
 	public RouteLayer getRouteLayer(){
 		if (_routeLayer == null){
-			_routeLayer = new RouteLayer(getRouter(), getTransportLayer());
+			_routeLayer = new RouteLayer(getRouter(), getTransportLayer(), this);
 		}
 		return _routeLayer;
 	}
@@ -342,6 +344,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	
 	@Override
 	public final void updateEntity() {
+		debug.tick();
 		if(checkTileEntity(_initialInit)) {
 			stillNeedReplace = true;
 			return;
@@ -371,8 +374,9 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		while(this._inTransitToMe.peek()!=null && this._inTransitToMe.peek().getTickToTimeOut() <= 0){
 			final ItemRoutingInformation p=_inTransitToMe.poll();
 			if (LogisticsPipes.DEBUG) {
-					LogisticsPipes.log.info("Timed Out: "+p.getItem().getFriendlyName() + " (" + p.hashCode() + ")");
+				LogisticsPipes.log.info("Timed Out: "+p.getItem().getFriendlyName() + " (" + p.hashCode() + ")");
 			}
+			debug.log("Timed Out: "+p.getItem().getFriendlyName() + " (" + p.hashCode() + ")");
 		}
 		//update router before ticking logic/transport
 		getRouter().update(getWorld().getTotalWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit, this);
@@ -1636,7 +1640,7 @@ outer:
 	}
 
 	public void triggerDebug() {
-		if(this.debugThisPipe) {
+		if(this.debug.debugThisPipe) {
 			System.out.print("");
 		}
 	}
@@ -1657,5 +1661,26 @@ outer:
 		} else {
 			return Configs.OPAQUE || this.getUpgradeManager().isOpaque();
 		}
+	}
+
+	public void addStatusInformation(List<StatusEntry> status) {
+		StatusEntry entry = new StatusEntry();
+		entry.name = "Send Queue";
+		entry.subEntry = new ArrayList<StatusEntry>();
+		for(Triplet<IRoutedItem, ForgeDirection, ItemSendMode> part:_sendQueue) {
+			StatusEntry subEntry = new StatusEntry();
+			subEntry.name = part.toString();
+			entry.subEntry.add(subEntry);
+		}
+		status.add(entry);
+		entry = new StatusEntry();
+		entry.name = "In Transit To Me";
+		entry.subEntry = new ArrayList<StatusEntry>();
+		for(ItemRoutingInformation part:_inTransitToMe) {
+			StatusEntry subEntry = new StatusEntry();
+			subEntry.name = part.toString();
+			entry.subEntry.add(subEntry);
+		}
+		status.add(entry);
 	}
 }

@@ -75,6 +75,7 @@ import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCQueued;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
+import logisticspipes.proxy.interfaces.IFuzzyRecipeProvider;
 import logisticspipes.request.CraftingTemplate;
 import logisticspipes.request.RequestTree;
 import logisticspipes.request.RequestTreeNode;
@@ -1145,10 +1146,16 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteImport.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 			MainProxy.sendPacketToServer(packet);
 		} else{
+			boolean fuzzyFlagsChanged = false;
 			final WorldUtil worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
 			for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
 				for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
-					if (provider.importRecipe(tile.tile, _dummyInventory)) break;
+					if (provider.importRecipe(tile.tile, _dummyInventory)) {
+						if (provider instanceof IFuzzyRecipeProvider) {
+							fuzzyFlagsChanged = ((IFuzzyRecipeProvider)provider).importFuzzyFlags(tile.tile, _dummyInventory, fuzzyCraftingFlagArray);
+						}
+						break;
+					}
 				}
 			}
 			// Send inventory as packet
@@ -1157,6 +1164,15 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 				MainProxy.sendPacketToPlayer(packet, (Player)player);
 			}
 			MainProxy.sendPacketToAllWatchingChunk(this.getX(), this.getZ(), MainProxy.getDimensionForWorld(getWorld()), packet);
+			
+			if(fuzzyFlagsChanged && this.getUpgradeManager().isFuzzyCrafter()) {
+				for (int i = 0; i < 9; i++) {
+					final ModernPacket pak = PacketHandler.getPacket(CraftingFuzzyFlag.class).setInteger2(fuzzyCraftingFlagArray[i]).setInteger(i).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
+					if(player != null)
+						MainProxy.sendPacketToPlayer(pak, (Player)player);
+					MainProxy.sendPacketToAllWatchingChunk(this.getX(), this.getZ(), MainProxy.getDimensionForWorld(getWorld()), pak);
+				}
+			}
 		}
 	}
 
@@ -1346,7 +1362,10 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		else
 		{
 			fuzzyCraftingFlagArray[slot] ^= 1 << flag;
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingFuzzyFlag.class).setInteger2(fuzzyCraftingFlagArray[slot]).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+			ModernPacket pak = PacketHandler.getPacket(CraftingFuzzyFlag.class).setInteger2(fuzzyCraftingFlagArray[slot]).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
+			if(player != null)
+				MainProxy.sendPacketToPlayer(pak, (Player)player);
+			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), pak);
 		}
 	}
 

@@ -28,13 +28,14 @@ public class LogisticsSolidBlock extends BlockContainer {
 	public static final int LOGISTICS_POWER_JUNCTION = 1;
 	public static final int LOGISTICS_SECURITY_STATION = 2;
 	public static final int LOGISTICS_AUTOCRAFTING_TABLE = 3;
+	public static final int LOGISTICS_FUZZYCRAFTING_TABLE = 4;
 
 	//Power Provider
 	public static final int LOGISTICS_BC_POWERPROVIDER = 10;
 	public static final int LOGISTICS_RF_POWERPROVIDER = 11;
 	public static final int LOGISTICS_IC2_POWERPROVIDER = 12;
 	
-	private static final Icon[] icons = new Icon[16];
+	private static final Icon[] icons = new Icon[17];
 	
 	public LogisticsSolidBlock(int par1) {
 		super(par1, Material.iron);
@@ -61,6 +62,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 				par5EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Security_Station_ID, par1World, par2, par3, par4);
 				return true;
 			case LOGISTICS_AUTOCRAFTING_TABLE:
+			case LOGISTICS_FUZZYCRAFTING_TABLE:
 				par5EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Auto_Crafting_ID, par1World, par2, par3, par4);
 				return true;
 			case LOGISTICS_BC_POWERPROVIDER:
@@ -136,6 +138,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 	    	case LOGISTICS_SECURITY_STATION:
 	    		return new LogisticsSecurityTileEntity();
 			case LOGISTICS_AUTOCRAFTING_TABLE:
+			case LOGISTICS_FUZZYCRAFTING_TABLE:
 				return new LogisticsCraftingTableTileEntity();
 			case LOGISTICS_BC_POWERPROVIDER:
 				return new LogisticsBCPowerProviderTileEntity();
@@ -155,6 +158,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 		case LOGISTICS_POWER_JUNCTION:
 		case LOGISTICS_SECURITY_STATION:
 		case LOGISTICS_AUTOCRAFTING_TABLE:
+		case LOGISTICS_FUZZYCRAFTING_TABLE:
 		case LOGISTICS_BC_POWERPROVIDER:
 		case LOGISTICS_RF_POWERPROVIDER:
 		case LOGISTICS_IC2_POWERPROVIDER:
@@ -178,7 +182,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IconRegister par1IconRegister) {
-		for(int i=0;i<16;i++) {
+		for(int i=0;i<17;i++) {
 			icons[i]=par1IconRegister.registerIcon("logisticspipes:lpsolidblock/"+i);
 		}
 	}
@@ -260,6 +264,15 @@ public class LogisticsSolidBlock extends BlockContainer {
 			switch (side) {
 			case 1: //TOP
 				return icons[11];
+			case 0: //Bottom
+				return icons[12];
+			default: //Front
+				return icons[10];
+			}
+		case LOGISTICS_FUZZYCRAFTING_TABLE:
+			switch (side) {
+			case 1: //TOP
+				return icons[16];
 			case 0: //Bottom
 				return icons[12];
 			default: //Front

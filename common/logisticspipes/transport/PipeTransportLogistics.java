@@ -254,6 +254,8 @@ public class PipeTransportLogistics extends PipeTransport {
 			if(!isItemExitable(data.getItemIdentifierStack())) { return null; }
 		}
 		
+		data.resetDelay();
+		
 		return value;
 	}
 	

@@ -32,7 +32,7 @@ public class ItemRoutingInformation {
 	public List<Integer> jamlist = new ArrayList<Integer>();
 	public IDistanceTracker tracker = null;
 	
-    private final long delay = 640 + MainProxy.getGlobalTick();
+    private long delay = 640 + MainProxy.getGlobalTick();
 	
 	@Getter
 	@Setter
@@ -64,7 +64,7 @@ public class ItemRoutingInformation {
 		nbttagcompound.setCompoundTag("Item", nbttagcompound2);
 	}
 
-	// the world tick in which getTickToTimeOut returns 0.
+	// the global LP tick in which getTickToTimeOut returns 0.
 	public long getTimeOut() {
 		return delay;
 	}
@@ -72,5 +72,12 @@ public class ItemRoutingInformation {
 	// how many ticks until this times out
 	public long getTickToTimeOut() {
 		return delay - MainProxy.getGlobalTick();
+	}
+	
+	public void resetDelay() {
+		delay = 640 + MainProxy.getGlobalTick();
+		if(tracker != null) {
+			tracker.setDelay(delay);
+		}
 	}
 }

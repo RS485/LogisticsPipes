@@ -391,5 +391,9 @@ public abstract class LPTravelingItem {
 		public IDistanceTracker getDistanceTracker() {
 			return info.tracker;
 		}
+
+		public void resetDelay() {
+			info.resetDelay();
+		}
 	}
 }

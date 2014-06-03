@@ -60,7 +60,7 @@ public class LogisticsOrder implements IOrderInfoProvider {
 	public List<Float> getProgresses() {
 		List<Float> progresses = new ArrayList<Float>();
 		for(IDistanceTracker tracker:trackers) {
-			if(!tracker.hasReachedDestination()) {
+			if(!tracker.hasReachedDestination() && !tracker.isTimeout()) {
 				float f;
 				if(tracker.getInitialDistanceToTarget() != 0) {
 					f = ((float)tracker.getCurrentDistanceToTarget()) / ((float)tracker.getInitialDistanceToTarget());

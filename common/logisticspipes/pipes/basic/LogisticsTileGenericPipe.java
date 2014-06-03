@@ -33,7 +33,9 @@ import dan200.computercraft.api.peripheral.IComputerAccess;
 
 @ModDependentInterface(modId={"CoFHCore"}, interfacePath={"cofh.api.transport.IItemConduit"})
 public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeInformationProvider, IItemConduit {
-
+	
+	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
+	
 	public boolean turtleConnect[] = new boolean[7];
 	
 	private LogisticsTileRenderController renderController;

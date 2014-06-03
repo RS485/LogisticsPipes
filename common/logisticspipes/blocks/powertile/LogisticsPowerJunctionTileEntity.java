@@ -43,6 +43,8 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 @ModDependentInterface(modId={"IC2", "ComputerCraft@1.6", "CoFHCore"}, interfacePath={"ic2.api.energy.tile.IEnergySink", "dan200.computercraft.api.peripheral.IPeripheral", "cofh.api.energy.IEnergyHandler"})
 public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPowerReceptor, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IPeripheral, IEnergyHandler {
 
+	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
+	
 	// true if it needs more power, turns off at full, turns on at 50%.
 	public boolean needMorePowerTriggerCheck = true;
 	

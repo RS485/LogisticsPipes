@@ -72,6 +72,7 @@ public class PacketHandler implements IPacketHandler {
 	}
 
 	public static void onPacketData(final LPDataInputStream data, final Player player) throws IOException {
+		if(player == null) return;
 		final int packetID = data.readInt();
 		final ModernPacket packet = PacketHandler.packetlist.get(packetID).template();
 		packet.readData(data);

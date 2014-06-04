@@ -17,6 +17,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ChatComponentText;
 import cpw.mods.fml.client.FMLClientHandler;
 
 @Accessors(chain=true)
@@ -48,13 +49,13 @@ public class MissingItems extends ModernPacket {
 			((GuiRequestTable)FMLClientHandler.instance().getClient().currentScreen).handleRequestAnswer(getItems(), isFlag(), (GuiRequestTable)FMLClientHandler.instance().getClient().currentScreen, player);
 		} else if(isFlag()) {
 			for(ItemIdentifierStack item:items){
-				player.addChatMessage(ChatColor.RED + "Missing: " + item.getFriendlyName());
+				player.addChatComponentMessage(new ChatComponentText(ChatColor.RED + "Missing: " + item.getFriendlyName()));
 			}
 		} else {
 			for(ItemIdentifierStack item:items) {
-				player.addChatMessage(ChatColor.GREEN + "Requested: " + item.getFriendlyName());
+				player.addChatComponentMessage(new ChatComponentText(ChatColor.GREEN + "Requested: " + item.getFriendlyName()));
 			}
-			player.addChatMessage(ChatColor.GREEN + "Request successful!");
+			player.addChatComponentMessage(new ChatComponentText(ChatColor.GREEN + "Request successful!"));
 		}
 	}
 	@Override

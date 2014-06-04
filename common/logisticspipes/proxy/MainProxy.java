@@ -68,7 +68,7 @@ public class MainProxy {
 		try{
 			return world.isRemote;
 		} catch(NullPointerException n) {
-			LogisticsPipes.log.severe("isClient called with a null world - using slow thread based fallback");
+			LogisticsPipes.log.fatal("isClient called with a null world - using slow thread based fallback");
 			n.printStackTrace();
 		}
 		return isClient();
@@ -87,7 +87,7 @@ public class MainProxy {
 		try{
 			return !world.isRemote;
 		} catch(NullPointerException n) {
-			LogisticsPipes.log.severe("isServer called with a null world - using slow thread based fallback");
+			LogisticsPipes.log.fatal("isServer called with a null world - using slow thread based fallback");
 			n.printStackTrace();
 		}
 		return isServer();
@@ -188,7 +188,7 @@ public class MainProxy {
 		if(MainProxy.isServer(dimension)) {
 			MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(dimension), PacketHandler.getPacket(ParticleFX.class).setInteger2(amount).setInteger(particle).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 		} else {
-			LogisticsPipes.log.severe("Server only method on Client (Particle Spawning)");
+			LogisticsPipes.log.fatal("Server only method on Client (Particle Spawning)");
 		}
 	}
 	

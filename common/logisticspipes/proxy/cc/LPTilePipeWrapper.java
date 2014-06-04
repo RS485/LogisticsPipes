@@ -354,7 +354,7 @@ public class LPTilePipeWrapper implements ILuaObject {
 			}
 			if(count >= 199) {
 				CoreRoutedPipe pipe = this.pipe.getCPipe();
-				LogisticsPipes.log.warning("CC call " + m.getName() + " on " + pipe.getClass().getName() + " at (" + this.pipe.xCoord + "," + this.pipe.yCoord + "," + this.pipe.zCoord + ") took too long.");
+				LogisticsPipes.log.warn("CC call " + m.getName() + " on " + pipe.getClass().getName() + " at (" + this.pipe.xCoord + "," + this.pipe.yCoord + "," + this.pipe.zCoord + ") took too long.");
 				throw new Exception("Took too long");
 			}
 			if(m.getReturnType().equals(Void.class)) {

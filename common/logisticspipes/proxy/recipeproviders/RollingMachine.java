@@ -35,7 +35,7 @@ public class RollingMachine implements ICraftingRecipeProvider {
 			Method findMatchingRecipe = c.getMethod("findMatchingRecipe", InventoryCrafting.class, World.class);
 			return (ItemStack)findMatchingRecipe.invoke(instance, inventorycrafting, world);
 		} catch (Exception ex) {
-			LogisticsPipes.log.fine("getResult fail");
+			LogisticsPipes.log.error("getResult fail");
 		}		
 		return null;
 	}
@@ -44,7 +44,7 @@ public class RollingMachine implements ICraftingRecipeProvider {
 		try {
 			return (InventoryCrafting) getCraftMatrixMethod.invoke(tile);
 		} catch (Exception ex) {
-			LogisticsPipes.log.fine("getCraftMatrix fail");
+			LogisticsPipes.log.error("getCraftMatrix fail");
 		}		
 		return null;
 	}

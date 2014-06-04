@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import logisticspipes.utils.item.ItemIdentifier;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -156,7 +155,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
 		try {
 			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
-			if (!Item.itemsList[itemIdent.itemID].isDamageable()) {
+			if (!itemIdent.getItem().isDamageable()) {
 				int count = (Integer) getItemCount.invoke(cratePileData, new Object[]{itemIdent.unsafeMakeNormalStack(1)});
 				return (count > 0);
 			}
@@ -205,9 +204,6 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 		st.stackSize = 0;
 		if(doAdd) {
 			ItemStack tst = stack.copy();
-			if(tst.stackTagCompound != null && tst.stackTagCompound.getName().equals("")) {
-				tst.stackTagCompound.setName("tag");
-			}
 			try {
 				Object cratePileData = getPileData.invoke(_tile, new Object[]{});
 				ItemStack overflow = (ItemStack) addItems.invoke(cratePileData, new Object[]{tst});

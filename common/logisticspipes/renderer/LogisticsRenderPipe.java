@@ -6,8 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import buildcraft.transport.Pipe;
-import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.signs.IPipeSign;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -49,6 +47,7 @@ import buildcraft.core.CoreConstants;
 import buildcraft.core.render.FluidRenderer;
 import buildcraft.core.render.RenderEntityBlock;
 import buildcraft.core.render.RenderEntityBlock.RenderInfo;
+import buildcraft.transport.Pipe;
 import buildcraft.transport.render.PipeRendererTESR;
 
 public class LogisticsRenderPipe extends PipeRendererTESR {
@@ -94,9 +93,9 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public void func_147500_a(TileEntity tileentity, double x, double y, double z, float f) {
+	public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float f) {
 		enableRendering(tileentity);
-		super.func_147500_a(tileentity, x, y, z, f);
+		super.renderTileEntityAt(tileentity, x, y, z, f);
 		if(!(tileentity instanceof LogisticsTileGenericPipe)) return;
 		LogisticsTileGenericPipe pipe = ((LogisticsTileGenericPipe)tileentity);
 		if(pipe.pipe == null) return;
@@ -127,7 +126,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 		GL11.glPushMatrix();
 		GL11.glDisable(2896 /* GL_LIGHTING */);
 		
-		float light = pipe.container.worldObj.getLightBrightness(pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord);
+		float light = pipe.container.getWorldObj().getLightBrightness(pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord);
 		
 		int count = 0;
 		for(LPTravelingItem item: pipe.transport.items) {
@@ -145,11 +144,11 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 			
 			if(fPos < 0.5) {
 				if(item.input == ForgeDirection.UNKNOWN) continue;
-				if(!pipe.container.getRenderState().pipeConnectionMatrix.isConnected(item.input)) continue;
+				if(!pipe.container.renderState.pipeConnectionMatrix.isConnected(item.input)) continue;
 				pos.moveForward(item.input.getOpposite(), 0.5F - fPos);
 			} else {
 				if(item.output == ForgeDirection.UNKNOWN) continue;
-				if(!pipe.container.getRenderState().pipeConnectionMatrix.isConnected(item.output)) continue;
+				if(!pipe.container.renderState.pipeConnectionMatrix.isConnected(item.output)) continue;
 				pos.moveForward(item.output, fPos - 0.5F);
 			}
 			
@@ -170,7 +169,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 		GL11.glTranslatef((float)x, (float)y, (float)z);
 		GL11.glScalef(renderScale, renderScale, renderScale);
 		dummyEntityItem.setEntityItemStack(itemstack);
-		customRenderItem.doRenderItem(dummyEntityItem, 0, 0, 0, 0, 0);
+		customRenderItem.doRender(dummyEntityItem, 0, 0, 0, 0, 0);
 		GL11.glPopMatrix();
 	}
 	
@@ -204,7 +203,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 		if(!pipe.getPipeSigns().isEmpty()) {
 			List<Pair<ForgeDirection, IPipeSign>> list = pipe.getPipeSigns();
 			for(Pair<ForgeDirection, IPipeSign> pair: list) {
-				if(pipe.container.getRenderState().pipeConnectionMatrix.isConnected(pair.getValue1())) {
+				if(pipe.container.renderState.pipeConnectionMatrix.isConnected(pair.getValue1())) {
 					continue;
 				}
 				GL11.glPushMatrix();
@@ -320,7 +319,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 				GL11.glEnable(GL11.GL_LIGHT1);
 				GL11.glEnable(GL11.GL_COLOR_MATERIAL);
 			}
-		} else if(item instanceof ItemBlock && RenderBlocks.renderItemIn3d(Block.blocksList[item.itemID].getRenderType())) {
+		} else if(item instanceof ItemBlock && RenderBlocks.renderItemIn3d(Block.getBlockFromItem(item).getRenderType())) {
 			GL11.glScalef(0.20F, -0.20F, -0.01F);
 			
 			GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
@@ -333,7 +332,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 			GL11.glDisable(GL11.GL_LIGHT1);
 			GL11.glDisable(GL11.GL_COLOR_MATERIAL);
 			
-			renderBlocks.renderBlockAsItem(Block.blocksList[item.itemID], itemstack.getItemDamage(), 1.0F);
+			renderBlocks.renderBlockAsItem(Block.getBlockFromItem(item), itemstack.getItemDamage(), 1.0F);
 			
 			GL11.glEnable(GL11.GL_LIGHTING);
 			GL11.glEnable(GL11.GL_LIGHT0);
@@ -351,7 +350,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 			
 			if(item.requiresMultipleRenderPasses()) {
 				for(int var14 = 0; var14 < item.getRenderPasses(itemstack.getItemDamage()); ++var14) {
-					Icon var15 = item.getIconFromDamageForRenderPass(itemstack.getItemDamage(), var14);
+					IIcon var15 = item.getIconFromDamageForRenderPass(itemstack.getItemDamage(), var14);
 					renderItem(var15);
 				}
 			} else {

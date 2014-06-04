@@ -81,7 +81,7 @@ public class LPConduitItem extends ConduitItem {
 	
 	public void updateLPStatus() {
 		if(tick++ == 5) {
-			pipe.getWorld().markBlockForRenderUpdate(pipe.getX(), pipe.getY(), pipe.getZ());
+			pipe.getWorld().markBlockRangeForRenderUpdate(pipe.getX() - 1, pipe.getY() - 1, pipe.getZ() - 1, pipe.getX() + 1, pipe.getY() + 1, pipe.getZ() + 1);
 		}
 	}
 	
@@ -159,7 +159,7 @@ public class LPConduitItem extends ConduitItem {
 
 	@Override
 	public ItemStack insertItem(ForgeDirection from, ItemStack item) {
-		if(MainProxy.isClient(pipe.worldObj)) return null;
+		if(MainProxy.isClient(pipe.getWorldObj())) return null;
 		if(pipe.injectItem(item, true, from) == 0) {
 			return item;
 		} else {
@@ -169,7 +169,7 @@ public class LPConduitItem extends ConduitItem {
 
 	@Override
 	public void insertItem(thermalexpansion.part.conduit.item.TravelingItem travelingItem) {
-		if(MainProxy.isClient(pipe.worldObj)) return;
+		if(MainProxy.isClient(pipe.getWorldObj())) return;
 		if(travelingItem.routedLPInfo == null) {
 			insertItem(ForgeDirection.VALID_DIRECTIONS[travelingItem.direction].getOpposite(), travelingItem.stack);
 		} else {

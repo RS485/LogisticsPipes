@@ -18,7 +18,7 @@ public class SpecialTankHandler {
 				handlers.add(handler);
 				LogisticsPipes.log.info("Loaded SpecialTankHandler: " + handler.getClass().getName());
 			} else {
-				LogisticsPipes.log.warning("Didn't load SpecialTankHandler: " + handler.getClass().getName());
+				LogisticsPipes.log.warn("Didn't load SpecialTankHandler: " + handler.getClass().getName());
 			}
 		} catch(Exception e) {
 			e.printStackTrace();

@@ -40,8 +40,8 @@ public class LogisticsASMHookClass {
         		}
         	}
         } catch(Exception e) {
-        	LogisticsPipes.log.severe(e.getMessage());
-        	LogisticsPipes.log.severe(Arrays.toString(e.getStackTrace()));
+        	LogisticsPipes.log.fatal(e.getMessage());
+        	LogisticsPipes.log.fatal(Arrays.toString(e.getStackTrace()));
         	e.printStackTrace();
         }
 	}

@@ -270,7 +270,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			if(!(this.container instanceof LogisticsTileGenericPipe)) {
 				TileEntity tile = getWorld().getTileEntity(getX(), getY(), getZ());
 				if(tile != this.container) {
-					LogisticsPipes.log.severe("LocalCodeError");
+					LogisticsPipes.log.fatal("LocalCodeError");
 				}
 				if(MainProxy.isClient(getWorld())) {
 					WorldTickHandler.clientPipesToReplace.add(this.container);

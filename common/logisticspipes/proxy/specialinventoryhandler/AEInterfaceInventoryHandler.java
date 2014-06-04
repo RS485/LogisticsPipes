@@ -125,9 +125,6 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	public ItemStack add(ItemStack stack, ForgeDirection from, boolean doAdd) {
 		ItemStack st = stack.copy();
 		ItemStack tst = stack.copy();
-		if(tst.stackTagCompound != null && tst.stackTagCompound.getName().equals("")) {
-			tst.stackTagCompound.setName("tag");
-		}
 		
 		ItemStack overflow = _tile.apiAddNetworkItem(tst, doAdd);
 		if(overflow != null) {

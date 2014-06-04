@@ -21,6 +21,10 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.BufferTransfer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.tuples.Pair;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.relauncher.Side;
 
 public class ClientPacketBufferHandlerThread {
@@ -55,8 +59,8 @@ public class ClientPacketBufferHandlerThread {
 							LinkedList<ModernPacket> packets = clientList;
 							clearLock.lock();
 							for(ModernPacket packet:packets) {
-								data.writeInt(packet.data.length);
-								data.write(packet.data);
+								data.writeInt(packet.getData().length);
+								data.write(packet.getData());
 							}
 							packets.clear();
 							clearLock.unlock();
@@ -139,21 +143,14 @@ public class ClientPacketBufferHandlerThread {
 			super("LogisticsPipes Packet Decompressor Client");
 			this.setDaemon(true);
 			this.start();
-			TickRegistry.registerTickHandler(new ITickHandler() {
-				@Override
-				public EnumSet<TickType> ticks() {
-					return EnumSet.of(TickType.CLIENT);
-				}
-
-				@Override
-				public void tickStart(EnumSet<TickType> type, Object... tickData) {}
-
-				@Override
-				public void tickEnd(EnumSet<TickType> type, Object... tickData) {
+			FMLCommonHandler.instance().bus().register(new Object() {
+				@SubscribeEvent
+				public void tickEnd(ClientTickEvent event) {
+					if(event.phase != Phase.END) return;
 					boolean flag = false;
 					do {
 						flag = false;
-						Pair<Player,byte[]> part = null;
+						Pair<EntityPlayer, byte[]> part = null;
 						synchronized (PacketBuffer) {
 							if(PacketBuffer.size() > 0) {
 								flag = true;
@@ -169,12 +166,7 @@ public class ClientPacketBufferHandlerThread {
 						}
 					} while(flag);
 				}
-
-				@Override
-				public String getLabel() {
-					return "LogisticsPipes Packet Compressor Tick Client";
-				}
-			}, Side.CLIENT);
+			});
 		}
 
 		@Override

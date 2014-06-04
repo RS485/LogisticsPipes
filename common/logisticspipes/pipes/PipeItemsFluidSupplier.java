@@ -97,8 +97,8 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 		while (data.getItemIdentifierStack().getStackSize() > 0 && container.fill(orientation, liquidId, false) == liquidId.amount && this.useEnergy(5)) {
 			container.fill(orientation, liquidId.copy(), true);
 			data.getItemIdentifierStack().lowerStackSize(1);
-			Item item = Item.itemsList[data.getItemIdentifierStack().getItem().itemID];
-			if (item.hasContainerItem()) {
+			Item item = data.getItemIdentifierStack().getItem().getItem();
+			if (item.hasContainerItem(data.getItemIdentifierStack().makeNormalStack())) {
 				Item containerItem = item.getContainerItem();
 				transport.sendItem(new ItemStack(containerItem, 1));
 			}
@@ -240,7 +240,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 		}
 		//still remaining... was from fuzzyMatch on a crafter
 		for(Entry<ItemIdentifier, Integer> e : _requestedItems.entrySet()) {
-			if(e.getKey().itemID == item.getItem().itemID && e.getKey().itemDamage == item.getItem().itemDamage) {
+			if(e.getKey().item == item.getItem().item && e.getKey().itemDamage == item.getItem().itemDamage) {
 				int expected = e.getValue();
 				e.setValue(Math.max(0, expected - remaining));
 				remaining -= expected;
@@ -250,7 +250,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 			}
 		}
 		//we have no idea what this is, log it.
-		LogisticsPipes.requestLog.info("liquid supplier got unexpected item " + item.toString());
+		debug.log("liquid supplier got unexpected item " + item.toString());
 	}
 
 	@Override

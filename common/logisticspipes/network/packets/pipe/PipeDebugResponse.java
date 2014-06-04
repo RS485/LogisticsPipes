@@ -5,7 +5,7 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.ChatComponentText;
 
 public class PipeDebugResponse extends CoordinatesPacket {
 	
@@ -19,9 +19,9 @@ public class PipeDebugResponse extends CoordinatesPacket {
 		if(tile != null) {
 			((CoreRoutedPipe) tile.pipe).debug.debugThisPipe = !((CoreRoutedPipe) tile.pipe).debug.debugThisPipe;
 			if(((CoreRoutedPipe) tile.pipe).debug.debugThisPipe) {
-				player.sendChatToPlayer(ChatMessageComponent.createFromText("Debug enabled on Server"));
+				player.addChatComponentMessage(new ChatComponentText("Debug enabled on Server"));
 			} else {
-				player.sendChatToPlayer(ChatMessageComponent.createFromText("Debug disabled on Server"));
+				player.addChatComponentMessage(new ChatComponentText("Debug disabled on Server"));
 			}
 		}
 	}

@@ -3,6 +3,7 @@ package logisticspipes.recipes;
 import logisticspipes.Configs;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.PlayerIdentifier;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -21,7 +22,7 @@ public class LPShapedOreRecipe extends ShapedOreRecipe {
 	@Override
 	public ItemStack getCraftingResult(InventoryCrafting inv) {
 		if(Configs.ENABLE_RESEARCH_SYSTEM) {
-			String name = SimpleServiceLocator.craftingPermissionManager.getPlayerName(inv);
+			PlayerIdentifier name = SimpleServiceLocator.craftingPermissionManager.getPlayerID(inv);
 			if(name == null || name.equals("")) return null;
 			if(!SimpleServiceLocator.craftingPermissionManager.isAllowedFor(dependent, name)) {
 				return null;
@@ -33,7 +34,7 @@ public class LPShapedOreRecipe extends ShapedOreRecipe {
 	@Override
 	public boolean matches(InventoryCrafting inv, World world) {
 		if(Configs.ENABLE_RESEARCH_SYSTEM) {
-			String name = SimpleServiceLocator.craftingPermissionManager.getPlayerName(inv);
+			PlayerIdentifier name = SimpleServiceLocator.craftingPermissionManager.getPlayerID(inv);
 			if(name == null || name.equals("")) return false;
 			if(!SimpleServiceLocator.craftingPermissionManager.isAllowedFor(dependent, name)) {
 				return false;

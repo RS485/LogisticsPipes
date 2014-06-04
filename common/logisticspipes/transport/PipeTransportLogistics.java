@@ -15,7 +15,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import buildcraft.transport.*;
 import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
@@ -58,7 +57,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.gates.ITrigger;
-import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.transport.IPipeTile;
 import buildcraft.api.transport.IPipeTile.PipeType;
@@ -244,7 +242,7 @@ public class PipeTransportLogistics extends PipeTransport {
 		if(value == null && MainProxy.isClient(getWorld())) {
 			return null;
 		} else if(value == null) {
-			LogisticsPipes.log.severe("THIS IS NOT SUPPOSED TO HAPPEN!");
+			LogisticsPipes.log.fatal("THIS IS NOT SUPPOSED TO HAPPEN!");
 			return ForgeDirection.UNKNOWN;
 		}
 		if(value == ForgeDirection.UNKNOWN && !data.getDoNotBuffer() && data.getBufferCounter() < 5) {
@@ -511,7 +509,7 @@ public class PipeTransportLogistics extends PipeTransport {
 			int[] slots = ((ISidedInventory)tile).getAccessibleSlotsFromSide(side.getOpposite().ordinal());
 			return slots != null && slots.length > 0;
 		}
-		return tile instanceof TileGenericPipe || tile instanceof ISpecialInventory || (tile instanceof IInventory && ((IInventory)tile).getSizeInventory() > 0) || (tile instanceof IMachine && ((IMachine)tile).manageSolids());
+		return tile instanceof TileGenericPipe || (tile instanceof IInventory && ((IInventory)tile).getSizeInventory() > 0) || (tile instanceof IMachine && ((IMachine)tile).manageSolids());
 	}
 	
 	@Override

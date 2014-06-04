@@ -24,7 +24,7 @@ public class InventoryUtilFactory {
 			handler.addLast(invHandler);
 			LogisticsPipes.log.info("Loaded SpecialInventoryHandler: " + invHandler.getClass().getCanonicalName());
 		} else {
-			LogisticsPipes.log.warning("Could not load SpecialInventoryHandler: " + invHandler.getClass().getCanonicalName());
+			LogisticsPipes.log.warn("Could not load SpecialInventoryHandler: " + invHandler.getClass().getCanonicalName());
 		}
 	}
 

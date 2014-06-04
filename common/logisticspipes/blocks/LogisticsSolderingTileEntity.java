@@ -25,19 +25,19 @@ import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerHandler;
 import buildcraft.api.power.PowerHandler.PowerReceiver;
 import buildcraft.api.power.PowerHandler.Type;
 
-public class LogisticsSolderingTileEntity extends TileEntity implements IPowerReceptor, ISpecialInventory, IGuiOpenControler, IRotationProvider {
+public class LogisticsSolderingTileEntity extends TileEntity implements IPowerReceptor, ISidedInventory, IGuiOpenControler, IRotationProvider {
 	
 	private PowerHandler provider;
 	private ItemIdentifierInventory inv = new ItemIdentifierInventory(12, "Soldering Inventory", 64);
@@ -386,6 +386,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 		inv.closeInventory();
 	}
 
+	/*
 	@Override
 	public int addItem(ItemStack stack, boolean doAdd, ForgeDirection from) {
 		if(stack == null) return 0;
@@ -477,6 +478,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 		}
 		return tmp;
 	}
+	*/
 
 	@Override
 	public void guiOpenedByPlayer(EntityPlayer player) {
@@ -526,4 +528,22 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 		super.func_145828_a(par1CrashReportCategory);
 		par1CrashReportCategory.addCrashSection("LP-Version", LogisticsPipes.VERSION);
 	}
+
+	@Override
+	public int[] getAccessibleSlotsFromSide(int var1) {
+		return new int[] {0,1,2,3,4,5,6,7,8,9,10};
+	}
+/*
+	@Override
+	public boolean canInsertItem(int var1, ItemStack var2, int var3) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canExtractItem(int var1, ItemStack var2, int var3) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	*/
 }

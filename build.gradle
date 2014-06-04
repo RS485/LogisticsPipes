@@ -70,6 +70,6 @@ processResources {
     }
 }
 dependencies {
-    compile 'com.mod-buildcraft:buildcraft:5.0.5:dev'
+    compile 'com.mod-buildcraft:buildcraft:6.0.10:dev'
     compile 'org.projectlombok:lombok:1.12.6'
 }

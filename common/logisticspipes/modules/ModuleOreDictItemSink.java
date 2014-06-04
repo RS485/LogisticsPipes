@@ -29,7 +29,6 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -99,7 +98,7 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 		if(oreItemIdMap == null) {
 			buildOreItemIdMap();
 		}
-		Set<Integer> damageSet = oreItemIdMap.get(item.itemID);
+		Set<Integer> damageSet = oreItemIdMap.get(item.item);
 		if(damageSet == null)
 			return null;
 		if(damageSet.isEmpty() || damageSet.contains(item.itemDamage))

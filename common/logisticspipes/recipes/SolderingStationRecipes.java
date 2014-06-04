@@ -8,6 +8,8 @@ import java.util.UUID;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ICraftingResultHandler;
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -34,7 +36,7 @@ public class SolderingStationRecipes {
 					null,
 					new ItemStack(BuildCraftSilicon.redstoneChipset,1,1),
 					new ItemStack(LogisticsPipes.ModuleItem,1,0),
-					new ItemStack(Item.enderPearl,1),
+					new ItemStack(Items.ender_pearl,1),
 					new ItemStack(LogisticsPipes.ModuleItem,1,0),
 					null,
 					null,
@@ -60,24 +62,24 @@ public class SolderingStationRecipes {
 				new ItemStack(LogisticsPipes.LogisticsHUDArmor,1,0), null));
 		
 		recipes.add(new SolderingStationRecipe(new ItemStack[]{
-					new ItemStack(Item.redstone,1,0),
+					new ItemStack(Items.redstone,1,0),
 					new ItemStack(BuildCraftSilicon.redstoneChipset,1,3),
-					new ItemStack(Item.redstone,1,0),
-					new ItemStack(Item.redstone,1,0),
-					new ItemStack(Block.glass,1,0),
-					new ItemStack(Item.redstone,1,0),
-					new ItemStack(Item.redstone,1,0),
-					new ItemStack(Item.redstone,1,0),
-					new ItemStack(Item.redstone,1,0) }, 
+					new ItemStack(Items.redstone,1,0),
+					new ItemStack(Items.redstone,1,0),
+					new ItemStack(Blocks.glass,1,0),
+					new ItemStack(Items.redstone,1,0),
+					new ItemStack(Items.redstone,1,0),
+					new ItemStack(Items.redstone,1,0),
+					new ItemStack(Items.redstone,1,0) }, 
 				new ItemStack(LogisticsPipes.LogisticsParts,1,1), null));
 		
 		recipes.add(new SolderingStationRecipe(new ItemStack[]{
 					null,
 					null,
 					null,
-					new ItemStack(Item.diamond,1,0),
-					new ItemStack(Item.diamond,1,0),
-					new ItemStack(Item.diamond,1,0),
+					new ItemStack(Items.diamond,1,0),
+					new ItemStack(Items.diamond,1,0),
+					new ItemStack(Items.diamond,1,0),
 					null,
 					null,
 					new ItemStack(BuildCraftSilicon.redstoneChipset,1,3) }, 
@@ -87,24 +89,24 @@ public class SolderingStationRecipes {
 					null,
 					new ItemStack(BuildCraftSilicon.redstoneChipset,1,3),
 					null,
-					new ItemStack(Item.diamond,1,0),
+					new ItemStack(Items.diamond,1,0),
 					null,
-					new ItemStack(Item.diamond,1,0),
+					new ItemStack(Items.diamond,1,0),
 					null,
 					null,
 					null }, 
 				new ItemStack(LogisticsPipes.LogisticsParts,1,2), null));
 
 		recipes.add(new SolderingStationRecipe(new ItemStack[]{
-					new ItemStack(Block.hopperBlock,1),
-					new ItemStack(Block.hopperBlock,1),
-					new ItemStack(Block.hopperBlock,1),
-					new ItemStack(Block.hopperBlock,1),
+					new ItemStack(Blocks.hopper,1),
+					new ItemStack(Blocks.hopper,1),
+					new ItemStack(Blocks.hopper,1),
+					new ItemStack(Blocks.hopper,1),
 					null,
-					new ItemStack(Block.hopperBlock,1),
-					new ItemStack(Block.hopperBlock,1),
-					new ItemStack(Block.hopperBlock,1),
-					new ItemStack(Block.hopperBlock,1) }, 
+					new ItemStack(Blocks.hopper,1),
+					new ItemStack(Blocks.hopper,1),
+					new ItemStack(Blocks.hopper,1),
+					new ItemStack(Blocks.hopper,1) }, 
 				new ItemStack(LogisticsPipes.LogisticsParts,1,3), null));
 		
 		recipes.add(new SolderingStationRecipe(new ItemStack[]{
@@ -119,26 +121,26 @@ public class SolderingStationRecipes {
 				new ItemStack(LogisticsPipes.LogisticsCraftingPipeMk3,1), null));
 
 		recipes.add(new SolderingStationRecipe(new ItemStack[]{
-					new ItemStack(Block.netherBrick,1),
+					new ItemStack(Blocks.nether_brick,1),
 					new ItemStack(BuildCraftSilicon.redstoneChipset,1,3),
-					new ItemStack(Block.netherBrick,1),
+					new ItemStack(Blocks.nether_brick,1),
 					null,
 					new ItemStack(LogisticsPipes.LogisticsBasicPipe,1),
 					null,
-					new ItemStack(Block.netherBrick,1),
+					new ItemStack(Blocks.nether_brick,1),
 					null,
-					new ItemStack(Block.netherBrick,1) }, 
+					new ItemStack(Blocks.nether_brick,1) }, 
 				new ItemStack(LogisticsPipes.LogisticsFirewallPipe,1), null));
 		
 		recipes.add(new SolderingStationRecipe(new ItemStack[]{
-				new ItemStack(Block.stoneBrick,1),
-				new ItemStack(Block.workbench,1),
-				new ItemStack(Block.stoneBrick,1),
+				new ItemStack(Blocks.stonebrick,1),
+				new ItemStack(Blocks.crafting_table,1),
+				new ItemStack(Blocks.stonebrick,1),
 				new ItemStack(LogisticsPipes.LogisticsCraftingPipeMk2,1),
-				new ItemStack(Block.hopperBlock,1),
+				new ItemStack(Blocks.hopper,1),
 				new ItemStack(LogisticsPipes.LogisticsRequestPipeMk2,1),
 				new ItemStack(BuildCraftSilicon.redstoneChipset,1,3),
-				new ItemStack(Block.chest,3),
+				new ItemStack(Blocks.chest,3),
 				new ItemStack(BuildCraftSilicon.redstoneChipset,1,3)}, 
 			new ItemStack(LogisticsPipes.logisticsRequestTable,1), null));
 	}

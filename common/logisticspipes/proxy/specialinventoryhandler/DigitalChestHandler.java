@@ -153,7 +153,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 
 	private ItemIdentifierStack getContents(){
 		ItemStack[] data = _tile.getStoredItemData();
-		if(data == null || data.length < 1 || data[0] == null || data[0].itemID < 1) return null;
+		if(data == null || data.length < 1 || data[0] == null || data[0].getItem() == null) return null;
 		ItemIdentifierStack dataIdent = ItemIdentifierStack.getFromStack(data[0]);
 		for(int i = 0; i < 3; i++) {
 			ItemStack stack = ((IInventory)_tile).getStackInSlot(i);

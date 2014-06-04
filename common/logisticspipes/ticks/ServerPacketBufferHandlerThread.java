@@ -23,6 +23,10 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.BufferTransfer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.tuples.Pair;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
 import cpw.mods.fml.relauncher.Side;
 
 public class ServerPacketBufferHandlerThread {
@@ -58,8 +62,8 @@ public class ServerPacketBufferHandlerThread {
 								}
 								LinkedList<ModernPacket> packets = player.getValue();
 								for(ModernPacket packet:packets) {
-									data.writeInt(packet.data.length);
-									data.write(packet.data);
+									data.writeInt(packet.getData().length);
+									data.write(packet.getData());
 								}
 								serverBuffer.put(player.getKey(), out.toByteArray());
 							}
@@ -150,17 +154,10 @@ public class ServerPacketBufferHandlerThread {
 			super("LogisticsPipes Packet Decompressor Server");
 			this.setDaemon(true);
 			this.start();
-			TickRegistry.registerTickHandler(new ITickHandler() {
-				@Override
-				public EnumSet<TickType> ticks() {
-					return EnumSet.of(TickType.SERVER);
-				}
-
-				@Override
-				public void tickStart(EnumSet<TickType> type, Object... tickData) {}
-
-				@Override
-				public void tickEnd(EnumSet<TickType> type, Object... tickData) {
+			FMLCommonHandler.instance().bus().register(new Object() {
+				@SubscribeEvent
+				public void tickEnd(ServerTickEvent event) {
+					if(event.phase != Phase.END) return;
 					boolean flag = false;
 					do {
 						flag = false;
@@ -180,12 +177,7 @@ public class ServerPacketBufferHandlerThread {
 						}
 					} while(flag);
 				}
-
-				@Override
-				public String getLabel() {
-					return "LogisticsPipes Packet Compressor Tick Server";
-				}
-			}, Side.SERVER);
+			});
 		}
 
 		@Override

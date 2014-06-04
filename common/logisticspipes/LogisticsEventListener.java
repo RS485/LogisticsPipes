@@ -1,7 +1,5 @@
 package logisticspipes;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -38,9 +36,9 @@ import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraftforge.client.event.GuiOpenEvent;
@@ -51,10 +49,14 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import net.minecraftforge.event.world.ChunkWatchEvent.UnWatch;
 import net.minecraftforge.event.world.ChunkWatchEvent.Watch;
 import net.minecraftforge.event.world.WorldEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
+import cpw.mods.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class LogisticsEventListener implements IPlayerTracker, IConnectionHandler {
+public class LogisticsEventListener {
 	
 	@SubscribeEvent
 	public void onEntitySpawn(EntityJoinWorldEvent event) {
@@ -170,27 +172,24 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 			watcherList.get(event.chunk).remove(event.player);
 		}
 	}
-	
-	@Override
-	public void onPlayerLogin(EntityPlayer player) {
-		if(MainProxy.isServer(player.worldObj)) {
-			SimpleServiceLocator.securityStationManager.sendClientAuthorizationList(player);
-			SimpleServiceLocator.craftingPermissionManager.sendCraftingPermissionsToPlayer(player);
+
+	@SubscribeEvent
+	public void onPlayerLogin(PlayerLoggedInEvent event) {
+		if(MainProxy.isServer(event.player.worldObj)) {
+			SimpleServiceLocator.securityStationManager.sendClientAuthorizationList(event.player);
+			SimpleServiceLocator.craftingPermissionManager.sendCraftingPermissionsToPlayer(event.player);
 		}
 		if(VersionChecker.hasNewVersion) {
-			player.sendChatToPlayer(ChatMessageComponent.createFromText("Your LogisticsPipes version is outdated. The newest version is #" + VersionChecker.newVersion + "."));
-			player.sendChatToPlayer(ChatMessageComponent.createFromText("Use \"/logisticspipes changelog\" to see a changelog."));
+			event.player.addChatComponentMessage(new ChatComponentText("Your LogisticsPipes version is outdated. The newest version is #" + VersionChecker.newVersion + "."));
+			event.player.addChatComponentMessage(new ChatComponentText("Use \"/logisticspipes changelog\" to see a changelog."));
 		}
+		SimpleServiceLocator.serverBufferHandler.clear(event.player);
 	}
 
-	@Override
-	public void onPlayerLogout(EntityPlayer player) {}
-
-	@Override
-	public void onPlayerChangedDimension(EntityPlayer player) {}
-
-	@Override
-	public void onPlayerRespawn(EntityPlayer player) {}
+	@SubscribeEvent
+	public void onPlayerLogout(PlayerLoggedOutEvent event) {
+		SimpleServiceLocator.serverBufferHandler.clear(event.player);
+	}
 
 	@AllArgsConstructor
 	private static class GuiEntry {
@@ -241,28 +240,9 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 	public static void addGuiToReopen(int xCoord, int yCoord, int zCoord, int guiID) {
 		getGuiPos().add(new GuiEntry(xCoord, yCoord, zCoord, guiID, false));
 	}
-
-	@Override
-	public void playerLoggedIn(Player player, NetHandler netHandler, INetworkManager manager) {
-		SimpleServiceLocator.serverBufferHandler.clear(player);
-	}
-
-	@Override
-	public String connectionReceived(NetLoginHandler netHandler, INetworkManager manager) {
-		return null;
-	}
-
-	@Override
-	public void connectionOpened(NetHandler netClientHandler, String server, int port, INetworkManager manager) {}
-
-	@Override
-	public void connectionOpened(NetHandler netClientHandler, MinecraftServer server, INetworkManager manager) {}
-
-	@Override
-	public void connectionClosed(INetworkManager manager) {}
-
-	@Override
-	public void clientLoggedIn(NetHandler clientHandler, INetworkManager manager, Packet1Login login) {
+	
+	@SubscribeEvent
+	public void clientLoggedIn(ClientConnectedToServerEvent event) {
 		SimpleServiceLocator.clientBufferHandler.clear();
 	}
 }

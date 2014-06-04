@@ -109,7 +109,7 @@ public class SimpleStackInventory implements IInventory, ISaveState {
     		if(index < _contents.length) {
     			_contents [index] = ItemStack.loadItemStackFromNBT(nbttagcompound2);
     		} else {
-    			LogisticsPipes.log.severe("SimpleInventory: java.lang.ArrayIndexOutOfBoundsException: " + index + " of " + _contents.length);
+    			LogisticsPipes.log.fatal("SimpleInventory: java.lang.ArrayIndexOutOfBoundsException: " + index + " of " + _contents.length);
     		}
     	}
 	}

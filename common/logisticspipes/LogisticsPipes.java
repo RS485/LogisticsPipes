@@ -8,22 +8,18 @@
 
 package logisticspipes;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.util.Calendar;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.commands.LogisticsPipesCommand;
 import logisticspipes.commands.chathelper.LPChatListener;
-import logisticspipes.items.ItemPipeSignCreator;
 import logisticspipes.items.ItemDisk;
 import logisticspipes.items.ItemHUDArmor;
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.ItemParts;
+import logisticspipes.items.ItemPipeSignCreator;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsBrokenItem;
 import logisticspipes.items.LogisticsFluidContainer;
@@ -32,7 +28,6 @@ import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.items.LogisticsNetworkManager;
 import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
-import logisticspipes.log.RequestLogFormator;
 import logisticspipes.logistics.LogisticsFluidManager;
 import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.network.GuiHandler;
@@ -75,13 +70,13 @@ import logisticspipes.textures.Textures;
 import logisticspipes.ticks.ClientPacketBufferHandlerThread;
 import logisticspipes.ticks.DebugGuiTickHandler;
 import logisticspipes.ticks.HudUpdateTick;
+import logisticspipes.ticks.LPTickHandler;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.ticks.RenderTickHandler;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.ticks.ServerPacketBufferHandlerThread;
 import logisticspipes.ticks.VersionChecker;
 import logisticspipes.ticks.Watchdog;
-import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.RoutedItemHelper;
@@ -92,6 +87,9 @@ import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
+
+import org.apache.logging.log4j.Logger;
+
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
@@ -105,7 +103,6 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.FMLInjectionData;
 import cpw.mods.fml.relauncher.Side;
 
 @Mod(
@@ -225,7 +222,6 @@ public class LogisticsPipes {
 	public static CreativeTabLP LPCreativeTab = new CreativeTabLP();
 	
 	public static Logger log;
-	public static Logger requestLog;
 	
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
@@ -262,16 +258,13 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setMachineProgressProvider(new MachineProgressProvider());
 		SimpleServiceLocator.setRoutedItemHelper(new RoutedItemHelper());
 		
-		if(event.getSide().isClient()) {
-			//SimpleServiceLocator.buildCraftProxy.registerLocalization();
-		}
 		NetworkRegistry.INSTANCE.registerGuiHandler(LogisticsPipes.instance, new GuiHandler());
+		FMLCommonHandler.instance().bus().register(new LPTickHandler());
+		
 		if(event.getSide().equals(Side.CLIENT)) {
-			TickRegistry.registerTickHandler(new RenderTickHandler(), Side.CLIENT);
+			FMLCommonHandler.instance().bus().register(new RenderTickHandler());
 		}
-		TickRegistry.registerTickHandler(new WorldTickHandler(), Side.SERVER);
-		TickRegistry.registerTickHandler(new WorldTickHandler(), Side.CLIENT);
-		TickRegistry.registerTickHandler(new QueuedTasks(), Side.SERVER);
+		FMLCommonHandler.instance().bus().register(new QueuedTasks());
 		if(event.getSide() == Side.CLIENT) {
 			SimpleServiceLocator.setClientPacketBufferHandlerThread(new ClientPacketBufferHandlerThread());
 		}
@@ -281,17 +274,13 @@ public class LogisticsPipes {
 		}
 		LogisticsEventListener eventListener = new LogisticsEventListener();
 		MinecraftForge.EVENT_BUS.register(eventListener);
-		GameRegistry.registerPlayerTracker(eventListener);
-		NetworkRegistry.instance().registerConnectionHandler(eventListener);
-		NetworkRegistry.instance().registerChatListener(new LPChatListener());
+		FMLCommonHandler.instance().bus().register(eventListener);
+		MinecraftForge.EVENT_BUS.register(new LPChatListener());
 		textures.registerBlockIcons(null);
 		
 		SimpleServiceLocator.buildCraftProxy.initProxyAndCheckVersion();
 
-		if(event.getSide().equals(Side.CLIENT)) {
-			TickRegistry.registerTickHandler(DebugGuiTickHandler.instance(), Side.CLIENT);
-		}
-		TickRegistry.registerTickHandler(DebugGuiTickHandler.instance(), Side.SERVER);
+		FMLCommonHandler.instance().bus().register(DebugGuiTickHandler.instance());
 		
 //		FMLInterModComms.sendMessage("Waila", "register", this.getClass()
 //		 .getPackage().getName()
@@ -302,26 +291,14 @@ public class LogisticsPipes {
 	public void preInit(FMLPreInitializationEvent evt) {
 		Configs.load();
 		log = evt.getModLog();
-		requestLog = Logger.getLogger("LogisticsPipes|Request");
-		requestLog.setUseParentHandlers(false);
-		try {
-			File logPath = new File((File) FMLInjectionData.data()[6], "LogisticsPipes-Request.log");
-			FileHandler fileHandler = new FileHandler(logPath.getPath(), true);
-			fileHandler.setFormatter(new RequestLogFormator());
-			fileHandler.setLevel(Level.ALL);
-			requestLog.addHandler(fileHandler);
-		} catch (Exception e) {}
-		if(DEBUG) {
-			log.setLevel(Level.ALL);
-		}
 		if(certificateError) {
-			log.severe("Certificate not correct");
-			log.severe("This in not a LogisticsPipes version from RS485.");
+			log.fatal("Certificate not correct");
+			log.fatal("This in not a LogisticsPipes version from RS485.");
 		}
 		if (DEV_BUILD) {
-			log.fine("You are using a dev version.");
-			log.fine("While the dev versions contain cutting edge features, they may also contain more bugs.");
-			log.fine("Please report any you find to https://github.com/RS485/LogisticsPipes-Dev/issues");
+			log.debug("You are using a dev version.");
+			log.debug("While the dev versions contain cutting edge features, they may also contain more bugs.");
+			log.debug("Please report any you find to https://github.com/RS485/LogisticsPipes/issues");
 		}
 		SimpleServiceLocator.setPipeInformationManager(new PipeInformaitonManager());
 		SimpleServiceLocator.setBuildCraftProxy(new BuildCraftProxy());
@@ -413,7 +390,6 @@ public class LogisticsPipes {
 		//Blocks
 		LogisticsSolidBlock = new LogisticsSolidBlock();
 		GameRegistry.registerBlock(LogisticsSolidBlock, LogisticsSolidBlockItem.class, null);
-		LogisticsSolidBlock.setUnlocalizedName("logisticsSolidBlock");
 		
 		SimpleServiceLocator.buildCraftProxy.registerPipes(event.getSide());
 		

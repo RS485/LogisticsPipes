@@ -1,6 +1,5 @@
 package logisticspipes.blocks.crafting;
 
-import cpw.mods.fml.common.network.Player;
 import logisticspipes.Configs;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.blocks.LogisticsSolidBlock;
@@ -11,6 +10,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.CraftingRequirement;
 import logisticspipes.utils.CraftingUtil;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
+import logisticspipes.utils.PlayerIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -23,6 +23,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.util.Constants;
 
 public class LogisticsCraftingTableTileEntity extends TileEntity implements ISimpleInventoryEventHandler, IInventory {
 	
@@ -33,7 +34,7 @@ public class LogisticsCraftingTableTileEntity extends TileEntity implements ISim
 	public CraftingRequirement[] fuzzyFlags = new CraftingRequirement[9];
 	private IRecipe cache;
 	private EntityPlayer fake;
-	private String placedBy = "";
+	private PlayerIdentifier placedBy = null;
 	
 	public LogisticsCraftingTableTileEntity() {
 		matrix.addListener(this);
@@ -161,11 +162,16 @@ outer:
 		super.readFromNBT(par1nbtTagCompound);
 		inv.readFromNBT(par1nbtTagCompound, "inv");
 		matrix.readFromNBT(par1nbtTagCompound, "matrix");
-		placedBy = par1nbtTagCompound.getString("placedBy");
+		if(par1nbtTagCompound.hasKey("placedBy")) {
+			String name = par1nbtTagCompound.getString("placedBy");
+			placedBy = PlayerIdentifier.convertFromUsername(name);
+		} else {
+			placedBy = PlayerIdentifier.readFromNBT(par1nbtTagCompound, "placedBy");
+		}
 		if(par1nbtTagCompound.hasKey("fuzzyFlags")) {
-			NBTTagList lst = par1nbtTagCompound.getTagList("fuzzyFlags");
+			NBTTagList lst = par1nbtTagCompound.getTagList("fuzzyFlags", Constants.NBT.TAG_COMPOUND);
 			for(int i = 0; i < 9; i++) {
-				NBTTagCompound comp = (NBTTagCompound) lst.tagAt(i);
+				NBTTagCompound comp = lst.getCompoundTagAt(i);
 				fuzzyFlags[i].ignore_dmg = comp.getBoolean("ignore_dmg");
 				fuzzyFlags[i].ignore_nbt = comp.getBoolean("ignore_nbt");
 				fuzzyFlags[i].use_od = comp.getBoolean("use_od");
@@ -180,7 +186,7 @@ outer:
 		super.writeToNBT(par1nbtTagCompound);
 		inv.writeToNBT(par1nbtTagCompound, "inv");
 		matrix.writeToNBT(par1nbtTagCompound, "matrix");
-		par1nbtTagCompound.setString("placedBy", placedBy);
+		placedBy.writeToNBT(par1nbtTagCompound, "placedBy");
 		NBTTagList lst = new NBTTagList();
 		for(int i = 0; i < 9; i++) {
 			NBTTagCompound comp = new NBTTagCompound();
@@ -261,8 +267,7 @@ outer:
 
 	public void placedBy(EntityLivingBase par5EntityLivingBase) {
 		if(par5EntityLivingBase instanceof EntityPlayer) {
-			//TODO change to GameProfile based Identification
-			placedBy = ((EntityPlayer)par5EntityLivingBase).getDisplayName();
+			placedBy = PlayerIdentifier.get((EntityPlayer) par5EntityLivingBase);
 		}
 	}
 	
@@ -299,7 +304,7 @@ outer:
 					.setInteger(integer)
 					.setTilePos(this);
 			if(pl != null)
-				MainProxy.sendPacketToPlayer(pak, (Player)pl);
+				MainProxy.sendPacketToPlayer(pak, pl);
 			MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(worldObj), pak);
 		}
 	}

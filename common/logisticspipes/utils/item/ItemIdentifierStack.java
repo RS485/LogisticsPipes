@@ -22,7 +22,7 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 	public static class orderedComparitor implements Comparator<ItemIdentifierStack>{
 		@Override
 		public int compare(ItemIdentifierStack o1, ItemIdentifierStack o2) {
-			int c=o1._item.itemID-o2._item.itemID;
+			int c=o1._item.getItemID() - o2._item.getItemID();
 			if(c!=0) return c;
 			c=o1._item.itemDamage-o2._item.itemDamage;
 			if(c!=0) return c;
@@ -36,11 +36,11 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 
 		@Override
 		public int compare(ItemIdentifierStack o1, ItemIdentifierStack o2) {
-			int c=o1._item.itemID-o2._item.itemID;
-			if(c!=0) return c;
-			c=o1._item.itemDamage-o2._item.itemDamage;
-			if(c!=0) return c;
-			return o1._item.uniqueID-o2._item.uniqueID;
+			int c = o1._item.getItemID() - o2._item.getItemID();
+			if(c != 0) return c;
+			c = o1._item.itemDamage - o2._item.itemDamage;
+			if(c != 0) return c;
+			return o1._item.uniqueID - o2._item.uniqueID;
 		}
 		
 	}
@@ -48,9 +48,9 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 
 		@Override
 		public int compare(ItemIdentifierStack o1, ItemIdentifierStack o2) {
-			int c=o1._item.itemID-o2._item.itemID;
-			if(c!=0) return c;
-			return o1._item.itemDamage-o2._item.itemDamage;
+			int c = o1._item.getItemID() - o2._item.getItemID();
+			if(c != 0) return c;
+			return o1._item.itemDamage - o2._item.itemDamage;
 		}
 		
 	}

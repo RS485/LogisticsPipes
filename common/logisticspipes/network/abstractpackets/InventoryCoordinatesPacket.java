@@ -7,7 +7,6 @@ import java.util.Set;
 
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +14,6 @@ import lombok.experimental.Accessors;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 
 @Accessors(chain=true)
 public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
@@ -60,14 +58,14 @@ public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
 			data.writeByte(1);
 			for(ItemIdentifierStack stack:identList) {
 				data.writeByte(1);
-				sendItemIdentifierStack(stack, data);
+				data.writeItemIdentifierStack(stack);
 			}
 			data.writeByte(-1);
 		} else if(identSet != null) {
 			data.writeByte(1);
 			for(ItemIdentifierStack stack:identSet) {
 				data.writeByte(1);
-				sendItemIdentifierStack(stack, data);
+				data.writeItemIdentifierStack(stack);
 			}
 			data.writeByte(-1);
 		} else {
@@ -90,7 +88,7 @@ public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
 			identList = new LinkedList<ItemIdentifierStack>();
 			byte index = data.readByte();
 			while (index != -1) { // read until the end
-				((LinkedList<ItemIdentifierStack>)identList).addLast(readItemIdentifierStack(data));
+				((LinkedList<ItemIdentifierStack>)identList).addLast(data.readItemIdentifierStack());
 				index = data.readByte(); // read the next slot
 			}
 		} else {
@@ -109,14 +107,6 @@ public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
 		}
 	}
 	
-	private void sendItemIdentifierStack(ItemIdentifierStack item, LPDataOutputStream data) throws IOException {
-		if (item != null) {
-			data.writeItemIdentifierStack(item);
-		} else {
-			data.writeInt(0);
-		}
-	}
-	
 	private ItemStack readItemStack(LPDataInputStream data) throws IOException {
 		final int itemID = data.readInt();
 		if (itemID == 0) {
@@ -127,18 +117,6 @@ public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
 			ItemStack stack = new ItemStack(Item.getItemById(itemID), stackSize, damage);
 			stack.setTagCompound(data.readNBTTagCompound());
 			return stack;
-		}
-	}
-	
-	private ItemIdentifierStack readItemIdentifierStack(LPDataInputStream data) throws IOException {
-		final int itemID = data.readInt();
-		if (itemID == 0) {
-			return null;
-		} else {
-			int stackSize = data.readInt();
-			int damage = data.readInt();
-			NBTTagCompound tag = data.readNBTTagCompound();
-			return new ItemIdentifierStack(ItemIdentifier.get(itemID, damage, tag), stackSize);
 		}
 	}
 }

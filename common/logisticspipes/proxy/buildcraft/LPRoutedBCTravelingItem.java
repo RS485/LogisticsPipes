@@ -19,6 +19,8 @@ public class LPRoutedBCTravelingItem extends TravelingItem {
 	};
 	
 	public LPRoutedBCTravelingItem() {
+		super(TravelingItem.make().id);
+		getCache().cache(this);
 		this.setInsertionHandler(LP_INSERTIONHANDLER);
 	}
 	

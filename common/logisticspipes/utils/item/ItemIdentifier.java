@@ -51,28 +51,33 @@ import cpw.mods.fml.common.registry.GameData;
 public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
 	private static class ItemKey implements Comparable<ItemKey>{
-		public ItemKey(int id, int d){ itemID=id;itemDamage=d;}
-		public final int itemID;
+		public ItemKey(Item id, int d) {
+			item=id;
+			itemDamage=d;
+			//1000001 chosen because 1048576 is 2^20, moving the bits for the item ID to the top of the integer
+			// not exactly 2^20 was chosen so that when the has is used mod power 2, there arn't repeated collisions on things with the same damage id.
+			hash = ((Item.getIdFromItem(item))*1000001) + itemDamage;
+		}
+		public final Item item;
 		public final int itemDamage;
+		private final int hash;
 		@Override 
 		public boolean equals(Object that){
 			if (!(that instanceof ItemKey))
 				return false;
 			ItemKey i = (ItemKey)that;
-			return this.itemID== i.itemID && this.itemDamage == i.itemDamage;
+			return this.item == i.item && this.itemDamage == i.itemDamage;
 			
 		}
 		
 		@Override public int hashCode(){
-			//1000001 chosen because 1048576 is 2^20, moving the bits for the item ID to the top of the integer
-			// not exactly 2^20 was chosen so that when the has is used mod power 2, there arn't repeated collisions on things with the same damage id.
-			return ((itemID)*1000001)+itemDamage;
+			return hash;
 		}
 		@Override
 		public int compareTo(ItemKey o) {
-			if(itemID==o.itemID)
+			if(item==o.item)
 				return itemDamage-o.itemDamage;
-			return itemID-o.itemID;
+			return Item.getIdFromItem(item) - Item.getIdFromItem(o.item);
 		}
 	}
 
@@ -94,16 +99,14 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	private static boolean init = false;
 	
 	//Hide default constructor
-	private ItemIdentifier(int itemID, int itemDamage, FinalNBTTagCompound tag, int uniqueID) {
-		this.itemID =  itemID;
+	private ItemIdentifier(Item item, int itemDamage, FinalNBTTagCompound tag, int uniqueID) {
+		this.item =  item;
 		this.itemDamage = itemDamage;
 		this.tag = tag;
 		this.uniqueID = uniqueID;
 	}
 	
-	private Item itemCache;
-	
-	public final int itemID;
+	public final Item item;
 	public final int itemDamage;
 	public final FinalNBTTagCompound tag;
 	public final int uniqueID;
@@ -112,26 +115,20 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	private ItemIdentifier _IDIgnoringDamage=null;
 
 	public static boolean allowNullsForTesting;
-	
-	public static ItemIdentifier get(Item itemID, int itemUndamagableDamage, NBTTagCompound tag)	{
-		int id = Item.getIdFromItem(itemID);
-		return get(id, itemUndamagableDamage, tag);
-	}
 
 	public static ItemIdentifier get(Block block, int itemUndamagableDamage, NBTTagCompound tag) {
-		int id = Block.getIdFromBlock(block);
-		return get(id, itemUndamagableDamage, tag);
+		return get(Item.getItemFromBlock(block), itemUndamagableDamage, tag);
 	}
 	
-	public static ItemIdentifier get(int itemID, int itemUndamagableDamage, NBTTagCompound tag)	{
-		ItemKey itemKey = new ItemKey(itemID, itemUndamagableDamage);
+	public static ItemIdentifier get(Item item, int itemUndamagableDamage, NBTTagCompound tag)	{
+		ItemKey itemKey = new ItemKey(item, itemUndamagableDamage);
 		if(tag == null) {
 			ItemIdentifier unknownItem = _itemIdentifierCache.get(itemKey);
 			if(unknownItem != null) {
 				return unknownItem;
 			}
 			int id = getUnusedId();
-			unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, null, id);
+			unknownItem = new ItemIdentifier(item, itemUndamagableDamage, null, id);
 			_itemIdentifierCache.put(itemKey, unknownItem);
 			_itemIdentifierIdCache.put(id, unknownItem);
 			return(unknownItem);
@@ -148,7 +145,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 				_itemIdentifierTagCache.put(itemKey, itemNBTList);
 			}
 			FinalNBTTagCompound finaltag = new FinalNBTTagCompound((NBTTagCompound)tag.copy());
-			ItemIdentifier unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, finaltag, getUnusedId());
+			ItemIdentifier unknownItem = new ItemIdentifier(item, itemUndamagableDamage, finaltag, getUnusedId());
 			itemNBTList.put(finaltag,unknownItem);
 			_itemIdentifierIdCache.put(unknownItem.uniqueID, unknownItem);
 			return(unknownItem);
@@ -159,8 +156,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		if (itemStack == null && allowNullsForTesting){
 			return null;
 		}
-		int id = Item.getIdFromItem(itemStack.getItem());
-		return get(id, itemStack.getItemDamage(), itemStack.stackTagCompound);
+		return get(itemStack.getItem(), itemStack.getItemDamage(), itemStack.stackTagCompound);
 	}
 	
 	public static ItemIdentifier getUndamaged(ItemStack itemStack) {
@@ -171,16 +167,15 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		if (!itemStack.getItem().isDamageable()) {
 			itemDamage = itemStack.getItemDamage();
 		}
-		int id = Item.getIdFromItem(itemStack.getItem());
-		return get(id, itemDamage, itemStack.stackTagCompound);
+		return get(itemStack.getItem(), itemDamage, itemStack.stackTagCompound);
 	}
 
-	//TODO Check if we can cache it this way around of if we have to cache the id and have a hard reference to the Item class.
 	public Item getItem() {
-		if(itemCache != null) {
-			itemCache = getItem();
-		}
-		return itemCache;
+		return item;
+	}
+	
+	public int getItemID() {
+		return Item.getIdFromItem(item);
 	}
 
 	public ItemIdentifier getUndamaged() {
@@ -188,20 +183,19 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 			if (!getItem().isDamageable()) {
 				_IDIgnoringDamage = this;
 			} else {
-				_IDIgnoringDamage = get(this.itemID, 0, this.tag);
+				_IDIgnoringDamage = get(this.item, 0, this.tag);
 			}
 		}
 		return _IDIgnoringDamage;
 	}
 
 	public static ItemIdentifier getIgnoringNBT(ItemStack itemStack) {
-		int id = Item.getIdFromItem(itemStack.getItem());
-		return get(id, itemStack.getItemDamage(), null);
+		return get(itemStack.getItem(), itemStack.getItemDamage(), null);
 	}
 
 	public ItemIdentifier getIgnoringNBT() {
 		if(this._IDIgnoringNBT==null){
-			_IDIgnoringNBT= get(itemID, itemDamage, null);			
+			_IDIgnoringNBT= get(item, itemDamage, null);			
 		}
 		return _IDIgnoringNBT;
 	}
@@ -252,7 +246,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
 	public String getDebugName() {
 		if (getItem() != null)	{
-			return getItem().getUnlocalizedName() + "(ID: " + itemID + ", Damage: " + itemDamage + ")";
+			return getItem().getUnlocalizedName() + "(ID: " + Item.getIdFromItem(item) + ", Damage: " + itemDamage + ")";
 		}
 		return "<item not found>";
 	}
@@ -261,22 +255,22 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return getItem() != null;
 	}
 
-	private String getName(int id,ItemStack stack) {
+	private String getName(Item item,ItemStack stack) {
 		String name = "???";
 		try {
-			name = Item.getItemById(id).getItemStackDisplayName(stack);
+			name = item.getItemStackDisplayName(stack);
 			if(name == null) {
 				throw new Exception();
 			}
 		} catch(Exception e) {
 			try {
-				name = Item.getItemById(id).getUnlocalizedName(stack);
+				name = item.getUnlocalizedName(stack);
 				if(name == null) {
 					throw new Exception();
 				}
 			} catch(Exception e1) {
 				try {
-					name = Item.getItemById(id).getUnlocalizedName();
+					name = item.getUnlocalizedName();
 					if(name == null) {
 						throw new Exception();
 					}
@@ -290,7 +284,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
 	public String getFriendlyName() {
 		if (getItem() != null) {
-			return getName(itemID, this.unsafeMakeNormalStack(1));
+			return getName(item, this.unsafeMakeNormalStack(1));
 		}
 		return "<Item name not found>";
 	}
@@ -476,7 +470,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
 	@Override
 	public String toString() {
-		return getModName() + "(" + getModId() + "):" + getFriendlyName() + ", " + itemID + ":" + itemDamage;
+		return getModName() + "(" + getModId() + "):" + getFriendlyName() + ", " + Item.getIdFromItem(item) + ":" + itemDamage;
 	}
 
 	@Override
@@ -511,11 +505,11 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	}
 
 	public boolean equalsForCrafting(ItemIdentifier item) {
-		return this.itemID == item.itemID && (item.isDamagable() ? true : this.itemDamage == item.itemDamage);
+		return this.item == item.item && (item.isDamagable() ? true : this.itemDamage == item.itemDamage);
 	}
 
 	public boolean equalsWithoutNBT(ItemIdentifier item) {
-		return this.itemID == item.itemID && this.itemDamage == item.itemDamage;
+		return this.item == item.item && this.itemDamage == item.itemDamage;
 	}
 
 	public boolean isDamagable() {
@@ -523,6 +517,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	}
 
 	public boolean isFluidContainer() {
-		return Item.itemsList[this.itemID] instanceof LogisticsFluidContainer;
+		return this.item instanceof LogisticsFluidContainer;
 	}
 }

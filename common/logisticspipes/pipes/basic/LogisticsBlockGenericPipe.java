@@ -3,13 +3,11 @@ package logisticspipes.pipes.basic;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.asm.ModDependentMethodName;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.textures.Textures;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -47,13 +45,13 @@ public class LogisticsBlockGenericPipe extends BlockGenericPipe {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon func_149673_e(IBlockAccess iblockaccess, int i, int j, int k, int l) {
+	public IIcon getIcon(IBlockAccess iblockaccess, int i, int j, int k, int l) {
 		TileEntity tile = iblockaccess.getTileEntity(i, j, k);
 		if(tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe)tile).pipe instanceof PipeBlockRequestTable) {
 			PipeBlockRequestTable table = (PipeBlockRequestTable) ((LogisticsTileGenericPipe)tile).pipe;
 			return table.getTextureFor(l);
 		}
-		return super.func_149673_e(iblockaccess, i, j, k, l);
+		return super.getIcon(iblockaccess, i, j, k, l);
 	}
 	
 	@Override

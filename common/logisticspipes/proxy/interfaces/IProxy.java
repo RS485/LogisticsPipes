@@ -1,5 +1,7 @@
 package logisticspipes.proxy.interfaces;
 
+import buildcraft.transport.Pipe;
+import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -26,4 +28,5 @@ public interface IProxy {
 	public void tickServer();
 	public void tickClient();
 	public EntityPlayer getEntityPlayerFromNetHandler(INetHandler handler);
+	public void setIconProviderFromPipe(ItemLogisticsPipe item, Pipe<?> dummyPipe);
 }

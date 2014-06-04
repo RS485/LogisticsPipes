@@ -84,14 +84,14 @@ public class ImmibisCraftingTableMk2 implements ICraftingRecipeProvider {
 				return true;
 			}
 		} catch (IllegalArgumentException e) {
-			LogisticsPipes.log.severe("Error while importing recipe from Tubestuff's AutoCraftingMk2");
+			LogisticsPipes.log.fatal("Error while importing recipe from Tubestuff's AutoCraftingMk2");
 			e.printStackTrace();
 		} catch (NoSuchFieldException e) {
-			LogisticsPipes.log.severe("Error while importing recipe from Tubestuff's AutoCraftingMk2");
+			LogisticsPipes.log.fatal("Error while importing recipe from Tubestuff's AutoCraftingMk2");
 			e.printStackTrace();
 		} catch (Exception e) {
-			LogisticsPipes.log.finer("Got a problem on ImmibisCraftingTableMk2 CraftingRecipeProvider:");
-			LogisticsPipes.log.finer(e.getMessage());
+			LogisticsPipes.log.error("Got a problem on ImmibisCraftingTableMk2 CraftingRecipeProvider:");
+			LogisticsPipes.log.error(e.getMessage());
 		}
 		return false;
 	}

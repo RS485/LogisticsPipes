@@ -63,12 +63,12 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 			items.stackSize--;
 		if(count >= items.stackSize) {
 			_tile.setStoredItemCount((_hideOnePerStack?1:0));
-			_tile.onInventoryChanged();
+			_tile.markDirty();
 			return items;
 		}
 		ItemStack newItems = items.splitStack(count);
 		_tile.setStoredItemCount(items.stackSize+(_hideOnePerStack?1:0));
-		_tile.onInventoryChanged();
+		_tile.markDirty();
 		return newItems;
 		
 	}
@@ -148,12 +148,12 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 			if(stack.stackSize <= _tile.getMaxStoredCount()) {
 				_tile.setStoredItemType(stack, stack.stackSize);
 				st.stackSize = stack.stackSize;
-				_tile.onInventoryChanged();
+				_tile.markDirty();
 				return st;
 			} else {
 				_tile.setStoredItemType(stack, _tile.getMaxStoredCount());
 				st.stackSize = _tile.getMaxStoredCount();
-				_tile.onInventoryChanged();
+				_tile.markDirty();
 				return st;
 			}
 		}
@@ -163,7 +163,7 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 		if(stack.stackSize <= _tile.getMaxStoredCount() - items.stackSize) {
 			_tile.setStoredItemCount(items.stackSize + stack.stackSize);
 			st.stackSize = stack.stackSize;
-			_tile.onInventoryChanged();
+			_tile.markDirty();
 			return st;
 		} else {
 			_tile.setStoredItemCount(_tile.getMaxStoredCount());
@@ -172,7 +172,7 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 			} else {
 				st.stackSize = stack.stackSize;
 			}
-			_tile.onInventoryChanged();
+			_tile.markDirty();
 			return st;
 		}
 	}

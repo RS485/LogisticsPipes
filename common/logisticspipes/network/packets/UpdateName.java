@@ -44,14 +44,13 @@ public class UpdateName extends ModernPacket {
 
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
-		ident = ItemIdentifier.get(data.readInt(), data.readInt(), null);
+		ident = data.readItemIdentifierStack().getItem();
 		name = data.readUTF();
 	}
 
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeInt(ident.itemID);
-		data.writeInt(ident.itemDamage);
+		data.writeItemIdentifierStack(ident.makeStack(0));
 		data.writeUTF(name);
 	}
 

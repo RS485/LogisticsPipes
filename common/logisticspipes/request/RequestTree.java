@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.init.Blocks;
+
 import logisticspipes.interfaces.routing.IFluidProvider;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestFluid;
@@ -169,7 +171,7 @@ public class RequestTree extends RequestTreeNode {
 	
 	public static boolean request(List<ItemIdentifierStack> items, IRequestItems requester, RequestLog log, EnumSet<ActiveRequestType> requestFlags) {
 		Map<ItemIdentifier,Integer> messages = new HashMap<ItemIdentifier,Integer>();
-		RequestTree tree = new RequestTree(new ItemIdentifierStack(ItemIdentifier.get(1,0,null), 0), requester, null, requestFlags);
+		RequestTree tree = new RequestTree(new ItemIdentifierStack(ItemIdentifier.get(Blocks.stone, 0, null), 0), requester, null, requestFlags);
 		boolean isDone = true;
 		for(ItemIdentifierStack stack:items) {
 			ItemIdentifier item = stack.getItem();

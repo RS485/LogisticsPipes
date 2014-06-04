@@ -5,6 +5,7 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ChatComponentText;
 
 public class PipeDebugLogResponse extends CoordinatesPacket {
 	
@@ -17,7 +18,7 @@ public class PipeDebugLogResponse extends CoordinatesPacket {
 		LogisticsTileGenericPipe tile = this.getPipe(player.getEntityWorld());
 		if(tile != null) {
 			((CoreRoutedPipe) tile.pipe).debug.openForPlayer(player);
-			player.sendChatToPlayer(ChatMessageComponent.createFromText("Debug log enabled."));
+			player.addChatComponentMessage(new ChatComponentText("Debug log enabled."));
 		}
 	}
 	

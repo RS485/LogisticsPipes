@@ -1,6 +1,5 @@
 package logisticspipes.ticks;
 
-import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.Callable;
@@ -8,8 +7,11 @@ import java.util.concurrent.Callable;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.utils.tuples.Pair;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
 
-public class QueuedTasks implements ITickHandler {
+public class QueuedTasks {
 	
 	@SuppressWarnings("rawtypes")
 	private static LinkedList<Callable> queue = new LinkedList<Callable>();
@@ -18,6 +20,7 @@ public class QueuedTasks implements ITickHandler {
 	public static void clearAllTasks() {
 		queue.clear();
 	}
+	
 	@SuppressWarnings("rawtypes")
 	public static void queueTask(Callable task) {
 		synchronized (queue) {
@@ -25,12 +28,10 @@ public class QueuedTasks implements ITickHandler {
 		}
 	}
 	
-	@Override
-	public void tickStart(EnumSet<TickType> type, Object... tickData) {}
-
 	@SuppressWarnings({"rawtypes" })
-	@Override
-	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
+	@SubscribeEvent
+	public void tickEnd(ServerTickEvent event) {
+		if(event.phase != Phase.END) return;
 		Callable call = null;
 		while(!queue.isEmpty()) {
 			synchronized (queue) {
@@ -56,15 +57,4 @@ public class QueuedTasks implements ITickHandler {
 			}
 		}
 	}
-
-	@Override
-	public EnumSet<TickType> ticks() {
-		return EnumSet.of(TickType.WORLD);
-	}
-
-	@Override
-	public String getLabel() {
-		return "LogisticsPipes QueuedTask";
-	}
-
 }

@@ -38,6 +38,7 @@ public class NEILogisticsPipesConfig implements IConfigureNEI {
 		main.add(LogisticsPipes.LogisticsCraftingSignCreator);
 		
 		Item[] pipeArray = BuildCraftProxy.pipelist.toArray(new Item[]{});
+		/*
 		Arrays.sort(pipeArray, new Comparator<Item>() {
 			@Override
 			public int compare(Item arg0, Item arg1) {
@@ -50,7 +51,7 @@ public class NEILogisticsPipesConfig implements IConfigureNEI {
 				}
 			}
 		});
-		
+		*/
 		MultiItemRange pipes = new MultiItemRange();
 		for(Item pipe: pipeArray) {
 			if(pipe != LogisticsPipes.LogisticsChassisPipeMk1 && pipe != LogisticsPipes.LogisticsChassisPipeMk2 && pipe != LogisticsPipes.LogisticsChassisPipeMk3 && pipe != LogisticsPipes.LogisticsChassisPipeMk4 && pipe != LogisticsPipes.LogisticsChassisPipeMk5) {

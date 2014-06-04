@@ -113,7 +113,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.FMLClientHandler;
 
@@ -187,39 +186,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		while(_orderManager.hasOrders()) {
 			_orderManager.sendFailed();
 		}
-	}
-
-	private ItemStack extractFromISpecialInventory(ISpecialInventory inv, ItemIdentifier wanteditem, int count){
-		ItemStack retstack = null;
-		while(count > 0) {
-			ItemStack[] stacks = inv.extractItem(false, ForgeDirection.UNKNOWN, 1);
-			if(stacks == null || stacks.length < 1 || stacks[0] == null) break;
-			ItemStack stack = stacks[0];
-			if(stack.stackSize == 0) break;
-			if(retstack == null) {
-				if(!wanteditem.fuzzyMatch(stack)) break;
-			} else {
-				if(!retstack.isItemEqual(stack)) break;
-				if(!ItemStack.areItemStackTagsEqual(retstack, stack)) break;
-			}
-			if(!useEnergy(neededEnergy() * stack.stackSize)) break;
-			
-			stacks = inv.extractItem(true, ForgeDirection.UNKNOWN, 1);
-			if(stacks == null || stacks.length < 1 || stacks[0] == null) {
-				LogisticsPipes.requestLog.info("crafting extractItem(true) got nothing from " + ((Object)inv).toString());
-				break;
-			}
-			if(!ItemStack.areItemStacksEqual(stack, stacks[0])) {
-				LogisticsPipes.requestLog.info("crafting extract got a unexpected item from " + ((Object)inv).toString());
-			}
-			if(retstack == null) {
-				retstack = stack;
-			} else {
-				retstack.stackSize += stack.stackSize;
-			}
-			count -= stack.stackSize;
-		}
-		return retstack;
 	}
 	
 	private ItemStack extractFromIInventory(IInventory inv, ItemIdentifier wanteditem, int count){
@@ -339,8 +305,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 				tile = it.next();
 				if (tile.tile instanceof LogisticsCraftingTableTileEntity) {
 					extracted = extractFromLogisticsCraftingTable((LogisticsCraftingTableTileEntity)tile.tile, nextOrder.getItem().getItem(), maxtosend);
-				} else if (tile.tile instanceof ISpecialInventory) {
-					extracted = extractFromISpecialInventory((ISpecialInventory) tile.tile, nextOrder.getItem().getItem(), maxtosend);
 				} else if (tile.tile instanceof net.minecraft.inventory.ISidedInventory) {
 					IInventory sidedadapter = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) tile.tile, ForgeDirection.UNKNOWN,true);
 					extracted = extractFromIInventory(sidedadapter, nextOrder.getItem().getItem(), maxtosend);
@@ -608,7 +572,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public void registerExtras(LogisticsPromise promise) {		
 		ItemIdentifierStack stack = new ItemIdentifierStack(promise.item,promise.numberOfItems);
 		_extras.add(new LogisticsOrder(stack, null, RequestType.EXTRA));
-		LogisticsPipes.requestLog.info(stack.getStackSize() + " extras registered");
+		debug.log(stack.getStackSize() + " extras registered");
 	}
 
 	@Override
@@ -1169,7 +1133,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 				for (int i = 0; i < 9; i++) {
 					final ModernPacket pak = PacketHandler.getPacket(CraftingFuzzyFlag.class).setInteger2(fuzzyCraftingFlagArray[i]).setInteger(i).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 					if(player != null)
-						MainProxy.sendPacketToPlayer(pak, (Player)player);
+						MainProxy.sendPacketToPlayer(pak, player);
 					MainProxy.sendPacketToAllWatchingChunk(this.getX(), this.getZ(), MainProxy.getDimensionForWorld(getWorld()), pak);
 				}
 			}

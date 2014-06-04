@@ -123,9 +123,9 @@ public class LogisticsSolidBlock extends BlockContainer {
 	public IIcon getIcon(int side, int meta) {
 		return getRotatedTexture(meta, side, 2, 0);
 	}
-	
+
 	@Override
-	public TileEntity createTileEntity(World world, int metadata) {
+	public TileEntity createNewTileEntity(World world, int metadata) {
         switch(metadata) {
 	    	case SOLDERING_STATION:
 	    		return new LogisticsSolderingTileEntity();
@@ -165,7 +165,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getBlockTexture(IBlockAccess access, int x, int y, int z, int side) {
+	public IIcon getIcon(IBlockAccess access, int x, int y, int z, int side) {
 		int meta = access.getBlockMetadata(x, y, z);
 		TileEntity tile = access.getTileEntity(x, y, z);
 		if(tile instanceof IRotationProvider) {
@@ -177,7 +177,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister par1IIconRegister) {
+	public void registerBlockIcons(IIconRegister par1IIconRegister) {
 		for(int i=0;i<17;i++) {
 			icons[i]=par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/"+i);
 		}

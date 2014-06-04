@@ -381,7 +381,7 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 		}
 		//still remaining... was from fuzzyMatch on a crafter
 		for(Entry<ItemIdentifier, Integer> e : _requestedItems.entrySet()) {
-			if(e.getKey().itemID == item.getItem().itemID && e.getKey().itemDamage == item.getItem().itemDamage) {
+			if(e.getKey().item == item.getItem().item && e.getKey().itemDamage == item.getItem().itemDamage) {
 				int expected = e.getValue();
 				e.setValue(Math.max(0, expected - remaining));
 				debug.log("Supplier: Fuzzy match with" + e + ". Still missing: " + e.getValue());
@@ -395,7 +395,6 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 			}
 		}
 		//we have no idea what this is, log it.
-		LogisticsPipes.requestLog.info("supplier got unexpected item " + item.toString());
 		debug.log("Supplier: supplier got unexpected item " + item.toString());
 	}
 

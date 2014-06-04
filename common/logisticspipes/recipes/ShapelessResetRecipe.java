@@ -1,18 +1,19 @@
 package logisticspipes.recipes;
 
 import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
 
 public class ShapelessResetRecipe implements IRecipe {
-	private final int itemID;
+	private final Item item;
 	private final int meta;
 	private final ItemStack output;
 
-	public ShapelessResetRecipe(int itemID, int meta) {
-		this.output = new ItemStack(itemID, 1, meta);
-		this.itemID = itemID;
+	public ShapelessResetRecipe(Item item, int meta) {
+		this.output = new ItemStack(item, 1, meta);
+		this.item = item;
 		this.meta = meta;
 	}
 
@@ -23,7 +24,7 @@ public class ShapelessResetRecipe implements IRecipe {
 			ItemStack slot = var1.getStackInSlot(i);
 			if(slot == null)
 				continue;
-			if(slot.itemID != itemID || slot.getItemDamage() != meta) {
+			if(slot.getItem() != item || slot.getItemDamage() != meta) {
 				return false;
 			}
 			nmatches++;
@@ -39,7 +40,7 @@ public class ShapelessResetRecipe implements IRecipe {
 				continue;
 			nmatches++;
 		}
-		return new ItemStack(itemID, nmatches, meta);
+		return new ItemStack(item, nmatches, meta);
 	}
 
 	@Override

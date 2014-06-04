@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ChatComponentText;
 import cpw.mods.fml.client.FMLClientHandler;
 
 @Accessors(chain=true)
@@ -47,10 +48,10 @@ public class ComponentList extends ModernPacket {
 			((GuiRequestTable)FMLClientHandler.instance().getClient().currentScreen).handleSimulateAnswer(used, missing, (GuiRequestTable)FMLClientHandler.instance().getClient().currentScreen, player);
 		} else {
 			for(ItemIdentifierStack item:used) {
-				player.addChatMessage("Component: " + item.getFriendlyName());
+				player.addChatComponentMessage(new ChatComponentText("Component: " + item.getFriendlyName()));
 			}
 			for(ItemIdentifierStack item:missing) {
-				player.addChatMessage("Missing: " + item.getFriendlyName());
+				player.addChatComponentMessage(new ChatComponentText("Missing: " + item.getFriendlyName()));
 			}
 		}
 	}

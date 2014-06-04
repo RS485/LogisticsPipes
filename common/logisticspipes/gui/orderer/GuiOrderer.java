@@ -35,6 +35,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 
 import org.lwjgl.input.Keyboard;
 
@@ -144,7 +145,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 	public boolean itemSearched(ItemIdentifier item) {
 		if(search.isEmpty()) return true;
 		if(isSearched(item.getFriendlyName().toLowerCase(), search.getContent().toLowerCase())) return true;
-		if(isSearched(String.valueOf(item.itemID), search.getContent())) return true;
+		if(isSearched(String.valueOf(Item.getIdFromItem(item.item)), search.getContent())) return true;
 		//Enchantment? Enchantment!
 		Map<Integer,Integer> enchantIdLvlMap = EnchantmentHelper.getEnchantments(item.unsafeMakeNormalStack(1));
 		for(Entry<Integer,Integer> e:enchantIdLvlMap.entrySet()) {

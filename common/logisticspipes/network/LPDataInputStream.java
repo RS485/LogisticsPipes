@@ -22,6 +22,7 @@ import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
+import net.minecraft.item.Item;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -145,7 +146,7 @@ public class LPDataInputStream extends DataInputStream {
 		int stacksize = this.readInt();
 		int damage = this.readInt();
 		NBTTagCompound tag = this.readNBTTagCompound();
-		return new ItemIdentifierStack(ItemIdentifier.get(itemID, damage, tag), stacksize);
+		return new ItemIdentifierStack(ItemIdentifier.get(Item.getItemById(itemID), damage, tag), stacksize);
 	}
 	
 	public <T> List<T> readList(IReadListObject<T> handler) throws IOException {

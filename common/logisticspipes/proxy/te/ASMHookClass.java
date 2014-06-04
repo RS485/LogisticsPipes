@@ -10,6 +10,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import thermalexpansion.block.conduit.BlockConduit;
 import thermalexpansion.part.conduit.ConduitBase;
 import thermalexpansion.part.conduit.item.ConduitItem;
+import thermalexpansion.part.conduit.item.TravelingItem;
 
 public class ASMHookClass {
 	private static void handleTileCheck(ConduitBase conduit, int side, TileEntity tile) {

@@ -29,7 +29,7 @@ public class TeleportPipes implements ISpecialPipedConnection {
 				PipeItemTeleport = (Class<? extends Pipe>) Class.forName("net.minecraft.src.buildcraft.additionalpipes.pipes.PipeItemTeleport");
 			}
 			teleportPipeMethod = PipeItemTeleport.getMethod("getConnectedPipes", boolean.class);
-			LogisticsPipes.log.fine("Additional pipes detected, adding compatibility");
+			LogisticsPipes.log.debug("Additional pipes detected, adding compatibility");
 			return true;
 		} catch (Exception e1) {
 			try {
@@ -37,10 +37,10 @@ public class TeleportPipes implements ISpecialPipedConnection {
 				Class<?> tpmanager = Class.forName("buildcraft.additionalpipes.pipes.TeleportManager");
 				teleportManager = tpmanager.getField("instance").get(null);
 				teleportPipeMethod = tpmanager.getMethod("getConnectedPipes",Class.forName("buildcraft.additionalpipes.pipes.PipeTeleport"),boolean.class);
-				LogisticsPipes.log.fine("Additional pipes detected, adding compatibility");
+				LogisticsPipes.log.debug("Additional pipes detected, adding compatibility");
 				return true;
 			} catch (Exception e2) {
-				LogisticsPipes.log.fine("Additional pipes not detected: " + e2.getMessage());
+				LogisticsPipes.log.debug("Additional pipes not detected: " + e2.getMessage());
 				return false;
 			}
 		}

@@ -181,7 +181,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 					}
     			}
     		} else {
-    			LogisticsPipes.log.severe("SimpleInventory: java.lang.ArrayIndexOutOfBoundsException: " + index + " of " + _contents.length);
+    			LogisticsPipes.log.fatal("SimpleInventory: java.lang.ArrayIndexOutOfBoundsException: " + index + " of " + _contents.length);
     		}
     	}
 		updateContents();

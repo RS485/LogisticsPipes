@@ -12,6 +12,7 @@ import logisticspipes.blocks.powertile.LogisticsBCPowerProviderTileEntity;
 import logisticspipes.blocks.powertile.LogisticsIC2PowerProviderTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
+import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.UpdateName;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -32,6 +33,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.config.Configuration;
+import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.server.FMLServerHandler;
@@ -284,4 +286,7 @@ public class ServerProxy implements IProxy {
 		if(handler instanceof NetHandlerPlayServer) return ((NetHandlerPlayServer)handler).playerEntity;
 		return null;
 	}
+
+	@Override
+	public void setIconProviderFromPipe(ItemLogisticsPipe item, Pipe<?> dummyPipe) {}
 }

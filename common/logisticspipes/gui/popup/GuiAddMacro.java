@@ -15,6 +15,7 @@ import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -83,7 +84,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 			if(itemNBT.hasKey("nbt")) {
 				tag = itemNBT.getCompoundTag("nbt");
 			}
-			ItemIdentifier item = ItemIdentifier.get(itemID, itemData, tag);
+			ItemIdentifier item = ItemIdentifier.get(Item.getItemById(itemID), itemData, tag);
 			int amount = itemNBT.getInteger("amount");
 			ItemIdentifierStack stack = new ItemIdentifierStack(item, amount);
 			macroItems.add(stack);
@@ -281,7 +282,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 						if(!handled) {
 							int i = 0;
 							for(ItemIdentifierStack stack:macroItems) {
-								if(item.itemID == stack.getItem().itemID && item.itemDamage < stack.getItem().itemDamage) {
+								if(item == stack.getItem() && item.itemDamage < stack.getItem().itemDamage) {
 									if(mousebutton == 0 || wheelup != 0) {
 										macroItems.add(i, item.makeStack(1 + (wheelup != 0 ? wheelup - 1: 0)));
 									} else if(mousebutton == 2) {
@@ -290,7 +291,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 									handled = true;
 									break;
 								}
-								if(item.itemID < stack.getItem().itemID) {
+								if(Item.getIdFromItem(item.item) < Item.getIdFromItem(stack.getItem().item)) {
 									if(mousebutton == 0 || wheelup != 0) {
 										macroItems.add(i, item.makeStack(1 + (wheelup != 0 ? wheelup - 1: 0)));
 									} else if(mousebutton == 2) {
@@ -379,7 +380,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 	public boolean itemSearched(ItemIdentifier item) {
 		if(Search1.isEmpty() && Search2.isEmpty()) return true;
 		if(isSearched(item.getFriendlyName().toLowerCase(),(Search1 + Search2).toLowerCase())) return true;
-		if(isSearched(String.valueOf(item.itemID),(Search1 + Search2))) return true;
+		if(isSearched(String.valueOf(Item.getIdFromItem(item.item)),(Search1 + Search2))) return true;
 		return false;
 	}
 	
@@ -440,7 +441,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 				NBTTagList inventar = new NBTTagList();
 				for(ItemIdentifierStack stack:macroItems) {
 					NBTTagCompound itemNBT = new NBTTagCompound();
-					itemNBT.setInteger("id", stack.getItem().itemID);
+					itemNBT.setInteger("id", Item.getIdFromItem(stack.getItem().item));
 					itemNBT.setInteger("data", stack.getItem().itemDamage);
 					if(stack.getItem().tag != null) {
 						itemNBT.setTag("nbt", stack.getItem().tag);

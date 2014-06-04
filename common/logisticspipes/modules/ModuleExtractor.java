@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-
-import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.gui.hud.modules.HUDExtractor;
 import logisticspipes.interfaces.IClientInformationProvider;
@@ -35,7 +33,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.api.inventory.ISpecialInventory;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -155,23 +152,6 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 		}
 
 		IInventoryUtil targetUtil = _invProvider.getSneakyInventory(extractOrientation,true);
-		
-		if (realInventory instanceof ISpecialInventory && !targetUtil.isSpecialInventory()){
-			ItemStack[] stack = ((ISpecialInventory) realInventory).extractItem(false, extractOrientation, 1);
-			if (stack == null || stack.length < 1 || stack[0] == null || stack[0].stackSize == 0) return;
-			Pair<Integer, SinkReply> reply = _itemSender.hasDestination(ItemIdentifier.get(stack[0]), true, new ArrayList<Integer>());
-			if (reply == null) return;
-			ItemStack[] stacks = ((ISpecialInventory) realInventory).extractItem(true, extractOrientation, 1);
-			if (stacks == null || stacks.length < 1 || stacks[0] == null || stacks[0].stackSize == 0) {
-				LogisticsPipes.log.info("extractor extractItem(true) got nothing from " + ((Object)realInventory).toString());
-				return;
-			}
-			if(!ItemStack.areItemStacksEqual(stack[0], stacks[0])) {
-				LogisticsPipes.log.info("extractor extract got a unexpected item from " + ((Object)realInventory).toString());
-			}
-			_itemSender.sendStack(stacks[0], reply, itemSendMode());
-			return;
-		}
 
 		
 		for (int i = 0; i < targetUtil.getSizeInventory(); i++){

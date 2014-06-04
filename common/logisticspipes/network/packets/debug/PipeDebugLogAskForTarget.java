@@ -9,7 +9,6 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.MainProxy;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumMovingObjectType;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import cpw.mods.fml.client.FMLClientHandler;

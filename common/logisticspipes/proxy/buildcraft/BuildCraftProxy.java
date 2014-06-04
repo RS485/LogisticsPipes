@@ -52,6 +52,7 @@ import logisticspipes.pipes.PipeLogisticsChassiMk5;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.fluid.LogisticsFluidConnectorPipe;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.gates.ActionDisableLogistics;
 import logisticspipes.proxy.buildcraft.gates.LogisticsTriggerProvider;
@@ -253,8 +254,8 @@ public class BuildCraftProxy {
 	 * @return the pipe
 	 */
 	@SuppressWarnings("unchecked")
-	public static ItemPipe registerPipe(Class<? extends Pipe<?>> clas) {
-		ItemPipe item = new ItemLogisticsPipe();
+	public static ItemLogisticsPipe registerPipe(Class<? extends Pipe<?>> clas) {
+		ItemLogisticsPipe item = new ItemLogisticsPipe();
 
 		Map pipes = null;
 		
@@ -273,14 +274,14 @@ public class BuildCraftProxy {
 		Pipe<?> dummyPipe = BlockGenericPipe.createPipe(item);
 		if (dummyPipe != null) {
 			item.setPipeIconIndex(dummyPipe.getIconIndexForItem());
-			TransportProxy.proxy.setIconProviderFromPipe(item, dummyPipe);
+			MainProxy.proxy.setIconProviderFromPipe(item, dummyPipe);
 		}
 
 		return item;
 	}
 	
 	protected Item createPipe(Class <? extends Pipe<?>> clas, String descr, Side side) {
-		ItemPipe res = registerPipe(clas);
+		ItemLogisticsPipe res = registerPipe(clas);
 		res.setCreativeTab(LogisticsPipes.LPCreativeTab);
 		res.setUnlocalizedName(clas.getSimpleName());
 		Pipe<?> pipe = BlockGenericPipe.createPipe(res);
@@ -385,7 +386,8 @@ public class BuildCraftProxy {
 					lpBCItem.saveToExtraNBTData();
 					bcItem = lpBCItem;
 				} else {
-					bcItem = new TravelingItem();
+					//TODO is this needed ClientSide ?
+					//bcItem = TravelingItem.make();
 				}
 				LPPosition p = new LPPosition(tile.xCoord + 0.5F, tile.yCoord + CoreConstants.PIPE_MIN_POS, tile.zCoord + 0.5F);
 				if(item.output.getOpposite() == ForgeDirection.DOWN) {

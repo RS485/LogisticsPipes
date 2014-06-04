@@ -59,7 +59,7 @@ public class LogisticsTileRenderController {
 	private class LaserBeamDataClient extends LaserBeamData {
 		public LaserBeamDataClient(float length, int timeout, boolean reverse, ForgeDirection dir, int color) {
 			super(length, timeout, reverse);
-			this.entity = new PipeFXLaserPowerBeam(pipe.worldObj, new LPPosition((TileEntity)pipe), length, dir, color, LogisticsTileRenderController.this.pipe).setReverse(reverse);
+			this.entity = new PipeFXLaserPowerBeam(pipe.getWorldObj(), new LPPosition((TileEntity)pipe), length, dir, color, LogisticsTileRenderController.this.pipe).setReverse(reverse);
 			Minecraft.getMinecraft().effectRenderer.addEffect(this.entity);
 			
 		}
@@ -107,7 +107,7 @@ public class LogisticsTileRenderController {
 	private class LaserBallDataClient extends LaserBallData {
 		public LaserBallDataClient(float length, int timeout, int color) {
 			super(length, timeout);
-			this.entity = new PipeFXLaserPowerBall(pipe.worldObj, new LPPosition((TileEntity)pipe), color, LogisticsTileRenderController.this.pipe);
+			this.entity = new PipeFXLaserPowerBall(pipe.getWorldObj(), new LPPosition((TileEntity)pipe), color, LogisticsTileRenderController.this.pipe);
 			Minecraft.getMinecraft().effectRenderer.addEffect(this.entity);
 		}
 		@Getter

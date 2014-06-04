@@ -7,7 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.BuildCraftTransport;
 import buildcraft.api.core.IIconProvider;
 import buildcraft.core.CoreConstants;
@@ -23,7 +23,7 @@ public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
 
 	public void renderPipe(RenderBlocks renderblocks, IBlockAccess iblockaccess, BlockGenericPipe block, LogisticsTileGenericPipe pipe, int x, int y, int z) {
 		if(pipe.pipe instanceof PipeBlockRequestTable) {
-			PipeRenderState state = pipe.getRenderState();
+			PipeRenderState state = pipe.renderState;
 			IIconProvider icons = pipe.getPipeIcons();
 			if (icons == null) return;
 			state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(ForgeDirection.UNKNOWN));
@@ -32,7 +32,7 @@ public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
 			renderblocks.renderStandardBlock(block, x, y, z);
 			return;
 		}
-		PipeRenderState state = pipe.getRenderState();
+		PipeRenderState state = pipe.renderState;
 		IIconProvider icons = pipe.getPipeIcons();
 		
 		if (icons == null)
@@ -205,7 +205,7 @@ public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
 
 	@Override
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
-		TileEntity tile = world.getBlockTileEntity(x, y, z);
+		TileEntity tile = world.getTileEntity(x, y, z);
 
 		if (tile instanceof LogisticsTileGenericPipe) {
 			LogisticsTileGenericPipe pipeTile = (LogisticsTileGenericPipe) tile;
@@ -214,11 +214,6 @@ public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
 			super.renderWorldBlock(world, x, y, z, block, modelId, renderer);
 		}
 		return true;
-	}
-
-	@Override
-	public boolean shouldRender3DInInventory() {
-		return false;
 	}
 
 	@Override

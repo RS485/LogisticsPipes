@@ -18,6 +18,7 @@ import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
+import net.minecraft.item.Item;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -130,7 +131,7 @@ public class LPDataOutputStream extends DataOutputStream {
 	}
 
 	public void writeItemIdentifierStack(ItemIdentifierStack stack) throws IOException {
-		this.writeInt(stack.getItem().itemID);
+		this.writeInt(Item.getIdFromItem(stack.getItem().item));
 		this.writeInt(stack.getStackSize());
 		this.writeInt(stack.getItem().itemDamage);
 		this.writeNBTTagCompound(stack.getItem().tag);

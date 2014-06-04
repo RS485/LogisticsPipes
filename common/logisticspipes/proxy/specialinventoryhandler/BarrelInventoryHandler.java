@@ -232,9 +232,6 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 				st.stackSize = stack.stackSize;
 				if(doAdd) {
 					ItemStack tst = stack.copy();
-					if(tst.stackTagCompound != null && tst.stackTagCompound.getName().equals("")) {
-						tst.stackTagCompound.setName("tag");
-					}
 					((IInventory)_tile).setInventorySlotContents(0, tst);
 				}
 			} else {

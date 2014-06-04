@@ -27,6 +27,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ChatComponentTranslation;
@@ -44,7 +45,7 @@ public class RequestHandler {
 			player.addChatMessage(new ChatComponentTranslation("lp.misc.noenergy"));
 			return;
 		}
-		RequestTree.request(ItemIdentifier.get(stack.getItem().itemID, stack.getItem().itemDamage, stack.getItem().tag).makeStack(stack.getStackSize()), pipe
+		RequestTree.request(ItemIdentifier.get(stack.getItem().item, stack.getItem().itemDamage, stack.getItem().tag).makeStack(stack.getStackSize()), pipe
 				, new RequestLog() {
 			@Override
 			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
@@ -73,7 +74,7 @@ public class RequestHandler {
 	public static void simulate(final EntityPlayer player, final ItemIdentifierStack stack, CoreRoutedPipe pipe) {
 		final Map<ItemIdentifier,Integer> used = new HashMap<ItemIdentifier,Integer>();
 		final Map<ItemIdentifier,Integer> missing = new HashMap<ItemIdentifier,Integer>();
-		RequestTree.simulate(ItemIdentifier.get(stack.getItem().itemID, stack.getItem().itemDamage, stack.getItem().tag).makeStack(stack.getStackSize()), pipe, new RequestLog() {
+		RequestTree.simulate(ItemIdentifier.get(stack.getItem().item, stack.getItem().itemDamage, stack.getItem().tag).makeStack(stack.getStackSize()), pipe, new RequestLog() {
 			@Override
 			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
 				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
@@ -181,7 +182,7 @@ public class RequestHandler {
 			if(!itemnbt.hasKey("nbt")) {
 				itemNBTContent = null;
 			}
-			ItemIdentifierStack stack = ItemIdentifier.get(itemnbt.getInteger("id"),itemnbt.getInteger("data"),itemNBTContent).makeStack(itemnbt.getInteger("amount"));
+			ItemIdentifierStack stack = ItemIdentifier.get(Item.getItemById(itemnbt.getInteger("id")), itemnbt.getInteger("data"), itemNBTContent).makeStack(itemnbt.getInteger("amount"));
 			transaction.add(stack);
 		}
 		RequestTree.request(transaction, requester, new RequestLog() {

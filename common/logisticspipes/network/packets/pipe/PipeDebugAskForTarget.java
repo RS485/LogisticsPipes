@@ -15,8 +15,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatMessageComponent;
-import net.minecraft.util.EnumMovingObjectType;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -46,9 +45,9 @@ public class PipeDebugAskForTarget extends ModernPacket {
 				if(tile instanceof LogisticsTileGenericPipe) {
 					((CoreRoutedPipe)((LogisticsTileGenericPipe)tile).pipe).debug.debugThisPipe = !((CoreRoutedPipe)((LogisticsTileGenericPipe)tile).pipe).debug.debugThisPipe;
 					if(((CoreRoutedPipe)((LogisticsTileGenericPipe)tile).pipe).debug.debugThisPipe) {
-						player.sendChatToPlayer(ChatMessageComponent.createFromText("Debug enabled On Client"));
+						player.addChatComponentMessage(new ChatComponentText("Debug enabled On Client"));
 					} else {
-						player.sendChatToPlayer(ChatMessageComponent.createFromText("Debug disabled On Client"));
+						player.addChatComponentMessage(new ChatComponentText("Debug disabled On Client"));
 					}
 				}
 			} else {

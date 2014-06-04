@@ -207,7 +207,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 			}
 		}
 		//we have no idea what this is, log it.
-		LogisticsPipes.requestLog.info("liquid supplier got unexpected item " + liquid.toString());
+		debug.log("liquid supplier got unexpected item " + liquid.toString());
 	}
 
 	@Override

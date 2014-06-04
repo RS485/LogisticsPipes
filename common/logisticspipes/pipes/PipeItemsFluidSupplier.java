@@ -86,7 +86,6 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 		if (!(tile instanceof IFluidHandler)) return;
 		if (tile instanceof TileGenericPipe) return;
 		IFluidHandler container = (IFluidHandler) tile;
-		if (data == null) return;
 		if (data.getItemIdentifierStack() == null) return;
 		FluidStack liquidId = FluidContainerRegistry.getFluidForFilledItem(data.getItemIdentifierStack().makeNormalStack());
 		if (liquidId == null) return;

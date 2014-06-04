@@ -33,6 +33,7 @@ public class SupplierPipeLimitedPacket extends CoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
+		if(pipe == null) return;
 		if(pipe.pipe instanceof PipeItemsSupplierLogistics) {
 			((PipeItemsSupplierLogistics)pipe.pipe).setLimited(isLimited());
 		}

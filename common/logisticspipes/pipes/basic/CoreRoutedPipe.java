@@ -265,24 +265,6 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 
 	public abstract ItemSendMode getItemSendMode();
 	
-	private boolean checkTileEntity(boolean force) {
-		if(getWorld().getTotalWorldTime() % 10 == 0 || force) {
-			if(!(this.container instanceof LogisticsTileGenericPipe)) {
-				TileEntity tile = getWorld().getTileEntity(getX(), getY(), getZ());
-				if(tile != this.container) {
-					LogisticsPipes.log.fatal("LocalCodeError");
-				}
-				if(MainProxy.isClient(getWorld())) {
-					WorldTickHandler.clientPipesToReplace.add(this.container);
-				} else {
-					WorldTickHandler.serverPipesToReplace.add(this.container);
-				}
-				return true;
-			}
-		}
-		return false;
-	}
-	
 	/**
 	 * Designed to help protect against routing loops - if both pipes are on the same block, and of ISided overlapps, return true
 	 * @param other

@@ -72,8 +72,6 @@ public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
-		if (MainProxy.isServer(entityplayer.worldObj)) {
-			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Freq_Card_ID, getWorld(), getX(), getY(), getZ());
-		}
+		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Freq_Card_ID, getWorld(), getX(), getY(), getZ());
 	}
 }

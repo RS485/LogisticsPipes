@@ -273,9 +273,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
-		if(MainProxy.isServer(entityplayer.worldObj)) {
-			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_FluidSupplier_ID, getWorld(), getX(), getY(), getZ());
-		}
+		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_FluidSupplier_ID, getWorld(), getX(), getY(), getZ());
 	}
 	
 	/*** GUI ***/

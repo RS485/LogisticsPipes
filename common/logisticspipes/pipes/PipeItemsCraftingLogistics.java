@@ -1027,17 +1027,15 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
-		if (MainProxy.isServer(entityplayer.worldObj)) {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(GuiArgument.class)
-					.setGuiID(GuiIDs.GUI_CRAFTINGPIPE_ID)
-					.setArgs(new Object[]{((CoreRoutedPipe)this.container.pipe).getUpgradeManager().isAdvancedSatelliteCrafter(),
-							((CoreRoutedPipe)this.container.pipe).getUpgradeManager().getFluidCrafter(),
-							amount,
-							((CoreRoutedPipe)this.container.pipe).getUpgradeManager().hasByproductExtractor(),
-							((CoreRoutedPipe)this.container.pipe).getUpgradeManager().isFuzzyCrafter()}),
-							(Player) entityplayer);
-			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_CRAFTINGPIPE_ID, getWorld(), getX(), getY(), getZ());
-		}
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(GuiArgument.class)
+				.setGuiID(GuiIDs.GUI_CRAFTINGPIPE_ID)
+				.setArgs(new Object[]{((CoreRoutedPipe)this.container.pipe).getUpgradeManager().isAdvancedSatelliteCrafter(),
+						((CoreRoutedPipe)this.container.pipe).getUpgradeManager().getFluidCrafter(),
+						amount,
+						((CoreRoutedPipe)this.container.pipe).getUpgradeManager().hasByproductExtractor(),
+						((CoreRoutedPipe)this.container.pipe).getUpgradeManager().isFuzzyCrafter()}),
+						(Player) entityplayer);
+		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_CRAFTINGPIPE_ID, getWorld(), getX(), getY(), getZ());
 	}
 
 	@Override

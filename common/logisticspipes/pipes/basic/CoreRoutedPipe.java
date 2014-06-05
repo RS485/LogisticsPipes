@@ -890,7 +890,9 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			}
 			return true;
 		} else if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && (settings == null || settings.openGui) && SimpleServiceLocator.buildCraftProxy.canWrench(entityplayer, this.getX(), this.getY(), this.getZ())) {
-			onWrenchClicked(entityplayer);
+			if (MainProxy.isServer(entityplayer.worldObj)) {
+				onWrenchClicked(entityplayer);
+			}
 			SimpleServiceLocator.buildCraftProxy.wrenchUsed(entityplayer, this.getX(), this.getY(), this.getZ());
 			return true;
 		} else if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer && (settings == null || settings.openRequest)) {
@@ -1502,9 +1504,7 @@ outer:
 	
 	// from logic
 	public void onWrenchClicked(EntityPlayer entityplayer) {
-		if (MainProxy.isServer(entityplayer.worldObj)) {
-			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Freq_Card_ID, getWorld(), getX(), getY(), getZ());
-		}
+		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Freq_Card_ID, getWorld(), getX(), getY(), getZ());
 	}
 	
 	final void destroy(){ // no overide, put code in OnBlockRemoval

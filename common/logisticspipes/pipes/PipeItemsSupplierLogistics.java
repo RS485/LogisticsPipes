@@ -113,11 +113,9 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
 		//pause = true; //Pause until GUI is closed //TODO Find a way to handle this
-		if(MainProxy.isServer(entityplayer.worldObj)) {
-			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SupplierPipe_ID, getWorld(), getX(), getY(), getZ());
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setHasPatternUpgrade(getUpgradeManager().hasPatternUpgrade()).setInteger((getUpgradeManager().hasPatternUpgrade() ? getPatternMode() : getSupplyMode()).ordinal()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)entityplayer);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeLimitedPacket.class).setLimited(isLimited()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)entityplayer);
-		}
+		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SupplierPipe_ID, getWorld(), getX(), getY(), getZ());
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setHasPatternUpgrade(getUpgradeManager().hasPatternUpgrade()).setInteger((getUpgradeManager().hasPatternUpgrade() ? getPatternMode() : getSupplyMode()).ordinal()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)entityplayer);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeLimitedPacket.class).setLimited(isLimited()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)entityplayer);
 	}
 	
 	/*** GUI ***/

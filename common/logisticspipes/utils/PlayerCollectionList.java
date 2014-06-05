@@ -1,15 +1,15 @@
 package logisticspipes.utils;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 
 public class PlayerCollectionList {
 
-	private List<EqualWeakReference<EntityPlayer>> players = new CopyOnWriteArrayList<EqualWeakReference<EntityPlayer>>();
+	private List<EqualWeakReference<EntityPlayer>> players = new ArrayList<EqualWeakReference<EntityPlayer>>();
 	private boolean checkingPlayers =false;
 
 	public void checkPlayers() {

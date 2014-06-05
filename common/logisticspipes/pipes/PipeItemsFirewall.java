@@ -41,16 +41,9 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	}
 	
 	@Override
-	public boolean wrenchClicked(EntityPlayer entityplayer, SecuritySettings settings) {
-		if(MainProxy.isServer(getWorld())) {
-			if (settings == null || settings.openGui) {
-				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_FIREWALL, getWorld(), getX(), getY(), getZ());
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player) entityplayer);
-			} else {
-				entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
-			}
-		}
-		return true;
+	public void onWrenchClicked(EntityPlayer entityplayer) {
+		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_FIREWALL, getWorld(), getX(), getY(), getZ());
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player) entityplayer);
 	}
 
 	@Override

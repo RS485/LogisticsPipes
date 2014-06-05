@@ -838,39 +838,18 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	
 	@Override
 	public final boolean blockActivated(EntityPlayer entityplayer) {
-		
-		
 		SecuritySettings settings = null;
 		if(MainProxy.isServer(entityplayer.worldObj)) {
 			LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(getUpgradeManager().getSecurityID());
-			// Logic had false
 			if(station != null) {
 				settings = station.getSecuritySettingsForPlayer(entityplayer, true);
 			}
 		}
-		if(handleClick(entityplayer, settings)) return true;
-		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && !(entityplayer.isSneaking()) && SimpleServiceLocator.buildCraftProxy.canWrench(entityplayer, this.getX(), this.getY(), this.getZ())) {
-			if(wrenchClicked(entityplayer, settings)) {
-				SimpleServiceLocator.buildCraftProxy.wrenchUsed(entityplayer, this.getX(), this.getY(), this.getZ());
-				return true;
-			}
-			SimpleServiceLocator.buildCraftProxy.wrenchUsed(entityplayer, this.getX(), this.getY(), this.getZ());
-		}
-		if(SimpleServiceLocator.buildCraftProxy.isUpgradeManagerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
-			if(MainProxy.isServer(getWorld())) {
-				if (settings == null || settings.openUpgrades) {
-					getUpgradeManager().openGui(entityplayer, this);
-				} else {
-					entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
-				}
-			}
+
+		if(handleClick(entityplayer, settings)) {
 			return true;
 		}
-		if(!(entityplayer.isSneaking()) && getUpgradeManager().tryIserting(getWorld(), entityplayer)) {
-			return true;
-		}
-		//TODO: simplify any duplicate logic from above
-		// from logic
+
 		if (entityplayer.getCurrentEquippedItem() == null) {
 			if (!entityplayer.isSneaking()) return false;
 			if(MainProxy.isClient(entityplayer.worldObj)) {
@@ -884,51 +863,65 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 				doDebugStuff(entityplayer);
 			}
 			return true;
-		} else if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsNetworkMonitior && (settings == null || settings.openNetworkMonitor)) {
-			if(MainProxy.isServer(entityplayer.worldObj)) {
-				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_RoutingStats_ID, getWorld(), getX(), getY(), getZ());
-			}
-			return true;
-		} else if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && (settings == null || settings.openGui) && SimpleServiceLocator.buildCraftProxy.canWrench(entityplayer, this.getX(), this.getY(), this.getZ())) {
-			if (MainProxy.isServer(entityplayer.worldObj)) {
-				onWrenchClicked(entityplayer);
-			}
-			SimpleServiceLocator.buildCraftProxy.wrenchUsed(entityplayer, this.getX(), this.getY(), this.getZ());
-			return true;
-		} else if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer && (settings == null || settings.openRequest)) {
-			if(MainProxy.isServer(entityplayer.worldObj)) {
-				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, getWorld(), getX(), getY(), getZ());
-			}
-			return true;
-		} else if(entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
-			if(MainProxy.isServer(entityplayer.worldObj)) {
-				entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
-			}
-			return true;
-		} else if(entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsNetworkMonitior) {
-			if(MainProxy.isServer(entityplayer.worldObj)) {
-				entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
-			}
-			return true;
 		}
-		return super.blockActivated(entityplayer);
-	}
-	
-	protected boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
-		return false;
-	}
-	
-	protected boolean wrenchClicked(EntityPlayer entityplayer, SecuritySettings settings) {
-		if (getLogisticsModule() != null && getLogisticsModule() instanceof LogisticsGuiModule) {
-			if(MainProxy.isServer(getWorld())) {
-				if (settings == null || settings.openGui) {
-					entityplayer.openGui(LogisticsPipes.instance, ((LogisticsGuiModule)getLogisticsModule()).getGuiHandlerID(), getWorld(), getX(), getY(), getZ());
+
+		if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsNetworkMonitior) {
+			if(MainProxy.isServer(entityplayer.worldObj)) {
+				if(settings == null || settings.openNetworkMonitor) {
+					entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_RoutingStats_ID, getWorld(), getX(), getY(), getZ());
 				} else {
 					entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
 				}
 			}
 			return true;
 		}
+
+		if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
+			if(MainProxy.isServer(entityplayer.worldObj)) {
+				if(settings == null || settings.openRequest) {
+					entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, getWorld(), getX(), getY(), getZ());
+				} else {
+					entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
+				}
+			}
+			return true;
+		}
+
+		if(SimpleServiceLocator.buildCraftProxy.isUpgradeManagerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
+			if(MainProxy.isServer(entityplayer.worldObj)) {
+				if (settings == null || settings.openUpgrades) {
+					getUpgradeManager().openGui(entityplayer, this);
+				} else {
+					entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
+				}
+			}
+			return true;
+		}
+
+		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && SimpleServiceLocator.buildCraftProxy.canWrench(entityplayer, this.getX(), this.getY(), this.getZ())) {
+			if(MainProxy.isServer(entityplayer.worldObj)) {
+				if (settings == null || settings.openGui) {
+					if (getLogisticsModule() != null && getLogisticsModule() instanceof LogisticsGuiModule) {
+						entityplayer.openGui(LogisticsPipes.instance, ((LogisticsGuiModule)getLogisticsModule()).getGuiHandlerID(), getWorld(), getX(), getY(), getZ());
+					} else {
+						onWrenchClicked(entityplayer);
+					}
+				} else {
+					entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
+				}
+			}
+			SimpleServiceLocator.buildCraftProxy.wrenchUsed(entityplayer, this.getX(), this.getY(), this.getZ());
+			return true;
+		}
+
+		if(!(entityplayer.isSneaking()) && getUpgradeManager().tryIserting(getWorld(), entityplayer)) {
+			return true;
+		}
+
+		return super.blockActivated(entityplayer);
+	}
+
+	protected boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
 		return false;
 	}
 	
@@ -1502,9 +1495,8 @@ outer:
 		this.queueEvent(CCConstants.LP_CC_BROADCAST_EVENT, new Object[]{sourceId, message});
 	}
 	
-	// from logic
 	public void onWrenchClicked(EntityPlayer entityplayer) {
-		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Freq_Card_ID, getWorld(), getX(), getY(), getZ());
+		//do nothing, every pipe with a GUI should either have a LogisticsGuiModule or override this method
 	}
 	
 	final void destroy(){ // no overide, put code in OnBlockRemoval

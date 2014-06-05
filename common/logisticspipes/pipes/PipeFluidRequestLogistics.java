@@ -5,6 +5,7 @@ import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
@@ -23,15 +24,19 @@ public class PipeFluidRequestLogistics extends FluidRoutedPipe implements IReque
 	}
 	
 	@Override
-	public boolean wrenchClicked(EntityPlayer entityplayer, SecuritySettings settings) {
-		if(MainProxy.isServer(getWorld())) {
-			if (settings == null || settings.openRequest) {
-				openGui(entityplayer);
-			} else {
-				entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
+	public boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
+		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && SimpleServiceLocator.buildCraftProxy.canWrench(entityplayer, this.getX(), this.getY(), this.getZ())) {
+			if(MainProxy.isServer(getWorld())) {
+				if (settings == null || settings.openRequest) {
+					openGui(entityplayer);
+				} else {
+					entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
+				}
 			}
+			SimpleServiceLocator.buildCraftProxy.wrenchUsed(entityplayer, this.getX(), this.getY(), this.getZ());
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	@Override

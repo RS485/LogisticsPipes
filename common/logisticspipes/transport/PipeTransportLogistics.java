@@ -614,7 +614,7 @@ public class PipeTransportLogistics extends PipeTransport {
 	
 	private void dropItem(LPTravelingItemServer item) {
 		if(container.worldObj.isRemote) { return; }
-		item.setSpeed(0.0F);
+		item.setSpeed(0.05F);
 		item.setContainer(container);
 		EntityItem entity = item.toEntityItem();
 		if(entity != null) {

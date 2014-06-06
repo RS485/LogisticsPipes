@@ -192,39 +192,41 @@ public abstract class LPTravelingItem {
 					return null;
 				}
 				
-				int xCoord = container.xCoord;
-				int yCoord = container.yCoord;
-				int zCoord = container.zCoord;
-				//N, W and down need to move a tiny bit beyond the block end because vanilla uses floor(coord) to determine block x/y/z
-				if(output == ForgeDirection.DOWN) {
-					//position.moveForwards(0.251);
-					yCoord -= 0.251;
-				} else if(output == ForgeDirection.UP) {
-					//position.moveForwards(0.75);
-					yCoord += 0.75;
-				} else if(output == ForgeDirection.NORTH) {
-					//position.moveForwards(0.501);
-					zCoord -= 0.501;
-				} else if(output == ForgeDirection.WEST) {
-					//position.moveForwards(0.501);
-					xCoord -= 0.501;
-				} else if(output == ForgeDirection.SOUTH) {
-					//position.moveForwards(0.5);
-					zCoord += 0.5;
-				} else if(output == ForgeDirection.EAST) {
-					//position.moveForwards(0.5);
-					xCoord += 0.5;
+				ForgeDirection exitdirection = output;
+				if (exitdirection == ForgeDirection.UNKNOWN) {
+					exitdirection = input;
+				}
+
+				LPPosition position = new LPPosition(container.xCoord + 0.5, container.yCoord + 0.375, container.zCoord + 0.5);
+
+				switch (exitdirection) {
+				case DOWN:
+					position.moveForward(exitdirection, 0.5);
+					break;
+				case UP:
+					position.moveForward(exitdirection, 0.75);
+					break;
+				case NORTH:
+				case SOUTH:
+				case WEST:
+				case EAST:
+					position.moveForward(exitdirection, 0.625);
+					break;
+				case UNKNOWN:
+				default:
+					break;
 				}
 
 				LPPosition motion = new LPPosition(0, 0, 0);
-				motion.moveForward(output, 0.1 + getSpeed() * 2F);
+				motion.moveForward(exitdirection, getSpeed() * 2F);
 
-				EntityItem entityitem = new EntityItem(worldObj, xCoord, yCoord, zCoord, getItemIdentifierStack().makeNormalStack());
+				EntityItem entityitem = new EntityItem(worldObj, position.getXD(), position.getYD(), position.getZD(), getItemIdentifierStack().makeNormalStack());
 
 				//entityitem.lifespan = 1200;
 				//entityitem.delayBeforeCanPickup = 10;
 
-				float f3 = worldObj.rand.nextFloat() * 0.01F - 0.02F;
+				//uniformly distributed in -0.005 .. 0.01 to increase bias toward smaller values
+				float f3 = worldObj.rand.nextFloat() * 0.015F - 0.005F;
 				entityitem.motionX = (float) worldObj.rand.nextGaussian() * f3 + motion.getXD();
 				entityitem.motionY = (float) worldObj.rand.nextGaussian() * f3 + motion.getYD();
 				entityitem.motionZ = (float) worldObj.rand.nextGaussian() * f3 + motion.getZD();

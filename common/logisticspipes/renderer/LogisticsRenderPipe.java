@@ -145,7 +145,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 			
 			if(fPos < 0.5) {
 				if(item.input == ForgeDirection.UNKNOWN) continue;
-				if(!pipe.container.getRenderState().pipeConnectionMatrix.isConnected(item.input)) continue;
+				if(!pipe.container.getRenderState().pipeConnectionMatrix.isConnected(item.input.getOpposite())) continue;
 				pos.moveForward(item.input.getOpposite(), 0.5F - fPos);
 			} else {
 				if(item.output == ForgeDirection.UNKNOWN) continue;

@@ -559,7 +559,7 @@ public class PipeTransportLogistics extends PipeTransport {
 						dropItem((LPTravelingItemServer)item);
 					}
 					items.scheduleRemoval(item);
-					return;
+					continue;
 				}
 				TileEntity tile = container.getTile(item.output);
 				if(items.scheduleRemoval(item)) {

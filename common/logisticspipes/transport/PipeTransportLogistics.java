@@ -164,9 +164,6 @@ public class PipeTransportLogistics extends PipeTransport {
 			item.output = resolveDestination((LPTravelingItemServer)item);
 			if(item.output == null) {
 				return; // don't do anything
-			} else if(item.output == ForgeDirection.UNKNOWN) {
-				dropItem((LPTravelingItemServer)item);
-				return;
 			}
 			getPipe().debug.log("Injected Item: [" + item.input + ", " + item.output + "] (" + ((LPTravelingItemServer)item).getInfo());
 		} else {

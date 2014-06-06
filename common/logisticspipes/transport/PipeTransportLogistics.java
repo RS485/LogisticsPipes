@@ -620,7 +620,7 @@ public class PipeTransportLogistics extends PipeTransport {
 	}
 	
 	protected boolean endReached(LPTravelingItem item) {
-		return item.getPosition() >= 1.0F;
+		return item.getPosition() >= ((item.output == ForgeDirection.UNKNOWN)?0.75F:1.0F);
 	}
 	
 	protected void neighborChange() {}

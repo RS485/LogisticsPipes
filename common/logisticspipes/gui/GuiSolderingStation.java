@@ -6,7 +6,7 @@ import java.util.List;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.utils.gui.BasicGuiHelper;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,7 +15,7 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiSolderingStation extends KraphtBaseGuiScreen {
+public class GuiSolderingStation extends LogisticsBaseGuiScreen {
 
 	private final LogisticsSolderingTileEntity tile;
 	

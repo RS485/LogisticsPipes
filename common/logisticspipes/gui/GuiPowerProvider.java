@@ -3,14 +3,14 @@ package logisticspipes.gui;
 import logisticspipes.blocks.powertile.LogisticsPowerProviderTileEntity;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.utils.gui.BasicGuiHelper;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.string.StringUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiPowerProvider extends KraphtBaseGuiScreen {
+public class GuiPowerProvider extends LogisticsBaseGuiScreen {
 	private static final String PREFIX = "gui.powerprovider.";
 
 	private final LogisticsPowerProviderTileEntity junction;

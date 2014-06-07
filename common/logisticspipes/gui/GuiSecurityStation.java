@@ -24,7 +24,7 @@ import logisticspipes.security.SecuritySettings;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.gui.GuiButton;
@@ -33,7 +33,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import org.lwjgl.input.Keyboard;
 
 
-public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerListReciver {
+public class GuiSecurityStation extends LogisticsBaseGuiScreen implements PlayerListReciver {
 	private static final String PREFIX = "gui.securitystation.";
 	
 	private final LogisticsSecurityTileEntity _tile;

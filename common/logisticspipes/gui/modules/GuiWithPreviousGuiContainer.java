@@ -5,11 +5,11 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.GuiBackPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.Container;
 
-public abstract class GuiWithPreviousGuiContainer extends KraphtBaseGuiScreen implements IGuiIDHandlerProvider {
+public abstract class GuiWithPreviousGuiContainer extends LogisticsBaseGuiScreen implements IGuiIDHandlerProvider {
 	
 	private int prevGuiID = -1;
 	protected CoreRoutedPipe pipe;

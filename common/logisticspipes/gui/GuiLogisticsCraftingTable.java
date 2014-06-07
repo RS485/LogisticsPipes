@@ -7,14 +7,14 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.utils.CraftingRequirement;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtil;
 import net.minecraft.entity.player.EntityPlayer;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiLogisticsCraftingTable extends KraphtBaseGuiScreen {
+public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
 	
 	public LogisticsCraftingTableTileEntity _crafter;
 

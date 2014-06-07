@@ -23,7 +23,7 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiIDHandlerProvider, ISubGuiControler {
+public abstract class LogisticsBaseGuiScreen extends GuiContainer implements IGuiIDHandlerProvider, ISubGuiControler {
 	
 	public enum Colors
 	{
@@ -50,17 +50,17 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 	
 	protected List<IRenderSlot> slots = new ArrayList<IRenderSlot>();
 
-	public KraphtBaseGuiScreen(int xSize, int ySize, int xCenterOffset, int yCenterOffset){
+	public LogisticsBaseGuiScreen(int xSize, int ySize, int xCenterOffset, int yCenterOffset){
 		this(new DummyContainer(null, null), xSize, ySize, xCenterOffset, yCenterOffset);
 	}
 
-	public KraphtBaseGuiScreen(Container container){
+	public LogisticsBaseGuiScreen(Container container){
 		super(container);
 		this.xCenterOffset = 0;
 		this.yCenterOffset = 0;
 	}
 
-	public KraphtBaseGuiScreen(Container container, int xSize, int ySize, int xCenterOffset, int yCenterOffset){
+	public LogisticsBaseGuiScreen(Container container, int xSize, int ySize, int xCenterOffset, int yCenterOffset){
 		super(container);
 		this.xSize = xSize;
 		this.ySize = ySize;

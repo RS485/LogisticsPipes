@@ -7,11 +7,11 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.utils.CardManagmentInventory;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
-public class GuiCardManager extends KraphtBaseGuiScreen {
+public class GuiCardManager extends LogisticsBaseGuiScreen {
 
 	public GuiCardManager(EntityPlayer player) {
 		super(180, 180, 0, 0);

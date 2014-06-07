@@ -5,11 +5,11 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.signs.ItemAmountPipeSign;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.ForgeDirection;
 
-public class ItemAmountSignCreationGui extends KraphtBaseGuiScreen {
+public class ItemAmountSignCreationGui extends LogisticsBaseGuiScreen {
 	
 	public ItemAmountSignCreationGui(EntityPlayer player, CoreRoutedPipe pipe, ForgeDirection dir) {
 		super(180, 125, 0, 0);

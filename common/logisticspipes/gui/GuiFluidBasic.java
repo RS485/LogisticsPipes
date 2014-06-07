@@ -3,13 +3,13 @@ package logisticspipes.gui;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.string.StringUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 
-public class GuiFluidBasic extends KraphtBaseGuiScreen {
+public class GuiFluidBasic extends LogisticsBaseGuiScreen {
 
 	public GuiFluidBasic(EntityPlayer player, IInventory inventory) {
 		super(180, 130, 0, 0);

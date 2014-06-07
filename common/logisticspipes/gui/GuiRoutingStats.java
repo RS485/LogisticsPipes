@@ -13,12 +13,12 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.string.StringUtil;
 import net.minecraft.entity.player.EntityPlayer;
 
-public class GuiRoutingStats extends KraphtBaseGuiScreen {
+public class GuiRoutingStats extends LogisticsBaseGuiScreen {
 	private static final String PREFIX = "gui.routingstats.";
 	
 	private IRouter _router;

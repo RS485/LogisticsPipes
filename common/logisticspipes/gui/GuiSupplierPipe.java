@@ -21,7 +21,7 @@ import logisticspipes.pipes.PipeItemsSupplierLogistics.SupplyMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.gui.GuiButton;
@@ -31,7 +31,7 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiSupplierPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerProvider {
+public class GuiSupplierPipe extends LogisticsBaseGuiScreen implements IGuiIDHandlerProvider {
 	private static final String PREFIX = "gui.supplierpipe.";
 	
 	private PipeItemsSupplierLogistics logic; 

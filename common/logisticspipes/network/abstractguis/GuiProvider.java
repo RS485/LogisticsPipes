@@ -10,6 +10,8 @@ import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @Accessors(chain=true)
 public abstract class GuiProvider {
@@ -24,6 +26,7 @@ public abstract class GuiProvider {
 	public void writeData(LPDataOutputStream data) throws IOException {}
 	public void readData(LPDataInputStream data) throws IOException {}
 	
+	@SideOnly(Side.CLIENT)
 	public abstract LogisticsBaseGuiScreen getClientGui(EntityPlayer player);
 	public abstract DummyContainer getContainer(EntityPlayer player);
 	

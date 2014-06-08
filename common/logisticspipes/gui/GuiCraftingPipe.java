@@ -10,6 +10,7 @@ package logisticspipes.gui;
 
 import logisticspipes.LogisticsEventListener;
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
+import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.utils.gui.BasicGuiHelper;
@@ -24,7 +25,7 @@ import net.minecraft.inventory.IInventory;
 public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvider {
 	private static final String					PREFIX				= "gui.crafting.";
 	
-	private final PipeItemsCraftingLogistics	_pipe;
+	private final ModuleCrafter	_pipe;
 	private final EntityPlayer					_player;
 	private final GuiButton[]					buttonarray;
 	private final GuiButton[]					normalButtonArray;
@@ -37,7 +38,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 	
 	private int									fuzzyPanelSelection	= -1;
 	
-	public GuiCraftingPipe(EntityPlayer player, IInventory dummyInventory, PipeItemsCraftingLogistics logic, boolean isAdvancedSat, int liquidCrafter, int[] amount, boolean hasByproductExtractor, boolean isFuzzy) {
+	public GuiCraftingPipe(EntityPlayer player, IInventory dummyInventory, ModuleCrafter logic, boolean isAdvancedSat, int liquidCrafter, int[] amount, boolean hasByproductExtractor, boolean isFuzzy) {
 		super(null);
 		_player = player;
 		this.isAdvancedSat = isAdvancedSat;

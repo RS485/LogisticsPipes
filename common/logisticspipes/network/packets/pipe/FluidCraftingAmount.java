@@ -30,9 +30,9 @@ public class FluidCraftingAmount extends Integer2CoordinatesPacket {
 			return;
 		}
 		if(MainProxy.isClient(player.worldObj)) {
-			((PipeItemsCraftingLogistics) pipe.pipe).defineFluidAmount(getInteger(), getInteger2());
+			((PipeItemsCraftingLogistics) pipe.pipe).getLogisticsModule().defineFluidAmount(getInteger(), getInteger2());
 		} else {
-			((PipeItemsCraftingLogistics) pipe.pipe).changeFluidAmount(getInteger(), getInteger2(), player);
+			((PipeItemsCraftingLogistics) pipe.pipe).getLogisticsModule().changeFluidAmount(getInteger(), getInteger2(), player);
 		}
 	}
 }

@@ -48,7 +48,7 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Electric Items", 1);
 	private boolean _dischargeMode;
 	protected IInventoryProvider _invProvider;
-	protected ISendRoutedItem _itemSender;
+
 	protected IRoutedPowerProvider _power;
 	private int ticksToAction = 100;
 	private int currentTick = 0;
@@ -78,9 +78,9 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_invProvider = invProvider;
-		_itemSender = itemSender;
+
 		_power = powerprovider;
 		_world = world;
 	}
@@ -138,21 +138,21 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 			if (isOfInterest(stack)) {
 				//If item set to discharge and its fully discharged, then extract it.
 				if (_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyDischarged(stack)) {
-					Triplet<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _itemSender.getSourceID(), true, FixedPriority.ElectricBuffer);
+					Triplet<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _invProvider.getSourceID(), true, FixedPriority.ElectricBuffer);
 					if(reply == null) continue;
 					if(_power.useEnergy(10)) {
 						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), _world.getWorld(), 2);
-						_itemSender.sendStack(inv.decrStackSize(i,1), reply, ItemSendMode.Normal);
+						_invProvider.sendStack(inv.decrStackSize(i,1), reply, ItemSendMode.Normal);
 						return;
 					}
 				}
 				//If item set to charge  and its fully charged, then extract it.
 				if (!_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyCharged(stack)) {
-					Triplet<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _itemSender.getSourceID(), true, FixedPriority.ElectricBuffer);
+					Triplet<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _invProvider.getSourceID(), true, FixedPriority.ElectricBuffer);
 					if(reply == null) continue;
 					if(_power.useEnergy(10)) {
 						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), _world.getWorld(), 2);
-						_itemSender.sendStack(inv.decrStackSize(i,1), reply, ItemSendMode.Normal);
+						_invProvider.sendStack(inv.decrStackSize(i,1), reply, ItemSendMode.Normal);
 						return;
 					}
 				}

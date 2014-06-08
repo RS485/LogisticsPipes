@@ -26,7 +26,7 @@ public class CraftingPriority extends IntegerCoordinatesPacket {
 		if (!(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
 			return;
 		}
-		((PipeItemsCraftingLogistics) pipe.pipe).setPriority(getInteger());
+		((PipeItemsCraftingLogistics) pipe.pipe).getLogisticsModule().setPriority(getInteger());
 	}
 }
 

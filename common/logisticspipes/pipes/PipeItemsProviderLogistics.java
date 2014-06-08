@@ -25,14 +25,17 @@ import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IOrderManagerContentReceiver;
+import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.logisticspipes.ExtractionMode;
+import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.ModuleProvider;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.hud.ChestContent;
@@ -43,6 +46,7 @@ import logisticspipes.network.packets.modules.ProviderPipeMode;
 import logisticspipes.network.packets.orderer.OrdererManagerContent;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
@@ -54,6 +58,7 @@ import logisticspipes.routing.order.LogisticsOrderManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SinkReply;
@@ -61,10 +66,14 @@ import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
@@ -80,8 +89,11 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	public final LinkedList<ItemIdentifierStack> itemListOrderer = new LinkedList<ItemIdentifierStack>();
 	private final HUDProvider HUD = new HUDProvider(this);
 	
-	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager(RequestType.PROVIDER, this);
+	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager(this);
 	private boolean doContentUpdate = true;
+	
+	protected ModuleProvider myModule;
+	private ForgeDirection temporaryDirection;
 		
 	public PipeItemsProviderLogistics(int itemID) {
 		super(itemID);
@@ -90,6 +102,8 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	public PipeItemsProviderLogistics(int itemID, LogisticsOrderManager logisticsOrderManager) {
 		this(itemID);
 		_orderManager = logisticsOrderManager;
+		myModule = new ModuleProvider();
+		myModule.registerHandler(this, this, this);
 	}
 	
 	@Override
@@ -242,7 +256,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders() && (firstOrder == null || firstOrder != order)) {
 			if(firstOrder == null)
 				firstOrder = order;
-			order = _orderManager.peekAtTopRequest();
+			order = _orderManager.peekAtTopRequest(RequestType.PROVIDER);
 			int sent = sendStack(order.getItem(), itemsleft, order.getDestination().getRouter().getSimpleID());
 			if(sent < 0) break;
 			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, getX(), getY(), getZ(), this.getWorld(), 3);
@@ -276,7 +290,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	@Override
 	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination) {
 		MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, getX(), getY(), getZ(), this.getWorld(), 2);
-		return _orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination);
+		return _orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, RequestType.PROVIDER);
 	}
 
 	@Override
@@ -498,7 +512,5 @@ outer:
 	public void nextExtractionMode() {
 		_extractionMode = _extractionMode.next();
 	}
-
-	
 
 }

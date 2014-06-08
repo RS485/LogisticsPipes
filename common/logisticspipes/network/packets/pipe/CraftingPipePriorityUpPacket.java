@@ -26,7 +26,7 @@ public class CraftingPipePriorityUpPacket extends CoordinatesPacket {
 		if (!(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
 			return;
 		}
-		((PipeItemsCraftingLogistics) pipe.pipe).priorityUp(player);
+		((PipeItemsCraftingLogistics) pipe.pipe).getLogisticsModule().priorityUp(player);
 	}
 }
 

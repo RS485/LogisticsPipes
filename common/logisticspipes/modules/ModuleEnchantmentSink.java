@@ -28,7 +28,7 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 
 	@Override
 	public void registerHandler(IInventoryProvider invProvider,
-			ISendRoutedItem itemSender, IWorldProvider world,
+			IWorldProvider world,
 			IRoutedPowerProvider powerProvider) {
 		_power = powerProvider;
 	}

@@ -28,7 +28,7 @@ public class CPipeNextSatellite extends CoordinatesPacket {
 			return;
 		}
 		
-		((PipeItemsCraftingLogistics) pipe.pipe).setNextSatellite(player);
+		((PipeItemsCraftingLogistics) pipe.pipe).getLogisticsModule().setNextSatellite(player);
 	}
 	
 }

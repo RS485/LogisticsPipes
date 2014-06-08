@@ -44,7 +44,6 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 	private int currentTick = 0;
 
 	private IInventoryProvider _invProvider;
-	private ISendRoutedItem _itemSender;
 	private IRoutedPowerProvider _power;
 	private ForgeDirection _sneakyDirection = ForgeDirection.UNKNOWN;
 	private IWorldProvider _world;
@@ -63,9 +62,9 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_invProvider = invProvider;
-		_itemSender = itemSender;
+
 		_power = powerprovider;
 		_world = world;
 	}
@@ -158,7 +157,7 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 		if (realInventory instanceof ISpecialInventory && !targetUtil.isSpecialInventory()){
 			ItemStack[] stack = ((ISpecialInventory) realInventory).extractItem(false, extractOrientation, 1);
 			if (stack == null || stack.length < 1 || stack[0] == null || stack[0].stackSize == 0) return;
-			Pair<Integer, SinkReply> reply = _itemSender.hasDestination(ItemIdentifier.get(stack[0]), true, new ArrayList<Integer>());
+			Pair<Integer, SinkReply> reply = _invProvider.hasDestination(ItemIdentifier.get(stack[0]), true, new ArrayList<Integer>());
 			if (reply == null) return;
 			ItemStack[] stacks = ((ISpecialInventory) realInventory).extractItem(true, extractOrientation, 1);
 			if (stacks == null || stacks.length < 1 || stacks[0] == null || stacks[0].stackSize == 0) {
@@ -168,7 +167,7 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 			if(!ItemStack.areItemStacksEqual(stack[0], stacks[0])) {
 				LogisticsPipes.log.info("extractor extract got a unexpected item from " + ((Object)realInventory).toString());
 			}
-			_itemSender.sendStack(stacks[0], reply, itemSendMode());
+			_invProvider.sendStack(stacks[0], reply, itemSendMode());
 			return;
 		}
 
@@ -179,7 +178,7 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 			if (slot == null) continue;
 			ItemIdentifier slotitem = ItemIdentifier.get(slot);
 			List<Integer> jamList = new LinkedList<Integer>();
-			Pair<Integer, SinkReply> reply = _itemSender.hasDestination(slotitem, true, jamList);
+			Pair<Integer, SinkReply> reply = _invProvider.hasDestination(slotitem, true, jamList);
 			if (reply == null) continue;
 
 			int itemsleft = itemsToExtract();
@@ -202,13 +201,13 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 				ItemStack stackToSend = targetUtil.decrStackSize(i, count);
 				if(stackToSend == null || stackToSend.stackSize == 0) break;
 				count = stackToSend.stackSize;
-				_itemSender.sendStack(stackToSend, reply, itemSendMode());
+				_invProvider.sendStack(stackToSend, reply, itemSendMode());
 				itemsleft -= count;
 				if(itemsleft <= 0) break;
 				slot = targetUtil.getStackInSlot(i);
 				if (slot == null) break;
 				jamList.add(reply.getValue1());
-				reply = _itemSender.hasDestination(ItemIdentifier.get(slot), true, jamList);
+				reply = _invProvider.hasDestination(ItemIdentifier.get(slot), true, jamList);
 			}
 			break;
 		}

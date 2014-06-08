@@ -22,9 +22,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleCCBasedItemSink extends LogisticsModule {
 	
-	private IInventoryProvider	coords;
 	private IQueueCCEvent	eventQueuer;
-	private ISendRoutedItem	itemSender;
+	private IInventoryProvider	invProvider;
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {}
@@ -33,9 +32,8 @@ public class ModuleCCBasedItemSink extends LogisticsModule {
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
 	
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerProvider) {
-		coords = invProvider;
-		this.itemSender = itemSender;
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerProvider) {
+		this.invProvider = invProvider;
 	}
 	
 	@Override
@@ -48,17 +46,17 @@ public class ModuleCCBasedItemSink extends LogisticsModule {
 	
 	@Override
 	public int getX() {
-		return coords.getX();
+		return invProvider.getX();
 	}
 	
 	@Override
 	public int getY() {
-		return coords.getY();
+		return invProvider.getY();
 	}
 	
 	@Override
 	public int getZ() {
-		return coords.getZ();
+		return invProvider.getZ();
 	}
 	
 	@Override
@@ -101,7 +99,7 @@ public class ModuleCCBasedItemSink extends LogisticsModule {
 	
 	@Override
 	public List<CCSinkResponder> queueCCSinkEvent(ItemIdentifierStack item) {
-		CCSinkResponder resonse = new CCSinkResponder(item, itemSender.getSourceID(), eventQueuer);
+		CCSinkResponder resonse = new CCSinkResponder(item, invProvider.getSourceID(), eventQueuer);
 		eventQueuer.queueEvent("ItemSink", new Object[]{SimpleServiceLocator.ccProxy.getAnswer(resonse)});
 		return new OneList<CCSinkResponder>(resonse);
 	}

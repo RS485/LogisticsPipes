@@ -55,7 +55,7 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Item list", 1);
 	private boolean _itemsIncluded = true;
 	protected IInventoryProvider _invProvider;
-	protected ISendRoutedItem _itemSender;
+
 	protected IRoutedPowerProvider _power;
 	private ForgeDirection _sneakyDirection = ForgeDirection.UNKNOWN;
 
@@ -72,9 +72,9 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_invProvider = invProvider;
-		_itemSender = itemSender;
+
 		_power = powerprovider;
 		_world = world;
 	}
@@ -180,7 +180,7 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 			if(!CanExtract(item.getKey().makeNormalStack(item.getValue())))
 				continue;
 			List<Integer> jamList = new LinkedList<Integer>();
-			Pair<Integer, SinkReply> reply = _itemSender.hasDestination(item.getKey(), true, jamList);
+			Pair<Integer, SinkReply> reply = _invProvider.hasDestination(item.getKey(), true, jamList);
 			if (reply == null) continue;
 
 			int itemsleft = itemsToExtract();
@@ -203,12 +203,12 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 				ItemStack stackToSend = invUtil.getMultipleItems(item.getKey(), count);
 				if(stackToSend == null || stackToSend.stackSize == 0) break;
 				count = stackToSend.stackSize;
-				_itemSender.sendStack(stackToSend, reply, itemSendMode());
+				_invProvider.sendStack(stackToSend, reply, itemSendMode());
 				itemsleft -= count;
 				if(itemsleft <= 0) break;
 				
 				jamList.add(reply.getValue1());
-				reply = _itemSender.hasDestination(item.getKey(), true, jamList);
+				reply = _invProvider.hasDestination(item.getKey(), true, jamList);
 			}
 			return;
 		}

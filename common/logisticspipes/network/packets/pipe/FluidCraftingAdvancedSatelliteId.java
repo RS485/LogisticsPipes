@@ -26,7 +26,7 @@ public class FluidCraftingAdvancedSatelliteId extends Integer2CoordinatesPacket 
 		if (!(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
 			return;
 		}
-		((PipeItemsCraftingLogistics) pipe.pipe).setFluidSatelliteId(getInteger(), getInteger2());
+		((PipeItemsCraftingLogistics) pipe.pipe).getLogisticsModule().setFluidSatelliteId(getInteger(), getInteger2());
 	}
 }
 

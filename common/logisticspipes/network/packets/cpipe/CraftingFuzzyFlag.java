@@ -23,7 +23,7 @@ public class CraftingFuzzyFlag extends Integer2CoordinatesPacket
 		if( !(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
 			return;
 		}
-		((PipeItemsCraftingLogistics) pipe.pipe).setFuzzyCraftingFlag(getInteger(), getInteger2(), player);
+		((PipeItemsCraftingLogistics) pipe.pipe).getLogisticsModule().setFuzzyCraftingFlag(getInteger(), getInteger2(), player);
 	}
 
 	@Override

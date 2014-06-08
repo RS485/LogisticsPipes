@@ -221,7 +221,7 @@ public class ModuleApiaristSink extends LogisticsGuiModule implements INBTPacket
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		this.worldProvider = world;
 		_power = powerprovider;
 	}

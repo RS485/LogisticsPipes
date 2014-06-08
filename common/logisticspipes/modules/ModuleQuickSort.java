@@ -40,7 +40,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 	protected int lastSuceededStack = 0;
 
 	protected IInventoryProvider _invProvider;
-	protected ISendRoutedItem _itemSender;
+
 	protected IRoutedPowerProvider _power;
 
 	private PlayerCollectionList _watchingPlayer = new PlayerCollectionList();
@@ -52,9 +52,9 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 	public ModuleQuickSort() {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_invProvider = invProvider;
-		_itemSender = itemSender;
+
 		_power = powerprovider;
 		_world = world;
 	}
@@ -106,7 +106,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 					continue;
 				
 				LinkedList<Integer> jamList =  new LinkedList<Integer>();
-				Pair<Integer, SinkReply> reply = _itemSender.hasDestination(item.getKey(), false, jamList);
+				Pair<Integer, SinkReply> reply = _invProvider.hasDestination(item.getKey(), false, jamList);
 				if (reply == null) {
 					if(lastStackLookedAt == lastSuceededStack) {
 						stalled = true;
@@ -132,14 +132,14 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 					ItemStack stackToSend = invUtil.getMultipleItems(item.getKey(), count);
 		
 					availableItems -= stackToSend.stackSize;
-					_itemSender.sendStack(stackToSend, reply, ItemSendMode.Fast);
+					_invProvider.sendStack(stackToSend, reply, ItemSendMode.Fast);
 					
 					MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), _world.getWorld(), 8);
 		
 					if(availableItems <= 0) break;
 		
 					jamList.add(reply.getValue1());
-					reply = _itemSender.hasDestination(item.getKey(), false, jamList);
+					reply = _invProvider.hasDestination(item.getKey(), false, jamList);
 				}
 				if(availableItems > 0) { //if we didn't send maxItemsToSend, try next item next time
 					lastSuceededStack = lastStackLookedAt;
@@ -182,7 +182,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 	
 			// begin duplicate code
 			List<Integer> jamList = new LinkedList<Integer>();
-			Pair<Integer, SinkReply> reply = _itemSender.hasDestination(ItemIdentifier.get(slot), false, jamList);
+			Pair<Integer, SinkReply> reply = _invProvider.hasDestination(ItemIdentifier.get(slot), false, jamList);
 			if (reply == null) {
 				if(lastStackLookedAt == lastSuceededStack) {
 					stalled = true;
@@ -210,13 +210,13 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 				}
 				ItemStack stackToSend = slot.splitStack(count);
 	
-				_itemSender.sendStack(stackToSend, reply, ItemSendMode.Fast);
+				_invProvider.sendStack(stackToSend, reply, ItemSendMode.Fast);
 				MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), _world.getWorld(), 8);
 	
 				if(slot.stackSize == 0) break;
 	
 				jamList.add(reply.getValue1());
-				reply = _itemSender.hasDestination(ItemIdentifier.get(slot), false, jamList);
+				reply = _invProvider.hasDestination(ItemIdentifier.get(slot), false, jamList);
 			}
 			ItemStack returned = null;
 			int amountToExtract = sizePrev - slot.stackSize;

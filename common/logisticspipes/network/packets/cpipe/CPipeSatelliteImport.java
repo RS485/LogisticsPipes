@@ -28,7 +28,7 @@ public class CPipeSatelliteImport extends CoordinatesPacket {
 			return;
 		}
 		
-		((PipeItemsCraftingLogistics) pipe.pipe).importFromCraftingTable(player);
+		((PipeItemsCraftingLogistics) pipe.pipe).getLogisticsModule().importFromCraftingTable(player);
 	}
 }
 

@@ -25,8 +25,7 @@ public class CraftingPipeStackMovePacket extends IntegerCoordinatesPacket {
 		}
 		if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
 			if(((PipeItemsCraftingLogistics)pipe.pipe) instanceof PipeItemsCraftingLogistics) {
-				PipeItemsCraftingLogistics logic = (PipeItemsCraftingLogistics) ((PipeItemsCraftingLogistics)pipe.pipe);
-				logic.handleStackMove(getInteger());
+				((PipeItemsCraftingLogistics)pipe.pipe).getLogisticsModule().handleStackMove(getInteger());
 			}
 		}
 	}

@@ -41,7 +41,7 @@ public class ApiaristAnalyserMode extends Integer2CoordinatesPacket {
 					DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
 					if(dummy.getModule() instanceof ModuleApiaristAnalyser) {
 						ModuleApiaristAnalyser module = (ModuleApiaristAnalyser) dummy.getModule();
-						module.registerHandler(null, null, new DummyWorldProvider(player.worldObj), null);
+						module.registerHandler(null, new DummyWorldProvider(player.worldObj), null);
 						module.setExtractMode(getInteger());
 					}
 				}

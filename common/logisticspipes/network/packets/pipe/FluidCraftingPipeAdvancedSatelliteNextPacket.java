@@ -26,7 +26,7 @@ public class FluidCraftingPipeAdvancedSatelliteNextPacket extends IntegerCoordin
 		if (!(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
 			return;
 		}
-		((PipeItemsCraftingLogistics) pipe.pipe).setNextFluidSatellite(player, getInteger());
+		((PipeItemsCraftingLogistics) pipe.pipe).getLogisticsModule().setNextFluidSatellite(player, getInteger());
 	}
 }
 

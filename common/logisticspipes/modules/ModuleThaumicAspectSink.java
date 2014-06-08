@@ -43,7 +43,7 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerProvider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerProvider) {
 		_power = powerProvider;
 		_world = world;
 	}

@@ -26,7 +26,7 @@ public class CraftingAdvancedSatelliteId extends Integer2CoordinatesPacket {
 		if( !(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
 			return;
 		}
-		((PipeItemsCraftingLogistics) pipe.pipe).setSatelliteId(getInteger(), getInteger2());
+		((PipeItemsCraftingLogistics) pipe.pipe).getLogisticsModule().setSatelliteId(getInteger(), getInteger2());
 	}
 }
 

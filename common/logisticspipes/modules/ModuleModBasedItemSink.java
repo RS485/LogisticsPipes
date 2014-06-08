@@ -48,7 +48,7 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IClien
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_power = powerprovider;
 		_world = world;
 	}

@@ -37,7 +37,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 	public PipeItemsApiaristAnalyser(int itemID) {
 		super(itemID);
 		analyserModule = new ModuleApiaristAnalyser();
-		analyserModule.registerHandler(this, this, this, this);
+		analyserModule.registerHandler(this, this, this);
 	}
 
 	@Override
@@ -105,7 +105,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 		return itemToSend;
 	}
 
-	private ForgeDirection getPointedOrientation() {
+	public ForgeDirection getPointedOrientation() {
 		for(ForgeDirection ori:ForgeDirection.values()) {
 			Position pos = new Position(this.container);
 			pos.orientation = ori;
@@ -120,7 +120,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 		return null;
 	}
 
-	private TileEntity getPointedTileEntity() {
+	public TileEntity getPointedTileEntity() {
 		WorldUtil wUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if(tile.tile != null) {

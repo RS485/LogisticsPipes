@@ -32,7 +32,7 @@ public class CPipeSatelliteImportBack extends InventoryCoordinatesPacket {
 		
 		final PipeItemsCraftingLogistics craftingPipe = (PipeItemsCraftingLogistics) pipe.pipe;
 		for(int i = 0; i < getStackList().size(); i++) {
-			craftingPipe.setDummyInventorySlot(i, getStackList().get(i));
+			craftingPipe.getLogisticsModule().setDummyInventorySlot(i, getStackList().get(i));
 		}
 	}
 }

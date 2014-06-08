@@ -52,7 +52,7 @@ public class CPipeSatelliteId extends CoordinatesPacket {
 			return;
 		}
 		
-		((PipeItemsCraftingLogistics) pipe.pipe).setSatelliteId(pipeId, -1);
+		((PipeItemsCraftingLogistics) pipe.pipe).getLogisticsModule().setSatelliteId(pipeId, -1);
 	}
 }
 

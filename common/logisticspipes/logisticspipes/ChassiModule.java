@@ -122,7 +122,7 @@ public class ChassiModule extends LogisticsGuiModule{
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		//Not used in Chassie Module
 	}
 
@@ -191,4 +191,5 @@ public class ChassiModule extends LogisticsGuiModule{
 		//Not Needed
 		return null;
 	}
+
 }

@@ -14,7 +14,7 @@ public class PipeItemsApiaristSink extends CoreRoutedPipe {
 	public PipeItemsApiaristSink(int itemID) {
 		super(itemID);
 		sinkModule = new ModuleApiaristSink();
-		sinkModule.registerHandler(null, null, this, this);
+		sinkModule.registerHandler(null, this, this);
 	}
 
 	@Override

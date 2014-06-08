@@ -94,4 +94,5 @@ public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 	public boolean canReceiveFluid() {
 		return false;
 	}
+
 }

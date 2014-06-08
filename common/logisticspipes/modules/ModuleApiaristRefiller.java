@@ -28,7 +28,6 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 	
 	private IInventoryProvider		_invProvider;
 	private IRoutedPowerProvider	_power;
-	private ISendRoutedItem			_itemSender;
 	
 	private IWorldProvider			_world;
 	
@@ -38,11 +37,11 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 	public ModuleApiaristRefiller() {}
 	
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerProvider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerProvider) {
 		_invProvider = invProvider;
 		_power = powerProvider;
 		_world = world;
-		_itemSender = itemSender;
+
 	}
 	
 	@Override
@@ -95,11 +94,11 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 		
 		if(reinsertBee(stack, sinv, direction)) return;
 		
-		Pair<Integer, SinkReply> reply = _itemSender.hasDestination(ItemIdentifier.get(stack), true, new ArrayList<Integer>());
+		Pair<Integer, SinkReply> reply = _invProvider.hasDestination(ItemIdentifier.get(stack), true, new ArrayList<Integer>());
 		if(reply == null) return;
 		_power.useEnergy(20);
 		extractItem(sinv, true, direction, 1);
-		_itemSender.sendStack(stack, reply, ItemSendMode.Normal);
+		_invProvider.sendStack(stack, reply, ItemSendMode.Normal);
 	}
 	
 	private ItemStack extractItem(ISidedInventory inv, boolean remove, ForgeDirection dir, int amount) {

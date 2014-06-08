@@ -1,10 +1,12 @@
 package logisticspipes.logisticspipes;
 
 import logisticspipes.interfaces.IInventoryUtil;
+import logisticspipes.interfaces.ISendRoutedItem;
+import logisticspipes.routing.order.LogisticsOrderManager;
 import net.minecraft.inventory.IInventory;
 import net.minecraftforge.common.ForgeDirection;
 
-public interface IInventoryProvider {
+public interface IInventoryProvider extends ISendRoutedItem {
 	public IInventoryUtil getPointedInventory(boolean forExtraction);
 	public IInventoryUtil getPointedInventory(ExtractionMode mode, boolean forExtraction);
 	public IInventoryUtil getSneakyInventory(boolean forExtraction);
@@ -19,4 +21,5 @@ public interface IInventoryProvider {
 	public int getX(); // returns the coords of the pipe, so modules which care don't need to fetch the coords for actions they send 
 	public int getY();
 	public int getZ();
+	public LogisticsOrderManager getOrderManager();
 }

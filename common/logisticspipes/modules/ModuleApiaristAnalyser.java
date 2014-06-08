@@ -32,7 +32,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClientInformationProvider, IModuleWatchReciver {
 
 	private IInventoryProvider _invProvider;
-	private ISendRoutedItem _itemSender;
 	private int ticksToAction = 100;
 	private int currentTick = 0;
 	private int slot = 0;
@@ -49,9 +48,9 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_invProvider = invProvider;
-		_itemSender = itemSender;
+
 		_power = powerprovider;
 		_world = world;
 	}
@@ -97,11 +96,11 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 				ItemStack item = inv.getStackInSlot(i);
 				if (SimpleServiceLocator.forestryProxy.isBee(item)) {
 					if (SimpleServiceLocator.forestryProxy.isAnalysedBee(item)) {
-						Pair<Integer, SinkReply> reply = _itemSender.hasDestination(ItemIdentifier.get(item), true, new ArrayList<Integer>());
+						Pair<Integer, SinkReply> reply = _invProvider.hasDestination(ItemIdentifier.get(item), true, new ArrayList<Integer>());
 						if (reply == null)
 							continue;
 						if (_power.useEnergy(6)) {
-							_itemSender.sendStack(inv.decrStackSize(i, 1), reply, ItemSendMode.Normal);
+							_invProvider.sendStack(inv.decrStackSize(i, 1), reply, ItemSendMode.Normal);
 						}
 					}
 				}

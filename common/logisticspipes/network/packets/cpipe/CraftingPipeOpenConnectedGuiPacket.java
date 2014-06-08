@@ -25,7 +25,7 @@ public class CraftingPipeOpenConnectedGuiPacket extends CoordinatesPacket {
 		}
 		if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
 			if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
-				((PipeItemsCraftingLogistics) pipe.pipe).openAttachedGui(player);
+				((PipeItemsCraftingLogistics) pipe.pipe).getLogisticsModule().openAttachedGui(player);
 			}
 		}
 	}

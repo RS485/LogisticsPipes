@@ -8,6 +8,7 @@ import logisticspipes.gui.hud.HUDCraftingMK3;
 import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.modules.ModuleCrafterMK3;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.hud.ChestContent;
@@ -36,6 +37,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	
 	public PipeItemsCraftingLogisticsMk3(int itemID) {
 		super(new CraftingPipeMk3Transport(), itemID);
+		this.craftingModule=new ModuleCrafterMK3(this);
 		((CraftingPipeMk3Transport)transport).pipe = this;
 		inv.addListener(this);
 	}
@@ -155,7 +157,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	}
 
 	@Override
-	public LogisticsModule getLogisticsModule() {
-		return new ModuleCrafterMK3(this);
+	public ModuleCrafter getLogisticsModule() {
+		return this.craftingModule;
 	}
 }

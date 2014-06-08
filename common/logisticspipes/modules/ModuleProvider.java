@@ -58,10 +58,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive {
 	
 	protected IInventoryProvider _invProvider;
-	protected ISendRoutedItem _itemSender;
 	protected IRoutedPowerProvider _power;
-	
-	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager(RequestType.PROVIDER);
+
+//	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager(this);	
 	
 	private List<ILegacyActiveModule> _previousLegacyModules = new LinkedList<ILegacyActiveModule>();
 
@@ -88,9 +87,8 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 	public ModuleProvider() {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_invProvider = invProvider;
-		_itemSender = itemSender;
 		_power = powerprovider;
 		_world = world;
 	}
@@ -152,10 +150,10 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 		int stacksleft = stacksToExtract();
 		LogisticsOrder firstOrder = null;
 		LogisticsOrder order = null;
-		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders() && (firstOrder == null || firstOrder != order)) {
+		while (itemsleft > 0 && stacksleft > 0 && _invProvider.getOrderManager().hasOrders() && (firstOrder == null || firstOrder != order)) {
 			if(firstOrder == null)
 				firstOrder = order;
-			order = _orderManager.peekAtTopRequest();
+			order = _invProvider.getOrderManager().peekAtTopRequest(RequestType.PROVIDER);
 			int sent = sendStack(order.getItem(), itemsleft, order.getDestination().getRouter().getSimpleID());
 			if(sent < 0) break;
 			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, getX(), getY(), getZ(), _world.getWorld(), 3);
@@ -178,8 +176,8 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 
 	@Override
 	public void onBlockRemoval() {
-		while(_orderManager.hasOrders()) {
-			_orderManager.sendFailed();
+		while(_invProvider.getOrderManager().hasOrders()) {
+			_invProvider.getOrderManager().sendFailed();
 		}
 	}
 
@@ -191,17 +189,17 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 		LogisticsPromise promise = new LogisticsPromise();
 		promise.item = tree.getStackItem();
 		promise.numberOfItems = Math.min(canProvide, tree.getMissingItemCount());
-		promise.sender = (IProvideItems) _itemSender;
+		promise.sender = (IProvideItems) _invProvider;
 		tree.addPromise(promise);
 	}
 
 	@Override
 	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination) {
-		return _orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination);
+		return _invProvider.getOrderManager().addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination,RequestType.PROVIDER);
 	}
 
 	private int getAvailableItemCount(ItemIdentifier item) {
-		return getTotalItemCount(item) - _orderManager.totalItemsCountInOrders(item);
+		return getTotalItemCount(item) - _invProvider.getOrderManager().totalItemsCountInOrders(item);
 	}
 
 	@Override
@@ -226,7 +224,7 @@ outer:
 				if(filter.isBlocked() == filter.isFilteredItem(currItem.getKey().getUndamaged()) || filter.blockProvider()) continue outer;
 			}
 
-			int remaining = currItem.getValue() - _orderManager.totalItemsCountInOrders(currItem.getKey());
+			int remaining = currItem.getValue() - _invProvider.getOrderManager().totalItemsCountInOrders(currItem.getKey());
 			if (remaining < 1) continue;
 
 			items.put(currItem.getKey(), remaining);
@@ -234,19 +232,19 @@ outer:
 	}
 
 	
-	// returns -1 on perminatly failed, don't try another stack this tick
+	// returns -1 on permanently failed, don't try another stack this tick
 	// returns 0 on "unable to do this delivery"
 	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination) {
 		ItemIdentifier item = stack.getItem();
 		IInventoryUtil inv = _invProvider.getPointedInventory(_extractionMode,true);
 		if (inv == null) {
-			_orderManager.sendFailed();
+			_invProvider.getOrderManager().sendFailed();
 			return 0;
 		}
 		
 		int available = inv.itemCount(item);
 		if (available == 0) {
-			_orderManager.sendFailed();
+			_invProvider.getOrderManager().sendFailed();
 			return 0;
 		}
 		int wanted = Math.min(available, stack.getStackSize());
@@ -254,7 +252,7 @@ outer:
 		wanted = Math.min(wanted, item.getMaxStackSize());
 		IRouter dRtr = SimpleServiceLocator.routerManager.getRouterUnsafe(destination,false);
 		if(dRtr == null) {
-			_orderManager.sendFailed();
+			_invProvider.getOrderManager().sendFailed();
 			return 0;
 		}
 		SinkReply reply = LogisticsManager.canSink(dRtr, null, true, stack.getItem(), null, true, false);
@@ -263,7 +261,7 @@ outer:
 			if(reply.maxNumberOfItems < wanted) {
 				wanted = reply.maxNumberOfItems;
 				if(wanted <= 0) {
-					_orderManager.deferSend();
+					_invProvider.getOrderManager().deferSend();
 					return 0;
 				}
 				defersend = true;
@@ -273,14 +271,14 @@ outer:
 
 		ItemStack removed = inv.getMultipleItems(item, wanted);
 		if(removed == null || removed.stackSize == 0) {
-			_orderManager.sendFailed();
+			_invProvider.getOrderManager().sendFailed();
 			return 0;
 		}
 		int sent = removed.stackSize;
 		_power.useEnergy(sent * neededEnergy());
 
-		IRoutedItem sendedItem = _itemSender.sendStack(removed, destination, itemSendMode());
-		_orderManager.sendSuccessfull(sent, defersend, sendedItem);
+		IRoutedItem sendedItem = _invProvider.sendStack(removed, destination, itemSendMode());
+		_invProvider.getOrderManager().sendSuccessfull(sent, defersend, sendedItem);
 		return sent;
 	}
 	

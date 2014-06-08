@@ -29,7 +29,7 @@ public abstract class LogisticsModule implements ISaveState {
 	 * @param itemSender the handler to send items into the logistics system
 	 * @param world that the module is in.
 	 */
-	public abstract void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerProvider);
+	public abstract void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerProvider);
 	
 	/**
 	 * Registers the slot the module is in

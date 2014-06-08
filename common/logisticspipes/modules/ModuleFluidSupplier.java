@@ -36,7 +36,7 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_world = world;
 		_power = powerprovider;
 	}

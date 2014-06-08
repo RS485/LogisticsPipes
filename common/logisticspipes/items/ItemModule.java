@@ -20,6 +20,9 @@ import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleApiaristTerminus;
 import logisticspipes.modules.ModuleCCBasedItemSink;
 import logisticspipes.modules.ModuleCCBasedQuickSort;
+import logisticspipes.modules.ModuleCrafter;
+import logisticspipes.modules.ModuleCrafterMK2;
+import logisticspipes.modules.ModuleCrafterMK3;
 import logisticspipes.modules.ModuleElectricBuffer;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleEnchantmentSink;
@@ -97,9 +100,14 @@ public class ItemModule extends LogisticsItem {
 	public static final int ELECTRICBUFFER = 301;
 
 
-	//ACTIVE MODULES
+	//Providers MODULES
 	public static final int PROVIDER = 500;
 	public static final int PROVIDER_MK2 = 501;
+
+	//Crafter MODULES
+	public static final int CRAFTER = 600;
+	public static final int CRAFTER_MK2 = 601;
+	public static final int CRAFTER_MK3 = 602;
 
 	private List<Module> modules = new ArrayList<Module>();
 
@@ -195,6 +203,9 @@ public class ItemModule extends LogisticsItem {
 		registerModule(ENCHANTMENTSINK_MK2		, ModuleEnchantmentSinkMK2.class);
 		registerModule(CC_BASED_QUICKSORT		, ModuleCCBasedQuickSort.class);
 		registerModule(CC_BASED_ITEMSINK		, ModuleCCBasedItemSink.class);
+		registerModule(CRAFTER			, ModuleCrafter.class);
+		registerModule(CRAFTER_MK2			, ModuleCrafterMK2.class);
+		registerModule(CRAFTER_MK3			, ModuleCrafterMK3.class);
 	}
 
 	public void registerModule(int id, Class<? extends LogisticsModule> moduleClass) {

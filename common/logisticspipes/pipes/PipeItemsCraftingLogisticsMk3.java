@@ -13,6 +13,7 @@ import logisticspipes.modules.ModuleCrafterMK3;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.hud.ChestContent;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.routing.order.IOrderInfoProvider.RequestType;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.CraftingPipeMk3Transport;
@@ -37,7 +38,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	
 	public PipeItemsCraftingLogisticsMk3(int itemID) {
 		super(new CraftingPipeMk3Transport(), itemID);
-		this.craftingModule=new ModuleCrafterMK3(this);
+		craftingModule=new ModuleCrafterMK3(this);
 		((CraftingPipeMk3Transport)transport).pipe = this;
 		inv.addListener(this);
 	}
@@ -73,7 +74,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 				}
 			}
 		}
-		if(!_orderManager.hasOrders()){
+		if(!_orderManager.hasOrders(RequestType.CRAFTING)){
 			sendBuffer();
 		}
 		if(change) {

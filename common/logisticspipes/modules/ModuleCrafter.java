@@ -252,7 +252,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public Icon getIconTexture(IconRegister register) {
-		return null;
+		return register.registerIcon("logisticspipes:itemModule/ModuleCrafter");
 	}
 
 	@Override
@@ -1086,7 +1086,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 
 
 	public void enabledUpdateEntity() {
-		if(_invProvider.getOrderManager().hasOrders()) {
+		if(_invProvider.getOrderManager().hasOrders(RequestType.CRAFTING)) {
 			cacheAreAllOrderesToBuffer();
 			if(_invProvider.getOrderManager().isFirstOrderWatched()) {
 				TileEntity tile = lastAccessedCrafter.get();
@@ -1104,13 +1104,13 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 
 		waitingForCraft = false;
 		
-		if((!_invProvider.getOrderManager().hasOrders() && _extras.isEmpty())) return;
+		if((!_invProvider.getOrderManager().hasOrders(RequestType.CRAFTING) && _extras.isEmpty())) return;
 		
 		waitingForCraft = true;
 		
 		List<AdjacentTile> crafters = locateCrafters();
 		if (crafters.size() < 1 ) {
-			if (_invProvider.getOrderManager().hasOrders()) {
+			if (_invProvider.getOrderManager().hasOrders(RequestType.CRAFTING)) {
 				_invProvider.getOrderManager().sendFailed();
 			} else {
 				_extras.clear();
@@ -1125,10 +1125,10 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 		
 		int itemsleft = itemsToExtract();
 		int stacksleft = stacksToExtract();
-		while (itemsleft > 0 && stacksleft > 0 && (_invProvider.getOrderManager().hasOrders() || !_extras.isEmpty())) {
+		while (itemsleft > 0 && stacksleft > 0 && (_invProvider.getOrderManager().hasOrders(RequestType.CRAFTING) || !_extras.isEmpty())) {
 			LogisticsOrder nextOrder;
 			boolean processingOrder=false;
-			if(_invProvider.getOrderManager().hasOrders()){
+			if(_invProvider.getOrderManager().hasOrders(RequestType.CRAFTING)){
 				nextOrder = _invProvider.getOrderManager().peekAtTopRequest(RequestType.CRAFTING); // fetch but not remove.
 				processingOrder=true;
 			} else {
@@ -1162,7 +1162,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 			while (extracted.stackSize > 0) {
 				if(nextOrder.getItem().getItem() != extractedID) {
 					LogisticsOrder startOrder = nextOrder;
-					if(_invProvider.getOrderManager().hasOrders()) {
+					if(_invProvider.getOrderManager().hasOrders(RequestType.CRAFTING)) {
 					do {
 						_invProvider.getOrderManager().deferSend();
 						nextOrder = _invProvider.getOrderManager().peekAtTopRequest(RequestType.CRAFTING);
@@ -1199,7 +1199,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 					item.setTransportMode(TransportMode.Active);
 					_invProvider.queueRoutedItem(item, tile.orientation);
 					_invProvider.getOrderManager().sendSuccessfull(stackToSend.stackSize, defersend, item);
-					if(_invProvider.getOrderManager().hasOrders()){
+					if(_invProvider.getOrderManager().hasOrders(RequestType.CRAFTING)){
 						nextOrder = _invProvider.getOrderManager().peekAtTopRequest(RequestType.CRAFTING); // fetch but not remove.
 					} else {
 						processingOrder = false;
@@ -1354,6 +1354,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 	public void clearCache() {
 		clearCraftersCache();
 	}
+	
 	
 
 }

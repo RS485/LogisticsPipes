@@ -2,6 +2,10 @@ package logisticspipes.modules;
 
 import java.util.Map;
 
+import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.util.Icon;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.pipes.PipeItemsCraftingLogisticsMk3;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.BufferMode;
@@ -11,6 +15,10 @@ public class ModuleCrafterMK3 extends ModuleCrafter {
 
 	private final PipeItemsCraftingLogisticsMk3	pipe;
 	
+	public ModuleCrafterMK3() {
+		pipe=null;
+	}
+
 	public ModuleCrafterMK3(PipeItemsCraftingLogisticsMk3 parent) {
 		super(parent);
 		this.pipe = parent;
@@ -60,6 +68,14 @@ public class ModuleCrafterMK3 extends ModuleCrafter {
 	protected int stacksToExtract() {
 		return 8;
 	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public Icon getIconTexture(IconRegister register) {
+		return register.registerIcon("logisticspipes:itemModule/ModuleCrafterMK3");
+	}
+
+
 	
 
 }

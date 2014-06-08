@@ -39,6 +39,7 @@ import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleCrafter;
+import logisticspipes.modules.ModuleCrafterMK2;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
@@ -143,14 +144,29 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 	
 	public PipeItemsCraftingLogistics(PipeTransportLogistics transport, int itemID) {
-		super(transport, itemID);
+		super(transport,itemID);
 		craftingModule = new ModuleCrafter(this);
-//		craftingModule.registerHandler(this, this, this);
 		throttleTime = 40;
 		_orderManager = new LogisticsOrderManager(this);// null by default when not needed
 	}
 
+
 	
+	// protected constructors so that other pipe types can override the module, if needed.
+	protected PipeItemsCraftingLogistics(int itemID,
+			ModuleCrafter moduleCrafter) {
+		super(itemID);
+		craftingModule = moduleCrafter;
+				throttleTime = 40;
+				_orderManager = new LogisticsOrderManager(this);// null by default when not needed
+	}
+
+	protected PipeItemsCraftingLogistics(PipeTransportLogistics transport,
+			int itemID, ModuleCrafter moduleCrafter) {
+		super(transport,itemID);
+		craftingModule=moduleCrafter;
+	}
+
 	@Override
 	public void onNeighborBlockChange(int blockId) {
 		craftingModule.clearCache();
@@ -159,7 +175,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	
 	@Override
 	public void onAllowedRemoval() {
-		while(_orderManager.hasOrders()) {
+		while(_orderManager.hasOrders(RequestType.CRAFTING)) {
 			_orderManager.sendFailed();
 		}
 	}
@@ -424,7 +440,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		while (lostItem != null) {
 			
 			ItemIdentifierStack stack = lostItem.get();
-			if(_orderManager.hasOrders()) { 
+			if(_orderManager.hasOrders(RequestType.CRAFTING)) { 
 				SinkReply reply = LogisticsManager.canSink(getRouter(), null, true, stack.getItem(), null, true, true);
 				if(reply == null || reply.maxNumberOfItems < 1) {
 					_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(stack, 5000));

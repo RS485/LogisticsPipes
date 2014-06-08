@@ -59,8 +59,8 @@ public class LogisticsOrderManager implements Iterable<LogisticsOrder> {
 		list.addLast(stack.clone());
 	}
 	
-	public boolean hasOrders() {
-		return _orders.size() > 0;
+	public boolean hasOrders(RequestType type) {
+		return  peekAtTopRequest(type)!=null;
 	}
 	
 /*	public LogisticsOrder peekAtTopRequest() {
@@ -69,12 +69,15 @@ public class LogisticsOrderManager implements Iterable<LogisticsOrder> {
 
 	/* NOT multi-access SAFE -- changes the state of the stack so the returned element is on top*/
 	public LogisticsOrder peekAtTopRequest(RequestType type) {
+		if(_orders.size()==0)
+			return null;
 		LogisticsOrder top = _orders.getFirst().setInProgress(true);
 		int loopCount=0;
 		while(top.getType()!=type){
 			loopCount++;
 			if(loopCount>_orders.size()) {
-				throw new NoSuchElementException("Unable to find a Request of Type "+type.toString());
+				return null;
+				//throw new NoSuchElementException("Unable to find a Request of Type "+type.toString());
 			}
 			deferSend(); // sets the new top to InProgress
 			top = _orders.getFirst();

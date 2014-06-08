@@ -8,8 +8,12 @@
 
 package logisticspipes.pipes;
 
+import logisticspipes.modules.ModuleCrafter;
+import logisticspipes.modules.ModuleCrafterMK2;
+import logisticspipes.modules.ModuleCrafterMK3;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+import logisticspipes.transport.CraftingPipeMk3Transport;
 import logisticspipes.transport.PipeTransportLogistics;
 
 public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
@@ -20,23 +24,9 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 
 	public PipeItemsCraftingLogisticsMk2(PipeTransportLogistics transport, int itemID) {
 		super(transport, itemID);
-	}
-/*
-	@Override
-	protected int neededEnergy() {
-		return 15;
+		craftingModule=new ModuleCrafterMK2(this);
 	}
 
-	@Override
-	protected int itemsToExtract() {
-		return 64;
-	}
-	
-	@Override
-	protected int stacksToExtract() {
-		return 1;
-	}
-	*/
 	@Override
 	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_CRAFTERMK2_TEXTURE;

@@ -53,7 +53,7 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 
 
 
-	private IHUDModuleRenderer HUD = new HUDExtractor(this);
+	private IHUDModuleRenderer HUD;
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
@@ -63,6 +63,7 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 
 	@Override
 	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+		HUD = new HUDExtractor(this);
 		_invProvider = invProvider;
 
 		_power = powerprovider;

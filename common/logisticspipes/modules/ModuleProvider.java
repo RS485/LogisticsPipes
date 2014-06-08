@@ -150,7 +150,7 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 		int stacksleft = stacksToExtract();
 		LogisticsOrder firstOrder = null;
 		LogisticsOrder order = null;
-		while (itemsleft > 0 && stacksleft > 0 && _invProvider.getOrderManager().hasOrders() && (firstOrder == null || firstOrder != order)) {
+		while (itemsleft > 0 && stacksleft > 0 && _invProvider.getOrderManager().hasOrders(RequestType.PROVIDER) && (firstOrder == null || firstOrder != order)) {
 			if(firstOrder == null)
 				firstOrder = order;
 			order = _invProvider.getOrderManager().peekAtTopRequest(RequestType.PROVIDER);
@@ -176,7 +176,7 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 
 	@Override
 	public void onBlockRemoval() {
-		while(_invProvider.getOrderManager().hasOrders()) {
+		while(_invProvider.getOrderManager().hasOrders(RequestType.PROVIDER)) {
 			_invProvider.getOrderManager().sendFailed();
 		}
 	}

@@ -108,7 +108,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	
 	@Override
 	public void onAllowedRemoval() {
-		while(_orderManager.hasOrders()) {
+		while(_orderManager.hasOrders(RequestType.PROVIDER)) {
 			_orderManager.sendFailed();
 		}
 	}
@@ -247,13 +247,13 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 			checkContentUpdate(null);
 		}
 		
-		if (!_orderManager.hasOrders() || getWorld().getTotalWorldTime() % 6 != 0) return;
+		if (!_orderManager.hasOrders(RequestType.PROVIDER) || getWorld().getTotalWorldTime() % 6 != 0) return;
 
 		int itemsleft = itemsToExtract();
 		int stacksleft = stacksToExtract();
 		LogisticsOrder firstOrder = null;
 		LogisticsOrder order = null;
-		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders() && (firstOrder == null || firstOrder != order)) {
+		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders(RequestType.PROVIDER) && (firstOrder == null || firstOrder != order)) {
 			if(firstOrder == null)
 				firstOrder = order;
 			order = _orderManager.peekAtTopRequest(RequestType.PROVIDER);

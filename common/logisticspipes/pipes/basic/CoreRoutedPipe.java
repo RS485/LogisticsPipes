@@ -33,7 +33,6 @@ import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
-import logisticspipes.interfaces.IHaveLocation;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.interfaces.ISecurityProvider;
@@ -166,7 +165,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	protected final PriorityBlockingQueue<ItemRoutingInformation> _inTransitToMe = new PriorityBlockingQueue<ItemRoutingInformation>(10, new ItemRoutingInformation.DelayComparator());
 	
 	private UpgradeManager upgradeManager = new UpgradeManager(this);
-	private LogisticsOrderManager orderManager = null;
+	protected LogisticsOrderManager _orderManager = null;
 	
 	public int stat_session_sent;
 	public int stat_session_recieved;
@@ -202,7 +201,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	public CoreRoutedPipe(PipeTransportLogistics transport, int itemID) {
 		super(transport, itemID);
 		//this.logic = logic;
-		((PipeTransportItems) transport).allowBouncing = true;
+		//((PipeTransportItems) transport).allowBouncing = true;
 		
 		pipecount++;
 		
@@ -1545,11 +1544,14 @@ outer:
 	}
 	
 
+	/*** IInventoryProvider ***/
+	 
+	 
 	@Override
 	public IInventoryUtil getPointedInventory(boolean forExtraction) {
 		return getSneakyInventory(this.getPointedOrientation().getOpposite(), forExtraction);
 	}
-
+	 
 	@Override
 	public IInventoryUtil getPointedInventory(ExtractionMode mode, boolean forExtraction) {
 		IInventory inv = getRealInventory();
@@ -1582,15 +1584,6 @@ outer:
 		return getSneakyInventory(insertion, forExtraction);
 	}
 
-	public ForgeDirection getPointedOrientation() {
-		return pointedDirection;
-	}
-	
-	public TileEntity getPointedTileEntity(){
-		if(pointedDirection == null || pointedDirection == ForgeDirection.UNKNOWN) return null;
-		return this.getContainer().getTile(pointedDirection);
-	}
-
 	@Override
 	public IInventoryUtil getSneakyInventory(ForgeDirection _sneakyOrientation, boolean forExtraction) {
 		IInventory inv = getRealInventory();
@@ -1606,7 +1599,6 @@ outer:
 		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
 	}
 
-	
 	@Override
 	public IInventory getRealInventory() {
 		TileEntity tile = getPointedTileEntity();
@@ -1616,6 +1608,11 @@ outer:
 		return InventoryHelper.getInventory((IInventory) tile);
 	}
 	
+	private TileEntity getPointedTileEntity() {
+		if(pointedDirection == ForgeDirection.UNKNOWN) return null;
+		return this.getContainer().getTile(pointedDirection);
+	}
+
 	@Override
 	public ForgeDirection inventoryOrientation() {
 		return getPointedOrientation();
@@ -1634,7 +1631,7 @@ outer:
 
 	@Override
 	public IRoutedItem sendStack(ItemStack stack, Pair<Integer, SinkReply> reply, ItemSendMode mode) {
-		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stack);
+		IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
 		itemToSend.setDestination(reply.getValue1());
 		if (reply.getValue2().isPassive){
 			if (reply.getValue2().isDefault){
@@ -1649,7 +1646,7 @@ outer:
 
 	@Override
 	public IRoutedItem sendStack(ItemStack stack, int destination, ItemSendMode mode) {
-		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stack);
+		IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(TransportMode.Active);
 		queueRoutedItem(itemToSend, getPointedOrientation(), mode);
@@ -1657,10 +1654,15 @@ outer:
 	}
 	
 
+	
+	public ForgeDirection getPointedOrientation() {
+		return this.pointedDirection;
+	}
+
 	@Override
 	public LogisticsOrderManager getOrderManager() {
-		orderManager=orderManager!=null?orderManager:new LogisticsOrderManager();
-		return this.orderManager;
+		_orderManager=_orderManager!=null?_orderManager:new LogisticsOrderManager();
+		return this._orderManager;
 	}
 
 	public void addPipeSign(ForgeDirection dir, IPipeSign type, EntityPlayer player) {

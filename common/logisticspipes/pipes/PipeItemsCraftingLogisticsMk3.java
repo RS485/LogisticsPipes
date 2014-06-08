@@ -41,29 +41,13 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 		((CraftingPipeMk3Transport)transport).pipe = this;
 		inv.addListener(this);
 	}
-
-	@Override
-	protected int neededEnergy() {
-		return 20;
-	}
-
-	@Override
-	protected int itemsToExtract() {
-		return 128;
-	}
-	
-	@Override
-	protected int stacksToExtract() {
-		return 8;
-	}
-	
 	@Override
 	public void enabledUpdateEntity() {
 		super.enabledUpdateEntity();
 		if(inv.isEmpty()) return;
 		if(getWorld().getTotalWorldTime() % 6 != 0) return;
 		//Add from internal buffer
-		List<AdjacentTile> crafters = locateCrafters();
+		List<AdjacentTile> crafters = craftingModule.locateCrafters();
 		if(crafters.size() < 1) {sendBuffer();return;}
 		boolean change = false;
 		for(AdjacentTile tile : crafters) {

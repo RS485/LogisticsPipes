@@ -38,7 +38,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 	
 	private int									fuzzyPanelSelection	= -1;
 	
-	public GuiCraftingPipe(EntityPlayer player, IInventory dummyInventory, ModuleCrafter logic, boolean isAdvancedSat, int liquidCrafter, int[] amount, boolean hasByproductExtractor, boolean isFuzzy) {
+	public GuiCraftingPipe(EntityPlayer player, IInventory dummyInventory, ModuleCrafter module, boolean isAdvancedSat, int liquidCrafter, int[] amount, boolean hasByproductExtractor, boolean isFuzzy) {
 		super(null);
 		_player = player;
 		this.isAdvancedSat = isAdvancedSat;
@@ -77,7 +77,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 		
 		for(int i = 0; i < liquidCrafter; i++) {
 			int liquidLeft = -(i * 40) - 40;
-			dummy.addFluidSlot(i, logic.getFluidInventory(), liquidLeft + 13, 22);
+			dummy.addFluidSlot(i, module.getFluidInventory(), liquidLeft + 13, 22);
 		}
 		
 		if(hasByproductExtractor) {
@@ -85,7 +85,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 		}
 		
 		this.inventorySlots = dummy;
-		_pipe = logic;
+		_pipe = module;
 		_pipe.setFluidAmount(amount);
 		buttonarray = new GuiButton[6];
 		normalButtonArray = new GuiButton[8];

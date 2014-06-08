@@ -130,5 +130,12 @@ public abstract class LogisticsModule implements ISaveState {
 	public String toString() {
 		return (new StringBuilder()).append(getClass().getSimpleName()).append("@").append("(").append(getX()).append(", ").append(getY()).append(", ").append(getZ()).append(")").toString();
 	}
+	
+	/**
+	 * typically used when the neighboring block changes
+	 */
+	public void clearCache() {
+	}
+	
 
 }

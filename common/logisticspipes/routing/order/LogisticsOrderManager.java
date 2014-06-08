@@ -120,15 +120,6 @@ public class LogisticsOrderManager implements Iterable<LogisticsOrder> {
 	}
 	
 	public LogisticsOrder addOrder(ItemIdentifierStack stack, IRequestItems requester,RequestType type) {
-		/*
-		for (LogisticsOrder request : _orders){
-			if (request.getItem().getItem() == stack.getItem() && request.getDestination() == requester) {
-				stack.setStackSize(stack.getStackSize() + request.getItem().getStackSize());
-				_orders.remove(request);
-				break;
-			}
-		}
-		*/
 		LogisticsOrder order = new LogisticsOrder(stack, requester, type);
 		_orders.addLast(order);
 		listen();

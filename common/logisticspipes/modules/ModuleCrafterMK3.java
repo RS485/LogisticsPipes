@@ -19,7 +19,7 @@ public class ModuleCrafterMK3 extends ModuleCrafter {
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
-		return new SinkReply(_sinkReply, spaceFor(item, includeInTransit, true), isForBuffer(item, includeInTransit) ? BufferMode.BUFFERED : pipe.areAllOrderesToBuffer() ? BufferMode.DESTINATION_BUFFERED : BufferMode.NONE);
+		return new SinkReply(_sinkReply, spaceFor(item, includeInTransit, true), isForBuffer(item, includeInTransit) ? BufferMode.BUFFERED : areAllOrderesToBuffer() ? BufferMode.DESTINATION_BUFFERED : BufferMode.NONE);
 	}
 	
 	protected int spaceFor(ItemIdentifier item, boolean includeInTransit, boolean addBufferSpace) {
@@ -44,4 +44,22 @@ public class ModuleCrafterMK3 extends ModuleCrafter {
 	private boolean isForBuffer(ItemIdentifier item, boolean includeInTransit) {
 		return spaceFor(item, includeInTransit, false) <= 0;
 	}
+	
+
+	@Override
+	protected int neededEnergy() {
+		return 20;
+	}
+
+	@Override
+	protected int itemsToExtract() {
+		return 128;
+	}
+	
+	@Override
+	protected int stacksToExtract() {
+		return 8;
+	}
+	
+
 }

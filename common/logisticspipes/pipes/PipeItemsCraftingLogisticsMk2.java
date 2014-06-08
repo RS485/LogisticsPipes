@@ -21,7 +21,7 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 	public PipeItemsCraftingLogisticsMk2(PipeTransportLogistics transport, int itemID) {
 		super(transport, itemID);
 	}
-
+/*
 	@Override
 	protected int neededEnergy() {
 		return 15;
@@ -36,7 +36,7 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 	protected int stacksToExtract() {
 		return 1;
 	}
-	
+	*/
 	@Override
 	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_CRAFTERMK2_TEXTURE;

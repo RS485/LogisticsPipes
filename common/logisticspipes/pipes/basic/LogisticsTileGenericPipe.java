@@ -81,16 +81,13 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 
 	@Override
 	public void updateEntity() {
-		if(renderController == null) {
-			renderController = new LogisticsTileRenderController(this);
-		}
-		if(renderController != null && sendInitPacket) {
+		if(sendInitPacket) {
 			sendInitPacket = false;
-			renderController.sendInit();
+			getRenderController().sendInit();
 		}
 		SimpleServiceLocator.thermalExpansionProxy.handleLPInternalConduitUpdate(this);
 		super.updateEntity();
-		renderController.onUpdate();
+		getRenderController().onUpdate();
 	}
 
 	@Override
@@ -231,14 +228,17 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	}
 
 	public void addLaser(ForgeDirection dir, float length, int color, boolean reverse, boolean renderBall) {
-		renderController.addLaser(dir, length, color, reverse, renderBall);
+		getRenderController().addLaser(dir, length, color, reverse, renderBall);
 	}
 
 	public void removeLaser(ForgeDirection dir, int color, boolean isBall) {
-		renderController.removeLaser(dir, color, isBall);
+		getRenderController().removeLaser(dir, color, isBall);
 	}
 
 	public LogisticsTileRenderController getRenderController() {
+		if(renderController == null) {
+			renderController = new LogisticsTileRenderController(this);
+		}
 		return renderController;
 	}
 

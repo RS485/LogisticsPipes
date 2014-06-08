@@ -565,6 +565,30 @@ public class GuiHandler implements IGuiHandler {
 			}
 			switch(((ID % 100) + 100) % 100) {
 			/*** Modules ***/
+			case GuiIDs.GUI_CRAFTINGPIPE_ID:
+				if(pipe == null || pipe.pipe == null || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleCrafter)) return null;
+				ModuleCrafter module = (ModuleCrafter) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot);
+				module.sendGuiArgs(player);
+				dummy = new DummyContainer(player.inventory, module.getDummyInventory());
+				dummy.addNormalSlotsForPlayerInventory(18, 97);
+				//Input slots
+		        for(int l = 0; l < 9; l++) {
+		        	dummy.addDummySlot(l, 18 + l * 18, 18);
+		        }
+		        
+		        //Output slot
+		        dummy.addDummySlot(9, 90, 64);
+		        
+		        for(int i=0;i<((CoreRoutedPipe)pipe.pipe).getUpgradeManager().getFluidCrafter();i++) {
+					int liquidLeft = -(i*40) - 40;
+					dummy.addFluidSlot(i, module.getFluidInventory(), liquidLeft + 13, 42);
+				}
+
+		        if(((CoreRoutedPipe)pipe.pipe).getUpgradeManager().hasByproductExtractor()) {
+		        	dummy.addDummySlot(10, 197, 104);
+		        }
+		        
+				return dummy;
 			case GuiIDs.GUI_Module_Extractor_ID:
 				if(slot >= 0) {
 					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ISneakyDirectionReceiver)) return null;
@@ -967,6 +991,14 @@ public class GuiHandler implements IGuiHandler {
 				slot--;
 			}
 			switch(((ID % 100) + 100) % 100) {
+			case GuiIDs.GUI_CRAFTINGPIPE_ID:
+				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleCrafter)) return null;
+				ModuleCrafter craftingModule = (ModuleCrafter) (((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot));
+				if(args == null) {
+					new UnsupportedOperationException("Arguments missing").printStackTrace();
+					return null;
+				}
+				return new GuiCraftingPipe(player, craftingModule.getDummyInventory(), craftingModule, (Boolean) args[0], (Integer) args[1], (int[]) args[2], (Boolean) args[3], (Boolean) args[4]);
 			case GuiIDs.GUI_Module_Extractor_ID:
 				if(slot >= 0) {
 					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ISneakyDirectionReceiver)) return null;

@@ -9,16 +9,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import cpw.mods.fml.common.event.FMLInterModComms;
 import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 
 import com.google.gson.Gson;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class VersionChecker extends Thread {
 
 	public static boolean hasNewVersion = false;
 	public static String newVersion = "";
 	public static List<String> changeLog = new ArrayList<String>(0);
+	public static boolean sentIMCMessage;
 
 	public VersionChecker() {
 		this.setDaemon(true);
@@ -76,6 +79,7 @@ public class VersionChecker extends Thread {
 					}
 				}
 				VersionChecker.changeLog = changeLogList;
+				sendIMCOutdatedMessage();
 			}
 		} catch(MalformedURLException e) {
 			if (Configs.CHECK_FOR_UPDATES){
@@ -86,5 +90,19 @@ public class VersionChecker extends Thread {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public static void sendIMCOutdatedMessage() {
+		NBTTagCompound tag = new NBTTagCompound();
+		tag.setString("newVersion", newVersion);
+		tag.setString("updateUrl", "http://www.minecraftforum.net/topic/1831791-/#downloads");
+		tag.setBoolean("isDirectLink", false);
+
+		String changeLogString = "";
+		for (String changeLogLine : changeLog) {
+			changeLogString = changeLogString + changeLogLine + "\n";
+		}
+		tag.setString("changeLog", changeLogString);
+		sentIMCMessage = FMLInterModComms.sendMessage("VersionChecker", "addUpdate", tag);
 	}
 }

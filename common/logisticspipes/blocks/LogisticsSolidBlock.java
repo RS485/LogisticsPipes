@@ -8,6 +8,9 @@ import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.network.NewGuiHandler;
+import logisticspipes.network.guis.block.SolderingStationGui;
+import logisticspipes.proxy.MainProxy;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -53,7 +56,9 @@ public class LogisticsSolidBlock extends BlockContainer {
 		if(!par5EntityPlayer.isSneaking()) {
 			switch(par1World.getBlockMetadata(par2, par3, par4)) {
 			case SOLDERING_STATION:
-				par5EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Soldering_Station_ID, par1World, par2, par3, par4);
+				if(MainProxy.isServer(par1World)) {
+					NewGuiHandler.getGui(SolderingStationGui.class).setPosX(par2).setPosY(par3).setPosZ(par4).open(par5EntityPlayer);
+				}
 				return true;
 			case LOGISTICS_POWER_JUNCTION:
 				par5EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Power_Junction_ID, par1World, par2, par3, par4);

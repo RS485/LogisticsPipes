@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -21,13 +20,7 @@ public class GuiSolderingStation extends LogisticsBaseGuiScreen {
 	
 	public GuiSolderingStation(EntityPlayer player, LogisticsSolderingTileEntity tile) {
 		super(176, 166, 0, 0);
-		this.inventorySlots = tile.createContainer(player);
 		this.tile = tile;
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Soldering_Station_ID;
 	}
 
 	@Override

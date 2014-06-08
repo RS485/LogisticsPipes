@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
@@ -23,7 +22,8 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-public abstract class LogisticsBaseGuiScreen extends GuiContainer implements IGuiIDHandlerProvider, ISubGuiControler {
+
+public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISubGuiControler {
 	
 	public enum Colors
 	{
@@ -285,5 +285,12 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements IGu
 	
 	public Minecraft getMC() {
 		return mc;
+	}
+
+	public int getGuiID() {
+		if(LogisticsPipes.DEBUG) {
+			Thread.dumpStack();
+		}
+		return 0;
 	}
 }

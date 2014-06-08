@@ -412,10 +412,6 @@ public class GuiHandler implements IGuiHandler {
 				
 				return dummy;
 			
-			case GuiIDs.GUI_Soldering_Station_ID:
-				if(!(tile instanceof LogisticsSolderingTileEntity)) return null;
-				return ((LogisticsSolderingTileEntity)tile).createContainer(player);
-				
 			case GuiIDs.GUI_Freq_Card_ID:
 				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeItemsSystemEntranceLogistics) || (pipe.pipe instanceof PipeItemsSystemDestinationLogistics))) return null;
 				IInventory inv = null;
@@ -896,10 +892,6 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_Inv_Sys_Connector_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsInvSysConnector)) return null;
 				return new GuiInvSysConnector(player, (PipeItemsInvSysConnector)pipe.pipe);
-			
-			case GuiIDs.GUI_Soldering_Station_ID:
-				if(!(tile instanceof LogisticsSolderingTileEntity)) return null;
-				return new GuiSolderingStation(player, (LogisticsSolderingTileEntity)tile);
 				
 			case GuiIDs.GUI_Freq_Card_ID:
 				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeItemsSystemEntranceLogistics) || (pipe.pipe instanceof PipeItemsSystemDestinationLogistics))) return null;

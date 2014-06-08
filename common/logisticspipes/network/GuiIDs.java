@@ -40,7 +40,7 @@ public class GuiIDs {
 	public static final int GUI_Request_Table_ID = 38;
 	
 	//Blocks
-	public static final int GUI_Soldering_Station_ID = 50;
+	//public static final int GUI_Soldering_Station_ID = 50;
 	public static final int GUI_Power_Junction_ID = 51;
 	public static final int GUI_Security_Station_ID = 52;
 	public static final int GUI_Auto_Crafting_ID = 53;

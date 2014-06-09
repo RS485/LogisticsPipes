@@ -1,6 +1,5 @@
 package logisticspipes.gui;
 
-import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.utils.gui.BasicGuiHelper;
@@ -36,11 +35,6 @@ public class GuiUpgradeManager extends LogisticsBaseGuiScreen {
 		if(upgrade.hasCombinedSneakyUpgrade()) {
 			fontRenderer.drawString(StringUtil.translate(PREFIX + "SneakyUpgrades"), 8, 47, 0x404040);
 		}
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Upgrade_Manager;
 	}
 	
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/upgrade_manager.png");

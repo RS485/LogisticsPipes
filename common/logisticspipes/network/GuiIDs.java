@@ -46,7 +46,7 @@ public class GuiIDs {
 	//public static final int GUI_Auto_Crafting_ID = 53;
 	//public static final int GUI_Power_Provider_ID = 54;
 
-	public static final int GUI_Upgrade_Manager = 60;
+	//public static final int GUI_Upgrade_Manager = 60;
 	public static final int GUI_Item_Manager = 61;
 	public static final int GUI_Item_Amount_Sign = 62;
 

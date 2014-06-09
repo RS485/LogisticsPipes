@@ -17,7 +17,6 @@ import logisticspipes.gui.GuiProviderPipe;
 import logisticspipes.gui.GuiRoutingStats;
 import logisticspipes.gui.GuiSatellitePipe;
 import logisticspipes.gui.GuiSupplierPipe;
-import logisticspipes.gui.GuiUpgradeManager;
 import logisticspipes.gui.ItemAmountSignCreationGui;
 import logisticspipes.gui.hud.GuiHUDSettings;
 import logisticspipes.gui.modules.GuiAdvancedExtractor;
@@ -404,10 +403,6 @@ public class GuiHandler implements IGuiHandler {
 				dummy.addRestrictedArmorForPlayerInventory(10, 60);
 				return dummy;
 				
-			case GuiIDs.GUI_Upgrade_Manager:
-				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof CoreRoutedPipe))) return null;
-				return ((CoreRoutedPipe)pipe.pipe).getUpgradeManager().getDummyContainer(player);
-				
 			case GuiIDs.GUI_Fluid_Basic_ID:
 				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeFluidBasic))) return null;
 				dummy = new DummyContainer(player, ((PipeFluidBasic)pipe.pipe).filterInv, new IGuiOpenControler() {
@@ -785,11 +780,6 @@ public class GuiHandler implements IGuiHandler {
 
 			case GuiIDs.GUI_HUD_Settings:
 				return new GuiHUDSettings(player, x);
-
-				
-			case GuiIDs.GUI_Upgrade_Manager:
-				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof CoreRoutedPipe))) return null;
-				return new GuiUpgradeManager(player, (CoreRoutedPipe) pipe.pipe);
 			
 			case GuiIDs.GUI_Fluid_Basic_ID:
 				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeFluidBasic))) return null;

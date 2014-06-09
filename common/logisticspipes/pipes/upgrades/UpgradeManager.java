@@ -8,7 +8,8 @@ import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsItemCard;
-import logisticspipes.network.GuiIDs;
+import logisticspipes.network.NewGuiHandler;
+import logisticspipes.network.guis.pipe.UpgradeManagerGui;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.upgrades.power.BCPowerSupplierUpgrade;
 import logisticspipes.pipes.upgrades.power.IC2PowerSupplierUpgrade;
@@ -216,7 +217,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	}
 
 	public void openGui(EntityPlayer entityplayer, CoreRoutedPipe pipe) {
-		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Upgrade_Manager, pipe.getWorld(), pipe.getX(), pipe.getY(), pipe.getZ());
+		NewGuiHandler.getGui(UpgradeManagerGui.class).setTilePos(pipe.container).open(entityplayer);
 	}
 
 	public DummyContainer getDummyContainer(EntityPlayer player) {

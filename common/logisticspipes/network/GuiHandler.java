@@ -16,7 +16,6 @@ import logisticspipes.gui.GuiProviderPipe;
 import logisticspipes.gui.GuiRoutingStats;
 import logisticspipes.gui.GuiSatellitePipe;
 import logisticspipes.gui.GuiSupplierPipe;
-import logisticspipes.gui.ItemAmountSignCreationGui;
 import logisticspipes.gui.hud.GuiHUDSettings;
 import logisticspipes.gui.modules.GuiAdvancedExtractor;
 import logisticspipes.gui.modules.GuiApiaristAnalyser;
@@ -79,7 +78,6 @@ import logisticspipes.pipes.PipeItemsSystemEntranceLogistics;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.pipes.signs.ItemAmountPipeSign;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.DummyModuleContainer;
@@ -90,14 +88,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.network.Player;
 
 public class GuiHandler implements IGuiHandler {
 
 	public final static Map<Integer, Object[]> argumentQueueClient = new HashMap<Integer, Object[]>();
-	public final static Map<Integer, Object[]> argumentQueueServer = new HashMap<Integer, Object[]>();
 
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, final int x, final int y, final int z) {
@@ -124,8 +120,6 @@ public class GuiHandler implements IGuiHandler {
 		if(ID == -1) {
 			return getServerGuiElement(100 * -20 + x, player, world, 0, -1, z);
 		}
-		
-		Object[] args = argumentQueueServer.get(ID);
 		
 		if(ID < 120 && ID > 0) {
 			switch(ID) {
@@ -435,14 +429,6 @@ public class GuiHandler implements IGuiHandler {
 				});
 				dummy.addNormalSlot(0, ((PipeBlockRequestTable)pipe.pipe).toSortInv, 0, 0);
 				dummy.addNormalSlot(0, ((PipeBlockRequestTable)pipe.pipe).diskInv, 0, 0);
-				dummy.addNormalSlotsForPlayerInventory(0, 0);
-				return dummy;
-
-			case GuiIDs.GUI_Item_Amount_Sign:
-				if(pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) return null;
-				ItemAmountPipeSign sign = ((ItemAmountPipeSign)((CoreRoutedPipe)pipe.pipe).getPipeSign((ForgeDirection)args[0]));
-				dummy = new DummyContainer(player.inventory, sign.itemTypeInv);
-				dummy.addDummySlot(0, 0, 0);
 				dummy.addNormalSlotsForPlayerInventory(0, 0);
 				return dummy;
 				
@@ -769,10 +755,6 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_Request_Table_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeBlockRequestTable)) return null;
 				return new GuiRequestTable(player, ((PipeBlockRequestTable)pipe.pipe));
-			
-			case GuiIDs.GUI_Item_Amount_Sign:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) return null;
-				return new ItemAmountSignCreationGui(player, (CoreRoutedPipe) pipe.pipe, (ForgeDirection)args[0]);
 				
 			default:break;
 			}

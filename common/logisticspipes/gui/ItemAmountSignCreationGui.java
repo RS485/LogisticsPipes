@@ -1,6 +1,5 @@
 package logisticspipes.gui;
 
-import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.signs.ItemAmountPipeSign;
 import logisticspipes.utils.gui.BasicGuiHelper;
@@ -18,11 +17,6 @@ public class ItemAmountSignCreationGui extends LogisticsBaseGuiScreen {
 		dummy.addDummySlot(0, 10, 13);
 		dummy.addNormalSlotsForPlayerInventory(10, 40);
 		this.inventorySlots = dummy;
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Item_Amount_Sign;
 	}
 	
 	@Override

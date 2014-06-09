@@ -3,7 +3,6 @@ package logisticspipes.gui;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISlotCheck;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.utils.CardManagmentInventory;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
@@ -37,11 +36,6 @@ public class GuiCardManager extends LogisticsBaseGuiScreen {
 		}
 		dummy.addNormalSlotsForPlayerInventory(10, 95);
 		this.inventorySlots = dummy;
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Item_Manager;
 	}
 
 	@Override

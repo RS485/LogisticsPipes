@@ -50,10 +50,6 @@ public class ModuleElectricBuffer extends LogisticsModule {
 
 	}
 
-
-	@Override 
-	public void registerSlot(int slot) {
-	}
 	
 	@Override 
 	public final int getX() {

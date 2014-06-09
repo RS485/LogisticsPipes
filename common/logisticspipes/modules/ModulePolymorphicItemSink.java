@@ -55,10 +55,6 @@ public class ModulePolymorphicItemSink extends LogisticsModule {
 
 	@Override
 	public void tick() {}
-
-	@Override 
-	public void registerSlot(int slot) {
-	}
 	
 	@Override 
 	public final int getX() {

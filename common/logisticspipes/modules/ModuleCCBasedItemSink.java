@@ -40,9 +40,6 @@ public class ModuleCCBasedItemSink extends LogisticsModule {
 	public void registerCCEventQueuer(IQueueCCEvent eventQueuer) {
 		this.eventQueuer = eventQueuer;
 	}
-
-	@Override
-	public void registerSlot(int slot) {}
 	
 	@Override
 	public int getX() {

@@ -31,11 +31,6 @@ public class ModuleApiaristTerminus extends LogisticsModule {
 	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerProvider) {
 		_power = powerProvider;
 	}
-
-
-	@Override 
-	public void registerSlot(int slot) {
-	}
 	
 	@Override 
 	public final int getX() {

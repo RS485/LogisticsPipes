@@ -39,15 +39,12 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 	protected int lastStackLookedAt = 0;
 	protected int lastSuceededStack = 0;
 
-	protected IInventoryProvider _invProvider;
-
 	protected IRoutedPowerProvider _power;
 
 	private PlayerCollectionList _watchingPlayer = new PlayerCollectionList();
 	private int lastPosSend = 0;
 
 	protected IWorldProvider _world;
-	protected int _slot;
 
 	public ModuleQuickSort() {}
 
@@ -257,29 +254,9 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 	}
 
 	private void sendPacketTo(EntityPlayer player) {
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(QuickSortState.class).setInteger2(lastPosSend).setInteger(_slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(QuickSortState.class).setInteger2(lastPosSend).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player) player);
 	}
 
-	@Override 
-	public void registerSlot(int slot) {
-		_slot = slot;
-	}
-	
-	@Override 
-	public int getX() {
-		return this._power.getX();
-	}
-	
-	@Override 
-	public int getY() {
-		return this._power.getY();
-	}
-	
-	@Override 
-	public int getZ() {
-		return this._power.getZ();
-	}
-	
 	@Override
 	public boolean hasGenericInterests() {
 		return false;

@@ -45,7 +45,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 			}
 		}, itemID);
 		itemSinkModule = new ModuleItemSink();
-		itemSinkModule.registerHandler(null, this, this);
+		itemSinkModule.registerHandler(this, this, this);
 	}
 
 	@Override

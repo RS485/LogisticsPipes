@@ -35,7 +35,7 @@ public abstract class LogisticsModule implements ISaveState {
 	 * Registers the slot the module is in
 	 * Negative numbers indicate an in-hand inventory, not in a gui or chassi 
 	 */
-	public abstract void registerSlot(int slot);
+	public final void registerSlot(int slot) {this.slot = slot;}
 	
 	/**
 	 * typically returns the coord of the pipe that holds it.
@@ -137,5 +137,6 @@ public abstract class LogisticsModule implements ISaveState {
 	public void clearCache() {
 	}
 	
+	int slot=0;
 
 }

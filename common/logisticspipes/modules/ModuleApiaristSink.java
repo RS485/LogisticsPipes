@@ -188,7 +188,6 @@ public class ModuleApiaristSink extends LogisticsGuiModule implements INBTPacket
 	public SinkSetting[] filter = new SinkSetting[6];
 	public IWorldProvider worldProvider;
 	private IRoutedPowerProvider _power;
-	private int slot;
 	
 	public ModuleApiaristSink() {
 		filter[0] = new SinkSetting(this);
@@ -224,6 +223,7 @@ public class ModuleApiaristSink extends LogisticsGuiModule implements INBTPacket
 	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		this.worldProvider = world;
 		_power = powerprovider;
+		_invProvider = invProvider;
 	}
 
 	@Override
@@ -292,35 +292,6 @@ public class ModuleApiaristSink extends LogisticsGuiModule implements INBTPacket
 		writeToNBT(tag);
 	}
 	
-	
-	@Override 
-	public void registerSlot(int slot) {
-		this.slot = slot;
-	}
-	
-	@Override 
-	public final int getX() {
-		if(slot>=0)
-			return this._power.getX();
-		else 
-			return 0;
-	}
-	@Override 
-	public final int getY() {
-		if(slot>=0)
-			return this._power.getY();
-		else 
-			return -1;
-	}
-	
-	@Override 
-	public final int getZ() {
-		if(slot>=0)
-			return this._power.getZ();
-		else 
-			return -1-slot;
-	}
-
 	@Override
 	public boolean hasGenericInterests() {
 		return true;

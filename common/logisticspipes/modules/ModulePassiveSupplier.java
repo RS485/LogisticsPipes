@@ -41,9 +41,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ModulePassiveSupplier extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler, IModuleSimpleFilter {
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested items", 64);
-	private IInventoryProvider _invProvider;
 	private IRoutedPowerProvider _power;
-	private int slot = 0;
 
 
 
@@ -115,36 +113,6 @@ public class ModulePassiveSupplier extends LogisticsGuiModule implements IClient
 		list.add("<that>");
 		return list;
 	}
-
-
-	@Override 
-	public void registerSlot(int slot) {
-		this.slot = slot;
-	}
-	
-	@Override 
-	public final int getX() {
-		if(slot>=0)
-			return this._invProvider.getX();
-		else 
-			return 0;
-	}
-	@Override 
-	public final int getY() {
-		if(slot>=0)
-			return this._invProvider.getY();
-		else 
-			return -1;
-	}
-	
-	@Override 
-	public final int getZ() {
-		if(slot>=0)
-			return this._invProvider.getZ();
-		else 
-			return -1-slot;
-	}
-
 	
 	@Override
 	public void startWatching() {

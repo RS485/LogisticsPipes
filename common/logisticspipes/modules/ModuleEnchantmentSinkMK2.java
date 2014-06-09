@@ -40,7 +40,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ModuleEnchantmentSinkMK2 extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive, IModuleSimpleFilter {
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested Enchanted items", 1);
-	private int slot = 0;
 
 	public ModuleEnchantmentSinkMK2() {
 		_filterInventory.addListener(this);
@@ -61,34 +60,6 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsGuiModule implements ICli
 			_power = powerprovider;
 		}
 
-
-		@Override 
-		public void registerSlot(int slot) {
-			this.slot = slot;
-		}
-		
-		@Override 
-		public final int getX() {
-			if(slot>=0)
-				return this._power.getX();
-			else 
-				return 0;
-		}
-		@Override 
-		public final int getY() {
-			if(slot>=0)
-				return this._power.getY();
-			else 
-				return -1;
-		}
-		
-		@Override 
-		public final int getZ() {
-			if(slot>=0)
-				return this._power.getZ();
-			else 
-				return -1-slot;
-		}
 
 		
 		private static final SinkReply _sinkReply = new SinkReply(FixedPriority.EnchantmentItemSink, 1, true, false, 1, 0);

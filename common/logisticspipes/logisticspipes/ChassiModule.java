@@ -27,6 +27,7 @@ public class ChassiModule extends LogisticsGuiModule{
 	public ChassiModule(int moduleCount,PipeLogisticsChassi parentPipe){
 		_modules = new LogisticsModule[moduleCount];
 		_parentPipe = parentPipe;
+		_invProvider = parentPipe;
 	}
 	
 	public void installModule(int slot, LogisticsModule module){
@@ -124,25 +125,6 @@ public class ChassiModule extends LogisticsGuiModule{
 	@Override
 	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		//Not used in Chassie Module
-	}
-
-
-	@Override 
-	public void registerSlot(int slot) {
-	}
-	
-	@Override 
-	public final int getX() {
-		return this._parentPipe.getX();
-	}
-	@Override 
-	public final int getY() {
-		return this._parentPipe.getX();
-	}
-	
-	@Override 
-	public final int getZ() {
-		return this._parentPipe.getX();
 	}
 
 	

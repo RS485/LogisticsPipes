@@ -40,8 +40,6 @@ public class ModuleTerminus extends LogisticsGuiModule implements IClientInforma
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Terminated items", 1);
 
-	private int slot;
-	
 	private IRoutedPowerProvider _power;
 	
 	private IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
@@ -59,6 +57,7 @@ public class ModuleTerminus extends LogisticsGuiModule implements IClientInforma
 	@Override
 	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_power = powerprovider;
+		_invProvider = invProvider;
 	}
 
 	@Override
@@ -104,34 +103,6 @@ public class ModuleTerminus extends LogisticsGuiModule implements IClientInforma
 		return list;
 	}
 
-
-	@Override 
-	public void registerSlot(int slot) {
-		this.slot = slot;
-	}
-	
-	@Override 
-	public final int getX() {
-		if(slot>=0)
-			return this._power.getX();
-		else 
-			return 0;
-	}
-	@Override 
-	public final int getY() {
-		if(slot>=0)
-			return this._power.getY();
-		else 
-			return -1;
-	}
-	
-	@Override 
-	public final int getZ() {
-		if(slot>=0)
-			return this._power.getZ();
-		else 
-			return -1-slot;
-	}
 
 
 	@Override

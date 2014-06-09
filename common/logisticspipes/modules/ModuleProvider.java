@@ -57,10 +57,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive {
 	
-	protected IInventoryProvider _invProvider;
 	protected IRoutedPowerProvider _power;
-
-//	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager(this);	
 	
 	private List<ILegacyActiveModule> _previousLegacyModules = new LinkedList<ILegacyActiveModule>();
 
@@ -72,8 +69,6 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 	protected boolean isExcludeFilter = false;
 	protected ExtractionMode _extractionMode = ExtractionMode.Normal;
 	
-	private int slot = 0;
-
 	private IWorldProvider _world;
 
 	private final Map<ItemIdentifier,Integer> displayMap = new HashMap<ItemIdentifier, Integer>();
@@ -336,36 +331,6 @@ outer:
 		list.add("<that>");
 		return list;
 	}
-
-
-	@Override 
-	public void registerSlot(int slot) {
-		this.slot = slot;
-	}
-	
-	@Override 
-	public final int getX() {
-		if(slot>=0)
-			return this._invProvider.getX();
-		else 
-			return 0;
-	}
-	@Override 
-	public final int getY() {
-		if(slot>=0)
-			return this._invProvider.getY();
-		else 
-			return -1;
-	}
-	
-	@Override 
-	public final int getZ() {
-		if(slot>=0)
-			return this._invProvider.getZ();
-		else 
-			return -1-slot;
-	}
-
 	
 	private void checkUpdate(EntityPlayer player) {
 		if(localModeWatchers.size() == 0 && player == null)

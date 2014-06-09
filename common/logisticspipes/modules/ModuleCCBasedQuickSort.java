@@ -225,29 +225,6 @@ outer:
 		return register.registerIcon("logisticspipes:itemModule/ModuleCCQuickSort");
 	}
 	
-	@Override 
-	public final int getX() {
-		if(_slot>=0)
-			return this._power.getX();
-		else 
-			return 0;
-	}
-	
-	@Override 
-	public final int getY() {
-		if(_slot>=0)
-			return this._power.getY();
-		else 
-			return -1;
-	}
-	
-	@Override 
-	public final int getZ() {
-		if(_slot>=0)
-			return this._power.getZ();
-		else 
-			return -1-_slot;
-	}
 	
 	@Override
 	public int getGuiHandlerID() {
@@ -282,25 +259,25 @@ outer:
 	private void checkSize() {
 		if(sinkSize != sinkResponses.size()) {
 			sinkSize = sinkResponses.size();
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortSinkSize.class).setInteger2(_slot).setInteger(sinkSize).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortSinkSize.class).setInteger2(slot).setInteger(sinkSize).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 		}
 	}
 
 	@Override
 	public void startWatching() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(_slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
 	@Override
 	public void stopWatching() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(_slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CCBasedQuickSortMode.class).setInteger2(_slot).setInteger(timeout).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CCBasedQuickSortSinkSize.class).setInteger2(_slot).setInteger(sinkSize).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CCBasedQuickSortMode.class).setInteger2(slot).setInteger(timeout).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CCBasedQuickSortSinkSize.class).setInteger2(slot).setInteger(sinkSize).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
 	}
 
 	@Override
@@ -315,7 +292,7 @@ outer:
 	
 	public void setTimeout(int time) {
 		this.timeout = time;
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortMode.class).setInteger2(_slot).setInteger(timeout).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortMode.class).setInteger2(slot).setInteger(timeout).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 	}
 
 	public void setSinkSize(int integer) {

@@ -34,10 +34,7 @@ public class ModuleSatelite extends LogisticsModule{
 
 	@Override
 	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {}
-	
-	@Override 
-	public void registerSlot(int slot) {}
-	
+		
 	@Override 
 	public final int getX() {
 		return this.pipe.getX();

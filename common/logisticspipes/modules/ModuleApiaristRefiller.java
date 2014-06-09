@@ -61,9 +61,6 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
 	
 	@Override
-	public void registerSlot(int slot) {}
-	
-	@Override
 	public final int getX() {
 		return this._invProvider.getX();
 	}

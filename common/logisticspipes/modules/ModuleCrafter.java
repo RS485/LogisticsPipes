@@ -109,7 +109,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 	
 	private PipeItemsCraftingLogistics _pipe;
 	
-	private IInventoryProvider _invProvider;
 	private IRequestItems _invRequester;
 	private IRoutedPowerProvider _power;
 	private ForgeDirection _sneakyDirection = ForgeDirection.UNKNOWN;
@@ -158,23 +157,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 		_invRequester=(IRequestItems)_invProvider;
 	}
 	
-	@Override
-	public void registerSlot(int slot) {}
-	
-	@Override
-	public final int getX() {
-		return this._invProvider.getX();
-	}
-	
-	@Override
-	public final int getY() {
-		return this._invProvider.getY();
-	}
-	
-	@Override
-	public final int getZ() {
-		return this._invProvider.getZ();
-	}
 	
 	protected static final SinkReply	_sinkReply	= new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0);
 	

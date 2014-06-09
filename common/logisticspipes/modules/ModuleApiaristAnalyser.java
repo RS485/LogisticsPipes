@@ -31,10 +31,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClientInformationProvider, IModuleWatchReciver {
 
-	private IInventoryProvider _invProvider;
 	private int ticksToAction = 100;
 	private int currentTick = 0;
-	private int slot = 0;
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
@@ -107,36 +105,6 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 			}
 		}
 	}
-
-
-	@Override 
-	public void registerSlot(int slot) {
-		this.slot = slot;
-	}
-	
-	@Override 
-	public final int getX() {
-		if(slot>=0)
-			return this._invProvider.getX();
-		else 
-			return 0;
-	}
-	@Override 
-	public final int getY() {
-		if(slot>=0)
-			return this._invProvider.getY();
-		else 
-			return -1;
-	}
-	
-	@Override 
-	public final int getZ() {
-		if(slot>=0)
-			return this._invProvider.getZ();
-		else 
-			return -1-slot;
-	}
-
 
 	@Override
 	public boolean hasGenericInterests() {

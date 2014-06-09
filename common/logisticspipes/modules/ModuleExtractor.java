@@ -43,15 +43,9 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 	//protected final int ticksToAction = 100;
 	private int currentTick = 0;
 
-	private IInventoryProvider _invProvider;
 	private IRoutedPowerProvider _power;
 	private ForgeDirection _sneakyDirection = ForgeDirection.UNKNOWN;
 	private IWorldProvider _world;
-
-	private int slot = 0;
-
-
-
 
 	private IHUDModuleRenderer HUD;
 
@@ -219,35 +213,6 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 		List<String> list = new ArrayList<String>(1);
 		list.add("Extraction: " + ((_sneakyDirection == ForgeDirection.UNKNOWN) ? "DEFAULT" : _sneakyDirection.name()));
 		return list;
-	}
-
-
-	@Override 
-	public void registerSlot(int slot) {
-		this.slot = slot;
-	}
-	
-	@Override 
-	public final int getX() {
-		if(slot>=0)
-			return this._invProvider.getX();
-		else 
-			return 0;
-	}
-	@Override 
-	public final int getY() {
-		if(slot>=0)
-			return this._invProvider.getY();
-		else 
-			return -1;
-	}
-	
-	@Override 
-	public final int getZ() {
-		if(slot>=0)
-			return this._invProvider.getZ();
-		else 
-			return -1-slot;
 	}
 
 

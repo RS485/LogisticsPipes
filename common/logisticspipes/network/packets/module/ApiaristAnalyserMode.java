@@ -41,6 +41,7 @@ public class ApiaristAnalyserMode extends Integer2CoordinatesPacket {
 					DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
 					if(dummy.getModule() instanceof ModuleApiaristAnalyser) {
 						ModuleApiaristAnalyser module = (ModuleApiaristAnalyser) dummy.getModule();
+						// why is this the only handler that needs to actually registerHandler?
 						module.registerHandler(null, new DummyWorldProvider(player.worldObj), null);
 						module.setExtractMode(getInteger());
 					}

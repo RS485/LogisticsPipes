@@ -1,8 +1,12 @@
 package logisticspipes.modules;
 
+import logisticspipes.logisticspipes.IInventoryProvider;
 import net.minecraft.entity.player.EntityPlayer;
 
 public abstract class LogisticsGuiModule extends LogisticsModule {
+
+
+	protected IInventoryProvider _invProvider;
 
 	/**
 	 * 
@@ -21,4 +25,31 @@ public abstract class LogisticsGuiModule extends LogisticsModule {
 	public void sendGuiArgs(EntityPlayer entityplayer) {
 		
 	}
+	
+	@Override 
+	public final int getX() {
+		if(slot>=0)
+			return this._invProvider.getX();
+		else 
+			return 0;
+	}
+	@Override 
+	public final int getY() {
+		if(slot>=0)
+			return this._invProvider.getY();
+		else 
+			return -1;
+	}
+	
+	@Override 
+	public final int getZ() {
+		if(slot>=0)
+			return this._invProvider.getZ();
+		else 
+			return -1-slot;
+	}
+
+
+	
+
 }

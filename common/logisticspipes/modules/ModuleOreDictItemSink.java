@@ -42,7 +42,6 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 	public final List<String> oreList = new LinkedList<String>();
 	//map of ItemID:<set of damagevalues>, empty set if wildcard damage
 	private Map<Integer, Set<Integer>> oreItemIdMap;
-	private int slot = 0;
 
 	private IHUDModuleRenderer HUD = new HUDOreDictItemSink(this);
 	private List<ItemIdentifierStack> oreHudList;
@@ -56,38 +55,8 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_power = powerprovider;
 		_world = world;
+		_invProvider = invProvider;
 	}
-
-
-	@Override
-	public void registerSlot(int slot) {
-		this.slot = slot;
-	}
-
-	@Override
-	public final int getX() {
-		if(slot>=0)
-			return this._power.getX();
-		else
-			return 0;
-	}
-
-	@Override
-	public final int getY() {
-		if(slot>=0)
-			return this._power.getY();
-		else
-			return -1;
-	}
-
-	@Override
-	public final int getZ() {
-		if(slot>=0)
-			return this._power.getZ();
-		else
-			return -1-slot;
-	}
-
 
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.OreDictItemSink, 0, true, false, 5, 0);
 	@Override

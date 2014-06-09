@@ -18,7 +18,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ModuleEnchantmentSink extends LogisticsModule {
 	
 	private IRoutedPowerProvider _power;
-	private int slot = 0;
 	
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {}
@@ -31,11 +30,6 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 			IWorldProvider world,
 			IRoutedPowerProvider powerProvider) {
 		_power = powerProvider;
-	}
-
-	@Override
-	public void registerSlot(int slot) {
-		this.slot = slot;
 	}
 
 	@Override

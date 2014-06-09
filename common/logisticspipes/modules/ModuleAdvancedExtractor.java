@@ -54,12 +54,10 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Item list", 1);
 	private boolean _itemsIncluded = true;
-	protected IInventoryProvider _invProvider;
-
+	
 	protected IRoutedPowerProvider _power;
 	private ForgeDirection _sneakyDirection = ForgeDirection.UNKNOWN;
 
-	private int slot = 0;
 	private IWorldProvider _world;
 
 	private IHUDModuleRenderer HUD = new HUDAdvancedExtractor(this);
@@ -249,35 +247,7 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 		list.add("<that>");
 		return list;
 	}
-
-	@Override 
-	public void registerSlot(int slot) {
-		this.slot = slot;
-	}
 	
-	@Override 
-	public final int getX() {
-		if(slot>=0)
-			return this._invProvider.getX();
-		else 
-			return 0;
-	}
-	@Override 
-	public final int getY() {
-		if(slot>=0)
-			return this._invProvider.getY();
-		else 
-			return -1;
-	}
-	
-	@Override 
-	public final int getZ() {
-		if(slot>=0)
-			return this._invProvider.getZ();
-		else 
-			return -1-slot;
-	}
-
 	@Override
 	public void InventoryChanged(IInventory inventory) {
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(ItemIdentifierStack.getListFromInventory(inventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);

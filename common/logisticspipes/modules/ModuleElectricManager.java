@@ -47,13 +47,10 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Electric Items", 1);
 	private boolean _dischargeMode;
-	protected IInventoryProvider _invProvider;
 
 	protected IRoutedPowerProvider _power;
 	private int ticksToAction = 100;
 	private int currentTick = 0;
-
-	private int slot = 0;
 
 	private IWorldProvider _world;
 
@@ -181,34 +178,6 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 	}
 
 
-
-	@Override 
-	public void registerSlot(int slot) {
-		this.slot = slot;
-	}
-	
-	@Override 
-	public final int getX() {
-		if(slot>=0)
-			return this._invProvider.getX();
-		else 
-			return 0;
-	}
-	@Override 
-	public final int getY() {
-		if(slot>=0)
-			return this._invProvider.getY();
-		else 
-			return -1;
-	}
-	
-	@Override 
-	public final int getZ() {
-		if(slot>=0)
-			return this._invProvider.getZ();
-		else 
-			return -1-slot;
-	}
 
 
 	@Override

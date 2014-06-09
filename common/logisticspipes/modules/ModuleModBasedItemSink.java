@@ -35,8 +35,6 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IClien
 	
 	public final List<String> modList = new LinkedList<String>();
 	private BitSet modIdSet;
-	private int slot = 0;
-
 
 
 	
@@ -51,37 +49,8 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IClien
 	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_power = powerprovider;
 		_world = world;
+		_invProvider = invProvider;
 	}
-
-
-	@Override 
-	public void registerSlot(int slot) {
-		this.slot = slot;
-	}
-	
-	@Override 
-	public final int getX() {
-		if(slot>=0)
-			return this._power.getX();
-		else 
-			return 0;
-	}
-	@Override 
-	public final int getY() {
-		if(slot>=0)
-			return this._power.getY();
-		else 
-			return -1;
-	}
-	
-	@Override 
-	public final int getZ() {
-		if(slot>=0)
-			return this._power.getZ();
-		else 
-			return -1-slot;
-	}
-
 	
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ModBasedItemSink, 0, true, false, 5, 0);
 	@Override

@@ -39,6 +39,7 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_world = world;
 		_power = powerprovider;
+		_invProvider = invProvider;
 	}
 
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 0, 0);
@@ -80,25 +81,6 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 		list.add("<inventory>");
 		list.add("<that>");
 		return list;
-	}
-
-
-	@Override 
-	public void registerSlot(int slot) {
-	}
-	
-	@Override 
-	public final int getX() {
-		return this._power.getX();
-	}
-	@Override 
-	public final int getY() {
-		return this._power.getY();
-	}
-	
-	@Override 
-	public final int getZ() {
-		return this._power.getZ();
 	}
 
 	@Override

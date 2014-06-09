@@ -6,12 +6,9 @@ import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.utils.gui.DummyContainer;
-import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class SolderingStationGui extends CoordinatesGuiProvider {
 	
@@ -20,8 +17,7 @@ public class SolderingStationGui extends CoordinatesGuiProvider {
 	}
 	
 	@Override
-	@SideOnly(Side.CLIENT)
-	public LogisticsBaseGuiScreen getClientGui(EntityPlayer player) {
+	public Object getClientGui(EntityPlayer player) {
 		final LogisticsSolderingTileEntity tile = this.getTile(player.worldObj, LogisticsSolderingTileEntity.class);
 		if(tile == null) return null;
 		GuiSolderingStation gui = new GuiSolderingStation(player, tile);

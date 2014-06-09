@@ -93,7 +93,7 @@ public class NewGuiHandler {
 		provider.readData(new LPDataInputStream(packet.getGuiData()));
 		LogisticsBaseGuiScreen screen;
 		try {
-			screen = provider.getClientGui(player);
+			screen = (LogisticsBaseGuiScreen) provider.getClientGui(player);
 		} catch(Exception e) {
 			LogisticsPipes.log.severe(packet.getClass().getName());
 			LogisticsPipes.log.severe(packet.toString());

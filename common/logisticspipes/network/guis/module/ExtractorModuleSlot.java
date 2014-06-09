@@ -2,8 +2,6 @@ package logisticspipes.network.guis.module;
 
 import java.io.IOException;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.gui.modules.GuiExtractor;
 import logisticspipes.interfaces.ISneakyDirectionReceiver;
 import logisticspipes.network.LPDataInputStream;
@@ -13,7 +11,6 @@ import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.gui.DummyContainer;
-import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -44,8 +41,7 @@ public class ExtractorModuleSlot extends ModuleCoordinatesGuiProvider {
 	}
 	
 	@Override
-	@SideOnly(Side.CLIENT)
-	public LogisticsBaseGuiScreen getClientGui(EntityPlayer player) {
+	public Object getClientGui(EntityPlayer player) {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld());
 		if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(getSlot()) instanceof ISneakyDirectionReceiver)) return null;
 		((ISneakyDirectionReceiver)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(getSlot())).setSneakyDirection(sneakyOrientation);

@@ -1,5 +1,7 @@
 package logisticspipes.network.guis.module;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.gui.modules.GuiExtractor;
 import logisticspipes.interfaces.ISneakyDirectionReceiver;
 import logisticspipes.modules.LogisticsModule;
@@ -17,6 +19,7 @@ public class ExtractorModuleInHand extends ModuleInHandGuiProvider {
 	}
 	
 	@Override
+	@SideOnly(Side.CLIENT)
 	public LogisticsBaseGuiScreen getClientGui(EntityPlayer player) {
 		LogisticsModule module = this.getLogisticsModule(player);
 		if(!(module instanceof ISneakyDirectionReceiver)) return null;

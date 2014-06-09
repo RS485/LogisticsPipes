@@ -566,10 +566,18 @@ public class GuiHandler implements IGuiHandler {
 			switch(((ID % 100) + 100) % 100) {
 			/*** Modules ***/
 			case GuiIDs.GUI_CRAFTINGPIPE_ID:
-				if(pipe == null || pipe.pipe == null || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleCrafter)) return null;
-				ModuleCrafter module = (ModuleCrafter) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot);
+				ModuleCrafter module ;
+				if(slot >= 0) {
+					if(pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleCrafter)) return null;
+					module = (ModuleCrafter) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot);
+					dummy = new DummyContainer(player.inventory, module.getDummyInventory());
+				} else {
+					dummy = new DummyModuleContainer(player, z);
+					if(!(((DummyModuleContainer)dummy).getModule() instanceof ModuleCrafter)) return null;
+					module = (ModuleCrafter) ((DummyModuleContainer)dummy).getModule();
+				}
+					
 				module.sendGuiArgs(player);
-				dummy = new DummyContainer(player.inventory, module.getDummyInventory());
 				dummy.addNormalSlotsForPlayerInventory(18, 97);
 				//Input slots
 		        for(int l = 0; l < 9; l++) {
@@ -578,7 +586,7 @@ public class GuiHandler implements IGuiHandler {
 		        
 		        //Output slot
 		        dummy.addDummySlot(9, 90, 64);
-		        
+		        if(pipe!=null){ // null for inhand config
 		        for(int i=0;i<((CoreRoutedPipe)pipe.pipe).getUpgradeManager().getFluidCrafter();i++) {
 					int liquidLeft = -(i*40) - 40;
 					dummy.addFluidSlot(i, module.getFluidInventory(), liquidLeft + 13, 42);
@@ -587,7 +595,7 @@ public class GuiHandler implements IGuiHandler {
 		        if(((CoreRoutedPipe)pipe.pipe).getUpgradeManager().hasByproductExtractor()) {
 		        	dummy.addDummySlot(10, 197, 104);
 		        }
-		        
+		        }
 				return dummy;
 			case GuiIDs.GUI_Module_Extractor_ID:
 				if(slot >= 0) {

@@ -425,6 +425,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 	}
 
 	private UpgradeManager getUpgradeManager() {
+		if(_invProvider==null) // should only happen for in-hand config.
+			return null;
 		return _invProvider.getUpgradeManager();
 	}
 
@@ -705,7 +707,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 	
 	@Override
 	public void sendGuiArgs(EntityPlayer entityplayer) {
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(GuiArgument.class)
+		if(getUpgradeManager()!=null){
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(GuiArgument.class)
 				.setGuiID(getGuiHandlerID())
 				.setArgs(new Object[]{getUpgradeManager().isAdvancedSatelliteCrafter(),
 						getUpgradeManager().getFluidCrafter(),
@@ -713,6 +716,12 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 						getUpgradeManager().hasByproductExtractor(),
 						getUpgradeManager().isFuzzyCrafter()}),
 						(Player) entityplayer);
+		} else {
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(GuiArgument.class)
+				.setGuiID(getGuiHandlerID())
+				.setArgs(new Object[]{false,0,0,false,false}),
+				(Player) entityplayer);
+		}
 		//entityplayer.openGui(LogisticsPipes.instance, getGuiHandlerID(), getWorld(), getX(), getY(), getZ());
 	}
 	

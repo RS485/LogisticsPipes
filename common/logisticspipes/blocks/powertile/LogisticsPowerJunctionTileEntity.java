@@ -12,10 +12,14 @@ import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.gui.hud.HUDPowerLevel;
 import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.IGuiOpenControler;
+import logisticspipes.interfaces.IGuiTileEntity;
 import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IPowerLevelDisplay;
+import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
+import logisticspipes.network.guis.block.PowerJunctionGui;
 import logisticspipes.network.packets.block.PowerJunctionLevel;
 import logisticspipes.network.packets.hud.HUDStartBlockWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopBlockWatchingPacket;
@@ -23,10 +27,8 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -41,7 +43,7 @@ import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 
 @ModDependentInterface(modId={"IC2", "ComputerCraft@1.6", "CoFHCore"}, interfacePath={"ic2.api.energy.tile.IEnergySink", "dan200.computercraft.api.peripheral.IPeripheral", "cofh.api.energy.IEnergyHandler"})
-public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPowerReceptor, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IPeripheral, IEnergyHandler {
+public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGuiTileEntity, IPowerReceptor, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IPeripheral, IEnergyHandler {
 
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
 	
@@ -238,12 +240,6 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 		return internalStorage * 100 / MAX_STORAGE;
 	}
 
-	public Container createContainer(EntityPlayer player) {
-		DummyContainer dummy = new DummyContainer(player, null, this);
-		dummy.addNormalSlotsForPlayerInventory(8, 80);
-		return dummy;
-	}
-
 	@Override
 	public void guiOpenedByPlayer(EntityPlayer player) {
 		guiListener.add(player);
@@ -437,5 +433,10 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	@ModDependentMethod(modId="CoFHCore")
 	public int getMaxEnergyStored(ForgeDirection from) {
 		return (int)(MAX_STORAGE * RFMultiplier);
+	}
+	
+	@Override
+	public CoordinatesGuiProvider getGuiProvider() {
+		return NewGuiHandler.getGui(PowerJunctionGui.class);
 	}
 }

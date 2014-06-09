@@ -9,7 +9,6 @@ import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.gui.popup.GuiEditCCAccessTable;
 import logisticspipes.gui.popup.GuiSecurityStationPopup;
 import logisticspipes.interfaces.PlayerListReciver;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.PlayerListRequest;
 import logisticspipes.network.packets.block.SecurityAuthorizationPacket;
@@ -119,11 +118,6 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 		} else {
 			super.actionPerformed(button);
 		}
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Security_Station_ID;
 	}
 
 	@Override

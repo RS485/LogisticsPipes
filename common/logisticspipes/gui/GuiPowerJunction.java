@@ -2,11 +2,11 @@ package logisticspipes.gui;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.block.PowerJunctionCheatPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.gui.GuiButton;
@@ -22,13 +22,10 @@ public class GuiPowerJunction extends LogisticsBaseGuiScreen {
 	
 	public GuiPowerJunction(EntityPlayer player, LogisticsPowerJunctionTileEntity junction) {
 		super(176, 166, 0, 0);
-		this.inventorySlots = junction.createContainer(player);
+		DummyContainer dummy = new DummyContainer(player, null, junction);
+		dummy.addNormalSlotsForPlayerInventory(8, 80);
+		this.inventorySlots = dummy;
 		this.junction = junction;
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Power_Junction_ID;
 	}
 	
 	@Override

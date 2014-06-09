@@ -6,8 +6,12 @@ import java.util.List;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ICraftingResultHandler;
 import logisticspipes.interfaces.IGuiOpenControler;
+import logisticspipes.interfaces.IGuiTileEntity;
 import logisticspipes.interfaces.IRotationProvider;
+import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
+import logisticspipes.network.guis.block.SolderingStationGui;
 import logisticspipes.network.packets.block.RequestRotationPacket;
 import logisticspipes.network.packets.block.SolderingStationHeat;
 import logisticspipes.network.packets.block.SolderingStationInventory;
@@ -33,7 +37,7 @@ import buildcraft.api.power.PowerHandler;
 import buildcraft.api.power.PowerHandler.PowerReceiver;
 import buildcraft.api.power.PowerHandler.Type;
 
-public class LogisticsSolderingTileEntity extends TileEntity implements IPowerReceptor, ISpecialInventory, IGuiOpenControler, IRotationProvider {
+public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTileEntity, IPowerReceptor, ISpecialInventory, IGuiOpenControler, IRotationProvider {
 	
 	private PowerHandler provider;
 	private ItemIdentifierInventory inv = new ItemIdentifierInventory(12, "Soldering Inventory", 64);
@@ -483,13 +487,11 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 
 	@Override
 	public boolean isInvNameLocalized() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
@@ -499,5 +501,8 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 		par1CrashReportCategory.addCrashSection("LP-Version", LogisticsPipes.VERSION);
 	}
 
-
+	@Override
+	public CoordinatesGuiProvider getGuiProvider() {
+		return NewGuiHandler.getGui(SolderingStationGui.class);
+	}
 }

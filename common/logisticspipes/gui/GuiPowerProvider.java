@@ -1,8 +1,8 @@
 package logisticspipes.gui;
 
 import logisticspipes.blocks.powertile.LogisticsPowerProviderTileEntity;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.string.StringUtil;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,13 +17,10 @@ public class GuiPowerProvider extends LogisticsBaseGuiScreen {
 	
 	public GuiPowerProvider(EntityPlayer player, LogisticsPowerProviderTileEntity junction) {
 		super(176, 166, 0, 0);
-		this.inventorySlots = junction.createContainer(player);
+		DummyContainer dummy = new DummyContainer(player, null, junction);
+		dummy.addNormalSlotsForPlayerInventory(8, 80);
+		this.inventorySlots = dummy;
 		this.junction = junction;
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Power_Provider_ID;
 	}
 	
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/power_junction.png");

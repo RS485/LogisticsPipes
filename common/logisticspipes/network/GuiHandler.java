@@ -4,10 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.blocks.LogisticsSecurityTileEntity;
-import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
-import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
-import logisticspipes.blocks.powertile.LogisticsPowerProviderTileEntity;
 import logisticspipes.gui.GuiCardManager;
 import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.gui.GuiCraftingPipe;
@@ -17,13 +13,9 @@ import logisticspipes.gui.GuiFluidSupplierMk2Pipe;
 import logisticspipes.gui.GuiFluidSupplierPipe;
 import logisticspipes.gui.GuiFreqCardContent;
 import logisticspipes.gui.GuiInvSysConnector;
-import logisticspipes.gui.GuiLogisticsCraftingTable;
-import logisticspipes.gui.GuiPowerJunction;
-import logisticspipes.gui.GuiPowerProvider;
 import logisticspipes.gui.GuiProviderPipe;
 import logisticspipes.gui.GuiRoutingStats;
 import logisticspipes.gui.GuiSatellitePipe;
-import logisticspipes.gui.GuiSecurityStation;
 import logisticspipes.gui.GuiSupplierPipe;
 import logisticspipes.gui.GuiUpgradeManager;
 import logisticspipes.gui.ItemAmountSignCreationGui;
@@ -34,7 +26,6 @@ import logisticspipes.gui.modules.GuiApiaristSink;
 import logisticspipes.gui.modules.GuiCCBasedQuickSort;
 import logisticspipes.gui.modules.GuiElectricManager;
 import logisticspipes.gui.modules.GuiFluidSupplier;
-import logisticspipes.gui.modules.GuiItemSink;
 import logisticspipes.gui.modules.GuiModBasedItemSink;
 import logisticspipes.gui.modules.GuiOreDictItemSink;
 import logisticspipes.gui.modules.GuiProvider;
@@ -58,12 +49,10 @@ import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleCCBasedQuickSort;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleFluidSupplier;
-import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModuleOreDictItemSink;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.modules.ModuleThaumicAspectSink;
-import logisticspipes.network.packets.block.CraftingTableFuzzyFlagsInitPacket;
 import logisticspipes.network.packets.gui.GuiArgument;
 import logisticspipes.network.packets.module.ApiaristAnalyserMode;
 import logisticspipes.network.packets.module.ElectricManagetMode;
@@ -72,7 +61,6 @@ import logisticspipes.network.packets.module.OreDictItemSinkList;
 import logisticspipes.network.packets.module.ThaumicAspectsSinkList;
 import logisticspipes.network.packets.modules.BeeModule;
 import logisticspipes.network.packets.modules.CCBasedQuickSortMode;
-import logisticspipes.network.packets.modules.ItemSinkDefault;
 import logisticspipes.network.packets.pipe.FluidSupplierMode;
 import logisticspipes.network.packets.pipe.InvSysConResistance;
 import logisticspipes.pipes.PipeBlockRequestTable;
@@ -410,14 +398,6 @@ public class GuiHandler implements IGuiHandler {
 				
 				return dummy;
 				
-			case GuiIDs.GUI_Power_Junction_ID:
-				if(!(tile instanceof LogisticsPowerJunctionTileEntity)) return null;
-				return ((LogisticsPowerJunctionTileEntity)tile).createContainer(player);
-
-			case GuiIDs.GUI_Power_Provider_ID:
-				if(!(tile instanceof LogisticsPowerProviderTileEntity)) return null;
-				return ((LogisticsPowerProviderTileEntity)tile).createContainer(player);
-				
 			case GuiIDs.GUI_HUD_Settings:
 				dummy = new DummyContainer(player.inventory, null);
 				dummy.addRestrictedHotbarForPlayerInventory(10, 160);
@@ -456,37 +436,10 @@ public class GuiHandler implements IGuiHandler {
 				}
 				return dummy;
 
-			case GuiIDs.GUI_Security_Station_ID:
-				if(!(tile instanceof LogisticsSecurityTileEntity)) return null;
-				dummy = new DummyContainer(player, null, ((LogisticsSecurityTileEntity)tile));
-				dummy.addRestrictedSlot(0, ((LogisticsSecurityTileEntity)tile).inv, 50, 50, -1);
-				dummy.addNormalSlotsForPlayerInventory(10, 210);
-				return dummy;
-
 			case GuiIDs.GUI_Module_Apiarist_Analyzer:
 				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleApiaristAnalyser)) return null;
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(0).setInteger(((ModuleApiaristAnalyser)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).getExtractMode()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
 				return new DummyContainer(player.inventory, null);
-				
-			case GuiIDs.GUI_Auto_Crafting_ID:
-				if(!(tile instanceof LogisticsCraftingTableTileEntity)) return null;
-				dummy = new DummyContainer(player.inventory, ((LogisticsCraftingTableTileEntity)tile).matrix);
-
-				for(int X=0;X<3;X++) {
-					for(int Y=0;Y<3;Y++) {
-						dummy.addDummySlot(Y*3 + X, 35 + X*18, 10 + Y*18);
-					}
-				}
-				dummy.addUnmodifiableSlot(0, ((LogisticsCraftingTableTileEntity)tile).resultInv, 125, 28);
-				for(int Y=0;Y<2;Y++) {
-					for(int X=0;X<9;X++) {
-						dummy.addNormalSlot(Y*9 + X, ((LogisticsCraftingTableTileEntity)tile).inv, 8 + X*18, 80 + Y*18);
-					}
-				}
-				dummy.addNormalSlotsForPlayerInventory(8, 135);
-				if(((LogisticsCraftingTableTileEntity)tile).isFuzzy())
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingTableFuzzyFlagsInitPacket.class).setCraftingTable((LogisticsCraftingTableTileEntity)tile), (Player)player);
-				return dummy;
 				
 			case GuiIDs.GUI_Request_Table_ID:
 				if(pipe == null || !(pipe.pipe instanceof PipeBlockRequestTable)) return null;
@@ -829,14 +782,6 @@ public class GuiHandler implements IGuiHandler {
 					inv = ((PipeItemsSystemDestinationLogistics)pipe.pipe).inv;
 				}
 				return new GuiFreqCardContent(player, inv);
-				
-			case GuiIDs.GUI_Power_Junction_ID:
-				if(!(tile instanceof LogisticsPowerJunctionTileEntity)) return null;
-				return new GuiPowerJunction(player, (LogisticsPowerJunctionTileEntity) tile);
-				
-			case GuiIDs.GUI_Power_Provider_ID:
-				if(!(tile instanceof LogisticsPowerProviderTileEntity)) return null;
-				return new GuiPowerProvider(player, (LogisticsPowerProviderTileEntity) tile);
 
 			case GuiIDs.GUI_HUD_Settings:
 				return new GuiHUDSettings(player, x);
@@ -854,17 +799,9 @@ public class GuiHandler implements IGuiHandler {
 				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeItemsFirewall))) return null;
 				return new GuiFirewall((PipeItemsFirewall) pipe.pipe, player);
 
-			case GuiIDs.GUI_Security_Station_ID:
-				if(!(tile instanceof LogisticsSecurityTileEntity)) return null;
-				return new GuiSecurityStation((LogisticsSecurityTileEntity)tile, player);
-
 			case GuiIDs.GUI_Module_Apiarist_Analyzer:
 				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleApiaristAnalyser)) return null;
 				return new GuiApiaristAnalyser((ModuleApiaristAnalyser)((CoreRoutedPipe)pipe.pipe).getLogisticsModule(), (CoreRoutedPipe) pipe.pipe, player.inventory);
-			
-			case GuiIDs.GUI_Auto_Crafting_ID:
-				if(!(tile instanceof LogisticsCraftingTableTileEntity)) return null;
-				return new GuiLogisticsCraftingTable(player, (LogisticsCraftingTableTileEntity)tile);
 	
 			case GuiIDs.GUI_Request_Table_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeBlockRequestTable)) return null;

@@ -9,7 +9,6 @@
 package logisticspipes.gui.modules;
 
 import logisticspipes.modules.ModuleItemSink;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.ItemSinkDefaultPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -89,10 +88,5 @@ public class GuiItemSink extends ModuleBaseGui {
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Module_ItemSink_ID;
 	}
 }

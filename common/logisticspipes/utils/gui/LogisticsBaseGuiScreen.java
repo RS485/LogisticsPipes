@@ -288,9 +288,6 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	}
 
 	public int getGuiID() {
-		if(LogisticsPipes.DEBUG) {
-			Thread.dumpStack();
-		}
 		return 0;
 	}
 }

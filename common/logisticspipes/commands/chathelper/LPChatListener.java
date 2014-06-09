@@ -9,7 +9,7 @@ import java.util.concurrent.Callable;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.asm.ClientSideOnlyMethodContent;
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.packets.OpenChatGui;
+import logisticspipes.network.packets.gui.OpenChatGui;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtil;

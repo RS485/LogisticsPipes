@@ -1,4 +1,4 @@
-package logisticspipes.network.guis.module;
+package logisticspipes.network.guis.module.inhand;
 
 import logisticspipes.gui.modules.GuiExtractor;
 import logisticspipes.interfaces.ISneakyDirectionReceiver;

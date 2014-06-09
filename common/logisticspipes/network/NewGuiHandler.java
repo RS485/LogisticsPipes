@@ -11,7 +11,7 @@ import java.util.Map;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.abstractguis.GuiProvider;
-import logisticspipes.network.packets.GUIPacket;
+import logisticspipes.network.packets.gui.GUIPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import lombok.SneakyThrows;

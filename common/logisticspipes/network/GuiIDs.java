@@ -14,7 +14,7 @@ public class GuiIDs {
 	
 	//Modules
 	//public static final int GUI_Module_Extractor_ID = 20;
-	public static final int GUI_Module_ItemSink_ID = 21;
+	//public static final int GUI_Module_ItemSink_ID = 21;
 	public static final int GUI_Module_FluidSupplier_ID = 22;
 	public static final int GUI_Module_CC_Based_QuickSort_ID = 23;
 	public static final int GUI_Module_Provider_ID = 24;

@@ -1,4 +1,4 @@
-package logisticspipes.network.packets;
+package logisticspipes.network.packets.gui;
 
 import java.io.IOException;
 

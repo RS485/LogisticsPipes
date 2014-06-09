@@ -1,6 +1,5 @@
 package logisticspipes.gui.modules;
 
-import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.GuiOpenChassie;
 import logisticspipes.pipes.PipeLogisticsChassi;
@@ -9,7 +8,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import net.minecraft.inventory.Container;
 
-public abstract class ModuleBaseGui extends LogisticsBaseGuiScreen implements IGuiIDHandlerProvider {
+public abstract class ModuleBaseGui extends LogisticsBaseGuiScreen {
 	
 	protected CoreRoutedPipe pipe;
 	

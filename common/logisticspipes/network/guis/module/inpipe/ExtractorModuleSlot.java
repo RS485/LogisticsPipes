@@ -1,4 +1,4 @@
-package logisticspipes.network.guis.module;
+package logisticspipes.network.guis.module.inpipe;
 
 import java.io.IOException;
 

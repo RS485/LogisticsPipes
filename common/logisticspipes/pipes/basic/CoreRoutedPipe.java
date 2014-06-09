@@ -853,7 +853,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		if (entityplayer.getCurrentEquippedItem() == null) {
 			if (!entityplayer.isSneaking()) return false;
 			if(MainProxy.isClient(entityplayer.worldObj)) {
-				if(!LogisticsHUDRenderer.instance().hasLasers()) { //TODO remove old Lasers
+				if(!LogisticsHUDRenderer.instance().hasLasers()) {
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestRoutingLasersPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 				} else {
 					LogisticsHUDRenderer.instance().resetLasers();
@@ -902,7 +902,11 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			if(MainProxy.isServer(entityplayer.worldObj)) {
 				if (settings == null || settings.openGui) {
 					if (getLogisticsModule() != null && getLogisticsModule() instanceof LogisticsGuiModule) {
-						entityplayer.openGui(LogisticsPipes.instance, ((LogisticsGuiModule)getLogisticsModule()).getGuiHandlerID(), getWorld(), getX(), getY(), getZ());
+						if(((LogisticsGuiModule)getLogisticsModule()).getGuiHandlerID() != -1) {
+							entityplayer.openGui(LogisticsPipes.instance, ((LogisticsGuiModule)getLogisticsModule()).getGuiHandlerID(), getWorld(), getX(), getY(), getZ());
+						} else {
+							((LogisticsGuiModule)getLogisticsModule()).getPipeGuiProvider().setSlot(-1).setTilePos(this.container).open(entityplayer);
+						}
 					} else {
 						onWrenchClicked(entityplayer);
 					}

@@ -7,15 +7,14 @@ import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
 
-public class GuiApiaristAnalyser extends GuiWithPreviousGuiContainer {
+public class GuiApiaristAnalyser extends ModuleBaseGui {
 
 	private final ModuleApiaristAnalyser module;	
 	
-	public GuiApiaristAnalyser(ModuleApiaristAnalyser module, CoreRoutedPipe pipe, GuiScreen previousGui, IInventory playerInventory) {
-		super(new DummyContainer(playerInventory,null), pipe, previousGui);
+	public GuiApiaristAnalyser(ModuleApiaristAnalyser module, CoreRoutedPipe pipe, IInventory playerInventory) {
+		super(new DummyContainer(playerInventory,null), pipe);
 		this.module = module;
 		xSize = 120;
 		ySize = 60;

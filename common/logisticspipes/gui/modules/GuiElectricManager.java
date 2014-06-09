@@ -17,13 +17,12 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiElectricManager extends GuiWithPreviousGuiContainer {
+public class GuiElectricManager extends ModuleBaseGui {
 
 	private final ModuleElectricManager _module;
 	private final int slot;
@@ -58,8 +57,8 @@ public class GuiElectricManager extends GuiWithPreviousGuiContainer {
 		}
 	}
 
-	public GuiElectricManager(IInventory playerInventory, CoreRoutedPipe pipe, ModuleElectricManager module, GuiScreen previousGui, int slot) {
-		super(null,pipe,previousGui);
+	public GuiElectricManager(IInventory playerInventory, CoreRoutedPipe pipe, ModuleElectricManager module, int slot) {
+		super(null,pipe);
 		_module = module;
 		this.slot = slot;
 		DummyContainer dummy = new DummyContainer(playerInventory, _module.getFilterInventory());

@@ -10,13 +10,12 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiProvider extends GuiWithPreviousGuiContainer {
+public class GuiProvider extends ModuleBaseGui {
 	
 	private final IInventory _playerInventory;
 	private final ModuleProvider _provider;
@@ -24,8 +23,8 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 	private final int _slot;
 
 
-	public GuiProvider(IInventory playerInventory, CoreRoutedPipe pipe, ModuleProvider provider, GuiScreen previousGui, int slot) {
-		super(null,pipe,previousGui);
+	public GuiProvider(IInventory playerInventory, CoreRoutedPipe pipe, ModuleProvider provider, int slot) {
+		super(null,pipe);
 		_playerInventory = playerInventory;
 		_provider = provider;
 		_slot = slot;

@@ -20,6 +20,7 @@ public class StringUtil {
 	public static List<String> untranslatedStrings = new ArrayList<String>();
 	
 	public static String handleColor(String input) {
+		if(input == null) return "null";
 		StringBuilder builder = new StringBuilder();
 		ImmutableList<Character> chars = Lists.charactersOf(input);
 		UnmodifiableListIterator<Character> iter = chars.listIterator();

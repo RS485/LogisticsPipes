@@ -8,16 +8,15 @@ import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
 
-public class GuiThaumicAspectSink extends GuiWithPreviousGuiContainer {
+public class GuiThaumicAspectSink extends ModuleBaseGui {
 	
 	private final ModuleThaumicAspectSink _module;
 	private final ItemIdentifierInventory tmpInv;
 	
-	public GuiThaumicAspectSink(IInventory playerInventory, CoreRoutedPipe pipe, ModuleThaumicAspectSink itemSink, GuiScreen previousGui, int slot) {
-		super(null, pipe, previousGui);
+	public GuiThaumicAspectSink(IInventory playerInventory, CoreRoutedPipe pipe, ModuleThaumicAspectSink itemSink, int slot) {
+		super(null, pipe);
 		
 		_module = itemSink;
 		

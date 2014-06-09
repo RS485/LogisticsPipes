@@ -239,7 +239,11 @@ public class ItemModule extends LogisticsItem {
 		LogisticsModule module = getModuleForItem(par1ItemStack, null, null, null, null, null);
 		if(module != null && module.hasGui()) {
 			if(par1ItemStack != null && par1ItemStack.stackSize > 0) {
-				par2EntityPlayer.openGui(LogisticsPipes.instance, -1, par3World, ((LogisticsGuiModule)module).getGuiHandlerID(), -1 ,par2EntityPlayer.inventory.currentItem);
+				if(((LogisticsGuiModule)module).getGuiHandlerID() != -1) {
+					par2EntityPlayer.openGui(LogisticsPipes.instance, -1, par3World, ((LogisticsGuiModule)module).getGuiHandlerID(), -1 ,par2EntityPlayer.inventory.currentItem);
+				} else {
+					((LogisticsGuiModule)module).getInHandGuiProvider().setInvSlot(par2EntityPlayer.inventory.currentItem).open(par2EntityPlayer);
+				}
 			}
 		}
 	}

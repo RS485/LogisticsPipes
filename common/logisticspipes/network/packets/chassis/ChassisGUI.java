@@ -81,7 +81,7 @@ public class ChassisGUI extends CoordinatesPacket {
 			}
 		} else {
 			//New Gui System
-			((LogisticsGuiModule) cassiPipe.getLogisticsModule().getSubModule(getButtonID())).getPipeGuiProvider().setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).open(player);
+			((LogisticsGuiModule) cassiPipe.getLogisticsModule().getSubModule(getButtonID())).getPipeGuiProvider().setSlot(getButtonID()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).open(player);
 		}
 	}
 	

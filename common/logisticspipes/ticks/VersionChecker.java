@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.event.FMLInterModComms;
 import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
@@ -92,21 +93,24 @@ public class VersionChecker extends Thread {
 		}
 	}
 
-    /**
-     * Integration with Version Checker (http://www.minecraftforum.net/topic/2721902-/)
-     */
+	/**
+	 * Integration with Version Checker (http://www.minecraftforum.net/topic/2721902-/)
+	 */
 	public static void sendIMCOutdatedMessage() {
-		NBTTagCompound tag = new NBTTagCompound();
-		tag.setString("oldVersion", LogisticsPipes.VERSION);
-		tag.setString("newVersion", newVersion);
-		tag.setString("updateUrl", "http://ci.thezorro266.com/view/Logistics%20Pipes/");
-		tag.setBoolean("isDirectLink", false);
+		if (Loader.isModLoaded("VersionChecker")) {
+			NBTTagCompound tag = new NBTTagCompound();
+			tag.setString("oldVersion", LogisticsPipes.VERSION);
+			tag.setString("newVersion", newVersion);
+			tag.setString("updateUrl", "http://ci.thezorro266.com/view/Logistics%20Pipes/");
+			tag.setBoolean("isDirectLink", false);
 
-		StringBuilder stringBuilder = new StringBuilder();
-		for (String changeLogLine : changeLog) {
-			stringBuilder.append(changeLogLine).append("\n");
+			StringBuilder stringBuilder = new StringBuilder();
+			for (String changeLogLine : changeLog) {
+				stringBuilder.append(changeLogLine).append("\n");
+			}
+			tag.setString("changeLog", stringBuilder.toString());
+			FMLInterModComms.sendRuntimeMessage("LogisticsPipes", "VersionChecker", "addUpdate", tag);
+			sentIMCMessage = true;
 		}
-		tag.setString("changeLog", stringBuilder.toString());
-		sentIMCMessage = FMLInterModComms.sendMessage("VersionChecker", "addUpdate", tag);
 	}
 }

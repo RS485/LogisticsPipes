@@ -57,6 +57,8 @@ public class BuildCraftTankHandler implements ISpecialTankAccessHandler {
 
 	@Override
 	public FluidStack drainFrom(TileEntity tile, FluidIdentifier ident, Integer amount, boolean drain) {
+		//workaround for BC5 and BC6 TileTank behavior before commit 08edcf1759c884cb95b66c53427bbd4b3f3d9751
+		tile = ((TileTank)tile).getBottomTank();
 		return ((IFluidHandler)tile).drain(ForgeDirection.UNKNOWN, ident.makeFluidStack(amount), drain);
 	}
 }

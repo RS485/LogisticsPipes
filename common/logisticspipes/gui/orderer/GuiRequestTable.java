@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import logisticspipes.Configs;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.popup.GuiDiskPopup;
 import logisticspipes.gui.popup.GuiRequestPopup;
 import logisticspipes.gui.popup.RequestMonitorPopup;
@@ -509,7 +510,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		if(par1 < guiLeft) {
 			extentionController.mouseOver(par1, par2);
 		}
-		Macrobutton.enabled = _table.diskInv.getStackInSlot(0) != null;
+		Macrobutton.enabled = _table.diskInv.getStackInSlot(0) != null && _table.diskInv.getStackInSlot(0).getItem().equals(LogisticsPipes.LogisticsItemDisk);
 	}
 
 	@SuppressWarnings("unchecked")

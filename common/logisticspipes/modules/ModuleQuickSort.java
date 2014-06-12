@@ -130,6 +130,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 						count = Math.min(count, reply.getValue2().maxNumberOfItems);
 					}
 					ItemStack stackToSend = invUtil.getMultipleItems(item.getKey(), count);
+					if(stackToSend == null || stackToSend.stackSize == 0) break;
 		
 					availableItems -= stackToSend.stackSize;
 					_itemSender.sendStack(stackToSend, reply, ItemSendMode.Fast);

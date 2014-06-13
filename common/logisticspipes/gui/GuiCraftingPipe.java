@@ -8,20 +8,28 @@
 
 package logisticspipes.gui;
 
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+
 import logisticspipes.LogisticsEventListener;
-import logisticspipes.interfaces.IGuiIDHandlerProvider;
+import logisticspipes.LogisticsPipes;
+import logisticspipes.items.ItemUpgrade;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
+import logisticspipes.utils.gui.extention.GuiExtention;
 import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 
-public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvider {
+public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 	private static final String					PREFIX				= "gui.crafting.";
 	
 	private final PipeItemsCraftingLogistics	_pipe;
@@ -34,6 +42,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 	private final boolean						isFuzzy;
 	private final int							liquidCrafter;
 	private final boolean						hasByproductExtractor;
+	private final int[]							fluidSlotIDs;
 	
 	private int									fuzzyPanelSelection	= -1;
 	
@@ -73,10 +82,17 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 		}
 		
 		liquidGuiParts = new GuiButton[liquidCrafter][];
+		fluidSlotIDs = new int[liquidCrafter];
+		
 		
 		for(int i = 0; i < liquidCrafter; i++) {
-			int liquidLeft = -(i * 40) - 40;
-			dummy.addFluidSlot(i, logic.getFluidInventory(), liquidLeft + 13, 22);
+			int liquidLeft = 0;
+			if(isAdvancedSat) {
+				liquidLeft = -40;
+			} else {
+				liquidLeft = -(liquidCrafter * 40)  + (i * 40);
+			}
+			fluidSlotIDs[i] = extentionController.registerControlledSlot(dummy.addFluidSlot(i, logic.getFluidInventory(), liquidLeft + 11, 24));
 		}
 		
 		if(hasByproductExtractor) {
@@ -94,51 +110,66 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
+		extentionController.clear();
 		buttonList.clear();
+		FluidCraftingExtention extention = null;
 		if(!isAdvancedSat) {
-			buttonList.add(normalButtonArray[0] = new SmallGuiButton(0, (width - xSize) / 2 + 155, (height - ySize) / 2 + 50, 10, 10, ">"));
-			buttonList.add(normalButtonArray[1] = new SmallGuiButton(1, (width - xSize) / 2 + 120, (height - ySize) / 2 + 50, 10, 10, "<"));
-			buttonList.add(normalButtonArray[2] = new SmallGuiButton(3, (width - xSize) / 2 + 39, (height - ySize) / 2 + 50, 37, 10, StringUtil.translate(PREFIX + "Import")));
-			buttonList.add(normalButtonArray[3] = new SmallGuiButton(4, (width - xSize) / 2 + 6, (height - ySize) / 2 + 50, 28, 10, StringUtil.translate(PREFIX + "Open")));
+			extention = new FluidCraftingExtention(0);
+			addButton(normalButtonArray[0] = new SmallGuiButton(0, (width - xSize) / 2 + 155, (height - ySize) / 2 + 50, 10, 10, ">"));
+			addButton(normalButtonArray[1] = new SmallGuiButton(1, (width - xSize) / 2 + 120, (height - ySize) / 2 + 50, 10, 10, "<"));
+			addButton(normalButtonArray[2] = new SmallGuiButton(3, (width - xSize) / 2 + 39, (height - ySize) / 2 + 50, 37, 10, StringUtil.translate(PREFIX + "Import")));
+			addButton(normalButtonArray[3] = new SmallGuiButton(4, (width - xSize) / 2 + 6, (height - ySize) / 2 + 50, 28, 10, StringUtil.translate(PREFIX + "Open")));
 			for(int i = 0; i < 6; i++) {
-				buttonList.add(buttonarray[i] = new SmallGuiButton(5 + i, (width - xSize) / 2 + 11 + 18 * i, (height - ySize) / 2 + 35, 10, 10, ">"));
+				addButton(buttonarray[i] = new SmallGuiButton(5 + i, (width - xSize) / 2 + 11 + 18 * i, (height - ySize) / 2 + 35, 10, 10, ">"));
 				buttonarray[i].drawButton = false;
 			}
-			buttonList.add(normalButtonArray[4] = new SmallGuiButton(20, (width - xSize) / 2 + 155, (height - ySize) / 2 + 85, 10, 10, ">"));
-			buttonList.add(normalButtonArray[5] = new SmallGuiButton(21, (width - xSize) / 2 + 120, (height - ySize) / 2 + 85, 10, 10, "<"));
+			addButton(normalButtonArray[4] = new SmallGuiButton(20, (width - xSize) / 2 + 155, (height - ySize) / 2 + 85, 10, 10, ">"));
+			addButton(normalButtonArray[5] = new SmallGuiButton(21, (width - xSize) / 2 + 120, (height - ySize) / 2 + 85, 10, 10, "<"));
 			if(liquidCrafter != 0) {
-				buttonList.add(normalButtonArray[6] = new SmallGuiButton(22, guiLeft - (liquidCrafter * 40) / 2 + 5, guiTop + 158, 10, 10, ">"));
-				buttonList.add(normalButtonArray[7] = new SmallGuiButton(23, guiLeft - (liquidCrafter * 40) / 2 - 15, guiTop + 158, 10, 10, "<"));
+				extention.registerButton(extentionController.registerControlledButton(addButton(normalButtonArray[6] = new SmallGuiButton(22, guiLeft - (liquidCrafter * 40) / 2 + 5, guiTop + 158, 10, 10, ">"))));
+				extention.registerButton(extentionController.registerControlledButton(addButton(normalButtonArray[7] = new SmallGuiButton(23, guiLeft - (liquidCrafter * 40) / 2 - 15, guiTop + 158, 10, 10, "<"))));
 			}
 		} else {
 			for(int i = 0; i < 9; i++) {
-				buttonList.add(advancedSatButtonArray[i][0] = new SmallGuiButton(30 + i, (width - xSize) / 2 + 10 + 18 * i, (height - ySize) / 2 + 40, 15, 10, "/\\"));
-				buttonList.add(advancedSatButtonArray[i][1] = new SmallGuiButton(40 + i, (width - xSize) / 2 + 10 + 18 * i, (height - ySize) / 2 + 70, 15, 10, "\\/"));
+				addButton(advancedSatButtonArray[i][0] = new SmallGuiButton(30 + i, (width - xSize) / 2 + 10 + 18 * i, (height - ySize) / 2 + 40, 15, 10, "/\\"));
+				addButton(advancedSatButtonArray[i][1] = new SmallGuiButton(40 + i, (width - xSize) / 2 + 10 + 18 * i, (height - ySize) / 2 + 70, 15, 10, "\\/"));
 			}
-			buttonList.add(normalButtonArray[2] = new SmallGuiButton(3, (width - xSize) / 2 + 39, (height - ySize) / 2 + 100, 37, 10, StringUtil.translate(PREFIX + "Import")));
-			buttonList.add(normalButtonArray[3] = new SmallGuiButton(4, (width - xSize) / 2 + 6, (height - ySize) / 2 + 100, 28, 10, StringUtil.translate(PREFIX + "Open")));
-			buttonList.add(normalButtonArray[4] = new SmallGuiButton(20, (width - xSize) / 2 + 155, (height - ySize) / 2 + 105, 10, 10, ">"));
-			buttonList.add(normalButtonArray[5] = new SmallGuiButton(21, (width - xSize) / 2 + 120, (height - ySize) / 2 + 105, 10, 10, "<"));
+			addButton(normalButtonArray[2] = new SmallGuiButton(3, (width - xSize) / 2 + 39, (height - ySize) / 2 + 100, 37, 10, StringUtil.translate(PREFIX + "Import")));
+			addButton(normalButtonArray[3] = new SmallGuiButton(4, (width - xSize) / 2 + 6, (height - ySize) / 2 + 100, 28, 10, StringUtil.translate(PREFIX + "Open")));
+			addButton(normalButtonArray[4] = new SmallGuiButton(20, (width - xSize) / 2 + 155, (height - ySize) / 2 + 105, 10, 10, ">"));
+			addButton(normalButtonArray[5] = new SmallGuiButton(21, (width - xSize) / 2 + 120, (height - ySize) / 2 + 105, 10, 10, "<"));
 		}
 		for(int i = 0; i < liquidCrafter; i++) {
-			int liquidLeft = guiLeft - (i * 40) - 40;
-			liquidGuiParts[i] = new GuiButton[10];
-			buttonList.add(liquidGuiParts[i][0] = new SmallGuiButton(100 + 10 * i + 0, liquidLeft + 22, guiTop + 65, 10, 10, "+"));
-			buttonList.add(liquidGuiParts[i][1] = new SmallGuiButton(100 + 10 * i + 1, liquidLeft + 22, guiTop + 85, 10, 10, "+"));
-			buttonList.add(liquidGuiParts[i][2] = new SmallGuiButton(100 + 10 * i + 2, liquidLeft + 22, guiTop + 105, 10, 10, "+"));
-			buttonList.add(liquidGuiParts[i][3] = new SmallGuiButton(100 + 10 * i + 3, liquidLeft + 22, guiTop + 125, 10, 10, "+"));
-			buttonList.add(liquidGuiParts[i][4] = new SmallGuiButton(100 + 10 * i + 4, liquidLeft + 8, guiTop + 65, 10, 10, "-"));
-			buttonList.add(liquidGuiParts[i][5] = new SmallGuiButton(100 + 10 * i + 5, liquidLeft + 8, guiTop + 85, 10, 10, "-"));
-			buttonList.add(liquidGuiParts[i][6] = new SmallGuiButton(100 + 10 * i + 6, liquidLeft + 8, guiTop + 105, 10, 10, "-"));
-			buttonList.add(liquidGuiParts[i][7] = new SmallGuiButton(100 + 10 * i + 7, liquidLeft + 8, guiTop + 125, 10, 10, "-"));
 			if(isAdvancedSat) {
-				buttonList.add(liquidGuiParts[i][8] = new SmallGuiButton(100 + 10 * i + 8, liquidLeft + 5, guiTop + 158, 10, 10, "<"));
-				buttonList.add(liquidGuiParts[i][9] = new SmallGuiButton(100 + 10 * i + 9, liquidLeft + 25, guiTop + 158, 10, 10, ">"));
+				extention = new FluidCraftingExtention(i);
 			}
+			int liquidLeft = 0;
+			if(isAdvancedSat) {
+				liquidLeft = guiLeft - 40;
+			} else {
+				liquidLeft = guiLeft - (liquidCrafter * 40) + (i * 40);
+			}
+			liquidGuiParts[i] = new GuiButton[10];
+			extention.registerButton(extentionController.registerControlledButton(addButton(liquidGuiParts[i][0] = new SmallGuiButton(100 + 10 * i + 0, liquidLeft + 22, guiTop + 65, 10, 10, "+"))));
+			extention.registerButton(extentionController.registerControlledButton(addButton(liquidGuiParts[i][1] = new SmallGuiButton(100 + 10 * i + 1, liquidLeft + 22, guiTop + 85, 10, 10, "+"))));
+			extention.registerButton(extentionController.registerControlledButton(addButton(liquidGuiParts[i][2] = new SmallGuiButton(100 + 10 * i + 2, liquidLeft + 22, guiTop + 105, 10, 10, "+"))));
+			extention.registerButton(extentionController.registerControlledButton(addButton(liquidGuiParts[i][3] = new SmallGuiButton(100 + 10 * i + 3, liquidLeft + 22, guiTop + 125, 10, 10, "+"))));
+			extention.registerButton(extentionController.registerControlledButton(addButton(liquidGuiParts[i][4] = new SmallGuiButton(100 + 10 * i + 4, liquidLeft + 8, guiTop + 65, 10, 10, "-"))));
+			extention.registerButton(extentionController.registerControlledButton(addButton(liquidGuiParts[i][5] = new SmallGuiButton(100 + 10 * i + 5, liquidLeft + 8, guiTop + 85, 10, 10, "-"))));
+			extention.registerButton(extentionController.registerControlledButton(addButton(liquidGuiParts[i][6] = new SmallGuiButton(100 + 10 * i + 6, liquidLeft + 8, guiTop + 105, 10, 10, "-"))));
+			extention.registerButton(extentionController.registerControlledButton(addButton(liquidGuiParts[i][7] = new SmallGuiButton(100 + 10 * i + 7, liquidLeft + 8, guiTop + 125, 10, 10, "-"))));
+			if(isAdvancedSat) {
+				extention.registerButton(extentionController.registerControlledButton(addButton(liquidGuiParts[i][8] = new SmallGuiButton(100 + 10 * i + 8, liquidLeft + 5, guiTop + 158, 10, 10, "<"))));
+				extention.registerButton(extentionController.registerControlledButton(addButton(liquidGuiParts[i][9] = new SmallGuiButton(100 + 10 * i + 9, liquidLeft + 25, guiTop + 158, 10, 10, ">"))));
+				extentionController.addExtention(extention);
+			}
+			extention.registerSlot(fluidSlotIDs[i]);
+		}
+		if(!isAdvancedSat) {
+			extentionController.addExtention(extention);
 		}
 	}
 	
@@ -235,11 +266,12 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 	@Override
 	public void onGuiClosed() {
 		super.onGuiClosed();
-		inventorySlots.onContainerClosed(_player); // Fix approved
+		inventorySlots.onContainerClosed(_player);
 	}
-	
+
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
+		super.drawGuiContainerForegroundLayer(par1, par2);
 		fontRenderer.drawString(StringUtil.translate(PREFIX + "Inputs"), 18, 7, 0x404040);
 		fontRenderer.drawString(StringUtil.translate(PREFIX + "Inventory"), 10, ySize - 93, 0x404040);
 		
@@ -266,54 +298,6 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			fontRenderer.drawString("" + _pipe.priority, 143 - (fontRenderer.getStringWidth("" + _pipe.priority) / 2), 107, 0x404040);
 		}
 		
-		for(int i = 0; i < liquidCrafter; i++) {
-			int liquidLeft = -(i * 40) - 40;
-			fontRenderer.drawString(Integer.toString(_pipe.getFluidAmount()[i]), liquidLeft + 21 - (fontRenderer.getStringWidth(Integer.toString(_pipe.getFluidAmount()[i])) / 2), 43, 0x404040);
-			fontRenderer.drawString("1", liquidLeft + 18, 57, 0x404040);
-			fontRenderer.drawString("10", liquidLeft + 15, 77, 0x404040);
-			fontRenderer.drawString("100", liquidLeft + 12, 97, 0x404040);
-			fontRenderer.drawString("1000", liquidLeft + 9, 117, 0x404040);
-			if(isAdvancedSat) {
-				if(_pipe.liquidSatelliteIdArray[i] == 0) {
-					drawRect(liquidLeft + 1, 13, liquidLeft + 40, 142, 0xAA8B8B8B);
-					fontRenderer.drawString(StringUtil.translate(PREFIX + "Off"), liquidLeft + 13, 149, 0x404040);
-					for(int j = 0; j < 8; j++) {
-						liquidGuiParts[i][j].enabled = false;
-					}
-				} else {
-					fontRenderer.drawString(Integer.toString(_pipe.liquidSatelliteIdArray[i]), liquidLeft + 21 - (fontRenderer.getStringWidth(Integer.toString(_pipe.liquidSatelliteIdArray[i])) / 2), 149, 0x404040);
-					for(int j = 0; j < 8; j++) {
-						liquidGuiParts[i][j].enabled = true;
-					}
-				}
-			}
-		}
-		if(!isAdvancedSat && liquidCrafter != 0) {
-			if(_pipe.liquidSatelliteId == 0) {
-				drawRect(-(liquidCrafter * 40) + 1, 13, 0, 142, 0xAA8B8B8B);
-				fontRenderer.drawString(StringUtil.translate(PREFIX + "Off"), -(liquidCrafter * 40) / 2 - 7, 149, 0x404040);
-				for(int i = 0; i < liquidCrafter; i++) {
-					for(int j = 0; j < 8; j++) {
-						liquidGuiParts[i][j].enabled = false;
-					}
-				}
-			} else {
-				fontRenderer.drawString(Integer.toString(_pipe.liquidSatelliteId), -(liquidCrafter * 40) / 2 + 1 - (fontRenderer.getStringWidth(Integer.toString(_pipe.liquidSatelliteId)) / 2), 149, 0x404040);
-				for(int i = 0; i < liquidCrafter; i++) {
-					for(int j = 0; j < 8; j++) {
-						liquidGuiParts[i][j].enabled = true;
-					}
-				}
-			}
-		}
-		for(int i = 0; i < liquidCrafter; i++) {
-			if(_pipe.getFluidInventory().getStackInSlot(i) == null && !((!isAdvancedSat && _pipe.liquidSatelliteId == 0) || (isAdvancedSat && _pipe.liquidSatelliteIdArray[i] == 0))) {
-				drawRect(-((i + 1) * 40) + 1, 40, -(i * 40), 142, 0xAA8B8B8B);
-				for(int j = 0; j < 8; j++) {
-					liquidGuiParts[i][j].enabled = false;
-				}
-			}
-		}
 		if(hasByproductExtractor) {
 			fontRenderer.drawString(StringUtil.translate(PREFIX + "Extra"), xSize - 35, 88, 0x404040);
 		}
@@ -363,55 +347,10 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			}
 		}
 	}
-	
-	@Override
-	public boolean isPointInRegion(int x, int y, int par3, int par4, int par5, int par6) {
-		if(!isAdvancedSat && liquidCrafter != 0) {
-			if(_pipe.liquidSatelliteId == 0) {
-				if(-(liquidCrafter * 40) < x && x < 0) {
-					if(10 < y && y < 170) { return false; }
-				}
-			}
-		} else if(liquidCrafter != 0) {
-			for(int i = 0; i < liquidCrafter; i++) {
-				if(_pipe.liquidSatelliteIdArray[i] == 0) {
-					if(-((i + 1) * 40) < x && x < -(i * 40)) {
-						if(10 < y && y < 170) { return false; }
-					}
-				}
-				
-			}
-		}
-		return super.isPointInRegion(x, y, par3, par4, par5, par6);
-	}
-	
-	@Override
-	public void drawScreen(int par1, int par2, float par3) {
-		super.drawScreen(par1, par2, par3);
-	}
-	
+
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, guiLeft + xSize - (hasByproductExtractor ? 40 : 0), guiTop + ySize, zLevel, true, true, true, true, true);
-		
-		if(liquidCrafter != 0) {
-			BasicGuiHelper.drawGuiBackGround(mc, guiLeft - (liquidCrafter * 40) - 2, guiTop + 10, guiLeft + 15, guiTop + 175, zLevel, true, true, true, true, false);
-			if(liquidCrafter > 1) {
-				for(int i = 1; i < liquidCrafter; i++) {
-					int xLine = guiLeft - (i * 40);
-					drawRect(xLine, guiTop + 13, xLine + 1, guiTop + (isAdvancedSat ? 172 : 142), 0xff8B8B8B);
-				}
-			}
-			
-			if(!isAdvancedSat) {
-				drawRect(guiLeft - (liquidCrafter * 40), guiTop + 142, guiLeft, guiTop + 143, 0xff8B8B8B);
-			}
-			
-			for(int i = 0; i < liquidCrafter; i++) {
-				int liquidLeft = guiLeft - (i * 40) - 40;
-				BasicGuiHelper.drawSlotBackground(mc, liquidLeft + 12, guiTop + 21);
-			}
-		}
 		
 		if(hasByproductExtractor) {
 			BasicGuiHelper.drawGuiBackGround(mc, guiLeft + xSize - 55, guiTop + 80, guiLeft + xSize, guiTop + 135, zLevel, true, true, false, true, true);
@@ -431,19 +370,8 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			BasicGuiHelper.drawBigSlotBackground(mc, guiLeft + 80, guiTop + 100);
 		}
 		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 8, guiTop + ySize - 82);
-		/*
-		if(!isAdvancedSat) {
-			for(int count = 36; count < 42; count++) {
-				Slot slot = inventorySlots.getSlot(count);
-				if(slot != null && slot.getStack() != null && slot.getStack().getMaxStackSize() < 2) {
-					drawRect(guiLeft + 8 + (18 * (count - 36)), guiTop + 18, guiLeft + 8 + (18 * (count - 36)) + 16, guiTop + 18 + 16, 0xFFFF0000);
-					buttonarray[count - 36].drawButton = true;
-				} else {
-					buttonarray[count - 36].drawButton = false;
-				}
-			}
-		}
-		*/
+
+		super.renderExtentions();
 	}
 	
 	@Override
@@ -476,4 +404,120 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 		}
 		super.mouseClicked(mouseX, mouseY, par3);
 	}
+	
+	private final class FluidCraftingExtention extends GuiExtention {
+
+		private final int id;
+
+		public FluidCraftingExtention(int id) {
+			this.id = id;
+		}
+
+		@Override
+		public int getFinalWidth() {
+			if(isAdvancedSat) {
+				return 42;
+			} else {
+				return 2 + liquidCrafter * 40;
+			}
+		}
+
+		@Override
+		public int getFinalHeight() {
+			return 175;
+		}
+
+		@Override
+		public void renderForground(int left, int top) {
+			if(!isFullyExtended()) {
+				GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);
+				GL11.glEnable(GL11.GL_LIGHTING);
+				GL11.glEnable(GL11.GL_DEPTH_TEST);
+				RenderHelper.enableGUIStandardItemLighting();
+				ItemStack stack = new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.LIQUID_CRAFTING);
+				itemRenderer.renderItemAndEffectIntoGUI(fontRenderer, getMC().renderEngine, stack, left + 5, top + 5);
+				itemRenderer.renderItemOverlayIntoGUI(fontRenderer, getMC().renderEngine, stack, left + 5, top + 5, "");
+				GL11.glDisable(GL11.GL_LIGHTING);
+				GL11.glDisable(GL11.GL_DEPTH_TEST);
+			}
+			itemRenderer.zLevel = 0.0F;
+			
+			if(!isAdvancedSat && liquidCrafter > 1 && !isFullyExtended()) {
+				String s = Integer.toString(liquidCrafter);
+				fontRenderer.drawStringWithShadow(s, left + 22 - fontRenderer.getStringWidth(s), top + 14, 16777215);
+			}
+			if(isFullyExtended()) {
+				if(liquidCrafter > 1 && !isAdvancedSat) {
+					for(int i = 1; i < liquidCrafter; i++) {
+						int xLine = left + 2 + (i * 40);
+						drawRect(xLine, top + 3, xLine + 1, top + 138, 0xff8B8B8B);
+					}
+				}
+				if(!isAdvancedSat) {
+					drawRect(left + 3, top + 138, left + 2 + (liquidCrafter * 40), top + 139, 0xff8B8B8B);
+				}
+				if(!isAdvancedSat) {
+					for(int i = 0; i < liquidCrafter; i++) {
+						int liquidLeft = left + i * 40;
+						renderFluidText(liquidLeft, top, i);
+					}
+					if(_pipe.liquidSatelliteId == 0) {
+						drawRect(left + 3, top + 3, left + 3 + (liquidCrafter * 40), top + 138, 0xAA8B8B8B);
+						fontRenderer.drawString(StringUtil.translate(PREFIX + "Off"), left + (liquidCrafter * 40) / 2 - 5, top + 145, 0x404040);
+						for(int i = 0; i < liquidCrafter; i++) {
+							for(int j = 0; j < 8; j++) {
+								liquidGuiParts[i][j].enabled = false;
+							}
+						}
+					} else {
+						fontRenderer.drawString(Integer.toString(_pipe.liquidSatelliteId), left + (liquidCrafter * 40) / 2 + 3 - (fontRenderer.getStringWidth(Integer.toString(_pipe.liquidSatelliteId)) / 2), top + 145, 0x404040);
+						for(int i = 0; i < liquidCrafter; i++) {
+							for(int j = 0; j < 8; j++) {
+								liquidGuiParts[i][j].enabled = true;
+							}
+						}
+					}
+				} else {
+					renderFluidText(left, top, id);
+				}
+			}
+		}
+		
+		private void renderFluidText(int left, int top, int i) {
+			BasicGuiHelper.drawSlotBackground(mc, left + 12, top + 19);
+			fontRenderer.drawString(Integer.toString(_pipe.getFluidAmount()[i]), left + 22 - (fontRenderer.getStringWidth(Integer.toString(_pipe.getFluidAmount()[i])) / 2), top + 40, 0x404040);
+			fontRenderer.drawString("1", left + 19, top + 53, 0x404040);
+			fontRenderer.drawString("10", left + 16, top + 73, 0x404040);
+			fontRenderer.drawString("100", left + 13, top + 93, 0x404040);
+			fontRenderer.drawString("1000", left + 10, top + 113, 0x404040);
+			if(isAdvancedSat) {
+				if(_pipe.liquidSatelliteIdArray[i] == 0) {
+					drawRect(left + 3, top + 3, left + 42, top + 138, 0xAA8B8B8B);
+					fontRenderer.drawString(StringUtil.translate(PREFIX + "Off"), left + 15, top + 146, 0x404040);
+					for(int j = 0; j < 8; j++) {
+						liquidGuiParts[i][j].enabled = false;
+					}
+				} else {
+					fontRenderer.drawString(Integer.toString(_pipe.liquidSatelliteIdArray[i]), left + 22 - (fontRenderer.getStringWidth(Integer.toString(_pipe.liquidSatelliteIdArray[i])) / 2), top + 146, 0x404040);
+					for(int j = 0; j < 8; j++) {
+						liquidGuiParts[i][j].enabled = true;
+					}
+				}
+				drawRect(left + 3, top + 138, left + 42, top + 139, 0xff8B8B8B);
+			}
+			if(_pipe.getFluidInventory().getStackInSlot(i) == null && !((!isAdvancedSat && _pipe.liquidSatelliteId == 0) || (isAdvancedSat && _pipe.liquidSatelliteIdArray[i] == 0))) {
+				drawRect(left + 3, top + 50, left + 42, top + 138, 0xAA8B8B8B);
+				for(int j = 0; j < 8; j++) {
+					liquidGuiParts[i][j].enabled = false;
+				}
+			}
+		}
+
+		@Override
+		public boolean renderSelectSlot(int slotId) {
+			if((isAdvancedSat && _pipe.liquidSatelliteIdArray[id] == 0) || (!isAdvancedSat && _pipe.liquidSatelliteId == 0)) return false;
+			return super.renderSelectSlot(slotId);
+		}
+	}	
 }

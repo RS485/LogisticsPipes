@@ -36,7 +36,6 @@ import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SearchBar;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.extention.GuiExtention;
-import logisticspipes.utils.gui.extention.GuiExtentionController;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
@@ -77,7 +76,6 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 	private int	startLeft;
 	private int	startXSize;
 	
-	private GuiExtentionController extentionController = new GuiExtentionController();
 	private BitSet handledExtention = new BitSet();
 	private int orderIdForButton;
 	
@@ -127,7 +125,6 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			reHide = true;
 		}
 		super.initGui();
-		extentionController.setMaxBottom(bottom);
 
 		buttonList.clear();
 		buttonList.add(new GuiButton(0, right - 55, bottom - 25, 50,20,"Request")); // Request
@@ -369,7 +366,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 				});
 			}
 		}
-		extentionController.render(guiLeft, guiTop);
+		super.renderExtentions();
 	}
 
 	public void refreshItems() {
@@ -504,11 +501,9 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 	
 	@Override
 	public void drawGuiContainerForegroundLayer(int par1, int par2) {
+		super.drawGuiContainerForegroundLayer(par1, par2);
 		if(super.hasSubGui()) return;
 		BasicGuiHelper.displayItemToolTip(itemDisplay.getToolTip(), this, this.zLevel, guiLeft, guiTop);
-		if(par1 < guiLeft) {
-			extentionController.mouseOver(par1, par2);
-		}
 		Macrobutton.enabled = _table.diskInv.getStackInSlot(0) != null;
 	}
 
@@ -548,9 +543,6 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			search.handleClick(i, j, k);
 		}
 		super.mouseClicked(i, j, k);
-		if(i < guiLeft) {
-			extentionController.mouseClicked(i, j, k);
-		}
 	}
 	
 	@Override

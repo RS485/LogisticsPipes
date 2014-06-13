@@ -13,10 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.utils.gui.extention.GuiExtentionController;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.input.Mouse;
@@ -47,9 +50,9 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	protected final int yCenterOffset;
 	
 	private SubGuiScreen subGui;
-	
 	protected List<IRenderSlot> slots = new ArrayList<IRenderSlot>();
-
+	protected GuiExtentionController extentionController = new GuiExtentionController();
+	
 	public LogisticsBaseGuiScreen(int xSize, int ySize, int xCenterOffset, int yCenterOffset){
 		this(new DummyContainer(null, null), xSize, ySize, xCenterOffset, yCenterOffset);
 	}
@@ -79,6 +82,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 		
 		this.xCenter = (right + guiLeft) / 2;
 		this.yCenter = (bottom + guiTop) / 2;
+		extentionController.setMaxBottom(bottom);
 	}
 	
 	@Override
@@ -122,6 +126,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 
 	@Override
 	public void drawScreen(int par1, int par2, float par3) {
+		checkButtons();
 		if(subGui != null) {
 			//Save Mouse Pos
 			int x = Mouse.getX();
@@ -185,6 +190,43 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	}
 	
 	@Override
+	protected void drawGuiContainerBackgroundLayer(float f, int i, int j) {
+		renderExtentions();
+	}
+
+	protected void renderExtentions() {
+		extentionController.render(guiLeft, guiTop);		
+	}
+
+	@Override
+	protected void drawSlotInventory(Slot slot) {
+		if(extentionController.renderSlot(slot)) {
+			super.drawSlotInventory(slot);
+		}
+	}
+
+	@Override
+	protected boolean isMouseOverSlot(Slot par1Slot, int par2, int par3) {
+		if(!extentionController.renderSelectSlot(par1Slot)) return false;
+		return super.isMouseOverSlot(par1Slot, par2, par3);
+	}
+
+	@SuppressWarnings("unchecked")
+	protected void checkButtons() {
+		for(GuiButton button:(List<GuiButton>) this.buttonList) {
+			if(extentionController.renderButtonControlled(button)) {
+				button.drawButton = extentionController.renderButton(button);
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public GuiButton addButton(GuiButton button) {
+		this.buttonList.add(button);
+		return button;
+	}
+
+	@Override
     public final void handleMouseInput() {
 		if(subGui != null) {
 			subGui.handleMouseInput();
@@ -216,6 +258,9 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
+		if(par1 < guiLeft) {
+			extentionController.mouseOver(par1, par2);
+		}
 		for(IRenderSlot slot:slots) {
 			if(slot instanceof IItemTextureRenderSlot) {
 				if(slot.drawSlotBackground()) 
@@ -244,6 +289,29 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 			}
 		}
 		super.mouseClicked(par1, par2, par3);
+		if(par3 == 0 && par1 < guiLeft && !mouseCanPressButton(par1, par2) && !isOverSlot(par1, par2)) {
+			extentionController.mouseClicked(par1, par2, par3);
+		}
+	}
+
+	private boolean mouseCanPressButton(int par1, int par2) {
+		for (int l = 0; l < this.buttonList.size(); ++l) {
+			GuiButton guibutton = (GuiButton) this.buttonList.get(l);
+			if (guibutton.mousePressed(this.mc, par1, par2)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isOverSlot(int par1, int par2) {
+		for (int k = 0; k < this.inventorySlots.inventorySlots.size(); ++k) {
+			Slot slot = (Slot) this.inventorySlots.inventorySlots.get(k);
+			if (this.isMouseOverSlot(slot, par1, par2)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void drawPoint(int x, int y, int color){

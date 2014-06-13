@@ -1,11 +1,15 @@
 package logisticspipes.utils.gui.extention;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import logisticspipes.utils.gui.BasicGuiHelper;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.inventory.Slot;
 
 public class GuiExtentionController {
 
@@ -14,6 +18,8 @@ public class GuiExtentionController {
 	@Setter
 	private int maxBottom;
 	private GuiExtention currentlyExtended = null;
+	private Map<Slot, Integer> slotMap = new HashMap<Slot, Integer>();
+	private Map<GuiButton, Integer> buttonMap = new HashMap<GuiButton, Integer>();
 	
 	public void render(int xPos, int yPos) {
 		yPos += 4;
@@ -97,5 +103,51 @@ public class GuiExtentionController {
 				return;
 			}
 		}
+	}
+	
+	public int registerControlledSlot(Slot slot) {
+		int size = slotMap.size();
+		slotMap.put(slot, size);
+		return size;
+	}
+	
+	public boolean renderSlot(Slot slot) {
+		if(!slotMap.containsKey(slot)) return true;
+		if(currentlyExtended == null) return false;
+		if(!currentlyExtended.isFullyExtended()) return false;
+		int id = slotMap.get(slot);
+		return currentlyExtended.renderSlot(id);
+	}
+
+	public boolean renderSelectSlot(Slot slot) {
+		if(!slotMap.containsKey(slot)) return true;
+		if(currentlyExtended == null) return false;
+		if(!currentlyExtended.isFullyExtended()) return false;
+		int id = slotMap.get(slot);
+		return currentlyExtended.renderSelectSlot(id);
+	}
+
+	public int registerControlledButton(GuiButton button) {
+		int size = buttonMap.size();
+		buttonMap.put(button, size);
+		return size;
+	}
+
+	public boolean renderButtonControlled(GuiButton button) {
+		return buttonMap.containsKey(button);
+	}
+
+	public boolean renderButton(GuiButton button) {
+		if(!buttonMap.containsKey(button)) return true;
+		if(currentlyExtended == null) return false;
+		if(!currentlyExtended.isFullyExtended()) return false;
+		int id = buttonMap.get(button);
+		return currentlyExtended.renderButton(id);
+	}
+
+	public void clear() {
+		extentions.clear();
+		extentionsToRemove.clear();
+		currentlyExtended = null;
 	}
 }

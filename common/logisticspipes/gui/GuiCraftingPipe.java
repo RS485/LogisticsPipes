@@ -8,9 +8,6 @@
 
 package logisticspipes.gui;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-
 import logisticspipes.LogisticsEventListener;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemUpgrade;
@@ -29,6 +26,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+
 public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 	private static final String					PREFIX				= "gui.crafting.";
 	
@@ -43,6 +43,7 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 	private final int							liquidCrafter;
 	private final boolean						hasByproductExtractor;
 	private final int[]							fluidSlotIDs;
+	private final int							byproductSlotID;
 	
 	private int									fuzzyPanelSelection	= -1;
 	
@@ -96,7 +97,9 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 		}
 		
 		if(hasByproductExtractor) {
-			dummy.addDummySlot(10, 187, 105);
+			byproductSlotID = extentionController.registerControlledSlot(dummy.addDummySlot(10, - 26, 29));
+		} else {
+			byproductSlotID = -1;
 		}
 		
 		this.inventorySlots = dummy;
@@ -170,6 +173,11 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 		}
 		if(!isAdvancedSat) {
 			extentionController.addExtention(extention);
+		}
+		if(hasByproductExtractor) {
+			ByproductExtention byproductExtention = new ByproductExtention();
+			byproductExtention.registerSlot(byproductSlotID);
+			extentionController.addExtention(byproductExtention);
 		}
 	}
 	
@@ -298,10 +306,6 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 			fontRenderer.drawString("" + _pipe.priority, 143 - (fontRenderer.getStringWidth("" + _pipe.priority) / 2), 107, 0x404040);
 		}
 		
-		if(hasByproductExtractor) {
-			fontRenderer.drawString(StringUtil.translate(PREFIX + "Extra"), xSize - 35, 88, 0x404040);
-		}
-		
 		if(isFuzzy) {
 			int mx = par1 - guiLeft;
 			int my = par2 - guiTop;
@@ -351,11 +355,6 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, guiLeft + xSize - (hasByproductExtractor ? 40 : 0), guiTop + ySize, zLevel, true, true, true, true, true);
-		
-		if(hasByproductExtractor) {
-			BasicGuiHelper.drawGuiBackGround(mc, guiLeft + xSize - 55, guiTop + 80, guiLeft + xSize, guiTop + 135, zLevel, true, true, false, true, true);
-			BasicGuiHelper.drawBigSlotBackground(mc, guiLeft + xSize - 35, guiTop + 100);
-		}
 		
 		if(!isAdvancedSat) {
 			drawRect(guiLeft + 115, guiTop + 4, guiLeft + 170, guiTop + 70, 0xff8B8B8B);
@@ -519,5 +518,38 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 			if((isAdvancedSat && _pipe.liquidSatelliteIdArray[id] == 0) || (!isAdvancedSat && _pipe.liquidSatelliteId == 0)) return false;
 			return super.renderSelectSlot(slotId);
 		}
-	}	
+	}
+	
+	private final class ByproductExtention extends GuiExtention {
+
+		@Override
+		public int getFinalWidth() {
+			return 40;
+		}
+
+		@Override
+		public int getFinalHeight() {
+			return 55;
+		}
+
+		@Override
+		public void renderForground(int left, int top) {
+			if(!isFullyExtended()) {
+				GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);
+				GL11.glEnable(GL11.GL_LIGHTING);
+				GL11.glEnable(GL11.GL_DEPTH_TEST);
+				RenderHelper.enableGUIStandardItemLighting();
+				ItemStack stack = new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CRAFTING_BYPRODUCT_EXTRACTOR);
+				itemRenderer.renderItemAndEffectIntoGUI(fontRenderer, getMC().renderEngine, stack, left + 5, top + 5);
+				itemRenderer.renderItemOverlayIntoGUI(fontRenderer, getMC().renderEngine, stack, left + 5, top + 5, "");
+				GL11.glDisable(GL11.GL_LIGHTING);
+				GL11.glDisable(GL11.GL_DEPTH_TEST);
+				itemRenderer.zLevel = 0.0F;
+			} else {
+				BasicGuiHelper.drawBigSlotBackground(mc, left + 9, top + 20);
+				fontRenderer.drawString(StringUtil.translate(PREFIX + "Extra"), left + 9, top + 8, 0x404040);
+			}
+		}
+	}
 }

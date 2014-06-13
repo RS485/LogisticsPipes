@@ -9,16 +9,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.event.FMLInterModComms;
 import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 
 import com.google.gson.Gson;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class VersionChecker extends Thread {
 
 	public static boolean hasNewVersion = false;
 	public static String newVersion = "";
 	public static List<String> changeLog = new ArrayList<String>(0);
+	public static boolean sentIMCMessage;
 
 	public VersionChecker() {
 		this.setDaemon(true);
@@ -76,6 +80,7 @@ public class VersionChecker extends Thread {
 					}
 				}
 				VersionChecker.changeLog = changeLogList;
+				sendIMCOutdatedMessage();
 			}
 		} catch(MalformedURLException e) {
 			if (Configs.CHECK_FOR_UPDATES){
@@ -85,6 +90,27 @@ public class VersionChecker extends Thread {
 			if (Configs.CHECK_FOR_UPDATES){
 				e.printStackTrace();
 			}
+		}
+	}
+
+	/**
+	 * Integration with Version Checker (http://www.minecraftforum.net/topic/2721902-/)
+	 */
+	public static void sendIMCOutdatedMessage() {
+		if (Loader.isModLoaded("VersionChecker")) {
+			NBTTagCompound tag = new NBTTagCompound();
+			tag.setString("oldVersion", LogisticsPipes.VERSION);
+			tag.setString("newVersion", newVersion);
+			tag.setString("updateUrl", "http://ci.thezorro266.com/view/Logistics%20Pipes/");
+			tag.setBoolean("isDirectLink", false);
+
+			StringBuilder stringBuilder = new StringBuilder();
+			for (String changeLogLine : changeLog) {
+				stringBuilder.append(changeLogLine).append("\n");
+			}
+			tag.setString("changeLog", stringBuilder.toString());
+			FMLInterModComms.sendRuntimeMessage("LogisticsPipes", "VersionChecker", "addUpdate", tag);
+			sentIMCMessage = true;
 		}
 	}
 }

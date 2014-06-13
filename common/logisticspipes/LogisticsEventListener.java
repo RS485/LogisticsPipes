@@ -179,7 +179,7 @@ public class LogisticsEventListener {
 			SimpleServiceLocator.securityStationManager.sendClientAuthorizationList(event.player);
 			SimpleServiceLocator.craftingPermissionManager.sendCraftingPermissionsToPlayer(event.player);
 		}
-		if(VersionChecker.hasNewVersion) {
+		if(VersionChecker.hasNewVersion && !VersionChecker.sentIMCMessage) {
 			event.player.addChatComponentMessage(new ChatComponentText("Your LogisticsPipes version is outdated. The newest version is #" + VersionChecker.newVersion + "."));
 			event.player.addChatComponentMessage(new ChatComponentText("Use \"/logisticspipes changelog\" to see a changelog."));
 		}

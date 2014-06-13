@@ -150,4 +150,10 @@ public class GuiExtentionController {
 		extentionsToRemove.clear();
 		currentlyExtended = null;
 	}
+
+	public void retract() {
+		if(currentlyExtended != null) {
+			currentlyExtended.setExtending(false);
+		}
+	}
 }

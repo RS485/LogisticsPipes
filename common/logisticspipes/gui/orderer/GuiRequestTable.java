@@ -465,6 +465,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			Macrobutton.drawButton = showRequest;
 			orderIdForButton = -1;
 		} else if(guibutton.id == 100) {
+			this.extentionController.retract();
 			this.setSubGui(new RequestMonitorPopup(_table, orderIdForButton));
 		} else if (guibutton.id == 18) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskRequestConectPacket.class).setPosX(_table.getX()).setPosY(_table.getY()).setPosZ(_table.getZ()));

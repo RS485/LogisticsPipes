@@ -134,6 +134,26 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	
 	public boolean waitingForCraft = false;
 	
+	protected ItemIdentifierInventory _dummyInventory = new ItemIdentifierInventory(11, "Requested items", 127);
+	protected ItemIdentifierInventory _liquidInventory = new ItemIdentifierInventory(ItemUpgrade.MAX_LIQUID_CRAFTER, "Fluid items", 1, true);
+	protected ItemIdentifierInventory _cleanupInventory = new ItemIdentifierInventory(ItemUpgrade.MAX_CRAFTING_CLEANUP * 3, "Cleanup Filer Items", 1);
+	
+	protected int[] amount = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
+	public int[] liquidSatelliteIdArray = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
+	public int liquidSatelliteId = 0;
+	
+	protected final DelayQueue< DelayedGeneric<ItemIdentifierStack>> _lostItems = new DelayQueue< DelayedGeneric<ItemIdentifierStack>>();
+	
+	public int satelliteId = 0;
+	
+	public int[] advancedSatelliteIdArray = new int[9];
+	
+	public int[] fuzzyCraftingFlagArray = new int[9];
+	
+	public int priority = 0;
+	
+	public boolean cleanupModeIsExclude = true;
+	
 	public PipeItemsCraftingLogistics(int itemID) {
 		super(itemID);
 		throttleTime = 40;
@@ -221,7 +241,45 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		}
 		return retstack;
 	}
-	
+
+	private ItemStack extractFromISpecialInventoryFiltered(ISpecialInventory inv, ItemIdentifierInventory filter, boolean isExcluded){
+		ItemStack[] stacks = inv.extractItem(false, ForgeDirection.UNKNOWN, 1);
+		if(stacks == null || stacks.length < 1 || stacks[0] == null) return null;
+		ItemStack stack = stacks[0];
+		if(stack.stackSize == 0) return null;
+		if(isExcluded) {
+			for(int i=0;i<filter.getSizeInventory();i++) {
+				ItemIdentifierStack identStack = filter.getIDStackInSlot(i);
+				if(identStack == null) continue;
+				if(identStack.getItem().fuzzyMatch(stack)) return null;
+			}
+		} else {
+			boolean found = false;
+			for(int i=0;i<filter.getSizeInventory();i++) {
+				ItemIdentifierStack identStack = filter.getIDStackInSlot(i);
+				if(identStack == null) continue;
+				if(identStack.getItem().fuzzyMatch(stack)) {
+					found = true;
+					break;
+				}
+			}
+			if(!found) {
+				return null;
+			}
+		}
+		if(!useEnergy(neededEnergy() * stack.stackSize)) return null;
+		
+		stacks = inv.extractItem(true, ForgeDirection.UNKNOWN, 1);
+		if(stacks == null || stacks.length < 1 || stacks[0] == null) {
+			LogisticsPipes.requestLog.info("crafting extractItem(true) got nothing from " + ((Object)inv).toString());
+			return null;
+		}
+		if(!ItemStack.areItemStacksEqual(stack, stacks[0])) {
+			LogisticsPipes.requestLog.info("crafting extract got a unexpected item from " + ((Object)inv).toString());
+		}
+		return stack;
+	}
+
 	private ItemStack extractFromIInventory(IInventory inv, ItemIdentifier wanteditem, int count){
 		IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
 		int available = invUtil.itemCount(wanteditem);
@@ -230,6 +288,47 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			return null;
 		}
 		return invUtil.getMultipleItems(wanteditem, Math.min(count, available));
+	}
+
+	private ItemStack extractFromIInventoryFiltered(IInventory inv, ItemIdentifierInventory filter, boolean isExcluded) {
+		IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
+		ItemIdentifier wanteditem = null;
+		for(ItemIdentifier item:invUtil.getItemsAndCount().keySet()) {
+			if(isExcluded) {
+				boolean found = false;
+				for(int i=0;i<filter.getSizeInventory();i++) {
+					ItemIdentifierStack identStack = filter.getIDStackInSlot(i);
+					if(identStack == null) continue;
+					if(identStack.getItem().fuzzyMatch(item.makeNormalStack(1))) {
+						found = true;
+						break;
+					}
+				}
+				if(!found) {
+					wanteditem = item;
+				}
+			} else {
+				boolean found = false;
+				for(int i=0;i<filter.getSizeInventory();i++) {
+					ItemIdentifierStack identStack = filter.getIDStackInSlot(i);
+					if(identStack == null) continue;
+					if(identStack.getItem().fuzzyMatch(item.makeNormalStack(1))) {
+						found = true;
+						break;
+					}
+				}
+				if(found) {
+					wanteditem = item;
+				}
+			}	
+		}
+		if(wanteditem == null) return null;
+		int available = invUtil.itemCount(wanteditem);
+		if(available == 0) return null;
+		if(!useEnergy(neededEnergy() * Math.min(64, available))) {
+			return null;
+		}
+		return invUtil.getMultipleItems(wanteditem, Math.min(64, available));
 	}
 	
 	private ItemStack extractFromLogisticsCraftingTable(LogisticsCraftingTableTileEntity tile, ItemIdentifier wanteditem, int count) {
@@ -258,7 +357,33 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		}
 		return retstack;		
 	}
-	
+
+	private ItemStack extract(AdjacentTile tile, ItemIdentifier item, int amount) {
+		if (tile.tile instanceof LogisticsCraftingTableTileEntity) {
+			return extractFromLogisticsCraftingTable((LogisticsCraftingTableTileEntity)tile.tile, item, amount);
+		} else if (tile.tile instanceof ISpecialInventory) {
+			return extractFromISpecialInventory((ISpecialInventory) tile.tile, item, amount);
+		} else if (tile.tile instanceof net.minecraft.inventory.ISidedInventory) {
+			IInventory sidedadapter = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) tile.tile, ForgeDirection.UNKNOWN, true);
+			return extractFromIInventory(sidedadapter, item, amount);
+		} else if (tile.tile instanceof IInventory) {
+			return extractFromIInventory((IInventory)tile.tile, item, amount);
+		}
+		return null;
+	}
+
+	private ItemStack extractFiltered(AdjacentTile tile, ItemIdentifierInventory inv, boolean isExcluded) {
+		if (tile.tile instanceof ISpecialInventory) {
+			return extractFromISpecialInventoryFiltered((ISpecialInventory) tile.tile, inv, isExcluded);
+		} else if (tile.tile instanceof net.minecraft.inventory.ISidedInventory) {
+			IInventory sidedadapter = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) tile.tile, ForgeDirection.UNKNOWN, true);
+			return extractFromIInventoryFiltered(sidedadapter, inv, isExcluded);
+		} else if (tile.tile instanceof IInventory) {
+			return extractFromIInventoryFiltered((IInventory)tile.tile, inv, isExcluded);
+		}
+		return null;
+	}
+
 	public void enableUpdateRequest() {
 		init = false;
 	}
@@ -300,7 +425,22 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 		waitingForCraft = false;
 		
-		if((!_orderManager.hasOrders() && _extras.isEmpty())) return;
+		if((!_orderManager.hasOrders() && _extras.isEmpty())) {
+			if(getUpgradeManager().getCrafterCleanup() > 0) {
+				List<AdjacentTile> crafters = locateCrafters();
+				ItemStack extracted = null;
+				AdjacentTile tile = null;
+				for (Iterator<AdjacentTile> it = crafters.iterator(); it.hasNext();) {
+					tile = it.next();
+					extracted = extractFiltered(tile, _cleanupInventory, cleanupModeIsExclude);
+					if(extracted != null && extracted.stackSize > 0) break;
+				}
+				if(extracted != null && extracted.stackSize > 0) {
+					this.queueRoutedItem(SimpleServiceLocator.routedItemHelper.createNewTravelItem(extracted), ForgeDirection.UP);
+				}
+			}
+			return;
+		}
 		
 		waitingForCraft = true;
 		
@@ -337,16 +477,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			AdjacentTile tile = null;
 			for (Iterator<AdjacentTile> it = crafters.iterator(); it.hasNext();) {
 				tile = it.next();
-				if (tile.tile instanceof LogisticsCraftingTableTileEntity) {
-					extracted = extractFromLogisticsCraftingTable((LogisticsCraftingTableTileEntity)tile.tile, nextOrder.getItem().getItem(), maxtosend);
-				} else if (tile.tile instanceof ISpecialInventory) {
-					extracted = extractFromISpecialInventory((ISpecialInventory) tile.tile, nextOrder.getItem().getItem(), maxtosend);
-				} else if (tile.tile instanceof net.minecraft.inventory.ISidedInventory) {
-					IInventory sidedadapter = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) tile.tile, ForgeDirection.UNKNOWN,true);
-					extracted = extractFromIInventory(sidedadapter, nextOrder.getItem().getItem(), maxtosend);
-				} else if (tile.tile instanceof IInventory) {
-					extracted = extractFromIInventory((IInventory)tile.tile, nextOrder.getItem().getItem(), maxtosend);
-				}
+				extracted = extract(tile, nextOrder.getItem().getItem(), maxtosend);
 				if (extracted != null && extracted.stackSize > 0) {
 					break;
 				}
@@ -408,7 +539,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			}
 		}
 	}
-	
+
 	private boolean cachedAreAllOrderesToBuffer;
 	
 	public boolean areAllOrderesToBuffer() {
@@ -764,27 +895,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		priority = packet.getPriority();
 	}
 	
-	// from PipeItemsCraftingLogistics
-	protected ItemIdentifierInventory _dummyInventory = new ItemIdentifierInventory(11, "Requested items", 127);
-	protected ItemIdentifierInventory _liquidInventory = new ItemIdentifierInventory(ItemUpgrade.MAX_LIQUID_CRAFTER, "Fluid items", 1, true);
-	
-	protected int[] amount = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
-	public int[] liquidSatelliteIdArray = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
-	public int liquidSatelliteId = 0;
-
-	//@Deprecated
-	//public boolean[] craftingSigns = new boolean[6];
-	
-	protected final DelayQueue< DelayedGeneric<ItemIdentifierStack>> _lostItems = new DelayQueue< DelayedGeneric<ItemIdentifierStack>>();
-	
-	public int satelliteId = 0;
-
-	public int[] advancedSatelliteIdArray = new int[9];
-	
-	public int[] fuzzyCraftingFlagArray = new int[9];
-
-	public int priority = 0;
-
 	/* ** SATELLITE CODE ** */
 	protected int getNextConnectSatelliteId(boolean prev, int x) {
 		int closestIdFound = prev ? 0 : Integer.MAX_VALUE;
@@ -974,6 +1084,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		super.readFromNBT(nbttagcompound);
 		_dummyInventory.readFromNBT(nbttagcompound, "");
 		_liquidInventory.readFromNBT(nbttagcompound, "FluidInv");
+		_cleanupInventory.readFromNBT(nbttagcompound, "CleanupInv");
 		satelliteId = nbttagcompound.getInteger("satelliteid");
 		
 		priority = nbttagcompound.getInteger("priority");
@@ -1009,6 +1120,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		super.writeToNBT(nbttagcompound);
 		_dummyInventory.writeToNBT(nbttagcompound, "");
 		_liquidInventory.writeToNBT(nbttagcompound, "FluidInv");
+		_cleanupInventory.writeToNBT(nbttagcompound, "CleanupInv");
 		nbttagcompound.setInteger("satelliteid", satelliteId);
 		
 		nbttagcompound.setInteger("priority", priority);
@@ -1033,7 +1145,10 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 						((CoreRoutedPipe)this.container.pipe).getUpgradeManager().getFluidCrafter(),
 						amount,
 						((CoreRoutedPipe)this.container.pipe).getUpgradeManager().hasByproductExtractor(),
-						((CoreRoutedPipe)this.container.pipe).getUpgradeManager().isFuzzyCrafter()}),
+						((CoreRoutedPipe)this.container.pipe).getUpgradeManager().isFuzzyCrafter(),
+						((CoreRoutedPipe)this.container.pipe).getUpgradeManager().getCrafterCleanup(),
+						cleanupModeIsExclude
+						}),
 						(Player) entityplayer);
 		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_CRAFTINGPIPE_ID, getWorld(), getX(), getY(), getZ());
 	}
@@ -1238,7 +1353,11 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public ItemIdentifierInventory getFluidInventory() {
 		return _liquidInventory;
 	}
-	
+
+	public IInventory getCleanupInventory() {
+		return _cleanupInventory;
+	}
+
 	public void setDummyInventorySlot(int slot, ItemStack itemstack) {
 		_dummyInventory.setInventorySlotContents(slot, itemstack);
 	}
@@ -1374,5 +1493,21 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			}
 		}
 		return false;
+	}
+
+	public void importCleanup() {
+		for(int i = 0;i < 10;i++) {
+			_cleanupInventory.setInventorySlotContents(i, _dummyInventory.getStackInSlot(i));
+		}
+		for(int i = 10;i < _cleanupInventory.getSizeInventory(); i++) {
+			_cleanupInventory.setInventorySlotContents(i, (ItemStack) null);
+		}
+		_cleanupInventory.compact_first(10);
+		_cleanupInventory.recheckStackLimit();
+		this.cleanupModeIsExclude = false;
+	}
+	
+	public void toogleCleaupMode() {
+		this.cleanupModeIsExclude = !this.cleanupModeIsExclude;
 	}
 }

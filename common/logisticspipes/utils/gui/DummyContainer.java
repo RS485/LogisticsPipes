@@ -99,6 +99,10 @@ public class DummyContainer extends Container {
 		return addSlotToContainer(new DummySlot(_dummyInventory, slotId, xCoord, yCoord));
 	}
 	
+	public Slot addDummySlot(int slotId, IInventory dummy, int xCoord, int yCoord) {
+		return addSlotToContainer(new DummySlot(dummy, slotId, xCoord, yCoord));
+	}
+	
 	public void addNormalSlot(int slotId, IInventory inventory, int xCoord, int yCoord) {
 		transferTop.add(addSlotToContainer(new Slot(inventory, slotId, xCoord, yCoord)));
 	}

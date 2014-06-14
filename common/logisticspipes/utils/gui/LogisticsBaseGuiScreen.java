@@ -52,6 +52,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	private SubGuiScreen subGui;
 	protected List<IRenderSlot> slots = new ArrayList<IRenderSlot>();
 	protected GuiExtentionController extentionController = new GuiExtentionController();
+	private GuiButton selectedButton;
 	
 	public LogisticsBaseGuiScreen(int xSize, int ySize, int xCenterOffset, int yCenterOffset){
 		this(new DummyContainer(null, null), xSize, ySize, xCenterOffset, yCenterOffset);
@@ -288,9 +289,33 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 				return;
 			}
 		}
-		super.mouseClicked(par1, par2, par3);
+		boolean handledButton = false;
+		if (par3 == 0) {
+			for (int l = 0; l < this.buttonList.size(); ++l) {
+				GuiButton guibutton = (GuiButton) this.buttonList.get(l);
+				if (guibutton.mousePressed(this.mc, par1, par2)) {
+					this.selectedButton = guibutton;
+					this.mc.sndManager.playSoundFX("random.click", 1.0F, 1.0F);
+					this.actionPerformed(guibutton);
+					handledButton = true;
+					break;
+				}
+			}
+		}
+		if(!handledButton) {
+			super.mouseClicked(par1, par2, par3);
+		}
 		if(par3 == 0 && par1 < guiLeft && !mouseCanPressButton(par1, par2) && !isOverSlot(par1, par2)) {
 			extentionController.mouseClicked(par1, par2, par3);
+		}
+	}
+
+	protected void mouseMovedOrUp(int par1, int par2, int par3) {
+		if (this.selectedButton != null && par3 == 0) {
+			this.selectedButton.mouseReleased(par1, par2);
+			this.selectedButton = null;
+		} else {
+			super.mouseMovedOrUp(par1, par2, par3);
 		}
 	}
 

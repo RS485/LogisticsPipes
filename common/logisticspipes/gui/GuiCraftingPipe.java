@@ -12,7 +12,11 @@ import logisticspipes.LogisticsEventListener;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.cpipe.CPipeCleanupImport;
+import logisticspipes.network.packets.cpipe.CPipeCleanupToggle;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
@@ -42,18 +46,23 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 	private final boolean						isFuzzy;
 	private final int							liquidCrafter;
 	private final boolean						hasByproductExtractor;
+	private final int							cleanupSize;
 	private final int[]							fluidSlotIDs;
 	private final int							byproductSlotID;
+	private final int[]							cleanupSlotIDs;
 	
 	private int									fuzzyPanelSelection	= -1;
+	private GuiButton							cleanupModeButton;
 	
-	public GuiCraftingPipe(EntityPlayer player, IInventory dummyInventory, PipeItemsCraftingLogistics logic, boolean isAdvancedSat, int liquidCrafter, int[] amount, boolean hasByproductExtractor, boolean isFuzzy) {
+	public GuiCraftingPipe(EntityPlayer player, IInventory dummyInventory, PipeItemsCraftingLogistics logic, boolean isAdvancedSat, int liquidCrafter, int[] amount, boolean hasByproductExtractor, boolean isFuzzy, int cleanupSize, boolean cleanupExclude) {
 		super(null);
 		_player = player;
 		this.isAdvancedSat = isAdvancedSat;
 		this.isFuzzy = isFuzzy;
 		this.liquidCrafter = liquidCrafter;
 		this.hasByproductExtractor = hasByproductExtractor;
+		this.cleanupSize = cleanupSize;
+		logic.cleanupModeIsExclude = cleanupExclude;
 		
 		if(!hasByproductExtractor) {
 			xSize = 177;
@@ -100,6 +109,13 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 			byproductSlotID = extentionController.registerControlledSlot(dummy.addDummySlot(10, - 26, 29));
 		} else {
 			byproductSlotID = -1;
+		}
+		
+		cleanupSlotIDs = new int[cleanupSize * 3];
+		for(int y = 0;y < cleanupSize;y++) {
+			for(int x=0;x < 3;x++) {
+				cleanupSlotIDs[y * 3 + x] = extentionController.registerControlledSlot(dummy.addDummySlot(y * 3 + x, logic.getCleanupInventory(), x * 18 - 57, y * 18 + 13));
+			}
 		}
 		
 		this.inventorySlots = dummy;
@@ -178,6 +194,15 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 			ByproductExtention byproductExtention = new ByproductExtention();
 			byproductExtention.registerSlot(byproductSlotID);
 			extentionController.addExtention(byproductExtention);
+		}
+		if(cleanupSize > 0) {
+			CleanupExtention cleanupExtention = new CleanupExtention();
+			cleanupExtention.registerButton(extentionController.registerControlledButton(addButton(cleanupModeButton = new SmallGuiButton(24, guiLeft - 56, guiTop + 18 + (18 * cleanupSize), 50, 10, StringUtil.translate(PREFIX + (_pipe.cleanupModeIsExclude ? "Exclude" : "Include"))))));
+			cleanupExtention.registerButton(extentionController.registerControlledButton(addButton(new SmallGuiButton(25, guiLeft - 56, guiTop + 32 + (18 * cleanupSize), 50, 10, StringUtil.translate(PREFIX + "Import")))));
+			for(int i=0;i<cleanupSize * 3;i++) {
+				cleanupExtention.registerSlot(cleanupSlotIDs[i]);
+			}
+			extentionController.addExtention(cleanupExtention);
 		}
 	}
 	
@@ -264,6 +289,12 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 				return;
 			case 23:
 				_pipe.setPrevFluidSatellite(_player, -1);
+				return;
+			case 24:
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(CPipeCleanupToggle.class).setTilePos(_pipe.container));
+				return;
+			case 25:
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(CPipeCleanupImport.class).setTilePos(_pipe.container));
 				return;
 			default:
 				super.actionPerformed(guibutton);
@@ -402,6 +433,10 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 			return;
 		}
 		super.mouseClicked(mouseX, mouseY, par3);
+	}
+	
+	public void onCleanupModeChange() {
+		cleanupModeButton.displayString = StringUtil.translate(PREFIX + (_pipe.cleanupModeIsExclude ? "Exclude" : "Include"));
 	}
 	
 	private final class FluidCraftingExtention extends GuiExtention {
@@ -549,6 +584,42 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 			} else {
 				BasicGuiHelper.drawBigSlotBackground(mc, left + 9, top + 20);
 				fontRenderer.drawString(StringUtil.translate(PREFIX + "Extra"), left + 9, top + 8, 0x404040);
+			}
+		}
+	}
+	
+	private final class CleanupExtention extends GuiExtention {
+
+		@Override
+		public int getFinalWidth() {
+			return 66;
+		}
+
+		@Override
+		public int getFinalHeight() {
+			return cleanupSize * 18 + 16 + 30;
+		}
+
+		@Override
+		public void renderForground(int left, int top) {
+			if(!isFullyExtended()) {
+				GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);
+				GL11.glEnable(GL11.GL_LIGHTING);
+				GL11.glEnable(GL11.GL_DEPTH_TEST);
+				RenderHelper.enableGUIStandardItemLighting();
+				ItemStack stack = new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CRAFTING_CLEANUP);
+				itemRenderer.renderItemAndEffectIntoGUI(fontRenderer, getMC().renderEngine, stack, left + 5, top + 5);
+				itemRenderer.renderItemOverlayIntoGUI(fontRenderer, getMC().renderEngine, stack, left + 5, top + 5, "");
+				GL11.glDisable(GL11.GL_LIGHTING);
+				GL11.glDisable(GL11.GL_DEPTH_TEST);
+				itemRenderer.zLevel = 0.0F;
+			} else {
+				for(int y = 0;y < cleanupSize;y++) {
+					for(int x=0;x < 3;x++) {
+						BasicGuiHelper.drawSlotBackground(mc, left + 8 + x * 18, top + 8 + y * 18);
+					}
+				}
 			}
 		}
 	}

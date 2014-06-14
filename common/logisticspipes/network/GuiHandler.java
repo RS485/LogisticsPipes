@@ -145,6 +145,13 @@ public class GuiHandler implements IGuiHandler {
 		        	dummy.addDummySlot(10, 197, 104);
 		        }
 		        
+		        for(int Y = 0;Y < ((CoreRoutedPipe)pipe.pipe).getUpgradeManager().getCrafterCleanup();Y++) {
+					for(int X=0;X < 3;X++) {
+						dummy.addDummySlot(Y * 3 + X, ((PipeItemsCraftingLogistics)pipe.pipe).getCleanupInventory(), X * 18 - 57, Y * 18 + 13);
+					}
+				}
+				
+		        
 				return dummy;
 
 			case GuiIDs.GUI_FluidSupplier_ID:
@@ -652,7 +659,7 @@ public class GuiHandler implements IGuiHandler {
 					new UnsupportedOperationException("Arguments missing").printStackTrace();
 					return null;
 				}
-				return new GuiCraftingPipe(player, ((PipeItemsCraftingLogistics)pipe.pipe).getDummyInventory(), (PipeItemsCraftingLogistics)pipe.pipe, (Boolean) args[0], (Integer) args[1], (int[]) args[2], (Boolean) args[3], (Boolean) args[4]);
+				return new GuiCraftingPipe(player, ((PipeItemsCraftingLogistics)pipe.pipe).getDummyInventory(), (PipeItemsCraftingLogistics)pipe.pipe, (Boolean) args[0], (Integer) args[1], (int[]) args[2], (Boolean) args[3], (Boolean) args[4], (Integer) args[5], (Boolean) args[6]);
 			
 			case GuiIDs.GUI_FluidSupplier_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsFluidSupplier)) return null;

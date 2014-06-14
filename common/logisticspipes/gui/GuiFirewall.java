@@ -6,12 +6,12 @@ import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
 import logisticspipes.utils.gui.GuiStringHandlerButton.StringHandler;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 
-public class GuiFirewall extends KraphtBaseGuiScreen {
+public class GuiFirewall extends LogisticsBaseGuiScreen {
 	private static final String PREFIX = "gui.firewall.";
 	
 	private PipeItemsFirewall pipe;

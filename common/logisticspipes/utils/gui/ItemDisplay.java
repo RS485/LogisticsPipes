@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 
 import logisticspipes.Configs;
 import logisticspipes.interfaces.ISpecialItemRenderer;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen.Colors;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen.Colors;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtil;
@@ -48,7 +48,7 @@ public class ItemDisplay {
 	
 	private final IItemSearch search;
 	private final FontRenderer fontRenderer;
-	private final KraphtBaseGuiScreen screen;
+	private final LogisticsBaseGuiScreen screen;
 	private final ISpecialItemRenderer renderer;
 	private final RenderItem itemRenderer = new RenderItem();
 	private int left, top, height, width;
@@ -56,7 +56,7 @@ public class ItemDisplay {
 	private final boolean shiftPageChange;
 	private final Minecraft mc = FMLClientHandler.instance().getClient();
 	
-	public ItemDisplay(IItemSearch search, FontRenderer fontRenderer, KraphtBaseGuiScreen screen, ISpecialItemRenderer renderer, int left, int top, int width, int height, int[] amountChangeMode, boolean shiftPageChange) {
+	public ItemDisplay(IItemSearch search, FontRenderer fontRenderer, LogisticsBaseGuiScreen screen, ISpecialItemRenderer renderer, int left, int top, int width, int height, int[] amountChangeMode, boolean shiftPageChange) {
 		this.search = search;
 		this.fontRenderer = fontRenderer;
 		this.screen = screen;

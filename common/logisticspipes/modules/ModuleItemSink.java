@@ -15,8 +15,12 @@ import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.network.GuiIDs;
+import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
+import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
+import logisticspipes.network.guis.module.inhand.ItemSinkInHand;
+import logisticspipes.network.guis.module.inpipe.ItemSinkSlot;
 import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
 import logisticspipes.network.packets.module.ModuleInventory;
 import logisticspipes.network.packets.modules.ItemSinkDefault;
@@ -95,9 +99,19 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 
 	@Override
 	public int getGuiHandlerID() {
-		return GuiIDs.GUI_Module_ItemSink_ID;
+		return -1;
 	}
-	
+
+	@Override
+	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+		return NewGuiHandler.getGui(ItemSinkSlot.class).setDefaultRoute(_isDefaultRoute);
+	}
+
+	@Override
+	public ModuleInHandGuiProvider getInHandGuiProvider() {
+		return NewGuiHandler.getGui(ItemSinkInHand.class);
+	}
+
 	@Override
 	public LogisticsModule getSubModule(int slot) {return null;}
 

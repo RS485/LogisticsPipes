@@ -48,11 +48,11 @@ import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IAdjacentWorldAccess;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.IRoutedItem;
+import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.logisticspipes.ITrackStatistics;
 import logisticspipes.logisticspipes.PipeTransportLayer;
 import logisticspipes.logisticspipes.RouteLayer;
 import logisticspipes.logisticspipes.TransportLayer;
-import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.modules.LogisticsGuiModule;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
@@ -117,13 +117,10 @@ import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import buildcraft.BuildCraftTransport;
 import buildcraft.api.core.IIconProvider;
-import buildcraft.api.core.Position;
 import buildcraft.api.gates.IAction;
 import buildcraft.core.network.IClientState;
 import buildcraft.transport.Pipe;
-import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.TravelingItem;
 import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -868,7 +865,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		if (entityplayer.getCurrentEquippedItem() == null) {
 			if (!entityplayer.isSneaking()) return false;
 			if(MainProxy.isClient(entityplayer.worldObj)) {
-				if(!LogisticsHUDRenderer.instance().hasLasers()) { //TODO remove old Lasers
+				if(!LogisticsHUDRenderer.instance().hasLasers()) {
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestRoutingLasersPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 				} else {
 					LogisticsHUDRenderer.instance().resetLasers();
@@ -917,7 +914,11 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			if(MainProxy.isServer(entityplayer.worldObj)) {
 				if (settings == null || settings.openGui) {
 					if (getLogisticsModule() != null && getLogisticsModule() instanceof LogisticsGuiModule) {
-						entityplayer.openGui(LogisticsPipes.instance, ((LogisticsGuiModule)getLogisticsModule()).getGuiHandlerID(), getWorld(), getX(), getY(), getZ());
+						if(((LogisticsGuiModule)getLogisticsModule()).getGuiHandlerID() != -1) {
+							entityplayer.openGui(LogisticsPipes.instance, ((LogisticsGuiModule)getLogisticsModule()).getGuiHandlerID(), getWorld(), getX(), getY(), getZ());
+						} else {
+							((LogisticsGuiModule)getLogisticsModule()).getPipeGuiProvider().setSlot(-1).setTilePos(this.container).open(entityplayer);
+						}
 					} else {
 						onWrenchClicked(entityplayer);
 					}

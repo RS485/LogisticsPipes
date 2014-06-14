@@ -1,15 +1,14 @@
 package logisticspipes.gui;
 
-import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.signs.ItemAmountPipeSign;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.ForgeDirection;
 
-public class ItemAmountSignCreationGui extends KraphtBaseGuiScreen {
+public class ItemAmountSignCreationGui extends LogisticsBaseGuiScreen {
 	
 	public ItemAmountSignCreationGui(EntityPlayer player, CoreRoutedPipe pipe, ForgeDirection dir) {
 		super(180, 125, 0, 0);
@@ -18,11 +17,6 @@ public class ItemAmountSignCreationGui extends KraphtBaseGuiScreen {
 		dummy.addDummySlot(0, 10, 13);
 		dummy.addNormalSlotsForPlayerInventory(10, 40);
 		this.inventorySlots = dummy;
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Item_Amount_Sign;
 	}
 	
 	@Override

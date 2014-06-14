@@ -6,9 +6,12 @@ import java.util.List;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ICraftingResultHandler;
 import logisticspipes.interfaces.IGuiOpenControler;
+import logisticspipes.interfaces.IGuiTileEntity;
 import logisticspipes.interfaces.IRotationProvider;
-import logisticspipes.interfaces.ISlotCheck;
+import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
+import logisticspipes.network.guis.block.SolderingStationGui;
 import logisticspipes.network.packets.block.RequestRotationPacket;
 import logisticspipes.network.packets.block.SolderingStationHeat;
 import logisticspipes.network.packets.block.SolderingStationInventory;
@@ -17,13 +20,11 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.recipes.SolderingStationRecipes.SolderingStationRecipe;
 import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -36,7 +37,7 @@ import buildcraft.api.power.PowerHandler;
 import buildcraft.api.power.PowerHandler.PowerReceiver;
 import buildcraft.api.power.PowerHandler.Type;
 
-public class LogisticsSolderingTileEntity extends TileEntity implements IPowerReceptor, ISpecialInventory, IGuiOpenControler, IRotationProvider {
+public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTileEntity, IPowerReceptor, ISpecialInventory, IGuiOpenControler, IRotationProvider {
 	
 	private PowerHandler provider;
 	private ItemIdentifierInventory inv = new ItemIdentifierInventory(12, "Soldering Inventory", 64);
@@ -53,33 +54,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 		provider.configure(10, 100, 1000, 100); // never triggers doWork, as this is just an energy store, and tick does the actual work.
 	}
 
-	public Container createContainer(EntityPlayer player) {
-		DummyContainer dummy = new DummyContainer(player, this, this);
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
-				final int slotNumber = i * 3 + j;
-				dummy.addRestrictedSlot(slotNumber, this, 44 + (j * 18),
-						17 + (i * 18), new ISlotCheck() {
-							@Override
-							public boolean isStackAllowed(ItemStack itemStack) {
-								return checkSlot(itemStack, slotNumber);
-							}
-						});
-			}
-		}
-		dummy.addRestrictedSlot(9, this, 107, 17, Item.ingotIron.itemID);
-		dummy.addRestrictedSlot(10, this, 141, 47, -1);
-		dummy.addRestrictedSlot(11, this, 9, 9, new ISlotCheck() {
-			@Override
-			public boolean isStackAllowed(ItemStack itemStack) {
-				return getRecipeForTaget(itemStack) != null && areStacksEmpty();
-			}
-		});
-		dummy.addNormalSlotsForPlayerInventory(8, 84);
-		return dummy;
-	}
-
-	private boolean checkSlot(ItemStack stack, int slotNumber) {
+	public boolean checkSlot(ItemStack stack, int slotNumber) {
 		if(getRecipeForTaget() == null || getRecipeForTaget().length <= slotNumber) {
 			return true;
 		}
@@ -512,13 +487,11 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 
 	@Override
 	public boolean isInvNameLocalized() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
@@ -528,5 +501,8 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 		par1CrashReportCategory.addCrashSection("LP-Version", LogisticsPipes.VERSION);
 	}
 
-
+	@Override
+	public CoordinatesGuiProvider getGuiProvider() {
+		return NewGuiHandler.getGui(SolderingStationGui.class);
+	}
 }

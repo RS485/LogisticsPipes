@@ -18,7 +18,7 @@ import logisticspipes.network.packets.chassis.ChassisGUI;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
@@ -27,7 +27,7 @@ import net.minecraft.item.ItemStack;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiChassiPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerProvider {
+public class GuiChassiPipe extends LogisticsBaseGuiScreen implements IGuiIDHandlerProvider {
 
 	private final PipeLogisticsChassi _chassiPipe;
 	private final EntityPlayer _player;

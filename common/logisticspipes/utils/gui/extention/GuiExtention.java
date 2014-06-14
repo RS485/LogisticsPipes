@@ -1,5 +1,8 @@
 package logisticspipes.utils.gui.extention;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +19,8 @@ public abstract class GuiExtention {
 	private int currentYPos=0;
 	private int targetYPos=0;
 	private boolean init = true;
+	private List<Integer> slotList = new ArrayList<Integer>();
+	private List<Integer> buttonList = new ArrayList<Integer>();
 
 	public abstract int getFinalWidth();
 	public abstract int getFinalHeight();
@@ -82,4 +87,24 @@ public abstract class GuiExtention {
 	}
 	
 	public void handleMouseOverAt(int xPos, int yPos) {}
+
+	public void registerSlot(int id) {
+		slotList.add(id);
+	}
+
+	public boolean renderSlot(int id) {
+		return slotList.contains(id);
+	}
+
+	public boolean renderSelectSlot(int id) {
+		return slotList.contains(id);
+	}
+
+	public void registerButton(int id) {
+		buttonList.add(id);
+	}
+
+	public boolean renderButton(int id) {
+		return buttonList.contains(id);
+	}
 }

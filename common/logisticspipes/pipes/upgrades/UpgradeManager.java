@@ -8,7 +8,8 @@ import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsItemCard;
-import logisticspipes.network.GuiIDs;
+import logisticspipes.network.NewGuiHandler;
+import logisticspipes.network.guis.pipe.UpgradeManagerGui;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.upgrades.power.BCPowerSupplierUpgrade;
 import logisticspipes.pipes.upgrades.power.IC2PowerSupplierUpgrade;
@@ -55,6 +56,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	private boolean	hasCCRemoteControlUpgrade = false;
 	private boolean hasCraftingMonitoringUpgrade = false;
 	private boolean hasOpaqueUpgrade = false;
+	private int craftingCleanup = 0;
 	
 	private boolean needsContainerPositionUpdate = false;
 	
@@ -122,6 +124,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		hasCCRemoteControlUpgrade = false;
 		hasCraftingMonitoringUpgrade = false;
 		hasOpaqueUpgrade = false;
+		craftingCleanup = 0;
 		for(int i=0;i<upgrades.length;i++) {
 			IPipeUpgrade upgrade = upgrades[i];
 			if(upgrade instanceof SneakyUpgrade && sneakyOrientation == ForgeDirection.UNKNOWN && !isCombinedSneakyUpgrade) {
@@ -156,9 +159,12 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 				hasCraftingMonitoringUpgrade = true;
 			} else if(upgrade instanceof OpaqueUpgrade) {
 				hasOpaqueUpgrade = true;
+			} else if(upgrade instanceof CraftingCleanupUpgrade) {
+				craftingCleanup += inv.getStackInSlot(i).stackSize;
 			}
 		}
 		liquidCrafter = Math.min(liquidCrafter, ItemUpgrade.MAX_LIQUID_CRAFTER);
+		craftingCleanup = Math.min(craftingCleanup, ItemUpgrade.MAX_CRAFTING_CLEANUP);
 		if(combinedBuffer != isCombinedSneakyUpgrade) {
 			needsContainerPositionUpdate = true;
 		}
@@ -216,7 +222,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	}
 
 	public void openGui(EntityPlayer entityplayer, CoreRoutedPipe pipe) {
-		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Upgrade_Manager, pipe.getWorld(), pipe.getX(), pipe.getY(), pipe.getZ());
+		NewGuiHandler.getGui(UpgradeManagerGui.class).setTilePos(pipe.container).open(entityplayer);
 	}
 
 	public DummyContainer getDummyContainer(EntityPlayer player) {
@@ -414,5 +420,9 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 
 	public boolean isOpaque() {
 		return hasOpaqueUpgrade;
+	}
+
+	public int getCrafterCleanup() {
+		return craftingCleanup;
 	}
 }

@@ -18,12 +18,11 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiAdvancedExtractor extends GuiWithPreviousGuiContainer {
+public class GuiAdvancedExtractor extends ModuleBaseGui {
 
 	private final ModuleAdvancedExtractor _advancedExtractor;
 	private final int slot;
@@ -66,8 +65,8 @@ public class GuiAdvancedExtractor extends GuiWithPreviousGuiContainer {
 		
 	}
 	
-	public GuiAdvancedExtractor(IInventory playerInventory, CoreRoutedPipe pipe, ModuleAdvancedExtractor advancedExtractor, GuiScreen previousGui, int slot) {
-		super(null,pipe,previousGui);
+	public GuiAdvancedExtractor(IInventory playerInventory, CoreRoutedPipe pipe, ModuleAdvancedExtractor advancedExtractor, int slot) {
+		super(null,pipe);
 		_advancedExtractor = advancedExtractor;
 		this.slot = slot;
 		DummyContainer dummy = new DummyContainer(playerInventory, _advancedExtractor.getFilterInventory());

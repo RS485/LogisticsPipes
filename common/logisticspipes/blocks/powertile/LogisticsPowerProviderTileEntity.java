@@ -10,13 +10,16 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.hud.HUDPowerLevel;
 import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.IGuiOpenControler;
+import logisticspipes.interfaces.IGuiTileEntity;
 import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IPowerLevelDisplay;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.routing.IFilter;
+import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.packets.block.PowerPacketLaser;
+import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
+import logisticspipes.network.guis.block.PowerProviderGui;
 import logisticspipes.network.packets.block.PowerProviderLevel;
 import logisticspipes.network.packets.hud.HUDStartBlockWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopBlockWatchingPacket;
@@ -32,16 +35,14 @@ import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.WorldUtil;
-import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 
-public abstract class LogisticsPowerProviderTileEntity extends TileEntity implements ISubSystemPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler {
+public abstract class LogisticsPowerProviderTileEntity extends TileEntity implements IGuiTileEntity, ISubSystemPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler {
 	public static final int BC_COLOR = 0x00ffff;
 	public static final int RF_COLOR = 0xff0000;
 	public static final int IC2_COLOR = 0xffff00;
@@ -304,12 +305,6 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 		par1CrashReportCategory.addCrashSection("LP-Version", LogisticsPipes.VERSION);
 	}
 
-	public Container createContainer(EntityPlayer player) {
-		DummyContainer dummy = new DummyContainer(player, null, this);
-		dummy.addNormalSlotsForPlayerInventory(8, 80);
-		return dummy;
-	}
-
 	public void handlePowerPacket(float float1) {
 		if(MainProxy.isClient(this.getWorld())) {
 			internalStorage = float1;
@@ -329,5 +324,9 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 	@Override
 	public boolean isHUDInvalid() {
 		return this.isInvalid();
+	}
+
+	public CoordinatesGuiProvider getGuiProvider() {
+		return NewGuiHandler.getGui(PowerProviderGui.class);
 	}
 }

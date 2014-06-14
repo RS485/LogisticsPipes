@@ -15,7 +15,7 @@ import logisticspipes.commands.chathelper.LPChatListener;
 import logisticspipes.interfaces.IRoutingDebugAdapter;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.packets.OpenChatGui;
+import logisticspipes.network.packets.gui.OpenChatGui;
 import logisticspipes.network.packets.routingdebug.RoutingUpdateCanidatePipe;
 import logisticspipes.network.packets.routingdebug.RoutingUpdateClearClient;
 import logisticspipes.network.packets.routingdebug.RoutingUpdateDebugCanidateList;

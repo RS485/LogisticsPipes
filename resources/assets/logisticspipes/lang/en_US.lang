@@ -227,6 +227,7 @@ item.IC2EVPowerSupplierUpgrade=IC2 EV Power Supplier Upgrade
 item.CCRemoteControlUpgrade=CC Remote Control Upgrade
 item.CraftingMonitoringUpgrade=Crafting Monitoring Upgrade
 item.OpaqueUpgrade=Opaque Upgrade
+item.CraftingCleanupUpgrade=Crafting Cleanup Upgrade
 
 # Blocks
 
@@ -265,6 +266,8 @@ gui.crafting.OreDict=OreDict
 gui.crafting.IgnDamage=IgnDamage
 gui.crafting.IgnNBT=IgnNBT
 gui.crafting.OrePrefix=OrePrefix
+gui.crafting.Include=Include
+gui.crafting.Exclude=Exclude
 
 gui.firewall.Blocked=Blocked
 gui.firewall.Allowed=Allowed

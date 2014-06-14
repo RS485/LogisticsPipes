@@ -6,12 +6,12 @@ import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
-public class GuiFreqCardContent extends KraphtBaseGuiScreen {
+public class GuiFreqCardContent extends LogisticsBaseGuiScreen {
 
 	public GuiFreqCardContent(EntityPlayer player, IInventory card) {
 		super(180, 130, 0, 0);

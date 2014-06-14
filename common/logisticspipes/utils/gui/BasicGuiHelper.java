@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen.Colors;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen.Colors;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.Minecraft;

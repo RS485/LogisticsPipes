@@ -14,19 +14,18 @@ import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.IItemTextureRenderSlot;
 import logisticspipes.utils.gui.ISmallColorRenderSlot;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Icon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
+public class GuiApiaristSink extends ModuleBaseGui {
 
 	private final ModuleApiaristSink module;
 	private int slot;
 	
-	public GuiApiaristSink(ModuleApiaristSink module, EntityPlayer player, CoreRoutedPipe pipe, GuiScreen previousGui, int slot) {
-		super(new DummyContainer(player.inventory,null), pipe, previousGui);
+	public GuiApiaristSink(ModuleApiaristSink module, EntityPlayer player, CoreRoutedPipe pipe, int slot) {
+		super(new DummyContainer(player.inventory,null), pipe);
 		this.module = module;
 		this.slot = slot;
 		for(int i=0; i < 6; i++) {

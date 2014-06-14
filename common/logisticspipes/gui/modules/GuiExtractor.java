@@ -9,29 +9,27 @@
 package logisticspipes.gui.modules;
 
 import logisticspipes.interfaces.ISneakyDirectionReceiver;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.ExtractorModuleDirectionPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiExtractor extends GuiWithPreviousGuiContainer {
+public class GuiExtractor extends ModuleBaseGui {
 
 	//private final SneakyPipe _pipe;
 	
 	private final ISneakyDirectionReceiver _directionReceiver;
 	private int slot;
 	
-	public GuiExtractor(IInventory playerInventory, CoreRoutedPipe pipe, ISneakyDirectionReceiver directionReceiver, GuiScreen previousGui, int slot) {
-		super(new DummyContainer(playerInventory, null),pipe,previousGui);
+	public GuiExtractor(IInventory playerInventory, CoreRoutedPipe pipe, ISneakyDirectionReceiver directionReceiver, int slot) {
+		super(new DummyContainer(playerInventory, null),pipe);
 		_directionReceiver = directionReceiver;
 		xSize = 160;
 		ySize = 200;
@@ -104,11 +102,6 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 			return "\u00a7a>" + s + "<";
 		}
 		return s.toLowerCase();
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Module_Extractor_ID;
 	}
 	
 	public void setMode(ForgeDirection o) {

@@ -12,19 +12,18 @@ import logisticspipes.interfaces.IModuleSimpleFilter;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.utils.gui.DummyContainer;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiSimpleFilter extends GuiWithPreviousGuiContainer {
+public class GuiSimpleFilter extends ModuleBaseGui {
 
 	private final IModuleSimpleFilter _module;
 	
 	
-	public GuiSimpleFilter(IInventory playerInventory, CoreRoutedPipe pipe, IModuleSimpleFilter module, GuiScreen previousGui) {
-		super(null,pipe,previousGui);
+	public GuiSimpleFilter(IInventory playerInventory, CoreRoutedPipe pipe, IModuleSimpleFilter module) {
+		super(null,pipe);
 		_module = module;
 		DummyContainer dummy = new DummyContainer(playerInventory, _module.getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(8, 60);

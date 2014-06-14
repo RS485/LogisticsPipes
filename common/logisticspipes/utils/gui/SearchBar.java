@@ -4,7 +4,7 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 
-import logisticspipes.utils.gui.KraphtBaseGuiScreen.Colors;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen.Colors;
 import net.minecraft.client.gui.FontRenderer;
 
 import org.lwjgl.input.Keyboard;
@@ -19,10 +19,10 @@ public class SearchBar {
 	protected int searchWidth = 150;
 	
     private final FontRenderer fontRenderer;
-    private final KraphtBaseGuiScreen screen;
+    private final LogisticsBaseGuiScreen screen;
     private int left, top, heigth, width;
     
-    public SearchBar(FontRenderer fontRenderer, KraphtBaseGuiScreen screen, int left, int top, int width, int heigth) {
+    public SearchBar(FontRenderer fontRenderer, LogisticsBaseGuiScreen screen, int left, int top, int width, int heigth) {
     	this.fontRenderer = fontRenderer;
     	this.screen = screen;
     	this.left = left;

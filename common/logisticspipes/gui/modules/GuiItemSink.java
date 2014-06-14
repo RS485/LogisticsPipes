@@ -9,7 +9,6 @@
 package logisticspipes.gui.modules;
 
 import logisticspipes.modules.ModuleItemSink;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.ItemSinkDefaultPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -17,13 +16,12 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiItemSink extends GuiWithPreviousGuiContainer {
+public class GuiItemSink extends ModuleBaseGui {
 
 	private final ModuleItemSink _itemSink;
 	private final int slot;
@@ -59,8 +57,8 @@ public class GuiItemSink extends GuiWithPreviousGuiContainer {
 		
 	}
 	
-	public GuiItemSink(IInventory playerInventory, CoreRoutedPipe pipe, ModuleItemSink itemSink, GuiScreen previousGui, int slot) {
-		super(null,pipe,previousGui);
+	public GuiItemSink(IInventory playerInventory, CoreRoutedPipe pipe, ModuleItemSink itemSink, int slot) {
+		super(null,pipe);
 		_itemSink = itemSink;
 		this.slot = slot;
 		DummyContainer dummy = new DummyContainer(playerInventory, _itemSink.getFilterInventory());
@@ -90,10 +88,5 @@ public class GuiItemSink extends GuiWithPreviousGuiContainer {
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Module_ItemSink_ID;
 	}
 }

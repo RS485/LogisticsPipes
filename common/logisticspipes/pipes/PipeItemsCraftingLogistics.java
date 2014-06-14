@@ -8,82 +8,40 @@
 
 package logisticspipes.pipes;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.DelayQueue;
 
-import logisticspipes.Configs;
-import logisticspipes.LogisticsPipes;
-import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.gui.hud.HUDCrafting;
 import logisticspipes.interfaces.IChangeListener;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
-import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IOrderManagerContentReceiver;
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
-import logisticspipes.items.ItemUpgrade;
 import logisticspipes.logistics.LogisticsManager;
-import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
-import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleCrafter;
-import logisticspipes.modules.ModuleCrafterMK2;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.packets.block.CraftingPipeNextAdvancedSatellitePacket;
-import logisticspipes.network.packets.block.CraftingPipePrevAdvancedSatellitePacket;
-import logisticspipes.network.packets.cpipe.CPipeNextSatellite;
-import logisticspipes.network.packets.cpipe.CPipePrevSatellite;
-import logisticspipes.network.packets.cpipe.CPipeSatelliteId;
-import logisticspipes.network.packets.cpipe.CPipeSatelliteImport;
-import logisticspipes.network.packets.cpipe.CPipeSatelliteImportBack;
-import logisticspipes.network.packets.cpipe.CraftingAdvancedSatelliteId;
-import logisticspipes.network.packets.cpipe.CraftingFuzzyFlag;
-import logisticspipes.network.packets.cpipe.CraftingPipeOpenConnectedGuiPacket;
-import logisticspipes.network.packets.gui.GuiArgument;
 import logisticspipes.network.packets.hud.HUDStartWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopWatchingPacket;
 import logisticspipes.network.packets.module.RequestCraftingPipeUpdatePacket;
 import logisticspipes.network.packets.orderer.OrdererManagerContent;
-import logisticspipes.network.packets.pipe.CraftingPipePriorityDownPacket;
-import logisticspipes.network.packets.pipe.CraftingPipePriorityUpPacket;
-import logisticspipes.network.packets.pipe.CraftingPipeStackMovePacket;
 import logisticspipes.network.packets.pipe.CraftingPipeUpdatePacket;
-import logisticspipes.network.packets.pipe.CraftingPriority;
-import logisticspipes.network.packets.pipe.FluidCraftingAdvancedSatelliteId;
-import logisticspipes.network.packets.pipe.FluidCraftingAmount;
-import logisticspipes.network.packets.pipe.FluidCraftingPipeAdvancedSatelliteNextPacket;
-import logisticspipes.network.packets.pipe.FluidCraftingPipeAdvancedSatellitePrevPacket;
-import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.signs.CraftingPipeSign;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCQueued;
 import logisticspipes.proxy.cc.interfaces.CCType;
-import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
-import logisticspipes.proxy.interfaces.IFuzzyRecipeProvider;
 import logisticspipes.request.CraftingTemplate;
 import logisticspipes.request.RequestTree;
 import logisticspipes.request.RequestTreeNode;
-import logisticspipes.routing.ExitRoute;
-import logisticspipes.routing.IRouter;
-import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.routing.order.IOrderInfoProvider.RequestType;
 import logisticspipes.routing.order.LogisticsOrder;
@@ -91,31 +49,16 @@ import logisticspipes.routing.order.LogisticsOrderManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
-import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.CraftingRequirement;
 import logisticspipes.utils.DelayedGeneric;
-import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.IHavePriority;
 import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SinkReply;
-import logisticspipes.utils.SinkReply.BufferMode;
-import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import net.minecraft.block.Block;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
-import buildcraft.api.inventory.ISpecialInventory;
-import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.Player;
 
@@ -132,6 +75,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	private boolean init = false;
 	private boolean doContentUpdate = true;
 	
+	protected final DelayQueue< DelayedGeneric<ItemIdentifierStack>> _lostItems = new DelayQueue< DelayedGeneric<ItemIdentifierStack>>();
 	
 	public PipeItemsCraftingLogistics(int itemID) {
 		super(itemID);
@@ -202,10 +146,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		if (doContentUpdate) {
 			checkContentUpdate();
 		}
-		
 		craftingModule.enabledUpdateEntity();
 	}
-	
 
 	@Override
 	public TextureType getCenterTexture() {
@@ -359,11 +301,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public void handleCraftingUpdatePacket(CraftingPipeUpdatePacket packet) {
 		craftingModule.handleCraftingUpdatePacket(packet);
 	}
-	
 
-	
-	protected final DelayQueue< DelayedGeneric<ItemIdentifierStack>> _lostItems = new DelayQueue< DelayedGeneric<ItemIdentifierStack>>();
-	
 	/* ** SATELLITE CODE ** */
 
 	public boolean isSatelliteConnected() {
@@ -377,6 +315,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		/*
 		_dummyInventory.readFromNBT(nbttagcompound, "");
 		_liquidInventory.readFromNBT(nbttagcompound, "FluidInv");
+		_cleanupInventory.readFromNBT(nbttagcompound, "CleanupInv");
 		satelliteId = nbttagcompound.getInteger("satelliteid");
 		
 		priority = nbttagcompound.getInteger("priority");
@@ -411,6 +350,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		/*
 		_dummyInventory.writeToNBT(nbttagcompound, "");
 		_liquidInventory.writeToNBT(nbttagcompound, "FluidInv");
+		_cleanupInventory.writeToNBT(nbttagcompound, "CleanupInv");
 		nbttagcompound.setInteger("satelliteid", satelliteId);
 		
 		nbttagcompound.setInteger("priority", priority);
@@ -474,6 +414,10 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		return craftingModule.getFluidInventory();
 	}
 
+	public IInventory getCleanupInventory() {
+		return craftingModule.getCleanupInventory();
+	}
+	
 	public void setNextSatellite(EntityPlayer player, int integer) {
 		craftingModule.setNextSatellite(player, integer);
 	}
@@ -490,5 +434,4 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		}
 		return false;
 	}
-
 }

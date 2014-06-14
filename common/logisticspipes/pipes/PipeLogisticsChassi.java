@@ -22,7 +22,6 @@ import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.gui.hud.HUDChassiePipe;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
-import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILegacyActiveModule;
 import logisticspipes.interfaces.ISendQueueContentRecieiver;
 import logisticspipes.interfaces.ISendRoutedItem;
@@ -32,15 +31,13 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.items.ItemModule;
-import logisticspipes.logisticspipes.ChassiModule;
 import logisticspipes.logisticspipes.ChassiTransportLayer;
-import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
 import logisticspipes.logisticspipes.TransportLayer;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.ChassiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.hud.HUDStartWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopWatchingPacket;
@@ -50,7 +47,6 @@ import logisticspipes.network.packets.pipe.RequestChassiOrientationPacket;
 import logisticspipes.network.packets.pipe.SendQueueContent;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
@@ -58,24 +54,18 @@ import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.request.CraftingTemplate;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.LogisticsPromise;
-import logisticspipes.routing.order.LogisticsOrder;
-import logisticspipes.routing.order.LogisticsOrderManager;
 import logisticspipes.routing.order.IOrderInfoProvider.RequestType;
+import logisticspipes.routing.order.LogisticsOrder;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.ticks.HudUpdateTick;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
-import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
-import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.Pair;
-import logisticspipes.utils.tuples.Triplet;
-import lombok.Getter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -270,7 +260,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 			if (stack.getItem() instanceof ItemModule){
 				LogisticsModule current = _module.getModule(i);
 				LogisticsModule next = ((ItemModule)stack.getItem()).getModuleForItem(stack, _module.getModule(i), this, this, this);
-				next.registerSlot(i);
+				next.registerPosition(ModulePositionType.SLOT, i);
 				next.registerCCEventQueuer(this);
 				if (current != next){
 					_module.installModule(i, next);
@@ -512,10 +502,10 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	@Override
 	public void setTile(TileEntity tile) {
 		super.setTile(tile);
-		for (int i = 0; i < _moduleInventory.getSizeInventory(); i++){
+		for (int i = 0; i < _moduleInventory.getSizeInventory(); i++) {
 			LogisticsModule current = _module.getModule(i);
 			if(current != null) {
-				current.registerSlot(i);
+				current.registerPosition(ModulePositionType.SLOT, i);
 			}
 		}
 	}
@@ -592,7 +582,6 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	public Integer getChassieSize() {
 		return this.getChassiSize();
 	}
-	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/chassipipe_size1.png");
 
 	public abstract ResourceLocation getChassiGUITexture() ;
 	

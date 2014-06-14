@@ -1,8 +1,6 @@
 package logisticspipes.gui.modules;
 
 import logisticspipes.modules.ModuleApiaristAnalyser;
-import logisticspipes.network.GuiIDs;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
@@ -13,8 +11,8 @@ public class GuiApiaristAnalyser extends ModuleBaseGui {
 
 	private final ModuleApiaristAnalyser module;	
 	
-	public GuiApiaristAnalyser(ModuleApiaristAnalyser module, CoreRoutedPipe pipe, IInventory playerInventory) {
-		super(new DummyContainer(playerInventory,null), pipe);
+	public GuiApiaristAnalyser(ModuleApiaristAnalyser module, IInventory playerInventory) {
+		super(new DummyContainer(playerInventory,null), module);
 		this.module = module;
 		xSize = 120;
 		ySize = 60;
@@ -47,10 +45,5 @@ public class GuiApiaristAnalyser extends ModuleBaseGui {
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-	}
-	
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Module_Apiarist_Analyzer;
 	}
 }

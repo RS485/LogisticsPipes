@@ -10,8 +10,9 @@ import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.logisticspipes.TransportLayer;
-import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleApiaristAnalyser;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
@@ -186,7 +187,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 	@Override
 	public void setTile(TileEntity tile) {
 		super.setTile(tile);
-		analyserModule.registerSlot(0);
+		analyserModule.registerPosition(ModulePositionType.IN_PIPE, 0);
 	}
 
 	@Override

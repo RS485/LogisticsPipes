@@ -1,5 +1,6 @@
 package logisticspipes.proxy.interfaces;
 
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -25,4 +26,5 @@ public interface IProxy {
 	public void sendBroadCast(String message);
 	public void tickServer();
 	public void tickClient();
+	public LogisticsModule getModuleFromGui();
 }

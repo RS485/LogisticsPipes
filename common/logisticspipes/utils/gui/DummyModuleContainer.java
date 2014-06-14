@@ -2,7 +2,9 @@ package logisticspipes.utils.gui;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
+import logisticspipes.utils.DummyWorldProvider;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
@@ -18,8 +20,8 @@ public class DummyModuleContainer extends DummyContainer {
 		super(player.inventory, null);
 		this.slot = slot;
 		moduleStack = player.inventory.mainInventory[slot];
-		module = LogisticsPipes.ModuleItem.getModuleForItem(moduleStack, null, null, null, null);
-		module.registerSlot(-1-slot);
+		module = LogisticsPipes.ModuleItem.getModuleForItem(moduleStack, null, null, new DummyWorldProvider(player.worldObj), null);
+		module.registerPosition(ModulePositionType.IN_HAND, slot);
 		ItemModuleInformationManager.readInformation(moduleStack, module);
 	}
 	

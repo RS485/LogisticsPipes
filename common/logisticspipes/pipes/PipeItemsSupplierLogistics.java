@@ -18,7 +18,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.SupplierPipeLimitedPacket;

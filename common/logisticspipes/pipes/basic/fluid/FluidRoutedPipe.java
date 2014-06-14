@@ -8,7 +8,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;

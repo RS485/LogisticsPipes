@@ -7,11 +7,16 @@ import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.network.GuiIDs;
+import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
+import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
+import logisticspipes.network.guis.module.inhand.ApiaristAnalyserModuleInHand;
+import logisticspipes.network.guis.module.inpipe.ApiaristAnalyzerModuleSlot;
 import logisticspipes.network.packets.module.ApiaristAnalyserMode;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
@@ -130,11 +135,6 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 	public boolean recievePassive() {
 		return true;
 	}
-
-	@Override
-	public int getGuiHandlerID() {
-		return GuiIDs.GUI_Module_Apiarist_Analyzer;
-	}
 	
 	public void setExtractMode(int mode) {
 		if (getExtractMode() == mode) return;
@@ -152,16 +152,12 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 	}
 	
 	public void modeChanged() {
-		if(_world != null) {
-			if(MainProxy.isServer(_world.getWorld())) {
-				if(getY() >= 0) {
-					MainProxy.sendToPlayerList(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(slot).setInteger(getExtractMode()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
-				}
-			} else {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(slot).setInteger(getExtractMode()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+		if(MainProxy.isServer(_world.getWorld())) {
+			if(getSlot().isInWorld()) {
+				MainProxy.sendToPlayerList(PacketHandler.getPacket(ApiaristAnalyserMode.class).setMode(getExtractMode()).setModulePos(this), localModeWatchers);
 			}
 		} else {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(slot).setInteger(getExtractMode()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setMode(getExtractMode()).setModulePos(this));
 		}
 	}
 
@@ -176,7 +172,7 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(slot).setInteger(getExtractMode()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setMode(getExtractMode()).setModulePos(this), (Player)player);
 	}
 
 	@Override
@@ -188,5 +184,15 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 	@SideOnly(Side.CLIENT)
 	public Icon getIconTexture(IconRegister register) {
 		return register.registerIcon("logisticspipes:itemModule/ModuleApiaristAnalyser");
+	}
+
+	@Override
+	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+		return NewGuiHandler.getGui(ApiaristAnalyzerModuleSlot.class).setExtractorMode(getExtractMode());
+	}
+
+	@Override
+	protected ModuleInHandGuiProvider getInHandGuiProvider() {
+		return NewGuiHandler.getGui(ApiaristAnalyserModuleInHand.class);
 	}
 }

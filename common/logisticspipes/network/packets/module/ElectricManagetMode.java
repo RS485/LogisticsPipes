@@ -1,17 +1,13 @@
 package logisticspipes.network.packets.module;
 
 import logisticspipes.modules.ModuleElectricManager;
-import logisticspipes.network.abstractpackets.Integer2CoordinatesPacket;
+import logisticspipes.network.abstractpackets.BooleanModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.PipeLogisticsChassi;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.gui.DummyModuleContainer;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
 @Accessors(chain=true)
-public class ElectricManagetMode extends Integer2CoordinatesPacket {
+public class ElectricManagetMode extends BooleanModuleCoordinatesPacket {
 
 	public ElectricManagetMode(int id) {
 		super(id);
@@ -24,35 +20,9 @@ public class ElectricManagetMode extends Integer2CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if(MainProxy.isClient(player.worldObj)) {
-			final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-			if(pipe == null) {
-				return;
-			}
-			if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2()) instanceof ModuleElectricManager) {
-				ModuleElectricManager module = (ModuleElectricManager) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2());
-				module.setDischargeMode(getInteger() == 1);
-			}
-		} else {
-			if(getInteger2() < 0) {
-				if(player.openContainer instanceof DummyModuleContainer) {
-					DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
-					if(dummy.getModule() instanceof ModuleElectricManager) {
-						ModuleElectricManager module = (ModuleElectricManager) dummy.getModule();
-						module.setDischargeMode(getInteger() == 1);
-					}
-				}
-				return;
-			}
-			final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-			if(pipe == null) {
-				return;
-			}
-			if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2()) instanceof ModuleElectricManager) {
-				ModuleElectricManager module = (ModuleElectricManager) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2());
-				module.setDischargeMode(getInteger() == 1);
-			}
-		}
+		ModuleElectricManager module = this.getLogisticsModule(player, ModuleElectricManager.class);
+		if(module == null) return;
+		module.setDischargeMode(isFlag());
 	}
 }
 

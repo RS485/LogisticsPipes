@@ -3,9 +3,9 @@ package logisticspipes.modules;
 import java.util.Collection;
 
 import logisticspipes.api.IRoutedPowerProvider;
-import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -34,7 +34,7 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 
 	@Override
 	public int getX() {
-		if(slot>=0)
+		if(slot.isInWorld())
 			return this._power.getX();
 		else 
 			return 0;
@@ -42,7 +42,7 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 
 	@Override
 	public int getY() {
-		if(slot>=0)
+		if(slot.isInWorld())
 			return this._power.getY();
 		else 
 			return 0;
@@ -50,7 +50,7 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 
 	@Override
 	public int getZ() {
-		if(slot>=0)
+		if(slot.isInWorld())
 			return this._power.getZ();
 		else 
 			return 0;

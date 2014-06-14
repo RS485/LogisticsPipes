@@ -1,12 +1,12 @@
 package logisticspipes.network.packets.modules;
 
-import logisticspipes.gui.modules.GuiProvider;
-import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
+import logisticspipes.modules.ModuleProvider;
+import logisticspipes.network.abstractpackets.BooleanModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.client.FMLClientHandler;
 
-public class ProviderModuleInclude extends IntegerCoordinatesPacket {
+
+public class ProviderModuleInclude extends BooleanModuleCoordinatesPacket {
 
 	public ProviderModuleInclude(int id) {
 		super(id);
@@ -19,9 +19,8 @@ public class ProviderModuleInclude extends IntegerCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiProvider) {
-			((GuiProvider) FMLClientHandler.instance().getClient().currentScreen).handleModuleIncludeRecive(getInteger());
-		}
+		final ModuleProvider module = this.getLogisticsModule(player, ModuleProvider.class);
+		module.setFilterExcluded(this.isFlag());
 	}
 }
 

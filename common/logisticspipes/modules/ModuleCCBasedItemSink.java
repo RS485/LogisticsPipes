@@ -8,6 +8,7 @@ import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.CCSinkResponder;
 import logisticspipes.utils.OneList;

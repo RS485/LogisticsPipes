@@ -12,7 +12,6 @@ import logisticspipes.LogisticsEventListener;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.modules.ModuleCrafter;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.cpipe.CPipeCleanupImport;
 import logisticspipes.network.packets.cpipe.CPipeCleanupToggle;
@@ -136,7 +135,7 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 		buttonList.clear();
 		FluidCraftingExtention extention = null;
 		if(!isAdvancedSat) {
-			extention = new FluidCraftingExtention(0);
+			if(liquidCrafter != 0) extention = new FluidCraftingExtention(0);
 			addButton(normalButtonArray[0] = new SmallGuiButton(0, (width - xSize) / 2 + 155, (height - ySize) / 2 + 50, 10, 10, ">"));
 			addButton(normalButtonArray[1] = new SmallGuiButton(1, (width - xSize) / 2 + 120, (height - ySize) / 2 + 50, 10, 10, "<"));
 			addButton(normalButtonArray[2] = new SmallGuiButton(3, (width - xSize) / 2 + 39, (height - ySize) / 2 + 50, 37, 10, StringUtil.translate(PREFIX + "Import")));
@@ -187,7 +186,7 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 			}
 			extention.registerSlot(fluidSlotIDs[i]);
 		}
-		if(!isAdvancedSat) {
+		if(!isAdvancedSat && liquidCrafter != 0) {
 			extentionController.addExtention(extention);
 		}
 		if(hasByproductExtractor) {
@@ -402,11 +401,6 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 8, guiTop + ySize - 82);
 
 		super.renderExtentions();
-	}
-	
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_CRAFTINGPIPE_ID;
 	}
 	
 	private boolean isMouseInFuzzyPanel(int mx, int my) {

@@ -1,14 +1,11 @@
 package logisticspipes.network.packets.modules;
 
 import logisticspipes.modules.ModuleItemSink;
-import logisticspipes.network.abstractpackets.Integer2CoordinatesPacket;
+import logisticspipes.network.abstractpackets.BooleanModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.PipeLogisticsChassi;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.entity.player.EntityPlayer;
 
-public class ItemSinkDefault extends Integer2CoordinatesPacket {
+public class ItemSinkDefault extends BooleanModuleCoordinatesPacket {
 
 	public ItemSinkDefault(int id) {
 		super(id);
@@ -21,29 +18,8 @@ public class ItemSinkDefault extends Integer2CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if (pipe == null) {
-			return;
-		}
-		if(getInteger2() == -1) {
-			if (!(pipe.pipe instanceof CoreRoutedPipe)) {
-				return;
-			}
-			if(!(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleItemSink)) {
-				return;
-			}
-			ModuleItemSink module = (ModuleItemSink) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule();
-			module.setDefaultRoute(getInteger() == 1);
-			return;
-		}
-		if (!(pipe.pipe instanceof PipeLogisticsChassi)) {
-			return;
-		}
-		if(((PipeLogisticsChassi)pipe.pipe).getModules() == null) return;
-		if(((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2()) instanceof ModuleItemSink) {
-			ModuleItemSink module = (ModuleItemSink) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2());
-			module.setDefaultRoute(getInteger() == 1);
-		}
+		ModuleItemSink module = this.getLogisticsModule(player, ModuleItemSink.class);
+		module.setDefaultRoute(isFlag());
 	}
 }
 

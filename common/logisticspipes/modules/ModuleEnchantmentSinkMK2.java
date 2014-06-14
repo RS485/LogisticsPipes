@@ -11,14 +11,14 @@ import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IModuleInventoryReceive;
-import logisticspipes.interfaces.IModuleSimpleFilter;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.network.GuiIDs;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsSimpleFilterModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
+import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
 import logisticspipes.network.packets.module.ModuleInventory;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
@@ -37,157 +37,149 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ModuleEnchantmentSinkMK2 extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive, IModuleSimpleFilter {
+public class ModuleEnchantmentSinkMK2 extends LogisticsSimpleFilterModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive {
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested Enchanted items", 1);
 
 	public ModuleEnchantmentSinkMK2() {
 		_filterInventory.addListener(this);
 	}
-	
-		private IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
-		
-		private IRoutedPowerProvider _power;
-		
-		private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
-		
-		public ItemIdentifierInventory getFilterInventory(){
-			return _filterInventory;
-		}
-		
-		@Override
-		public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
-			_power = powerprovider;
-		}
 
+	private IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
 
-		
-		private static final SinkReply _sinkReply = new SinkReply(FixedPriority.EnchantmentItemSink, 1, true, false, 1, 0);
-		@Override
-		public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
-			if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
-			if (_filterInventory.containsExcludeNBTItem(item.getUndamaged().getIgnoringNBT())){
-				if(item.makeNormalStack(1).isItemEnchanted())
-				{
-					return _sinkReply;
-				}
-				return null;
+	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
+
+	public ItemIdentifierInventory getFilterInventory() {
+		return _filterInventory;
+	}
+
+	@Override
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+		_invProvider = invProvider;
+	}
+
+	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.EnchantmentItemSink, 1, true, false, 1, 0);
+
+	@Override
+	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
+		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
+		if (_filterInventory.containsExcludeNBTItem(item.getUndamaged().getIgnoringNBT())) {
+			if (item.makeNormalStack(1).isItemEnchanted()) {
+				return _sinkReply;
 			}
 			return null;
 		}
-
-		@Override
-		public int getGuiHandlerID() {
-			return GuiIDs.GUI_Module_Simple_Filter_ID;
-		}
-		
-		@Override
-		public LogisticsModule getSubModule(int slot) {return null;}
-
-		@Override
-		public void readFromNBT(NBTTagCompound nbttagcompound) {
-			_filterInventory.readFromNBT(nbttagcompound, "");
-		}
-
-		@Override
-		public void writeToNBT(NBTTagCompound nbttagcompound) {
-	    	_filterInventory.writeToNBT(nbttagcompound, "");
-		}
-
-		@Override
-		public void tick() {}
-
-		@Override
-		public List<String> getClientInformation() {
-			List<String> list = new ArrayList<String>();
-			list.add("Filter: ");
-			list.add("<inventory>");
-			list.add("<that>");
-			return list;
-		}
-
-		@Override
-		public void startWatching() {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
-		}
-
-		@Override
-		public void stopWatching() {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
-		}
-
-		@Override
-		public void startWatching(EntityPlayer player) {
-			localModeWatchers.add(player);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
-		}
-
-		@Override
-		public void stopWatching(EntityPlayer player) {
-			localModeWatchers.remove(player);
-		}
-
-		@Override
-		public void InventoryChanged(IInventory inventory) {
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(ItemIdentifierStack.getListFromInventory(inventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
-		}
-
-		@Override
-		public IHUDModuleRenderer getRenderer() {
-			return HUD;
-		}
-
-		@Override
-		public void handleInvContent(Collection<ItemIdentifierStack> list) {
-			_filterInventory.handleItemIdentifierList(list);
-		}
-
-		@Override
-		/*
-		 * (non-Javadoc)
-		 * @see logisticspipes.modules.LogisticsModule#hasGenericInterests()
-		 * Only looking for items in filter
-		 */
-		public boolean hasGenericInterests() {
-			return false;
-		}
-
-		@Override
-		public List<ItemIdentifier> getSpecificInterests() {
-			Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
-			List<ItemIdentifier> li= new ArrayList<ItemIdentifier>(mapIC.size());
-			li.addAll(mapIC.keySet());
-			for(ItemIdentifier id:mapIC.keySet()){
-				li.add(id.getUndamaged());
-				li.add(id.getUndamaged().getIgnoringNBT());
-			}
-			return li;
-		}
-
-		@Override
-		public boolean interestedInAttachedInventory() {		
-			return false;
-		}
-
-		@Override
-		public boolean interestedInUndamagedID() {
-			return true;
-		}
-
-
-		@Override
-		public boolean recievePassive() {
-			return true;
-		}
-
-		@Override
-		@SideOnly(Side.CLIENT)
-		public Icon getIconTexture(IconRegister register) {
-			return register.registerIcon("logisticspipes:itemModule/ModuleEnchantmentSinkMK2");
-		}
-		@Override
-		public boolean hasEffect() {
-			return true;
-		}
+		return null;
 	}
-	
+
+	@Override
+	public LogisticsModule getSubModule(int slot) {
+		return null;
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
+		_filterInventory.readFromNBT(nbttagcompound, "");
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
+		_filterInventory.writeToNBT(nbttagcompound, "");
+	}
+
+	@Override
+	public void tick() {}
+
+	@Override
+	public List<String> getClientInformation() {
+		List<String> list = new ArrayList<String>();
+		list.add("Filter: ");
+		list.add("<inventory>");
+		list.add("<that>");
+		return list;
+	}
+
+	@Override
+	public void startWatching() {
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setModulePos(this));
+	}
+
+	@Override
+	public void stopWatching() {
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopModuleWatchingPacket.class).setModulePos(this));
+	}
+
+	@Override
+	public void startWatching(EntityPlayer player) {
+		localModeWatchers.add(player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player) player);
+	}
+
+	@Override
+	public void stopWatching(EntityPlayer player) {
+		localModeWatchers.remove(player);
+	}
+
+	@Override
+	public void InventoryChanged(IInventory inventory) {
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(inventory)).setModulePos(this), localModeWatchers);
+	}
+
+	@Override
+	public IHUDModuleRenderer getRenderer() {
+		return HUD;
+	}
+
+	@Override
+	public void handleInvContent(Collection<ItemIdentifierStack> list) {
+		_filterInventory.handleItemIdentifierList(list);
+	}
+
+	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see logisticspipes.modules.LogisticsModule#hasGenericInterests()
+	 * Only looking for items in filter
+	 */
+	public boolean hasGenericInterests() {
+		return false;
+	}
+
+	@Override
+	public List<ItemIdentifier> getSpecificInterests() {
+		Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
+		List<ItemIdentifier> li = new ArrayList<ItemIdentifier>(mapIC.size());
+		li.addAll(mapIC.keySet());
+		for (ItemIdentifier id : mapIC.keySet()) {
+			li.add(id.getUndamaged());
+			li.add(id.getUndamaged().getIgnoringNBT());
+		}
+		return li;
+	}
+
+	@Override
+	public boolean interestedInAttachedInventory() {
+		return false;
+	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return true;
+	}
+
+	@Override
+	public boolean recievePassive() {
+		return true;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public Icon getIconTexture(IconRegister register) {
+		return register.registerIcon("logisticspipes:itemModule/ModuleEnchantmentSinkMK2");
+	}
+
+	@Override
+	public boolean hasEffect() {
+		return true;
+	}
+}

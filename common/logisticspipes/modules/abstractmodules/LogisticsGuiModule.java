@@ -1,53 +1,40 @@
-package logisticspipes.modules;
+package logisticspipes.modules.abstractmodules;
 
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
-import net.minecraft.entity.player.EntityPlayer;
 
 public abstract class LogisticsGuiModule extends LogisticsModule {
 
-
 	protected IInventoryProvider _invProvider;
-
-	/**
-	 * 
-	 * @return The gui id of the given module; 
-	 */
-	public int getGuiHandlerID() {
-		return -1;
+	
+	protected abstract ModuleCoordinatesGuiProvider getPipeGuiProvider();
+	
+	protected abstract ModuleInHandGuiProvider getInHandGuiProvider();
+	
+	public final ModuleCoordinatesGuiProvider getPipeGuiProviderForModule() {
+		return getPipeGuiProvider().setSlot(slot).setPositionInt(positionInt);
 	}
 	
-	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
-		return null;
-	}
-	
-	public ModuleInHandGuiProvider getInHandGuiProvider() {
-		return null;
+	public final ModuleInHandGuiProvider getInHandGuiProviderForModule() {
+		return getInHandGuiProvider().setInvSlot(positionInt);
 	}
 	
 	@Override
 	public boolean hasGui() {
 		return true;
 	}
-
-	/**
-	 * for passing args info needed for rendering of the gui that is not stored in the module itself (ie, presence of upgrades)
-	 */
-	public void sendGuiArgs(EntityPlayer entityplayer) {
-		
-	}
 	
 	@Override 
 	public final int getX() {
-		if(slot>=0)
+		if(slot.isInWorld())
 			return this._invProvider.getX();
 		else 
 			return 0;
 	}
 	@Override 
 	public final int getY() {
-		if(slot>=0)
+		if(slot.isInWorld())
 			return this._invProvider.getY();
 		else 
 			return -1;
@@ -55,9 +42,9 @@ public abstract class LogisticsGuiModule extends LogisticsModule {
 	
 	@Override 
 	public final int getZ() {
-		if(slot>=0)
+		if(slot.isInWorld())
 			return this._invProvider.getZ();
 		else 
-			return -1-slot;
+			return -1-positionInt;
 	}
 }

@@ -53,8 +53,8 @@ import logisticspipes.logisticspipes.ITrackStatistics;
 import logisticspipes.logisticspipes.PipeTransportLayer;
 import logisticspipes.logisticspipes.RouteLayer;
 import logisticspipes.logisticspipes.TransportLayer;
-import logisticspipes.modules.LogisticsGuiModule;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -914,11 +914,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			if(MainProxy.isServer(entityplayer.worldObj)) {
 				if (settings == null || settings.openGui) {
 					if (getLogisticsModule() != null && getLogisticsModule() instanceof LogisticsGuiModule) {
-						if(((LogisticsGuiModule)getLogisticsModule()).getGuiHandlerID() != -1) {
-							entityplayer.openGui(LogisticsPipes.instance, ((LogisticsGuiModule)getLogisticsModule()).getGuiHandlerID(), getWorld(), getX(), getY(), getZ());
-						} else {
-							((LogisticsGuiModule)getLogisticsModule()).getPipeGuiProvider().setSlot(-1).setTilePos(this.container).open(entityplayer);
-						}
+						((LogisticsGuiModule)getLogisticsModule()).getPipeGuiProviderForModule().setTilePos(this.container).open(entityplayer);
 					} else {
 						onWrenchClicked(entityplayer);
 					}

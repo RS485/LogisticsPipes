@@ -160,9 +160,9 @@ public class LogisticsPipes {
 	//Log Requests
 	public static boolean DisplayRequests;
 
-	public static final boolean DEBUG = true;
-	public static final String MCVersion = "1.6.4";
-	public static final String VERSION = "${lp.version.full}:${DEBUG}";
+	public static final boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "%DEBUG%".equals("true");
+	public static final String MCVersion = "%MCVERSION%";
+	public static final String VERSION = "%VERSION%:%DEBUG%";
 	public static final boolean DEV_BUILD = VERSION.contains(".dev.") || DEBUG;
 	public static boolean WATCHDOG = false;
 	

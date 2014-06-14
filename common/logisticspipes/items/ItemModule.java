@@ -6,11 +6,9 @@ import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IRoutedPowerProvider;
-import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.modules.LogisticsGuiModule;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.logisticspipes.ItemModuleInformationManager;
 import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleAdvancedExtractorMK2;
 import logisticspipes.modules.ModuleAdvancedExtractorMK3;
@@ -40,6 +38,9 @@ import logisticspipes.modules.ModuleProviderMk2;
 import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.modules.ModuleTerminus;
 import logisticspipes.modules.ModuleThaumicAspectSink;
+import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.item.ItemIdentifierInventory;
@@ -203,9 +204,11 @@ public class ItemModule extends LogisticsItem {
 		registerModule(ENCHANTMENTSINK_MK2		, ModuleEnchantmentSinkMK2.class);
 		registerModule(CC_BASED_QUICKSORT		, ModuleCCBasedQuickSort.class);
 		registerModule(CC_BASED_ITEMSINK		, ModuleCCBasedItemSink.class);
-		registerModule(CRAFTER			, ModuleCrafter.class);
-		registerModule(CRAFTER_MK2			, ModuleCrafterMK2.class);
-		registerModule(CRAFTER_MK3			, ModuleCrafterMK3.class);
+		if(LogisticsPipes.DEBUG) {
+			registerModule(CRAFTER					, ModuleCrafter.class);
+			registerModule(CRAFTER_MK2				, ModuleCrafterMK2.class);
+			registerModule(CRAFTER_MK3				, ModuleCrafterMK3.class);
+		}
 	}
 
 	public void registerModule(int id, Class<? extends LogisticsModule> moduleClass) {
@@ -250,11 +253,9 @@ public class ItemModule extends LogisticsItem {
 		LogisticsModule module = getModuleForItem(par1ItemStack, null, null, null, null);
 		if(module != null && module.hasGui()) {
 			if(par1ItemStack != null && par1ItemStack.stackSize > 0) {
-				if(((LogisticsGuiModule)module).getGuiHandlerID() != -1) {
-					par2EntityPlayer.openGui(LogisticsPipes.instance, -1, par3World, ((LogisticsGuiModule)module).getGuiHandlerID(), -1 ,par2EntityPlayer.inventory.currentItem);
-				} else {
-					((LogisticsGuiModule)module).getInHandGuiProvider().setInvSlot(par2EntityPlayer.inventory.currentItem).open(par2EntityPlayer);
-				}
+				ItemModuleInformationManager.readInformation(par1ItemStack, module);
+				module.registerPosition(ModulePositionType.IN_HAND, par2EntityPlayer.inventory.currentItem);
+				((LogisticsGuiModule)module).getInHandGuiProviderForModule().open(par2EntityPlayer);
 			}
 		}
 	}

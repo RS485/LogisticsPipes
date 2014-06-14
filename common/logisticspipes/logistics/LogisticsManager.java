@@ -23,7 +23,7 @@ import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsProviderLogistics;

@@ -12,14 +12,14 @@ import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleInventoryReceive;
-import logisticspipes.interfaces.IModuleSimpleFilter;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.network.GuiIDs;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsSimpleFilterModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
+import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
 import logisticspipes.network.packets.module.ModuleInventory;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
@@ -38,14 +38,11 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ModulePassiveSupplier extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler, IModuleSimpleFilter {
+public class ModulePassiveSupplier extends LogisticsSimpleFilterModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested items", 64);
 	private IRoutedPowerProvider _power;
 
-
-
-	
 	private IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
 	
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
@@ -85,11 +82,6 @@ public class ModulePassiveSupplier extends LogisticsGuiModule implements IClient
 	}
 
 	@Override
-	public int getGuiHandlerID() {
-		return GuiIDs.GUI_Module_Simple_Filter_ID;
-	}
-	
-	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound, "");
 	}
@@ -116,18 +108,18 @@ public class ModulePassiveSupplier extends LogisticsGuiModule implements IClient
 	
 	@Override
 	public void startWatching() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setModulePos(this));
 	}
 
 	@Override
 	public void stopWatching() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopModuleWatchingPacket.class).setModulePos(this));
 	}
 
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setModulePos(this), (Player)player);
 	}
 
 	@Override
@@ -147,7 +139,7 @@ public class ModulePassiveSupplier extends LogisticsGuiModule implements IClient
 
 	@Override
 	public void InventoryChanged(IInventory inventory) {
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setModulePos(this), localModeWatchers);
 	}
 
 	@Override

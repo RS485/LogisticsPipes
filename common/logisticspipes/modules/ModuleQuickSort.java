@@ -7,15 +7,17 @@ import java.util.Map.Entry;
 
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
+import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
 import logisticspipes.network.packets.modules.QuickSortState;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
@@ -254,7 +256,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 	}
 
 	private void sendPacketTo(EntityPlayer player) {
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(QuickSortState.class).setInteger2(lastPosSend).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(QuickSortState.class).setInteger2(lastPosSend).setInteger(getPositionInt()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player) player);
 	}
 
 	@Override
@@ -298,12 +300,17 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 	}
 
 	@Override
-	public int getGuiHandlerID() {
-		throw new UnsupportedOperationException();
+	public boolean hasGui() {
+		return false;
 	}
 
 	@Override
-	public boolean hasGui() {
-		return false;
+	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+		return null;
+	}
+
+	@Override
+	protected ModuleInHandGuiProvider getInHandGuiProvider() {
+		return null;
 	}
 }

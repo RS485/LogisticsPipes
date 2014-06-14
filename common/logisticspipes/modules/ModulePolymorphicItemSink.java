@@ -7,6 +7,7 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;

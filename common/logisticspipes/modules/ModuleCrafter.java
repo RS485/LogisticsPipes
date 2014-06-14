@@ -23,10 +23,16 @@ import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
-import logisticspipes.network.GuiIDs;
+import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
+import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.guis.module.inhand.CraftingModuleInHand;
+import logisticspipes.network.guis.module.inpipe.CraftingModuleSlot;
 import logisticspipes.network.packets.block.CraftingPipeNextAdvancedSatellitePacket;
 import logisticspipes.network.packets.block.CraftingPipePrevAdvancedSatellitePacket;
 import logisticspipes.network.packets.cpipe.CPipeNextSatellite;
@@ -37,7 +43,6 @@ import logisticspipes.network.packets.cpipe.CPipeSatelliteImportBack;
 import logisticspipes.network.packets.cpipe.CraftingAdvancedSatelliteId;
 import logisticspipes.network.packets.cpipe.CraftingFuzzyFlag;
 import logisticspipes.network.packets.cpipe.CraftingPipeOpenConnectedGuiPacket;
-import logisticspipes.network.packets.gui.GuiArgument;
 import logisticspipes.network.packets.pipe.CraftingPipePriorityDownPacket;
 import logisticspipes.network.packets.pipe.CraftingPipePriorityUpPacket;
 import logisticspipes.network.packets.pipe.CraftingPipeStackMovePacket;
@@ -138,6 +143,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 		_invProvider = parent;
 		_power=parent;
 		_invRequester=parent;
+		_world = parent;
+		this.registerPosition(ModulePositionType.IN_PIPE, 0);
 	}
 	
 	/** 
@@ -148,6 +155,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 		_invProvider = invProvider;
 		_power=powerprovider;	
 		_invRequester=(IRequestItems)_invProvider;
+		_world = world;
 	}
 	
 	
@@ -161,7 +169,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 	
 	protected int spaceFor(ItemIdentifier item, boolean includeInTransit) {
 		int count = 0;
-		WorldUtil wUtil = new WorldUtil(_invProvider.getWorld(), _invProvider.getX(), _invProvider.getY(), _invProvider.getZ());
+		WorldUtil wUtil = new WorldUtil(getWorld(), _invProvider.getX(), _invProvider.getY(), _invProvider.getZ());
 		for(AdjacentTile tile: wUtil.getAdjacentTileEntities(true)) {
 			if(!(tile.tile instanceof IInventory)) continue;
 			if(tile.tile instanceof TileGenericPipe) continue;
@@ -483,14 +491,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 		return  this._invProvider.getOrderManager().totalItemsCountInAllOrders();
 	}
 
-
-	@Override
-	public int getGuiHandlerID() {
-		return GuiIDs.GUI_CRAFTINGPIPE_ID;
-	}
-
-
-
 	protected int getNextConnectSatelliteId(boolean prev, int x) {
 		int closestIdFound = prev ? 0 : Integer.MAX_VALUE;
 		for (final PipeItemsSatelliteLogistics satellite : PipeItemsSatelliteLogistics.AllSatellites) {
@@ -660,6 +660,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 			liquidSatelliteIdArray[i] = nbttagcompound.getInteger("liquidSatelliteIdArray" + i);
 		}
 		liquidSatelliteId = nbttagcompound.getInteger("liquidSatelliteId"); 
+		cleanupModeIsExclude = nbttagcompound.getBoolean("cleanupModeIsExclude");
 	}
 
 	@Override
@@ -685,6 +686,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 		}
 		nbttagcompound.setIntArray("FluidAmount", amount);
 		nbttagcompound.setInteger("liquidSatelliteId", liquidSatelliteId);
+		nbttagcompound.setBoolean("cleanupModeIsExclude", cleanupModeIsExclude);
 	}
 	
 	public ModernPacket getCPipePacket() {
@@ -701,25 +703,19 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 	}
 	
 	@Override
-	public void sendGuiArgs(EntityPlayer entityplayer) {
-		if(getUpgradeManager()!=null){
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(GuiArgument.class)
-				.setGuiID(getGuiHandlerID())
-				.setArgs(new Object[]{getUpgradeManager().isAdvancedSatelliteCrafter(),
-						getUpgradeManager().getFluidCrafter(),
-						amount,
-						getUpgradeManager().hasByproductExtractor(),
-						getUpgradeManager().isFuzzyCrafter(),
-						getUpgradeManager().getCrafterCleanup(),
-						cleanupModeIsExclude}),
-						(Player) entityplayer);
-		} else {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(GuiArgument.class)
-				.setGuiID(getGuiHandlerID())
-				.setArgs(new Object[]{false,0,0,false,false,0,true}),
-				(Player) entityplayer);
-		}
-		//entityplayer.openGui(LogisticsPipes.instance, getGuiHandlerID(), getWorld(), getX(), getY(), getZ());
+	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+		return NewGuiHandler.getGui(CraftingModuleSlot.class).setAdvancedSat(getUpgradeManager().isAdvancedSatelliteCrafter())
+				.setLiquidCrafter(getUpgradeManager().getFluidCrafter())
+				.setAmount(amount)
+				.setHasByproductExtractor(getUpgradeManager().hasByproductExtractor())
+				.setFuzzy(getUpgradeManager().isFuzzyCrafter())
+				.setCleanupSize(getUpgradeManager().getCrafterCleanup())
+				.setCleanupExclude(cleanupModeIsExclude);
+	}
+
+	@Override
+	protected ModuleInHandGuiProvider getInHandGuiProvider() {
+		return NewGuiHandler.getGui(CraftingModuleInHand.class).setAmount(amount).setCleanupExclude(cleanupModeIsExclude);
 	}
 	
 	public List<ForgeDirection> getCraftingSigns() {
@@ -742,8 +738,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 					MainProxy.sendPacketToPlayer(packetA, (Player)player);
 					MainProxy.sendPacketToPlayer(packetB, (Player)player);
 				}
-				MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(_invProvider.getWorld()), packetA);
-				MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(_invProvider.getWorld()), packetB);
+				MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), packetA);
+				MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), packetB);
 				_pipe.refreshRender(false);
 				return true;
 			}
@@ -809,8 +805,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 	}
 
 	private World getWorld() {
-			return _invProvider.getWorld();
-		}
+		return _world.getWorld();
+	}
 
 	public void handleStackMove(int number) {
 		if(MainProxy.isClient(this.getWorld())) {

@@ -8,6 +8,7 @@ import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;

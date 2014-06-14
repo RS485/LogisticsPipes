@@ -1,17 +1,38 @@
 package logisticspipes.network.packets.module;
 
+import java.io.IOException;
+
 import logisticspipes.modules.ModuleItemSink;
-import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.utils.gui.DummyModuleContainer;
+import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
-public class ItemSinkDefaultPacket extends IntegerCoordinatesPacket {
+@Accessors(chain=true)
+public class ItemSinkDefaultPacket extends ModuleCoordinatesPacket {
 
+	@Getter
+	@Setter
+	private boolean isDefault;
+	
 	public ItemSinkDefaultPacket(int id) {
 		super(id);
+	}
+
+	@Override
+	public void writeData(LPDataOutputStream data) throws IOException {
+		super.writeData(data);
+		data.writeBoolean(isDefault);
+	}
+
+	@Override
+	public void readData(LPDataInputStream data) throws IOException {
+		super.readData(data);
+		isDefault = data.readBoolean();
 	}
 
 	@Override
@@ -21,41 +42,9 @@ public class ItemSinkDefaultPacket extends IntegerCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final int value = ((getInteger() % 10) + 10) % 10;
-		final int slot = getInteger() / 10;
-		if(slot < 0) {
-			if(player.openContainer instanceof DummyModuleContainer) {
-				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
-				if(dummy.getModule() instanceof ModuleItemSink) {
-					((ModuleItemSink) dummy.getModule()).setDefaultRoute(value == 1);
-				}
-			}
-			return;
-		}
-		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) {
-			return;
-		}
-		if( !(pipe.pipe instanceof CoreRoutedPipe)) {
-			return;
-		}
-		final CoreRoutedPipe piperouted = (CoreRoutedPipe) pipe.pipe;
-		if(piperouted.getLogisticsModule() == null) {
-			return;
-		}
-		if(slot <= 0) {
-			if(piperouted.getLogisticsModule() instanceof ModuleItemSink) {
-				final ModuleItemSink module = (ModuleItemSink) piperouted.getLogisticsModule();
-				module.setDefaultRoute(value == 1);
-				return;
-			}
-		} else {
-			if(piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ModuleItemSink) {
-				final ModuleItemSink module = (ModuleItemSink) piperouted.getLogisticsModule().getSubModule(slot - 1);
-				module.setDefaultRoute(value == 1);
-				return;
-			}
-		}
+		ModuleItemSink module = this.getLogisticsModule(player, ModuleItemSink.class);
+		if(module == null) return;
+		module.setDefaultRoute(isDefault);
 	}
 }
 

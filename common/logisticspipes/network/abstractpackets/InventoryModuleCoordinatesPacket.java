@@ -17,7 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 @Accessors(chain=true)
-public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
+public abstract class InventoryModuleCoordinatesPacket extends ModuleCoordinatesPacket {
 	
 
 	@Setter
@@ -34,7 +34,7 @@ public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
 	@Setter
 	private Set<ItemIdentifierStack> identSet;
 	
-	public InventoryCoordinatesPacket(int id) {
+	public InventoryModuleCoordinatesPacket(int id) {
 		super(id);
 	}
 

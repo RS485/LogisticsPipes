@@ -15,20 +15,24 @@ import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.interfaces.ISendRoutedItem;
-import logisticspipes.interfaces.ISneakyDirectionReceiver;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.network.GuiIDs;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
+import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
+import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
+import logisticspipes.network.guis.module.inhand.AdvancedExtractorModuleInHand;
+import logisticspipes.network.guis.module.inpipe.AdvancedExtractorModuleSlot;
 import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
+import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
 import logisticspipes.network.packets.module.ModuleInventory;
 import logisticspipes.network.packets.modules.AdvancedExtractorInclude;
 import logisticspipes.network.packets.modules.ExtractorModuleMode;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
@@ -48,7 +52,7 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISneakyDirectionReceiver, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
+public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
 
 	protected int currentTick = 0;
 
@@ -126,8 +130,13 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 	}
 
 	@Override
-	public int getGuiHandlerID() {
-		return GuiIDs.GUI_Module_Advanced_Extractor_ID;
+	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+		return NewGuiHandler.getGui(AdvancedExtractorModuleSlot.class).setAreItemsIncluded(_itemsIncluded);
+	}
+
+	@Override
+	protected ModuleInHandGuiProvider getInHandGuiProvider() {
+		return NewGuiHandler.getGui(AdvancedExtractorModuleInHand.class);
 	}
 
 	@Override
@@ -234,7 +243,7 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 
 	public void setItemsIncluded(boolean flag) {
 		_itemsIncluded = flag;
-		if(!localModeWatchers.isEmpty()) MainProxy.sendToPlayerList(PacketHandler.getPacket(AdvancedExtractorInclude.class).setInteger2(slot).setInteger(areItemsIncluded() ? 1 : 0).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+		if(!localModeWatchers.isEmpty()) MainProxy.sendToPlayerList(PacketHandler.getPacket(AdvancedExtractorInclude.class).setFlag(areItemsIncluded()).setModulePos(this), localModeWatchers);
 	}
 
 	@Override
@@ -250,7 +259,7 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 	
 	@Override
 	public void InventoryChanged(IInventory inventory) {
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(ItemIdentifierStack.getListFromInventory(inventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(inventory)).setModulePos(this), localModeWatchers);
 	}
 
 	@Override
@@ -260,20 +269,20 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 
 	@Override
 	public void startWatching() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setModulePos(this));
 	}
 
 	@Override
 	public void stopWatching() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopModuleWatchingPacket.class).setModulePos(this));
 	}
 
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(slot).setInteger(_sneakyDirection.ordinal()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(AdvancedExtractorInclude.class).setInteger2(slot).setInteger(areItemsIncluded() ? 1 : 0).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setModulePos(this), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setDirection(_sneakyDirection).setModulePos(this), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(AdvancedExtractorInclude.class).setFlag(areItemsIncluded()).setModulePos(this), (Player)player);
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;

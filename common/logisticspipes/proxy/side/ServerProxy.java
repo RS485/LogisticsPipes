@@ -11,6 +11,7 @@ import logisticspipes.blocks.powertile.LogisticsBCPowerProviderTileEntity;
 import logisticspipes.blocks.powertile.LogisticsIC2PowerProviderTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.UpdateName;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -278,4 +279,9 @@ public class ServerProxy implements IProxy {
 
 	@Override
 	public void tickClient() {}
+
+	@Override
+	public LogisticsModule getModuleFromGui() {
+		return null;
+	}
 }

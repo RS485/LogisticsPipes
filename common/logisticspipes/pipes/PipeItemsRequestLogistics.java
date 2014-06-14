@@ -18,7 +18,7 @@ import java.util.Map.Entry;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IRequestAPI;
 import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;

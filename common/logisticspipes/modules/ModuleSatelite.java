@@ -7,6 +7,7 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.AdjacentTile;

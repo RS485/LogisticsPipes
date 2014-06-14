@@ -5,7 +5,7 @@ import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.RemoteOrderer;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;

@@ -4,7 +4,7 @@ import java.util.List;
 
 import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDModuleRenderer;
-import logisticspipes.interfaces.IModuleSimpleFilter;
+import logisticspipes.modules.abstractmodules.LogisticsSimpleFilterModule;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.Minecraft;
@@ -15,9 +15,9 @@ import cpw.mods.fml.client.FMLClientHandler;
 
 public class HUDSimpleFilterModule implements IHUDModuleRenderer {
 
-	private final IModuleSimpleFilter module;
+	private final LogisticsSimpleFilterModule module;
 	
-	public HUDSimpleFilterModule(IModuleSimpleFilter module) {
+	public HUDSimpleFilterModule(LogisticsSimpleFilterModule module) {
 		this.module = module;
 	}
 	

@@ -3,7 +3,7 @@ package logisticspipes.pipes;
 import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;

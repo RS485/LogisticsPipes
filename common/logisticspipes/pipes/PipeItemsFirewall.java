@@ -4,7 +4,7 @@ import java.util.BitSet;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.pipe.FireWallFlag;

@@ -17,9 +17,14 @@ import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.network.GuiIDs;
+import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
+import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
+import logisticspipes.network.guis.module.inhand.CCBasedQuickSortInHand;
+import logisticspipes.network.guis.module.inpipe.CCBasedQuickSortSlot;
 import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
+import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
 import logisticspipes.network.packets.modules.CCBasedQuickSortMode;
 import logisticspipes.network.packets.modules.CCBasedQuickSortSinkSize;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
@@ -224,12 +229,6 @@ outer:
 	public Icon getIconTexture(IconRegister register) {
 		return register.registerIcon("logisticspipes:itemModule/ModuleCCQuickSort");
 	}
-	
-	
-	@Override
-	public int getGuiHandlerID() {
-		return GuiIDs.GUI_Module_CC_Based_QuickSort_ID;
-	}
 
 	@Override
 	public boolean hasGui() {
@@ -259,25 +258,25 @@ outer:
 	private void checkSize() {
 		if(sinkSize != sinkResponses.size()) {
 			sinkSize = sinkResponses.size();
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortSinkSize.class).setInteger2(slot).setInteger(sinkSize).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortSinkSize.class).setSinkSize(sinkSize).setModulePos(this), localModeWatchers);
 		}
 	}
 
 	@Override
 	public void startWatching() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setModulePos(this));
 	}
 
 	@Override
 	public void stopWatching() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopModuleWatchingPacket.class).setModulePos(this));
 	}
 
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CCBasedQuickSortMode.class).setInteger2(slot).setInteger(timeout).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CCBasedQuickSortSinkSize.class).setInteger2(slot).setInteger(sinkSize).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CCBasedQuickSortMode.class).setTimeOut(timeout).setModulePos(this), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CCBasedQuickSortSinkSize.class).setSinkSize(sinkSize).setModulePos(this), (Player)player);
 	}
 
 	@Override
@@ -292,12 +291,22 @@ outer:
 	
 	public void setTimeout(int time) {
 		this.timeout = time;
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortMode.class).setInteger2(slot).setInteger(timeout).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortMode.class).setTimeOut(timeout).setModulePos(this), localModeWatchers);
 	}
 
 	public void setSinkSize(int integer) {
 		if(MainProxy.isClient(this._world.getWorld())) {
 			this.sinkSize = integer;
 		}
+	}
+
+	@Override
+	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+		return NewGuiHandler.getGui(CCBasedQuickSortSlot.class).setTimeOut(timeout);
+	}
+
+	@Override
+	protected ModuleInHandGuiProvider getInHandGuiProvider() {
+		return NewGuiHandler.getGui(CCBasedQuickSortInHand.class);
 	}
 }

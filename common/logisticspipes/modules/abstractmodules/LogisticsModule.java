@@ -1,4 +1,4 @@
-package logisticspipes.modules;
+package logisticspipes.modules.abstractmodules;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -6,7 +6,6 @@ import java.util.List;
 
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IQueueCCEvent;
-import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.ISaveState;
 import logisticspipes.logisticspipes.IInventoryProvider;
@@ -16,6 +15,7 @@ import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import lombok.Getter;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.util.Icon;
 import cpw.mods.fml.relauncher.Side;
@@ -31,11 +31,28 @@ public abstract class LogisticsModule implements ISaveState {
 	 */
 	public abstract void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerProvider);
 	
+	@Getter
+	protected ModulePositionType slot;
+	@Getter
+	protected int positionInt;
 	/**
-	 * Registers the slot the module is in
-	 * Negative numbers indicate an in-hand inventory, not in a gui or chassi 
+	 * Registers the slot type the module is in
 	 */
-	public final void registerSlot(int slot) {this.slot = slot;}
+	public final void registerPosition(ModulePositionType slot, int positionInt) {
+		this.slot = slot;
+		this.positionInt = positionInt;
+	}
+	
+	public enum ModulePositionType {
+		SLOT(true),
+		IN_HAND(false),
+		IN_PIPE(true);
+		@Getter
+		private final boolean inWorld;
+		ModulePositionType(boolean inWorld) {
+			this.inWorld = inWorld;
+		}
+	}
 	
 	/**
 	 * typically returns the coord of the pipe that holds it.
@@ -136,7 +153,4 @@ public abstract class LogisticsModule implements ISaveState {
 	 */
 	public void clearCache() {
 	}
-	
-	int slot=0;
-
 }

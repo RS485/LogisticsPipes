@@ -1,18 +1,23 @@
 package logisticspipes.network.packets.modules;
 
-import logisticspipes.gui.modules.GuiCCBasedQuickSort;
-import logisticspipes.modules.LogisticsModule;
-import logisticspipes.modules.ModuleCCBasedQuickSort;
-import logisticspipes.network.abstractpackets.Integer2CoordinatesPacket;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.PipeLogisticsChassi;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.gui.DummyModuleContainer;
-import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.client.FMLClientHandler;
+import java.io.IOException;
 
-public class CCBasedQuickSortMode extends Integer2CoordinatesPacket {
+import logisticspipes.modules.ModuleCCBasedQuickSort;
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import net.minecraft.entity.player.EntityPlayer;
+
+@Accessors(chain=true)
+public class CCBasedQuickSortMode extends ModuleCoordinatesPacket {
+	
+	@Getter
+	@Setter
+	private int timeOut;
 	
 	public CCBasedQuickSortMode(int id) {
 		super(id);
@@ -20,34 +25,24 @@ public class CCBasedQuickSortMode extends Integer2CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if(getInteger2() < 0) {
-			if(MainProxy.isClient(player.worldObj)) {
-				if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiCCBasedQuickSort) {
-					((GuiCCBasedQuickSort) FMLClientHandler.instance().getClient().currentScreen).setTimeOut(getInteger());
-				}
-			} else {
-				if(player.openContainer instanceof DummyModuleContainer) {
-					DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
-					if(dummy.getModule() instanceof ModuleCCBasedQuickSort) {
-						final ModuleCCBasedQuickSort module = (ModuleCCBasedQuickSort) dummy.getModule();
-						module.setTimeout(getInteger());
-					}
-				}
-			}
-			return;
-		}
-		LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) return;
-		if(pipe.pipe instanceof PipeLogisticsChassi) {
-			LogisticsModule module = ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2());
-			if(module instanceof ModuleCCBasedQuickSort) {
-				((ModuleCCBasedQuickSort)module).setTimeout(getInteger());
-			}
-		}
+		ModuleCCBasedQuickSort module = this.getLogisticsModule(player, ModuleCCBasedQuickSort.class);
+		((ModuleCCBasedQuickSort)module).setTimeout(timeOut);
 	}
 	
 	@Override
 	public ModernPacket template() {
 		return new CCBasedQuickSortMode(getId());
+	}
+
+	@Override
+	public void writeData(LPDataOutputStream data) throws IOException {
+		super.writeData(data);
+		data.writeInt(timeOut);
+	}
+
+	@Override
+	public void readData(LPDataInputStream data) throws IOException {
+		super.readData(data);
+		timeOut = data.readInt();
 	}
 }

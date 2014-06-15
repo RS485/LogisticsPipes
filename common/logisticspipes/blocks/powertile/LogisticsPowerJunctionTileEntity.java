@@ -52,7 +52,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 	
 	public final int BuildCraftMultiplier = 5;
 	public final int IC2Multiplier = 2;
-	public final float RFMultiplier = 0.5F;
+	public final int RFDivisor = 2;
 	public final int MAX_STORAGE = 2000000;
 	
 	private PowerHandler powerFramework;
@@ -61,6 +61,9 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 	private int internalStorage = 0;
   	private int lastUpdateStorage = 0;
   	private double internalBuffer = 0;
+
+	//small buffer to hold a fractional LP worth of RF
+	private int internalRFbuffer = 0;
 	
   	private boolean addedToEnergyNet = false;
 	
@@ -396,19 +399,19 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 	@Override
 	@ModDependentMethod(modId="CoFHCore")
 	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
-		float space = freeSpace() / RFMultiplier;
-		float minrequest = 1.01f / RFMultiplier;	//we round down, so always ask for a bit over 1LP-equivalent
-		if(space < minrequest)
-			space = minrequest;
-		int availablelp = (int) (Math.min(maxReceive, space) * RFMultiplier);
-		if(availablelp > 0) {
-			int totake = (int) (availablelp / RFMultiplier);
-			if(!simulate) {
-				addEnergy(availablelp);
+		if(freeSpace() < 1)
+			return 0;
+		int RFspace = freeSpace() * RFDivisor - internalRFbuffer;
+		int RFtotake = Math.min(maxReceive, RFspace);
+		if(!simulate) {
+			addEnergy(RFtotake / RFDivisor);
+			internalRFbuffer += RFtotake % RFDivisor;
+			if(internalRFbuffer >= RFDivisor) {
+				addEnergy(1);
+				internalRFbuffer -= RFDivisor;
 			}
-			return totake;
 		}
-		return 0;
+		return RFtotake;
 	}
 
 	@Override
@@ -426,13 +429,13 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 	@Override
 	@ModDependentMethod(modId="CoFHCore")
 	public int getEnergyStored(ForgeDirection from) {
-		return 0;
+		return internalStorage * RFDivisor + internalRFbuffer;
 	}
 
 	@Override
 	@ModDependentMethod(modId="CoFHCore")
 	public int getMaxEnergyStored(ForgeDirection from) {
-		return (int)(MAX_STORAGE * RFMultiplier);
+		return MAX_STORAGE * RFDivisor;
 	}
 	
 	@Override

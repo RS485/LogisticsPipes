@@ -124,12 +124,12 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IClien
 	}
 
 	@Override
-	public void startWatching() {
+	public void startHUDWatching() {
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setModulePos(this));
 	}
 
 	@Override
-	public void stopWatching() {
+	public void stopHUDWatching() {
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopModuleWatchingPacket.class).setModulePos(this));
 	}
 
@@ -159,7 +159,7 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IClien
 	}
 
 	@Override
-	public IHUDModuleRenderer getRenderer() {
+	public IHUDModuleRenderer getHUDRenderer() {
 		return HUD;
 	}
 	@Override

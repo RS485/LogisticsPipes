@@ -227,12 +227,12 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 
 
 	@Override
-	public void startWatching() {
+	public void startHUDWatching() {
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setModulePos(this));
 	}
 
 	@Override
-	public void stopWatching() {
+	public void stopHUDWatching() {
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopModuleWatchingPacket.class).setModulePos(this));
 	}
 
@@ -248,7 +248,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 	}
 
 	@Override
-	public IHUDModuleRenderer getRenderer() {
+	public IHUDModuleRenderer getHUDRenderer() {
 		return HUD;
 	}
 

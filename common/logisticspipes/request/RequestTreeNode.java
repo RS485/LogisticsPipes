@@ -13,6 +13,7 @@ import java.util.PriorityQueue;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
@@ -39,13 +40,14 @@ import logisticspipes.utils.tuples.Triplet;
 
 public class RequestTreeNode {
 
-	protected RequestTreeNode(ItemIdentifierStack item, IRequestItems requester, RequestTreeNode parentNode, EnumSet<ActiveRequestType> requestFlags) {
-		this(null,item,requester,parentNode,requestFlags);
+	protected RequestTreeNode(ItemIdentifierStack item, IRequestItems requester, RequestTreeNode parentNode, EnumSet<ActiveRequestType> requestFlags, IAdditionalTargetInformation info) {
+		this(null,item,requester,parentNode,requestFlags, info);
 	}
-	private RequestTreeNode(CraftingTemplate template, ItemIdentifierStack item, IRequestItems requester, RequestTreeNode parentNode, EnumSet<ActiveRequestType> requestFlags) {
+	private RequestTreeNode(CraftingTemplate template, ItemIdentifierStack item, IRequestItems requester, RequestTreeNode parentNode, EnumSet<ActiveRequestType> requestFlags, IAdditionalTargetInformation info) {
 		this.request = item;
 		this.target = requester;
-		this.parentNode=parentNode;
+		this.info = info;
+		this.parentNode = parentNode;
 //		this.requestFlags=requestFlags;
 		if(parentNode!=null) {
 			parentNode.subRequests.add(this);
@@ -74,6 +76,7 @@ public class RequestTreeNode {
 
 //	private final EnumSet<ActiveRequestType> requestFlags;
 	private final IRequestItems target;
+	private final IAdditionalTargetInformation info;
 	private final ItemIdentifierStack request;
 	private final RequestTreeNode parentNode;
 	protected final RequestTree root;
@@ -118,10 +121,7 @@ public class RequestTreeNode {
 			int more = promise.numberOfItems - getMissingItemCount();
 			promise.numberOfItems = getMissingItemCount();
 			//Add Extra
-			LogisticsExtraPromise extra = new LogisticsExtraPromise();
-			extra.item = promise.item;
-			extra.numberOfItems = more;
-			extra.sender = promise.sender;
+			LogisticsExtraPromise extra = new LogisticsExtraPromise(promise.item, more, promise.sender, false);
 			extrapromises.add(extra);
 		}
 		if(promise.numberOfItems <= 0) throw new IllegalArgumentException("zero count ... again");
@@ -214,7 +214,7 @@ public class RequestTreeNode {
 			list.getSubOrders().add(subNode.fullFill());
 		}
 		for(LogisticsPromise promise:promises) {
-			LogisticsOrder result = promise.sender.fullFill(promise, target);
+			LogisticsOrder result = promise.sender.fullFill(promise, target, info);
 			if(result != null) {
 				list.add(result);
 			}
@@ -600,13 +600,13 @@ outer:
 
 	private int getSubRequests(int nCraftingSets, CraftingTemplate template){
 		boolean failed = false;
-		List<Pair<CraftingRequirement, IRequestItems>> stacks = template.getComponentItems(nCraftingSets);
+		List<Triplet<CraftingRequirement, IRequestItems, IAdditionalTargetInformation>> stacks = template.getComponentItems(nCraftingSets);
 		int workSetsAvailable = nCraftingSets;
 		ArrayList<SubRequestGroup>lastNodes = new ArrayList<SubRequestGroup>(stacks.size());
-		for(Pair<CraftingRequirement,IRequestItems> stack:stacks) {
+		for(Triplet<CraftingRequirement, IRequestItems, IAdditionalTargetInformation> stack:stacks) {
 			if(stack.getValue1().isUnique())
 			{
-				RequestTreeNode node = new RequestTreeNode(template,stack.getValue1().stack, stack.getValue2(), this, RequestTree.defaultRequestFlags);
+				RequestTreeNode node = new RequestTreeNode(template,stack.getValue1().stack, stack.getValue2(), this, RequestTree.defaultRequestFlags, stack.getValue3());
 				SubRequestGroup grp = new SubRequestGroup();
 				grp.addNode(node);
 				lastNodes.add(grp);
@@ -623,7 +623,7 @@ outer:
 				{
 					if(req <= 0)
 						break;
-					RequestTreeNode node = new RequestTreeNode(template, new ItemIdentifierStack(i, req), stack.getValue2(), this, RequestTree.defaultRequestFlags);
+					RequestTreeNode node = new RequestTreeNode(template, new ItemIdentifierStack(i, req), stack.getValue2(), this, RequestTree.defaultRequestFlags, stack.getValue3());
 					req -= node.getPromiseItemCount();
 					grp.addNode(node);
 				}
@@ -663,11 +663,7 @@ outer:
 			return generateRequestTreeFor(workSetsAvailable, template);
 		}
 		for(ItemIdentifierStack stack:template.getByproduct()) {
-			LogisticsExtraPromise extra = new LogisticsExtraPromise();
-			extra.item = stack.getItem();
-			extra.numberOfItems = stack.getStackSize() * workSetsAvailable;
-			extra.sender = template.getCrafter();
-			extra.provided = false;
+			LogisticsExtraPromise extra = new LogisticsExtraPromise(stack.getItem(), stack.getStackSize() * workSetsAvailable, template.getCrafter(), false);
 			byproducts.add(extra);
 		}
 		return workSetsAvailable;
@@ -681,13 +677,13 @@ outer:
 		if(workSets>0) {
 			//now set the amounts
 
-			List<Pair<CraftingRequirement,IRequestItems>> stacks = template.getComponentItems(workSets);
+			List<Triplet<CraftingRequirement, IRequestItems, IAdditionalTargetInformation>> stacks = template.getComponentItems(workSets);
 
 			boolean failed = false;
-			for(Pair<CraftingRequirement,IRequestItems> stack:stacks) {
+			for(Triplet<CraftingRequirement, IRequestItems, IAdditionalTargetInformation> stack:stacks) {
 				if(stack.getValue1().isUnique())
 				{
-					RequestTreeNode node = new RequestTreeNode(template,stack.getValue1().stack, stack.getValue2(), this, RequestTree.defaultRequestFlags);
+					RequestTreeNode node = new RequestTreeNode(template,stack.getValue1().stack, stack.getValue2(), this, RequestTree.defaultRequestFlags, stack.getValue3());
 					newChildren.add(node);
 					if(!node.isDone()) {
 						failed = true;
@@ -701,7 +697,7 @@ outer:
 					{
 						if(req <= 0)
 							break;
-						RequestTreeNode node = new RequestTreeNode(template, new ItemIdentifierStack(i, req), stack.getValue2(), this, RequestTree.defaultRequestFlags);
+						RequestTreeNode node = new RequestTreeNode(template, new ItemIdentifierStack(i, req), stack.getValue2(), this, RequestTree.defaultRequestFlags, stack.getValue3());
 						req -= node.getPromiseItemCount();
 						newChildren.add(node);
 					}
@@ -728,11 +724,7 @@ outer:
 			}
 		}
 		for(ItemIdentifierStack stack:template.getByproduct()) {
-			LogisticsExtraPromise extra = new LogisticsExtraPromise();
-			extra.item = stack.getItem();
-			extra.numberOfItems = stack.getStackSize() * workSets;
-			extra.sender = template.getCrafter();
-			extra.provided = false;
+			LogisticsExtraPromise extra = new LogisticsExtraPromise(stack.getItem(), stack.getStackSize() * workSets, template.getCrafter(), false);
 			byproducts.add(extra);
 		}
 		return workSets;
@@ -748,10 +740,10 @@ outer:
 
 		int nCraftingSetsNeeded = (this.getMissingItemCount() + template.getResultStackSize() - 1) / template.getResultStackSize();
 
-		List<Pair<CraftingRequirement, IRequestItems>> stacks = template.getComponentItems(nCraftingSetsNeeded);
+		List<Triplet<CraftingRequirement, IRequestItems, IAdditionalTargetInformation>> stacks = template.getComponentItems(nCraftingSetsNeeded);
 
-		for(Pair<CraftingRequirement,IRequestItems> stack:stacks) {
-			new RequestTreeNode(template, stack.getValue1().stack, stack.getValue2(), this, RequestTree.defaultRequestFlags);
+		for(Triplet<CraftingRequirement, IRequestItems, IAdditionalTargetInformation> stack:stacks) {
+			new RequestTreeNode(template, stack.getValue1().stack, stack.getValue2(), this, RequestTree.defaultRequestFlags, stack.getValue3());
 		}
 
 		List<Triplet<FluidIdentifier, Integer, IRequestFluid>> liquids = template.getComponentFluid(nCraftingSetsNeeded);

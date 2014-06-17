@@ -15,12 +15,14 @@ public class LogisticsPromise {
 	public ItemIdentifier item;
 	public int numberOfItems;
 	public IProvideItems sender;
+
+	public LogisticsPromise(ItemIdentifier item, int numberOfItems, IProvideItems sender) {
+		this.item = item;
+		this.numberOfItems = numberOfItems;
+		this.sender = sender;
+	}
 	
 	public LogisticsPromise copy() {
-		LogisticsPromise result = new LogisticsPromise();
-		result.item = item;
-		result.numberOfItems = numberOfItems;
-		result.sender = sender;
-		return result;
+		return new LogisticsPromise(item, numberOfItems, sender);
 	}
 }

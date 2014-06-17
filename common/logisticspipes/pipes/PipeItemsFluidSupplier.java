@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -253,12 +254,12 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 	}
 
 	@Override
-	public void itemLost(ItemIdentifierStack item) {
+	public void itemLost(ItemIdentifierStack item, IAdditionalTargetInformation info) {
 		decreaseRequested(item);
 	}
 
 	@Override
-	public void itemArrived(ItemIdentifierStack item) {
+	public void itemArrived(ItemIdentifierStack item, IAdditionalTargetInformation info) {
 		decreaseRequested(item);
 		delayThrottle();
 	}

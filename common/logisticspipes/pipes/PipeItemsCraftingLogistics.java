@@ -13,18 +13,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.DelayQueue;
 
 import logisticspipes.gui.hud.HUDCrafting;
 import logisticspipes.interfaces.IChangeListener;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.IOrderManagerContentReceiver;
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
-import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -40,7 +39,6 @@ import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCQueued;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.request.CraftingTemplate;
-import logisticspipes.request.RequestTree;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.routing.order.IOrderInfoProvider.RequestType;
@@ -49,10 +47,8 @@ import logisticspipes.routing.order.LogisticsOrderManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
-import logisticspipes.utils.DelayedGeneric;
 import logisticspipes.utils.IHavePriority;
 import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.entity.player.EntityPlayer;
@@ -144,7 +140,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		if (doContentUpdate) {
 			checkContentUpdate();
 		}
-		craftingModule.enabledUpdateEntity();
+		//craftingModule.enabledUpdateEntity();
 	}
 
 	@Override
@@ -174,8 +170,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 
 	@Override
-	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination) {
-		return craftingModule.fullFill(promise,destination);
+	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination, IAdditionalTargetInformation info) {
+		return craftingModule.fullFill(promise, destination, info);
 	}
 
 	@Override
@@ -329,12 +325,13 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 
 	@Override
-	public void itemArrived(ItemIdentifierStack item) {
+	public void itemArrived(ItemIdentifierStack item, IAdditionalTargetInformation info) {
+		craftingModule.itemArrived(item, info);
 	}
 
 	@Override
-	public void itemLost(ItemIdentifierStack item) {
-		craftingModule.itemLost(item);
+	public void itemLost(ItemIdentifierStack item, IAdditionalTargetInformation info) {
+		craftingModule.itemLost(item, info);
 	}
 
 	public IInventory getDummyInventory() {

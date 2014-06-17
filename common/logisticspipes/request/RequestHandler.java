@@ -165,7 +165,7 @@ public class RequestHandler {
 				}
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(false), (Player)player);
 			}
-		},RequestTree.defaultRequestFlags);
+		},RequestTree.defaultRequestFlags, null);
 	}
 
 	public static void requestMacrolist(NBTTagCompound itemlist, final CoreRoutedPipe requester, final EntityPlayer player) {
@@ -208,7 +208,7 @@ public class RequestHandler {
 					((IRequestWatcher)requester).handleOrderList(transaction.get(0), parts);
 				}
 			}
-		},RequestTree.defaultRequestFlags);
+		},RequestTree.defaultRequestFlags, null);
 	}
 
 	public static Object[] computerRequest(final ItemIdentifierStack makeStack, final CoreRoutedPipe pipe, boolean craftingOnly) {
@@ -244,7 +244,7 @@ public class RequestHandler {
 			
 			@Override
 			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items, LinkedLogisticsOrderList parts) {}
-		},false, false,true,false,requestFlags);
+		},false, false,true,false,requestFlags, null);
 		return status;
 	}
 

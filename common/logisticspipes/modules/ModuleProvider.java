@@ -18,6 +18,7 @@ import logisticspipes.interfaces.ILegacyActiveModule;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.IWorldProvider;
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
@@ -159,7 +160,7 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 			if(firstOrder == null)
 				firstOrder = order;
 			order = _invProvider.getOrderManager().peekAtTopRequest(RequestType.PROVIDER);
-			int sent = sendStack(order.getItem(), itemsleft, order.getDestination().getRouter().getSimpleID());
+			int sent = sendStack(order.getItem(), itemsleft, order.getDestination().getRouter().getSimpleID(), order.getInformation());
 			if(sent < 0) break;
 			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, getX(), getY(), getZ(), _world.getWorld(), 3);
 			stacksleft -= 1;
@@ -191,16 +192,13 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 		int canProvide = getAvailableItemCount(tree.getStackItem());
 		canProvide -= donePromisses;
 		if (canProvide < 1) return;
-		LogisticsPromise promise = new LogisticsPromise();
-		promise.item = tree.getStackItem();
-		promise.numberOfItems = Math.min(canProvide, tree.getMissingItemCount());
-		promise.sender = (IProvideItems) _invProvider;
+		LogisticsPromise promise = new LogisticsPromise(tree.getStackItem(), Math.min(canProvide, tree.getMissingItemCount()), (IProvideItems) _invProvider);
 		tree.addPromise(promise);
 	}
 
 	@Override
-	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination) {
-		return _invProvider.getOrderManager().addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination,RequestType.PROVIDER);
+	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination, IAdditionalTargetInformation info) {
+		return _invProvider.getOrderManager().addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination,RequestType.PROVIDER, info);
 	}
 
 	private int getAvailableItemCount(ItemIdentifier item) {
@@ -239,7 +237,7 @@ outer:
 	
 	// returns -1 on permanently failed, don't try another stack this tick
 	// returns 0 on "unable to do this delivery"
-	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination) {
+	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination, IAdditionalTargetInformation info) {
 		ItemIdentifier item = stack.getItem();
 		IInventoryUtil inv = _invProvider.getPointedInventory(_extractionMode,true);
 		if (inv == null) {
@@ -282,7 +280,7 @@ outer:
 		int sent = removed.stackSize;
 		_power.useEnergy(sent * neededEnergy());
 
-		IRoutedItem sendedItem = _invProvider.sendStack(removed, destination, itemSendMode());
+		IRoutedItem sendedItem = _invProvider.sendStack(removed, destination, itemSendMode(), info);
 		_invProvider.getOrderManager().sendSuccessfull(sent, defersend, sendedItem);
 		return sent;
 	}

@@ -11,9 +11,9 @@ package logisticspipes.routing.order;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.NoSuchElementException;
 
 import logisticspipes.interfaces.IChangeListener;
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.proxy.MainProxy;
@@ -104,7 +104,7 @@ public class LogisticsOrderManager implements Iterable<LogisticsOrder> {
 	}
 	
 	public void sendFailed() {
-		_orders.getFirst().getDestination().itemCouldNotBeSend(_orders.getFirst().getItem());
+		_orders.getFirst().getDestination().itemCouldNotBeSend(_orders.getFirst().getItem(), _orders.getFirst().getInformation());
 		if(!_orders.isEmpty()) {
 			LogisticsOrder order = _orders.removeFirst();
 			order.setFinished(true);
@@ -122,8 +122,8 @@ public class LogisticsOrderManager implements Iterable<LogisticsOrder> {
 		listen();
 	}
 	
-	public LogisticsOrder addOrder(ItemIdentifierStack stack, IRequestItems requester,RequestType type) {
-		LogisticsOrder order = new LogisticsOrder(stack, requester, type);
+	public LogisticsOrder addOrder(ItemIdentifierStack stack, IRequestItems requester, RequestType type, IAdditionalTargetInformation info) {
+		LogisticsOrder order = new LogisticsOrder(stack, requester, type, info);
 		_orders.addLast(order);
 		listen();
 		return order;

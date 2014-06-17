@@ -218,7 +218,7 @@ outer:
 			if(stack == null || stack.stackSize <= 0) continue;
 			int amount = Math.min(stack.stackSize, sink.getCanSink());
 			ItemStack extracted = invUtil.decrStackSize(slot, amount);
-			_invProvider.sendStack(extracted, sink.getRouterId(), ItemSendMode.Fast);
+			_invProvider.sendStack(extracted, sink.getRouterId(), ItemSendMode.Fast, null);
 			sended = true;
 		}
 		return sended;

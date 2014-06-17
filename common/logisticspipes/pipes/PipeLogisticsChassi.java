@@ -26,6 +26,7 @@ import logisticspipes.interfaces.ILegacyActiveModule;
 import logisticspipes.interfaces.ISendQueueContentRecieiver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
@@ -61,13 +62,13 @@ import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.ticks.HudUpdateTick;
-import logisticspipes.utils.DelayedGeneric;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import lombok.Getter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -248,26 +249,34 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	
 	@Override
-	public void itemArrived(ItemIdentifierStack item) {
+	public void itemArrived(ItemIdentifierStack item, IAdditionalTargetInformation info) {
 		if(MainProxy.isServer(this.getWorld())) {
-			for (int i = 0; i < this.getChassiSize(); i++){
-				LogisticsModule x = _module.getSubModule(i);
-				if (x instanceof IRequireReliableTransport && x.getSpecificInterests().contains(item.getItem())) {
-					IRequireReliableTransport y = (IRequireReliableTransport)x;
-					y.itemArrived(item);
+			if(info instanceof ChasseTargetInformation) {
+				ChasseTargetInformation target = (ChasseTargetInformation) info;
+				LogisticsModule module = _module.getSubModule(target.moduleSlot);
+				if(module instanceof IRequireReliableTransport) {
+					((IRequireReliableTransport) module).itemArrived(item, info);
+				}
+			} else {
+				if(LogisticsPipes.DEBUG) {
+					new RuntimeException("Information weren't ment for a chassi pipe").printStackTrace();
 				}
 			}
 		}
 	}
 
 	@Override
-	public void itemLost(ItemIdentifierStack item) {
+	public void itemLost(ItemIdentifierStack item, IAdditionalTargetInformation info) {
 		if(MainProxy.isServer(this.getWorld())) {
-			for (int i = 0; i < this.getChassiSize(); i++){
-				LogisticsModule x = _module.getSubModule(i);
-				if (x instanceof IRequireReliableTransport && x.getSpecificInterests().contains(item.getItem())) {
-					IRequireReliableTransport y = (IRequireReliableTransport)x;
-					y.itemLost(item);
+			if(info instanceof ChasseTargetInformation) {
+				ChasseTargetInformation target = (ChasseTargetInformation) info;
+				LogisticsModule module = _module.getSubModule(target.moduleSlot);
+				if(module instanceof IRequireReliableTransport) {
+					((IRequireReliableTransport) module).itemLost(item, info);
+				}
+			} else {
+				if(LogisticsPipes.DEBUG) {
+					new RuntimeException("Information weren't ment for a chassi pipe").printStackTrace();
 				}
 			}
 		}
@@ -424,8 +433,9 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	}
 
 	@Override
-	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination) {
-		if (!isEnabled()){
+	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination, IAdditionalTargetInformation info) {
+		//TODO extract information from info to determine the module
+		if (!isEnabled()) {
 			return null;
 		}
 		for (int i = 0; i < this.getChassiSize(); i++) {
@@ -434,7 +444,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 				ILegacyActiveModule y = (ILegacyActiveModule) x;
 				if(y.filterAllowsItem(promise.item)) {
 					MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, getX(), getY(), getZ(), this.getWorld(), 2);
-					return y.fullFill(promise, destination);
+					return y.fullFill(promise, destination, info);
 				}
 			}
 		}
@@ -620,7 +630,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	@Override
 	public void registerExtras(LogisticsPromise promise) {
 		ItemIdentifierStack stack = new ItemIdentifierStack(promise.item,promise.numberOfItems);
-		_extras.add(new LogisticsOrder(stack, null, RequestType.EXTRA));
+		_extras.add(new LogisticsOrder(stack, null, RequestType.EXTRA, null));
 		LogisticsPipes.requestLog.info(stack.getStackSize() + " extras registered");
 	}
 
@@ -675,5 +685,14 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		// TODO Auto-generated method stub
 		// probably not needed, the chasi order manager handles the count, would need to store origin to specifically know this.
 		return 0;
+	}
+	
+	public static class ChasseTargetInformation implements IAdditionalTargetInformation {
+		@Getter
+		private final int moduleSlot;
+		
+		public ChasseTargetInformation(int slot) {
+			this.moduleSlot = slot;
+		}
 	}
 }

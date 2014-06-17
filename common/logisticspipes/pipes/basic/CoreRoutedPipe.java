@@ -39,6 +39,7 @@ import logisticspipes.interfaces.ISecurityProvider;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
@@ -182,7 +183,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 
 	protected List<IInventory> _cachedAdjacentInventories;
 
-	protected ForgeDirection pointedDirection;
+	protected ForgeDirection pointedDirection = ForgeDirection.UNKNOWN;
 	//public BaseRoutingLogic logic;
 	// from BaseRoutingLogic
 	protected int throttleTime = 20;
@@ -226,11 +227,17 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	}
 	
 	public void queueRoutedItem(IRoutedItem routedItem, ForgeDirection from) {
+		if(from == null) {
+			throw new NullPointerException();
+		}
 		_sendQueue.addLast(new Triplet<IRoutedItem, ForgeDirection, ItemSendMode>(routedItem, from, ItemSendMode.Normal));
 		sendQueueChanged(false);
 	}
 
 	public void queueRoutedItem(IRoutedItem routedItem, ForgeDirection from, ItemSendMode mode) {
+		if(from == null) {
+			throw new NullPointerException();
+		}
 		_sendQueue.addLast(new Triplet<IRoutedItem, ForgeDirection, ItemSendMode>(routedItem, from, mode));
 		sendQueueChanged(false);
 	}
@@ -241,6 +248,10 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	public int sendQueueChanged(boolean force) {return 0;}
 	
 	private void sendRoutedItem(IRoutedItem routedItem, ForgeDirection from) {
+		
+		if(from == null) {
+			throw new NullPointerException();
+		}
 		
 		((PipeTransportLogistics)transport).injectItem(routedItem, from.getOpposite());
 		
@@ -1023,9 +1034,9 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	}
 	
 	@Override
-	public void itemCouldNotBeSend(ItemIdentifierStack item) {
+	public void itemCouldNotBeSend(ItemIdentifierStack item, IAdditionalTargetInformation info) {
 		if(this instanceof IRequireReliableTransport) {
-			((IRequireReliableTransport)this).itemLost(item);
+			((IRequireReliableTransport)this).itemLost(item, info);
 		}
 		//Override by subclasses //TODO
 	}
@@ -1265,7 +1276,7 @@ outer:
 	public void notifyOfItemArival(ItemRoutingInformation information) {
 		this._inTransitToMe.remove(information);
 		if (this instanceof IRequireReliableTransport) {
-			((IRequireReliableTransport)this).itemArrived(information.getItem());
+			((IRequireReliableTransport)this).itemArrived(information.getItem(), information.targetInfo);
 		}
 		if (this instanceof IRequireReliableFluidTransport) {
 			ItemIdentifierStack stack = information.getItem();
@@ -1642,10 +1653,11 @@ outer:
 	}
 
 	@Override
-	public IRoutedItem sendStack(ItemStack stack, int destination, ItemSendMode mode) {
+	public IRoutedItem sendStack(ItemStack stack, int destination, ItemSendMode mode, IAdditionalTargetInformation info) {
 		IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(TransportMode.Active);
+		itemToSend.setAdditionalTargetInformation(info);
 		queueRoutedItem(itemToSend, getPointedOrientation(), mode);
 		return itemToSend;
 	}

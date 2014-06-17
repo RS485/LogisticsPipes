@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.order.IDistanceTracker;
@@ -40,6 +41,9 @@ public interface IRoutedItem {
 	
 	public void setTransportMode(TransportMode transportMode);
 	public TransportMode getTransportMode();
+	
+	public void setAdditionalTargetInformation(IAdditionalTargetInformation info);
+	public IAdditionalTargetInformation getAdditionalTargetInformation();
 	
 	public void setDoNotBuffer(boolean doNotBuffer);
 	public boolean getDoNotBuffer();

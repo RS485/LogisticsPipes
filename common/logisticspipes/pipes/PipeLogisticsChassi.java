@@ -30,6 +30,7 @@ import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.items.ItemModule;
 import logisticspipes.logisticspipes.ChassiTransportLayer;
 import logisticspipes.logisticspipes.IInventoryProvider;
@@ -60,6 +61,7 @@ import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.ticks.HudUpdateTick;
+import logisticspipes.utils.DelayedGeneric;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
@@ -244,6 +246,32 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		}
 	}
 
+	
+	@Override
+	public void itemArrived(ItemIdentifierStack item) {
+		if(MainProxy.isServer(this.getWorld())) {
+			for (int i = 0; i < this.getChassiSize(); i++){
+				LogisticsModule x = _module.getSubModule(i);
+				if (x instanceof IRequireReliableTransport && x.getSpecificInterests().contains(item.getItem())) {
+					IRequireReliableTransport y = (IRequireReliableTransport)x;
+					y.itemArrived(item);
+				}
+			}
+		}
+	}
+
+	@Override
+	public void itemLost(ItemIdentifierStack item) {
+		if(MainProxy.isServer(this.getWorld())) {
+			for (int i = 0; i < this.getChassiSize(); i++){
+				LogisticsModule x = _module.getSubModule(i);
+				if (x instanceof IRequireReliableTransport && x.getSpecificInterests().contains(item.getItem())) {
+					IRequireReliableTransport y = (IRequireReliableTransport)x;
+					y.itemLost(item);
+				}
+			}
+		}
+	}
 	@Override
 	public void InventoryChanged(IInventory inventory) {
 		boolean reInitGui = false;
@@ -601,9 +629,10 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		for (int i = 0; i < this.getChassiSize(); i++){
 			LogisticsModule x = _module.getSubModule(i);
 			
-			if(x!=null && x instanceof ICraftItems){
-				if(((ICraftItems)x).getCraftedItems().contains(toCraft))
+			if(x!=null && x instanceof ICraftItems) {				
+				if(((ICraftItems)x).canCraft(toCraft)) {
 					return ((ICraftItems)x).addCrafting(toCraft);
+				}
 			}
 		}
 		return null;
@@ -614,10 +643,10 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	@Override
 	public List<ItemIdentifierStack> getCraftedItems() {
 		List<ItemIdentifierStack> craftables = null;
-		for (int i = 0; i < this.getChassiSize(); i++){
+		for (int i = 0; i < this.getChassiSize(); i++) {
 			LogisticsModule x = _module.getSubModule(i);
 			
-			if(x!=null && x instanceof ICraftItems){
+			if(x!=null && x instanceof ICraftItems) {
 				if(craftables ==null) {
 					craftables = new LinkedList<ItemIdentifierStack> ();
 				}
@@ -626,7 +655,20 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		}
 		return craftables;
 	}
-
+	
+	@Override
+	public boolean canCraft(ItemIdentifier toCraft) {
+		for (int i = 0; i < this.getChassiSize(); i++) {
+			LogisticsModule x = _module.getSubModule(i);
+			
+			if(x!=null && x instanceof ICraftItems) {
+				if(((ICraftItems)x).canCraft(toCraft)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	
 	@Override
 	public int getTodo() {

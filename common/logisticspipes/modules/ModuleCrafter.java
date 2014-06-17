@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.DelayQueue;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IRoutedPowerProvider;
@@ -64,6 +65,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IFuzzyRecipeProvider;
 import logisticspipes.request.CraftingTemplate;
+import logisticspipes.request.RequestTree;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
@@ -73,6 +75,7 @@ import logisticspipes.routing.order.IOrderInfoProvider.RequestType;
 import logisticspipes.routing.order.LogisticsOrder;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.CraftingRequirement;
+import logisticspipes.utils.DelayedGeneric;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SinkReply;
@@ -133,6 +136,9 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 	private WeakReference<TileEntity> lastAccessedCrafter = new WeakReference<TileEntity>(null);
 	
 	public boolean cleanupModeIsExclude = true;
+	// for reliable transport
+	protected final DelayQueue< DelayedGeneric<ItemIdentifierStack>> _lostItems = new DelayQueue< DelayedGeneric<ItemIdentifierStack>>();
+	
 	
 	public ModuleCrafter() {
 	}
@@ -195,9 +201,43 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 		return null;
 	}
 	
-	@Override
-	public void tick() {}
+		@Override
+		public void tick() {
+			if (_lostItems.isEmpty()) {
+				return;
+			}
+			//if(true) return;
+			DelayedGeneric<ItemIdentifierStack> lostItem = _lostItems.poll();
+			while (lostItem != null) {
+				
+				ItemIdentifierStack stack = lostItem.get();
+				if(_invProvider.getOrderManager().hasOrders(RequestType.CRAFTING)) { 
+					SinkReply reply = LogisticsManager.canSink(getRouter(), null, true, stack.getItem(), null, true, true);
+					if(reply == null || reply.maxNumberOfItems < 1) {
+						_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(stack, 5000));
+						lostItem = _lostItems.poll();
+						continue;
+					}
+				}
+				int received = RequestTree.requestPartial(stack, (CoreRoutedPipe) _invProvider);
+				if(received < stack.getStackSize()) {
+					stack.setStackSize(stack.getStackSize() - received);
+					_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(stack, 5000));
+				}
+				lostItem = _lostItems.poll();
+			}
+	}
 	
+
+		@Override
+		public void itemArrived(ItemIdentifierStack item) {
+		}
+
+		@Override
+		public void itemLost(ItemIdentifierStack item) {
+			_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(item, 5000));
+		}
+		
 	@Override
 	public boolean hasGenericInterests() {
 		return false;
@@ -211,8 +251,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 		for(ItemIdentifierStack craftable:result){
 			l1.add(craftable.getItem());
 		}
-		//for(int i=0; i<9;i++)
-		//	l1.add(getMaterials(i));
+		for(int i=0; i<9;i++)
+			l1.add(getMaterials(i).getItem()); // needed to be interested in things for a chassi to report reliableDelivery failure.
 		return l1;
 	}
 	
@@ -245,14 +285,21 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 		if (_extras.isEmpty()) return;
 		
 		ItemIdentifier requestedItem = tree.getStackItem();
+		/*
 		List<ItemIdentifierStack> providedItem = getCraftedItems();
 		for(ItemIdentifierStack item:providedItem) {
 			if(item.getItem() == requestedItem) {
 				return;
 			}
+		}*/
+		if(canCraft(requestedItem)) {
+			return;
 		}
-		if (!providedItem.contains(requestedItem)) return;
-
+		
+//		if (!providedItem.contains(requestedItem)) return;
+		if(!canCraft(requestedItem)) {
+			return;
+		}
 		
 		for(IFilter filter:filters) {
 			if(filter.isBlocked() == filter.isFilteredItem(requestedItem.getUndamaged()) || filter.blockProvider()) return;
@@ -477,6 +524,12 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 		return false;
 	}
 
+	@Override
+	public boolean canCraft(ItemIdentifier toCraft) {
+		return _dummyInventory.getIDStackInSlot(9)!=null && _dummyInventory.getIDStackInSlot(9).getItem().equals(toCraft);
+	}
+
+	
 	@Override
 	public List<ItemIdentifierStack> getCraftedItems() {
 		//TODO: AECrafting check.
@@ -1469,4 +1522,5 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 	public void toogleCleaupMode() {
 		this.cleanupModeIsExclude = !this.cleanupModeIsExclude;
 	}
+
 }

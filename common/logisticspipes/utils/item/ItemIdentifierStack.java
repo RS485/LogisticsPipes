@@ -104,11 +104,14 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 	}
 	
 	@Override
-	public boolean equals(Object object) {
-		if(object instanceof ItemIdentifierStack) {
-			ItemIdentifierStack stack = (ItemIdentifierStack)object;
+	public boolean equals(Object that) {
+		if(that instanceof ItemIdentifierStack) {
+			ItemIdentifierStack stack = (ItemIdentifierStack)that;
 			return stack._item.equals(this._item) && stack.getStackSize() == this.getStackSize();
 		}
+		if (!(that instanceof ItemIdentifier))
+			throw new IllegalStateException("Comparison between ItemIdentifierStack and ItemIdentifier -- did you forget a .getItem() in your code?");
+
 		return false;
 	}
 	

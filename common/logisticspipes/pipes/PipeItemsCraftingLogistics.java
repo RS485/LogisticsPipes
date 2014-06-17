@@ -75,8 +75,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	private boolean init = false;
 	private boolean doContentUpdate = true;
 	
-	protected final DelayQueue< DelayedGeneric<ItemIdentifierStack>> _lostItems = new DelayQueue< DelayedGeneric<ItemIdentifierStack>>();
-	
 	public PipeItemsCraftingLogistics(int itemID) {
 		super(itemID);
 		// module still relies on this for some code
@@ -192,6 +190,10 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		craftingModule.getAllItems(list, filters);
 	}
 
+	@Override
+	public boolean canCraft(ItemIdentifier toCraft) {
+		return craftingModule.canCraft(toCraft);
+	}
 	@Override
 	public List<ItemIdentifierStack> getCraftedItems() {
 		return craftingModule.getCraftedItems();
@@ -312,89 +314,18 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 		craftingModule.readFromNBT(nbttagcompound);
-		/*
-		_dummyInventory.readFromNBT(nbttagcompound, "");
-		_liquidInventory.readFromNBT(nbttagcompound, "FluidInv");
-		_cleanupInventory.readFromNBT(nbttagcompound, "CleanupInv");
-		satelliteId = nbttagcompound.getInteger("satelliteid");
-		
-		priority = nbttagcompound.getInteger("priority");
-		for(int i=0;i<9;i++) {
-			advancedSatelliteIdArray[i] = nbttagcompound.getInteger("advancedSatelliteId" + i);
-		}
-		for(int i=0;i<9;i++) {
-			fuzzyCraftingFlagArray[i] = nbttagcompound.getByte("fuzzyCraftingFlag" + i);
-		}
-		for(int i=0;i<6;i++) {
-			craftingSigns[i] = nbttagcompound.getBoolean("craftingSigns" + i);
-		}
-		if(nbttagcompound.hasKey("FluidAmount")) {
-			amount = nbttagcompound.getIntArray("FluidAmount");
-		}
-		if(amount.length < ItemUpgrade.MAX_LIQUID_CRAFTER) {
-			amount = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
-		}
-		for(int i=0;i<ItemUpgrade.MAX_LIQUID_CRAFTER;i++) {
-			liquidSatelliteIdArray[i] = nbttagcompound.getInteger("liquidSatelliteIdArray" + i);
-		}
-		for(int i=0;i<ItemUpgrade.MAX_LIQUID_CRAFTER;i++) {
-			liquidSatelliteIdArray[i] = nbttagcompound.getInteger("liquidSatelliteIdArray" + i);
-		}
-		liquidSatelliteId = nbttagcompound.getInteger("liquidSatelliteId"); */
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
 		craftingModule.writeToNBT(nbttagcompound);
-		/*
-		_dummyInventory.writeToNBT(nbttagcompound, "");
-		_liquidInventory.writeToNBT(nbttagcompound, "FluidInv");
-		_cleanupInventory.writeToNBT(nbttagcompound, "CleanupInv");
-		nbttagcompound.setInteger("satelliteid", satelliteId);
-		
-		nbttagcompound.setInteger("priority", priority);
-		for(int i=0;i<9;i++) {
-			nbttagcompound.setInteger("advancedSatelliteId" + i, advancedSatelliteIdArray[i]);
-		}
-		for(int i=0;i<9;i++) {
-			nbttagcompound.setByte("fuzzyCraftingFlag" + i, (byte)fuzzyCraftingFlagArray[i]);
-		}
-		for(int i=0;i<6;i++) {
-			nbttagcompound.setBoolean("craftingSigns" + i, craftingSigns[i]);
-		}
-		for(int i=0;i<ItemUpgrade.MAX_LIQUID_CRAFTER;i++) {
-			nbttagcompound.setInteger("liquidSatelliteIdArray" + i, liquidSatelliteIdArray[i]);
-		}
-		nbttagcompound.setIntArray("FluidAmount", amount);
-		nbttagcompound.setInteger("liquidSatelliteId", liquidSatelliteId);*/
 	}
 
 	@Override
 	public void throttledUpdateEntity() {
 		super.throttledUpdateEntity();
-		if (_lostItems.isEmpty()) {
-			return;
-		}
-		DelayedGeneric<ItemIdentifierStack> lostItem = _lostItems.poll();
-		while (lostItem != null) {
-			
-			ItemIdentifierStack stack = lostItem.get();
-			if(_orderManager.hasOrders(RequestType.CRAFTING)) { 
-				SinkReply reply = LogisticsManager.canSink(getRouter(), null, true, stack.getItem(), null, true, true);
-				if(reply == null || reply.maxNumberOfItems < 1) {
-					_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(stack, 5000));
-					lostItem = _lostItems.poll();
-					continue;
-				}
-			}
-			int received = RequestTree.requestPartial(stack, (CoreRoutedPipe) container.pipe);
-			if(received < stack.getStackSize()) {
-				stack.setStackSize(stack.getStackSize() - received);
-				_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(stack, 5000));
-			}
-			lostItem = _lostItems.poll();
-		}
+		craftingModule.tick();
 	}
 
 	@Override
@@ -403,7 +334,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 	@Override
 	public void itemLost(ItemIdentifierStack item) {
-		_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(item, 5000));
+		craftingModule.itemLost(item);
 	}
 
 	public IInventory getDummyInventory() {
@@ -434,4 +365,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		}
 		return false;
 	}
+
+
 }

@@ -128,9 +128,7 @@ public abstract class LPTravelingItem {
 			this.input = input;
 			this.output = output;
 			this.speed = speed;
-			if(Math.abs(position - this.position) > 0.3F && Math.abs((position + 1.0F) - this.position) > 0.3F) {
-				this.position = position;
-			}
+			this.position = position;
 		}
 	}
 	

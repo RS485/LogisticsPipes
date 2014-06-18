@@ -170,7 +170,7 @@ public class PipeTransportLogistics extends PipeTransport {
 			item.output = ForgeDirection.UNKNOWN;
 		}
 		
-		items.scheduleAdd(item);
+		items.add(item);
 		
 		if(MainProxy.isServer(container.worldObj) && !getPipe().isOpaque()) {
 			sendItemPacket((LPTravelingItemServer)item);
@@ -666,8 +666,10 @@ public class PipeTransportLogistics extends PipeTransport {
 			}
 			item.updateInformation(input, output, speed, position);
 		}
+		//update lastTicked so we don't double-move items
+		item.lastTicked = MainProxy.getGlobalTick();
 		if(items.get(travelId) == null) {
-			items.scheduleAdd(item);
+			items.add(item);
 		}
 	}
 	

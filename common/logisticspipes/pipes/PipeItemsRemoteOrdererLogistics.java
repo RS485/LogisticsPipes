@@ -3,7 +3,7 @@ package logisticspipes.pipes;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.items.RemoteOrderer;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.security.SecuritySettings;

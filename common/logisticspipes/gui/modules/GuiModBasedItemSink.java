@@ -1,8 +1,6 @@
 package logisticspipes.gui.modules;
 
 import logisticspipes.modules.ModuleModBasedItemSink;
-import logisticspipes.network.GuiIDs;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.SmallGuiButton;
@@ -19,8 +17,8 @@ public class GuiModBasedItemSink extends ModuleBaseGui {
 	private int mouseX = 0;
 	private int mouseY = 0;
 	
-	public GuiModBasedItemSink(IInventory playerInventory, CoreRoutedPipe pipe, ModuleModBasedItemSink itemSink, int slot) {
-		super(null, pipe);
+	public GuiModBasedItemSink(IInventory playerInventory, ModuleModBasedItemSink itemSink) {
+		super(null, itemSink);
 		
 		_itemSink = itemSink;
 		
@@ -45,11 +43,6 @@ public class GuiModBasedItemSink extends ModuleBaseGui {
 		this.buttonList.add(new SmallGuiButton(1, guiLeft + 107, guiTop + 18, 50, 10, "Remove"));
 		((GuiButton)buttonList.get(0)).enabled = false;
 		((GuiButton)buttonList.get(1)).enabled = false;
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Module_ModBased_ItemSink_ID;
 	}
 
 	@Override

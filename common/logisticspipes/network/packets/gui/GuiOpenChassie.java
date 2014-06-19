@@ -1,10 +1,11 @@
 package logisticspipes.network.packets.gui;
 
-import net.minecraft.entity.player.EntityPlayer;
-import logisticspipes.LogisticsPipes;
-import logisticspipes.network.GuiIDs;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
+import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.guis.pipe.ChassiGuiProvider;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class GuiOpenChassie extends CoordinatesPacket {
 	public GuiOpenChassie(int id) {
@@ -13,7 +14,7 @@ public class GuiOpenChassie extends CoordinatesPacket {
 	
 	@Override
 	public void processPacket(EntityPlayer player) {
-		player.openGui(LogisticsPipes.instance, GuiIDs.GUI_ChassiModule_ID, player.worldObj, getPosX(), getPosY(), getPosZ());
+		NewGuiHandler.getGui(ChassiGuiProvider.class).setSlot(ModulePositionType.IN_PIPE).setPositionInt(0).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).open(player);
 	}
 
 	@Override

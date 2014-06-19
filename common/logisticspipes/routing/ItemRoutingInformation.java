@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.order.IDistanceTracker;
@@ -31,6 +32,7 @@ public class ItemRoutingInformation {
 	public TransportMode _transportMode = TransportMode.Unknown;
 	public List<Integer> jamlist = new ArrayList<Integer>();
 	public IDistanceTracker tracker = null;
+	public IAdditionalTargetInformation targetInfo;
 	
     private long delay = 640 + MainProxy.getGlobalTick();
 	

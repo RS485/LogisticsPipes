@@ -1,19 +1,23 @@
 package logisticspipes.network.packets.module;
 
+import java.io.IOException;
+
 import logisticspipes.modules.ModuleApiaristAnalyser;
-import logisticspipes.network.abstractpackets.Integer2CoordinatesPacket;
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.PipeLogisticsChassi;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.DummyWorldProvider;
-import logisticspipes.utils.gui.DummyModuleContainer;
+import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
 @Accessors(chain=true)
-public class ApiaristAnalyserMode extends Integer2CoordinatesPacket {
+public class ApiaristAnalyserMode extends ModuleCoordinatesPacket {
+
+	@Getter
+	@Setter
+	private int mode;
 
 	public ApiaristAnalyserMode(int id) {
 		super(id);
@@ -26,36 +30,20 @@ public class ApiaristAnalyserMode extends Integer2CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if(MainProxy.isClient(player.worldObj)) {
-			final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-			if (pipe == null) return;
-			if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2()) instanceof ModuleApiaristAnalyser) {
-				((ModuleApiaristAnalyser)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2())).setExtractMode(getInteger());
-			}
-			if(pipe.pipe instanceof CoreRoutedPipe && ((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleApiaristAnalyser) {
-				((ModuleApiaristAnalyser)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).setExtractMode(getInteger());
-			}
-		} else {
-			if(getInteger2() < 0) {
-				if(player.openContainer instanceof DummyModuleContainer) {
-					DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
-					if(dummy.getModule() instanceof ModuleApiaristAnalyser) {
-						ModuleApiaristAnalyser module = (ModuleApiaristAnalyser) dummy.getModule();
-						module.registerHandler(null, null, new DummyWorldProvider(player.worldObj), null);
-						module.setExtractMode(getInteger());
-					}
-				}
-				return;
-			}
-			final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-			if(pipe == null) return;
-			if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2()) instanceof ModuleApiaristAnalyser) {
-				((ModuleApiaristAnalyser)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2())).setExtractMode(getInteger());
-			}
-			if(pipe.pipe instanceof CoreRoutedPipe && ((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleApiaristAnalyser) {
-				((ModuleApiaristAnalyser)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).setExtractMode(getInteger());
-			}
-		}
+		ModuleApiaristAnalyser module = this.getLogisticsModule(player, ModuleApiaristAnalyser.class);
+		module.setExtractMode(mode);
+	}
+
+	@Override
+	public void writeData(LPDataOutputStream data) throws IOException {
+		super.writeData(data);
+		data.writeInt(mode);
+	}
+
+	@Override
+	public void readData(LPDataInputStream data) throws IOException {
+		super.readData(data);
+		mode = data.readInt();
 	}
 }
 

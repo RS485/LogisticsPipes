@@ -5,10 +5,14 @@ import java.util.List;
 
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
-import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.network.GuiIDs;
+import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.network.NewGuiHandler;
+import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
+import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
+import logisticspipes.network.guis.module.inpipe.FluidSupplierSlot;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.SinkReply;
@@ -26,8 +30,6 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 	
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested liquids", 1);
 
-
-
 	private IWorldProvider _world;
 	IRoutedPowerProvider _power;
 	
@@ -36,9 +38,10 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_world = world;
 		_power = powerprovider;
+		_invProvider = invProvider;
 	}
 
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 0, 0);
@@ -53,10 +56,14 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 	}
 
 	@Override
-	public int getGuiHandlerID() {
-		return GuiIDs.GUI_Module_FluidSupplier_ID;
+	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+		return NewGuiHandler.getGui(FluidSupplierSlot.class);
 	}
-	
+
+	@Override
+	protected ModuleInHandGuiProvider getInHandGuiProvider() {
+		return null;
+	}	
 	@Override
 	public LogisticsModule getSubModule(int slot) {return null;}
 
@@ -80,25 +87,6 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 		list.add("<inventory>");
 		list.add("<that>");
 		return list;
-	}
-
-
-	@Override 
-	public void registerSlot(int slot) {
-	}
-	
-	@Override 
-	public final int getX() {
-		return this._power.getX();
-	}
-	@Override 
-	public final int getY() {
-		return this._power.getY();
-	}
-	
-	@Override 
-	public final int getZ() {
-		return this._power.getZ();
 	}
 
 	@Override

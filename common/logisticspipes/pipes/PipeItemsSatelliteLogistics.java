@@ -18,10 +18,11 @@ import logisticspipes.gui.hud.HUDSatellite;
 import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
-import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleSatelite;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -281,7 +282,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		final Iterator<ItemIdentifierStack> iterator = _lostItems.iterator();
 		while (iterator.hasNext()) {
 			ItemIdentifierStack stack = iterator.next();
-			int received = RequestTree.requestPartial(stack, (CoreRoutedPipe) container.pipe);
+			int received = RequestTree.requestPartial(stack, (CoreRoutedPipe) container.pipe, null);
 			if(received > 0) {
 				if(received == stack.getStackSize()) {
 					iterator.remove();
@@ -293,12 +294,12 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	}
 
 	@Override
-	public void itemLost(ItemIdentifierStack item) {
+	public void itemLost(ItemIdentifierStack item, IAdditionalTargetInformation info) {
 		_lostItems.add(item);
 	}
 
 	@Override
-	public void itemArrived(ItemIdentifierStack item) {
+	public void itemArrived(ItemIdentifierStack item, IAdditionalTargetInformation info) {
 	}
 
 	public void setSatelliteId(int integer) {

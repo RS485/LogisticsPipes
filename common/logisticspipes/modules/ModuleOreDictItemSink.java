@@ -14,12 +14,18 @@ import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.network.GuiIDs;
+import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
+import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
+import logisticspipes.network.guis.module.inhand.OreDictItemSinkModuleInHand;
+import logisticspipes.network.guis.module.inpipe.OreDictItemSinkModuleSlot;
 import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
+import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
 import logisticspipes.network.packets.module.OreDictItemSinkList;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.PlayerCollectionList;
@@ -42,52 +48,19 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 	public final List<String> oreList = new LinkedList<String>();
 	//map of ItemID:<set of damagevalues>, empty set if wildcard damage
 	private Map<Integer, Set<Integer>> oreItemIdMap;
-	private int slot = 0;
 
 	private IHUDModuleRenderer HUD = new HUDOreDictItemSink(this);
 	private List<ItemIdentifierStack> oreHudList;
 
-	private IRoutedPowerProvider _power;
 	private IWorldProvider _world;
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
-		_power = powerprovider;
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_world = world;
+		_invProvider = invProvider;
 	}
-
-
-	@Override
-	public void registerSlot(int slot) {
-		this.slot = slot;
-	}
-
-	@Override
-	public final int getX() {
-		if(slot>=0)
-			return this._power.getX();
-		else
-			return 0;
-	}
-
-	@Override
-	public final int getY() {
-		if(slot>=0)
-			return this._power.getY();
-		else
-			return -1;
-	}
-
-	@Override
-	public final int getZ() {
-		if(slot>=0)
-			return this._power.getZ();
-		else
-			return -1-slot;
-	}
-
 
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.OreDictItemSink, 0, true, false, 5, 0);
 	@Override
@@ -105,8 +78,15 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 	}
 
 	@Override
-	public int getGuiHandlerID() {
-		return GuiIDs.GUI_Module_OreDict_ItemSink_ID;
+	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+		NBTTagCompound nbt = new NBTTagCompound();
+		this.writeToNBT(nbt);
+		return NewGuiHandler.getGui(OreDictItemSinkModuleSlot.class).setNbt(nbt);
+	}
+
+	@Override
+	protected ModuleInHandGuiProvider getInHandGuiProvider() {
+		return NewGuiHandler.getGui(OreDictItemSinkModuleInHand.class);
 	}
 
 	public List<ItemIdentifierStack> getHudItemList() {
@@ -186,13 +166,13 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 	}
 
 	@Override
-	public void startWatching() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+	public void startHUDWatching() {
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setModulePos(this));
 	}
 
 	@Override
-	public void stopWatching() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+	public void stopHUDWatching() {
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopModuleWatchingPacket.class).setModulePos(this));
 	}
 
 	@Override
@@ -200,7 +180,7 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 		localModeWatchers.add(player);
 		NBTTagCompound nbt = new NBTTagCompound();
 		writeToNBT(nbt);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OreDictItemSinkList.class).setSlot(slot).setTag(nbt).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OreDictItemSinkList.class).setTag(nbt).setModulePos(this), (Player)player);
 	}
 
 	@Override
@@ -212,16 +192,16 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 		if(MainProxy.isServer(_world.getWorld())) {
 			NBTTagCompound nbt = new NBTTagCompound();
 			writeToNBT(nbt);
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(OreDictItemSinkList.class).setSlot(slot).setTag(nbt).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(OreDictItemSinkList.class).setTag(nbt).setModulePos(this), localModeWatchers);
 		} else {
 			NBTTagCompound nbt = new NBTTagCompound();
 			writeToNBT(nbt);
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(OreDictItemSinkList.class).setSlot(slot).setTag(nbt).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(OreDictItemSinkList.class).setTag(nbt).setModulePos(this));
 		}
 	}
 
 	@Override
-	public IHUDModuleRenderer getRenderer() {
+	public IHUDModuleRenderer getHUDRenderer() {
 		return HUD;
 	}
 	@Override

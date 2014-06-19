@@ -8,6 +8,7 @@ import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
@@ -26,7 +27,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ModuleElectricBuffer extends LogisticsModule {
 	private IInventoryProvider _invProvider;
 	private IRoutedPowerProvider _power;
-	private ISendRoutedItem _itemSender;
 
 
 
@@ -44,17 +44,13 @@ public class ModuleElectricBuffer extends LogisticsModule {
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerProvider) {		
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerProvider) {		
 		_invProvider = invProvider;
 		_power = powerProvider;
 		_world = world;
-		_itemSender = itemSender;
+
 	}
 
-
-	@Override 
-	public void registerSlot(int slot) {
-	}
 	
 	@Override 
 	public final int getX() {
@@ -98,10 +94,10 @@ public class ModuleElectricBuffer extends LogisticsModule {
 			ItemStack stack = inv.getStackInSlot(i);
 			if (stack == null) continue;
 			if (SimpleServiceLocator.IC2Proxy.isElectricItem(stack)) {
-				Triplet<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _itemSender.getSourceID(), true, FixedPriority.ElectricManager);
+				Triplet<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _invProvider.getSourceID(), true, FixedPriority.ElectricManager);
 				if(reply == null) continue;
 				MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.getX(), this.getY(), this.getZ(), _world.getWorld(), 2);
-				_itemSender.sendStack(inv.decrStackSize(i, 1), reply, ItemSendMode.Normal);
+				_invProvider.sendStack(inv.decrStackSize(i, 1), reply, ItemSendMode.Normal);
 				return;
 			}
 			continue;

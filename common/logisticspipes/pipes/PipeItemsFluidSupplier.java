@@ -5,9 +5,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -190,7 +191,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 				boolean success = false;
 
 				if(_requestPartials) {
-					countToRequest = RequestTree.requestPartial(need.makeStack(countToRequest), (IRequestItems) this.container.pipe);
+					countToRequest = RequestTree.requestPartial(need.makeStack(countToRequest), (IRequestItems) this.container.pipe, null);
 					if(countToRequest > 0) {
 						success = true;
 					}
@@ -253,12 +254,12 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 	}
 
 	@Override
-	public void itemLost(ItemIdentifierStack item) {
+	public void itemLost(ItemIdentifierStack item, IAdditionalTargetInformation info) {
 		decreaseRequested(item);
 	}
 
 	@Override
-	public void itemArrived(ItemIdentifierStack item) {
+	public void itemArrived(ItemIdentifierStack item, IAdditionalTargetInformation info) {
 		decreaseRequested(item);
 		delayThrottle();
 	}

@@ -15,10 +15,18 @@ import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
-public interface ICraftItems extends IProvideItems, IRequestItems{
+public interface ICraftItems extends IProvideItems, IRequestItems, IRequireReliableTransport{
 	void registerExtras(LogisticsPromise promise);
 	CraftingTemplate addCrafting(ItemIdentifier toCraft);
 	//void canCraft(LogisticsTransaction transaction);
-	List<ItemIdentifierStack> getCraftedItems();
+	/**
+	 * some items do not have a specific list of things they can craft (ie, AE crafting system, fuzzy crafting)
+	 * in this case enumerating them all will be slow/impossible.
+	 *
+	 * @deprecated getCraftedItems can be slow, instead ask if the item you are after can be crafted
+	 */
+	@Deprecated 
+	List<ItemIdentifierStack> getCraftedItems(); // list of all items that can be crafted.
+	boolean canCraft(ItemIdentifier toCraft); // list of all items that can be crafted.
 	int getTodo();
 }

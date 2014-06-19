@@ -15,7 +15,7 @@ import java.util.UUID;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.LPPosition;

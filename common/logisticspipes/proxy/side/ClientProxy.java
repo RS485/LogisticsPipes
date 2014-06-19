@@ -8,6 +8,8 @@ import logisticspipes.blocks.powertile.LogisticsBCPowerProviderTileEntity;
 import logisticspipes.blocks.powertile.LogisticsIC2PowerProviderTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
+import logisticspipes.gui.modules.ModuleBaseGui;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
 import logisticspipes.pipefxhandlers.providers.EntityBlueSparkleFXProvider;
@@ -206,5 +208,13 @@ public class ClientProxy implements IProxy {
 	@Override
 	public void tickClient() {
 		MainProxy.addTick();
+	}
+
+	@Override
+	public LogisticsModule getModuleFromGui() {
+		if (FMLClientHandler.instance().getClient().currentScreen instanceof ModuleBaseGui) {
+			return ((ModuleBaseGui) FMLClientHandler.instance().getClient().currentScreen).getModule();
+		}
+		return null;
 	}
 }

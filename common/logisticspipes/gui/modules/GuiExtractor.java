@@ -8,10 +8,9 @@
 
 package logisticspipes.gui.modules;
 
-import logisticspipes.interfaces.ISneakyDirectionReceiver;
+import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.ExtractorModuleDirectionPacket;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.client.gui.GuiButton;
@@ -23,17 +22,13 @@ import org.lwjgl.opengl.GL11;
 
 public class GuiExtractor extends ModuleBaseGui {
 
-	//private final SneakyPipe _pipe;
+	private final LogisticsSneakyDirectionModule _directionReceiver;
 	
-	private final ISneakyDirectionReceiver _directionReceiver;
-	private int slot;
-	
-	public GuiExtractor(IInventory playerInventory, CoreRoutedPipe pipe, ISneakyDirectionReceiver directionReceiver, int slot) {
-		super(new DummyContainer(playerInventory, null),pipe);
+	public GuiExtractor(IInventory playerInventory, LogisticsSneakyDirectionModule directionReceiver) {
+		super(new DummyContainer(playerInventory, null), directionReceiver);
 		_directionReceiver = directionReceiver;
 		xSize = 160;
 		ySize = 200;
-		this.slot = slot;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -66,11 +61,7 @@ public class GuiExtractor extends ModuleBaseGui {
 	protected void actionPerformed(GuiButton guibutton) {
 		_directionReceiver.setSneakyDirection(ForgeDirection.getOrientation(guibutton.id));
 		
-		if(slot >= 0) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(ExtractorModuleDirectionPacket.class).setInteger(_directionReceiver.getSneakyDirection().ordinal() + (slot * 10)).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
-		} else {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(ExtractorModuleDirectionPacket.class).setInteger(_directionReceiver.getSneakyDirection().ordinal() + (slot * 10)).setPosX(0).setPosY(-1).setPosZ(_directionReceiver.getZ()));
-		}
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(ExtractorModuleDirectionPacket.class).setDirection(_directionReceiver.getSneakyDirection()).setModulePos(_directionReceiver));
 		
 		refreshButtons();
 		super.actionPerformed(guibutton);

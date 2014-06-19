@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.items.LogisticsFluidContainer;
@@ -254,6 +255,7 @@ public abstract class LPTravelingItem {
 			info._doNotBuffer = false;
 			info.arrived = false;
 			info._transportMode = TransportMode.Unknown;
+			info.targetInfo = null;
 		}
 		
 		public void itemWasLost() {
@@ -263,7 +265,7 @@ public abstract class LPTravelingItem {
 			if (info.destinationint >= 0 && SimpleServiceLocator.routerManager.isRouter(info.destinationint)){
 				IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(info.destinationint); 
 				if (destinationRouter.getPipe() != null && destinationRouter.getPipe() instanceof IRequireReliableTransport) {
-					((IRequireReliableTransport)destinationRouter.getPipe()).itemLost(info.getItem().clone());
+					((IRequireReliableTransport)destinationRouter.getPipe()).itemLost(info.getItem().clone(), info.targetInfo);
 				}
 				if (destinationRouter.getPipe() != null && destinationRouter.getPipe() instanceof IRequireReliableFluidTransport) {
 					if(info.getItem().getItem().isFluidContainer()) {
@@ -394,6 +396,16 @@ public abstract class LPTravelingItem {
 
 		public void resetDelay() {
 			info.resetDelay();
+		}
+
+		@Override
+		public void setAdditionalTargetInformation(IAdditionalTargetInformation targetInfo) {
+			info.targetInfo = targetInfo;
+		}
+
+		@Override
+		public IAdditionalTargetInformation getAdditionalTargetInformation() {
+			return info.targetInfo;
 		}
 	}
 }

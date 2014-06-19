@@ -25,14 +25,18 @@ import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IOrderManagerContentReceiver;
+import logisticspipes.interfaces.ISendRoutedItem;
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.logisticspipes.ExtractionMode;
+import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.ModuleProvider;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.hud.ChestContent;
@@ -43,6 +47,7 @@ import logisticspipes.network.packets.modules.ProviderPipeMode;
 import logisticspipes.network.packets.orderer.OrdererManagerContent;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
@@ -54,6 +59,7 @@ import logisticspipes.routing.order.LogisticsOrderManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SinkReply;
@@ -61,10 +67,14 @@ import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
@@ -80,8 +90,11 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	public final LinkedList<ItemIdentifierStack> itemListOrderer = new LinkedList<ItemIdentifierStack>();
 	private final HUDProvider HUD = new HUDProvider(this);
 	
-	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager(RequestType.PROVIDER, this);
+	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager(this);
 	private boolean doContentUpdate = true;
+	
+	protected ModuleProvider myModule;
+	private ForgeDirection temporaryDirection;
 		
 	public PipeItemsProviderLogistics(int itemID) {
 		super(itemID);
@@ -90,11 +103,13 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	public PipeItemsProviderLogistics(int itemID, LogisticsOrderManager logisticsOrderManager) {
 		this(itemID);
 		_orderManager = logisticsOrderManager;
+		myModule = new ModuleProvider();
+		myModule.registerHandler(this, this, this);
 	}
 	
 	@Override
 	public void onAllowedRemoval() {
-		while(_orderManager.hasOrders()) {
+		while(_orderManager.hasOrders(RequestType.PROVIDER)) {
 			_orderManager.sendFailed();
 		}
 	}
@@ -134,7 +149,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		return 1;
 	}
 	
-	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination) {
+	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination, IAdditionalTargetInformation info) {
 		ItemIdentifier item = stack.getItem();
 		
 		WorldUtil wUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
@@ -177,6 +192,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 			IRoutedItem routedItem = SimpleServiceLocator.routedItemHelper.createNewTravelItem(removed);
 			routedItem.setDestination(destination);
 			routedItem.setTransportMode(TransportMode.Active);
+			routedItem.setAdditionalTargetInformation(info);
 			super.queueRoutedItem(routedItem, tile.orientation);
 			
 			_orderManager.sendSuccessfull(sent, defersend, routedItem);
@@ -233,17 +249,17 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 			checkContentUpdate(null);
 		}
 		
-		if (!_orderManager.hasOrders() || getWorld().getTotalWorldTime() % 6 != 0) return;
+		if (!_orderManager.hasOrders(RequestType.PROVIDER) || getWorld().getTotalWorldTime() % 6 != 0) return;
 
 		int itemsleft = itemsToExtract();
 		int stacksleft = stacksToExtract();
 		LogisticsOrder firstOrder = null;
 		LogisticsOrder order = null;
-		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders() && (firstOrder == null || firstOrder != order)) {
+		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders(RequestType.PROVIDER) && (firstOrder == null || firstOrder != order)) {
 			if(firstOrder == null)
 				firstOrder = order;
-			order = _orderManager.peekAtTopRequest();
-			int sent = sendStack(order.getItem(), itemsleft, order.getDestination().getRouter().getSimpleID());
+			order = _orderManager.peekAtTopRequest(RequestType.PROVIDER);
+			int sent = sendStack(order.getItem(), itemsleft, order.getDestination().getRouter().getSimpleID(), order.getInformation());
 			if(sent < 0) break;
 			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, getX(), getY(), getZ(), this.getWorld(), 3);
 			stacksleft -= 1;
@@ -266,17 +282,14 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		int canProvide = getAvailableItemCount(tree.getStackItem());
 		canProvide -= donePromisses;
 		if (canProvide < 1) return;
-		LogisticsPromise promise = new LogisticsPromise();
-		promise.item = tree.getStackItem();
-		promise.numberOfItems = Math.min(canProvide, tree.getMissingItemCount());
-		promise.sender = this;
+		LogisticsPromise promise = new LogisticsPromise(tree.getStackItem(), Math.min(canProvide, tree.getMissingItemCount()), this);
 		tree.addPromise(promise);
 	}
 	
 	@Override
-	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination) {
+	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination, IAdditionalTargetInformation info) {
 		MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, getX(), getY(), getZ(), this.getWorld(), 2);
-		return _orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination);
+		return _orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, RequestType.PROVIDER, info);
 	}
 
 	@Override
@@ -498,7 +511,5 @@ outer:
 	public void nextExtractionMode() {
 		_extractionMode = _extractionMode.next();
 	}
-
-	
 
 }

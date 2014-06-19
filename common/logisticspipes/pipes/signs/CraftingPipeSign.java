@@ -2,6 +2,7 @@ package logisticspipes.pipes.signs;
 
 import java.util.List;
 
+import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.cpipe.CPipeSatelliteImportBack;
@@ -64,7 +65,7 @@ public class CraftingPipeSign implements IPipeSign {
 	public void render(CoreRoutedPipe pipe, LogisticsRenderPipe renderer) {
 		PipeItemsCraftingLogistics cpipe = (PipeItemsCraftingLogistics)pipe;
 		FontRenderer var17 = renderer.getFontRenderer();
-		if(pipe != null) {
+		if(cpipe != null) {
 			List<ItemIdentifierStack> craftables = cpipe.getCraftedItems();
 			
 			String name = "";
@@ -87,9 +88,10 @@ public class CraftingPipeSign implements IPipeSign {
 					} catch(Exception e1) {}
 				}
 				
+				ModuleCrafter logisticsMod=cpipe.getLogisticsModule();
 				var17.drawString("ID: " + String.valueOf(item.itemID), -var17.getStringWidth("ID: " + String.valueOf(item.itemID)) / 2, 0 * 10 - 4 * 5, 0);
-				if(cpipe.satelliteId != 0) {
-					var17.drawString("Sat ID: " + String.valueOf(cpipe.satelliteId), -var17.getStringWidth("Sat ID: " + String.valueOf(cpipe.satelliteId)) / 2, 1 * 10 - 4 * 5, 0);
+				if(logisticsMod.satelliteId != 0) {
+					var17.drawString("Sat ID: " + String.valueOf(logisticsMod.satelliteId), -var17.getStringWidth("Sat ID: " + String.valueOf(logisticsMod.satelliteId)) / 2, 1 * 10 - 4 * 5, 0);
 				}
 			} else {
 				GL11.glRotatef(-180.0F, 1.0F, 0.0F, 0.0F);

@@ -3,6 +3,7 @@ package logisticspipes.routing.order;
 import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import lombok.Getter;
@@ -17,6 +18,8 @@ public class LogisticsOrder implements IOrderInfoProvider {
 	private final ItemIdentifierStack item;
 	@Getter
 	private final IRequestItems destination;
+	@Getter
+	private final IAdditionalTargetInformation information;
 	@Getter
 	@Setter
 	private boolean isFinished = false;
@@ -36,10 +39,14 @@ public class LogisticsOrder implements IOrderInfoProvider {
 	private byte machineProgress = 0;
 	private List<IDistanceTracker> trackers = new ArrayList<IDistanceTracker>();
 	
-	public LogisticsOrder(ItemIdentifierStack item, IRequestItems destination, RequestType type) {
+	public LogisticsOrder(ItemIdentifierStack item, IRequestItems destination, RequestType type, IAdditionalTargetInformation info) {
+		if(destination == null && type != RequestType.EXTRA) {
+			throw new NullPointerException();
+		}
 		this.item = item;
 		this.destination = destination;
 		this.type = type;
+		this.information = info;
 	}
 
 	@Override

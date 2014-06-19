@@ -33,24 +33,29 @@ import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.interfaces.ISecurityProvider;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.items.ItemPipeSignCreator;
+import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IAdjacentWorldAccess;
+import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.IRoutedItem;
+import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.logisticspipes.ITrackStatistics;
 import logisticspipes.logisticspipes.PipeTransportLayer;
 import logisticspipes.logisticspipes.RouteLayer;
 import logisticspipes.logisticspipes.TransportLayer;
-import logisticspipes.modules.LogisticsGuiModule;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -78,6 +83,7 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.routing.IRouterQueuedTask;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.ServerRouter;
+import logisticspipes.routing.order.LogisticsOrderManager;
 import logisticspipes.security.PermissionException;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
@@ -91,6 +97,8 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.PlayerCollectionList;
+import logisticspipes.utils.SidedInventoryMinecraftAdapter;
+import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -100,6 +108,7 @@ import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
@@ -119,7 +128,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import dan200.computercraft.api.lua.ILuaObject;
 
 @CCType(name = "LogisticsPipes:Normal")
-public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implements IClientState, IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IRoutedPowerProvider, IQueueCCEvent {
+public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implements IInventoryProvider,IClientState, IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IRoutedPowerProvider, IQueueCCEvent {
 
 	public enum ItemSendMode {
 		Normal,
@@ -154,6 +163,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	protected final PriorityBlockingQueue<ItemRoutingInformation> _inTransitToMe = new PriorityBlockingQueue<ItemRoutingInformation>(10, new ItemRoutingInformation.DelayComparator());
 	
 	private UpgradeManager upgradeManager = new UpgradeManager(this);
+	protected LogisticsOrderManager _orderManager = null;
 	
 	public int stat_session_sent;
 	public int stat_session_recieved;
@@ -173,6 +183,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 
 	protected List<IInventory> _cachedAdjacentInventories;
 
+	protected ForgeDirection pointedDirection = ForgeDirection.UNKNOWN;
 	//public BaseRoutingLogic logic;
 	// from BaseRoutingLogic
 	protected int throttleTime = 20;
@@ -187,6 +198,8 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 
 	public CoreRoutedPipe(PipeTransportLogistics transport, int itemID) {
 		super(transport, itemID);
+		//this.logic = logic;
+		//((PipeTransportItems) transport).allowBouncing = true;
 		
 		pipecount++;
 		
@@ -214,11 +227,17 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	}
 	
 	public void queueRoutedItem(IRoutedItem routedItem, ForgeDirection from) {
+		if(from == null) {
+			throw new NullPointerException();
+		}
 		_sendQueue.addLast(new Triplet<IRoutedItem, ForgeDirection, ItemSendMode>(routedItem, from, ItemSendMode.Normal));
 		sendQueueChanged(false);
 	}
 
 	public void queueRoutedItem(IRoutedItem routedItem, ForgeDirection from, ItemSendMode mode) {
+		if(from == null) {
+			throw new NullPointerException();
+		}
 		_sendQueue.addLast(new Triplet<IRoutedItem, ForgeDirection, ItemSendMode>(routedItem, from, mode));
 		sendQueueChanged(false);
 	}
@@ -229,6 +248,10 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	public int sendQueueChanged(boolean force) {return 0;}
 	
 	private void sendRoutedItem(IRoutedItem routedItem, ForgeDirection from) {
+		
+		if(from == null) {
+			throw new NullPointerException();
+		}
 		
 		((PipeTransportLogistics)transport).injectItem(routedItem, from.getOpposite());
 		
@@ -902,11 +925,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			if(MainProxy.isServer(entityplayer.worldObj)) {
 				if (settings == null || settings.openGui) {
 					if (getLogisticsModule() != null && getLogisticsModule() instanceof LogisticsGuiModule) {
-						if(((LogisticsGuiModule)getLogisticsModule()).getGuiHandlerID() != -1) {
-							entityplayer.openGui(LogisticsPipes.instance, ((LogisticsGuiModule)getLogisticsModule()).getGuiHandlerID(), getWorld(), getX(), getY(), getZ());
-						} else {
-							((LogisticsGuiModule)getLogisticsModule()).getPipeGuiProvider().setSlot(-1).setTilePos(this.container).open(entityplayer);
-						}
+						((LogisticsGuiModule)getLogisticsModule()).getPipeGuiProviderForModule().setTilePos(this.container).open(entityplayer);
 					} else {
 						onWrenchClicked(entityplayer);
 					}
@@ -1015,9 +1034,9 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	}
 	
 	@Override
-	public void itemCouldNotBeSend(ItemIdentifierStack item) {
+	public void itemCouldNotBeSend(ItemIdentifierStack item, IAdditionalTargetInformation info) {
 		if(this instanceof IRequireReliableTransport) {
-			((IRequireReliableTransport)this).itemLost(item);
+			((IRequireReliableTransport)this).itemLost(item, info);
 		}
 		//Override by subclasses //TODO
 	}
@@ -1257,7 +1276,7 @@ outer:
 	public void notifyOfItemArival(ItemRoutingInformation information) {
 		this._inTransitToMe.remove(information);
 		if (this instanceof IRequireReliableTransport) {
-			((IRequireReliableTransport)this).itemArrived(information.getItem());
+			((IRequireReliableTransport)this).itemArrived(information.getItem(), information.targetInfo);
 		}
 		if (this instanceof IRequireReliableFluidTransport) {
 			ItemIdentifierStack stack = information.getItem();
@@ -1531,6 +1550,129 @@ outer:
 	public WorldUtil getWorldUtil() {
 		return new WorldUtil(this.getWorld(), this.getX(), this.getY(), this.getZ());
 	}
+	
+
+	/*** IInventoryProvider ***/
+	 
+	 
+	@Override
+	public IInventoryUtil getPointedInventory(boolean forExtraction) {
+		return getSneakyInventory(this.getPointedOrientation().getOpposite(), forExtraction);
+	}
+	 
+	@Override
+	public IInventoryUtil getPointedInventory(ExtractionMode mode, boolean forExtraction) {
+		IInventory inv = getRealInventory();
+		if(inv == null) return null;
+		if (inv instanceof net.minecraft.inventory.ISidedInventory) inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) inv, this.getPointedOrientation().getOpposite(), forExtraction);
+		switch(mode){
+			case LeaveFirst:
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, false, false, 1, 0);
+			case LeaveLast:
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, false, false, 0, 1);
+			case LeaveFirstAndLast:
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, false, false, 1, 1);
+			case Leave1PerStack:
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, true, false, 0, 0);
+			case Leave1PerType:
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, false, true, 0, 0);
+			default:
+				break;
+		}
+		return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, false, false, 0, 0);
+	}
+
+	@Override
+	public IInventoryUtil getSneakyInventory(boolean forExtraction) {
+		UpgradeManager manager = getUpgradeManager();
+		ForgeDirection insertion = this.getPointedOrientation().getOpposite();
+		if(manager.hasSneakyUpgrade()) {
+			insertion = manager.getSneakyOrientation();
+		}
+		return getSneakyInventory(insertion, forExtraction);
+	}
+
+	@Override
+	public IInventoryUtil getSneakyInventory(ForgeDirection _sneakyOrientation, boolean forExtraction) {
+		IInventory inv = getRealInventory();
+		if(inv == null) return null;
+		if (inv instanceof net.minecraft.inventory.ISidedInventory) inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) inv, _sneakyOrientation, forExtraction);
+		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
+	}
+
+	@Override
+	public IInventoryUtil getUnsidedInventory() {
+		IInventory inv = getRealInventory();
+		if(inv == null) return null;
+		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
+	}
+
+	@Override
+	public IInventory getRealInventory() {
+		TileEntity tile = getPointedTileEntity();
+		if (tile == null ) return null;
+		if (tile instanceof TileGenericPipe) return null;
+		if (!(tile instanceof IInventory)) return null;
+		return InventoryHelper.getInventory((IInventory) tile);
+	}
+	
+	private TileEntity getPointedTileEntity() {
+		if(pointedDirection == ForgeDirection.UNKNOWN) return null;
+		return this.getContainer().getTile(pointedDirection);
+	}
+
+	@Override
+	public ForgeDirection inventoryOrientation() {
+		return getPointedOrientation();
+	}
+
+	/*** ISendRoutedItem ***/
+
+	public int getSourceint() {
+		return this.getRouter().getSimpleID();
+	};
+
+	@Override
+	public Triplet<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault, List<Integer> routerIDsToExclude) {
+		return SimpleServiceLocator.logisticsManager.hasDestination(stack, allowDefault, getRouter().getSimpleID(), routerIDsToExclude);
+	}
+
+	@Override
+	public IRoutedItem sendStack(ItemStack stack, Pair<Integer, SinkReply> reply, ItemSendMode mode) {
+		IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
+		itemToSend.setDestination(reply.getValue1());
+		if (reply.getValue2().isPassive){
+			if (reply.getValue2().isDefault){
+				itemToSend.setTransportMode(TransportMode.Default);
+			} else {
+				itemToSend.setTransportMode(TransportMode.Passive);
+			}
+		}
+		queueRoutedItem(itemToSend, getPointedOrientation(), mode);
+		return itemToSend;
+	}
+
+	@Override
+	public IRoutedItem sendStack(ItemStack stack, int destination, ItemSendMode mode, IAdditionalTargetInformation info) {
+		IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
+		itemToSend.setDestination(destination);
+		itemToSend.setTransportMode(TransportMode.Active);
+		itemToSend.setAdditionalTargetInformation(info);
+		queueRoutedItem(itemToSend, getPointedOrientation(), mode);
+		return itemToSend;
+	}
+	
+
+	
+	public ForgeDirection getPointedOrientation() {
+		return this.pointedDirection;
+	}
+
+	@Override
+	public LogisticsOrderManager getOrderManager() {
+		_orderManager=_orderManager!=null?_orderManager:new LogisticsOrderManager();
+		return this._orderManager;
+	}
 
 	public void addPipeSign(ForgeDirection dir, IPipeSign type, EntityPlayer player) {
 		if(dir.ordinal() < 6) {
@@ -1679,4 +1821,10 @@ outer:
 		}
 		status.add(entry);
 	}
+	
+	@Override
+	public int getSourceID() {
+		return this.getRouterId();
+	}
+
 }

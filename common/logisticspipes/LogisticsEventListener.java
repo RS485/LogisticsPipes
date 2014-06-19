@@ -115,7 +115,7 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 					for(AdjacentTile adj:new WorldUtil(tile).getAdjacentTileEntities()) {
 						if(adj.tile instanceof LogisticsTileGenericPipe) {
 							if(((LogisticsTileGenericPipe)adj.tile).pipe instanceof PipeLogisticsChassi) {
-								if(((PipeLogisticsChassi)((LogisticsTileGenericPipe)adj.tile).pipe).getOrientation() == adj.orientation.getOpposite()) {
+								if(((PipeLogisticsChassi)((LogisticsTileGenericPipe)adj.tile).pipe).getPointedOrientation() == adj.orientation.getOpposite()) {
 									PipeLogisticsChassi chassi = (PipeLogisticsChassi)((LogisticsTileGenericPipe)adj.tile).pipe;
 									for(int i=0;i<chassi.getChassiSize();i++) {
 										if(chassi.getLogisticsModule().getSubModule(i) instanceof ModuleQuickSort) {

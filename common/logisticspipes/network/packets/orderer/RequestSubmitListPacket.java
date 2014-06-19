@@ -1,6 +1,6 @@
 package logisticspipes.network.packets.orderer;
 
-import logisticspipes.network.abstractpackets.InventoryCoordinatesPacket;
+import logisticspipes.network.abstractpackets.InventoryModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -8,7 +8,7 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.request.RequestHandler;
 import net.minecraft.entity.player.EntityPlayer;
 
-public class RequestSubmitListPacket extends InventoryCoordinatesPacket {
+public class RequestSubmitListPacket extends InventoryModuleCoordinatesPacket {
 
 	public RequestSubmitListPacket(int id) {
 		super(id);

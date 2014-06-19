@@ -6,11 +6,9 @@ import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IRoutedPowerProvider;
-import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.modules.LogisticsGuiModule;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.logisticspipes.ItemModuleInformationManager;
 import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleAdvancedExtractorMK2;
 import logisticspipes.modules.ModuleAdvancedExtractorMK3;
@@ -20,6 +18,9 @@ import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleApiaristTerminus;
 import logisticspipes.modules.ModuleCCBasedItemSink;
 import logisticspipes.modules.ModuleCCBasedQuickSort;
+import logisticspipes.modules.ModuleCrafter;
+import logisticspipes.modules.ModuleCrafterMK2;
+import logisticspipes.modules.ModuleCrafterMK3;
 import logisticspipes.modules.ModuleElectricBuffer;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleEnchantmentSink;
@@ -37,6 +38,9 @@ import logisticspipes.modules.ModuleProviderMk2;
 import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.modules.ModuleTerminus;
 import logisticspipes.modules.ModuleThaumicAspectSink;
+import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.item.ItemIdentifierInventory;
@@ -97,9 +101,14 @@ public class ItemModule extends LogisticsItem {
 	public static final int ELECTRICBUFFER = 301;
 
 
-	//ACTIVE MODULES
+	//Providers MODULES
 	public static final int PROVIDER = 500;
 	public static final int PROVIDER_MK2 = 501;
+
+	//Crafter MODULES
+	public static final int CRAFTER = 600;
+	public static final int CRAFTER_MK2 = 601;
+	public static final int CRAFTER_MK3 = 602;
 
 	private List<Module> modules = new ArrayList<Module>();
 
@@ -195,6 +204,11 @@ public class ItemModule extends LogisticsItem {
 		registerModule(ENCHANTMENTSINK_MK2		, ModuleEnchantmentSinkMK2.class);
 		registerModule(CC_BASED_QUICKSORT		, ModuleCCBasedQuickSort.class);
 		registerModule(CC_BASED_ITEMSINK		, ModuleCCBasedItemSink.class);
+		if(LogisticsPipes.DEBUG) {
+			registerModule(CRAFTER					, ModuleCrafter.class);
+			registerModule(CRAFTER_MK2				, ModuleCrafterMK2.class);
+			registerModule(CRAFTER_MK3				, ModuleCrafterMK3.class);
+		}
 	}
 
 	public void registerModule(int id, Class<? extends LogisticsModule> moduleClass) {
@@ -236,20 +250,18 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	private void openConfigGui(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World) {
-		LogisticsModule module = getModuleForItem(par1ItemStack, null, null, null, null, null);
+		LogisticsModule module = getModuleForItem(par1ItemStack, null, null, null, null);
 		if(module != null && module.hasGui()) {
 			if(par1ItemStack != null && par1ItemStack.stackSize > 0) {
-				if(((LogisticsGuiModule)module).getGuiHandlerID() != -1) {
-					par2EntityPlayer.openGui(LogisticsPipes.instance, -1, par3World, ((LogisticsGuiModule)module).getGuiHandlerID(), -1 ,par2EntityPlayer.inventory.currentItem);
-				} else {
-					((LogisticsGuiModule)module).getInHandGuiProvider().setInvSlot(par2EntityPlayer.inventory.currentItem).open(par2EntityPlayer);
-				}
+				ItemModuleInformationManager.readInformation(par1ItemStack, module);
+				module.registerPosition(ModulePositionType.IN_HAND, par2EntityPlayer.inventory.currentItem);
+				((LogisticsGuiModule)module).getInHandGuiProviderForModule().open(par2EntityPlayer);
 			}
 		}
 	}
 	@Override
 	public boolean hasEffect(ItemStack par1ItemStack) {
-		LogisticsModule module = getModuleForItem(par1ItemStack, null, null, null, null, null);
+		LogisticsModule module = getModuleForItem(par1ItemStack, null, null, null, null);
 		if(module != null) {
 			if(par1ItemStack != null && par1ItemStack.stackSize > 0) {
 				return module.hasEffect();
@@ -284,7 +296,7 @@ public class ItemModule extends LogisticsItem {
 		return true;
 	}
 
-	public LogisticsModule getModuleForItem(ItemStack itemStack, LogisticsModule currentModule, IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider power){
+	public LogisticsModule getModuleForItem(ItemStack itemStack, LogisticsModule currentModule, IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider power){
 		if (itemStack == null) return null;
 		if (itemStack.itemID != this.itemID) return null;
 		for(Module module:modules) {
@@ -295,7 +307,7 @@ public class ItemModule extends LogisticsItem {
 				}
 				LogisticsModule newmodule = module.getILogisticsModule();
 				if(newmodule == null) return null;
-				newmodule.registerHandler(invProvider, itemSender, world, power);
+				newmodule.registerHandler(invProvider, world, power);
 				return newmodule;
 			}
 		}

@@ -1,8 +1,8 @@
 package logisticspipes.network.guis.module.inhand;
 
 import logisticspipes.gui.modules.GuiExtractor;
-import logisticspipes.interfaces.ISneakyDirectionReceiver;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
 import logisticspipes.utils.gui.DummyContainer;
@@ -18,14 +18,14 @@ public class ExtractorModuleInHand extends ModuleInHandGuiProvider {
 	@Override
 	public Object getClientGui(EntityPlayer player) {
 		LogisticsModule module = this.getLogisticsModule(player);
-		if(!(module instanceof ISneakyDirectionReceiver)) return null;
-		return new GuiExtractor(player.inventory, null, (ISneakyDirectionReceiver) module, -2);
+		if(!(module instanceof LogisticsSneakyDirectionModule)) return null;
+		return new GuiExtractor(player.inventory, (LogisticsSneakyDirectionModule) module);
 	}
 
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
 		DummyContainer dummy = new DummyModuleContainer(player, getInvSlot());
-		if(!(((DummyModuleContainer)dummy).getModule() instanceof ISneakyDirectionReceiver)) return null;
+		if(!(((DummyModuleContainer)dummy).getModule() instanceof LogisticsSneakyDirectionModule)) return null;
 		return dummy;
 	}
 

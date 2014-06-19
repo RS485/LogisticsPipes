@@ -12,9 +12,10 @@ import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
@@ -22,6 +23,7 @@ import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
 import logisticspipes.network.guis.module.inhand.ItemSinkInHand;
 import logisticspipes.network.guis.module.inpipe.ItemSinkSlot;
 import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
+import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
 import logisticspipes.network.packets.module.ModuleInventory;
 import logisticspipes.network.packets.modules.ItemSinkDefault;
 import logisticspipes.proxy.MainProxy;
@@ -45,7 +47,6 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 	
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested items", 1);
 	private boolean _isDefaultRoute;
-	private int slot = 0;
 	
 	private IHUDModuleRenderer HUD = new HUDItemSink(this);
 	
@@ -66,41 +67,13 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 	}
 	public void setDefaultRoute(boolean isDefaultRoute){
 		_isDefaultRoute = isDefaultRoute;
-		if(!localModeWatchers.isEmpty()) MainProxy.sendToPlayerList(PacketHandler.getPacket(ItemSinkDefault.class).setInteger2(slot).setInteger(isDefaultRoute() ? 1 : 0).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+		if(!localModeWatchers.isEmpty()) MainProxy.sendToPlayerList(PacketHandler.getPacket(ItemSinkDefault.class).setFlag(_isDefaultRoute).setModulePos(this), localModeWatchers);
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_power = powerprovider;
-	}
-
-
-	@Override 
-	public void registerSlot(int slot) {
-		this.slot = slot;
-	}
-	
-	@Override 
-	public final int getX() {
-		if(slot>=0)
-			return this._power.getX();
-		else 
-			return 0;
-	}
-	@Override 
-	public final int getY() {
-		if(slot>=0)
-			return this._power.getY();
-		else 
-			return -1;
-	}
-	
-	@Override 
-	public final int getZ() {
-		if(slot>=0)
-			return this._power.getZ();
-		else 
-			return -1-slot;
+		_invProvider=invProvider;
 	}
 
 	
@@ -124,11 +97,6 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 			return null;
 		}
 		return null;
-	}
-
-	@Override
-	public int getGuiHandlerID() {
-		return -1;
 	}
 
 	@Override
@@ -171,20 +139,20 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 	}
 
 	@Override
-	public void startWatching() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+	public void startHUDWatching() {
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setModulePos(this));
 	}
 
 	@Override
-	public void stopWatching() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+	public void stopHUDWatching() {
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopModuleWatchingPacket.class).setModulePos(this));
 	}
 
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ItemSinkDefault.class).setInteger2(slot).setInteger(isDefaultRoute() ? 1 : 0).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setModulePos(this), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ItemSinkDefault.class).setFlag(_isDefaultRoute).setModulePos(this), (Player)player);
 	}
 
 	@Override
@@ -194,11 +162,11 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 
 	@Override
 	public void InventoryChanged(IInventory inventory) {
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(ItemIdentifierStack.getListFromInventory(inventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(inventory)).setModulePos(this), localModeWatchers);
 	}
 
 	@Override
-	public IHUDModuleRenderer getRenderer() {
+	public IHUDModuleRenderer getHUDRenderer() {
 		return HUD;
 	}
 

@@ -8,8 +8,6 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.gui.DummyContainer;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,34 +39,16 @@ public class ItemSinkSlot extends ModuleCoordinatesGuiProvider {
 
 	@Override
 	public Object getClientGui(EntityPlayer player) {
-		LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) return null;
-		ModuleItemSink module;
-		int slot = 0;
-		if(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleItemSink) {
-			module = (ModuleItemSink) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule();
-		} else if (((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(getSlot()) instanceof ModuleItemSink) {
-			slot = getSlot() + 1;
-			module = (ModuleItemSink) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(getSlot());
-		} else {
-			return null;
-		}
+		ModuleItemSink module = this.getLogisticsModule(player.getEntityWorld(), ModuleItemSink.class);
+		if(module == null) return null;
 		module.setDefaultRoute(isDefaultRoute);
-		return new GuiItemSink(player.inventory, (CoreRoutedPipe) pipe.pipe, module, slot);
+		return new GuiItemSink(player.inventory, module);
 	}
 
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
-		LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) return null;
-		ModuleItemSink module;
-		if(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleItemSink) {
-			module = (ModuleItemSink) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule();
-		} else if(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(getSlot()) instanceof ModuleItemSink) {
-			module = (ModuleItemSink) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(getSlot());
-		} else {
-			return null;
-		}
+		ModuleItemSink module = this.getLogisticsModule(player.getEntityWorld(), ModuleItemSink.class);
+		if(module == null) return null;
 		DummyContainer dummy = new DummyContainer(player.inventory, module.getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 

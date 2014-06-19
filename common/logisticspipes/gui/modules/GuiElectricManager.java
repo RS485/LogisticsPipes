@@ -9,10 +9,8 @@
 package logisticspipes.gui.modules;
 
 import logisticspipes.modules.ModuleElectricManager;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.ElectricManagerPacket;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
@@ -25,8 +23,6 @@ import org.lwjgl.opengl.GL11;
 public class GuiElectricManager extends ModuleBaseGui {
 
 	private final ModuleElectricManager _module;
-	private final int slot;
-
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -48,19 +44,14 @@ public class GuiElectricManager extends ModuleBaseGui {
 		{
 			case 0:
 				_module.setDischargeMode(!_module.isDischargeMode());
-				if(slot >= 0) {
-					MainProxy.sendPacketToServer(PacketHandler.getPacket(ElectricManagerPacket.class).setInteger2(slot - 1).setInteger((_module.isDischargeMode() ? 1 : 0)).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
-				} else {
-					MainProxy.sendPacketToServer(PacketHandler.getPacket(ElectricManagerPacket.class).setInteger2(slot).setInteger((_module.isDischargeMode() ? 1 : 0)).setPosX(_module.getX()).setPosY(_module.getY()).setPosZ(_module.getZ()));
-				}
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(ElectricManagerPacket.class).setFlag(_module.isDischargeMode()).setModulePos(_module));
 				break;
 		}
 	}
 
-	public GuiElectricManager(IInventory playerInventory, CoreRoutedPipe pipe, ModuleElectricManager module, int slot) {
-		super(null,pipe);
+	public GuiElectricManager(IInventory playerInventory, ModuleElectricManager module) {
+		super(null, module);
 		_module = module;
-		this.slot = slot;
 		DummyContainer dummy = new DummyContainer(playerInventory, _module.getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 
@@ -86,10 +77,5 @@ public class GuiElectricManager extends ModuleBaseGui {
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Module_ElectricManager_ID;
 	}
 }

@@ -1,16 +1,15 @@
 package logisticspipes.network.packets.module;
 
+import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import logisticspipes.network.packets.cpipe.CPipeSatelliteImportBack;
-import logisticspipes.pipes.PipeItemsCraftingLogistics;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.entity.player.EntityPlayer;
 import cpw.mods.fml.common.network.Player;
 
-public class RequestCraftingPipeUpdatePacket extends CoordinatesPacket {
+public class RequestCraftingPipeUpdatePacket extends ModuleCoordinatesPacket {
 
 	public RequestCraftingPipeUpdatePacket(int id) {
 		super(id);
@@ -23,17 +22,10 @@ public class RequestCraftingPipeUpdatePacket extends CoordinatesPacket {
 	
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) {
-			return;
-		}
-		if(!(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
-			Thread.dumpStack();
-			return;
-		}
-		PipeItemsCraftingLogistics cpipe = (PipeItemsCraftingLogistics) pipe.pipe;
-		MainProxy.sendPacketToPlayer(cpipe.getCPipePacket(), (Player) player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(((PipeItemsCraftingLogistics) pipe.pipe).getDummyInventory()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player) player);
+		ModuleCrafter module = this.getLogisticsModule(player, ModuleCrafter.class);
+		if(module == null) return;
+		MainProxy.sendPacketToPlayer(module.getCPipePacket(), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(module.getDummyInventory()).setModulePos(module), (Player) player);
 	}
 }
 

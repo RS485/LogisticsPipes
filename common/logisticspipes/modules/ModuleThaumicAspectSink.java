@@ -7,11 +7,16 @@ import java.util.List;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.network.GuiIDs;
+import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
+import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
+import logisticspipes.network.guis.module.inhand.ThaumicAspectSinkModuleInHand;
+import logisticspipes.network.guis.module.inpipe.ThaumicAspectSinkModuleSlot;
 import logisticspipes.network.packets.module.ThaumicAspectsSinkList;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -29,13 +34,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClientInformationProvider, IModuleWatchReciver {
-
-	private int slot = 0;
-
-
-
 	
-	private IRoutedPowerProvider _power;
 	private IWorldProvider _world;
 	
 	public final List<String> aspectList = new LinkedList<String>();
@@ -43,40 +42,11 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerProvider) {
-		_power = powerProvider;
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerProvider) {
 		_world = world;
-	}
+		_invProvider = invProvider;
 
-
-	@Override 
-	public void registerSlot(int slot) {
-		this.slot = slot;
 	}
-	
-	@Override 
-	public final int getX() {
-		if(slot>=0)
-			return this._power.getX();
-		else 
-			return 0;
-	}
-	@Override 
-	public final int getY() {
-		if(slot>=0)
-			return this._power.getY();
-		else 
-			return -1;
-	}
-	
-	@Override 
-	public final int getZ() {
-		if(slot>=0)
-			return this._power.getZ();
-		else 
-			return -1-slot;
-	}
-
 	
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, -2, true, false, 5, 0);
 	@Override
@@ -129,7 +99,7 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 		localModeWatchers.add(player);
 		NBTTagCompound nbt = new NBTTagCompound();
 		writeToNBT(nbt);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ThaumicAspectsSinkList.class).setSlot(slot).setTag(nbt).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ThaumicAspectsSinkList.class).setTag(nbt).setModulePos(this), (Player)player);
 	}
 
 	@Override
@@ -141,11 +111,11 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 		if(MainProxy.isServer(_world.getWorld())) {
 			NBTTagCompound nbt = new NBTTagCompound();
 			writeToNBT(nbt);
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(ThaumicAspectsSinkList.class).setSlot(slot).setTag(nbt).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(ThaumicAspectsSinkList.class).setTag(nbt).setModulePos(this), localModeWatchers);
 		} else {
 			NBTTagCompound nbt = new NBTTagCompound();
 			writeToNBT(nbt);
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(ThaumicAspectsSinkList.class).setSlot(slot).setTag(nbt).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(ThaumicAspectsSinkList.class).setTag(nbt).setModulePos(this));
 		}
 	}
 
@@ -164,8 +134,15 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 	}
 
 	@Override
-	public int getGuiHandlerID() {
-		return GuiIDs.GUI_Module_Thaumic_AspectSink_ID;
+	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+		NBTTagCompound tag = new NBTTagCompound();
+		this.writeToNBT(tag);
+		return NewGuiHandler.getGui(ThaumicAspectSinkModuleSlot.class).setNbt(tag);
+	}
+
+	@Override
+	protected ModuleInHandGuiProvider getInHandGuiProvider() {
+		return NewGuiHandler.getGui(ThaumicAspectSinkModuleInHand.class);
 	}
 
 	public void handleItem(ItemStack stack) {

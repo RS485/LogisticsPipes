@@ -4,9 +4,11 @@ import java.io.IOException;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
+import logisticspipes.utils.DummyWorldProvider;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -39,8 +41,8 @@ public abstract class ModuleInHandGuiProvider extends GuiProvider {
 	public final LogisticsModule getLogisticsModule(EntityPlayer player) {
 		ItemStack item = player.inventory.mainInventory[invSlot];
 		if(item == null) return null;
-		LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, null, null);
-		module.registerSlot(-1-invSlot);
+		LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, new DummyWorldProvider(player.getEntityWorld()), null);
+		module.registerPosition(ModulePositionType.IN_HAND, invSlot);
 		ItemModuleInformationManager.readInformation(item, module);
 		return module;
 	}

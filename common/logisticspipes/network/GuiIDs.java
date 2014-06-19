@@ -2,7 +2,7 @@ package logisticspipes.network;
 
 public class GuiIDs {
 	//Pipes
-	public static final int GUI_CRAFTINGPIPE_ID = 10;
+	//public static final int GUI_CRAFTINGPIPE_ID = 10;
 	public static final int GUI_FluidSupplier_ID = 11;
 	public static final int GUI_ProviderPipe_ID = 12;
 	public static final int GUI_SatelitePipe_ID = 13;
@@ -12,7 +12,7 @@ public class GuiIDs {
 	public static final int GUI_FIREWALL = 17;
 	public static final int GUI_FluidSupplier_MK2_ID = 18;
 	
-	//Modules
+/*	//Modules
 	//public static final int GUI_Module_Extractor_ID = 20;
 	//public static final int GUI_Module_ItemSink_ID = 21;
 	public static final int GUI_Module_FluidSupplier_ID = 22;
@@ -28,7 +28,8 @@ public class GuiIDs {
 	public static final int GUI_Module_Thaumic_AspectSink_ID = 41;
 	public static final int GUI_Module_Apiarist_Analyzer = 42;
 	public static final int GUI_Module_OreDict_ItemSink_ID = 43;
-
+*/
+	
 	//Devices
 	public static final int GUI_RoutingStats_ID = 30;
 	public static final int GUI_Normal_Orderer_ID = 31;

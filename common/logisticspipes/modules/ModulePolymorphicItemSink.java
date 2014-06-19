@@ -7,6 +7,7 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -24,7 +25,7 @@ public class ModulePolymorphicItemSink extends LogisticsModule {
 	public ModulePolymorphicItemSink() {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_invProvider = invProvider;
 		_power = powerprovider;
 	}
@@ -55,10 +56,6 @@ public class ModulePolymorphicItemSink extends LogisticsModule {
 
 	@Override
 	public void tick() {}
-
-	@Override 
-	public void registerSlot(int slot) {
-	}
 	
 	@Override 
 	public final int getX() {

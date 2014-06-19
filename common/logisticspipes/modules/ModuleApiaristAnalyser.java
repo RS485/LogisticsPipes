@@ -7,11 +7,16 @@ import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.network.GuiIDs;
+import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
+import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
+import logisticspipes.network.guis.module.inhand.ApiaristAnalyserModuleInHand;
+import logisticspipes.network.guis.module.inpipe.ApiaristAnalyzerModuleSlot;
 import logisticspipes.network.packets.module.ApiaristAnalyserMode;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
@@ -31,11 +36,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClientInformationProvider, IModuleWatchReciver {
 
-	private IInventoryProvider _invProvider;
-	private ISendRoutedItem _itemSender;
 	private int ticksToAction = 100;
 	private int currentTick = 0;
-	private int slot = 0;
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
@@ -49,9 +51,9 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_invProvider = invProvider;
-		_itemSender = itemSender;
+
 		_power = powerprovider;
 		_world = world;
 	}
@@ -97,47 +99,17 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 				ItemStack item = inv.getStackInSlot(i);
 				if (SimpleServiceLocator.forestryProxy.isBee(item)) {
 					if (SimpleServiceLocator.forestryProxy.isAnalysedBee(item)) {
-						Pair<Integer, SinkReply> reply = _itemSender.hasDestination(ItemIdentifier.get(item), true, new ArrayList<Integer>());
+						Pair<Integer, SinkReply> reply = _invProvider.hasDestination(ItemIdentifier.get(item), true, new ArrayList<Integer>());
 						if (reply == null)
 							continue;
 						if (_power.useEnergy(6)) {
-							_itemSender.sendStack(inv.decrStackSize(i, 1), reply, ItemSendMode.Normal);
+							_invProvider.sendStack(inv.decrStackSize(i, 1), reply, ItemSendMode.Normal);
 						}
 					}
 				}
 			}
 		}
 	}
-
-
-	@Override 
-	public void registerSlot(int slot) {
-		this.slot = slot;
-	}
-	
-	@Override 
-	public final int getX() {
-		if(slot>=0)
-			return this._invProvider.getX();
-		else 
-			return 0;
-	}
-	@Override 
-	public final int getY() {
-		if(slot>=0)
-			return this._invProvider.getY();
-		else 
-			return -1;
-	}
-	
-	@Override 
-	public final int getZ() {
-		if(slot>=0)
-			return this._invProvider.getZ();
-		else 
-			return -1-slot;
-	}
-
 
 	@Override
 	public boolean hasGenericInterests() {
@@ -163,11 +135,6 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 	public boolean recievePassive() {
 		return true;
 	}
-
-	@Override
-	public int getGuiHandlerID() {
-		return GuiIDs.GUI_Module_Apiarist_Analyzer;
-	}
 	
 	public void setExtractMode(int mode) {
 		if (getExtractMode() == mode) return;
@@ -185,16 +152,12 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 	}
 	
 	public void modeChanged() {
-		if(_world != null) {
-			if(MainProxy.isServer(_world.getWorld())) {
-				if(getY() >= 0) {
-					MainProxy.sendToPlayerList(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(slot).setInteger(getExtractMode()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
-				}
-			} else {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(slot).setInteger(getExtractMode()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+		if(MainProxy.isServer(_world.getWorld())) {
+			if(getSlot().isInWorld()) {
+				MainProxy.sendToPlayerList(PacketHandler.getPacket(ApiaristAnalyserMode.class).setMode(getExtractMode()).setModulePos(this), localModeWatchers);
 			}
 		} else {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(slot).setInteger(getExtractMode()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setMode(getExtractMode()).setModulePos(this));
 		}
 	}
 
@@ -209,7 +172,7 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(slot).setInteger(getExtractMode()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setMode(getExtractMode()).setModulePos(this), (Player)player);
 	}
 
 	@Override
@@ -221,5 +184,15 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 	@SideOnly(Side.CLIENT)
 	public Icon getIconTexture(IconRegister register) {
 		return register.registerIcon("logisticspipes:itemModule/ModuleApiaristAnalyser");
+	}
+
+	@Override
+	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+		return NewGuiHandler.getGui(ApiaristAnalyzerModuleSlot.class).setExtractorMode(getExtractMode());
+	}
+
+	@Override
+	protected ModuleInHandGuiProvider getInHandGuiProvider() {
+		return NewGuiHandler.getGui(ApiaristAnalyserModuleInHand.class);
 	}
 }

@@ -1,15 +1,18 @@
-package logisticspipes.logisticspipes;
+package logisticspipes.modules;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.modules.LogisticsGuiModule;
-import logisticspipes.modules.LogisticsModule;
-import logisticspipes.network.GuiIDs;
+import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.network.NewGuiHandler;
+import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
+import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
+import logisticspipes.network.guis.pipe.ChassiGuiProvider;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.cc.CCSinkResponder;
 import logisticspipes.utils.SinkReply;
@@ -19,14 +22,16 @@ import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Icon;
 
-public class ChassiModule extends LogisticsGuiModule{
+public class ChassiModule extends LogisticsGuiModule {
 	
 	private final LogisticsModule[] _modules;
 	private final PipeLogisticsChassi _parentPipe;
 	
-	public ChassiModule(int moduleCount,PipeLogisticsChassi parentPipe){
+	public ChassiModule(int moduleCount, PipeLogisticsChassi parentPipe){
 		_modules = new LogisticsModule[moduleCount];
 		_parentPipe = parentPipe;
+		_invProvider = parentPipe;
+		this.registerPosition(ModulePositionType.IN_PIPE, 0);
 	}
 	
 	public void installModule(int slot, LogisticsModule module){
@@ -77,12 +82,6 @@ public class ChassiModule extends LogisticsGuiModule{
 		}
 		return new SinkReply(bestresult, Math.min(bestresult.maxNumberOfItems, roomForItem));
 	}
-
-
-	@Override
-	public int getGuiHandlerID() {
-		return GuiIDs.GUI_ChassiModule_ID;
-	}
 	
 	@Override
 	public LogisticsModule getSubModule(int slot) {
@@ -122,27 +121,8 @@ public class ChassiModule extends LogisticsGuiModule{
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		//Not used in Chassie Module
-	}
-
-
-	@Override 
-	public void registerSlot(int slot) {
-	}
-	
-	@Override 
-	public final int getX() {
-		return this._parentPipe.getX();
-	}
-	@Override 
-	public final int getY() {
-		return this._parentPipe.getX();
-	}
-	
-	@Override 
-	public final int getZ() {
-		return this._parentPipe.getX();
 	}
 
 	
@@ -189,6 +169,16 @@ public class ChassiModule extends LogisticsGuiModule{
 	@Override
 	public Icon getIconTexture(IconRegister register) {
 		//Not Needed
+		return null;
+	}
+
+	@Override
+	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+		return NewGuiHandler.getGui(ChassiGuiProvider.class);
+	}
+
+	@Override
+	protected ModuleInHandGuiProvider getInHandGuiProvider() {
 		return null;
 	}
 }

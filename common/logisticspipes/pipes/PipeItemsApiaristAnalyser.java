@@ -10,8 +10,9 @@ import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.logisticspipes.TransportLayer;
-import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleApiaristAnalyser;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
@@ -37,7 +38,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 	public PipeItemsApiaristAnalyser(int itemID) {
 		super(itemID);
 		analyserModule = new ModuleApiaristAnalyser();
-		analyserModule.registerHandler(this, this, this, this);
+		analyserModule.registerHandler(this, this, this);
 	}
 
 	@Override
@@ -81,31 +82,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 		return SimpleServiceLocator.logisticsManager.hasDestination(stack, allowDefault, getRouter().getSimpleID(), routerIDsToExclude);
 	}
 
-	@Override
-	public IRoutedItem sendStack(ItemStack stack, Pair<Integer, SinkReply> reply, ItemSendMode mode) {
-		IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
-		itemToSend.setDestination(reply.getValue1());
-		if (reply.getValue2().isPassive){
-			if (reply.getValue2().isDefault){
-				itemToSend.setTransportMode(TransportMode.Default);
-			} else {
-				itemToSend.setTransportMode(TransportMode.Passive);
-			}
-		}
-		super.queueRoutedItem(itemToSend, getPointedOrientation(), mode);
-		return itemToSend;
-	}
-
-	@Override
-	public IRoutedItem sendStack(ItemStack stack, int destination, ItemSendMode mode) {
-		IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
-		itemToSend.setDestination(destination);
-		itemToSend.setTransportMode(TransportMode.Active);
-		super.queueRoutedItem(itemToSend, getPointedOrientation(), mode);
-		return itemToSend;
-	}
-
-	private ForgeDirection getPointedOrientation() {
+	public ForgeDirection getPointedOrientation() {
 		for(ForgeDirection ori:ForgeDirection.values()) {
 			Position pos = new Position(this.container);
 			pos.orientation = ori;
@@ -120,7 +97,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 		return null;
 	}
 
-	private TileEntity getPointedTileEntity() {
+	public TileEntity getPointedTileEntity() {
 		WorldUtil wUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if(tile.tile != null) {
@@ -186,7 +163,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 	@Override
 	public void setTile(TileEntity tile) {
 		super.setTile(tile);
-		analyserModule.registerSlot(0);
+		analyserModule.registerPosition(ModulePositionType.IN_PIPE, 0);
 	}
 
 	@Override

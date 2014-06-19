@@ -16,7 +16,7 @@ import logisticspipes.interfaces.IOrderManagerContentReceiver;
 import logisticspipes.interfaces.routing.IDirectRoutingConnection;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.hud.HUDStartWatchingPacket;

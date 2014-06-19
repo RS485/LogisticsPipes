@@ -11,7 +11,6 @@ package logisticspipes.gui.modules;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.ItemSinkDefaultPacket;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
@@ -24,8 +23,6 @@ import org.lwjgl.opengl.GL11;
 public class GuiItemSink extends ModuleBaseGui {
 
 	private final ModuleItemSink _itemSink;
-	private final int slot;
-	
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -46,21 +43,15 @@ public class GuiItemSink extends ModuleBaseGui {
 		{
 			case 0:
 				_itemSink.setDefaultRoute(!_itemSink.isDefaultRoute());
-				//((GuiButton)buttonList.get(0)).displayString = _itemSink.isDefaultRoute() ? "Yes" : "No";
-				if(slot >= 0) {
-					MainProxy.sendPacketToServer(PacketHandler.getPacket(ItemSinkDefaultPacket.class).setInteger((_itemSink.isDefaultRoute() ? 1 : 0) + (slot * 10)).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
-				} else {
-					MainProxy.sendPacketToServer(PacketHandler.getPacket(ItemSinkDefaultPacket.class).setInteger((_itemSink.isDefaultRoute() ? 1 : 0) + (slot * 10)).setPosX(0).setPosY(-1).setPosZ(0));
-				}
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(ItemSinkDefaultPacket.class).setDefault(_itemSink.isDefaultRoute()).setModulePos(_itemSink));
 				break;
 		}
 		
 	}
 	
-	public GuiItemSink(IInventory playerInventory, CoreRoutedPipe pipe, ModuleItemSink itemSink, int slot) {
-		super(null,pipe);
+	public GuiItemSink(IInventory playerInventory, ModuleItemSink itemSink) {
+		super(null, itemSink);
 		_itemSink = itemSink;
-		this.slot = slot;
 		DummyContainer dummy = new DummyContainer(playerInventory, _itemSink.getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 

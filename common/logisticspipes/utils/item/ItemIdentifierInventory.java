@@ -302,7 +302,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 			if(LogisticsPipes.DEBUG) {
 				new UnsupportedOperationException("Not valid for this Inventory: (" + stack + ")").printStackTrace();
 			}
-			return 0;
+			return stack.stackSize;
 		}
 		stack = stack.copy();
 
@@ -396,15 +396,15 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 		
 	}
 
-	public void compact_first_9() {
+	public void compact_first(int size) {
 		// Compact
-		for (int i = 0; i < 9; i++) {
+		for (int i = 0; i < size; i++) {
 			final ItemIdentifierStack stackInSlot = getIDStackInSlot(i);
 			if (stackInSlot == null) {
 				continue;
 			}
 			final ItemIdentifier itemInSlot = stackInSlot.getItem();
-			for (int j = i + 1; j < 9; j++) {
+			for (int j = i + 1; j < size; j++) {
 				final ItemIdentifierStack stackInOtherSlot = getIDStackInSlot(j);
 				if (stackInOtherSlot == null) {
 					continue;
@@ -417,17 +417,25 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 			setInventorySlotContents(i,stackInSlot);
 		}
 		
-		for (int i = 0; i < 9; i++) {
+		for (int i = 0; i < size; i++) {
 			if (getStackInSlot(i) != null) {
 				continue;
 			}
-			for (int j = i + 1; j < 9; j++) {
+			for (int j = i + 1; j < size; j++) {
 				if (getStackInSlot(j) == null) {
 					continue;
 				}
 				setInventorySlotContents(i, getStackInSlot(j));
 				clearInventorySlotContents(j);
 				break;
+			}
+		}
+	}
+
+	public void recheckStackLimit() {
+		for(int i = 0;i < this._contents.length; i++) {
+			if(_contents[i] != null) {
+				_contents[i].setStackSize(Math.min(_contents[i].getStackSize(), this._stackLimit));
 			}
 		}
 	}

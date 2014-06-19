@@ -9,11 +9,9 @@
 package logisticspipes.gui.modules;
 
 import logisticspipes.modules.ModuleAdvancedExtractor;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.AdvancedExtractorIncludePacket;
 import logisticspipes.network.packets.module.AdvancedExtractorSneakyGuiPacket;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
@@ -25,7 +23,6 @@ import org.lwjgl.opengl.GL11;
 public class GuiAdvancedExtractor extends ModuleBaseGui {
 
 	private final ModuleAdvancedExtractor _advancedExtractor;
-	private final int slot;
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -48,27 +45,18 @@ public class GuiAdvancedExtractor extends ModuleBaseGui {
 		{
 			case 0:
 				_advancedExtractor.setItemsIncluded(!_advancedExtractor.areItemsIncluded());
-				if(slot >= 0) {
-					MainProxy.sendPacketToServer(PacketHandler.getPacket(AdvancedExtractorIncludePacket.class).setInteger((_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
-				} else {
-					MainProxy.sendPacketToServer(PacketHandler.getPacket(AdvancedExtractorIncludePacket.class).setInteger((_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).setPosX(0).setPosY(-1).setPosZ(0));
-				}
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(AdvancedExtractorIncludePacket.class).setModulePos(_advancedExtractor));
 				break;
 			case 1:
-				if(slot >= 0) {
-					MainProxy.sendPacketToServer(PacketHandler.getPacket(AdvancedExtractorSneakyGuiPacket.class).setInteger(slot).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
-				} else {
-					MainProxy.sendPacketToServer(PacketHandler.getPacket(AdvancedExtractorSneakyGuiPacket.class).setInteger(slot).setPosX(_advancedExtractor.getX()).setPosY(-1).setPosZ(_advancedExtractor.getZ()));
-				}
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(AdvancedExtractorSneakyGuiPacket.class).setModulePos(_advancedExtractor));
 				break;
 		}
 		
 	}
 	
-	public GuiAdvancedExtractor(IInventory playerInventory, CoreRoutedPipe pipe, ModuleAdvancedExtractor advancedExtractor, int slot) {
-		super(null,pipe);
+	public GuiAdvancedExtractor(IInventory playerInventory, ModuleAdvancedExtractor advancedExtractor) {
+		super(null, advancedExtractor);
 		_advancedExtractor = advancedExtractor;
-		this.slot = slot;
 		DummyContainer dummy = new DummyContainer(playerInventory, _advancedExtractor.getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 
@@ -96,11 +84,6 @@ public class GuiAdvancedExtractor extends ModuleBaseGui {
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 	}
 
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Module_Advanced_Extractor_ID + (slot * 100);
-	}
-	
 	public void setInclude(boolean flag) {
 		_advancedExtractor.setItemsIncluded(flag);
 	}

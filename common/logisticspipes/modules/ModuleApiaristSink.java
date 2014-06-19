@@ -3,11 +3,15 @@ package logisticspipes.modules;
 import java.util.List;
 
 import logisticspipes.api.IRoutedPowerProvider;
-import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.network.GuiIDs;
-import logisticspipes.network.INBTPacketProvider;
+import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.network.NewGuiHandler;
+import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
+import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
+import logisticspipes.network.guis.module.inhand.ApiaristSinkModuleInHand;
+import logisticspipes.network.guis.module.inpipe.ApiaristSinkModuleSlot;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
@@ -19,7 +23,7 @@ import net.minecraft.util.Icon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ModuleApiaristSink extends LogisticsGuiModule implements INBTPacketProvider {
+public class ModuleApiaristSink extends LogisticsGuiModule {
 
 	public enum FilterType {
 		Null("","anything",0),
@@ -188,7 +192,6 @@ public class ModuleApiaristSink extends LogisticsGuiModule implements INBTPacket
 	public SinkSetting[] filter = new SinkSetting[6];
 	public IWorldProvider worldProvider;
 	private IRoutedPowerProvider _power;
-	private int slot;
 	
 	public ModuleApiaristSink() {
 		filter[0] = new SinkSetting(this);
@@ -221,14 +224,22 @@ public class ModuleApiaristSink extends LogisticsGuiModule implements INBTPacket
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		this.worldProvider = world;
 		_power = powerprovider;
+		_invProvider = invProvider;
 	}
 
 	@Override
-	public int getGuiHandlerID() {
-		return GuiIDs.GUI_Module_Apiarist_Sink_ID;
+	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+		NBTTagCompound tag = new NBTTagCompound();
+		this.writeToNBT(tag);
+		return NewGuiHandler.getGui(ApiaristSinkModuleSlot.class).setNbt(tag);
+	}
+
+	@Override
+	protected ModuleInHandGuiProvider getInHandGuiProvider() {
+		return NewGuiHandler.getGui(ApiaristSinkModuleInHand.class);
 	}
 	
 	public boolean isFiltered(ItemIdentifier item) {
@@ -281,46 +292,7 @@ public class ModuleApiaristSink extends LogisticsGuiModule implements INBTPacket
 
 	@Override
 	public void tick() {}
-
-	@Override
-	public void readFromPacketNBT(NBTTagCompound tag) {
-		readFromNBT(tag);
-	}
-
-	@Override
-	public void writeToPacketNBT(NBTTagCompound tag) {
-		writeToNBT(tag);
-	}
 	
-	
-	@Override 
-	public void registerSlot(int slot) {
-		this.slot = slot;
-	}
-	
-	@Override 
-	public final int getX() {
-		if(slot>=0)
-			return this._power.getX();
-		else 
-			return 0;
-	}
-	@Override 
-	public final int getY() {
-		if(slot>=0)
-			return this._power.getY();
-		else 
-			return -1;
-	}
-	
-	@Override 
-	public final int getZ() {
-		if(slot>=0)
-			return this._power.getZ();
-		else 
-			return -1-slot;
-	}
-
 	@Override
 	public boolean hasGenericInterests() {
 		return true;

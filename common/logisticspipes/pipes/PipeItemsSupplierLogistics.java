@@ -16,9 +16,10 @@ import java.util.Map.Entry;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IInventoryUtil;
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.SupplierPipeLimitedPacket;
@@ -29,7 +30,6 @@ import logisticspipes.pipes.basic.debug.StatusEntry;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTree;
-import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.AdjacentTile;
@@ -200,7 +200,7 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 
 			if(_patternMode != PatternMode.Full) {
 				debug.log("Supplier: Requesting partial: " + toRequest);
-				neededCount = RequestTree.requestPartial(toRequest, (IRequestItems) container.pipe);
+				neededCount = RequestTree.requestPartial(toRequest, (IRequestItems) container.pipe, null);
 				debug.log("Supplier: Requested: " + toRequest.getItem().makeStack(neededCount));
 				if(neededCount > 0) {
 					success = true;
@@ -294,7 +294,7 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 
 			if(_requestMode!=SupplyMode.Full) {
 				debug.log("Supplier: Requesting partial: " + need.getKey().makeStack(neededCount));
-				neededCount = RequestTree.requestPartial(need.getKey().makeStack(neededCount), (IRequestItems) container.pipe);
+				neededCount = RequestTree.requestPartial(need.getKey().makeStack(neededCount), (IRequestItems) container.pipe, null);
 				debug.log("Supplier: Requested: " + need.getKey().makeStack(neededCount));
 				if(neededCount > 0) {
 					success = true;
@@ -398,13 +398,13 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 	}
 
 	@Override
-	public void itemLost(ItemIdentifierStack item) {
+	public void itemLost(ItemIdentifierStack item, IAdditionalTargetInformation info) {
 		debug.log("Supplier: Registered Item Lost: " + item);
 		decreaseRequested(item);
 	}
 
 	@Override
-	public void itemArrived(ItemIdentifierStack item) {
+	public void itemArrived(ItemIdentifierStack item, IAdditionalTargetInformation info) {
 		debug.log("Supplier: Registered Item Arrived: " + item);
 		decreaseRequested(item);
 		delayThrottle();

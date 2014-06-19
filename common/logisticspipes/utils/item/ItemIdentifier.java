@@ -509,11 +509,18 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
 	@Override
 	public boolean equals(Object that){
+		if (that instanceof ItemIdentifierStack)
+			throw new IllegalStateException("Comparison between ItemIdentifierStack and ItemIdentifier -- did you forget a .getItem() in your code?");
 		if (!(that instanceof ItemIdentifier))
 			return false;
 		ItemIdentifier i = (ItemIdentifier)that;
-		return this.uniqueID==i.uniqueID;
+		return this.equals(i);
 		
+	}
+
+
+	public boolean equals(ItemIdentifier that){
+		return this.uniqueID==that.uniqueID; 
 	}
 	
 	@Override public int hashCode(){

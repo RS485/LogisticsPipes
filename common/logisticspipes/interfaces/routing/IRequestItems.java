@@ -13,7 +13,7 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 
 public interface IRequestItems extends Comparable<IRequestItems>{
 	public IRouter getRouter();
-	public void itemCouldNotBeSend(ItemIdentifierStack item);
+	public void itemCouldNotBeSend(ItemIdentifierStack item, IAdditionalTargetInformation info);
 	public int getID();
 	
 	@Override

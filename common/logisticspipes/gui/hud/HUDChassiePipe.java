@@ -6,8 +6,8 @@ import java.util.List;
 import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.interfaces.IHUDModuleHandler;
-import logisticspipes.logisticspipes.ChassiModule;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.ChassiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
@@ -115,11 +115,11 @@ public class HUDChassiePipe extends BasicHUDGui {
 			BasicGuiHelper.drawGuiBackGround(mc, -23, -35, 45, 45, 0, false);
         	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)127);	
 
-			if(selectedmodule instanceof IHUDModuleHandler && ((IHUDModuleHandler)selectedmodule).getRenderer() != null) {
+			if(selectedmodule instanceof IHUDModuleHandler && ((IHUDModuleHandler)selectedmodule).getHUDRenderer() != null) {
 				GL11.glTranslatef(11.0F, 5.0F, (float) (-0.00005F * distance));
-				((IHUDModuleHandler)selectedmodule).getRenderer().renderContent();
-				if(((IHUDModuleHandler)selectedmodule).getRenderer().getButtons() != null) {
-					for(IHUDButton button:((IHUDModuleHandler)selectedmodule).getRenderer().getButtons()) {
+				((IHUDModuleHandler)selectedmodule).getHUDRenderer().renderContent();
+				if(((IHUDModuleHandler)selectedmodule).getHUDRenderer().getButtons() != null) {
+					for(IHUDButton button:((IHUDModuleHandler)selectedmodule).getHUDRenderer().getButtons()) {
 					button.renderAlways();
 						if(button.shouldRenderButton()) {
 							button.renderButton(button.isFocused(), button.isblockFocused());
@@ -183,7 +183,7 @@ public class HUDChassiePipe extends BasicHUDGui {
 		if(selected != -1) {
 			LogisticsModule selectedmodule = module.getSubModule(selected);
 			if(selectedmodule instanceof IHUDModuleHandler) {
-				((IHUDModuleHandler)selectedmodule).startWatching();
+				((IHUDModuleHandler)selectedmodule).startHUDWatching();
 			}
 		}
 	}
@@ -192,7 +192,7 @@ public class HUDChassiePipe extends BasicHUDGui {
 		if(selected != -1) {
 			LogisticsModule selectedmodule = module.getSubModule(selected);
 			if(selectedmodule instanceof IHUDModuleHandler) {
-				((IHUDModuleHandler)selectedmodule).stopWatching();
+				((IHUDModuleHandler)selectedmodule).stopHUDWatching();
 			}
 		}
 		selected = -1;

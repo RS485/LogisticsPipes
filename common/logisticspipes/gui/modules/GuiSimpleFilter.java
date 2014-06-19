@@ -8,9 +8,7 @@
 
 package logisticspipes.gui.modules;
 
-import logisticspipes.interfaces.IModuleSimpleFilter;
-import logisticspipes.network.GuiIDs;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.modules.abstractmodules.LogisticsSimpleFilterModule;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
@@ -19,11 +17,11 @@ import org.lwjgl.opengl.GL11;
 
 public class GuiSimpleFilter extends ModuleBaseGui {
 
-	private final IModuleSimpleFilter _module;
+	private final LogisticsSimpleFilterModule _module;
 	
 	
-	public GuiSimpleFilter(IInventory playerInventory, CoreRoutedPipe pipe, IModuleSimpleFilter module) {
-		super(null,pipe);
+	public GuiSimpleFilter(IInventory playerInventory, LogisticsSimpleFilterModule module) {
+		super(null, module);
 		_module = module;
 		DummyContainer dummy = new DummyContainer(playerInventory, _module.getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
@@ -53,10 +51,5 @@ public class GuiSimpleFilter extends ModuleBaseGui {
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Module_Simple_Filter_ID;
 	}
 }

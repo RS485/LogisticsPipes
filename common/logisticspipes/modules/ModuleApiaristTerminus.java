@@ -6,6 +6,7 @@ import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
@@ -28,13 +29,8 @@ public class ModuleApiaristTerminus extends LogisticsModule {
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerProvider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerProvider) {
 		_power = powerProvider;
-	}
-
-
-	@Override 
-	public void registerSlot(int slot) {
 	}
 	
 	@Override 

@@ -7,6 +7,7 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.AdjacentTile;
@@ -33,11 +34,8 @@ public class ModuleSatelite extends LogisticsModule{
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {}
-	
-	@Override 
-	public void registerSlot(int slot) {}
-	
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {}
+		
 	@Override 
 	public final int getX() {
 		return this.pipe.getX();

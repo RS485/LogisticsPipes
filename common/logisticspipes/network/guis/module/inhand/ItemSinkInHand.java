@@ -2,8 +2,8 @@ package logisticspipes.network.guis.module.inhand;
 
 import net.minecraft.entity.player.EntityPlayer;
 import logisticspipes.gui.modules.GuiItemSink;
-import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleItemSink;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
 import logisticspipes.utils.gui.DummyContainer;
@@ -19,7 +19,7 @@ public class ItemSinkInHand extends ModuleInHandGuiProvider {
 	public Object getClientGui(EntityPlayer player) {
 		LogisticsModule module = this.getLogisticsModule(player);
 		if(!(module instanceof ModuleItemSink)) return null;
-		return new GuiItemSink(player.inventory, null, (ModuleItemSink) module, -2);
+		return new GuiItemSink(player.inventory, (ModuleItemSink) module);
 	}
 
 	@Override

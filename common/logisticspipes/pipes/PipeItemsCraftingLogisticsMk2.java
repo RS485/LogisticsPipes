@@ -9,6 +9,7 @@
 package logisticspipes.pipes;
 
 import logisticspipes.modules.ModuleCrafterMK2;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 
@@ -16,7 +17,8 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics {
 	
 	public PipeItemsCraftingLogisticsMk2(int itemID) {
 		super(itemID);
-		craftingModule=new ModuleCrafterMK2(this);
+		craftingModule = new ModuleCrafterMK2(this);
+		craftingModule.registerPosition(ModulePositionType.IN_PIPE, 0);
 	}
 
 	@Override

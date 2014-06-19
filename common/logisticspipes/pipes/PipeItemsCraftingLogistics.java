@@ -25,6 +25,7 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.modules.ModuleCrafter;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.hud.HUDStartWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopWatchingPacket;
@@ -72,8 +73,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		super(itemID);
 		// module still relies on this for some code
 		craftingModule = new ModuleCrafter(this);
-		
-//		craftingModule.registerHandler(this, this, this);
+		craftingModule.registerPosition(ModulePositionType.IN_PIPE, 0);
 		throttleTime = 40;
 		_orderManager = new LogisticsOrderManager(this); // null by default when not needed
 	}
@@ -197,6 +197,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		if(mode == 1) {
 			localModeWatchers.add(player);
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererManagerContent.class).setIdentList(oldList).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+			this.craftingModule.startWatching(player);
 		} else {
 			super.playerStartWatching(player, mode);
 		}
@@ -206,6 +207,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public void playerStopWatching(EntityPlayer player, int mode) {
 		super.playerStopWatching(player, mode);
 		localModeWatchers.remove(player);
+		this.craftingModule.stopWatching(player);
 	}
 
 	@Override

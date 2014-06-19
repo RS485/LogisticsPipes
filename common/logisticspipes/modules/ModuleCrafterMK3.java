@@ -11,6 +11,7 @@ import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.ModuleInventory;
 import logisticspipes.pipes.PipeItemsCraftingLogisticsMk3;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.order.IOrderInfoProvider.RequestType;
@@ -45,6 +46,7 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISi
 
 	public ModuleCrafterMK3(PipeItemsCraftingLogisticsMk3 parent) {
 		super(parent);
+		inv.addListener(this);
 	}
 	
 	@Override //function-called-on-module-removal-from-pipe	
@@ -113,7 +115,7 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISi
 		if(crafters.size() < 1) {sendBuffer();return;}
 		boolean change = false;
 		for(AdjacentTile tile : crafters) {
-			for(int i=0;i<inv.getSizeInventory();i++) {
+			for(int i = inv.getSizeInventory() - 1; i >= 0; i--) {
 				ItemIdentifierStack slot = inv.getIDStackInSlot(i);
 				if(slot == null) continue;
 				ForgeDirection insertion = tile.orientation.getOpposite();
@@ -164,7 +166,6 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISi
 		bufferList.clear();
 		bufferList.addAll(list);
 	}
-	
 
 	@Override
 	public void startWatching(EntityPlayer player) {

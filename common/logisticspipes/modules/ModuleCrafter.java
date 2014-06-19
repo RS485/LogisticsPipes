@@ -931,7 +931,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		}
 	}
 
-		public void setPrevFluidSatellite(EntityPlayer player, int i) {
+	public void setPrevFluidSatellite(EntityPlayer player, int i) {
 		if (MainProxy.isClient(player.worldObj)) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidCraftingPipeAdvancedSatellitePrevPacket.class).setInteger(i).setModulePos(this));
 		} else {
@@ -1473,6 +1473,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	public void clearCache() {
 		clearCraftersCache();
 	}
+	
 	public void importCleanup() {
 		for(int i = 0;i < 10;i++) {
 			_cleanupInventory.setInventorySlotContents(i, _dummyInventory.getStackInSlot(i));
@@ -1487,15 +1488,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	
 	public void toogleCleaupMode() {
 		this.cleanupModeIsExclude = !this.cleanupModeIsExclude;
-	}
-	
-	public static class CraftingChassieInformation extends ChasseTargetInformation {
-		@Getter
-		private final int craftingSlot;
-		public CraftingChassieInformation(int craftingSlot, int moduleSlot) {
-			super(moduleSlot);
-			this.craftingSlot = craftingSlot;
-		}
 	}
 
 	@Override
@@ -1522,5 +1514,14 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	public IHUDModuleRenderer getHUDRenderer() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public static class CraftingChassieInformation extends ChasseTargetInformation {
+		@Getter
+		private final int craftingSlot;
+		public CraftingChassieInformation(int craftingSlot, int moduleSlot) {
+			super(moduleSlot);
+			this.craftingSlot = craftingSlot;
+		}
 	}
 }

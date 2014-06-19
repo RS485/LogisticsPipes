@@ -6,6 +6,7 @@ import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.modules.ModuleCrafterMK3;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -17,6 +18,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	public PipeItemsCraftingLogisticsMk3(int itemID) {
 		super(itemID);
 		craftingModule = new ModuleCrafterMK3(this);
+		craftingModule.registerPosition(ModulePositionType.IN_PIPE, 0);
 	}
 	
 	@Override

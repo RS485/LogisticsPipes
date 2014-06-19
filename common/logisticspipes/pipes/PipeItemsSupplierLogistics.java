@@ -10,6 +10,7 @@ package logisticspipes.pipes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -367,26 +368,30 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 		//see if we can get an exact match
 		Integer count = _requestedItems.get(item.getItem());
 		if (count != null) {
-			_requestedItems.put(item.getItem(), Math.max(0, count - remaining));
-			debug.log("Supplier: Exact match. Still missing: " + _requestedItems.get(item.getItem()));
-			remaining -= count;
-			if(Math.max(0, count - remaining) == 0) {
+			debug.log("Supplier: Exact match. Still missing: " + Math.max(0, count - remaining));
+			if(count - remaining > 0) {
+				_requestedItems.put(item.getItem(), count - remaining);
+			} else {
 				_requestedItems.remove(item.getItem());
 			}
+			remaining -= count;
 		}
 		if(remaining <= 0) {
 			return;
 		}
 		//still remaining... was from fuzzyMatch on a crafter
-		for(Entry<ItemIdentifier, Integer> e : _requestedItems.entrySet()) {
+		Iterator<Entry<ItemIdentifier, Integer>> it = _requestedItems.entrySet().iterator();
+		while(it.hasNext()) {
+			Entry<ItemIdentifier, Integer> e = it.next();
 			if(e.getKey().itemID == item.getItem().itemID && e.getKey().itemDamage == item.getItem().itemDamage) {
 				int expected = e.getValue();
-				e.setValue(Math.max(0, expected - remaining));
-				debug.log("Supplier: Fuzzy match with" + e + ". Still missing: " + e.getValue());
-				remaining -= expected;
-				if(Math.max(0, expected - remaining) == 0) {
-					_requestedItems.remove(item.getItem());
+				debug.log("Supplier: Fuzzy match with" + e + ". Still missing: " + Math.max(0, expected - remaining));
+				if(expected - remaining > 0) {
+					e.setValue(expected - remaining);
+				} else {
+					it.remove();
 				}
+				remaining -= expected;
 			}
 			if(remaining <= 0) {
 				return;

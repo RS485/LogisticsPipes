@@ -142,6 +142,7 @@ public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
 		return (T) module;
 	}
 
+	/*
 	@Override
 	public <T> T getTile(World world, Class<T> clazz) {
 		if(LogisticsPipes.DEBUG && !moduleBased) {
@@ -149,4 +150,5 @@ public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
 		}
 		return super.getTile(world, clazz);
 	}
+	*/
 }

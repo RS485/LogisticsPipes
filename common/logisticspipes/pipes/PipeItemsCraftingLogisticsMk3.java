@@ -31,73 +31,22 @@ import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2 implements ISimpleInventoryEventHandler, IChestContentReceiver {
 	
-	public ItemIdentifierInventory inv = new ItemIdentifierInventory(16, "Buffer", 127);
-	
-	public List<ItemIdentifierStack> bufferList = new LinkedList<ItemIdentifierStack>();
 	private HUDCraftingMK3 HUD = new HUDCraftingMK3(this);
 	
 	public PipeItemsCraftingLogisticsMk3(int itemID) {
 		super(new CraftingPipeMk3Transport(), itemID);
 		craftingModule=new ModuleCrafterMK3(this);
 		((CraftingPipeMk3Transport)transport).pipe = this;
-		inv.addListener(this);
 	}
 	@Override
 	public void enabledUpdateEntity() {
 		super.enabledUpdateEntity();
-		if(inv.isEmpty()) return;
-		if(getWorld().getTotalWorldTime() % 6 != 0) return;
-		//Add from internal buffer
-		List<AdjacentTile> crafters = craftingModule.locateCrafters();
-		if(crafters.size() < 1) {sendBuffer();return;}
-		boolean change = false;
-		for(AdjacentTile tile : crafters) {
-			for(int i=0;i<inv.getSizeInventory();i++) {
-				ItemIdentifierStack slot = inv.getIDStackInSlot(i);
-				if(slot == null) continue;
-				ForgeDirection insertion = tile.orientation.getOpposite();
-				if(getUpgradeManager().hasSneakyUpgrade()) {
-					insertion = getUpgradeManager().getSneakyOrientation();
-				}
-				ItemIdentifierStack toadd = slot.clone();
-				toadd.setStackSize(Math.min(toadd.getStackSize(), toadd.getItem().getMaxStackSize()));
-				toadd.setStackSize(Math.min(toadd.getStackSize(), ((IInventory)tile.tile).getInventoryStackLimit()));
-				ItemStack added = InventoryHelper.getTransactorFor(tile.tile).add(toadd.makeNormalStack(), insertion, true);
-				slot.setStackSize(slot.getStackSize() - added.stackSize);
-				if(added.stackSize != 0) {
-					change = true;
-				}
-				if(slot.getStackSize() <= 0) {
-					inv.clearInventorySlotContents(i);
-				} else {
-					inv.setInventorySlotContents(i, slot);
-				}
-			}
-		}
-		if(!_orderManager.hasOrders(RequestType.CRAFTING)){
-			sendBuffer();
-		}
-		if(change) {
-			inv.onInventoryChanged();
-		}
-	}
-
-	private void sendBuffer() {
-		for(int i=0;i<inv.getSizeInventory();i++) {
-			ItemStack stackToSend = inv.getStackInSlot(i);
-			if(stackToSend==null) continue;
-			transport.sendItem(stackToSend);
-			inv.clearInventorySlotContents(i);
-			break;
-		}
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void onAllowedRemoval() {
 		super.onAllowedRemoval();
-		inv.dropContents(getWorld(), getX(), getY(), getZ());
+		craftingModule.onAllowedRemoval();
 	}
 
 	@Override
@@ -105,18 +54,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 		return Textures.LOGISTICSPIPE_CRAFTERMK3_TEXTURE;
 	}
 
-	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
-		super.writeToNBT(nbttagcompound);
-		inv.writeToNBT(nbttagcompound, "buffer");
-	}
-
-	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		super.readFromNBT(nbttagcompound);
-		inv.readFromNBT(nbttagcompound, "buffer");
-	}
-
+	/*
 	@Override
 	public void InventoryChanged(IInventory inventory) {
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(ChestContent.class).setIdentList(ItemIdentifierStack.getListFromInventory(inv, true)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
@@ -135,7 +73,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 		bufferList.clear();
 		bufferList.addAll(list);
 	}
-
+*/
 	@Override
 	public IHeadUpDisplayRenderer getRenderer() {
 		return HUD;
@@ -144,5 +82,16 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	@Override
 	public ModuleCrafter getLogisticsModule() {
 		return this.craftingModule;
+	}
+	@Override
+	public void setReceivedChestContent(
+			Collection<ItemIdentifierStack> _allItems) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void InventoryChanged(IInventory inventory) {
+		// TODO Auto-generated method stub
+		
 	}
 }

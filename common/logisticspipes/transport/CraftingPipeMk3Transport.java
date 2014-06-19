@@ -14,7 +14,7 @@ public class CraftingPipeMk3Transport extends PipeTransportLogistics {
 
 	@Override
 	protected void reverseItem(LPTravelingItemServer data, ItemIdentifierStack itemStack) {
-		itemStack.setStackSize(pipe.inv.addCompressed(itemStack.makeNormalStack(), true));
+		itemStack.setStackSize(pipe.getMk3Module().inv.addCompressed(itemStack.makeNormalStack(), true));
 		if(itemStack.getStackSize() > 0) {
 			super.reverseItem(data, itemStack);
 		}

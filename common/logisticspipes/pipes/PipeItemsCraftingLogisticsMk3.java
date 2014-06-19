@@ -94,4 +94,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 		// TODO Auto-generated method stub
 		
 	}
+	public ModuleCrafterMK3 getMk3Module() {
+		return (ModuleCrafterMK3)craftingModule;
+	}
 }

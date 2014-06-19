@@ -1,5 +1,6 @@
 package logisticspipes.blocks.powertile;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,7 @@ import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.WorldUtil;
+import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -109,7 +111,16 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 												if(pipe != null && pipe.container instanceof LogisticsTileGenericPipe) {
 													((LogisticsTileGenericPipe)pipe.container).addLaser(adjacent.orientation.getOpposite(), 1, this.getLaserColor(), true, true);
 												}
-												sendPowerLaserPackets(sourceRouter, destinationRouter, exit.exitOrientation);
+												try {
+													currentlyUsedPos.add(sourceRouter.getLPPosition());
+													sendPowerLaserPackets(sourceRouter, destinationRouter, exit.exitOrientation);
+													currentlyUsedPos.remove(sourceRouter.getLPPosition());
+												} catch(StackOverflowError error) {
+													for(LPPosition pos:currentlyUsedPos) {
+														System.out.println(pos);
+													}
+													throw error;
+												}
 												internalStorage -= toSend;
 												handlePower(destinationRouter.getPipe(), toSend);
 												break outerTiles;
@@ -134,6 +145,8 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 
 	protected abstract void handlePower(CoreRoutedPipe pipe, float toSend);
 
+	private List<LPPosition> currentlyUsedPos = new ArrayList<LPPosition>();
+
 	private void sendPowerLaserPackets(IRouter sourceRouter, IRouter destinationRouter, ForgeDirection exitOrientation) {
 		if(sourceRouter == destinationRouter) return;
 		List<ExitRoute> exits = sourceRouter.getRoutersOnSide(exitOrientation);
@@ -153,7 +166,9 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 						for(IFilter filter:newExit.filters) {
 							if(filter.blockPower()) continue outerRouters;
 						}
+						currentlyUsedPos.add(sourceRouter.getLPPosition());
 						sendPowerLaserPackets(sourceRouter, destinationRouter, newExit.exitOrientation);
+						currentlyUsedPos.remove(sourceRouter.getLPPosition());
 					}
 				}
 			}

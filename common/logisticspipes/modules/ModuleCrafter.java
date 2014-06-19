@@ -47,7 +47,6 @@ import logisticspipes.network.packets.cpipe.CraftingFuzzyFlag;
 import logisticspipes.network.packets.cpipe.CraftingPipeOpenConnectedGuiPacket;
 import logisticspipes.network.packets.pipe.CraftingPipePriorityDownPacket;
 import logisticspipes.network.packets.pipe.CraftingPipePriorityUpPacket;
-import logisticspipes.network.packets.pipe.CraftingPipeStackMovePacket;
 import logisticspipes.network.packets.pipe.CraftingPipeUpdatePacket;
 import logisticspipes.network.packets.pipe.CraftingPriority;
 import logisticspipes.network.packets.pipe.FluidCraftingAdvancedSatelliteId;
@@ -621,11 +620,11 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 
 	public void setNextSatellite(EntityPlayer player) {
 		if (MainProxy.isClient(player.worldObj)) {
-			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeNextSatellite.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
+			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeNextSatellite.class).setPosX(getX()).setModulePos(this);
 			MainProxy.sendPacketToServer(packet);
 		} else {
 			satelliteId = getNextConnectSatelliteId(false, -1);
-			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteId.class).setPipeId(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
+			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteId.class).setPipeId(satelliteId).setModulePos(this);
 			MainProxy.sendPacketToPlayer(packet, (Player)player);
 		}
 
@@ -736,7 +735,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 	}
 	
 	public ModernPacket getCPipePacket() {
-		return PacketHandler.getPacket(CraftingPipeUpdatePacket.class).setAmount(amount).setLiquidSatelliteIdArray(liquidSatelliteIdArray).setLiquidSatelliteId(liquidSatelliteId).setSatelliteId(satelliteId).setAdvancedSatelliteIdArray(advancedSatelliteIdArray).setFuzzyCraftingFlagArray(fuzzyCraftingFlagArray).setPriority(priority).setPosX(getX()).setPosY(getY()).setPosZ(getZ());	}
+		return PacketHandler.getPacket(CraftingPipeUpdatePacket.class).setAmount(amount).setLiquidSatelliteIdArray(liquidSatelliteIdArray).setLiquidSatelliteId(liquidSatelliteId).setSatelliteId(satelliteId).setAdvancedSatelliteIdArray(advancedSatelliteIdArray).setFuzzyCraftingFlagArray(fuzzyCraftingFlagArray).setPriority(priority).setModulePos(this);
+	}
 	
 	public void handleCraftingUpdatePacket(CraftingPipeUpdatePacket packet) {
 		amount = packet.getAmount();
@@ -779,7 +779,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 			if(craftingSigns[dir.ordinal()] != b) {
 				craftingSigns[dir.ordinal()] = b;
 				final ModernPacket packetA = this.getCPipePacket();
-				final ModernPacket packetB = PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(getDummyInventory()).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
+				final ModernPacket packetB = PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(getDummyInventory()).setModulePos(this);
 				if(player != null) {
 					MainProxy.sendPacketToPlayer(packetA, (Player)player);
 					MainProxy.sendPacketToPlayer(packetB, (Player)player);
@@ -814,18 +814,18 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 		_dummyInventory.setInventorySlotContents(slot, itemstack);
 	}
 	
-		public void importFromCraftingTable(EntityPlayer player) {
-		if (MainProxy.isClient(getWorld())) {
+	public void importFromCraftingTable(EntityPlayer player) {
+		if(MainProxy.isClient(getWorld())) {
 			// Send packet asking for import
-			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteImport.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
+			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteImport.class).setModulePos(this);
 			MainProxy.sendPacketToServer(packet);
-		} else{
+		} else {
 			boolean fuzzyFlagsChanged = false;
 			final WorldUtil worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
-			for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
-				for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
-					if (provider.importRecipe(tile.tile, _dummyInventory)) {
-						if (provider instanceof IFuzzyRecipeProvider) {
+			for(final AdjacentTile tile: worldUtil.getAdjacentTileEntities(true)) {
+				for(ICraftingRecipeProvider provider: SimpleServiceLocator.craftingRecipeProviders) {
+					if(provider.importRecipe(tile.tile, _dummyInventory)) {
+						if(provider instanceof IFuzzyRecipeProvider) {
 							fuzzyFlagsChanged = ((IFuzzyRecipeProvider)provider).importFuzzyFlags(tile.tile, _dummyInventory, fuzzyCraftingFlagArray);
 						}
 						break;
@@ -833,17 +833,16 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 				}
 			}
 			// Send inventory as packet
-			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(_dummyInventory).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
+			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(_dummyInventory).setModulePos(this);
 			if(player != null) {
 				MainProxy.sendPacketToPlayer(packet, (Player)player);
 			}
 			MainProxy.sendPacketToAllWatchingChunk(this.getX(), this.getZ(), MainProxy.getDimensionForWorld(getWorld()), packet);
 			
 			if(fuzzyFlagsChanged && this.getUpgradeManager().isFuzzyCrafter()) {
-				for (int i = 0; i < 9; i++) {
-					final ModernPacket pak = PacketHandler.getPacket(CraftingFuzzyFlag.class).setInteger2(fuzzyCraftingFlagArray[i]).setInteger(i).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-					if(player != null)
-						MainProxy.sendPacketToPlayer(pak, (Player)player);
+				for(int i = 0; i < 9; i++) {
+					final ModernPacket pak = PacketHandler.getPacket(CraftingFuzzyFlag.class).setInteger2(fuzzyCraftingFlagArray[i]).setInteger(i).setModulePos(this);
+					if(player != null) MainProxy.sendPacketToPlayer(pak, (Player)player);
 					MainProxy.sendPacketToAllWatchingChunk(this.getX(), this.getZ(), MainProxy.getDimensionForWorld(getWorld()), pak);
 				}
 			}
@@ -853,38 +852,22 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 	private World getWorld() {
 		return _world.getWorld();
 	}
-
-	public void handleStackMove(int number) {
-		if(MainProxy.isClient(this.getWorld())) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipeStackMovePacket.class).setInteger(number).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
-		}
-		ItemStack stack = _dummyInventory.getStackInSlot(number);
-		if(stack == null ) return;
-		for(int i = 6;i < 9;i++) {
-			ItemStack stackb = _dummyInventory.getStackInSlot(i);
-			if(stackb == null) {
-				_dummyInventory.setInventorySlotContents(i, stack);
-				_dummyInventory.clearInventorySlotContents(number);
-				break;
-			}
-		}
-	}
 	
 	public void priorityUp(EntityPlayer player) {
 		priority++;
 		if(MainProxy.isClient(player.worldObj)) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipePriorityUpPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipePriorityUpPacket.class).setModulePos(this));
 		} else if(player != null && MainProxy.isServer(player.worldObj)) {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingPriority.class).setInteger(priority).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingPriority.class).setInteger(priority).setModulePos(this), (Player)player);
 		}
 	}
 	
 	public void priorityDown(EntityPlayer player) {
 		priority--;
 		if(MainProxy.isClient(player.worldObj)) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipePriorityDownPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipePriorityDownPacket.class).setModulePos(this));
 		} else if(player != null && MainProxy.isServer(player.worldObj)) {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingPriority.class).setInteger(priority).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingPriority.class).setInteger(priority).setModulePos(this), (Player)player);
 		}
 	}
 	
@@ -909,58 +892,58 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 
 	public void setNextSatellite(EntityPlayer player, int i) {
 		if (MainProxy.isClient(player.worldObj)) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipeNextAdvancedSatellitePacket.class).setInteger(i).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipeNextAdvancedSatellitePacket.class).setInteger(i).setModulePos(this));
 		} else {
 			advancedSatelliteIdArray[i] = getNextConnectSatelliteId(false, i);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(advancedSatelliteIdArray[i]).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(advancedSatelliteIdArray[i]).setModulePos(this), (Player)player);
 		}
 	}
 
 	public void setPrevSatellite(EntityPlayer player, int i) {
 		if (MainProxy.isClient(player.worldObj)) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipePrevAdvancedSatellitePacket.class).setInteger(i).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipePrevAdvancedSatellitePacket.class).setInteger(i).setModulePos(this));
 		} else {
 			advancedSatelliteIdArray[i] = getNextConnectSatelliteId(true, i);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(advancedSatelliteIdArray[i]).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(advancedSatelliteIdArray[i]).setModulePos(this), (Player)player);
 		}
 	}
 
 	public void changeFluidAmount(int change, int slot, EntityPlayer player) {
 		if (MainProxy.isClient(player.worldObj)) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidCraftingAmount.class).setInteger2(slot).setInteger(change).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidCraftingAmount.class).setInteger2(slot).setInteger(change).setModulePos(this));
 		} else {
 			amount[slot] += change;
 			if(amount[slot] <= 0) {
 				amount[slot] = 0;
 			}
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAmount.class).setInteger2(slot).setInteger(amount[slot]).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAmount.class).setInteger2(slot).setInteger(amount[slot]).setModulePos(this), (Player)player);
 		}
 	}
 
 		public void setPrevFluidSatellite(EntityPlayer player, int i) {
 		if (MainProxy.isClient(player.worldObj)) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidCraftingPipeAdvancedSatellitePrevPacket.class).setInteger(i).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidCraftingPipeAdvancedSatellitePrevPacket.class).setInteger(i).setModulePos(this));
 		} else {
 			if(i == -1) {
 				liquidSatelliteId = getNextConnectFluidSatelliteId(true, i);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteId).setModulePos(this), (Player)player);
 			} else {
 				liquidSatelliteIdArray[i] = getNextConnectFluidSatelliteId(true, i);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteIdArray[i]).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteIdArray[i]).setModulePos(this), (Player)player);
 			}
 		}
 	}
 
 	public void setNextFluidSatellite(EntityPlayer player, int i) {
 		if (MainProxy.isClient(player.worldObj)) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidCraftingPipeAdvancedSatelliteNextPacket.class).setInteger(i).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidCraftingPipeAdvancedSatelliteNextPacket.class).setInteger(i).setModulePos(this));
 		} else {
 			if(i == -1) {
 				liquidSatelliteId = getNextConnectFluidSatelliteId(false, i);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteId).setModulePos(this), (Player)player);
 			} else {
 				liquidSatelliteIdArray[i] = getNextConnectFluidSatelliteId(false, i);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteIdArray[i]).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteIdArray[i]).setModulePos(this), (Player)player);
 			}
 		}
 	}
@@ -1019,105 +1002,80 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 			return;
 		if(MainProxy.isClient(this.getWorld()))
 			if(player == null)
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingFuzzyFlag.class).setInteger2(flag).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingFuzzyFlag.class).setInteger2(flag).setInteger(slot).setModulePos(this));
 			else
 				fuzzyCraftingFlagArray[slot] = flag;
 		else
 		{
 			fuzzyCraftingFlagArray[slot] ^= 1 << flag;
-			ModernPacket pak = PacketHandler.getPacket(CraftingFuzzyFlag.class).setInteger2(fuzzyCraftingFlagArray[slot]).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
+			ModernPacket pak = PacketHandler.getPacket(CraftingFuzzyFlag.class).setInteger2(fuzzyCraftingFlagArray[slot]).setInteger(slot).setModulePos(this);
 			if(player != null)
 				MainProxy.sendPacketToPlayer(pak, (Player)player);
 			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), pak);
 		}
 	}
-/*
-	public boolean hasCraftingSign() {
-		for(int i=0;i<6;i++) {
-			if(signItem[i] instanceof CraftingPipeSign) {
-				return true;
+	
+	public void openAttachedGui(EntityPlayer player) {
+		if(MainProxy.isClient(player.worldObj)) {
+			if(player instanceof EntityPlayerMP) {
+				((EntityPlayerMP)player).closeScreen();
+			} else if(player instanceof EntityPlayerSP) {
+				((EntityPlayerSP)player).closeScreen();
+			}
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipeOpenConnectedGuiPacket.class).setModulePos(this));
+			return;
+		}
+		
+		// hack to avoid wrenching blocks
+		int savedEquipped = player.inventory.currentItem;
+		boolean foundSlot = false;
+		// try to find a empty slot
+		for(int i = 0; i < 9; i++) {
+			if(player.inventory.getStackInSlot(i) == null) {
+				foundSlot = true;
+				player.inventory.currentItem = i;
+				break;
 			}
 		}
-		return false;
-	}*/
-/*
-	@Override
-	public void startWatching() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
-	}
-
-	@Override
-	public void stopWatching() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
-	}
-*/
-
-
-	public void openAttachedGui(EntityPlayer player) {
-			 		if (MainProxy.isClient(player.worldObj)) {
-			 			if(player instanceof EntityPlayerMP) {
-			 				((EntityPlayerMP)player).closeScreen();
-			 			} else if(player instanceof EntityPlayerSP) {
-			 				((EntityPlayerSP)player).closeScreen();
-			 			}
-			 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipeOpenConnectedGuiPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
-			 			return;
-			 		}
-			 
-			 		//hack to avoid wrenching blocks
-			 		int savedEquipped = player.inventory.currentItem;
-			 		boolean foundSlot = false;
-			 		//try to find a empty slot
-			 		for(int i = 0; i < 9; i++) {
-			 			if(player.inventory.getStackInSlot(i) == null) {
-			 				foundSlot = true;
-			 				player.inventory.currentItem = i;
-			 				break;
-			 			}
-			 		}
-			 		//okay, anything that's a block?
-			 		if(!foundSlot) {
-			 			for(int i = 0; i < 9; i++) {
-			 				ItemStack is = player.inventory.getStackInSlot(i);
-			 				if(is.getItem() instanceof ItemBlock) {
-			 					foundSlot = true;
-			 					player.inventory.currentItem = i;
-			 					break;
-			 				}
-			 			}
-			 		}
-			 		//give up and select whatever is right of the current slot
-			 		if(!foundSlot) {
-			 			player.inventory.currentItem = (player.inventory.currentItem + 1) % 9;
-			 		}
-			 
-			 		final WorldUtil worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
-			 		boolean found = false;
-			 		for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
-			 			for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
-			 				if (provider.canOpenGui(tile.tile)) {
-			 					found = true;
-			 					break;
-			 				}
-			 			}
-			 
-			 			if (!found)
-			 				found = (tile.tile instanceof IInventory && !(tile.tile instanceof TileGenericPipe));
-			 
-			 			if (found) {
-			 				Block block = getWorld().getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord) < Block.blocksList.length ? Block.blocksList[getWorld().getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord)] : null;
-			 				if(block != null) {
-			 					if(block.onBlockActivated(getWorld(), tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, player, 0, 0, 0, 0)){
-			 						break;
-			 					}
-			 				}
-			 			}
-			 		}
-			 
-			 		player.inventory.currentItem = savedEquipped;
+		// okay, anything that's a block?
+		if(!foundSlot) {
+			for(int i = 0; i < 9; i++) {
+				ItemStack is = player.inventory.getStackInSlot(i);
+				if(is.getItem() instanceof ItemBlock) {
+					foundSlot = true;
+					player.inventory.currentItem = i;
+					break;
+				}
+			}
+		}
+		// give up and select whatever is right of the current slot
+		if(!foundSlot) {
+			player.inventory.currentItem = (player.inventory.currentItem + 1) % 9;
+		}
 		
+		final WorldUtil worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
+		boolean found = false;
+		for(final AdjacentTile tile: worldUtil.getAdjacentTileEntities(true)) {
+			for(ICraftingRecipeProvider provider: SimpleServiceLocator.craftingRecipeProviders) {
+				if(provider.canOpenGui(tile.tile)) {
+					found = true;
+					break;
+				}
+			}
+			
+			if(!found) found = (tile.tile instanceof IInventory && !(tile.tile instanceof TileGenericPipe));
+			
+			if(found) {
+				Block block = getWorld().getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord) < Block.blocksList.length ? Block.blocksList[getWorld().getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord)] : null;
+				if(block != null) {
+					if(block.onBlockActivated(getWorld(), tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, player, 0, 0, 0, 0)) {
+						break;
+					}
+				}
+			}
+		}
+		player.inventory.currentItem = savedEquipped;
 	}
-
 
 	public void enabledUpdateEntity() {
 		if(_invProvider.getOrderManager().hasOrders(RequestType.CRAFTING)) {

@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.World;
 
 @Accessors(chain=true)
 public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
@@ -66,11 +67,14 @@ public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
 		return this;
 	}
 	
+	private boolean moduleBased = false;
 	@SuppressWarnings("unchecked")
 	public <T> T getLogisticsModule(EntityPlayer player, Class<T> clazz) {
 		LogisticsModule module = null;
 		if(this.type == ModulePositionType.IN_PIPE) {
+			moduleBased = true;
 			LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld());
+			moduleBased = false;
 			if(pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) {
 				if(LogisticsPipes.DEBUG) {
 					LogisticsPipes.log.severe(this.toString());
@@ -102,7 +106,9 @@ public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
 				}
 			}
 		} else {
+			moduleBased = true;
 			LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld());
+			moduleBased = false;
 			if(pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) {
 				if(LogisticsPipes.DEBUG) {
 					LogisticsPipes.log.severe(this.toString());
@@ -134,5 +140,13 @@ public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
 			}
 		}
 		return (T) module;
+	}
+
+	@Override
+	public <T> T getTile(World world, Class<T> clazz) {
+		if(LogisticsPipes.DEBUG && !moduleBased) {
+			new Exception("ModulePacket was asked for a pipe").printStackTrace();
+		}
+		return super.getTile(world, clazz);
 	}
 }

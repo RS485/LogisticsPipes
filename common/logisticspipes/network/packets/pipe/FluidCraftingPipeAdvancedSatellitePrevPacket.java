@@ -1,12 +1,11 @@
 package logisticspipes.network.packets.pipe;
 
-import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
+import logisticspipes.modules.ModuleCrafter;
+import logisticspipes.network.abstractpackets.IntegerModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.PipeItemsCraftingLogistics;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.entity.player.EntityPlayer;
 
-public class FluidCraftingPipeAdvancedSatellitePrevPacket extends IntegerCoordinatesPacket {
+public class FluidCraftingPipeAdvancedSatellitePrevPacket extends IntegerModuleCoordinatesPacket {
 
 	public FluidCraftingPipeAdvancedSatellitePrevPacket(int id) {
 		super(id);
@@ -19,14 +18,9 @@ public class FluidCraftingPipeAdvancedSatellitePrevPacket extends IntegerCoordin
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if (pipe == null) {
-			return;
-		}
-		if (!(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
-			return;
-		}
-		((PipeItemsCraftingLogistics) pipe.pipe).getLogisticsModule().setPrevFluidSatellite(player, getInteger());
+		ModuleCrafter module = this.getLogisticsModule(player, ModuleCrafter.class);
+		if(module == null) return;
+		module.setPrevFluidSatellite(player, getInteger());
 	}
 }
 

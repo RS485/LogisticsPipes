@@ -26,12 +26,10 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.hud.HUDStartWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopWatchingPacket;
 import logisticspipes.network.packets.module.RequestCraftingPipeUpdatePacket;
 import logisticspipes.network.packets.orderer.OrdererManagerContent;
-import logisticspipes.network.packets.pipe.CraftingPipeUpdatePacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.signs.CraftingPipeSign;
 import logisticspipes.proxy.MainProxy;
@@ -127,7 +125,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		if(!init) {
 			if(MainProxy.isClient(getWorld())) {
 				if(FMLClientHandler.instance().getClient() != null && FMLClientHandler.instance().getClient().thePlayer != null && FMLClientHandler.instance().getClient().thePlayer.sendQueue != null){
-					MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestCraftingPipeUpdatePacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+					MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestCraftingPipeUpdatePacket.class).setModulePos(craftingModule));
 				}
 			}
 			init = true;
@@ -286,25 +284,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public List<ForgeDirection> getCraftingSigns() {
 		return craftingModule.getCraftingSigns();
 	}
-
-	public boolean setCraftingSign(ForgeDirection dir, boolean b, EntityPlayer player) {
-		return craftingModule.setCraftingSign(dir, b, player);
-	}
-	
-	public ModernPacket getCPipePacket() {
-		return craftingModule.getCPipePacket();
-		
-	}
-	
-	public void handleCraftingUpdatePacket(CraftingPipeUpdatePacket packet) {
-		craftingModule.handleCraftingUpdatePacket(packet);
-	}
-
-	/* ** SATELLITE CODE ** */
-
-	public boolean isSatelliteConnected() {
-		return craftingModule.isSatelliteConnected();
-	}
 	
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
@@ -346,14 +325,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		return craftingModule.getCleanupInventory();
 	}
 	
-	public void setNextSatellite(EntityPlayer player, int integer) {
-		craftingModule.setNextSatellite(player, integer);
-	}
-
-	public void setPrevSatellite(EntityPlayer player, int integer) {
-		craftingModule.setPrevSatellite(player, integer);
-	}
-	
 	public boolean hasCraftingSign() {
 		for(int i=0;i<6;i++) {
 			if(signItem[i] instanceof CraftingPipeSign) {
@@ -362,6 +333,4 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		}
 		return false;
 	}
-
-
 }

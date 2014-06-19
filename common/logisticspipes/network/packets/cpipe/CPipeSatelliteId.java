@@ -2,19 +2,18 @@ package logisticspipes.network.packets.cpipe;
 
 import java.io.IOException;
 
+import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.PipeItemsCraftingLogistics;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
 @Accessors(chain = true)
-public class CPipeSatelliteId extends CoordinatesPacket {
+public class CPipeSatelliteId extends ModuleCoordinatesPacket {
 	
 	@Getter
 	@Setter
@@ -43,16 +42,9 @@ public class CPipeSatelliteId extends CoordinatesPacket {
 	
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final LogisticsTileGenericPipe pipe = getPipe(player.worldObj);
-		if(pipe == null) {
-			return;
-		}
-		
-		if( !(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
-			return;
-		}
-		
-		((PipeItemsCraftingLogistics) pipe.pipe).getLogisticsModule().setSatelliteId(pipeId, -1);
+		ModuleCrafter module = this.getLogisticsModule(player, ModuleCrafter.class);
+		if(module == null) return;
+		module.setSatelliteId(pipeId, -1);
 	}
 }
 

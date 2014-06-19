@@ -1,12 +1,11 @@
 package logisticspipes.network.packets.cpipe;
 
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
+import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.PipeItemsCraftingLogistics;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import net.minecraft.entity.player.EntityPlayer;
 
-public class CPipePrevSatellite extends CoordinatesPacket {
+public class CPipePrevSatellite extends ModuleCoordinatesPacket {
 	
 	public CPipePrevSatellite(int id) {
 		super(id);
@@ -19,17 +18,9 @@ public class CPipePrevSatellite extends CoordinatesPacket {
 	
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final LogisticsTileGenericPipe pipe = getPipe(player.worldObj);
-		if(pipe == null) {
-			return;
-		}
-		
-		if( !(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
-			return;
-		}
-		
-		((PipeItemsCraftingLogistics) pipe.pipe).getLogisticsModule().setPrevSatellite(player);
+		ModuleCrafter module = this.getLogisticsModule(player, ModuleCrafter.class);
+		if(module == null) return;
+		module.setPrevSatellite(player);
 	}
-	
 }
 

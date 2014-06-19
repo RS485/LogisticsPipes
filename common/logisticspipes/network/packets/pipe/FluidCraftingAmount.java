@@ -1,15 +1,14 @@
 package logisticspipes.network.packets.pipe;
 
-import logisticspipes.network.abstractpackets.Integer2CoordinatesPacket;
+import logisticspipes.modules.ModuleCrafter;
+import logisticspipes.network.abstractpackets.Integer2ModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.PipeItemsCraftingLogistics;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
 @Accessors(chain=true)
-public class FluidCraftingAmount extends Integer2CoordinatesPacket {
+public class FluidCraftingAmount extends Integer2ModuleCoordinatesPacket {
 
 	public FluidCraftingAmount(int id) {
 		super(id);
@@ -22,17 +21,12 @@ public class FluidCraftingAmount extends Integer2CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if (pipe == null) {
-			return;
-		}
-		if (!(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
-			return;
-		}
+		ModuleCrafter module = this.getLogisticsModule(player, ModuleCrafter.class);
+		if(module == null) return;
 		if(MainProxy.isClient(player.worldObj)) {
-			((PipeItemsCraftingLogistics) pipe.pipe).getLogisticsModule().defineFluidAmount(getInteger(), getInteger2());
+			module.defineFluidAmount(getInteger(), getInteger2());
 		} else {
-			((PipeItemsCraftingLogistics) pipe.pipe).getLogisticsModule().changeFluidAmount(getInteger(), getInteger2(), player);
+			module.changeFluidAmount(getInteger(), getInteger2(), player);
 		}
 	}
 }

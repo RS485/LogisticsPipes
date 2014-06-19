@@ -37,7 +37,6 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 	
 	private final ModuleCrafter	_pipe;
 	private final EntityPlayer					_player;
-	private final GuiButton[]					buttonarray;
 	private final GuiButton[]					normalButtonArray;
 	private final GuiButton[][]					advancedSatButtonArray;
 	private final GuiButton[][]					liquidGuiParts;
@@ -120,7 +119,6 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 		this.inventorySlots = dummy;
 		_pipe = module;
 		_pipe.setFluidAmount(amount);
-		buttonarray = new GuiButton[6];
 		normalButtonArray = new GuiButton[8];
 		advancedSatButtonArray = new GuiButton[9][2];
 		for(int i = 0; i < 9; i++) {
@@ -140,10 +138,6 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 			addButton(normalButtonArray[1] = new SmallGuiButton(1, (width - xSize) / 2 + 120, (height - ySize) / 2 + 50, 10, 10, "<"));
 			addButton(normalButtonArray[2] = new SmallGuiButton(3, (width - xSize) / 2 + 39, (height - ySize) / 2 + 50, 37, 10, StringUtil.translate(PREFIX + "Import")));
 			addButton(normalButtonArray[3] = new SmallGuiButton(4, (width - xSize) / 2 + 6, (height - ySize) / 2 + 50, 28, 10, StringUtil.translate(PREFIX + "Open")));
-			for(int i = 0; i < 6; i++) {
-				addButton(buttonarray[i] = new SmallGuiButton(5 + i, (width - xSize) / 2 + 11 + 18 * i, (height - ySize) / 2 + 35, 10, 10, ">"));
-				buttonarray[i].drawButton = false;
-			}
 			addButton(normalButtonArray[4] = new SmallGuiButton(20, (width - xSize) / 2 + 155, (height - ySize) / 2 + 85, 10, 10, ">"));
 			addButton(normalButtonArray[5] = new SmallGuiButton(21, (width - xSize) / 2 + 120, (height - ySize) / 2 + 85, 10, 10, "<"));
 			if(liquidCrafter != 0) {
@@ -207,9 +201,11 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 	
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
+		/*
 		if(5 <= guibutton.id && guibutton.id < 11) {
 			_pipe.handleStackMove(guibutton.id - 5);
 		}
+		*/
 		if(30 <= guibutton.id && guibutton.id < 40) {
 			_pipe.setNextSatellite(_player, guibutton.id - 30);
 		}

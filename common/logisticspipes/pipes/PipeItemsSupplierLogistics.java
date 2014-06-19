@@ -30,7 +30,6 @@ import logisticspipes.pipes.basic.debug.StatusEntry;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTree;
-import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.AdjacentTile;
@@ -201,7 +200,7 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 
 			if(_patternMode != PatternMode.Full) {
 				debug.log("Supplier: Requesting partial: " + toRequest);
-				neededCount = RequestTree.requestPartial(toRequest, (IRequestItems) container.pipe);
+				neededCount = RequestTree.requestPartial(toRequest, (IRequestItems) container.pipe, null);
 				debug.log("Supplier: Requested: " + toRequest.getItem().makeStack(neededCount));
 				if(neededCount > 0) {
 					success = true;
@@ -295,7 +294,7 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 
 			if(_requestMode!=SupplyMode.Full) {
 				debug.log("Supplier: Requesting partial: " + need.getKey().makeStack(neededCount));
-				neededCount = RequestTree.requestPartial(need.getKey().makeStack(neededCount), (IRequestItems) container.pipe);
+				neededCount = RequestTree.requestPartial(need.getKey().makeStack(neededCount), (IRequestItems) container.pipe, null);
 				debug.log("Supplier: Requested: " + need.getKey().makeStack(neededCount));
 				if(neededCount > 0) {
 					success = true;

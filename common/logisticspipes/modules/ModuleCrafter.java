@@ -13,7 +13,10 @@ import java.util.concurrent.DelayQueue;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
+import logisticspipes.interfaces.IHUDModuleHandler;
+import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
+import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.ICraftItems;
@@ -45,6 +48,8 @@ import logisticspipes.network.packets.cpipe.CPipeSatelliteImportBack;
 import logisticspipes.network.packets.cpipe.CraftingAdvancedSatelliteId;
 import logisticspipes.network.packets.cpipe.CraftingFuzzyFlag;
 import logisticspipes.network.packets.cpipe.CraftingPipeOpenConnectedGuiPacket;
+import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
+import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
 import logisticspipes.network.packets.pipe.CraftingPipePriorityDownPacket;
 import logisticspipes.network.packets.pipe.CraftingPipePriorityUpPacket;
 import logisticspipes.network.packets.pipe.CraftingPipeUpdatePacket;
@@ -78,6 +83,7 @@ import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.CraftingRequirement;
 import logisticspipes.utils.DelayedGeneric;
 import logisticspipes.utils.FluidIdentifier;
+import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.BufferMode;
@@ -86,6 +92,7 @@ import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.tuples.Pair;
 import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -106,7 +113,7 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
+public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IHUDModuleHandler, IModuleWatchReciver {
 	
 	private PipeItemsCraftingLogistics _pipe;
 	
@@ -139,7 +146,9 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 	
 	public boolean cleanupModeIsExclude = true;
 	// for reliable transport
-	protected final DelayQueue< DelayedGeneric<ItemIdentifierStack>> _lostItems = new DelayQueue< DelayedGeneric<ItemIdentifierStack>>();
+	protected final DelayQueue< DelayedGeneric<Pair<ItemIdentifierStack, IAdditionalTargetInformation>>> _lostItems = new DelayQueue< DelayedGeneric<Pair<ItemIdentifierStack, IAdditionalTargetInformation>>>();
+	
+	protected final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	
 	public ModuleCrafter() {}
 	
@@ -206,22 +215,22 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 		enabledUpdateEntity();
 		if(_lostItems.isEmpty()) { return; }
 		// if(true) return;
-		DelayedGeneric<ItemIdentifierStack> lostItem = _lostItems.poll();
+		DelayedGeneric<Pair<ItemIdentifierStack, IAdditionalTargetInformation>> lostItem = _lostItems.poll();
 		while(lostItem != null) {
 			
-			ItemIdentifierStack stack = lostItem.get();
+			Pair<ItemIdentifierStack, IAdditionalTargetInformation> pair = lostItem.get();
 			if(_invProvider.getOrderManager().hasOrders(RequestType.CRAFTING)) {
-				SinkReply reply = LogisticsManager.canSink(getRouter(), null, true, stack.getItem(), null, true, true);
+				SinkReply reply = LogisticsManager.canSink(getRouter(), null, true, pair.getValue1().getItem(), null, true, true);
 				if(reply == null || reply.maxNumberOfItems < 1) {
-					_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(stack, 5000));
+					_lostItems.add(new DelayedGeneric<Pair<ItemIdentifierStack, IAdditionalTargetInformation>>(pair, 5000));
 					lostItem = _lostItems.poll();
 					continue;
 				}
 			}
-			int received = RequestTree.requestPartial(stack, (CoreRoutedPipe)_invProvider);
-			if(received < stack.getStackSize()) {
-				stack.setStackSize(stack.getStackSize() - received);
-				_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(stack, 5000));
+			int received = RequestTree.requestPartial(pair.getValue1(), (CoreRoutedPipe)_invProvider, pair.getValue2());
+			if(received < pair.getValue1().getStackSize()) {
+				pair.getValue1().setStackSize(pair.getValue1().getStackSize() - received);
+				_lostItems.add(new DelayedGeneric<Pair<ItemIdentifierStack, IAdditionalTargetInformation>>(pair, 5000));
 			}
 			lostItem = _lostItems.poll();
 		}
@@ -232,7 +241,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 	
 	@Override
 	public void itemLost(ItemIdentifierStack item, IAdditionalTargetInformation info) {
-		_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(item, 5000));
+		_lostItems.add(new DelayedGeneric<Pair<ItemIdentifierStack, IAdditionalTargetInformation>>(new Pair<ItemIdentifierStack, IAdditionalTargetInformation>(item, info), 5000));
 	}
 
 	@Override
@@ -1155,7 +1164,10 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 					break;
 				}
 			}
-			if(extracted == null || extracted.stackSize == 0) break;
+			if(extracted == null || extracted.stackSize == 0) {
+				_invProvider.getOrderManager().deferSend();
+				break;
+			}
 			lastAccessedCrafter = new WeakReference<TileEntity>(tile.tile);
 			// send the new crafted items to the destination
 			ItemIdentifier extractedID = ItemIdentifier.get(extracted);
@@ -1484,5 +1496,31 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 			super(moduleSlot);
 			this.craftingSlot = craftingSlot;
 		}
+	}
+
+	@Override
+	public void startHUDWatching() {
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setModulePos(this));
+	}
+
+	@Override
+	public void stopHUDWatching() {
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopModuleWatchingPacket.class).setModulePos(this));
+	}
+
+	@Override
+	public void startWatching(EntityPlayer player) {
+		localModeWatchers.add(player);
+	}
+
+	@Override
+	public void stopWatching(EntityPlayer player) {
+		localModeWatchers.remove(player);
+	}
+
+	@Override
+	public IHUDModuleRenderer getHUDRenderer() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

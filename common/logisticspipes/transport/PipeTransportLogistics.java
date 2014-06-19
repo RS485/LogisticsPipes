@@ -19,6 +19,7 @@ import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
+import logisticspipes.interfaces.IBufferItems;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.interfaces.ISpecialInsertion;
@@ -186,6 +187,11 @@ public class PipeTransportLogistics extends PipeTransport {
 		// Safe guard - if for any reason the item is corrupted at this
 		// stage, avoid adding it to the pipe to avoid further exceptions.
 			return;
+		
+		if(getPipe() instanceof IBufferItems) {
+			stack.setStackSize(((IBufferItems)getPipe()).addToBuffer(stack, item.getAdditionalTargetInformation()));
+			if(stack.getStackSize() <= 0) return;
+		}
 		
 		// Assign new ID to update ItemStack content
 		item.id = item.getNextId();

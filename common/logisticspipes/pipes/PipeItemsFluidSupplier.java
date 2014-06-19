@@ -191,7 +191,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 				boolean success = false;
 
 				if(_requestPartials) {
-					countToRequest = RequestTree.requestPartial(need.makeStack(countToRequest), (IRequestItems) this.container.pipe);
+					countToRequest = RequestTree.requestPartial(need.makeStack(countToRequest), (IRequestItems) this.container.pipe, null);
 					if(countToRequest > 0) {
 						success = true;
 					}

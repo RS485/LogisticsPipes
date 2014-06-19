@@ -222,8 +222,8 @@ public class RequestTree extends RequestTreeNode {
 		return request( item, requester, log, false, false,true,false,defaultRequestFlags, null) == item.getStackSize();
 	}
 	
-	public static int requestPartial(ItemIdentifierStack item, IRequestItems requester) {
-		return request( item, requester, null, true, false,true,false,defaultRequestFlags, null);
+	public static int requestPartial(ItemIdentifierStack item, IRequestItems requester, IAdditionalTargetInformation info) {
+		return request( item, requester, null, true, false,true,false,defaultRequestFlags, info);
 	}
 
 	public static int simulate(ItemIdentifierStack item, IRequestItems requester, RequestLog log) {

@@ -149,7 +149,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		return 1;
 	}
 	
-	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination) {
+	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination, IAdditionalTargetInformation info) {
 		ItemIdentifier item = stack.getItem();
 		
 		WorldUtil wUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
@@ -192,6 +192,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 			IRoutedItem routedItem = SimpleServiceLocator.routedItemHelper.createNewTravelItem(removed);
 			routedItem.setDestination(destination);
 			routedItem.setTransportMode(TransportMode.Active);
+			routedItem.setAdditionalTargetInformation(info);
 			super.queueRoutedItem(routedItem, tile.orientation);
 			
 			_orderManager.sendSuccessfull(sent, defersend, routedItem);
@@ -258,7 +259,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 			if(firstOrder == null)
 				firstOrder = order;
 			order = _orderManager.peekAtTopRequest(RequestType.PROVIDER);
-			int sent = sendStack(order.getItem(), itemsleft, order.getDestination().getRouter().getSimpleID());
+			int sent = sendStack(order.getItem(), itemsleft, order.getDestination().getRouter().getSimpleID(), order.getInformation());
 			if(sent < 0) break;
 			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, getX(), getY(), getZ(), this.getWorld(), 3);
 			stacksleft -= 1;

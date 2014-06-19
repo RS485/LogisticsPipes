@@ -282,7 +282,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		final Iterator<ItemIdentifierStack> iterator = _lostItems.iterator();
 		while (iterator.hasNext()) {
 			ItemIdentifierStack stack = iterator.next();
-			int received = RequestTree.requestPartial(stack, (CoreRoutedPipe) container.pipe);
+			int received = RequestTree.requestPartial(stack, (CoreRoutedPipe) container.pipe, null);
 			if(received > 0) {
 				if(received == stack.getStackSize()) {
 					iterator.remove();

@@ -20,12 +20,10 @@ public class ChestContent extends InventoryModuleCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe tile = this.getPipe(player.worldObj);
-		if(tile == null) {
-			return;
-		}
-		if(tile.pipe instanceof IChestContentReceiver) {
+		if(tile != null && tile.pipe instanceof IChestContentReceiver) {
 			((IChestContentReceiver) tile.pipe).setReceivedChestContent(getIdentList());
 		}
+		
 	}
 
 	@Override

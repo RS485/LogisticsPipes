@@ -20,6 +20,7 @@ import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.gui.hud.HUDChassiePipe;
+import logisticspipes.interfaces.IBufferItems;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.ILegacyActiveModule;
@@ -83,7 +84,7 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.Player;
 
 @CCType(name="LogisticsChassiePipe")
-public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICraftItems,ISimpleInventoryEventHandler, IInventoryProvider, ISendRoutedItem, IProvideItems, IWorldProvider, IHeadUpDisplayRendererProvider, ISendQueueContentRecieiver {
+public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICraftItems, IBufferItems, ISimpleInventoryEventHandler, IInventoryProvider, ISendRoutedItem, IProvideItems, IWorldProvider, IHeadUpDisplayRendererProvider, ISendQueueContentRecieiver {
 
 	private final ChassiModule _module;
 	private final ItemIdentifierInventory _moduleInventory;
@@ -259,7 +260,8 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 				}
 			} else {
 				if(LogisticsPipes.DEBUG && info != null) {
-					new RuntimeException("Information weren't ment for a chassi pipe").printStackTrace();
+					System.out.println(item);
+					new RuntimeException("[ItemArrived] Information weren't ment for a chassi pipe").printStackTrace();
 				}
 			}
 		}
@@ -276,11 +278,32 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 				}
 			} else {
 				if(LogisticsPipes.DEBUG) {
-					new RuntimeException("Information weren't ment for a chassi pipe").printStackTrace();
+					System.out.println(item);
+					new RuntimeException("[ItemLost] Information weren't ment for a chassi pipe").printStackTrace();
 				}
 			}
 		}
 	}
+	
+	@Override
+	public int addToBuffer(ItemIdentifierStack item, IAdditionalTargetInformation info) {
+		if(MainProxy.isServer(this.getWorld())) {
+			if(info instanceof ChasseTargetInformation) {
+				ChasseTargetInformation target = (ChasseTargetInformation) info;
+				LogisticsModule module = _module.getSubModule(target.moduleSlot);
+				if(module instanceof IBufferItems) {
+					return ((IBufferItems)module).addToBuffer(item, info);
+				}
+			} else {
+				if(LogisticsPipes.DEBUG) {
+					System.out.println(item);
+					new RuntimeException("[AddToBuffer] Information weren't ment for a chassi pipe").printStackTrace();
+				}
+			}
+		}
+		return item.getStackSize();
+	}
+	
 	@Override
 	public void InventoryChanged(IInventory inventory) {
 		boolean reInitGui = false;

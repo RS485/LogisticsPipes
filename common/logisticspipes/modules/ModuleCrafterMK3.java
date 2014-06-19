@@ -1,19 +1,18 @@
 package logisticspipes.modules;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraft.client.renderer.texture.IconRegister;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.Icon;
-import net.minecraftforge.common.ForgeDirection;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import logisticspipes.interfaces.IBufferItems;
+import logisticspipes.interfaces.IModuleInventoryReceive;
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.module.ModuleInventory;
 import logisticspipes.pipes.PipeItemsCraftingLogisticsMk3;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.order.IOrderInfoProvider.RequestType;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
@@ -23,8 +22,18 @@ import logisticspipes.utils.SinkReply.BufferMode;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.Icon;
+import net.minecraftforge.common.ForgeDirection;
+import cpw.mods.fml.common.network.Player;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
-public class ModuleCrafterMK3 extends ModuleCrafter implements ISimpleInventoryEventHandler {
+public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISimpleInventoryEventHandler, IModuleInventoryReceive {
 
 	public ItemIdentifierInventory inv = new ItemIdentifierInventory(16, "Buffer", 127);
 	
@@ -96,6 +105,7 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements ISimpleInventoryE
 
 	@Override
 	public void tick(){
+		super.tick();
 		if(inv.isEmpty()) return;
 		if(getWorld().getTotalWorldTime() % 6 != 0) return;
 		//Add from internal buffer
@@ -142,16 +152,25 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements ISimpleInventoryE
 			inv.clearInventorySlotContents(i);
 			break;
 		}
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void InventoryChanged(IInventory inventory) {
-		// TODO Auto-generated method stub
-		
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(inv, true)).setModulePos(this), localModeWatchers);
+	}
+
+	@Override
+	public void handleInvContent(Collection<ItemIdentifierStack> list) {
+		bufferList.clear();
+		bufferList.addAll(list);
 	}
 	
+
+	@Override
+	public void startWatching(EntityPlayer player) {
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(inv, true)).setModulePos(this), (Player) player);
+		super.startWatching(player);
+	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
@@ -165,6 +184,8 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements ISimpleInventoryE
 		inv.readFromNBT(nbttagcompound, "buffer");
 	}
 
-
-
+	@Override
+	public int addToBuffer(ItemIdentifierStack stack, IAdditionalTargetInformation info) {
+		return inv.addCompressed(stack.makeNormalStack(), true);
+	}
 }

@@ -302,7 +302,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 			if(LogisticsPipes.DEBUG) {
 				new UnsupportedOperationException("Not valid for this Inventory: (" + stack + ")").printStackTrace();
 			}
-			return 0;
+			return stack.stackSize;
 		}
 		stack = stack.copy();
 

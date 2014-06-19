@@ -8,22 +8,14 @@
 
 package logisticspipes.pipes;
 
-import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.modules.ModuleCrafterMK2;
-import logisticspipes.modules.ModuleCrafterMK3;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import logisticspipes.transport.CraftingPipeMk3Transport;
-import logisticspipes.transport.PipeTransportLogistics;
 
-public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
+public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics {
 	
 	public PipeItemsCraftingLogisticsMk2(int itemID) {
 		super(itemID);
-	}
-
-	public PipeItemsCraftingLogisticsMk2(PipeTransportLogistics transport, int itemID) {
-		super(transport, itemID);
 		craftingModule=new ModuleCrafterMK2(this);
 	}
 

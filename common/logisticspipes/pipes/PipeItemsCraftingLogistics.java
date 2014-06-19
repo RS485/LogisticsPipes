@@ -44,7 +44,6 @@ import logisticspipes.routing.order.LogisticsOrder;
 import logisticspipes.routing.order.LogisticsOrderManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.IHavePriority;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -77,30 +76,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 //		craftingModule.registerHandler(this, this, this);
 		throttleTime = 40;
 		_orderManager = new LogisticsOrderManager(this); // null by default when not needed
-	}
-	
-	public PipeItemsCraftingLogistics(PipeTransportLogistics transport, int itemID) {
-		super(transport,itemID);
-		craftingModule = new ModuleCrafter(this);
-		throttleTime = 40;
-		_orderManager = new LogisticsOrderManager(this);// null by default when not needed
-	}
-
-
-	
-	// protected constructors so that other pipe types can override the module, if needed.
-	protected PipeItemsCraftingLogistics(int itemID,
-			ModuleCrafter moduleCrafter) {
-		super(itemID);
-		craftingModule = moduleCrafter;
-				throttleTime = 40;
-				_orderManager = new LogisticsOrderManager(this);// null by default when not needed
-	}
-
-	protected PipeItemsCraftingLogistics(PipeTransportLogistics transport,
-			int itemID, ModuleCrafter moduleCrafter) {
-		super(transport,itemID);
-		craftingModule=moduleCrafter;
 	}
 
 	@Override

@@ -282,10 +282,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 
 		inv.setInventorySlotContents(10, toAdd);
 
-		inv.getStackInSlot(9).stackSize -= 1;
-		if(inv.getStackInSlot(9).stackSize <= 0) {
-			inv.clearInventorySlotContents(9);
-		}
+		inv.decrStackSize(9, 1);
 
 		inv.onInventoryChanged();
 		super.onInventoryChanged();

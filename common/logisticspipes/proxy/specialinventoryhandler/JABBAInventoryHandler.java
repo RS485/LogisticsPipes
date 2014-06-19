@@ -13,16 +13,19 @@ import net.minecraftforge.common.ForgeDirection;
 
 public class JABBAInventoryHandler extends SpecialInventoryHandler {
 
-	private final IBarrelStorage _tile;
+	private final TileEntityBarrel _tile;
+	private final IBarrelStorage _storage;
 	private final boolean _hideOnePerStack;
 
 	private JABBAInventoryHandler(TileEntity tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
-		_tile = ((TileEntityBarrel)tile).getStorage();
+		_tile = (TileEntityBarrel)tile;
+		_storage = _tile.getStorage();
 		_hideOnePerStack = hideOnePerStack || hideOne;
 	}
 
 	public JABBAInventoryHandler() {
 		_tile = null;
+		_storage = null;
 		_hideOnePerStack = false;
 	}
 
@@ -44,30 +47,30 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public int itemCount(ItemIdentifier itemIdent) {
-		ItemStack items = _tile.getStoredItemType();
+		ItemStack items = _storage.getStoredItemType();
 		if(items != null && ItemIdentifier.get(items) == itemIdent)
-			return (_tile.isCreative() ? (int) (Math.pow(2, 20)) : (items.stackSize - (_hideOnePerStack ? 1:0)));
+			return (_storage.isCreative() ? (int) (Math.pow(2, 20)) : (items.stackSize - (_hideOnePerStack ? 1:0)));
 		return 0;
 	}
 
 	@Override
 	public ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
-		ItemStack items = _tile.getStoredItemType();
+		ItemStack items = _storage.getStoredItemType();
 		if(items == null || ItemIdentifier.get(items) != itemIdent) {
 			return null;
 		}
-		if(_tile.isCreative()) {
+		if(_storage.isCreative()) {
 			return itemIdent.makeNormalStack(count);
 		}
 		if(_hideOnePerStack)
 			items.stackSize--;
 		if(count >= items.stackSize) {
-			_tile.setStoredItemCount((_hideOnePerStack?1:0));
+			_storage.setStoredItemCount((_hideOnePerStack?1:0));
 			_tile.onInventoryChanged();
 			return items;
 		}
 		ItemStack newItems = items.splitStack(count);
-		_tile.setStoredItemCount(items.stackSize+(_hideOnePerStack?1:0));
+		_storage.setStoredItemCount(items.stackSize+(_hideOnePerStack?1:0));
 		_tile.onInventoryChanged();
 		return newItems;
 		
@@ -76,7 +79,7 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public Set<ItemIdentifier> getItems() {
 		Set<ItemIdentifier> result = new TreeSet<ItemIdentifier>();
-		ItemStack items = _tile.getStoredItemType();
+		ItemStack items = _storage.getStoredItemType();
 		if(items != null && items.stackSize > 0) {
 			result.add(ItemIdentifier.get(items));
 		}
@@ -86,9 +89,9 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
 		HashMap<ItemIdentifier, Integer> result = new HashMap<ItemIdentifier, Integer>();
-		ItemStack items = _tile.getStoredItemType();
+		ItemStack items = _storage.getStoredItemType();
 		if(items != null && items.stackSize > 0) {
-			result.put(ItemIdentifier.get(items), _tile.isCreative() ? (int) (Math.pow(2, 20)) : items.stackSize-(_hideOnePerStack?1:0));
+			result.put(ItemIdentifier.get(items), _storage.isCreative() ? (int) (Math.pow(2, 20)) : items.stackSize-(_hideOnePerStack?1:0));
 		}
 		return result;
 	}
@@ -100,13 +103,13 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public boolean containsItem(ItemIdentifier itemIdent) {
-		ItemStack items = _tile.getStoredItemType();
-		return items != null && _tile.sameItem(itemIdent.makeNormalStack(1));
+		ItemStack items = _storage.getStoredItemType();
+		return items != null && _storage.sameItem(itemIdent.makeNormalStack(1));
 	}
 
 	@Override
 	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
-		ItemStack items = _tile.getStoredItemType();
+		ItemStack items = _storage.getStoredItemType();
 		if(items != null && ItemIdentifier.getUndamaged(items) == itemIdent)
 			return true;
 		return false;		
@@ -122,15 +125,15 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 		if(itemIdent.tag != null) {
 			return 0;
 		}
-		ItemStack items = _tile.getStoredItemType();
+		ItemStack items = _storage.getStoredItemType();
 		if(items == null) {
-			return _tile.getMaxStoredCount();
+			return _storage.getMaxStoredCount();
 		}
-		if(_tile.sameItem(itemIdent.makeNormalStack(1))) {
-			if(_tile.isVoid()) {
-				return _tile.getMaxStoredCount();
+		if(_storage.sameItem(itemIdent.makeNormalStack(1))) {
+			if(_storage.isVoid()) {
+				return _storage.getMaxStoredCount();
 			} else {
-				return _tile.getMaxStoredCount() - items.stackSize;
+				return _storage.getMaxStoredCount() - items.stackSize;
 			}
 		}
 		return 0;
@@ -143,32 +146,32 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 		if(stack.getTagCompound() != null) {
 			return st;
 		}
-		ItemStack items = _tile.getStoredItemType();
+		ItemStack items = _storage.getStoredItemType();
 		if((items == null || items.stackSize == 0)) {
-			if(stack.stackSize <= _tile.getMaxStoredCount()) {
-				_tile.setStoredItemType(stack, stack.stackSize);
+			if(stack.stackSize <= _storage.getMaxStoredCount()) {
+				_storage.setStoredItemType(stack, stack.stackSize);
 				st.stackSize = stack.stackSize;
 				_tile.onInventoryChanged();
 				return st;
 			} else {
-				_tile.setStoredItemType(stack, _tile.getMaxStoredCount());
-				st.stackSize = _tile.getMaxStoredCount();
+				_storage.setStoredItemType(stack, _storage.getMaxStoredCount());
+				st.stackSize = _storage.getMaxStoredCount();
 				_tile.onInventoryChanged();
 				return st;
 			}
 		}
-		if(!_tile.sameItem(stack)) {
+		if(!_storage.sameItem(stack)) {
 			return st;
 		}
-		if(stack.stackSize <= _tile.getMaxStoredCount() - items.stackSize) {
-			_tile.setStoredItemCount(items.stackSize + stack.stackSize);
+		if(stack.stackSize <= _storage.getMaxStoredCount() - items.stackSize) {
+			_storage.setStoredItemCount(items.stackSize + stack.stackSize);
 			st.stackSize = stack.stackSize;
 			_tile.onInventoryChanged();
 			return st;
 		} else {
-			_tile.setStoredItemCount(_tile.getMaxStoredCount());
-			if(!_tile.isVoid()) {
-				st.stackSize = _tile.getMaxStoredCount() - items.stackSize;
+			_storage.setStoredItemCount(_storage.getMaxStoredCount());
+			if(!_storage.isVoid()) {
+				st.stackSize = _storage.getMaxStoredCount() - items.stackSize;
 			} else {
 				st.stackSize = stack.stackSize;
 			}
@@ -190,12 +193,12 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public ItemStack getStackInSlot(int i) {
 		if(i != 0) return null;
-		return _tile.getStoredItemType();
+		return _storage.getStoredItemType();
 	}
 
 	@Override
 	public ItemStack decrStackSize(int i, int j) {
 		if(i != 0) return null;
-		return getMultipleItems(ItemIdentifier.get(_tile.getStoredItemType()), j);
+		return getMultipleItems(ItemIdentifier.get(_storage.getStoredItemType()), j);
 	}
 }

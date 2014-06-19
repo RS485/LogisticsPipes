@@ -271,10 +271,21 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 	public ItemStack getStackInSlot(int i) {
 		if(i != 0) return null;
 		try {
-			return (ItemStack) item.get(_tile);
+			ItemStack itemStack = (ItemStack) item.get(_tile);
+			if(itemStack != null) {
+				int value = (Integer) getItemCount.invoke(_tile, new Object[]{});
+				value -= _hideOnePerStack?1:0;
+				if(value > 0) {
+					ItemStack ret = itemStack.copy();
+					ret.stackSize = value;
+					return ret;
+				}
+			}
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -285,10 +296,11 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 		try {
 			ItemStack itemStack = (ItemStack) item.get(_tile);
 			int value = (Integer) getItemCount.invoke(_tile, new Object[]{});
-			if(value > (_hideOnePerStack?1:0)) {
-				setItemCount.invoke(_tile, new Object[]{value - 1});
+			j = Math.min(j, value - (_hideOnePerStack?1:0));
+			if(j > 0) {
+				setItemCount.invoke(_tile, new Object[]{value - j});
 				ItemStack ret = itemStack.copy();
-				ret.stackSize = 1;
+				ret.stackSize = j;
 				return ret;
 			}
 		} catch (IllegalAccessException e) {

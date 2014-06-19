@@ -258,7 +258,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 					((IRequireReliableTransport) module).itemArrived(item, info);
 				}
 			} else {
-				if(LogisticsPipes.DEBUG) {
+				if(LogisticsPipes.DEBUG && info != null) {
 					new RuntimeException("Information weren't ment for a chassi pipe").printStackTrace();
 				}
 			}

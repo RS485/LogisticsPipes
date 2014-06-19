@@ -199,6 +199,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 		return null;
 	}
 
+	public void onAllowedRemoval() {}
+	
 	@Override
 	public void tick() {
 		enabledUpdateEntity();
@@ -849,7 +851,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems {
 		}
 	}
 
-	private World getWorld() {
+	protected World getWorld() {
 		return _world.getWorld();
 	}
 	

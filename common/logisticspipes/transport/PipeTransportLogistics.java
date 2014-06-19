@@ -555,6 +555,7 @@ public class PipeTransportLogistics extends PipeTransport {
 	
 	private void moveSolids() {
 		items.flush();
+		items.scheduleAdd();
 		for(LPTravelingItem item: items) {
 			if(item.lastTicked >= MainProxy.getGlobalTick()) continue;
 			item.lastTicked = MainProxy.getGlobalTick();
@@ -577,6 +578,7 @@ public class PipeTransportLogistics extends PipeTransport {
 				}
 			}
 		}
+		items.addScheduledItems();
 		items.removeScheduledItems();
 	}
 	

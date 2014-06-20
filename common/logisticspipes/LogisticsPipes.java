@@ -23,6 +23,7 @@ import logisticspipes.items.ItemDisk;
 import logisticspipes.items.ItemHUDArmor;
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.ItemParts;
+import logisticspipes.items.ItemPipeController;
 import logisticspipes.items.ItemPipeSignCreator;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsBrokenItem;
@@ -221,6 +222,7 @@ public class LogisticsPipes {
 	public static Item LogisticsUpgradeManager;
 	public static Item LogisticsFluidContainer;
 	public static Item LogisticsBrokenItem;
+	public static Item LogisticsPipeControllerItem;
 	
 	// Logistics Blocks
 	public static Block LogisticsSolidBlock;
@@ -413,6 +415,9 @@ public class LogisticsPipes {
 		
 		LogisticsBrokenItem = new LogisticsBrokenItem(Configs.ITEM_BROKEN_ID);
 		LogisticsBrokenItem.setUnlocalizedName("brokenItem");
+
+		LogisticsPipeControllerItem = new ItemPipeController(Configs.ITEM_PIPE_CONTROLLER_ID);
+		LogisticsPipeControllerItem.setUnlocalizedName("pipeController");
 
 		//Blocks
 		LogisticsSolidBlock = new LogisticsSolidBlock(Configs.LOGISTICS_SOLID_BLOCK_ID);

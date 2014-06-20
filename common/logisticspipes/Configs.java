@@ -13,6 +13,7 @@ public class Configs {
 	public static final String CATEGORY_DEBUG 		= "debug";
 
 	// Ids
+	public static int ITEM_PIPE_CONTROLLER_ID = 6862;
 	public static int ITEM_BROKEN_ID = 6863;
 	public static int ITEM_LIQUID_CONTAINER_ID = 6864;
 	public static int ITEM_UPGRADE_MANAGER_ID = 6865;
@@ -145,6 +146,9 @@ public class Configs {
 				.getInt();
 		ITEM_BROKEN_ID = CONFIGURATION.getItem("LogisticsBrokenItem.id",
 				ITEM_BROKEN_ID, "The item id for the logistics broken item")
+				.getInt();
+		ITEM_PIPE_CONTROLLER_ID = CONFIGURATION.getItem("LogisticsPipeControllerItem.id",
+				ITEM_PIPE_CONTROLLER_ID, "The item id for the logistics pipe controller item")
 				.getInt();
 	
 		ITEM_LIQUID_CONTAINER_ID = CONFIGURATION.getItem(

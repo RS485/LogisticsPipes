@@ -108,9 +108,22 @@ public abstract class LPTravelingItem {
 		return false;
 	}
 	
+	public int getAge() {
+		return 0;
+	}
+	
+	public void addAge() {}
+
+	public float getHoverStart() {
+		return 0;
+	}
+	
 	public static final class LPTravelingItemClient extends LPTravelingItem {
 		@Setter
 		private ItemIdentifierStack item;
+		private int age;
+		private float hoverStart = (float)(Math.random() * Math.PI * 2.0D);
+		
 		public LPTravelingItemClient(int id, float position, ForgeDirection input, ForgeDirection output) {
 			super(id, position, input, output);
 		}
@@ -130,6 +143,21 @@ public abstract class LPTravelingItem {
 			this.output = output;
 			this.speed = speed;
 			this.position = position;
+		}
+		
+		@Override
+		public int getAge() {
+			return 0;//age;
+		}
+
+		@Override
+		public void addAge() {
+			age++;
+		}
+
+		@Override
+		public float getHoverStart() {
+			return 0;//hoverStart;
 		}
 	}
 	

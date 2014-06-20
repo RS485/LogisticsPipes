@@ -559,6 +559,7 @@ public class PipeTransportLogistics extends PipeTransport {
 		for(LPTravelingItem item: items) {
 			if(item.lastTicked >= MainProxy.getGlobalTick()) continue;
 			item.lastTicked = MainProxy.getGlobalTick();
+			item.addAge();
 			item.setPosition(item.getPosition() + item.getSpeed());
 			if(endReached(item)) {
 				if(item.output == ForgeDirection.UNKNOWN) {

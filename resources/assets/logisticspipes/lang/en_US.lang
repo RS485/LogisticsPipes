@@ -178,11 +178,16 @@ item.ModuleEnchantmentSink=Enchantment Sink module
 item.ModuleEnchantmentSinkMK2=Enchantment Sink module MK2
 item.ModuleCCBasedItemSink=CC Based ItemSink module
 item.ModuleCCBasedQuickSort=CC Based QuickSort module
+item.ModuleCrafter=Crafting module
+item.ModuleCrafterMK2=Crafting module MK2
+item.ModuleCrafterMK3=Crafting module MK3
 
 # Items
 
+item.pipeController=Logistics Pipe Controller
 item.brokenItem=Logistics Broken Item
 item.logisticsFluidContainer=Logistics Fluid Container
+# %cRED (DEPRECATED) %cRESET
 item.upgradeManagerItem=Upgrade Manager
 item.HUDbow=Logistics HUD Bow
 item.HUDglass=Logistics HUD Glass
@@ -190,6 +195,7 @@ item.HUDnosebridge=Logistics HUD Nose Bridge
 item.NanoHopper=Nano Hopper
 item.logisticsItemCard=Logistics Item Card
 item.itemDisk=Logistics Disk
+# %cRED (DEPRECATED) %cRESET
 item.networkMonitorItem=Network monitor
 item.ItemPipeSignCreator.0=Crafting Sign Creator
 item.ItemPipeSignCreator.1=Item Amount Sign Creator
@@ -356,3 +362,14 @@ gui.supplierpipe.RequestMode=Request Mode
 gui.upgrademanager.Upgrades=Upgrades
 gui.upgrademanager.Inventory=Inventory
 gui.upgrademanager.SneakyUpgrades=Sneaky Upgrades
+
+gui.pipecontroller.upgrade=Upgrades
+gui.pipecontroller.inventory=Inventory
+gui.pipecontroller.sneakyUpgrades=Sneaky Upgrades
+gui.pipecontroller.security=Security
+gui.pipecontroller.Session=Session
+gui.pipecontroller.Lifetime=Lifetime
+gui.pipecontroller.Sent=Sent
+gui.pipecontroller.Recieved=Recieved
+gui.pipecontroller.Relayed=Relayed
+gui.pipecontroller.RoutingTableSize=RoutingTableSize

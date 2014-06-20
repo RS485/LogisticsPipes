@@ -57,8 +57,10 @@ import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.guis.pipe.PipeController;
 import logisticspipes.network.packets.pipe.PipeSignTypes;
 import logisticspipes.network.packets.pipe.RequestRoutingLasersPacket;
 import logisticspipes.network.packets.pipe.RequestSignPacket;
@@ -867,6 +869,17 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			if(station != null) {
 				settings = station.getSecuritySettingsForPlayer(entityplayer, true);
 			}
+		}
+
+		if (entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsPipeControllerItem) {
+			if(MainProxy.isServer(entityplayer.worldObj)) {
+				if(settings == null || settings.openNetworkMonitor) {
+					NewGuiHandler.getGui(PipeController.class).setTilePos(container).open(entityplayer);
+				} else {
+					entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
+				}
+			}
+			return true;
 		}
 
 		if(handleClick(entityplayer, settings)) {

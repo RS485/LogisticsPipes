@@ -156,7 +156,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 			if(item == null || item.getItemIdentifierStack() == null) continue;
 			if(item.getContainer().xCoord != pipe.container.xCoord || item.getContainer().yCoord != pipe.container.yCoord || item.getContainer().zCoord != pipe.container.zCoord) continue;
 			ItemStack itemstack = item.getItemIdentifierStack().makeNormalStack();
-			doRenderItem(itemstack, x + pos.getXD(), y + pos.getYD(), z + pos.getZD(), light);
+			doRenderItem(itemstack, x + pos.getXD(), y + pos.getYD(), z + pos.getZD(), light, item.getAge(), item.getHoverStart());
 			count++;
 		}
 		
@@ -164,13 +164,17 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 		GL11.glPopMatrix();
 	}
 	
-	public void doRenderItem(ItemStack itemstack, double x, double y, double z, float light) {
+	public void doRenderItem(ItemStack itemstack, double x, double y, double z, float light, int age, float hoverStart) {
 		float renderScale = 0.7f;
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float)x, (float)y, (float)z);
 		GL11.glScalef(renderScale, renderScale, renderScale);
 		dummyEntityItem.setEntityItemStack(itemstack);
+		dummyEntityItem.age = age;
+		dummyEntityItem.hoverStart = hoverStart;
 		customRenderItem.doRenderItem(dummyEntityItem, 0, 0, 0, 0, 0);
+		dummyEntityItem.age = 0;
+		dummyEntityItem.hoverStart = 0;
 		GL11.glPopMatrix();
 	}
 	

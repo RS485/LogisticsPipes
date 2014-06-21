@@ -3,20 +3,15 @@ package logisticspipes.proxy;
 import java.io.File;
 import java.util.WeakHashMap;
 
-import logisticspipes.Configs;
 import logisticspipes.LogisticsEventListener;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.FakePlayer;
-import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.packets.pipe.ParticleFX;
-import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.routing.debug.RoutingTableDebugUpdateThread;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.utils.PlayerCollectionList;
 import lombok.Getter;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.ServerListenThread;
 import net.minecraft.server.ThreadMinecraftServer;
@@ -178,20 +173,6 @@ public class MainProxy {
 		return false;
 	}
 
-	public static void sendSpawnParticlePacket(int particle, int xCoord, int yCoord, int zCoord, World dimension, int amount) {
-		if(!Configs.ENABLE_PARTICLE_FX) return;
-		if(MainProxy.isServer(dimension)) {
-			MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(dimension), PacketHandler.getPacket(ParticleFX.class).setInteger2(amount).setInteger(particle).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
-		} else {
-			LogisticsPipes.log.severe("Server only method on Client (Particle Spawning)");
-		}
-	}
-	
-	public static void spawnParticle(int particle, int xCoord, int yCoord, int zCoord, int amount) {
-		if(!Configs.ENABLE_PARTICLE_FX || !Minecraft.isFancyGraphicsEnabled()) return;
-		PipeFXRenderHandler.spawnGenericParticle(particle, xCoord, yCoord, zCoord, amount);
-	}
-	
 	public static EntityPlayer getFakePlayer(TileEntity tile) {
 		return new FakePlayer(tile);
 	}

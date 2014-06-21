@@ -134,7 +134,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 					availableItems -= stackToSend.stackSize;
 					_invProvider.sendStack(stackToSend, reply, ItemSendMode.Fast);
 					
-					MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), _world.getWorld(), 8);
+					_invProvider.spawnParticle(Particles.OrangeParticle, 8);
 		
 					if(availableItems <= 0) break;
 		
@@ -211,7 +211,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 				ItemStack stackToSend = slot.splitStack(count);
 	
 				_invProvider.sendStack(stackToSend, reply, ItemSendMode.Fast);
-				MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), _world.getWorld(), 8);
+				_invProvider.spawnParticle(Particles.OrangeParticle, 8);
 	
 				if(slot.stackSize == 0) break;
 	

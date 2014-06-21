@@ -9,7 +9,6 @@ import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -131,8 +130,8 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 					if(inserted == 0) { return false; }
 					_power.useEnergy(100);
 					extractItem(inv, true, direction, 1);
-					MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, this.getX(), this.getY(), this.getZ(), _world.getWorld(), 5);
-					MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, this.getX(), this.getY(), this.getZ(), _world.getWorld(), 5);
+					_invProvider.spawnParticle(Particles.VioletParticle, 5);
+					_invProvider.spawnParticle(Particles.BlueParticle, 5);
 					return true;
 				}
 			}
@@ -144,8 +143,8 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 					if(inserted == 0) { return false; }
 					_power.useEnergy(100);
 					extractItem(inv, true, direction, 1);
-					MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, this.getX(), this.getY(), this.getZ(), _world.getWorld(), 5);
-					MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, this.getX(), this.getY(), this.getZ(), _world.getWorld(), 5);
+					_invProvider.spawnParticle(Particles.VioletParticle, 5);
+					_invProvider.spawnParticle(Particles.BlueParticle, 5);
 					return true;
 				}
 			}

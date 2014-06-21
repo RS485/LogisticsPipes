@@ -466,7 +466,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 			if (x instanceof ILegacyActiveModule){
 				ILegacyActiveModule y = (ILegacyActiveModule) x;
 				if(y.filterAllowsItem(promise.item)) {
-					MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, getX(), getY(), getZ(), this.getWorld(), 2);
+					spawnParticle(Particles.WhiteParticle, 2);
 					return y.fullFill(promise, destination, info);
 				}
 			}

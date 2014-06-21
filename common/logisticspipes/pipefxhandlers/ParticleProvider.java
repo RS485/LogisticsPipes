@@ -9,6 +9,6 @@ public interface ParticleProvider {
 	float green = 1;
 	float blue = 1;
 	
-	public abstract EntityFX createGenericParticle(WorldClient world, double x, double y, double z);
+	public abstract EntityFX createGenericParticle(WorldClient world, double x, double y, double z, int amount);
 
 }

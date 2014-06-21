@@ -30,7 +30,6 @@ import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.pipes.PipeItemsRequestLogistics;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
@@ -147,7 +146,7 @@ outer:
 		if(result.getValue1() != null) {
 			CoreRoutedPipe pipe = SimpleServiceLocator.routerManager.getRouterUnsafe(result.getValue1(),false).getPipe();
 			pipe.useEnergy(result.getValue2().energyUse);
-			MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, pipe.getX(), pipe.getY(), pipe.getZ(), pipe.getWorld(), 10);
+			pipe.spawnParticle(Particles.BlueParticle, 10);
 		}
 		return result;
 	}

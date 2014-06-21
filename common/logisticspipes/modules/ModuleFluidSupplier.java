@@ -14,7 +14,6 @@ import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
 import logisticspipes.network.guis.module.inpipe.FluidSupplierSlot;
 import logisticspipes.pipefxhandlers.Particles;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -49,7 +48,7 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 		if (_filterInventory.containsItem(item)){
-			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, getX(), getY(), getZ(), _world.getWorld(), 2);
+			_invProvider.spawnParticle(Particles.VioletParticle, 2);
 			return _sinkReply;
 		}
 		return null;

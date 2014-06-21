@@ -4,14 +4,12 @@ import java.util.List;
 
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
@@ -96,7 +94,7 @@ public class ModuleElectricBuffer extends LogisticsModule {
 			if (SimpleServiceLocator.IC2Proxy.isElectricItem(stack)) {
 				Triplet<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _invProvider.getSourceID(), true, FixedPriority.ElectricManager);
 				if(reply == null) continue;
-				MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.getX(), this.getY(), this.getZ(), _world.getWorld(), 2);
+				_invProvider.spawnParticle(Particles.OrangeParticle, 2);
 				_invProvider.sendStack(inv.decrStackSize(i, 1), reply, ItemSendMode.Normal);
 				return;
 			}

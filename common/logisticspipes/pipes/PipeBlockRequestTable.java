@@ -136,7 +136,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 			if(itemToSend.getDestinationUUID() != null) {
 				ForgeDirection dir = this.getRouteLayer().getOrientationForItem(itemToSend, null);
 				super.queueRoutedItem(itemToSend, dir.getOpposite());
-				MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), this.getWorld(), 4);
+				spawnParticle(Particles.OrangeParticle, 4);
 				toSortInv.clearInventorySlotContents(0);
 			} else {
 				delay = 100;

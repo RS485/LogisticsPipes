@@ -13,12 +13,8 @@ public class EntityGreenSparkleFXProvider implements ParticleProvider {
 	float blue = 0F;
 
 	@Override
-	public EntityFX createGenericParticle(WorldClient world, double x, double y, double z) {
-		EntitySparkleFX effect = GenericSparkleFactory.getSparkleInstance(world, x, y, z);
-		
-		effect.setRed(red);
-		effect.setGreen(green);
-		effect.setBlue(blue);
+	public EntityFX createGenericParticle(WorldClient world, double x, double y, double z, int amount) {
+		EntitySparkleFX effect = GenericSparkleFactory.getSparkleInstance(world, x, y, z, red, green, blue, amount);
 		
 		return effect;
 

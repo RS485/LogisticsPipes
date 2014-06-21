@@ -354,9 +354,6 @@ public class PipeTransportLogistics extends PipeTransport {
 		if(getPipe().useEnergy((int)(add * 50 + 0.5))) {
 			item.setSpeed(Math.min(Math.max(item.getSpeed(), TransportConstants.PIPE_NORMAL_SPEED * defaultBoost * multiplyerSpeed), 1.0F));
 		}
-		if(MainProxy.isClient(getWorld())) {
-			MainProxy.spawnParticle(Particles.GoldParticle, getPipe().getX(), getPipe().getY(), getPipe().getZ(), 1);
-		}
 	}
 	
 	protected void handleTileReachedServer(LPTravelingItemServer arrivingItem, TileEntity tile) {
@@ -680,6 +677,7 @@ public class PipeTransportLogistics extends PipeTransport {
 		if(items.get(travelId) == null) {
 			items.add(item);
 		}
+		getPipe().spawnParticle(Particles.OrangeParticle, 1);
 	}
 	
 	private void sendItemContentRequest(int travelId) {

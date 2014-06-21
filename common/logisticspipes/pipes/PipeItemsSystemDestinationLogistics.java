@@ -7,7 +7,6 @@ import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.item.ItemIdentifierInventory;
@@ -42,7 +41,7 @@ public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 		if(inv.getStackInSlot(0) == null) return null;
 		if(!inv.getStackInSlot(0).hasTagCompound()) return null;
 		if(!inv.getStackInSlot(0).getTagCompound().hasKey("UUID")) return null;
-		MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, getX(), getY(), getZ(), this.getWorld(), 2);
+		spawnParticle(Particles.WhiteParticle, 2);
 		return UUID.fromString(inv.getStackInSlot(0).getTagCompound().getString("UUID"));
 	}
 

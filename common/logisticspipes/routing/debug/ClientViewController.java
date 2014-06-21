@@ -18,7 +18,7 @@ import logisticspipes.network.packets.routingdebug.RoutingUpdateDoneDebug;
 import logisticspipes.network.packets.routingdebug.RoutingUpdateInitDebug;
 import logisticspipes.network.packets.routingdebug.RoutingUpdateSourcePipe;
 import logisticspipes.pipefxhandlers.Particles;
-import logisticspipes.proxy.MainProxy;
+import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.PipeRoutingConnectionType;
@@ -65,10 +65,10 @@ public class ClientViewController implements IDebugHUDProvider {
 	public void tick() {
 		if(tick++ % 5 != 0) return;
 		if(mainPipe != null) {
-			MainProxy.spawnParticle(Particles.WhiteParticle, mainPipe.getX(), mainPipe.getY(), mainPipe.getZ(), 1);
+			PipeFXRenderHandler.spawnGenericParticle(Particles.WhiteParticle, mainPipe.getX(), mainPipe.getY(), mainPipe.getZ(), 1);
 		}
 		for(LPPosition pos:canidates) {
-			MainProxy.spawnParticle(Particles.OrangeParticle, pos.getX(), pos.getY(), pos.getZ(), 1);
+			PipeFXRenderHandler.spawnGenericParticle(Particles.OrangeParticle, pos.getX(), pos.getY(), pos.getZ(), 1);
 		}
 	}
 	

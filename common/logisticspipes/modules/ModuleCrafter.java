@@ -334,7 +334,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		if (promise instanceof LogisticsExtraPromise) {
 			removeExtras(promise.numberOfItems, promise.item);
 		}
-		MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, getX(), getY(), getZ(), this.getWorld(), 2);
+		_invProvider.spawnParticle(Particles.WhiteParticle, 2);
 		return _invProvider.getOrderManager().addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination,RequestType.CRAFTING, info);
 	}
 
@@ -1139,7 +1139,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		List<ItemIdentifierStack> wanteditem = getCraftedItems();
 		if(wanteditem == null || wanteditem.isEmpty()) return;
 
-		MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, getX(), getY(), getZ(), this.getWorld(), 2);
+		_invProvider.spawnParticle(Particles.VioletParticle, 2);
 		
 		int itemsleft = itemsToExtract();
 		int stacksleft = stacksToExtract();

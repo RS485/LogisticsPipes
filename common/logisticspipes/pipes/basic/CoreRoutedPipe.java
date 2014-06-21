@@ -36,6 +36,7 @@ import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.interfaces.ISecurityProvider;
+import logisticspipes.interfaces.ISpawnParticles;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
@@ -61,11 +62,13 @@ import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.guis.pipe.PipeController;
+import logisticspipes.network.packets.pipe.ParticleFX;
 import logisticspipes.network.packets.pipe.PipeSignTypes;
 import logisticspipes.network.packets.pipe.RequestRoutingLasersPacket;
 import logisticspipes.network.packets.pipe.RequestSignPacket;
 import logisticspipes.network.packets.pipe.StatUpdate;
 import logisticspipes.pipefxhandlers.Particles;
+import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
 import logisticspipes.pipes.basic.debug.DebugLogController;
 import logisticspipes.pipes.basic.debug.StatusEntry;
 import logisticspipes.pipes.signs.IPipeSign;
@@ -107,6 +110,7 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
+import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -130,7 +134,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import dan200.computercraft.api.lua.ILuaObject;
 
 @CCType(name = "LogisticsPipes:Normal")
-public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implements IInventoryProvider,IClientState, IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IRoutedPowerProvider, IQueueCCEvent {
+public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implements IInventoryProvider,IClientState, IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IRoutedPowerProvider, IQueueCCEvent, ISpawnParticles {
 
 	public enum ItemSendMode {
 		Normal,
@@ -191,6 +195,9 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	protected int throttleTime = 20;
 	private int throttleTimeLeft = 20 + new Random().nextInt(Configs.LOGISTICS_DETECTION_FREQUENCY);
 	
+	private int[] queuedParticles = new int[Particles.values().length];
+	private boolean hasQueuedParticles = false;
+
 	protected IPipeSign[] signItem = new IPipeSign[6];
 	private boolean isOpaqueClientSide = false;
 	
@@ -267,7 +274,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			}
 		} // should not be able to send to a non-existing router
 			// router.startTrackingRoutedItem((RoutedEntityItem) routedItem.getTravelingItem());
-		MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.getX(), this.getY(), this.getZ(), this.getWorld(), 2);
+		spawnParticle(Particles.OrangeParticle, 2);
 		stat_lifetime_sent++;
 		stat_session_sent++;
 		updateStats();
@@ -370,6 +377,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	@Override
 	public final void updateEntity() {
 		debug.tick();
+		spawnParticleTick();
 		if(checkTileEntity(_initialInit)) {
 			stillNeedReplace = true;
 			return;
@@ -653,7 +661,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		if((flag = canUseEnergy(1)) != _textureBufferPowered) {
 			_textureBufferPowered = flag;
 			refreshRender(false);
-			MainProxy.sendSpawnParticlePacket(Particles.RedParticle, this.getX(), this.getY(), this.getZ(), this.getWorld(), 3);
+			spawnParticle(Particles.RedParticle, 3);
 		}
 	}
 	
@@ -705,6 +713,40 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		}
 		return Textures.LOGISTICSPIPE_NOTROUTED_TEXTURE;
 	}
+
+	public void spawnParticle(Particles particle, int amount) {
+		if(!Configs.ENABLE_PARTICLE_FX)
+			return;
+		queuedParticles[particle.ordinal()] += amount;
+		hasQueuedParticles = true;
+	}
+
+	private void spawnParticleTick() {
+		if(!hasQueuedParticles)
+			return;
+		if(MainProxy.isServer(getWorld())) {
+			ArrayList<ParticleCount> tosend = new ArrayList<ParticleCount>(queuedParticles.length);
+			for(int i = 0; i < queuedParticles.length; i++) {
+				if(queuedParticles[i] > 0) {
+					tosend.add(new ParticleCount(Particles.values()[i], queuedParticles[i]));
+				}
+			}
+			MainProxy.sendPacketToAllWatchingChunk(this.getX(), this.getZ(), MainProxy.getDimensionForWorld(this.getWorld()), PacketHandler.getPacket(ParticleFX.class).setParticles(tosend).setPosX(this.getX()).setPosY(this.getY()).setPosZ(this.getZ()));
+		} else {
+			if(Minecraft.isFancyGraphicsEnabled()) {
+				for(int i = 0; i < queuedParticles.length; i++) {
+					if(queuedParticles[i] > 0) {
+						PipeFXRenderHandler.spawnGenericParticle(Particles.values()[i], this.getX(), this.getY(), this.getZ(), queuedParticles[i]);
+					}
+				}
+			}
+		}
+		for(int i = 0; i < queuedParticles.length; i++) {
+			queuedParticles[i] = 0;
+		}
+		hasQueuedParticles = false;
+	}
+
 
 	protected boolean isPowerProvider(ForgeDirection ori) {
 		TileEntity tilePipe = this.container.getTile(ori);
@@ -969,7 +1011,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		
 		this.container.scheduleRenderUpdate();
 		if (spawnPart) {
-			MainProxy.sendSpawnParticlePacket(Particles.GreenParticle, this.getX(), this.getY(), this.getZ(), this.getWorld(), 3);
+			spawnParticle(Particles.GreenParticle, 3);
 		}
 	}
 	
@@ -977,7 +1019,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		clearCache();
 		this.container.scheduleNeighborChange();
 		if (spawnPart) {
-			MainProxy.sendSpawnParticlePacket(Particles.GreenParticle, this.getX(), this.getY(), this.getZ(), this.getWorld(), 3);
+			spawnParticle(Particles.GreenParticle, 3);
 		}
 	}
 	
@@ -1179,7 +1221,7 @@ outer:
 						if (particlecount > 10) {
 							particlecount = 10;
 						}
-						MainProxy.sendSpawnParticlePacket(Particles.GoldParticle, this.getX(), this.getY(), this.getZ(), this.getWorld(), particlecount);
+						spawnParticle(Particles.GoldParticle, particlecount);
 					}
 					return true;
 				}

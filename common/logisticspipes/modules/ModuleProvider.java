@@ -162,7 +162,7 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 			order = _invProvider.getOrderManager().peekAtTopRequest(RequestType.PROVIDER);
 			int sent = sendStack(order.getItem(), itemsleft, order.getDestination().getRouter().getSimpleID(), order.getInformation());
 			if(sent < 0) break;
-			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, getX(), getY(), getZ(), _world.getWorld(), 3);
+			_invProvider.spawnParticle(Particles.VioletParticle, 3);
 			stacksleft -= 1;
 			itemsleft -= sent;
 		}

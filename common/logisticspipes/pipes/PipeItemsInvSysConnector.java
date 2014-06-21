@@ -27,10 +27,8 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ItemRoutingInformation;
-import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.transport.TransportInvConnection;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryHelper;
@@ -47,10 +45,8 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatMessageComponent;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
-import buildcraft.transport.TravelingItem;
 import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectRoutingConnection, IHeadUpDisplayRendererProvider, IOrderManagerContentReceiver{
@@ -155,7 +151,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(mode);
 		super.queueRoutedItem(itemToSend, dir);
-		MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), this.getWorld(), 4);
+		spawnParticle(Particles.OrangeParticle, 4);
 	}
 	
 	private UUID getConnectionUUID() {
@@ -337,7 +333,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 				if(CRP instanceof IDirectRoutingConnection) {
 					IDirectRoutingConnection pipe = (IDirectRoutingConnection) CRP;
 					pipe.addItem(item.getItem(), item.getStackSize(), info.destinationint, info._transportMode);
-					MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), this.getWorld(), 4);
+					spawnParticle(Particles.OrangeParticle, 4);
 				}
 			}
 		}

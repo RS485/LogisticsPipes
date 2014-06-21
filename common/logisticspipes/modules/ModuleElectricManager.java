@@ -149,7 +149,7 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 					Triplet<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _invProvider.getSourceID(), true, FixedPriority.ElectricBuffer);
 					if(reply == null) continue;
 					if(_power.useEnergy(10)) {
-						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), _world.getWorld(), 2);
+						_invProvider.spawnParticle(Particles.OrangeParticle, 2);
 						_invProvider.sendStack(inv.decrStackSize(i,1), reply, ItemSendMode.Normal);
 						return;
 					}
@@ -159,7 +159,7 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 					Triplet<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _invProvider.getSourceID(), true, FixedPriority.ElectricBuffer);
 					if(reply == null) continue;
 					if(_power.useEnergy(10)) {
-						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), _world.getWorld(), 2);
+						_invProvider.spawnParticle(Particles.OrangeParticle, 2);
 						_invProvider.sendStack(inv.decrStackSize(i,1), reply, ItemSendMode.Normal);
 						return;
 					}

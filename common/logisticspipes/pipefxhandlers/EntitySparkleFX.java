@@ -16,100 +16,26 @@ public class EntitySparkleFX extends EntityFX
     public int multiplier;
     public boolean shrink;
     public int particle;
-    public boolean tinkle;
     public int blendmode;
 
-    public EntitySparkleFX(World var1, double var2, double var4, double var6, float var8, float var9, float var10, float var11, int var12)
+    public EntitySparkleFX(World world, double x, double y, double z, float scalemult, float red, float green, float blue, int var12)
     {
-        super(var1, var2, var4, var6, 0.0D, 0.0D, 0.0D);
+        super(world, x, y, z, 0.0D, 0.0D, 0.0D);
         this.shrink = false;
         this.particle = 0;
-        this.tinkle = false;
         this.blendmode = 1;
 
-        if (var9 == 0.0F)
-        {
-            var9 = 1.0F;
-        }
-
-        this.particleRed = var9;
-        this.particleGreen = var10;
-        this.particleBlue = var11;
-        this.particleGravity = 0.0F;
+        this.particleRed = red;
+        this.particleGreen = green;
+        this.particleBlue = blue;
+        this.particleGravity = 0.07F;
         this.motionX = this.motionY = this.motionZ = 0.0D;
-        this.particleScale *= var8;
-        this.particleMaxAge = 2 * var12 - 1;
+        this.particleScale *= scalemult;
+        this.particleMaxAge = 3 * var12 - 1;
         this.multiplier = var12;
         this.noClip = true;
     }
 
-    public EntitySparkleFX(World var1, double var2, double var4, double var6, float var8, int var9, int var10)
-    {
-        this(var1, var2, var4, var6, var8, 0.0F, 0.0F, 0.0F, var10);
-
-        switch (var9)
-        {
-            case 0:
-                this.particleRed = 0.75F + var1.rand.nextFloat() * 0.25F;
-                this.particleGreen = 0.25F + var1.rand.nextFloat() * 0.25F;
-                this.particleBlue = 0.75F + var1.rand.nextFloat() * 0.25F;
-                break;
-
-            case 1:
-                this.particleRed = 0.5F + var1.rand.nextFloat() * 0.3F;
-                this.particleGreen = 0.5F + var1.rand.nextFloat() * 0.3F;
-                this.particleBlue = 0.2F;
-                break;
-
-            case 2:
-                this.particleRed = 0.2F;
-                this.particleGreen = 0.2F;
-                this.particleBlue = 0.7F + var1.rand.nextFloat() * 0.3F;
-                break;
-
-            case 3:
-                this.particleRed = 0.2F;
-                this.particleGreen = 0.7F + var1.rand.nextFloat() * 0.3F;
-                this.particleBlue = 0.2F;
-                break;
-
-            case 4:
-                this.particleRed = 0.7F + var1.rand.nextFloat() * 0.3F;
-                this.particleGreen = 0.2F;
-                this.particleBlue = 0.2F;
-                break;
-
-            case 5:
-                this.blendmode = 771;
-                this.particleRed = var1.rand.nextFloat() * 0.1F;
-                this.particleGreen = var1.rand.nextFloat() * 0.1F;
-                this.particleBlue = var1.rand.nextFloat() * 0.1F;
-                break;
-
-            case 6:
-                this.particleRed = 0.8F + var1.rand.nextFloat() * 0.2F;
-                this.particleGreen = 0.8F + var1.rand.nextFloat() * 0.2F;
-                this.particleBlue = 0.8F + var1.rand.nextFloat() * 0.2F;
-                break;
-
-            case 7:
-                this.particleRed = 0.2F;
-                this.particleGreen = 0.5F + var1.rand.nextFloat() * 0.3F;
-                this.particleBlue = 0.6F + var1.rand.nextFloat() * 0.3F;
-        }
-    }
-
-    public EntitySparkleFX(World var1, double var2, double var4, double var6, double var8, double var10, double var12, float var14, int var15, int var16)
-    {
-        this(var1, var2, var4, var6, var14, var15, var16);
-        double var17 = var8 - this.posX;
-        double var19 = var10 - this.posY;
-        double var21 = var12 - this.posZ;
-        this.motionX = var17 / this.particleMaxAge;
-        this.motionY = var19 / this.particleMaxAge;
-        this.motionZ = var21 / this.particleMaxAge;
-    }
-	
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/particles/particles.png");
 	private static final ResourceLocation field_110737_b = new ResourceLocation("textures/particle/particles.png");
 
@@ -157,14 +83,8 @@ public class EntitySparkleFX extends EntityFX
         try
         {
             EntityClientPlayerMP var1 = Minecraft.getMinecraft().thePlayer;
-            byte var2 = 50;
 
-            if (!Minecraft.getMinecraft().gameSettings.fancyGraphics)
-            {
-                var2 = 25;
-            }
-
-            if (var1.getDistance(this.posX, this.posY, this.posZ) > var2)
+            if (var1.getDistance(this.posX, this.posY, this.posZ) > 50)
             {
                 this.setDead();
             }
@@ -172,11 +92,6 @@ public class EntitySparkleFX extends EntityFX
             this.prevPosX = this.posX;
             this.prevPosY = this.posY;
             this.prevPosZ = this.posZ;
-
-            if (this.particleAge == 0 && this.tinkle && this.worldObj.rand.nextInt(10) == 0)
-            {
-                this.worldObj.playSoundAtEntity(this, "random.orb", 0.02F, 0.7F * ((this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.6F + 2.0F));
-            }
 
             if (this.particleAge++ >= this.particleMaxAge)
             {
@@ -203,27 +118,4 @@ public class EntitySparkleFX extends EntityFX
             ;
         }
     }
-
-    public void setGravity(float var1)
-    {
-        this.particleGravity = var1;
-    }
-
-    public void setParticle(int var1)
-    {
-        this.particle = var1;
-    }
-    
-    public void setRed(float red) {
-    	this.particleRed = red;
-    }
-    
-    public void setGreen(float green) {
-    	this.particleGreen = green;
-    }
-    
-    public void setBlue(float blue) {
-    	this.particleBlue = blue;
-    }
-    
 }

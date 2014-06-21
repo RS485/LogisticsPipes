@@ -137,7 +137,7 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 
 		for(int amount : _requestedItems.values()) {
 			if(amount > 0) {
-				MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, getX(), getY(), getZ(), this.getWorld(), 2);
+				spawnParticle(Particles.VioletParticle, 2);
 			}
 		}
 

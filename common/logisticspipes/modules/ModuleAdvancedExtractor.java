@@ -199,7 +199,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 				}
 
 				while(!_power.useEnergy(neededEnergy() * count) && count > 0) {
-					MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.getX(), this.getY(), this.getZ(), _world.getWorld(), 2);
+					_invProvider.spawnParticle(Particles.OrangeParticle, 2);
 					count--;
 				}
 

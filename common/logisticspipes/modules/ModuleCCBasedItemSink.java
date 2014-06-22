@@ -3,9 +3,8 @@ package logisticspipes.modules;
 import java.util.Collection;
 import java.util.List;
 
-import logisticspipes.api.IRoutedPowerProvider;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IQueueCCEvent;
-import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -33,7 +32,7 @@ public class ModuleCCBasedItemSink extends LogisticsModule {
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
 	
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerProvider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
 		this.invProvider = invProvider;
 	}
 	

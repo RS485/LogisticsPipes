@@ -11,10 +11,7 @@ import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.ModuleInventory;
 import logisticspipes.pipes.PipeItemsCraftingLogisticsMk3;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.routing.order.IOrderInfoProvider.RequestType;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.InventoryHelper;
@@ -109,7 +106,7 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISi
 	public void tick(){
 		super.tick();
 		if(inv.isEmpty()) return;
-		if(getWorld().getTotalWorldTime() % 6 != 0) return;
+		if(!_service.isNthTick(6)) return;
 		//Add from internal buffer
 		List<AdjacentTile> crafters = locateCrafters();
 		boolean change = false;

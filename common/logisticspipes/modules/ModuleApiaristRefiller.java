@@ -3,7 +3,7 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.List;
 
-import logisticspipes.api.IRoutedPowerProvider;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -26,7 +26,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ModuleApiaristRefiller extends LogisticsModule {
 	
 	private IInventoryProvider		_invProvider;
-	private IRoutedPowerProvider	_power;
+	private IPipeServiceProvider	_service;
 	
 	private IWorldProvider			_world;
 	
@@ -36,9 +36,9 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 	public ModuleApiaristRefiller() {}
 	
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerProvider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
 		_invProvider = invProvider;
-		_power = powerProvider;
+		_service = service;
 		_world = world;
 
 	}
@@ -84,7 +84,7 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 		ForgeDirection direction = _invProvider.inventoryOrientation().getOpposite();
 		ItemStack stack = extractItem(sinv, false, direction, 1);
 		if(stack == null) return;
-		if(!(_power.canUseEnergy(100))) return;
+		if(!(_service.canUseEnergy(100))) return;
 		
 		currentTickCount = ticksToOperation;
 		
@@ -92,7 +92,7 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 		
 		Pair<Integer, SinkReply> reply = _invProvider.hasDestination(ItemIdentifier.get(stack), true, new ArrayList<Integer>());
 		if(reply == null) return;
-		_power.useEnergy(20);
+		_service.useEnergy(20);
 		extractItem(sinv, true, direction, 1);
 		_invProvider.sendStack(stack, reply, ItemSendMode.Normal);
 	}
@@ -128,10 +128,10 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 				if(SimpleServiceLocator.forestryProxy.isPurebred(stack)) {
 					int inserted = addItem(inv, stack, direction);
 					if(inserted == 0) { return false; }
-					_power.useEnergy(100);
+					_service.useEnergy(100);
 					extractItem(inv, true, direction, 1);
-					_invProvider.spawnParticle(Particles.VioletParticle, 5);
-					_invProvider.spawnParticle(Particles.BlueParticle, 5);
+					_service.spawnParticle(Particles.VioletParticle, 5);
+					_service.spawnParticle(Particles.BlueParticle, 5);
 					return true;
 				}
 			}
@@ -141,10 +141,10 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 				if(SimpleServiceLocator.forestryProxy.isPurebred(stack)) {
 					int inserted = addItem(inv, stack, direction);
 					if(inserted == 0) { return false; }
-					_power.useEnergy(100);
+					_service.useEnergy(100);
 					extractItem(inv, true, direction, 1);
-					_invProvider.spawnParticle(Particles.VioletParticle, 5);
-					_invProvider.spawnParticle(Particles.BlueParticle, 5);
+					_service.spawnParticle(Particles.VioletParticle, 5);
+					_service.spawnParticle(Particles.BlueParticle, 5);
 					return true;
 				}
 			}

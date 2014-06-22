@@ -5,13 +5,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.gui.hud.modules.HUDExtractor;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -48,7 +48,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 	//protected final int ticksToAction = 100;
 	private int currentTick = 0;
 
-	private IRoutedPowerProvider _power;
+	private IPipeServiceProvider _service;
 	private ForgeDirection _sneakyDirection = ForgeDirection.UNKNOWN;
 	private IWorldProvider _world;
 
@@ -61,11 +61,11 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
 		HUD = new HUDExtractor(this);
 		_invProvider = invProvider;
 
-		_power = powerprovider;
+		_service = service;
 		_world = world;
 	}
 
@@ -194,8 +194,8 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 					count = Math.min(count, reply.getValue2().maxNumberOfItems);
 				}
 
-				while(!_power.useEnergy(neededEnergy() * count) && count > 0) {
-					_invProvider.spawnParticle(Particles.OrangeParticle, 2);
+				while(!_service.useEnergy(neededEnergy() * count) && count > 0) {
+					_service.spawnParticle(Particles.OrangeParticle, 2);
 					count--;
 				}
 

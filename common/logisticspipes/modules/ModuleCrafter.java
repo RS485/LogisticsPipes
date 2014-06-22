@@ -11,12 +11,12 @@ import java.util.TreeSet;
 import java.util.concurrent.DelayQueue;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.ICraftItems;
@@ -118,7 +118,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	private PipeItemsCraftingLogistics _pipe;
 	
 	private IRequestItems _invRequester;
-	private IRoutedPowerProvider _power;
+	protected IPipeServiceProvider _service;
 	//private ForgeDirection _sneakyDirection = ForgeDirection.UNKNOWN;
 	private IWorldProvider _world;
 
@@ -155,7 +155,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	public ModuleCrafter(PipeItemsCraftingLogistics parent) {
 		_pipe = parent;
 		_invProvider = parent;
-		_power = parent;
+		_service = parent;
 		_invRequester = parent;
 		_world = parent;
 		this.registerPosition(ModulePositionType.IN_PIPE, 0);
@@ -165,9 +165,9 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	 * assumes that the invProvider is also IRequest items.
 	 */
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
 		_invProvider = invProvider;
-		_power = powerprovider;
+		_service = service;
 		_invRequester = (IRequestItems)_invProvider;
 		_world = world;
 	}
@@ -334,7 +334,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		if (promise instanceof LogisticsExtraPromise) {
 			removeExtras(promise.numberOfItems, promise.item);
 		}
-		_invProvider.spawnParticle(Particles.WhiteParticle, 2);
+		_service.spawnParticle(Particles.WhiteParticle, 2);
 		return _invProvider.getOrderManager().addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination,RequestType.CRAFTING, info);
 	}
 
@@ -1103,7 +1103,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			cachedAreAllOrderesToBuffer = false;
 		}
 		
-		if (getWorld().getTotalWorldTime() % 6 != 0) return;
+		if (!_service.isNthTick(6)) return;
 
 		waitingForCraft = false;
 		
@@ -1139,7 +1139,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		List<ItemIdentifierStack> wanteditem = getCraftedItems();
 		if(wanteditem == null || wanteditem.isEmpty()) return;
 
-		_invProvider.spawnParticle(Particles.VioletParticle, 2);
+		_service.spawnParticle(Particles.VioletParticle, 2);
 		
 		int itemsleft = itemsToExtract();
 		int stacksleft = stacksToExtract();
@@ -1302,7 +1302,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				if(!retstack.isItemEqual(stack)) break;
 				if(!ItemStack.areItemStackTagsEqual(retstack, stack)) break;
 			}
-			if(!_power.useEnergy(neededEnergy() * stack.stackSize)) break;
+			if(!_service.useEnergy(neededEnergy() * stack.stackSize)) break;
 			
 			stacks = inv.extractItem(true, ForgeDirection.UNKNOWN, 1);
 			if(stacks == null || stacks.length < 1 || stacks[0] == null) {
@@ -1347,7 +1347,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				return null;
 			}
 		}
-		if(!_power.useEnergy(neededEnergy() * stack.stackSize)) return null;
+		if(!_service.useEnergy(neededEnergy() * stack.stackSize)) return null;
 		
 		stacks = inv.extractItem(true, ForgeDirection.UNKNOWN, 1);
 		if(stacks == null || stacks.length < 1 || stacks[0] == null) {
@@ -1364,7 +1364,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
 		int available = invUtil.itemCount(wanteditem);
 		if(available == 0) return null;
-		if(!_power.useEnergy(neededEnergy() * Math.min(count, available))) {
+		if(!_service.useEnergy(neededEnergy() * Math.min(count, available))) {
 			return null;
 		}
 		return invUtil.getMultipleItems(wanteditem, Math.min(count, available));
@@ -1405,7 +1405,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		if(wanteditem == null) return null;
 		int available = invUtil.itemCount(wanteditem);
 		if(available == 0) return null;
-		if(!_power.useEnergy(neededEnergy() * Math.min(64, available))) {
+		if(!_service.useEnergy(neededEnergy() * Math.min(64, available))) {
 			return null;
 		}
 		return invUtil.getMultipleItems(wanteditem, Math.min(64, available));
@@ -1418,7 +1418,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		}
 		ItemStack retstack = null;
 		while(count > 0) {
-			ItemStack stack = tile.getOutput(wanteditem, _power);
+			ItemStack stack = tile.getOutput(wanteditem, _service);
 			if(stack == null || stack.stackSize == 0) break;
 			if(retstack == null) {
 				if(!wanteditem.fuzzyMatch(stack)) break;
@@ -1426,7 +1426,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				if(!retstack.isItemEqual(stack)) break;
 				if(!ItemStack.areItemStackTagsEqual(retstack, stack)) break;
 			}
-			if(!_power.useEnergy(neededEnergy() * stack.stackSize)) break;
+			if(!_service.useEnergy(neededEnergy() * stack.stackSize)) break;
 			
 			if(retstack == null) {
 				retstack = stack;

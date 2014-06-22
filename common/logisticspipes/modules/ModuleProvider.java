@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.gui.hud.modules.HUDProviderModule;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
@@ -17,6 +16,7 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILegacyActiveModule;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IFilter;
@@ -63,7 +63,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive {
 	
-	protected IRoutedPowerProvider _power;
+	protected IPipeServiceProvider _service;
 	
 	private List<ILegacyActiveModule> _previousLegacyModules = new LinkedList<ILegacyActiveModule>();
 
@@ -88,9 +88,9 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 	public ModuleProvider() {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
 		_invProvider = invProvider;
-		_power = powerprovider;
+		_service = service;
 		_world = world;
 	}
 
@@ -162,7 +162,7 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 			order = _invProvider.getOrderManager().peekAtTopRequest(RequestType.PROVIDER);
 			int sent = sendStack(order.getItem(), itemsleft, order.getDestination().getRouter().getSimpleID(), order.getInformation());
 			if(sent < 0) break;
-			_invProvider.spawnParticle(Particles.VioletParticle, 3);
+			_service.spawnParticle(Particles.VioletParticle, 3);
 			stacksleft -= 1;
 			itemsleft -= sent;
 		}
@@ -270,7 +270,7 @@ outer:
 				defersend = true;
 			}
 		}
-		if(!_power.canUseEnergy(wanted * neededEnergy())) return -1;
+		if(!_service.canUseEnergy(wanted * neededEnergy())) return -1;
 
 		ItemStack removed = inv.getMultipleItems(item, wanted);
 		if(removed == null || removed.stackSize == 0) {
@@ -278,7 +278,7 @@ outer:
 			return 0;
 		}
 		int sent = removed.stackSize;
-		_power.useEnergy(sent * neededEnergy());
+		_service.useEnergy(sent * neededEnergy());
 
 		IRoutedItem sendedItem = _invProvider.sendStack(removed, destination, itemSendMode(), info);
 		_invProvider.getOrderManager().sendSuccessfull(sent, defersend, sendedItem);

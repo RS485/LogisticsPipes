@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import logisticspipes.api.IRoutedPowerProvider;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.ISaveState;
@@ -29,7 +29,7 @@ public abstract class LogisticsModule implements ISaveState {
 	 * @param itemSender the handler to send items into the logistics system
 	 * @param world that the module is in.
 	 */
-	public abstract void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerProvider);
+	public abstract void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service);
 	
 	@Getter
 	protected ModulePositionType slot;

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.api.IRoutedPowerProvider;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
@@ -296,7 +296,7 @@ public class ItemModule extends LogisticsItem {
 		return true;
 	}
 
-	public LogisticsModule getModuleForItem(ItemStack itemStack, LogisticsModule currentModule, IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider power){
+	public LogisticsModule getModuleForItem(ItemStack itemStack, LogisticsModule currentModule, IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service){
 		if (itemStack == null) return null;
 		if (itemStack.itemID != this.itemID) return null;
 		for(Module module:modules) {
@@ -307,7 +307,7 @@ public class ItemModule extends LogisticsItem {
 				}
 				LogisticsModule newmodule = module.getILogisticsModule();
 				if(newmodule == null) return null;
-				newmodule.registerHandler(invProvider, world, power);
+				newmodule.registerHandler(invProvider, world, service);
 				return newmodule;
 			}
 		}

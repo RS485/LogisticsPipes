@@ -1,16 +1,10 @@
 package logisticspipes.modules;
 
-import java.util.Map;
-
+import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.util.Icon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import logisticspipes.pipes.PipeItemsCraftingLogistics;
-import logisticspipes.pipes.PipeItemsCraftingLogisticsMk3;
-import logisticspipes.utils.SinkReply;
-import logisticspipes.utils.SinkReply.BufferMode;
-import logisticspipes.utils.item.ItemIdentifier;
 
 public class ModuleCrafterMK2 extends ModuleCrafter {
 

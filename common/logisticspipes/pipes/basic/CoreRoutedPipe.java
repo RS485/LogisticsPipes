@@ -30,13 +30,13 @@ import java.util.concurrent.PriorityBlockingQueue;
 import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
-import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.interfaces.IInventoryUtil;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.interfaces.ISecurityProvider;
-import logisticspipes.interfaces.ISpawnParticles;
+import logisticspipes.interfaces.ISpawnParticles.ParticleCount;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
@@ -134,7 +134,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import dan200.computercraft.api.lua.ILuaObject;
 
 @CCType(name = "LogisticsPipes:Normal")
-public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implements IInventoryProvider,IClientState, IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IRoutedPowerProvider, IQueueCCEvent, ISpawnParticles {
+public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implements IInventoryProvider,IClientState, IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IPipeServiceProvider, IQueueCCEvent {
 
 	public enum ItemSendMode {
 		Normal,
@@ -296,7 +296,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	public abstract ItemSendMode getItemSendMode();
 	
 	private boolean checkTileEntity(boolean force) {
-		if(getWorld().getTotalWorldTime() % 10 == 0 || force) {
+		if(isNthTick(10) || force) {
 			if(!(this.container instanceof LogisticsTileGenericPipe)) {
 				TileEntity tile = getWorld().getBlockTileEntity(getX(), getY(), getZ());
 				if(tile != this.container) {
@@ -471,6 +471,10 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			throttleTimeLeft = 7;
 	}
 	
+	public boolean isNthTick(int n) {
+		return ((getWorld().getTotalWorldTime() + _delayOffset) % n == 0);
+	}
+
 	private void doDebugStuff(EntityPlayer entityplayer) {
 		//entityplayer.worldObj.setWorldTime(4951);
 		IRouter r = getRouter();
@@ -655,7 +659,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 
 	public void checkTexturePowered() {
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return;
-		if(getWorld().getTotalWorldTime() % 10 != 0) return;
+		if(!isNthTick(10)) return;
 		if(stillNeedReplace || _initialInit || router == null) return;
 		boolean flag;
 		if((flag = canUseEnergy(1)) != _textureBufferPowered) {

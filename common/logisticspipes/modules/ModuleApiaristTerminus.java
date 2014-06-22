@@ -2,8 +2,7 @@ package logisticspipes.modules;
 
 import java.util.List;
 
-import logisticspipes.api.IRoutedPowerProvider;
-import logisticspipes.interfaces.ISendRoutedItem;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -20,7 +19,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleApiaristTerminus extends LogisticsModule {
 
-	private IRoutedPowerProvider _power;
+	private IPipeServiceProvider _service;
 	
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {}
@@ -29,22 +28,22 @@ public class ModuleApiaristTerminus extends LogisticsModule {
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerProvider) {
-		_power = powerProvider;
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
+		_service = service;
 	}
 	
 	@Override 
 	public final int getX() {
-		return this._power.getX();
+		return this._service.getX();
 	}
 	@Override 
 	public final int getY() {
-		return this._power.getY();
+		return this._service.getY();
 	}
 	
 	@Override 
 	public final int getZ() {
-		return this._power.getZ();
+		return this._service.getZ();
 	}	
 	private boolean replyCheck(ItemStack item) {
 		if (SimpleServiceLocator.forestryProxy.isDrone(item)) {
@@ -59,7 +58,7 @@ public class ModuleApiaristTerminus extends LogisticsModule {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 		boolean decision = replyCheck(item.makeNormalStack(1));
 		if (decision) {
-			if (_power.canUseEnergy(5)) {
+			if (_service.canUseEnergy(5)) {
 				return _sinkReply;
 			}
 		}

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.gui.hud.modules.HUDElectricManager;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
@@ -12,6 +11,7 @@ import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
@@ -54,7 +54,7 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Electric Items", 1);
 	private boolean _dischargeMode;
 
-	protected IRoutedPowerProvider _power;
+	protected IPipeServiceProvider _service;
 	private int ticksToAction = 100;
 	private int currentTick = 0;
 
@@ -81,10 +81,10 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
 		_invProvider = invProvider;
 
-		_power = powerprovider;
+		_service = service;
 		_world = world;
 	}
 
@@ -93,7 +93,7 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 	@Override
 	public SinkReply sinksItem(ItemIdentifier stackID, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if (bestPriority >= FixedPriority.ElectricManager.ordinal()) return null;
-		if (!_power.canUseEnergy(1)) return null;
+		if (!_service.canUseEnergy(1)) return null;
 		ItemStack stack = stackID.makeNormalStack(1);
 		if (isOfInterest(stack)) {
 			//If item is full and in discharge mode, sink.
@@ -148,8 +148,8 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 				if (_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyDischarged(stack)) {
 					Triplet<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _invProvider.getSourceID(), true, FixedPriority.ElectricBuffer);
 					if(reply == null) continue;
-					if(_power.useEnergy(10)) {
-						_invProvider.spawnParticle(Particles.OrangeParticle, 2);
+					if(_service.useEnergy(10)) {
+						_service.spawnParticle(Particles.OrangeParticle, 2);
 						_invProvider.sendStack(inv.decrStackSize(i,1), reply, ItemSendMode.Normal);
 						return;
 					}
@@ -158,8 +158,8 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 				if (!_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyCharged(stack)) {
 					Triplet<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _invProvider.getSourceID(), true, FixedPriority.ElectricBuffer);
 					if(reply == null) continue;
-					if(_power.useEnergy(10)) {
-						_invProvider.spawnParticle(Particles.OrangeParticle, 2);
+					if(_service.useEnergy(10)) {
+						_service.spawnParticle(Particles.OrangeParticle, 2);
 						_invProvider.sendStack(inv.decrStackSize(i,1), reply, ItemSendMode.Normal);
 						return;
 					}

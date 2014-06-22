@@ -110,12 +110,12 @@ outer:
 		
 		//Extract Item
 
-		if(!_power.canUseEnergy(500)) {
+		if(!_service.canUseEnergy(500)) {
 			stalled = true;
 			return;
 		}
 		
-		if((!(invUtil instanceof SpecialInventoryHandler) && invUtil.getSizeInventory() == 0) || !_power.canUseEnergy(500)) {
+		if((!(invUtil instanceof SpecialInventoryHandler) && invUtil.getSizeInventory() == 0) || !_service.canUseEnergy(500)) {
 			stalled = true;
 			return;
 		}

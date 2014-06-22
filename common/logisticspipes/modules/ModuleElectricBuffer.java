@@ -2,8 +2,8 @@ package logisticspipes.modules;
 
 import java.util.List;
 
-import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IInventoryUtil;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
@@ -24,7 +24,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleElectricBuffer extends LogisticsModule {
 	private IInventoryProvider _invProvider;
-	private IRoutedPowerProvider _power;
+	private IPipeServiceProvider _service;
 
 
 
@@ -42,9 +42,9 @@ public class ModuleElectricBuffer extends LogisticsModule {
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerProvider) {		
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
 		_invProvider = invProvider;
-		_power = powerProvider;
+		_service = service;
 		_world = world;
 
 	}
@@ -52,16 +52,16 @@ public class ModuleElectricBuffer extends LogisticsModule {
 	
 	@Override 
 	public final int getX() {
-		return this._power.getX();
+		return this._service.getX();
 	}
 	@Override 
 	public final int getY() {
-		return this._power.getY();
+		return this._service.getY();
 	}
 	
 	@Override 
 	public final int getZ() {
-		return this._power.getZ();
+		return this._service.getZ();
 	}
 
 	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ElectricBuffer, 0, true, false, 1, 0);
@@ -69,7 +69,7 @@ public class ModuleElectricBuffer extends LogisticsModule {
 	public SinkReply sinksItem(ItemIdentifier stack, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if (bestPriority >= FixedPriority.ElectricBuffer.ordinal()) return null;
 		if (SimpleServiceLocator.IC2Proxy.isElectricItem(stack.makeNormalStack(1))) {
-			if (_power.canUseEnergy(1)) {
+			if (_service.canUseEnergy(1)) {
 				return _sinkReply;
 			}
 		}
@@ -94,7 +94,7 @@ public class ModuleElectricBuffer extends LogisticsModule {
 			if (SimpleServiceLocator.IC2Proxy.isElectricItem(stack)) {
 				Triplet<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _invProvider.getSourceID(), true, FixedPriority.ElectricManager);
 				if(reply == null) continue;
-				_invProvider.spawnParticle(Particles.OrangeParticle, 2);
+				_service.spawnParticle(Particles.OrangeParticle, 2);
 				_invProvider.sendStack(inv.decrStackSize(i, 1), reply, ItemSendMode.Normal);
 				return;
 			}

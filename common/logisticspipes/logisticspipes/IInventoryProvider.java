@@ -9,7 +9,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.inventory.IInventory;
 import net.minecraftforge.common.ForgeDirection;
 
-public interface IInventoryProvider extends ISendRoutedItem, ISpawnParticles {
+public interface IInventoryProvider extends ISendRoutedItem {
 	public IInventoryUtil getPointedInventory(boolean forExtraction);
 	public IInventoryUtil getPointedInventory(ExtractionMode mode, boolean forExtraction);
 	public IInventoryUtil getSneakyInventory(boolean forExtraction);

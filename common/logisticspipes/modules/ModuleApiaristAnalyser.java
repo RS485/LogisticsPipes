@@ -3,10 +3,10 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.List;
 
-import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
@@ -41,7 +41,7 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
-	private IRoutedPowerProvider _power;
+	private IPipeServiceProvider _service;
 	private IWorldProvider _world;
 
 	public boolean extractMode = true;
@@ -51,10 +51,10 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
 		_invProvider = invProvider;
 
-		_power = powerprovider;
+		_service = service;
 		_world = world;
 	}
 
@@ -75,7 +75,7 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 		ItemStack item = itemID.makeNormalStack(1);
 		if(SimpleServiceLocator.forestryProxy.isBee(item)) {
 			if(!SimpleServiceLocator.forestryProxy.isAnalysedBee(item)) {
-				if(_power.canUseEnergy(3)) {
+				if(_service.canUseEnergy(3)) {
 					return _sinkReply;
 				}
 			}
@@ -102,7 +102,7 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 						Pair<Integer, SinkReply> reply = _invProvider.hasDestination(ItemIdentifier.get(item), true, new ArrayList<Integer>());
 						if (reply == null)
 							continue;
-						if (_power.useEnergy(6)) {
+						if (_service.useEnergy(6)) {
 							_invProvider.sendStack(inv.decrStackSize(i, 1), reply, ItemSendMode.Normal);
 						}
 					}

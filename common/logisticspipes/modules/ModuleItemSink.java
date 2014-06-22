@@ -5,13 +5,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.gui.hud.modules.HUDItemSink;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
@@ -50,7 +50,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 	
 	private IHUDModuleRenderer HUD = new HUDItemSink(this);
 	
-	private IRoutedPowerProvider _power;
+	private IPipeServiceProvider _service;
 	
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	
@@ -71,8 +71,8 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
-		_power = powerprovider;
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
+		_service = service;
 		_invProvider=invProvider;
 	}
 
@@ -84,14 +84,14 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 		if(_isDefaultRoute && !allowDefault) return null;
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 		if (_filterInventory.containsUndamagedItem(item.getUndamaged())){
-			if(_power.canUseEnergy(1)) {
+			if(_service.canUseEnergy(1)) {
 				return _sinkReply;
 			}
 			return null;
 		}
 		if (_isDefaultRoute){
 			if(bestPriority > _sinkReplyDefault.fixedPriority.ordinal() || (bestPriority == _sinkReplyDefault.fixedPriority.ordinal() && bestCustomPriority >= _sinkReplyDefault.customPriority)) return null;
-			if(_power.canUseEnergy(1)) {
+			if(_service.canUseEnergy(1)) {
 				return _sinkReplyDefault;
 			}
 			return null;

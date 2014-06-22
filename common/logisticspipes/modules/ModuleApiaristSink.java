@@ -2,7 +2,7 @@ package logisticspipes.modules;
 
 import java.util.List;
 
-import logisticspipes.api.IRoutedPowerProvider;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
@@ -191,7 +191,7 @@ public class ModuleApiaristSink extends LogisticsGuiModule {
 	
 	public SinkSetting[] filter = new SinkSetting[6];
 	public IWorldProvider worldProvider;
-	private IRoutedPowerProvider _power;
+	private IPipeServiceProvider _service;
 	
 	public ModuleApiaristSink() {
 		filter[0] = new SinkSetting(this);
@@ -224,9 +224,9 @@ public class ModuleApiaristSink extends LogisticsGuiModule {
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
 		this.worldProvider = world;
-		_power = powerprovider;
+		_service = service;
 		_invProvider = invProvider;
 	}
 
@@ -276,7 +276,7 @@ public class ModuleApiaristSink extends LogisticsGuiModule {
 		if(SimpleServiceLocator.forestryProxy.isBee(item)) {
 			if(SimpleServiceLocator.forestryProxy.isAnalysedBee(item)) {
 				if(isFiltered(itemID)) {
-					if(_power.canUseEnergy(2)) {
+					if(_service.canUseEnergy(2)) {
 						return _sinkReply;
 					}
 				}

@@ -5,13 +5,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.gui.hud.modules.HUDSimpleFilterModule;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -40,7 +40,7 @@ public class ModuleTerminus extends LogisticsSimpleFilterModule implements IClie
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Terminated items", 1);
 
-	private IRoutedPowerProvider _power;
+	private IPipeServiceProvider _service;
 	
 	private IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
 
@@ -55,8 +55,8 @@ public class ModuleTerminus extends LogisticsSimpleFilterModule implements IClie
 	}
 	
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
-		_power = powerprovider;
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
+		_service = service;
 		_invProvider = invProvider;
 	}
 
@@ -75,7 +75,7 @@ public class ModuleTerminus extends LogisticsSimpleFilterModule implements IClie
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 		if (_filterInventory.containsUndamagedItem(item.getUndamaged())){
-			if(_power.canUseEnergy(2)) {
+			if(_service.canUseEnergy(2)) {
 				return _sinkReply;
 			}
 		}

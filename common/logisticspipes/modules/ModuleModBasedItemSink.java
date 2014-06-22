@@ -5,12 +5,12 @@ import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.gui.hud.modules.HUDModBasedItemSink;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
@@ -44,14 +44,14 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IClien
 
 	private IHUDModuleRenderer HUD = new HUDModBasedItemSink(this);
 	
-	private IRoutedPowerProvider _power;
+	private IPipeServiceProvider _service;
 	private IWorldProvider _world;
 	
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
-		_power = powerprovider;
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
+		_service = service;
 		_world = world;
 		_invProvider = invProvider;
 	}
@@ -64,7 +64,7 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IClien
 			buildModIdSet();
 		}
 		if(modIdSet.get(item.getModId())) {
-			if(_power.canUseEnergy(5)) {
+			if(_service.canUseEnergy(5)) {
 				return _sinkReply;
 			}
 		}

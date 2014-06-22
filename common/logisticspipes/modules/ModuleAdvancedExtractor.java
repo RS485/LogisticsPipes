@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.gui.hud.modules.HUDAdvancedExtractor;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
@@ -15,6 +14,7 @@ import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -59,7 +59,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Item list", 1);
 	private boolean _itemsIncluded = true;
 	
-	protected IRoutedPowerProvider _power;
+	protected IPipeServiceProvider _service;
 	private ForgeDirection _sneakyDirection = ForgeDirection.UNKNOWN;
 
 	private IWorldProvider _world;
@@ -74,10 +74,10 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
 		_invProvider = invProvider;
 
-		_power = powerprovider;
+		_service = service;
 		_world = world;
 	}
 
@@ -198,8 +198,8 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 					count = Math.min(count, reply.getValue2().maxNumberOfItems);
 				}
 
-				while(!_power.useEnergy(neededEnergy() * count) && count > 0) {
-					_invProvider.spawnParticle(Particles.OrangeParticle, 2);
+				while(!_service.useEnergy(neededEnergy() * count) && count > 0) {
+					_service.spawnParticle(Particles.OrangeParticle, 2);
 					count--;
 				}
 

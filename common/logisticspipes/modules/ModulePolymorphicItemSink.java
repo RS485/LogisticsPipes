@@ -2,9 +2,8 @@ package logisticspipes.modules;
 
 import java.util.List;
 
-import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.interfaces.ISendRoutedItem;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -20,14 +19,14 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ModulePolymorphicItemSink extends LogisticsModule {
 	
 	private IInventoryProvider _invProvider;
-	private IRoutedPowerProvider _power;
+	private IPipeServiceProvider _service;
 	
 	public ModulePolymorphicItemSink() {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
 		_invProvider = invProvider;
-		_power = powerprovider;
+		_service = service;
 	}
 
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 3, 0);
@@ -39,7 +38,7 @@ public class ModulePolymorphicItemSink extends LogisticsModule {
 		
 		if (!targetInventory.containsUndamagedItem(item.getUndamaged())) return null;
 		
-		if(_power.canUseEnergy(3)) {
+		if(_service.canUseEnergy(3)) {
 			return _sinkReply;
 		}
 		return null;
@@ -59,16 +58,16 @@ public class ModulePolymorphicItemSink extends LogisticsModule {
 	
 	@Override 
 	public final int getX() {
-		return this._power.getX();
+		return this._service.getX();
 	}
 	@Override 
 	public final int getY() {
-		return this._power.getY();
+		return this._service.getY();
 	}
 	
 	@Override 
 	public final int getZ() {
-		return this._power.getZ();
+		return this._service.getZ();
 	}
 	@Override
 	public boolean hasGenericInterests() {

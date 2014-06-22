@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IInventoryUtil;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
@@ -41,7 +41,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 	protected int lastStackLookedAt = 0;
 	protected int lastSuceededStack = 0;
 
-	protected IRoutedPowerProvider _power;
+	protected IPipeServiceProvider _service;
 
 	private PlayerCollectionList _watchingPlayer = new PlayerCollectionList();
 	private int lastPosSend = 0;
@@ -51,10 +51,10 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 	public ModuleQuickSort() {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
 		_invProvider = invProvider;
 
-		_power = powerprovider;
+		_service = service;
 		_world = world;
 	}
 
@@ -86,7 +86,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 		IInventoryUtil invUtil = _invProvider.getPointedInventory(true);
 		if (invUtil == null) return;
 
-		if(!_power.canUseEnergy(500)) {
+		if(!_service.canUseEnergy(500)) {
 			stalled = true;
 			return;
 		}
@@ -113,7 +113,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 					lastStackLookedAt++;
 					return;
 				}
-				if(!_power.useEnergy(500)) {
+				if(!_service.useEnergy(500)) {
 					stalled = true;
 					lastStackLookedAt++;
 					return;
@@ -134,7 +134,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 					availableItems -= stackToSend.stackSize;
 					_invProvider.sendStack(stackToSend, reply, ItemSendMode.Fast);
 					
-					_invProvider.spawnParticle(Particles.OrangeParticle, 8);
+					_service.spawnParticle(Particles.OrangeParticle, 8);
 		
 					if(availableItems <= 0) break;
 		
@@ -153,7 +153,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 			}
 		} else {
 			
-			if((!(invUtil instanceof SpecialInventoryHandler) && invUtil.getSizeInventory() == 0) || !_power.canUseEnergy(500)) {
+			if((!(invUtil instanceof SpecialInventoryHandler) && invUtil.getSizeInventory() == 0) || !_service.canUseEnergy(500)) {
 				stalled = true;
 				return;
 			}
@@ -190,7 +190,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 				lastStackLookedAt++;
 				return;
 			}
-			if(!_power.useEnergy(500)) {
+			if(!_service.useEnergy(500)) {
 				stalled = true;
 				lastStackLookedAt++;
 				return;
@@ -211,7 +211,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 				ItemStack stackToSend = slot.splitStack(count);
 	
 				_invProvider.sendStack(stackToSend, reply, ItemSendMode.Fast);
-				_invProvider.spawnParticle(Particles.OrangeParticle, 8);
+				_service.spawnParticle(Particles.OrangeParticle, 8);
 	
 				if(slot.stackSize == 0) break;
 	

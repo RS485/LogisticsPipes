@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.gui.hud.modules.HUDSimpleFilterModule;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
@@ -13,6 +12,7 @@ import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -41,7 +41,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ModulePassiveSupplier extends LogisticsSimpleFilterModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested items", 64);
-	private IRoutedPowerProvider _power;
+	private IPipeServiceProvider _service;
 
 	private IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
 	
@@ -52,9 +52,9 @@ public class ModulePassiveSupplier extends LogisticsSimpleFilterModule implement
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
 		_invProvider = invProvider;
-		_power = powerprovider;
+		_service = service;
 	}
 
 	public IInventory getFilterInventory(){
@@ -75,7 +75,7 @@ public class ModulePassiveSupplier extends LogisticsSimpleFilterModule implement
 		int haveCount = targetUtil.itemCount(item);
 		if (targetCount <= haveCount) return null;
 		
-		if(_power.canUseEnergy(2)) {
+		if(_service.canUseEnergy(2)) {
 			return new SinkReply(_sinkReply, targetCount - haveCount);
 		}
 		return null;

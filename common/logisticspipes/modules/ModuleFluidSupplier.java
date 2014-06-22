@@ -3,8 +3,8 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.List;
 
-import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
@@ -30,16 +30,16 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested liquids", 1);
 
 	private IWorldProvider _world;
-	IRoutedPowerProvider _power;
+	IPipeServiceProvider _service;
 	
 	public IInventory getFilterInventory(){
 		return _filterInventory;
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IRoutedPowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
 		_world = world;
-		_power = powerprovider;
+		_service = service;
 		_invProvider = invProvider;
 	}
 
@@ -48,7 +48,7 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 		if (_filterInventory.containsItem(item)){
-			_invProvider.spawnParticle(Particles.VioletParticle, 2);
+			_service.spawnParticle(Particles.VioletParticle, 2);
 			return _sinkReply;
 		}
 		return null;

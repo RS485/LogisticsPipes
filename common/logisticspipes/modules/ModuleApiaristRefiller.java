@@ -61,17 +61,17 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 	
 	@Override
 	public final int getX() {
-		return this._invProvider.getX();
+		return this._service.getX();
 	}
 	
 	@Override
 	public final int getY() {
-		return this._invProvider.getY();
+		return this._service.getY();
 	}
 	
 	@Override
 	public final int getZ() {
-		return this._invProvider.getZ();
+		return this._service.getZ();
 	}
 	
 	@Override

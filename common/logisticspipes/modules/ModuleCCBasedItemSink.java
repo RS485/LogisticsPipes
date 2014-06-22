@@ -23,7 +23,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ModuleCCBasedItemSink extends LogisticsModule {
 	
 	private IQueueCCEvent	eventQueuer;
-	private IInventoryProvider	invProvider;
+	private IPipeServiceProvider _service;
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {}
@@ -33,7 +33,7 @@ public class ModuleCCBasedItemSink extends LogisticsModule {
 	
 	@Override
 	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
-		this.invProvider = invProvider;
+		_service = service;
 	}
 	
 	@Override
@@ -43,17 +43,17 @@ public class ModuleCCBasedItemSink extends LogisticsModule {
 	
 	@Override
 	public int getX() {
-		return invProvider.getX();
+		return _service.getX();
 	}
 	
 	@Override
 	public int getY() {
-		return invProvider.getY();
+		return _service.getY();
 	}
 	
 	@Override
 	public int getZ() {
-		return invProvider.getZ();
+		return _service.getZ();
 	}
 	
 	@Override
@@ -96,7 +96,7 @@ public class ModuleCCBasedItemSink extends LogisticsModule {
 	
 	@Override
 	public List<CCSinkResponder> queueCCSinkEvent(ItemIdentifierStack item) {
-		CCSinkResponder resonse = new CCSinkResponder(item, invProvider.getSourceID(), eventQueuer);
+		CCSinkResponder resonse = new CCSinkResponder(item, _service.getSourceID(), eventQueuer);
 		eventQueuer.queueEvent("ItemSink", new Object[]{SimpleServiceLocator.ccProxy.getAnswer(resonse)});
 		return new OneList<CCSinkResponder>(resonse);
 	}

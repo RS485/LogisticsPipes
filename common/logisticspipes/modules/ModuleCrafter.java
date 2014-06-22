@@ -182,7 +182,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	protected int spaceFor(ItemIdentifier item, boolean includeInTransit) {
 		int count = 0;
-		WorldUtil wUtil = new WorldUtil(getWorld(), _invProvider.getX(), _invProvider.getY(), _invProvider.getZ());
+		WorldUtil wUtil = new WorldUtil(getWorld(), _service.getX(), _service.getY(), _service.getZ());
 		for(AdjacentTile tile: wUtil.getAdjacentTileEntities(true)) {
 			if(!(tile.tile instanceof IInventory)) continue;
 			if(tile.tile instanceof TileGenericPipe) continue;

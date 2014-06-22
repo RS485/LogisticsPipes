@@ -31,7 +31,7 @@ import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
 
-public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInventoryProvider, ISendRoutedItem {
+public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRoutedItem {
 
 	private ModuleApiaristAnalyser analyserModule;
 

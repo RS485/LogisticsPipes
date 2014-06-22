@@ -18,9 +18,6 @@ public interface IInventoryProvider extends ISendRoutedItem {
 	public IInventory getRealInventory();
 
 	public ForgeDirection inventoryOrientation();
-	public int getX(); // returns the coords of the pipe, so modules which care don't need to fetch the coords for actions they send 
-	public int getY();
-	public int getZ();
 	
 	// to interact and send items you need to know about orders, upgrades, and have the ability to send
 	public LogisticsOrderManager getOrderManager();

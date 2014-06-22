@@ -112,7 +112,6 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISi
 		if(getWorld().getTotalWorldTime() % 6 != 0) return;
 		//Add from internal buffer
 		List<AdjacentTile> crafters = locateCrafters();
-		if(crafters.size() < 1) {sendBuffer();return;}
 		boolean change = false;
 		for(AdjacentTile tile : crafters) {
 			for(int i = inv.getSizeInventory() - 1; i >= 0; i--) {
@@ -137,25 +136,12 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISi
 				}
 			}
 		}
-		if(!_invProvider.getOrderManager().hasOrders(RequestType.CRAFTING)){
-			sendBuffer();
-		}
 		if(change) {
 			inv.onInventoryChanged();
 		}
 
 	}
 	
-	private void sendBuffer() {
-		for(int i=0;i<inv.getSizeInventory();i++) {
-			ItemStack stackToSend = inv.getStackInSlot(i);
-			if(stackToSend==null) continue;
-			_invProvider.sendStack(stackToSend, -1, ItemSendMode.Normal, null) ;
-			inv.clearInventorySlotContents(i);
-			break;
-		}
-	}
-
 	@Override
 	public void InventoryChanged(IInventory inventory) {
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(inv, true)).setModulePos(this), localModeWatchers);

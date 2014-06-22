@@ -2,9 +2,6 @@ package logisticspipes.modules;
 
 import java.util.Collection;
 
-import logisticspipes.interfaces.IPipeServiceProvider;
-import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
@@ -17,8 +14,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleEnchantmentSink extends LogisticsModule {
 	
-	private IPipeServiceProvider _service;
-	
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {}
 
@@ -26,16 +21,9 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider,
-			IWorldProvider world,
-			IPipeServiceProvider service) {
-		_service = service;
-	}
-
-	@Override
 	public int getX() {
 		if(slot.isInWorld())
-			return this._service.getX();
+			return _service.getX();
 		else 
 			return 0;
 	}
@@ -43,7 +31,7 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 	@Override
 	public int getY() {
 		if(slot.isInWorld())
-			return this._service.getY();
+			return _service.getY();
 		else 
 			return 0;
 	}
@@ -51,7 +39,7 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 	@Override
 	public int getZ() {
 		if(slot.isInWorld())
-			return this._service.getZ();
+			return _service.getZ();
 		else 
 			return 0;
 	}

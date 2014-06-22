@@ -6,9 +6,6 @@ import java.util.List;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.interfaces.IPipeServiceProvider;
-import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
@@ -41,21 +38,10 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
-	private IPipeServiceProvider _service;
-	private IWorldProvider _world;
-
 	public boolean extractMode = true;
 
 	public ModuleApiaristAnalyser() {
 
-	}
-
-	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
-		_invProvider = invProvider;
-
-		_service = service;
-		_world = world;
 	}
 
 	@Override
@@ -93,17 +79,17 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 		if (extractMode) {
 			if (++currentTick < ticksToAction) return;
 			currentTick = 0;
-			IInventoryUtil inv = _invProvider.getUnsidedInventory();
+			IInventoryUtil inv = _service.getUnsidedInventory();
 			if (inv == null) return;
 			for (int i = 0; i < inv.getSizeInventory(); i++) {
 				ItemStack item = inv.getStackInSlot(i);
 				if (SimpleServiceLocator.forestryProxy.isBee(item)) {
 					if (SimpleServiceLocator.forestryProxy.isAnalysedBee(item)) {
-						Pair<Integer, SinkReply> reply = _invProvider.hasDestination(ItemIdentifier.get(item), true, new ArrayList<Integer>());
+						Pair<Integer, SinkReply> reply = _service.hasDestination(ItemIdentifier.get(item), true, new ArrayList<Integer>());
 						if (reply == null)
 							continue;
 						if (_service.useEnergy(6)) {
-							_invProvider.sendStack(inv.decrStackSize(i, 1), reply, ItemSendMode.Normal);
+							_service.sendStack(inv.decrStackSize(i, 1), reply, ItemSendMode.Normal);
 						}
 					}
 				}

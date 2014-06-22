@@ -6,7 +6,6 @@ import java.util.List;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
@@ -30,7 +29,7 @@ public class ChassiModule extends LogisticsGuiModule {
 	public ChassiModule(int moduleCount, PipeLogisticsChassi parentPipe){
 		_modules = new LogisticsModule[moduleCount];
 		_parentPipe = parentPipe;
-		_invProvider = parentPipe;
+		_service = parentPipe;
 		this.registerPosition(ModulePositionType.IN_PIPE, 0);
 	}
 	
@@ -121,7 +120,7 @@ public class ChassiModule extends LogisticsGuiModule {
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
+	public void registerHandler(IWorldProvider world, IPipeServiceProvider service) {
 		//Not used in Chassie Module
 	}
 

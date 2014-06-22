@@ -3,10 +3,7 @@ package logisticspipes.modules;
 import java.util.List;
 
 import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.interfaces.IPipeServiceProvider;
-import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
@@ -23,12 +20,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleElectricBuffer extends LogisticsModule {
-	private IInventoryProvider _invProvider;
-	private IPipeServiceProvider _service;
-
-
-
-	private IWorldProvider _world;
 
 	private int currentTickCount = 0;
 	private int ticksToAction = 80;
@@ -40,14 +31,6 @@ public class ModuleElectricBuffer extends LogisticsModule {
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
-
-	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
-		_invProvider = invProvider;
-		_service = service;
-		_world = world;
-
-	}
 
 	
 	@Override 
@@ -86,16 +69,16 @@ public class ModuleElectricBuffer extends LogisticsModule {
 		if (++currentTickCount < ticksToAction) return;
 		currentTickCount = 0;
 
-		IInventoryUtil inv = _invProvider.getPointedInventory(true);
+		IInventoryUtil inv = _service.getPointedInventory(true);
 		if (inv == null) return;
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
 			ItemStack stack = inv.getStackInSlot(i);
 			if (stack == null) continue;
 			if (SimpleServiceLocator.IC2Proxy.isElectricItem(stack)) {
-				Triplet<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _invProvider.getSourceID(), true, FixedPriority.ElectricManager);
+				Triplet<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _service.getSourceID(), true, FixedPriority.ElectricManager);
 				if(reply == null) continue;
 				_service.spawnParticle(Particles.OrangeParticle, 2);
-				_invProvider.sendStack(inv.decrStackSize(i, 1), reply, ItemSendMode.Normal);
+				_service.sendStack(inv.decrStackSize(i, 1), reply, ItemSendMode.Normal);
 				return;
 			}
 			continue;

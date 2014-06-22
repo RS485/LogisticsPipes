@@ -6,9 +6,6 @@ import java.util.List;
 
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.interfaces.IPipeServiceProvider;
-import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
@@ -35,19 +32,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClientInformationProvider, IModuleWatchReciver {
 	
-	private IWorldProvider _world;
-	
 	public final List<String> aspectList = new LinkedList<String>();
 	
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
-	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
-		_world = world;
-		_invProvider = invProvider;
-
-	}
-	
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, -2, true, false, 5, 0);
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {

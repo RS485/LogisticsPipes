@@ -11,9 +11,6 @@ import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.interfaces.IPipeServiceProvider;
-import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
 import logisticspipes.network.NewGuiHandler;
@@ -48,25 +45,14 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 	//protected final int ticksToAction = 100;
 	private int currentTick = 0;
 
-	private IPipeServiceProvider _service;
 	private ForgeDirection _sneakyDirection = ForgeDirection.UNKNOWN;
-	private IWorldProvider _world;
 
-	private IHUDModuleRenderer HUD;
+	private IHUDModuleRenderer HUD = new HUDExtractor(this);
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
 	public ModuleExtractor() {
 
-	}
-
-	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
-		HUD = new HUDExtractor(this);
-		_invProvider = invProvider;
-
-		_service = service;
-		_world = world;
 	}
 
 	protected int ticksToAction(){
@@ -150,19 +136,19 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 		currentTick = 0;
 
 		//Extract Item
-		IInventory realInventory = _invProvider.getRealInventory();
+		IInventory realInventory = _service.getRealInventory();
 		if (realInventory == null) return;
 		ForgeDirection extractOrientation = _sneakyDirection;
 		if(extractOrientation == ForgeDirection.UNKNOWN) {
-			extractOrientation = _invProvider.inventoryOrientation().getOpposite();
+			extractOrientation = _service.inventoryOrientation().getOpposite();
 		}
 
-		IInventoryUtil targetUtil = _invProvider.getSneakyInventory(extractOrientation,true);
+		IInventoryUtil targetUtil = _service.getSneakyInventory(extractOrientation,true);
 		
 		if (realInventory instanceof ISpecialInventory && !targetUtil.isSpecialInventory()){
 			ItemStack[] stack = ((ISpecialInventory) realInventory).extractItem(false, extractOrientation, 1);
 			if (stack == null || stack.length < 1 || stack[0] == null || stack[0].stackSize == 0) return;
-			Pair<Integer, SinkReply> reply = _invProvider.hasDestination(ItemIdentifier.get(stack[0]), true, new ArrayList<Integer>());
+			Pair<Integer, SinkReply> reply = _service.hasDestination(ItemIdentifier.get(stack[0]), true, new ArrayList<Integer>());
 			if (reply == null) return;
 			ItemStack[] stacks = ((ISpecialInventory) realInventory).extractItem(true, extractOrientation, 1);
 			if (stacks == null || stacks.length < 1 || stacks[0] == null || stacks[0].stackSize == 0) {
@@ -172,7 +158,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 			if(!ItemStack.areItemStacksEqual(stack[0], stacks[0])) {
 				LogisticsPipes.log.info("extractor extract got a unexpected item from " + ((Object)realInventory).toString());
 			}
-			_invProvider.sendStack(stacks[0], reply, itemSendMode());
+			_service.sendStack(stacks[0], reply, itemSendMode());
 			return;
 		}
 
@@ -183,7 +169,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 			if (slot == null) continue;
 			ItemIdentifier slotitem = ItemIdentifier.get(slot);
 			List<Integer> jamList = new LinkedList<Integer>();
-			Pair<Integer, SinkReply> reply = _invProvider.hasDestination(slotitem, true, jamList);
+			Pair<Integer, SinkReply> reply = _service.hasDestination(slotitem, true, jamList);
 			if (reply == null) continue;
 
 			int itemsleft = itemsToExtract();
@@ -206,13 +192,13 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 				ItemStack stackToSend = targetUtil.decrStackSize(i, count);
 				if(stackToSend == null || stackToSend.stackSize == 0) break;
 				count = stackToSend.stackSize;
-				_invProvider.sendStack(stackToSend, reply, itemSendMode());
+				_service.sendStack(stackToSend, reply, itemSendMode());
 				itemsleft -= count;
 				if(itemsleft <= 0) break;
 				slot = targetUtil.getStackInSlot(i);
 				if (slot == null) break;
 				jamList.add(reply.getValue1());
-				reply = _invProvider.hasDestination(ItemIdentifier.get(slot), true, jamList);
+				reply = _service.hasDestination(ItemIdentifier.get(slot), true, jamList);
 			}
 			break;
 		}

@@ -11,10 +11,7 @@ import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.interfaces.IPipeServiceProvider;
-import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
@@ -54,11 +51,8 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Electric Items", 1);
 	private boolean _dischargeMode;
 
-	protected IPipeServiceProvider _service;
 	private int ticksToAction = 100;
 	private int currentTick = 0;
-
-	private IWorldProvider _world;
 
 	private IHUDModuleRenderer HUD = new HUDElectricManager(this);
 
@@ -78,14 +72,6 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 	public void setDischargeMode(boolean isDischargeMode){
 		_dischargeMode = isDischargeMode;
 		if(!localModeWatchers.isEmpty()) MainProxy.sendToPlayerList(PacketHandler.getPacket(ElectricManagetMode.class).setFlag(isDischargeMode()).setModulePos(this), localModeWatchers);
-	}
-
-	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
-		_invProvider = invProvider;
-
-		_service = service;
-		_world = world;
 	}
 
 
@@ -138,7 +124,7 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 		if (++currentTick  < ticksToAction) return;
 		currentTick = 0;
 
-		IInventoryUtil inv = _invProvider.getSneakyInventory(true);
+		IInventoryUtil inv = _service.getSneakyInventory(true);
 		if(inv == null) return;
 		for(int i=0; i < inv.getSizeInventory(); i++) {
 			ItemStack stack = inv.getStackInSlot(i);
@@ -146,21 +132,21 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 			if (isOfInterest(stack)) {
 				//If item set to discharge and its fully discharged, then extract it.
 				if (_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyDischarged(stack)) {
-					Triplet<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _invProvider.getSourceID(), true, FixedPriority.ElectricBuffer);
+					Triplet<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _service.getSourceID(), true, FixedPriority.ElectricBuffer);
 					if(reply == null) continue;
 					if(_service.useEnergy(10)) {
 						_service.spawnParticle(Particles.OrangeParticle, 2);
-						_invProvider.sendStack(inv.decrStackSize(i,1), reply, ItemSendMode.Normal);
+						_service.sendStack(inv.decrStackSize(i,1), reply, ItemSendMode.Normal);
 						return;
 					}
 				}
 				//If item set to charge  and its fully charged, then extract it.
 				if (!_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyCharged(stack)) {
-					Triplet<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _invProvider.getSourceID(), true, FixedPriority.ElectricBuffer);
+					Triplet<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _service.getSourceID(), true, FixedPriority.ElectricBuffer);
 					if(reply == null) continue;
 					if(_service.useEnergy(10)) {
 						_service.spawnParticle(Particles.OrangeParticle, 2);
-						_invProvider.sendStack(inv.decrStackSize(i,1), reply, ItemSendMode.Normal);
+						_service.sendStack(inv.decrStackSize(i,1), reply, ItemSendMode.Normal);
 						return;
 					}
 				}

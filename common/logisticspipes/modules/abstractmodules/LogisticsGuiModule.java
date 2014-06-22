@@ -1,13 +1,10 @@
 package logisticspipes.modules.abstractmodules;
 
-import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
 
 public abstract class LogisticsGuiModule extends LogisticsModule {
 
-	protected IInventoryProvider _invProvider;
-	
 	protected abstract ModuleCoordinatesGuiProvider getPipeGuiProvider();
 	
 	protected abstract ModuleInHandGuiProvider getInHandGuiProvider();
@@ -28,14 +25,14 @@ public abstract class LogisticsGuiModule extends LogisticsModule {
 	@Override 
 	public final int getX() {
 		if(slot.isInWorld())
-			return this._invProvider.getX();
+			return _service.getX();
 		else 
 			return 0;
 	}
 	@Override 
 	public final int getY() {
 		if(slot.isInWorld())
-			return this._invProvider.getY();
+			return _service.getY();
 		else 
 			return -1;
 	}
@@ -43,7 +40,7 @@ public abstract class LogisticsGuiModule extends LogisticsModule {
 	@Override 
 	public final int getZ() {
 		if(slot.isInWorld())
-			return this._invProvider.getZ();
+			return _service.getZ();
 		else 
 			return -1-positionInt;
 	}

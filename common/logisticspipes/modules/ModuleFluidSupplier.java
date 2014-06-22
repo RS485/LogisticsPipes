@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.interfaces.IClientInformationProvider;
-import logisticspipes.interfaces.IPipeServiceProvider;
-import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
@@ -29,18 +26,8 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 	
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested liquids", 1);
 
-	private IWorldProvider _world;
-	IPipeServiceProvider _service;
-	
 	public IInventory getFilterInventory(){
 		return _filterInventory;
-	}
-
-	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
-		_world = world;
-		_service = service;
-		_invProvider = invProvider;
 	}
 
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 0, 0);

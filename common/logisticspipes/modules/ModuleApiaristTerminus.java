@@ -2,9 +2,6 @@ package logisticspipes.modules;
 
 import java.util.List;
 
-import logisticspipes.interfaces.IPipeServiceProvider;
-import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
@@ -19,19 +16,12 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleApiaristTerminus extends LogisticsModule {
 
-	private IPipeServiceProvider _service;
-	
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {}
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
 
-	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
-		_service = service;
-	}
-	
 	@Override 
 	public final int getX() {
 		return this._service.getX();

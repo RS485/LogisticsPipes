@@ -3,9 +3,6 @@ package logisticspipes.modules;
 import java.util.List;
 
 import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.interfaces.IPipeServiceProvider;
-import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
@@ -18,22 +15,13 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModulePolymorphicItemSink extends LogisticsModule {
 	
-	private IInventoryProvider _invProvider;
-	private IPipeServiceProvider _service;
-	
 	public ModulePolymorphicItemSink() {}
-
-	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
-		_invProvider = invProvider;
-		_service = service;
-	}
 
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 3, 0);
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
-		IInventoryUtil targetInventory = _invProvider.getSneakyInventory(false);
+		IInventoryUtil targetInventory = _service.getSneakyInventory(false);
 		if (targetInventory == null) return null;
 		
 		if (!targetInventory.containsUndamagedItem(item.getUndamaged())) return null;

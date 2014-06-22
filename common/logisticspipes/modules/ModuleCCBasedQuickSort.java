@@ -67,7 +67,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 	
 	private void createSinkMessage(int slot, ItemIdentifierStack stack) {
 		List<CCSinkResponder> respones = new ArrayList<CCSinkResponder>();
-		IRouter sourceRouter = this._invProvider.getRouter();
+		IRouter sourceRouter = this._service.getRouter();
 		if (sourceRouter == null) return;
 		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(null); // get only pipes with generic interest
 		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(); // get the routing table 
@@ -99,7 +99,7 @@ outer:
 
 	@Override
 	public void tick() {
-		IInventoryUtil invUtil = _invProvider.getPointedInventory(true);
+		IInventoryUtil invUtil = _service.getPointedInventory(true);
 		if (invUtil == null) return;
 		handleSinkResponses(invUtil);
 		if (--currentTick > 0) return;
@@ -182,7 +182,7 @@ outer:
 		ItemIdentifier ident = list.get(0).getStack().getItem();
 		ItemStack stack = invUtil.getStackInSlot(slot);
 		if(stack == null || ItemIdentifier.get(stack) != ident) return false;
-		final IRouter source = this._invProvider.getRouter();
+		final IRouter source = this._service.getRouter();
 		List<Triplet<Integer, Integer, CCSinkResponder>> posibilities = new ArrayList<Triplet<Integer, Integer, CCSinkResponder>>();
 		for(CCSinkResponder sink:list) {
 			if(!sink.isDone()) continue;
@@ -218,7 +218,7 @@ outer:
 			if(stack == null || stack.stackSize <= 0) continue;
 			int amount = Math.min(stack.stackSize, sink.getCanSink());
 			ItemStack extracted = invUtil.decrStackSize(slot, amount);
-			_invProvider.sendStack(extracted, sink.getRouterId(), ItemSendMode.Fast, null);
+			_service.sendStack(extracted, sink.getRouterId(), ItemSendMode.Fast, null);
 			sended = true;
 		}
 		return sended;

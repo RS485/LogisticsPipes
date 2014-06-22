@@ -20,7 +20,7 @@ public class DummyModuleContainer extends DummyContainer {
 		super(player.inventory, null);
 		this.slot = slot;
 		moduleStack = player.inventory.mainInventory[slot];
-		module = LogisticsPipes.ModuleItem.getModuleForItem(moduleStack, null, null, new DummyWorldProvider(player.worldObj), null);
+		module = LogisticsPipes.ModuleItem.getModuleForItem(moduleStack, null, new DummyWorldProvider(player.worldObj), null);
 		module.registerPosition(ModulePositionType.IN_HAND, slot);
 		ItemModuleInformationManager.readInformation(moduleStack, module);
 	}

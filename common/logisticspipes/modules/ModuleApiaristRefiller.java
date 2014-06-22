@@ -3,9 +3,6 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.List;
 
-import logisticspipes.interfaces.IPipeServiceProvider;
-import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
@@ -25,23 +22,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleApiaristRefiller extends LogisticsModule {
 	
-	private IInventoryProvider		_invProvider;
-	private IPipeServiceProvider	_service;
-	
-	private IWorldProvider			_world;
-	
 	private int						currentTickCount	= 0;
 	private int						ticksToOperation	= 200;
 	
 	public ModuleApiaristRefiller() {}
-	
-	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
-		_invProvider = invProvider;
-		_service = service;
-		_world = world;
-
-	}
 	
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
@@ -78,10 +62,10 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 	public void tick() {
 		if(++currentTickCount < ticksToOperation) return;
 		currentTickCount = 0;
-		IInventory inv = _invProvider.getRealInventory();
+		IInventory inv = _service.getRealInventory();
 		if(!(inv instanceof ISidedInventory)) return;
 		ISidedInventory sinv = (ISidedInventory)inv;
-		ForgeDirection direction = _invProvider.inventoryOrientation().getOpposite();
+		ForgeDirection direction = _service.inventoryOrientation().getOpposite();
 		ItemStack stack = extractItem(sinv, false, direction, 1);
 		if(stack == null) return;
 		if(!(_service.canUseEnergy(100))) return;
@@ -90,11 +74,11 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 		
 		if(reinsertBee(stack, sinv, direction)) return;
 		
-		Pair<Integer, SinkReply> reply = _invProvider.hasDestination(ItemIdentifier.get(stack), true, new ArrayList<Integer>());
+		Pair<Integer, SinkReply> reply = _service.hasDestination(ItemIdentifier.get(stack), true, new ArrayList<Integer>());
 		if(reply == null) return;
 		_service.useEnergy(20);
 		extractItem(sinv, true, direction, 1);
-		_invProvider.sendStack(stack, reply, ItemSendMode.Normal);
+		_service.sendStack(stack, reply, ItemSendMode.Normal);
 	}
 	
 	private ItemStack extractItem(ISidedInventory inv, boolean remove, ForgeDirection dir, int amount) {

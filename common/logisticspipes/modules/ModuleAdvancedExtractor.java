@@ -14,9 +14,6 @@ import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.interfaces.IPipeServiceProvider;
-import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
 import logisticspipes.network.NewGuiHandler;
@@ -59,10 +56,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Item list", 1);
 	private boolean _itemsIncluded = true;
 	
-	protected IPipeServiceProvider _service;
 	private ForgeDirection _sneakyDirection = ForgeDirection.UNKNOWN;
-
-	private IWorldProvider _world;
 
 	private IHUDModuleRenderer HUD = new HUDAdvancedExtractor(this);
 
@@ -71,14 +65,6 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 
 	public ModuleAdvancedExtractor() {
 		_filterInventory.addListener(this);
-	}
-
-	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
-		_invProvider = invProvider;
-
-		_service = service;
-		_world = world;
 	}
 
 	public ItemIdentifierInventory getFilterInventory() {
@@ -173,9 +159,9 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 
 		ForgeDirection extractOrientation = _sneakyDirection;
 		if(extractOrientation == ForgeDirection.UNKNOWN) {
-			extractOrientation = _invProvider.inventoryOrientation().getOpposite();
+			extractOrientation = _service.inventoryOrientation().getOpposite();
 		}
-		IInventoryUtil inventory = _invProvider.getSneakyInventory(extractOrientation,true);
+		IInventoryUtil inventory = _service.getSneakyInventory(extractOrientation,true);
 		if (inventory == null) return;
 
 		checkExtract(inventory);
@@ -187,7 +173,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 			if(!CanExtract(item.getKey().makeNormalStack(item.getValue())))
 				continue;
 			List<Integer> jamList = new LinkedList<Integer>();
-			Pair<Integer, SinkReply> reply = _invProvider.hasDestination(item.getKey(), true, jamList);
+			Pair<Integer, SinkReply> reply = _service.hasDestination(item.getKey(), true, jamList);
 			if (reply == null) continue;
 
 			int itemsleft = itemsToExtract();
@@ -210,12 +196,12 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 				ItemStack stackToSend = invUtil.getMultipleItems(item.getKey(), count);
 				if(stackToSend == null || stackToSend.stackSize == 0) break;
 				count = stackToSend.stackSize;
-				_invProvider.sendStack(stackToSend, reply, itemSendMode());
+				_service.sendStack(stackToSend, reply, itemSendMode());
 				itemsleft -= count;
 				if(itemsleft <= 0) break;
 				
 				jamList.add(reply.getValue1());
-				reply = _invProvider.hasDestination(item.getKey(), true, jamList);
+				reply = _service.hasDestination(item.getKey(), true, jamList);
 			}
 			return;
 		}

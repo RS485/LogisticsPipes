@@ -250,7 +250,7 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	private void openConfigGui(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World) {
-		LogisticsModule module = getModuleForItem(par1ItemStack, null, null, null, null);
+		LogisticsModule module = getModuleForItem(par1ItemStack, null, null, null);
 		if(module != null && module.hasGui()) {
 			if(par1ItemStack != null && par1ItemStack.stackSize > 0) {
 				ItemModuleInformationManager.readInformation(par1ItemStack, module);
@@ -261,7 +261,7 @@ public class ItemModule extends LogisticsItem {
 	}
 	@Override
 	public boolean hasEffect(ItemStack par1ItemStack) {
-		LogisticsModule module = getModuleForItem(par1ItemStack, null, null, null, null);
+		LogisticsModule module = getModuleForItem(par1ItemStack, null, null, null);
 		if(module != null) {
 			if(par1ItemStack != null && par1ItemStack.stackSize > 0) {
 				return module.hasEffect();
@@ -296,7 +296,7 @@ public class ItemModule extends LogisticsItem {
 		return true;
 	}
 
-	public LogisticsModule getModuleForItem(ItemStack itemStack, LogisticsModule currentModule, IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service){
+	public LogisticsModule getModuleForItem(ItemStack itemStack, LogisticsModule currentModule, IWorldProvider world, IPipeServiceProvider service){
 		if (itemStack == null) return null;
 		if (itemStack.itemID != this.itemID) return null;
 		for(Module module:modules) {
@@ -307,7 +307,7 @@ public class ItemModule extends LogisticsItem {
 				}
 				LogisticsModule newmodule = module.getILogisticsModule();
 				if(newmodule == null) return null;
-				newmodule.registerHandler(invProvider, world, service);
+				newmodule.registerHandler(world, service);
 				return newmodule;
 			}
 		}

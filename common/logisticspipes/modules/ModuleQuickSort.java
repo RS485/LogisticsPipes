@@ -6,9 +6,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.interfaces.IPipeServiceProvider;
-import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
@@ -41,22 +38,10 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 	protected int lastStackLookedAt = 0;
 	protected int lastSuceededStack = 0;
 
-	protected IPipeServiceProvider _service;
-
 	private PlayerCollectionList _watchingPlayer = new PlayerCollectionList();
 	private int lastPosSend = 0;
 
-	protected IWorldProvider _world;
-
 	public ModuleQuickSort() {}
-
-	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
-		_invProvider = invProvider;
-
-		_service = service;
-		_world = world;
-	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {}
@@ -83,7 +68,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 			currentTick = normalDelay;
 		
 		//Extract Item
-		IInventoryUtil invUtil = _invProvider.getPointedInventory(true);
+		IInventoryUtil invUtil = _service.getPointedInventory(true);
 		if (invUtil == null) return;
 
 		if(!_service.canUseEnergy(500)) {
@@ -105,7 +90,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 					continue;
 				
 				LinkedList<Integer> jamList =  new LinkedList<Integer>();
-				Pair<Integer, SinkReply> reply = _invProvider.hasDestination(item.getKey(), false, jamList);
+				Pair<Integer, SinkReply> reply = _service.hasDestination(item.getKey(), false, jamList);
 				if (reply == null) {
 					if(lastStackLookedAt == lastSuceededStack) {
 						stalled = true;
@@ -132,14 +117,14 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 					if(stackToSend == null || stackToSend.stackSize == 0) break;
 		
 					availableItems -= stackToSend.stackSize;
-					_invProvider.sendStack(stackToSend, reply, ItemSendMode.Fast);
+					_service.sendStack(stackToSend, reply, ItemSendMode.Fast);
 					
 					_service.spawnParticle(Particles.OrangeParticle, 8);
 		
 					if(availableItems <= 0) break;
 		
 					jamList.add(reply.getValue1());
-					reply = _invProvider.hasDestination(item.getKey(), false, jamList);
+					reply = _service.hasDestination(item.getKey(), false, jamList);
 				}
 				if(availableItems > 0) { //if we didn't send maxItemsToSend, try next item next time
 					lastSuceededStack = lastStackLookedAt;
@@ -182,7 +167,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 	
 			// begin duplicate code
 			List<Integer> jamList = new LinkedList<Integer>();
-			Pair<Integer, SinkReply> reply = _invProvider.hasDestination(ItemIdentifier.get(slot), false, jamList);
+			Pair<Integer, SinkReply> reply = _service.hasDestination(ItemIdentifier.get(slot), false, jamList);
 			if (reply == null) {
 				if(lastStackLookedAt == lastSuceededStack) {
 					stalled = true;
@@ -210,13 +195,13 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 				}
 				ItemStack stackToSend = slot.splitStack(count);
 	
-				_invProvider.sendStack(stackToSend, reply, ItemSendMode.Fast);
+				_service.sendStack(stackToSend, reply, ItemSendMode.Fast);
 				_service.spawnParticle(Particles.OrangeParticle, 8);
 	
 				if(slot.stackSize == 0) break;
 	
 				jamList.add(reply.getValue1());
-				reply = _invProvider.hasDestination(ItemIdentifier.get(slot), false, jamList);
+				reply = _service.hasDestination(ItemIdentifier.get(slot), false, jamList);
 			}
 			ItemStack returned = null;
 			int amountToExtract = sizePrev - slot.stackSize;

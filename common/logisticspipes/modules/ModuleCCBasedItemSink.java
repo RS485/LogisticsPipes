@@ -3,10 +3,7 @@ package logisticspipes.modules;
 import java.util.Collection;
 import java.util.List;
 
-import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IQueueCCEvent;
-import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.CCSinkResponder;
@@ -23,18 +20,12 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ModuleCCBasedItemSink extends LogisticsModule {
 	
 	private IQueueCCEvent	eventQueuer;
-	private IPipeServiceProvider _service;
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {}
 	
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
-	
-	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
-		_service = service;
-	}
 	
 	@Override
 	public void registerCCEventQueuer(IQueueCCEvent eventQueuer) {

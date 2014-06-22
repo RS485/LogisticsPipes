@@ -12,9 +12,6 @@ import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.interfaces.IPipeServiceProvider;
-import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsSimpleFilterModule;
 import logisticspipes.network.PacketHandler;
@@ -41,7 +38,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ModulePassiveSupplier extends LogisticsSimpleFilterModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested items", 64);
-	private IPipeServiceProvider _service;
 
 	private IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
 	
@@ -49,12 +45,6 @@ public class ModulePassiveSupplier extends LogisticsSimpleFilterModule implement
 	
 	public ModulePassiveSupplier() {
 		_filterInventory.addListener(this);
-	}
-
-	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
-		_invProvider = invProvider;
-		_service = service;
 	}
 
 	public IInventory getFilterInventory(){
@@ -66,7 +56,7 @@ public class ModulePassiveSupplier extends LogisticsSimpleFilterModule implement
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 
-		IInventoryUtil targetUtil = _invProvider.getSneakyInventory(false);
+		IInventoryUtil targetUtil = _service.getSneakyInventory(false);
 		if (targetUtil == null) return null;
 		
 		if (!_filterInventory.containsItem(item)) return null;

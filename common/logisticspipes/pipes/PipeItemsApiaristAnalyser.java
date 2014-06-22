@@ -6,9 +6,7 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.ExtractionMode;
-import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.modules.ModuleApiaristAnalyser;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -22,10 +20,8 @@ import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
@@ -38,7 +34,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 	public PipeItemsApiaristAnalyser(int itemID) {
 		super(itemID);
 		analyserModule = new ModuleApiaristAnalyser();
-		analyserModule.registerHandler(this, this, this);
+		analyserModule.registerHandler(this, this);
 	}
 
 	@Override

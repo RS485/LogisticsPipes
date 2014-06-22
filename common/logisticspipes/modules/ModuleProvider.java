@@ -16,15 +16,12 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILegacyActiveModule;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.interfaces.IPipeServiceProvider;
-import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.logisticspipes.ExtractionMode;
-import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -63,8 +60,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive {
 	
-	protected IPipeServiceProvider _service;
-	
 	private List<ILegacyActiveModule> _previousLegacyModules = new LinkedList<ILegacyActiveModule>();
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Items to provide (or empty for all)", 1);
@@ -75,8 +70,6 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 	protected boolean isExcludeFilter = false;
 	protected ExtractionMode _extractionMode = ExtractionMode.Normal;
 	
-	private IWorldProvider _world;
-
 	private final Map<ItemIdentifier,Integer> displayMap = new HashMap<ItemIdentifier, Integer>();
 	public final ArrayList<ItemIdentifierStack> displayList = new ArrayList<ItemIdentifierStack>();
 	private final ArrayList<ItemIdentifierStack> oldList = new ArrayList<ItemIdentifierStack>();
@@ -86,13 +79,6 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	
 	public ModuleProvider() {}
-
-	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
-		_invProvider = invProvider;
-		_service = service;
-		_world = world;
-	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
@@ -156,10 +142,10 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 		int stacksleft = stacksToExtract();
 		LogisticsOrder firstOrder = null;
 		LogisticsOrder order = null;
-		while (itemsleft > 0 && stacksleft > 0 && _invProvider.getOrderManager().hasOrders(RequestType.PROVIDER) && (firstOrder == null || firstOrder != order)) {
+		while (itemsleft > 0 && stacksleft > 0 && _service.getOrderManager().hasOrders(RequestType.PROVIDER) && (firstOrder == null || firstOrder != order)) {
 			if(firstOrder == null)
 				firstOrder = order;
-			order = _invProvider.getOrderManager().peekAtTopRequest(RequestType.PROVIDER);
+			order = _service.getOrderManager().peekAtTopRequest(RequestType.PROVIDER);
 			int sent = sendStack(order.getItem(), itemsleft, order.getDestination().getRouter().getSimpleID(), order.getInformation());
 			if(sent < 0) break;
 			_service.spawnParticle(Particles.VioletParticle, 3);
@@ -182,8 +168,8 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 
 	@Override
 	public void onBlockRemoval() {
-		while(_invProvider.getOrderManager().hasOrders(RequestType.PROVIDER)) {
-			_invProvider.getOrderManager().sendFailed();
+		while(_service.getOrderManager().hasOrders(RequestType.PROVIDER)) {
+			_service.getOrderManager().sendFailed();
 		}
 	}
 
@@ -192,22 +178,22 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 		int canProvide = getAvailableItemCount(tree.getStackItem());
 		canProvide -= donePromisses;
 		if (canProvide < 1) return;
-		LogisticsPromise promise = new LogisticsPromise(tree.getStackItem(), Math.min(canProvide, tree.getMissingItemCount()), (IProvideItems) _invProvider);
+		LogisticsPromise promise = new LogisticsPromise(tree.getStackItem(), Math.min(canProvide, tree.getMissingItemCount()), (IProvideItems) _service);
 		tree.addPromise(promise);
 	}
 
 	@Override
 	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination, IAdditionalTargetInformation info) {
-		return _invProvider.getOrderManager().addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination,RequestType.PROVIDER, info);
+		return _service.getOrderManager().addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination,RequestType.PROVIDER, info);
 	}
 
 	private int getAvailableItemCount(ItemIdentifier item) {
-		return getTotalItemCount(item) - _invProvider.getOrderManager().totalItemsCountInOrders(item);
+		return getTotalItemCount(item) - _service.getOrderManager().totalItemsCountInOrders(item);
 	}
 
 	@Override
 	public void getAllItems(Map<ItemIdentifier, Integer> items, List<IFilter> filters) {
-		IInventoryUtil inv =_invProvider.getPointedInventory(_extractionMode,true);
+		IInventoryUtil inv = _service.getPointedInventory(_extractionMode,true);
 		if (inv == null) return;
 		
 		Map<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
@@ -227,7 +213,7 @@ outer:
 				if(filter.isBlocked() == filter.isFilteredItem(currItem.getKey().getUndamaged()) || filter.blockProvider()) continue outer;
 			}
 
-			int remaining = currItem.getValue() - _invProvider.getOrderManager().totalItemsCountInOrders(currItem.getKey());
+			int remaining = currItem.getValue() - _service.getOrderManager().totalItemsCountInOrders(currItem.getKey());
 			if (remaining < 1) continue;
 
 			items.put(currItem.getKey(), remaining);
@@ -239,15 +225,15 @@ outer:
 	// returns 0 on "unable to do this delivery"
 	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination, IAdditionalTargetInformation info) {
 		ItemIdentifier item = stack.getItem();
-		IInventoryUtil inv = _invProvider.getPointedInventory(_extractionMode,true);
+		IInventoryUtil inv = _service.getPointedInventory(_extractionMode,true);
 		if (inv == null) {
-			_invProvider.getOrderManager().sendFailed();
+			_service.getOrderManager().sendFailed();
 			return 0;
 		}
 		
 		int available = inv.itemCount(item);
 		if (available == 0) {
-			_invProvider.getOrderManager().sendFailed();
+			_service.getOrderManager().sendFailed();
 			return 0;
 		}
 		int wanted = Math.min(available, stack.getStackSize());
@@ -255,7 +241,7 @@ outer:
 		wanted = Math.min(wanted, item.getMaxStackSize());
 		IRouter dRtr = SimpleServiceLocator.routerManager.getRouterUnsafe(destination,false);
 		if(dRtr == null) {
-			_invProvider.getOrderManager().sendFailed();
+			_service.getOrderManager().sendFailed();
 			return 0;
 		}
 		SinkReply reply = LogisticsManager.canSink(dRtr, null, true, stack.getItem(), null, true, false);
@@ -264,7 +250,7 @@ outer:
 			if(reply.maxNumberOfItems < wanted) {
 				wanted = reply.maxNumberOfItems;
 				if(wanted <= 0) {
-					_invProvider.getOrderManager().deferSend();
+					_service.getOrderManager().deferSend();
 					return 0;
 				}
 				defersend = true;
@@ -274,20 +260,20 @@ outer:
 
 		ItemStack removed = inv.getMultipleItems(item, wanted);
 		if(removed == null || removed.stackSize == 0) {
-			_invProvider.getOrderManager().sendFailed();
+			_service.getOrderManager().sendFailed();
 			return 0;
 		}
 		int sent = removed.stackSize;
 		_service.useEnergy(sent * neededEnergy());
 
-		IRoutedItem sendedItem = _invProvider.sendStack(removed, destination, itemSendMode(), info);
-		_invProvider.getOrderManager().sendSuccessfull(sent, defersend, sendedItem);
+		IRoutedItem sendedItem = _service.sendStack(removed, destination, itemSendMode(), info);
+		_service.getOrderManager().sendSuccessfull(sent, defersend, sendedItem);
 		return sent;
 	}
 	
 	private int getTotalItemCount(ItemIdentifier item) {
 		
-		IInventoryUtil inv = _invProvider.getPointedInventory(_extractionMode,true);
+		IInventoryUtil inv = _service.getPointedInventory(_extractionMode,true);
 		if (inv == null) return 0;
 		
 		if(!filterAllowsItem(item)) return 0;

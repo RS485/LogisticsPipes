@@ -97,7 +97,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		this(itemID);
 		_orderManager = logisticsOrderManager;
 		myModule = new ModuleProvider();
-		myModule.registerHandler(this, this, this);
+		myModule.registerHandler(this, this);
 	}
 	
 	@Override

@@ -8,7 +8,6 @@ import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.ISaveState;
-import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.proxy.cc.CCSinkResponder;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCType;
@@ -23,13 +22,19 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 @CCType(name="LogisticsModule")
 public abstract class LogisticsModule implements ISaveState {
+
+	protected IWorldProvider _world;
+	protected IPipeServiceProvider _service;
+
 	/**
 	 * Registers the Inventory and ItemSender to the module
-	 * @param invProvider The connected inventory
-	 * @param itemSender the handler to send items into the logistics system
 	 * @param world that the module is in.
+	 * @param service Inventory access, power and utility functions provided by the pipe
 	 */
-	public abstract void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service);
+	public void registerHandler(IWorldProvider world, IPipeServiceProvider service) {
+		_world = world;
+		_service = service;
+	}
 	
 	@Getter
 	protected ModulePositionType slot;

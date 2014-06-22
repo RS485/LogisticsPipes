@@ -11,9 +11,6 @@ import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.interfaces.IPipeServiceProvider;
-import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsSimpleFilterModule;
 import logisticspipes.network.PacketHandler;
@@ -40,8 +37,6 @@ public class ModuleTerminus extends LogisticsSimpleFilterModule implements IClie
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Terminated items", 1);
 
-	private IPipeServiceProvider _service;
-	
 	private IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
@@ -54,12 +49,6 @@ public class ModuleTerminus extends LogisticsSimpleFilterModule implements IClie
 		return _filterInventory;
 	}
 	
-	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
-		_service = service;
-		_invProvider = invProvider;
-	}
-
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound, "");

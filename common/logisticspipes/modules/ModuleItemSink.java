@@ -11,9 +11,6 @@ import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.interfaces.IPipeServiceProvider;
-import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
@@ -50,8 +47,6 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 	
 	private IHUDModuleRenderer HUD = new HUDItemSink(this);
 	
-	private IPipeServiceProvider _service;
-	
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	
 	public ModuleItemSink() {
@@ -68,12 +63,6 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 	public void setDefaultRoute(boolean isDefaultRoute){
 		_isDefaultRoute = isDefaultRoute;
 		if(!localModeWatchers.isEmpty()) MainProxy.sendToPlayerList(PacketHandler.getPacket(ItemSinkDefault.class).setFlag(_isDefaultRoute).setModulePos(this), localModeWatchers);
-	}
-
-	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
-		_service = service;
-		_invProvider=invProvider;
 	}
 
 	

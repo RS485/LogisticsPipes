@@ -319,7 +319,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 			if (stack.getItem() instanceof ItemModule){
 				LogisticsModule current = _module.getModule(i);
-				LogisticsModule next = ((ItemModule)stack.getItem()).getModuleForItem(stack, _module.getModule(i), this, this, this);
+				LogisticsModule next = ((ItemModule)stack.getItem()).getModuleForItem(stack, _module.getModule(i), this, this);
 				next.registerPosition(ModulePositionType.SLOT, i);
 				next.registerCCEventQueuer(this);
 				if (current != next){

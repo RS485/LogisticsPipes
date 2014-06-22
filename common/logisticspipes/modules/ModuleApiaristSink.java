@@ -2,9 +2,6 @@ package logisticspipes.modules;
 
 import java.util.List;
 
-import logisticspipes.interfaces.IPipeServiceProvider;
-import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
@@ -63,11 +60,11 @@ public class ModuleApiaristSink extends LogisticsGuiModule {
 		}
 
 		public void firstBeeUp() {
-			firstBee = SimpleServiceLocator.forestryProxy.getNextAlleleId(firstBee, module.worldProvider.getWorld());
+			firstBee = SimpleServiceLocator.forestryProxy.getNextAlleleId(firstBee, module._world.getWorld());
 		}
 
 		public void firstBeeDown() {
-			firstBee = SimpleServiceLocator.forestryProxy.getPrevAlleleId(firstBee, module.worldProvider.getWorld());
+			firstBee = SimpleServiceLocator.forestryProxy.getPrevAlleleId(firstBee, module._world.getWorld());
 		}
 		
 		public void firstBeeReset() {
@@ -75,11 +72,11 @@ public class ModuleApiaristSink extends LogisticsGuiModule {
 		}
 		
 		public void secondBeeUp() {
-			secondBee = SimpleServiceLocator.forestryProxy.getNextAlleleId(secondBee, module.worldProvider.getWorld());
+			secondBee = SimpleServiceLocator.forestryProxy.getNextAlleleId(secondBee, module._world.getWorld());
 		}
 		
 		public void secondBeeDown() {
-			secondBee = SimpleServiceLocator.forestryProxy.getPrevAlleleId(secondBee, module.worldProvider.getWorld());
+			secondBee = SimpleServiceLocator.forestryProxy.getPrevAlleleId(secondBee, module._world.getWorld());
 		}
 		
 		public void secondBeeReset() {
@@ -190,8 +187,6 @@ public class ModuleApiaristSink extends LogisticsGuiModule {
 	}
 	
 	public SinkSetting[] filter = new SinkSetting[6];
-	public IWorldProvider worldProvider;
-	private IPipeServiceProvider _service;
 	
 	public ModuleApiaristSink() {
 		filter[0] = new SinkSetting(this);
@@ -221,13 +216,6 @@ public class ModuleApiaristSink extends LogisticsGuiModule {
 			filters.setCompoundTag(""+i, filterNBT);
 		}
 		nbttagcompound.setCompoundTag("filters", filters);
-	}
-
-	@Override
-	public void registerHandler(IInventoryProvider invProvider, IWorldProvider world, IPipeServiceProvider service) {
-		this.worldProvider = world;
-		_service = service;
-		_invProvider = invProvider;
 	}
 
 	@Override

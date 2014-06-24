@@ -107,6 +107,9 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			if(name.equals("net.minecraft.crash.CrashReport")) {
 				return handleCrashReportClass(bytes);
 			}
+			if(name.equals("dan200.computercraft.core.lua.LuaJLuaMachine")) {
+				return handleCCLuaJLuaMachine(bytes);
+			}
 			if(!name.startsWith("logisticspipes.")) {
 				return bytes;
 			}
@@ -640,6 +643,72 @@ public class LogisticsClassTransformer implements IClassTransformer {
 						super.visitVarInsn(Opcodes.ALOAD, 1);
 						super.visitVarInsn(Opcodes.ALOAD, 0);
 						super.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/proxy/buildcraft/BCEventHandler", "handle", "(Lbuildcraft/transport/pipes/events/PipeEvent;Lbuildcraft/transport/Pipe;)V");
+					}
+				};
+				m.accept(mv);
+				node.methods.set(node.methods.indexOf(m), mv);
+			}
+		}
+		ClassWriter writer = new ClassWriter(0);
+		node.accept(writer);
+		return writer.toByteArray();
+	}
+
+	private byte[] handleCCLuaJLuaMachine(byte[] bytes) {
+		final ClassReader reader = new ClassReader(bytes);
+		final ClassNode node = new ClassNode();
+		reader.accept(node, 0);
+		for(MethodNode m:node.methods) {
+			if(m.name.equals("wrapLuaObject") && m.desc.equals("(Ldan200/computercraft/api/lua/ILuaObject;)Lorg/luaj/vm2/LuaTable;")) {
+				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+					@Override
+					public void visitInsn(int opcode) {
+						if(opcode == Opcodes.ARETURN) {
+							super.visitVarInsn(Opcodes.ALOAD, 1);
+							super.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/proxy/cc/LPASMHookCC", "onCCWrappedILuaObject", "(Lorg/luaj/vm2/LuaTable;Ldan200/computercraft/api/lua/ILuaObject;)Lorg/luaj/vm2/LuaTable;");
+						}
+						super.visitInsn(opcode);
+					}
+
+					@Override
+					public void visitCode() {
+						super.visitCode();
+						Label l0 = new Label();
+						super.visitLabel(l0);
+						super.visitVarInsn(Opcodes.ALOAD, 1);
+						super.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/proxy/cc/LPASMHookCC", "handleCCWrappedILuaObject", "(Ldan200/computercraft/api/lua/ILuaObject;)Z");
+						Label l1 = new Label();
+						super.visitJumpInsn(Opcodes.IFEQ, l1);
+						Label l2 = new Label();
+						super.visitLabel(l2);
+						super.visitVarInsn(Opcodes.ALOAD, 1);
+						super.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/proxy/cc/LPASMHookCC", "returnCCWrappedILuaObject", "(Ldan200/computercraft/api/lua/ILuaObject;)Lorg/luaj/vm2/LuaTable;");
+						super.visitInsn(Opcodes.ARETURN);
+						super.visitLabel(l1);
+					}
+				};
+				m.accept(mv);
+				node.methods.set(node.methods.indexOf(m), mv);
+			}
+			if(m.name.equals("toObject") && m.desc.equals("(Lorg/luaj/vm2/LuaValue;)Ljava/lang/Object;")) {
+				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+					boolean added = false;
+					@Override
+					public void visitLineNumber(int line, Label start) {
+						if(!added) {
+							added = true;
+							super.visitVarInsn(Opcodes.ALOAD, 1);
+							super.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/proxy/cc/LPASMHookCC", "handleCCToObject", "(Lorg/luaj/vm2/LuaValue;)Z");
+							start = new Label();
+							super.visitJumpInsn(Opcodes.IFEQ, start);
+							Label l5 = new Label();
+							super.visitLabel(l5);
+							super.visitVarInsn(Opcodes.ALOAD, 1);
+							super.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/proxy/cc/LPASMHookCC", "returnCCToObject", "(Lorg/luaj/vm2/LuaValue;)Ljava/lang/Object;");
+							super.visitInsn(Opcodes.ARETURN);
+							super.visitLabel(start);
+						}
+						super.visitLineNumber(line, start);
 					}
 				};
 				m.accept(mv);

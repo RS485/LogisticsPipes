@@ -13,7 +13,7 @@ import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
 import logisticspipes.network.guis.pipe.ChassiGuiProvider;
 import logisticspipes.pipes.PipeLogisticsChassi;
-import logisticspipes.proxy.cc.CCSinkResponder;
+import logisticspipes.proxy.cc.objects.CCSinkResponder;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;

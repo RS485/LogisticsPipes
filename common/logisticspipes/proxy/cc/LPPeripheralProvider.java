@@ -1,6 +1,7 @@
 package logisticspipes.proxy.cc;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.cc.wrapper.LPPeripheralTilePipeWrapper;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;

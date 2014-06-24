@@ -635,7 +635,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	}
 	
 	@CCCommand(description="Returns the LogisticsModule for the given slot number starting by 1")
-	public LogisticsModule getModule(Double i) {
+	public LogisticsModule getModuleInSlot(Double i) {
 		return _module.getSubModule((int) (i - 1));
 	}
 	

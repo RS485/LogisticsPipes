@@ -6,7 +6,7 @@ import java.util.List;
 import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.cc.CCSinkResponder;
+import logisticspipes.proxy.cc.objects.CCSinkResponder;
 import logisticspipes.utils.OneList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;

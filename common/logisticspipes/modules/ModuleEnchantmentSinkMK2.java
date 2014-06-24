@@ -18,6 +18,8 @@ import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
 import logisticspipes.network.packets.module.ModuleInventory;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.cc.interfaces.CCCommand;
+import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
@@ -34,6 +36,7 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
+@CCType(name="EnchantmentSink Module MK2")
 public class ModuleEnchantmentSinkMK2 extends LogisticsSimpleFilterModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive {
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested Enchanted items", 1);
@@ -46,6 +49,7 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsSimpleFilterModule implem
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
+	@CCCommand(description="Returns the FilterInventory of this Module")
 	public ItemIdentifierInventory getFilterInventory() {
 		return _filterInventory;
 	}

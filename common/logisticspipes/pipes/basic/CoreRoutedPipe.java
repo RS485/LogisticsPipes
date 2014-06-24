@@ -36,7 +36,6 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.interfaces.ISecurityProvider;
-import logisticspipes.interfaces.ISpawnParticles.ParticleCount;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
@@ -48,7 +47,6 @@ import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.items.ItemPipeSignCreator;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IAdjacentWorldAccess;
-import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.logisticspipes.ITrackStatistics;
@@ -78,9 +76,9 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.buildcraft.gates.ActionDisableLogistics;
 import logisticspipes.proxy.cc.CCConstants;
-import logisticspipes.proxy.cc.LPTilePipeWrapper;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCDirectCall;
+import logisticspipes.proxy.cc.interfaces.CCSecurtiyCheck;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.ExitRoute;
@@ -131,7 +129,6 @@ import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import dan200.computercraft.api.lua.ILuaObject;
 
 @CCType(name = "LogisticsPipes:Normal")
 public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implements IClientState, IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IPipeServiceProvider, IQueueCCEvent {
@@ -904,7 +901,8 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	public void onBlockPlaced() {
 		super.onBlockPlaced();
 	}
-	
+
+	@CCCommand(description="Returns the Internal LogisticsModule for this pipe")
 	public abstract LogisticsModule getLogisticsModule();
 	
 	@Override
@@ -1296,6 +1294,7 @@ outer:
 		return blockRemove;
 	}
 	
+	@CCSecurtiyCheck
 	public void checkCCAccess() throws PermissionException {
 		ISecurityProvider sec = getSecurityProvider();
 		if(sec != null) {
@@ -1460,42 +1459,6 @@ outer:
 		return false;
 	}
 
-	@CCCommand(description="Returns the Item Id for given ItemIdentifier Id.")
-	public int getItemID(Double itemId) throws Exception {
-		if(itemId == null) throw new Exception("Invalid ItemIdentifierID");
-		ItemIdentifier item = ItemIdentifier.getForId((int)Math.floor(itemId));
-		if(item == null) throw new Exception("Invalid ItemIdentifierID");
-		return item.itemID;
-	}
-
-	@CCCommand(description="Returns the Item damage for the given ItemIdentifier Id.")
-	public int getItemDamage(Double itemId) throws Exception {
-		if(itemId == null) throw new Exception("Invalid ItemIdentifierID");
-		ItemIdentifier itemd = ItemIdentifier.getForId((int)Math.floor(itemId));
-		if(itemd == null) throw new Exception("Invalid ItemIdentifierID");
-		return itemd.itemDamage;
-	}
-
-	@CCCommand(description="Returns the NBTTagCompound for the given ItemIdentifier Id.")
-	public Map<Object,Object> getNBTTagCompound(Double itemId) throws Exception {
-		ItemIdentifier itemn = ItemIdentifier.getForId((int)Math.floor(itemId));
-		if(itemn == null) throw new Exception("Invalid ItemIdentifierID");
-		return itemn.getNBTTagCompoundAsMap();
-	}
-
-	@CCCommand(description="Returns the ItemIdentifier Id for the given Item id and damage.")
-	public int getItemIdentifierIDFor(Double itemID, Double itemDamage) {
-		return ItemIdentifier.get((int)Math.floor(itemID), (int)Math.floor(itemDamage), null).getId();
-	}
-
-	@CCCommand(description="Returns the name of the item for the given ItemIdentifier Id.")
-	public String getUnlocalizedName(Double itemId) throws Exception {
-		if(itemId == null) throw new Exception("Invalid ItemIdentifierID");
-		ItemIdentifier itemd = ItemIdentifier.getForId((int)Math.floor(itemId));
-		if(itemd == null) throw new Exception("Invalid ItemIdentifierID");
-		return itemd.getFriendlyNameCC();
-	}
-
 	@CCCommand(description="Returns true if the computer is allowed to interact with the connected pipe.", needPermission=false)
 	public boolean canAccess() {
 		ISecurityProvider sec = getSecurityProvider();
@@ -1556,7 +1519,7 @@ outer:
 	@CCCommand(description="Returns the access to the pipe of the givven router UUID")
 	@ModDependentMethod(modId="ComputerCraft@1.6")
 	@CCDirectCall
-	public ILuaObject getPipeForUUID(String sUuid) throws PermissionException {
+	public Object getPipeForUUID(String sUuid) throws PermissionException {
 		if(!getUpgradeManager().hasCCRemoteControlUpgrade()) throw new PermissionException();
 		UUID uuid = UUID.fromString(sUuid);
 		int id = SimpleServiceLocator.routerManager.getIDforUUID(uuid);
@@ -1564,7 +1527,18 @@ outer:
 		if(router == null) return null;
 		CoreRoutedPipe pipe = router.getPipe();
 		if(!(pipe.container instanceof LogisticsTileGenericPipe)) return null;
-		return new LPTilePipeWrapper((LogisticsTileGenericPipe)pipe.container);
+		return pipe.container;
+	}
+	
+	@CCCommand(description="Returns the global LP object which is used to access general LP methods.", needPermission=false)
+	@CCDirectCall
+	public Object getLP() throws PermissionException {
+		return SimpleServiceLocator.ccProxy.getLP();
+	}
+	
+	@CCCommand(description="Returns true if the pipe has an internal module")
+	public boolean hasLogisticsModule() {
+		return this.getLogisticsModule() != null;
 	}
 	
 	private void handleMesssage(int computerId, Object message, int sourceId) {

@@ -1,4 +1,4 @@
-package logisticspipes.proxy.cc;
+package logisticspipes.proxy.cc.objects;
 
 import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.proxy.cc.interfaces.CCCommand;

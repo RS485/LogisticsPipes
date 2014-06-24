@@ -77,8 +77,7 @@ public class PipeTransportLogistics extends PipeTransport {
 	private final int																					_bufferTimeOut	= 20 * 2;														// 2 Seconds
 	private final HashMap<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>>	_itemBuffer		= new HashMap<ItemIdentifierStack, Pair<Integer, Integer>>();
 	private Chunk																						chunk;
-	public LPItemList																					items = new LPItemList(this);;
-	public boolean 																						isRendering;
+	public LPItemList																					items = new LPItemList(this);
 	
 	@Override
 	public void initialize() {
@@ -86,8 +85,6 @@ public class PipeTransportLogistics extends PipeTransport {
 		if(MainProxy.isServer(getWorld())) {
 			// cache chunk for marking dirty
 			chunk = getWorld().getChunkFromBlockCoords(container.xCoord, container.zCoord);
-		} else {
-			isRendering = true;
 		}
 	}
 	
@@ -512,14 +509,24 @@ public class PipeTransportLogistics extends PipeTransport {
 		}
 		return tile instanceof TileGenericPipe || tile instanceof ISpecialInventory || (tile instanceof IInventory && ((IInventory)tile).getSizeInventory() > 0) || (tile instanceof IMachine && ((IMachine)tile).manageSolids());
 	}
+
+	private SecurityManager hackToGetCaller = new SecurityManager() {
+		@Override
+		public Object getSecurityContext() {
+			return this.getClassContext();
+		}
+	};
 	
 	@Override
 	public PipeType getPipeType() {
-		if(isRendering) {
-			return PipeType.STRUCTURE; // Don't let BC render the Pipe content
-		} else {
+		Class<?>[] caller = (Class<?>[]) hackToGetCaller.getSecurityContext();
+		if(caller[3].getName().equals("buildcraft.core.utils.Utils")) {
 			return PipeType.ITEM;
 		}
+		if(LogisticsPipes.LogisticsPipeType == null) {
+			return PipeType.STRUCTURE;
+		}
+		return LogisticsPipes.LogisticsPipeType; // Don't let BC render the Pipe content
 	}
 	
 	public void defaultReajustSpeed(TravelingItem item) {

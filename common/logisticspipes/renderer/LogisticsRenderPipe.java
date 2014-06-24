@@ -94,9 +94,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float f) {
-		enableRendering(tileentity);
 		super.renderTileEntityAt(tileentity, x, y, z, f); // Render Gates And Wires
-		disableRendering(tileentity);
 		if(!(tileentity instanceof LogisticsTileGenericPipe)) return;
 		LogisticsTileGenericPipe pipe = ((LogisticsTileGenericPipe)tileentity);
 		if(pipe.pipe == null) return;
@@ -111,16 +109,6 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 		if(pipe.pipe instanceof CoreRoutedPipe) {
 			renderPipePipe((CoreRoutedPipe)pipe.pipe, x, y, z);
 		}
-	}
-	
-	private void enableRendering(TileEntity tileentity) {
-		if(!(tileentity instanceof LogisticsTileGenericPipe)) return;
-		((LogisticsTileGenericPipe)tileentity).enableRendering();
-	}
-
-	private void disableRendering(TileEntity tileentity) {
-		if(!(tileentity instanceof LogisticsTileGenericPipe)) return;
-		((LogisticsTileGenericPipe)tileentity).disableRendering();
 	}
 
 	private void renderSolids(Pipe<PipeTransportLogistics> pipe, double x, double y, double z, float f) {

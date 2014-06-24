@@ -345,7 +345,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	public int injectItem(ItemStack payload, boolean doAdd, ForgeDirection from) {
 		if (BlockGenericPipe.isValid(pipe) && pipe.transport instanceof PipeTransportLogistics && isPipeConnected(from)) {
 			if (doAdd && MainProxy.isServer(this.getWorldObj())) {
-				((PipeTransportLogistics) pipe.transport).injectItem(SimpleServiceLocator.routedItemHelper.createNewTravelItem(payload), from);
+				((PipeTransportLogistics) pipe.transport).injectItem(SimpleServiceLocator.routedItemHelper.createNewTravelItem(payload), from.getOpposite());
 			}
 			return payload.stackSize;
 		}
@@ -354,17 +354,5 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	
 	public boolean isOpaque() {
 		return getCPipe().isOpaque();
-	}
-
-	public void enableRendering() {
-		if(pipe.transport instanceof PipeTransportLogistics) {
-			((PipeTransportLogistics) pipe.transport).isRendering = true;
-		}
-	}
-
-	public void disableRendering() {
-		if(pipe.transport instanceof PipeTransportLogistics) {
-			((PipeTransportLogistics) pipe.transport).isRendering = false;
-		}
 	}
 }

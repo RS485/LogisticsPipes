@@ -15,6 +15,8 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import buildcraft.api.transport.IPipeTile.PipeType;
+
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.commands.LogisticsPipesCommand;
@@ -92,6 +94,7 @@ import net.minecraft.item.Item;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.common.EnumHelper;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -232,6 +235,7 @@ public class LogisticsPipes {
 	public static final String logisticsTileGenericPipeMapping = "logisticspipes.pipes.basic.LogisticsTileGenericPipe";
 	
 	public static CreativeTabLP LPCreativeTab = new CreativeTabLP();
+	public static PipeType LogisticsPipeType;
 	
 	public static Logger log;
 	public static Logger requestLog;
@@ -299,6 +303,7 @@ public class LogisticsPipes {
 		}
 		TickRegistry.registerTickHandler(DebugGuiTickHandler.instance(), Side.SERVER);
 		
+		LogisticsPipeType = EnumHelper.addEnum(PipeType.class, "LOGISTICS", new Class<?>[]{}, new Object[]{});
 //		FMLInterModComms.sendMessage("Waila", "register", this.getClass()
 //		 .getPackage().getName()
 //		 + ".waila.WailaRegister.register");

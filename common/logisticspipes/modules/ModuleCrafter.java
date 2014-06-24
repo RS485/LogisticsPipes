@@ -290,18 +290,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		if (_extras.isEmpty()) return;
 		
 		ItemIdentifier requestedItem = tree.getStackItem();
-		/*
-		List<ItemIdentifierStack> providedItem = getCraftedItems();
-		for(ItemIdentifierStack item:providedItem) {
-			if(item.getItem() == requestedItem) {
-				return;
-			}
-		}*/
-		if(canCraft(requestedItem)) {
-			return;
-		}
 		
-//		if (!providedItem.contains(requestedItem)) return;
 		if(!canCraft(requestedItem)) {
 			return;
 		}
@@ -1159,7 +1148,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				}
 			}
 			if(extracted == null || extracted.stackSize == 0) {
-				_service.getOrderManager().deferSend();
+				if(processingOrder)
+					_service.getOrderManager().deferSend();
 				break;
 			}
 			lastAccessedCrafter = new WeakReference<TileEntity>(tile.tile);
@@ -1211,7 +1201,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 					} else {
 						processingOrder = false;
 						if(!_extras.isEmpty())
-						nextOrder = _extras.getFirst();
+							nextOrder = _extras.getFirst();
 					}
 				} else {
 					removeExtras(numtosend,nextOrder.getItem().getItem());

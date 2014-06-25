@@ -8,11 +8,6 @@ import logisticspipes.proxy.cc.interfaces.CCType;
 @CCType(name="LP Global Access")
 public class LPGlobalCCAccess {
 	
-	@CCCommand
-	public void log() {
-		System.out.println("CC LOG");
-	}
-	
 	@CCCommand(description="Tryes to give more information about the givven object")
 	public String identify(Object object) {
 		if(object instanceof Map<?,?>) {

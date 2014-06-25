@@ -39,4 +39,14 @@ public class CCItemIdentifierInventory {
 		s--;
 		inv.setInventorySlotContents(s, stack);
 	}
+
+	@CCCommand(description="Sets the ItemIdentifierStack at the givven slot")
+	@CCQueued
+	public void clearSlot(Double slot) {
+		int s = slot.intValue();
+		if(s <= 0 || s > this.getSizeInventory()) throw new UnsupportedOperationException("Slot out of Inventory");
+		if(s != (double) slot) throw new UnsupportedOperationException("Slot not an Integer");
+		s--;
+		inv.setInventorySlotContents(s, (ItemIdentifierStack) null);
+	}
 }

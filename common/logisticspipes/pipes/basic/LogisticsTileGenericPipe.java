@@ -9,11 +9,13 @@ import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.pipes.PipeItemsFirewall;
+import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.te.LPConduitItem;
 import logisticspipes.renderer.LogisticsTileRenderController;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
+import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.OrientationsUtil;
@@ -25,7 +27,9 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import thermalexpansion.part.conduit.ConduitBase;
+import buildcraft.api.transport.IPipeConnection;
 import buildcraft.transport.BlockGenericPipe;
+import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.TravelingItem;
 import cofh.api.transport.IItemConduit;
@@ -160,9 +164,53 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	}
 	
 	@Override
-	public boolean canPipeConnect(TileEntity with, ForgeDirection dir) {
+	public boolean canPipeConnect(TileEntity with, ForgeDirection side) {
+		if(MainProxy.isClient(worldObj)) {
+			//XXX why is this ever called client side, its not *used* for anything.
+			return false;
+		}
+		if (with == null)
+			return false;
+
+		if (hasPlug(side))
+			return false;
+
+		if (!BlockGenericPipe.isValid(pipe))
+			return false;
+
 		if(SimpleServiceLocator.ccProxy.isTurtle(with) && !turtleConnect[OrientationsUtil.getOrientationOfTilewithTile(this, with).ordinal()]) return false;
-		return super.canPipeConnect(with, dir);
+
+		if (with instanceof IPipeConnection) {
+			IPipeConnection.ConnectOverride override = ((IPipeConnection) with).overridePipeConnection(PipeType.ITEM, side.getOpposite());
+			if(override == IPipeConnection.ConnectOverride.DISCONNECT) {
+				//if it doesn't don't want to connect to item pipes, how about fluids?
+				if(pipe.transport instanceof PipeFluidTransportLogistics || pipe instanceof PipeItemsFluidSupplier) {
+					override = ((IPipeConnection) with).overridePipeConnection(PipeType.FLUID, side.getOpposite());
+				}
+				if(override == IPipeConnection.ConnectOverride.DISCONNECT) {
+					//nope, maybe you'd like some BC power?
+					if(getCPipe().getUpgradeManager().hasBCPowerSupplierUpgrade()) {
+						override = ((IPipeConnection) with).overridePipeConnection(PipeType.POWER, side.getOpposite());
+					}
+				}
+			}
+			if (override == IPipeConnection.ConnectOverride.DISCONNECT)
+				return false;
+		}
+
+		if (with instanceof TileGenericPipe) {
+			if (((TileGenericPipe) with).hasPlug(side.getOpposite()))
+				return false;
+			Pipe otherPipe = ((TileGenericPipe) with).pipe;
+
+			if (!BlockGenericPipe.isValid(otherPipe))
+				return false;
+
+			if (!otherPipe.canPipeConnect(this, side.getOpposite()))
+				return false;
+		}
+
+		return pipe.canPipeConnect(with, side);
 	}
 	
 	public void queueEvent(String event, Object[] arguments) {

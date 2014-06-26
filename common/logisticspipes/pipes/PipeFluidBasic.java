@@ -51,7 +51,7 @@ public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 		if(!guiOpenedBy.isEmpty()) return 0; //Don't sink when the gui is open
 		FluidIdentifier ident = FluidIdentifier.get(stack);
 		if(filterInv.getStackInSlot(0) == null) return 0;
-		if(ident != FluidIdentifier.get(filterInv.getIDStackInSlot(0).getItem())) return 0;
+		if(!ident.equals(FluidIdentifier.get(filterInv.getIDStackInSlot(0).getItem()))) return 0;
 		int onTheWay = this.countOnRoute(ident);
 		int freeSpace = -onTheWay;
 		for(Pair<TileEntity,ForgeDirection> pair:getAdjacentTanks(true)) {

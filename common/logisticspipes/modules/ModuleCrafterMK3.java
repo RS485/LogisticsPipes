@@ -63,7 +63,7 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISi
 			for(int i=0;i<inv.getSizeInventory();i++) {
 				if(inv.getIDStackInSlot(i) == null) {
 					invSpace += inv.getInventoryStackLimit();
-				} else if(inv.getIDStackInSlot(i).getItem() == item) {
+				} else if(inv.getIDStackInSlot(i).getItem().equals(item)) {
 					invSpace += (inv.getInventoryStackLimit() - inv.getIDStackInSlot(i).getStackSize());
 				}
 			}

@@ -56,7 +56,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 	public int itemCount(ItemIdentifier itemIdent) {
 		ItemIdentifierStack content = getContents();
 		if(content == null) return 0;
-		if(content.getItem() != itemIdent) return 0;
+		if(!content.getItem().equals(itemIdent)) return 0;
 		return content.getStackSize() - (_hideOnePerStack?1:0);
 	}
 
@@ -88,14 +88,14 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 	public boolean containsItem(ItemIdentifier itemIdent) {
 		ItemIdentifierStack content = getContents();
 		if(content == null) return false;
-		return itemIdent == content.getItem();
+		return itemIdent.equals(content.getItem());
 	}
 
 	@Override
 	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
 		ItemIdentifierStack content = getContents();
 		if(content == null) return false;
-		return itemIdent.getUndamaged() == content.getItem().getUndamaged();
+		return itemIdent.getUndamaged().equals(content.getItem().getUndamaged());
 	}
 
 	@Override
@@ -107,7 +107,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 	public int roomForItem(ItemIdentifier itemIdent, int count) {
 		ItemIdentifierStack content = getContents();
 		if(content == null) return 0;
-		if(content.getItem() != itemIdent) return 0;
+		if(!content.getItem().equals(itemIdent)) return 0;
 		return _tile.getMaxItemCount() + 3 * itemIdent.getMaxStackSize() - content.getStackSize();
 	}
 
@@ -116,7 +116,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 		//check that we can actually get what we want
 		ItemIdentifierStack content = getContents();
 		if(content == null) return null;
-		if(content.getItem() != itemIdent) return null;
+		if(!content.getItem().equals(itemIdent)) return null;
 		if(content.getStackSize() < count) return null;
 
 		//set up the finished stack to return
@@ -126,7 +126,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 		//empty input slots first
 		for(int i = 1; count > 0 && i < 3; i++) {
 			ItemStack stack = ((IInventory)_tile).getStackInSlot(i);
-			if(stack != null && ItemIdentifier.get(stack) == itemIdent) {
+			if(stack != null && ItemIdentifier.get(stack).equals(itemIdent)) {
 				int wanted = Math.min(count, stack.stackSize);
 				stack.stackSize -= wanted;
 				count -= wanted;
@@ -143,7 +143,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 
 		//and finally use the output slot
 		ItemStack stack = ((IInventory)_tile).getStackInSlot(0);
-		if(stack != null && ItemIdentifier.get(stack) == itemIdent) {
+		if(stack != null && ItemIdentifier.get(stack).equals(itemIdent)) {
 			wanted = Math.min(count, stack.stackSize - (_hideOnePerStack?1:0));
 			stack.stackSize -= wanted;
 			count -= wanted;
@@ -157,7 +157,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 		ItemIdentifierStack dataIdent = ItemIdentifierStack.getFromStack(data[0]);
 		for(int i = 0; i < 3; i++) {
 			ItemStack stack = ((IInventory)_tile).getStackInSlot(i);
-			if(stack != null && ItemIdentifier.get(stack) == dataIdent.getItem()) {
+			if(stack != null && ItemIdentifier.get(stack).equals(dataIdent.getItem())) {
 				dataIdent.setStackSize(dataIdent.getStackSize() + stack.stackSize);
 			}
 		}
@@ -171,7 +171,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 		st.stackSize = 0;
 		ItemIdentifierStack content = getContents();
 		if(content == null) return st;
-		if(content.getItem() != itemIdent) return st;
+		if(!content.getItem().equals(itemIdent)) return st;
 
 		if(!doAdd) {
 			int space = _tile.getMaxItemCount() + 3 * itemIdent.getMaxStackSize() - content.getStackSize();
@@ -185,7 +185,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 			slot = st.copy();
 			slot.stackSize = 0;
 		}
-		if(ItemIdentifier.get(slot) == itemIdent) {
+		if(ItemIdentifier.get(slot).equals(itemIdent)) {
 			int toadd = Math.min(slot.getMaxStackSize() - slot.stackSize, stack.stackSize - st.stackSize);
 			if(toadd > 0) {
 				st.stackSize += toadd;
@@ -211,7 +211,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 				slot = st.copy();
 				slot.stackSize = 0;
 			}
-			if(ItemIdentifier.get(slot) == itemIdent) {
+			if(ItemIdentifier.get(slot).equals(itemIdent)) {
 				toadd = Math.min(slot.getMaxStackSize() - slot.stackSize, stack.stackSize - st.stackSize);
 				if(toadd > 0) {
 					st.stackSize += toadd;

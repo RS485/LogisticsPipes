@@ -178,7 +178,7 @@ public class FluidIdentifier {
 		if(liquid == null || liquid.fluidID <= 0) {
 			return tanks.capacity;
 		}
-		if(get(liquid) == this) {
+		if(get(liquid).equals(this)) {
 			return tanks.capacity - liquid.amount;
 		}
 		return 0;
@@ -189,7 +189,7 @@ public class FluidIdentifier {
 		if(liquid == null || liquid.fluidID <= 0) {
 			return tank.getCapacity();
 		}
-		if(get(liquid) == this) {
+		if(get(liquid).equals(this)) {
 			return tank.getCapacity() - liquid.amount;
 		}
 		return 0;
@@ -221,7 +221,7 @@ public class FluidIdentifier {
 				rlock.unlock();
 				return i;
 			}
-			if(i == this)
+			if(i.equals(this))
 				takeNext = true;
 		}
 		rlock.unlock();
@@ -232,7 +232,7 @@ public class FluidIdentifier {
 		rlock.lock();
 		FluidIdentifier last = null;
 		for(FluidIdentifier i : _fluidIdentifierCache) {
-			if(i == this) {
+			if(i.equals(this)) {
 				rlock.unlock();
 				return last;
 			}

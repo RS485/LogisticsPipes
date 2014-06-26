@@ -611,7 +611,7 @@ public class DummyContainer extends Container {
 		
 		ItemIdentifier currentItem = ItemIdentifier.get(currentlyEquippedStack);
 		ItemIdentifier slotItem = ItemIdentifier.get(slot.getStack());
-		if(currentItem == slotItem) {
+		if(currentItem.equals(slotItem)) {
 			ItemStack tstack = slot.getStack();
 			// Do manual shift-checking to play nice with NEI
 			int counter = isShift == 1 ? 10 : 1;

@@ -356,7 +356,7 @@ outer2:
 		int amount = 0;
 		for(Map<ItemIdentifier, Integer> allItems: items) {
 			for(Entry<ItemIdentifier, Integer> item: allItems.entrySet()) {
-				if(item.getKey() == itemType) {
+				if(item.getKey().equals(itemType)) {
 					amount += item.getValue();
 				}
 			}

@@ -128,7 +128,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 			if(stack != null) {
 				ItemIdentifier ident = ItemIdentifier.get(stack);
 				for(Quartet<ItemIdentifier,Integer,Integer,TransportMode> pair:destination) {
-					if(pair.getValue1() == ident) {
+					if(pair.getValue1().equals(ident)) {
 						int tosend = Math.min(pair.getValue2(), stack.stackSize);
 						if(!useEnergy(6)) break;
 						sendStack(inv.decrStackSize(i, tosend),pair.getValue3(),dir, pair.getValue4());
@@ -193,7 +193,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		for(Quartet<ItemIdentifier,Integer,Integer,TransportMode> pair:destination) {
 			ItemIdentifierStack currentStack = new ItemIdentifierStack(pair.getValue1(), pair.getValue2());
 			Entry<ItemIdentifierStack,?> entry = list.ceilingEntry(currentStack);
-			if(entry!=null && entry.getKey().getItem() == currentStack.getItem()){
+			if(entry!=null && entry.getKey().getItem().equals(currentStack.getItem())){
 				entry.getKey().setStackSize(entry.getKey().getStackSize() + currentStack.getStackSize());
 			} else 
 				list.put(currentStack,null);

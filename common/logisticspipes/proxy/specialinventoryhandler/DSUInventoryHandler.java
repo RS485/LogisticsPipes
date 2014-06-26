@@ -44,7 +44,7 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public int itemCount(ItemIdentifier itemIdent) {
 		ItemStack items = _tile.getStoredItemType();
-		if(items != null && ItemIdentifier.get(items) == itemIdent)
+		if(items != null && ItemIdentifier.get(items).equals(itemIdent))
 			return items.stackSize - (_hideOnePerStack?1:0);
 		return 0;
 	}
@@ -52,7 +52,7 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
 		ItemStack items = _tile.getStoredItemType();
-		if(items == null || ItemIdentifier.get(items) != itemIdent) {
+		if(items == null || !ItemIdentifier.get(items).equals(itemIdent)) {
 			return null;
 		}
 		if(_hideOnePerStack)
@@ -95,13 +95,13 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public boolean containsItem(ItemIdentifier itemIdent) {
 		ItemStack items = _tile.getStoredItemType();
-		return items != null && ItemIdentifier.get(items) == itemIdent;
+		return items != null && ItemIdentifier.get(items).equals(itemIdent);
 	}
 
 	@Override
 	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
 		ItemStack items = _tile.getStoredItemType();
-		if(items != null && ItemIdentifier.getUndamaged(items) == itemIdent)
+		if(items != null && ItemIdentifier.getUndamaged(items).equals(itemIdent))
 			return true;
 		return false;		
 	}
@@ -120,7 +120,7 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 		if(items == null) {
 			return _tile.getMaxStoredCount();
 		}
-		if(ItemIdentifier.get(items) == itemIdent) {
+		if(ItemIdentifier.get(items).equals(itemIdent)) {
 			return _tile.getMaxStoredCount() - items.stackSize;
 		}
 		return 0;

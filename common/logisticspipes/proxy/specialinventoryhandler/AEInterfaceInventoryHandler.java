@@ -104,7 +104,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	public boolean containsUndamagedItem(ItemIdentifier item) {
 		for(ItemStack items: _tile.apiGetNetworkContents()) {
 			ItemIdentifier ident = ItemIdentifier.getUndamaged(items);
-			if(ident == item) {
+			if(ident.equals(item)) {
 				return true;
 			}
 		}

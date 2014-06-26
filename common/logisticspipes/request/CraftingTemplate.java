@@ -51,7 +51,7 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 
 	public void addRequirement(FluidIdentifier liquid, Integer amount, IRequestFluid crafter) {
 		for(Triplet<FluidIdentifier, Integer, IRequestFluid> i : _requiredFluid) {
-			if(i.getValue1() == liquid && i.getValue3() == crafter) {
+			if(i.getValue1().equals(liquid) && i.getValue3() == crafter) {
 				i.setValue2(i.getValue2() + amount);
 				return;
 			}
@@ -61,7 +61,7 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 	
 	public void addByproduct(ItemIdentifierStack stack) {
 		for(ItemIdentifierStack i : _byproduct) {
-			if(i.getItem() == stack.getItem()) {
+			if(i.getItem().equals(stack.getItem())) {
 				i.setStackSize(i.getStackSize() + stack.getStackSize());
 				return;
 			}

@@ -109,7 +109,7 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 			ItemIdentifierStack stack = (ItemIdentifierStack)that;
 			return stack._item.equals(this._item) && stack.getStackSize() == this.getStackSize();
 		}
-		if (!(that instanceof ItemIdentifier))
+		if ((that instanceof ItemIdentifier))
 			throw new IllegalStateException("Comparison between ItemIdentifierStack and ItemIdentifier -- did you forget a .getItem() in your code?");
 
 		return false;

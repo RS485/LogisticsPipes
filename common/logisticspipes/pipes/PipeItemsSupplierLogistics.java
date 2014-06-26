@@ -173,7 +173,7 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 			}
 			int haveCount = 0;
 			if(have != null) {
-				if(have.getItem() != needed.getItem()) {
+				if(!have.getItem().equals(needed.getItem())) {
 					debug.log("Supplier: Slot for " + i + ", " + needed + " already taken by " + have);
 					((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(true);
 					continue;
@@ -434,12 +434,12 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 	public int[] getSlotsForItemIdentifier(ItemIdentifier item) {
 		int size = 0;
 		for(int i=0;i<9;i++) {
-			if(dummyInventory.getIDStackInSlot(i) != null && dummyInventory.getIDStackInSlot(i).getItem() == item) size++;
+			if(dummyInventory.getIDStackInSlot(i) != null && dummyInventory.getIDStackInSlot(i).getItem().equals(item)) size++;
 		}
 		int[] array = new int[size];
 		int pos = 0;
 		for(int i=0;i<9;i++) {
-			if(dummyInventory.getIDStackInSlot(i) != null && dummyInventory.getIDStackInSlot(i).getItem() == item) {
+			if(dummyInventory.getIDStackInSlot(i) != null && dummyInventory.getIDStackInSlot(i).getItem().equals(item)) {
 				array[pos++] = i;
 			}
 		}

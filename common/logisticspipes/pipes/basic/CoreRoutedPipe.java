@@ -1349,7 +1349,7 @@ outer:
 		int count = 0;
 		for(Iterator<ItemRoutingInformation> iter = _inTransitToMe.iterator();iter.hasNext();) {
 			ItemRoutingInformation next = iter.next();
-			if(next.getItem().getItem() == it)
+			if(next.getItem().getItem().equals(it))
 				count += next.getItem().getStackSize();
 		}
 		return count;

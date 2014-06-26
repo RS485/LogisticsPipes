@@ -164,7 +164,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 			for(int i = 0; i < numitems; i++) {
 				ItemStack itemStack = (ItemStack) getItemStack.invoke(cratePileData, new Object[]{i});
 				ItemIdentifier itemId = ItemIdentifier.getUndamaged(itemStack);
-				if(itemId == itemIdent) {
+				if(itemId.equals(itemIdent)) {
 					return true;
 				}
 			}

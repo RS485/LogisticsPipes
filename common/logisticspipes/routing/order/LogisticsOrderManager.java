@@ -132,7 +132,7 @@ public class LogisticsOrderManager implements Iterable<LogisticsOrder> {
 	public int totalItemsCountInOrders(ItemIdentifier item) {
 		int itemCount = 0;
 		for(LogisticsOrder request: _orders) {
-			if(request.getItem().getItem() != item) continue;
+			if(!request.getItem().getItem().equals(item)) continue;
 			itemCount += request.getItem().getStackSize();
 		}
 		return itemCount;

@@ -125,7 +125,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 					liquidId.setValue(liquidId.getValue() - haveCount);
 				}
 				for (Entry<FluidIdentifier, Integer> requestedItem : _requestedItems.entrySet()){
-					if(requestedItem.getKey() == liquidId.getKey()) {
+					if(requestedItem.getKey().equals(liquidId.getKey())) {
 						liquidId.setValue(liquidId.getValue() - requestedItem.getValue());
 					}
 				}
@@ -196,7 +196,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 		}
 		//still remaining... was from fuzzyMatch on a crafter
 		for(Entry<FluidIdentifier, Integer> e : _requestedItems.entrySet()) {
-			if(e.getKey() == liquid) {
+			if(e.getKey().equals(liquid)) {
 				int expected = e.getValue();
 				e.setValue(Math.max(0, expected - remaining));
 				remaining -= expected;

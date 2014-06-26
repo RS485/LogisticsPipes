@@ -300,7 +300,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		}
 		int remaining = 0;
 		for(LogisticsOrder extra:_extras){
-			if(extra.getItem().getItem()==requestedItem){
+			if(extra.getItem().getItem().equals(requestedItem)){
 				remaining += extra.getItem().getStackSize();
 			}
 				
@@ -1156,13 +1156,13 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			// send the new crafted items to the destination
 			ItemIdentifier extractedID = ItemIdentifier.get(extracted);
 			while (extracted.stackSize > 0) {
-				if(nextOrder.getItem().getItem() != extractedID) {
+				if(!nextOrder.getItem().getItem().equals(extractedID)) {
 					LogisticsOrder startOrder = nextOrder;
 					if(_service.getOrderManager().hasOrders(RequestType.CRAFTING)) {
-					do {
-						_service.getOrderManager().deferSend();
-						nextOrder = _service.getOrderManager().peekAtTopRequest(RequestType.CRAFTING);
-					} while(nextOrder.getItem().getItem() != extractedID && startOrder != nextOrder);
+						do {
+							_service.getOrderManager().deferSend();
+							nextOrder = _service.getOrderManager().peekAtTopRequest(RequestType.CRAFTING);
+						} while(!nextOrder.getItem().getItem().equals(extractedID) && startOrder != nextOrder);
 					}
 					if(startOrder == nextOrder) {
 						int numtosend = Math.min(extracted.stackSize, extractedID.getMaxStackSize());
@@ -1232,7 +1232,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		Iterator<LogisticsOrder> i = _extras.iterator();
 		while(i.hasNext()){
 			ItemIdentifierStack e = i.next().getItem();
-			if(e.getItem()== item) {
+			if(e.getItem().equals(item)) {
 				if(numToSend >= e.getStackSize()) {
 					numToSend -= e.getStackSize();
 					i.remove();

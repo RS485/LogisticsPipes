@@ -48,7 +48,7 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public int itemCount(ItemIdentifier itemIdent) {
 		ItemStack items = _storage.getStoredItemType();
-		if(items != null && ItemIdentifier.get(items) == itemIdent)
+		if(items != null && ItemIdentifier.get(items).equals(itemIdent))
 			return (_storage.isCreative() ? (int) (Math.pow(2, 20)) : (items.stackSize - (_hideOnePerStack ? 1:0)));
 		return 0;
 	}
@@ -56,7 +56,7 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
 		ItemStack items = _storage.getStoredItemType();
-		if(items == null || ItemIdentifier.get(items) != itemIdent) {
+		if(items == null || !ItemIdentifier.get(items).equals(itemIdent)) {
 			return null;
 		}
 		if(_storage.isCreative()) {
@@ -110,7 +110,7 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
 		ItemStack items = _storage.getStoredItemType();
-		if(items != null && ItemIdentifier.getUndamaged(items) == itemIdent)
+		if(items != null && ItemIdentifier.getUndamaged(items).equals(itemIdent))
 			return true;
 		return false;		
 	}

@@ -41,7 +41,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 		boolean first = true;
 		for (int i = _cropStart; i < _inventory.getSizeInventory() - _cropEnd; i++){
 			ItemStack stack = _inventory.getStackInSlot(i);
-			if (stack == null || ItemIdentifier.get(stack) != item) continue;
+			if (stack == null || !ItemIdentifier.get(stack).equals(item)) continue;
 			if(first){
 				count = stack.stackSize - ((_hideOne||_hideOnePerStack)?1:0);
 				first = false;
@@ -94,7 +94,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 		
 		for (int i = _cropStart; i < _inventory.getSizeInventory() - _cropEnd && count>0; i++) {
 			ItemStack stack = _inventory.getStackInSlot(i);
-			if (stack == null || (stack.stackSize == 1 && _hideOnePerStack) || ItemIdentifier.get(stack) != item) continue;
+			if (stack == null || (stack.stackSize == 1 && _hideOnePerStack) || !ItemIdentifier.get(stack).equals(item)) continue;
 			int itemsToSplit = Math.min(count,stack.stackSize-((first && _hideOne || _hideOnePerStack)?1:0));
 			first = false;
 			if(itemsToSplit ==0 ) continue;
@@ -121,7 +121,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 		for (int i = 0; i < _inventory.getSizeInventory(); i++){
 			ItemStack stack = _inventory.getStackInSlot(i);
 			if (stack == null) continue;
-			if (ItemIdentifier.get(stack) == item) return true;
+			if (ItemIdentifier.get(stack).equals(item)) return true;
 		}
 		return false;
 	}
@@ -132,7 +132,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 		for (int i = 0; i < _inventory.getSizeInventory(); i++){
 			ItemStack stack = _inventory.getStackInSlot(i);
 			if (stack == null) continue;
-			if (ItemIdentifier.getUndamaged(stack) == item) return true;
+			if (ItemIdentifier.getUndamaged(stack).equals(item)) return true;
 		}
 		return false;
 	}
@@ -155,7 +155,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 				}
 				continue;
 			}
-			if (ItemIdentifier.get(stack) != item) continue;
+			if (!ItemIdentifier.get(stack).equals(item)) continue;
 			
 			totalRoom += (Math.min(stackLimit, item.getMaxStackSize()) - stack.stackSize);
 		}
@@ -196,7 +196,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 			return wanted;
 		}
 
-		if (ItemIdentifier.get(stackInSlot) != ItemIdentifier.get(stack)) {
+		if (!ItemIdentifier.get(stackInSlot).equals(ItemIdentifier.get(stack))) {
 			return 0;
 		}
 

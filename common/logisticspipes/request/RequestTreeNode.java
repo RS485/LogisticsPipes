@@ -115,7 +115,7 @@ public class RequestTreeNode {
 	}
 	
 	public void addPromise(LogisticsPromise promise) {
-		if(promise.item != request.getItem()) throw new IllegalArgumentException("wrong item");
+		if(!promise.item.equals(request.getItem())) throw new IllegalArgumentException("wrong item");
 		if(getMissingItemCount() == 0) throw new IllegalArgumentException("zero count needed, promises not needed.");
 		if(promise.numberOfItems > getMissingItemCount()) {
 			int more = promise.numberOfItems - getMissingItemCount();
@@ -168,7 +168,7 @@ public class RequestTreeNode {
 
 	protected void checkForExtras(ItemIdentifier item, HashMap<IProvideItems,List<LogisticsExtraPromise>> extraMap) {
 		for(LogisticsExtraPromise extra:extrapromises) {
-			if(extra.item == item) {
+			if(extra.item.equals(item)) {
 				List<LogisticsExtraPromise> extras = extraMap.get(extra.sender);
 				if(extras == null) {
 					extras = new LinkedList<LogisticsExtraPromise>();
@@ -184,7 +184,7 @@ public class RequestTreeNode {
 
 	protected void removeUsedExtras(ItemIdentifier item, HashMap<IProvideItems,List<LogisticsExtraPromise>> extraMap) {
 		for(LogisticsPromise promise:promises) {
-			if(promise.item != item) continue;
+			if(!promise.item.equals(item)) continue;
 			if(!(promise instanceof LogisticsExtraPromise)) continue;
 			LogisticsExtraPromise epromise = (LogisticsExtraPromise)promise;
 			if(epromise.provided) continue;

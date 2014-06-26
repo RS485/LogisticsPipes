@@ -409,7 +409,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 				if (stackInOtherSlot == null) {
 					continue;
 				}
-				if (itemInSlot == stackInOtherSlot.getItem()) {
+				if (itemInSlot.equals(stackInOtherSlot.getItem())) {
 					stackInSlot.setStackSize(stackInSlot.getStackSize() + stackInOtherSlot.getStackSize());
 					clearInventorySlotContents(j);
 				}

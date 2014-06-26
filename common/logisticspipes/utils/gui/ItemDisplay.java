@@ -85,7 +85,7 @@ public class ItemDisplay {
 		boolean found = false;
 		if (selectedItem == null) return;
 		for (ItemIdentifierStack itemStack : _allItems) {
-			if (itemStack.getItem() == selectedItem.getItem()) {
+			if (itemStack.getItem().equals(selectedItem.getItem())) {
 				selectedItem = itemStack;
 				found = true;
 				break;

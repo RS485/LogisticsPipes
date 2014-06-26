@@ -1,4 +1,4 @@
-package logisticspipes.proxy.cc;
+package logisticspipes.proxy.cc.wrapper;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraftforge.common.ForgeDirection;
@@ -6,20 +6,25 @@ import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 
-public class LPPeripheralTilePipeWrapper extends LPTilePipeWrapper implements IPeripheral {
+public class LPPeripheralTilePipeWrapper implements IPeripheral {
 
 	private final ForgeDirection dir;
+	private CCCommandWrapper wrapped;
+	private LogisticsTileGenericPipe pipe;
 
 	public LPPeripheralTilePipeWrapper(LogisticsTileGenericPipe pipe, ForgeDirection dir) {
-		super(pipe);
+		this.pipe = pipe;
+		wrapped = (CCCommandWrapper) CCObjectWrapper.checkForAnnotations(pipe.pipe);
 		this.dir = dir;
 	}
 
 	@Override
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws Exception {
 		pipe.currentPC = computer;
-		Object[] result = super.callMethod(context, method, arguments);
+		wrapped.isDirectCall = true;
+		Object[] result = wrapped.callMethod(context, method, arguments);
 		pipe.currentPC = null;
+		wrapped.isDirectCall = false;
 		return result;
 	}
 
@@ -41,5 +46,15 @@ public class LPPeripheralTilePipeWrapper extends LPTilePipeWrapper implements IP
 			return ((LPPeripheralTilePipeWrapper)other).pipe.equals(pipe);
 		}
 		return false;
+	}
+
+	@Override
+	public String getType() {
+		return wrapped.getType();
+	}
+
+	@Override
+	public String[] getMethodNames() {
+		return wrapped.getMethodNames();
 	}
 }

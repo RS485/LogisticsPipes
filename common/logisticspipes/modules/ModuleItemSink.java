@@ -24,6 +24,8 @@ import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
 import logisticspipes.network.packets.module.ModuleInventory;
 import logisticspipes.network.packets.modules.ItemSinkDefault;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.cc.interfaces.CCCommand;
+import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
@@ -40,6 +42,7 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
+@CCType(name="ItemSink Module")
 public class ModuleItemSink extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive {
 	
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested items", 1);
@@ -53,14 +56,18 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 		_filterInventory.addListener(this);
 	}
 	
+	@CCCommand(description="Returns the FilterInventory of this Module")
 	public ItemIdentifierInventory getFilterInventory(){
 		return _filterInventory;
 	}
-	
+
+	@CCCommand(description="Returns true if the module is a default route")
 	public boolean isDefaultRoute(){
 		return _isDefaultRoute;
 	}
-	public void setDefaultRoute(boolean isDefaultRoute){
+	
+	@CCCommand(description="Sets the default route status of this module")
+	public void setDefaultRoute(Boolean isDefaultRoute){
 		_isDefaultRoute = isDefaultRoute;
 		if(!localModeWatchers.isEmpty()) MainProxy.sendToPlayerList(PacketHandler.getPacket(ItemSinkDefault.class).setFlag(_isDefaultRoute).setModulePos(this), localModeWatchers);
 	}

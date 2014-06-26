@@ -162,6 +162,16 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return get(itemStack.itemID, itemDamage, itemStack.stackTagCompound);
 	}
 
+	public static List<ItemIdentifier> getMatchingNBTIdentifier(int itemID, int itemData) {
+		ItemKey itemKey = new ItemKey(itemID, itemData);
+		ConcurrentHashMap<FinalNBTTagCompound, ItemIdentifier> itemNBTList = _itemIdentifierTagCache.get(itemKey);
+		if(itemNBTList!=null) {
+			return new ArrayList<ItemIdentifier>(itemNBTList.values());
+		} else {
+			return new ArrayList<ItemIdentifier>(0);
+		}
+	}
+
 	public ItemIdentifier getUndamaged() {
 		if(_IDIgnoringDamage==null){
 			if (!Item.itemsList[this.itemID].isDamageable()) {

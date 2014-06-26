@@ -6,6 +6,8 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.cc.objects.LPGlobalCCAccess;
+import logisticspipes.proxy.cc.wrapper.CCObjectWrapper;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.recipes.CraftingDependency;
 import logisticspipes.recipes.RecipeManager;
@@ -24,6 +26,7 @@ import dan200.computercraft.shared.turtle.blocks.TileTurtle;
 public class CCProxy implements ICCProxy {
 	
 	private Field target;
+	private LPGlobalCCAccess	generalAccess;
 	
 	public CCProxy() throws NoSuchFieldException, SecurityException {
 		ComputerCraftAPI.registerPeripheralProvider(new LPPeripheralProvider());
@@ -144,6 +147,14 @@ public class CCProxy implements ICCProxy {
 
 	@Override
 	public Object getAnswer(Object object) {
-		return CCHelper.getAnswer(object);
+		return CCObjectWrapper.getWrappedObject(object);
+	}
+
+	@Override
+	public Object getLP() {
+		if(generalAccess == null) {
+			generalAccess = new LPGlobalCCAccess();
+		}
+		return generalAccess;
 	}
 }

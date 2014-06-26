@@ -104,7 +104,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	public final int itemID;
 	public final int itemDamage;
 	public final FinalNBTTagCompound tag;
-	public final int uniqueID;
+	protected final int uniqueID;
 	
 	private ItemIdentifier _IDIgnoringNBT=null;
 	private ItemIdentifier _IDIgnoringDamage=null;
@@ -349,10 +349,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		if(stack.itemID != this.itemID) return false;
 		if(stack.getItemDamage() != this.itemDamage) return false;
 		return true;
-	}
-	
-	public int getId() {
-		return uniqueID;
 	}
 	
 	public String getNBTTagCompoundName() {

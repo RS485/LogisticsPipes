@@ -42,7 +42,6 @@ public class AECraftingTemplate extends CraftingTemplate {
 	@Override
 	public boolean canCraft(ItemIdentifier item) {
 		List<ItemStack> results = _interface.getCraftingOptions();
-		item.getId();
 		
 		for(ItemStack r:results){
 			if(ItemIdentifier.get(r).equals(item)) {

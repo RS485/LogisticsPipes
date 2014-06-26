@@ -193,7 +193,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		for(Quartet<ItemIdentifier,Integer,Integer,TransportMode> pair:destination) {
 			ItemIdentifierStack currentStack = new ItemIdentifierStack(pair.getValue1(), pair.getValue2());
 			Entry<ItemIdentifierStack,?> entry = list.ceilingEntry(currentStack);
-			if(entry!=null && entry.getKey().getItem().uniqueID == currentStack.getItem().uniqueID){
+			if(entry!=null && entry.getKey().getItem() == currentStack.getItem()){
 				entry.getKey().setStackSize(entry.getKey().getStackSize() + currentStack.getStackSize());
 			} else 
 				list.put(currentStack,null);

@@ -614,7 +614,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	public void setNextSatellite(EntityPlayer player) {
 		if (MainProxy.isClient(player.worldObj)) {
-			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeNextSatellite.class).setPosX(getX()).setModulePos(this);
+			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeNextSatellite.class).setModulePos(this);
 			MainProxy.sendPacketToServer(packet);
 		} else {
 			satelliteId = getNextConnectSatelliteId(false, -1);

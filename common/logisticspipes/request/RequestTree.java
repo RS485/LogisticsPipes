@@ -218,8 +218,8 @@ public class RequestTree extends RequestTreeNode {
 		}
 	}
 
-	public static boolean request(ItemIdentifierStack item, IRequestItems requester, RequestLog log) {
-		return request( item, requester, log, false, false,true,false,defaultRequestFlags, null) == item.getStackSize();
+	public static boolean request(ItemIdentifierStack item, IRequestItems requester, RequestLog log, IAdditionalTargetInformation info) {
+		return request( item, requester, log, false, false,true,false,defaultRequestFlags, info) == item.getStackSize();
 	}
 	
 	public static int requestPartial(ItemIdentifierStack item, IRequestItems requester, IAdditionalTargetInformation info) {

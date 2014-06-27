@@ -24,6 +24,7 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.interfaces.ISpecialInsertion;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
+import logisticspipes.interfaces.routing.ITargetSlotInformation;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.network.PacketHandler;
@@ -32,7 +33,6 @@ import logisticspipes.network.packets.pipe.PipeContentRequest;
 import logisticspipes.network.packets.pipe.PipePositionPacket;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
-import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
@@ -397,36 +397,33 @@ public class PipeTransportLogistics extends PipeTransport {
 				}
 				UpgradeManager manager = getPipe().getUpgradeManager();
 				boolean tookSome = false;
-				if(manager.hasPatternUpgrade()) {
-					if(getPipe() instanceof PipeItemsSupplierLogistics) {
-						IInventory inv = (IInventory)tile;
-						if(inv instanceof ISidedInventory) inv = new SidedInventoryMinecraftAdapter((ISidedInventory)inv, ForgeDirection.UNKNOWN, false);
-						IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
-						if(util instanceof ISpecialInsertion) {
-							PipeItemsSupplierLogistics pipe = (PipeItemsSupplierLogistics)getPipe();
-							int[] slots = pipe.getSlotsForItemIdentifier(itemStack.getItem());
-							for(int i: slots) {
-								if(util.getSizeInventory() > pipe.getInvSlotForSlot(i)) {
-									ItemStack content = util.getStackInSlot(pipe.getInvSlotForSlot(i));
-									ItemStack toAdd = itemStack.makeNormalStack();
-									toAdd.stackSize = Math.min(toAdd.stackSize, Math.max(0, pipe.getAmountForSlot(i) - (content != null ? content.stackSize : 0)));
-									if(toAdd.stackSize > 0) {
-										if(util.getSizeInventory() > pipe.getInvSlotForSlot(i)) {
-											int added = ((ISpecialInsertion)util).addToSlot(toAdd, pipe.getInvSlotForSlot(i));
-											itemStack.lowerStackSize(added);
-											if(added > 0) {
-												tookSome = true;
-											}
-										}
+				if(arrivingItem.getAdditionalTargetInformation() instanceof ITargetSlotInformation) {
+					ITargetSlotInformation information = (ITargetSlotInformation) arrivingItem.getAdditionalTargetInformation();
+					IInventory inv = (IInventory)tile;
+					if(inv instanceof ISidedInventory) inv = new SidedInventoryMinecraftAdapter((ISidedInventory)inv, ForgeDirection.UNKNOWN, false);
+					IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
+					if(util instanceof ISpecialInsertion) {
+						int slot = information.getTargetSlot();
+						int amount = information.getAmount();
+						if(util.getSizeInventory() > slot) {
+							ItemStack content = util.getStackInSlot(slot);
+							ItemStack toAdd = itemStack.makeNormalStack();
+							toAdd.stackSize = Math.min(toAdd.stackSize, Math.max(0, amount - (content != null ? content.stackSize : 0)));
+							if(toAdd.stackSize > 0) {
+								if(util.getSizeInventory() > slot) {
+									int added = ((ISpecialInsertion)util).addToSlot(toAdd, slot);
+									itemStack.lowerStackSize(added);
+									if(added > 0) {
+										tookSome = true;
 									}
 								}
 							}
-							if(pipe.isLimited()) {
-								if(itemStack.getStackSize() > 0) {
-									reverseItem(arrivingItem, itemStack);
-								}
-								return;
+						}
+						if(information.isLimited()) {
+							if(itemStack.getStackSize() > 0) {
+								reverseItem(arrivingItem, itemStack);
 							}
+							return;
 						}
 					}
 				}
@@ -644,8 +641,10 @@ public class PipeTransportLogistics extends PipeTransport {
 	
 	@Override
 	public void dropContents() {
-		for(LPTravelingItem item: items) {
-			container.pipe.dropItem(item.getItemIdentifierStack().makeNormalStack());
+		if(MainProxy.isServer(this.getWorld())) {
+			for(LPTravelingItem item: items) {
+				dropItem((LPTravelingItemServer) item);
+			}
 		}
 		items.clear();
 	}

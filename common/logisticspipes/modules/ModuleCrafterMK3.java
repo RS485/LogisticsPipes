@@ -12,6 +12,8 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.ModuleInventory;
 import logisticspipes.pipes.PipeItemsCraftingLogisticsMk3;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.routing.order.IOrderInfoProvider.RequestType;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.InventoryHelper;
@@ -120,10 +122,16 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISi
 				}
 				ItemIdentifierStack toadd = slot.clone();
 				toadd.setStackSize(Math.min(toadd.getStackSize(), toadd.getItem().getMaxStackSize()));
-				toadd.setStackSize(Math.min(toadd.getStackSize(), ((IInventory)tile.tile).getInventoryStackLimit()));
-				ItemStack added = InventoryHelper.getTransactorFor(tile.tile).add(toadd.makeNormalStack(), insertion, true);
-				slot.setStackSize(slot.getStackSize() - added.stackSize);
-				if(added.stackSize != 0) {
+				if(_service.getOrderManager().hasOrders(RequestType.CRAFTING)) {
+					toadd.setStackSize(Math.min(toadd.getStackSize(), ((IInventory)tile.tile).getInventoryStackLimit()));
+					ItemStack added = InventoryHelper.getTransactorFor(tile.tile).add(toadd.makeNormalStack(), insertion, true);
+					slot.setStackSize(slot.getStackSize() - added.stackSize);
+					if(added.stackSize != 0) {
+						change = true;
+					}
+				} else {
+					_service.queueRoutedItem(SimpleServiceLocator.routedItemHelper.createNewTravelItem(toadd), tile.orientation.getOpposite());
+					slot.setStackSize(slot.getStackSize() - toadd.getStackSize());
 					change = true;
 				}
 				if(slot.getStackSize() <= 0) {

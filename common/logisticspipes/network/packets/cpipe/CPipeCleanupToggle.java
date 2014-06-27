@@ -1,15 +1,14 @@
 package logisticspipes.network.packets.cpipe;
 
+import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.PipeItemsCraftingLogistics;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.entity.player.EntityPlayer;
 import cpw.mods.fml.common.network.Player;
 
-public class CPipeCleanupToggle extends CoordinatesPacket {
+public class CPipeCleanupToggle extends ModuleCoordinatesPacket {
 	
 	public CPipeCleanupToggle(int id) {
 		super(id);
@@ -22,17 +21,10 @@ public class CPipeCleanupToggle extends CoordinatesPacket {
 	
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final LogisticsTileGenericPipe pipe = getPipe(player.worldObj);
-		if(pipe == null) {
-			return;
-		}
-		
-		if( !(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
-			return;
-		}
-		
-		((PipeItemsCraftingLogistics) pipe.pipe).getLogisticsModule().toogleCleaupMode();
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CPipeCleanupStatus.class).setMode(((PipeItemsCraftingLogistics) pipe.pipe).getLogisticsModule().cleanupModeIsExclude).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
+		final ModuleCrafter module = this.getLogisticsModule(player, ModuleCrafter.class);
+		if(module == null) return;
+		module.toogleCleaupMode();
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CPipeCleanupStatus.class).setMode(module.cleanupModeIsExclude).setPacketPos(this), (Player) player);
 	}
 }
 

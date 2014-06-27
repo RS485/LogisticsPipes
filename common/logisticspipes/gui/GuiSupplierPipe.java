@@ -8,16 +8,14 @@
 
 package logisticspipes.gui;
 
-import logisticspipes.LogisticsEventListener;
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
-import logisticspipes.network.GuiIDs;
+import logisticspipes.modules.ModuleActiveSupplier;
+import logisticspipes.modules.ModuleActiveSupplier.PatternMode;
+import logisticspipes.modules.ModuleActiveSupplier.SupplyMode;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.SupplierPipeLimitedPacket;
 import logisticspipes.network.packets.module.SupplierPipeModePacket;
 import logisticspipes.network.packets.pipe.SlotFinderOpenGuiPacket;
-import logisticspipes.pipes.PipeItemsSupplierLogistics;
-import logisticspipes.pipes.PipeItemsSupplierLogistics.PatternMode;
-import logisticspipes.pipes.PipeItemsSupplierLogistics.SupplyMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
@@ -34,10 +32,10 @@ import org.lwjgl.opengl.GL11;
 public class GuiSupplierPipe extends LogisticsBaseGuiScreen implements IGuiIDHandlerProvider {
 	private static final String PREFIX = "gui.supplierpipe.";
 	
-	private PipeItemsSupplierLogistics logic; 
+	private ModuleActiveSupplier module; 
 	private final boolean hasPatternUpgrade;
 	
-	public GuiSupplierPipe(IInventory playerInventory, IInventory dummyInventory, PipeItemsSupplierLogistics logic, Boolean flag, int[] slots) {
+	public GuiSupplierPipe(IInventory playerInventory, IInventory dummyInventory, ModuleActiveSupplier module, Boolean flag, int[] slots) {
 		super(null);
 		hasPatternUpgrade = flag;
 		
@@ -58,8 +56,8 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen implements IGuiIDHan
 			}
 		}
 		this.inventorySlots = dummy; 
-		logic.slotArray = slots;
-		this.logic = logic;
+		module.slotArray = slots;
+		this.module = module;
 		xSize = 194;
 		ySize = 186;
 	}
@@ -77,7 +75,7 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen implements IGuiIDHan
 		fontRenderer.drawString(StringUtil.translate(PREFIX + "RequestMode"), xSize - 140, ySize - 112, 0x404040);
 		if(hasPatternUpgrade) {
 			for(int i = 0; i < 9;i++) {
-				fontRenderer.drawString(Integer.toString(logic.slotArray[i]), 22 + i * 18, 55, 0x404040);
+				fontRenderer.drawString(Integer.toString(module.slotArray[i]), 22 + i * 18, 55, 0x404040);
 			}
 		}
 	}
@@ -113,9 +111,9 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen implements IGuiIDHan
 	public void initGui() {
 		super.initGui();
 		buttonList.clear();
-		buttonList.add(new GuiButton(0, width / 2 + 35, height / 2 - 25, 50, 20, (hasPatternUpgrade ? logic.getPatternMode() : logic.getSupplyMode()).toString()));
+		buttonList.add(new GuiButton(0, width / 2 + 35, height / 2 - 25, 50, 20, (hasPatternUpgrade ? module.getPatternMode() : module.getSupplyMode()).toString()));
 		if(hasPatternUpgrade) {
-			buttonList.add(new SmallGuiButton(1, guiLeft + 5, guiTop + 68, 45, 10, logic.isLimited() ? "Limited" : "Unlimited"));
+			buttonList.add(new SmallGuiButton(1, guiLeft + 5, guiTop + 68, 45, 10, module.isLimited() ? "Limited" : "Unlimited"));
 			for(int i=0;i < 9;i++) {
 				buttonList.add(new SmallGuiButton(i + 2, guiLeft + 18 + i*18, guiTop + 40, 17, 10, "Set"));
 			}
@@ -126,51 +124,37 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen implements IGuiIDHan
 	protected void actionPerformed(GuiButton guibutton) {
 		if (guibutton.id == 0) {
 			if(hasPatternUpgrade) {
-				int currentMode = logic.getPatternMode().ordinal() + 1;
+				int currentMode = module.getPatternMode().ordinal() + 1;
 				if(currentMode >= PatternMode.values().length){
 					currentMode=0;
 				}
-				logic.setPatternMode(PatternMode.values()[currentMode]);
-				((GuiButton)buttonList.get(0)).displayString = logic.getPatternMode().toString();
+				module.setPatternMode(PatternMode.values()[currentMode]);
+				((GuiButton)buttonList.get(0)).displayString = module.getPatternMode().toString();
 			} else {
-				int currentMode = logic.getSupplyMode().ordinal() + 1;
+				int currentMode = module.getSupplyMode().ordinal() + 1;
 				if(currentMode >= SupplyMode.values().length){
 					currentMode=0;
 				}
-				logic.setSupplyMode(SupplyMode.values()[currentMode]);
-				((GuiButton)buttonList.get(0)).displayString = logic.getSupplyMode().toString();
+				module.setSupplyMode(SupplyMode.values()[currentMode]);
+				((GuiButton)buttonList.get(0)).displayString = module.getSupplyMode().toString();
 			}
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(SupplierPipeModePacket.class).setPosX(logic.getX()).setPosY(logic.getY()).setPosZ(logic.getZ()));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(SupplierPipeModePacket.class).setModulePos(module));
 		} else if(hasPatternUpgrade) {
 			if(guibutton.id == 1) {
-				logic.setLimited(!logic.isLimited());
-				((GuiButton)buttonList.get(1)).displayString = logic.isLimited() ? "Limited" : "Unlimited";
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(SupplierPipeLimitedPacket.class).setLimited(logic.isLimited()).setPosX(logic.getX()).setPosY(logic.getY()).setPosZ(logic.getZ()));
+				module.setLimited(!module.isLimited());
+				((GuiButton)buttonList.get(1)).displayString = module.isLimited() ? "Limited" : "Unlimited";
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(SupplierPipeLimitedPacket.class).setLimited(module.isLimited()).setModulePos(module));
 			} else if(guibutton.id >= 2 && guibutton.id <= 10) {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(SlotFinderOpenGuiPacket.class).setSlot(guibutton.id - 2).setPosX(logic.getX()).setPosY(logic.getY()).setPosZ(logic.getZ()));
-				LogisticsEventListener.addGuiToReopen(logic.getX(), logic.getY(), logic.getZ(), GuiIDs.GUI_SupplierPipe_ID);
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(SlotFinderOpenGuiPacket.class).setSlot(guibutton.id - 2).setModulePos(module));
 			}
 		}
 		super.actionPerformed(guibutton);
 	}
 	
 	public void refreshMode() {
-		((GuiButton)buttonList.get(0)).displayString = (hasPatternUpgrade ? logic.getPatternMode() : logic.getSupplyMode()).toString();
+		((GuiButton)buttonList.get(0)).displayString = (hasPatternUpgrade ? module.getPatternMode() : module.getSupplyMode()).toString();
 		if(hasPatternUpgrade) {
-			((GuiButton)buttonList.get(1)).displayString = logic.isLimited() ? "Limited" : "Unlimited";
+			((GuiButton)buttonList.get(1)).displayString = module.isLimited() ? "Limited" : "Unlimited";
 		}
 	}
-	
-	@Override
-	public void onGuiClosed() {
-		super.onGuiClosed();
-		logic.pause = false;
-		
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_SupplierPipe_ID;
-	}
-
 }

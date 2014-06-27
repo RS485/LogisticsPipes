@@ -181,6 +181,7 @@ item.ModuleCCBasedQuickSort=CC Based QuickSort module
 item.ModuleCrafter=Crafting module
 item.ModuleCrafterMK2=Crafting module MK2
 item.ModuleCrafterMK3=Crafting module MK3
+item.ModuleActiveSupplier=Active Supplier Module
 
 # Items
 

@@ -281,6 +281,10 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		this._inTransitToMe.add(routedItem);
 		//LogisticsPipes.log.info("Sending: "+routedItem.getIDStack().getItem().getFriendlyName());
 	}
+	
+	public void notifyOfReroute(ItemRoutingInformation routedItem) {
+		this._inTransitToMe.remove(routedItem);
+	}
 
 	//When Recreating the Item from the TE version we have the same hashCode but a different instance so we need to refresh this
 	public void refreshItem(ItemRoutingInformation routedItem) {
@@ -1860,4 +1864,8 @@ outer:
 		return this.getRouterId();
 	}
 
+	@Override
+	public DebugLogController getDebug() {
+		return debug;
+	}
 }

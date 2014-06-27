@@ -16,7 +16,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
 
 @Accessors(chain=true)
 public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
@@ -52,11 +51,12 @@ public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
 		}
 	}
 
-	@Override
 	public ModuleCoordinatesPacket setModulePos(LogisticsModule module) {
 		type = module.getSlot();
 		positionInt = module.getPositionInt();
-		super.setModulePos(module);
+		this.setPosX(module.getX());
+		this.setPosY(module.getY());
+		this.setPosZ(module.getZ());
 		return this;
 	}
 	

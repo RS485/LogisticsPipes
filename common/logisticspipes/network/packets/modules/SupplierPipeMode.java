@@ -3,14 +3,13 @@ package logisticspipes.network.packets.modules;
 import java.io.IOException;
 
 import logisticspipes.gui.GuiSupplierPipe;
+import logisticspipes.modules.ModuleActiveSupplier;
+import logisticspipes.modules.ModuleActiveSupplier.PatternMode;
+import logisticspipes.modules.ModuleActiveSupplier.SupplyMode;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
+import logisticspipes.network.abstractpackets.IntegerModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.PipeItemsSupplierLogistics;
-import logisticspipes.pipes.PipeItemsSupplierLogistics.PatternMode;
-import logisticspipes.pipes.PipeItemsSupplierLogistics.SupplyMode;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -18,7 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import cpw.mods.fml.client.FMLClientHandler;
 
 @Accessors(chain=true)
-public class SupplierPipeMode extends IntegerCoordinatesPacket {
+public class SupplierPipeMode extends IntegerModuleCoordinatesPacket {
 
 	@Getter
 	@Setter
@@ -35,17 +34,12 @@ public class SupplierPipeMode extends IntegerCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if (pipe == null) {
-			return;
-		}
-		if (!(pipe.pipe instanceof PipeItemsSupplierLogistics)) {
-			return;
-		}
+		ModuleActiveSupplier module = this.getLogisticsModule(player, ModuleActiveSupplier.class);
+		if(module == null) return;
 		if(hasPatternUpgrade) {
-			((PipeItemsSupplierLogistics) pipe.pipe).setPatternMode(PatternMode.values()[getInteger()]);
+			module.setPatternMode(PatternMode.values()[getInteger()]);
 		} else {
-			((PipeItemsSupplierLogistics) pipe.pipe).setSupplyMode(SupplyMode.values()[getInteger()]);
+			module.setSupplyMode(SupplyMode.values()[getInteger()]);
 		}
 		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiSupplierPipe) {
 			((GuiSupplierPipe) FMLClientHandler.instance().getClient().currentScreen).refreshMode();

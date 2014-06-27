@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.pipe.SlotFinderNumberPacket;
 import logisticspipes.proxy.MainProxy;
@@ -41,6 +42,10 @@ public class LogisticsGuiOverrenderer {
 	private int pipePosY;
 	@Setter
 	private int pipePosZ;
+	@Setter
+	private ModulePositionType positionType;
+	@Setter
+	private int positionInt;
 	@Setter
 	private int slot;
 	@Setter
@@ -114,7 +119,7 @@ public class LogisticsGuiOverrenderer {
 					GL11.glEnable(GL11.GL_LIGHTING);
 					GL11.glEnable(GL11.GL_DEPTH_TEST);
 					if(clicked) {
-						MainProxy.sendPacketToServer(PacketHandler.getPacket(SlotFinderNumberPacket.class).setInventorySlot(slot.slotNumber).setSlot(this.slot).setPipePosX(pipePosX).setPipePosY(pipePosY).setPipePosZ(pipePosZ).setPosX(targetPosX).setPosY(targetPosY).setPosZ(targetPosZ));
+						MainProxy.sendPacketToServer(PacketHandler.getPacket(SlotFinderNumberPacket.class).setInventorySlot(slot.slotNumber).setSlot(this.slot).setPipePosX(pipePosX).setPipePosY(pipePosY).setPipePosZ(pipePosZ).setType(positionType).setPositionInt(positionInt).setPosX(targetPosX).setPosY(targetPosY).setPosZ(targetPosZ));
 						clicked = false;
 						FMLClientHandler.instance().getClient().thePlayer.closeScreen();
 						isOverlaySlotActive = false;

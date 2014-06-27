@@ -55,13 +55,14 @@ public abstract class CoordinatesPacket extends ModernPacket {
 		this.setPosZ(tile.zCoord);
 		return this;
 	}
-
+	/*
 	public CoordinatesPacket setModulePos(LogisticsModule module) {
 		this.setPosX(module.getX());
 		this.setPosY(module.getY());
 		this.setPosZ(module.getZ());
 		return this;
 	}
+	*/
 	
 	public CoordinatesPacket setPacketPos(CoordinatesPacket packet) {
 		this.posX = packet.posX;

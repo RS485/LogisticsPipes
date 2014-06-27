@@ -1,18 +1,17 @@
 package logisticspipes.network.packets.module;
 
+import logisticspipes.modules.ModuleActiveSupplier;
+import logisticspipes.modules.ModuleActiveSupplier.PatternMode;
+import logisticspipes.modules.ModuleActiveSupplier.SupplyMode;
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import logisticspipes.network.packets.modules.SupplierPipeMode;
-import logisticspipes.pipes.PipeItemsSupplierLogistics;
-import logisticspipes.pipes.PipeItemsSupplierLogistics.PatternMode;
-import logisticspipes.pipes.PipeItemsSupplierLogistics.SupplyMode;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.entity.player.EntityPlayer;
 import cpw.mods.fml.common.network.Player;
 
-public class SupplierPipeModePacket extends CoordinatesPacket {
+public class SupplierPipeModePacket extends ModuleCoordinatesPacket {
 
 	public SupplierPipeModePacket(int id) {
 		super(id);
@@ -25,27 +24,23 @@ public class SupplierPipeModePacket extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if (pipe == null) {
-			return;
-		}
-		if (!(pipe.pipe instanceof PipeItemsSupplierLogistics)) {
-			return;
-		}
-		final PipeItemsSupplierLogistics logic = (PipeItemsSupplierLogistics) pipe.pipe;
-		int  mode;
-		if(logic.getUpgradeManager().hasPatternUpgrade()) {
-			mode = logic.getPatternMode().ordinal() +1;
-			if(mode >= PatternMode.values().length)
+		final ModuleActiveSupplier module = this.getLogisticsModule(player, ModuleActiveSupplier.class);
+		if(module == null) return;
+		int mode;
+		if(module.hasPatternUpgrade()) {
+			mode = module.getPatternMode().ordinal() +1;
+			if(mode >= PatternMode.values().length) {
 				mode=0;
-			logic.setPatternMode(PatternMode.values()[mode]);
+			}
+			module.setPatternMode(PatternMode.values()[mode]);
 		} else {
-			mode = logic.getSupplyMode().ordinal() +1;
-			if(mode >= SupplyMode.values().length)
+			mode = module.getSupplyMode().ordinal() +1;
+			if(mode >= SupplyMode.values().length) {
 				mode=0;
-			logic.setSupplyMode(SupplyMode.values()[mode]);
+			}
+			module.setSupplyMode(SupplyMode.values()[mode]);
 		}
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setHasPatternUpgrade(logic.getUpgradeManager().hasPatternUpgrade()).setInteger(mode).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setHasPatternUpgrade(module.hasPatternUpgrade()).setInteger(mode).setPacketPos(this), (Player)player);
 	}
 }
 

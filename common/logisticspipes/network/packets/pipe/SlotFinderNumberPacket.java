@@ -4,12 +4,11 @@ import java.io.IOException;
 import java.util.List;
 
 import logisticspipes.interfaces.IInventoryUtil;
+import logisticspipes.modules.ModuleActiveSupplier;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.PipeItemsSupplierLogistics;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -26,7 +25,7 @@ import net.minecraft.util.ChatMessageComponent;
 import net.minecraftforge.common.ForgeDirection;
 
 @Accessors(chain=true)
-public class SlotFinderNumberPacket extends CoordinatesPacket {
+public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 
 	@Getter
 	@Setter
@@ -114,9 +113,9 @@ public class SlotFinderNumberPacket extends CoordinatesPacket {
 			setPosX(getPipePosX());
 			setPosY(getPipePosY());
 			setPosZ(getPipePosZ());
-			LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-			if(pipe != null && pipe.pipe instanceof PipeItemsSupplierLogistics) {
-				((PipeItemsSupplierLogistics)pipe.pipe).slotArray[slot] = resultIndex;
+			ModuleActiveSupplier module = this.getLogisticsModule(player, ModuleActiveSupplier.class);
+			if(module != null) {
+				module.slotArray[slot] = resultIndex;
 			}
 		}
 	}

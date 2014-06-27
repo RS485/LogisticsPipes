@@ -67,7 +67,7 @@ public class RequestHandler {
 			
 			@Override
 			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items, LinkedLogisticsOrderList parts) {}
-		});
+		}, null);
 	}
 	
 	public static void simulate(final EntityPlayer player, final ItemIdentifierStack stack, CoreRoutedPipe pipe) {

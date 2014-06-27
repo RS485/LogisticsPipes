@@ -1,8 +1,5 @@
 package logisticspipes.network;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.GuiFirewall;
 import logisticspipes.gui.GuiFluidBasic;
@@ -13,7 +10,6 @@ import logisticspipes.gui.GuiInvSysConnector;
 import logisticspipes.gui.GuiProviderPipe;
 import logisticspipes.gui.GuiRoutingStats;
 import logisticspipes.gui.GuiSatellitePipe;
-import logisticspipes.gui.GuiSupplierPipe;
 import logisticspipes.gui.hud.GuiHUDSettings;
 import logisticspipes.gui.orderer.FluidGuiOrderer;
 import logisticspipes.gui.orderer.GuiRequestTable;
@@ -23,7 +19,6 @@ import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.interfaces.ISlotClick;
 import logisticspipes.items.LogisticsItemCard;
-import logisticspipes.network.packets.gui.GuiArgument;
 import logisticspipes.network.packets.pipe.FluidSupplierMode;
 import logisticspipes.network.packets.pipe.InvSysConResistance;
 import logisticspipes.pipes.PipeBlockRequestTable;
@@ -37,7 +32,6 @@ import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
-import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.pipes.PipeItemsSystemDestinationLogistics;
 import logisticspipes.pipes.PipeItemsSystemEntranceLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -53,8 +47,6 @@ import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.network.Player;
 
 public class GuiHandler implements IGuiHandler {
-
-	public final static Map<Integer, Object[]> argumentQueueClient = new HashMap<Integer, Object[]>();
 
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, final int x, final int y, final int z) {
@@ -133,22 +125,6 @@ public class GuiHandler implements IGuiHandler {
 				if(pipe != null && pipe.pipe != null && pipe.pipe instanceof PipeFluidSatellite) {
 					return new DummyContainer(player.inventory, null);
 				}
-				
-			case GuiIDs.GUI_SupplierPipe_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsSupplierLogistics)) return null;
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(GuiArgument.class).setGuiID(GuiIDs.GUI_SupplierPipe_ID).setArgs(new Object[]{((PipeItemsSupplierLogistics)pipe.pipe).getUpgradeManager().hasPatternUpgrade(), ((PipeItemsSupplierLogistics)pipe.pipe).slotArray}), (Player)player);
-				dummy = new DummyContainer(player.inventory, ((PipeItemsSupplierLogistics)pipe.pipe).getDummyInventory());
-				dummy.addNormalSlotsForPlayerInventory(18, 97);
-				
-				xOffset = 72;
-				yOffset = 18;
-				
-				for (int row = 0; row < 3; row++) {
-					for (int column = 0; column < 3; column++) {
-						dummy.addDummySlot(column + row * 3, xOffset + column * 18, yOffset + row * 18);
-					}
-				}
-				return dummy;
 								
 				/*** Basic ***/
 			case GuiIDs.GUI_RoutingStats_ID:
@@ -300,8 +276,6 @@ public class GuiHandler implements IGuiHandler {
 			return getClientGuiElement(-100 * 20 + x, player, world, 0, -1, z);
 		}
 		
-		Object[] args = argumentQueueClient.get(ID);
-		
 		if(ID < 110 && ID > 0) {
 			switch(ID) {
 			
@@ -325,10 +299,6 @@ public class GuiHandler implements IGuiHandler {
 					return new GuiSatellitePipe((PipeFluidSatellite)pipe.pipe, player);
 				}
 				return null;
-				
-			case GuiIDs.GUI_SupplierPipe_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsSupplierLogistics)) return null;
-				return new GuiSupplierPipe(player.inventory, ((PipeItemsSupplierLogistics)pipe.pipe).getDummyInventory(), (PipeItemsSupplierLogistics)pipe.pipe, (Boolean) args[0], (int[]) args[1]);
 				
 				/*** Modules ***/
 			case GuiIDs.GUI_RoutingStats_ID:

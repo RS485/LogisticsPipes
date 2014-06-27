@@ -7,8 +7,8 @@ import java.util.List;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
+import logisticspipes.modules.ModuleActiveSupplier;
 import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleAdvancedExtractorMK2;
 import logisticspipes.modules.ModuleAdvancedExtractorMK3;
@@ -104,6 +104,7 @@ public class ItemModule extends LogisticsItem {
 	//Providers MODULES
 	public static final int PROVIDER = 500;
 	public static final int PROVIDER_MK2 = 501;
+	public static final int ACTIVE_SUPPLIER = 502;
 
 	//Crafter MODULES
 	public static final int CRAFTER = 600;
@@ -208,6 +209,7 @@ public class ItemModule extends LogisticsItem {
 			registerModule(CRAFTER					, ModuleCrafter.class);
 			registerModule(CRAFTER_MK2				, ModuleCrafterMK2.class);
 			registerModule(CRAFTER_MK3				, ModuleCrafterMK3.class);
+			registerModule(ACTIVE_SUPPLIER			, ModuleActiveSupplier.class);
 		}
 	}
 

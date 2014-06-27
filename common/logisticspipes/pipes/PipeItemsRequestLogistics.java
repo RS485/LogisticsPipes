@@ -193,7 +193,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 
 			@Override
 			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items, LinkedLogisticsOrderList parts) {}
-		});
+		}, null);
 		List<ItemStack> missingList = new ArrayList<ItemStack>(missing.size());
 		for(Entry<ItemIdentifier,Integer>e:missing.entrySet()) {
 			missingList.add(e.getKey().unsafeMakeNormalStack(e.getValue()));

@@ -175,7 +175,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		ItemIdentifier unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, finaltag, uniqueNBTID);
 		checkNBTbadness(unknownItem, tag);
 		itemNBTList.put(finaltag, new Pair<Integer, WeakReference<ItemIdentifier>>(uniqueNBTID, new WeakReference<ItemIdentifier>(unknownItem)));
-		wlock.lock();
+		wlock.unlock();
 		return unknownItem;
 	}
 	

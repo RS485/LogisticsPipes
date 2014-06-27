@@ -18,7 +18,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.LogisticsFluidContainer;
@@ -79,9 +81,13 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		}
 	}
 
+	//lock for _itemIdentifierTagCache and _badTags
+	private final static ReadWriteLock dblock = new ReentrantReadWriteLock();
+	private final static Lock rlock = dblock.readLock();
+	private final static Lock wlock = dblock.writeLock();
 
 	//NBT-less itemidentifiers get created on demand, for items with NBT, we have this *cough* beauty.
-	private final static ConcurrentHashMap<ItemKey, ConcurrentHashMap<FinalNBTTagCompound, Pair<Integer, WeakReference<ItemIdentifier>>>> _itemIdentifierTagCache = new ConcurrentHashMap<ItemKey, ConcurrentHashMap<FinalNBTTagCompound, Pair<Integer, WeakReference<ItemIdentifier>>>>(1024, 0.5f, 1);
+	private final static HashMap<ItemKey, HashMap<FinalNBTTagCompound, Pair<Integer, WeakReference<ItemIdentifier>>>> _itemIdentifierTagCache = new HashMap<ItemKey, HashMap<FinalNBTTagCompound, Pair<Integer, WeakReference<ItemIdentifier>>>>(1024, 0.5f);
 	
 	private final static HashSet<ItemIdentifier> _badTags = new HashSet<ItemIdentifier>(128, 0.75f);
 	
@@ -126,23 +132,42 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		}
 
 		ItemKey itemKey = new ItemKey(itemID, itemUndamagableDamage);
-		ConcurrentHashMap<FinalNBTTagCompound, Pair<Integer, WeakReference<ItemIdentifier>>> itemNBTList = _itemIdentifierTagCache.get(itemKey);
 		FinalNBTTagCompound tagwithfixedname = new FinalNBTTagCompound(tag);
+		//take the read lock, see if we already know this.
+		rlock.lock();
+		HashMap<FinalNBTTagCompound, Pair<Integer, WeakReference<ItemIdentifier>>> itemNBTList = _itemIdentifierTagCache.get(itemKey);
+		if(itemNBTList != null) {
+			Pair<Integer, WeakReference<ItemIdentifier>> unknownItemRef = itemNBTList.get(tagwithfixedname);
+			if(unknownItemRef != null) {
+				ItemIdentifier unknownItem = unknownItemRef.getValue2().get();
+				if(unknownItem != null) {
+					rlock.unlock();
+					return unknownItem;
+				}
+			}
+		}
+		//we either don't know this item/nbt or the ItemIdentifier got GCed
+		rlock.unlock();
+		wlock.lock();
+		//re-get in case another thread added it while we were blocked on the write lock
+		itemNBTList = _itemIdentifierTagCache.get(itemKey);
 		if(itemNBTList!=null){
 			Pair<Integer, WeakReference<ItemIdentifier>> unknownItemRef = itemNBTList.get(tagwithfixedname);
 			if(unknownItemRef!=null) {
 				ItemIdentifier unknownItem = unknownItemRef.getValue2().get();
 				if(unknownItem!=null) {
+					wlock.unlock();
 					return unknownItem;
 				}
 				//we once knew that item, resurrect it.
 				FinalNBTTagCompound finaltag = new FinalNBTTagCompound((NBTTagCompound)tag.copy());
 				unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, finaltag, unknownItemRef.getValue1());
 				unknownItemRef.setValue2(new WeakReference<ItemIdentifier>(unknownItem));
+				wlock.unlock();
 				return unknownItem;
 			}
 		} else {
-			itemNBTList = new ConcurrentHashMap<FinalNBTTagCompound, Pair<Integer, WeakReference<ItemIdentifier>>>(16, 0.5f, 1);
+			itemNBTList = new HashMap<FinalNBTTagCompound, Pair<Integer, WeakReference<ItemIdentifier>>>(16, 0.5f);
 			_itemIdentifierTagCache.put(itemKey, itemNBTList);
 		}
 		FinalNBTTagCompound finaltag = new FinalNBTTagCompound((NBTTagCompound)tag.copy());
@@ -150,6 +175,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		ItemIdentifier unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, finaltag, uniqueNBTID);
 		checkNBTbadness(unknownItem, tag);
 		itemNBTList.put(finaltag, new Pair<Integer, WeakReference<ItemIdentifier>>(uniqueNBTID, new WeakReference<ItemIdentifier>(unknownItem)));
+		wlock.lock();
 		return unknownItem;
 	}
 	
@@ -173,7 +199,8 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 
 	public static List<ItemIdentifier> getMatchingNBTIdentifier(int itemID, int itemData) {
 		ItemKey itemKey = new ItemKey(itemID, itemData);
-		ConcurrentHashMap<FinalNBTTagCompound, Pair<Integer, WeakReference<ItemIdentifier>>> itemNBTList = _itemIdentifierTagCache.get(itemKey);
+		rlock.lock();
+		HashMap<FinalNBTTagCompound, Pair<Integer, WeakReference<ItemIdentifier>>> itemNBTList = _itemIdentifierTagCache.get(itemKey);
 		if(itemNBTList!=null) {
 			Collection<Pair<Integer, WeakReference<ItemIdentifier>>> c = itemNBTList.values();
 			ArrayList<ItemIdentifier> resultlist = new ArrayList<ItemIdentifier>(itemNBTList.values().size());
@@ -183,10 +210,11 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 					resultlist.add(iid);
 				}
 			}
+			rlock.unlock();
 			return resultlist;
-		} else {
-			return new ArrayList<ItemIdentifier>(0);
 		}
+		rlock.unlock();
+		return new ArrayList<ItemIdentifier>(0);
 	}
 
 	public ItemIdentifier getUndamaged() {
@@ -210,7 +238,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return _IDIgnoringNBT;
 	}
 
-	private static int getUnusedId(ConcurrentHashMap<FinalNBTTagCompound, Pair<Integer, WeakReference<ItemIdentifier>>> itemNBTList) {
+	private static int getUnusedId(HashMap<FinalNBTTagCompound, Pair<Integer, WeakReference<ItemIdentifier>>> itemNBTList) {
 		//find a unused unique ID value, also cleans up dangling weakrefs. horribly inefficient but good enough for now.
 		int maxid = 0;
 		Iterator<Entry<FinalNBTTagCompound, Pair<Integer, WeakReference<ItemIdentifier>>>> it = itemNBTList.entrySet().iterator();

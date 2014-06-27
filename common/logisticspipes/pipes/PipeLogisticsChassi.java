@@ -240,8 +240,11 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 				}
 			}
 			for(int i=0;i<_moduleInventory.getSizeInventory();i++) {
-				if(_moduleInventory.getStackInSlot(i) != null) {
-					ItemModuleInformationManager.saveInfotmation(_moduleInventory.getStackInSlot(i), this.getLogisticsModule().getSubModule(i));
+				ItemIdentifierStack ms = _moduleInventory.getIDStackInSlot(i);
+				if(ms != null) {
+					ItemStack s = ms.makeNormalStack();
+					ItemModuleInformationManager.saveInfotmation(s, this.getLogisticsModule().getSubModule(i));
+					_moduleInventory.setInventorySlotContents(i, s);
 				}
 			}
 			_moduleInventory.dropContents(this.getWorld(), getX(), getY(), getZ());

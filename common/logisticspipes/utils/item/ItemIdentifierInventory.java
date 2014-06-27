@@ -59,6 +59,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 	}
 
 	@Override
+	@Deprecated
 	public ItemStack getStackInSlot(int i) {
 		if (_contents[i] == null) return null;
 		return _contents[i].makeNormalStack();

@@ -196,8 +196,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 
 	@Override
 	public void tick() {
-		_service.isNthTick(100);
-		
+		if(!_service.isNthTick(100)) return;
 		
 		for(int amount : _requestedItems.values()) {
 			if(amount > 0) {

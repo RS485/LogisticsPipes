@@ -31,6 +31,7 @@ public class ApiaristAnalyserMode extends ModuleCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		ModuleApiaristAnalyser module = this.getLogisticsModule(player, ModuleApiaristAnalyser.class);
+		if(module == null) return;
 		module.setExtractMode(mode);
 	}
 

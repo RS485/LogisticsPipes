@@ -19,6 +19,7 @@ public class HUDStartModuleWatchingPacket extends ModuleCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		IModuleWatchReciver handler = this.getLogisticsModule(player, IModuleWatchReciver.class);
+		if(handler == null) return;
 		handler.startWatching(player);
 	}
 }

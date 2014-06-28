@@ -26,6 +26,7 @@ public class CCBasedQuickSortMode extends ModuleCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		ModuleCCBasedQuickSort module = this.getLogisticsModule(player, ModuleCCBasedQuickSort.class);
+		if(module == null) return;
 		((ModuleCCBasedQuickSort)module).setTimeout(timeOut);
 	}
 	

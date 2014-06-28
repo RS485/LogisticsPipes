@@ -20,6 +20,7 @@ public class ProviderModuleInclude extends BooleanModuleCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final ModuleProvider module = this.getLogisticsModule(player, ModuleProvider.class);
+		if(module == null) return;
 		module.setFilterExcluded(this.isFlag());
 	}
 }

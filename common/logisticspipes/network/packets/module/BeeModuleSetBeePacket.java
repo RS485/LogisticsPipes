@@ -41,6 +41,7 @@ public class BeeModuleSetBeePacket extends ModuleCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		ModuleApiaristSink sink = this.getLogisticsModule(player, ModuleApiaristSink.class);
+		if(sink == null) return;
 		if(integer2 >= sink.filter.length) return;
 		switch(integer3) {
 			case 0:

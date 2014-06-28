@@ -33,6 +33,7 @@ public class ModuleBasedItemSinkList extends ModuleCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		ModuleModBasedItemSink module = this.getLogisticsModule(player, ModuleModBasedItemSink.class);
+		if(module == null) return;
 		module.readFromNBT(nbt);
 		if(MainProxy.isServer(player.getEntityWorld()) && this.getType().isInWorld()) {
 			module.ModListChanged();

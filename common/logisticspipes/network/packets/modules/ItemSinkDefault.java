@@ -19,6 +19,7 @@ public class ItemSinkDefault extends BooleanModuleCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		ModuleItemSink module = this.getLogisticsModule(player, ModuleItemSink.class);
+		if(module == null) return;
 		module.setDefaultRoute(isFlag());
 	}
 }

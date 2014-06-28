@@ -21,6 +21,7 @@ public class ElectricManagerPacket extends BooleanModuleCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		ModuleElectricManager module = this.getLogisticsModule(player, ModuleElectricManager.class);
+		if(module == null) return;
 		module.setDischargeMode(this.isFlag());
 	}
 }

@@ -23,6 +23,7 @@ public class ProviderModuleNextModePacket extends ModuleCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final ModuleProvider module = this.getLogisticsModule(player, ModuleProvider.class);
+		if(module == null) return;
 		module.nextExtractionMode();
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setMode(module.getExtractionMode().ordinal()).setModulePos(module), (Player) player);
 	}

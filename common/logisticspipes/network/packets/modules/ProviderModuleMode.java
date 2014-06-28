@@ -31,6 +31,7 @@ public class ProviderModuleMode extends ModuleCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final ModuleProvider module = this.getLogisticsModule(player, ModuleProvider.class);
+		if(module == null) return;
 		module.setExtractionMode(mode);
 	}
 

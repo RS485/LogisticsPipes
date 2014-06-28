@@ -21,6 +21,7 @@ public class ExtractorModuleMode extends DirectionModuleCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsSneakyDirectionModule recieiver = this.getLogisticsModule(player, LogisticsSneakyDirectionModule.class);
+		if(recieiver == null) return;
 		recieiver.setSneakyDirection(getDirection());
 	}
 }

@@ -23,6 +23,7 @@ public class ProviderModuleIncludePacket extends ModuleCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final ModuleProvider module = this.getLogisticsModule(player, ModuleProvider.class);
+		if(module == null) return;
 		module.setFilterExcluded(!module.isExcludeFilter());
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleInclude.class).setFlag(module.isExcludeFilter()).setModulePos(module), (Player) player);
 	}

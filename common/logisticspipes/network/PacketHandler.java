@@ -92,7 +92,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 	
 	@Override
 	protected void decode(ChannelHandlerContext ctx, FMLProxyPacket msg, List<Object> out) throws Exception {
-		INetHandler netHandler = (INetHandler)ctx.channel().attr(NetworkRegistry.NET_HANDLER).get();
+		INetHandler netHandler = ctx.channel().attr(NetworkRegistry.NET_HANDLER).get();
 		EntityPlayer player = MainProxy.proxy.getEntityPlayerFromNetHandler(netHandler);
 		ByteBuf payload = msg.payload();
 		int packetID = payload.readInt();
@@ -101,8 +101,8 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 		try {
 			packet.processPacket(player);
 		} catch(Exception e) {
-			LogisticsPipes.log.severe(packet.getClass().getName());
-			LogisticsPipes.log.severe(packet.toString());
+			LogisticsPipes.log.error(packet.getClass().getName());
+			LogisticsPipes.log.error(packet.toString());
 			throw new RuntimeException(e);
 		}
 		ctx.attr(INBOUNDPACKETTRACKER).get().set(msg);

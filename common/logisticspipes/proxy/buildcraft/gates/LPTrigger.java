@@ -12,19 +12,11 @@ import buildcraft.api.gates.ITriggerParameter;
 import buildcraft.api.gates.TriggerParameter;
 
 public abstract class LPTrigger implements ITrigger {
-	protected final int legacyId;
 	protected final String uniqueTag;
 
-	public LPTrigger(int legacyId, String uniqueTag) {
-		this.legacyId = legacyId;
+	public LPTrigger(String uniqueTag) {
 		this.uniqueTag = uniqueTag;
 		ActionManager.registerTrigger(this);
-	}
-
-
-	@Override
-	public int getLegacyId() {
-		return this.legacyId;
 	}
 
 	@Override
@@ -45,22 +37,14 @@ public abstract class LPTrigger implements ITrigger {
 	}
 
 	@Override
-	public boolean isTriggerActive(ForgeDirection side, TileEntity tile, ITriggerParameter parameter) {
-		return false;
-	}
-
-	@Override
 	public final ITriggerParameter createParameter() {
 		return new TriggerParameter();
 	}
-
-
 
 	@Override
 	public IIcon getIcon() {
 		return Textures.LPactionIconProvider.getIcon(getIconIndex());
 	}
-
 
 	@Override
 	public void registerIcons(IIconRegister iconRegister) {

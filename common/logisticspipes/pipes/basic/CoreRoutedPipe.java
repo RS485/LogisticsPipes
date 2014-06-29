@@ -324,27 +324,24 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	 * Called every tick
 	 */
 	public void ignoreDisableUpdateEntity() {}
-	
-	@Override
-	public final void updateEntity() {
-		debug.tick();
-		if(checkTileEntity(_initialInit)) {
-			stillNeedReplace = true;
-			return;
-		} else {
-			if(stillNeedReplace) {
-				stillNeedReplace = false;
-				getWorld().notifyBlockChange(getX(), getY(), getZ(), getWorld().getBlock(getX(), getY(), getZ()));
-				/* TravelingItems are just held by a pipe, they don't need to know their world
+
+    @Override
+    public final void updateEntity() {
+        debug.tick();
+        if (checkTileEntity()) {
+            return;
+        } else {
+            stillNeedReplace = false;
+            getWorld().notifyBlockChange(getX(), getY(), getZ(), getWorld().getBlock(getX(), getY(), getZ()));
+                /* TravelingItems are just held by a pipe, they don't need to know their world
 				 * for(Triplet<IRoutedItem, ForgeDirection, ItemSendMode> item : _sendQueue) {
 					//assign world to any entityitem we created in readfromnbt
 					item.getValue1().getTravelingItem().setWorld(getWorld());
 				}*/
-				//first tick just create a router and do nothing.
-				firstInitialiseTick();
-				return;
-			}
-		}
+            //first tick just create a router and do nothing.
+            firstInitialiseTick();
+            return;
+        }
 		if(repeatFor > 0) {
 			if(delayTo < System.currentTimeMillis()) {
 				delayTo = System.currentTimeMillis() + 200;

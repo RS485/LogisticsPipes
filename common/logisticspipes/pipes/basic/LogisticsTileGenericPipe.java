@@ -64,14 +64,17 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 		return null;
 	}
 
-	@Override
-	public void invalidate() {
-		if(!getCPipe().blockRemove()) {
-			this.tileEntityInvalid = true;
-			super.invalidate();
-			SimpleServiceLocator.thermalExpansionProxy.handleLPInternalConduitRemove(this);
-		}
-	}
+    @Override
+    public void invalidate() {
+        if (pipe == null) {
+            this.tileEntityInvalid = true;
+            super.invalidate();
+        } else if (!getCPipe().blockRemove()) {
+            this.tileEntityInvalid = true;
+            super.invalidate();
+            SimpleServiceLocator.thermalExpansionProxy.handleLPInternalConduitRemove(this);
+        }
+    }
 
 	@Override
 	public void onChunkUnload() {

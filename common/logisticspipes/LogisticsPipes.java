@@ -34,6 +34,7 @@ import logisticspipes.network.GuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
+import logisticspipes.pipes.basic.LogisticsBlockLogisticsPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.ProxyManager;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -214,6 +215,7 @@ public class LogisticsPipes {
 	
 	// Logistics Blocks
 	public static Block LogisticsSolidBlock;
+    public static Block LogisticsPipeBlock;
 
 	public static Textures textures = new Textures();
 	
@@ -390,7 +392,10 @@ public class LogisticsPipes {
 		//Blocks
 		LogisticsSolidBlock = new LogisticsSolidBlock();
 		GameRegistry.registerBlock(LogisticsSolidBlock, LogisticsSolidBlockItem.class, null);
-		
+
+        LogisticsPipeBlock = new LogisticsBlockLogisticsPipe();
+        GameRegistry.registerBlock(LogisticsPipeBlock,"logisticsPipeBlock");
+
 		SimpleServiceLocator.buildCraftProxy.registerPipes(event.getSide());
 		
 		SimpleServiceLocator.IC2Proxy.addCraftingRecipes();

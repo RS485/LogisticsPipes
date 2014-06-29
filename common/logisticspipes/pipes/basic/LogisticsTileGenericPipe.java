@@ -217,9 +217,9 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 
 	@ModDependentMethod(modId="ThermalExpansion")
 	public boolean canTEConduitConnect(ConduitBase conduit, int side) {
-		return pipe.canPipeConnect(conduit.getTile(), ForgeDirection.VALID_DIRECTIONS[side].getOpposite());
-		
-	}
+        if (pipe == null) return false;
+        return pipe.canPipeConnect(conduit.getTile(), ForgeDirection.VALID_DIRECTIONS[side].getOpposite());
+    }
 
 	@ModDependentMethod(modId="ThermalExpansion")
 	public LPConduitItem getTEConduit(int side) {

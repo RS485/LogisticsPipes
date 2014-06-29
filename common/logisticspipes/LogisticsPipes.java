@@ -34,6 +34,7 @@ import logisticspipes.network.GuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
+import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsBlockLogisticsPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.ProxyManager;
@@ -304,7 +305,6 @@ public class LogisticsPipes {
 		}
 		SimpleServiceLocator.setPipeInformationManager(new PipeInformaitonManager());
 		SimpleServiceLocator.setBuildCraftProxy(new BuildCraftProxy());
-		SimpleServiceLocator.buildCraftProxy.replaceBlockGenericPipe();
 		SimpleServiceLocator.buildCraftProxy.registerPipeInformationProvider();
 
 		if (Configs.EASTER_EGGS) {
@@ -393,7 +393,7 @@ public class LogisticsPipes {
 		LogisticsSolidBlock = new LogisticsSolidBlock();
 		GameRegistry.registerBlock(LogisticsSolidBlock, LogisticsSolidBlockItem.class, null);
 
-        LogisticsPipeBlock = new LogisticsBlockLogisticsPipe();
+        LogisticsPipeBlock = new LogisticsBlockGenericPipe();
         GameRegistry.registerBlock(LogisticsPipeBlock,"logisticsPipeBlock");
 
 		SimpleServiceLocator.buildCraftProxy.registerPipes(event.getSide());

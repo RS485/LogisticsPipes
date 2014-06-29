@@ -84,7 +84,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 	
 	/**
 	 * Used to render a icon of an aspect at a give x and y on top of a given GuiScreen.
-	 * @param etag The EnumTag (aspect) to render
+	 * @param tag The EnumTag (aspect) to render
 	 * @param x
 	 * @param y
 	 * @param gui The gui to render on.

@@ -12,6 +12,7 @@ import java.util.LinkedList;
 
 import buildcraft.api.transport.IPipeTile;
 import buildcraft.transport.Pipe;
+import buildcraft.transport.gates.GateDefinition;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
@@ -39,15 +40,19 @@ public class LogisticsTriggerProvider implements ITriggerProvider {
 			triggers.add(BuildCraftProxy.LogisticsCraftingTrigger);
 			return triggers;
 		}
-		if(pipe instanceof CoreRoutedPipe) {
-			LinkedList<ITrigger> triggers = new LinkedList<ITrigger>();
-			//Only show this conditional on Gates that can accept parameters
-			if (((CoreRoutedPipe) pipe).hasGate() && pipe instanceof Pipe && ((Pipe<?>) pipe).gate.kind == Gate.GateKind.AND_4 || ((Pipe<?>) pipe).gate.kind == Gate.GateKind.OR_4) {
-				triggers.add(BuildCraftProxy.LogisticsHasDestinationTrigger);
-			}
-			return triggers;
-		}
-		return null;
+        if (pipe instanceof CoreRoutedPipe) {
+            LinkedList<ITrigger> triggers = new LinkedList<ITrigger>();
+            //Only show this conditional on Gates that can accept parameters
+            if (((CoreRoutedPipe) pipe).hasGate()) {
+                Gate gate = ((Pipe<?>) pipe).gate;
+                if ((gate.logic == GateDefinition.GateLogic.AND || gate.logic == GateDefinition.GateLogic.OR)
+                        && gate.material == GateDefinition.GateMaterial.DIAMOND) {
+                    triggers.add(BuildCraftProxy.LogisticsHasDestinationTrigger);
+                }
+            }
+            return triggers;
+        }
+        return null;
 	}
 	
 	@Override

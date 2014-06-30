@@ -221,7 +221,7 @@ public class FluidIdentifier {
 				rlock.unlock();
 				return i;
 			}
-			if(i.equals(this))
+			if(this.equals(i))
 				takeNext = true;
 		}
 		rlock.unlock();
@@ -232,7 +232,7 @@ public class FluidIdentifier {
 		rlock.lock();
 		FluidIdentifier last = null;
 		for(FluidIdentifier i : _fluidIdentifierCache) {
-			if(i.equals(this)) {
+			if(this.equals(i)) {
 				rlock.unlock();
 				return last;
 			}

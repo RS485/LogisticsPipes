@@ -129,21 +129,15 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 					continue;
 				}
 				keyRefWlock.lock();
-				int numremoved = 0;
 				do {
 					//value in the map might have been replaced in the meantime
 					IDReference current = keyRefMap.get(r.key);
 					if(r == current) {
-						numremoved++;
 						keyRefMap.remove(r.key);
 						tagIDsets[r.key.itemID].clear(r.uniqueID);
-						System.out.println("Cleaned up ItemIdentifier for " + r.key.itemID + ":" + r.key.itemDamage + "-nbt" + r.uniqueID);
-					} else {
-						System.out.println("Ignored stale ref for " + r.key.itemID + ":" + r.key.itemDamage + "-nbt" + r.uniqueID);
 					}
 					r = (IDReference)(keyRefQueue.poll());
 				} while(r != null);
-				System.out.println("cleaned up " + numremoved + " ItemIdentifiers");
 				keyRefWlock.unlock();
 			}
 		}
@@ -180,7 +174,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		}
 		ret = new ItemIdentifier(itemID, 0, null, 0);
 		simpleIdentifiers.set(itemID, ret);
-		System.out.println("Created Simple ItemIdentifier for " + itemID);
 		return ret;
 	}
 
@@ -206,7 +199,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		}
 		ret = new ItemIdentifier(itemID, damage, null, 0);
 		damages.set(damage, ret);
-		System.out.println("Created Damage ItemIdentifier for " + itemID + ":" + damage);
 		return ret;
 	}
 
@@ -247,11 +239,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		keyRefMap.put(realKey, new IDReference(realKey, nextUniqueID, ret));
 		checkNBTbadness(ret, finaltag);
 		keyRefWlock.unlock();
-		if(r == null) {
-			System.out.println("Created NBT ItemIdentifier for " + itemID + ":" + damage + "-nbt" + nextUniqueID);
-		} else {
-			System.out.println("Revived NBT ItemIdentifier for " + itemID + ":" + damage + "-nbt" + nextUniqueID);
-		}
 		return ret;
 	}
 

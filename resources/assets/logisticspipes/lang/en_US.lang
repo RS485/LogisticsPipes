@@ -34,6 +34,7 @@ item.PipeItemsProviderLogisticsMk2=Provider Logistics Pipe Mk2
 item.PipeItemsProviderLogisticsMk2.tip1=Type: Item Source
 item.PipeItemsProviderLogisticsMk2.tip2= - Attaches to an inventory
 item.PipeItemsProviderLogisticsMk2.tip3= - Sends a stack of items into the network on request
+item.PipeItemsProviderLogisticsMk2.tip4= - Ignores Suppliers on the same block.
 
 item.PipeItemsCraftingLogistics=Crafting Logistics Pipe
 item.PipeItemsCraftingLogistics.tip1=Type: Active Requester + Source
@@ -59,8 +60,6 @@ item.PipeItemsCraftingLogisticsMk3.tip5= - Can use a satelite pipe to send input
 item.PipeItemsSatelliteLogistics=Satellite Logistics Pipe
 item.PipeItemsSatelliteLogistics.tip1=Type: Active request destination
 item.PipeItemsSatelliteLogistics.tip2= - A crafting pipe can send additional inputs here
-item.PipeItemsSatelliteLogistics.tip3= - Used to send non-stackable items to chest next
-item.PipeItemsSatelliteLogistics.tip4=   the crafting table.
 
 item.PipeItemsSupplierLogistics=Supplier Logistics Pipe
 item.PipeItemsSupplierLogistics.tip1=Type: Active item requester

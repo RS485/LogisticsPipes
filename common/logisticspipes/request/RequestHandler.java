@@ -44,8 +44,7 @@ public class RequestHandler {
 			player.sendChatToPlayer(ChatMessageComponent.createFromText("No Energy"));
 			return;
 		}
-		RequestTree.request(ItemIdentifier.get(stack.getItem().itemID, stack.getItem().itemDamage, stack.getItem().tag).makeStack(stack.getStackSize()), pipe
-				, new RequestLog() {
+		RequestTree.request(stack.clone(), pipe, new RequestLog() {
 			@Override
 			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
 				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(items.size());
@@ -73,7 +72,7 @@ public class RequestHandler {
 	public static void simulate(final EntityPlayer player, final ItemIdentifierStack stack, CoreRoutedPipe pipe) {
 		final Map<ItemIdentifier,Integer> used = new HashMap<ItemIdentifier,Integer>();
 		final Map<ItemIdentifier,Integer> missing = new HashMap<ItemIdentifier,Integer>();
-		RequestTree.simulate(ItemIdentifier.get(stack.getItem().itemID, stack.getItem().itemDamage, stack.getItem().tag).makeStack(stack.getStackSize()), pipe, new RequestLog() {
+		RequestTree.simulate(stack.clone(), pipe, new RequestLog() {
 			@Override
 			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
 				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {

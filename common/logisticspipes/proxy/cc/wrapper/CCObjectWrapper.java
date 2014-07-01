@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import net.minecraft.nbt.NBTBase;
+
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCSecurtiyCheck;
 import logisticspipes.proxy.cc.interfaces.CCType;
@@ -126,6 +128,13 @@ public class CCObjectWrapper {
 				map.put(getWrappedObject(key), getWrappedObject(oldMap.get(key)));
 			}
 			return map;
+		} else if(input instanceof NBTBase) {
+			try {
+				return ItemIdentifier.getNBTBaseAsMap((NBTBase)input);
+			} catch(Exception e) {
+				e.printStackTrace();
+				return null;
+			}
 		}
 		return checkForAnnotations(input);
 	}

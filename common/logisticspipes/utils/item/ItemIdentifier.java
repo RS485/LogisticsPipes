@@ -433,28 +433,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return maxStackSize;
 	}
 	
-	public String getNBTTagCompoundName() {
-		if(tag != null) {
-			return tag.getName();
-		} else {
-			return null;
-		}
-	}
-	
-	public Map<Object, Object> getNBTTagCompoundAsMap() {
-		if(tag != null) {
-			try {
-				return getNBTBaseAsMap(tag);
-			} catch(Exception e) {
-				e.printStackTrace();
-				return null;
-			}
-		} else {
-			return null;
-		}
-	}
-	
-	private Map<Integer, Object> getArrayAsMap(int[] array) {
+	private static Map<Integer, Object> getArrayAsMap(int[] array) {
 		HashMap<Integer, Object> map = new HashMap<Integer, Object>();
 		int i = 0;
 		for(int object: array) {
@@ -464,7 +443,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return map;
 	}
 	
-	private Map<Integer, Object> getArrayAsMap(byte[] array) {
+	private static Map<Integer, Object> getArrayAsMap(byte[] array) {
 		HashMap<Integer, Object> map = new HashMap<Integer, Object>();
 		int i = 1;
 		for(byte object: array) {
@@ -475,7 +454,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	private Map<Object, Object> getNBTBaseAsMap(NBTBase nbt) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+	public static Map<Object, Object> getNBTBaseAsMap(NBTBase nbt) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		if(nbt == null) {
 			return null;
 		}

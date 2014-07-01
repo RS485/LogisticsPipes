@@ -132,7 +132,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 		for (int i = 0; i < _inventory.getSizeInventory(); i++){
 			ItemStack stack = _inventory.getStackInSlot(i);
 			if (stack == null) continue;
-			if (ItemIdentifier.getUndamaged(stack).equals(item)) return true;
+			if (ItemIdentifier.get(stack).getUndamaged().equals(item)) return true;
 		}
 		return false;
 	}

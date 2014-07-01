@@ -165,6 +165,8 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	public final FinalNBTTagCompound tag;
 	protected final int uniqueID;
 	
+	private int maxStackSize = 0;
+
 	private ItemIdentifier _IDIgnoringNBT=null;
 	private ItemIdentifier _IDIgnoringDamage=null;
 
@@ -279,17 +281,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return get(itemStack.itemID, itemStack.getItemDamage(), itemStack.stackTagCompound);
 	}
 	
-	public static ItemIdentifier getUndamaged(ItemStack itemStack) {
-		if (itemStack == null && allowNullsForTesting){
-			return null;
-		}
-		int itemDamage = 0;
-		if (!Item.itemsList[itemStack.itemID].isDamageable()) {
-			itemDamage = itemStack.getItemDamage();
-		}
-		return get(itemStack.itemID, itemDamage, itemStack.stackTagCompound);
-	}
-
 	public static List<ItemIdentifier> getMatchingNBTIdentifier(int itemID, int itemData) {
 		//inefficient, we'll have to add another map if this becomes a bottleneck
 		ArrayList<ItemIdentifier> resultlist = new ArrayList<ItemIdentifier>(16);
@@ -303,43 +294,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		keyRefRlock.unlock();
 		return resultlist;
 	}
-
-	public ItemIdentifier getUndamaged() {
-		if(_IDIgnoringDamage==null){
-			if (!Item.itemsList[this.itemID].isDamageable()) {
-				_IDIgnoringDamage = this;
-			} else {
-				_IDIgnoringDamage = get(this.itemID, 0, this.tag);
-			}
-		}
-		return _IDIgnoringDamage;
-	}
-
-	public static ItemIdentifier getIgnoringNBT(ItemStack itemStack) {
-		return get(itemStack.itemID, itemStack.getItemDamage(), null);
-	}
-
-	public ItemIdentifier getIgnoringNBT() {
-		if(this._IDIgnoringNBT==null){
-			_IDIgnoringNBT= get(itemID, itemDamage, null);			
-		}
-		return _IDIgnoringNBT;
-	}
-
-	/*
-	private static boolean tagsequal(NBTTagCompound tag1, NBTTagCompound tag2) {
-		if(tag1 == null && tag2 == null) {
-			return true;
-		}
-		if(tag1 == null) {
-			return false;
-		}
-		if(tag2 == null) {
-			return false;
-		}
-		return tag1.equals(tag2);
-	}
-	*/
 
 	public static void tick() {
 		if(init) return;
@@ -369,6 +323,30 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
 	/* Instance Methods */
 	
+	public ItemIdentifier getUndamaged() {
+		if(_IDIgnoringDamage == null) {
+			if(!unsafeMakeNormalStack(0).isItemStackDamageable()) {
+				_IDIgnoringDamage = this;
+			} else {
+				ItemStack tstack = makeNormalStack(0);
+				tstack.setItemDamage(0);
+				_IDIgnoringDamage = get(tstack);
+			}
+		}
+		return _IDIgnoringDamage;
+	}
+
+	public ItemIdentifier getIgnoringNBT() {
+		if(_IDIgnoringNBT == null) {
+			if(tag == null) {
+				_IDIgnoringNBT = this;
+			} else {
+				_IDIgnoringNBT = get(itemID, itemDamage, null);
+			}
+		}
+		return _IDIgnoringNBT;
+	}
+
 	public String getDebugName() {
 		if (Item.itemsList[itemID] != null)	{
 			return Item.itemsList[itemID].getUnlocalizedName() + "(ID: " + itemID + ", Damage: " + itemDamage + ")";
@@ -409,7 +387,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
 	public String getFriendlyName() {
 		if (Item.itemsList[itemID] != null) {
-			return getName(itemID,this.unsafeMakeNormalStack(1));
+			return getName(itemID,this.unsafeMakeNormalStack(0));
 		}
 		return "<Item name not found>";
 	}
@@ -456,17 +434,16 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	}
 	
 	public int getMaxStackSize() {
-		if(Item.itemsList[this.itemID].isDamageable() && this.itemDamage > 0) {
-			return 1;
+		if(maxStackSize == 0) {
+			ItemStack tstack = this.unsafeMakeNormalStack(0);
+			int tstacksize = tstack.getMaxStackSize();
+			if(tstack.isItemStackDamageable() && tstack.isItemDamaged()) {
+				tstacksize = 1;
+			}
+			tstacksize = Math.max(1, Math.min(64, tstacksize));
+			maxStackSize = tstacksize;
 		}
-		int limit = Item.itemsList[this.itemID].getItemStackLimit();
-		return limit < 64 ? limit : 64;
-	}
-	
-	public boolean fuzzyMatch(ItemStack stack) {
-		if(stack.itemID != this.itemID) return false;
-		if(stack.getItemDamage() != this.itemDamage) return false;
-		return true;
+		return maxStackSize;
 	}
 	
 	public String getNBTTagCompoundName() {
@@ -657,12 +634,16 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return this.itemID == item.itemID && (item.isDamagable() ? true : this.itemDamage == item.itemDamage);
 	}
 
+	public boolean equalsWithoutNBT(ItemStack stack) {
+		return this.itemID == stack.itemID && this.itemDamage == stack.getItemDamage();
+	}
+
 	public boolean equalsWithoutNBT(ItemIdentifier item) {
 		return this.itemID == item.itemID && this.itemDamage == item.itemDamage;
 	}
 
 	public boolean isDamagable() {
-		return this.makeNormalStack(0).getItem().isDamageable();
+		return this.getUndamaged() == this;
 	}
 
 	private static void checkNBTbadness(ItemIdentifier item, NBTBase nbt) {

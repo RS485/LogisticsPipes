@@ -185,7 +185,7 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 		try {
 			ItemStack itemStack = (ItemStack) item.get(_tile);
 			if(itemStack != null) {
-				return ItemIdentifier.getUndamaged(itemStack).equals(itemIdent);
+				return ItemIdentifier.get(itemStack).getUndamaged().equals(itemIdent);
 			}
 			return false;
 		} catch (IllegalArgumentException e) {

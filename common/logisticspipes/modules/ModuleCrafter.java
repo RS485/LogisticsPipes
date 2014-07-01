@@ -1281,7 +1281,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			ItemStack stack = stacks[0];
 			if(stack.stackSize == 0) break;
 			if(retstack == null) {
-				if(!wanteditem.fuzzyMatch(stack)) break;
+				if(!wanteditem.equalsWithoutNBT(stack)) break;
 			} else {
 				if(!retstack.isItemEqual(stack)) break;
 				if(!ItemStack.areItemStackTagsEqual(retstack, stack)) break;
@@ -1315,14 +1315,14 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			for(int i=0;i<filter.getSizeInventory() && i < filterInvLimit;i++) {
 				ItemIdentifierStack identStack = filter.getIDStackInSlot(i);
 				if(identStack == null) continue;
-				if(identStack.getItem().fuzzyMatch(stack)) return null;
+				if(identStack.getItem().equalsWithoutNBT(stack)) return null;
 			}
 		} else {
 			boolean found = false;
 			for(int i=0;i<filter.getSizeInventory() && i < filterInvLimit;i++) {
 				ItemIdentifierStack identStack = filter.getIDStackInSlot(i);
 				if(identStack == null) continue;
-				if(identStack.getItem().fuzzyMatch(stack)) {
+				if(identStack.getItem().equalsWithoutNBT(stack)) {
 					found = true;
 					break;
 				}
@@ -1363,7 +1363,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				for(int i=0;i<filter.getSizeInventory() && i < filterInvLimit;i++) {
 					ItemIdentifierStack identStack = filter.getIDStackInSlot(i);
 					if(identStack == null) continue;
-					if(identStack.getItem().fuzzyMatch(item.makeNormalStack(1))) {
+					if(identStack.getItem().equalsWithoutNBT(item)) {
 						found = true;
 						break;
 					}
@@ -1376,7 +1376,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				for(int i=0;i<filter.getSizeInventory() && i < filterInvLimit;i++) {
 					ItemIdentifierStack identStack = filter.getIDStackInSlot(i);
 					if(identStack == null) continue;
-					if(identStack.getItem().fuzzyMatch(item.makeNormalStack(1))) {
+					if(identStack.getItem().equalsWithoutNBT(item)) {
 						found = true;
 						break;
 					}
@@ -1405,7 +1405,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			ItemStack stack = tile.getOutput(wanteditem, _service);
 			if(stack == null || stack.stackSize == 0) break;
 			if(retstack == null) {
-				if(!wanteditem.fuzzyMatch(stack)) break;
+				if(!wanteditem.equalsWithoutNBT(stack)) break;
 			} else {
 				if(!retstack.isItemEqual(stack)) break;
 				if(!ItemStack.areItemStackTagsEqual(retstack, stack)) break;

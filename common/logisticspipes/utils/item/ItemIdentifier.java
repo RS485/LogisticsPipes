@@ -8,16 +8,16 @@
 
 package logisticspipes.utils.item;
 
+import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.BitSet;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -26,7 +26,6 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.FinalNBTTagCompound;
-import logisticspipes.utils.tuples.Pair;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
@@ -54,43 +53,59 @@ import cpw.mods.fml.common.registry.ItemData;
  *  A ItemIdentifier is immutable, singleton and most importantly UNIQUE!
  */
 public final class ItemIdentifier implements Comparable<ItemIdentifier> {
-	
-	private static class ItemKey implements Comparable<ItemKey>{
-		public ItemKey(int id, int d){ itemID=id;itemDamage=d;}
+	//a key to look up a ItemIdentifier by ItemID:damage:tag
+	private static class ItemKey {
 		public final int itemID;
 		public final int itemDamage;
-		@Override 
-		public boolean equals(Object that){
+		public final FinalNBTTagCompound tag;
+		public ItemKey(int i, int d, FinalNBTTagCompound t) {
+			this.itemID = i;
+			this.itemDamage = d;
+			this.tag = t;
+		}
+		@Override
+		public boolean equals(Object that) {
 			if (!(that instanceof ItemKey))
 				return false;
 			ItemKey i = (ItemKey)that;
-			return this.itemID== i.itemID && this.itemDamage == i.itemDamage;
-			
-		}
-		
-		@Override public int hashCode(){
-			//1000001 chosen because 1048576 is 2^20, moving the bits for the item ID to the top of the integer
-			// not exactly 2^20 was chosen so that when the has is used mod power 2, there arn't repeated collisions on things with the same damage id.
-			return ((itemID)*1000001)+itemDamage;
+			return this.itemID == i.itemID && this.itemDamage == i.itemDamage && this.tag.equals(i.tag);
 		}
 		@Override
-		public int compareTo(ItemKey o) {
-			if(itemID==o.itemID)
-				return itemDamage-o.itemDamage;
-			return itemID-o.itemID;
+		public int hashCode() {
+			return ((itemID*0x8241)+itemDamage)^tag.hashCode();
 		}
 	}
 
-	//lock for _itemIdentifierTagCache and _badTags
-	private final static ReadWriteLock dblock = new ReentrantReadWriteLock();
-	private final static Lock rlock = dblock.readLock();
-	private final static Lock wlock = dblock.writeLock();
+	//remember itemId/damage/tag so we can find GCed ItemIdentifiers
+	private static class IDReference extends WeakReference<ItemIdentifier> {
+		private final ItemKey key;
+		private final int uniqueID;
+		IDReference(ItemKey k, int u, ItemIdentifier id) {
+			super(id, keyRefQueue);
+			key = k;
+			uniqueID = u;
+		}
+	}
+	
+	//array of ItemIdentifiers for damage=0,tag=null items
+	private final static AtomicReferenceArray<ItemIdentifier> simpleIdentifiers = new AtomicReferenceArray<ItemIdentifier>(32768);
 
-	//NBT-less itemidentifiers get created on demand, for items with NBT, we have this *cough* beauty.
-	private final static HashMap<ItemKey, HashMap<FinalNBTTagCompound, Pair<Integer, WeakReference<ItemIdentifier>>>> _itemIdentifierTagCache = new HashMap<ItemKey, HashMap<FinalNBTTagCompound, Pair<Integer, WeakReference<ItemIdentifier>>>>(1024, 0.5f);
-	
-	private final static HashSet<ItemIdentifier> _badTags = new HashSet<ItemIdentifier>(128, 0.75f);
-	
+	//array of arrays for items with damage>0 and tag==null
+	private final static AtomicReferenceArray<AtomicReferenceArray<ItemIdentifier>> damageIdentifiers = new AtomicReferenceArray<AtomicReferenceArray<ItemIdentifier>>(32768);
+
+	//map for id+damage+tag -> ItemIdentifier lookup
+	private final static HashMap<ItemKey, IDReference> keyRefMap = new HashMap<ItemKey, IDReference>(1024, 0.5f);
+	//for tracking the tagUniqueIDs in use for a given ItemID
+	private final static BitSet[] tagIDsets = new BitSet[32768];
+	//remember items we already printed a bad tag warning for
+	private final static BitSet _badTags = new BitSet(32768);
+	//a referenceQueue to collect GCed identifier refs
+	private final static ReferenceQueue<ItemIdentifier> keyRefQueue = new ReferenceQueue<ItemIdentifier>();
+	//and locks to protect these
+	private final static ReadWriteLock keyRefLock = new ReentrantReadWriteLock();
+	private final static Lock keyRefRlock = keyRefLock.readLock();
+	private final static Lock keyRefWlock = keyRefLock.writeLock();
+
 	//array of mod names, used for id -> name, 0 is unknown
 	private final static ArrayList<String> _modNameList = new ArrayList<String>();
 	//map of mod name -> internal LP modid, first modname gets 1
@@ -98,6 +113,43 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	//map of itemid -> modid
 	private final static int _modItemIdMap[] = new int[32768];
 	
+	//helper thread to clean up references to GCed ItemIdentifiers
+	private static final class ItemIdentifierCleanupThread extends Thread {
+		public ItemIdentifierCleanupThread() {
+			setName("LogisticsPipes ItemIdentifier Cleanup Thread");
+			setDaemon(true);
+			start();
+		}
+		public void run() {
+			while(true) {
+				IDReference r;
+				try {
+					r = (IDReference)(keyRefQueue.remove());
+				} catch (InterruptedException e) {
+					continue;
+				}
+				keyRefWlock.lock();
+				int numremoved = 0;
+				do {
+					//value in the map might have been replaced in the meantime
+					IDReference current = keyRefMap.get(r.key);
+					if(r == current) {
+						numremoved++;
+						keyRefMap.remove(r.key);
+						tagIDsets[r.key.itemID].clear(r.uniqueID);
+						System.out.println("Cleaned up ItemIdentifier for " + r.key.itemID + ":" + r.key.itemDamage + "-nbt" + r.uniqueID);
+					} else {
+						System.out.println("Ignored stale ref for " + r.key.itemID + ":" + r.key.itemDamage + "-nbt" + r.uniqueID);
+					}
+					r = (IDReference)(keyRefQueue.poll());
+				} while(r != null);
+				System.out.println("cleaned up " + numremoved + " ItemIdentifiers");
+				keyRefWlock.unlock();
+			}
+		}
+	}
+	private static final ItemIdentifierCleanupThread cleanupThread = new ItemIdentifierCleanupThread();
+
 	private static boolean init = false;
 	
 	//Hide default constructor
@@ -118,6 +170,89 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 
 	public static boolean allowNullsForTesting;
 	
+	private static ItemIdentifier getOrCreateSimple(int itemID) {
+		//no locking here. if 2 threads race and create the same ItemIdentifier, they end up .equal() and one of them ends up in the volatile array
+		ItemIdentifier ret = simpleIdentifiers.get(itemID);
+		if(ret != null) {
+			return ret;
+		}
+		ret = new ItemIdentifier(itemID, 0, null, 0);
+		simpleIdentifiers.set(itemID, ret);
+		System.out.println("Created Simple ItemIdentifier for " + itemID);
+		return ret;
+	}
+
+	private static ItemIdentifier getOrCreateDamage(int itemID, int damage) {
+		//again no locking, we can end up removing or overwriting ItemIdentifiers concurrently added by another thread, but that doesn't affect anything.
+		AtomicReferenceArray<ItemIdentifier> damages = damageIdentifiers.get(itemID);
+		if(damages == null) {
+			//round to nearest superior power of 2
+			int newlen = 1 << (32 - Integer.numberOfLeadingZeros(damage + 1));
+			damages = new AtomicReferenceArray<ItemIdentifier>(newlen);
+			damageIdentifiers.set(itemID, damages);
+		} else if(damages.length() <= damage) {
+			int newlen = 1 << (32 - Integer.numberOfLeadingZeros(damage + 1));
+			AtomicReferenceArray<ItemIdentifier> newdamages = new AtomicReferenceArray<ItemIdentifier>(newlen);
+			for(int i = 0; i < damages.length(); i++)
+				newdamages.set(i, damages.get(i));
+			damageIdentifiers.set(itemID, newdamages);
+			damages = newdamages;
+		}
+		ItemIdentifier ret = damages.get(damage);
+		if(ret != null) {
+			return ret;
+		}
+		ret = new ItemIdentifier(itemID, damage, null, 0);
+		damages.set(damage, ret);
+		System.out.println("Created Damage ItemIdentifier for " + itemID + ":" + damage);
+		return ret;
+	}
+
+	private static ItemIdentifier getOrCreateTag(int itemID, int damage, FinalNBTTagCompound tag) {
+		ItemKey k = new ItemKey(itemID, damage, tag);
+		keyRefRlock.lock();
+		IDReference r = keyRefMap.get(k);
+		if(r != null) {
+			ItemIdentifier ret = r.get();
+			if(ret != null) {
+				keyRefRlock.unlock();
+				return ret;
+			}
+		}
+		keyRefRlock.unlock();
+		keyRefWlock.lock();
+		r = keyRefMap.get(k);
+		if(r != null) {
+			ItemIdentifier ret = r.get();
+			if(ret != null) {
+				keyRefWlock.unlock();
+				return ret;
+			}
+		}
+		if(tagIDsets[itemID] == null) {
+			tagIDsets[itemID] = new BitSet(16);
+		}
+		int nextUniqueID;
+		if(r == null) {
+			nextUniqueID = tagIDsets[itemID].nextClearBit(1);
+			tagIDsets[itemID].set(nextUniqueID);
+		} else {
+			nextUniqueID = r.uniqueID;
+		}
+		FinalNBTTagCompound finaltag = new FinalNBTTagCompound((NBTTagCompound)tag.copy());
+		ItemKey realKey = new ItemKey(itemID, damage, finaltag);
+		ItemIdentifier ret = new ItemIdentifier(itemID, damage, finaltag, nextUniqueID);
+		keyRefMap.put(realKey, new IDReference(realKey, nextUniqueID, ret));
+		checkNBTbadness(ret, finaltag);
+		keyRefWlock.unlock();
+		if(r == null) {
+			System.out.println("Created NBT ItemIdentifier for " + itemID + ":" + damage + "-nbt" + nextUniqueID);
+		} else {
+			System.out.println("Revived NBT ItemIdentifier for " + itemID + ":" + damage + "-nbt" + nextUniqueID);
+		}
+		return ret;
+	}
+
 	public static ItemIdentifier get(int itemID, int itemUndamagableDamage, NBTTagCompound tag)	{
 		if(itemID < 0 || itemID > 32767) {
 			throw new IllegalArgumentException("Item ID out of range");
@@ -125,58 +260,16 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		if(itemUndamagableDamage < 0 || itemUndamagableDamage > 32767) {
 			throw new IllegalArgumentException("Item Damage out of range");
 		}
-
-		//no NBT, easy.
-		if(tag == null) {
-			return new ItemIdentifier(itemID, itemUndamagableDamage, null, 0);
-		}
-
-		ItemKey itemKey = new ItemKey(itemID, itemUndamagableDamage);
-		FinalNBTTagCompound tagwithfixedname = new FinalNBTTagCompound(tag);
-		//take the read lock, see if we already know this.
-		rlock.lock();
-		HashMap<FinalNBTTagCompound, Pair<Integer, WeakReference<ItemIdentifier>>> itemNBTList = _itemIdentifierTagCache.get(itemKey);
-		if(itemNBTList != null) {
-			Pair<Integer, WeakReference<ItemIdentifier>> unknownItemRef = itemNBTList.get(tagwithfixedname);
-			if(unknownItemRef != null) {
-				ItemIdentifier unknownItem = unknownItemRef.getValue2().get();
-				if(unknownItem != null) {
-					rlock.unlock();
-					return unknownItem;
-				}
-			}
-		}
-		//we either don't know this item/nbt or the ItemIdentifier got GCed
-		rlock.unlock();
-		wlock.lock();
-		//re-get in case another thread added it while we were blocked on the write lock
-		itemNBTList = _itemIdentifierTagCache.get(itemKey);
-		if(itemNBTList!=null){
-			Pair<Integer, WeakReference<ItemIdentifier>> unknownItemRef = itemNBTList.get(tagwithfixedname);
-			if(unknownItemRef!=null) {
-				ItemIdentifier unknownItem = unknownItemRef.getValue2().get();
-				if(unknownItem!=null) {
-					wlock.unlock();
-					return unknownItem;
-				}
-				//we once knew that item, resurrect it.
-				FinalNBTTagCompound finaltag = new FinalNBTTagCompound((NBTTagCompound)tag.copy());
-				unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, finaltag, unknownItemRef.getValue1());
-				unknownItemRef.setValue2(new WeakReference<ItemIdentifier>(unknownItem));
-				wlock.unlock();
-				return unknownItem;
-			}
+		if(tag == null && itemUndamagableDamage == 0) {
+			//no tag, no damage
+			return getOrCreateSimple(itemID);
+		} else if(tag == null) {
+			//no tag, damage
+			return getOrCreateDamage(itemID, itemUndamagableDamage);
 		} else {
-			itemNBTList = new HashMap<FinalNBTTagCompound, Pair<Integer, WeakReference<ItemIdentifier>>>(16, 0.5f);
-			_itemIdentifierTagCache.put(itemKey, itemNBTList);
+			//tag
+			return getOrCreateTag(itemID, itemUndamagableDamage, new FinalNBTTagCompound(tag));
 		}
-		FinalNBTTagCompound finaltag = new FinalNBTTagCompound((NBTTagCompound)tag.copy());
-		int uniqueNBTID = getUnusedId(itemNBTList);
-		ItemIdentifier unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, finaltag, uniqueNBTID);
-		checkNBTbadness(unknownItem, tag);
-		itemNBTList.put(finaltag, new Pair<Integer, WeakReference<ItemIdentifier>>(uniqueNBTID, new WeakReference<ItemIdentifier>(unknownItem)));
-		wlock.unlock();
-		return unknownItem;
 	}
 	
 	public static ItemIdentifier get(ItemStack itemStack) {
@@ -198,23 +291,17 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	}
 
 	public static List<ItemIdentifier> getMatchingNBTIdentifier(int itemID, int itemData) {
-		ItemKey itemKey = new ItemKey(itemID, itemData);
-		rlock.lock();
-		HashMap<FinalNBTTagCompound, Pair<Integer, WeakReference<ItemIdentifier>>> itemNBTList = _itemIdentifierTagCache.get(itemKey);
-		if(itemNBTList!=null) {
-			Collection<Pair<Integer, WeakReference<ItemIdentifier>>> c = itemNBTList.values();
-			ArrayList<ItemIdentifier> resultlist = new ArrayList<ItemIdentifier>(itemNBTList.values().size());
-			for(Pair<Integer, WeakReference<ItemIdentifier>> p : c) {
-				ItemIdentifier iid =  p.getValue2().get();
-				if(iid != null) {
-					resultlist.add(iid);
-				}
+		//inefficient, we'll have to add another map if this becomes a bottleneck
+		ArrayList<ItemIdentifier> resultlist = new ArrayList<ItemIdentifier>(16);
+		keyRefRlock.lock();
+		for(IDReference r : keyRefMap.values()) {
+			ItemIdentifier t = r.get();
+			if(t != null && t.itemID == itemID && t.itemDamage == itemData) {
+				resultlist.add(t);
 			}
-			rlock.unlock();
-			return resultlist;
 		}
-		rlock.unlock();
-		return new ArrayList<ItemIdentifier>(0);
+		keyRefRlock.unlock();
+		return resultlist;
 	}
 
 	public ItemIdentifier getUndamaged() {
@@ -231,6 +318,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	public static ItemIdentifier getIgnoringNBT(ItemStack itemStack) {
 		return get(itemStack.itemID, itemStack.getItemDamage(), null);
 	}
+
 	public ItemIdentifier getIgnoringNBT() {
 		if(this._IDIgnoringNBT==null){
 			_IDIgnoringNBT= get(itemID, itemDamage, null);			
@@ -238,24 +326,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return _IDIgnoringNBT;
 	}
 
-	private static int getUnusedId(HashMap<FinalNBTTagCompound, Pair<Integer, WeakReference<ItemIdentifier>>> itemNBTList) {
-		//find a unused unique ID value, also cleans up dangling weakrefs. horribly inefficient but good enough for now.
-		int maxid = 0;
-		Iterator<Entry<FinalNBTTagCompound, Pair<Integer, WeakReference<ItemIdentifier>>>> it = itemNBTList.entrySet().iterator();
-		while(it.hasNext()) {
-			Entry<FinalNBTTagCompound, Pair<Integer, WeakReference<ItemIdentifier>>> e = it.next();
-			if(e.getValue().getValue2().get() == null) {
-				//we found a dangling ref, re-use its id
-				int id = e.getValue().getValue1();
-				it.remove();
-				return id;
-			} else {
-				maxid = Math.max(maxid, e.getValue().getValue1());
-			}
-		}
-		return maxid + 1;
-	}
-	
 	/*
 	private static boolean tagsequal(NBTTagCompound tag1, NBTTagCompound tag2) {
 		if(tag1 == null && tag2 == null) {
@@ -571,13 +641,16 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		
 	}
 
-
 	public boolean equals(ItemIdentifier that){
-		return this.itemID == that.itemID && this.itemDamage == that.itemDamage && this.uniqueID==that.uniqueID;
+		return this.itemID == that.itemID && this.itemDamage == that.itemDamage && this.uniqueID == that.uniqueID;
 	}
 	
-	@Override public int hashCode(){
-		return (((itemID)*1000001)+itemDamage)^uniqueID;
+	@Override
+	public int hashCode(){
+		if(tag == null)
+			return (itemID*0x8241)+itemDamage;
+		else
+			return ((itemID*0x8241)+itemDamage)^tag.hashCode();
 	}
 
 	public boolean equalsForCrafting(ItemIdentifier item) {
@@ -594,8 +667,8 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 
 	private static void checkNBTbadness(ItemIdentifier item, NBTBase nbt) {
 		if((item.getMaxStackSize() > 1 || LogisticsPipes.DEBUG) && nbt.getName().isEmpty()) {
-			if (!_badTags.contains(item.getIgnoringNBT())) {
-				_badTags.add(item.getIgnoringNBT());
+			if (!_badTags.get(item.itemID)) {
+				_badTags.set(item.itemID);
 				LogisticsPipes.log.warning("Bad item " + item.getDebugName()
 						+ " : Root NBTTag has no name");
 			}

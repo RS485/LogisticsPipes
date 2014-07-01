@@ -216,7 +216,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 		if(MainProxy.isServer(worldObj)) {
 			for(int i=0;i<_contents.length;i++) {
 				while(_contents[i] != null) {
-					ItemStack todrop = decrStackSize(i, _contents[i].unsafeMakeNormalStack().getMaxStackSize());
+					ItemStack todrop = decrStackSize(i, _contents[i].getItem().getMaxStackSize());
 			    	dropItems(worldObj, todrop, posX, posY, posZ);
 				}
 			}

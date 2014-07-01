@@ -35,8 +35,8 @@ public class CCItemIdentifier implements ILPCCTypeDefinition {
 		}
 		
 		@CCCommand(description="Returns true if this ItemIdentifier is damagable")
-		public boolean isDamagable() {
-			return ident.isDamagable();
+		public boolean isDamageable() {
+			return ident.isDamageable();
 		}
 		
 		@CCCommand(description="Returns true if this ItemIdentifier has an tag")

@@ -597,7 +597,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	}
 
 	public boolean equalsForCrafting(ItemIdentifier item) {
-		return this.itemID == item.itemID && (item.isDamagable() ? true : this.itemDamage == item.itemDamage);
+		return this.itemID == item.itemID && (item.isDamageable() || (this.itemDamage == item.itemDamage));
 	}
 
 	public boolean equalsWithoutNBT(ItemStack stack) {
@@ -608,7 +608,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return this.itemID == item.itemID && this.itemDamage == item.itemDamage;
 	}
 
-	public boolean isDamagable() {
+	public boolean isDamageable() {
 		return this.getUndamaged() == this;
 	}
 

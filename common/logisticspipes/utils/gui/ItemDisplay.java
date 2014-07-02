@@ -2,6 +2,7 @@ package logisticspipes.utils.gui;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -32,6 +33,10 @@ import org.lwjgl.opengl.GL12;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class ItemDisplay {
+	public enum DisplayOption {
+		ID, ID_DOWN, SIZE, SIZE_DOWN, NAME, NAME_DOWN;
+	}
+	
 	private static final ResourceLocation TEXTURE = new ResourceLocation("textures/gui/icons.png");
 	private static final int PANELSIZEX = 20;
 	private static final int PANELSIZEY = 20;
@@ -55,6 +60,7 @@ public class ItemDisplay {
 	private final int[] amountChangeMode;
 	private final boolean shiftPageChange;
 	private final Minecraft mc = FMLClientHandler.instance().getClient();
+	private static DisplayOption option = DisplayOption.ID;
 	
 	public ItemDisplay(IItemSearch search, FontRenderer fontRenderer, LogisticsBaseGuiScreen screen, ISpecialItemRenderer renderer, int left, int top, int width, int height, int[] amountChangeMode, boolean shiftPageChange) {
 		this.search = search;
@@ -81,7 +87,7 @@ public class ItemDisplay {
 		listbyserver = true;
 		_allItems.clear();
 		_allItems.addAll(allItems);
-		Collections.sort(_allItems, new ItemIdentifierStack.orderedComparitor());
+		Collections.sort(_allItems, new StackComparitor());
 		boolean found = false;
 		if (selectedItem == null) return;
 		for (ItemIdentifierStack itemStack : _allItems) {
@@ -94,6 +100,72 @@ public class ItemDisplay {
 		if(!found) {
 			selectedItem = null;
 		}
+	}
+
+	private class StackComparitor implements Comparator<ItemIdentifierStack> {
+		@Override
+		public int compare(ItemIdentifierStack o1, ItemIdentifierStack o2) {
+			if(option == DisplayOption.ID) {
+				int c = basicCompare(o1, o2);
+				if(c != 0) return c;
+				return o2.getStackSize() - o1.getStackSize();
+			} else if(option == DisplayOption.ID_DOWN) {
+				int c = basicCompare(o2, o1);
+				if(c != 0) return c;
+				return o1.getStackSize() - o2.getStackSize();
+			} else if(option == DisplayOption.SIZE) {
+				int c = o2.getStackSize() - o1.getStackSize();
+				if(c != 0) return c;
+				return basicCompare(o1, o2);
+			} else if(option == DisplayOption.SIZE_DOWN) {
+				int c = o1.getStackSize() - o2.getStackSize();
+				if(c != 0) return c;
+				return basicCompare(o2, o1);
+			} else if(option == DisplayOption.NAME) {
+				int c = o1.getItem().getFriendlyName().compareToIgnoreCase(o2.getItem().getFriendlyName());
+				if(c != 0) return c;
+				c = basicCompare(o1, o2);
+				if(c != 0) return c;
+				return o2.getStackSize() - o1.getStackSize();
+			} else if(option == DisplayOption.NAME_DOWN) {
+				int c = o2.getItem().getFriendlyName().compareToIgnoreCase(o1.getItem().getFriendlyName());
+				if(c != 0) return c;
+				c = basicCompare(o2, o1);
+				if(c != 0) return c;
+				return o1.getStackSize() - o2.getStackSize();
+			} else {
+				int c = basicCompare(o1, o2);
+				if(c != 0) return c;
+				return o2.getStackSize() - o1.getStackSize();
+			}
+		}
+
+		private int basicCompare(ItemIdentifierStack o1, ItemIdentifierStack o2) {
+			int c = o1.getItem().itemID - o2.getItem().itemID;
+			if(c != 0) return c;
+			c = o1.getItem().itemDamage - o2.getItem().itemDamage;
+			if(c != 0) return c;
+			return o1.getItem().uniqueID - o2.getItem().uniqueID;
+		}
+	}
+	
+	public void cycle() {
+		int i = option.ordinal();
+		i++;
+		if(i >= DisplayOption.values().length) i = 0;
+		option = DisplayOption.values()[i];
+		Collections.sort(_allItems, new StackComparitor());
+	}
+	
+	public void renderSortMode(int x, int y) {
+		String name = option.name();
+		boolean up = true;
+		if(name.endsWith("_DOWN")) {
+			name = name.substring(0, name.length() - 5);
+			up = false;
+		}
+		name += !up ? " /\\" : " \\/";
+		fontRenderer.drawString(name, x - fontRenderer.getStringWidth(name) / 2 , y, 0x404040);
 	}
 
 	public void renderPageNumber(int x, int y) {

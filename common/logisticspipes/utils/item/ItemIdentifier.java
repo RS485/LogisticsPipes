@@ -157,7 +157,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	public final int itemID;
 	public final int itemDamage;
 	public final FinalNBTTagCompound tag;
-	protected final int uniqueID;
+	public final int uniqueID;
 	
 	private int maxStackSize = 0;
 

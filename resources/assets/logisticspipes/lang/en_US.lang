@@ -34,6 +34,7 @@ item.PipeItemsProviderLogisticsMk2=Provider Logistics Pipe Mk2
 item.PipeItemsProviderLogisticsMk2.tip1=Type: Item Source
 item.PipeItemsProviderLogisticsMk2.tip2= - Attaches to an inventory
 item.PipeItemsProviderLogisticsMk2.tip3= - Sends a stack of items into the network on request
+item.PipeItemsProviderLogisticsMk2.tip4= - Ignores Suppliers on the same block.
 
 item.PipeItemsCraftingLogistics=Crafting Logistics Pipe
 item.PipeItemsCraftingLogistics.tip1=Type: Active Requester + Source
@@ -59,8 +60,6 @@ item.PipeItemsCraftingLogisticsMk3.tip5= - Can use a satelite pipe to send input
 item.PipeItemsSatelliteLogistics=Satellite Logistics Pipe
 item.PipeItemsSatelliteLogistics.tip1=Type: Active request destination
 item.PipeItemsSatelliteLogistics.tip2= - A crafting pipe can send additional inputs here
-item.PipeItemsSatelliteLogistics.tip3= - Used to send non-stackable items to chest next
-item.PipeItemsSatelliteLogistics.tip4=   the crafting table.
 
 item.PipeItemsSupplierLogistics=Supplier Logistics Pipe
 item.PipeItemsSupplierLogistics.tip1=Type: Active item requester
@@ -136,7 +135,6 @@ item.PipeItemsFirewall.tip3=   while allowing only certain items to pass
 
 item.PipeItemsFluidSupplier=Logistics Fluid Container Supplier
 item.PipeItemsFluidSupplier.tip1=Uses buckets or other fluid containers to fill the connected tank
-item.PipeItemsFluidSupplier.tip2= - used for machines which automatically empty containers provided
 item.PipeFluidSupplierMk2=Logistics Fluid Supplier
 item.PipeFluidSupplierMk2.tip1=Pulls Fluids from a Logistics Fluid Provider Pipe
 item.LogisticsFluidConnectorPipe=Logistics Fluid Connector Pipe
@@ -301,7 +299,6 @@ gui.fluidsupplier.Partialrequests=Partial requests
 gui.fluidsupplier.Yes=Yes
 gui.fluidsupplier.No=No
 
-gui.invsyscon.No=No
 gui.invsyscon.Refresh=Refresh
 gui.invsyscon.Save=Save
 gui.invsyscon.InventorySystemConnector=Inventory System Connector

@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.hud.HUDProvider;
@@ -75,7 +76,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
-	private final Map<ItemIdentifier,Integer> displayMap = new HashMap<ItemIdentifier, Integer>();
+	private final Map<ItemIdentifier,Integer> displayMap = new TreeMap<ItemIdentifier, Integer>();
 	public final ArrayList<ItemIdentifierStack> displayList = new ArrayList<ItemIdentifierStack>();
 	private final ArrayList<ItemIdentifierStack> oldList = new ArrayList<ItemIdentifierStack>();
 

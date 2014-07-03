@@ -24,9 +24,9 @@ import logisticspipes.utils.string.ChatColor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatMessageComponent;
 
 @Accessors(chain = true)
 public class RoutingUpdateTargetResponse extends ModernPacket {
@@ -79,9 +79,9 @@ public class RoutingUpdateTargetResponse extends ModernPacket {
 			int y = (Integer) additions[1];
 			int z = (Integer) additions[2];
 			player.sendChatToPlayer(ChatMessageComponent.createFromText("Checking Block at: x:" + x + " y:" + y + " z:" + z));
-			int id = player.worldObj.getBlockId(x, y, z);
-			player.sendChatToPlayer(ChatMessageComponent.createFromText("Found Block with Id: " + id));
-			final TileEntity tile = player.worldObj.getBlockTileEntity(x, y, z);
+			Block id = player.worldObj.getBlock(x, y, z);
+			player.sendChatToPlayer(ChatMessageComponent.createFromText("Found Block with Id: " + Block.getIdFromBlock(id)));
+			final TileEntity tile = player.worldObj.getTileEntity(x, y, z);
 			if(tile == null) {
 				player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.RED + "No TileEntity found"));
 			} else if (!(tile instanceof LogisticsTileGenericPipe)) {

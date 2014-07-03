@@ -172,7 +172,7 @@ public class ServerProxy implements IProxy {
 				}
 				int id = Integer.valueOf(itemPart);
 				int meta = Integer.valueOf(metaPart);
-				SimpleServiceLocator.serverBufferHandler.addPacketToCompressor(PacketHandler.getPacket(UpdateName.class).setIdent(ItemIdentifier.get(id, meta, null)).setName("-"), player);
+				SimpleServiceLocator.serverBufferHandler.addPacketToCompressor(PacketHandler.getPacket(UpdateName.class).setIdent(ItemIdentifier.get(Item.getItemById(id), meta, null)).setName("-"), player);
 			}
 		}
 	}

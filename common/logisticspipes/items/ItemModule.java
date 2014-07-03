@@ -369,7 +369,7 @@ public class ItemModule extends LogisticsItem {
 							if(data.startsWith("<that>")) {
 								String prefix = data.substring(6);
 								NBTTagCompound module = nbt.getCompoundTag("moduleInformation");
-								int size = module.getTagList(prefix + "items").tagCount();
+								int size = module.getTagList(prefix + "items", module.getId()).tagCount();
 								if(module.hasKey(prefix + "itemsCount")) {
 									size = module.getInteger(prefix + "itemsCount");
 								}

@@ -123,7 +123,7 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 					t.setItemDamage(0);
 				oreHudList.add(new ItemIdentifierStack(ItemIdentifier.get(t), 1));
 			} else {
-				oreHudList.add(new ItemIdentifierStack(ItemIdentifier.get(Blocks.fire, 0, null), 1));
+				oreHudList.add(new ItemIdentifierStack(ItemIdentifier.get(Item.getItemFromBlock(Blocks.fire), 0, null), 1));
 			}
 		}
 	}

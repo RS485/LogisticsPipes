@@ -22,6 +22,8 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.IHavePriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 
 public class RequestTree extends RequestTreeNode {
 
@@ -170,7 +172,7 @@ public class RequestTree extends RequestTreeNode {
 	
 	public static boolean request(List<ItemIdentifierStack> items, IRequestItems requester, RequestLog log, EnumSet<ActiveRequestType> requestFlags, IAdditionalTargetInformation info) {
 		Map<ItemIdentifier,Integer> messages = new HashMap<ItemIdentifier,Integer>();
-		RequestTree tree = new RequestTree(new ItemIdentifierStack(ItemIdentifier.get(Blocks.stone, 0, null), 0), requester, null, requestFlags, info);
+		RequestTree tree = new RequestTree(new ItemIdentifierStack(ItemIdentifier.get(Item.getItemFromBlock(Blocks.stone), 0, null), 0), requester, null, requestFlags, info);
 		boolean isDone = true;
 		for(ItemIdentifierStack stack:items) {
 			ItemIdentifier item = stack.getItem();

@@ -511,7 +511,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 	public CoordinatesGuiProvider getGuiProvider() {
 		return NewGuiHandler.getGui(SolderingStationGui.class);
 	}
-/*
+
 	@Override
 	public boolean canInsertItem(int var1, ItemStack var2, int var3) {
 		// TODO Auto-generated method stub
@@ -523,5 +523,5 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 		// TODO Auto-generated method stub
 		return false;
 	}
-	*/
+
 }

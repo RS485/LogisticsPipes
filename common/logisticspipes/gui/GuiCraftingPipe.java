@@ -133,18 +133,6 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 		buttonList.clear();
 		FluidCraftingExtention extention = null;
 		if(!isAdvancedSat) {
-<<<<<<< HEAD
-			buttonList.add(normalButtonArray[0] = new SmallGuiButton(0, (width - xSize) / 2 + 155, (height - ySize) / 2 + 50, 10, 10, ">"));
-			buttonList.add(normalButtonArray[1] = new SmallGuiButton(1, (width - xSize) / 2 + 120, (height - ySize) / 2 + 50, 10, 10, "<"));
-			buttonList.add(normalButtonArray[2] = new SmallGuiButton(3, (width - xSize) / 2 + 39, (height - ySize) / 2 + 50, 37, 10, StringUtil.translate(PREFIX + "Import")));
-			buttonList.add(normalButtonArray[3] = new SmallGuiButton(4, (width - xSize) / 2 + 6, (height - ySize) / 2 + 50, 28, 10, StringUtil.translate(PREFIX + "Open")));
-			for(int i = 0; i < 6; i++) {
-				buttonList.add(buttonarray[i] = new SmallGuiButton(5 + i, (width - xSize) / 2 + 11 + 18 * i, (height - ySize) / 2 + 35, 10, 10, ">"));
-				buttonarray[i].visible = false;
-			}
-			buttonList.add(normalButtonArray[4] = new SmallGuiButton(20, (width - xSize) / 2 + 155, (height - ySize) / 2 + 85, 10, 10, ">"));
-			buttonList.add(normalButtonArray[5] = new SmallGuiButton(21, (width - xSize) / 2 + 120, (height - ySize) / 2 + 85, 10, 10, "<"));
-=======
 			if(liquidCrafter != 0) extention = new FluidCraftingExtention(0);
 			addButton(normalButtonArray[0] = new SmallGuiButton(0, (width - xSize) / 2 + 155, (height - ySize) / 2 + 50, 10, 10, ">"));
 			addButton(normalButtonArray[1] = new SmallGuiButton(1, (width - xSize) / 2 + 120, (height - ySize) / 2 + 50, 10, 10, "<"));
@@ -152,7 +140,6 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 			addButton(normalButtonArray[3] = new SmallGuiButton(4, (width - xSize) / 2 + 6, (height - ySize) / 2 + 50, 28, 10, StringUtil.translate(PREFIX + "Open")));
 			addButton(normalButtonArray[4] = new SmallGuiButton(20, (width - xSize) / 2 + 155, (height - ySize) / 2 + 85, 10, 10, ">"));
 			addButton(normalButtonArray[5] = new SmallGuiButton(21, (width - xSize) / 2 + 120, (height - ySize) / 2 + 85, 10, 10, "<"));
->>>>>>> mc16
 			if(liquidCrafter != 0) {
 				extention.registerButton(extentionController.registerControlledButton(addButton(normalButtonArray[6] = new SmallGuiButton(22, guiLeft - (liquidCrafter * 40) / 2 + 5, guiTop + 158, 10, 10, ">"))));
 				extention.registerButton(extentionController.registerControlledButton(addButton(normalButtonArray[7] = new SmallGuiButton(23, guiLeft - (liquidCrafter * 40) / 2 - 15, guiTop + 158, 10, 10, "<"))));
@@ -318,14 +305,9 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-<<<<<<< HEAD
+		super.drawGuiContainerForegroundLayer(par1, par2);
 		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Inputs"), 18, 7, 0x404040);
 		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Inventory"), 10, ySize - 93, 0x404040);
-=======
-		super.drawGuiContainerForegroundLayer(par1, par2);
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "Inputs"), 18, 7, 0x404040);
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "Inventory"), 10, ySize - 93, 0x404040);
->>>>>>> mc16
 		
 		if(!isAdvancedSat) {
 			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Output"), 77, 40, 0x404040);
@@ -350,61 +332,6 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 			mc.fontRenderer.drawString("" + _pipe.priority, 143 - (mc.fontRenderer.getStringWidth("" + _pipe.priority) / 2), 107, 0x404040);
 		}
 		
-<<<<<<< HEAD
-		for(int i = 0; i < liquidCrafter; i++) {
-			int liquidLeft = -(i * 40) - 40;
-			mc.fontRenderer.drawString(Integer.toString(_pipe.getFluidAmount()[i]), liquidLeft + 21 - (mc.fontRenderer.getStringWidth(Integer.toString(_pipe.getFluidAmount()[i])) / 2), 43, 0x404040);
-			mc.fontRenderer.drawString("1", liquidLeft + 18, 57, 0x404040);
-			mc.fontRenderer.drawString("10", liquidLeft + 15, 77, 0x404040);
-			mc.fontRenderer.drawString("100", liquidLeft + 12, 97, 0x404040);
-			mc.fontRenderer.drawString("1000", liquidLeft + 9, 117, 0x404040);
-			if(isAdvancedSat) {
-				if(_pipe.liquidSatelliteIdArray[i] == 0) {
-					drawRect(liquidLeft + 1, 13, liquidLeft + 40, 142, 0xAA8B8B8B);
-					mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Off"), liquidLeft + 13, 149, 0x404040);
-					for(int j = 0; j < 8; j++) {
-						liquidGuiParts[i][j].enabled = false;
-					}
-				} else {
-					mc.fontRenderer.drawString(Integer.toString(_pipe.liquidSatelliteIdArray[i]), liquidLeft + 21 - (mc.fontRenderer.getStringWidth(Integer.toString(_pipe.liquidSatelliteIdArray[i])) / 2), 149, 0x404040);
-					for(int j = 0; j < 8; j++) {
-						liquidGuiParts[i][j].enabled = true;
-					}
-				}
-			}
-		}
-		if(!isAdvancedSat && liquidCrafter != 0) {
-			if(_pipe.liquidSatelliteId == 0) {
-				drawRect(-(liquidCrafter * 40) + 1, 13, 0, 142, 0xAA8B8B8B);
-				mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Off"), -(liquidCrafter * 40) / 2 - 7, 149, 0x404040);
-				for(int i = 0; i < liquidCrafter; i++) {
-					for(int j = 0; j < 8; j++) {
-						liquidGuiParts[i][j].enabled = false;
-					}
-				}
-			} else {
-				mc.fontRenderer.drawString(Integer.toString(_pipe.liquidSatelliteId), -(liquidCrafter * 40) / 2 + 1 - (mc.fontRenderer.getStringWidth(Integer.toString(_pipe.liquidSatelliteId)) / 2), 149, 0x404040);
-				for(int i = 0; i < liquidCrafter; i++) {
-					for(int j = 0; j < 8; j++) {
-						liquidGuiParts[i][j].enabled = true;
-					}
-				}
-			}
-		}
-		for(int i = 0; i < liquidCrafter; i++) {
-			if(_pipe.getFluidInventory().getStackInSlot(i) == null && !((!isAdvancedSat && _pipe.liquidSatelliteId == 0) || (isAdvancedSat && _pipe.liquidSatelliteIdArray[i] == 0))) {
-				drawRect(-((i + 1) * 40) + 1, 40, -(i * 40), 142, 0xAA8B8B8B);
-				for(int j = 0; j < 8; j++) {
-					liquidGuiParts[i][j].enabled = false;
-				}
-			}
-		}
-		if(hasByproductExtractor) {
-			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Extra"), xSize - 35, 88, 0x404040);
-		}
-		
-=======
->>>>>>> mc16
 		if(isFuzzy) {
 			int mx = par1 - guiLeft;
 			int my = par2 - guiTop;
@@ -450,38 +377,7 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 			}
 		}
 	}
-<<<<<<< HEAD
-	
-	@Override
-	//isPointInRegion
-	public boolean func_146978_c(int x, int y, int par3, int par4, int par5, int par6) {
-		if(!isAdvancedSat && liquidCrafter != 0) {
-			if(_pipe.liquidSatelliteId == 0) {
-				if(-(liquidCrafter * 40) < x && x < 0) {
-					if(10 < y && y < 170) { return false; }
-				}
-			}
-		} else if(liquidCrafter != 0) {
-			for(int i = 0; i < liquidCrafter; i++) {
-				if(_pipe.liquidSatelliteIdArray[i] == 0) {
-					if(-((i + 1) * 40) < x && x < -(i * 40)) {
-						if(10 < y && y < 170) { return false; }
-					}
-				}
-				
-			}
-		}
-		return super.func_146978_c(x, y, par3, par4, par5, par6);
-	}
-	
-	@Override
-	public void drawScreen(int par1, int par2, float par3) {
-		super.drawScreen(par1, par2, par3);
-	}
-	
-=======
 
->>>>>>> mc16
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, guiLeft + xSize - (hasByproductExtractor ? 40 : 0), guiTop + ySize, zLevel, true, true, true, true, true);
@@ -564,16 +460,16 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
 				RenderHelper.enableGUIStandardItemLighting();
 				ItemStack stack = new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.LIQUID_CRAFTING);
-				itemRenderer.renderItemAndEffectIntoGUI(fontRenderer, getMC().renderEngine, stack, left + 5, top + 5);
-				itemRenderer.renderItemOverlayIntoGUI(fontRenderer, getMC().renderEngine, stack, left + 5, top + 5, "");
+				itemRender.renderItemAndEffectIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5);
+				itemRender.renderItemOverlayIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5, "");
 				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
 			}
-			itemRenderer.zLevel = 0.0F;
+			itemRender.zLevel = 0.0F;
 			
 			if(!isAdvancedSat && liquidCrafter > 1 && !isFullyExtended()) {
 				String s = Integer.toString(liquidCrafter);
-				fontRenderer.drawStringWithShadow(s, left + 22 - fontRenderer.getStringWidth(s), top + 14, 16777215);
+				mc.fontRenderer.drawStringWithShadow(s, left + 22 - fontRendererObj.getStringWidth(s), top + 14, 16777215);
 			}
 			if(isFullyExtended()) {
 				if(liquidCrafter > 1 && !isAdvancedSat) {
@@ -592,14 +488,14 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 					}
 					if(_pipe.liquidSatelliteId == 0) {
 						drawRect(left + 3, top + 3, left + 3 + (liquidCrafter * 40), top + 138, 0xAA8B8B8B);
-						fontRenderer.drawString(StringUtil.translate(PREFIX + "Off"), left + (liquidCrafter * 40) / 2 - 5, top + 145, 0x404040);
+						mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Off"), left + (liquidCrafter * 40) / 2 - 5, top + 145, 0x404040);
 						for(int i = 0; i < liquidCrafter; i++) {
 							for(int j = 0; j < 8; j++) {
 								liquidGuiParts[i][j].enabled = false;
 							}
 						}
 					} else {
-						fontRenderer.drawString(Integer.toString(_pipe.liquidSatelliteId), left + (liquidCrafter * 40) / 2 + 3 - (fontRenderer.getStringWidth(Integer.toString(_pipe.liquidSatelliteId)) / 2), top + 145, 0x404040);
+						mc.fontRenderer.drawString(Integer.toString(_pipe.liquidSatelliteId), left + (liquidCrafter * 40) / 2 + 3 - (fontRendererObj.getStringWidth(Integer.toString(_pipe.liquidSatelliteId)) / 2), top + 145, 0x404040);
 						for(int i = 0; i < liquidCrafter; i++) {
 							for(int j = 0; j < 8; j++) {
 								liquidGuiParts[i][j].enabled = true;
@@ -614,20 +510,20 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 		
 		private void renderFluidText(int left, int top, int i) {
 			BasicGuiHelper.drawSlotBackground(mc, left + 12, top + 19);
-			fontRenderer.drawString(Integer.toString(_pipe.getFluidAmount()[i]), left + 22 - (fontRenderer.getStringWidth(Integer.toString(_pipe.getFluidAmount()[i])) / 2), top + 40, 0x404040);
-			fontRenderer.drawString("1", left + 19, top + 53, 0x404040);
-			fontRenderer.drawString("10", left + 16, top + 73, 0x404040);
-			fontRenderer.drawString("100", left + 13, top + 93, 0x404040);
-			fontRenderer.drawString("1000", left + 10, top + 113, 0x404040);
+			mc.fontRenderer.drawString(Integer.toString(_pipe.getFluidAmount()[i]), left + 22 - (fontRendererObj.getStringWidth(Integer.toString(_pipe.getFluidAmount()[i])) / 2), top + 40, 0x404040);
+			mc.fontRenderer.drawString("1", left + 19, top + 53, 0x404040);
+			mc.fontRenderer.drawString("10", left + 16, top + 73, 0x404040);
+			mc.fontRenderer.drawString("100", left + 13, top + 93, 0x404040);
+			mc.fontRenderer.drawString("1000", left + 10, top + 113, 0x404040);
 			if(isAdvancedSat) {
 				if(_pipe.liquidSatelliteIdArray[i] == 0) {
 					drawRect(left + 3, top + 3, left + 42, top + 138, 0xAA8B8B8B);
-					fontRenderer.drawString(StringUtil.translate(PREFIX + "Off"), left + 15, top + 146, 0x404040);
+					mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Off"), left + 15, top + 146, 0x404040);
 					for(int j = 0; j < 8; j++) {
 						liquidGuiParts[i][j].enabled = false;
 					}
 				} else {
-					fontRenderer.drawString(Integer.toString(_pipe.liquidSatelliteIdArray[i]), left + 22 - (fontRenderer.getStringWidth(Integer.toString(_pipe.liquidSatelliteIdArray[i])) / 2), top + 146, 0x404040);
+					mc.fontRenderer.drawString(Integer.toString(_pipe.liquidSatelliteIdArray[i]), left + 22 - (fontRendererObj.getStringWidth(Integer.toString(_pipe.liquidSatelliteIdArray[i])) / 2), top + 146, 0x404040);
 					for(int j = 0; j < 8; j++) {
 						liquidGuiParts[i][j].enabled = true;
 					}
@@ -670,14 +566,14 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
 				RenderHelper.enableGUIStandardItemLighting();
 				ItemStack stack = new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CRAFTING_BYPRODUCT_EXTRACTOR);
-				itemRenderer.renderItemAndEffectIntoGUI(fontRenderer, getMC().renderEngine, stack, left + 5, top + 5);
-				itemRenderer.renderItemOverlayIntoGUI(fontRenderer, getMC().renderEngine, stack, left + 5, top + 5, "");
+				itemRender.renderItemAndEffectIntoGUI(fontRendererObj, getMC().renderEngine, stack, left + 5, top + 5);
+				itemRender.renderItemOverlayIntoGUI(fontRendererObj, getMC().renderEngine, stack, left + 5, top + 5, "");
 				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
-				itemRenderer.zLevel = 0.0F;
+				itemRender.zLevel = 0.0F;
 			} else {
 				BasicGuiHelper.drawBigSlotBackground(mc, left + 9, top + 20);
-				fontRenderer.drawString(StringUtil.translate(PREFIX + "Extra"), left + 9, top + 8, 0x404040);
+				fontRendererObj.drawString(StringUtil.translate(PREFIX + "Extra"), left + 9, top + 8, 0x404040);
 			}
 		}
 	}
@@ -703,11 +599,11 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
 				RenderHelper.enableGUIStandardItemLighting();
 				ItemStack stack = new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CRAFTING_CLEANUP);
-				itemRenderer.renderItemAndEffectIntoGUI(fontRenderer, getMC().renderEngine, stack, left + 5, top + 5);
-				itemRenderer.renderItemOverlayIntoGUI(fontRenderer, getMC().renderEngine, stack, left + 5, top + 5, "");
+				itemRender.renderItemAndEffectIntoGUI(fontRendererObj, getMC().renderEngine, stack, left + 5, top + 5);
+				itemRender.renderItemOverlayIntoGUI(fontRendererObj, getMC().renderEngine, stack, left + 5, top + 5, "");
 				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
-				itemRenderer.zLevel = 0.0F;
+				itemRender.zLevel = 0.0F;
 			} else {
 				for(int y = 0;y < cleanupSize;y++) {
 					for(int x=0;x < 3;x++) {

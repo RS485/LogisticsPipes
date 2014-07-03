@@ -30,6 +30,7 @@ import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
@@ -235,7 +236,7 @@ public class ServerProxy implements IProxy {
 			if(list != null && !list.isEmpty()) {
 				for(Object obj:list) {
 					if(obj instanceof EntityPlayerMP) {
-						((EntityPlayerMP)obj).sendChatToPlayer(ChatMessageComponent.createFromText("Server: " + message));
+						((EntityPlayerMP)obj).addChatMessage(new ChatComponentText("Server: " + message));
 					}
 				}
 			}

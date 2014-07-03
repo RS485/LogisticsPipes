@@ -204,9 +204,9 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	}
 
 	@Override
-	protected void drawSlotInventory(Slot slot) {
+	protected void func_146977_a(Slot slot) {
 		if(extentionController.renderSlot(slot)) {
-			super.drawSlotInventory(slot);
+			super.func_146977_a(slot);
 		}
 	}
 

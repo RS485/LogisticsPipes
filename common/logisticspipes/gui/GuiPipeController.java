@@ -243,11 +243,11 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 	}
 	
 	@Override
-	protected void drawSlotInventory(Slot slot) {
+	protected void func_146977_a(Slot slot) {
 		if(TAB_SLOTS_1_1.contains(slot) && current_Tab != 0) return;
 		if(TAB_SLOTS_1_2.contains(slot) && (current_Tab != 0 || !pipe.getUpgradeManager().hasCombinedSneakyUpgrade())) return;
 		if(TAB_SLOTS_2.contains(slot) && current_Tab != 1) return;
-		super.drawSlotInventory(slot);
+		super.func_146977_a(slot);
 	}
 	
 	@Override

@@ -187,7 +187,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 	
 	@Override
 	public boolean isScannedObject(ItemStack stack, String playerName) {
-		String h = ScanManager.generateItemHash(stack.itemID, stack.getItemDamage());
+		String h = ScanManager.generateItemHash(Item.getIdFromItem(stack.getItem()), stack.getItemDamage());
 		List<String> list = Thaumcraft.proxy.getScannedObjects().get(playerName);
 		return (list != null) && (list.contains("@" + h) || list.contains("#" + h));
 	}

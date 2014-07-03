@@ -153,8 +153,6 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	protected boolean _initialInit = true;
 	
 	private boolean enabled = true;
-	private Field itemIDAccess;
-	private int cachedItemID = -1;
 	private boolean blockRemove = false;
 	private boolean destroyByPlayer = false;
 	private PowerSupplierHandler powerHandler = new PowerSupplierHandler(this);
@@ -518,7 +516,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	
 	@Override
 	public final void onBlockRemoval() {
-		revertItemID();
+		//revertItemID();
 		if(canBeDestroyed() || destroyByPlayer) {
 			try {
 				onAllowedRemoval();
@@ -582,7 +580,8 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		if(canBeDestroyed() || destroyByPlayer) {
 			super.dropContents();
 		} else {
-			if(itemIDAccess == null) {
+			//XXX do this in TE overrides
+			/*if(itemIDAccess == null) {
 				try {
 					itemIDAccess = Pipe.class.getDeclaredField("itemID");
 					itemIDAccess.setAccessible(true);
@@ -616,10 +615,11 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 					blockRemove = false;
 					return null;
 				}
-			});
+			});*/
 		}
 	}
 
+	/*
 	private void revertItemID() {
 		if(cachedItemID != -1) {
 			try {
@@ -632,6 +632,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			cachedItemID = -1;
 		}
 	}
+	*/
 
 	public void checkTexturePowered() {
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return;
@@ -1232,7 +1233,7 @@ outer:
 	
 	@Override
 	public int getID(){
-		return this.itemID;
+		return this.getRouter().getSimpleID();
 	}
 
 	public Set<ItemIdentifier> getSpecificInterests() {

@@ -109,6 +109,19 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 		out.add(packet);
 	}
 	
+	public static void onPacketData(LPDataInputStream s, EntityPlayer p) {
+		try {
+			int packetID = s.readInt();
+			final ModernPacket packet = PacketHandler.packetlist.get(packetID).template();
+			packet.readData(s);
+			packet.processPacket(p);
+		} catch(Exception e) {
+			//LogisticsPipes.log.error(packet.getClass().getName());
+			//LogisticsPipes.log.error(packet.toString());
+			throw new RuntimeException(e);
+		}
+	}
+
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
 		FMLLog.log(Level.ERROR, cause, "LogisticsPipes PacketHandler exception caught");

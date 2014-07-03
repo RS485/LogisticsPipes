@@ -29,7 +29,9 @@ public class RequestUpdateNamesPacket extends ModernPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		Item[] itemList = Item.itemsList;
+		//XXX stubbed out. How do you enumerate every item now?
+		//Item[] itemList = Item.itemsList;
+		Item[] itemList = new Item[0];
 		List<ItemIdentifier> identList = new LinkedList<ItemIdentifier>();
 		for(Item item:itemList) {
 			if(item != null) {

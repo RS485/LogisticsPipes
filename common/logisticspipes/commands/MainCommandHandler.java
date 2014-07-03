@@ -12,7 +12,6 @@ import logisticspipes.commands.commands.NameLookupCommand;
 import logisticspipes.commands.commands.RoutingThreadCommand;
 import logisticspipes.commands.commands.TransferNamesCommand;
 import logisticspipes.commands.commands.VersionCommand;
-import logisticspipes.commands.commands.WatchCommand;
 import logisticspipes.commands.commands.WrapperCommand;
 import net.minecraft.command.ICommandSender;
 

@@ -11,8 +11,6 @@ package logisticspipes;
 import java.lang.reflect.Field;
 import java.util.Calendar;
 
-import buildcraft.api.transport.IPipeTile.PipeType;
-
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.commands.LogisticsPipesCommand;
@@ -81,7 +79,6 @@ import logisticspipes.ticks.RenderTickHandler;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.ticks.ServerPacketBufferHandlerThread;
 import logisticspipes.ticks.VersionChecker;
-import logisticspipes.ticks.Watchdog;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.RoutedItemHelper;
@@ -92,9 +89,11 @@ import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.EnumHelper;
 
 import org.apache.logging.log4j.Logger;
 
+import buildcraft.api.transport.IPipeTile.PipeType;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;

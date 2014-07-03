@@ -2,7 +2,6 @@ package logisticspipes.commands.commands;
 
 import logisticspipes.commands.LogisticsPipesCommand;
 import logisticspipes.commands.abstracts.ICommandHandler;
-import logisticspipes.ticks.Watchdog;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ChatComponentText;
 

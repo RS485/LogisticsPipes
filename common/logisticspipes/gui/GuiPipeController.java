@@ -204,7 +204,7 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 				mc.fontRenderer.drawString("Authorization: " + (SimpleServiceLocator.securityStationManager.isAuthorized(id) ? ChatColor.GREEN + "Authorized" : ChatColor.RED + "Deauthorized"), 10, 94, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
 			}
 		} else if(current_Tab == 2) {
-			String pipeName = ItemIdentifier.get(pipe.itemID, 0, null).getFriendlyName();
+			String pipeName = ItemIdentifier.get(pipe.item, 0, null).getFriendlyName();
 			fontRendererObj.drawString(pipeName, (170 - fontRendererObj.getStringWidth(pipeName)) / 2, 28, 0x83601c);
 			
 			int sessionxCenter = 85;

@@ -96,7 +96,7 @@ public class DebugHelper implements IContainerTooltipHandler {
 			DefaultMutableTreeNode type = new DefaultMutableTreeNode("NBTTagByteArray");
 			DefaultMutableTreeNode content = new DefaultMutableTreeNode("Data");
 			int i = 0;
-			for(byte byt:((NBTTagByteArray)nbt).byteArray) {
+			for(byte byt:((NBTTagByteArray)nbt).func_150292_c()) {
 				content.add(new DefaultMutableTreeNode("[" + i + "]: " + Byte.toString(byt)));
 				i++;
 			}
@@ -118,7 +118,7 @@ public class DebugHelper implements IContainerTooltipHandler {
 			DefaultMutableTreeNode type = new DefaultMutableTreeNode("NBTTagIntArray");
 			DefaultMutableTreeNode content = new DefaultMutableTreeNode("Data");
 			int i = 0;
-			for(int byt:((NBTTagIntArray)nbt).intArray) {
+			for(int byt:((NBTTagIntArray)nbt).func_150302_c()) {
 				content.add(new DefaultMutableTreeNode("[" + i + "]: " + byt));
 				i++;
 			}

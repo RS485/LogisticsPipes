@@ -94,8 +94,8 @@ public class NewGuiHandler {
 		try {
 			screen = (LogisticsBaseGuiScreen) provider.getClientGui(player);
 		} catch(Exception e) {
-			LogisticsPipes.log.severe(packet.getClass().getName());
-			LogisticsPipes.log.severe(packet.toString());
+			LogisticsPipes.log.error(packet.getClass().getName());
+			LogisticsPipes.log.error(packet.toString());
 			throw new RuntimeException(e);
 		}
 		screen.inventorySlots.windowId = packet.getWindowID();

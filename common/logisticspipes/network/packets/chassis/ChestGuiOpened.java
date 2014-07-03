@@ -12,7 +12,6 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.common.network.Player;
 
 public class ChestGuiOpened extends ModernPacket {
 	
@@ -27,7 +26,7 @@ public class ChestGuiOpened extends ModernPacket {
 	public void processPacket(EntityPlayer player) {
 		List<WeakReference<ModuleQuickSort>> list = LogisticsEventListener.chestQuickSortConnection.get(player);
 		if(list == null || list.isEmpty()) return;
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(EnableQuickSortMarker.class), (Player) player); 
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(EnableQuickSortMarker.class), player); 
 		for(WeakReference<ModuleQuickSort> sorter:list) {
 			ModuleQuickSort module = sorter.get();
 			if(module == null) continue;

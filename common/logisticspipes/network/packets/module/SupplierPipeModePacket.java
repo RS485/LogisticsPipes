@@ -9,7 +9,6 @@ import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import logisticspipes.network.packets.modules.SupplierPipeMode;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.common.network.Player;
 
 public class SupplierPipeModePacket extends ModuleCoordinatesPacket {
 
@@ -40,7 +39,7 @@ public class SupplierPipeModePacket extends ModuleCoordinatesPacket {
 			}
 			module.setSupplyMode(SupplyMode.values()[mode]);
 		}
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setHasPatternUpgrade(module.hasPatternUpgrade()).setInteger(mode).setPacketPos(this), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setHasPatternUpgrade(module.hasPatternUpgrade()).setInteger(mode).setPacketPos(this), player);
 	}
 }
 

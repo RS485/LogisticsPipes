@@ -43,7 +43,6 @@ import buildcraft.transport.render.PipeRendererTESR;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
-import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ClientProxy implements IProxy {
@@ -137,7 +136,7 @@ public class ClientProxy implements IProxy {
 		//Not Client Side
 	}
 	@Override
-	public void sendNameUpdateRequest(Player player) {
+	public void sendNameUpdateRequest(EntityPlayer player) {
 		//Not Client Side
 	}
 

@@ -41,7 +41,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
-import cpw.mods.fml.common.network.Player;
 
 public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenControler, ISecurityProvider, IGuiTileEntity {
 	
@@ -97,9 +96,9 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 
 	@Override
 	public void guiOpenedByPlayer(EntityPlayer player) {
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationCC.class).setInteger(allowCC?1:0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player) player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationAutoDestroy.class).setInteger(allowAutoDestroy?1:0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player) player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationId.class).setUuid(getSecId()).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationCC.class).setInteger(allowCC?1:0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationAutoDestroy.class).setInteger(allowAutoDestroy?1:0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationId.class).setUuid(getSecId()).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), player);
 		SimpleServiceLocator.securityStationManager.sendClientAuthorizationList();
 		listener.add(player);
 	}
@@ -237,7 +236,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 		}
 		NBTTagCompound nbt = new NBTTagCompound();
 		setting.writeToNBT(nbt);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationOpenPlayer.class).setTag(nbt), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationOpenPlayer.class).setTag(nbt), player);
 	}
 
 	public void saveNewSecuritySettings(NBTTagCompound tag) {
@@ -291,7 +290,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 			list.appendTag(new NBTTagInt("" + i, i));
 		}
 		tag.setTag("list", list);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationCCIDs.class).setTag(tag).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationCCIDs.class).setTag(tag).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), player);
 	}
 
 	public void handleListPacket(NBTTagCompound tag) {

@@ -48,7 +48,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
-import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport, IHeadUpDisplayRendererProvider, IChestContentReceiver {
 	
@@ -145,7 +144,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 			localModeWatchers.add(player);
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 //TODO Must be handled manualy
-			MainProxy.sendPacketToPlayer(packet, (Player)player);
+			MainProxy.sendPacketToPlayer(packet, player);
 			updateInv(true);
 		} else {
 			super.playerStartWatching(player, mode);
@@ -232,7 +231,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		} else {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 //TODO Must be handled manualy
-			MainProxy.sendPacketToPlayer(packet, (Player)player);
+			MainProxy.sendPacketToPlayer(packet, player);
 		}
 		updateWatchers();
 	}
@@ -247,7 +246,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		} else {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 //TODO Must be handled manualy
-			MainProxy.sendPacketToPlayer(packet,(Player) player);
+			MainProxy.sendPacketToPlayer(packet, player);
 		}
 		updateWatchers();
 	}
@@ -269,7 +268,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		// Send the satellite id when opening gui
 		final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 //TODO Must be handled manualy
-		MainProxy.sendPacketToPlayer(packet, (Player)entityplayer);
+		MainProxy.sendPacketToPlayer(packet, entityplayer);
 		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SatelitePipe_ID, getWorld(), getX(), getY(), getZ());
 	}
 

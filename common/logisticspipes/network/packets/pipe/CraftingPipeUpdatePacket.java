@@ -8,8 +8,6 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
-import logisticspipes.pipes.PipeItemsCraftingLogistics;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

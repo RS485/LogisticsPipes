@@ -20,7 +20,6 @@ import net.minecraft.inventory.ContainerPlayer;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
-import cpw.mods.fml.common.network.Player;
 
 public class CraftingPermissionManager {
 	private Map<String, Pair<Long, EnumSet<CraftingDependency>>> serverCache = new HashMap<String, Pair<Long, EnumSet<CraftingDependency>>>();
@@ -109,6 +108,6 @@ public class CraftingPermissionManager {
 	
 	public void sendCraftingPermissionsToPlayer(EntityPlayer player) {
 		EnumSet<CraftingDependency> set = getEnumSet(player.getEntityName());
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingPermissionPacket.class).setEnumSet(set), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingPermissionPacket.class).setEnumSet(set), player);
 	}
 }

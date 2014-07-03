@@ -23,7 +23,6 @@ import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -78,7 +77,7 @@ public class NewGuiHandler {
 		packet.setGuiID(guiProvider.getId());
 		packet.setWindowID(windowId);
 		packet.setGuiData(data.toByteArray());
-		MainProxy.sendPacketToPlayer(packet, (Player) player);
+		MainProxy.sendPacketToPlayer(packet, player);
 
 		player.openContainer = container;
         player.openContainer.windowId = windowId;

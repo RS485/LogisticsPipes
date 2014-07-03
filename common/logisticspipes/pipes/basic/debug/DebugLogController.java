@@ -11,7 +11,6 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.PlayerCollectionList;
 import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.common.network.Player;
 
 public class DebugLogController {
 	
@@ -49,7 +48,7 @@ public class DebugLogController {
 		players.add(player);
 		List<StatusEntry> status = new ArrayList<StatusEntry>();
 		pipe.addStatusInformation(status);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SendNewLogWindow.class).setWindowID(ID).setTitle(pipe.toString()), (Player) player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(UpdateStatusEntries.class).setWindowID(ID).setStatus(status), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SendNewLogWindow.class).setWindowID(ID).setTitle(pipe.toString()), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(UpdateStatusEntries.class).setWindowID(ID).setStatus(status), player);
 	}
 }

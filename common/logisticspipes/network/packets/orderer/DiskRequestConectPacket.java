@@ -10,7 +10,6 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import cpw.mods.fml.common.network.Player;
 
 public class DiskRequestConectPacket extends CoordinatesPacket {
 
@@ -37,7 +36,7 @@ public class DiskRequestConectPacket extends CoordinatesPacket {
 					}
 				}
 			}
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DiscContent.class).setStack(((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DiscContent.class).setStack(((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), player);
 		}
 		if(pipe.pipe instanceof PipeBlockRequestTable) {
 			if(((PipeBlockRequestTable)pipe.pipe).diskInv.getStackInSlot(0) != null) {
@@ -47,7 +46,7 @@ public class DiskRequestConectPacket extends CoordinatesPacket {
 					}
 				}
 			}
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DiscContent.class).setStack(((PipeBlockRequestTable)pipe.pipe).diskInv.getStackInSlot(0)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DiscContent.class).setStack(((PipeBlockRequestTable)pipe.pipe).diskInv.getStackInSlot(0)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), player);
 		}
 	}
 }

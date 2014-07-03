@@ -126,7 +126,6 @@ import buildcraft.api.gates.IAction;
 import buildcraft.core.network.IClientState;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
-import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -1077,7 +1076,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		if(mode == 0) {
 			watchers.add(player);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(StatUpdate.class).setPipe(this), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(StatUpdate.class).setPipe(this), player);
 		}
 	}
 
@@ -1740,13 +1739,13 @@ outer:
 		}
 		ModernPacket packet = PacketHandler.getPacket(PipeSignTypes.class).setTypes(types).setTilePos(container);
 		MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), packet);
-		MainProxy.sendPacketToPlayer(packet, (Player) player);
+		MainProxy.sendPacketToPlayer(packet, player);
 		for(int i=0;i<6;i++) {
 			if(signItem[i] != null) {
 				packet = signItem[i].getPacket();
 				if(packet != null) {
 					MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), packet);
-					MainProxy.sendPacketToPlayer(packet, (Player) player);
+					MainProxy.sendPacketToPlayer(packet, player);
 				}
 			}
 		}

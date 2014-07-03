@@ -8,7 +8,6 @@ import logisticspipes.network.packets.modules.ExtractorModuleMode;
 import logisticspipes.proxy.MainProxy;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.common.network.Player;
 
 @Accessors(chain=true)
 public class ExtractorModuleDirectionPacket extends DirectionModuleCoordinatesPacket {
@@ -27,7 +26,7 @@ public class ExtractorModuleDirectionPacket extends DirectionModuleCoordinatesPa
 		final LogisticsSneakyDirectionModule module = this.getLogisticsModule(player, LogisticsSneakyDirectionModule.class);
 		if(module == null) return;
 		module.setSneakyDirection(getDirection());
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setDirection(module.getSneakyDirection()).setPacketPos(this), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setDirection(module.getSneakyDirection()).setPacketPos(this), player);
 	}
 }
 

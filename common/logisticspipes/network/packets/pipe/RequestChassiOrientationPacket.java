@@ -7,7 +7,6 @@ import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.common.network.Player;
 
 public class RequestChassiOrientationPacket extends CoordinatesPacket {
 	
@@ -19,7 +18,7 @@ public class RequestChassiOrientationPacket extends CoordinatesPacket {
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
 		if(pipe == null || !(pipe.pipe instanceof PipeLogisticsChassi)) return;
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ChassiOrientationPacket.class).setDir(((PipeLogisticsChassi)pipe.pipe).getPointedOrientation()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ChassiOrientationPacket.class).setDir(((PipeLogisticsChassi)pipe.pipe).getPointedOrientation()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
 	}
 	
 	@Override

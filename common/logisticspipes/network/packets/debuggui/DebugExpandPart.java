@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.common.network.Player;
 
 @Accessors(chain = true)
 public class DebugExpandPart extends ModernPacket {
@@ -35,7 +34,7 @@ public class DebugExpandPart extends ModernPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		try {
-			DebugGuiTickHandler.instance().expandGuiAt(tree, (Player) player);
+			DebugGuiTickHandler.instance().expandGuiAt(tree, player);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

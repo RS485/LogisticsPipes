@@ -7,8 +7,8 @@ import logisticspipes.network.packets.gui.OpenChatGui;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.string.ChatColor;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatMessageComponent;
-import cpw.mods.fml.common.network.Player;
 
 public class MorePageDisplay {
 	
@@ -156,7 +156,7 @@ public class MorePageDisplay {
 				currentpage++;
 				display(sender, currentpage);
 			}
-			if(sender instanceof Player) MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) sender);
+			if(sender instanceof EntityPlayer) MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (EntityPlayer) sender);
 		} else if(input.equalsIgnoreCase("previous") || input.equalsIgnoreCase("prev") || input.equalsIgnoreCase("pre") || input.equalsIgnoreCase("p")) {
 			if(currentpage < 2) {
 				display(sender, currentpagecount);
@@ -180,16 +180,16 @@ public class MorePageDisplay {
 			display(sender, currentpage, true, false, 1);
 			sender.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.AQUA + "Added '" + ChatColor.YELLOW + input.substring(5) + ChatColor.AQUA + "' to your chat history."));
 			printLastLine(sender, false);
-			if(sender instanceof Player) MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) sender);
+			if(sender instanceof EntityPlayer) MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (EntityPlayer) sender);
 		} else if(input.equals("save")) {
 			display(sender, currentpage, true, false, 2);
 			sender.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.AQUA + "Add an command after the '" + ChatColor.YELLOW + "save " + ChatColor.AQUA + "' and it will be added to your chat history."));
 			printLastLine(sender, false);
-			if(sender instanceof Player) MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) sender);
+			if(sender instanceof EntityPlayer) MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (EntityPlayer) sender);
 		} else {
 			//display(sender,currentpage,true);
 			printLastLine(sender, true);
-			if(sender instanceof Player) MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) sender);
+			if(sender instanceof EntityPlayer) MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (EntityPlayer) sender);
 		}
 		return true;
 	}
@@ -300,7 +300,7 @@ public class MorePageDisplay {
 		if( !all) clearscreen(sender, row - 2 - header.size() - doneLines - linesub);
 		if(all && count > content.size()) clearscreen(sender, count - content.size());
 		if( !flag) printLastLine(sender);
-		if(sender instanceof Player) MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) sender);
+		if(sender instanceof EntityPlayer) MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (EntityPlayer) sender);
 	}
 	
 	private class StringConnected {

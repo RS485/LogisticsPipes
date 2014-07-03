@@ -22,7 +22,6 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import buildcraft.transport.TileGenericPipe;
-import cpw.mods.fml.common.network.Player;
 
 @Accessors(chain=true)
 public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
@@ -82,11 +81,11 @@ public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 				Block block = player.worldObj.getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord) < Block.blocksList.length ? Block.blocksList[player.worldObj.getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord)] : null;
 				if(SimpleServiceLocator.enderStorageProxy.isEnderChestBlock(block)) {
 					SimpleServiceLocator.enderStorageProxy.openEnderChest(player.worldObj, tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, player);
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class).setTagetPosX(tile.tile.xCoord).setTagetPosY(tile.tile.yCoord).setTagetPosZ(tile.tile.zCoord).setSlot(getSlot()).setPacketPos(this), (Player)player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class).setTagetPosX(tile.tile.xCoord).setTagetPosY(tile.tile.yCoord).setTagetPosZ(tile.tile.zCoord).setSlot(getSlot()).setPacketPos(this), player);
 				}
 				if(block != null) {
 					if(block.onBlockActivated(player.worldObj, tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, player, 0, 0, 0, 0)) {
-						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class).setTagetPosX(tile.tile.xCoord).setTagetPosY(tile.tile.yCoord).setTagetPosZ(tile.tile.zCoord).setSlot(getSlot()).setPacketPos(this), (Player)player);
+						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class).setTagetPosX(tile.tile.xCoord).setTagetPosY(tile.tile.yCoord).setTagetPosZ(tile.tile.zCoord).setSlot(getSlot()).setPacketPos(this), player);
 						break;
 					}
 				}

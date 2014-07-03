@@ -108,7 +108,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.transport.TileGenericPipe;
-import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -619,7 +618,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		} else {
 			satelliteId = getNextConnectSatelliteId(false, -1);
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteId.class).setPipeId(satelliteId).setModulePos(this);
-			MainProxy.sendPacketToPlayer(packet, (Player)player);
+			MainProxy.sendPacketToPlayer(packet, player);
 		}
 
 	}
@@ -640,7 +639,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		} else {
 			satelliteId = getNextConnectSatelliteId(true, -1);
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteId.class).setPipeId(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-			MainProxy.sendPacketToPlayer(packet, (Player)player);
+			MainProxy.sendPacketToPlayer(packet, player);
 		}
 	}
 
@@ -775,8 +774,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				final ModernPacket packetA = this.getCPipePacket();
 				final ModernPacket packetB = PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(getDummyInventory()).setModulePos(this);
 				if(player != null) {
-					MainProxy.sendPacketToPlayer(packetA, (Player)player);
-					MainProxy.sendPacketToPlayer(packetB, (Player)player);
+					MainProxy.sendPacketToPlayer(packetA, player);
+					MainProxy.sendPacketToPlayer(packetB, player);
 				}
 				MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), packetA);
 				MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), packetB);
@@ -829,14 +828,14 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			// Send inventory as packet
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(_dummyInventory).setModulePos(this);
 			if(player != null) {
-				MainProxy.sendPacketToPlayer(packet, (Player)player);
+				MainProxy.sendPacketToPlayer(packet, player);
 			}
 			MainProxy.sendPacketToAllWatchingChunk(this.getX(), this.getZ(), MainProxy.getDimensionForWorld(getWorld()), packet);
 			
 			if(fuzzyFlagsChanged && this.getUpgradeManager().isFuzzyCrafter()) {
 				for(int i = 0; i < 9; i++) {
 					final ModernPacket pak = PacketHandler.getPacket(CraftingFuzzyFlag.class).setInteger2(fuzzyCraftingFlagArray[i]).setInteger(i).setModulePos(this);
-					if(player != null) MainProxy.sendPacketToPlayer(pak, (Player)player);
+					if(player != null) MainProxy.sendPacketToPlayer(pak, player);
 					MainProxy.sendPacketToAllWatchingChunk(this.getX(), this.getZ(), MainProxy.getDimensionForWorld(getWorld()), pak);
 				}
 			}
@@ -852,7 +851,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		if(MainProxy.isClient(player.worldObj)) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipePriorityUpPacket.class).setModulePos(this));
 		} else if(player != null && MainProxy.isServer(player.worldObj)) {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingPriority.class).setInteger(priority).setModulePos(this), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingPriority.class).setInteger(priority).setModulePos(this), player);
 		}
 	}
 	
@@ -861,7 +860,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		if(MainProxy.isClient(player.worldObj)) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipePriorityDownPacket.class).setModulePos(this));
 		} else if(player != null && MainProxy.isServer(player.worldObj)) {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingPriority.class).setInteger(priority).setModulePos(this), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingPriority.class).setInteger(priority).setModulePos(this), player);
 		}
 	}
 	
@@ -889,7 +888,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipeNextAdvancedSatellitePacket.class).setInteger(i).setModulePos(this));
 		} else {
 			advancedSatelliteIdArray[i] = getNextConnectSatelliteId(false, i);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(advancedSatelliteIdArray[i]).setModulePos(this), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(advancedSatelliteIdArray[i]).setModulePos(this), player);
 		}
 	}
 
@@ -898,7 +897,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipePrevAdvancedSatellitePacket.class).setInteger(i).setModulePos(this));
 		} else {
 			advancedSatelliteIdArray[i] = getNextConnectSatelliteId(true, i);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(advancedSatelliteIdArray[i]).setModulePos(this), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(advancedSatelliteIdArray[i]).setModulePos(this), player);
 		}
 	}
 
@@ -910,7 +909,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			if(amount[slot] <= 0) {
 				amount[slot] = 0;
 			}
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAmount.class).setInteger2(slot).setInteger(amount[slot]).setModulePos(this), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAmount.class).setInteger2(slot).setInteger(amount[slot]).setModulePos(this), player);
 		}
 	}
 
@@ -920,10 +919,10 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		} else {
 			if(i == -1) {
 				liquidSatelliteId = getNextConnectFluidSatelliteId(true, i);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteId).setModulePos(this), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteId).setModulePos(this), player);
 			} else {
 				liquidSatelliteIdArray[i] = getNextConnectFluidSatelliteId(true, i);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteIdArray[i]).setModulePos(this), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteIdArray[i]).setModulePos(this), player);
 			}
 		}
 	}
@@ -934,10 +933,10 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		} else {
 			if(i == -1) {
 				liquidSatelliteId = getNextConnectFluidSatelliteId(false, i);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteId).setModulePos(this), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteId).setModulePos(this), player);
 			} else {
 				liquidSatelliteIdArray[i] = getNextConnectFluidSatelliteId(false, i);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteIdArray[i]).setModulePos(this), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteIdArray[i]).setModulePos(this), player);
 			}
 		}
 	}
@@ -1004,7 +1003,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			fuzzyCraftingFlagArray[slot] ^= 1 << flag;
 			ModernPacket pak = PacketHandler.getPacket(CraftingFuzzyFlag.class).setInteger2(fuzzyCraftingFlagArray[slot]).setInteger(slot).setModulePos(this);
 			if(player != null)
-				MainProxy.sendPacketToPlayer(pak, (Player)player);
+				MainProxy.sendPacketToPlayer(pak, player);
 			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), pak);
 		}
 	}

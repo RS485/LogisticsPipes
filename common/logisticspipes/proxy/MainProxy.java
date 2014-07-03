@@ -113,12 +113,12 @@ public class MainProxy {
 		}
 	}
 
-	public static void sendPacketToPlayer(ModernPacket packet, Player player) {
+	public static void sendPacketToPlayer(ModernPacket packet, EntityPlayer player) {
 		packet.create();
 		if(packet.isCompressable() || needsToBeCompressed(packet)) {
 			SimpleServiceLocator.serverBufferHandler.addPacketToCompressor(packet.getPacket(), player);
 		} else {
-			PacketDispatcher.sendPacketToPlayer(packet.getPacket(), player);
+			PacketDispatcher.sendPacketToPlayer(packet.getPacket(), (Player) player);
 		}
 	}
 
@@ -129,7 +129,7 @@ public class MainProxy {
 		if(players != null) {
 			for(EntityPlayer player:players.players()) {
 				if(MainProxy.getDimensionForWorld(player.worldObj) == dimensionId) {
-					sendPacketToPlayer(packet, (Player)player);
+					sendPacketToPlayer(packet, player);
 				}
 			}
 			return;
@@ -141,7 +141,7 @@ public class MainProxy {
 		packet.create();
 		if(packet.isCompressable() || needsToBeCompressed(packet)) {
 			for(EntityPlayer player:players.players()) {
-				SimpleServiceLocator.serverBufferHandler.addPacketToCompressor(packet.getPacket(), (Player) player);
+				SimpleServiceLocator.serverBufferHandler.addPacketToCompressor(packet.getPacket(), player);
 			}
 		} else {
 			for(EntityPlayer player:players.players()) {
@@ -155,7 +155,7 @@ public class MainProxy {
 		if(packet.isCompressable() || needsToBeCompressed(packet)) {
 			for(World world: DimensionManager.getWorlds()) {
 				for(Object playerObject:world.playerEntities) {
-					Player player = (Player) playerObject;
+					EntityPlayer player = (EntityPlayer) playerObject;
 					SimpleServiceLocator.serverBufferHandler.addPacketToCompressor(packet.getPacket(), player);
 				}
 			}

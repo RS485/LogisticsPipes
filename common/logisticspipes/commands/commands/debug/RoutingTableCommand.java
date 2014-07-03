@@ -7,7 +7,6 @@ import logisticspipes.proxy.MainProxy;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatMessageComponent;
-import cpw.mods.fml.common.network.Player;
 
 public class RoutingTableCommand implements ICommandHandler {
 
@@ -28,7 +27,7 @@ public class RoutingTableCommand implements ICommandHandler {
 	
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateAskForTarget.class), (Player) sender);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateAskForTarget.class), (EntityPlayer) sender);
 		sender.sendChatToPlayer(ChatMessageComponent.createFromText("Asking for Target."));
 	}
 }

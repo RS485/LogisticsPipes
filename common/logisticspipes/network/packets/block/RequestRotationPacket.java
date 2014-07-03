@@ -6,7 +6,6 @@ import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.common.network.Player;
 
 public class RequestRotationPacket extends CoordinatesPacket {
 
@@ -23,7 +22,7 @@ public class RequestRotationPacket extends CoordinatesPacket {
 	public void processPacket(EntityPlayer player) {
 		IRotationProvider tile = this.getTile(player.worldObj, IRotationProvider.class);
 		if(tile != null) {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(Rotation.class).setInteger(tile.getRotation()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(Rotation.class).setInteger(tile.getRotation()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
 		}
 	}
 }

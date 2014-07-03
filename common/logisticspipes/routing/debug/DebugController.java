@@ -32,8 +32,8 @@ import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.ticks.QueuedTasks;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatMessageComponent;
-import cpw.mods.fml.common.network.Player;
 
 public class DebugController implements IRoutingDebugAdapter {
 	private static HashMap<ICommandSender, DebugController> instances = new HashMap<ICommandSender, DebugController>();
@@ -81,7 +81,7 @@ public class DebugController implements IRoutingDebugAdapter {
 								e.printStackTrace();
 							}
 						}
-						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) sender);
+						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (EntityPlayer) sender);
 						if(oldThread != null) {
 							oldThread.stop();
 						}
@@ -119,7 +119,7 @@ public class DebugController implements IRoutingDebugAdapter {
 					@Override
 					public Boolean call() throws Exception {
 						state = DebugWaitState.CONTINUE;
-						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player)sender);
+						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (EntityPlayer)sender);
 						return true;
 					}
 				}, sender);
@@ -149,7 +149,7 @@ public class DebugController implements IRoutingDebugAdapter {
 		this.closedSet = closedSet;
 		this.filterList = filterList;
 		ExitRoute[] e = candidatesCost.toArray(new ExitRoute[]{});
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateDebugCanidateList.class).setMsg(e), (Player) sender);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateDebugCanidateList.class).setMsg(e), (EntityPlayer) sender);
 		wait("Start?", true);
 	}
 
@@ -161,8 +161,8 @@ public class DebugController implements IRoutingDebugAdapter {
 		}
 		pipeHandled = false;
 		prevNode = lowestCostNode;
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateClearClient.class), (Player) sender);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateSourcePipe.class).setExitRoute(lowestCostNode), (Player) sender);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateClearClient.class), (EntityPlayer) sender);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateSourcePipe.class).setExitRoute(lowestCostNode), (EntityPlayer) sender);
 	}
 	
 	@Override
@@ -176,7 +176,7 @@ public class DebugController implements IRoutingDebugAdapter {
 			if(set != null) {
 				IRouter router = SimpleServiceLocator.routerManager.getRouter(i);
 				if(router != null) {
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateDebugClosedSet.class).setPos(router.getLPPosition()).setSet(set), (Player) sender);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateDebugClosedSet.class).setPos(router.getLPPosition()).setSet(set), (EntityPlayer) sender);
 				}
 			}
 		}
@@ -185,7 +185,7 @@ public class DebugController implements IRoutingDebugAdapter {
 			if(filters != null) {
 				IRouter router = SimpleServiceLocator.routerManager.getRouter(i);
 				if(router != null) {
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateDebugFilters.class).setPos(router.getLPPosition()).setFilters(filters), (Player) sender);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateDebugFilters.class).setPos(router.getLPPosition()).setFilters(filters), (EntityPlayer) sender);
 				}
 			}
 		}
@@ -197,7 +197,7 @@ public class DebugController implements IRoutingDebugAdapter {
 			list.addAll(Arrays.asList(e));
 			e = list.toArray(new ExitRoute[]{});
 		}
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateDebugCanidateList.class).setMsg(e), (Player) sender);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateDebugCanidateList.class).setMsg(e), (EntityPlayer) sender);
 		if(prevNode == null || prevNode.debug.isTraced) {
 			//Display Information On Client Side
 			
@@ -210,7 +210,7 @@ public class DebugController implements IRoutingDebugAdapter {
 	public void newCanidate(ExitRoute next) {
 		next.debug.index = cachedRoutes.size();
 		cachedRoutes.add(new WeakReference<ExitRoute>(next));
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateCanidatePipe.class).setExitRoute(next), (Player) sender);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateCanidatePipe.class).setExitRoute(next), (EntityPlayer) sender);
 	}
 
 	@Override
@@ -226,15 +226,15 @@ public class DebugController implements IRoutingDebugAdapter {
 	@Override
 	public void done() {
 		sendMsg("Update Done");
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateClearClient.class), (Player) sender);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateDoneDebug.class), (Player) sender);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateClearClient.class), (EntityPlayer) sender);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateDoneDebug.class), (EntityPlayer) sender);
 		cachedRoutes.clear();
 	}
 
 	@Override
 	public void init() {
 		sendMsg("Initialising variables");
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateInitDebug.class), (Player) sender);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateInitDebug.class), (EntityPlayer) sender);
 	}
 
 	@Override

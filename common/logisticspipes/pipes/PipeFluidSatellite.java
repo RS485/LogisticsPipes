@@ -42,7 +42,6 @@ import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
-import cpw.mods.fml.common.network.Player;
 
 public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid, IRequireReliableFluidTransport, IHeadUpDisplayRendererProvider, IChestContentReceiver {
 
@@ -150,7 +149,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 		if(mode == 1) {
 			localModeWatchers.add(player);
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID((this).satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-			MainProxy.sendPacketToPlayer(packet, (Player)player);
+			MainProxy.sendPacketToPlayer(packet, player);
 			updateInv(true);
 		} else {
 			super.playerStartWatching(player, mode);
@@ -226,7 +225,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 			MainProxy.sendPacketToServer(packet);
 		} else {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-			MainProxy.sendPacketToPlayer(packet, (Player)player);
+			MainProxy.sendPacketToPlayer(packet, player);
 		}
 		updateWatchers();
 	}
@@ -239,7 +238,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 			MainProxy.sendPacketToServer(packet);
 		} else {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-			MainProxy.sendPacketToPlayer(packet,(Player) player);
+			MainProxy.sendPacketToPlayer(packet, player);
 		}
 		updateWatchers();
 	}
@@ -262,7 +261,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	public void onWrenchClicked(EntityPlayer entityplayer) {
 		// Send the satellite id when opening gui
 		final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-		MainProxy.sendPacketToPlayer(packet, (Player)entityplayer);
+		MainProxy.sendPacketToPlayer(packet, entityplayer);
 		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SatelitePipe_ID, getWorld(), getX(), getY(), getZ());
 	}
 

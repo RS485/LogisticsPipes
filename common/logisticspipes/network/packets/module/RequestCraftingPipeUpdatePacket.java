@@ -7,7 +7,6 @@ import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import logisticspipes.network.packets.cpipe.CPipeSatelliteImportBack;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.common.network.Player;
 
 public class RequestCraftingPipeUpdatePacket extends ModuleCoordinatesPacket {
 
@@ -24,8 +23,8 @@ public class RequestCraftingPipeUpdatePacket extends ModuleCoordinatesPacket {
 	public void processPacket(EntityPlayer player) {
 		ModuleCrafter module = this.getLogisticsModule(player, ModuleCrafter.class);
 		if(module == null) return;
-		MainProxy.sendPacketToPlayer(module.getCPipePacket(), (Player) player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(module.getDummyInventory()).setModulePos(module), (Player) player);
+		MainProxy.sendPacketToPlayer(module.getCPipePacket(), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(module.getDummyInventory()).setModulePos(module), player);
 	}
 }
 

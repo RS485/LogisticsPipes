@@ -19,6 +19,7 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.BufferTransfer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.tuples.Pair;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
@@ -30,9 +31,9 @@ public class ServerPacketBufferHandlerThread {
 
 	private class ServerCompressorThread extends Thread {
 		//Map of Players to lists of S->C packets to be serialized and compressed
-		private final HashMap<Player, LinkedList<Packet250CustomPayload>> serverList = new HashMap<Player,LinkedList<Packet250CustomPayload>>();
+		private final HashMap<EntityPlayer, LinkedList<Packet250CustomPayload>> serverList = new HashMap<EntityPlayer, LinkedList<Packet250CustomPayload>>();
 		//Map of Players to serialized but still uncompressed S->C data
-		private final HashMap<Player, byte[]> serverBuffer = new HashMap<Player, byte[]>();
+		private final HashMap<EntityPlayer, byte[]> serverBuffer = new HashMap<EntityPlayer, byte[]>();
 		//used to cork the compressor so we can queue up a whole bunch of packets at once
 		private boolean pause = false;
 		//Clear content on next tick
@@ -50,7 +51,7 @@ public class ServerPacketBufferHandlerThread {
 				try {
 					synchronized(serverList) {
 						if(!pause) {
-							for(Entry<Player, LinkedList<Packet250CustomPayload>> player:serverList.entrySet()) {
+							for(Entry<EntityPlayer, LinkedList<Packet250CustomPayload>> player:serverList.entrySet()) {
 								ByteArrayOutputStream out = new ByteArrayOutputStream();
 								DataOutputStream data = new DataOutputStream(out);
 								byte[] towrite = serverBuffer.get(player.getKey());
@@ -68,7 +69,7 @@ public class ServerPacketBufferHandlerThread {
 						}
 					}
 					//Send Content
-					for(Entry<Player, byte[]> player:serverBuffer.entrySet()) {
+					for(Entry<EntityPlayer, byte[]> player:serverBuffer.entrySet()) {
 						while(player.getValue().length > 32 * 1024) {
 							byte[] sendbuffer = Arrays.copyOf(player.getValue(), 1024 * 32);
 							byte[] newbuffer = Arrays.copyOfRange(player.getValue(), 1024 * 32, player.getValue().length);
@@ -103,7 +104,7 @@ public class ServerPacketBufferHandlerThread {
 			}
 		}
 
-		public void addPacketToCompressor(Packet250CustomPayload packet, Player player) {
+		public void addPacketToCompressor(Packet250CustomPayload packet, EntityPlayer player) {
 			if(packet.channel.equals("BCLP")) {
 				synchronized(serverList) {
 					LinkedList<Packet250CustomPayload> packetList = serverList.get(player);
@@ -305,7 +306,7 @@ public class ServerPacketBufferHandlerThread {
 		serverCompressorThread.setPause(flag);
 	}
 
-	public void addPacketToCompressor(Packet250CustomPayload packet, Player player) {
+	public void addPacketToCompressor(Packet250CustomPayload packet, EntityPlayer player) {
 		serverCompressorThread.addPacketToCompressor(packet, player);
 	}
 

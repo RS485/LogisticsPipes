@@ -27,7 +27,6 @@ import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatMessageComponent;
-import cpw.mods.fml.common.network.Player;
 
 @Accessors(chain = true)
 public class RoutingUpdateTargetResponse extends ModernPacket {
@@ -95,12 +94,12 @@ public class RoutingUpdateTargetResponse extends ModernPacket {
 					public Boolean call() throws Exception {
 						player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.GREEN + "Starting RoutingTable debug update."));
 						DebugController.instance(player).debug(((ServerRouter)((CoreRoutedPipe)((LogisticsTileGenericPipe)tile).pipe).getRouter()));
-						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) player);
+						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
 						return true;
 					}
 				}, player);
 				player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.AQUA + "Start RoutingTable debug update ? " + ChatColor.RESET + "<" + ChatColor.GREEN + "yes" + ChatColor.RESET + "/" + ChatColor.RED + "no" + ChatColor.RESET + ">"));
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
 			}
 		} else if(mode == TargetMode.Entity) {
 			player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.RED + "Entity not allowed"));

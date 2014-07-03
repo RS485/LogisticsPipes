@@ -187,7 +187,7 @@ public class ServerProxy implements IProxy {
 	}
 
 	@Override
-	public void sendNameUpdateRequest(Player player) {
+	public void sendNameUpdateRequest(EntityPlayer player) {
 		for(String category:langDatabase.getCategoryNames()) {
 			if(!category.startsWith("itemNames.")) continue;
 			String name = langDatabase.get(category, "name", "").getString();

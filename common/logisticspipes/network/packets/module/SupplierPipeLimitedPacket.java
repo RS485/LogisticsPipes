@@ -16,7 +16,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.network.Player;
 
 @Accessors(chain=true)
 public class SupplierPipeLimitedPacket extends ModuleCoordinatesPacket {
@@ -37,7 +36,7 @@ public class SupplierPipeLimitedPacket extends ModuleCoordinatesPacket {
 		if(MainProxy.isClient(player.worldObj)) {
 			refresh();
 		} else {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeLimitedPacket.class).setLimited(isLimited()).setPacketPos(this), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeLimitedPacket.class).setLimited(isLimited()).setPacketPos(this), player);
 		}
 	}
 	

@@ -6,7 +6,6 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.common.network.Player;
 
 public class CPipeCleanupImport extends ModuleCoordinatesPacket {
 	
@@ -24,7 +23,7 @@ public class CPipeCleanupImport extends ModuleCoordinatesPacket {
 		final ModuleCrafter module = this.getLogisticsModule(player, ModuleCrafter.class);
 		if(module == null) return;
 		module.importCleanup();
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CPipeCleanupStatus.class).setMode(module.cleanupModeIsExclude).setPacketPos(this), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CPipeCleanupStatus.class).setMode(module.cleanupModeIsExclude).setPacketPos(this), player);
 	}
 }
 

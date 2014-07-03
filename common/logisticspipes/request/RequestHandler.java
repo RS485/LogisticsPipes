@@ -29,7 +29,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ChatMessageComponent;
-import cpw.mods.fml.common.network.Player;
 
 public class RequestHandler {
 	
@@ -51,14 +50,14 @@ public class RequestHandler {
 				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
 					coll.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
 				}
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(true), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(true), player);
 			}
 
 			@Override
 			public void handleSucessfullRequestOf(ItemIdentifier item, int count, LinkedLogisticsOrderList parts) {
 				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(1);
 				coll.add(new ItemIdentifierStack(item, count));
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(false), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(false), player);
 				if(pipe instanceof IRequestWatcher) {
 					((IRequestWatcher)pipe).handleOrderList(item.makeStack(count), parts);
 				}
@@ -106,7 +105,7 @@ public class RequestHandler {
 		for(Entry<ItemIdentifier,Integer>e:missing.entrySet()) {
 			missingList.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
 		}
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ComponentList.class).setUsed(usedList).setMissing(missingList), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ComponentList.class).setUsed(usedList).setMissing(missingList), player);
 	}
 	
 	public static void refresh(EntityPlayer player, CoreRoutedPipe pipe, DisplayOptions option) {
@@ -134,7 +133,7 @@ public class RequestHandler {
 			if (_availableItems.containsKey(item)) continue;
 			_allItems.add(item.makeStack(0));
 		}
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererContent.class).setIdentSet(_allItems), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererContent.class).setIdentSet(_allItems), player);
 	}
 	
 
@@ -150,7 +149,7 @@ public class RequestHandler {
 				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
 					coll.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
 				}
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(true), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(true), player);
 			}
 			
 			@Override
@@ -162,7 +161,7 @@ public class RequestHandler {
 				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
 					coll.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
 				}
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(false), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(false), player);
 			}
 		},RequestTree.defaultRequestFlags, null);
 	}
@@ -190,7 +189,7 @@ public class RequestHandler {
 				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
 					coll.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
 				}
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(true), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(true), player);
 			}
 			
 			@Override
@@ -202,7 +201,7 @@ public class RequestHandler {
 				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
 					coll.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
 				}
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(false), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(false), player);
 				if(requester instanceof IRequestWatcher) {
 					((IRequestWatcher)requester).handleOrderList(transaction.get(0), parts);
 				}
@@ -249,7 +248,7 @@ public class RequestHandler {
 
 	public static void refreshFluid(EntityPlayer player, CoreRoutedPipe pipe) {
 		TreeSet<ItemIdentifierStack> _allItems = SimpleServiceLocator.logisticsFluidManager.getAvailableFluid(pipe.getRouter().getIRoutersByCost());
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererContent.class).setIdentSet(_allItems), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererContent.class).setIdentSet(_allItems), player);
 	}
 
 	public static void requestFluid(final EntityPlayer player, final ItemIdentifierStack stack, CoreRoutedPipe pipe, IRequestFluid requester) {
@@ -265,14 +264,14 @@ public class RequestHandler {
 				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
 					coll.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
 				}
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(true), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(true), player);
 			}
 
 			@Override
 			public void handleSucessfullRequestOf(ItemIdentifier item, int count, LinkedLogisticsOrderList parts) {
 				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(1);
 				coll.add(new ItemIdentifierStack(item, count));
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(false), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(false), player);
 			}
 			
 			@Override

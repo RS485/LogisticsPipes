@@ -44,7 +44,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import cpw.mods.fml.common.network.IGuiHandler;
-import cpw.mods.fml.common.network.Player;
 
 public class GuiHandler implements IGuiHandler {
 
@@ -91,7 +90,7 @@ public class GuiHandler implements IGuiHandler {
 					}
 				}
 				
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidSupplierMode.class).setInteger((((PipeItemsFluidSupplier)pipe.pipe).isRequestingPartials() ? 1 : 0)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidSupplierMode.class).setInteger((((PipeItemsFluidSupplier)pipe.pipe).isRequestingPartials() ? 1 : 0)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), player);
 			    return dummy;
 
 			case GuiIDs.GUI_FluidSupplier_MK2_ID:
@@ -100,7 +99,7 @@ public class GuiHandler implements IGuiHandler {
 				dummy.addNormalSlotsForPlayerInventory(18, 97);
 				dummy.addFluidSlot(0, ((PipeFluidSupplierMk2)pipe.pipe).getDummyInventory(), 0, 0);
 				
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidSupplierMode.class).setInteger((((PipeFluidSupplierMk2)pipe.pipe).isRequestingPartials() ? 1 : 0)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidSupplierMode.class).setInteger((((PipeFluidSupplierMk2)pipe.pipe).isRequestingPartials() ? 1 : 0)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), player);
 			    return dummy;
 				
 			case GuiIDs.GUI_ProviderPipe_ID:
@@ -169,7 +168,7 @@ public class GuiHandler implements IGuiHandler {
 				
 				dummy.addNormalSlotsForPlayerInventory(0, 50);
 				
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(InvSysConResistance.class).setInteger(((PipeItemsInvSysConnector)pipe.pipe).resistance).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(InvSysConResistance.class).setInteger(((PipeItemsInvSysConnector)pipe.pipe).resistance).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), player);
 				
 				return dummy;
 			

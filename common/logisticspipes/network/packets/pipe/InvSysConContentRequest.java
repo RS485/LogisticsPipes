@@ -7,7 +7,6 @@ import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.common.network.Player;
 
 public class InvSysConContentRequest extends CoordinatesPacket {
 
@@ -27,7 +26,7 @@ public class InvSysConContentRequest extends CoordinatesPacket {
 			return;
 		}
 		if(pipe.pipe instanceof PipeItemsInvSysConnector) {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(InvSysConContent.class).setIdentSet(((PipeItemsInvSysConnector)pipe.pipe).getExpectedItems()), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(InvSysConContent.class).setIdentSet(((PipeItemsInvSysConnector)pipe.pipe).getExpectedItems()), player);
 		}
 	}
 }

@@ -303,7 +303,7 @@ outer:
 					.setInteger(integer)
 					.setTilePos(this);
 			if(pl != null)
-				MainProxy.sendPacketToPlayer(pak, (Player)pl);
+				MainProxy.sendPacketToPlayer(pak, pl);
 			MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(worldObj), pak);
 		}
 	}

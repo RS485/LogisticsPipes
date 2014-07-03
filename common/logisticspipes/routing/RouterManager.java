@@ -25,7 +25,6 @@ import logisticspipes.network.packets.block.SecurityStationAuthorizedList;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.common.network.Player;
 
 
 public class RouterManager implements IRouterManager, IDirectConnectionManager, ISecurityStationManager {
@@ -318,7 +317,7 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager, 
 	
 	@Override
 	public void sendClientAuthorizationList(EntityPlayer player) {
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationAuthorizedList.class).setStringList(this._authorized), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationAuthorizedList.class).setStringList(this._authorized), player);
 	}
 
 	@Override

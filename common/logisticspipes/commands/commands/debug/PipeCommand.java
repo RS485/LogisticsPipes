@@ -8,7 +8,6 @@ import logisticspipes.proxy.MainProxy;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatMessageComponent;
-import cpw.mods.fml.common.network.Player;
 
 public class PipeCommand implements ICommandHandler {
 	
@@ -36,15 +35,15 @@ public class PipeCommand implements ICommandHandler {
 		if(args[0].equalsIgnoreCase("help")) {
 			sender.sendChatToPlayer(ChatMessageComponent.createFromText("client, server, both or console"));
 		} else if(args[0].equalsIgnoreCase("both")) {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PipeDebugAskForTarget.class).setServer(true), (Player) sender);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PipeDebugAskForTarget.class).setServer(false), (Player) sender);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PipeDebugAskForTarget.class).setServer(true), (EntityPlayer) sender);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PipeDebugAskForTarget.class).setServer(false), (EntityPlayer) sender);
 			sender.sendChatToPlayer(ChatMessageComponent.createFromText("Asking for Target."));
 		} else if(args[0].equalsIgnoreCase("console") || args[0].equalsIgnoreCase("c")) {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PipeDebugLogAskForTarget.class), (Player) sender);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PipeDebugLogAskForTarget.class), (EntityPlayer) sender);
 			sender.sendChatToPlayer(ChatMessageComponent.createFromText("Asking for Target."));
 		} else {
 			boolean isClient = args[0].equalsIgnoreCase("client");
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PipeDebugAskForTarget.class).setServer(!isClient), (Player) sender);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PipeDebugAskForTarget.class).setServer(!isClient), (EntityPlayer) sender);
 			sender.sendChatToPlayer(ChatMessageComponent.createFromText("Asking for Target."));
 		}
 	}

@@ -13,7 +13,6 @@ import logisticspipes.proxy.MainProxy;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.DimensionManager;
-import cpw.mods.fml.common.network.Player;
 
 @Accessors(chain=true)
 public class PlayerListRequest extends ModernPacket {
@@ -40,7 +39,7 @@ public class PlayerListRequest extends ModernPacket {
 				list.add(names.substring(0, names.length() - 4));
 			}
 		}
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PlayerList.class).setStringList(list), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PlayerList.class).setStringList(list), player);
 	}
 
 	@Override

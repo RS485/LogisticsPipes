@@ -45,8 +45,7 @@ public class RequestHandler {
 			player.addChatMessage(new ChatComponentTranslation("lp.misc.noenergy"));
 			return;
 		}
-		RequestTree.request(ItemIdentifier.get(stack.getItem().item, stack.getItem().itemDamage, stack.getItem().tag).makeStack(stack.getStackSize()), pipe
-				, new RequestLog() {
+		RequestTree.request(stack.clone(), pipe, new RequestLog() {
 			@Override
 			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
 				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(items.size());
@@ -68,13 +67,13 @@ public class RequestHandler {
 			
 			@Override
 			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items, LinkedLogisticsOrderList parts) {}
-		});
+		}, null);
 	}
 	
 	public static void simulate(final EntityPlayer player, final ItemIdentifierStack stack, CoreRoutedPipe pipe) {
 		final Map<ItemIdentifier,Integer> used = new HashMap<ItemIdentifier,Integer>();
 		final Map<ItemIdentifier,Integer> missing = new HashMap<ItemIdentifier,Integer>();
-		RequestTree.simulate(ItemIdentifier.get(stack.getItem().item, stack.getItem().itemDamage, stack.getItem().tag).makeStack(stack.getStackSize()), pipe, new RequestLog() {
+		RequestTree.simulate(stack.clone(), pipe, new RequestLog() {
 			@Override
 			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
 				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
@@ -166,7 +165,7 @@ public class RequestHandler {
 				}
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(false), player);
 			}
-		},RequestTree.defaultRequestFlags);
+		},RequestTree.defaultRequestFlags, null);
 	}
 
 	public static void requestMacrolist(NBTTagCompound itemlist, final CoreRoutedPipe requester, final EntityPlayer player) {
@@ -209,7 +208,7 @@ public class RequestHandler {
 					((IRequestWatcher)requester).handleOrderList(transaction.get(0), parts);
 				}
 			}
-		},RequestTree.defaultRequestFlags);
+		},RequestTree.defaultRequestFlags, null);
 	}
 
 	public static Object[] computerRequest(final ItemIdentifierStack makeStack, final CoreRoutedPipe pipe, boolean craftingOnly) {
@@ -245,7 +244,7 @@ public class RequestHandler {
 			
 			@Override
 			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items, LinkedLogisticsOrderList parts) {}
-		},false, false,true,false,requestFlags);
+		},false, false,true,false,requestFlags, null);
 		return status;
 	}
 

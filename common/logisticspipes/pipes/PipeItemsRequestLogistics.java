@@ -18,7 +18,7 @@ import java.util.Map.Entry;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IRequestAPI;
 import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -34,6 +34,7 @@ import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -64,15 +65,19 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 	}
 	
 	@Override
-	public boolean wrenchClicked(EntityPlayer entityplayer, SecuritySettings settings) {
-		if(MainProxy.isServer(getWorld())) {
-			if (settings == null || settings.openRequest) {
-				openGui(entityplayer);
-			} else {
-				entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
+	public boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
+		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && SimpleServiceLocator.buildCraftProxy.canWrench(entityplayer, this.getX(), this.getY(), this.getZ())) {
+			if(MainProxy.isServer(getWorld())) {
+				if (settings == null || settings.openRequest) {
+					openGui(entityplayer);
+				} else {
+					entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
+				}
 			}
+			SimpleServiceLocator.buildCraftProxy.wrenchUsed(entityplayer, this.getX(), this.getY(), this.getZ());
+			return true;
 		}
-		return true;
+		return false;
 	}
 	
 	@Override
@@ -189,7 +194,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 
 			@Override
 			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items, LinkedLogisticsOrderList parts) {}
-		});
+		}, null);
 		List<ItemStack> missingList = new ArrayList<ItemStack>(missing.size());
 		for(Entry<ItemIdentifier,Integer>e:missing.entrySet()) {
 			missingList.add(e.getKey().unsafeMakeNormalStack(e.getValue()));
@@ -199,20 +204,30 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 	}
 
 	/* CC */
-
-	@CCCommand(description="Requests the given ItemIdentifier Id with the given amount")
+	@CCCommand(description="Requests the given ItemIdentifierStack")
 	@CCQueued
-	public Object[] makeRequest(Double itemId, Double amount) throws Exception {
-		return makeRequest(itemId, amount, false);
+	public Object[] makeRequest(ItemIdentifierStack stack) throws Exception {
+		return makeRequest(stack.getItem(), Double.valueOf(stack.getStackSize()), false);
+	}
+	
+	@CCCommand(description="Requests the given ItemIdentifierStack")
+	@CCQueued
+	public Object[] makeRequest(ItemIdentifierStack stack, Boolean forceCrafting) throws Exception {
+		return makeRequest(stack.getItem(), Double.valueOf(stack.getStackSize()), forceCrafting);
+	}
+	
+	@CCCommand(description="Requests the given ItemIdentifier with the given amount")
+	@CCQueued
+	public Object[] makeRequest(ItemIdentifier item, Double amount) throws Exception {
+		return makeRequest(item, amount, false);
 	}
 
-	@CCCommand(description="Requests the given ItemIdentifier Id with the given amount")
+	@CCCommand(description="Requests the given ItemIdentifier with the given amount")
 	@CCQueued
-	public Object[] makeRequest(Double itemId, Double amount, Boolean forceCrafting) throws Exception {
+	public Object[] makeRequest(ItemIdentifier item, Double amount, Boolean forceCrafting) throws Exception {
 		if(forceCrafting==null)
 			forceCrafting=false;
-		ItemIdentifier item = ItemIdentifier.getForId((int)Math.floor(itemId));
-		if(item == null) throw new Exception("Invalid ItemIdentifierID");
+		if(item == null) throw new Exception("Invalid ItemIdentifier");
 		return RequestHandler.computerRequest(item.makeStack((int)Math.floor(amount)), this,forceCrafting);
 	}
 
@@ -237,9 +252,8 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 
 	@CCCommand(description="Asks for the amount of an ItemIdentifier Id inside the Logistics Network")
 	@CCQueued
-	public int getItemAmount(Double itemId) throws Exception {
+	public int getItemAmount(ItemIdentifier item) throws Exception {
 		Map<ItemIdentifier, Integer> items = SimpleServiceLocator.logisticsManager.getAvailableItems(getRouter().getIRoutersByCost());
-		ItemIdentifier item = ItemIdentifier.getForId((int)Math.floor(itemId));
 		if(item == null) throw new Exception("Invalid ItemIdentifierID");
 		if(items.containsKey(item)) {
 			return items.get(item);

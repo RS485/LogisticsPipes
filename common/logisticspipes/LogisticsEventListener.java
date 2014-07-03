@@ -14,9 +14,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.packets.GuiReopenPacket;
 import logisticspipes.network.packets.chassis.ChestGuiClosed;
 import logisticspipes.network.packets.chassis.ChestGuiOpened;
+import logisticspipes.network.packets.gui.GuiReopenPacket;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -111,7 +111,7 @@ public class LogisticsEventListener {
 					for(AdjacentTile adj:new WorldUtil(tile).getAdjacentTileEntities()) {
 						if(adj.tile instanceof LogisticsTileGenericPipe) {
 							if(((LogisticsTileGenericPipe)adj.tile).pipe instanceof PipeLogisticsChassi) {
-								if(((PipeLogisticsChassi)((LogisticsTileGenericPipe)adj.tile).pipe).getOrientation() == adj.orientation.getOpposite()) {
+								if(((PipeLogisticsChassi)((LogisticsTileGenericPipe)adj.tile).pipe).getPointedOrientation() == adj.orientation.getOpposite()) {
 									PipeLogisticsChassi chassi = (PipeLogisticsChassi)((LogisticsTileGenericPipe)adj.tile).pipe;
 									for(int i=0;i<chassi.getChassiSize();i++) {
 										if(chassi.getLogisticsModule().getSubModule(i) instanceof ModuleQuickSort) {

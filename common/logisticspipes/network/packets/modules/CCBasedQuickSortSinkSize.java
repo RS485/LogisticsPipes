@@ -1,14 +1,23 @@
 package logisticspipes.network.packets.modules;
 
-import logisticspipes.modules.LogisticsModule;
+import java.io.IOException;
+
 import logisticspipes.modules.ModuleCCBasedQuickSort;
-import logisticspipes.network.abstractpackets.Integer2CoordinatesPacket;
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.PipeLogisticsChassi;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
-public class CCBasedQuickSortSinkSize extends Integer2CoordinatesPacket {
+@Accessors(chain=true)
+public class CCBasedQuickSortSinkSize extends ModuleCoordinatesPacket {
+	
+	@Getter
+	@Setter
+	private int sinkSize;
 	
 	public CCBasedQuickSortSinkSize(int id) {
 		super(id);
@@ -16,19 +25,25 @@ public class CCBasedQuickSortSinkSize extends Integer2CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if(getInteger2() < 0) return;
-		LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) return;
-		if(pipe.pipe instanceof PipeLogisticsChassi) {
-			LogisticsModule module = ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2());
-			if(module instanceof ModuleCCBasedQuickSort) {
-				((ModuleCCBasedQuickSort)module).setSinkSize(getInteger());
-			}
-		}
+		ModuleCCBasedQuickSort module = this.getLogisticsModule(player, ModuleCCBasedQuickSort.class);
+		if(module == null) return;
+		module.setSinkSize(sinkSize);
 	}
 	
 	@Override
 	public ModernPacket template() {
 		return new CCBasedQuickSortSinkSize(getId());
+	}
+
+	@Override
+	public void writeData(LPDataOutputStream data) throws IOException {
+		super.writeData(data);
+		data.writeInt(sinkSize);
+	}
+
+	@Override
+	public void readData(LPDataInputStream data) throws IOException {
+		super.readData(data);
+		sinkSize = data.readInt();
 	}
 }

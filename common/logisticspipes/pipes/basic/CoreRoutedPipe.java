@@ -33,35 +33,43 @@ import buildcraft.api.core.IIconProvider;
 import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
-import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
+import logisticspipes.interfaces.IInventoryUtil;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.interfaces.ISecurityProvider;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.items.ItemPipeSignCreator;
+import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IAdjacentWorldAccess;
 import logisticspipes.logisticspipes.IRoutedItem;
+import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.logisticspipes.ITrackStatistics;
 import logisticspipes.logisticspipes.PipeTransportLayer;
 import logisticspipes.logisticspipes.RouteLayer;
 import logisticspipes.logisticspipes.TransportLayer;
-import logisticspipes.modules.LogisticsGuiModule;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.guis.pipe.PipeController;
+import logisticspipes.network.packets.pipe.ParticleFX;
 import logisticspipes.network.packets.pipe.PipeSignTypes;
 import logisticspipes.network.packets.pipe.RequestRoutingLasersPacket;
 import logisticspipes.network.packets.pipe.RequestSignPacket;
 import logisticspipes.network.packets.pipe.StatUpdate;
 import logisticspipes.pipefxhandlers.Particles;
+import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
 import logisticspipes.pipes.basic.debug.DebugLogController;
 import logisticspipes.pipes.basic.debug.StatusEntry;
 import logisticspipes.pipes.signs.IPipeSign;
@@ -71,9 +79,9 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.buildcraft.gates.ActionDisableLogistics;
 import logisticspipes.proxy.cc.CCConstants;
-import logisticspipes.proxy.cc.LPTilePipeWrapper;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCDirectCall;
+import logisticspipes.proxy.cc.interfaces.CCSecurtiyCheck;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.ExitRoute;
@@ -81,6 +89,7 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.routing.IRouterQueuedTask;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.ServerRouter;
+import logisticspipes.routing.order.LogisticsOrderManager;
 import logisticspipes.security.PermissionException;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
@@ -93,16 +102,22 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.PlayerCollectionList;
+import logisticspipes.utils.SidedInventoryMinecraftAdapter;
+import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
+import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+<<<<<<< HEAD
 import net.minecraft.item.Item;
+=======
+>>>>>>> mc16
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -118,10 +133,9 @@ import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import dan200.computercraft.api.lua.ILuaObject;
 
 @CCType(name = "LogisticsPipes:Normal")
-public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implements IClientState, IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IRoutedPowerProvider, IQueueCCEvent {
+public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implements IClientState, IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IPipeServiceProvider, IQueueCCEvent {
 
 	public enum ItemSendMode {
 		Normal,
@@ -156,6 +170,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	protected final PriorityBlockingQueue<ItemRoutingInformation> _inTransitToMe = new PriorityBlockingQueue<ItemRoutingInformation>(10, new ItemRoutingInformation.DelayComparator());
 	
 	private UpgradeManager upgradeManager = new UpgradeManager(this);
+	protected LogisticsOrderManager _orderManager = null;
 	
 	public int stat_session_sent;
 	public int stat_session_recieved;
@@ -175,11 +190,15 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 
 	protected List<IInventory> _cachedAdjacentInventories;
 
+	protected ForgeDirection pointedDirection = ForgeDirection.UNKNOWN;
 	//public BaseRoutingLogic logic;
 	// from BaseRoutingLogic
 	protected int throttleTime = 20;
 	private int throttleTimeLeft = 20 + new Random().nextInt(Configs.LOGISTICS_DETECTION_FREQUENCY);
 	
+	private int[] queuedParticles = new int[Particles.values().length];
+	private boolean hasQueuedParticles = false;
+
 	protected IPipeSign[] signItem = new IPipeSign[6];
 	private boolean isOpaqueClientSide = false;
 	public CoreRoutedPipe(Item item) {
@@ -215,11 +234,17 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	}
 	
 	public void queueRoutedItem(IRoutedItem routedItem, ForgeDirection from) {
+		if(from == null) {
+			throw new NullPointerException();
+		}
 		_sendQueue.addLast(new Triplet<IRoutedItem, ForgeDirection, ItemSendMode>(routedItem, from, ItemSendMode.Normal));
 		sendQueueChanged(false);
 	}
 
 	public void queueRoutedItem(IRoutedItem routedItem, ForgeDirection from, ItemSendMode mode) {
+		if(from == null) {
+			throw new NullPointerException();
+		}
 		_sendQueue.addLast(new Triplet<IRoutedItem, ForgeDirection, ItemSendMode>(routedItem, from, mode));
 		sendQueueChanged(false);
 	}
@@ -230,6 +255,10 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	public int sendQueueChanged(boolean force) {return 0;}
 	
 	private void sendRoutedItem(IRoutedItem routedItem, ForgeDirection from) {
+		
+		if(from == null) {
+			throw new NullPointerException();
+		}
 		
 		((PipeTransportLogistics)transport).injectItem(routedItem, from.getOpposite());
 		
@@ -243,7 +272,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			}
 		} // should not be able to send to a non-existing router
 			// router.startTrackingRoutedItem((RoutedEntityItem) routedItem.getTravelingItem());
-		MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.getX(), this.getY(), this.getZ(), this.getWorld(), 2);
+		spawnParticle(Particles.OrangeParticle, 2);
 		stat_lifetime_sent++;
 		stat_session_sent++;
 		updateStats();
@@ -252,6 +281,10 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	private void notifyOfSend(ItemRoutingInformation routedItem) {
 		this._inTransitToMe.add(routedItem);
 		//LogisticsPipes.log.info("Sending: "+routedItem.getIDStack().getItem().getFriendlyName());
+	}
+	
+	public void notifyOfReroute(ItemRoutingInformation routedItem) {
+		this._inTransitToMe.remove(routedItem);
 	}
 
 	//When Recreating the Item from the TE version we have the same hashCode but a different instance so we need to refresh this
@@ -264,6 +297,24 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 
 	public abstract ItemSendMode getItemSendMode();
 	
+	private boolean checkTileEntity(boolean force) {
+		if(isNthTick(10) || force) {
+			if(!(this.container instanceof LogisticsTileGenericPipe)) {
+				TileEntity tile = getWorld().getBlockTileEntity(getX(), getY(), getZ());
+				if(tile != this.container) {
+					LogisticsPipes.log.severe("LocalCodeError");
+				}
+				if(MainProxy.isClient(getWorld())) {
+					WorldTickHandler.clientPipesToReplace.add(this.container);
+				} else {
+					WorldTickHandler.serverPipesToReplace.add(this.container);
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Designed to help protect against routing loops - if both pipes are on the same block, and of ISided overlapps, return true
 	 * @param other
@@ -325,15 +376,18 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	 */
 	public void ignoreDisableUpdateEntity() {}
 
-    @Override
-    public final void updateEntity() {
-        debug.tick();
-        if (checkTileEntity()) {
-            return;
-        } else {
-            stillNeedReplace = false;
-            getWorld().notifyBlockChange(getX(), getY(), getZ(), getWorld().getBlock(getX(), getY(), getZ()));
-                /* TravelingItems are just held by a pipe, they don't need to know their world
+	@Override
+	public final void updateEntity() {
+		debug.tick();
+		spawnParticleTick();
+		if(checkTileEntity(_initialInit)) {
+			stillNeedReplace = true;
+			return;
+		} else {
+			if(stillNeedReplace) {
+				stillNeedReplace = false;
+				getWorld().notifyBlockChange(getX(), getY(), getZ(), getWorld().getBlock(getX(), getY(), getZ()));
+				/* TravelingItems are just held by a pipe, they don't need to know their world
 				 * for(Triplet<IRoutedItem, ForgeDirection, ItemSendMode> item : _sendQueue) {
 					//assign world to any entityitem we created in readfromnbt
 					item.getValue1().getTravelingItem().setWorld(getWorld());
@@ -405,7 +459,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		enabledUpdateEntity();
 		if (getLogisticsModule() == null) return;
 		getLogisticsModule().tick();
-	}	
+	}
 
 	protected void onAllowedRemoval() {}
 
@@ -418,6 +472,10 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			throttleTimeLeft = 7;
 	}
 	
+	public boolean isNthTick(int n) {
+		return ((getWorld().getTotalWorldTime() + _delayOffset) % n == 0);
+	}
+
 	private void doDebugStuff(EntityPlayer entityplayer) {
 		//entityplayer.worldObj.setWorldTime(4951);
 		IRouter r = getRouter();
@@ -602,13 +660,13 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 
 	public void checkTexturePowered() {
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return;
-		if(getWorld().getTotalWorldTime() % 10 != 0) return;
+		if(!isNthTick(10)) return;
 		if(stillNeedReplace || _initialInit || router == null) return;
 		boolean flag;
 		if((flag = canUseEnergy(1)) != _textureBufferPowered) {
 			_textureBufferPowered = flag;
 			refreshRender(false);
-			MainProxy.sendSpawnParticlePacket(Particles.RedParticle, this.getX(), this.getY(), this.getZ(), this.getWorld(), 3);
+			spawnParticle(Particles.RedParticle, 3);
 		}
 	}
 	
@@ -660,6 +718,40 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		}
 		return Textures.LOGISTICSPIPE_NOTROUTED_TEXTURE;
 	}
+
+	public void spawnParticle(Particles particle, int amount) {
+		if(!Configs.ENABLE_PARTICLE_FX)
+			return;
+		queuedParticles[particle.ordinal()] += amount;
+		hasQueuedParticles = true;
+	}
+
+	private void spawnParticleTick() {
+		if(!hasQueuedParticles)
+			return;
+		if(MainProxy.isServer(getWorld())) {
+			ArrayList<ParticleCount> tosend = new ArrayList<ParticleCount>(queuedParticles.length);
+			for(int i = 0; i < queuedParticles.length; i++) {
+				if(queuedParticles[i] > 0) {
+					tosend.add(new ParticleCount(Particles.values()[i], queuedParticles[i]));
+				}
+			}
+			MainProxy.sendPacketToAllWatchingChunk(this.getX(), this.getZ(), MainProxy.getDimensionForWorld(this.getWorld()), PacketHandler.getPacket(ParticleFX.class).setParticles(tosend).setPosX(this.getX()).setPosY(this.getY()).setPosZ(this.getZ()));
+		} else {
+			if(Minecraft.isFancyGraphicsEnabled()) {
+				for(int i = 0; i < queuedParticles.length; i++) {
+					if(queuedParticles[i] > 0) {
+						PipeFXRenderHandler.spawnGenericParticle(Particles.values()[i], this.getX(), this.getY(), this.getZ(), queuedParticles[i]);
+					}
+				}
+			}
+		}
+		for(int i = 0; i < queuedParticles.length; i++) {
+			queuedParticles[i] = 0;
+		}
+		hasQueuedParticles = false;
+	}
+
 
 	protected boolean isPowerProvider(ForgeDirection ori) {
 		TileEntity tilePipe = this.container.getTile(ori);
@@ -813,48 +905,39 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	public void onBlockPlaced() {
 		super.onBlockPlaced();
 	}
-	
+
+	@CCCommand(description="Returns the Internal LogisticsModule for this pipe")
 	public abstract LogisticsModule getLogisticsModule();
 	
 	@Override
 	public final boolean blockActivated(EntityPlayer entityplayer) {
-		
-		
 		SecuritySettings settings = null;
 		if(MainProxy.isServer(entityplayer.worldObj)) {
 			LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(getUpgradeManager().getSecurityID());
-			// Logic had false
 			if(station != null) {
 				settings = station.getSecuritySettingsForPlayer(entityplayer, true);
 			}
 		}
-		if(handleClick(entityplayer, settings)) return true;
-		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && !(entityplayer.isSneaking()) && SimpleServiceLocator.buildCraftProxy.canWrench(entityplayer, this.getX(), this.getY(), this.getZ())) {
-			if(wrenchClicked(entityplayer, settings)) {
-				SimpleServiceLocator.buildCraftProxy.wrenchUsed(entityplayer, this.getX(), this.getY(), this.getZ());
-				return true;
-			}
-			SimpleServiceLocator.buildCraftProxy.wrenchUsed(entityplayer, this.getX(), this.getY(), this.getZ());
-		}
-		if(SimpleServiceLocator.buildCraftProxy.isUpgradeManagerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
-			if(MainProxy.isServer(getWorld())) {
-				if (settings == null || settings.openUpgrades) {
-					getUpgradeManager().openGui(entityplayer, this);
+
+		if (entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsPipeControllerItem) {
+			if(MainProxy.isServer(entityplayer.worldObj)) {
+				if(settings == null || settings.openNetworkMonitor) {
+					NewGuiHandler.getGui(PipeController.class).setTilePos(container).open(entityplayer);
 				} else {
 					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
 				}
 			}
 			return true;
 		}
-		if(!(entityplayer.isSneaking()) && getUpgradeManager().tryIserting(getWorld(), entityplayer)) {
+
+		if(handleClick(entityplayer, settings)) {
 			return true;
 		}
-		//TODO: simplify any duplicate logic from above
-		// from logic
+
 		if (entityplayer.getCurrentEquippedItem() == null) {
 			if (!entityplayer.isSneaking()) return false;
 			if(MainProxy.isClient(entityplayer.worldObj)) {
-				if(!LogisticsHUDRenderer.instance().hasLasers()) { //TODO remove old Lasers
+				if(!LogisticsHUDRenderer.instance().hasLasers()) {
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestRoutingLasersPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 				} else {
 					LogisticsHUDRenderer.instance().resetLasers();
@@ -864,49 +947,65 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 				doDebugStuff(entityplayer);
 			}
 			return true;
-		} else if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsNetworkMonitior && (settings == null || settings.openNetworkMonitor)) {
-			if(MainProxy.isServer(entityplayer.worldObj)) {
-				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_RoutingStats_ID, getWorld(), getX(), getY(), getZ());
-			}
-			return true;
-		} else if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && (settings == null || settings.openGui) && SimpleServiceLocator.buildCraftProxy.canWrench(entityplayer, this.getX(), this.getY(), this.getZ())) {
-			onWrenchClicked(entityplayer);
-			SimpleServiceLocator.buildCraftProxy.wrenchUsed(entityplayer, this.getX(), this.getY(), this.getZ());
-			return true;
-		} else if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer && (settings == null || settings.openRequest)) {
-			if(MainProxy.isServer(entityplayer.worldObj)) {
-				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, getWorld(), getX(), getY(), getZ());
-			}
-			return true;
-		} else if(entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
-			if(MainProxy.isServer(entityplayer.worldObj)) {
-				entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
-			}
-			return true;
-		} else if(entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsNetworkMonitior) {
-			if(MainProxy.isServer(entityplayer.worldObj)) {
-				entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
-			}
-			return true;
 		}
-		return super.blockActivated(entityplayer);
-	}
-	
-	protected boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
-		return false;
-	}
-	
-	protected boolean wrenchClicked(EntityPlayer entityplayer, SecuritySettings settings) {
-		if (getLogisticsModule() != null && getLogisticsModule() instanceof LogisticsGuiModule) {
-			if(MainProxy.isServer(getWorld())) {
-				if (settings == null || settings.openGui) {
-					entityplayer.openGui(LogisticsPipes.instance, ((LogisticsGuiModule)getLogisticsModule()).getGuiHandlerID(), getWorld(), getX(), getY(), getZ());
+
+		if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsNetworkMonitior) {
+			if(MainProxy.isServer(entityplayer.worldObj)) {
+				if(settings == null || settings.openNetworkMonitor) {
+					entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_RoutingStats_ID, getWorld(), getX(), getY(), getZ());
 				} else {
 					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
 				}
 			}
 			return true;
 		}
+
+		if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
+			if(MainProxy.isServer(entityplayer.worldObj)) {
+				if(settings == null || settings.openRequest) {
+					entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, getWorld(), getX(), getY(), getZ());
+				} else {
+					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
+				}
+			}
+			return true;
+		}
+
+		if(SimpleServiceLocator.buildCraftProxy.isUpgradeManagerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
+			if(MainProxy.isServer(entityplayer.worldObj)) {
+				if (settings == null || settings.openUpgrades) {
+					getUpgradeManager().openGui(entityplayer, this);
+				} else {
+					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
+				}
+			}
+			return true;
+		}
+
+		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && SimpleServiceLocator.buildCraftProxy.canWrench(entityplayer, this.getX(), this.getY(), this.getZ())) {
+			if(MainProxy.isServer(entityplayer.worldObj)) {
+				if (settings == null || settings.openGui) {
+					if (getLogisticsModule() != null && getLogisticsModule() instanceof LogisticsGuiModule) {
+						((LogisticsGuiModule)getLogisticsModule()).getPipeGuiProviderForModule().setTilePos(this.container).open(entityplayer);
+					} else {
+						onWrenchClicked(entityplayer);
+					}
+				} else {
+					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
+				}
+			}
+			SimpleServiceLocator.buildCraftProxy.wrenchUsed(entityplayer, this.getX(), this.getY(), this.getZ());
+			return true;
+		}
+
+		if(!(entityplayer.isSneaking()) && getUpgradeManager().tryIserting(getWorld(), entityplayer)) {
+			return true;
+		}
+
+		return super.blockActivated(entityplayer);
+	}
+
+	protected boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
 		return false;
 	}
 	
@@ -918,7 +1017,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		
 		this.container.scheduleRenderUpdate();
 		if (spawnPart) {
-			MainProxy.sendSpawnParticlePacket(Particles.GreenParticle, this.getX(), this.getY(), this.getZ(), this.getWorld(), 3);
+			spawnParticle(Particles.GreenParticle, 3);
 		}
 	}
 	
@@ -926,7 +1025,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		clearCache();
 		this.container.scheduleNeighborChange();
 		if (spawnPart) {
-			MainProxy.sendSpawnParticlePacket(Particles.GreenParticle, this.getX(), this.getY(), this.getZ(), this.getWorld(), 3);
+			spawnParticle(Particles.GreenParticle, 3);
 		}
 	}
 	
@@ -996,9 +1095,9 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	}
 	
 	@Override
-	public void itemCouldNotBeSend(ItemIdentifierStack item) {
+	public void itemCouldNotBeSend(ItemIdentifierStack item, IAdditionalTargetInformation info) {
 		if(this instanceof IRequireReliableTransport) {
-			((IRequireReliableTransport)this).itemLost(item);
+			((IRequireReliableTransport)this).itemLost(item, info);
 		}
 		//Override by subclasses //TODO
 	}
@@ -1128,7 +1227,7 @@ outer:
 						if (particlecount > 10) {
 							particlecount = 10;
 						}
-						MainProxy.sendSpawnParticlePacket(Particles.GoldParticle, this.getX(), this.getY(), this.getZ(), this.getWorld(), particlecount);
+						spawnParticle(Particles.GoldParticle, particlecount);
 					}
 					return true;
 				}
@@ -1199,6 +1298,7 @@ outer:
 		return blockRemove;
 	}
 	
+	@CCSecurtiyCheck
 	public void checkCCAccess() throws PermissionException {
 		ISecurityProvider sec = getSecurityProvider();
 		if(sec != null) {
@@ -1238,7 +1338,7 @@ outer:
 	public void notifyOfItemArival(ItemRoutingInformation information) {
 		this._inTransitToMe.remove(information);
 		if (this instanceof IRequireReliableTransport) {
-			((IRequireReliableTransport)this).itemArrived(information.getItem());
+			((IRequireReliableTransport)this).itemArrived(information.getItem(), information.targetInfo);
 		}
 		if (this instanceof IRequireReliableFluidTransport) {
 			ItemIdentifierStack stack = information.getItem();
@@ -1253,7 +1353,7 @@ outer:
 		int count = 0;
 		for(Iterator<ItemRoutingInformation> iter = _inTransitToMe.iterator();iter.hasNext();) {
 			ItemRoutingInformation next = iter.next();
-			if(next.getItem().getItem() == it)
+			if(next.getItem().getItem().equals(it))
 				count += next.getItem().getStackSize();
 		}
 		return count;
@@ -1363,42 +1463,6 @@ outer:
 		return false;
 	}
 
-	@CCCommand(description="Returns the Item Id for given ItemIdentifier Id.")
-	public int getItemID(Double itemId) throws Exception {
-		if(itemId == null) throw new Exception("Invalid ItemIdentifierID");
-		ItemIdentifier item = ItemIdentifier.getForId((int)Math.floor(itemId));
-		if(item == null) throw new Exception("Invalid ItemIdentifierID");
-		return item.itemID;
-	}
-
-	@CCCommand(description="Returns the Item damage for the given ItemIdentifier Id.")
-	public int getItemDamage(Double itemId) throws Exception {
-		if(itemId == null) throw new Exception("Invalid ItemIdentifierID");
-		ItemIdentifier itemd = ItemIdentifier.getForId((int)Math.floor(itemId));
-		if(itemd == null) throw new Exception("Invalid ItemIdentifierID");
-		return itemd.itemDamage;
-	}
-
-	@CCCommand(description="Returns the NBTTagCompound for the given ItemIdentifier Id.")
-	public Map<Object,Object> getNBTTagCompound(Double itemId) throws Exception {
-		ItemIdentifier itemn = ItemIdentifier.getForId((int)Math.floor(itemId));
-		if(itemn == null) throw new Exception("Invalid ItemIdentifierID");
-		return itemn.getNBTTagCompoundAsMap();
-	}
-
-	@CCCommand(description="Returns the ItemIdentifier Id for the given Item id and damage.")
-	public int getItemIdentifierIDFor(Double itemID, Double itemDamage) {
-		return ItemIdentifier.get((int)Math.floor(itemID), (int)Math.floor(itemDamage), null).getId();
-	}
-
-	@CCCommand(description="Returns the name of the item for the given ItemIdentifier Id.")
-	public String getUnlocalizedName(Double itemId) throws Exception {
-		if(itemId == null) throw new Exception("Invalid ItemIdentifierID");
-		ItemIdentifier itemd = ItemIdentifier.getForId((int)Math.floor(itemId));
-		if(itemd == null) throw new Exception("Invalid ItemIdentifierID");
-		return itemd.getFriendlyNameCC();
-	}
-
 	@CCCommand(description="Returns true if the computer is allowed to interact with the connected pipe.", needPermission=false)
 	public boolean canAccess() {
 		ISecurityProvider sec = getSecurityProvider();
@@ -1459,7 +1523,7 @@ outer:
 	@CCCommand(description="Returns the access to the pipe of the givven router UUID")
 	@ModDependentMethod(modId="ComputerCraft@1.6")
 	@CCDirectCall
-	public ILuaObject getPipeForUUID(String sUuid) throws PermissionException {
+	public Object getPipeForUUID(String sUuid) throws PermissionException {
 		if(!getUpgradeManager().hasCCRemoteControlUpgrade()) throw new PermissionException();
 		UUID uuid = UUID.fromString(sUuid);
 		int id = SimpleServiceLocator.routerManager.getIDforUUID(uuid);
@@ -1467,7 +1531,18 @@ outer:
 		if(router == null) return null;
 		CoreRoutedPipe pipe = router.getPipe();
 		if(!(pipe.container instanceof LogisticsTileGenericPipe)) return null;
-		return new LPTilePipeWrapper((LogisticsTileGenericPipe)pipe.container);
+		return pipe.container;
+	}
+	
+	@CCCommand(description="Returns the global LP object which is used to access general LP methods.", needPermission=false)
+	@CCDirectCall
+	public Object getLP() throws PermissionException {
+		return SimpleServiceLocator.ccProxy.getLP();
+	}
+	
+	@CCCommand(description="Returns true if the pipe has an internal module")
+	public boolean hasLogisticsModule() {
+		return this.getLogisticsModule() != null;
 	}
 	
 	private void handleMesssage(int computerId, Object message, int sourceId) {
@@ -1480,11 +1555,8 @@ outer:
 		this.queueEvent(CCConstants.LP_CC_BROADCAST_EVENT, new Object[]{sourceId, message});
 	}
 	
-	// from logic
 	public void onWrenchClicked(EntityPlayer entityplayer) {
-		if (MainProxy.isServer(entityplayer.worldObj)) {
-			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Freq_Card_ID, getWorld(), getX(), getY(), getZ());
-		}
+		//do nothing, every pipe with a GUI should either have a LogisticsGuiModule or override this method
 	}
 	
 	final void destroy(){ // no overide, put code in OnBlockRemoval
@@ -1514,6 +1586,129 @@ outer:
 
 	public WorldUtil getWorldUtil() {
 		return new WorldUtil(this.getWorld(), this.getX(), this.getY(), this.getZ());
+	}
+	
+
+	/*** IInventoryProvider ***/
+	 
+	 
+	@Override
+	public IInventoryUtil getPointedInventory(boolean forExtraction) {
+		return getSneakyInventory(this.getPointedOrientation().getOpposite(), forExtraction);
+	}
+	 
+	@Override
+	public IInventoryUtil getPointedInventory(ExtractionMode mode, boolean forExtraction) {
+		IInventory inv = getRealInventory();
+		if(inv == null) return null;
+		if (inv instanceof net.minecraft.inventory.ISidedInventory) inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) inv, this.getPointedOrientation().getOpposite(), forExtraction);
+		switch(mode){
+			case LeaveFirst:
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, false, false, 1, 0);
+			case LeaveLast:
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, false, false, 0, 1);
+			case LeaveFirstAndLast:
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, false, false, 1, 1);
+			case Leave1PerStack:
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, true, false, 0, 0);
+			case Leave1PerType:
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, false, true, 0, 0);
+			default:
+				break;
+		}
+		return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, false, false, 0, 0);
+	}
+
+	@Override
+	public IInventoryUtil getSneakyInventory(boolean forExtraction) {
+		UpgradeManager manager = getUpgradeManager();
+		ForgeDirection insertion = this.getPointedOrientation().getOpposite();
+		if(manager.hasSneakyUpgrade()) {
+			insertion = manager.getSneakyOrientation();
+		}
+		return getSneakyInventory(insertion, forExtraction);
+	}
+
+	@Override
+	public IInventoryUtil getSneakyInventory(ForgeDirection _sneakyOrientation, boolean forExtraction) {
+		IInventory inv = getRealInventory();
+		if(inv == null) return null;
+		if (inv instanceof net.minecraft.inventory.ISidedInventory) inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) inv, _sneakyOrientation, forExtraction);
+		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
+	}
+
+	@Override
+	public IInventoryUtil getUnsidedInventory() {
+		IInventory inv = getRealInventory();
+		if(inv == null) return null;
+		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
+	}
+
+	@Override
+	public IInventory getRealInventory() {
+		TileEntity tile = getPointedTileEntity();
+		if (tile == null ) return null;
+		if (tile instanceof TileGenericPipe) return null;
+		if (!(tile instanceof IInventory)) return null;
+		return InventoryHelper.getInventory((IInventory) tile);
+	}
+	
+	private TileEntity getPointedTileEntity() {
+		if(pointedDirection == ForgeDirection.UNKNOWN) return null;
+		return this.getContainer().getTile(pointedDirection);
+	}
+
+	@Override
+	public ForgeDirection inventoryOrientation() {
+		return getPointedOrientation();
+	}
+
+	/*** ISendRoutedItem ***/
+
+	public int getSourceint() {
+		return this.getRouter().getSimpleID();
+	};
+
+	@Override
+	public Triplet<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault, List<Integer> routerIDsToExclude) {
+		return SimpleServiceLocator.logisticsManager.hasDestination(stack, allowDefault, getRouter().getSimpleID(), routerIDsToExclude);
+	}
+
+	@Override
+	public IRoutedItem sendStack(ItemStack stack, Pair<Integer, SinkReply> reply, ItemSendMode mode) {
+		IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
+		itemToSend.setDestination(reply.getValue1());
+		if (reply.getValue2().isPassive){
+			if (reply.getValue2().isDefault){
+				itemToSend.setTransportMode(TransportMode.Default);
+			} else {
+				itemToSend.setTransportMode(TransportMode.Passive);
+			}
+		}
+		queueRoutedItem(itemToSend, getPointedOrientation(), mode);
+		return itemToSend;
+	}
+
+	@Override
+	public IRoutedItem sendStack(ItemStack stack, int destination, ItemSendMode mode, IAdditionalTargetInformation info) {
+		IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
+		itemToSend.setDestination(destination);
+		itemToSend.setTransportMode(TransportMode.Active);
+		itemToSend.setAdditionalTargetInformation(info);
+		queueRoutedItem(itemToSend, getPointedOrientation(), mode);
+		return itemToSend;
+	}
+	
+
+	
+	public ForgeDirection getPointedOrientation() {
+		return this.pointedDirection;
+	}
+
+	@Override
+	public LogisticsOrderManager getOrderManager() {
+		_orderManager=_orderManager!=null?_orderManager:new LogisticsOrderManager();
+		return this._orderManager;
 	}
 
 	public void addPipeSign(ForgeDirection dir, IPipeSign type, EntityPlayer player) {
@@ -1662,5 +1857,15 @@ outer:
 			entry.subEntry.add(subEntry);
 		}
 		status.add(entry);
+	}
+	
+	@Override
+	public int getSourceID() {
+		return this.getRouterId();
+	}
+
+	@Override
+	public DebugLogController getDebug() {
+		return debug;
 	}
 }

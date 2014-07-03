@@ -23,14 +23,13 @@ import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.pipes.PipeItemsRequestLogistics;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
@@ -147,7 +146,7 @@ outer:
 		if(result.getValue1() != null) {
 			CoreRoutedPipe pipe = SimpleServiceLocator.routerManager.getRouterUnsafe(result.getValue1(),false).getPipe();
 			pipe.useEnergy(result.getValue2().energyUse);
-			MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, pipe.getX(), pipe.getY(), pipe.getZ(), pipe.getWorld(), 10);
+			pipe.spawnParticle(Particles.BlueParticle, 10);
 		}
 		return result;
 	}
@@ -357,7 +356,7 @@ outer2:
 		int amount = 0;
 		for(Map<ItemIdentifier, Integer> allItems: items) {
 			for(Entry<ItemIdentifier, Integer> item: allItems.entrySet()) {
-				if(item.getKey() == itemType) {
+				if(item.getKey().equals(itemType)) {
 					amount += item.getValue();
 				}
 			}

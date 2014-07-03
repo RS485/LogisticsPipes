@@ -44,7 +44,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 	@Override
 	public void enabledUpdateEntity() {
 		super.enabledUpdateEntity();
-		if (!manager.hasOrders() || getWorld().getTotalWorldTime() % 6 != 0) return;
+		if (!manager.hasOrders() || !isNthTick(6)) return;
 		
 		Triplet<FluidIdentifier, Integer, IRequestFluid> order = manager.getFirst();
 		int amountToSend, attemptedAmount;
@@ -57,7 +57,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 				if(handler instanceof ISpecialTankAccessHandler) {
 					fallback = false;
 					FluidStack drained = ((ISpecialTankAccessHandler)handler).drainFrom(pair.getValue1(), order.getValue1(), amountToSend, false);
-					if(drained != null && order.getValue1() == FluidIdentifier.get(drained)) {
+					if(drained != null && order.getValue1().equals(FluidIdentifier.get(drained))) {
 						drained = ((ISpecialTankAccessHandler)handler).drainFrom(pair.getValue1(), order.getValue1(), amountToSend, true);
 						int amount = drained.amount;
 						amountToSend -= amount;
@@ -77,14 +77,14 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 					if(tank == null) continue;
 					FluidStack liquid;
 					if((liquid = tank.fluid) != null) {
-						if(order.getValue1() == FluidIdentifier.get(liquid)) {
+						if(order.getValue1().equals(FluidIdentifier.get(liquid))) {
 							int amount = Math.min(liquid.amount, amountToSend);
 							FluidStack drained = ((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), amount, false);
-							if(drained != null && order.getValue1() == FluidIdentifier.get(drained)) {
+							if(drained != null && order.getValue1().equals(FluidIdentifier.get(drained))) {
 								drained = ((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), amount, true);
 								while(drained.amount < amountToSend) {
 									FluidStack addition = ((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), amountToSend - drained.amount, false);
-									if(addition != null && order.getValue1() == FluidIdentifier.get(addition)) {
+									if(addition != null && order.getValue1().equals(FluidIdentifier.get(addition))) {
 										addition = ((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), amountToSend - drained.amount, true);
 										drained.amount += addition.amount;
 									} else {
@@ -199,7 +199,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 					if(tank == null) continue;
 					FluidStack liquid;
 					if((liquid = tank.fluid) != null) {
-						if(request.getFluid() == FluidIdentifier.get(liquid)) {
+						if(request.getFluid().equals(FluidIdentifier.get(liquid))) {
 							if(((IFluidHandler)pair.getValue1()).canDrain(pair.getValue2().getOpposite(), liquid.getFluid())) {
 								if(((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), 1, false) != null) {
 									long addition = ((long) containedAmount) + liquid.amount;

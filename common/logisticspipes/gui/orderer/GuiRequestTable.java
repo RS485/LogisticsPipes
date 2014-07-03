@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import logisticspipes.Configs;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.popup.GuiDiskPopup;
 import logisticspipes.gui.popup.GuiRequestPopup;
 import logisticspipes.gui.popup.RequestMonitorPopup;
@@ -32,11 +33,10 @@ import logisticspipes.utils.gui.GuiCheckBox;
 import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.ISubGuiControler;
 import logisticspipes.utils.gui.ItemDisplay;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SearchBar;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.extention.GuiExtention;
-import logisticspipes.utils.gui.extention.GuiExtentionController;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
@@ -55,7 +55,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch, ISpecialItemRenderer, IDiskProvider {
+public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSearch, ISpecialItemRenderer, IDiskProvider {
 
 	private enum DisplayOptions {
 		Both,
@@ -78,7 +78,6 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 	private int	startLeft;
 	private int	startXSize;
 	
-	private GuiExtentionController extentionController = new GuiExtentionController();
 	private BitSet handledExtention = new BitSet();
 	private int orderIdForButton;
 	
@@ -128,7 +127,6 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 			reHide = true;
 		}
 		super.initGui();
-		extentionController.setMaxBottom(bottom);
 
 		buttonList.clear();
 		buttonList.add(new GuiButton(0, right - 55, bottom - 25, 50,20,"Request")); // Request
@@ -145,6 +143,7 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 		buttonList.add(new SmallGuiButton(3, guiLeft + 210, bottom - 15, 46, 10, "Refresh")); // Refresh
 		buttonList.add(new SmallGuiButton(13,  guiLeft + 210, bottom - 28, 46, 10, "Content")); // Component
 		buttonList.add(new SmallGuiButton(9, guiLeft + 210, bottom - 41, 46, 10, "Both"));
+		buttonList.add(new SmallGuiButton(20, right - 116, bottom - 41, 26, 10, "Sort")); // Sort
 		
 		buttonList.add(new SmallGuiButton(14, guiLeft + 96, guiTop + 53, 10, 10, "+")); // +1
 		buttonList.add(new SmallGuiButton(15, guiLeft + 108, guiTop + 53, 15, 10, "++")); // +10
@@ -166,12 +165,12 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 			showRequest = false;
 			xSize = startXSize - 210;
 			guiLeft = startLeft + 105;
-			for(int i=13;i<16;i++) {
+			for(int i=14;i<17;i++) {
 				((GuiButton)buttonList.get(i)).xPosition += 105;
 			}
-			((GuiButton)buttonList.get(16)).xPosition += 90;
-			((SmallGuiButton)buttonList.get(16)).displayString = "Show";
-			for(int i=0; i< 13;i++) {
+			((GuiButton)buttonList.get(17)).xPosition += 90;
+			((SmallGuiButton)buttonList.get(17)).displayString = "Show";
+			for(int i=0; i< 14;i++) {
 				((GuiButton)buttonList.get(i)).visible = false;
 			}
 		}
@@ -198,7 +197,8 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 			itemDisplay.renderAmount(right - 103, bottom - 24, getStackAmount());
 			//SearchInput
 			search.renderSearchBar();
-			
+
+			itemDisplay.renderSortMode(right - 103, bottom - 52);
 			itemDisplay.renderItemArea(zLevel);
 		}
 		
@@ -370,7 +370,7 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 				});
 			}
 		}
-		extentionController.render(guiLeft, guiTop);
+		super.renderExtentions();
 	}
 
 	public void refreshItems() {
@@ -450,29 +450,32 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 			if(showRequest) {
 				xSize = startXSize;
 				guiLeft = startLeft;
-				for(int i=13;i<16;i++) {
+				for(int i=14;i<17;i++) {
 					((GuiButton)buttonList.get(i)).xPosition -= 105;
 				}
-				((GuiButton)buttonList.get(16)).xPosition -= 90;
+				((GuiButton)buttonList.get(17)).xPosition -= 90;
 			} else {
 				xSize = startXSize - 210;
 				guiLeft = startLeft + 105;
-				for(int i=13;i<16;i++) {
+				for(int i=14;i<17;i++) {
 					((GuiButton)buttonList.get(i)).xPosition += 105;
 				}
-				((GuiButton)buttonList.get(16)).xPosition += 90;
+				((GuiButton)buttonList.get(17)).xPosition += 90;
 			}
-			((SmallGuiButton)buttonList.get(16)).displayString = showRequest ? "Hide" : "Show";
-			for(int i=0; i< 13;i++) {
+			((SmallGuiButton)buttonList.get(17)).displayString = showRequest ? "Hide" : "Show";
+			for(int i=0; i< 14;i++) {
 				((GuiButton)buttonList.get(i)).visible = showRequest;
 			}
 			Macrobutton.visible = showRequest;
 			orderIdForButton = -1;
 		} else if(guibutton.id == 100) {
+			this.extentionController.retract();
 			this.setSubGui(new RequestMonitorPopup(_table, orderIdForButton));
 		} else if (guibutton.id == 18) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskRequestConectPacket.class).setPosX(_table.getX()).setPosY(_table.getY()).setPosZ(_table.getZ()));
 			this.setSubGui(new GuiDiskPopup(this));
+		} else if (guibutton.id == 20) {
+			itemDisplay.cycle();
 		}
 	}
 
@@ -505,12 +508,10 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 	
 	@Override
 	public void drawGuiContainerForegroundLayer(int par1, int par2) {
+		super.drawGuiContainerForegroundLayer(par1, par2);
 		if(super.hasSubGui()) return;
 		BasicGuiHelper.displayItemToolTip(itemDisplay.getToolTip(), this, this.zLevel, guiLeft, guiTop);
-		if(par1 < guiLeft) {
-			extentionController.mouseOver(par1, par2);
-		}
-		Macrobutton.enabled = _table.diskInv.getStackInSlot(0) != null;
+		Macrobutton.enabled = _table.diskInv.getStackInSlot(0) != null && _table.diskInv.getStackInSlot(0).getItem().equals(LogisticsPipes.LogisticsItemDisk);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -518,7 +519,7 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 	public boolean itemSearched(ItemIdentifier item) {
 		if(search.isEmpty()) return true;
 		if(isSearched(item.getFriendlyName().toLowerCase(), search.getContent().toLowerCase())) return true;
-		if(isSearched(String.valueOf(Item.getIdFromItem(item.item)), search.getContent())) return true;
+		//if(isSearched(String.valueOf(Item.getIdFromItem(item.item)), search.getContent())) return true;
 		//Enchantment? Enchantment!
 		Map<Integer,Integer> enchantIdLvlMap = EnchantmentHelper.getEnchantments(item.unsafeMakeNormalStack(1));
 		for(Entry<Integer,Integer> e:enchantIdLvlMap.entrySet()) {
@@ -549,9 +550,6 @@ public class GuiRequestTable extends KraphtBaseGuiScreen implements IItemSearch,
 			search.handleClick(i, j, k);
 		}
 		super.mouseClicked(i, j, k);
-		if(i < guiLeft) {
-			extentionController.mouseClicked(i, j, k);
-		}
 	}
 	
 	@Override

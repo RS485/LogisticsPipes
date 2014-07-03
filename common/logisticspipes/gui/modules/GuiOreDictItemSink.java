@@ -3,19 +3,16 @@ package logisticspipes.gui.modules;
 import java.util.ArrayList;
 
 import logisticspipes.modules.ModuleOreDictItemSink;
-import logisticspipes.network.GuiIDs;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
-public class GuiOreDictItemSink extends GuiWithPreviousGuiContainer {
+public class GuiOreDictItemSink extends ModuleBaseGui {
 
 	private final ModuleOreDictItemSink _itemSink;
 	private final ItemIdentifierInventory tmpInv;
@@ -23,8 +20,8 @@ public class GuiOreDictItemSink extends GuiWithPreviousGuiContainer {
 	private int mouseX = 0;
 	private int mouseY = 0;
 
-	public GuiOreDictItemSink(IInventory playerInventory, CoreRoutedPipe pipe, ModuleOreDictItemSink itemSink, GuiScreen previousGui, int slot) {
-		super(null, pipe, previousGui);
+	public GuiOreDictItemSink(IInventory playerInventory, ModuleOreDictItemSink itemSink) {
+		super(null, itemSink);
 
 		_itemSink = itemSink;
 
@@ -49,11 +46,6 @@ public class GuiOreDictItemSink extends GuiWithPreviousGuiContainer {
 		this.buttonList.add(new SmallGuiButton(1, guiLeft + 107, guiTop + 18, 50, 10, "Remove"));
 		((GuiButton)buttonList.get(0)).enabled = false;
 		((GuiButton)buttonList.get(1)).enabled = false;
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Module_OreDict_ItemSink_ID;
 	}
 
 	@Override

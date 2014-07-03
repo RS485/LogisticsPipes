@@ -9,7 +9,6 @@ import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.gui.popup.GuiEditCCAccessTable;
 import logisticspipes.gui.popup.GuiSecurityStationPopup;
 import logisticspipes.interfaces.PlayerListReciver;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.PlayerListRequest;
 import logisticspipes.network.packets.block.SecurityAuthorizationPacket;
@@ -24,7 +23,7 @@ import logisticspipes.security.SecuritySettings;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.gui.GuiButton;
@@ -34,7 +33,7 @@ import net.minecraft.item.Item;
 import org.lwjgl.input.Keyboard;
 
 
-public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerListReciver {
+public class GuiSecurityStation extends LogisticsBaseGuiScreen implements PlayerListReciver {
 	private static final String PREFIX = "gui.securitystation.";
 	
 	private final LogisticsSecurityTileEntity _tile;
@@ -120,11 +119,6 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 		} else {
 			super.actionPerformed(button);
 		}
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Security_Station_ID;
 	}
 
 	@Override

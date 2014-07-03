@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.routingdebug;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -15,7 +14,7 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.packets.OpenChatGui;
+import logisticspipes.network.packets.gui.OpenChatGui;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
@@ -27,7 +26,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatMessageComponent;
 
 @Accessors(chain = true)
 public class RoutingUpdateTargetResponse extends ModernPacket {
@@ -74,34 +73,36 @@ public class RoutingUpdateTargetResponse extends ModernPacket {
 	@Override
 	public void processPacket(final EntityPlayer player) {
 		if(mode == TargetMode.None) {
-			player.addChatComponentMessage(new ChatComponentText(ChatColor.RED + "No Target Found"));
+			player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.RED + "No Target Found"));
 		} else if(mode == TargetMode.Block) {
 			int x = (Integer) additions[0];
 			int y = (Integer) additions[1];
 			int z = (Integer) additions[2];
-			player.addChatComponentMessage(new ChatComponentText("Checking Block at: x:" + x + " y:" + y + " z:" + z));
-			final TileEntity tile = player.worldObj.getTileEntity(x, y, z);
+			player.sendChatToPlayer(ChatMessageComponent.createFromText("Checking Block at: x:" + x + " y:" + y + " z:" + z));
+			int id = player.worldObj.getBlockId(x, y, z);
+			player.sendChatToPlayer(ChatMessageComponent.createFromText("Found Block with Id: " + id));
+			final TileEntity tile = player.worldObj.getBlockTileEntity(x, y, z);
 			if(tile == null) {
-				player.addChatComponentMessage(new ChatComponentText(ChatColor.RED + "No TileEntity found"));
+				player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.RED + "No TileEntity found"));
 			} else if (!(tile instanceof LogisticsTileGenericPipe)) {
-				player.addChatComponentMessage(new ChatComponentText(ChatColor.RED + "No LogisticsTileGenericPipe found"));
+				player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.RED + "No LogisticsTileGenericPipe found"));
 			} else if (!(((LogisticsTileGenericPipe)tile).pipe instanceof CoreRoutedPipe)) {
-				player.addChatComponentMessage(new ChatComponentText(ChatColor.RED + "No CoreRoutedPipe found"));
+				player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.RED + "No CoreRoutedPipe found"));
 			} else {
 				LPChatListener.addTask(new Callable<Boolean>(){
 					@Override
 					public Boolean call() throws Exception {
-						player.addChatComponentMessage(new ChatComponentText(ChatColor.GREEN + "Starting RoutingTable debug update."));
+						player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.GREEN + "Starting RoutingTable debug update."));
 						DebugController.instance(player).debug(((ServerRouter)((CoreRoutedPipe)((LogisticsTileGenericPipe)tile).pipe).getRouter()));
 						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
 						return true;
 					}
 				}, player);
-				player.addChatComponentMessage(new ChatComponentText(ChatColor.AQUA + "Start RoutingTable debug update ? " + ChatColor.RESET + "<" + ChatColor.GREEN + "yes" + ChatColor.RESET + "/" + ChatColor.RED + "no" + ChatColor.RESET + ">"));
+				player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.AQUA + "Start RoutingTable debug update ? " + ChatColor.RESET + "<" + ChatColor.GREEN + "yes" + ChatColor.RESET + "/" + ChatColor.RED + "no" + ChatColor.RESET + ">"));
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
 			}
 		} else if(mode == TargetMode.Entity) {
-			player.addChatComponentMessage(new ChatComponentText(ChatColor.RED + "Entity not allowed"));
+			player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.RED + "Entity not allowed"));
 		}
 	}
 	

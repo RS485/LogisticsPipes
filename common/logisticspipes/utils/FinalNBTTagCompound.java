@@ -16,4 +16,12 @@ public class FinalNBTTagCompound extends NBTTagCompound {
 	{
 		return hashcode;
 	}
+
+	@Override
+	public boolean equals(Object par1Obj) {
+		if(par1Obj instanceof FinalNBTTagCompound && hashcode != par1Obj.hashCode()) {
+			return false;
+		}
+		return super.equals(par1Obj);
+	}
 }

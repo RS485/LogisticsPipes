@@ -34,6 +34,7 @@ item.PipeItemsProviderLogisticsMk2=Provider Logistics Pipe Mk2
 item.PipeItemsProviderLogisticsMk2.tip1=Type: Item Source
 item.PipeItemsProviderLogisticsMk2.tip2= - Attaches to an inventory
 item.PipeItemsProviderLogisticsMk2.tip3= - Sends a stack of items into the network on request
+item.PipeItemsProviderLogisticsMk2.tip4= - Ignores Suppliers on the same block.
 
 item.PipeItemsCraftingLogistics=Crafting Logistics Pipe
 item.PipeItemsCraftingLogistics.tip1=Type: Active Requester + Source
@@ -59,8 +60,6 @@ item.PipeItemsCraftingLogisticsMk3.tip5= - Can use a satelite pipe to send input
 item.PipeItemsSatelliteLogistics=Satellite Logistics Pipe
 item.PipeItemsSatelliteLogistics.tip1=Type: Active request destination
 item.PipeItemsSatelliteLogistics.tip2= - A crafting pipe can send additional inputs here
-item.PipeItemsSatelliteLogistics.tip3= - Used to send non-stackable items to chest next
-item.PipeItemsSatelliteLogistics.tip4=   the crafting table.
 
 item.PipeItemsSupplierLogistics=Supplier Logistics Pipe
 item.PipeItemsSupplierLogistics.tip1=Type: Active item requester
@@ -136,7 +135,6 @@ item.PipeItemsFirewall.tip3=   while allowing only certain items to pass
 
 item.PipeItemsFluidSupplier=Logistics Fluid Container Supplier
 item.PipeItemsFluidSupplier.tip1=Uses buckets or other fluid containers to fill the connected tank
-item.PipeItemsFluidSupplier.tip2= - used for machines which automatically empty containers provided
 item.PipeFluidSupplierMk2=Logistics Fluid Supplier
 item.PipeFluidSupplierMk2.tip1=Pulls Fluids from a Logistics Fluid Provider Pipe
 item.LogisticsFluidConnectorPipe=Logistics Fluid Connector Pipe
@@ -178,11 +176,17 @@ item.ModuleEnchantmentSink=Enchantment Sink module
 item.ModuleEnchantmentSinkMK2=Enchantment Sink module MK2
 item.ModuleCCBasedItemSink=CC Based ItemSink module
 item.ModuleCCBasedQuickSort=CC Based QuickSort module
+item.ModuleCrafter=Crafting module
+item.ModuleCrafterMK2=Crafting module MK2
+item.ModuleCrafterMK3=Crafting module MK3
+item.ModuleActiveSupplier=Active Supplier Module
 
 # Items
 
+item.pipeController=Logistics Pipe Controller
 item.brokenItem=Logistics Broken Item
 item.logisticsFluidContainer=Logistics Fluid Container
+# %cRED (DEPRECATED) %cRESET
 item.upgradeManagerItem=Upgrade Manager
 item.HUDbow=Logistics HUD Bow
 item.HUDglass=Logistics HUD Glass
@@ -190,6 +194,7 @@ item.HUDnosebridge=Logistics HUD Nose Bridge
 item.NanoHopper=Nano Hopper
 item.logisticsItemCard=Logistics Item Card
 item.itemDisk=Logistics Disk
+# %cRED (DEPRECATED) %cRESET
 item.networkMonitorItem=Network monitor
 item.ItemPipeSignCreator.0=Crafting Sign Creator
 item.ItemPipeSignCreator.1=Item Amount Sign Creator
@@ -227,6 +232,7 @@ item.IC2EVPowerSupplierUpgrade=IC2 EV Power Supplier Upgrade
 item.CCRemoteControlUpgrade=CC Remote Control Upgrade
 item.CraftingMonitoringUpgrade=Crafting Monitoring Upgrade
 item.OpaqueUpgrade=Opaque Upgrade
+item.CraftingCleanupUpgrade=Crafting Cleanup Upgrade
 
 # Blocks
 
@@ -284,6 +290,8 @@ gui.crafting.OreDict=OreDict
 gui.crafting.IgnDamage=IgnDamage
 gui.crafting.IgnNBT=IgnNBT
 gui.crafting.OrePrefix=OrePrefix
+gui.crafting.Include=Include
+gui.crafting.Exclude=Exclude
 
 gui.firewall.Blocked=Blocked
 gui.firewall.Allowed=Allowed
@@ -310,7 +318,6 @@ gui.fluidsupplier.Partialrequests=Partial requests
 gui.fluidsupplier.Yes=Yes
 gui.fluidsupplier.No=No
 
-gui.invsyscon.No=No
 gui.invsyscon.Refresh=Refresh
 gui.invsyscon.Save=Save
 gui.invsyscon.InventorySystemConnector=Inventory System Connector
@@ -372,3 +379,14 @@ gui.supplierpipe.RequestMode=Request Mode
 gui.upgrademanager.Upgrades=Upgrades
 gui.upgrademanager.Inventory=Inventory
 gui.upgrademanager.SneakyUpgrades=Sneaky Upgrades
+
+gui.pipecontroller.upgrade=Upgrades
+gui.pipecontroller.inventory=Inventory
+gui.pipecontroller.sneakyUpgrades=Sneaky Upgrades
+gui.pipecontroller.security=Security
+gui.pipecontroller.Session=Session
+gui.pipecontroller.Lifetime=Lifetime
+gui.pipecontroller.Sent=Sent
+gui.pipecontroller.Recieved=Recieved
+gui.pipecontroller.Relayed=Relayed
+gui.pipecontroller.RoutingTableSize=RoutingTableSize

@@ -26,7 +26,7 @@ import logisticspipes.utils.gui.GuiCheckBox;
 import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.ISubGuiControler;
 import logisticspipes.utils.gui.ItemDisplay;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SearchBar;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -39,7 +39,7 @@ import net.minecraft.item.Item;
 
 import org.lwjgl.input.Keyboard;
 
-public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSearch, ISpecialItemRenderer {
+public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItemSearch, ISpecialItemRenderer {
 
 	public final EntityPlayer _entityPlayer;
 	public ItemDisplay itemDisplay;
@@ -100,7 +100,9 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		buttonList.add(new SmallGuiButton(7, xCenter + 38, bottom - 26, 15, 10, "++")); // +10
 		buttonList.add(new SmallGuiButton(11, xCenter + 26, bottom - 15, 26, 10, "+++")); // +64
 		buttonList.add(new GuiCheckBox(8, guiLeft + 9, bottom - 60, 14, 14, Configs.DISPLAY_POPUP)); // Popup
-
+		
+		buttonList.add(new SmallGuiButton(20, xCenter - 13, bottom - 41, 26, 10, "Sort")); // Sort
+		
 		if(search == null) search = new SearchBar(mc.fontRenderer, this, guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
 		search.reposition(guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
 		
@@ -131,6 +133,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		//SearchInput
 		search.renderSearchBar();
 		
+		itemDisplay.renderSortMode(xCenter, bottom - 52);
 		itemDisplay.renderItemArea(zLevel);
 	}
 	
@@ -145,7 +148,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 	public boolean itemSearched(ItemIdentifier item) {
 		if(search.isEmpty()) return true;
 		if(isSearched(item.getFriendlyName().toLowerCase(), search.getContent().toLowerCase())) return true;
-		if(isSearched(String.valueOf(Item.getIdFromItem(item.item)), search.getContent())) return true;
+		//if(isSearched(String.valueOf(Item.getIdFromItem(item.item)), search.getContent())) return true;
 		//Enchantment? Enchantment!
 		Map<Integer,Integer> enchantIdLvlMap = EnchantmentHelper.getEnchantments(item.unsafeMakeNormalStack(1));
 		for(Entry<Integer,Integer> e:enchantIdLvlMap.entrySet()) {
@@ -229,6 +232,8 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			Configs.savePopupState();
 		} else if (guibutton.id == 13 && itemDisplay.getSelectedItem() != null) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestComponentPacket.class).setDimension(dimension).setStack(itemDisplay.getSelectedItem().getItem().makeStack(itemDisplay.getRequestCount())).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
+		} else if (guibutton.id == 20) {
+			itemDisplay.cycle();
 		}
 		
 		super.actionPerformed(guibutton);

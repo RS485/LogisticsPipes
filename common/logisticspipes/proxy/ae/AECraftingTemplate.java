@@ -2,6 +2,7 @@ package logisticspipes.proxy.ae;
 
 import java.util.List;
 
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.request.CraftingTemplate;
@@ -34,14 +35,13 @@ public class AECraftingTemplate extends CraftingTemplate {
 	}
 	
 	@Override
-	public void addRequirement(CraftingRequirement stack, IRequestItems crafter) {
+	public void addRequirement(CraftingRequirement stack, IRequestItems crafter, IAdditionalTargetInformation info) {
 	
 	}
 	
 	@Override
 	public boolean canCraft(ItemIdentifier item) {
 		List<ItemStack> results = _interface.getCraftingOptions();
-		item.getId();
 		
 		for(ItemStack r:results){
 			if(ItemIdentifier.get(r).equals(item)) {
@@ -55,10 +55,7 @@ public class AECraftingTemplate extends CraftingTemplate {
 	@Override 
 	public LogisticsPromise generatePromise(int nResultSets) {
 		InterfaceCraftingResponse response = _interface.requestCrafting(_result.unsafeMakeNormalStack(), true);
-		LogisticsPromise promise = new LogisticsPromise();
-		promise.item = ItemIdentifier.get(response.Request);
-		promise.numberOfItems = response.Request.stackSize;
-		promise.sender = _crafter;
+		LogisticsPromise promise = new LogisticsPromise(ItemIdentifier.get(response.Request), response.Request.stackSize, _crafter);
 		return promise;
 	}
 

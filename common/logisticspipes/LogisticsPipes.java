@@ -11,6 +11,8 @@ package logisticspipes;
 import java.lang.reflect.Field;
 import java.util.Calendar;
 
+import buildcraft.api.transport.IPipeTile.PipeType;
+
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.commands.LogisticsPipesCommand;
@@ -19,6 +21,7 @@ import logisticspipes.items.ItemDisk;
 import logisticspipes.items.ItemHUDArmor;
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.ItemParts;
+import logisticspipes.items.ItemPipeController;
 import logisticspipes.items.ItemPipeSignCreator;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsBrokenItem;
@@ -31,11 +34,11 @@ import logisticspipes.items.RemoteOrderer;
 import logisticspipes.logistics.LogisticsFluidManager;
 import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.network.GuiHandler;
+import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
-import logisticspipes.pipes.basic.LogisticsBlockLogisticsPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.ProxyManager;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -110,7 +113,7 @@ import cpw.mods.fml.relauncher.Side;
 @Mod(
 		modid = "LogisticsPipes",
 		name = "Logistics Pipes",
-		version = "%VERSION%",
+		version = "${lp.version.full}",
 		/* %------------CERTIFICATE-SUM-----------% */
 		dependencies = "required-after:Forge@[9.10.1.850,);" +
 				"required-after:BuildCraft|Core;" +
@@ -141,6 +144,7 @@ public class LogisticsPipes {
 			throw new RuntimeException("LogisticsPipes could not find its class transformer. If you are running MC from an IDE make sure to copy the 'LogisticsPipes_dummy.jar' to your mods folder. If you are running MC normal please report this as a bug at 'https://github.com/RS485/LogisticsPipes/issues'.");
 		}
 		PacketHandler.intialize();
+		NewGuiHandler.intialize();
 	}
 	
 	@Instance("LogisticsPipes")
@@ -213,6 +217,7 @@ public class LogisticsPipes {
 	public static Item LogisticsUpgradeManager;
 	public static Item LogisticsFluidContainer;
 	public static Item LogisticsBrokenItem;
+	public static Item LogisticsPipeControllerItem;
 	
 	// Logistics Blocks
 	public static Block LogisticsSolidBlock;
@@ -223,6 +228,7 @@ public class LogisticsPipes {
 	public static final String logisticsTileGenericPipeMapping = "logisticspipes.pipes.basic.LogisticsTileGenericPipe";
 	
 	public static CreativeTabLP LPCreativeTab = new CreativeTabLP();
+	public static PipeType LogisticsPipeType;
 	
 	public static Logger log;
 	
@@ -285,6 +291,7 @@ public class LogisticsPipes {
 
 		FMLCommonHandler.instance().bus().register(DebugGuiTickHandler.instance());
 		
+		LogisticsPipeType = EnumHelper.addEnum(PipeType.class, "LOGISTICS", new Class<?>[]{}, new Object[]{});
 //		FMLInterModComms.sendMessage("Waila", "register", this.getClass()
 //		 .getPackage().getName()
 //		 + ".waila.WailaRegister.register");
@@ -388,6 +395,9 @@ public class LogisticsPipes {
 		
 		LogisticsBrokenItem = new LogisticsBrokenItem();
 		LogisticsBrokenItem.setUnlocalizedName("brokenItem");
+
+		LogisticsPipeControllerItem = new ItemPipeController();
+		LogisticsPipeControllerItem.setUnlocalizedName("pipeController");
 
 		//Blocks
 		LogisticsSolidBlock = new LogisticsSolidBlock();

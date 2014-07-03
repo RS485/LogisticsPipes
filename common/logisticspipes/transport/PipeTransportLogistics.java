@@ -19,10 +19,12 @@ import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
+import logisticspipes.interfaces.IBufferItems;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.interfaces.ISpecialInsertion;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
+import logisticspipes.interfaces.routing.ITargetSlotInformation;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.network.PacketHandler;
@@ -31,7 +33,6 @@ import logisticspipes.network.packets.pipe.PipeContentRequest;
 import logisticspipes.network.packets.pipe.PipePositionPacket;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
-import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
@@ -75,8 +76,7 @@ public class PipeTransportLogistics extends PipeTransport {
 	private final int																					_bufferTimeOut	= 20 * 2;														// 2 Seconds
 	private final HashMap<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>>	_itemBuffer		= new HashMap<ItemIdentifierStack, Pair<Integer, Integer>>();
 	private Chunk																						chunk;
-	public LPItemList																					items = new LPItemList(this);;
-	public boolean 																						isRendering;
+	public LPItemList																					items = new LPItemList(this);
 	
 	@Override
 	public void initialize() {
@@ -84,8 +84,6 @@ public class PipeTransportLogistics extends PipeTransport {
 		if(MainProxy.isServer(getWorld())) {
 			// cache chunk for marking dirty
 			chunk = getWorld().getChunkFromBlockCoords(container.xCoord, container.zCoord);
-		} else {
-			isRendering = true;
 		}
 	}
 	
@@ -163,16 +161,13 @@ public class PipeTransportLogistics extends PipeTransport {
 			item.output = resolveDestination((LPTravelingItemServer)item);
 			if(item.output == null) {
 				return; // don't do anything
-			} else if(item.output == ForgeDirection.UNKNOWN) {
-				dropItem((LPTravelingItemServer)item);
-				return;
 			}
 			getPipe().debug.log("Injected Item: [" + item.input + ", " + item.output + "] (" + ((LPTravelingItemServer)item).getInfo());
 		} else {
 			item.output = ForgeDirection.UNKNOWN;
 		}
 		
-		items.scheduleAdd(item);
+		items.add(item);
 		
 		if(MainProxy.isServer(container.getWorldObj()) && !getPipe().isOpaque()) {
 			sendItemPacket((LPTravelingItemServer)item);
@@ -188,6 +183,11 @@ public class PipeTransportLogistics extends PipeTransport {
 		// Safe guard - if for any reason the item is corrupted at this
 		// stage, avoid adding it to the pipe to avoid further exceptions.
 			return;
+		
+		if(getPipe() instanceof IBufferItems) {
+			stack.setStackSize(((IBufferItems)getPipe()).addToBuffer(stack, item.getAdditionalTargetInformation()));
+			if(stack.getStackSize() <= 0) return;
+		}
 		
 		// Assign new ID to update ItemStack content
 		item.id = item.getNextId();
@@ -350,9 +350,6 @@ public class PipeTransportLogistics extends PipeTransport {
 		if(getPipe().useEnergy((int)(add * 50 + 0.5))) {
 			item.setSpeed(Math.min(Math.max(item.getSpeed(), TransportConstants.PIPE_NORMAL_SPEED * defaultBoost * multiplyerSpeed), 1.0F));
 		}
-		if(MainProxy.isClient(getWorld())) {
-			MainProxy.spawnParticle(Particles.GoldParticle, getPipe().getX(), getPipe().getY(), getPipe().getZ(), 1);
-		}
 	}
 	
 	protected void handleTileReachedServer(LPTravelingItemServer arrivingItem, TileEntity tile) {
@@ -399,36 +396,33 @@ public class PipeTransportLogistics extends PipeTransport {
 				}
 				UpgradeManager manager = getPipe().getUpgradeManager();
 				boolean tookSome = false;
-				if(manager.hasPatternUpgrade()) {
-					if(getPipe() instanceof PipeItemsSupplierLogistics) {
-						IInventory inv = (IInventory)tile;
-						if(inv instanceof ISidedInventory) inv = new SidedInventoryMinecraftAdapter((ISidedInventory)inv, ForgeDirection.UNKNOWN, false);
-						IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
-						if(util instanceof ISpecialInsertion) {
-							PipeItemsSupplierLogistics pipe = (PipeItemsSupplierLogistics)getPipe();
-							int[] slots = pipe.getSlotsForItemIdentifier(itemStack.getItem());
-							for(int i: slots) {
-								if(util.getSizeInventory() > pipe.getInvSlotForSlot(i)) {
-									ItemStack content = util.getStackInSlot(pipe.getInvSlotForSlot(i));
-									ItemStack toAdd = itemStack.makeNormalStack();
-									toAdd.stackSize = Math.min(toAdd.stackSize, Math.max(0, pipe.getAmountForSlot(i) - (content != null ? content.stackSize : 0)));
-									if(toAdd.stackSize > 0) {
-										if(util.getSizeInventory() > pipe.getInvSlotForSlot(i)) {
-											int added = ((ISpecialInsertion)util).addToSlot(toAdd, pipe.getInvSlotForSlot(i));
-											itemStack.lowerStackSize(added);
-											if(added > 0) {
-												tookSome = true;
-											}
-										}
+				if(arrivingItem.getAdditionalTargetInformation() instanceof ITargetSlotInformation) {
+					ITargetSlotInformation information = (ITargetSlotInformation) arrivingItem.getAdditionalTargetInformation();
+					IInventory inv = (IInventory)tile;
+					if(inv instanceof ISidedInventory) inv = new SidedInventoryMinecraftAdapter((ISidedInventory)inv, ForgeDirection.UNKNOWN, false);
+					IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
+					if(util instanceof ISpecialInsertion) {
+						int slot = information.getTargetSlot();
+						int amount = information.getAmount();
+						if(util.getSizeInventory() > slot) {
+							ItemStack content = util.getStackInSlot(slot);
+							ItemStack toAdd = itemStack.makeNormalStack();
+							toAdd.stackSize = Math.min(toAdd.stackSize, Math.max(0, amount - (content != null ? content.stackSize : 0)));
+							if(toAdd.stackSize > 0) {
+								if(util.getSizeInventory() > slot) {
+									int added = ((ISpecialInsertion)util).addToSlot(toAdd, slot);
+									itemStack.lowerStackSize(added);
+									if(added > 0) {
+										tookSome = true;
 									}
 								}
 							}
-							if(pipe.isLimited()) {
-								if(itemStack.getStackSize() > 0) {
-									reverseItem(arrivingItem, itemStack);
-								}
-								return;
+						}
+						if(information.isLimited()) {
+							if(itemStack.getStackSize() > 0) {
+								reverseItem(arrivingItem, itemStack);
 							}
+							return;
 						}
 					}
 				}
@@ -511,14 +505,24 @@ public class PipeTransportLogistics extends PipeTransport {
 		}
 		return tile instanceof TileGenericPipe || (tile instanceof IInventory && ((IInventory)tile).getSizeInventory() > 0) || (tile instanceof IMachine && ((IMachine)tile).manageSolids());
 	}
+
+	private SecurityManager hackToGetCaller = new SecurityManager() {
+		@Override
+		public Object getSecurityContext() {
+			return this.getClassContext();
+		}
+	};
 	
 	@Override
 	public PipeType getPipeType() {
-		if(isRendering) {
-			return PipeType.STRUCTURE; // Don't let BC render the Pipe content
-		} else {
+		Class<?>[] caller = (Class<?>[]) hackToGetCaller.getSecurityContext();
+		if(caller[3].getName().equals("buildcraft.core.utils.Utils")) {
 			return PipeType.ITEM;
 		}
+		if(LogisticsPipes.LogisticsPipeType == null) {
+			return PipeType.STRUCTURE;
+		}
+		return LogisticsPipes.LogisticsPipeType; // Don't let BC render the Pipe content
 	}
 	
 	public void defaultReajustSpeed(TravelingItem item) {
@@ -551,9 +555,11 @@ public class PipeTransportLogistics extends PipeTransport {
 	
 	private void moveSolids() {
 		items.flush();
+		items.scheduleAdd();
 		for(LPTravelingItem item: items) {
 			if(item.lastTicked >= MainProxy.getGlobalTick()) continue;
 			item.lastTicked = MainProxy.getGlobalTick();
+			item.addAge();
 			item.setPosition(item.getPosition() + item.getSpeed());
 			if(endReached(item)) {
 				if(item.output == ForgeDirection.UNKNOWN) {
@@ -561,7 +567,7 @@ public class PipeTransportLogistics extends PipeTransport {
 						dropItem((LPTravelingItemServer)item);
 					}
 					items.scheduleRemoval(item);
-					return;
+					continue;
 				}
 				TileEntity tile = container.getTile(item.output);
 				if(items.scheduleRemoval(item)) {
@@ -573,6 +579,7 @@ public class PipeTransportLogistics extends PipeTransport {
 				}
 			}
 		}
+		items.addScheduledItems();
 		items.removeScheduledItems();
 	}
 	
@@ -613,7 +620,7 @@ public class PipeTransportLogistics extends PipeTransport {
 	
 	private void dropItem(LPTravelingItemServer item) {
 		if(container.getWorldObj().isRemote) { return; }
-		item.setSpeed(0.0F);
+		item.setSpeed(0.05F);
 		item.setContainer(container);
 		EntityItem entity = item.toEntityItem();
 		if(entity != null) {
@@ -622,7 +629,7 @@ public class PipeTransportLogistics extends PipeTransport {
 	}
 	
 	protected boolean endReached(LPTravelingItem item) {
-		return item.getPosition() >= 1.0F;
+		return item.getPosition() >= ((item.output == ForgeDirection.UNKNOWN)?0.75F:1.0F);
 	}
 	
 	protected void neighborChange() {}
@@ -633,8 +640,10 @@ public class PipeTransportLogistics extends PipeTransport {
 	
 	@Override
 	public void dropContents() {
-		for(LPTravelingItem item: items) {
-			container.pipe.dropItem(item.getItemIdentifierStack().makeNormalStack());
+		if(MainProxy.isServer(this.getWorld())) {
+			for(LPTravelingItem item: items) {
+				dropItem((LPTravelingItemServer) item);
+			}
 		}
 		items.clear();
 	}
@@ -668,9 +677,12 @@ public class PipeTransportLogistics extends PipeTransport {
 			}
 			item.updateInformation(input, output, speed, position);
 		}
+		//update lastTicked so we don't double-move items
+		item.lastTicked = MainProxy.getGlobalTick();
 		if(items.get(travelId) == null) {
-			items.scheduleAdd(item);
+			items.add(item);
 		}
+		getPipe().spawnParticle(Particles.OrangeParticle, 1);
 	}
 	
 	private void sendItemContentRequest(int travelId) {

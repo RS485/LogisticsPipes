@@ -16,8 +16,8 @@ import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
-import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleSatelite;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -85,7 +85,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	@Override
 	public void enabledUpdateEntity() {
 		super.enabledUpdateEntity();
-		if(getWorld().getTotalWorldTime() % 20 == 0 && localModeWatchers.size() > 0) {
+		if(isNthTick(20) && localModeWatchers.size() > 0) {
 			updateInv(false);
 		}
 	}
@@ -240,7 +240,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 			MainProxy.sendPacketToServer(packet);
 		} else {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-			MainProxy.sendPacketToPlayer(packet,player);
+			MainProxy.sendPacketToPlayer(packet, player);
 		}
 		updateWatchers();
 	}
@@ -261,12 +261,10 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
-		if (MainProxy.isServer(entityplayer.worldObj)) {
-			// Send the satellite id when opening gui
-			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-			MainProxy.sendPacketToPlayer(packet, entityplayer);
-			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SatelitePipe_ID, getWorld(), getX(), getY(), getZ());
-		}
+		// Send the satellite id when opening gui
+		final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
+		MainProxy.sendPacketToPlayer(packet, entityplayer);
+		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SatelitePipe_ID, getWorld(), getX(), getY(), getZ());
 	}
 
 	@Override

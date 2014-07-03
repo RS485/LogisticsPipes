@@ -8,9 +8,9 @@ import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -27,24 +27,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleApiaristRefiller extends LogisticsModule {
 	
-	private IInventoryProvider		_invProvider;
-	private IRoutedPowerProvider	_power;
-	private ISendRoutedItem			_itemSender;
-	
-	private IWorldProvider			_world;
-	
 	private int						currentTickCount	= 0;
 	private int						ticksToOperation	= 200;
 	
 	public ModuleApiaristRefiller() {}
-	
-	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerProvider) {
-		_invProvider = invProvider;
-		_power = powerProvider;
-		_world = world;
-		_itemSender = itemSender;
-	}
 	
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
@@ -63,44 +49,41 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
 	
 	@Override
-	public void registerSlot(int slot) {}
-	
-	@Override
 	public final int getX() {
-		return this._invProvider.getX();
+		return this._service.getX();
 	}
 	
 	@Override
 	public final int getY() {
-		return this._invProvider.getY();
+		return this._service.getY();
 	}
 	
 	@Override
 	public final int getZ() {
-		return this._invProvider.getZ();
+		return this._service.getZ();
 	}
 	
 	@Override
 	public void tick() {
 		if(++currentTickCount < ticksToOperation) return;
 		currentTickCount = 0;
-		IInventory inv = _invProvider.getRealInventory();
+		IInventory inv = _service.getRealInventory();
 		if(!(inv instanceof ISidedInventory)) return;
 		ISidedInventory sinv = (ISidedInventory)inv;
-		ForgeDirection direction = _invProvider.inventoryOrientation().getOpposite();
+		ForgeDirection direction = _service.inventoryOrientation().getOpposite();
 		ItemStack stack = extractItem(sinv, false, direction, 1);
 		if(stack == null) return;
-		if(!(_power.canUseEnergy(100))) return;
+		if(!(_service.canUseEnergy(100))) return;
 		
 		currentTickCount = ticksToOperation;
 		
 		if(reinsertBee(stack, sinv, direction)) return;
 		
-		Pair<Integer, SinkReply> reply = _itemSender.hasDestination(ItemIdentifier.get(stack), true, new ArrayList<Integer>());
+		Pair<Integer, SinkReply> reply = _service.hasDestination(ItemIdentifier.get(stack), true, new ArrayList<Integer>());
 		if(reply == null) return;
-		_power.useEnergy(20);
+		_service.useEnergy(20);
 		extractItem(sinv, true, direction, 1);
-		_itemSender.sendStack(stack, reply, ItemSendMode.Normal);
+		_service.sendStack(stack, reply, ItemSendMode.Normal);
 	}
 	
 	private ItemStack extractItem(ISidedInventory inv, boolean remove, ForgeDirection dir, int amount) {
@@ -134,10 +117,10 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 				if(SimpleServiceLocator.forestryProxy.isPurebred(stack)) {
 					int inserted = addItem(inv, stack, direction);
 					if(inserted == 0) { return false; }
-					_power.useEnergy(100);
+					_service.useEnergy(100);
 					extractItem(inv, true, direction, 1);
-					MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, this.getX(), this.getY(), this.getZ(), _world.getWorld(), 5);
-					MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, this.getX(), this.getY(), this.getZ(), _world.getWorld(), 5);
+					_service.spawnParticle(Particles.VioletParticle, 5);
+					_service.spawnParticle(Particles.BlueParticle, 5);
 					return true;
 				}
 			}
@@ -147,10 +130,10 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 				if(SimpleServiceLocator.forestryProxy.isPurebred(stack)) {
 					int inserted = addItem(inv, stack, direction);
 					if(inserted == 0) { return false; }
-					_power.useEnergy(100);
+					_service.useEnergy(100);
 					extractItem(inv, true, direction, 1);
-					MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, this.getX(), this.getY(), this.getZ(), _world.getWorld(), 5);
-					MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, this.getX(), this.getY(), this.getZ(), _world.getWorld(), 5);
+					_service.spawnParticle(Particles.VioletParticle, 5);
+					_service.spawnParticle(Particles.BlueParticle, 5);
 					return true;
 				}
 			}

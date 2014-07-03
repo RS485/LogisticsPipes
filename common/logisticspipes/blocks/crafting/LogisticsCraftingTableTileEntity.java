@@ -3,8 +3,12 @@ package logisticspipes.blocks.crafting;
 import logisticspipes.Configs;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.blocks.LogisticsSolidBlock;
+import logisticspipes.interfaces.IGuiTileEntity;
+import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.guis.block.AutoCraftingGui;
 import logisticspipes.network.packets.block.CraftingTableFuzzyFlagsModifyPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.CraftingRequirement;
@@ -25,7 +29,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.Constants;
 
-public class LogisticsCraftingTableTileEntity extends TileEntity implements ISimpleInventoryEventHandler, IInventory {
+public class LogisticsCraftingTableTileEntity extends TileEntity implements IGuiTileEntity, ISimpleInventoryEventHandler, IInventory {
 	
 	public ItemIdentifierInventory inv = new ItemIdentifierInventory(18, "Crafting Resources", 64);
 	public ItemIdentifierInventory matrix = new ItemIdentifierInventory(9, "Crafting Matrix", 1);
@@ -307,5 +311,10 @@ outer:
 				MainProxy.sendPacketToPlayer(pak, pl);
 			MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(worldObj), pak);
 		}
+	}
+
+	@Override
+	public CoordinatesGuiProvider getGuiProvider() {
+		return NewGuiHandler.getGui(AutoCraftingGui.class).setCraftingTable(this);
 	}
 }

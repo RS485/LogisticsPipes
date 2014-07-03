@@ -6,23 +6,16 @@ import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleApiaristSink.FilterType;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.PipeItemsApiaristSink;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.utils.gui.DummyModuleContainer;
+import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
 @Accessors(chain=true)
-public class BeeModuleSetBeePacket extends CoordinatesPacket {
+public class BeeModuleSetBeePacket extends ModuleCoordinatesPacket {
 	
-	@Getter
-	@Setter
-	private int integer1 = 0;
 	@Getter
 	@Setter
 	private int integer2 = 0;
@@ -47,31 +40,8 @@ public class BeeModuleSetBeePacket extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		ModuleApiaristSink sink;
-		if(integer1 < 0) {
-			if(player.openContainer instanceof DummyModuleContainer) {
-				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
-				if(dummy.getModule() instanceof ModuleApiaristSink) {
-					sink = (ModuleApiaristSink) dummy.getModule();
-				} else {
-					return;
-				}
-			} else {
-				return;
-			}
-		} else {
-			final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-			if(pipe == null) {
-				return;
-			}
-			if(pipe.pipe instanceof PipeItemsApiaristSink) {
-				sink = (ModuleApiaristSink) ((PipeItemsApiaristSink)pipe.pipe).getLogisticsModule();
-			} else if(pipe.pipe instanceof CoreRoutedPipe && ((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(integer1 - 1) instanceof ModuleApiaristSink) {
-				sink = (ModuleApiaristSink) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(integer1 - 1);
-			} else {
-				return;
-			}
-		}
+		ModuleApiaristSink sink = this.getLogisticsModule(player, ModuleApiaristSink.class);
+		if(sink == null) return;
 		if(integer2 >= sink.filter.length) return;
 		switch(integer3) {
 			case 0:
@@ -93,8 +63,6 @@ public class BeeModuleSetBeePacket extends CoordinatesPacket {
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
 		super.writeData(data);
-
-		data.writeInt(integer1);
 		data.writeInt(integer2);
 		data.writeInt(integer3);
 		data.writeInt(integer4);
@@ -105,8 +73,6 @@ public class BeeModuleSetBeePacket extends CoordinatesPacket {
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);
-
-		integer1 = data.readInt();
 		integer2 = data.readInt();
 		integer3 = data.readInt();
 		integer4 = data.readInt();

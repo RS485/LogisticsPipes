@@ -2,6 +2,7 @@ package logisticspipes.modules;
 
 import java.util.Collection;
 
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.ISendRoutedItem;
@@ -18,9 +19,6 @@ import net.minecraft.util.IIcon;
 
 public class ModuleEnchantmentSink extends LogisticsModule {
 	
-	private IRoutedPowerProvider _power;
-	private int slot = 0;
-	
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {}
 
@@ -28,37 +26,25 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider,
-			ISendRoutedItem itemSender, IWorldProvider world,
-			IRoutedPowerProvider powerProvider) {
-		_power = powerProvider;
-	}
-
-	@Override
-	public void registerSlot(int slot) {
-		this.slot = slot;
-	}
-
-	@Override
 	public int getX() {
-		if(slot>=0)
-			return this._power.getX();
+		if(slot.isInWorld())
+			return _service.getX();
 		else 
 			return 0;
 	}
 
 	@Override
 	public int getY() {
-		if(slot>=0)
-			return this._power.getY();
+		if(slot.isInWorld())
+			return _service.getY();
 		else 
 			return 0;
 	}
 
 	@Override
 	public int getZ() {
-		if(slot>=0)
-			return this._power.getZ();
+		if(slot.isInWorld())
+			return _service.getZ();
 		else 
 			return 0;
 	}

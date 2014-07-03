@@ -1,11 +1,9 @@
 package logisticspipes.pipes.signs;
 
-import logisticspipes.LogisticsPipes;
-import logisticspipes.network.GuiHandler;
-import logisticspipes.network.GuiIDs;
+import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.packets.gui.GuiArgument;
+import logisticspipes.network.guis.item.ItemAmountSignGui;
 import logisticspipes.network.packets.pipe.ItemAmountSignUpdatePacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -50,9 +48,7 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 	}
 	
 	private void openGUI(CoreRoutedPipe pipe, ForgeDirection dir, EntityPlayer player) {
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(GuiArgument.class).setGuiID(GuiIDs.GUI_Item_Amount_Sign).setArgs(dir), player);
-		GuiHandler.argumentQueueServer.put(GuiIDs.GUI_Item_Amount_Sign, new Object[] { dir });
-		player.openGui(LogisticsPipes.instance, GuiIDs.GUI_Item_Amount_Sign, player.worldObj, pipe.getX(), pipe.getY(), pipe.getZ());
+		NewGuiHandler.getGui(ItemAmountSignGui.class).setDir(dir).setTilePos(pipe.container).open(player);
 	}
 
 	@Override

@@ -1,12 +1,12 @@
 package logisticspipes.network.packets.block;
 
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
-import logisticspipes.network.abstractpackets.InventoryCoordinatesPacket;
+import logisticspipes.network.abstractpackets.InventoryModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
-public class SolderingStationInventory extends InventoryCoordinatesPacket {
+public class SolderingStationInventory extends InventoryModuleCoordinatesPacket {
 
 	public SolderingStationInventory(int id) {
 		super(id);

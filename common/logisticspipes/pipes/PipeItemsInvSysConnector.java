@@ -18,7 +18,7 @@ import logisticspipes.interfaces.IOrderManagerContentReceiver;
 import logisticspipes.interfaces.routing.IDirectRoutingConnection;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.hud.HUDStartWatchingPacket;
@@ -29,10 +29,8 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ItemRoutingInformation;
-import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.transport.TransportInvConnection;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryHelper;
@@ -133,7 +131,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 			if(stack != null) {
 				ItemIdentifier ident = ItemIdentifier.get(stack);
 				for(Quartet<ItemIdentifier,Integer,Integer,TransportMode> pair:destination) {
-					if(pair.getValue1() == ident) {
+					if(pair.getValue1().equals(ident)) {
 						int tosend = Math.min(pair.getValue2(), stack.stackSize);
 						if(!useEnergy(6)) break;
 						sendStack(inv.decrStackSize(i, tosend),pair.getValue3(),dir, pair.getValue4());
@@ -156,7 +154,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(mode);
 		super.queueRoutedItem(itemToSend, dir);
-		MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), this.getWorld(), 4);
+		spawnParticle(Particles.OrangeParticle, 4);
 	}
 	
 	private UUID getConnectionUUID() {
@@ -198,7 +196,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		for(Quartet<ItemIdentifier,Integer,Integer,TransportMode> pair:destination) {
 			ItemIdentifierStack currentStack = new ItemIdentifierStack(pair.getValue1(), pair.getValue2());
 			Entry<ItemIdentifierStack,?> entry = list.ceilingEntry(currentStack);
-			if(entry!=null && entry.getKey().getItem().uniqueID == currentStack.getItem().uniqueID){
+			if(entry!=null && entry.getKey().getItem().equals(currentStack.getItem())){
 				entry.getKey().setStackSize(entry.getKey().getStackSize() + currentStack.getStackSize());
 			} else 
 				list.put(currentStack,null);
@@ -207,15 +205,8 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	}
 	
 	@Override
-	public boolean wrenchClicked(EntityPlayer entityplayer, SecuritySettings settings) {
-		if(MainProxy.isServer(getWorld())) {
-			if (settings == null || settings.openGui) {
-				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Inv_Sys_Connector_ID, getWorld(), getX(), getY(), getZ());
-			} else {
-				entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
-			}
-		}
-		return true;
+	public void onWrenchClicked(EntityPlayer entityplayer) {
+		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Inv_Sys_Connector_ID, getWorld(), getX(), getY(), getZ());
 	}
 
 	@Override
@@ -345,7 +336,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 				if(CRP instanceof IDirectRoutingConnection) {
 					IDirectRoutingConnection pipe = (IDirectRoutingConnection) CRP;
 					pipe.addItem(item.getItem(), item.getStackSize(), info.destinationint, info._transportMode);
-					MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), this.getWorld(), 4);
+					spawnParticle(Particles.OrangeParticle, 4);
 				}
 			}
 		}

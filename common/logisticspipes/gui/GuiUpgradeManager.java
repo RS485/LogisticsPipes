@@ -1,11 +1,10 @@
 package logisticspipes.gui;
 
-import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.string.StringUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
@@ -13,7 +12,7 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiUpgradeManager extends KraphtBaseGuiScreen {
+public class GuiUpgradeManager extends LogisticsBaseGuiScreen {
 	private static final String PREFIX = "gui.upgrademanager.";
 	
 	private final UpgradeManager upgrade;
@@ -36,11 +35,6 @@ public class GuiUpgradeManager extends KraphtBaseGuiScreen {
 		if(upgrade.hasCombinedSneakyUpgrade()) {
 			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "SneakyUpgrades"), 8, 47, 0x404040);
 		}
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Upgrade_Manager;
 	}
 	
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/upgrade_manager.png");

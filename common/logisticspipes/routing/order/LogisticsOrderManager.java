@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import logisticspipes.interfaces.IChangeListener;
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.proxy.MainProxy;
@@ -22,15 +23,11 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.world.World;
 
 public class LogisticsOrderManager implements Iterable<LogisticsOrder> {
-	
-	private final RequestType	type;
-	
-	public LogisticsOrderManager(RequestType type) {
-		this.type = type;
+		
+	public LogisticsOrderManager() {
 	}
 	
-	public LogisticsOrderManager(RequestType type, IChangeListener listener) {
-		this(type);
+	public LogisticsOrderManager(IChangeListener listener) {
 		this.listener = listener;
 	}
 	
@@ -62,14 +59,32 @@ public class LogisticsOrderManager implements Iterable<LogisticsOrder> {
 		list.addLast(stack.clone());
 	}
 	
-	public boolean hasOrders() {
-		return _orders.size() > 0;
+	public boolean hasOrders(RequestType type) {
+		return  peekAtTopRequest(type)!=null;
 	}
 	
-	public LogisticsOrder peekAtTopRequest() {
+/*	public LogisticsOrder peekAtTopRequest() {
 		return _orders.getFirst().setInProgress(true);
+	}*/
+
+	/* NOT multi-access SAFE -- changes the state of the stack so the returned element is on top*/
+	public LogisticsOrder peekAtTopRequest(RequestType type) {
+		if(_orders.size()==0)
+			return null;
+		LogisticsOrder top = _orders.getFirst().setInProgress(true);
+		int loopCount=0;
+		while(top.getType()!=type){
+			loopCount++;
+			if(loopCount>_orders.size()) {
+				return null;
+				//throw new NoSuchElementException("Unable to find a Request of Type "+type.toString());
+			}
+			deferSend(); // sets the new top to InProgress
+			top = _orders.getFirst();
+		}
+		return top;
 	}
-	
+
 	public void sendSuccessfull(int number, boolean defersend, IRoutedItem item) {
 		_orders.getFirst().getItem().setStackSize(_orders.getFirst().getItem().getStackSize() - number);
 		if(_orders.getFirst().isWatched()) {
@@ -89,7 +104,7 @@ public class LogisticsOrderManager implements Iterable<LogisticsOrder> {
 	}
 	
 	public void sendFailed() {
-		_orders.getFirst().getDestination().itemCouldNotBeSend(_orders.getFirst().getItem());
+		_orders.getFirst().getDestination().itemCouldNotBeSend(_orders.getFirst().getItem(), _orders.getFirst().getInformation());
 		if(!_orders.isEmpty()) {
 			LogisticsOrder order = _orders.removeFirst();
 			order.setFinished(true);
@@ -107,17 +122,8 @@ public class LogisticsOrderManager implements Iterable<LogisticsOrder> {
 		listen();
 	}
 	
-	public LogisticsOrder addOrder(ItemIdentifierStack stack, IRequestItems requester) {
-		/*
-		for (LogisticsOrder request : _orders){
-			if (request.getItem().getItem() == stack.getItem() && request.getDestination() == requester) {
-				stack.setStackSize(stack.getStackSize() + request.getItem().getStackSize());
-				_orders.remove(request);
-				break;
-			}
-		}
-		*/
-		LogisticsOrder order = new LogisticsOrder(stack, requester, this.type);
+	public LogisticsOrder addOrder(ItemIdentifierStack stack, IRequestItems requester, RequestType type, IAdditionalTargetInformation info) {
+		LogisticsOrder order = new LogisticsOrder(stack, requester, type, info);
 		_orders.addLast(order);
 		listen();
 		return order;
@@ -126,7 +132,7 @@ public class LogisticsOrderManager implements Iterable<LogisticsOrder> {
 	public int totalItemsCountInOrders(ItemIdentifier item) {
 		int itemCount = 0;
 		for(LogisticsOrder request: _orders) {
-			if(request.getItem().getItem() != item) continue;
+			if(!request.getItem().getItem().equals(item)) continue;
 			itemCount += request.getItem().getStackSize();
 		}
 		return itemCount;

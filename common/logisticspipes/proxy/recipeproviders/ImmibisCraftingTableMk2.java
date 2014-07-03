@@ -61,7 +61,7 @@ public class ImmibisCraftingTableMk2 implements ICraftingRecipeProvider {
 						int count = 1;
 						for(int j = i+1; j < 9; j++) {
 							ItemStack tempStack = inventory.getStackInSlot(j);
-							if(tempStack != null && ItemIdentifier.get(slotStack) == ItemIdentifier.get(tempStack)) {
+							if(tempStack != null && ItemIdentifier.get(slotStack).equals(ItemIdentifier.get(tempStack))) {
 								inventory.clearInventorySlotContents(j);
 								count++;
 							}

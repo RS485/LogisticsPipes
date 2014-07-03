@@ -8,7 +8,7 @@ import logisticspipes.network.packets.block.SecurityAddCCIdPacket;
 import logisticspipes.network.packets.block.SecurityRemoveCCIdPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen.Colors;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen.Colors;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.string.StringUtil;

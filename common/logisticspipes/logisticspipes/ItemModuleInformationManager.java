@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import logisticspipes.interfaces.IClientInformationProvider;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;

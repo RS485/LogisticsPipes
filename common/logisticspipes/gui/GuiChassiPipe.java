@@ -8,17 +8,15 @@
 
 package logisticspipes.gui;
 
-import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import logisticspipes.items.ItemModule;
-import logisticspipes.modules.LogisticsModule;
-import logisticspipes.network.GuiIDs;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.chassis.ChassisGUI;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
@@ -27,7 +25,7 @@ import net.minecraft.item.ItemStack;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiChassiPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerProvider {
+public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 
 	private final PipeLogisticsChassi _chassiPipe;
 	private final EntityPlayer _player;
@@ -154,11 +152,5 @@ public class GuiChassiPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerP
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
-	}
-
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_ChassiModule_ID;
 	}
 }

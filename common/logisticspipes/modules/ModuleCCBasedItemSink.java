@@ -6,11 +6,9 @@ import java.util.List;
 
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IQueueCCEvent;
-import logisticspipes.interfaces.ISendRoutedItem;
-import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.cc.CCSinkResponder;
+import logisticspipes.proxy.cc.objects.CCSinkResponder;
 import logisticspipes.utils.OneList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -23,9 +21,7 @@ import net.minecraft.util.IIcon;
 
 public class ModuleCCBasedItemSink extends LogisticsModule {
 	
-	private IInventoryProvider	coords;
 	private IQueueCCEvent	eventQueuer;
-	private ISendRoutedItem	itemSender;
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {}
@@ -34,32 +30,23 @@ public class ModuleCCBasedItemSink extends LogisticsModule {
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
 	
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerProvider) {
-		coords = invProvider;
-		this.itemSender = itemSender;
-	}
-	
-	@Override
 	public void registerCCEventQueuer(IQueueCCEvent eventQueuer) {
 		this.eventQueuer = eventQueuer;
 	}
-
-	@Override
-	public void registerSlot(int slot) {}
 	
 	@Override
 	public int getX() {
-		return coords.getX();
+		return _service.getX();
 	}
 	
 	@Override
 	public int getY() {
-		return coords.getY();
+		return _service.getY();
 	}
 	
 	@Override
 	public int getZ() {
-		return coords.getZ();
+		return _service.getZ();
 	}
 	
 	@Override
@@ -102,7 +89,7 @@ public class ModuleCCBasedItemSink extends LogisticsModule {
 	
 	@Override
 	public List<CCSinkResponder> queueCCSinkEvent(ItemIdentifierStack item) {
-		CCSinkResponder resonse = new CCSinkResponder(item, itemSender.getSourceID(), eventQueuer);
+		CCSinkResponder resonse = new CCSinkResponder(item, _service.getSourceID(), eventQueuer);
 		eventQueuer.queueEvent("ItemSink", new Object[]{SimpleServiceLocator.ccProxy.getAnswer(resonse)});
 		return new OneList<CCSinkResponder>(resonse);
 	}

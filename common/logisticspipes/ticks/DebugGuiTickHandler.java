@@ -37,7 +37,6 @@ import javax.swing.tree.MutableTreeNode;
 
 import logisticspipes.commands.chathelper.LPChatListener;
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.packets.OpenChatGui;
 import logisticspipes.network.packets.debuggui.DebugExpandPart;
 import logisticspipes.network.packets.debuggui.DebugInfoUpdate;
 import logisticspipes.network.packets.debuggui.DebugPanelOpen;
@@ -45,6 +44,7 @@ import logisticspipes.network.packets.debuggui.DebugSetVarContent;
 import logisticspipes.network.packets.debuggui.DebugTargetResponse;
 import logisticspipes.network.packets.debuggui.DebugTargetResponse.TargetMode;
 import logisticspipes.network.packets.debuggui.DebugTypePacket;
+import logisticspipes.network.packets.gui.OpenChatGui;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;

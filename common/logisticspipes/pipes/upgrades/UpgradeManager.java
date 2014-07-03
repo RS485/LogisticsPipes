@@ -8,7 +8,8 @@ import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsItemCard;
-import logisticspipes.network.GuiIDs;
+import logisticspipes.network.NewGuiHandler;
+import logisticspipes.network.guis.pipe.UpgradeManagerGui;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.upgrades.power.BCPowerSupplierUpgrade;
 import logisticspipes.pipes.upgrades.power.IC2PowerSupplierUpgrade;
@@ -19,6 +20,7 @@ import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.item.SimpleStackInventory;
+import lombok.Getter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -28,8 +30,12 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 public class UpgradeManager implements ISimpleInventoryEventHandler {
 	
+	@Getter
 	private SimpleStackInventory inv = new SimpleStackInventory(9, "UpgradeInventory", 16);
+	@Getter
 	private SimpleStackInventory sneakyInv = new SimpleStackInventory(9, "SneakyUpgradeInventory", 1);
+	@Getter
+	private SimpleStackInventory secInv = new SimpleStackInventory(1, "SecurityInventory", 16);
 	private IPipeUpgrade[] upgrades = new IPipeUpgrade[8];
 	private IPipeUpgrade[] sneakyUpgrades = new IPipeUpgrade[9];
 	private CoreRoutedPipe pipe;
@@ -55,26 +61,37 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	private boolean	hasCCRemoteControlUpgrade = false;
 	private boolean hasCraftingMonitoringUpgrade = false;
 	private boolean hasOpaqueUpgrade = false;
+	private int craftingCleanup = 0;
 	
 	private boolean needsContainerPositionUpdate = false;
 	
 	public UpgradeManager(CoreRoutedPipe pipe) {
 		this.pipe = pipe;
 		inv.addListener(this);
+		sneakyInv.addListener(this);
+		secInv.addListener(this);
 	}
 	
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		inv.readFromNBT(nbttagcompound, "UpgradeInventory_");
-		InventoryChanged(inv);
 		sneakyInv.readFromNBT(nbttagcompound, "SneakyUpgradeInventory_");
-		InventoryChanged(sneakyInv);
+		secInv.readFromNBT(nbttagcompound, "SecurityInventory_");
+		
+		if(sneakyInv.getStackInSlot(8) != null) {
+			if(sneakyInv.getStackInSlot(8).getItem() == LogisticsPipes.LogisticsItemCard && sneakyInv.getStackInSlot(8).getItemDamage() == LogisticsItemCard.SEC_CARD) {
+				secInv.setInventorySlotContents(0, sneakyInv.getStackInSlot(8));
+				sneakyInv.setInventorySlotContents(8, null);
+			}
+		}
+		
+		InventoryChanged(inv);
 	}
 	
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		inv.writeToNBT(nbttagcompound, "UpgradeInventory_");
-		InventoryChanged(inv);
 		sneakyInv.writeToNBT(nbttagcompound, "SneakyUpgradeInventory_");
-		InventoryChanged(sneakyInv);
+		secInv.writeToNBT(nbttagcompound, "SecurityInventory_");
+		InventoryChanged(inv);
 	}
 
 	private boolean updateModule(int slot, IPipeUpgrade[] upgrades, IInventory inv) {
@@ -122,6 +139,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		hasCCRemoteControlUpgrade = false;
 		hasCraftingMonitoringUpgrade = false;
 		hasOpaqueUpgrade = false;
+		craftingCleanup = 0;
 		for(int i=0;i<upgrades.length;i++) {
 			IPipeUpgrade upgrade = upgrades[i];
 			if(upgrade instanceof SneakyUpgrade && sneakyOrientation == ForgeDirection.UNKNOWN && !isCombinedSneakyUpgrade) {
@@ -156,9 +174,12 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 				hasCraftingMonitoringUpgrade = true;
 			} else if(upgrade instanceof OpaqueUpgrade) {
 				hasOpaqueUpgrade = true;
+			} else if(upgrade instanceof CraftingCleanupUpgrade) {
+				craftingCleanup += inv.getStackInSlot(i).stackSize;
 			}
 		}
 		liquidCrafter = Math.min(liquidCrafter, ItemUpgrade.MAX_LIQUID_CRAFTER);
+		craftingCleanup = Math.min(craftingCleanup, ItemUpgrade.MAX_CRAFTING_CLEANUP);
 		if(combinedBuffer != isCombinedSneakyUpgrade) {
 			needsContainerPositionUpdate = true;
 		}
@@ -184,7 +205,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		}
 		uuid = null;
 		uuidS = null;
-		ItemStack stack = inv.getStackInSlot(8);
+		ItemStack stack = secInv.getStackInSlot(0);
 		if(stack == null) return;
 		if(stack.getItem() != LogisticsPipes.LogisticsItemCard || stack.getItemDamage() != LogisticsItemCard.SEC_CARD) return;
 		if(!stack.hasTagCompound()) return;
@@ -216,11 +237,11 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	}
 
 	public void openGui(EntityPlayer entityplayer, CoreRoutedPipe pipe) {
-		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Upgrade_Manager, pipe.getWorld(), pipe.getX(), pipe.getY(), pipe.getZ());
+		NewGuiHandler.getGui(UpgradeManagerGui.class).setTilePos(pipe.container).open(entityplayer);
 	}
 
-	public DummyContainer getDummyContainer(EntityPlayer player) {
-		DummyContainer dummy = new DummyContainer(player, inv, new IGuiOpenControler() {
+	public IGuiOpenControler getGuiController() {
+		return new IGuiOpenControler() {
 			PlayerCollectionList players = new PlayerCollectionList();
 			@Override
 			public void guiOpenedByPlayer(EntityPlayer player) {
@@ -233,7 +254,11 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 					sneakyInv.dropContents(pipe.getWorld(), pipe.getX(), pipe.getY(), pipe.getZ());
 				}
 			}
-		});
+		};
+	}
+
+	public DummyContainer getDummyContainer(EntityPlayer player) {
+		DummyContainer dummy = new DummyContainer(player, inv, getGuiController());
 		dummy.addNormalSlotsForPlayerInventory(8, isCombinedSneakyUpgrade ? 90 : 60);
 
 		//Pipe slots
@@ -252,7 +277,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	    	});
 	    }
 	    //Static slot for Security Cards
-    	dummy.addStaticRestrictedSlot(8, inv, 8 + 8 * 18, 18, new ISlotCheck() {
+    	dummy.addStaticRestrictedSlot(0, secInv, 8 + 8 * 18, 18, new ISlotCheck() {
 			@Override
 			public boolean isStackAllowed(ItemStack itemStack) {
 				if(itemStack == null) return false;
@@ -313,10 +338,10 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		}
 		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsItemCard && entityplayer.getCurrentEquippedItem().getItemDamage() == LogisticsItemCard.SEC_CARD) {
 			if(MainProxy.isClient(world)) return true;
-			if(inv.getStackInSlot(8) == null) {
+			if(secInv.getStackInSlot(0) == null) {
 				ItemStack newItem=entityplayer.getCurrentEquippedItem().splitStack(1);
-				inv.setInventorySlotContents(8, newItem);
-				InventoryChanged(inv);
+				secInv.setInventorySlotContents(0, newItem);
+				InventoryChanged(secInv);
 				return true;
 			}
 		}
@@ -351,8 +376,8 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		ItemStack stack = new ItemStack(LogisticsPipes.LogisticsItemCard, 1, LogisticsItemCard.SEC_CARD);
 		stack.setTagCompound(new NBTTagCompound());
 		stack.getTagCompound().setString("UUID", id.toString());
-		inv.setInventorySlotContents(8, stack);
-		InventoryChanged(inv);
+		secInv.setInventorySlotContents(0, stack);
+		InventoryChanged(secInv);
 	}
 	
 	public void securityTick() {
@@ -414,5 +439,9 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 
 	public boolean isOpaque() {
 		return hasOpaqueUpgrade;
+	}
+
+	public int getCrafterCleanup() {
+		return craftingCleanup;
 	}
 }

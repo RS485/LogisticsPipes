@@ -1,16 +1,14 @@
 package logisticspipes.pipefxhandlers;
 
-import java.util.HashMap;
-
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 
 public class PipeFXRenderHandler {
 	
-	private static HashMap<Integer, ParticleProvider> particlemap = new HashMap<Integer, ParticleProvider> ();
+	private static ParticleProvider particlemap[] = new ParticleProvider[Particles.values().length];
 	
-	public static void spawnGenericParticle(int particle, double x, double y, double z, int amount) {
+	public static void spawnGenericParticle(Particles particle, double x, double y, double z, int amount) {
 		if (MainProxy.getClientMainWorld() == null) return;
 		try {
 		Minecraft mc = Minecraft.getMinecraft();
@@ -28,12 +26,12 @@ public class PipeFXRenderHandler {
 			return;
 		}
 
-		ParticleProvider provider = particlemap.get(particle);
+		ParticleProvider provider = particlemap[particle.ordinal()];
 		if (provider == null) return;
 		
 		
-		for (int i = 0; i < amount; i++) {
-			effect = provider.createGenericParticle(mc.theWorld, x, y, z);
+		for (int i = 0; i < Math.sqrt(amount); i++) {
+			effect = provider.createGenericParticle(mc.theWorld, x, y, z, amount);
 			if (effect != null) {
 				mc.effectRenderer.addEffect(effect);
 			}
@@ -42,9 +40,9 @@ public class PipeFXRenderHandler {
 		} catch (NullPointerException e) {}
 	}
 	
-	public static void registerParticleHandler(int particle, ParticleProvider provider) {
-		if(!particlemap.containsKey(particle)) {
-			particlemap.put(particle, provider);
+	public static void registerParticleHandler(Particles particle, ParticleProvider provider) {
+		if(particlemap[particle.ordinal()] == null) {
+			particlemap[particle.ordinal()] = provider;
 		}
 	}
 }

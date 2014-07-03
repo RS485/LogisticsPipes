@@ -15,7 +15,7 @@ import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtil;
@@ -27,7 +27,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-public class GuiInvSysConnector extends KraphtBaseGuiScreen {
+public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 	private static final String PREFIX = "gui.invsyscon.";
 	
 	private int page = 0;

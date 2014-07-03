@@ -12,9 +12,13 @@ import java.util.UUID;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IGuiOpenControler;
+import logisticspipes.interfaces.IGuiTileEntity;
 import logisticspipes.interfaces.ISecurityProvider;
 import logisticspipes.items.LogisticsItemCard;
+import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
+import logisticspipes.network.guis.block.SecurityStationGui;
 import logisticspipes.network.packets.block.SecurityStationAutoDestroy;
 import logisticspipes.network.packets.block.SecurityStationCC;
 import logisticspipes.network.packets.block.SecurityStationCCIDs;
@@ -39,7 +43,7 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenControler, ISecurityProvider {
+public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenControler, ISecurityProvider, IGuiTileEntity {
 	
 	public ItemIdentifierInventory inv = new ItemIdentifierInventory(1, "ID Slots", 64);
 	private PlayerCollectionList listener = new PlayerCollectionList();
@@ -344,5 +348,9 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	public boolean canUpdate() {
 		return false;
 	}
-	
+
+	@Override
+	public CoordinatesGuiProvider getGuiProvider() {
+		return NewGuiHandler.getGui(SecurityStationGui.class);
+	}
 }

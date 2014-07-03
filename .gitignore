@@ -1,4 +1,13 @@
-#eclipse
+lib**
+sign/**
+build/**
+output/**
+download/**
+**/.classpath
+**/.project
+
+### Eclipse ###
+*.pydevproject
 .project
 .classpath
 .metadata

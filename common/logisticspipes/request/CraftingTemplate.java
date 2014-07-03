@@ -11,6 +11,7 @@ package logisticspipes.request;
 import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.interfaces.routing.IRequestItems;
@@ -27,7 +28,7 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 	
 	protected ItemIdentifierStack _result;
 	protected ICraftItems _crafter;
-	protected ArrayList<Pair<CraftingRequirement, IRequestItems>> _required = new ArrayList<Pair<CraftingRequirement, IRequestItems>>(9);
+	protected ArrayList<Triplet<CraftingRequirement, IRequestItems, IAdditionalTargetInformation>> _required = new ArrayList<Triplet<CraftingRequirement, IRequestItems, IAdditionalTargetInformation>>(9);
 	protected ArrayList<Triplet<FluidIdentifier, Integer, IRequestFluid>> _requiredFluid = new ArrayList<Triplet<FluidIdentifier, Integer, IRequestFluid>>();
 	protected ArrayList<ItemIdentifierStack> _byproduct = new ArrayList<ItemIdentifierStack>(9);
 	private final int priority;
@@ -38,19 +39,19 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 		this.priority = priority;
 	}
 	
-	public void addRequirement(CraftingRequirement requirement, IRequestItems crafter) {
+	public void addRequirement(CraftingRequirement requirement, IRequestItems crafter, IAdditionalTargetInformation info) {
 		for(Pair<CraftingRequirement, IRequestItems> i : _required) {
 			if(i.getValue1().isSameItemAndFlag(requirement) && i.getValue2() == crafter) {
 				i.getValue1().stack.setStackSize(i.getValue1().stack.getStackSize() + requirement.stack.getStackSize());
 				return;
 			}
 		}
-		_required.add(new Pair<CraftingRequirement, IRequestItems>(requirement, crafter));
+		_required.add(new Triplet<CraftingRequirement, IRequestItems, IAdditionalTargetInformation>(requirement, crafter, info));
 	}
 
 	public void addRequirement(FluidIdentifier liquid, Integer amount, IRequestFluid crafter) {
 		for(Triplet<FluidIdentifier, Integer, IRequestFluid> i : _requiredFluid) {
-			if(i.getValue1() == liquid && i.getValue3() == crafter) {
+			if(i.getValue1().equals(liquid) && i.getValue3() == crafter) {
 				i.setValue2(i.getValue2() + amount);
 				return;
 			}
@@ -60,7 +61,7 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 	
 	public void addByproduct(ItemIdentifierStack stack) {
 		for(ItemIdentifierStack i : _byproduct) {
-			if(i.getItem() == stack.getItem()) {
+			if(i.getItem().equals(stack.getItem())) {
 				i.setStackSize(i.getStackSize() + stack.getStackSize());
 				return;
 			}
@@ -69,11 +70,7 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 	}
 	
 	public LogisticsPromise generatePromise(int nResultSets) {
-		LogisticsPromise promise = new LogisticsPromise();
-		promise.item = _result.getItem();
-		promise.numberOfItems = _result.getStackSize() * nResultSets;
-		promise.sender = _crafter;
-		return promise;
+		return new LogisticsPromise(_result.getItem(), _result.getStackSize() * nResultSets, _crafter);
 	}
 	
 	//TODO: refactor so that other classes don't reach through the template to the crafter.
@@ -112,12 +109,12 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 		return _byproduct;
 	}
 
-	protected List<Pair<CraftingRequirement, IRequestItems>> getComponentItems(int nCraftingSetsNeeded) {
-		List<Pair<CraftingRequirement, IRequestItems>> stacks = new ArrayList<Pair<CraftingRequirement, IRequestItems>>(_required.size());
+	protected List<Triplet<CraftingRequirement, IRequestItems, IAdditionalTargetInformation>> getComponentItems(int nCraftingSetsNeeded) {
+		List<Triplet<CraftingRequirement, IRequestItems, IAdditionalTargetInformation>> stacks = new ArrayList<Triplet<CraftingRequirement, IRequestItems, IAdditionalTargetInformation>>(_required.size());
 
 		// for each thing needed to satisfy this promise
-		for(Pair<CraftingRequirement, IRequestItems> stack : _required) {
-			Pair<CraftingRequirement, IRequestItems> pair = new Pair<CraftingRequirement, IRequestItems>(stack.getValue1().clone(),stack.getValue2());
+		for(Triplet<CraftingRequirement, IRequestItems, IAdditionalTargetInformation> stack : _required) {
+			Triplet<CraftingRequirement, IRequestItems, IAdditionalTargetInformation> pair = new Triplet<CraftingRequirement, IRequestItems, IAdditionalTargetInformation>(stack.getValue1().clone(), stack.getValue2(), stack.getValue3());
 			pair.getValue1().stack.setStackSize(pair.getValue1().stack.getStackSize() * nCraftingSetsNeeded);
 			stacks.add(pair);
 		}

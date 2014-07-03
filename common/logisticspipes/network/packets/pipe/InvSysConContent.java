@@ -1,12 +1,12 @@
 package logisticspipes.network.packets.pipe;
 
 import logisticspipes.gui.GuiInvSysConnector;
-import logisticspipes.network.abstractpackets.InventoryCoordinatesPacket;
+import logisticspipes.network.abstractpackets.InventoryModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import net.minecraft.entity.player.EntityPlayer;
 import cpw.mods.fml.client.FMLClientHandler;
 
-public class InvSysConContent extends InventoryCoordinatesPacket {
+public class InvSysConContent extends InventoryModuleCoordinatesPacket {
 
 	public InvSysConContent(int id) {
 		super(id);

@@ -11,8 +11,9 @@ import java.util.TreeSet;
 
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
-import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleItemSink;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
@@ -46,7 +47,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 			}
 		}, item);
 		itemSinkModule = new ModuleItemSink();
-		itemSinkModule.registerHandler(null, null, this, this);
+		itemSinkModule.registerHandler(this, this);
 	}
 
 	@Override
@@ -120,7 +121,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	@Override
 	public void setTile(TileEntity tile) {
 		super.setTile(tile);
-		itemSinkModule.registerSlot(0);
+		itemSinkModule.registerPosition(ModulePositionType.IN_PIPE, 0);
 	}
 	
 	@Override

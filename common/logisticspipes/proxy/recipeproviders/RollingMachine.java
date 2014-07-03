@@ -75,7 +75,7 @@ public class RollingMachine implements ICraftingRecipeProvider {
 			inventory.setInventorySlotContents(i, newStack);
 		}
 
-		inventory.compact_first_9();
+		inventory.compact_first(9);
 		
 		return true;
 	}

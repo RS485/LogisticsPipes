@@ -11,11 +11,11 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 
-public class GuiHUDSettings extends KraphtBaseGuiScreen {
+public class GuiHUDSettings extends LogisticsBaseGuiScreen {
 
 	private int slot;
 	private EntityPlayer player;

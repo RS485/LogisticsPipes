@@ -1,7 +1,6 @@
 package logisticspipes.proxy.recipeproviders;
 
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
-import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IFuzzyRecipeProvider;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
@@ -40,7 +39,7 @@ public class LogisticsCraftingTable implements IFuzzyRecipeProvider {
 		}
 		
 		if(!bench.isFuzzy())
-			inventory.compact_first_9();
+			inventory.compact_first(9);
 		
 		return true;
 	}
@@ -79,7 +78,7 @@ public class LogisticsCraftingTable implements IFuzzyRecipeProvider {
 				if (stackInOtherSlot == null) {
 					continue;
 				}
-				if (itemInSlot == stackInOtherSlot.getItem() && flags[i] == flags[j]) {
+				if (itemInSlot.equals(stackInOtherSlot.getItem()) && flags[i] == flags[j]) {
 					stackInSlot.setStackSize(stackInSlot.getStackSize() + stackInOtherSlot.getStackSize());
 					inventory.clearInventorySlotContents(j);
 					flags[j] = 0;

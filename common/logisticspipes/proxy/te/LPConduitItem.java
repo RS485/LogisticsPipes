@@ -171,9 +171,9 @@ public class LPConduitItem extends ConduitItem {
 	public void insertItem(thermalexpansion.part.conduit.item.TravelingItem travelingItem) {
 		if(MainProxy.isClient(pipe.getWorldObj())) return;
 		if(travelingItem.routedLPInfo == null) {
-			insertItem(ForgeDirection.VALID_DIRECTIONS[travelingItem.direction].getOpposite(), travelingItem.stack);
+			insertItem(ForgeDirection.VALID_DIRECTIONS[travelingItem.direction], travelingItem.stack);
 		} else {
-			ForgeDirection from = ForgeDirection.VALID_DIRECTIONS[travelingItem.direction].getOpposite();
+			ForgeDirection from = ForgeDirection.VALID_DIRECTIONS[travelingItem.direction];
 			if (BlockGenericPipe.isValid(pipe.pipe) && pipe.pipe.transport instanceof PipeTransportLogistics) {
 				LPTravelingItemServer item = new LPTravelingItemServer(travelingItem.routedLPInfo);
 				item.refreshDestinationInformation();

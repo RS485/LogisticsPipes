@@ -94,8 +94,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float f) {
-		enableRendering(tileentity);
-		super.renderTileEntityAt(tileentity, x, y, z, f);
+		super.renderTileEntityAt(tileentity, x, y, z, f); // Render Gates And Wires
 		if(!(tileentity instanceof LogisticsTileGenericPipe)) return;
 		LogisticsTileGenericPipe pipe = ((LogisticsTileGenericPipe)tileentity);
 		if(pipe.pipe == null) return;
@@ -110,16 +109,6 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 		if(pipe.pipe instanceof CoreRoutedPipe) {
 			renderPipePipe((CoreRoutedPipe)pipe.pipe, x, y, z);
 		}
-	}
-	
-	private void enableRendering(TileEntity tileentity) {
-		if(!(tileentity instanceof LogisticsTileGenericPipe)) return;
-		((LogisticsTileGenericPipe)tileentity).enableRendering();
-	}
-
-	private void disableRendering(TileEntity tileentity) {
-		if(!(tileentity instanceof LogisticsTileGenericPipe)) return;
-		((LogisticsTileGenericPipe)tileentity).disableRendering();
 	}
 
 	private void renderSolids(Pipe<PipeTransportLogistics> pipe, double x, double y, double z, float f) {
@@ -144,7 +133,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 			
 			if(fPos < 0.5) {
 				if(item.input == ForgeDirection.UNKNOWN) continue;
-				if(!pipe.container.renderState.pipeConnectionMatrix.isConnected(item.input)) continue;
+				if(!pipe.container.renderState.pipeConnectionMatrix.isConnected(item.input.getOpposite())) continue;
 				pos.moveForward(item.input.getOpposite(), 0.5F - fPos);
 			} else {
 				if(item.output == ForgeDirection.UNKNOWN) continue;
@@ -155,7 +144,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 			if(item == null || item.getItemIdentifierStack() == null) continue;
 			if(item.getContainer().xCoord != pipe.container.xCoord || item.getContainer().yCoord != pipe.container.yCoord || item.getContainer().zCoord != pipe.container.zCoord) continue;
 			ItemStack itemstack = item.getItemIdentifierStack().makeNormalStack();
-			doRenderItem(itemstack, x + pos.getXD(), y + pos.getYD(), z + pos.getZD(), light);
+			doRenderItem(itemstack, x + pos.getXD(), y + pos.getYD(), z + pos.getZD(), light, item.getAge(), item.getHoverStart());
 			count++;
 		}
 		
@@ -163,13 +152,17 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 		GL11.glPopMatrix();
 	}
 	
-	public void doRenderItem(ItemStack itemstack, double x, double y, double z, float light) {
+	public void doRenderItem(ItemStack itemstack, double x, double y, double z, float light, int age, float hoverStart) {
 		float renderScale = 0.7f;
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float)x, (float)y, (float)z);
 		GL11.glScalef(renderScale, renderScale, renderScale);
 		dummyEntityItem.setEntityItemStack(itemstack);
+		dummyEntityItem.age = age;
+		dummyEntityItem.hoverStart = hoverStart;
 		customRenderItem.doRender(dummyEntityItem, 0, 0, 0, 0, 0);
+		dummyEntityItem.age = 0;
+		dummyEntityItem.hoverStart = 0;
 		GL11.glPopMatrix();
 	}
 	

@@ -1,14 +1,13 @@
 package logisticspipes.network.packets.pipe;
 
-
 import java.io.IOException;
 
 import logisticspipes.interfaces.ISpecialInsertion;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
@@ -25,7 +24,7 @@ import net.minecraft.item.ItemStack;
 import buildcraft.transport.TileGenericPipe;
 
 @Accessors(chain=true)
-public class SlotFinderOpenGuiPacket extends CoordinatesPacket {
+public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 	
 	@Getter
 	@Setter
@@ -82,11 +81,11 @@ public class SlotFinderOpenGuiPacket extends CoordinatesPacket {
 				Block block = player.worldObj.getBlock(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord);
 				if(SimpleServiceLocator.enderStorageProxy.isEnderChestBlock(block)) {
 					SimpleServiceLocator.enderStorageProxy.openEnderChest(player.worldObj, tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, player);
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class).setTagetPosX(tile.tile.xCoord).setTagetPosY(tile.tile.yCoord).setTagetPosZ(tile.tile.zCoord).setSlot(getSlot()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class).setTagetPosX(tile.tile.xCoord).setTagetPosY(tile.tile.yCoord).setTagetPosZ(tile.tile.zCoord).setSlot(getSlot()).setPacketPos(this), player);
 				}
 				if(block != null) {
 					if(block.onBlockActivated(player.worldObj, tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, player, 0, 0, 0, 0)) {
-						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class).setTagetPosX(tile.tile.xCoord).setTagetPosY(tile.tile.yCoord).setTagetPosZ(tile.tile.zCoord).setSlot(getSlot()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
+						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class).setTagetPosX(tile.tile.xCoord).setTagetPosY(tile.tile.yCoord).setTagetPosZ(tile.tile.zCoord).setSlot(getSlot()).setPacketPos(this), player);
 						break;
 					}
 				}

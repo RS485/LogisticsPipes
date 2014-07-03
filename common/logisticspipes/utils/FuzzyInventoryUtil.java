@@ -19,7 +19,7 @@ public class FuzzyInventoryUtil extends InventoryUtil {
 		for (int i =0; i < _inventory.getSizeInventory(); i++){
 			ItemStack stack = _inventory.getStackInSlot(i);
 			if (stack == null) continue;
-				items.add(ItemIdentifier.getIgnoringNBT(stack));
+				items.add(ItemIdentifier.get(stack).getIgnoringNBT());
 		}
 		return items;
 	}

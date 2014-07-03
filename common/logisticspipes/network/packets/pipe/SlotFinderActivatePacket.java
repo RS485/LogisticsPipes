@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import logisticspipes.renderer.LogisticsGuiOverrenderer;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
 @Accessors(chain=true)
-public class SlotFinderActivatePacket extends CoordinatesPacket {
+public class SlotFinderActivatePacket extends ModuleCoordinatesPacket {
 
 	@Getter
 	@Setter
@@ -65,5 +65,7 @@ public class SlotFinderActivatePacket extends CoordinatesPacket {
 		LogisticsGuiOverrenderer.getInstance().setTargetPosZ(getTagetPosZ());
 		LogisticsGuiOverrenderer.getInstance().setSlot(getSlot());
 		LogisticsGuiOverrenderer.getInstance().setOverlaySlotActive(true);
+		LogisticsGuiOverrenderer.getInstance().setPositionInt(getPositionInt());
+		LogisticsGuiOverrenderer.getInstance().setPositionType(getType());
 	}
 }

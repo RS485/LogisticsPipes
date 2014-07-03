@@ -1,5 +1,6 @@
 package logisticspipes.network.packets.orderer;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -27,12 +28,14 @@ public class DiskDropPacket extends CoordinatesPacket {
 			return;
 		}
 		if(pipe.pipe instanceof PipeItemsRequestLogisticsMk2) {
-			((PipeItemsRequestLogisticsMk2)pipe.pipe).dropDisk();
 			if(((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk() != null) {
-				if(!((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().hasTagCompound()) {
-					((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().setTagCompound(new NBTTagCompound());
+				if(((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().getItem().equals(LogisticsPipes.LogisticsItemDisk)) {
+					if(!((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().hasTagCompound()) {
+						((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().setTagCompound(new NBTTagCompound());
+					}
 				}
 			}
+			((PipeItemsRequestLogisticsMk2)pipe.pipe).dropDisk();
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DiscContent.class).setStack(((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), player);
 		}
 	}

@@ -1,12 +1,12 @@
 package logisticspipes.network.packets.hud;
 
 import logisticspipes.interfaces.IChestContentReceiver;
-import logisticspipes.network.abstractpackets.InventoryCoordinatesPacket;
+import logisticspipes.network.abstractpackets.InventoryModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.entity.player.EntityPlayer;
 
-public class ChestContent extends InventoryCoordinatesPacket {
+public class ChestContent extends InventoryModuleCoordinatesPacket {
 
 	public ChestContent(int id) {
 		super(id);
@@ -20,12 +20,10 @@ public class ChestContent extends InventoryCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe tile = this.getPipe(player.worldObj);
-		if(tile == null) {
-			return;
-		}
-		if(tile.pipe instanceof IChestContentReceiver) {
+		if(tile != null && tile.pipe instanceof IChestContentReceiver) {
 			((IChestContentReceiver) tile.pipe).setReceivedChestContent(getIdentList());
 		}
+		
 	}
 
 	@Override

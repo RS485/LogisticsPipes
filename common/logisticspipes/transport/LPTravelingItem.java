@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.items.LogisticsFluidContainer;
@@ -106,9 +107,22 @@ public abstract class LPTravelingItem {
 		return false;
 	}
 	
+	public int getAge() {
+		return 0;
+	}
+	
+	public void addAge() {}
+
+	public float getHoverStart() {
+		return 0;
+	}
+	
 	public static final class LPTravelingItemClient extends LPTravelingItem {
 		@Setter
 		private ItemIdentifierStack item;
+		private int age;
+		private float hoverStart = (float)(Math.random() * Math.PI * 2.0D);
+		
 		public LPTravelingItemClient(int id, float position, ForgeDirection input, ForgeDirection output) {
 			super(id, position, input, output);
 		}
@@ -127,9 +141,22 @@ public abstract class LPTravelingItem {
 			this.input = input;
 			this.output = output;
 			this.speed = speed;
-			if(Math.abs(position - this.position) > 0.3F && Math.abs((position + 1.0F) - this.position) > 0.3F) {
-				this.position = position;
-			}
+			this.position = position;
+		}
+		
+		@Override
+		public int getAge() {
+			return 0;//age;
+		}
+
+		@Override
+		public void addAge() {
+			age++;
+		}
+
+		@Override
+		public float getHoverStart() {
+			return 0;//hoverStart;
 		}
 	}
 	
@@ -187,47 +214,49 @@ public abstract class LPTravelingItem {
 				}
 
 				if(getItemIdentifierStack().makeNormalStack().getItem() instanceof LogisticsFluidContainer) {
-					itemDroped();
+					itemWasLost();
 					return null;
 				}
 				
-				int xCoord = container.xCoord;
-				int yCoord = container.yCoord;
-				int zCoord = container.zCoord;
-				//N, W and down need to move a tiny bit beyond the block end because vanilla uses floor(coord) to determine block x/y/z
-				if(output == ForgeDirection.DOWN) {
-					//position.moveForwards(0.251);
-					yCoord -= 0.251;
-				} else if(output == ForgeDirection.UP) {
-					//position.moveForwards(0.75);
-					yCoord += 0.75;
-				} else if(output == ForgeDirection.NORTH) {
-					//position.moveForwards(0.501);
-					zCoord -= 0.501;
-				} else if(output == ForgeDirection.WEST) {
-					//position.moveForwards(0.501);
-					xCoord -= 0.501;
-				} else if(output == ForgeDirection.SOUTH) {
-					//position.moveForwards(0.5);
-					zCoord += 0.5;
-				} else if(output == ForgeDirection.EAST) {
-					//position.moveForwards(0.5);
-					xCoord += 0.5;
+				ForgeDirection exitdirection = output;
+				if (exitdirection == ForgeDirection.UNKNOWN) {
+					exitdirection = input;
+				}
+
+				LPPosition position = new LPPosition(container.xCoord + 0.5, container.yCoord + 0.375, container.zCoord + 0.5);
+
+				switch (exitdirection) {
+				case DOWN:
+					position.moveForward(exitdirection, 0.5);
+					break;
+				case UP:
+					position.moveForward(exitdirection, 0.75);
+					break;
+				case NORTH:
+				case SOUTH:
+				case WEST:
+				case EAST:
+					position.moveForward(exitdirection, 0.625);
+					break;
+				case UNKNOWN:
+				default:
+					break;
 				}
 
 				LPPosition motion = new LPPosition(0, 0, 0);
-				motion.moveForward(output, 0.1 + getSpeed() * 2F);
+				motion.moveForward(exitdirection, getSpeed() * 2F);
 
-				EntityItem entityitem = new EntityItem(worldObj, xCoord, yCoord, zCoord, getItemIdentifierStack().makeNormalStack());
+				EntityItem entityitem = new EntityItem(worldObj, position.getXD(), position.getYD(), position.getZD(), getItemIdentifierStack().makeNormalStack());
 
 				//entityitem.lifespan = 1200;
 				//entityitem.delayBeforeCanPickup = 10;
 
-				float f3 = worldObj.rand.nextFloat() * 0.01F - 0.02F;
+				//uniformly distributed in -0.005 .. 0.01 to increase bias toward smaller values
+				float f3 = worldObj.rand.nextFloat() * 0.015F - 0.005F;
 				entityitem.motionX = (float) worldObj.rand.nextGaussian() * f3 + motion.getXD();
 				entityitem.motionY = (float) worldObj.rand.nextGaussian() * f3 + motion.getYD();
 				entityitem.motionZ = (float) worldObj.rand.nextGaussian() * f3 + motion.getZD();
-				itemDroped();
+				itemWasLost();
 
 				return entityitem;
 			} else {
@@ -238,8 +267,6 @@ public abstract class LPTravelingItem {
 		public boolean isCorrupted() {
 			return getItemIdentifierStack() == null || getItemIdentifierStack().getStackSize() <= 0;
 		}
-		
-		protected void itemDroped() {}
 
 		@Override
 		public void clearDestination() {
@@ -253,6 +280,7 @@ public abstract class LPTravelingItem {
 			info._doNotBuffer = false;
 			info.arrived = false;
 			info._transportMode = TransportMode.Unknown;
+			info.targetInfo = null;
 		}
 		
 		public void itemWasLost() {
@@ -261,13 +289,16 @@ public abstract class LPTravelingItem {
 			}
 			if (info.destinationint >= 0 && SimpleServiceLocator.routerManager.isRouter(info.destinationint)){
 				IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(info.destinationint); 
-				if (destinationRouter.getPipe() != null && destinationRouter.getPipe() instanceof IRequireReliableTransport) {
-					((IRequireReliableTransport)destinationRouter.getPipe()).itemLost(info.getItem().clone());
-				}
-				if (destinationRouter.getPipe() != null && destinationRouter.getPipe() instanceof IRequireReliableFluidTransport) {
-					if(info.getItem().getItem().isFluidContainer()) {
-						FluidStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(info.getItem());
-						((IRequireReliableFluidTransport)destinationRouter.getPipe()).liquidLost(FluidIdentifier.get(liquid), liquid.amount);
+				if(destinationRouter.getPipe() != null) {
+					destinationRouter.getPipe().notifyOfReroute(info);
+					if (destinationRouter.getPipe() instanceof IRequireReliableTransport) {
+						((IRequireReliableTransport)destinationRouter.getPipe()).itemLost(info.getItem().clone(), info.targetInfo);
+					}
+					if (destinationRouter.getPipe() instanceof IRequireReliableFluidTransport) {
+						if(info.getItem().getItem().isFluidContainer()) {
+							FluidStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(info.getItem());
+							((IRequireReliableFluidTransport)destinationRouter.getPipe()).liquidLost(FluidIdentifier.get(liquid), liquid.amount);
+						}
 					}
 				}
 			}
@@ -393,6 +424,16 @@ public abstract class LPTravelingItem {
 
 		public void resetDelay() {
 			info.resetDelay();
+		}
+
+		@Override
+		public void setAdditionalTargetInformation(IAdditionalTargetInformation targetInfo) {
+			info.targetInfo = targetInfo;
+		}
+
+		@Override
+		public IAdditionalTargetInformation getAdditionalTargetInformation() {
+			return info.targetInfo;
 		}
 	}
 }

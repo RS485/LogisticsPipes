@@ -14,14 +14,12 @@ import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleInventoryReceive;
-import logisticspipes.interfaces.IModuleSimpleFilter;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.interfaces.ISendRoutedItem;
-import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.network.GuiIDs;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsSimpleFilterModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
+import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
 import logisticspipes.network.packets.module.ModuleInventory;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
@@ -39,28 +37,16 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.util.IIcon;
 
-public class ModulePassiveSupplier extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler, IModuleSimpleFilter {
+public class ModulePassiveSupplier extends LogisticsSimpleFilterModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested items", 64);
-	private IInventoryProvider _invProvider;
-	private IRoutedPowerProvider _power;
-	private int slot = 0;
 
-
-
-	
 	private IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
 	
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	
 	public ModulePassiveSupplier() {
 		_filterInventory.addListener(this);
-	}
-
-	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
-		_invProvider = invProvider;
-		_power = powerprovider;
 	}
 
 	public IInventory getFilterInventory(){
@@ -72,7 +58,7 @@ public class ModulePassiveSupplier extends LogisticsGuiModule implements IClient
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 
-		IInventoryUtil targetUtil = _invProvider.getSneakyInventory(false);
+		IInventoryUtil targetUtil = _service.getSneakyInventory(false);
 		if (targetUtil == null) return null;
 		
 		if (!_filterInventory.containsItem(item)) return null;
@@ -81,17 +67,12 @@ public class ModulePassiveSupplier extends LogisticsGuiModule implements IClient
 		int haveCount = targetUtil.itemCount(item);
 		if (targetCount <= haveCount) return null;
 		
-		if(_power.canUseEnergy(2)) {
+		if(_service.canUseEnergy(2)) {
 			return new SinkReply(_sinkReply, targetCount - haveCount);
 		}
 		return null;
 	}
 
-	@Override
-	public int getGuiHandlerID() {
-		return GuiIDs.GUI_Module_Simple_Filter_ID;
-	}
-	
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound, "");
@@ -116,51 +97,21 @@ public class ModulePassiveSupplier extends LogisticsGuiModule implements IClient
 		list.add("<that>");
 		return list;
 	}
-
-
-	@Override 
-	public void registerSlot(int slot) {
-		this.slot = slot;
-	}
-	
-	@Override 
-	public final int getX() {
-		if(slot>=0)
-			return this._invProvider.getX();
-		else 
-			return 0;
-	}
-	@Override 
-	public final int getY() {
-		if(slot>=0)
-			return this._invProvider.getY();
-		else 
-			return -1;
-	}
-	
-	@Override 
-	public final int getZ() {
-		if(slot>=0)
-			return this._invProvider.getZ();
-		else 
-			return -1-slot;
-	}
-
 	
 	@Override
-	public void startWatching() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+	public void startHUDWatching() {
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setModulePos(this));
 	}
 
 	@Override
-	public void stopWatching() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+	public void stopHUDWatching() {
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopModuleWatchingPacket.class).setModulePos(this));
 	}
 
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setModulePos(this), player);
 	}
 
 	@Override
@@ -169,7 +120,7 @@ public class ModulePassiveSupplier extends LogisticsGuiModule implements IClient
 	}
 
 	@Override
-	public IHUDModuleRenderer getRenderer() {
+	public IHUDModuleRenderer getHUDRenderer() {
 		return HUD;
 	}
 
@@ -180,7 +131,7 @@ public class ModulePassiveSupplier extends LogisticsGuiModule implements IClient
 
 	@Override
 	public void InventoryChanged(IInventory inventory) {
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setModulePos(this), localModeWatchers);
 	}
 
 	@Override

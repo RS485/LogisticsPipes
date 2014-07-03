@@ -1,18 +1,14 @@
 package logisticspipes.network.packets.modules;
 
-import logisticspipes.gui.modules.GuiExtractor;
-import logisticspipes.interfaces.ISneakyDirectionReceiver;
-import logisticspipes.network.abstractpackets.Integer2CoordinatesPacket;
+import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
+import logisticspipes.network.abstractpackets.DirectionModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.PipeLogisticsChassi;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.client.FMLClientHandler;
 
-public class ExtractorModuleMode extends Integer2CoordinatesPacket {
-
+@Accessors(chain=true)
+public class ExtractorModuleMode extends DirectionModuleCoordinatesPacket {
+	
 	public ExtractorModuleMode(int id) {
 		super(id);
 	}
@@ -24,26 +20,8 @@ public class ExtractorModuleMode extends Integer2CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if(getInteger2() < 0) {
-			if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiExtractor) {
-				((GuiExtractor) FMLClientHandler.instance().getClient().currentScreen).setMode(ForgeDirection.getOrientation(getInteger()));
-			}
-			return;
-		}
-		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if (pipe == null) {
-			return;
-		}
-		if(getInteger2() == -1) {
-			if(pipe.pipe instanceof CoreRoutedPipe && ((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ISneakyDirectionReceiver) {
-				((ISneakyDirectionReceiver)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).setSneakyDirection(ForgeDirection.getOrientation(getInteger()));
-			}
-			return;
-		}
-		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2()) instanceof ISneakyDirectionReceiver) {
-			ISneakyDirectionReceiver recieiver = (ISneakyDirectionReceiver) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2());
-			recieiver.setSneakyDirection(ForgeDirection.getOrientation(getInteger()));
-		}
+		LogisticsSneakyDirectionModule recieiver = this.getLogisticsModule(player, LogisticsSneakyDirectionModule.class);
+		if(recieiver == null) return;
+		recieiver.setSneakyDirection(getDirection());
 	}
 }
-

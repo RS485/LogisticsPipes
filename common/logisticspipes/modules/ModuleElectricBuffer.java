@@ -5,13 +5,10 @@ import java.util.List;
 
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.interfaces.ISendRoutedItem;
-import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
@@ -25,13 +22,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.util.IIcon;
 
 public class ModuleElectricBuffer extends LogisticsModule {
-	private IInventoryProvider _invProvider;
-	private IRoutedPowerProvider _power;
-	private ISendRoutedItem _itemSender;
-
-
-
-	private IWorldProvider _world;
 
 	private int currentTickCount = 0;
 	private int ticksToAction = 80;
@@ -44,31 +34,19 @@ public class ModuleElectricBuffer extends LogisticsModule {
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
 
-	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerProvider) {		
-		_invProvider = invProvider;
-		_power = powerProvider;
-		_world = world;
-		_itemSender = itemSender;
-	}
-
-
-	@Override 
-	public void registerSlot(int slot) {
-	}
 	
 	@Override 
 	public final int getX() {
-		return this._power.getX();
+		return this._service.getX();
 	}
 	@Override 
 	public final int getY() {
-		return this._power.getY();
+		return this._service.getY();
 	}
 	
 	@Override 
 	public final int getZ() {
-		return this._power.getZ();
+		return this._service.getZ();
 	}
 
 	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ElectricBuffer, 0, true, false, 1, 0);
@@ -76,7 +54,7 @@ public class ModuleElectricBuffer extends LogisticsModule {
 	public SinkReply sinksItem(ItemIdentifier stack, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if (bestPriority >= FixedPriority.ElectricBuffer.ordinal()) return null;
 		if (SimpleServiceLocator.IC2Proxy.isElectricItem(stack.makeNormalStack(1))) {
-			if (_power.canUseEnergy(1)) {
+			if (_service.canUseEnergy(1)) {
 				return _sinkReply;
 			}
 		}
@@ -93,16 +71,16 @@ public class ModuleElectricBuffer extends LogisticsModule {
 		if (++currentTickCount < ticksToAction) return;
 		currentTickCount = 0;
 
-		IInventoryUtil inv = _invProvider.getPointedInventory(true);
+		IInventoryUtil inv = _service.getPointedInventory(true);
 		if (inv == null) return;
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
 			ItemStack stack = inv.getStackInSlot(i);
 			if (stack == null) continue;
 			if (SimpleServiceLocator.IC2Proxy.isElectricItem(stack)) {
-				Triplet<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _itemSender.getSourceID(), true, FixedPriority.ElectricManager);
+				Triplet<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _service.getSourceID(), true, FixedPriority.ElectricManager);
 				if(reply == null) continue;
-				MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.getX(), this.getY(), this.getZ(), _world.getWorld(), 2);
-				_itemSender.sendStack(inv.decrStackSize(i, 1), reply, ItemSendMode.Normal);
+				_service.spawnParticle(Particles.OrangeParticle, 2);
+				_service.sendStack(inv.decrStackSize(i, 1), reply, ItemSendMode.Normal);
 				return;
 			}
 			continue;

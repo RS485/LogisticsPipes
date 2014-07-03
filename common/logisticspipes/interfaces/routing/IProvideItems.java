@@ -19,7 +19,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 
 public interface IProvideItems {
 	public void canProvide(RequestTreeNode tree, int donePromisses, List<IFilter> filter);
-	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination);
+	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination, IAdditionalTargetInformation info);
 	public void getAllItems(Map<ItemIdentifier, Integer> list, List<IFilter> filter);
 	public IRouter getRouter();
 }

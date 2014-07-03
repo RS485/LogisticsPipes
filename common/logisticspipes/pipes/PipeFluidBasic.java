@@ -44,15 +44,8 @@ public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 	}
 
 	@Override
-	public boolean wrenchClicked(EntityPlayer entityplayer, SecuritySettings settings) {
-		if(MainProxy.isServer(getWorld())) {
-			if (settings == null || settings.openGui) {
-				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Fluid_Basic_ID, getWorld(), getX(), getY(), getZ());
-			} else {
-				entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
-			}
-		}
-		return true;
+	public void onWrenchClicked(EntityPlayer entityplayer) {
+		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Fluid_Basic_ID, getWorld(), getX(), getY(), getZ());
 	}
 
 	@Override
@@ -60,7 +53,7 @@ public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 		if(!guiOpenedBy.isEmpty()) return 0; //Don't sink when the gui is open
 		FluidIdentifier ident = FluidIdentifier.get(stack);
 		if(filterInv.getStackInSlot(0) == null) return 0;
-		if(ident != FluidIdentifier.get(filterInv.getIDStackInSlot(0).getItem())) return 0;
+		if(!ident.equals(FluidIdentifier.get(filterInv.getIDStackInSlot(0).getItem()))) return 0;
 		int onTheWay = this.countOnRoute(ident);
 		int freeSpace = -onTheWay;
 		for(Pair<TileEntity,ForgeDirection> pair:getAdjacentTanks(true)) {
@@ -103,4 +96,5 @@ public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 	public boolean canReceiveFluid() {
 		return false;
 	}
+
 }

@@ -3,11 +3,10 @@ package logisticspipes.utils.gui;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen.Colors;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen.Colors;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.Minecraft;
@@ -449,6 +448,54 @@ public class BasicGuiHelper {
         var9.addVertexWithUV(x		, y			, zLevel, icon.getMinU()	, icon.getMinV());
         var9.draw();
 	}
+
+	private static final ResourceLocation LOCK_ICON = new ResourceLocation("logisticspipes", "textures/gui/lock.png");
+	
+    public static void drawLockBackground(Minecraft mc, int x, int y) {
+    	zLevel = 0;
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		mc.renderEngine.bindTexture(LOCK_ICON);
+		
+		Tessellator var9 = Tessellator.instance;
+        var9.startDrawingQuads();
+        var9.addVertexWithUV(x		, y + 15	, zLevel, 0	, 1);
+        var9.addVertexWithUV(x + 14	, y + 15	, zLevel, 1	, 1);
+        var9.addVertexWithUV(x + 14	, y			, zLevel, 1	, 0);
+        var9.addVertexWithUV(x		, y			, zLevel, 0	, 0);
+        var9.draw();
+    }
+
+	private static final ResourceLocation LINES_ICON = new ResourceLocation("logisticspipes", "textures/gui/lines.png");
+	
+    public static void drawLinesBackground(Minecraft mc, int x, int y) {
+    	zLevel = 0;
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		mc.renderEngine.bindTexture(LINES_ICON);
+		
+		Tessellator var9 = Tessellator.instance;
+        var9.startDrawingQuads();
+        var9.addVertexWithUV(x		, y + 16	, zLevel, 0	, 1);
+        var9.addVertexWithUV(x + 16	, y + 16	, zLevel, 1	, 1);
+        var9.addVertexWithUV(x + 16	, y			, zLevel, 1	, 0);
+        var9.addVertexWithUV(x		, y			, zLevel, 0	, 0);
+        var9.draw();
+    }
+
+	private static final ResourceLocation STATS_ICON = new ResourceLocation("logisticspipes", "textures/gui/stats.png");
+	
+    public static void drawStatsBackground(Minecraft mc, int x, int y) {
+    	zLevel = 0;
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		mc.renderEngine.bindTexture(STATS_ICON);
+		
+		Tessellator var9 = Tessellator.instance;
+        var9.startDrawingQuads();
+        var9.addVertexWithUV(x		, y + 16	, zLevel, 0	, 1);
+        var9.addVertexWithUV(x + 16	, y + 16	, zLevel, 1	, 1);
+        var9.addVertexWithUV(x + 16	, y			, zLevel, 1	, 0);
+        var9.addVertexWithUV(x		, y			, zLevel, 0	, 0);
+        var9.draw();
+    }
     
     public static void renderForestryBeeAt(Minecraft mc, int x, int y, float zLevel, String id) {
     	GL11.glDisable(GL11.GL_LIGHTING);
@@ -623,9 +670,14 @@ public class BasicGuiHelper {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		// GL11.glDisable(GL11.GL_BLEND);
 	}
-	
+
 	public static String getStringWithSpacesFromInteger(int source) {
 		String data = Integer.toString(source);
+		return insert3rdSpace(data);
+	}
+	
+	public static String getStringWithSpacesFromLong(long source) {
+		String data = Long.toString(source);
 		return insert3rdSpace(data);
 	}
 	

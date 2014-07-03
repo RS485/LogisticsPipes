@@ -19,15 +19,20 @@ import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.network.GuiIDs;
+import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
+import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
+import logisticspipes.network.guis.module.inhand.CCBasedQuickSortInHand;
+import logisticspipes.network.guis.module.inpipe.CCBasedQuickSortSlot;
 import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
+import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
 import logisticspipes.network.packets.modules.CCBasedQuickSortMode;
 import logisticspipes.network.packets.modules.CCBasedQuickSortSinkSize;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.cc.CCSinkResponder;
+import logisticspipes.proxy.cc.objects.CCSinkResponder;
 import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
@@ -63,7 +68,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 	
 	private void createSinkMessage(int slot, ItemIdentifierStack stack) {
 		List<CCSinkResponder> respones = new ArrayList<CCSinkResponder>();
-		IRouter sourceRouter = this._itemSender.getRouter();
+		IRouter sourceRouter = this._service.getRouter();
 		if (sourceRouter == null) return;
 		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(null); // get only pipes with generic interest
 		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(); // get the routing table 
@@ -95,7 +100,7 @@ outer:
 
 	@Override
 	public void tick() {
-		IInventoryUtil invUtil = _invProvider.getPointedInventory(true);
+		IInventoryUtil invUtil = _service.getPointedInventory(true);
 		if (invUtil == null) return;
 		handleSinkResponses(invUtil);
 		if (--currentTick > 0) return;
@@ -106,12 +111,12 @@ outer:
 		
 		//Extract Item
 
-		if(!_power.canUseEnergy(500)) {
+		if(!_service.canUseEnergy(500)) {
 			stalled = true;
 			return;
 		}
 		
-		if((!(invUtil instanceof SpecialInventoryHandler) && invUtil.getSizeInventory() == 0) || !_power.canUseEnergy(500)) {
+		if((!(invUtil instanceof SpecialInventoryHandler) && invUtil.getSizeInventory() == 0) || !_service.canUseEnergy(500)) {
 			stalled = true;
 			return;
 		}
@@ -177,8 +182,8 @@ outer:
 		if(list.isEmpty()) return false;
 		ItemIdentifier ident = list.get(0).getStack().getItem();
 		ItemStack stack = invUtil.getStackInSlot(slot);
-		if(stack == null || ItemIdentifier.get(stack) != ident) return false;
-		final IRouter source = this._itemSender.getRouter();
+		if(stack == null || !ItemIdentifier.get(stack).equals(ident)) return false;
+		final IRouter source = this._service.getRouter();
 		List<Triplet<Integer, Integer, CCSinkResponder>> posibilities = new ArrayList<Triplet<Integer, Integer, CCSinkResponder>>();
 		for(CCSinkResponder sink:list) {
 			if(!sink.isDone()) continue;
@@ -214,7 +219,7 @@ outer:
 			if(stack == null || stack.stackSize <= 0) continue;
 			int amount = Math.min(stack.stackSize, sink.getCanSink());
 			ItemStack extracted = invUtil.decrStackSize(slot, amount);
-			_itemSender.sendStack(extracted, sink.getRouterId(), ItemSendMode.Fast);
+			_service.sendStack(extracted, sink.getRouterId(), ItemSendMode.Fast, null);
 			sended = true;
 		}
 		return sended;
@@ -224,35 +229,6 @@ outer:
 	@SideOnly(Side.CLIENT)
 	public IIcon getIconTexture(IIconRegister register) {
 		return register.registerIcon("logisticspipes:itemModule/ModuleCCQuickSort");
-	}
-	
-	@Override 
-	public final int getX() {
-		if(_slot>=0)
-			return this._power.getX();
-		else 
-			return 0;
-	}
-	
-	@Override 
-	public final int getY() {
-		if(_slot>=0)
-			return this._power.getY();
-		else 
-			return -1;
-	}
-	
-	@Override 
-	public final int getZ() {
-		if(_slot>=0)
-			return this._power.getZ();
-		else 
-			return -1-_slot;
-	}
-	
-	@Override
-	public int getGuiHandlerID() {
-		return GuiIDs.GUI_Module_CC_Based_QuickSort_ID;
 	}
 
 	@Override
@@ -283,25 +259,25 @@ outer:
 	private void checkSize() {
 		if(sinkSize != sinkResponses.size()) {
 			sinkSize = sinkResponses.size();
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortSinkSize.class).setInteger2(_slot).setInteger(sinkSize).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortSinkSize.class).setSinkSize(sinkSize).setModulePos(this), localModeWatchers);
 		}
 	}
 
 	@Override
-	public void startWatching() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(_slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+	public void startHUDWatching() {
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setModulePos(this));
 	}
 
 	@Override
-	public void stopWatching() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(_slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+	public void stopHUDWatching() {
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopModuleWatchingPacket.class).setModulePos(this));
 	}
 
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CCBasedQuickSortMode.class).setInteger2(_slot).setInteger(timeout).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CCBasedQuickSortSinkSize.class).setInteger2(_slot).setInteger(sinkSize).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CCBasedQuickSortMode.class).setTimeOut(timeout).setModulePos(this), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CCBasedQuickSortSinkSize.class).setSinkSize(sinkSize).setModulePos(this), player);
 	}
 
 	@Override
@@ -310,18 +286,28 @@ outer:
 	}
 
 	@Override
-	public IHUDModuleRenderer getRenderer() {
+	public IHUDModuleRenderer getHUDRenderer() {
 		return HUD;
 	}
 	
 	public void setTimeout(int time) {
 		this.timeout = time;
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortMode.class).setInteger2(_slot).setInteger(timeout).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortMode.class).setTimeOut(timeout).setModulePos(this), localModeWatchers);
 	}
 
 	public void setSinkSize(int integer) {
 		if(MainProxy.isClient(this._world.getWorld())) {
 			this.sinkSize = integer;
 		}
+	}
+
+	@Override
+	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+		return NewGuiHandler.getGui(CCBasedQuickSortSlot.class).setTimeOut(timeout);
+	}
+
+	@Override
+	protected ModuleInHandGuiProvider getInHandGuiProvider() {
+		return NewGuiHandler.getGui(CCBasedQuickSortInHand.class);
 	}
 }

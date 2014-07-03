@@ -36,7 +36,7 @@ public class SolderingStation implements ICraftingRecipeProvider {
 			inventory.setInventorySlotContents(i, newStack);
 		}
 
-		inventory.compact_first_9();
+		inventory.compact_first(9);
 		
 		for (int i = 0; i < inventory.getSizeInventory() - 2; i++) {
 			if (inventory.getStackInSlot(i) != null) {

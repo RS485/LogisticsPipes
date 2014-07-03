@@ -1,13 +1,11 @@
 package logisticspipes.network.packets.hud;
 
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.PipeLogisticsChassi;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import net.minecraft.entity.player.EntityPlayer;
 
-public class HUDStartModuleWatchingPacket extends IntegerCoordinatesPacket {
+public class HUDStartModuleWatchingPacket extends ModuleCoordinatesPacket {
 
 	public HUDStartModuleWatchingPacket(int id) {
 		super(id);
@@ -20,14 +18,9 @@ public class HUDStartModuleWatchingPacket extends IntegerCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) {
-			return;
-		}
-		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger()) instanceof IModuleWatchReciver) {
-			IModuleWatchReciver handler = (IModuleWatchReciver) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger());
-			handler.startWatching(player);
-		}
+		IModuleWatchReciver handler = this.getLogisticsModule(player, IModuleWatchReciver.class);
+		if(handler == null) return;
+		handler.startWatching(player);
 	}
 }
 

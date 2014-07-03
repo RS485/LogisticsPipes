@@ -1,23 +1,20 @@
 package logisticspipes.gui.modules;
 
 import logisticspipes.modules.ModuleThaumicAspectSink;
-import logisticspipes.network.GuiIDs;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
 
-public class GuiThaumicAspectSink extends GuiWithPreviousGuiContainer {
+public class GuiThaumicAspectSink extends ModuleBaseGui {
 	
 	private final ModuleThaumicAspectSink _module;
 	private final ItemIdentifierInventory tmpInv;
 	
-	public GuiThaumicAspectSink(IInventory playerInventory, CoreRoutedPipe pipe, ModuleThaumicAspectSink itemSink, GuiScreen previousGui, int slot) {
-		super(null, pipe, previousGui);
+	public GuiThaumicAspectSink(IInventory playerInventory, ModuleThaumicAspectSink itemSink) {
+		super(null, itemSink);
 		
 		_module = itemSink;
 		
@@ -40,11 +37,6 @@ public class GuiThaumicAspectSink extends GuiWithPreviousGuiContainer {
 		this.buttonList.clear();
 		this.buttonList.add(new GuiButton(0, guiLeft + 8, guiTop + 53, 50, 20, "Inject"));
 		this.buttonList.add(new GuiButton(1, guiLeft + 116, guiTop + 53, 50, 20, "Clear"));
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Module_Thaumic_AspectSink_ID;
 	}
 
 	@Override

@@ -15,4 +15,5 @@ public interface ICCProxy {
 	public void handleMesssage(int computerId, Object message, LogisticsTileGenericPipe tile, int sourceId);
 	public void addCraftingRecipes();
 	public Object getAnswer(Object object);
+	public Object getLP();
 }

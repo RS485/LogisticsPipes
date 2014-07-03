@@ -4,10 +4,8 @@ package logisticspipes.gui.modules;
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleApiaristSink.FilterType;
 import logisticspipes.modules.ModuleApiaristSink.SinkSetting;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.BeeModuleSetBeePacket;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.gui.BasicGuiHelper;
@@ -15,27 +13,24 @@ import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.IItemTextureRenderSlot;
 import logisticspipes.utils.gui.ISmallColorRenderSlot;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.util.IIcon;
 
-public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
+public class GuiApiaristSink extends ModuleBaseGui {
 
 	private final ModuleApiaristSink module;
-	private int slot;
 	
-	public GuiApiaristSink(ModuleApiaristSink module, EntityPlayer player, CoreRoutedPipe pipe, GuiScreen previousGui, int slot) {
-		super(new DummyContainer(player.inventory,null), pipe, previousGui);
+	public GuiApiaristSink(ModuleApiaristSink module, EntityPlayer player) {
+		super(new DummyContainer(player.inventory,null), module);
 		this.module = module;
-		this.slot = slot;
 		for(int i=0; i < 6; i++) {
 			SinkSetting filter = module.filter[i];
-			this.addRenderSlot(new TypeSlot(20, 20 + (i*18), filter, i, this));
-			this.addRenderSlot(new GroupSlot(guiLeft + 45, guiTop + 25 + (i*18), filter, i, this));
-			this.addRenderSlot(new BeeSlot(60, 20 + (i*18),filter,0, i, this));
-			this.addRenderSlot(new BeeSlot(78, 20 + (i*18),filter,1, i, this));
+			this.addRenderSlot(new TypeSlot(20, 20 + (i*18), filter, i));
+			this.addRenderSlot(new GroupSlot(guiLeft + 45, guiTop + 25 + (i*18), filter, i));
+			this.addRenderSlot(new BeeSlot(60, 20 + (i*18),filter,0, i));
+			this.addRenderSlot(new BeeSlot(78, 20 + (i*18),filter,1, i));
 		}
 		xSize = 120;
 		ySize = 150;
@@ -46,25 +41,18 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 	}
 	
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Module_Apiarist_Sink_ID;
-	}
-
 	private class TypeSlot extends IItemTextureRenderSlot {
 
 		final private int xPos;
 		final private int yPos;
 		final private SinkSetting setting;
 		final private int row;
-		final private GuiApiaristSink gui;
 		
-		private TypeSlot(int xPos, int yPos, SinkSetting setting, int row, GuiApiaristSink guiApiaristSink) {
+		private TypeSlot(int xPos, int yPos, SinkSetting setting, int row) {
 			this.xPos = xPos;
 			this.yPos = yPos;
 			this.setting = setting;
 			this.row = row;
-			this.gui = guiApiaristSink;
 		}
 		
 		@Override
@@ -85,7 +73,7 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 			if(button == 1) {
 				setting.FilterTypeDown();
 			}
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(BeeModuleSetBeePacket.class).setInteger1(gui.slot).setInteger2(row).setInteger3(3).setInteger4(setting.filterType.ordinal()).setPosX(module.getX()).setPosY(module.getY()).setPosZ(module.getZ()));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(BeeModuleSetBeePacket.class).setInteger2(row).setInteger3(3).setInteger4(setting.filterType.ordinal()).setModulePos(module));
 		}
 
 		@Override
@@ -131,14 +119,12 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 		final private int yPos;
 		final private SinkSetting setting;
 		final private int row;
-		final private GuiApiaristSink gui;
 
-		private GroupSlot(int xPos, int yPos, SinkSetting setting, int row, GuiApiaristSink guiApiaristSink) {
+		private GroupSlot(int xPos, int yPos, SinkSetting setting, int row) {
 			this.xPos = xPos;
 			this.yPos = yPos;
 			this.setting = setting;
 			this.row = row;
-			this.gui = guiApiaristSink;
 		}
 		
 		@Override
@@ -152,7 +138,7 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 			if(button == 1) {
 				setting.filterGroupDown();
 			}
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(BeeModuleSetBeePacket.class).setInteger1(gui.slot).setInteger2(row).setInteger3(2).setInteger4(setting.filterGroup).setPosX(module.getX()).setPosY(module.getY()).setPosZ(module.getZ()));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(BeeModuleSetBeePacket.class).setInteger2(row).setInteger3(2).setInteger4(setting.filterGroup).setModulePos(module));
 		}
 
 		@Override
@@ -228,15 +214,13 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 		final private SinkSetting setting;
 		final private int slotNumber;
 		final private int row;
-		final private GuiApiaristSink gui;
 		
-		private BeeSlot(int xPos, int yPos, SinkSetting setting, int slotNumber, int row, GuiApiaristSink guiApiaristSink) {
+		private BeeSlot(int xPos, int yPos, SinkSetting setting, int slotNumber, int row) {
 			this.xPos = xPos;
 			this.yPos = yPos;
 			this.setting = setting;
 			this.slotNumber = slotNumber;
 			this.row = row;
-			this.gui = guiApiaristSink;
 		}
 
 		@Override
@@ -262,7 +246,7 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 					setting.secondBeeDown();
 				}
 			}
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(BeeModuleSetBeePacket.class).setInteger1(gui.slot).setInteger2(row).setInteger3(slotNumber).setString1(slotNumber == 0 ? setting.firstBee : setting.secondBee).setPosX(module.getX()).setPosY(module.getY()).setPosZ(module.getZ()));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(BeeModuleSetBeePacket.class).setInteger2(row).setInteger3(slotNumber).setString1(slotNumber == 0 ? setting.firstBee : setting.secondBee).setModulePos(module));
 		}
 
 		@Override

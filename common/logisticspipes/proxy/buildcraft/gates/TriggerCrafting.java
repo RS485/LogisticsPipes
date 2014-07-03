@@ -14,7 +14,7 @@ public class TriggerCrafting extends LPTrigger implements ITriggerPipe {
 	@Override
 	public boolean isTriggerActive(Pipe pipe, ITriggerParameter parameter) {
 		if (!(pipe instanceof PipeItemsCraftingLogistics)) return false;
-		return ((PipeItemsCraftingLogistics)pipe).waitingForCraft;
+		return ((PipeItemsCraftingLogistics)pipe).getLogisticsModule().waitingForCraft;
 	}
 
 	@Override

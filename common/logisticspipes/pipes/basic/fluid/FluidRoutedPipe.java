@@ -8,7 +8,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -176,7 +176,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 			ItemIdentifierStack item = next.getItem();
 			if(item.getItem().isFluidContainer()) {
 				FluidStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(item);
-				if(FluidIdentifier.get(liquid) == ident) {
+				if(FluidIdentifier.get(liquid).equals(ident)) {
 					amount += liquid.amount;
 				}
 			}
@@ -194,7 +194,6 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 		if(canInsertToTanks() && MainProxy.isServer(getWorld())) {
 			if(arrivingItem.getItemIdentifierStack() == null || !(arrivingItem.getItemIdentifierStack().getItem().isFluidContainer())) return false;
 			if(this.getRouter().getSimpleID() != arrivingItem.getDestination()) return false;
-			this.transport.items.scheduleRemoval(arrivingItem);
 			int filled = 0;
 			FluidStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(arrivingItem.getItemIdentifierStack());
 			if(this.isConnectableTank(tile, arrivingItem.output, false)) {

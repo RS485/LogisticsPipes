@@ -9,7 +9,7 @@ import logisticspipes.network.packets.orderer.DiscContent;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.IItemSearch;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen.Colors;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen.Colors;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;

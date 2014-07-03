@@ -59,6 +59,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 	}
 
 	@Override
+	@Deprecated
 	public ItemStack getStackInSlot(int i) {
 		if (_contents[i] == null) return null;
 		return _contents[i].makeNormalStack();
@@ -210,7 +211,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 		if(MainProxy.isServer(worldObj)) {
 			for(int i=0;i<_contents.length;i++) {
 				while(_contents[i] != null) {
-					ItemStack todrop = decrStackSize(i, _contents[i].unsafeMakeNormalStack().getMaxStackSize());
+					ItemStack todrop = decrStackSize(i, _contents[i].getItem().getMaxStackSize());
 			    	dropItems(worldObj, todrop, posX, posY, posZ);
 				}
 			}
@@ -297,7 +298,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 			if(LogisticsPipes.DEBUG) {
 				new UnsupportedOperationException("Not valid for this Inventory: (" + stack + ")").printStackTrace();
 			}
-			return 0;
+			return stack.stackSize;
 		}
 		stack = stack.copy();
 
@@ -390,20 +391,20 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 		
 	}
 
-	public void compact_first_9() {
+	public void compact_first(int size) {
 		// Compact
-		for (int i = 0; i < 9; i++) {
+		for (int i = 0; i < size; i++) {
 			final ItemIdentifierStack stackInSlot = getIDStackInSlot(i);
 			if (stackInSlot == null) {
 				continue;
 			}
 			final ItemIdentifier itemInSlot = stackInSlot.getItem();
-			for (int j = i + 1; j < 9; j++) {
+			for (int j = i + 1; j < size; j++) {
 				final ItemIdentifierStack stackInOtherSlot = getIDStackInSlot(j);
 				if (stackInOtherSlot == null) {
 					continue;
 				}
-				if (itemInSlot == stackInOtherSlot.getItem()) {
+				if (itemInSlot.equals(stackInOtherSlot.getItem())) {
 					stackInSlot.setStackSize(stackInSlot.getStackSize() + stackInOtherSlot.getStackSize());
 					clearInventorySlotContents(j);
 				}
@@ -411,17 +412,25 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 			setInventorySlotContents(i,stackInSlot);
 		}
 		
-		for (int i = 0; i < 9; i++) {
+		for (int i = 0; i < size; i++) {
 			if (getStackInSlot(i) != null) {
 				continue;
 			}
-			for (int j = i + 1; j < 9; j++) {
+			for (int j = i + 1; j < size; j++) {
 				if (getStackInSlot(j) == null) {
 					continue;
 				}
 				setInventorySlotContents(i, getStackInSlot(j));
 				clearInventorySlotContents(j);
 				break;
+			}
+		}
+	}
+
+	public void recheckStackLimit() {
+		for(int i = 0;i < this._contents.length; i++) {
+			if(_contents[i] != null) {
+				_contents[i].setStackSize(Math.min(_contents[i].getStackSize(), this._stackLimit));
 			}
 		}
 	}

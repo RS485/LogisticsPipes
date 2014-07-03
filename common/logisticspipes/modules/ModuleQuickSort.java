@@ -6,18 +6,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-
-import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.interfaces.ISendRoutedItem;
-import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
+import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
 import logisticspipes.network.packets.modules.QuickSortState;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
@@ -40,25 +38,10 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 	protected int lastStackLookedAt = 0;
 	protected int lastSuceededStack = 0;
 
-	protected IInventoryProvider _invProvider;
-	protected ISendRoutedItem _itemSender;
-	protected IRoutedPowerProvider _power;
-
 	private PlayerCollectionList _watchingPlayer = new PlayerCollectionList();
 	private int lastPosSend = 0;
 
-	protected IWorldProvider _world;
-	protected int _slot;
-
 	public ModuleQuickSort() {}
-
-	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
-		_invProvider = invProvider;
-		_itemSender = itemSender;
-		_power = powerprovider;
-		_world = world;
-	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {}
@@ -85,10 +68,10 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 			currentTick = normalDelay;
 		
 		//Extract Item
-		IInventoryUtil invUtil = _invProvider.getPointedInventory(true);
+		IInventoryUtil invUtil = _service.getPointedInventory(true);
 		if (invUtil == null) return;
 
-		if(!_power.canUseEnergy(500)) {
+		if(!_service.canUseEnergy(500)) {
 			stalled = true;
 			return;
 		}
@@ -107,7 +90,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 					continue;
 				
 				LinkedList<Integer> jamList =  new LinkedList<Integer>();
-				Pair<Integer, SinkReply> reply = _itemSender.hasDestination(item.getKey(), false, jamList);
+				Pair<Integer, SinkReply> reply = _service.hasDestination(item.getKey(), false, jamList);
 				if (reply == null) {
 					if(lastStackLookedAt == lastSuceededStack) {
 						stalled = true;
@@ -115,7 +98,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 					lastStackLookedAt++;
 					return;
 				}
-				if(!_power.useEnergy(500)) {
+				if(!_service.useEnergy(500)) {
 					stalled = true;
 					lastStackLookedAt++;
 					return;
@@ -131,16 +114,17 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 						count = Math.min(count, reply.getValue2().maxNumberOfItems);
 					}
 					ItemStack stackToSend = invUtil.getMultipleItems(item.getKey(), count);
+					if(stackToSend == null || stackToSend.stackSize == 0) break;
 		
 					availableItems -= stackToSend.stackSize;
-					_itemSender.sendStack(stackToSend, reply, ItemSendMode.Fast);
+					_service.sendStack(stackToSend, reply, ItemSendMode.Fast);
 					
-					MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), _world.getWorld(), 8);
+					_service.spawnParticle(Particles.OrangeParticle, 8);
 		
 					if(availableItems <= 0) break;
 		
 					jamList.add(reply.getValue1());
-					reply = _itemSender.hasDestination(item.getKey(), false, jamList);
+					reply = _service.hasDestination(item.getKey(), false, jamList);
 				}
 				if(availableItems > 0) { //if we didn't send maxItemsToSend, try next item next time
 					lastSuceededStack = lastStackLookedAt;
@@ -154,7 +138,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 			}
 		} else {
 			
-			if((!(invUtil instanceof SpecialInventoryHandler) && invUtil.getSizeInventory() == 0) || !_power.canUseEnergy(500)) {
+			if((!(invUtil instanceof SpecialInventoryHandler) && invUtil.getSizeInventory() == 0) || !_service.canUseEnergy(500)) {
 				stalled = true;
 				return;
 			}
@@ -183,7 +167,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 	
 			// begin duplicate code
 			List<Integer> jamList = new LinkedList<Integer>();
-			Pair<Integer, SinkReply> reply = _itemSender.hasDestination(ItemIdentifier.get(slot), false, jamList);
+			Pair<Integer, SinkReply> reply = _service.hasDestination(ItemIdentifier.get(slot), false, jamList);
 			if (reply == null) {
 				if(lastStackLookedAt == lastSuceededStack) {
 					stalled = true;
@@ -191,7 +175,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 				lastStackLookedAt++;
 				return;
 			}
-			if(!_power.useEnergy(500)) {
+			if(!_service.useEnergy(500)) {
 				stalled = true;
 				lastStackLookedAt++;
 				return;
@@ -211,13 +195,13 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 				}
 				ItemStack stackToSend = slot.splitStack(count);
 	
-				_itemSender.sendStack(stackToSend, reply, ItemSendMode.Fast);
-				MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), _world.getWorld(), 8);
+				_service.sendStack(stackToSend, reply, ItemSendMode.Fast);
+				_service.spawnParticle(Particles.OrangeParticle, 8);
 	
 				if(slot.stackSize == 0) break;
 	
 				jamList.add(reply.getValue1());
-				reply = _itemSender.hasDestination(ItemIdentifier.get(slot), false, jamList);
+				reply = _service.hasDestination(ItemIdentifier.get(slot), false, jamList);
 			}
 			ItemStack returned = null;
 			int amountToExtract = sizePrev - slot.stackSize;
@@ -258,29 +242,9 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 	}
 
 	private void sendPacketTo(EntityPlayer player) {
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(QuickSortState.class).setInteger2(lastPosSend).setInteger(_slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(QuickSortState.class).setInteger2(lastPosSend).setInteger(getPositionInt()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), player);
 	}
 
-	@Override 
-	public void registerSlot(int slot) {
-		_slot = slot;
-	}
-	
-	@Override 
-	public int getX() {
-		return this._power.getX();
-	}
-	
-	@Override 
-	public int getY() {
-		return this._power.getY();
-	}
-	
-	@Override 
-	public int getZ() {
-		return this._power.getZ();
-	}
-	
 	@Override
 	public boolean hasGenericInterests() {
 		return false;
@@ -322,12 +286,17 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 	}
 
 	@Override
-	public int getGuiHandlerID() {
-		throw new UnsupportedOperationException();
+	public boolean hasGui() {
+		return false;
 	}
 
 	@Override
-	public boolean hasGui() {
-		return false;
+	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+		return null;
+	}
+
+	@Override
+	protected ModuleInHandGuiProvider getInHandGuiProvider() {
+		return null;
 	}
 }

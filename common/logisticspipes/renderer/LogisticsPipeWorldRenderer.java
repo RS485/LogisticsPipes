@@ -65,10 +65,14 @@ public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
 				// the mask points to all faces perpendicular to dir, i.e. dirs 0+1 -> mask 111100, 1+2 -> 110011, 3+5 -> 001111
 				int renderMask = (3 << (dir / 2 * 2)) ^ 0x3f;
 	
+				//workaround for 1.6 texture weirdness, rotate texture for N/S/E/W connections
+				renderblocks.uvRotateEast = renderblocks.uvRotateNorth = renderblocks.uvRotateWest = renderblocks.uvRotateSouth = (dir < 2) ? 0 : 1;
+
 				// render sub block
 				state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(ForgeDirection.VALID_DIRECTIONS[dir]));
 	
 				renderTwoWayBlock(renderblocks, block, x, y, z, dim, renderMask);
+				renderblocks.uvRotateEast = renderblocks.uvRotateNorth = renderblocks.uvRotateWest = renderblocks.uvRotateSouth = 0;
 			}
 		} else {
 			// render the unconnected pipe faces of the center block (if any)
@@ -99,6 +103,9 @@ public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
 				// the mask points to all faces perpendicular to dir, i.e. dirs 0+1 -> mask 111100, 1+2 -> 110011, 3+5 -> 001111
 				int renderMask = (3 << (dir / 2 * 2)) ^ 0x3f;
 				
+				//workaround for 1.6 texture weirdness, rotate texture for N/S/E/W connections
+				renderblocks.uvRotateEast = renderblocks.uvRotateNorth = renderblocks.uvRotateWest = renderblocks.uvRotateSouth = (dir < 2) ? 0 : 1;
+
 				//Render opaque Layer
 				state.currentTexture = icons.getIcon(Textures.LOGISTICSPIPE_OPAQUE_TEXTURE.normal);
 				renderOneWayBlock(renderblocks, block, x, y, z, dim, 0x3f);
@@ -106,6 +113,7 @@ public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
 				// render sub block
 				state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(ForgeDirection.VALID_DIRECTIONS[dir]));
 				renderOneWayBlock(renderblocks, block, x, y, z, dim, renderMask);
+				renderblocks.uvRotateEast = renderblocks.uvRotateNorth = renderblocks.uvRotateWest = renderblocks.uvRotateSouth = 0;
 			}
 		}
 
@@ -140,9 +148,12 @@ public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
 		block.setRenderMask(mask);
 		renderblocks.setRenderBounds(dim[2], dim[0], dim[1], dim[5], dim[3], dim[4]);
 		renderblocks.renderStandardBlock(block, x, y, z);
+		//flip back side texture
+		renderblocks.flipTexture = true;
 		block.setRenderMask((mask & 0x15) << 1 | (mask & 0x2a) >> 1); // pairwise swapped mask
 		renderblocks.setRenderBounds(dim[5], dim[3], dim[4], dim[2], dim[0], dim[1]);
 		renderblocks.renderStandardBlock(block, x, y, z);
+		renderblocks.flipTexture = false;
 	}
 
 	private void pipeFacadeRenderer(RenderBlocks renderblocks, BlockGenericPipe block, PipeRenderState state, int x, int y, int z) {

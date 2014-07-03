@@ -1,202 +1,199 @@
 #zh_CN
-#by wiki.mcbbc.com/Team TF
 
+# 用 %c 和 logisticspipes.utils.string.ChatColor 里的值来添加颜色
+# 比如 '%cYELLOW ' (注意后面要有空格)
 
-# Pipes
+# 管道
 
 item.PipeItemsBasicLogistics=基础物流管道
-item.PipeItemsBasicLogistics.tip1=类型: 被动型目的地推送
-item.PipeItemsBasicLogistics.tip2= - 为网络中的物品定位
-item.PipeItemsBasicLogistics.tip3= - 将指定物品放入箱子
-item.PipeItemsBasicLogistics.tip4= - 可以作为默认的路由
+item.PipeItemsBasicLogistics.tip1=类型: 被动收纳
+item.PipeItemsBasicLogistics.tip2= - 为物品规划路线
+item.PipeItemsBasicLogistics.tip3= - 收纳指定类型的物品
+item.PipeItemsBasicLogistics.tip4= - 收纳无处可去的物品
 
 item.PipeItemsRequestLogistics=请求物流管道
-item.PipeItemsRequestLogistics.tip1=类型:主动请求
-item.PipeItemsRequestLogistics.tip2= - 允许你手动申请请求物品
-item.PipeItemsRequestLogistics.tip3= - 可以从任意物品源获得物品
-item.PipeItemsRequestLogistics.tip4= - 在管道上放置箱子可收纳请求出的物品
+item.PipeItemsRequestLogistics.tip1=类型: 主动请求
+item.PipeItemsRequestLogistics.tip2= - 用于玩家从网络中请求物品
+item.PipeItemsRequestLogistics.tip3= - 请求的物品由类型为物品源的管道提供
+item.PipeItemsRequestLogistics.tip4= - 如果管道连接了箱子, 请求到的物品将被存入箱中
 
 item.PipeItemsRequestLogisticsMk2=请求物流管道Mk2
-item.PipeItemsRequestLogisticsMk2.tip1=类型:主动请求
+item.PipeItemsRequestLogisticsMk2.tip1=类型: 主动请求
 item.PipeItemsRequestLogisticsMk2.tip2= - 比Mk1快
-item.PipeItemsRequestLogisticsMk2.tip3= - 允许你手动申请请求物品
-item.PipeItemsRequestLogisticsMk2.tip4= - 可以从任意物品源获得物品
-item.PipeItemsRequestLogisticsMk2.tip5= - 在管道上放置箱子可收纳请求出的物品
+item.PipeItemsRequestLogisticsMk2.tip3= - 用于玩家从网络中请求物品
+item.PipeItemsRequestLogisticsMk2.tip4= - 请求的物品由类型为物品源的管道提供
+item.PipeItemsRequestLogisticsMk2.tip5= - 如果管道连接了容器, 请求到的物品将被存入其中
 
 item.PipeItemsProviderLogistics=供应物流管道
 item.PipeItemsProviderLogistics.tip1=类型: 物品源
-item.PipeItemsProviderLogistics.tip2= - 依附某个容器
-item.PipeItemsProviderLogistics.tip3= - 当有请求时从物流网络中发16个物品
+item.PipeItemsProviderLogistics.tip2= - 可以为类型为主动请求的管道提供容器中的物品
+item.PipeItemsProviderLogistics.tip3= - 提供速度限为每单位时间16个物品
+item.PipeItemsProviderLogistics.tip4= - 不会为连接到同一个容器上的补给管道提供物品
 
 item.PipeItemsProviderLogisticsMk2=供应物流管道Mk2
 item.PipeItemsProviderLogisticsMk2.tip1=类型: 物品源
-item.PipeItemsProviderLogisticsMk2.tip2= - 依附某个容器
-item.PipeItemsProviderLogisticsMk2.tip3= - 当有请求时向物流网络中发送一个组的物品
-item.PipeItemsProviderLogistics.tip4= - 忽略同一格的补给管道
+item.PipeItemsProviderLogisticsMk2.tip2= - 可以为类型为主动请求的管道提供容器中的物品
+item.PipeItemsProviderLogisticsMk2.tip3= - 提供速度限为每单位时间1组物品
+item.PipeItemsProviderLogisticsMk2.tip4= - 不会为连接到同一个容器上的补给管道提供物品
 
 item.PipeItemsCraftingLogistics=合成物流管道
-item.PipeItemsCraftingLogistics.tip1=类型:主动提供+物品源
-item.PipeItemsCraftingLogistics.tip2= - 一次合1件物品
-item.PipeItemsCraftingLogistics.tip3= - 依附在自动合成台上
-item.PipeItemsCraftingLogistics.tip4= - 当有请求时自动合成对应的物品
-item.PipeItemsCraftingLogistics.tip5= - 可以通过卫星式合成辅助物流管道来提供合成材料
+item.PipeItemsCraftingLogistics.tip1=类型: 主动请求 + 物品源
+item.PipeItemsCraftingLogistics.tip2= - 合成速度限制为每单位时间1个物品
+item.PipeItemsCraftingLogistics.tip3= - 可与自动合成桌连接
+item.PipeItemsCraftingLogistics.tip4= - 将自动抽走产物
+item.PipeItemsCraftingLogistics.tip5= - 可以配合卫星管道来将合成原料送至别处
 
 item.PipeItemsCraftingLogisticsMk2=合成物流管道Mk2
-item.PipeItemsCraftingLogisticsMk2.tip1=类型:主动提供+物品源
-item.PipeItemsCraftingLogisticsMk2.tip2= - 一次合16件物品
-item.PipeItemsCraftingLogisticsMk2.tip3= - 依附在自动合成台上
-item.PipeItemsCraftingLogisticsMk2.tip4= - 当有请求时自动合成对应的物品
-item.PipeItemsCraftingLogisticsMk2.tip5= - 可以通过卫星式合成辅助物流管道来提供合成材料
+item.PipeItemsCraftingLogisticsMk2.tip1=类型: 主动请求 + 物品源
+item.PipeItemsCraftingLogisticsMk2.tip2= - 合成速度限制为每单位时间16个物品
+item.PipeItemsCraftingLogisticsMk2.tip3= - 可与自动合成桌连接
+item.PipeItemsCraftingLogisticsMk2.tip4= - 将自动抽走产物
+item.PipeItemsCraftingLogisticsMk2.tip5= - 可以配合卫星管道来将合成原料送至别处
 
 item.PipeItemsCraftingLogisticsMk3=合成物流管道Mk3
-item.PipeItemsCraftingLogisticsMk3.tip1=类型:主动提供+物品源
-item.PipeItemsCraftingLogisticsMk3.tip2= - 一次合成一组的物品
-item.PipeItemsCraftingLogisticsMk3.tip3= - 依附在自动合成台上
-item.PipeItemsCraftingLogisticsMk3.tip4= - 当有请求时自动合成对应的物品.
-item.PipeItemsCraftingLogisticsMk3.tip5= - 可以通过卫星式合成辅助物流管道来提供合成材料
+item.PipeItemsCraftingLogisticsMk3.tip1=类型: 主动请求 + 物品源
+item.PipeItemsCraftingLogisticsMk3.tip2= - 合成速度限制为每单位时间1组物品
+item.PipeItemsCraftingLogisticsMk3.tip3= - 可与自动合成桌连接
+item.PipeItemsCraftingLogisticsMk3.tip4= - 将自动抽走产物
+item.PipeItemsCraftingLogisticsMk3.tip5= - 可以配合卫星管道来将合成原料送至别处
 
-item.PipeItemsSatelliteLogistics=卫星式合成辅助物流管道
-item.PipeItemsSatelliteLogistics.tip1=类型:主动推送目标
-item.PipeItemsSatelliteLogistics.tip2= - 一种可以将物品发送至合成栏内的管道
-item.PipeItemsSatelliteLogistics.tip3= - 连接在合成台边的箱子上
-item.PipeItemsSatelliteLogistics.tip4=   用于发送不可堆叠的物品
+item.PipeItemsSatelliteLogistics=卫星物流管道
+item.PipeItemsSatelliteLogistics.tip1=类型: 主动请求目标
+item.PipeItemsSatelliteLogistics.tip2= - 合成管道可以将合成原料送至此处
 
 item.PipeItemsSupplierLogistics=补给物流管道
-item.PipeItemsSupplierLogistics.tip1=注定提供物品
-item.PipeItemsSupplierLogistics.tip2= - 自动填充箱子和机器
-item.PipeItemsSupplierLogistics.tip3= - 可以从任意物品源获得物品
-item.PipeItemsSupplierLogistics.tip4= - 忽略同一格的供应管道
+item.PipeItemsSupplierLogistics.tip1=类型: 主动请求
+item.PipeItemsSupplierLogistics.tip2= - 自动填充箱子或机器
+item.PipeItemsSupplierLogistics.tip3= - 可以向任意类型为物品源的管道请求物品
+item.PipeItemsSupplierLogistics.tip4= - 不会向连接到同一个容器上的供应管道请求物品
 
-item.PipeItemsBuilderSupplierLogistics=建造补给物流管道
-item.PipeItemsBuilderSupplierLogistics.tip1=主动请求物品
+item.PipeItemsBuilderSupplierLogistics=建造机补给物流管道
+item.PipeItemsBuilderSupplierLogistics.tip1=类型: 主动请求
 item.PipeItemsBuilderSupplierLogistics.tip2= - 自动填充建造机所需材料
 
 item.PipeLogisticsChassiMk1=物流底盘Mk1
-item.PipeLogisticsChassiMk1.tip1=类型:混合
+item.PipeLogisticsChassiMk1.tip1=类型: 混合
 item.PipeLogisticsChassiMk1.tip2= - 可以容纳1个模块
 
 item.PipeLogisticsChassiMk2=物流底盘Mk2
-item.PipeLogisticsChassiMk2.tip1=类型:混合
+item.PipeLogisticsChassiMk2.tip1=类型: 混合
 item.PipeLogisticsChassiMk2.tip2= - 可以容纳2个模块
 
 item.PipeLogisticsChassiMk3=物流底盘Mk3
-item.PipeLogisticsChassiMk3.tip1=类型:混合
+item.PipeLogisticsChassiMk3.tip1=类型: 混合
 item.PipeLogisticsChassiMk3.tip2= - 可以容纳3个模块
 
 item.PipeLogisticsChassiMk4=物流底盘Mk4
-item.PipeLogisticsChassiMk4.tip1=类型:混合
+item.PipeLogisticsChassiMk4.tip1=类型: 混合
 item.PipeLogisticsChassiMk4.tip2= - 可以容纳4个模块
 
 item.PipeLogisticsChassiMk5=物流底盘Mk5
-item.PipeLogisticsChassiMk5.tip1=类型:混合
+item.PipeLogisticsChassiMk5.tip1=类型: 混合
 item.PipeLogisticsChassiMk5.tip2= - 可以容纳8个模块
 
-item.PipeItemsRemoteOrdererLogistics=远程提货物流管道
-item.PipeItemsRemoteOrdererLogistics.tip1=类型:主动提供
-item.PipeItemsRemoteOrdererLogistics.tip2= - 允许你手动*远程地*申请请求物品
-item.PipeItemsRemoteOrdererLogistics.tip3= - 可以从任意物品源获得物品
-item.PipeItemsRemoteOrdererLogistics.tip4= - 你必须右击管道中的远程要求
+item.PipeItemsRemoteOrdererLogistics=远程请求物流管道
+item.PipeItemsRemoteOrdererLogistics.tip1=类型: 主动请求
+item.PipeItemsRemoteOrdererLogistics.tip2= - 用于玩家从网络中远程请求物品
+item.PipeItemsRemoteOrdererLogistics.tip3= - 请求的物品由类型为物品源的管道提供
+item.PipeItemsRemoteOrdererLogistics.tip4= - 拿着远程请求器右击此管道来建立连接
 
 item.PipeItemsApiaristAnalyser=蜜蜂分析物流管道
-item.PipeItemsApiaristAnalyser.tip1=类型:被动目标
-item.PipeItemsApiaristAnalyser.tip2= - 一种为未分析的蜜蜂定位的被动型目的地管道
-item.PipeItemsApiaristAnalyser.tip3= - 允许用于自动分析
+item.PipeItemsApiaristAnalyser.tip1=类型: 被动收纳
+item.PipeItemsApiaristAnalyser.tip2= - 未被分析的蜜蜂将被收纳至此处
+item.PipeItemsApiaristAnalyser.tip3= - 可用于自动分析
 
 item.PipeItemsApiaristSink=蜜蜂收纳物流管道
-item.PipeItemsApiaristSink.tip1=类型:被动目标
-item.PipeItemsApiaristSink.tip2= - 一种为分析过的蜜蜂定位的被动型目的地管道
+item.PipeItemsApiaristSink.tip1=类型: 被动收纳
+item.PipeItemsApiaristSink.tip2= - 被分析的蜜蜂将被收纳至此处
 item.PipeItemsApiaristSink.tip3= - 可基于遗传特性和基因组进行过滤
 
-item.PipeItemsInvSysConnector=物流物品栏系统控制器
-item.PipeItemsInvSysConnector.tip1=类型:桥接
-item.PipeItemsInvSysConnector.tip2= - 通过共享物品栏
-item.PipeItemsInvSysConnector.tip3=   将两个物流网络连接到一起
-item.PipeItemsInvSysConnector.tip4= - 通常用于末影箱子但是
-item.PipeItemsInvSysConnector.tip5=   你也可以富有技巧地设计用到矿车...
+item.PipeItemsInvSysConnector=物流网络连接器
+item.PipeItemsInvSysConnector.tip1=类型: 并网
+item.PipeItemsInvSysConnector.tip2= - 通过外部运输方式
+item.PipeItemsInvSysConnector.tip3=   (比如末影箱, 矿车或其他管道)
+item.PipeItemsInvSysConnector.tip4=   将两个物流网络连接到一起
 
 item.PipeItemsSystemEntranceLogistics=物流系统入口管道
-item.PipeItemsSystemEntranceLogistics.tip1=类型:路由器
-item.PipeItemsSystemEntranceLogistics.tip2= - 将一个未定位路由过的物品发送到一个匹配好的
-item.PipeItemsSystemEntranceLogistics.tip3=   目的地定位管道
-item.PipeItemsSystemEntranceLogistics.tip4= - 入口和目的地定位管道都
-item.PipeItemsSystemEntranceLogistics.tip5=   必须共享相同的编码频率卡片
+item.PipeItemsSystemEntranceLogistics.tip1=类型: 路线规划
+item.PipeItemsSystemEntranceLogistics.tip2= - 将流经此管的物品发往与此管配对的目的管道
+item.PipeItemsSystemEntranceLogistics.tip3= - 入口和目的管道必须拥有配对的频率卡
 
-item.PipeItemsSystemDestinationLogistics=物流系统目的地定位管道
-item.PipeItemsSystemDestinationLogistics.tip1=类型:特殊目标
-item.PipeItemsSystemDestinationLogistics.tip2= - 从匹配好的入口管道接收
-item.PipeItemsSystemDestinationLogistics.tip3=   未被定位导航的物品
-item.PipeItemsSystemDestinationLogistics.tip4= - B入口和目的地定位管道都
-item.PipeItemsSystemDestinationLogistics.tip5=   必须共享相同的编码频率卡片
+item.PipeItemsSystemDestinationLogistics=物流系统目的管道
+item.PipeItemsSystemDestinationLogistics.tip1=类型: 特殊目标
+item.PipeItemsSystemDestinationLogistics.tip2= - 接收由物流系统入口管道发送的物品
+item.PipeItemsSystemDestinationLogistics.tip3= - 入口和目的管道必须拥有配对的频率卡
 
 item.PipeItemsFirewall=物流防火墙管道
-item.PipeItemsFirewall.tip1=类型:请求过滤
-item.PipeItemsFirewall.tip2= - 允许连接到风险网络中
-item.PipeItemsFirewall.tip3=   连接时仅允许某些物品通过
+item.PipeItemsFirewall.tip1=类型: 过滤器
+item.PipeItemsFirewall.tip2= - 只允许特定物品通过
 
-item.PipeItemsFluidSupplier=物流液体补给管道
-item.PipeItemsFluidSupplier.tip1=使用桶或其他液体容器填充连接的水槽
-item.PipeItemsFluidSupplier.tip2= - 用于自动清空器供应容器的机器
-item.PipeFluidSupplierMk2=物流液体补给管道Mk2
-item.PipeFluidSupplierMk2.tip1=从物流液体供应管道中获取液体
-item.LogisticsFluidConnectorPipe=物流液体连接管道
-item.PipeFluidBasic=物流液体基础管道
-item.PipeFluidInsertion=物流液体插入管道
-item.PipeFluidProvider=物流液体供应管道
-item.PipeFluidRequestLogistics=物流液体请求管道
-item.PipeFluidExtractor=物流液体抽取管道
-item.PipeFluidSatellite=物流液体卫星式合成辅助物流管道
+item.PipeItemsFluidSupplier=物流流体容器补给管道
+item.PipeItemsFluidSupplier.tip1=用桶或其他流体容器里的流体来填充与管道连接的储液器
+item.PipeFluidSupplierMk2=物流流体补给管道
+item.PipeFluidSupplierMk2.tip1=从物流流体供应管道中请求流体
+item.LogisticsFluidConnectorPipe=物流流体连接管道
+item.PipeFluidBasic=物流流体基础管道
+item.PipeFluidInsertion=物流流体插入管道
+item.PipeFluidProvider=物流流体供应管道
+item.PipeFluidRequestLogistics=物流流体请求管道
+item.PipeFluidExtractor=物流流体抽取管道
+item.PipeFluidSatellite=物流流体卫星管道
 item.PipeBlockRequestTable=物流请求桌
 
-# Modules
+# 模块
 
-#TODO: 按住潜行键以获得更多信息
+#TODO: 添加shift键提示
 item.ModuleBlank=空白模块
 item.ModuleItemSink=物品收纳模块
 item.ModulePassiveSupplier=被动补给模块
-item.ModuleExtractor=提取器模块
+item.ModuleExtractor=提取模块
 item.ModulePolymorphicItemSink=同类物品收纳模块
-item.ModuleQuickSort=排序发送模块
-item.ModuleTerminus=终端模块
-item.ModuleAdvancedExtractor=高级提取器模块
-item.ModuleExtractorMk2=提取器模块Mk2
-item.ModuleAdvancedExtractorMK2=高级提取器模块Mk2
-item.ModuleExtractorMk3=提取器模块MK3
-item.ModuleAdvancedExtractorMK3=高级提取器模块Mk3
-item.ModuleProvider=供应器模块
-item.ModuleProviderMk2=供应器模块Mk2
+item.ModuleQuickSort=快速分拣模块
+item.ModuleTerminus=终结模块
+item.ModuleAdvancedExtractor=高级提取模块
+item.ModuleExtractorMk2=提取模块Mk2
+item.ModuleAdvancedExtractorMK2=高级提取模块Mk2
+item.ModuleExtractorMk3=提取模块MK3
+item.ModuleAdvancedExtractorMK3=高级提取模块Mk3
+item.ModuleProvider=供应模块
+item.ModuleProviderMk2=供应模块Mk2
 item.ModuleElectricManager=电力管理模块
 item.ModuleElectricBuffer=电力缓冲模块
 item.ModuleApiaristAnalyser=蜜蜂分析模块
 item.ModuleApiaristSink=蜜蜂收纳模块
-item.ModuleApiaristRefiller=养蜂灌注模块
-item.ModuleApiaristTerminus=雄峰终端模块
-item.ModuleModBasedItemSink=模组物品收纳模块
-item.ModuleOreDictItemSink=矿物辞典收纳模块
+item.ModuleApiaristRefiller=养蜂装填模块
+item.ModuleApiaristTerminus=雄峰终结模块
+item.ModuleModBasedItemSink=基于物品所属模组的收纳模块
+item.ModuleOreDictItemSink=矿物词典收纳模块
 item.ModuleThaumicAspectSink=神秘要素收纳模块
 item.ModuleEnchantmentSink=附魔收纳模块
 item.ModuleEnchantmentSinkMK2=附魔收纳模块Mk2
 item.ModuleCCBasedItemSink=基于CC的物品收纳模块
-item.ModuleCCBasedQuickSort=基于CC的排序发送模块
+item.ModuleCCBasedQuickSort=基于CC的快速分拣模块
+item.ModuleCrafter=合成模块
+item.ModuleCrafterMK2=合成模块Mk2
+item.ModuleCrafterMK3=合成模块Mk3
+item.ModuleActiveSupplier=主动补给模块
 
-# Items
+# 物品
 
-item.brokenItem=物流损坏物品
-item.logisticsFluidContainer=物流液体容器
-item.upgradeManagerItem=升级管理器
+item.pipeController=物流管道控制器
+item.brokenItem=损毁了的物品
+item.logisticsFluidContainer=物流流体载体
+item.upgradeManagerItem=物流升级管理器
 item.HUDbow=物流HUD眼镜镜架
 item.HUDglass=物流HUD眼镜镜片
 item.HUDnosebridge=物流HUD眼镜镜框
 item.NanoHopper=纳米漏斗
 item.logisticsItemCard=物流物品卡片
-item.itemDisk=物流盘
-item.networkMonitorItem=网络监视器
-item.networkMonitorItem.name=网络监视器
+item.itemDisk=物流磁盘
+item.networkMonitorItem=物流网络监视器
+item.ItemPipeSignCreator.0=合成管道标牌
+item.ItemPipeSignCreator.1=物品数量标牌
 item.logisticsHUDGlasses=物流HUD眼镜
-item.ItemPipeSignCreator.0=合成标记贴牌器
-item.ItemPipeSignCreator.1=物品总量贴牌器
 item.remoteOrdererItem=远程请求器
 
-# Upgrades
+# 升级
 
 item.SneakyUpgradeUP=选择连接升级(上)
 item.SneakyUpgradeDOWN=选择连接升级(下)
@@ -206,31 +203,33 @@ item.SneakyUpgradeEAST=选择连接升级(东)
 item.SneakyUpgradeWEST=选择连接升级(西)
 item.CombinedSneakyUpgrade=多选连接升级
 item.SpeedUpgrade=物品加速升级
-item.ConnectionUpgradeUP=选择断开升级(上)
-item.ConnectionUpgradeDOWN=选择断开升级(下)
-item.ConnectionUpgradeNORTH=选择断开升级(北)
-item.ConnectionUpgradeSOUTH=选择断开升级(南)
-item.ConnectionUpgradeEAST=选择断开升级(东)
-item.ConnectionUpgradeWEST=选择断开升级(西)
+item.ConnectionUpgradeUP=断开连接升级(上)
+item.ConnectionUpgradeDOWN=断开连接升级(下)
+item.ConnectionUpgradeNORTH=断开连接升级(北)
+item.ConnectionUpgradeSOUTH=断开连接升级(南)
+item.ConnectionUpgradeEAST=断开连接升级(东)
+item.ConnectionUpgradeWEST=断开连接升级(西)
 item.AdvancedSatelliteUpgrade=高级卫星升级
-item.FluidCraftingUpgrade=液体合成升级
-item.CraftingByproductUpgrade=副产品提取升级
+item.FluidCraftingUpgrade=流体合成升级
+item.CraftingByproductUpgrade=副产物提取升级
 item.PatternUpgrade=放置规则升级
 item.FuzzyCraftingUpgrade=模糊合成升级
 item.PowerTransportationUpgrade=能量运输升级
-item.BCPowerSupplierUpgrade=BC能量补给器升级
-item.RFPowerSupplierUpgrade=TE能量补给器升级
-item.IC2LVPowerSupplierUpgrade=IC2低压能量补给器升级
-item.IC2MVPowerSupplierUpgrade=IC2中压能量补给器升级
-item.IC2HVPowerSupplierUpgrade=IC2高压能量补给器升级
-item.IC2EVPowerSupplierUpgrade=IC2超高压能量补给器升级
+item.BCPowerSupplierUpgrade=BC能量补给升级
+item.RFPowerSupplierUpgrade=TE能量补给升级
+item.IC2LVPowerSupplierUpgrade=IC2低压能量补给升级
+item.IC2MVPowerSupplierUpgrade=IC2中压能量补给升级
+item.IC2HVPowerSupplierUpgrade=IC2高压能量补给升级
+item.IC2EVPowerSupplierUpgrade=IC2超高压能量补给升级
 item.CCRemoteControlUpgrade=CC遥控升级
 item.CraftingMonitoringUpgrade=合成监视升级
+item.OpaqueUpgrade=不透明升级
+item.CraftingCleanupUpgrade=合成残余物清理升级
 
-# Blocks
+# 砖块
 
-tile.solderingstation=焊接台
-tile.logisticspowerjunction=物流能源中枢
+tile.solderingstation=物流焊接台
+tile.logisticspowerjunction=物流能量中枢
 tile.logisticssecuritystation=物流安全站
 tile.logisticscraftingtable=物流合成桌
 tile.logisticsfuzzycraftingtable=物流模糊合成桌
@@ -238,117 +237,129 @@ tile.logisticsbcpowerprovider=物流BC能量供应器
 tile.logisticstepowerprovider=物流TE能量供应器
 tile.logisticsic2powerprovider=物流IC2能量供应器
 
-# Misc
+# 杂项
 
 itemGroup.Logistics_Pipes=物流管道
 misc.holdshift=<按住 %cYELLOW %cITALIC Shift %cRESET %cGRAY 查看更多信息>
 misc.extractionmode.Normal=正常
 misc.extractionmode.LeaveFirst=留下第一组物品
 misc.extractionmode.LeaveLast=留下最后一组物品
-misc.extractionmode.LeaveFirstAndLast=留下第一和最后一组物品
+misc.extractionmode.LeaveFirstAndLast=留下第一组和最后一组物品
 misc.extractionmode.Leave1PerStack=每组物品留一个
 misc.extractionmode.Leave1PerType=每种物品留一个
 
 # GUI
 
-gui.crafting.Inputs=输入
+gui.crafting.Inputs=原料
 gui.crafting.Inventory=物品栏
 gui.crafting.Import=导入
 gui.crafting.Open=打开
-gui.crafting.Output=导出
+gui.crafting.Output=产物
 gui.crafting.Satellite=卫星
 gui.crafting.Off=关
 gui.crafting.Priority=优先级
 gui.crafting.Extra=副产物
-gui.crafting.OreDict=矿物词典
+gui.crafting.OreDict=匹配矿典
 gui.crafting.IgnDamage=忽略损耗
 gui.crafting.IgnNBT=忽略NBT
 gui.crafting.OrePrefix=匹配同类
+gui.crafting.Include=包括
+gui.crafting.Exclude=除外
 
 gui.firewall.Blocked=阻止
 gui.firewall.Allowed=允许
 gui.firewall.Firewall=防火墙
 gui.firewall.Filter=过滤器
-gui.firewall.Filtereditemsare=被过滤的物品为
-gui.firewall.Providing=提供
+gui.firewall.Filtereditemsare=被过滤的物品
+gui.firewall.Providing=供应
 gui.firewall.Crafting=合成
-gui.firewall.Sorting=分类
-gui.firewall.Powerflow=能量流量
+gui.firewall.Sorting=分拣
+gui.firewall.Powerflow=能量
 
 gui.fluidbasic.Empty=空
 
 gui.fluidsuppliermk2.Inventory=物品栏
 gui.fluidsuppliermk2.Fluid=流体
-gui.fluidsuppliermk2.Partialrequests=部分请求
+gui.fluidsuppliermk2.Partialrequests=不完整请求
 gui.fluidsuppliermk2.Yes=是
 gui.fluidsuppliermk2.No=否
-gui.fluidsuppliermk2.TargetInv=保持流体库存
+gui.fluidsuppliermk2.TargetInv=要补给的流体
 
-gui.fluidsupplier.TargetInv=保持流体库存
+gui.fluidsupplier.TargetInv=要补给的流体
 gui.fluidsupplier.Inventory=物品栏
-gui.fluidsupplier.Partialrequests=局部请求
+gui.fluidsupplier.Partialrequests=不完整请求
 gui.fluidsupplier.Yes=是
 gui.fluidsupplier.No=否
 
-gui.invsyscon.No=否
 gui.invsyscon.Refresh=刷新
 gui.invsyscon.Save=保存
-gui.invsyscon.InventorySystemConnector=并网
+gui.invsyscon.InventorySystemConnector=物流网络连接器
 gui.invsyscon.ConnectionCard=连接卡
-gui.invsyscon.Waitingfor=等待
-gui.invsyscon.Resistance=优先度(越小越优先)
+gui.invsyscon.Waitingfor=等待的物品
+gui.invsyscon.Resistance=开销值
 
-gui.powerjunction.LogisticsPowerJunction=物流能源中枢
-gui.powerjunction.StoredEnergy=存储能量
+gui.powerjunction.LogisticsPowerJunction=物流能量中枢
+gui.powerjunction.StoredEnergy=存储的能量
 
 gui.powerprovider.LogisticsMJPowerProvider=物流BC能量供应器
 gui.powerprovider.LogisticsEUPowerProvider=物流IC2能量供应器
 gui.powerprovider.LogisticsRFPowerProvider=物流TE能量供应器
-gui.powerprovider.StoredEnergy=存储能量
+gui.powerprovider.StoredEnergy=存储的能量
 
-gui.providerpipe.TargetInv=供应物品(或者空着以提供所有物品)
+gui.providerpipe.TargetInv=要供应的物品(留空供应所有物品)
 gui.providerpipe.Inventory=物品栏
 gui.providerpipe.Mode=模式
-gui.providerpipe.Exclude=排除
-gui.providerpipe.Include=包含
-gui.providerpipe.Switch=转换
+gui.providerpipe.Exclude=除外
+gui.providerpipe.Include=包括
+gui.providerpipe.Switch=切换
 
-gui.routingstats.Session=会话
-gui.routingstats.Lifetime=期限
-gui.routingstats.Sent=已送出
-gui.routingstats.Recieved=已接受
-gui.routingstats.Relayed=被中继的
-gui.routingstats.RoutingTableSize=路由表尺寸
+gui.routingstats.Session=会话期
+gui.routingstats.Lifetime=生命期
+gui.routingstats.Sent=已发出
+gui.routingstats.Recieved=已收到
+gui.routingstats.Relayed=已转发
+gui.routingstats.RoutingTableSize=路由表大小
 gui.routingstats.exit=按<ESC>退出
 
 gui.satellite.SatelliteID=卫星ID
 
 gui.securitystation.Open=打开
-gui.securitystation.EditTable=编辑台
+gui.securitystation.EditTable=编辑列表
 gui.securitystation.Authorize=授权
 gui.securitystation.Deauthorize=解除授权
 gui.securitystation.SecurityStation=安全站
-gui.securitystation.allowCCAccess=允许使用ComputerCraft
-gui.securitystation.excludeIDs=被排除的ComputerCraft IDs
-gui.securitystation.pipeRemove=允许自动化的管道移除
+gui.securitystation.allowCCAccess=允许CC电脑访问
+gui.securitystation.excludeIDs=禁止访问的电脑ID
+gui.securitystation.pipeRemove=允许自动化设备移除管道
 gui.securitystation.Player=玩家
 gui.securitystation.SecurityCards=安全卡
 gui.securitystation.Inventory=物品栏
-gui.securitystation.popup.ccAccess.Remove=移除
+gui.securitystation.popup.ccAccess.Remove=删除
 gui.securitystation.popup.ccAccess.Add=添加
 gui.securitystation.popup.player.Close=关闭
 gui.securitystation.popup.player.Player=玩家
-gui.securitystation.popup.player.ConfigureSettings=修改设置
-gui.securitystation.popup.player.ActiveRequesting=主动请求
-gui.securitystation.popup.player.UpgradePipes=升级管道
-gui.securitystation.popup.player.CheckNetwork=检查网络
-gui.securitystation.popup.player.RemovePipes=移除管道
+gui.securitystation.popup.player.ConfigureSettings=允许修改设置
+gui.securitystation.popup.player.ActiveRequesting=允许主动请求
+gui.securitystation.popup.player.UpgradePipes=允许升级管道
+gui.securitystation.popup.player.CheckNetwork=允许检查网络
+gui.securitystation.popup.player.RemovePipes=允许移除管道
 
-gui.supplierpipe.TargetInv=保持物品库存
-gui.supplierpipe.TargetInvPattern=物品保存在特定的槽里
+gui.supplierpipe.TargetInv=要补给的物品
+gui.supplierpipe.TargetInvPattern=每个槽中要补给的物品
 gui.supplierpipe.Inventory=物品栏
 gui.supplierpipe.RequestMode=请求模式
 
-gui.upgrademanager.Upgrades=升级
+gui.upgrademanager.Upgrades=此管道拥有的升级
 gui.upgrademanager.Inventory=物品栏
 gui.upgrademanager.SneakyUpgrades=选择连接升级
+
+gui.pipecontroller.upgrade=此管道拥有的升级
+gui.pipecontroller.inventory=物品栏
+gui.pipecontroller.sneakyUpgrades=选择连接升级
+gui.pipecontroller.security=安全设置
+gui.pipecontroller.Session=会话期
+gui.pipecontroller.Lifetime=生命期
+gui.pipecontroller.Sent=已发出
+gui.pipecontroller.Recieved=已收到
+gui.pipecontroller.Relayed=已转发
+gui.pipecontroller.RoutingTableSize=路由表大小

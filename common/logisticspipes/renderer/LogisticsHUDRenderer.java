@@ -126,7 +126,7 @@ public class LogisticsHUDRenderer {
 		}
 		
 		if(newList.size() < 1) { 
-			clearList(false);
+			clearList(true);
 			return;
 		}
 		Collections.sort(newList, new Comparator<Pair<Double, IHeadUpDisplayRendererProvider>>() {
@@ -203,10 +203,10 @@ public class LogisticsHUDRenderer {
 		if(!displayRenderer()) return;
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		EntityPlayer player = mc.thePlayer;
-		if(list.size() == 0 || Math.hypot(lastXPos - player.posX,Math.hypot(lastYPos - player.posY, lastZPos - player.posZ)) > 0.5 || (renderTicks % 10 == 0 && (lastXPos != player.posX || lastYPos != player.posY + player.getEyeHeight() || lastZPos != player.posZ)) || renderTicks % 600 == 0) {
+		if(list.size() == 0 || Math.hypot(lastXPos - player.posX,Math.hypot(lastYPos - player.posY, lastZPos - player.posZ)) > 0.5 || (renderTicks % 10 == 0 && (lastXPos != player.posX || lastYPos != player.posY || lastZPos != player.posZ)) || renderTicks % 600 == 0) {
 			refreshList(player.posX,player.posY,player.posZ);
 			lastXPos = player.posX;
-			lastYPos = player.posY + player.getEyeHeight();
+			lastYPos = player.posY;
 			lastZPos = player.posZ;
 		}
 		boolean cursorHandled = false;

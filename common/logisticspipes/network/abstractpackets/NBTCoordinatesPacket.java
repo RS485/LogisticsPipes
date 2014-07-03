@@ -2,7 +2,6 @@ package logisticspipes.network.abstractpackets;
 
 import java.io.IOException;
 
-import logisticspipes.network.INBTPacketProvider;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import lombok.Getter;
@@ -31,11 +30,5 @@ public abstract class NBTCoordinatesPacket extends CoordinatesPacket {
 	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);
 		tag = data.readNBTTagCompound();
-	}
-	
-	public NBTCoordinatesPacket readFromProvider(INBTPacketProvider provider) {
-		tag = new NBTTagCompound();
-		provider.writeToPacketNBT(tag);
-		return this;
 	}
 }

@@ -5,13 +5,12 @@ import java.util.BitSet;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.pipe.FireWallFlag;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -42,16 +41,9 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	}
 	
 	@Override
-	public boolean wrenchClicked(EntityPlayer entityplayer, SecuritySettings settings) {
-		if(MainProxy.isServer(getWorld())) {
-			if (settings == null || settings.openGui) {
-				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_FIREWALL, getWorld(), getX(), getY(), getZ());
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), entityplayer);
-			} else {
-				entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
-			}
-		}
-		return true;
+	public void onWrenchClicked(EntityPlayer entityplayer) {
+		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_FIREWALL, getWorld(), getX(), getY(), getZ());
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), entityplayer);
 	}
 
 	@Override

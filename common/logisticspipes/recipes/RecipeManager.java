@@ -5,9 +5,14 @@ import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.RemoteOrderer;
+<<<<<<< HEAD
 import logisticspipes.modules.LogisticsModule;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+=======
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import net.minecraft.block.Block;
+>>>>>>> mc16
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -491,7 +496,7 @@ public class RecipeManager {
 		});
 		
 		for(int i=0; i<1000;i++) {
-			LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(new ItemStack(LogisticsPipes.ModuleItem, 1, i), null, null, null, null, null);
+			LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(new ItemStack(LogisticsPipes.ModuleItem, 1, i), null, null, null);
 			if(module != null) {
 				NBTTagCompound nbt = new NBTTagCompound();
 				boolean force = false;

@@ -9,35 +9,19 @@
 package logisticspipes.pipes;
 
 import net.minecraft.item.Item;
+import logisticspipes.modules.ModuleCrafterMK2;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import logisticspipes.transport.PipeTransportLogistics;
 
-public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
+public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics {
 	
 	public PipeItemsCraftingLogisticsMk2(Item item) {
 		super(item);
+		craftingModule = new ModuleCrafterMK2(this);
+		craftingModule.registerPosition(ModulePositionType.IN_PIPE, 0);
 	}
 
-	public PipeItemsCraftingLogisticsMk2(PipeTransportLogistics transport, Item item) {
-		super(transport, item);
-	}
-
-	@Override
-	protected int neededEnergy() {
-		return 15;
-	}
-
-	@Override
-	protected int itemsToExtract() {
-		return 64;
-	}
-	
-	@Override
-	protected int stacksToExtract() {
-		return 1;
-	}
-	
 	@Override
 	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_CRAFTERMK2_TEXTURE;

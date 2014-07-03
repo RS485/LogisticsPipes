@@ -16,25 +16,27 @@ public class LPItemList implements Iterable<LPTravelingItem> {
 	private final Set<LPTravelingItem> toRemove = new HashSet<LPTravelingItem>();
 	private int delay = 0;
 	private final PipeTransportLogistics pipe;
+	private boolean iterating = false;
 
 	public LPItemList(PipeTransportLogistics pipe) {
 		this.pipe = pipe;
 	}
 
-	private boolean add(LPTravelingItem item) {
-		if (items.containsValue(item))
-			return false;
+	public void add(LPTravelingItem item) {
+		if(iterating) {
+			toAdd.add(item);
+			return;
+		}
+		if(items.containsValue(item))
+			return;
 		item.setContainer(pipe.container);
 		items.put(item.getId(), item);
-		return true;
 	}
 
-	private boolean addAll(Collection<? extends LPTravelingItem> collection) {
-		boolean changed = false;
+	private void addAll(Collection<? extends LPTravelingItem> collection) {
 		for (LPTravelingItem item : collection) {
-			changed |= add(item);
+			add(item);
 		}
-		return changed;
 	}
 
 	public LPTravelingItem get(int id) {
@@ -55,11 +57,13 @@ public class LPItemList implements Iterable<LPTravelingItem> {
 		toLoad.clear();
 	}
 
-	public void scheduleAdd(LPTravelingItem item) {
-		toAdd.add(item);
+	public void scheduleAdd() {
+		iterating = true;
+
 	}
 
-	private void addScheduledItems() {
+	public void addScheduledItems() {
+		iterating = false;
 		addAll(toAdd);
 		toAdd.clear();
 	}
@@ -95,7 +99,6 @@ public class LPItemList implements Iterable<LPTravelingItem> {
 
 	void flush() {
 		loadScheduledItems();
-		addScheduledItems();
 		removeScheduledItems();
 		purgeBadItems();
 	}
@@ -105,19 +108,7 @@ public class LPItemList implements Iterable<LPTravelingItem> {
 		return items.values().iterator();
 	}
 
-	public int size() {
-		return items.values().size();
-	}
-
 	void clear() {
-		toRemove.addAll(items.values());
-	}
-
-	public boolean isEmpty() {
-		return items.isEmpty();
-	}
-	
-	public boolean hasContent() {
-		return !items.isEmpty() || !toAdd.isEmpty();
+		items.clear();
 	}
 }

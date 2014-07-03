@@ -1,14 +1,14 @@
 package logisticspipes.blocks;
 
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.blocks.powertile.LogisticsBCPowerProviderTileEntity;
 import logisticspipes.blocks.powertile.LogisticsIC2PowerProviderTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
+import logisticspipes.interfaces.IGuiTileEntity;
 import logisticspipes.interfaces.IRotationProvider;
-import logisticspipes.network.GuiIDs;
+import logisticspipes.proxy.MainProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -53,26 +53,12 @@ public class LogisticsSolidBlock extends BlockContainer {
 	@Override
 	public boolean onBlockActivated(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer, int par6, float par7,float par8, float par9) {
 		if(!par5EntityPlayer.isSneaking()) {
-			switch(par1World.getBlockMetadata(par2, par3, par4)) {
-			case SOLDERING_STATION:
-				par5EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Soldering_Station_ID, par1World, par2, par3, par4);
+			TileEntity tile = par1World.getTileEntity(par2, par3, par4);
+			if(tile instanceof IGuiTileEntity) {
+				if(MainProxy.isServer(par5EntityPlayer.worldObj)) {
+					((IGuiTileEntity)tile).getGuiProvider().setTilePos(tile).open(par5EntityPlayer);
+				}
 				return true;
-			case LOGISTICS_POWER_JUNCTION:
-				par5EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Power_Junction_ID, par1World, par2, par3, par4);
-				return true;
-			case LOGISTICS_SECURITY_STATION:
-				par5EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Security_Station_ID, par1World, par2, par3, par4);
-				return true;
-			case LOGISTICS_AUTOCRAFTING_TABLE:
-			case LOGISTICS_FUZZYCRAFTING_TABLE:
-				par5EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Auto_Crafting_ID, par1World, par2, par3, par4);
-				return true;
-			case LOGISTICS_BC_POWERPROVIDER:
-			case LOGISTICS_RF_POWERPROVIDER:
-			case LOGISTICS_IC2_POWERPROVIDER:
-				par5EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Power_Provider_ID, par1World, par2, par3, par4);
-				return true;
-				default:break;
 			}
 		}
 		return false;

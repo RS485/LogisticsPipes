@@ -1,34 +1,27 @@
 package logisticspipes.gui.modules;
 
 import logisticspipes.modules.ModuleProvider;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.ProviderModuleIncludePacket;
 import logisticspipes.network.packets.module.ProviderModuleNextModePacket;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiProvider extends GuiWithPreviousGuiContainer {
+public class GuiProvider extends ModuleBaseGui {
 	
 	private final IInventory _playerInventory;
 	private final ModuleProvider _provider;
-	//private final Pipe pipe;
-	private final int _slot;
 
-
-	public GuiProvider(IInventory playerInventory, CoreRoutedPipe pipe, ModuleProvider provider, GuiScreen previousGui, int slot) {
-		super(null,pipe,previousGui);
+	public GuiProvider(IInventory playerInventory, ModuleProvider provider) {
+		super(null, provider);
 		_playerInventory = playerInventory;
 		_provider = provider;
-		_slot = slot;
 		
 		DummyContainer dummy = new DummyContainer(_playerInventory, _provider.getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(18, 97);
@@ -66,18 +59,10 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 	protected void actionPerformed(GuiButton guibutton) {
 		if (guibutton.id == 0){
 			_provider.setFilterExcluded(!_provider.isExcludeFilter());
-			if(_slot >= 0) {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleIncludePacket.class).setInteger(_slot).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
-			} else {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleIncludePacket.class).setInteger(_slot).setPosX(_provider.getX()).setPosY(_provider.getY()).setPosZ(_provider.getZ()));
-			}
-		} else if (guibutton.id  == 1){
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleIncludePacket.class).setModulePos(_provider));
+		} else if (guibutton.id == 1){
 			_provider.nextExtractionMode();
-			if(_slot >= 0) {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleNextModePacket.class).setInteger(_slot).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
-			} else {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleNextModePacket.class).setInteger(_slot).setPosX(_provider.getX()).setPosY(_provider.getY()).setPosZ(_provider.getZ()));
-				}
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleNextModePacket.class).setModulePos(_provider));
 		}
 		super.actionPerformed(guibutton);
 	}
@@ -97,23 +82,5 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 		mc.fontRenderer.drawString(_provider.getFilterInventory().getInventoryName(), xSize / 2 - mc.fontRenderer.getStringWidth(_provider.getFilterInventory().getInventoryName())/2, 6, 0x404040);
 		mc.fontRenderer.drawString("Inventory", 18, ySize - 102, 0x404040);
 		mc.fontRenderer.drawString("Mode: " + _provider.getExtractionMode().getExtractionModeString(), 9, ySize - 112, 0x404040);
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Module_Provider_ID;
-	}
-
-	public void handleModuleModeRecive(int integer) {
-		_provider.setExtractionMode(integer);
-	}
-
-	public void refreshInclude() {
-		((GuiButton)buttonList.get(0)).displayString = _provider.isExcludeFilter() ? "Exclude" : "Include";
-	}
-	
-	public void handleModuleIncludeRecive(int integer) {
-		_provider.setFilterExcluded(integer == 1);
-		refreshInclude();
 	}
 }

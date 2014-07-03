@@ -66,7 +66,7 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 		try {
 			ItemStack itemStack = (ItemStack) item.get(_tile);
 			if(itemStack != null) {
-				if(ItemIdentifier.get(itemStack) == itemIdent) {
+				if(ItemIdentifier.get(itemStack).equals(itemIdent)) {
 					int value = (Integer) getItemCount.invoke(_tile, new Object[]{});
 					return value - (_hideOnePerStack?1:0);
 				}
@@ -86,7 +86,7 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 		try {
 			ItemStack itemStack = (ItemStack) item.get(_tile);
 			if(itemStack != null) {
-				if(ItemIdentifier.get(itemStack) != itemIdent) return null;
+				if(!ItemIdentifier.get(itemStack).equals(itemIdent)) return null;
 				int value = (Integer) getItemCount.invoke(_tile, new Object[]{});
 				if(value - (_hideOnePerStack?1:0) < count) return null;
 				setItemCount.invoke(_tile, new Object[]{value - count});
@@ -144,7 +144,7 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 		try {
 			ItemStack itemStack = (ItemStack) item.get(_tile);
 			if(itemStack != null) {
-				if(ItemIdentifier.get(itemStack) != itemIdent) return null;
+				if(!ItemIdentifier.get(itemStack).equals(itemIdent)) return null;
 				int value = (Integer) getItemCount.invoke(_tile, new Object[]{});
 				if(value > (_hideOnePerStack?1:0)) {
 					setItemCount.invoke(_tile, new Object[]{value - 1});
@@ -169,7 +169,7 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 		try {
 			ItemStack itemStack = (ItemStack) item.get(_tile);
 			if(itemStack != null) {
-				return ItemIdentifier.get(itemStack) == itemIdent;
+				return ItemIdentifier.get(itemStack).equals(itemIdent);
 			}
 			return false;
 		} catch (IllegalArgumentException e) {
@@ -185,7 +185,7 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 		try {
 			ItemStack itemStack = (ItemStack) item.get(_tile);
 			if(itemStack != null) {
-				return ItemIdentifier.getUndamaged(itemStack) == itemIdent;
+				return ItemIdentifier.get(itemStack).getUndamaged().equals(itemIdent);
 			}
 			return false;
 		} catch (IllegalArgumentException e) {
@@ -206,7 +206,7 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 			ItemStack itemStack = (ItemStack) item.get(_tile);
 			int max = (Integer) getMaxSize.invoke(_tile, new Object[]{});
 			if(itemStack != null) {
-				if(ItemIdentifier.get(itemStack) != itemIdent) return 0;
+				if(!ItemIdentifier.get(itemStack).equals(itemIdent)) return 0;
 				int value = (Integer) getItemCount.invoke(_tile, new Object[]{});
 				return max - value;
 			}
@@ -235,7 +235,7 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 					((IInventory)_tile).setInventorySlotContents(0, tst);
 				}
 			} else {
-				if(ItemIdentifier.get(itemStack) != ItemIdentifier.get(stack)) return st;
+				if(!ItemIdentifier.get(itemStack).equals(ItemIdentifier.get(stack))) return st;
 				int max = (Integer) getMaxSize.invoke(_tile, new Object[]{});
 				int value = (Integer) getItemCount.invoke(_tile, new Object[]{});
 				int room = max - value;
@@ -268,10 +268,21 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 	public ItemStack getStackInSlot(int i) {
 		if(i != 0) return null;
 		try {
-			return (ItemStack) item.get(_tile);
+			ItemStack itemStack = (ItemStack) item.get(_tile);
+			if(itemStack != null) {
+				int value = (Integer) getItemCount.invoke(_tile, new Object[]{});
+				value -= _hideOnePerStack?1:0;
+				if(value > 0) {
+					ItemStack ret = itemStack.copy();
+					ret.stackSize = value;
+					return ret;
+				}
+			}
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -282,10 +293,11 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 		try {
 			ItemStack itemStack = (ItemStack) item.get(_tile);
 			int value = (Integer) getItemCount.invoke(_tile, new Object[]{});
-			if(value > (_hideOnePerStack?1:0)) {
-				setItemCount.invoke(_tile, new Object[]{value - 1});
+			j = Math.min(j, value - (_hideOnePerStack?1:0));
+			if(j > 0) {
+				setItemCount.invoke(_tile, new Object[]{value - j});
 				ItemStack ret = itemStack.copy();
-				ret.stackSize = 1;
+				ret.stackSize = j;
 				return ret;
 			}
 		} catch (IllegalAccessException e) {

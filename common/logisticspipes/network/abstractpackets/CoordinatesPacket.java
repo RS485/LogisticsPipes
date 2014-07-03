@@ -3,6 +3,7 @@ package logisticspipes.network.abstractpackets;
 import java.io.IOException;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -52,6 +53,21 @@ public abstract class CoordinatesPacket extends ModernPacket {
 		this.setPosX(tile.xCoord);
 		this.setPosY(tile.yCoord);
 		this.setPosZ(tile.zCoord);
+		return this;
+	}
+	/*
+	public CoordinatesPacket setModulePos(LogisticsModule module) {
+		this.setPosX(module.getX());
+		this.setPosY(module.getY());
+		this.setPosZ(module.getZ());
+		return this;
+	}
+	*/
+	
+	public CoordinatesPacket setPacketPos(CoordinatesPacket packet) {
+		this.posX = packet.posX;
+		this.posY = packet.posY;
+		this.posZ = packet.posZ;
 		return this;
 	}
 	

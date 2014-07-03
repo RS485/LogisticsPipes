@@ -34,26 +34,28 @@ import net.minecraftforge.fluids.FluidStack;
 
 public class DummyContainer extends Container {
 	
-	protected IInventory		_playerInventory;
-	protected IInventory		_dummyInventory;
-	protected IGuiOpenControler	_controler;
-	private List<Slot>			transferTop		= new ArrayList<Slot>();
-	private List<Slot>			transferBottom	= new ArrayList<Slot>();
-	private long				lastClicked;
-	private long				lastDragnDropLockup;
-	boolean						wasDummyLookup;
-	
+	protected IInventory			_playerInventory;
+	protected IInventory			_dummyInventory;
+	protected IGuiOpenControler[]	_controler;
+	private List<Slot>				transferTop		= new ArrayList<Slot>();
+	private List<Slot>				transferBottom	= new ArrayList<Slot>();
+	private long					lastClicked;
+	private long					lastDragnDropLockup;
+	boolean							wasDummyLookup;
+
 	public DummyContainer(IInventory playerInventory, IInventory dummyInventory) {
 		_playerInventory = playerInventory;
 		_dummyInventory = dummyInventory;
 		_controler = null;
 	}
 	
-	public DummyContainer(EntityPlayer player, IInventory dummyInventory, IGuiOpenControler controler) {
+	public DummyContainer(EntityPlayer player, IInventory dummyInventory, IGuiOpenControler... controler) {
 		_playerInventory = player.inventory;
 		_dummyInventory = dummyInventory;
 		_controler = controler;
-		_controler.guiOpenedByPlayer(player);
+		for(int i = 0; i < _controler.length; i++) {
+			_controler[i].guiOpenedByPlayer(player);
+		}
 	}
 	
 	@Override
@@ -96,50 +98,52 @@ public class DummyContainer extends Container {
 	 * @param yCoord
 	 *            yCoord of TopLeft corner of where the slot should be rendered
 	 */
-	public void addDummySlot(int slotId, int xCoord, int yCoord) {
-		addSlotToContainer(new DummySlot(_dummyInventory, slotId, xCoord, yCoord));
+	public Slot addDummySlot(int slotId, int xCoord, int yCoord) {
+		return addSlotToContainer(new DummySlot(_dummyInventory, slotId, xCoord, yCoord));
+	}
+	
+	public Slot addDummySlot(int slotId, IInventory dummy, int xCoord, int yCoord) {
+		return addSlotToContainer(new DummySlot(dummy, slotId, xCoord, yCoord));
 	}
 	
 	public void addNormalSlot(int slotId, IInventory inventory, int xCoord, int yCoord) {
-		Slot slot = new Slot(inventory, slotId, xCoord, yCoord);
-		addSlotToContainer(slot);
-		transferTop.add(slot);
+		transferTop.add(addSlotToContainer(new Slot(inventory, slotId, xCoord, yCoord)));
 	}
 	
-	public void addRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, Item item) {
-		addSlotToContainer(new RestrictedSlot(inventory, slotId, xCoord, yCoord, item));
+	public Slot addRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, Item item) {
+		return addSlotToContainer(new RestrictedSlot(inventory, slotId, xCoord, yCoord, item));
 	}
 	
-	public void addStaticRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, Item item, int stackLimit) {
-		addSlotToContainer(new StaticRestrictedSlot(inventory, slotId, xCoord, yCoord, item, stackLimit));
+	public Slot addStaticRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, Item item, int stackLimit) {
+		return addSlotToContainer(new StaticRestrictedSlot(inventory, slotId, xCoord, yCoord, item, stackLimit));
 	}
 	
-	public void addRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, ISlotCheck slotCheck) {
-		addSlotToContainer(new RestrictedSlot(inventory, slotId, xCoord, yCoord, slotCheck));
+	public Slot addRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, ISlotCheck slotCheck) {
+		return addSlotToContainer(new RestrictedSlot(inventory, slotId, xCoord, yCoord, slotCheck));
 	}
 	
-	public void addStaticRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, ISlotCheck slotCheck, int stackLimit) {
-		addSlotToContainer(new StaticRestrictedSlot(inventory, slotId, xCoord, yCoord, slotCheck, stackLimit));
+	public Slot addStaticRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, ISlotCheck slotCheck, int stackLimit) {
+		return addSlotToContainer(new StaticRestrictedSlot(inventory, slotId, xCoord, yCoord, slotCheck, stackLimit));
 	}
 	
-	public void addModuleSlot(int slotId, IInventory inventory, int xCoord, int yCoord, PipeLogisticsChassi pipe) {
-		addSlotToContainer(new ModuleSlot(inventory, slotId, xCoord, yCoord, pipe));
+	public Slot addModuleSlot(int slotId, IInventory inventory, int xCoord, int yCoord, PipeLogisticsChassi pipe) {
+		return addSlotToContainer(new ModuleSlot(inventory, slotId, xCoord, yCoord, pipe));
 	}
 	
-	public void addFluidSlot(int slotId, IInventory inventory, int xCoord, int yCoord) {
-		addSlotToContainer(new FluidSlot(inventory, slotId, xCoord, yCoord));
+	public Slot addFluidSlot(int slotId, IInventory inventory, int xCoord, int yCoord) {
+		return addSlotToContainer(new FluidSlot(inventory, slotId, xCoord, yCoord));
 	}
 	
-	public void addColorSlot(int slotId, IInventory inventory, int xCoord, int yCoord) {
-		addSlotToContainer(new ColorSlot(inventory, slotId, xCoord, yCoord));
+	public Slot addColorSlot(int slotId, IInventory inventory, int xCoord, int yCoord) {
+		return addSlotToContainer(new ColorSlot(inventory, slotId, xCoord, yCoord));
 	}
 	
-	public void addUnmodifiableSlot(int slotId, IInventory inventory, int xCoord, int yCoord) {
-		addSlotToContainer(new UnmodifiableSlot(inventory, slotId, xCoord, yCoord));
+	public Slot addUnmodifiableSlot(int slotId, IInventory inventory, int xCoord, int yCoord) {
+		return addSlotToContainer(new UnmodifiableSlot(inventory, slotId, xCoord, yCoord));
 	}
 	
-	public void addCallableSlotHandler(int slotId, IInventory inventory, int xCoord, int yCoord, ISlotClick handler) {
-		addSlotToContainer(new HandelableSlot(inventory, slotId, xCoord, yCoord, handler));
+	public Slot addCallableSlotHandler(int slotId, IInventory inventory, int xCoord, int yCoord, ISlotClick handler) {
+		return addSlotToContainer(new HandelableSlot(inventory, slotId, xCoord, yCoord, handler));
 	}
 	
 	@Override
@@ -606,7 +610,7 @@ public class DummyContainer extends Container {
 		
 		ItemIdentifier currentItem = ItemIdentifier.get(currentlyEquippedStack);
 		ItemIdentifier slotItem = ItemIdentifier.get(slot.getStack());
-		if(currentItem == slotItem) {
+		if(currentItem.equals(slotItem)) {
 			ItemStack tstack = slot.getStack();
 			// Do manual shift-checking to play nice with NEI
 			int counter = isShift == 1 ? 10 : 1;
@@ -638,7 +642,9 @@ public class DummyContainer extends Container {
 	@Override
 	public void onContainerClosed(EntityPlayer par1EntityPlayer) {
 		if(_controler != null) {
-			_controler.guiClosedByPlayer(par1EntityPlayer);
+			for(int i = 0; i < _controler.length; i++) {
+				_controler[i].guiClosedByPlayer(par1EntityPlayer);
+			}
 		}
 		super.onContainerClosed(par1EntityPlayer);
 	}

@@ -7,8 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraft.init.Blocks;
-
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IFluidProvider;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestFluid;
@@ -39,8 +38,8 @@ public class RequestTree extends RequestTreeNode {
 	private HashMap<FinalPair<IProvideItems,ItemIdentifier>,Integer> _promisetotals;
 	private HashMap<FinalPair<IFluidProvider,FluidIdentifier>,Integer> _promisetotalsliquid;
 
-	public RequestTree(ItemIdentifierStack item, IRequestItems requester, RequestTree parent, EnumSet<ActiveRequestType> requestFlags) {
-		super(item, requester, parent, requestFlags);
+	public RequestTree(ItemIdentifierStack item, IRequestItems requester, RequestTree parent, EnumSet<ActiveRequestType> requestFlags, IAdditionalTargetInformation info) {
+		super(item, requester, parent, requestFlags, info);
 	}
 	
 	private int getExistingPromisesFor(FinalPair<IProvideItems, ItemIdentifier> key) {
@@ -169,9 +168,9 @@ public class RequestTree extends RequestTreeNode {
 		
 	}
 	
-	public static boolean request(List<ItemIdentifierStack> items, IRequestItems requester, RequestLog log, EnumSet<ActiveRequestType> requestFlags) {
+	public static boolean request(List<ItemIdentifierStack> items, IRequestItems requester, RequestLog log, EnumSet<ActiveRequestType> requestFlags, IAdditionalTargetInformation info) {
 		Map<ItemIdentifier,Integer> messages = new HashMap<ItemIdentifier,Integer>();
-		RequestTree tree = new RequestTree(new ItemIdentifierStack(ItemIdentifier.get(Blocks.stone, 0, null), 0), requester, null, requestFlags);
+		RequestTree tree = new RequestTree(new ItemIdentifierStack(ItemIdentifier.get(Blocks.stone, 0, null), 0), requester, null, requestFlags, info);
 		boolean isDone = true;
 		for(ItemIdentifierStack stack:items) {
 			ItemIdentifier item = stack.getItem();
@@ -180,7 +179,7 @@ public class RequestTree extends RequestTreeNode {
 				count = 0;
 			count += stack.getStackSize();
 			messages.put(item, count);
-			RequestTree node = new RequestTree(stack, requester, tree, requestFlags);
+			RequestTree node = new RequestTree(stack, requester, tree, requestFlags, info);
 			isDone = isDone && node.isDone();
 		}
 		if(isDone) {
@@ -197,8 +196,8 @@ public class RequestTree extends RequestTreeNode {
 		}
 	}
 	
-	public static int request(ItemIdentifierStack item, IRequestItems requester, RequestLog log, boolean acceptPartial, boolean simulateOnly, boolean logMissing, boolean logUsed, EnumSet<ActiveRequestType> requestFlags) {
-		RequestTree tree = new RequestTree(item, requester, null, requestFlags);
+	public static int request(ItemIdentifierStack item, IRequestItems requester, RequestLog log, boolean acceptPartial, boolean simulateOnly, boolean logMissing, boolean logUsed, EnumSet<ActiveRequestType> requestFlags, IAdditionalTargetInformation info) {
+		RequestTree tree = new RequestTree(item, requester, null, requestFlags, info);
 		if(!simulateOnly &&(tree.isDone() || ((tree.getPromiseItemCount() > 0) && acceptPartial))) {
 			LinkedLogisticsOrderList list = tree.fullFillAll();
 			if(log != null) {
@@ -219,16 +218,16 @@ public class RequestTree extends RequestTreeNode {
 		}
 	}
 
-	public static boolean request(ItemIdentifierStack item, IRequestItems requester, RequestLog log) {
-		return request( item, requester, log, false, false,true,false,defaultRequestFlags) == item.getStackSize();
+	public static boolean request(ItemIdentifierStack item, IRequestItems requester, RequestLog log, IAdditionalTargetInformation info) {
+		return request( item, requester, log, false, false,true,false,defaultRequestFlags, info) == item.getStackSize();
 	}
 	
-	public static int requestPartial(ItemIdentifierStack item, IRequestItems requester) {
-		return request( item, requester, null, true, false,true,false,defaultRequestFlags);
+	public static int requestPartial(ItemIdentifierStack item, IRequestItems requester, IAdditionalTargetInformation info) {
+		return request( item, requester, null, true, false,true,false,defaultRequestFlags, info);
 	}
 
 	public static int simulate(ItemIdentifierStack item, IRequestItems requester, RequestLog log) {
-		return request( item, requester, log, true, true, false, true,defaultRequestFlags);
+		return request( item, requester, log, true, true, false, true,defaultRequestFlags, null);
 	}
 	
 	public static int requestFluidPartial(FluidIdentifier liquid, int amount, IRequestFluid pipe, RequestLog log) {

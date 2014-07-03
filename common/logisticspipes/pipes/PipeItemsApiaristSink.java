@@ -1,7 +1,8 @@
 package logisticspipes.pipes;
 
-import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleApiaristSink;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
@@ -15,7 +16,7 @@ public class PipeItemsApiaristSink extends CoreRoutedPipe {
 	public PipeItemsApiaristSink(Item item) {
 		super(item);
 		sinkModule = new ModuleApiaristSink();
-		sinkModule.registerHandler(null, null, this, this);
+		sinkModule.registerHandler(this, this);
 	}
 
 	@Override
@@ -36,7 +37,7 @@ public class PipeItemsApiaristSink extends CoreRoutedPipe {
 	@Override
 	public void setTile(TileEntity tile) {
 		super.setTile(tile);
-		sinkModule.registerSlot(0);
+		sinkModule.registerPosition(ModulePositionType.IN_PIPE, 0);
 	}
 
 	@Override

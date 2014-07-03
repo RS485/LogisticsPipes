@@ -1,17 +1,15 @@
 package logisticspipes.network.packets.module;
 
-
 import java.io.IOException;
 
 import logisticspipes.asm.ClientSideOnlyMethodContent;
 import logisticspipes.gui.GuiSupplierPipe;
+import logisticspipes.modules.ModuleActiveSupplier;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.PipeItemsSupplierLogistics;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import logisticspipes.proxy.MainProxy;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,7 +18,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import cpw.mods.fml.client.FMLClientHandler;
 
 @Accessors(chain=true)
-public class SupplierPipeLimitedPacket extends CoordinatesPacket {
+public class SupplierPipeLimitedPacket extends ModuleCoordinatesPacket {
 
 	@Getter
 	@Setter
@@ -32,14 +30,13 @@ public class SupplierPipeLimitedPacket extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe.pipe instanceof PipeItemsSupplierLogistics) {
-			((PipeItemsSupplierLogistics)pipe.pipe).setLimited(isLimited());
-		}
+		ModuleActiveSupplier module = this.getLogisticsModule(player, ModuleActiveSupplier.class);
+		if(module == null) return;
+		module.setLimited(isLimited());
 		if(MainProxy.isClient(player.worldObj)) {
 			refresh();
 		} else {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeLimitedPacket.class).setLimited(isLimited()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeLimitedPacket.class).setLimited(isLimited()).setPacketPos(this), player);
 		}
 	}
 	

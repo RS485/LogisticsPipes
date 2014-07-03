@@ -1,5 +1,6 @@
 package logisticspipes.network.packets.orderer;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeBlockRequestTable;
@@ -31,6 +32,9 @@ public class DiskMacroRequestPacket extends IntegerCoordinatesPacket {
 			if(((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk() == null) {
 				return;
 			}
+			if(!((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().getItem().equals(LogisticsPipes.LogisticsItemDisk)) {
+				return;
+			}
 			if(!((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().hasTagCompound()) {
 				return;
 			}
@@ -50,6 +54,9 @@ public class DiskMacroRequestPacket extends IntegerCoordinatesPacket {
 		}
 		if(pipe.pipe instanceof PipeBlockRequestTable) {
 			if(((PipeBlockRequestTable)pipe.pipe).getDisk() == null) {
+				return;
+			}
+			if(!((PipeBlockRequestTable)pipe.pipe).getDisk().getItem().equals(LogisticsPipes.LogisticsItemDisk)) {
 				return;
 			}
 			if(!((PipeBlockRequestTable)pipe.pipe).getDisk().hasTagCompound()) {

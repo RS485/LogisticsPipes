@@ -9,23 +9,19 @@
 package logisticspipes.gui.modules;
 
 import logisticspipes.modules.ModuleFluidSupplier;
-import logisticspipes.network.GuiIDs;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.utils.gui.DummyContainer;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiFluidSupplier extends GuiWithPreviousGuiContainer {
+public class GuiFluidSupplier extends ModuleBaseGui {
 
 	private final ModuleFluidSupplier _liquidSupplier;
 	
-	
-	public GuiFluidSupplier(IInventory playerInventory, CoreRoutedPipe pipe, ModuleFluidSupplier liquidSupplier, GuiScreen previousGui) {
-		super(null,pipe,previousGui);
-		_liquidSupplier = liquidSupplier;
+	public GuiFluidSupplier(IInventory playerInventory, ModuleFluidSupplier module) {
+		super(null, module);
+		_liquidSupplier = module;
 		DummyContainer dummy = new DummyContainer(playerInventory, _liquidSupplier.getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 
@@ -52,10 +48,5 @@ public class GuiFluidSupplier extends GuiWithPreviousGuiContainer {
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Module_FluidSupplier_ID;
 	}
 }

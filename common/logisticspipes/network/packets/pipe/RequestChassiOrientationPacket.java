@@ -18,7 +18,7 @@ public class RequestChassiOrientationPacket extends CoordinatesPacket {
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
 		if(pipe == null || !(pipe.pipe instanceof PipeLogisticsChassi)) return;
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ChassiOrientationPacket.class).setDir(((PipeLogisticsChassi)pipe.pipe).getOrientation()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ChassiOrientationPacket.class).setDir(((PipeLogisticsChassi)pipe.pipe).getPointedOrientation()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
 	}
 	
 	@Override

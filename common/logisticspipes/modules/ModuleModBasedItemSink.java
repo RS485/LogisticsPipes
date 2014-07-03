@@ -2,12 +2,11 @@ package logisticspipes.modules;
 
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
-
-import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.gui.hud.modules.HUDModBasedItemSink;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
@@ -32,14 +31,14 @@ import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.IIcon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.util.IIcon;
 
 public class ModuleModBasedItemSink extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 	
 	public final List<String> modList = new LinkedList<String>();
-	private BitSet modIdSet;
+	private final Set<String> modIdSet = new HashSet<String>();
 
 	private IHUDModuleRenderer HUD = new HUDModBasedItemSink(this);
 	
@@ -52,7 +51,7 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IClien
 		if(modIdSet == null) {
 			buildModIdSet();
 		}
-		if(modIdSet.get(item.getModId())) {
+		if(modIdSet.contains(item.getModName())) {
 			if(_service.canUseEnergy(5)) {
 				return _sinkReply;
 			}
@@ -76,11 +75,8 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IClien
 	public LogisticsModule getSubModule(int slot) {return null;}
 
 	private void buildModIdSet() {
-		modIdSet = new BitSet();
-		for(String modname : modList) {
-			int modid = ItemIdentifier.getModIdForName(modname);
-			modIdSet.set(modid);
-		}
+		modIdSet.clear();
+		modIdSet.addAll(modList);
 	}
 
 	@Override
@@ -90,7 +86,7 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IClien
 		for(int i = 0; i < limit; i++) {
 			modList.add(nbttagcompound.getString("Mod" + i));
 		}
-		modIdSet = null;
+		buildModIdSet();
 	}
 
 	@Override

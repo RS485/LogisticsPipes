@@ -12,7 +12,6 @@ public class LPTickHandler {
 	
 	@SubscribeEvent
 	public void clientTick(ClientTickEvent event) {
-		ItemIdentifier.tick();
 		FluidIdentifier.initFromForge(true);
 		if(LogisticsPipes.WATCHDOG) {
 			Watchdog.tickClient();

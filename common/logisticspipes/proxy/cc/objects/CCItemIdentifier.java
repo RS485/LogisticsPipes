@@ -7,6 +7,7 @@ import logisticspipes.proxy.cc.interfaces.ILPCCTypeDefinition;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class CCItemIdentifier implements ILPCCTypeDefinition {
@@ -26,7 +27,7 @@ public class CCItemIdentifier implements ILPCCTypeDefinition {
 
 		@CCCommand(description="Returns the itemID of this ItemIdentifier")
 		public int getId() {
-			return ident.itemID;
+			return Item.getIdFromItem(ident.item);
 		}
 		
 		@CCCommand(description="Returns the data/damage of this ItemIdentifier")

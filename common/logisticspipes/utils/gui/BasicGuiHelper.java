@@ -98,7 +98,7 @@ public class BasicGuiHelper {
 			
 			GL11.glDisable(GL11.GL_LIGHTING);
 			
-			if(st != null && itemStack.getItem().isValid()) {
+			if(st != null) {
 				if(disableEffect) {
 					if(st != null) {
 						if( !ForgeHooksClient.renderInventoryItem(renderBlocks, mc.renderEngine, st, renderItem.renderWithColor, renderItem.zLevel, x, y)) {

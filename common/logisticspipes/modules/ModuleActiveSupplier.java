@@ -456,7 +456,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 		Iterator<Entry<ItemIdentifier, Integer>> it = _requestedItems.entrySet().iterator();
 		while(it.hasNext()) {
 			Entry<ItemIdentifier, Integer> e = it.next();
-			if(e.getKey().itemID == item.getItem().itemID && e.getKey().itemDamage == item.getItem().itemDamage) {
+			if(e.getKey().equalsWithoutNBT(item.getItem())) {
 				int expected = e.getValue();
 				_service.getDebug().log("Supplier: Fuzzy match with" + e + ". Still missing: " + Math.max(0, expected - remaining));
 				if(expected - remaining > 0) {

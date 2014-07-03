@@ -141,11 +141,7 @@ public class ItemDisplay {
 		}
 
 		private int basicCompare(ItemIdentifierStack o1, ItemIdentifierStack o2) {
-			int c = o1.getItem().itemID - o2.getItem().itemID;
-			if(c != 0) return c;
-			c = o1.getItem().itemDamage - o2.getItem().itemDamage;
-			if(c != 0) return c;
-			return o1.getItem().uniqueID - o2.getItem().uniqueID;
+			return o1.compareTo(o2);
 		}
 	}
 	

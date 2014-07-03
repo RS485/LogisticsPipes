@@ -155,7 +155,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
 		try {
 			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
-			if (!itemIdent.getItem().isDamageable()) {
+			if (!itemIdent.isDamageable()) {
 				int count = (Integer) getItemCount.invoke(cratePileData, new Object[]{itemIdent.unsafeMakeNormalStack(1)});
 				return (count > 0);
 			}

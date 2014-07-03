@@ -35,13 +35,15 @@ public class CCItemIdentifierBuilder {
 
 	@CCCommand(description="Returns the ItemIdentifier for this ItemIdentifierBuilder")
 	public ItemIdentifier build() {
-		if(itemID < 0 || itemID > Item.itemsList.length || Item.itemsList[itemID] == null) throw new UnsupportedOperationException("Not a valid ItemIdentifier");
-		return ItemIdentifier.get(itemID, itemData, null);
+		Item item = Item.getItemById(itemID);
+		if(item == null) throw new UnsupportedOperationException("Not a valid ItemIdentifier");
+		return ItemIdentifier.get(item, itemData, null);
 	}
 
 	@CCCommand(description="Returns a list of all ItemIdentifier with an NBT tag matching the givven Item ID and data")
 	public List<ItemIdentifier> matchingNBTIdentifier() {
-		if(itemID < 0 || itemID > Item.itemsList.length || Item.itemsList[itemID] == null) throw new UnsupportedOperationException("Not a valid ItemIdentifier");
-		return ItemIdentifier.getMatchingNBTIdentifier(itemID, itemData);
+		Item item = Item.getItemById(itemID);
+		if(item == null) throw new UnsupportedOperationException("Not a valid ItemIdentifier");
+		return ItemIdentifier.getMatchingNBTIdentifier(item, itemData);
 	}
 }

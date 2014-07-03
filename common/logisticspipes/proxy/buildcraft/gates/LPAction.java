@@ -20,18 +20,11 @@ import net.minecraft.util.IIcon;
 
 public abstract  class LPAction implements IAction {
 
-	protected final int legacyId;
 	protected final String uniqueTag;
 
-	public LPAction(int legacyId, String uniqueTag) {
-		this.legacyId = legacyId;
+	public LPAction(String uniqueTag) {
 		this.uniqueTag = uniqueTag;
 		ActionManager.registerAction(this);
-	}
-
-	@Override
-	public int getLegacyId() {
-		return this.legacyId;
 	}
 
 	@Override
@@ -66,5 +59,9 @@ public abstract  class LPAction implements IAction {
 	public IIcon getIcon() {
 		return Textures.LPactionIconProvider.getIcon(getIconIndex());
 	}
-	
+
+	@Override
+	public buildcraft.api.gates.IAction rotateLeft() {
+		return this;
+	}
 }

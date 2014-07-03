@@ -5,12 +5,13 @@ import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
+import buildcraft.api.gates.ITileTrigger;
 import buildcraft.api.gates.ITriggerParameter;
 
-public class TriggerNeedsPower extends LPTrigger{
+public class TriggerNeedsPower extends LPTrigger implements ITileTrigger{
 
-	public TriggerNeedsPower(int id) {
-		super(id,"LogisticsPipes.trigger.nodeRequestsRecharge");
+	public TriggerNeedsPower() {
+		super("LogisticsPipes:trigger.nodeRequestsRecharge");
 	}
 
 	@Override

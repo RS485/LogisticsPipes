@@ -50,4 +50,9 @@ public abstract class LPTrigger implements ITrigger {
 	public void registerIcons(IIconRegister iconRegister) {
 		Textures.LPactionIconProvider.registerIcons(iconRegister);	
 	}
+
+	@Override
+	public buildcraft.api.gates.ITrigger rotateLeft() {
+		return this;
+	}
 }

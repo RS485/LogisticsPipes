@@ -12,8 +12,8 @@ import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 
 public class ActionDisableLogistics extends LPAction{
 
-	public ActionDisableLogistics(int id) {
-		super(id,"LogisticsPipes.action.pipeDisable");
+	public ActionDisableLogistics() {
+		super("LogisticsPipes:action.pipeDisable");
 	}
 	
 	@Override

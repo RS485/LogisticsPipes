@@ -2,18 +2,19 @@ package logisticspipes.proxy.buildcraft.gates;
 
 import java.util.ArrayList;
 
-import buildcraft.transport.Pipe;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.item.ItemStack;
 import buildcraft.api.gates.ITriggerParameter;
+import buildcraft.transport.IPipeTrigger;
+import buildcraft.transport.Pipe;
 
-public class TriggerHasDestination extends LPTrigger implements ITriggerPipe {
+public class TriggerHasDestination extends LPTrigger implements IPipeTrigger {
 
-	public TriggerHasDestination(int id) {
-		super(id,"LogisticsPipes.trigger.hasDestination");
+	public TriggerHasDestination() {
+		super("LogisticsPipes:trigger.hasDestination");
 	}
 
 	@Override

@@ -198,13 +198,13 @@ public class BuildCraftProxy {
 		ActionManager.registerTriggerProvider(new LogisticsTriggerProvider());
 		
 		/* Triggers */
-		LogisticsFailedTrigger = new TriggerSupplierFailed(700);
-		LogisticsNeedPowerTrigger = new TriggerNeedsPower(701);
-		LogisticsCraftingTrigger = new TriggerCrafting(702);
-		LogisticsHasDestinationTrigger = new TriggerHasDestination(703);
+		LogisticsFailedTrigger = new TriggerSupplierFailed();
+		LogisticsNeedPowerTrigger = new TriggerNeedsPower();
+		LogisticsCraftingTrigger = new TriggerCrafting();
+		LogisticsHasDestinationTrigger = new TriggerHasDestination();
 		
 		/* Actions */
-		LogisticsDisableAction = new ActionDisableLogistics(700);
+		LogisticsDisableAction = new ActionDisableLogistics();
 	}
 
 	public void registerPipes(Side side) {

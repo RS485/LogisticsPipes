@@ -1,14 +1,15 @@
 package logisticspipes.proxy.buildcraft.gates;
 
-import buildcraft.transport.Pipe;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import buildcraft.api.gates.ITriggerParameter;
+import buildcraft.transport.IPipeTrigger;
+import buildcraft.transport.Pipe;
 
-public class TriggerCrafting extends LPTrigger implements ITriggerPipe {
+public class TriggerCrafting extends LPTrigger implements IPipeTrigger {
 
-	public TriggerCrafting(int id) {
-		super(id,"LogisticsPipes.triggers.isCrafting");
+	public TriggerCrafting() {
+		super("LogisticsPipes:trigger.isCrafting");
 	}
 
 	@Override

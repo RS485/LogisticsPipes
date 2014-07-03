@@ -8,16 +8,17 @@
 
 package logisticspipes.proxy.buildcraft.gates;
 
-import buildcraft.transport.Pipe;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import buildcraft.api.gates.ITriggerParameter;
+import buildcraft.transport.IPipeTrigger;
+import buildcraft.transport.Pipe;
 
-public class TriggerSupplierFailed extends LPTrigger implements ITriggerPipe{
+public class TriggerSupplierFailed extends LPTrigger implements IPipeTrigger{
 
-	public TriggerSupplierFailed(int id) {
-		super(id,"LogisticsPipes.trigger.supplierFailed");
+	public TriggerSupplierFailed() {
+		super("LogisticsPipes:trigger.supplierFailed");
 	}
 	
 	@Override

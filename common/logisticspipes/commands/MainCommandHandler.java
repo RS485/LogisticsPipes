@@ -44,7 +44,6 @@ public class MainCommandHandler extends SubCommandHandler {
 		this.registerSubCommand(new NameLookupCommand());
 		this.registerSubCommand(new DumpCommand());
 		this.registerSubCommand(new BypassCommand());
-		this.registerSubCommand(new WatchCommand());
 		this.registerSubCommand(new DebugCommand());
 		this.registerSubCommand(new WrapperCommand());
 		this.registerSubCommand(new ClearCommand());

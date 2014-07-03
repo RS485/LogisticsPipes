@@ -39,10 +39,6 @@ public class Configs {
 	public static int MULTI_THREAD_NUMBER = 4;
 	public static int MULTI_THREAD_PRIORITY = Thread.NORM_PRIORITY;
 
-	public static boolean WATCHDOG_CLIENT 	= false;
-	public static boolean WATCHDOG_SERVER 	= false;
-	public static int WATCHDOG_TIMEOUT		= 60000;
-
 	public static double POWER_USAGE_MULTIPLIER = 1;
 	public static int LOGISTICS_CRAFTING_TABLE_POWER_USAGE = 250;
 
@@ -152,16 +148,6 @@ public class Configs {
 							"Priority of the multiThread Threads. 10 is highest, 5 normal, 1 lowest").set(Integer
 					.toString(Thread.NORM_PRIORITY));
 		}
-
-		WATCHDOG_CLIENT = CONFIGURATION
-				.get(CATEGORY_DEBUG, "watchdog_client", WATCHDOG_CLIENT,
-						"Enable the LP thread watchdog client side.").getBoolean(false);
-		WATCHDOG_SERVER = CONFIGURATION
-				.get(CATEGORY_DEBUG, "watchdog_server", WATCHDOG_SERVER,
-						"Enable the LP thread watchdog server side.").getBoolean(false);
-		WATCHDOG_TIMEOUT = CONFIGURATION
-				.get(CATEGORY_DEBUG, "watchdog_timeout", WATCHDOG_TIMEOUT,
-						"The LP thread watchdog timeout time in ms.").getInt();
 
 		
 		POWER_USAGE_MULTIPLIER = CONFIGURATION.get(

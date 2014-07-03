@@ -13,17 +13,11 @@ public class LPTickHandler {
 	@SubscribeEvent
 	public void clientTick(ClientTickEvent event) {
 		FluidIdentifier.initFromForge(true);
-		if(LogisticsPipes.WATCHDOG) {
-			Watchdog.tickClient();
-		}
 	}
 
 	@SubscribeEvent
 	public void serverTick(ServerTickEvent event) {
 		HudUpdateTick.tick();
 		SimpleServiceLocator.craftingPermissionManager.tick();
-		if(LogisticsPipes.WATCHDOG) {
-			Watchdog.tickServer();
-		}
 	}
 }

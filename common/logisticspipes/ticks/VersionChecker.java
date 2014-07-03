@@ -15,7 +15,9 @@ import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 
 import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
 import net.minecraft.nbt.NBTTagCompound;
+
 
 public class VersionChecker extends Thread {
 
@@ -43,13 +45,13 @@ public class VersionChecker extends Thread {
 			s.close();
 			if(!Configs.CHECK_FOR_UPDATES) return;
 			Gson gson = new Gson();
-			StringMap part = gson.fromJson(string, StringMap.class);
+			LinkedTreeMap part = gson.fromJson(string, LinkedTreeMap.class);
 			Boolean hasNew = (Boolean) part.get("new");
 			if(hasNew) {
 				VersionChecker.hasNewVersion = true;
 				VersionChecker.newVersion = Integer.toString(Double.valueOf(part.get("build").toString()).intValue());
-				LogisticsPipes.log.warning("New LogisticsPipes" + (LogisticsPipes.DEV_BUILD?"-Dev":"") + " version found: #" + Double.valueOf(part.get("build").toString()).intValue());
-				StringMap changeLog = (StringMap) part.get("changelog");
+				LogisticsPipes.log.info("New LogisticsPipes" + (LogisticsPipes.DEV_BUILD?"-Dev":"") + " version found: #" + Double.valueOf(part.get("build").toString()).intValue());
+				LinkedTreeMap changeLog = (LinkedTreeMap) part.get("changelog");
 				List<String> changeLogList = new ArrayList<String>();
 				if(changeLog != null) {
 					for(Object oVersion:changeLog.keySet()) {

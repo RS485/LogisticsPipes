@@ -15,7 +15,6 @@ public interface IProxy {
 	public World getWorld();
 	public void registerTileEntities();
 	public EntityPlayer getClientPlayer();
-	public boolean isMainThreadRunning();
 	
 	public void addLogisticsPipesOverride(IIconRegister par1IIconRegister, int index, String override1, String override2, boolean flag);
 	public void registerParticles();

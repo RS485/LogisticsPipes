@@ -86,11 +86,6 @@ public class ClientProxy implements IProxy {
 	}
 
 	@Override
-	public boolean isMainThreadRunning() {
-		return FMLClientHandler.instance().getClient().running;
-	}
-	
-	@Override
 	public void registerParticles() {
 		PipeFXRenderHandler.registerParticleHandler(Particles.WhiteParticle, new EntityWhiteSparkleFXProvider());
 		PipeFXRenderHandler.registerParticleHandler(Particles.RedParticle, new EntityRedSparkleFXProvider());
@@ -103,30 +98,7 @@ public class ClientProxy implements IProxy {
 	
 	@Override
 	public String getName(ItemIdentifier item) {
-		String name = "???";
-		try {
-			name = item.getItem().getItemStackDisplayName(item.unsafeMakeNormalStack(1));
-			if(name == null) {
-				throw new Exception();
-			}
-		} catch(Exception e) {
-			try {
-				name = item.getItem().getUnlocalizedName(item.unsafeMakeNormalStack(1));
-				if(name == null) {
-					throw new Exception();
-				}
-			} catch(Exception e1) {
-				try {
-					name = item.getItem().getUnlocalizedName();
-					if(name == null) {
-						throw new Exception();
-					}
-				} catch(Exception e2) {
-					name = "???"; 
-				}
-			}
-		}
-		return name;
+		return item.getFriendlyName();
 	}
 
 	@Override

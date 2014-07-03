@@ -75,42 +75,10 @@ public class ServerProxy implements IProxy {
 		return null;
 	}
 
-	@Override
-	public boolean isMainThreadRunning() {
-		return FMLServerHandler.instance().getServer().isServerRunning();
-	}
-	
 
 	@Override
 	public void registerParticles() {
 		//Only Client Side
-	}
-	
-	private String tryGetName(ItemIdentifier item) {
-		String name = "???";
-		try {
-			name = item.getItem().getItemStackDisplayName(item.unsafeMakeNormalStack(1));
-			if(name == null) {
-				throw new Exception();
-			}
-		} catch(Exception e) {
-			try {
-				name = item.getItem().getUnlocalizedName(item.unsafeMakeNormalStack(1));
-				if(name == null) {
-					throw new Exception();
-				}
-			} catch(Exception e1) {
-				try {
-					name = item.getItem().getUnlocalizedName();
-					if(name == null) {
-						throw new Exception();
-					}
-				} catch(Exception e2) {
-					name = "???"; 
-				}
-			}
-		}
-		return name;
 	}
 	
 	private String getNameForCategory(String category, ItemIdentifier item) {
@@ -118,7 +86,7 @@ public class ServerProxy implements IProxy {
 		if(name.equals("")) {
 			saveLangDatabase();
 			if(item.isDamageable()) {
-				return tryGetName(item);
+				return item.getFriendlyName();
 			} else {
 				return  "LP|UNDEFINED";
 			}
@@ -139,23 +107,23 @@ public class ServerProxy implements IProxy {
 	public String getName(ItemIdentifier item) {
 		String category = "";
 		if(item.isDamageable()) {
-			category = "itemNames." + Integer.toString(item.itemID);
+			category = "itemNames." + Integer.toString(Item.getIdFromItem(item.item));
 		} else {
 			if(item.itemDamage == 0) {
-				category = "itemNames." + Integer.toString(item.itemID);
+				category = "itemNames." + Integer.toString(Item.getIdFromItem(item.item));
 			} else {
-				category = "itemNames." + Integer.toString(item.itemID) + "." + Integer.toString(item.itemDamage);
+				category = "itemNames." + Integer.toString(Item.getIdFromItem(item.item)) + "." + Integer.toString(item.itemDamage);
 			}
 		}
 		String name = getNameForCategory(category, item);
 		if(name.equals("LP|UNDEFINED")) {
 			if(item.itemDamage == 0) {
-				return tryGetName(item);
+				return item.getFriendlyName();
 			} else {
-				category = "itemNames." + Integer.toString(item.itemID);
+				category = "itemNames." + Integer.toString(Item.getIdFromItem(item.item));
 				name = getNameForCategory(category, item);
 				if(name.equals("LP|UNDEFINED")) {
-					return tryGetName(item);
+					return item.getFriendlyName();
 				}
 			}
 		}
@@ -166,12 +134,12 @@ public class ServerProxy implements IProxy {
 	public void updateNames(ItemIdentifier item, String name) {
 		String category = "";
 		if(item.isDamageable()) {
-			category = "itemNames." + Integer.toString(item.itemID);
+			category = "itemNames." + Integer.toString(Item.getIdFromItem(item.item));
 		} else {
 			if(item.itemDamage == 0) {
-				category = "itemNames." + Integer.toString(item.itemID);
+				category = "itemNames." + Integer.toString(Item.getIdFromItem(item.item));
 			} else {
-				category = "itemNames." + Integer.toString(item.itemID) + "." + Integer.toString(item.itemDamage);
+				category = "itemNames." + Integer.toString(Item.getIdFromItem(item.item)) + "." + Integer.toString(item.itemDamage);
 			}
 		}
 		setNameForCategory(category, item, name);

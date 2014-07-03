@@ -294,24 +294,6 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 
 	public abstract ItemSendMode getItemSendMode();
 	
-	private boolean checkTileEntity(boolean force) {
-		if(isNthTick(10) || force) {
-			if(!(this.container instanceof LogisticsTileGenericPipe)) {
-				TileEntity tile = getWorld().getBlockTileEntity(getX(), getY(), getZ());
-				if(tile != this.container) {
-					LogisticsPipes.log.severe("LocalCodeError");
-				}
-				if(MainProxy.isClient(getWorld())) {
-					WorldTickHandler.clientPipesToReplace.add(this.container);
-				} else {
-					WorldTickHandler.serverPipesToReplace.add(this.container);
-				}
-				return true;
-			}
-		}
-		return false;
-	}
-
 	/**
 	 * Designed to help protect against routing loops - if both pipes are on the same block, and of ISided overlapps, return true
 	 * @param other
@@ -377,18 +359,14 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	public final void updateEntity() {
 		debug.tick();
 		spawnParticleTick();
-		if(checkTileEntity(_initialInit)) {
-			stillNeedReplace = true;
-			return;
-		} else {
-			if(stillNeedReplace) {
-				stillNeedReplace = false;
-				getWorld().notifyBlockChange(getX(), getY(), getZ(), getWorld().getBlock(getX(), getY(), getZ()));
-				/* TravelingItems are just held by a pipe, they don't need to know their world
-				 * for(Triplet<IRoutedItem, ForgeDirection, ItemSendMode> item : _sendQueue) {
-					//assign world to any entityitem we created in readfromnbt
-					item.getValue1().getTravelingItem().setWorld(getWorld());
-				}*/
+		if(stillNeedReplace) {
+			stillNeedReplace = false;
+			getWorld().notifyBlockChange(getX(), getY(), getZ(), getWorld().getBlock(getX(), getY(), getZ()));
+			/* TravelingItems are just held by a pipe, they don't need to know their world
+			 * for(Triplet<IRoutedItem, ForgeDirection, ItemSendMode> item : _sendQueue) {
+				//assign world to any entityitem we created in readfromnbt
+				item.getValue1().getTravelingItem().setWorld(getWorld());
+			}*/
             //first tick just create a router and do nothing.
             firstInitialiseTick();
             return;
@@ -632,9 +610,9 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 				@Override
 				public Object call() throws Exception {
 					revertItemID();
-					worldCache.setBlock(xCache, yCache, zCache, BuildCraftTransport.genericPipeBlock.blockID);
-					worldCache.setBlockTileEntity(xCache, yCache, zCache, tileCache);
-					worldCache.notifyBlockChange(xCache, yCache, zCache, BuildCraftTransport.genericPipeBlock.blockID);
+					worldCache.setBlock(xCache, yCache, zCache, LogisticsPipes.LogisticsPipeBlock);
+					worldCache.setTileEntity(xCache, yCache, zCache, tileCache);
+					worldCache.notifyBlockChange(xCache, yCache, zCache, LogisticsPipes.LogisticsPipeBlock);
 					blockRemove = false;
 					return null;
 				}

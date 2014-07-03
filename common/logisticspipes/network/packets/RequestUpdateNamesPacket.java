@@ -35,13 +35,13 @@ public class RequestUpdateNamesPacket extends ModernPacket {
 			if(item != null) {
 				for(CreativeTabs tab:item.getCreativeTabs()) {
 					List<ItemStack> list = new ArrayList<ItemStack>();
-					item.getSubItems(item.itemID, tab, list);
+					item.getSubItems(item, tab, list);
 					if(list.size() > 0) {
 						for(ItemStack stack:list) {
 							identList.add(ItemIdentifier.get(stack));
 						}
 					} else {
-						identList.add(ItemIdentifier.get(item.itemID, 0, null));
+						identList.add(ItemIdentifier.get(item, 0, null));
 					}
 				}
 			}

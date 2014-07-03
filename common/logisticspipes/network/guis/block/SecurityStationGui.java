@@ -1,11 +1,12 @@
 package logisticspipes.network.guis.block;
 
-import net.minecraft.entity.player.EntityPlayer;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.gui.GuiSecurityStation;
 import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.utils.gui.DummyContainer;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 
 public class SecurityStationGui extends CoordinatesGuiProvider {
 	
@@ -25,7 +26,7 @@ public class SecurityStationGui extends CoordinatesGuiProvider {
 		LogisticsSecurityTileEntity tile = this.getTile(player.getEntityWorld(), LogisticsSecurityTileEntity.class);
 		if(tile == null) return null;
 		DummyContainer dummy = new DummyContainer(player, null, tile);
-		dummy.addRestrictedSlot(0, tile.inv, 50, 50, -1);
+		dummy.addRestrictedSlot(0, tile.inv, 50, 50, (Item)null);
 		dummy.addNormalSlotsForPlayerInventory(10, 210);
 		return dummy;
 	}

@@ -43,7 +43,7 @@ public class SolderingStationGui extends CoordinatesGuiProvider {
 			}
 		}
 		dummy.addRestrictedSlot(9, tile, 107, 17, Items.iron_ingot);
-		dummy.addRestrictedSlot(10, tile, 141, 47, -1);
+		dummy.addRestrictedSlot(10, tile, 141, 47, (Item)null);
 		dummy.addRestrictedSlot(11, tile, 9, 9, new ISlotCheck() {
 			@Override
 			public boolean isStackAllowed(ItemStack itemStack) {

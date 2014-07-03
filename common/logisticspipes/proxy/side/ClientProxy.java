@@ -8,8 +8,8 @@ import logisticspipes.blocks.powertile.LogisticsBCPowerProviderTileEntity;
 import logisticspipes.blocks.powertile.LogisticsIC2PowerProviderTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
-import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.gui.modules.ModuleBaseGui;
+import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
@@ -31,8 +31,8 @@ import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.tileentity.TileEntity;
@@ -73,7 +73,7 @@ public class ClientProxy implements IProxy {
 		LogisticsRenderPipe lrp = new LogisticsRenderPipe();
 		ClientRegistry.bindTileEntitySpecialRenderer(LogisticsTileGenericPipe.class, lrp);
 		SimpleServiceLocator.buildCraftProxy.resetItemRotation(lrp);
-		Object brp = TileEntityRenderer.instance.specialRendererMap.get(TileGenericPipe.class);
+		Object brp = TileEntityRendererDispatcher.instance.mapSpecialRenderers.get(TileGenericPipe.class);
 		if(brp instanceof PipeRendererTESR) {
 			SimpleServiceLocator.buildCraftProxy.resetItemRotation((PipeRendererTESR) brp);
 		}
@@ -172,7 +172,7 @@ public class ClientProxy implements IProxy {
 	@Override
 	public void sendBroadCast(String message) {
 		if(Minecraft.getMinecraft().thePlayer != null) {
-			Minecraft.getMinecraft().thePlayer.sendChatToPlayer(ChatMessageComponent.createFromText("Client: " + message));
+			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Client: " + message));
 		}
 	}
 

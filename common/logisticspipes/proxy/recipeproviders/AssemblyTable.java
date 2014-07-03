@@ -1,9 +1,15 @@
 package logisticspipes.proxy.recipeproviders;
 
+import java.util.List;
+
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.utils.item.ItemIdentifierInventory;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.oredict.OreDictionary;
+import buildcraft.core.recipes.AssemblyRecipeManager;
 import buildcraft.core.recipes.AssemblyRecipeManager.AssemblyRecipe;
 import buildcraft.silicon.TileAssemblyTable;
 
@@ -21,16 +27,16 @@ public class AssemblyTable implements ICraftingRecipeProvider {
 		TileAssemblyTable table = (TileAssemblyTable) tile;
 
 		//current pipe inputs/outputs
-		ItemStack[] inputs = new ItemStack[inventory.getSizeInventory() - 2];
+		ItemIdentifierInventory inputs = new ItemIdentifierInventory(inventory.getSizeInventory() - 2, "AssemblyTableDummyInv", 64, false);
 		for(int i = 0; i< inventory.getSizeInventory() - 2; i++)
-			inputs[i] = inventory.getStackInSlot(i);
+			inputs.setInventorySlotContents(i, inventory.getIDStackInSlot(i));
 		ItemStack output = inventory.getStackInSlot(inventory.getSizeInventory() - 2);
 
 		//see if there's a recipe planned in the table that matches the current pipe settings, if yes take the next, otherwise take the first
 		AssemblyRecipe firstRecipe = null;
 		AssemblyRecipe nextRecipe = null;
 		boolean takeNext = false;
-		for (AssemblyRecipe r : AssemblyRecipe.assemblyRecipes) {
+		for (AssemblyRecipe r : AssemblyRecipeManager.INSTANCE.getRecipes()) {
 			if(table.isPlanned(r)) {
 				if(firstRecipe == null) {
 					firstRecipe = r;
@@ -55,11 +61,29 @@ public class AssemblyTable implements ICraftingRecipeProvider {
 		inventory.setInventorySlotContents(inventory.getSizeInventory() - 2, nextRecipe.output);
 		try {
 			for (int i = 0; i < inventory.getSizeInventory() - 2; i++) {
-				if (i < nextRecipe.input.length) {
-					inventory.setInventorySlotContents(i,
-							(ItemStack) nextRecipe.input[i]);
+				inventory.clearInventorySlotContents(i);
+			}
+			int i = 0;
+			for(Object input : nextRecipe.getInputs()) {
+				ItemStack processed = null;
+				if (input instanceof String) {
+					List<ItemStack> ores = OreDictionary.getOres((String) input);
+					if(ores != null && ores.size() > 0)
+						input = ores.get(0);
+				} else if (input instanceof ItemStack) {
+					processed = (ItemStack)input;
+				} else if (input instanceof Item) {
+					processed = new ItemStack((Item) input);
+				} else if (input instanceof Block) {
+					processed = new ItemStack((Block) input, 1, 0);
+				} else if (input instanceof Integer) {
+					processed = null;
 				} else {
-					inventory.clearInventorySlotContents(i);
+					throw new IllegalArgumentException("Unknown Object passed to recipe!");
+				}
+				if(processed != null) {
+					inventory.setInventorySlotContents(i, processed);
+					++i;
 				}
 			}
 		} catch (ClassCastException e) {// TODO: make it show a nice error or

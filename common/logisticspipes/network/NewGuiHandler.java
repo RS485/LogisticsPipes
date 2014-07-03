@@ -67,7 +67,7 @@ public class NewGuiHandler {
 		if(!(oPlayer instanceof EntityPlayerMP)) throw new UnsupportedOperationException("Gui can only be opened on the server side");
 		EntityPlayerMP player = (EntityPlayerMP) oPlayer;
 		Container container = guiProvider.getContainer(player);
-		player.incrementWindowID();
+		player.getNextWindowId();
         player.closeContainer();
         int windowId = player.currentWindowId;
 

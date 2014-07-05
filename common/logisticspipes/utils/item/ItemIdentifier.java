@@ -664,4 +664,79 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	public boolean isFluidContainer() {
 		return Item.itemsList[this.itemID] instanceof LogisticsFluidContainer;
 	}
+	
+	public void debugDumpData(boolean isClient) {
+		System.out.println((isClient?"Client":"Server") + " Item: " + itemID + ":" + itemDamage + " uniqueID " + uniqueID);
+		StringBuilder sb = new StringBuilder();
+		sb.append("Tag: ");
+		debugDumpTag(tag, sb);
+		System.out.println(sb.toString());
+		System.out.println("Damageable: " + isDamageable());
+		System.out.println("MaxStackSize: " + getMaxStackSize());
+		if(this.getUndamaged() == this) {
+			System.out.println("Undamaged: this");
+		} else {
+			System.out.println("Undamaged:");
+			this.getUndamaged().debugDumpData(isClient);
+		}
+	}
+	
+	private void debugDumpTag(NBTBase nbt, StringBuilder sb) {
+		if(nbt == null) {
+			sb.append("null");
+			return;
+		}
+		if(nbt instanceof NBTTagByte) {
+			sb.append("TagByte(name=\"" + nbt.getName() + "\",data=" + ((NBTTagByte)nbt).data + ")");
+		} else if(nbt instanceof NBTTagShort) {
+			sb.append("TagShort(name=\"" + nbt.getName() + "\",data=" + ((NBTTagShort)nbt).data + ")");
+		} else if(nbt instanceof NBTTagInt) {
+			sb.append("TagInt(name=\"" + nbt.getName() + "\",data=" + ((NBTTagInt)nbt).data + ")");
+		} else if(nbt instanceof NBTTagLong) {
+			sb.append("TagLong(name=\"" + nbt.getName() + "\",data=" + ((NBTTagLong)nbt).data + ")");
+		} else if(nbt instanceof NBTTagFloat) {
+			sb.append("TagFloat(name=\"" + nbt.getName() + "\",data=" + ((NBTTagFloat)nbt).data + ")");
+		} else if(nbt instanceof NBTTagDouble) {
+			sb.append("TagDouble(name=\"" + nbt.getName() + "\",data=" + ((NBTTagDouble)nbt).data + ")");
+		} else if(nbt instanceof NBTTagString) {
+			sb.append("TagString(name=\"" + nbt.getName() + "\",data=\"" + ((NBTTagString)nbt).data + "\")");
+		} else if(nbt instanceof NBTTagByteArray) {
+			sb.append("TagByteArray(name=\"" + nbt.getName() + "\",data=");
+			for(int i = 0; i < ((NBTTagByteArray)nbt).byteArray.length; i++) {
+				sb.append(((NBTTagByteArray)nbt).byteArray[i]);
+				if(i < ((NBTTagByteArray)nbt).byteArray.length - 1)
+					sb.append(",");
+			}
+			sb.append(")");
+		} else if(nbt instanceof NBTTagIntArray) {
+			sb.append("TagIntArray(name=\"" + nbt.getName() + "\",data=");
+			for(int i = 0; i < ((NBTTagIntArray)nbt).intArray.length; i++) {
+				sb.append(((NBTTagIntArray)nbt).intArray[i]);
+				if(i < ((NBTTagIntArray)nbt).intArray.length - 1)
+					sb.append(",");
+			}
+			sb.append(")");
+		} else if(nbt instanceof NBTTagList) {
+			sb.append("TagList(name=\"" + nbt.getName() + "\",data=");
+			for(int i = 0; i < ((NBTTagList)nbt).tagList.size(); i++) {
+				debugDumpTag((NBTBase)(((NBTTagList)nbt).tagList.get(i)), sb);
+				if(i < ((NBTTagList)nbt).tagList.size() - 1)
+					sb.append(",");
+			}
+			sb.append(")");
+		} else if(nbt instanceof NBTTagCompound) {
+			sb.append("TagCompound(name=\"" + nbt.getName() + "\",data=");
+			Object[] oe = ((NBTTagCompound)nbt).tagMap.entrySet().toArray();
+			for(int i = 0; i < oe.length; i++) {
+				Entry<String, NBTBase> e = (Entry<String, NBTBase>)(oe[i]);
+				sb.append("\"" + e.getKey() + "\"=");
+				debugDumpTag((NBTBase)(e.getValue()), sb);
+				if(i < oe.length - 1)
+					sb.append(",");
+			}
+			sb.append(")");
+		} else {
+			sb.append(nbt.getClass().getName() + "(?)");
+		}
+	}
 }

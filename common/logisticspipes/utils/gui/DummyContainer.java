@@ -477,6 +477,13 @@ public class DummyContainer extends Container {
 		lastClicked = System.currentTimeMillis();
 		if(slotId < 0) return superSlotClick(slotId, mouseButton, isShift, entityplayer);
 		Slot slot = (Slot)inventorySlots.get(slotId);
+		//debug dump
+		if(LogisticsPipes.DEBUG && slot != null) {
+			ItemStack stack = slot.getStack();
+			if(stack != null) {
+				ItemIdentifier.get(stack).debugDumpData(entityplayer.worldObj.isRemote);
+			}
+		}
 		if(slot == null || (!(slot instanceof DummySlot) && !(slot instanceof UnmodifiableSlot) && !(slot instanceof FluidSlot) && !(slot instanceof ColorSlot) && !(slot instanceof HandelableSlot))) {
 			ItemStack stack1 = superSlotClick(slotId, mouseButton, isShift, entityplayer);
 			ItemStack stack2 = slot.getStack();

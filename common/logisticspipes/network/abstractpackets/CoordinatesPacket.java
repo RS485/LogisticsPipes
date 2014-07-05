@@ -2,10 +2,9 @@ package logisticspipes.network.abstractpackets;
 
 import java.io.IOException;
 
-import logisticspipes.LogisticsPipes;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
+import logisticspipes.network.exception.TargetNotFoundException;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import lombok.Getter;
 import lombok.Setter;
@@ -84,27 +83,18 @@ public abstract class CoordinatesPacket extends ModernPacket {
 			return null;
 		}
 		if (!world.blockExists(getPosX(), getPosY(), getPosZ())) {
-			if(LogisticsPipes.DEBUG) {
-				LogisticsPipes.log.severe(this.toString());
-				new RuntimeException("Couldn't find " + clazz.getName()).printStackTrace();
-			}
+			targetNotFound("Couldn't find " + clazz.getName());
 			return null;
 		}
 
 		final TileEntity tile = world.getBlockTileEntity(getPosX(), getPosY(), getPosZ());
 		if(tile != null) {
 			if(!(clazz.isAssignableFrom(tile.getClass()))) {
-				if(LogisticsPipes.DEBUG) {
-					LogisticsPipes.log.severe(this.toString());
-					new RuntimeException("Couldn't find " + clazz.getName() + ", found " + tile.getClass()).printStackTrace();
-				}
+				targetNotFound("Couldn't find " + clazz.getName() + ", found " + tile.getClass());
 				return null;
 			}
 		} else {
-			if(LogisticsPipes.DEBUG) {
-				LogisticsPipes.log.severe(this.toString());
-				new RuntimeException("Couldn't find " + clazz.getName()).printStackTrace();
-			}
+			targetNotFound("Couldn't find " + clazz.getName());
 		}
 		return (T) tile;
 	}
@@ -117,5 +107,9 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	 */
 	public LogisticsTileGenericPipe getPipe(World world) {
 		return getTile(world, LogisticsTileGenericPipe.class);
+	}
+	
+	protected void targetNotFound(String message) {
+		throw new TargetNotFoundException(message, this);
 	}
 }

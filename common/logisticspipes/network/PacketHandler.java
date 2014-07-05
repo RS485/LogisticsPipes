@@ -11,6 +11,9 @@ import java.util.Map;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.exception.TargetNotFoundException;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import lombok.SneakyThrows;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetworkManager;
@@ -27,11 +30,23 @@ public class PacketHandler implements IPacketHandler {
 	public static List<ModernPacket> packetlist;
 
 	public static Map<Class<? extends ModernPacket>, ModernPacket> packetmap;
+	
+	private static int packetDebugID = 1;
+	public static final Map<Integer, StackTraceElement[]> debugMap = new HashMap<Integer, StackTraceElement[]>();
 
 	@SuppressWarnings("unchecked")
 	// Suppressed because this cast should never fail.
 	public static <T extends ModernPacket> T getPacket(Class<T> clazz) {
-		return (T) packetmap.get(clazz).template();
+		T packet = (T) packetmap.get(clazz).template();
+		if(LogisticsPipes.DEBUG && MainProxy.proxy.getSide().equals("Client")) {
+			StackTraceElement[] trace = Thread.currentThread().getStackTrace();
+			synchronized(debugMap) { //Unique id
+				int id = packetDebugID++;
+				debugMap.put(id, trace);
+				packet.setDebugId(id);
+			}
+		}
+		return packet;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -75,9 +90,25 @@ public class PacketHandler implements IPacketHandler {
 		if(player == null) return;
 		final int packetID = data.readInt();
 		final ModernPacket packet = PacketHandler.packetlist.get(packetID).template();
+		packet.setDebugId(data.readInt());
 		packet.readData(data);
+		onPacketData(packet, (EntityPlayer) player);
+	}
+	
+	public static void onPacketData(ModernPacket packet, final EntityPlayer player) {
 		try {
 			packet.processPacket((EntityPlayer) player);
+			if(LogisticsPipes.DEBUG) {
+				debugMap.remove((Integer) packet.getDebugId());
+			}
+		} catch(TargetNotFoundException e) {
+			if(packet.retry() && MainProxy.isClient(player.getEntityWorld())) {
+				SimpleServiceLocator.clientBufferHandler.queueFailedPacket(packet, player);
+			} else if(LogisticsPipes.DEBUG) {
+				LogisticsPipes.log.severe(packet.getClass().getName());
+				LogisticsPipes.log.severe(packet.toString());
+				e.printStackTrace();
+			}
 		} catch(Exception e) {
 			LogisticsPipes.log.severe(packet.getClass().getName());
 			LogisticsPipes.log.severe(packet.toString());

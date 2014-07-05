@@ -30,6 +30,12 @@ public abstract class ModernPacket {
 
 	@Getter
 	private byte[] data = null;
+	
+	@Getter
+	@Setter
+	private int debugId = 0;
+	
+	protected int leftRetries = 5;
 
 	public ModernPacket(int id) {
 		this.channel = LogisticsPipes.LOGISTICS_PIPES_CHANNEL_NAME;
@@ -51,6 +57,7 @@ public abstract class ModernPacket {
 		LPDataOutputStream dataStream = new LPDataOutputStream();
 		try {
 			dataStream.writeInt(getId());
+			dataStream.writeInt(debugId);
 			writeData(dataStream);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -62,4 +69,8 @@ public abstract class ModernPacket {
 	public abstract void processPacket(EntityPlayer player);
 	public abstract void writeData(LPDataOutputStream data) throws IOException;
 	public abstract ModernPacket template();
+
+	public boolean retry() {
+		return leftRetries-- > 0;
+	}
 }

@@ -14,9 +14,11 @@ import java.util.zip.GZIPOutputStream;
 
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.BufferTransfer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.tuples.Pair;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
@@ -135,6 +137,8 @@ public class ClientPacketBufferHandlerThread {
 		private byte[] ByteBuffer = new byte[]{};
 		//FIFO for deserialized S->C packets, decompressor adds, tickEnd removes
 		private final LinkedList<Pair<Player,byte[]>> PacketBuffer = new LinkedList<Pair<Player,byte[]>>();
+		//List of packets that that should be reattempted to apply in the next tick
+		private final LinkedList<Pair<EntityPlayer, ModernPacket>> retryPackets = new LinkedList<Pair<EntityPlayer,ModernPacket>>();
 		//Clear content on next tick
 		private boolean clear = false;
 
@@ -171,6 +175,12 @@ public class ClientPacketBufferHandlerThread {
 							}
 						}
 					} while(flag);
+					int toHandle = retryPackets.size();
+					while(toHandle > 0) {
+						toHandle--;
+						Pair<EntityPlayer, ModernPacket> part = retryPackets.pop();
+						PacketHandler.onPacketData(part.getValue2(), part.getValue1());
+					}
 				}
 
 				@Override
@@ -239,6 +249,11 @@ public class ClientPacketBufferHandlerThread {
 		public void clear() {
 			clear = true;
 			queue.clear();
+			retryPackets.clear();
+		}
+		
+		public void queueFailedPacket(ModernPacket packet, EntityPlayer player) {
+			retryPackets.add(new Pair<EntityPlayer, ModernPacket>(player, packet));
 		}
 	}
 	private final ClientDecompressorThread clientDecompressorThread = new ClientDecompressorThread();
@@ -287,5 +302,9 @@ public class ClientPacketBufferHandlerThread {
 	public void clear() {
 		clientCompressorThread.clear();
 		clientDecompressorThread.clear();
+	}
+	
+	public void queueFailedPacket(ModernPacket packet, EntityPlayer player) {
+		clientDecompressorThread.queueFailedPacket(packet, player);
 	}
 }

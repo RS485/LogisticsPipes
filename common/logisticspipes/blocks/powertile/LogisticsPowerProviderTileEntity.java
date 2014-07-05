@@ -98,6 +98,7 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 						for(AdjacentTile adjacent: util.getAdjacentTileEntities(false)) {
 							if(adjacent.tile instanceof LogisticsTileGenericPipe) {
 								if(((LogisticsTileGenericPipe)adjacent.tile).pipe instanceof CoreRoutedPipe) {
+									if(((CoreRoutedPipe)((LogisticsTileGenericPipe)adjacent.tile).pipe).stillNeedReplace()) continue;
 									IRouter sourceRouter = ((CoreRoutedPipe)((LogisticsTileGenericPipe)adjacent.tile).pipe).getRouter();
 									if(sourceRouter != null) {
 										outerRouters:

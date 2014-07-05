@@ -32,7 +32,7 @@ public class TargetNotFoundException extends RuntimeException {
 				list.remove(0);
 				list.remove(0);
 			}
-			RuntimeException runtime = new RuntimeException();
+			RuntimeException runtime = new RuntimeException("Packet was send from: ");
 			runtime.setStackTrace(list.toArray(new StackTraceElement[list.size()]));
 			this.initCause(runtime);
 		}

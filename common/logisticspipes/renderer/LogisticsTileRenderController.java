@@ -145,7 +145,7 @@ public class LogisticsTileRenderController {
 				if(data.timeout < 0 || data.isDeadEntity()) {
 					data.setDead();
 					if(data.sendPacket()) {
-						MainProxy.sendPacketToAllWatchingChunk(this.pipe.getX(), this.pipe.getZ(), MainProxy.getDimensionForWorld(this.pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(key.color).setPos(pipe.getCPipe().getLPPosition()).setRenderBall(false).setDir(key.dir).setRemove(true));
+						MainProxy.sendPacketToAllWatchingChunk(this.pipe.getX(), this.pipe.getZ(), MainProxy.getDimensionForWorld(this.pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(key.color).setRenderBall(false).setDir(key.dir).setRemove(true).setTilePos(pipe));
 					}
 					iter.remove();
 				}
@@ -159,7 +159,7 @@ public class LogisticsTileRenderController {
 				if(data.timeout < 0 || data.isDeadEntity()) {
 					data.setDead();
 					if(data.sendPacket()) {
-						MainProxy.sendPacketToAllWatchingChunk(this.pipe.getX(), this.pipe.getZ(), MainProxy.getDimensionForWorld(this.pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(key).setPos(pipe.getCPipe().getLPPosition()).setRenderBall(true).setDir(ForgeDirection.UNKNOWN).setRemove(true));
+						MainProxy.sendPacketToAllWatchingChunk(this.pipe.getX(), this.pipe.getZ(), MainProxy.getDimensionForWorld(this.pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(key).setRenderBall(true).setDir(ForgeDirection.UNKNOWN).setRemove(true).setTilePos(pipe));
 					}
 					iter.remove();
 				}
@@ -193,7 +193,7 @@ public class LogisticsTileRenderController {
 			}
 		}
 		if(sendPacket) {
-			MainProxy.sendPacketToAllWatchingChunk(this.pipe.getX(), this.pipe.getZ(), MainProxy.getDimensionForWorld(this.pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(color).setPos(pipe.getCPipe().getLPPosition()).setRenderBall(renderBall).setDir(dir).setLength(length).setReverse(reverse));
+			MainProxy.sendPacketToAllWatchingChunk(this.pipe.getX(), this.pipe.getZ(), MainProxy.getDimensionForWorld(this.pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(color).setRenderBall(renderBall).setDir(dir).setLength(length).setReverse(reverse).setTilePos(pipe));
 		}
 	}
 	
@@ -227,7 +227,7 @@ public class LogisticsTileRenderController {
 			LaserKey key = iter.next();
 			LaserBeamData data = powerLasersBeam.get(key);
 			boolean isBall = powerLasersBall.containsKey(key.color);
-			MainProxy.sendPacketToAllWatchingChunk(this.pipe.getX(), this.pipe.getZ(), MainProxy.getDimensionForWorld(this.pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(key.color).setPos(pipe.getCPipe().getLPPosition()).setRenderBall(isBall).setDir(key.dir).setLength(data.length).setReverse(data.reverse));
+			MainProxy.sendPacketToAllWatchingChunk(this.pipe.getX(), this.pipe.getZ(), MainProxy.getDimensionForWorld(this.pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(key.color).setRenderBall(isBall).setDir(key.dir).setLength(data.length).setReverse(data.reverse).setTilePos(pipe));
 		}
 	}
 }

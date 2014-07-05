@@ -609,7 +609,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	}
 
 	public boolean isDamageable() {
-		return this.getUndamaged() == this;
+		return this.unsafeMakeNormalStack(0).isItemStackDamageable();
 	}
 
 	private static void checkNBTbadness(ItemIdentifier item, NBTBase nbt) {

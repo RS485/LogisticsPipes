@@ -3,6 +3,7 @@ package logisticspipes.pipes.signs;
 import java.util.List;
 
 import logisticspipes.modules.ModuleCrafter;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.cpipe.CPipeSatelliteImportBack;
@@ -45,7 +46,7 @@ public class CraftingPipeSign implements IPipeSign {
 	@Override
 	public ModernPacket getPacket() {
 		PipeItemsCraftingLogistics cpipe = (PipeItemsCraftingLogistics)pipe;
-		return PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(cpipe.getDummyInventory()).setPosX(cpipe.getX()).setPosY(cpipe.getY()).setPosZ(cpipe.getZ());
+		return PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(cpipe.getDummyInventory()).setType(ModulePositionType.IN_PIPE).setPosX(cpipe.getX()).setPosY(cpipe.getY()).setPosZ(cpipe.getZ());
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package logisticspipes.network;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 import io.netty.util.AttributeKey;
@@ -16,14 +17,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.Level;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.MainProxy;
 import lombok.SneakyThrows;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetHandler;
+
+import org.apache.logging.log4j.Level;
 
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
@@ -33,6 +34,7 @@ import cpw.mods.fml.common.network.FMLIndexedMessageToMessageCodec;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.internal.FMLProxyPacket;
 
+@Sharable
 public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernPacket> {
 
 	public static List<ModernPacket> packetlist;

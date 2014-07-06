@@ -400,7 +400,7 @@ public class LogisticsPipes {
 
 		//Blocks
 		LogisticsSolidBlock = new LogisticsSolidBlock();
-		GameRegistry.registerBlock(LogisticsSolidBlock, LogisticsSolidBlockItem.class, null);
+		GameRegistry.registerBlock(LogisticsSolidBlock, LogisticsSolidBlockItem.class,"logisticsSolidBlock");
 
         LogisticsPipeBlock = new LogisticsBlockGenericPipe();
         GameRegistry.registerBlock(LogisticsPipeBlock,"logisticsPipeBlock");

@@ -154,30 +154,27 @@ public class ServerPacketBufferHandlerThread {
 			super("LogisticsPipes Packet Decompressor Server");
 			this.setDaemon(true);
 			this.start();
-			FMLCommonHandler.instance().bus().register(new Object() {
-				@SubscribeEvent
-				public void tickEnd(ServerTickEvent event) {
-					if(event.phase != Phase.END) return;
-					boolean flag = false;
-					do {
-						flag = false;
-						Pair<EntityPlayer,byte[]> part = null;
-						synchronized (PacketBuffer) {
-							if(PacketBuffer.size() > 0) {
-								flag = true;
-								part = PacketBuffer.pop();
-							}
-						}
-						if(flag) {
-							try {
-								PacketHandler.onPacketData(new LPDataInputStream(part.getValue2()), part.getValue1());
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-						}
-					} while(flag);
+		}
+		
+		public void serverTickEnd() {
+			boolean flag = false;
+			do {
+				flag = false;
+				Pair<EntityPlayer,byte[]> part = null;
+				synchronized (PacketBuffer) {
+					if(PacketBuffer.size() > 0) {
+						flag = true;
+						part = PacketBuffer.pop();
+					}
 				}
-			});
+				if(flag) {
+					try {
+						PacketHandler.onPacketData(new LPDataInputStream(part.getValue2()), part.getValue1());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			} while(flag);
 		}
 
 		@Override
@@ -290,6 +287,11 @@ public class ServerPacketBufferHandlerThread {
 	public ServerPacketBufferHandlerThread() {
 	}
 
+	public void serverTick(ServerTickEvent event) {
+		if(event.phase != Phase.END) return;
+		serverDecompressorThread.serverTickEnd();
+	}
+	
 	public void setPause(boolean flag) {
 		serverCompressorThread.setPause(flag);
 	}

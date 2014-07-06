@@ -13,11 +13,13 @@ public class LPTickHandler {
 	@SubscribeEvent
 	public void clientTick(ClientTickEvent event) {
 		FluidIdentifier.initFromForge(true);
+		SimpleServiceLocator.clientBufferHandler.clientTick(event);
 	}
 
 	@SubscribeEvent
 	public void serverTick(ServerTickEvent event) {
 		HudUpdateTick.tick();
 		SimpleServiceLocator.craftingPermissionManager.tick();
+		SimpleServiceLocator.serverBufferHandler.serverTick(event);
 	}
 }

@@ -25,6 +25,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
 import cpw.mods.fml.relauncher.Side;
 
 public class ClientPacketBufferHandlerThread {
@@ -143,30 +144,27 @@ public class ClientPacketBufferHandlerThread {
 			super("LogisticsPipes Packet Decompressor Client");
 			this.setDaemon(true);
 			this.start();
-			FMLCommonHandler.instance().bus().register(new Object() {
-				@SubscribeEvent
-				public void tickEnd(ClientTickEvent event) {
-					if(event.phase != Phase.END) return;
-					boolean flag = false;
-					do {
-						flag = false;
-						Pair<EntityPlayer, byte[]> part = null;
-						synchronized (PacketBuffer) {
-							if(PacketBuffer.size() > 0) {
-								flag = true;
-								part = PacketBuffer.pop();
-							}
-						}
-						if(flag) {
-							try {
-								PacketHandler.onPacketData(new LPDataInputStream(part.getValue2()), part.getValue1());
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-						}
-					} while(flag);
+		}
+		
+		public void clientTickEnd() {
+			boolean flag = false;
+			do {
+				flag = false;
+				Pair<EntityPlayer, byte[]> part = null;
+				synchronized (PacketBuffer) {
+					if(PacketBuffer.size() > 0) {
+						flag = true;
+						part = PacketBuffer.pop();
+					}
 				}
-			});
+				if(flag) {
+					try {
+						PacketHandler.onPacketData(new LPDataInputStream(part.getValue2()), part.getValue1());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			} while(flag);
 		}
 
 		@Override
@@ -235,6 +233,11 @@ public class ClientPacketBufferHandlerThread {
 	public ClientPacketBufferHandlerThread() {
 	}
 
+	public void clientTick(ClientTickEvent event) {
+		if(event.phase != Phase.END) return;
+		clientDecompressorThread.clientTickEnd();
+	}
+	
 	public void setPause(boolean flag) {
 		clientCompressorThread.setPause(flag);
 	}

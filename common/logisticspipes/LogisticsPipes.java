@@ -240,7 +240,7 @@ public class LogisticsPipes {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		String expectedBCVersion = "4.2.2";
+		String expectedBCVersion = "6.0.10";
 		if(BCVersion != null) {
 			if(!BCVersion.equals("@VERSION@") && !BCVersion.contains(expectedBCVersion)) {
 				throw new VersionNotSupportedException("BC", BCVersion, expectedBCVersion, "");

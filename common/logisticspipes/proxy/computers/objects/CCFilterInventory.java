@@ -1,8 +1,8 @@
-package logisticspipes.proxy.cc.objects;
+package logisticspipes.proxy.computers.objects;
 
-import logisticspipes.proxy.cc.interfaces.CCCommand;
-import logisticspipes.proxy.cc.interfaces.CCQueued;
-import logisticspipes.proxy.cc.interfaces.CCType;
+import logisticspipes.proxy.computers.interfaces.CCCommand;
+import logisticspipes.proxy.computers.interfaces.CCQueued;
+import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;

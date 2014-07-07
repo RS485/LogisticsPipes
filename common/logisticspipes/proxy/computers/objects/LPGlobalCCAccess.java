@@ -1,9 +1,9 @@
-package logisticspipes.proxy.cc.objects;
+package logisticspipes.proxy.computers.objects;
 
 import java.util.Map;
 
-import logisticspipes.proxy.cc.interfaces.CCCommand;
-import logisticspipes.proxy.cc.interfaces.CCType;
+import logisticspipes.proxy.computers.interfaces.CCCommand;
+import logisticspipes.proxy.computers.interfaces.CCType;
 
 @CCType(name="LP Global Access")
 public class LPGlobalCCAccess {
@@ -28,6 +28,7 @@ public class LPGlobalCCAccess {
 			builder.append("]");
 			return builder.toString();
 		}
+		if(object == null) return "null";
 		return object.toString() + " [" + object.getClass() + "]";
 	}
 

@@ -76,10 +76,10 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.buildcraft.gates.ActionDisableLogistics;
 import logisticspipes.proxy.cc.CCConstants;
-import logisticspipes.proxy.cc.interfaces.CCCommand;
-import logisticspipes.proxy.cc.interfaces.CCDirectCall;
-import logisticspipes.proxy.cc.interfaces.CCSecurtiyCheck;
-import logisticspipes.proxy.cc.interfaces.CCType;
+import logisticspipes.proxy.computers.interfaces.CCCommand;
+import logisticspipes.proxy.computers.interfaces.CCDirectCall;
+import logisticspipes.proxy.computers.interfaces.CCSecurtiyCheck;
+import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
@@ -1536,7 +1536,7 @@ outer:
 	@CCCommand(description="Returns the global LP object which is used to access general LP methods.", needPermission=false)
 	@CCDirectCall
 	public Object getLP() throws PermissionException {
-		return SimpleServiceLocator.ccProxy.getLP();
+		return LogisticsPipes.getComputerLP();
 	}
 	
 	@CCCommand(description="Returns true if the pipe has an internal module")

@@ -1,4 +1,4 @@
-package logisticspipes.proxy.cc.interfaces;
+package logisticspipes.proxy.computers.interfaces;
 
 public interface ICCTypeWrapped {
 	public Object getObject();

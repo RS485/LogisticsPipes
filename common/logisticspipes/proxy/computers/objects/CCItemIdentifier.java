@@ -1,9 +1,9 @@
-package logisticspipes.proxy.cc.objects;
+package logisticspipes.proxy.computers.objects;
 
-import logisticspipes.proxy.cc.interfaces.CCCommand;
-import logisticspipes.proxy.cc.interfaces.CCType;
-import logisticspipes.proxy.cc.interfaces.ICCTypeWrapped;
-import logisticspipes.proxy.cc.interfaces.ILPCCTypeDefinition;
+import logisticspipes.proxy.computers.interfaces.CCCommand;
+import logisticspipes.proxy.computers.interfaces.CCType;
+import logisticspipes.proxy.computers.interfaces.ICCTypeWrapped;
+import logisticspipes.proxy.computers.interfaces.ILPCCTypeDefinition;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -85,7 +85,7 @@ public class CCItemIdentifier implements ILPCCTypeDefinition {
 		}
 
 		@Override
-		public Object getObject() {
+		public ItemIdentifier getObject() {
 			return ident;
 		}
 	}

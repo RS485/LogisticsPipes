@@ -30,7 +30,7 @@ import logisticspipes.network.packets.modules.CCBasedQuickSortSinkSize;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.cc.objects.CCSinkResponder;
+import logisticspipes.proxy.computers.objects.CCSinkResponder;
 import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;

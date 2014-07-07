@@ -1,6 +1,7 @@
 package logisticspipes.proxy.cc.wrapper;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
 import net.minecraftforge.common.ForgeDirection;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -14,7 +15,7 @@ public class LPPeripheralTilePipeWrapper implements IPeripheral {
 
 	public LPPeripheralTilePipeWrapper(LogisticsTileGenericPipe pipe, ForgeDirection dir) {
 		this.pipe = pipe;
-		wrapped = (CCCommandWrapper) CCObjectWrapper.checkForAnnotations(pipe.pipe);
+		wrapped = (CCCommandWrapper) CCObjectWrapper.checkForAnnotations(pipe.pipe, CCCommandWrapper.WRAPPER);
 		this.dir = dir;
 	}
 

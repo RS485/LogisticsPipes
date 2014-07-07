@@ -21,6 +21,7 @@
 	<property name="ic2.dir"              value="${mcp.dir}/unpack/ic2"/>
 	<property name="cc.dir"               value="${mcp.dir}/unpack/cc"/>
 	<property name="thaumcraft.dir"       value="${mcp.dir}/unpack/thaumcraft"/>
+	<property name="ocapi.dir"            value="${mcp.dir}/unpack/oc"/>
 
 	<property name="minecraftsrc.dir"        value="${mcp.dir}/src/minecraft"/>
 
@@ -42,6 +43,7 @@
 	<property name="lombok.version"       value="0.11.8"/>
 	<property name="jarjar.version"       value="1.4"/>
 	<property name="guava.version"        value="15.0-SNAPSHOT"/>
+	<property name="ocapi.version"        value="2.0.1"/>
 	<property name="lp.version"           value="0.7.4"/>
 
 	<!-- Targets -->
@@ -62,6 +64,7 @@
 		<get src="${downloadserver.full}jarjar-${jarjar.version}.jar" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}guava-${guava.version}.jar" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}lombok-${lombok.version}.jar" dest="${download.dir}" usetimestamp="True"/>
+		<get src="${downloadserver.full}OpenComputersAPI-${ocapi.version}.zip" dest="${download.dir}" usetimestamp="True"/>
 
 		<echo message="Download finished"/>
 	</target>
@@ -142,6 +145,12 @@
 			</fileset>
 		</unzip>
 
+		<unzip dest="${ocapi.dir}" failOnEmptyArchive="true">
+			<fileset dir="${download.dir}">
+				<include name="OpenComputersAPI-${ocapi.version}.zip"/>
+			</fileset>
+		</unzip>
+
 		<echo message="Unpacking finished"/>
 
 		<copy file="${download.dir}/lombok-${lombok.version}.jar" todir="${mcp.dir}/lib"/>
@@ -186,6 +195,13 @@
 		</copy>
 
 		<echo message="Copied ThaumCraft API"/>
+
+		<!-- Copy OpenComputers API source -->
+		<copy todir="${minecraftsrc.dir}">
+			<fileset dir="${ocapi.dir}"/>
+		</copy>
+
+		<echo message="Copied OpenComputers API"/>
 
 		<!-- Copy Dummy classes source -->
 		<copy todir="${minecraftsrc.dir}">

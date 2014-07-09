@@ -8,7 +8,6 @@ import io.netty.handler.codec.MessageToMessageCodec;
 import io.netty.util.AttributeKey;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,12 +16,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.proxy.MainProxy;
 import lombok.SneakyThrows;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.INetHandler;
 
 import org.apache.logging.log4j.Level;
 
@@ -30,15 +26,16 @@ import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 
 import cpw.mods.fml.common.FMLLog;
-import cpw.mods.fml.common.network.FMLIndexedMessageToMessageCodec;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.internal.FMLProxyPacket;
 
+/*
+ *  Basically FML SimpleIndexedCodec, except with static registration of LP ModernPackets and short instead of byte discriminator
+ */
 @Sharable
 public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernPacket> {
 
 	public static List<ModernPacket> packetlist;
-
 	public static Map<Class<? extends ModernPacket>, ModernPacket> packetmap;
 
 	@SuppressWarnings("unchecked")
@@ -47,14 +44,13 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 		return (T) packetmap.get(clazz).template();
 	}
 
+	/*
+	 * enumerates all ModernPackets, sets their IDs and populate packetlist/packetmap
+	 */
 	@SuppressWarnings("unchecked")
-	@SneakyThrows({ IOException.class, InvocationTargetException.class, IllegalAccessException.class, InstantiationException.class, NoSuchFieldException.class, SecurityException.class })
+	@SneakyThrows({ IOException.class, InvocationTargetException.class, IllegalAccessException.class, InstantiationException.class})
 	// Suppression+sneakiness because these shouldn't ever fail, and if they do, it needs to fail.
-	public static final void intialize() {
-		Field FINBOUNDPACKETTRACKER = FMLIndexedMessageToMessageCodec.class.getDeclaredField("INBOUNDPACKETTRACKER");
-		FINBOUNDPACKETTRACKER.setAccessible(true);
-		INBOUNDPACKETTRACKER = (AttributeKey<ThreadLocal<FMLProxyPacket>>) FINBOUNDPACKETTRACKER.get(null);
-		
+	public static final void initialize() {
 		final List<ClassInfo> classes = new ArrayList<ClassInfo>(ClassPath.from(PacketHandler.class.getClassLoader()).getTopLevelClassesRecursive("logisticspipes.network.packets"));
 		Collections.sort(classes, new Comparator<ClassInfo>() {
 			@Override
@@ -76,44 +72,54 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 			currentid++;
 		}
 	}
-	
-	protected static AttributeKey<ThreadLocal<FMLProxyPacket>>	INBOUNDPACKETTRACKER;
-	
+
+	protected static final AttributeKey<ThreadLocal<FMLProxyPacket>> INBOUNDPACKETTRACKER = new AttributeKey<ThreadLocal<FMLProxyPacket>>("lp:inboundpacket");
+
 	@Override
-	protected void encode(ChannelHandlerContext ctx, ModernPacket msg, List<Object> out) throws Exception {
+	public void handlerAdded(ChannelHandlerContext ctx) throws Exception
+	{
+		super.handlerAdded(ctx);
+		ctx.attr(INBOUNDPACKETTRACKER).set(new ThreadLocal<FMLProxyPacket>());
+	}
+
+	@Override
+	protected final void encode(ChannelHandlerContext ctx, ModernPacket msg, List<Object> out) throws Exception
+	{
 		ByteBuf buffer = Unpooled.buffer();
-		buffer.writeInt(msg.getId());
+		buffer.writeShort(msg.getId());
 		msg.writeData(new LPDataOutputStream(buffer));
 		FMLProxyPacket proxy = new FMLProxyPacket(buffer.copy(), ctx.channel().attr(NetworkRegistry.FML_CHANNEL).get());
 		FMLProxyPacket old = ctx.attr(INBOUNDPACKETTRACKER).get().get();
-		if(old != null) {
+		if (old != null)
+		{
 			proxy.setDispatcher(old.getDispatcher());
 		}
 		out.add(proxy);
 	}
-	
+
 	@Override
-	protected void decode(ChannelHandlerContext ctx, FMLProxyPacket msg, List<Object> out) throws Exception {
-		INetHandler netHandler = ctx.channel().attr(NetworkRegistry.NET_HANDLER).get();
-		EntityPlayer player = MainProxy.proxy.getEntityPlayerFromNetHandler(netHandler);
+	protected final void decode(ChannelHandlerContext ctx, FMLProxyPacket msg, List<Object> out) throws Exception
+	{
 		ByteBuf payload = msg.payload();
-		int packetID = payload.readInt();
+		int packetID = payload.readShort();
 		final ModernPacket packet = PacketHandler.packetlist.get(packetID).template();
-		packet.readData(new LPDataInputStream(payload));
-		try {
-			packet.processPacket(player);
-		} catch(Exception e) {
-			LogisticsPipes.log.error(packet.getClass().getName());
-			LogisticsPipes.log.error(packet.toString());
-			throw new RuntimeException(e);
-		}
 		ctx.attr(INBOUNDPACKETTRACKER).get().set(msg);
+		packet.readData(new LPDataInputStream(payload.slice()));
 		out.add(packet);
 	}
-	
+
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception
+	{
+		FMLLog.log(Level.ERROR, cause, "LogisticsPipes PacketHandler exception caught");
+		super.exceptionCaught(ctx, cause);
+	}
+
+	//hacky callback to process packets coming from by the packetbufferhandler decompressors
+	//TODO replace with proper netty implementation
 	public static void onPacketData(LPDataInputStream s, EntityPlayer p) {
 		try {
-			int packetID = s.readInt();
+			int packetID = s.readShort();
 			final ModernPacket packet = PacketHandler.packetlist.get(packetID).template();
 			packet.readData(s);
 			packet.processPacket(p);
@@ -122,11 +128,5 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 			//LogisticsPipes.log.error(packet.toString());
 			throw new RuntimeException(e);
 		}
-	}
-
-	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		FMLLog.log(Level.ERROR, cause, "LogisticsPipes PacketHandler exception caught");
-		super.exceptionCaught(ctx, cause);
 	}
 }

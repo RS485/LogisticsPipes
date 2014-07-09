@@ -8,6 +8,7 @@ import logisticspipes.LogisticsEventListener;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.FakePlayer;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.PacketInboundHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.routing.debug.RoutingTableDebugUpdateThread;
@@ -109,6 +110,11 @@ public class MainProxy {
 
 	public static void createChannels() {
 		channels = NetworkRegistry.INSTANCE.newChannel("LogisticsPipes", new PacketHandler());
+		for(Side side:Side.values()) {
+			FMLEmbeddedChannel channel = channels.get(side);
+			String type = channel.findChannelHandlerNameForType(PacketHandler.class);
+			channel.pipeline().addAfter(type, PacketInboundHandler.class.getName(), new PacketInboundHandler());
+		}
 	}
 
 	public static void sendPacketToServer(ModernPacket packet) {

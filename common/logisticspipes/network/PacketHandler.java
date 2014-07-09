@@ -17,8 +17,12 @@ import java.util.List;
 import java.util.Map;
 
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.proxy.MainProxy;
 import lombok.SneakyThrows;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.NetHandlerPlayServer;
 
 import org.apache.logging.log4j.Level;
 
@@ -42,6 +46,16 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 	// Suppressed because this cast should never fail.
 	public static <T extends ModernPacket> T getPacket(Class<T> clazz) {
 		return (T) packetmap.get(clazz).template();
+	}
+
+	//horrible hack to carry the proper player for the side along...
+	static class InboundModernPacketWrapper {
+		final ModernPacket packet;
+		final EntityPlayer player;
+		InboundModernPacketWrapper(ModernPacket p, EntityPlayer e) {
+			packet = p;
+			player = e;
+		}
 	}
 
 	/*
@@ -105,7 +119,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 		final ModernPacket packet = PacketHandler.packetlist.get(packetID).template();
 		ctx.attr(INBOUNDPACKETTRACKER).get().set(msg);
 		packet.readData(new LPDataInputStream(payload.slice()));
-		out.add(packet);
+		out.add(new InboundModernPacketWrapper(packet, MainProxy.proxy.getEntityPlayerFromNetHandler(msg.handler())));
 	}
 
 	@Override

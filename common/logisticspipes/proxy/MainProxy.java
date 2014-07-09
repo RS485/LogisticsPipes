@@ -118,6 +118,11 @@ public class MainProxy {
 	}
 
 	public static void sendPacketToServer(ModernPacket packet) {
+		if(MainProxy.isServer()) {
+			System.err.println("sendPacketToServer called serverside !");
+			new Exception().printStackTrace();
+			return;
+		}
 		if(packet.isCompressable() || needsToBeCompressed(packet)) {
 			SimpleServiceLocator.clientBufferHandler.addPacketToCompressor(packet);
 		} else {
@@ -127,6 +132,11 @@ public class MainProxy {
 	}
 
 	public static void sendPacketToPlayer(ModernPacket packet, EntityPlayer player) {
+		if(!MainProxy.isServer(player.worldObj)) {
+			System.err.println("sendPacketToPlayer called clientside !");
+			new Exception().printStackTrace();
+			return;
+		}
 		if(packet.isCompressable() || needsToBeCompressed(packet)) {
 			SimpleServiceLocator.serverBufferHandler.addPacketToCompressor(packet, player);
 		} else {
@@ -137,6 +147,11 @@ public class MainProxy {
 	}
 
 	public static void sendPacketToAllWatchingChunk(int X, int Z, int dimensionId, ModernPacket packet) {
+		if(!MainProxy.isServer()) {
+			System.err.println("sendPacketToAllWatchingChunk called clientside !");
+			new Exception().printStackTrace();
+			return;
+		}
 		ChunkCoordIntPair chunk = new ChunkCoordIntPair(X >> 4, Z >> 4);
 		PlayerCollectionList players = LogisticsEventListener.watcherList.get(chunk);
 		if(players != null) {
@@ -150,6 +165,11 @@ public class MainProxy {
 	}
 	
 	public static void sendToPlayerList(ModernPacket packet, PlayerCollectionList players) {
+		if(!MainProxy.isServer()) {
+			System.err.println("sendToPlayerList called clientside !");
+			new Exception().printStackTrace();
+			return;
+		}
 		if(players.isEmpty()) return;
 		if(packet.isCompressable() || needsToBeCompressed(packet)) {
 			for(EntityPlayer player:players.players()) {
@@ -163,6 +183,11 @@ public class MainProxy {
 	}
 
 	public static void sendToAllPlayers(ModernPacket packet) {
+		if(!MainProxy.isServer()) {
+			System.err.println("sendToAllPlayers called clientside !");
+			new Exception().printStackTrace();
+			return;
+		}
 		if(packet.isCompressable() || needsToBeCompressed(packet)) {
 			for(World world: DimensionManager.getWorlds()) {
 				for(Object playerObject:world.playerEntities) {

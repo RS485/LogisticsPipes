@@ -343,19 +343,23 @@ public class LogisticsPipes {
 		
 		LogisticsNetworkMonitior = new LogisticsNetworkManager();
 		LogisticsNetworkMonitior.setUnlocalizedName("networkMonitorItem");
+		GameRegistry.registerItem(LogisticsNetworkMonitior, LogisticsNetworkMonitior.getUnlocalizedName());
 		
 		LogisticsItemCard = new LogisticsItemCard();
 		LogisticsItemCard.setUnlocalizedName("logisticsItemCard");
+		GameRegistry.registerItem(LogisticsItemCard, LogisticsItemCard.getUnlocalizedName());
 		if(isClient) {
 			MinecraftForgeClient.registerItemRenderer(LogisticsItemCard, (FluidContainerRenderer)renderer);
 		}
 		
 		LogisticsRemoteOrderer = new RemoteOrderer();
 		LogisticsRemoteOrderer.setUnlocalizedName("remoteOrdererItem");
+		GameRegistry.registerItem(LogisticsRemoteOrderer, LogisticsRemoteOrderer.getUnlocalizedName());
 
 		ItemPipeSignCreator.registerPipeSignTypes();
 		LogisticsCraftingSignCreator = new ItemPipeSignCreator();
-		LogisticsCraftingSignCreator.setUnlocalizedName("CraftingSignCreator");
+		LogisticsCraftingSignCreator.setUnlocalizedName("ItemPipeSignCreator");
+		GameRegistry.registerItem(LogisticsCraftingSignCreator, LogisticsCraftingSignCreator.getUnlocalizedName());
 		
 		int renderIndex;
 		if(isClient) {
@@ -365,45 +369,54 @@ public class LogisticsPipes {
 		}
 		LogisticsHUDArmor = new ItemHUDArmor(renderIndex);
 		LogisticsHUDArmor.setUnlocalizedName("logisticsHUDGlasses");
+		GameRegistry.registerItem(LogisticsHUDArmor, LogisticsHUDArmor.getUnlocalizedName());
 		
 		LogisticsParts = new ItemParts();
 		LogisticsParts.setUnlocalizedName("logisticsParts");
+		GameRegistry.registerItem(LogisticsParts, LogisticsParts.getUnlocalizedName());
 		
 		SimpleServiceLocator.buildCraftProxy.registerTrigger();
 		
 		ModuleItem = new ItemModule();
 		ModuleItem.setUnlocalizedName("itemModule");
 		ModuleItem.loadModules();
+		GameRegistry.registerItem(ModuleItem, ModuleItem.getUnlocalizedName());
 		
 		LogisticsItemDisk = new ItemDisk();
 		LogisticsItemDisk.setUnlocalizedName("itemDisk");
+		GameRegistry.registerItem(LogisticsItemDisk, LogisticsItemDisk.getUnlocalizedName());
 
 		UpgradeItem = new ItemUpgrade();
 		UpgradeItem.setUnlocalizedName("itemUpgrade");
 		UpgradeItem.loadUpgrades();
+		GameRegistry.registerItem(UpgradeItem, UpgradeItem.getUnlocalizedName());
 		
 		//TODO make it visible in creative search
 		LogisticsUpgradeManager = new LogisticsItem();
 		LogisticsUpgradeManager.setUnlocalizedName("upgradeManagerItem");
+		GameRegistry.registerItem(LogisticsUpgradeManager, LogisticsUpgradeManager.getUnlocalizedName());
 		
 		LogisticsFluidContainer = new LogisticsFluidContainer();
 		LogisticsFluidContainer.setUnlocalizedName("logisticsFluidContainer");
 		if(isClient) {
 			MinecraftForgeClient.registerItemRenderer(LogisticsFluidContainer, (FluidContainerRenderer)renderer);
 		}
+		GameRegistry.registerItem(LogisticsFluidContainer, LogisticsFluidContainer.getUnlocalizedName());
 		
 		LogisticsBrokenItem = new LogisticsBrokenItem();
 		LogisticsBrokenItem.setUnlocalizedName("brokenItem");
+		GameRegistry.registerItem(LogisticsBrokenItem, LogisticsBrokenItem.getUnlocalizedName());
 
 		LogisticsPipeControllerItem = new ItemPipeController();
 		LogisticsPipeControllerItem.setUnlocalizedName("pipeController");
+		GameRegistry.registerItem(LogisticsPipeControllerItem, LogisticsPipeControllerItem.getUnlocalizedName());
 
 		//Blocks
 		LogisticsSolidBlock = new LogisticsSolidBlock();
-		GameRegistry.registerBlock(LogisticsSolidBlock, LogisticsSolidBlockItem.class,"logisticsSolidBlock");
+		GameRegistry.registerBlock(LogisticsSolidBlock, LogisticsSolidBlockItem.class, "logisticsSolidBlock");
 
-        LogisticsPipeBlock = new LogisticsBlockGenericPipe();
-        GameRegistry.registerBlock(LogisticsPipeBlock,"logisticsPipeBlock");
+		LogisticsPipeBlock = new LogisticsBlockGenericPipe();
+		GameRegistry.registerBlock(LogisticsPipeBlock, "logisticsPipeBlock");
 
 		SimpleServiceLocator.buildCraftProxy.registerPipes(event.getSide());
 		

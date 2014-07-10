@@ -16,13 +16,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.MainProxy;
 import lombok.SneakyThrows;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.NetHandlerPlayServer;
 
 import org.apache.logging.log4j.Level;
 
@@ -135,11 +133,15 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 		try {
 			int packetID = s.readShort();
 			final ModernPacket packet = PacketHandler.packetlist.get(packetID).template();
-			packet.readData(s);
-			packet.processPacket(p);
+			try {
+				packet.readData(s);
+				packet.processPacket(p);
+			} catch(Exception e) {
+				LogisticsPipes.log.error(packet.getClass().getName());
+				LogisticsPipes.log.error(packet.toString());
+				throw e;
+			}
 		} catch(Exception e) {
-			//LogisticsPipes.log.error(packet.getClass().getName());
-			//LogisticsPipes.log.error(packet.toString());
 			throw new RuntimeException(e);
 		}
 	}

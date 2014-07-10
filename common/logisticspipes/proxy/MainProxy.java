@@ -201,12 +201,15 @@ public class MainProxy {
 		}
 	}
 
+	//XXX do we still need this?
 	private static boolean needsToBeCompressed(ModernPacket packet) {
+		/*
 		if(packet.getData() != null) {
 			if(packet.getData().length > 32767) {
 				return true; // Packet is to big
 			}
 		}
+		*/
 		return false;
 	}
 

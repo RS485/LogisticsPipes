@@ -26,9 +26,6 @@ public abstract class ModernPacket {
 	@Getter
 	private final int id;
 
-	@Getter
-	private byte[] data = null;
-
 	public ModernPacket(int id) {
 		//this.channel = LogisticsPipes.LOGISTICS_PIPES_CHANNEL_NAME;
 		this.id = id;

@@ -16,6 +16,7 @@ import java.util.zip.GZIPOutputStream;
 import net.minecraft.entity.player.EntityPlayer;
 
 import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.BufferTransfer;
@@ -60,8 +61,11 @@ public class ClientPacketBufferHandlerThread {
 							LinkedList<ModernPacket> packets = clientList;
 							clearLock.lock();
 							for(ModernPacket packet:packets) {
-								data.writeInt(packet.getData().length);
-								data.write(packet.getData());
+								LPDataOutputStream t = new LPDataOutputStream();
+								t.writeShort(packet.getId());
+								packet.writeData(t);
+								data.writeInt(t.size());
+								data.write(t.toByteArray());
 							}
 							packets.clear();
 							clearLock.unlock();

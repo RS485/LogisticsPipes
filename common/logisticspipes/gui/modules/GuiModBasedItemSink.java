@@ -111,8 +111,13 @@ public class GuiModBasedItemSink extends ModuleBaseGui {
 		}
 		BasicGuiHelper.drawRect(guiLeft + 5, guiTop + 30, guiLeft + 169, guiTop + 122, 0xff808080);
 		for(int i=0; i < _itemSink.modList.size() && i < 9;i++) {
+			int pointerX = var2 - guiLeft;
+			int pointerY = var3 - guiTop;
+			if(6 <= pointerX && pointerX < 168 && 31 + (10 * i) <= pointerY && pointerY < 31 + (10 * (i + 1))) {
+				BasicGuiHelper.drawRect(guiLeft + 6, guiTop + 31 + (10 * i), guiLeft + 168, guiTop + 31 + (10 * (i + 1)), 0xffc0c0c0);
+			}
 			mc.fontRenderer.drawString(_itemSink.modList.get(i), guiLeft + 7, guiTop + 32 + (10 * i), 0x404040);
-			if(7 < mouseX && mouseX < 168 && 32 + (10 * i) < mouseY && mouseY < 32 + (10 * (i + 1))) {
+			if(6 <= mouseX && mouseX < 168 && 31 + (10 * i) <= mouseY && mouseY < 31 + (10 * (i + 1))) {
 				name = _itemSink.modList.get(i);
 				mouseX = 0;
 				mouseY = 0;

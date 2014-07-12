@@ -62,7 +62,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 			for (Aspect tag : tags.getAspectsSortedAmount()) {
 				if (tag == null) continue;
 				int yPos = y + index * 18;
-	            renderAspectAt(tag, x, yPos, gui, tags.getAmount(tag));
+	            renderAspectAt(tag, x, yPos, gui, tags.getAmount(tag), true);
 				index++;
 			}
 		}
@@ -88,28 +88,30 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 	 * @param y
 	 * @param gui The gui to render on.
 	 */
-	private void renderAspectAt(Aspect tag, int x, int y, GuiScreen gui, int amount) {
+	private void renderAspectAt(Aspect tag, int x, int y, GuiScreen gui, int amount, boolean drawBackground) {
 		if(!(tag instanceof Aspect)) return;
 		Minecraft mc = FMLClientHandler.instance().getClient();
-		UtilsFX.bindTexture("textures/aspects/_back.png");
-		GL11.glPushMatrix();
-		GL11.glEnable(3042);
-		GL11.glBlendFunc(770, 771);
-		GL11.glTranslated(x - 2, y - 2, 0.0D);
-		GL11.glScaled(1.25D, 1.25D, 0.0D);
-		UtilsFX.drawTexturedQuadFull(0, 0, gui.zLevel);
-		GL11.glDisable(3042);
-		GL11.glPopMatrix();
+		if(drawBackground) {
+			UtilsFX.bindTexture("textures/aspects/_back.png");
+			GL11.glPushMatrix();
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			GL11.glTranslated(x - 2, y - 2, 0.0D);
+			GL11.glScaled(1.25D, 1.25D, 0.0D);
+			UtilsFX.drawTexturedQuadFull(0, 0, gui.zLevel);
+			GL11.glDisable(GL11.GL_BLEND);
+			GL11.glPopMatrix();
+		}
 		if(Thaumcraft.proxy.playerKnowledge.hasDiscoveredAspect(mc.thePlayer.username, tag)) {
 			UtilsFX.drawTag(x, y, tag, amount, 0, gui.zLevel);
 		} else {
 			UtilsFX.bindTexture("textures/aspects/_unknown.png");
 			GL11.glPushMatrix();
-			GL11.glEnable(3042);
-			GL11.glBlendFunc(770, 771);
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 			GL11.glTranslated(x, y, 0.0D);
 			UtilsFX.drawTexturedQuadFull(0, 0, gui.zLevel);
-			GL11.glDisable(3042);
+			GL11.glDisable(GL11.GL_BLEND);
 			GL11.glPopMatrix();
 		}
 	}
@@ -135,7 +137,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 		int currentListIndex = 0;
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < legnth; j++) {
-				renderAspectAt(Aspect.getAspect(etagIDs.get(currentListIndex)), xshift, yshift, gui, 0);
+				renderAspectAt(Aspect.getAspect(etagIDs.get(currentListIndex)), xshift, yshift, gui, 0, false);
 				currentListIndex += 1;
 				if(currentListIndex == etagIDs.size()) return;
 				xshift += 18;

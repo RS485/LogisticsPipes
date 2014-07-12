@@ -398,6 +398,26 @@ public class BasicGuiHelper {
         var9.draw();
     }
 	
+	public static void drawSlotBackground(Minecraft mc, int x, int y, int color) {
+		zLevel = 0;
+		float colorA = (color >> 24 & 0xFF) / 255.0F;
+		float colorR = (color >> 16 & 0xFF) / 255.0F;
+		float colorG = (color >> 8 & 0xFF) / 255.0F;
+		float colorB = (color & 0xFF) / 255.0F;
+		GL11.glColor4f(colorR, colorG, colorB, colorA);
+		mc.renderEngine.bindTexture(SLOT);
+
+		Tessellator var9 = Tessellator.instance;
+		var9.startDrawingQuads();
+		var9.addVertexWithUV(x		, y + 18	, zLevel, 0	, 1);
+		var9.addVertexWithUV(x + 18	, y + 18	, zLevel, 1	, 1);
+		var9.addVertexWithUV(x + 18	, y			, zLevel, 1	, 0);
+		var9.addVertexWithUV(x		, y			, zLevel, 0	, 0);
+		var9.draw();
+
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+    }
+
 	private static final ResourceLocation BIGSLOT = new ResourceLocation("logisticspipes", "textures/gui/slot-big.png");
 	
 

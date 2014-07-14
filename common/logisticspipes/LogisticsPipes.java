@@ -121,7 +121,7 @@ import cpw.mods.fml.relauncher.Side;
 @Mod(
 		modid = "LogisticsPipes|Main",
 		name = "Logistics Pipes",
-		version = "${lp.version.full}",
+		version = "%VERSION%",
 		/* %------------CERTIFICATE-SUM-----------% */
 		dependencies = "required-after:Forge@[9.10.1.850,);" +
 				"required-after:BuildCraft|Core;" +

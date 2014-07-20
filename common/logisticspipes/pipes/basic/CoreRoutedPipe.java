@@ -787,6 +787,11 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		upgradeManager.writeToNBT(upgradeNBT);
 		nbttagcompound.setCompoundTag("upgradeManager", upgradeNBT);
 
+		NBTTagCompound powerNBT = new NBTTagCompound();
+		powerHandler.writeToNBT(powerNBT);
+		if(!powerNBT.hasNoTags())
+			nbttagcompound.setCompoundTag("powerHandler", powerNBT);
+
 		NBTTagList sendqueue = new NBTTagList();
 		for(Triplet<IRoutedItem, ForgeDirection, ItemSendMode> p : _sendQueue) {
 			NBTTagCompound tagentry = new NBTTagCompound();
@@ -835,6 +840,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			getLogisticsModule().readFromNBT(nbttagcompound);
 		}
 		upgradeManager.readFromNBT(nbttagcompound.getCompoundTag("upgradeManager"));
+		powerHandler.readFromNBT(nbttagcompound.getCompoundTag("powerHandler"));
 
 		_sendQueue.clear();
 		NBTTagList sendqueue = nbttagcompound.getTagList("sendqueue");

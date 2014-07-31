@@ -9,6 +9,8 @@ import net.minecraft.client.gui.FontRenderer;
 
 import org.lwjgl.input.Keyboard;
 
+import scala.Char;
+
 public class SearchBar {
 	protected String searchinput1 = "";
 	protected String searchinput2 = "";
@@ -84,17 +86,11 @@ public class SearchBar {
 	 */
 	public boolean handleKey(char c, int i) {
 		if(!editsearch) return false;
-		if (c == 13) {
+		if (c == 13 || i == 28) { //Enter
 			editsearch = false;
-		} else if (i == 47 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-			searchinput1 = searchinput1 + getClipboardString();
 		} else if (c == 8 || (i == 14 && System.getProperty("os.name").toLowerCase().indexOf("mac") >= 0)) { //Backspace
 			if (searchinput1.length() > 0)
 				searchinput1 = searchinput1.substring(0, searchinput1.length() - 1);
-		} else if (Character.isLetterOrDigit(c) || c == ' ') {
-			if (fontRenderer.getStringWidth(searchinput1 + c + searchinput2) <= searchWidth) {
-				searchinput1 += c;
-			}
 		} else if(i == 203) { //Left
 			if(searchinput1.length() > 0) {
 				searchinput2 = searchinput1.substring(searchinput1.length() - 1) + searchinput2;
@@ -105,18 +101,24 @@ public class SearchBar {
 				searchinput1 += searchinput2.substring(0,1);
 				searchinput2 = searchinput2.substring(1);
 			}
-		} else if(i == 28) { //Enter
-			editsearch = false;
-		} else if(i == 199) { //Pos
+		} else if(i == 199) { //Home
 			searchinput2 = searchinput1 + searchinput2;
 			searchinput1 = "";
-		} else if(i == 207) { //Ende
+		} else if(i == 207) { //End
 			searchinput1 = searchinput1 + searchinput2;
 			searchinput2 = "";
-		} else if(i == 211) { //Entf
+		} else if(i == 211) { //Del
 			if (searchinput2.length() > 0) {
 				searchinput2 = searchinput2.substring(1);
 			}
+		} else if (i == 47 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) { //Ctrl-v
+			searchinput1 = searchinput1 + getClipboardString();
+		} else if (!Character.isISOControl(c)) {
+			if (fontRenderer.getStringWidth(searchinput1 + c + searchinput2) <= searchWidth) {
+				searchinput1 += c;
+			}
+		} else {
+			//ignore this key/character
 		}
 		return true;
 	}

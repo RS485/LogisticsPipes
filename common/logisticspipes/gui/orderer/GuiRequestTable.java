@@ -576,22 +576,20 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 	}
 
 	@Override
-	public void handleKeyboardInputSub() {
-		if(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-			if(Keyboard.isKeyDown(Keyboard.KEY_A)) {
-				itemDisplay.setMaxAmount();
-			} else if(Keyboard.isKeyDown(Keyboard.KEY_D)) {
-				itemDisplay.reset();
-			}
-		}
-		super.handleKeyboardInputSub();
-	}
-
-	@Override
 	protected void keyTyped(char c, int i) {
-		// Track everything except Escape when in search bar
-		if(i == 1 || !search.handleKey(c, i)) {
-			super.keyTyped(c, i);
+		if (i == 30 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) { //Ctrl-a
+			itemDisplay.setMaxAmount();
+		} else if (i == 32 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) { //Ctrl-d
+			itemDisplay.resetAmount();
+		} else if (i == 201) { //PgUp
+			itemDisplay.prevPage();
+		} else if (i == 209) { //PgDn
+			itemDisplay.nextPage();
+		} else {
+			// Track everything except Escape when in search bar
+			if(i == 1 || !search.handleKey(c, i)) {
+				super.keyTyped(c, i);
+			}
 		}
 	}
 

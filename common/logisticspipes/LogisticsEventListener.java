@@ -228,7 +228,7 @@ public class LogisticsEventListener {
 		if(event.gui == null) {
 			LogisticsGuiOverrenderer.getInstance().setOverlaySlotActive(false);
 		}
-		if(event.gui instanceof GuiChest || SimpleServiceLocator.ironChestProxy.isChestGui(event.gui)) {
+		if(event.gui instanceof GuiChest || (SimpleServiceLocator.ironChestProxy != null && SimpleServiceLocator.ironChestProxy.isChestGui(event.gui))) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ChestGuiOpened.class));
 		} else {
 			QuickSortChestMarkerStorage.getInstance().disable();

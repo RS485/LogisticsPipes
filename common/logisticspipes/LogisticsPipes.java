@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.Map;
 
+import logisticspipes.asm.LogisticsPipesClassInjector;
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.commands.LogisticsPipesCommand;
@@ -77,6 +78,7 @@ import logisticspipes.proxy.SpecialInventoryHandlerManager;
 import logisticspipes.proxy.SpecialTankHandlerManager;
 import logisticspipes.proxy.VersionNotSupportedException;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
+import logisticspipes.proxy.computers.objects.LPGlobalCCAccess;
 import logisticspipes.proxy.forestry.ForestryProgressProvider;
 import logisticspipes.proxy.ic2.IC2ProgressProvider;
 import logisticspipes.proxy.progressprovider.MachineProgressProvider;
@@ -122,6 +124,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
@@ -148,7 +151,7 @@ import cpw.mods.fml.relauncher.Side;
 @Mod(
 		modid = "LogisticsPipes",
 		name = "Logistics Pipes",
-		version = "${lp.version.full}",
+		version = "%VERSION%",
 		/* %------------CERTIFICATE-SUM-----------% */
 		dependencies = "required-after:Forge@[9.10.1.850,);" +
 				"required-after:BuildCraft|Core;" +
@@ -167,7 +170,7 @@ import cpw.mods.fml.relauncher.Side;
 public class LogisticsPipes {
 
 	public LogisticsPipes() {
-		LaunchClassLoader loader = (LaunchClassLoader)LogisticsPipes.class.getClassLoader();
+		LaunchClassLoader loader = Launch.classLoader;
 		boolean found = false;
 		for(IClassTransformer transformer:loader.getTransformers()) {
 			if(transformer.getClass().getName().equals("logisticspipes.asm.LogisticsClassTransformer")) {
@@ -178,7 +181,32 @@ public class LogisticsPipes {
 		if(!found) {
 			throw new RuntimeException("LogisticsPipes could not find its class transformer. If you are running MC from an IDE make sure to copy the 'LogisticsPipes_dummy.jar' to your mods folder. If you are running MC normal please report this as a bug at 'https://github.com/RS485/LogisticsPipes/issues'.");
 		}
-		PacketHandler.initialize();
+		try {
+			Field fTransformers = LaunchClassLoader.class.getDeclaredField("transformers");
+			fTransformers.setAccessible(true);
+			@SuppressWarnings("unchecked")
+			List<IClassTransformer> transformers = (List<IClassTransformer>) fTransformers.get(loader);
+			IClassTransformer lpClassInjector = new LogisticsPipesClassInjector();
+			transformers.add(lpClassInjector);
+			// Avoid NPE caused by wrong ClassTransformers
+			for(int i=transformers.size() - 1 ; i > 0;i--) { // Move everything one up
+				transformers.set(i, transformers.get(i - 1));
+			}
+			transformers.set(0, lpClassInjector); // So that our injector can be first
+		} catch(NoSuchFieldException e) {
+			loader.registerTransformer("logisticspipes.asm.LogisticsPipesClassInjector");
+			e.printStackTrace();
+		} catch(SecurityException e) {
+			loader.registerTransformer("logisticspipes.asm.LogisticsPipesClassInjector");
+			e.printStackTrace();
+		} catch(IllegalArgumentException e) {
+			loader.registerTransformer("logisticspipes.asm.LogisticsPipesClassInjector");
+			e.printStackTrace();
+		} catch(IllegalAccessException e) {
+			loader.registerTransformer("logisticspipes.asm.LogisticsPipesClassInjector");
+			e.printStackTrace();
+		}
+		PacketHandler.intialize();
 		NewGuiHandler.intialize();
 	}
 	
@@ -265,6 +293,8 @@ public class LogisticsPipes {
 	public static CreativeTabLP LPCreativeTab = new CreativeTabLP();
 	
 	public static Logger log;
+
+	private static LPGlobalCCAccess	generalAccess;
 	
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
@@ -500,6 +530,13 @@ public class LogisticsPipes {
 			System.out.println("[LogisticsPipes|Certificate] This in not a LogisticsPipes version from RS485.");
 			certificateError = true;
 		}
+	}
+	
+	public static Object getComputerLP() {
+		if(generalAccess == null) {
+			generalAccess = new LPGlobalCCAccess();
+		}
+		return generalAccess;
 	}
 	
 	public void registerPipes(Side side) {

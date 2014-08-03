@@ -1,7 +1,7 @@
 package logisticspipes.proxy.cc;
 
-import logisticspipes.proxy.cc.interfaces.ICCTypeWrapped;
 import logisticspipes.proxy.cc.wrapper.CCCommandWrapper;
+import logisticspipes.proxy.computers.interfaces.ICCTypeWrapped;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;

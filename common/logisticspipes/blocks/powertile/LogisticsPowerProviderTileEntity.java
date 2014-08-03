@@ -98,6 +98,7 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 						for(AdjacentTile adjacent: util.getAdjacentTileEntities(false)) {
 							if(adjacent.tile instanceof LogisticsTileGenericPipe) {
 								if(((LogisticsTileGenericPipe)adjacent.tile).pipe instanceof CoreRoutedPipe) {
+									if(((CoreRoutedPipe)((LogisticsTileGenericPipe)adjacent.tile).pipe).stillNeedReplace()) continue;
 									IRouter sourceRouter = ((CoreRoutedPipe)((LogisticsTileGenericPipe)adjacent.tile).pipe).getRouter();
 									if(sourceRouter != null) {
 										outerRouters:
@@ -113,7 +114,7 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 												}
 												try {
 													currentlyUsedPos.add(sourceRouter.getLPPosition());
-													sendPowerLaserPackets(sourceRouter, destinationRouter, exit.exitOrientation);
+													sendPowerLaserPackets(sourceRouter, destinationRouter, exit.exitOrientation, exit.exitOrientation != adjacent.orientation);
 													currentlyUsedPos.remove(sourceRouter.getLPPosition());
 												} catch(StackOverflowError error) {
 													for(LPPosition pos:currentlyUsedPos) {
@@ -147,7 +148,7 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 
 	private List<LPPosition> currentlyUsedPos = new ArrayList<LPPosition>();
 
-	private void sendPowerLaserPackets(IRouter sourceRouter, IRouter destinationRouter, ForgeDirection exitOrientation) {
+	private void sendPowerLaserPackets(IRouter sourceRouter, IRouter destinationRouter, ForgeDirection exitOrientation, boolean addBall) {
 		if(sourceRouter == destinationRouter) return;
 		List<ExitRoute> exits = sourceRouter.getRoutersOnSide(exitOrientation);
 		for(ExitRoute exit:exits) {
@@ -156,7 +157,7 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 				//MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, sourceRouter.getDimension(), PacketHandler.getPacket(PowerPacketLaser.class).setColor(this.getLaserColor()).setPos(sourceRouter.getLPPosition()).setDir(exit.exitOrientation).setRenderBall(true).setLength(distance));
 				CoreRoutedPipe pipe = sourceRouter.getPipe();
 				if(pipe != null && pipe.container instanceof LogisticsTileGenericPipe) {
-					((LogisticsTileGenericPipe)pipe.container).addLaser(exit.exitOrientation, distance, this.getLaserColor(), false, true);
+					((LogisticsTileGenericPipe)pipe.container).addLaser(exit.exitOrientation, distance, this.getLaserColor(), false, addBall);
 				}
 				sourceRouter = exit.destination; // Use new sourceRouter
 				if(sourceRouter == destinationRouter) return;
@@ -167,7 +168,7 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 							if(filter.blockPower()) continue outerRouters;
 						}
 						currentlyUsedPos.add(sourceRouter.getLPPosition());
-						sendPowerLaserPackets(sourceRouter, destinationRouter, newExit.exitOrientation);
+						sendPowerLaserPackets(sourceRouter, destinationRouter, newExit.exitOrientation, newExit.exitOrientation != exit.exitOrientation);
 						currentlyUsedPos.remove(sourceRouter.getLPPosition());
 					}
 				}

@@ -8,10 +8,13 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
-import org.apache.logging.log4j.Level;
-
-import logisticspipes.Configs;
-import logisticspipes.LPConstants;
+import li.cil.oc.api.network.Arguments;
+import li.cil.oc.api.network.Context;
+import li.cil.oc.api.network.Environment;
+import li.cil.oc.api.network.ManagedPeripheral;
+import li.cil.oc.api.network.Message;
+import li.cil.oc.api.network.Node;
+import li.cil.oc.api.network.SidedEnvironment;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.asm.ModDependentField;
 import logisticspipes.asm.ModDependentInterface;
@@ -24,6 +27,8 @@ import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
+import logisticspipes.proxy.opencomputers.asm.BaseWrapperClass;
 import logisticspipes.proxy.te.LPConduitItem;
 import logisticspipes.renderer.IIconProvider;
 import logisticspipes.renderer.LogisticsTileRenderController;
@@ -57,9 +62,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
-@ModDependentInterface(modId={"CoFHCore"}, interfacePath={"cofh.api.transport.IItemConduit"})
-public class LogisticsTileGenericPipe extends TileEntity implements IPipeInformationProvider, IFluidHandler, IItemConduit {
-	
+@ModDependentInterface(modId={"CoFHCore", "OpenComputers@1.3", "OpenComputers@1.3", "OpenComputers@1.3"}, interfacePath={"cofh.api.transport.IItemConduit", "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment"})
+public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeInformationProvider, IItemConduit, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IItemConduit {	
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
 	
 	public boolean turtleConnect[] = new boolean[7];
@@ -75,12 +79,17 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 	@ModDependentField(modId="ThermalExpansion")
 	public LPConduitItem[] localConduit;
 	
+	@ModDependentField(modId="OpenComputers@1.3")
+	public Node node;
+	private boolean addedToNetwork = false;
+	
 	private boolean sendInitPacket = true;
 	
 	public LogisticsTileGenericPipe() {
 		if(SimpleServiceLocator.ccProxy.isCC()) {
 			connections = new HashMap<IComputerAccess, ForgeDirection>();
 		}
+		SimpleServiceLocator.openComputersProxy.initLogisticsTileGenericPipe(this);
 	}
 	
 	public CoreRoutedPipe getCPipe() {
@@ -109,6 +118,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
     		}
     		super.invalidate();
             SimpleServiceLocator.thermalExpansionProxy.handleLPInternalConduitRemove(this);
+			SimpleServiceLocator.openComputersProxy.handleLPInvalidate(this);
         }
     }
 
@@ -118,6 +128,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 			pipe.onChunkUnload();
 		}
 		SimpleServiceLocator.thermalExpansionProxy.handleLPInternalConduitChunkUnload(this);
+		SimpleServiceLocator.openComputersProxy.handleLPChunkUnload(this);
 	}
 
 	@Override
@@ -184,6 +195,10 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 			}
 		}
 		getRenderController().onUpdate();
+		if(!addedToNetwork) {
+			addedToNetwork = true;
+			SimpleServiceLocator.openComputersProxy.addToNetwork(this);
+		}
 	}
 
 	@Override
@@ -255,6 +270,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 		for(int i=0;i<turtleConnect.length;i++) {
 			nbt.setBoolean("turtleConnect_" + i, turtleConnect[i]);
 		}
+		SimpleServiceLocator.openComputersProxy.handleLPWriteToNBT(this, nbttagcompound);
 	}
 
 	@Override
@@ -278,6 +294,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 		for(int i=0;i<turtleConnect.length;i++) {
 			turtleConnect[i] = nbt.getBoolean("turtleConnect_" + i);
 		}
+		SimpleServiceLocator.openComputersProxy.handleLPReadFromNBT(this, nbttagcompound);
 	}
 	
 	public boolean canPipeConnect(TileEntity with, ForgeDirection side) {
@@ -492,6 +509,55 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 	
 	public boolean isOpaque() {
 		return getCPipe().isOpaque();
+	}
+
+	@Override
+	@ModDependentMethod(modId="OpenComputers@1.3")
+	public Node node() {
+		return node;
+	}
+
+	@Override
+	@ModDependentMethod(modId="OpenComputers@1.3")
+	public void onConnect(Node node1) {}
+
+	@Override
+	@ModDependentMethod(modId="OpenComputers@1.3")
+	public void onDisconnect(Node node1) {}
+
+	@Override
+	@ModDependentMethod(modId="OpenComputers@1.3")
+	public void onMessage(Message message) {}
+
+	@Override
+	@ModDependentMethod(modId="OpenComputers@1.3")
+	public Object[] invoke(String s, Context context, Arguments arguments) throws Exception {
+		BaseWrapperClass object = (BaseWrapperClass) CCObjectWrapper.getWrappedObject(pipe, BaseWrapperClass.WRAPPER);
+		object.isDirectCall = true;
+		return CCObjectWrapper.createArray(object);
+	}
+
+	@Override
+	@ModDependentMethod(modId="OpenComputers@1.3")
+	public String[] methods() {
+		return new String[]{"getPipe"};
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	@ModDependentMethod(modId="OpenComputers@1.3")
+	public boolean canConnect(ForgeDirection dir) {
+		return !(this.getTile(dir) instanceof LogisticsTileGenericPipe);
+	}
+
+	@Override
+	@ModDependentMethod(modId="OpenComputers@1.3")
+	public Node sidedNode(ForgeDirection dir) {
+		if(this.getTile(dir) instanceof LogisticsTileGenericPipe) {
+			return null;
+		} else {
+			return node();
+		}
 	}
 	
 

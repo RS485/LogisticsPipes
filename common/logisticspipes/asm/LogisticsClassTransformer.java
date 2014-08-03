@@ -2,10 +2,8 @@ package logisticspipes.asm;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import logisticspipes.Configs;
@@ -40,8 +38,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 	private LaunchClassLoader cl = (LaunchClassLoader)LogisticsClassTransformer.class.getClassLoader();
 	private Field negativeResourceCache;
 	private Field invalidClasses;
-	
-	public Map<String, byte[]> cachedClasses = new HashMap<String, byte[]>();
+
 	public static LogisticsClassTransformer instance;
 	
 	public LogisticsClassTransformer() {
@@ -63,15 +60,9 @@ public class LogisticsClassTransformer implements IClassTransformer {
 	@Override
 	public byte[] transform(String name, String transformedName, byte[] bytes) {
 		try {
-			if(cachedClasses.containsKey(name)) {
-				interfacesToClearA.add(name);
-			}
 			Thread thread = Thread.currentThread();
 			if(thread.getName().equals("Minecraft main thread") || thread.getName().equals("main") || thread.getName().equals("Server thread")) { //Only clear when called from the main thread to avoid ConcurrentModificationException on start
 				clearNegativeInterfaceCache();
-			}
-			if(cachedClasses.containsKey(name)) {
-				return cachedClasses.get(name);
 			}
 			if(bytes == null) return null;
 			if(name.equals("buildcraft.transport.PipeTransportItems")) {

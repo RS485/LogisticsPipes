@@ -1,11 +1,15 @@
 package logisticspipes.gui.modules;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import org.lwjgl.opengl.GL11;
+
 import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
 
 public class GuiThaumicAspectSink extends ModuleBaseGui {
@@ -13,6 +17,11 @@ public class GuiThaumicAspectSink extends ModuleBaseGui {
 	private final ModuleThaumicAspectSink _module;
 	private final ItemIdentifierInventory tmpInv;
 	
+	private List<String> stackTags = null;
+
+	private int mouseX = 0;
+	private int mouseY = 0;
+
 	public GuiThaumicAspectSink(IInventory playerInventory, ModuleThaumicAspectSink itemSink) {
 		super(null, itemSink);
 		
@@ -21,13 +30,13 @@ public class GuiThaumicAspectSink extends ModuleBaseGui {
 		tmpInv = new ItemIdentifierInventory(1, "Aspect Reader", 1);
 		
 		DummyContainer dummy = new DummyContainer(playerInventory, tmpInv);
-		dummy.addDummySlot(0, 79, 8);
+		dummy.addDummySlot(0, 7, 7);
+
+		dummy.addNormalSlotsForPlayerInventory(7, 90);
 		
-		dummy.addNormalSlotsForPlayerInventory(7, 100);
-	    
-	    this.inventorySlots = dummy;
+		this.inventorySlots = dummy;
 		xSize = 175;
-		ySize = 182;
+		ySize = 172;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -35,65 +44,102 @@ public class GuiThaumicAspectSink extends ModuleBaseGui {
 	public void initGui() {
 		super.initGui();
 		this.buttonList.clear();
-		this.buttonList.add(new GuiButton(0, guiLeft + 8, guiTop + 53, 50, 20, "Inject"));
-		this.buttonList.add(new GuiButton(1, guiLeft + 116, guiTop + 53, 50, 20, "Clear"));
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton par1GuiButton) {
-		if(par1GuiButton.id == 0 && tmpInv.getStackInSlot(0) != null && SimpleServiceLocator.thaumCraftProxy.isScannedObject(tmpInv.getStackInSlot(0), mc.thePlayer.getDisplayName())) {
-			_module.handleItem(tmpInv.getStackInSlot(0));
-			tmpInv.clearInventorySlotContents(0);
-		} else if(par1GuiButton.id == 1) {
-			_module.clearAspectList();
-		} else {
-			super.actionPerformed(par1GuiButton);		
+	protected void mouseClicked(int i, int j, int k) {
+		int x = i - guiLeft;
+		int y = j - guiTop;
+		if(0 < x && x < 175 && 0 < y && y < 172) {
+			mouseX = x;
+			mouseY = y;
 		}
+		super.mouseClicked(i, j, k);
+	}
+
+	@Override
+	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
+		super.drawGuiContainerForegroundLayer(par1, par2);
+
+		mc.fontRenderer.drawString("Aspect Reader", 26, 11, 0x404040);
+		mc.fontRenderer.drawString("Sunk Aspects", 8, 48, 0x404040);
+		fontRenderer.drawString("Inventory", 8, ySize - 92, 0x404040);
+
+		//handle clicks
+		if(6 <= mouseX && mouseX < 6 + 9 * 18 && 24 <= mouseY && mouseY < 24 + 18) {
+			int i = (mouseX - 6) / 18;
+			if(stackTags != null && i < stackTags.size()) {
+				tmpInv.clearInventorySlotContents(0);
+				_module.guiAddAspect(stackTags.get(i));
+				stackTags.remove(i);
+			}
+		}
+		if(6 <= mouseX && mouseX < 6 + 9 * 18 && 57 <= mouseY && mouseY < 57 + 18) {
+			int i = (mouseX - 6) / 18;
+			if(_module.aspectList != null && i < _module.aspectList.size()) {
+				tmpInv.clearInventorySlotContents(0);
+				if(stackTags == null) {
+					stackTags = new LinkedList<String>();
+				}
+				if(!stackTags.contains(_module.aspectList.get(i)) && stackTags.size() < 9) {
+					stackTags.add(_module.aspectList.get(i));
+				}
+				_module.guiRemoveAspect(_module.aspectList.get(i));
+			}
+		}
+		mouseX = 0;
+		mouseY = 0;
+
+		//transfer tags from stack to gui list
+		if(tmpInv.getStackInSlot(0) != null && SimpleServiceLocator.thaumCraftProxy.isScannedObject(tmpInv.getStackInSlot(0), mc.thePlayer.getDisplayName())) {
+			stackTags = SimpleServiceLocator.thaumCraftProxy.getListOfTagsForStack(tmpInv.getStackInSlot(0));
+		}
+
+		//render aspects
+		GL11.glEnable(GL11.GL_LIGHTING);
+		if(stackTags != null) {
+			SimpleServiceLocator.thaumCraftProxy.renderAspectsInGrid(stackTags, 7, 25, 9, 1, this);
+		}
+		SimpleServiceLocator.thaumCraftProxy.renderAspectsInGrid(_module.aspectList, 7, 58, 9, 1, this);
+		GL11.glDisable(GL11.GL_LIGHTING);
+
+		//render mouse-over overlay
+		int pointerX = par1 - guiLeft;
+		int pointerY = par2 - guiTop;
+
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		if(6 <= pointerX && pointerX < 6 + 9 * 18 && 24 <= pointerY && pointerY < 24 + 18) {
+			int i = (pointerX - 6) / 18;
+			if(stackTags != null && i < stackTags.size()) {
+				BasicGuiHelper.drawRect(7 + i * 18, 25, 7 + i * 18 + 16, 25 + 16, 0x80ffffff);
+			}
+		}
+		if(6 <= pointerX && pointerX < 6 + 9 * 18 && 57 <= pointerY && pointerY < 57 + 18) {
+			int i = (pointerX - 6) / 18;
+			if(_module.aspectList != null && i < _module.aspectList.size()) {
+				BasicGuiHelper.drawRect(7 + i * 18, 58, 7 + i * 18 + 16, 58 + 16, 0x80ffffff);
+			}
+		}
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glDisable(GL11.GL_BLEND);
 	}
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
+		super.drawGuiContainerBackgroundLayer(var1, var2, var3);
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, false);
-		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 7, guiTop + 100);
-		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 78, guiTop + 7);
-		if(tmpInv.getStackInSlot(0) != null && SimpleServiceLocator.thaumCraftProxy.isScannedObject(tmpInv.getStackInSlot(0), mc.thePlayer.getDisplayName())) {
-			((GuiButton)buttonList.get(0)).displayString = "Inject";
-		} else {
-			((GuiButton)buttonList.get(0)).displayString = "...";
-		}
-		if(_module.aspectList.size() == 0) {
-			((GuiButton)buttonList.get(1)).displayString = "...";
-		} else {
-			((GuiButton)buttonList.get(1)).displayString = "Clear";
-		}
-		
-		/** back **/
-		BasicGuiHelper.drawRect(guiLeft + 5, guiTop + 28, guiLeft + 169, guiTop + 97, 0xff808080);
-		BasicGuiHelper.drawRect(guiLeft + 58, guiTop + 34, guiLeft + 116, guiTop + 92, 0xff807080);	
-		
-		/** Top Left L shape **/
-		BasicGuiHelper.drawRect(guiLeft + 58, guiTop + 34, guiLeft + 61, guiTop + 54, 0xff803080);	
-		BasicGuiHelper.drawRect(guiLeft + 58, guiTop + 34, guiLeft + 78, guiTop + 37, 0xff803080);		
-		
-		/** Top Right L shape **/
-		BasicGuiHelper.drawRect(guiLeft + 116, guiTop + 34, guiLeft + 113, guiTop + 54, 0xff803080);	
-		BasicGuiHelper.drawRect(guiLeft + 116, guiTop + 34, guiLeft + 96, guiTop + 37, 0xff803080);		
-		
-		/** Bottom Right L shape **/
-		BasicGuiHelper.drawRect(guiLeft + 116, guiTop + 72, guiLeft + 113, guiTop + 92, 0xff803080);	
-		BasicGuiHelper.drawRect(guiLeft + 116, guiTop + 89, guiLeft + 96, guiTop + 92, 0xff803080);		
-		
-		/** Bottom Left L shape **/
-		BasicGuiHelper.drawRect(guiLeft + 58, guiTop + 72, guiLeft + 61, guiTop + 92, 0xff803080);	
-		BasicGuiHelper.drawRect(guiLeft + 58, guiTop + 89, guiLeft + 78, guiTop + 92, 0xff803080);		
+		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 7, guiTop + 90);
 
-		
-		if (tmpInv.getStackInSlot(0) != null) {
-			if(SimpleServiceLocator.thaumCraftProxy.isScannedObject(tmpInv.getStackInSlot(0), mc.thePlayer.getDisplayName())) {
-				SimpleServiceLocator.thaumCraftProxy.renderAspectsDown(tmpInv.getStackInSlot(0), guiLeft + 175, guiTop + 8, this);
-			}
+		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 6, guiTop + 6);
+
+		//I can has purple aspect slots
+		for(int i = 0; i < 9; i++) {
+			BasicGuiHelper.drawSlotBackground(mc, guiLeft + 6 + i * 18, guiTop + 24, 0xffffe4ff);
 		}
-		
-		SimpleServiceLocator.thaumCraftProxy.renderAspectsInGrid(_module.aspectList, guiLeft + 61, guiTop + 37, 3, 3, this);
+
+		for(int i = 0; i < 9; i++) {
+			BasicGuiHelper.drawSlotBackground(mc, guiLeft + 6 + i * 18, guiTop + 57, 0xffffe4ff);
+		}
 	}
 }

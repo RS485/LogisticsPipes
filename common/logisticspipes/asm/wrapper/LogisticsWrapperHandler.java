@@ -74,9 +74,9 @@ public class LogisticsWrapperHandler {
 			if(e != null) {
 				((AbstractWrapper)instance).setState(WrapperState.Exception);
 				((AbstractWrapper)instance).setReason(e);
-				LogisticsPipes.log.info("Couldn't loaded " + name + " ProgressProvider");
+				LogisticsPipes.log.info("Couldn't load " + name + " ProgressProvider");
 			} else {
-				LogisticsPipes.log.info("Didn't loaded " + name + " ProgressProvider");
+				LogisticsPipes.log.info("Didn't load " + name + " ProgressProvider");
 				((AbstractWrapper)instance).setState(WrapperState.ModMissing);
 			}
 		}
@@ -109,9 +109,9 @@ public class LogisticsWrapperHandler {
 			if(e != null) {
 				((AbstractWrapper)instance).setState(WrapperState.Exception);
 				((AbstractWrapper)instance).setReason(e);
-				LogisticsPipes.log.info("Couldn't loaded " + name + " RecipeProvider");
+				LogisticsPipes.log.info("Couldn't load " + name + " RecipeProvider");
 			} else {
-				LogisticsPipes.log.info("Didn't loaded " + name + " RecipeProvider");
+				LogisticsPipes.log.info("Didn't load " + name + " RecipeProvider");
 				((AbstractWrapper)instance).setState(WrapperState.ModMissing);
 			}
 		}

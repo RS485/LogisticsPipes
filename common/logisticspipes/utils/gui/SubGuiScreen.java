@@ -88,12 +88,8 @@ public class SubGuiScreen extends GuiScreen implements ISubGuiControler {
 		if(subGui != null) {
 			subGui.handleKeyboardInput();
 		} else {
-			this.handleKeyboardInputSub();
+			super.handleKeyboardInput();
 		}
-	}
-
-	public void handleKeyboardInputSub() {
-		super.handleKeyboardInput();
 	}
 
 	@Override

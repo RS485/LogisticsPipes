@@ -135,23 +135,18 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 		return NewGuiHandler.getGui(ThaumicAspectSinkModuleInHand.class);
 	}
 
-	public void handleItem(ItemStack stack) {
-		List<String> itemAspectList = SimpleServiceLocator.thaumCraftProxy.getListOfTagsForStack(stack);
-		if (itemAspectList == null) return;
-		boolean listChanged = false;
-		for (int i = 0; i < itemAspectList.size(); i++) {
-			if (aspectList.contains(itemAspectList.get(i)) || aspectList.size() >= 9) continue;
-			aspectList.add(itemAspectList.get(i));
-			listChanged = true;
-		}
-		if (listChanged) aspectListChanged();
-	}
-
-	public void clearAspectList() {
-		NBTTagCompound nbt = new NBTTagCompound();
-		readFromNBT(nbt);
+	public void guiAddAspect(String aspect) {
+		if (aspectList.contains(aspect) || aspectList.size() >= 9) return;
+		aspectList.add(aspect);
 		aspectListChanged();
 	}
+
+	public void guiRemoveAspect(String aspect) {
+		if (!aspectList.contains(aspect)) return;
+		aspectList.remove(aspect);
+		aspectListChanged();
+	}
+
 	@Override
 	public boolean hasGenericInterests() {
 		return true;

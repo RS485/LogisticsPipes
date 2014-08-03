@@ -249,14 +249,10 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 		if(subGui != null) {
 			subGui.handleKeyboardInput();
 		} else {
-			this.handleKeyboardInputSub();
+			super.handleKeyboardInput();
 		}
 	}
 
-	public void handleKeyboardInputSub() {
-		super.handleKeyboardInput();
-	}
-	
 	public void addRenderSlot(IRenderSlot slot) {
 		this.slots.add(slot);
 	}

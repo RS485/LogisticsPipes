@@ -29,11 +29,13 @@ import logisticspipes.proxy.interfaces.IIC2Proxy;
 import logisticspipes.proxy.interfaces.IIronChestProxy;
 import logisticspipes.proxy.interfaces.IModularPowersuitsProxy;
 import logisticspipes.proxy.interfaces.INEIProxy;
+import logisticspipes.proxy.interfaces.IOpenComputersProxy;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
 import logisticspipes.proxy.interfaces.IToolWrenchProxy;
 import logisticspipes.proxy.mps.ModularPowersuitsProxy;
 import logisticspipes.proxy.nei.NEIProxy;
+import logisticspipes.proxy.opencomputers.OpenComputersProxy;
 import logisticspipes.proxy.te.ThermalExpansionProxy;
 import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 import logisticspipes.proxy.toolWrench.ToolWrenchProxy;
@@ -46,6 +48,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.model.ModelSign;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
@@ -136,7 +139,6 @@ public class ProxyManager {
 			@Override public void handleMesssage(int computerId, Object message, LogisticsTileGenericPipe tile, int sourceId) {}
 			@Override public void addCraftingRecipes() {}
 			@Override public Object getAnswer(Object object) {return object;}
-			@Override public Object getLP() {return null;}
 		}));
 		
 		SimpleServiceLocator.setThaumCraftProxy(getWrappedProxy("Thaumcraft", IThaumCraftProxy.class, ThaumCraftProxy.class, new IThaumCraftProxy() {
@@ -225,6 +227,15 @@ public class ProxyManager {
 		SimpleServiceLocator.setEnderStorageProxy(getWrappedProxy("EnderStorage", IEnderStorageProxy.class, EnderStorageProxy.class, new IEnderStorageProxy() {
 			@Override public boolean isEnderChestBlock(Block block) {return false;}
 			@Override public void openEnderChest(World world, int x, int y, int z, EntityPlayer player) {}
+		}));
+		
+		SimpleServiceLocator.setOpenComputersProxy(getWrappedProxy("OpenComputers@1.3", IOpenComputersProxy.class, OpenComputersProxy.class, new IOpenComputersProxy() {
+			@Override public void initLogisticsTileGenericPipe(LogisticsTileGenericPipe tile) {}
+			@Override public void handleLPWriteToNBT(LogisticsTileGenericPipe tile, NBTTagCompound nbt) {}
+			@Override public void handleLPReadFromNBT(LogisticsTileGenericPipe tile, NBTTagCompound nbt) {}
+			@Override public void handleLPInvalidate(LogisticsTileGenericPipe tile) {}
+			@Override public void handleLPChunkUnload(LogisticsTileGenericPipe tile) {}
+			@Override public void addToNetwork(LogisticsTileGenericPipe tile) {}
 		}));
 		
 		SimpleServiceLocator.setToolWrenchProxy(getWrappedProxy("!IToolWrench", IToolWrenchProxy.class, ToolWrenchProxy.class, new IToolWrenchProxy() {

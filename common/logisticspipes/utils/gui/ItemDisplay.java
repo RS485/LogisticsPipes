@@ -402,9 +402,8 @@ public class ItemDisplay {
 		return tooltip;
 	}
 
-	public void reset() {
+	public void resetAmount() {
 		requestCount = 1;
-		selectedItem = null;
 	}
 	
 	public void setMaxAmount() {

@@ -35,6 +35,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 	private final HashMap<ItemIdentifier, Integer> _contentsMap;
 	private final HashSet<ItemIdentifier> _contentsUndamagedSet;
 	private final HashSet<ItemIdentifier> _contentsNoNBTSet;
+	private final HashSet<ItemIdentifier> _contentsUndamagedNoNBTSet;
 	private final boolean isLiquidInvnetory;
 	
 	private final LinkedList<ISimpleInventoryEventHandler> _listener = new LinkedList<ISimpleInventoryEventHandler>(); 
@@ -46,6 +47,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 		_contentsMap = new HashMap<ItemIdentifier, Integer>((int)(size * 1.5));
 		_contentsUndamagedSet = new HashSet<ItemIdentifier>((int)(size * 1.5));
 		_contentsNoNBTSet = new HashSet<ItemIdentifier>((int)(size * 1.5));
+		_contentsUndamagedNoNBTSet = new HashSet<ItemIdentifier>((int)(size * 1.5));
 		isLiquidInvnetory = liquidInv;
 	}
 
@@ -332,6 +334,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 		_contentsMap.clear();
 		_contentsUndamagedSet.clear();
 		_contentsNoNBTSet.clear();
+		_contentsUndamagedNoNBTSet.clear();
 		for (int i = 0; i < _contents.length; i++) {
 			if(_contents[i] == null) continue;
 			ItemIdentifier itemId = _contents[i].getItem();
@@ -343,6 +346,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 			}
 			_contentsUndamagedSet.add(itemId.getUndamaged()); // add is cheaper than check then add; it just returns false if it is already there
 			_contentsNoNBTSet.add(itemId.getIgnoringNBT()); // add is cheaper than check then add; it just returns false if it is already there
+			_contentsUndamagedNoNBTSet.add(itemId.getIgnoringNBT().getUndamaged()); // add is cheaper than check then add; it just returns false if it is already there
 			
 		}
 	}
@@ -368,6 +372,10 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 
 	public boolean containsExcludeNBTItem(final ItemIdentifier item) {
 		return _contentsNoNBTSet.contains(item);
+	}
+
+	public boolean containsUndamagedExcludeNBTItem(final ItemIdentifier item) {
+		return _contentsUndamagedNoNBTSet.contains(item);
 	}
 
 	public boolean isEmpty() {

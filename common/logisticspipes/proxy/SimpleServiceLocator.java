@@ -27,6 +27,7 @@ import logisticspipes.proxy.interfaces.IIC2Proxy;
 import logisticspipes.proxy.interfaces.IIronChestProxy;
 import logisticspipes.proxy.interfaces.IModularPowersuitsProxy;
 import logisticspipes.proxy.interfaces.INEIProxy;
+import logisticspipes.proxy.interfaces.IOpenComputersProxy;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
 import logisticspipes.proxy.interfaces.IToolWrenchProxy;
@@ -195,7 +196,11 @@ public final class SimpleServiceLocator {
 	public static void setRoutedItemHelper(RoutedItemHelper helper) {
 		routedItemHelper = helper;
 	}
-	
+
+	public static IOpenComputersProxy openComputersProxy;
+	public static void setOpenComputersProxy(IOpenComputersProxy proxy) {
+		openComputersProxy = proxy;
+	}
 	public static IToolWrenchProxy toolWrenchHandler;
 	public static void setToolWrenchProxy(IToolWrenchProxy handler) {
 		toolWrenchHandler = handler;

@@ -1,10 +1,10 @@
-package logisticspipes.proxy.cc.objects;
+package logisticspipes.proxy.computers.objects;
 
-import logisticspipes.proxy.cc.interfaces.CCCommand;
-import logisticspipes.proxy.cc.interfaces.CCType;
-import logisticspipes.proxy.cc.interfaces.ICCTypeWrapped;
-import logisticspipes.proxy.cc.interfaces.ILPCCTypeDefinition;
-import logisticspipes.proxy.cc.objects.CCTriplet.CCTripletImplementation;
+import logisticspipes.proxy.computers.interfaces.CCCommand;
+import logisticspipes.proxy.computers.interfaces.CCType;
+import logisticspipes.proxy.computers.interfaces.ICCTypeWrapped;
+import logisticspipes.proxy.computers.interfaces.ILPCCTypeDefinition;
+import logisticspipes.proxy.computers.objects.CCTriplet.CCTripletImplementation;
 import logisticspipes.utils.tuples.Quartet;
 
 public class CCQuartet implements ILPCCTypeDefinition {

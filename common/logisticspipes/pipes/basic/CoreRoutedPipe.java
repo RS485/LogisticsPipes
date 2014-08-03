@@ -81,10 +81,10 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.buildcraft.gates.ActionDisableLogistics;
 import logisticspipes.proxy.cc.CCConstants;
-import logisticspipes.proxy.cc.interfaces.CCCommand;
-import logisticspipes.proxy.cc.interfaces.CCDirectCall;
-import logisticspipes.proxy.cc.interfaces.CCSecurtiyCheck;
-import logisticspipes.proxy.cc.interfaces.CCType;
+import logisticspipes.proxy.computers.interfaces.CCCommand;
+import logisticspipes.proxy.computers.interfaces.CCDirectCall;
+import logisticspipes.proxy.computers.interfaces.CCSecurtiyCheck;
+import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.renderer.IIconProvider;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.ExitRoute;
@@ -764,6 +764,11 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		upgradeManager.writeToNBT(upgradeNBT);
 		nbttagcompound.setTag("upgradeManager", upgradeNBT);
 
+		NBTTagCompound powerNBT = new NBTTagCompound();
+		powerHandler.writeToNBT(powerNBT);
+		if(!powerNBT.hasNoTags())
+			nbttagcompound.setCompoundTag("powerHandler", powerNBT);
+
 		NBTTagList sendqueue = new NBTTagList();
 		for(Triplet<IRoutedItem, ForgeDirection, ItemSendMode> p : _sendQueue) {
 			NBTTagCompound tagentry = new NBTTagCompound();
@@ -812,6 +817,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 			getLogisticsModule().readFromNBT(nbttagcompound);
 		}
 		upgradeManager.readFromNBT(nbttagcompound.getCompoundTag("upgradeManager"));
+		powerHandler.readFromNBT(nbttagcompound.getCompoundTag("powerHandler"));
 
 		_sendQueue.clear();
 		NBTTagList sendqueue = nbttagcompound.getTagList("sendqueue", nbttagcompound.getId());
@@ -1513,7 +1519,7 @@ outer:
 	@CCCommand(description="Returns the global LP object which is used to access general LP methods.", needPermission=false)
 	@CCDirectCall
 	public Object getLP() throws PermissionException {
-		return SimpleServiceLocator.ccProxy.getLP();
+		return LogisticsPipes.getComputerLP();
 	}
 	
 	@CCCommand(description="Returns true if the pipe has an internal module")

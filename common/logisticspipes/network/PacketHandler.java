@@ -18,7 +18,9 @@ import java.util.Map;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.exception.TargetNotFoundException;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import lombok.SneakyThrows;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -39,11 +41,23 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 
 	public static List<ModernPacket> packetlist;
 	public static Map<Class<? extends ModernPacket>, ModernPacket> packetmap;
+	
+	private static int packetDebugID = 1;
+	public static final Map<Integer, StackTraceElement[]> debugMap = new HashMap<Integer, StackTraceElement[]>();
 
 	@SuppressWarnings("unchecked")
 	// Suppressed because this cast should never fail.
 	public static <T extends ModernPacket> T getPacket(Class<T> clazz) {
-		return (T) packetmap.get(clazz).template();
+		T packet = (T) packetmap.get(clazz).template();
+		if(LogisticsPipes.DEBUG && MainProxy.proxy.getSide().equals("Client")) {
+			StackTraceElement[] trace = Thread.currentThread().getStackTrace();
+			synchronized(debugMap) { //Unique id
+				int id = packetDebugID++;
+				debugMap.put(id, trace);
+				packet.setDebugId(id);
+			}
+		}
+		return packet;
 	}
 
 	//horrible hack to carry the proper player for the side along...
@@ -125,6 +139,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 		ByteBuf payload = msg.payload();
 		int packetID = payload.readShort();
 		final ModernPacket packet = PacketHandler.packetlist.get(packetID).template();
+		packet.setDebugId(data.readInt());
 		ctx.attr(INBOUNDPACKETTRACKER).get().set(msg);
 		packet.readData(new LPDataInputStream(payload.slice()));
 		out.add(new InboundModernPacketWrapper(packet, MainProxy.proxy.getEntityPlayerFromNetHandler(msg.handler())));
@@ -140,6 +155,10 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 	//hacky callback to process packets coming from by the packetbufferhandler decompressors
 	//TODO replace with proper netty implementation
 	public static void onPacketData(LPDataInputStream s, EntityPlayer p) {
+		onPacketData(packet, (EntityPlayer) player);
+	}
+	
+	public static void onPacketData(ModernPacket packet, final EntityPlayer player) {
 		try {
 			int packetID = s.readShort();
 			final ModernPacket packet = PacketHandler.packetlist.get(packetID).template();
@@ -150,6 +169,17 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 				LogisticsPipes.log.error(packet.getClass().getName());
 				LogisticsPipes.log.error(packet.toString());
 				throw e;
+			}
+			if(LogisticsPipes.DEBUG) {
+				debugMap.remove((Integer) packet.getDebugId());
+			}
+		} catch(TargetNotFoundException e) {
+			if(packet.retry() && MainProxy.isClient(player.getEntityWorld())) {
+				SimpleServiceLocator.clientBufferHandler.queueFailedPacket(packet, player);
+			} else if(LogisticsPipes.DEBUG) {
+				LogisticsPipes.log.severe(packet.getClass().getName());
+				LogisticsPipes.log.severe(packet.toString());
+				e.printStackTrace();
 			}
 		} catch(Exception e) {
 			throw new RuntimeException(e);

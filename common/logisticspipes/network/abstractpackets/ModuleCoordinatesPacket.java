@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.World;
 
 @Accessors(chain=true)
 public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
@@ -76,10 +77,7 @@ public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
 			LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld());
 			moduleBased = false;
 			if(pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) {
-				if(LogisticsPipes.DEBUG) {
-					LogisticsPipes.log.fatal(this.toString());
-					new RuntimeException("Couldn't find " + clazz.getName() + ", pipe didn't exsist").printStackTrace();
-				}
+				targetNotFound("Couldn't find " + clazz.getName() + ", pipe didn't exsist");
 				return null;
 			}
 			module = ((CoreRoutedPipe)pipe.pipe).getLogisticsModule();
@@ -89,19 +87,13 @@ public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
 					DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
 					module = dummy.getModule();
 				} else {
-					if(LogisticsPipes.DEBUG) {
-						LogisticsPipes.log.fatal(this.toString());
-						new RuntimeException("Couldn't find " + clazz.getName() + ", container wasn't a DummyModule Container").printStackTrace();
-					}
+					targetNotFound("Couldn't find " + clazz.getName() + ", container wasn't a DummyModule Container");
 					return null;
 				}
 			} else {
 				module = MainProxy.proxy.getModuleFromGui();
 				if(module == null) {
-					if(LogisticsPipes.DEBUG) {
-						LogisticsPipes.log.fatal(this.toString());
-						new RuntimeException("Couldn't find " + clazz.getName() + ", GUI didn't provide the module").printStackTrace();
-					}
+					targetNotFound("Couldn't find " + clazz.getName() + ", GUI didn't provide the module");
 					return null;
 				}
 			}
@@ -110,45 +102,31 @@ public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
 			LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld());
 			moduleBased = false;
 			if(pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) {
-				if(LogisticsPipes.DEBUG) {
-					LogisticsPipes.log.fatal(this.toString());
-					new RuntimeException("Couldn't find " + clazz.getName() + ", pipe didn't exsist").printStackTrace();
-				}
+				targetNotFound("Couldn't find " + clazz.getName() + ", pipe didn't exsist");
 				return null;
 			}
 			if(!(pipe.pipe instanceof PipeLogisticsChassi)) {
-				if(LogisticsPipes.DEBUG) {
-					LogisticsPipes.log.fatal(this.toString());
-					new RuntimeException("Couldn't find " + clazz.getName() + ", pipe wasn't a chassi pipe").printStackTrace();
-				}
+				targetNotFound("Couldn't find " + clazz.getName() + ", pipe wasn't a chassi pipe");
 				return null;
 			}
 			module = ((PipeLogisticsChassi)pipe.pipe).getLogisticsModule().getSubModule(positionInt);
 		}
 		if(module != null) {
 			if(!(clazz.isAssignableFrom(module.getClass()))) {
-				if(LogisticsPipes.DEBUG) {
-					LogisticsPipes.log.fatal(this.toString());
-					new RuntimeException("Couldn't find " + clazz.getName() + ", found " + module.getClass()).printStackTrace();
-				}
+				targetNotFound("Couldn't find " + clazz.getName() + ", found " + module.getClass());
 				return null;
 			}
 		} else {
-			if(LogisticsPipes.DEBUG) {
-				LogisticsPipes.log.fatal(this.toString());
-				new RuntimeException("Couldn't find " + clazz.getName()).printStackTrace();
-			}
+			targetNotFound("Couldn't find " + clazz.getName());
 		}
 		return (T) module;
 	}
 
-	/*
 	@Override
 	public <T> T getTile(World world, Class<T> clazz) {
-		if(LogisticsPipes.DEBUG && !moduleBased) {
+		if(LogisticsPipes.DEBUG && !moduleBased && type != null) {
 			new Exception("ModulePacket was asked for a pipe").printStackTrace();
 		}
 		return super.getTile(world, clazz);
 	}
-	*/
 }

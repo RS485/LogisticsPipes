@@ -90,7 +90,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	
 				@Override
 				public boolean isFilteredItem(ItemIdentifier item) {
-					return inv.containsUndamagedItem(item);
+					return inv.containsUndamagedExcludeNBTItem(item.getIgnoringNBT().getUndamaged());
 				}
 	
 				@Override

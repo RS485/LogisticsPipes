@@ -6,9 +6,12 @@ import java.util.LinkedList;
 import java.util.concurrent.Callable;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.proxy.cc.interfaces.CCCommand;
-import logisticspipes.proxy.cc.interfaces.CCDirectCall;
-import logisticspipes.proxy.cc.interfaces.CCQueued;
+import logisticspipes.proxy.computers.interfaces.CCCommand;
+import logisticspipes.proxy.computers.interfaces.CCDirectCall;
+import logisticspipes.proxy.computers.interfaces.CCQueued;
+import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
+import logisticspipes.proxy.computers.wrapper.CCWrapperInformation;
+import logisticspipes.proxy.computers.wrapper.ICommandWrapper;
 import logisticspipes.security.PermissionException;
 import logisticspipes.ticks.QueuedTasks;
 
@@ -18,9 +21,14 @@ import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.ILuaObject;
 
 public class CCCommandWrapper implements ILuaObject {
-	private static int nextID = 0;
 	
-	public final int id = nextID++;
+	public static final ICommandWrapper WRAPPER = new ICommandWrapper() {
+		@Override
+		public Object getWrappedObject(CCWrapperInformation info, Object object) {
+			return new CCCommandWrapper(info, object);
+		}
+	};
+	
 	private CCWrapperInformation info;
 	private Object object;
 	public boolean isDirectCall;
@@ -125,36 +133,6 @@ public class CCCommandWrapper implements ILuaObject {
 		
 		if(match.getAnnotation(CCQueued.class) != null) {
 			final Method m = match;
-			String prefunction = null;
-			if(!(prefunction = match.getAnnotation(CCQueued.class).prefunction()).equals("")) {
-				if(object != null) {
-					Class<?> clazz = object.getClass();
-					while(true) {
-						for(Method method:clazz.getDeclaredMethods()) {
-							if(method.getName().equals(prefunction)) {
-								if(method.getParameterTypes().length > 0) {
-									throw new InternalError("Internal Excption (Code: 3)");
-								}
-								try {
-									method.invoke(object, new Object[]{});
-								} catch(InvocationTargetException e) {
-									if(e.getTargetException() instanceof Exception) {
-										throw new RuntimeException(e.getTargetException());
-									}
-									throw new RuntimeException(e);
-								} catch(IllegalAccessException e) {
-									throw new RuntimeException(e);
-								} catch(IllegalArgumentException e) {
-									throw new RuntimeException(e);
-								}
-								break;
-							}
-						}
-						if(clazz.getSuperclass() == Object.class) break;
-						clazz = clazz.getSuperclass();
-					}
-				}
-			}
 			final Object[] a = arguments;
 			final Object[] resultArray = new Object[1];
 			final Boolean[] booleans = new Boolean[2];
@@ -201,7 +179,7 @@ public class CCCommandWrapper implements ILuaObject {
 				//PermissionException
 				throw ((RuntimeException)resultArray[0]);
 			}
-			return CCObjectWrapper.createArray(CCObjectWrapper.getWrappedObject(resultArray[0]));
+			return CCObjectWrapper.createArray(CCObjectWrapper.getWrappedObject(resultArray[0], WRAPPER));
 		}
 		Object result;
 		try {
@@ -216,7 +194,7 @@ public class CCCommandWrapper implements ILuaObject {
 		} catch(IllegalArgumentException e) {
 			throw new RuntimeException(e);
 		}
-		return CCObjectWrapper.createArray(CCObjectWrapper.getWrappedObject(result));
+		return CCObjectWrapper.createArray(CCObjectWrapper.getWrappedObject(result, WRAPPER));
 	}
 
 	private Object[] help(Object[] arguments) {

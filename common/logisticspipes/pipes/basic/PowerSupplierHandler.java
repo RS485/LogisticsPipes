@@ -10,6 +10,10 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.tuples.Pair;
+import net.minecraft.nbt.NBTTagCompound;
+import buildcraft.api.power.IPowerReceptor;
+import buildcraft.api.power.PowerHandler.PowerReceiver;
+import buildcraft.api.power.PowerHandler.Type;
 
 public class PowerSupplierHandler {
 	private final static float INTERNAL_BC_BUFFER_MAX = 1000;
@@ -25,7 +29,22 @@ public class PowerSupplierHandler {
 	public PowerSupplierHandler(CoreRoutedPipe pipe) {
 		this.pipe = pipe;
 	}
-	
+
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
+		if(internal_BC_Buffer > 0)
+			nbttagcompound.setFloat("bufferMJ", internal_BC_Buffer);
+		if(internal_RF_Buffer > 0)
+			nbttagcompound.setFloat("bufferRF", internal_RF_Buffer);
+		if(internal_IC2_Buffer > 0)
+			nbttagcompound.setFloat("bufferEU", internal_IC2_Buffer);
+	}
+
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
+		internal_BC_Buffer = nbttagcompound.getFloat("bufferMJ");
+		internal_RF_Buffer = nbttagcompound.getFloat("bufferRF");
+		internal_IC2_Buffer = nbttagcompound.getFloat("bufferEU");
+	}
+
 	public void update() {
 		//TODO: workout new BC power system
 		/*

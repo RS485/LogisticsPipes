@@ -11,7 +11,7 @@ public class ModStatusHelper {
 			if(Loader.isModLoaded(modId)) {
 				ModContainer mod = Loader.instance().getIndexedModList().get(modId);
 				if(mod != null) {
-					return mod.getVersion().contains(version);
+					return mod.getVersion().startsWith(version);
 				}
 			}
 			return false;

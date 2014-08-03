@@ -632,11 +632,11 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	public void setPrevSatellite(EntityPlayer player) {
 		if (MainProxy.isClient(player.worldObj)) {
-			final CoordinatesPacket packet = PacketHandler.getPacket(CPipePrevSatellite.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
+			final CoordinatesPacket packet = PacketHandler.getPacket(CPipePrevSatellite.class).setModulePos(this);
 			MainProxy.sendPacketToServer(packet);
 		} else {
 			satelliteId = getNextConnectSatelliteId(true, -1);
-			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteId.class).setPipeId(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
+			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteId.class).setPipeId(satelliteId).setModulePos(this);
 			MainProxy.sendPacketToPlayer(packet, player);
 		}
 	}

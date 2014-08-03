@@ -79,7 +79,7 @@ public class RecipeManager {
 			"grg",
 			"cdc",
 			" G ",
-			Character.valueOf('G'), BuildCraftCore.goldGearItem,
+			Character.valueOf('G'), "gearGold",
 			Character.valueOf('g'), Blocks.glass,
 			Character.valueOf('d'), BuildCraftTransport.pipeItemsDiamond,
 			Character.valueOf('c'), BuildCraftTransport.pipeItemsCobblestone,
@@ -90,7 +90,7 @@ public class RecipeManager {
 			" G ",
 			"rPr",
 			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe,
-			Character.valueOf('G'), BuildCraftCore.goldGearItem,
+			Character.valueOf('G'), "gearGold",
 			Character.valueOf('r'), Items.redstone
 		});
 
@@ -107,7 +107,7 @@ public class RecipeManager {
 			"U",
 			"B",
 			Character.valueOf('B'), LogisticsPipes.LogisticsProviderPipeMk1,
-			Character.valueOf('U'), BuildCraftCore.diamondGearItem
+			Character.valueOf('U'), "gearDiamond"
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsProviderPipeMk2, 1), CraftingDependency.Fast_Crafting, new Object[] {
@@ -122,7 +122,7 @@ public class RecipeManager {
 			"P",
 			"S",
 			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe,
-			Character.valueOf('S'), BuildCraftCore.stoneGearItem,
+			Character.valueOf('S'), "gearStone",
 			Character.valueOf('r'), Items.redstone
 		});
 		
@@ -143,8 +143,8 @@ public class RecipeManager {
 			"P",
 			"i",
 			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe,
-			Character.valueOf('g'), BuildCraftCore.goldGearItem,
-			Character.valueOf('i'), BuildCraftCore.ironGearItem
+			Character.valueOf('g'), "gearGold",
+			Character.valueOf('i'), "gearIron"
 		});
 
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsRequestPipeMk1, 1), CraftingDependency.Basic, new Object[] {
@@ -153,7 +153,7 @@ public class RecipeManager {
 			"i",
 			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe,
 			Character.valueOf('g'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
-			Character.valueOf('i'), BuildCraftCore.ironGearItem
+			Character.valueOf('i'), "gearIron"
 		});
 
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsRequestPipeMk2, 1), CraftingDependency.Fast_Crafting, new Object[] {
@@ -161,7 +161,7 @@ public class RecipeManager {
 			"B",
 			"r",
 			Character.valueOf('B'), LogisticsPipes.LogisticsRequestPipeMk1,
-			Character.valueOf('U'), BuildCraftCore.diamondGearItem,
+			Character.valueOf('U'), "gearDiamond",
 			Character.valueOf('r'), Items.redstone
 		});
 		
@@ -177,7 +177,7 @@ public class RecipeManager {
 			"B",
 			"r",
 			Character.valueOf('B'), LogisticsPipes.LogisticsCraftingPipeMk1,
-			Character.valueOf('U'), BuildCraftCore.goldGearItem,
+			Character.valueOf('U'), "gearGold",
 			Character.valueOf('r'), Items.redstone
 		});
 		
@@ -241,7 +241,7 @@ public class RecipeManager {
 			"CGC",
 			"rBr",
 			Character.valueOf('C'), "dyeGreen",
-			Character.valueOf('G'), BuildCraftCore.ironGearItem,
+			Character.valueOf('G'), "gearIron",
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
@@ -258,7 +258,7 @@ public class RecipeManager {
 			"CGC",
 			"rBr",
 			Character.valueOf('C'), "dyeRed",
-			Character.valueOf('G'), BuildCraftCore.ironGearItem,
+			Character.valueOf('G'), "gearIron",
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
@@ -275,7 +275,7 @@ public class RecipeManager {
 			"CGC",
 			"rBr",
 			Character.valueOf('C'), "dyeBlue",
-			Character.valueOf('G'), BuildCraftCore.ironGearItem,
+			Character.valueOf('G'), "gearIron",
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
@@ -299,7 +299,7 @@ public class RecipeManager {
 			"U",
 			"B",
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.EXTRACTOR),
-			Character.valueOf('U'), BuildCraftCore.goldGearItem
+			Character.valueOf('U'), "gearGold"
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.EXTRACTOR_MK2), CraftingDependency.High_Tech_Modules, new Object[] {
@@ -313,7 +313,7 @@ public class RecipeManager {
 			"U",
 			"B",
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ADVANCED_EXTRACTOR),
-			Character.valueOf('U'), BuildCraftCore.goldGearItem
+			Character.valueOf('U'), "gearGold"
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ADVANCED_EXTRACTOR_MK2), CraftingDependency.High_Tech_Modules, new Object[] {
@@ -334,7 +334,7 @@ public class RecipeManager {
 			"U",
 			"B",
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.EXTRACTOR_MK2),
-			Character.valueOf('U'), BuildCraftCore.diamondGearItem
+			Character.valueOf('U'), "gearDiamond"
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.EXTRACTOR_MK3), CraftingDependency.High_Tech_Modules, new Object[] {
@@ -348,7 +348,7 @@ public class RecipeManager {
 			"U",
 			"B",
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ADVANCED_EXTRACTOR_MK2),
-			Character.valueOf('U'), BuildCraftCore.diamondGearItem
+			Character.valueOf('U'), "gearDiamond"
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ADVANCED_EXTRACTOR_MK3), CraftingDependency.High_Tech_Modules, new Object[] {
@@ -369,7 +369,7 @@ public class RecipeManager {
 			"CGC",
 			"rBr",
 			Character.valueOf('C'), "dyeOrange",
-			Character.valueOf('G'), BuildCraftCore.ironGearItem,
+			Character.valueOf('G'), "gearIron",
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
@@ -386,7 +386,7 @@ public class RecipeManager {
 			"CGC",
 			"rBr",
 			Character.valueOf('C'), "dyeBlue",
-			Character.valueOf('G'), BuildCraftCore.diamondGearItem,
+			Character.valueOf('G'), "gearDiamond",
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
@@ -404,7 +404,7 @@ public class RecipeManager {
 			"rBr",
 			Character.valueOf('C'), "dyeBlack",
 			Character.valueOf('D'), "dyePurple",
-			Character.valueOf('G'), BuildCraftCore.ironGearItem,
+			Character.valueOf('G'), "gearIron",
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
@@ -422,7 +422,7 @@ public class RecipeManager {
 			"CGC",
 			"rBr",
 			Character.valueOf('C'), "dyeBlue",
-			Character.valueOf('G'), BuildCraftCore.goldGearItem,
+			Character.valueOf('G'), "gearGold",
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
@@ -439,7 +439,7 @@ public class RecipeManager {
 			"U",
 			"B",
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.PROVIDER),
-			Character.valueOf('U'), BuildCraftCore.diamondGearItem
+			Character.valueOf('U'), "gearDiamond"
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.PROVIDER_MK2), CraftingDependency.High_Tech_Modules, new Object[] {
@@ -453,7 +453,7 @@ public class RecipeManager {
 			"U",
 			"B",
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ITEMSINK),
-			Character.valueOf('U'), BuildCraftCore.goldGearItem
+			Character.valueOf('U'), "gearGold"
 		});
 
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.MODBASEDITEMSINK), CraftingDependency.Sink_Modules, new Object[] {
@@ -486,7 +486,7 @@ public class RecipeManager {
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ENCHANTMENTSINK_MK2), CraftingDependency.Sink_Modules, new Object[] {
 			"U",
 			"B",
-			Character.valueOf('U'), BuildCraftCore.goldGearItem,
+			Character.valueOf('U'), "gearGold",
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ENCHANTMENTSINK)
 		});
 		
@@ -585,7 +585,7 @@ public class RecipeManager {
 			" G ",
 			" g ",
 			Character.valueOf('g'), Items.gold_ingot,
-			Character.valueOf('G'), BuildCraftCore.goldGearItem
+			Character.valueOf('G'), "gearGold"
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsNetworkMonitior, 1), CraftingDependency.Basic, new Object[] {
@@ -601,7 +601,7 @@ public class RecipeManager {
 			"gg",
 			"DD",
 			Character.valueOf('g'), Blocks.glass,
-			Character.valueOf('D'), BuildCraftCore.diamondGearItem
+			Character.valueOf('D'), "gearDiamond"
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsRemoteOrderer, 1, 0), CraftingDependency.DistanceRequest, new Object[] {
@@ -645,9 +645,9 @@ public class RecipeManager {
 			"G G",
 			" S ",
 			" D ",
-			Character.valueOf('G'), BuildCraftCore.goldGearItem,
+			Character.valueOf('G'), "gearGold",
 			Character.valueOf('S'), Items.sign,
-			Character.valueOf('D'), BuildCraftCore.diamondGearItem
+			Character.valueOf('D'), "gearDiamond"
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsCraftingSignCreator, 1), CraftingDependency.Information_System, new Object[] {
@@ -681,7 +681,7 @@ public class RecipeManager {
 			"iDi",
 			"rBr",
 			"iii",
-			Character.valueOf('D'), new ItemStack(BuildCraftCore.diamondGearItem, 1),
+			Character.valueOf('D'), "gearDiamond",
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), LogisticsPipes.LogisticsBasicPipe,
 			Character.valueOf('i'), Items.iron_ingot
@@ -704,7 +704,7 @@ public class RecipeManager {
 			Character.valueOf('w'), "plankWood",
 			Character.valueOf('C'), Blocks.crafting_table,
 			Character.valueOf('S'), Blocks.chest,
-			Character.valueOf('G'), BuildCraftCore.stoneGearItem
+			Character.valueOf('G'), "gearStone"
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_FUZZYCRAFTING_TABLE), CraftingDependency.Basic, new Object[] { 
@@ -844,7 +844,7 @@ public class RecipeManager {
 			"RgR", 
 			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
 			Character.valueOf('R'), Items.redstone, 
-			Character.valueOf('g'), BuildCraftCore.woodenGearItem, 
+			Character.valueOf('g'), "gearWood"
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 10), CraftingDependency.Upgrades, new Object[] { 

@@ -7,6 +7,7 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.pipe.PipeFluidUpdate;
 import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.SafeTimeTracker;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -15,9 +16,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
-import buildcraft.BuildCraftCore;
-import buildcraft.api.core.SafeTimeTracker;
-import buildcraft.core.utils.Utils;
 
 public class PipeFluidTransportLogistics extends PipeTransportLogistics implements IFluidHandler {
 
@@ -146,18 +144,18 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 	/*
 	 * BuildCraft Fluid Sync Code
 	 */
-	private final SafeTimeTracker tracker = new SafeTimeTracker();
-	private long clientSyncCounter = BuildCraftCore.longUpdateFactor - 10;
+	private final SafeTimeTracker tracker = new SafeTimeTracker(10);
+	private long clientSyncCounter = 30;
 	public byte initClient = 0;
 	
 	private static final ForgeDirection[] orientations = ForgeDirection.values();
 
 	private void updateFluid() {
 		if(MainProxy.isClient(getWorld())) return;
-		if (tracker.markTimeIfDelay(getWorld(), BuildCraftCore.updateFactor)) {
+		if (tracker.markTimeIfDelay(getWorld())) {
 
 			boolean init = false;
-			if (++clientSyncCounter > BuildCraftCore.longUpdateFactor) {
+			if (++clientSyncCounter > 40) {
 				clientSyncCounter = 0;
 				init = true;
 			}

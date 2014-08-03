@@ -1,27 +1,23 @@
 package logisticspipes.renderer;
 
+import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
+import logisticspipes.LPConstants;
 import logisticspipes.pipes.PipeBlockRequestTable;
+import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.side.ClientProxy;
+import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.textures.Textures;
+import logisticspipes.utils.MatrixTranformations;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.BuildCraftTransport;
-import buildcraft.api.core.IIconProvider;
-import buildcraft.core.CoreConstants;
-import buildcraft.core.utils.MatrixTranformations;
-import buildcraft.transport.BlockGenericPipe;
-import buildcraft.transport.PipeIconProvider;
-import buildcraft.transport.PipeRenderState;
-import buildcraft.transport.TransportProxy;
-import buildcraft.transport.render.FacadeRenderHelper;
-import buildcraft.transport.render.PipeRendererWorld;
 
-public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
+public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler {
 
-	public void renderPipe(RenderBlocks renderblocks, IBlockAccess iblockaccess, BlockGenericPipe block, LogisticsTileGenericPipe pipe, int x, int y, int z) {
+	public void renderPipe(RenderBlocks renderblocks, IBlockAccess iblockaccess, LogisticsBlockGenericPipe block, LogisticsTileGenericPipe pipe, int x, int y, int z) {
 		if(pipe.pipe instanceof PipeBlockRequestTable) {
 			PipeRenderState state = pipe.renderState;
 			IIconProvider icons = pipe.getPipeIcons();
@@ -59,8 +55,8 @@ public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
 				resetToCenterDimensions(dim);
 				
 				// extend block towards dir as it's connected to there
-				dim[dir / 2] = dir % 2 == 0 ? 0 : CoreConstants.PIPE_MAX_POS;
-				dim[dir / 2 + 3] = dir % 2 == 0 ? CoreConstants.PIPE_MIN_POS : 1;
+				dim[dir / 2] = dir % 2 == 0 ? 0 : LPConstants.PIPE_MAX_POS;
+				dim[dir / 2 + 3] = dir % 2 == 0 ? LPConstants.PIPE_MIN_POS : 1;
 	
 				// the mask points to all faces perpendicular to dir, i.e. dirs 0+1 -> mask 111100, 1+2 -> 110011, 3+5 -> 001111
 				int renderMask = (3 << (dir / 2 * 2)) ^ 0x3f;
@@ -97,8 +93,8 @@ public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
 				resetToCenterDimensions(dim);
 				
 				// extend block towards dir as it's connected to there
-				dim[dir / 2] = dir % 2 == 0 ? 0 : CoreConstants.PIPE_MAX_POS;
-				dim[dir / 2 + 3] = dir % 2 == 0 ? CoreConstants.PIPE_MIN_POS : 1;
+				dim[dir / 2] = dir % 2 == 0 ? 0 : LPConstants.PIPE_MAX_POS;
+				dim[dir / 2 + 3] = dir % 2 == 0 ? LPConstants.PIPE_MIN_POS : 1;
 	
 				// the mask points to all faces perpendicular to dir, i.e. dirs 0+1 -> mask 111100, 1+2 -> 110011, 3+5 -> 001111
 				int renderMask = (3 << (dir / 2 * 2)) ^ 0x3f;
@@ -124,14 +120,14 @@ public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
 	}
 
 	private void resetToCenterDimensions(float[] dim) {
-		for (int i = 0; i < 3; i++) dim[i] = CoreConstants.PIPE_MIN_POS;
-		for (int i = 3; i < 6; i++) dim[i] = CoreConstants.PIPE_MAX_POS;
+		for (int i = 0; i < 3; i++) dim[i] = LPConstants.PIPE_MIN_POS;
+		for (int i = 3; i < 6; i++) dim[i] = LPConstants.PIPE_MAX_POS;
 	}
 
 	/**
 	 * Render a block with normal and inverted vertex order so back face culling doesn't have any effect.
 	 */
-	private void renderOneWayBlock(RenderBlocks renderblocks, BlockGenericPipe block, int x, int y, int z, float[] dim, int mask) {
+	private void renderOneWayBlock(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, int x, int y, int z, float[] dim, int mask) {
 		assert mask != 0;
 
 		block.setRenderMask(mask);
@@ -142,7 +138,7 @@ public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
 	/**
 	 * Render a block with normal and inverted vertex order so back face culling doesn't have any effect.
 	 */
-	private void renderTwoWayBlock(RenderBlocks renderblocks, BlockGenericPipe block, int x, int y, int z, float[] dim, int mask) {
+	private void renderTwoWayBlock(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, int x, int y, int z, float[] dim, int mask) {
 		assert mask != 0;
 
 		block.setRenderMask(mask);
@@ -156,7 +152,7 @@ public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
 		renderblocks.flipTexture = false;
 	}
 
-	private void pipeFacadeRenderer(RenderBlocks renderblocks, BlockGenericPipe block, PipeRenderState state, int x, int y, int z) {
+	private void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z) {
 		FacadeRenderHelper.pipeFacadeRenderer(renderblocks, block, state, x, y, z);
 	}
 
@@ -220,17 +216,18 @@ public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
 
 		if (tile instanceof LogisticsTileGenericPipe) {
 			LogisticsTileGenericPipe pipeTile = (LogisticsTileGenericPipe) tile;
-			renderPipe(renderer, world, (BlockGenericPipe) block, pipeTile, x, y, z);
-		} else {
-			super.renderWorldBlock(world, x, y, z, block, modelId, renderer);
+			renderPipe(renderer, world, (LogisticsBlockGenericPipe) block, pipeTile, x, y, z);
 		}
 		return true;
 	}
 
 	@Override
 	public int getRenderId() {
-		return TransportProxy.pipeModel;
+		return ClientProxy.pipeModel;
 	}
-	
-	
+
+	@Override
+	public boolean shouldRender3DInInventory(int modelId) {
+		return false;
+	}
 }

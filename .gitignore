@@ -32,3 +32,11 @@ run
 #LP
 api
 sign
+
+#MC
+config/**
+crash-reports/**
+logs/**
+mods/**
+saves/**
+options.txt

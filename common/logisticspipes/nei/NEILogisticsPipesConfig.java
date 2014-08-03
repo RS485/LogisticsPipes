@@ -37,7 +37,7 @@ public class NEILogisticsPipesConfig implements IConfigureNEI {
 		main.add(LogisticsPipes.LogisticsRemoteOrderer);
 		main.add(LogisticsPipes.LogisticsCraftingSignCreator);
 		
-		Item[] pipeArray = BuildCraftProxy.pipelist.toArray(new Item[]{});
+		//Item[] pipeArray = BuildCraftProxy.pipelist.toArray(new Item[]{});
 		/*
 		Arrays.sort(pipeArray, new Comparator<Item>() {
 			@Override
@@ -51,14 +51,14 @@ public class NEILogisticsPipesConfig implements IConfigureNEI {
 				}
 			}
 		});
-		*/
 		MultiItemRange pipes = new MultiItemRange();
 		for(Item pipe: pipeArray) {
 			if(pipe != LogisticsPipes.LogisticsChassisPipeMk1 && pipe != LogisticsPipes.LogisticsChassisPipeMk2 && pipe != LogisticsPipes.LogisticsChassisPipeMk3 && pipe != LogisticsPipes.LogisticsChassisPipeMk4 && pipe != LogisticsPipes.LogisticsChassisPipeMk5) {
 				pipes.add(pipe);
 			}
 		}
-
+*/
+		
 		MultiItemRange pipesChassi = new MultiItemRange();
 		pipesChassi.add(LogisticsPipes.LogisticsChassisPipeMk1);
 		pipesChassi.add(LogisticsPipes.LogisticsChassisPipeMk2);
@@ -71,7 +71,7 @@ public class NEILogisticsPipesConfig implements IConfigureNEI {
 		
 		addSetRange("LogisticsPipes", main);
 		addSetRange("LogisticsPipes.Modules", modules);
-		addSetRange("LogisticsPipes.Pipes", pipes);
+		//addSetRange("LogisticsPipes.Pipes", pipes);
 		addSetRange("LogisticsPipes.Pipes.Chassi", pipesChassi);
 
 		API.registerRecipeHandler(new NEISolderingStationRecipeManager());

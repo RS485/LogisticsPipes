@@ -29,12 +29,12 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.PriorityBlockingQueue;
 
-import buildcraft.api.core.IIconProvider;
 import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
+import logisticspipes.interfaces.IClientState;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IQueueCCEvent;
@@ -59,6 +59,8 @@ import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -83,6 +85,7 @@ import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCDirectCall;
 import logisticspipes.proxy.cc.interfaces.CCSecurtiyCheck;
 import logisticspipes.proxy.cc.interfaces.CCType;
+import logisticspipes.renderer.IIconProvider;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
@@ -123,16 +126,11 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
-import buildcraft.BuildCraftTransport;
-import buildcraft.api.gates.IAction;
-import buildcraft.core.network.IClientState;
-import buildcraft.transport.Pipe;
-import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @CCType(name = "LogisticsPipes:Normal")
-public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implements IClientState, IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IPipeServiceProvider, IQueueCCEvent {
+public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClientState, IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IPipeServiceProvider, IQueueCCEvent {
 
 	public enum ItemSendMode {
 		Normal,
@@ -316,7 +314,6 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		WorldUtil worldUtil = new WorldUtil(this.getWorld(), this.getX(), this.getY(), this.getZ());
 		LinkedList<IInventory> adjacent = new LinkedList<IInventory>();
 		for (AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)){
-			if (tile.tile instanceof TileGenericPipe) continue;
 			if (!(tile.tile instanceof IInventory)) continue;
 			adjacent.add(InventoryHelper.getInventory((IInventory)tile.tile));
 		}
@@ -536,6 +533,8 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 				e.printStackTrace();
 			}
 		} else if(!blockRemove) {
+			/*
+			 * XXX: Move this to TE
 			final World worldCache = getWorld();
 			final int xCache = getX();
 			final int yCache = getY();
@@ -553,6 +552,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 					return null;
 				}
 			});
+			*/
 		}
 	}
 	
@@ -947,7 +947,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			return true;
 		}
 
-		if(SimpleServiceLocator.buildCraftProxy.isUpgradeManagerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
+		if(SimpleServiceLocator.toolWrenchHandler.isUpgradeManagerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
 			if(MainProxy.isServer(entityplayer.worldObj)) {
 				if (settings == null || settings.openUpgrades) {
 					getUpgradeManager().openGui(entityplayer, this);
@@ -958,7 +958,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			return true;
 		}
 
-		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && SimpleServiceLocator.buildCraftProxy.canWrench(entityplayer, this.getX(), this.getY(), this.getZ())) {
+		if (SimpleServiceLocator.toolWrenchHandler.isWrenchEquipped(entityplayer) && SimpleServiceLocator.toolWrenchHandler.canWrench(entityplayer, this.getX(), this.getY(), this.getZ())) {
 			if(MainProxy.isServer(entityplayer.worldObj)) {
 				if (settings == null || settings.openGui) {
 					if (getLogisticsModule() != null && getLogisticsModule() instanceof LogisticsGuiModule) {
@@ -970,7 +970,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
 				}
 			}
-			SimpleServiceLocator.buildCraftProxy.wrenchUsed(entityplayer, this.getX(), this.getY(), this.getZ());
+			SimpleServiceLocator.toolWrenchHandler.wrenchUsed(entityplayer, this.getX(), this.getY(), this.getZ());
 			return true;
 		}
 
@@ -1098,7 +1098,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	public boolean globalIgnoreConnectionDisconnection = false;
 	
 	public final boolean canPipeConnect(TileEntity tile, ForgeDirection dir, boolean ignoreSystemDisconnection) {
-		ForgeDirection side = OrientationsUtil.getOrientationOfTilewithPipe(this.transport, tile);
+		ForgeDirection side = OrientationsUtil.getOrientationOfTilewithTile(this.container, tile);
 		if(getUpgradeManager().isSideDisconnected(side)) {
 			return false;
 		}
@@ -1624,7 +1624,6 @@ outer:
 	public IInventory getRealInventory() {
 		TileEntity tile = getPointedTileEntity();
 		if (tile == null ) return null;
-		if (tile instanceof TileGenericPipe) return null;
 		if (!(tile instanceof IInventory)) return null;
 		return InventoryHelper.getInventory((IInventory) tile);
 	}
@@ -1797,12 +1796,12 @@ outer:
 	}
 
 	@Override
-	public void writeData(ByteBuf data) {
+	public void writeData(LPDataOutputStream data) throws IOException {
 		data.writeBoolean(isOpaque());
 	}
 
 	@Override
-	public void readData(ByteBuf data) {
+	public void readData(LPDataInputStream data) throws IOException {
 		isOpaqueClientSide = data.readBoolean();
 	}
 

@@ -105,7 +105,6 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.tileentity.TileEntity;
@@ -179,7 +178,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		WorldUtil wUtil = new WorldUtil(getWorld(), _service.getX(), _service.getY(), _service.getZ());
 		for(AdjacentTile tile: wUtil.getAdjacentTileEntities(true)) {
 			if(!(tile.tile instanceof IInventory)) continue;
-			if(tile.tile instanceof TileGenericPipe) continue;
 			IInventory base = (IInventory)tile.tile;
 			if(base instanceof net.minecraft.inventory.ISidedInventory) {
 				base = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory)base, tile.orientation.getOpposite(), false);
@@ -1027,7 +1025,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				}
 			}
 			
-			if(!found) found = (tile.tile instanceof IInventory && !(tile.tile instanceof TileGenericPipe));
+			if(!found) found = (tile.tile instanceof IInventory);
 			
 			if(found) {
 				Block block = getWorld().getBlock(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord);
@@ -1336,7 +1334,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		WorldUtil worldUtil = new WorldUtil(this.getWorld(), this.getX(), this.getY(), this.getZ());
 		LinkedList<AdjacentTile> crafters = new LinkedList<AdjacentTile>();
 		for (AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)){
-			if (tile.tile instanceof TileGenericPipe) continue;
 			if (!(tile.tile instanceof IInventory)) continue;
 			crafters.add(tile);
 		}

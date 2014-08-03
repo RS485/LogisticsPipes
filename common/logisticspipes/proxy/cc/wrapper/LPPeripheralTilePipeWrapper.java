@@ -19,7 +19,7 @@ public class LPPeripheralTilePipeWrapper implements IPeripheral {
 	}
 
 	@Override
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws Exception {
+	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
 		pipe.currentPC = computer;
 		wrapped.isDirectCall = true;
 		Object[] result = wrapped.callMethod(context, method, arguments);

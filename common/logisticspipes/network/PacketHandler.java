@@ -85,6 +85,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 		}
 	}
 
+	//TODO correct to work with WeakReference (See FML original)
 	protected static final AttributeKey<ThreadLocal<FMLProxyPacket>> INBOUNDPACKETTRACKER = new AttributeKey<ThreadLocal<FMLProxyPacket>>("lp:inboundpacket");
 
 	@Override
@@ -94,13 +95,22 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 		ctx.attr(INBOUNDPACKETTRACKER).set(new ThreadLocal<FMLProxyPacket>());
 	}
 
-	@Override
-	protected final void encode(ChannelHandlerContext ctx, ModernPacket msg, List<Object> out) throws Exception
-	{
+	//Used to provide the Description packet
+	public static FMLProxyPacket toFMLPacket(ModernPacket msg) throws Exception {
+		return toFMLPacket(msg, MainProxy.networkChannelName);
+	}
+	
+	private static FMLProxyPacket toFMLPacket(ModernPacket msg, String channel) throws Exception {
 		ByteBuf buffer = Unpooled.buffer();
 		buffer.writeShort(msg.getId());
 		msg.writeData(new LPDataOutputStream(buffer));
-		FMLProxyPacket proxy = new FMLProxyPacket(buffer.copy(), ctx.channel().attr(NetworkRegistry.FML_CHANNEL).get());
+		return new FMLProxyPacket(buffer.copy(), channel);
+	}
+
+	@Override
+	protected final void encode(ChannelHandlerContext ctx, ModernPacket msg, List<Object> out) throws Exception
+	{
+		FMLProxyPacket proxy = toFMLPacket(msg, ctx.channel().attr(NetworkRegistry.FML_CHANNEL).get());
 		FMLProxyPacket old = ctx.attr(INBOUNDPACKETTRACKER).get().get();
 		if (old != null)
 		{

@@ -36,7 +36,6 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.transport.TileGenericPipe;
 
 
 /**
@@ -79,7 +78,7 @@ public class PathFinder {
 		result = this.getConnectedRoutingPipes(startPipe, EnumSet.allOf(PipeRoutingConnectionType.class), ForgeDirection.UNKNOWN);
 	}
 	
-	public PathFinder(TileGenericPipe startPipe, int maxVisited, int maxLength) {
+	public PathFinder(LogisticsTileGenericPipe startPipe, int maxVisited, int maxLength) {
 		this(SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(startPipe), maxVisited, maxLength);
 	}
 	

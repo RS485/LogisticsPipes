@@ -53,7 +53,6 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
-import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -205,7 +204,6 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 
 		WorldUtil worldUtil = new WorldUtil(_world.getWorld(), getX(), getY(), getZ());
 		for (AdjacentTile tile :  worldUtil.getAdjacentTileEntities(true)){
-			if (tile.tile instanceof TileGenericPipe) continue;
 			if (!(tile.tile instanceof IInventory)) continue;
 			
 			IInventory inv = (IInventory) tile.tile;

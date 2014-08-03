@@ -4,8 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-
-import buildcraft.transport.Pipe;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
@@ -43,6 +41,8 @@ import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
+import logisticspipes.pipes.basic.CoreUnroutedPipe;
+import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.item.ItemIdentifierInventory;
@@ -63,7 +63,6 @@ import net.minecraft.world.World;
 
 import org.lwjgl.input.Keyboard;
 
-import buildcraft.transport.BlockGenericPipe;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -287,8 +286,8 @@ public class ItemModule extends LogisticsItem {
 			TileEntity tile = par3World.getTileEntity(par4, par5, par6);
 			if(tile instanceof LogisticsTileGenericPipe) {
 				if (par2EntityPlayer.getDisplayName().equals("ComputerCraft")) { //Allow turtle to place modules in pipes.
-					Pipe<?> pipe = BlockGenericPipe.getPipe(par3World, par4, par5, par6);
-					if (BlockGenericPipe.isValid(pipe)){
+					CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(par3World, par4, par5, par6);
+					if (LogisticsBlockGenericPipe.isValid(pipe)){
 						pipe.blockActivated(par2EntityPlayer);
 					}
 				}

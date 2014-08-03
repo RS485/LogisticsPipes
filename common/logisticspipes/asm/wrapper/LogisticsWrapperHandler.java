@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.proxy.DontLoadProxy;
 import logisticspipes.proxy.VersionNotSupportedException;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IGenericProgressProvider;
@@ -216,8 +217,10 @@ public class LogisticsWrapperHandler {
 				if(e1 instanceof VersionNotSupportedException) {
 					throw (VersionNotSupportedException) e1;
 				}
-				e1.printStackTrace();
-				e = e1;
+				if(!(e1 instanceof DontLoadProxy)) {
+					e1.printStackTrace();
+					e = e1;
+				}
 			} catch(NoClassDefFoundError e1) {
 				e1.printStackTrace();
 				e = e1;

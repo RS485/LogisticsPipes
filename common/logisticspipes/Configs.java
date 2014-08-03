@@ -24,6 +24,8 @@ public class Configs {
 	public static final float LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER = 10F;
 
 	public static int LOGISTICS_HUD_RENDER_DISTANCE = 15;
+	
+	public static int PIPE_CONTENTS_RENDER_DIST = 24; //TODO
 
 	public static boolean LOGISTICS_POWER_USAGE_DISABLED = false;
 	public static boolean ENABLE_RESEARCH_SYSTEM = false;

@@ -368,7 +368,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 	
 	@Override
 	@ModDependentMethod(modId="ComputerCraft@1.6")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws Exception {
+	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
 		return new Object[]{this.getPowerLevel()};
 	}
 	

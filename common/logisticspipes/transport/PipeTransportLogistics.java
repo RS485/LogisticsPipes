@@ -16,8 +16,10 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import logisticspipes.Configs;
+import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
+import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.interfaces.IBufferItems;
 import logisticspipes.interfaces.IInventoryUtil;
@@ -34,6 +36,7 @@ import logisticspipes.network.packets.pipe.PipePositionPacket;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
 import logisticspipes.pipes.upgrades.UpgradeManager;
@@ -55,32 +58,19 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.api.gates.ITrigger;
-import buildcraft.api.power.IPowerReceptor;
-import buildcraft.api.transport.IPipeTile;
-import buildcraft.api.transport.IPipeTile.PipeType;
-import buildcraft.core.IMachine;
-import buildcraft.core.inventory.Transactor;
-import buildcraft.transport.BlockGenericPipe;
-import buildcraft.transport.Pipe;
-import buildcraft.transport.PipeTransport;
-import buildcraft.transport.PipeTransportItems;
-import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.TransportConstants;
-import buildcraft.transport.TravelingItem;
 
-public class PipeTransportLogistics extends PipeTransport {
+public class PipeTransportLogistics {
 	
 	private final int																					_bufferTimeOut	= 20 * 2;														// 2 Seconds
 	private final HashMap<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>>	_itemBuffer		= new HashMap<ItemIdentifierStack, Pair<Integer, Integer>>();
 	private Chunk																						chunk;
 	public LPItemList																					items = new LPItemList(this);
-	
-	@Override
+	public LogisticsTileGenericPipe 																	container;
+
 	public void initialize() {
-		super.initialize();
 		if(MainProxy.isServer(getWorld())) {
 			// cache chunk for marking dirty
 			chunk = getWorld().getChunkFromBlockCoords(container.xCoord, container.zCoord);
@@ -92,8 +82,8 @@ public class PipeTransportLogistics extends PipeTransport {
 			// items are crossing a chunk boundary, mark both chunks modified
 			if(container.xCoord >> 4 != tile.xCoord >> 4 || container.zCoord >> 4 != tile.zCoord >> 4) {
 				chunk.isModified = true;
-				if(tile instanceof TileGenericPipe && ((TileGenericPipe)tile).pipe != null && ((TileGenericPipe)tile).pipe.transport instanceof PipeTransportLogistics && ((PipeTransportLogistics)((TileGenericPipe)tile).pipe.transport).chunk != null) {
-					((PipeTransportLogistics)((TileGenericPipe)tile).pipe.transport).chunk.isModified = true;
+				if(tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe)tile).pipe != null && ((LogisticsTileGenericPipe)tile).pipe.transport instanceof PipeTransportLogistics && ((PipeTransportLogistics)((LogisticsTileGenericPipe)tile).pipe.transport).chunk != null) {
+					((PipeTransportLogistics)((LogisticsTileGenericPipe)tile).pipe.transport).chunk.isModified = true;
 				} else {
 					getWorld().getChunkFromChunkCoords(tile.xCoord, tile.zCoord).isModified = true;
 				}
@@ -105,7 +95,6 @@ public class PipeTransportLogistics extends PipeTransport {
 		return (CoreRoutedPipe)container.pipe;
 	}
 	
-	@Override
 	public void updateEntity() {
 		moveSolids();
 		if(!_itemBuffer.isEmpty()) {
@@ -259,9 +248,7 @@ public class PipeTransportLogistics extends PipeTransport {
 		return value;
 	}
 	
-	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
-		super.readFromNBT(nbt);
 		
 		NBTTagList nbttaglist = nbt.getTagList("travelingEntities", 10);
 		
@@ -292,9 +279,7 @@ public class PipeTransportLogistics extends PipeTransport {
 		
 	}
 	
-	@Override
 	public void writeToNBT(NBTTagCompound nbt) {
-		super.writeToNBT(nbt);
 		
 		{
 			NBTTagList nbttaglist = new NBTTagList();
@@ -346,9 +331,9 @@ public class PipeTransportLogistics extends PipeTransport {
 		float multiplyerSpeed = 1.0F + (0.02F * getPipe().getUpgradeManager().getSpeedUpgradeCount());
 		float multiplyerPower = 1.0F + (0.03F * getPipe().getUpgradeManager().getSpeedUpgradeCount());
 		
-		float add = Math.max(item.getSpeed(), TransportConstants.PIPE_NORMAL_SPEED * defaultBoost * multiplyerPower) - item.getSpeed();
+		float add = Math.max(item.getSpeed(), LPConstants.PIPE_NORMAL_SPEED * defaultBoost * multiplyerPower) - item.getSpeed();
 		if(getPipe().useEnergy((int)(add * 50 + 0.5))) {
-			item.setSpeed(Math.min(Math.max(item.getSpeed(), TransportConstants.PIPE_NORMAL_SPEED * defaultBoost * multiplyerSpeed), 1.0F));
+			item.setSpeed(Math.min(Math.max(item.getSpeed(), LPConstants.PIPE_NORMAL_SPEED * defaultBoost * multiplyerSpeed), 1.0F));
 		}
 	}
 	
@@ -379,7 +364,7 @@ public class PipeTransportLogistics extends PipeTransport {
 				SimpleServiceLocator.specialtileconnection.transmit(tile, arrivingItem);
 			}
 		}
-		if(tile instanceof IPipeTile) {
+		if(tile instanceof LogisticsTileGenericPipe || SimpleServiceLocator.buildCraftProxy.isIPipeTile(tile)) {
 			if(passToNextPipe(arrivingItem, tile)) return;
 		} else if(tile instanceof IInventory) {
 			// items.scheduleRemoval(arrivingItem);
@@ -467,7 +452,7 @@ public class PipeTransportLogistics extends PipeTransport {
 	}
 	
 	protected void handleTileReachedClient(LPTravelingItemClient arrivingItem, TileEntity tile) {
-		if(tile instanceof IPipeTile) {
+		if(tile instanceof LogisticsTileGenericPipe || SimpleServiceLocator.buildCraftProxy.isIPipeTile(tile)) {
 			passToNextPipe(arrivingItem, tile);
 		}
 		// Just ignore any other case
@@ -480,18 +465,18 @@ public class PipeTransportLogistics extends PipeTransport {
 	
 	protected void insertedItemStack(ItemIdentifierStack item, ItemRoutingInformation info, TileEntity tile) {}
 	
-	@Override
 	public boolean canPipeConnect(TileEntity tile, ForgeDirection side) {
 		if(tile instanceof ILogisticsPowerProvider || tile instanceof ISubSystemPowerProvider) {
-			ForgeDirection ori = OrientationsUtil.getOrientationOfTilewithPipe(this, tile);
+			ForgeDirection ori = OrientationsUtil.getOrientationOfTilewithTile(this.container, tile);
 			if(ori != null && ori != ForgeDirection.UNKNOWN) {
 				if((tile instanceof LogisticsPowerJunctionTileEntity || tile instanceof ISubSystemPowerProvider) && !OrientationsUtil.isSide(ori)) { return false; }
 				return true;
 			}
 		}
 		if(SimpleServiceLocator.betterStorageProxy.isBetterStorageCrate(tile) || SimpleServiceLocator.factorizationProxy.isBarral(tile)
-				|| (Configs.TE_PIPE_SUPPORT && SimpleServiceLocator.thermalExpansionProxy.isItemConduit(tile) && SimpleServiceLocator.thermalExpansionProxy.isSideFree(tile, side.getOpposite().ordinal())) || (this.getPipe().getUpgradeManager().hasBCPowerSupplierUpgrade() && tile instanceof IPowerReceptor)
+				//|| (Configs.TE_PIPE_SUPPORT && SimpleServiceLocator.thermalExpansionProxy.isItemConduit(tile) && SimpleServiceLocator.thermalExpansionProxy.isSideFree(tile, side.getOpposite().ordinal())) || (this.getPipe().getUpgradeManager().hasBCPowerSupplierUpgrade() && tile instanceof IPowerReceptor)
 				|| (this.getPipe().getUpgradeManager().hasRFPowerSupplierUpgrade() && SimpleServiceLocator.thermalExpansionProxy.isEnergyHandler(tile)) || (this.getPipe().getUpgradeManager().getIC2PowerLevel() > 0 && SimpleServiceLocator.IC2Proxy.isEnergySink(tile))) { return true; }
+		/*
 		if(tile instanceof TileGenericPipe) {
 			Pipe<?> pipe2 = ((TileGenericPipe)tile).pipe;
 			if(BlockGenericPipe.isValid(pipe2)) {
@@ -499,41 +484,25 @@ public class PipeTransportLogistics extends PipeTransport {
 				return true;
 			}
 		}
+		*/
+		if(!SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) return true;
 		if(tile instanceof ISidedInventory) {
 			int[] slots = ((ISidedInventory)tile).getAccessibleSlotsFromSide(side.getOpposite().ordinal());
 			return slots != null && slots.length > 0;
 		}
-		return tile instanceof TileGenericPipe || (tile instanceof IInventory && ((IInventory)tile).getSizeInventory() > 0) || (tile instanceof IMachine && ((IMachine)tile).manageSolids());
-	}
-
-	private SecurityManager hackToGetCaller = new SecurityManager() {
-		@Override
-		public Object getSecurityContext() {
-			return this.getClassContext();
-		}
-	};
-	
-	@Override
-	public PipeType getPipeType() {
-		Class<?>[] caller = (Class<?>[]) hackToGetCaller.getSecurityContext();
-		if(caller[3].getName().equals("buildcraft.core.utils.Utils")) {
-			return PipeType.ITEM;
-		}
-		if(LogisticsPipes.LogisticsPipeType == null) {
-			return PipeType.STRUCTURE;
-		}
-		return LogisticsPipes.LogisticsPipeType; // Don't let BC render the Pipe content
+		return SimpleServiceLocator.pipeInformaitonManager.isPipe(tile) || (tile instanceof IInventory && ((IInventory)tile).getSizeInventory() > 0) || SimpleServiceLocator.buildCraftProxy.isMachineManagingSolids(tile);
 	}
 	
+	/*
 	public void defaultReajustSpeed(TravelingItem item) {
 		float speed = item.getSpeed();
 		
-		if(speed > TransportConstants.PIPE_NORMAL_SPEED) {
-			speed -= TransportConstants.PIPE_NORMAL_SPEED;
+		if(speed > LPConstants.PIPE_NORMAL_SPEED) {
+			speed -= LPConstants.PIPE_NORMAL_SPEED;
 		}
 		
-		if(speed < TransportConstants.PIPE_NORMAL_SPEED) {
-			speed = TransportConstants.PIPE_NORMAL_SPEED;
+		if(speed < LPConstants.PIPE_NORMAL_SPEED) {
+			speed = LPConstants.PIPE_NORMAL_SPEED;
 		}
 		
 		item.setSpeed(speed);
@@ -552,6 +521,7 @@ public class PipeTransportLogistics extends PipeTransport {
 		
 		return false;
 	}
+	*/
 	
 	private void moveSolids() {
 		items.flush();
@@ -586,7 +556,7 @@ public class PipeTransportLogistics extends PipeTransport {
 	private boolean passToNextPipe(LPTravelingItem item, TileEntity tile) {
 		if(tile instanceof LogisticsTileGenericPipe) {
 			LogisticsTileGenericPipe pipe = (LogisticsTileGenericPipe)tile;
-			if(BlockGenericPipe.isValid(pipe.pipe) && pipe.pipe.transport instanceof PipeTransportLogistics) {
+			if(LogisticsBlockGenericPipe.isValid(pipe.pipe) && pipe.pipe.transport instanceof PipeTransportLogistics) {
 				((PipeTransportLogistics)pipe.pipe.transport).injectItem(item, item.output);
 				return true;
 			}
@@ -598,6 +568,7 @@ public class PipeTransportLogistics extends PipeTransport {
 	/**
 	 * Accept items from BC
 	 */
+	@ModDependentMethod(modId="BuildCraft|Transport")
 	public void injectItem(TravelingItem item, ForgeDirection inputOrientation) {
 		if(MainProxy.isServer(this.getWorld())) {
 			if(item instanceof LPRoutedBCTravelingItem) {
@@ -634,11 +605,6 @@ public class PipeTransportLogistics extends PipeTransport {
 	
 	protected void neighborChange() {}
 	
-	public boolean isTriggerActive(ITrigger trigger) {
-		return false;
-	}
-	
-	@Override
 	public void dropContents() {
 		if(MainProxy.isServer(this.getWorld())) {
 			for(LPTravelingItem item: items) {
@@ -648,7 +614,6 @@ public class PipeTransportLogistics extends PipeTransport {
 		items.clear();
 	}
 	
-	@Override
 	public boolean delveIntoUnloadedChunks() {
 		return true;
 	}
@@ -691,5 +656,17 @@ public class PipeTransportLogistics extends PipeTransport {
 	
 	public void sendItem(ItemStack stackToSend) {
 		this.injectItem((LPTravelingItem)SimpleServiceLocator.routedItemHelper.createNewTravelItem(stackToSend), ForgeDirection.UP);
+	}
+	
+	public World getWorld() {
+		return container.getWorldObj();
+	}
+
+	public void onNeighborBlockChange(int blockId) {}
+
+	public void onBlockPlaced() {}
+
+	public void setTile(LogisticsTileGenericPipe tile) {
+		container = tile;
 	}
 }

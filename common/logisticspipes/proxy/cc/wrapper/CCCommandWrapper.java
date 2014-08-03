@@ -45,7 +45,7 @@ public class CCCommandWrapper implements ILuaObject {
 	}
 
 	@Override
-	public Object[] callMethod(ILuaContext context, int methodId, Object[] arguments) throws Exception {
+	public Object[] callMethod(ILuaContext context, int methodId, Object[] arguments) {
 		if(methodId == 0) {
 			return help(arguments);
 		}
@@ -112,9 +112,13 @@ public class CCCommandWrapper implements ILuaObject {
 					info.securityMethod.invoke(object);
 				} catch(InvocationTargetException e) {
 					if(e.getTargetException() instanceof Exception) {
-						throw (Exception) e.getTargetException();
+						throw new RuntimeException(e.getTargetException());
 					}
-					throw e;
+					throw new RuntimeException(e);
+				} catch(IllegalAccessException e) {
+					throw new RuntimeException(e);
+				} catch(IllegalArgumentException e) {
+					throw new RuntimeException(e);
 				}
 			}
 		}
@@ -135,9 +139,13 @@ public class CCCommandWrapper implements ILuaObject {
 									method.invoke(object, new Object[]{});
 								} catch(InvocationTargetException e) {
 									if(e.getTargetException() instanceof Exception) {
-										throw (Exception) e.getTargetException();
+										throw new RuntimeException(e.getTargetException());
 									}
-									throw e;
+									throw new RuntimeException(e);
+								} catch(IllegalAccessException e) {
+									throw new RuntimeException(e);
+								} catch(IllegalArgumentException e) {
+									throw new RuntimeException(e);
 								}
 								break;
 							}
@@ -175,19 +183,23 @@ public class CCCommandWrapper implements ILuaObject {
 			});
 			int count = 0;
 			while(!booleans[0] && count < 200) {
-				Thread.sleep(10);
+				try {
+					Thread.sleep(10);
+				} catch(InterruptedException e) {
+					throw new RuntimeException(e);
+				}
 				count++;
 			}
 			if(count >= 199) {
 				LogisticsPipes.log.warn("CC call " + m.getName() + " on " + object.getClass().getName() + ", (" + object.toString() + ") took too long.");
-				throw new Exception("Took too long");
+				throw new RuntimeException("Took too long");
 			}
 			if(m.getReturnType().equals(Void.class)) {
 				return null;
 			}
 			if(booleans[1]) {
 				//PermissionException
-				throw ((Exception)resultArray[0]);
+				throw ((RuntimeException)resultArray[0]);
 			}
 			return CCObjectWrapper.createArray(CCObjectWrapper.getWrappedObject(resultArray[0]));
 		}
@@ -196,9 +208,13 @@ public class CCCommandWrapper implements ILuaObject {
 			result = match.invoke(this.object, arguments);
 		} catch(InvocationTargetException e) {
 			if(e.getTargetException() instanceof Exception) {
-				throw (Exception) e.getTargetException();
+				throw new RuntimeException(e.getTargetException());
 			}
-			throw e;
+			throw new RuntimeException(e);
+		} catch(IllegalAccessException e) {
+			throw new RuntimeException(e);
+		} catch(IllegalArgumentException e) {
+			throw new RuntimeException(e);
 		}
 		return CCObjectWrapper.createArray(CCObjectWrapper.getWrappedObject(result));
 	}

@@ -3,10 +3,10 @@ package logisticspipes.logisticspipes;
 import java.util.LinkedList;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.AdjacentTile;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.transport.TileGenericPipe;
 
 /**
  * This class is responsible for handling incoming items for standard pipes
@@ -38,7 +38,7 @@ public class PipeTransportLayer extends TransportLayer{
 		// 1st prio, deliver to adjacent IInventories
 		
 		for (AdjacentTile tile : adjacentEntities) {
-			if (tile.tile instanceof TileGenericPipe) continue;
+			if (SimpleServiceLocator.pipeInformaitonManager.isPipe(tile.tile)) continue;
 			if (_router.isRoutedExit(tile.orientation)) continue;
 			if(denyed != null && denyed.equals(tile.orientation)) continue;
 			

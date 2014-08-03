@@ -20,6 +20,7 @@ import logisticspipes.pipefxhandlers.providers.EntityOrangeSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityRedSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityVioletSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityWhiteSparkleFXProvider;
+import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -31,7 +32,6 @@ import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
@@ -40,9 +40,6 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
-import buildcraft.transport.Pipe;
-import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.render.PipeRendererTESR;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
@@ -50,6 +47,8 @@ import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ClientProxy implements IProxy {
 	
+	public static int	pipeModel = -1;
+
 	@Override
 	public String getSide() {
 		return "Client";
@@ -70,13 +69,11 @@ public class ClientProxy implements IProxy {
 		GameRegistry.registerTileEntity(LogisticsSecurityTileEntity.class, "logisticspipes.blocks.LogisticsSecurityTileEntity");
 		GameRegistry.registerTileEntity(LogisticsCraftingTableTileEntity.class, "logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity");
 		GameRegistry.registerTileEntity(LogisticsTileGenericPipe.class, LogisticsPipes.logisticsTileGenericPipeMapping);
+		
+		pipeModel = RenderingRegistry.getNextAvailableRenderId();
+		
 		LogisticsRenderPipe lrp = new LogisticsRenderPipe();
 		ClientRegistry.bindTileEntitySpecialRenderer(LogisticsTileGenericPipe.class, lrp);
-		SimpleServiceLocator.buildCraftProxy.resetItemRotation(lrp);
-		Object brp = TileEntityRendererDispatcher.instance.mapSpecialRenderers.get(TileGenericPipe.class);
-		if(brp instanceof PipeRendererTESR) {
-			SimpleServiceLocator.buildCraftProxy.resetItemRotation((PipeRendererTESR) brp);
-		}
 		RenderingRegistry.registerBlockHandler(new LogisticsPipeWorldRenderer());
 	}
 
@@ -193,7 +190,7 @@ public class ClientProxy implements IProxy {
 	}
 
 	@Override
-	public void setIconProviderFromPipe(ItemLogisticsPipe item, Pipe<?> dummyPipe) {
+	public void setIconProviderFromPipe(ItemLogisticsPipe item, CoreUnroutedPipe dummyPipe) {
 		item.setPipesIcons(dummyPipe.getIconProvider());
 	}
 

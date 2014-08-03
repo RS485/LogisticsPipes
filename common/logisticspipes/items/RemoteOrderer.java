@@ -9,6 +9,7 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.pipe.RequestPipeDimension;
 import logisticspipes.pipes.PipeItemsRemoteOrdererLogistics;
+import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.string.StringUtil;
@@ -24,8 +25,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
 import org.lwjgl.input.Keyboard;
-
-import buildcraft.transport.Pipe;
 
 public class RemoteOrderer extends Item {
 	final static IIcon[]	_icons	= new IIcon[17];
@@ -110,7 +109,7 @@ public class RemoteOrderer extends Item {
 		if(world == null) { return null; }
 		TileEntity tile = world.getTileEntity(stack.stackTagCompound.getInteger("connectedPipe-x"), stack.stackTagCompound.getInteger("connectedPipe-y"), stack.stackTagCompound.getInteger("connectedPipe-z"));
 		if(!(tile instanceof LogisticsTileGenericPipe)) { return null; }
-		Pipe<?> pipe = ((LogisticsTileGenericPipe)tile).pipe;
+		CoreUnroutedPipe pipe = ((LogisticsTileGenericPipe)tile).pipe;
 		if(pipe instanceof PipeItemsRemoteOrdererLogistics) { return (PipeItemsRemoteOrdererLogistics)pipe; }
 		return null;
 	}

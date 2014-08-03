@@ -1,5 +1,6 @@
 package logisticspipes.renderer;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -9,13 +10,11 @@ import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
 
-import buildcraft.BuildCraftTransport;
-
 public class LogisticsPipeBlockRenderer implements IItemRenderer {
 	private void renderBlockItem(RenderBlocks render, ItemStack item, float translateX, float translateY, float translateZ) {
 		Tessellator tessellator = Tessellator.instance;
 
-		Block block = BuildCraftTransport.genericPipeBlock;
+		Block block = LogisticsPipes.LogisticsPipeBlock;
 		
 		block.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 		block.setBlockBoundsForItemRender();

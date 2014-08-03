@@ -10,9 +10,6 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.tuples.Pair;
-import buildcraft.api.power.IPowerReceptor;
-import buildcraft.api.power.PowerHandler.PowerReceiver;
-import buildcraft.api.power.PowerHandler.Type;
 
 public class PowerSupplierHandler {
 	private final static float INTERNAL_BC_BUFFER_MAX = 1000;
@@ -30,6 +27,8 @@ public class PowerSupplierHandler {
 	}
 	
 	public void update() {
+		//TODO: workout new BC power system
+		/*
 		if(this.pipe.getUpgradeManager().hasBCPowerSupplierUpgrade()) {
 			//Use Buffer
 			WorldUtil worldUtil = new WorldUtil(this.pipe.getWorld(), this.pipe.getX(), this.pipe.getY(), this.pipe.getZ());
@@ -99,6 +98,7 @@ public class PowerSupplierHandler {
 				}
 			}
 		}
+		*/
 		if(SimpleServiceLocator.thermalExpansionProxy.isTE() && this.pipe.getUpgradeManager().hasRFPowerSupplierUpgrade()) {
 			//Use Buffer
 			WorldUtil worldUtil = new WorldUtil(this.pipe.getWorld(), this.pipe.getX(), this.pipe.getY(), this.pipe.getZ());

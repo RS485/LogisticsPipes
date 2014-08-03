@@ -5,11 +5,10 @@ import java.util.Map;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.transactor.ITransactor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.core.inventory.ITransactor;
-import buildcraft.core.inventory.filters.IStackFilter;
 
 public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransactor {
 	public abstract boolean init();
@@ -41,14 +40,5 @@ public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransa
 			}
 		}
 		return stack;
-	}
-
-	@Override
-	public ItemStack remove(IStackFilter filter, ForgeDirection orientation, boolean doRemove) {
-		//Currently unimplemented because LP has it's own methods
-		if(LogisticsPipes.DEBUG) {
-			throw new UnsupportedOperationException();
-		}
-		return null;
 	}
 }

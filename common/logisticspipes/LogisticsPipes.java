@@ -10,6 +10,7 @@ package logisticspipes;
 
 import java.lang.reflect.Field;
 import java.util.Calendar;
+import java.util.Map;
 
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.blocks.LogisticsSolidBlock;
@@ -17,6 +18,7 @@ import logisticspipes.commands.LogisticsPipesCommand;
 import logisticspipes.commands.chathelper.LPChatListener;
 import logisticspipes.items.ItemDisk;
 import logisticspipes.items.ItemHUDArmor;
+import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.ItemParts;
 import logisticspipes.items.ItemPipeController;
@@ -34,8 +36,39 @@ import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.network.GuiHandler;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.pipes.PipeBlockRequestTable;
+import logisticspipes.pipes.PipeFluidBasic;
+import logisticspipes.pipes.PipeFluidExtractor;
+import logisticspipes.pipes.PipeFluidInsertion;
+import logisticspipes.pipes.PipeFluidProvider;
+import logisticspipes.pipes.PipeFluidRequestLogistics;
 import logisticspipes.pipes.PipeFluidSatellite;
+import logisticspipes.pipes.PipeFluidSupplierMk2;
+import logisticspipes.pipes.PipeItemsApiaristAnalyser;
+import logisticspipes.pipes.PipeItemsApiaristSink;
+import logisticspipes.pipes.PipeItemsBasicLogistics;
+import logisticspipes.pipes.PipeItemsCraftingLogistics;
+import logisticspipes.pipes.PipeItemsCraftingLogisticsMk2;
+import logisticspipes.pipes.PipeItemsCraftingLogisticsMk3;
+import logisticspipes.pipes.PipeItemsFirewall;
+import logisticspipes.pipes.PipeItemsFluidSupplier;
+import logisticspipes.pipes.PipeItemsInvSysConnector;
+import logisticspipes.pipes.PipeItemsProviderLogistics;
+import logisticspipes.pipes.PipeItemsProviderLogisticsMk2;
+import logisticspipes.pipes.PipeItemsRemoteOrdererLogistics;
+import logisticspipes.pipes.PipeItemsRequestLogistics;
+import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
+import logisticspipes.pipes.PipeItemsSupplierLogistics;
+import logisticspipes.pipes.PipeItemsSystemDestinationLogistics;
+import logisticspipes.pipes.PipeItemsSystemEntranceLogistics;
+import logisticspipes.pipes.PipeLogisticsChassiMk1;
+import logisticspipes.pipes.PipeLogisticsChassiMk2;
+import logisticspipes.pipes.PipeLogisticsChassiMk3;
+import logisticspipes.pipes.PipeLogisticsChassiMk4;
+import logisticspipes.pipes.PipeLogisticsChassiMk5;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.ProxyManager;
@@ -66,6 +99,7 @@ import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.renderer.FluidContainerRenderer;
 import logisticspipes.renderer.LogisticsHUDRenderer;
+import logisticspipes.renderer.LogisticsPipeBlockRenderer;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.routing.pathfinder.PipeInformaitonManager;
@@ -85,15 +119,17 @@ import logisticspipes.utils.RoutedItemHelper;
 import net.minecraft.block.Block;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.EnumHelper;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.logging.log4j.Logger;
 
-import buildcraft.api.transport.IPipeTile.PipeType;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
@@ -227,27 +263,11 @@ public class LogisticsPipes {
 	public static final String logisticsTileGenericPipeMapping = "logisticspipes.pipes.basic.LogisticsTileGenericPipe";
 	
 	public static CreativeTabLP LPCreativeTab = new CreativeTabLP();
-	public static PipeType LogisticsPipeType;
 	
 	public static Logger log;
 	
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
-		String BCVersion = null;
-		try {
-			Field versionField = buildcraft.core.Version.class.getDeclaredField("VERSION");
-			BCVersion = (String) versionField.get(null);
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		String expectedBCVersion = "6.0.10";
-		if(BCVersion != null) {
-			if(!BCVersion.equals("@VERSION@") && !BCVersion.contains(expectedBCVersion)) {
-				throw new VersionNotSupportedException("BC", BCVersion, expectedBCVersion, "");
-			}
-		} else {
-			log.info("Couldn't check the BC Version.");
-		}
 		
 		//Register Network channels
 		MainProxy.createChannels();
@@ -286,14 +306,9 @@ public class LogisticsPipes {
 		MinecraftForge.EVENT_BUS.register(new LPChatListener());
 		textures.registerBlockIcons(null);
 		
-		SimpleServiceLocator.buildCraftProxy.initProxyAndCheckVersion();
+		SimpleServiceLocator.buildCraftProxy.initProxy();
 
 		FMLCommonHandler.instance().bus().register(DebugGuiTickHandler.instance());
-		
-		LogisticsPipeType = EnumHelper.addEnum(PipeType.class, "LOGISTICS", new Class<?>[]{}, new Object[]{});
-//		FMLInterModComms.sendMessage("Waila", "register", this.getClass()
-//		 .getPackage().getName()
-//		 + ".waila.WailaRegister.register");
 	}
 	
 	@EventHandler
@@ -375,7 +390,7 @@ public class LogisticsPipes {
 		LogisticsParts.setUnlocalizedName("logisticsParts");
 		GameRegistry.registerItem(LogisticsParts, LogisticsParts.getUnlocalizedName());
 		
-		SimpleServiceLocator.buildCraftProxy.registerTrigger();
+		//SimpleServiceLocator.buildCraftProxy.registerTrigger();
 		
 		ModuleItem = new ItemModule();
 		ModuleItem.setUnlocalizedName("itemModule");
@@ -418,7 +433,7 @@ public class LogisticsPipes {
 		LogisticsPipeBlock = new LogisticsBlockGenericPipe();
 		GameRegistry.registerBlock(LogisticsPipeBlock, "logisticsPipeBlock");
 
-		SimpleServiceLocator.buildCraftProxy.registerPipes(event.getSide());
+		registerPipes(event.getSide());
 		
 		SimpleServiceLocator.IC2Proxy.addCraftingRecipes();
 		SimpleServiceLocator.forestryProxy.addCraftingRecipes();
@@ -454,6 +469,8 @@ public class LogisticsPipes {
 		FluidIdentifier.initFromForge(false);
 
 		new VersionChecker();
+		
+		SimpleServiceLocator.buildCraftProxy.resetItemRotation();
 	}
 	
 	@EventHandler
@@ -482,6 +499,80 @@ public class LogisticsPipes {
 			System.out.println("[LogisticsPipes|Certificate] File: " + warning.source.getAbsolutePath());
 			System.out.println("[LogisticsPipes|Certificate] This in not a LogisticsPipes version from RS485.");
 			certificateError = true;
+		}
+	}
+	
+	public void registerPipes(Side side) {
+		LogisticsPipes.LogisticsBasicPipe = createPipe(PipeItemsBasicLogistics.class, "Basic Logistics Pipe", side);
+		LogisticsPipes.LogisticsRequestPipeMk1 = createPipe(PipeItemsRequestLogistics.class, "Request Logistics Pipe", side);
+		LogisticsPipes.LogisticsProviderPipeMk1 = createPipe(PipeItemsProviderLogistics.class, "Provider Logistics Pipe", side);
+		LogisticsPipes.LogisticsCraftingPipeMk1 = createPipe(PipeItemsCraftingLogistics.class, "Crafting Logistics Pipe", side);
+		LogisticsPipes.LogisticsSatellitePipe = createPipe(PipeItemsSatelliteLogistics.class, "Satellite Logistics Pipe", side);
+		LogisticsPipes.LogisticsSupplierPipe = createPipe(PipeItemsSupplierLogistics.class, "Supplier Logistics Pipe", side);
+		LogisticsPipes.LogisticsChassisPipeMk1 = createPipe(PipeLogisticsChassiMk1.class, "Logistics Chassi Mk1", side);
+		LogisticsPipes.LogisticsChassisPipeMk2 = createPipe(PipeLogisticsChassiMk2.class, "Logistics Chassi Mk2", side);
+		LogisticsPipes.LogisticsChassisPipeMk3 = createPipe(PipeLogisticsChassiMk3.class, "Logistics Chassi Mk3", side);
+		LogisticsPipes.LogisticsChassisPipeMk4 = createPipe(PipeLogisticsChassiMk4.class, "Logistics Chassi Mk4", side);
+		LogisticsPipes.LogisticsChassisPipeMk5 = createPipe(PipeLogisticsChassiMk5.class, "Logistics Chassi Mk5", side);
+		LogisticsPipes.LogisticsCraftingPipeMk2 = createPipe(PipeItemsCraftingLogisticsMk2.class, "Crafting Logistics Pipe MK2", side);
+		LogisticsPipes.LogisticsRequestPipeMk2 = createPipe(PipeItemsRequestLogisticsMk2.class, "Request Logistics Pipe MK2", side);
+		LogisticsPipes.LogisticsRemoteOrdererPipe = createPipe(PipeItemsRemoteOrdererLogistics.class, "Remote Orderer Pipe", side);
+		LogisticsPipes.LogisticsProviderPipeMk2 = createPipe(PipeItemsProviderLogisticsMk2.class, "Provider Logistics Pipe MK2", side);
+		LogisticsPipes.LogisticsApiaristAnalyzerPipe = createPipe(PipeItemsApiaristAnalyser.class, "Apiarist Logistics Analyser Pipe", side);
+		LogisticsPipes.LogisticsApiaristSinkPipe = createPipe(PipeItemsApiaristSink.class, "Apiarist Logistics Analyser Pipe", side);
+		LogisticsPipes.LogisticsInvSysConPipe = createPipe(PipeItemsInvSysConnector.class, "Logistics Inventory System Connector", side);
+		LogisticsPipes.LogisticsEntrancePipe = createPipe(PipeItemsSystemEntranceLogistics.class, "Logistics System Entrance Pipe", side);
+		LogisticsPipes.LogisticsDestinationPipe = createPipe(PipeItemsSystemDestinationLogistics.class, "Logistics System Destination Pipe", side);
+		LogisticsPipes.LogisticsCraftingPipeMk3 = createPipe(PipeItemsCraftingLogisticsMk3.class, "Crafting Logistics Pipe MK3", side);
+		LogisticsPipes.LogisticsFirewallPipe = createPipe(PipeItemsFirewall.class, "Firewall Logistics Pipe", side);
+		
+		LogisticsPipes.LogisticsFluidSupplierPipeMk1 = createPipe(PipeItemsFluidSupplier.class, "Fluid Supplier Logistics Pipe", side);
+		
+		LogisticsPipes.LogisticsFluidBasicPipe = createPipe(PipeFluidBasic.class, "Basic Logistics Fluid Pipe", side);
+		LogisticsPipes.LogisticsFluidInsertionPipe = createPipe(PipeFluidInsertion.class, "Logistics Fluid Insertion Pipe", side);
+		LogisticsPipes.LogisticsFluidProviderPipe = createPipe(PipeFluidProvider.class, "Logistics Fluid Provider Pipe", side);
+		LogisticsPipes.LogisticsFluidRequestPipe = createPipe(PipeFluidRequestLogistics.class, "Logistics Fluid Request Pipe", side);
+		LogisticsPipes.LogisticsFluidExtractorPipe = createPipe(PipeFluidExtractor.class, "Logistics Fluid Extractor Pipe", side);
+		LogisticsPipes.LogisticsFluidSatellitePipe = createPipe(PipeFluidSatellite.class, "Logistics Fluid Satellite Pipe", side);
+		LogisticsPipes.LogisticsFluidSupplierPipeMk2 = createPipe(PipeFluidSupplierMk2.class, "Logistics Fluid Supplier Pipe Mk2", side);
+	
+		LogisticsPipes.logisticsRequestTable = createPipe(PipeBlockRequestTable.class, "Request Table", side);
+	}
+	
+	protected Item createPipe(Class <? extends CoreUnroutedPipe> clas, String descr, Side side) {
+		ItemLogisticsPipe res = LogisticsBlockGenericPipe.registerPipe(clas);
+		res.setCreativeTab(LogisticsPipes.LPCreativeTab);
+		res.setUnlocalizedName(clas.getSimpleName());
+		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.createPipe(res);
+		if(pipe instanceof CoreRoutedPipe) {
+			res.setPipeIconIndex(((CoreRoutedPipe)pipe).getTextureType(ForgeDirection.UNKNOWN).normal);
+		}
+		
+		if(side.isClient()) {
+			if(pipe instanceof PipeBlockRequestTable) {
+				MinecraftForgeClient.registerItemRenderer(res, new LogisticsPipeBlockRenderer());
+			} else {
+				MinecraftForgeClient.registerItemRenderer(res, TransportProxyClient.pipeItemRenderer);
+			}
+		}
+		if(clas != PipeItemsBasicLogistics.class) {
+			if(clas != PipeFluidBasic.class && PipeFluidBasic.class.isAssignableFrom(clas)) {
+				registerShapelessResetRecipe(res, 0, LogisticsPipes.LogisticsFluidBasicPipe, 0);
+			} else {
+				registerShapelessResetRecipe(res, 0, LogisticsPipes.LogisticsBasicPipe, 0);
+			}
+		}
+		GameRegistry.registerItem(res, res.getUnlocalizedName());
+		return res;
+	}
+
+	protected void registerShapelessResetRecipe(Item fromItem, int fromData, Item toItem, int toData) {
+		for(int j=1;j < 10; j++) {
+			Object[] obj = new Object[j];
+			for(int k=0;k<j;k++) {
+				obj[k] = new ItemStack(fromItem, 1, toData);
+			}
+			CraftingManager.getInstance().addShapelessRecipe(new ItemStack(toItem, j, fromData), obj);
 		}
 	}
 }

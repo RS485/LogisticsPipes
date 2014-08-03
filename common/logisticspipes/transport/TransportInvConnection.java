@@ -1,6 +1,5 @@
 package logisticspipes.transport;
 
-import buildcraft.transport.TravelingItem;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.utils.item.ItemIdentifierStack;

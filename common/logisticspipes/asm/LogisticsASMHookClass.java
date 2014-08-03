@@ -11,8 +11,6 @@ import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.item.ItemStack;
-import buildcraft.transport.TravelerSet;
-import buildcraft.transport.TravelingItem;
 
 
 public class LogisticsASMHookClass {
@@ -21,29 +19,6 @@ public class LogisticsASMHookClass {
 	
 	public static void callingClearedMethod() {
 		throw new RuntimeException("This Method should never be called");
-	}
-	
-	public static void clearInvalidFluidContainers(TravelerSet items) {
-		try {
-        	if(toLoad == null) {
-        		toLoad = TravelerSet.class.getDeclaredField("toLoad");
-        		toLoad.setAccessible(true);
-        	}
-        	@SuppressWarnings("unchecked")
-			HashSet<TravelingItem> toLoadSet = (HashSet<TravelingItem>) toLoad.get(items);
-        	Iterator<TravelingItem> iterator = toLoadSet.iterator();
-        	while(iterator.hasNext()) {
-        		TravelingItem item = iterator.next();
-        		ItemStack stack = item.getItemStack();
-        		if(stack != null && stack.getItem() instanceof LogisticsFluidContainer && SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemIdentifierStack.getFromStack(stack)) == null) {
-        			iterator.remove();
-        		}
-        	}
-        } catch(Exception e) {
-        	LogisticsPipes.log.fatal(e.getMessage());
-        	LogisticsPipes.log.fatal(Arrays.toString(e.getStackTrace()));
-        	e.printStackTrace();
-        }
 	}
 	
 	public static String getCrashReportAddition() {

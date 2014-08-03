@@ -5,13 +5,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import logisticspipes.LPConstants;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.signs.IPipeSign;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.transport.PipeTransportLogistics;
+import logisticspipes.utils.MatrixTranformations;
 import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.block.Block;
@@ -20,10 +24,12 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelSign;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -43,14 +49,10 @@ import net.minecraftforge.fluids.FluidStack;
 
 import org.lwjgl.opengl.GL11;
 
-import buildcraft.core.CoreConstants;
-import buildcraft.core.render.FluidRenderer;
-import buildcraft.core.render.RenderEntityBlock;
-import buildcraft.core.render.RenderEntityBlock.RenderInfo;
-import buildcraft.transport.Pipe;
-import buildcraft.transport.render.PipeRendererTESR;
+import buildcraft.api.transport.PipeWire;
 
-public class LogisticsRenderPipe extends PipeRendererTESR {
+
+public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 
 	final static private int LIQUID_STAGES = 40;
 	final static private int MAX_ITEMS_TO_RENDER = 10;
@@ -94,16 +96,16 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float f) {
-		super.renderTileEntityAt(tileentity, x, y, z, f); // Render Gates And Wires
 		if(!(tileentity instanceof LogisticsTileGenericPipe)) return;
 		LogisticsTileGenericPipe pipe = ((LogisticsTileGenericPipe)tileentity);
 		if(pipe.pipe == null) return;
+		renderGatesWires(pipe, x, y, z);
 		if(!pipe.isOpaque()) {
 			if(pipe.pipe.transport instanceof PipeFluidTransportLogistics) {
-				renderFluids((Pipe<PipeFluidTransportLogistics>)pipe.pipe, x, y, z);
+				renderFluids(pipe.pipe, x, y, z);
 			}
 			if(pipe.pipe.transport instanceof PipeTransportLogistics) {
-				renderSolids((Pipe<PipeTransportLogistics>)pipe.pipe, x, y, z, f);
+				renderSolids(pipe.pipe, x, y, z, f);
 			}
 		}
 		if(pipe.pipe instanceof CoreRoutedPipe) {
@@ -111,7 +113,286 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 		}
 	}
 
-	private void renderSolids(Pipe<PipeTransportLogistics> pipe, double x, double y, double z, float f) {
+
+
+	private void renderGatesWires(LogisticsTileGenericPipe pipe, double x, double y, double z) {
+		PipeRenderState state = pipe.renderState;
+
+		if (state.wireMatrix.hasWire(PipeWire.RED)) {
+			pipeWireRender(pipe, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MIN_POS, PipeWire.RED, x, y, z);
+		}
+
+		if (state.wireMatrix.hasWire(PipeWire.BLUE)) {
+			pipeWireRender(pipe, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, PipeWire.BLUE, x, y, z);
+		}
+
+		if (state.wireMatrix.hasWire(PipeWire.GREEN)) {
+			pipeWireRender(pipe, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, PipeWire.GREEN, x, y, z);
+		}
+
+		if (state.wireMatrix.hasWire(PipeWire.YELLOW)) {
+			pipeWireRender(pipe, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MAX_POS, PipeWire.YELLOW, x, y, z);
+		}
+
+		if (pipe.pipe.gate != null) {
+			pipeGateRender(pipe, x, y, z);
+		}
+	}
+
+	private void pipeWireRender(LogisticsTileGenericPipe pipe, float cx, float cy, float cz, PipeWire color, double x, double y, double z) {
+
+		PipeRenderState state = pipe.renderState;
+
+		float minX = LPConstants.PIPE_MIN_POS;
+		float minY = LPConstants.PIPE_MIN_POS;
+		float minZ = LPConstants.PIPE_MIN_POS;
+
+		float maxX = LPConstants.PIPE_MAX_POS;
+		float maxY = LPConstants.PIPE_MAX_POS;
+		float maxZ = LPConstants.PIPE_MAX_POS;
+
+		boolean foundX = false, foundY = false, foundZ = false;
+
+		if (state.wireMatrix.isWireConnected(color, ForgeDirection.WEST)) {
+			minX = 0;
+			foundX = true;
+		}
+
+		if (state.wireMatrix.isWireConnected(color, ForgeDirection.EAST)) {
+			maxX = 1;
+			foundX = true;
+		}
+
+		if (state.wireMatrix.isWireConnected(color, ForgeDirection.DOWN)) {
+			minY = 0;
+			foundY = true;
+		}
+
+		if (state.wireMatrix.isWireConnected(color, ForgeDirection.UP)) {
+			maxY = 1;
+			foundY = true;
+		}
+
+		if (state.wireMatrix.isWireConnected(color, ForgeDirection.NORTH)) {
+			minZ = 0;
+			foundZ = true;
+		}
+
+		if (state.wireMatrix.isWireConnected(color, ForgeDirection.SOUTH)) {
+			maxZ = 1;
+			foundZ = true;
+		}
+
+		boolean center = false;
+
+		if (minX == 0 && maxX != 1 && (foundY || foundZ)) {
+			if (cx == LPConstants.PIPE_MIN_POS) {
+				maxX = LPConstants.PIPE_MIN_POS;
+			} else {
+				center = true;
+			}
+		}
+
+		if (minX != 0 && maxX == 1 && (foundY || foundZ)) {
+			if (cx == LPConstants.PIPE_MAX_POS) {
+				minX = LPConstants.PIPE_MAX_POS;
+			} else {
+				center = true;
+			}
+		}
+
+		if (minY == 0 && maxY != 1 && (foundX || foundZ)) {
+			if (cy == LPConstants.PIPE_MIN_POS) {
+				maxY = LPConstants.PIPE_MIN_POS;
+			} else {
+				center = true;
+			}
+		}
+
+		if (minY != 0 && maxY == 1 && (foundX || foundZ)) {
+			if (cy == LPConstants.PIPE_MAX_POS) {
+				minY = LPConstants.PIPE_MAX_POS;
+			} else {
+				center = true;
+			}
+		}
+
+		if (minZ == 0 && maxZ != 1 && (foundX || foundY)) {
+			if (cz == LPConstants.PIPE_MIN_POS) {
+				maxZ = LPConstants.PIPE_MIN_POS;
+			} else {
+				center = true;
+			}
+		}
+
+		if (minZ != 0 && maxZ == 1 && (foundX || foundY)) {
+			if (cz == LPConstants.PIPE_MAX_POS) {
+				minZ = LPConstants.PIPE_MAX_POS;
+			} else {
+				center = true;
+			}
+		}
+
+		boolean found = foundX || foundY || foundZ;
+
+		GL11.glPushMatrix();
+		GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
+		GL11.glEnable(GL11.GL_LIGHTING);
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		RenderHelper.disableStandardItemLighting();
+
+		GL11.glColor3f(1, 1, 1);
+		GL11.glTranslatef((float) x, (float) y, (float) z);
+
+		float scale = 1.001f;
+		GL11.glTranslatef(0.5F, 0.5F, 0.5F);
+		GL11.glScalef(scale, scale, scale);
+		GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
+
+
+		bindTexture(TextureMap.locationBlocksTexture);
+
+		RenderInfo renderBox = new RenderInfo();
+		renderBox.texture = BuildCraftTransport.instance.wireIconProvider.getIcon(state.wireMatrix.getWireIconIndex(color));
+
+		// Z render
+
+		if (minZ != LPConstants.PIPE_MIN_POS || maxZ != LPConstants.PIPE_MAX_POS || !found) {
+			renderBox.setBounds(cx == LPConstants.PIPE_MIN_POS ? cx - 0.05F : cx, cy == LPConstants.PIPE_MIN_POS ? cy - 0.05F : cy, minZ, cx == LPConstants.PIPE_MIN_POS ? cx
+					: cx + 0.05F, cy == LPConstants.PIPE_MIN_POS ? cy : cy + 0.05F, maxZ);
+			RenderEntityBlock.INSTANCE.renderBlock(renderBox, pipe.getWorldObj(), 0, 0, 0, pipe.xCoord, pipe.yCoord, pipe.zCoord, true, true);
+		}
+
+		// X render
+
+		if (minX != LPConstants.PIPE_MIN_POS || maxX != LPConstants.PIPE_MAX_POS || !found) {
+			renderBox.setBounds(minX, cy == LPConstants.PIPE_MIN_POS ? cy - 0.05F : cy, cz == LPConstants.PIPE_MIN_POS ? cz - 0.05F : cz, maxX, cy == LPConstants.PIPE_MIN_POS ? cy
+					: cy + 0.05F, cz == LPConstants.PIPE_MIN_POS ? cz : cz + 0.05F);
+			RenderEntityBlock.INSTANCE.renderBlock(renderBox, pipe.getWorldObj(), 0, 0, 0, pipe.xCoord, pipe.yCoord, pipe.zCoord, true, true);
+		}
+
+		// Y render
+
+		if (minY != LPConstants.PIPE_MIN_POS || maxY != LPConstants.PIPE_MAX_POS || !found) {
+			renderBox.setBounds(cx == LPConstants.PIPE_MIN_POS ? cx - 0.05F : cx, minY, cz == LPConstants.PIPE_MIN_POS ? cz - 0.05F : cz, cx == LPConstants.PIPE_MIN_POS ? cx
+					: cx + 0.05F, maxY, cz == LPConstants.PIPE_MIN_POS ? cz : cz + 0.05F);
+			RenderEntityBlock.INSTANCE.renderBlock(renderBox, pipe.getWorldObj(), 0, 0, 0, pipe.xCoord, pipe.yCoord, pipe.zCoord, true, true);
+		}
+
+		if (center || !found) {
+			renderBox.setBounds(cx == LPConstants.PIPE_MIN_POS ? cx - 0.05F : cx, cy == LPConstants.PIPE_MIN_POS ? cy - 0.05F : cy, cz == LPConstants.PIPE_MIN_POS ? cz - 0.05F : cz,
+					cx == LPConstants.PIPE_MIN_POS ? cx : cx + 0.05F, cy == LPConstants.PIPE_MIN_POS ? cy : cy + 0.05F, cz == LPConstants.PIPE_MIN_POS ? cz : cz + 0.05F);
+			RenderEntityBlock.INSTANCE.renderBlock(renderBox, pipe.getWorldObj(), 0, 0, 0, pipe.xCoord, pipe.yCoord, pipe.zCoord, true, true);
+		}
+
+		RenderHelper.enableStandardItemLighting();
+
+		GL11.glPopAttrib();
+		GL11.glPopMatrix();
+	}
+
+	private void pipeGateRender(LogisticsTileGenericPipe pipe, double x, double y, double z) {
+		GL11.glPushMatrix();
+		GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
+//		GL11.glEnable(GL11.GL_LIGHTING);
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glEnable(GL11.GL_CULL_FACE);
+//		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		RenderHelper.disableStandardItemLighting();
+
+		GL11.glColor3f(1, 1, 1);
+		GL11.glTranslatef((float) x, (float) y, (float) z);
+
+		bindTexture(TextureMap.locationBlocksTexture);
+
+		IIcon iconLogic;
+		if (pipe.renderState.isGateLit()) {
+			iconLogic = pipe.pipe.gate.logic.getIconLit();
+		} else {
+			iconLogic = pipe.pipe.gate.logic.getIconDark();
+		}
+
+		float translateCenter = 0;
+
+		// Render base gate
+		renderGate(pipe, iconLogic, 0, 0.1F, 0, 0);
+
+		float pulseStage = pipe.pipe.gate.getPulseStage() * 2F;
+
+		if (pipe.renderState.isGatePulsing() || pulseStage != 0) {
+			// Render pulsing gate
+			float amplitude = 0.10F;
+			float start = 0.01F;
+
+			if (pulseStage < 1) {
+				translateCenter = (pulseStage * amplitude) + start;
+			} else {
+				translateCenter = amplitude - ((pulseStage - 1F) * amplitude) + start;
+			}
+
+			renderGate(pipe, iconLogic, 0, 0.13F, translateCenter, translateCenter);
+		}
+
+		IIcon materialIcon = pipe.pipe.gate.material.getIconBlock();
+		if (materialIcon != null) {
+			renderGate(pipe, materialIcon, 1, 0.13F, translateCenter, translateCenter);
+		}
+
+		for (IGateExpansion expansion : pipe.pipe.gate.expansions.keySet()) {
+			renderGate(pipe, expansion.getOverlayBlock(), 2, 0.13F, translateCenter, translateCenter);
+		}
+
+		RenderHelper.enableStandardItemLighting();
+
+		GL11.glPopAttrib();
+		GL11.glPopMatrix();
+	}
+
+	private void renderGate(LogisticsTileGenericPipe tile, IIcon icon, int layer, float trim, float translateCenter, float extraDepth) {
+		PipeRenderState state = tile.renderState;
+
+		RenderInfo renderBox = new RenderInfo();
+		renderBox.texture = icon;
+
+		float[][] zeroState = new float[3][2];
+		float min = LPConstants.PIPE_MIN_POS + trim / 2F;
+		float max = LPConstants.PIPE_MAX_POS - trim / 2F;
+
+		// X START - END
+		zeroState[0][0] = min;
+		zeroState[0][1] = max;
+		// Y START - END
+		zeroState[1][0] = LPConstants.PIPE_MIN_POS - 0.10F - 0.001F * layer;
+		zeroState[1][1] = LPConstants.PIPE_MIN_POS + 0.001F + 0.01F * layer + extraDepth;
+		// Z START - END
+		zeroState[2][0] = min;
+		zeroState[2][1] = max;
+
+		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+			if (shouldRenderNormalPipeSide(state, direction)) {
+				GL11.glPushMatrix();
+
+				float xt = direction.offsetX * translateCenter,
+						yt = direction.offsetY * translateCenter,
+						zt = direction.offsetZ * translateCenter;
+
+				GL11.glTranslatef(xt, yt, zt);
+
+				float[][] rotated = MatrixTranformations.deepClone(zeroState);
+				MatrixTranformations.transform(rotated, direction);
+
+				if (layer != 0) {
+					renderBox.setRenderSingleSide(direction.ordinal());
+				}
+				renderBox.setBounds(rotated[0][0], rotated[1][0], rotated[2][0], rotated[0][1], rotated[1][1], rotated[2][1]);
+				RenderEntityBlock.INSTANCE.renderBlock(renderBox, tile.getWorldObj(), 0, 0, 0, tile.xCoord, tile.yCoord, tile.zCoord, true, true);
+				GL11.glPopMatrix();
+			}
+		}
+	}
+
+	private void renderSolids(CoreUnroutedPipe pipe, double x, double y, double z, float f) {
 		GL11.glPushMatrix();
 		GL11.glDisable(2896 /* GL_LIGHTING */);
 		
@@ -392,7 +673,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 	}
 	
 	// BC copy, except where marked with XXX
-	private void renderFluids(Pipe<PipeFluidTransportLogistics> pipe, double x, double y, double z) {
+	private void renderFluids(CoreUnroutedPipe pipe, double x, double y, double z) {
 		// XXX PipeTransportFluids trans = pipe.transport;
 		PipeFluidTransportLogistics trans = (PipeFluidTransportLogistics)(pipe.transport);
 		
@@ -516,7 +797,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 		block.baseBlock = fluid.getBlock();
 		block.texture = fluid.getStillIcon();
 		
-		float size = CoreConstants.PIPE_MAX_POS - CoreConstants.PIPE_MIN_POS;
+		float size = LPConstants.PIPE_MAX_POS - LPConstants.PIPE_MIN_POS;
 		
 		// render size
 		
@@ -529,12 +810,12 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 			GL11.glNewList(d.sideHorizontal[s], 4864 /* GL_COMPILE */);
 			
 			block.minX = 0.0F;
-			block.minZ = CoreConstants.PIPE_MIN_POS + 0.01F;
+			block.minZ = LPConstants.PIPE_MIN_POS + 0.01F;
 			
 			block.maxX = block.minX + size / 2F + 0.01F;
 			block.maxZ = block.minZ + size - 0.02F;
 			
-			block.minY = CoreConstants.PIPE_MIN_POS + 0.01F;
+			block.minY = LPConstants.PIPE_MIN_POS + 0.01F;
 			block.maxY = block.minY + (size - 0.02F) * ratio;
 			
 			RenderEntityBlock.INSTANCE.renderBlock(block, world, 0, 0, 0, false, true);
@@ -546,7 +827,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 			d.sideVertical[s] = GLAllocation.generateDisplayLists(1);
 			GL11.glNewList(d.sideVertical[s], 4864 /* GL_COMPILE */);
 			
-			block.minY = CoreConstants.PIPE_MAX_POS - 0.01;
+			block.minY = LPConstants.PIPE_MAX_POS - 0.01;
 			block.maxY = 1;
 			
 			block.minX = 0.5 - (size / 2 - 0.01) * ratio;
@@ -564,13 +845,13 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 			d.centerHorizontal[s] = GLAllocation.generateDisplayLists(1);
 			GL11.glNewList(d.centerHorizontal[s], 4864 /* GL_COMPILE */);
 			
-			block.minX = CoreConstants.PIPE_MIN_POS + 0.01;
-			block.minZ = CoreConstants.PIPE_MIN_POS + 0.01;
+			block.minX = LPConstants.PIPE_MIN_POS + 0.01;
+			block.minZ = LPConstants.PIPE_MIN_POS + 0.01;
 			
 			block.maxX = block.minX + size - 0.02;
 			block.maxZ = block.minZ + size - 0.02;
 			
-			block.minY = CoreConstants.PIPE_MIN_POS + 0.01;
+			block.minY = LPConstants.PIPE_MIN_POS + 0.01;
 			block.maxY = block.minY + (size - 0.02F) * ratio;
 			
 			RenderEntityBlock.INSTANCE.renderBlock(block, world, 0, 0, 0, false, true);
@@ -582,8 +863,8 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 			d.centerVertical[s] = GLAllocation.generateDisplayLists(1);
 			GL11.glNewList(d.centerVertical[s], 4864 /* GL_COMPILE */);
 			
-			block.minY = CoreConstants.PIPE_MIN_POS + 0.01;
-			block.maxY = CoreConstants.PIPE_MAX_POS - 0.01;
+			block.minY = LPConstants.PIPE_MIN_POS + 0.01;
+			block.maxY = LPConstants.PIPE_MAX_POS - 0.01;
 			
 			block.minX = 0.5 - (size / 2 - 0.02) * ratio;
 			block.maxX = 0.5 + (size / 2 - 0.02) * ratio;

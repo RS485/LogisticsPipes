@@ -6,6 +6,7 @@ import java.util.concurrent.Callable;
 
 import logisticspipes.Configs;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
+import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -27,8 +28,6 @@ import thermalexpansion.part.conduit.GridTickHandler;
 import thermalexpansion.part.conduit.IConduit;
 import thermalexpansion.part.conduit.item.ConduitItem;
 import thermalexpansion.part.conduit.item.ItemRoute;
-import buildcraft.transport.BlockGenericPipe;
-import buildcraft.transport.PipeTransportItems;
 
 public class LPConduitItem extends ConduitItem {
 	public static boolean dontCheckRoutes = false;
@@ -174,7 +173,7 @@ public class LPConduitItem extends ConduitItem {
 			insertItem(ForgeDirection.VALID_DIRECTIONS[travelingItem.direction], travelingItem.stack);
 		} else {
 			ForgeDirection from = ForgeDirection.VALID_DIRECTIONS[travelingItem.direction];
-			if (BlockGenericPipe.isValid(pipe.pipe) && pipe.pipe.transport instanceof PipeTransportLogistics) {
+			if (LogisticsBlockGenericPipe.isValid(pipe.pipe) && pipe.pipe.transport instanceof PipeTransportLogistics) {
 				LPTravelingItemServer item = new LPTravelingItemServer(travelingItem.routedLPInfo);
 				item.refreshDestinationInformation();
 				((PipeTransportLogistics) pipe.pipe.transport).injectItem(item, from);

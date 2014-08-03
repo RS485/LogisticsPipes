@@ -43,31 +43,6 @@ public class ClassPipeTransportItemsHandler {
 		Iterator<MethodNode> iter = node.methods.iterator();
 		while(iter.hasNext()) {
 			MethodNode m = iter.next();
-			if(m.name.equals("readFromNBT")) {
-				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
-
-					// logisticspipes.asm.LogisticsASMHookClass.clearInvalidFluidContainers(items);
-					@Override
-					public void visitInsn(int opcode) {
-						if(opcode == Opcodes.RETURN) {
-							AbstractInsnNode instruction_1 = null;
-							AbstractInsnNode instruction_2 = null;
-							instructions.remove(instruction_2 = instructions.getLast());
-							instructions.remove(instruction_1 = instructions.getLast());
-							Label l = new Label();
-							this.visitLabel(l);
-							this.visitVarInsn(Opcodes.ALOAD, 0);
-							this.visitFieldInsn(Opcodes.GETFIELD, "buildcraft/transport/PipeTransportItems", "items", "Lbuildcraft/transport/TravelerSet;");
-							this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/LogisticsASMHookClass", "clearInvalidFluidContainers", "(Lbuildcraft/transport/TravelerSet;)V");
-							instructions.add(instruction_1);
-							instructions.add(instruction_2);							
-						}
-						super.visitInsn(opcode);
-					}
-				};
-				m.accept(mv);
-				node.methods.set(node.methods.indexOf(m), mv);
-			}
 			if(m.name.equals("injectItem")) {
 				iter.remove();
 			}

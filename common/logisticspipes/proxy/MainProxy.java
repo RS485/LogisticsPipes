@@ -29,14 +29,15 @@ import cpw.mods.fml.relauncher.Side;
 
 public class MainProxy {
 	
-	@SidedProxy(clientSide="logisticspipes.proxy.side.ClientProxy", serverSide="logisticspipes.proxy.side.ServerProxy")
-	public static IProxy proxy;
+	@SidedProxy(clientSide = "logisticspipes.proxy.side.ClientProxy", serverSide = "logisticspipes.proxy.side.ServerProxy")
+	public static IProxy							proxy;
 	@Getter
-	private static int	globalTick;
-	public static EnumMap<Side, FMLEmbeddedChannel> channels;
+	private static int								globalTick;
+	public static EnumMap<Side, FMLEmbeddedChannel>	channels;
 	
-	private static WeakHashMap<Thread, Side> threadSideMap = new WeakHashMap<Thread, Side>();
-	
+	private static WeakHashMap<Thread, Side>		threadSideMap		= new WeakHashMap<Thread, Side>();
+	public static final String						networkChannelName	= "LogisticsPipes";
+
 	private static Side getEffectiveSide() {
 		Thread thr = Thread.currentThread();
 		if(threadSideMap.containsKey(thr)) {
@@ -109,7 +110,7 @@ public class MainProxy {
 	}
 
 	public static void createChannels() {
-		channels = NetworkRegistry.INSTANCE.newChannel("LogisticsPipes", new PacketHandler());
+		channels = NetworkRegistry.INSTANCE.newChannel(networkChannelName, new PacketHandler());
 		for(Side side:Side.values()) {
 			FMLEmbeddedChannel channel = channels.get(side);
 			String type = channel.findChannelHandlerNameForType(PacketHandler.class);

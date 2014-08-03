@@ -21,7 +21,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import buildcraft.transport.TileGenericPipe;
 
 @Accessors(chain=true)
 public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
@@ -75,7 +74,7 @@ public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 			}
 
 			if (!found)
-				found = (tile.tile instanceof IInventory && !(tile.tile instanceof TileGenericPipe));
+				found = (tile.tile instanceof IInventory);
 
 			if (found) {
 				Block block = player.worldObj.getBlock(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord);

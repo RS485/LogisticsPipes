@@ -14,7 +14,7 @@ import logisticspipes.interfaces.ISecurityStationManager;
 import logisticspipes.interfaces.routing.IDirectConnectionManager;
 import logisticspipes.logistics.ILogisticsFluidManager;
 import logisticspipes.logistics.ILogisticsManager;
-import logisticspipes.proxy.buildcraft.BuildCraftProxy;
+import logisticspipes.proxy.interfaces.IBCProxy;
 import logisticspipes.proxy.interfaces.IBetterSignProxy;
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
@@ -29,6 +29,7 @@ import logisticspipes.proxy.interfaces.IModularPowersuitsProxy;
 import logisticspipes.proxy.interfaces.INEIProxy;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
+import logisticspipes.proxy.interfaces.IToolWrenchProxy;
 import logisticspipes.proxy.progressprovider.MachineProgressProvider;
 import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
 import logisticspipes.proxy.specialconnection.SpecialTileConnection;
@@ -45,8 +46,8 @@ public final class SimpleServiceLocator {
 	
 	private SimpleServiceLocator(){};
 	
-	public static BuildCraftProxy buildCraftProxy = null;
-	public static void setBuildCraftProxy(final BuildCraftProxy bcProxy){
+	public static IBCProxy buildCraftProxy = null;
+	public static void setBuildCraftProxy(final IBCProxy bcProxy){
 		buildCraftProxy = bcProxy;
 	}
 	
@@ -195,4 +196,8 @@ public final class SimpleServiceLocator {
 		routedItemHelper = helper;
 	}
 	
+	public static IToolWrenchProxy toolWrenchHandler;
+	public static void setToolWrenchProxy(IToolWrenchProxy handler) {
+		toolWrenchHandler = handler;
+	}
 }

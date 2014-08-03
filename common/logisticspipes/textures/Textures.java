@@ -1,8 +1,8 @@
 package logisticspipes.textures;
 
-import buildcraft.api.core.IIconProvider;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.renderer.IIconProvider;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import logisticspipes.textures.provider.LPPipeIconProvider;
 import net.minecraft.client.renderer.texture.IIconRegister;

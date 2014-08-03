@@ -23,7 +23,7 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 
 	@Override
 	public boolean isCorrect() {
-		return true;
+		return pipe != null && pipe.transport instanceof PipeTransportItems;
 	}
 	
 	@Override

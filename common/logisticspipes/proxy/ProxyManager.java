@@ -9,6 +9,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.bettersign.BetterSignProxy;
 import logisticspipes.proxy.bs.BetterStorageProxy;
+import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.cc.CCProxy;
 import logisticspipes.proxy.enderchest.EnderStorageProxy;
 import logisticspipes.proxy.enderio.EnderIOProxy;
@@ -16,6 +17,7 @@ import logisticspipes.proxy.factorization.FactorizationProxy;
 import logisticspipes.proxy.forestry.ForestryProxy;
 import logisticspipes.proxy.ic.IronChestProxy;
 import logisticspipes.proxy.ic2.IC2Proxy;
+import logisticspipes.proxy.interfaces.IBCProxy;
 import logisticspipes.proxy.interfaces.IBetterSignProxy;
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
@@ -29,10 +31,13 @@ import logisticspipes.proxy.interfaces.IModularPowersuitsProxy;
 import logisticspipes.proxy.interfaces.INEIProxy;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
+import logisticspipes.proxy.interfaces.IToolWrenchProxy;
 import logisticspipes.proxy.mps.ModularPowersuitsProxy;
 import logisticspipes.proxy.nei.NEIProxy;
 import logisticspipes.proxy.te.ThermalExpansionProxy;
 import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
+import logisticspipes.proxy.toolWrench.ToolWrenchProxy;
+import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.block.Block;
@@ -62,6 +67,17 @@ public class ProxyManager {
 	}
 	
 	public static void load() {
+		SimpleServiceLocator.setBuildCraftProxy(getWrappedProxy("BuildCraft|Transport", IBCProxy.class, BuildCraftProxy.class, new IBCProxy() {
+			@Override public void resetItemRotation() {}
+			@Override public boolean insertIntoBuildcraftPipe(TileEntity tile, LPTravelingItem item) {return false;}
+			@Override public boolean isIPipeTile(TileEntity tile) {return false;}
+			@Override public void registerPipeInformationProvider() {}
+			@Override public void initProxy() {}
+			@Override public boolean checkForPipeConnection(TileEntity with, ForgeDirection side) {return false;}
+			@Override public boolean checkConnectionOverride(TileEntity with, ForgeDirection side) {return false;}
+			@Override public boolean isMachineManagingSolids(TileEntity tile) {return false;}
+		}));
+		
 		SimpleServiceLocator.setForestryProxy(getWrappedProxy("Forestry", IForestryProxy.class, ForestryProxy.class, new IForestryProxy() {
 			@Override public boolean isBee(ItemStack item) {return false;}
 			@Override public boolean isBee(ItemIdentifier item) {return false;}
@@ -209,6 +225,12 @@ public class ProxyManager {
 		SimpleServiceLocator.setEnderStorageProxy(getWrappedProxy("EnderStorage", IEnderStorageProxy.class, EnderStorageProxy.class, new IEnderStorageProxy() {
 			@Override public boolean isEnderChestBlock(Block block) {return false;}
 			@Override public void openEnderChest(World world, int x, int y, int z, EntityPlayer player) {}
+		}));
+		
+		SimpleServiceLocator.setToolWrenchProxy(getWrappedProxy("!IToolWrench", IToolWrenchProxy.class, ToolWrenchProxy.class, new IToolWrenchProxy() {
+			@Override public void wrenchUsed(EntityPlayer entityplayer, int x, int y, int z) {}
+			@Override public boolean isWrenchEquipped(EntityPlayer entityplayer) {return false;}
+			@Override public boolean canWrench(EntityPlayer entityplayer, int x, int y, int z) {return false;}
 		}));
 	}
 }

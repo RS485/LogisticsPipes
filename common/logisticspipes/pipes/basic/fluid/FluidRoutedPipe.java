@@ -10,6 +10,7 @@ import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ItemRoutingInformation;
@@ -29,8 +30,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidHandler;
-import buildcraft.core.IMachine;
-import buildcraft.transport.TileGenericPipe;
 
 public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 
@@ -55,7 +54,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 				return true;
 		}
 
-		return tile instanceof TileGenericPipe || (tile instanceof IMachine && ((IMachine) tile).manageFluids());
+		return tile instanceof TileGenericPipe || SimpleServiceLocator.buildCraftProxy.isMachineManagingFluids(tile);
 	}
 	
 	@Override
@@ -79,9 +78,6 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 
 			if (liq.getTankInfo(connection.getOpposite()) != null && liq.getTankInfo(connection.getOpposite()).length > 0)
 				return true;
-		}
-		if(tile instanceof TileGenericPipe) {
-			return ((TileGenericPipe)tile).pipe instanceof LogisticsFluidConnectorPipe;
 		}
 		return false;
 	}
@@ -115,8 +111,8 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 		if(SimpleServiceLocator.specialTankHandler.hasHandlerFor(tile)) return true;
 		if(!(tile instanceof IFluidHandler)) return false;
 		if(!this.canPipeConnect(tile, dir)) return false;
-		if(tile instanceof TileGenericPipe) {
-			if(((TileGenericPipe)tile).pipe instanceof FluidRoutedPipe) return false;
+		if(tile instanceof LogisticsTileGenericPipe) {
+			if(((LogisticsTileGenericPipe)tile).pipe instanceof FluidRoutedPipe) return false;
 			if(!flag) return false;
 			if(((TileGenericPipe)tile).pipe == null || !(((TileGenericPipe)tile).pipe.transport instanceof IFluidHandler)) return false;
 		}
@@ -130,8 +126,8 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 			int validDirections = 0;
 			List<Pair<TileEntity,ForgeDirection>> list = getAdjacentTanks(true);
 			for(Pair<TileEntity,ForgeDirection> pair:list) {
-				if(pair.getValue1() instanceof TileGenericPipe) {
-					if(((TileGenericPipe)pair.getValue1()).pipe instanceof CoreRoutedPipe) continue;
+				if(pair.getValue1() instanceof LogisticsTileGenericPipe) {
+					if(((LogisticsTileGenericPipe)pair.getValue1()).pipe instanceof CoreRoutedPipe) continue;
 				}
 				FluidTank tank = ((PipeFluidTransportLogistics)this.transport).sideTanks[pair.getValue2().ordinal()];
 				validDirections++;
@@ -150,8 +146,8 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 			FluidStack stack = tank.getFluid();
 			if(stack == null) return;
 			for(Pair<TileEntity,ForgeDirection> pair:list) {
-				if(pair.getValue1() instanceof TileGenericPipe) {
-					if(((TileGenericPipe)pair.getValue1()).pipe instanceof CoreRoutedPipe) continue;
+				if(pair.getValue1() instanceof LogisticsTileGenericPipe) {
+					if(((LogisticsTileGenericPipe)pair.getValue1()).pipe instanceof CoreRoutedPipe) continue;
 				}
 				FluidTank tankSide = ((PipeFluidTransportLogistics)this.transport).sideTanks[pair.getValue2().ordinal()];
 				stack = tank.getFluid();

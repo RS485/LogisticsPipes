@@ -10,11 +10,11 @@ package logisticspipes.utils;
 
 import java.util.LinkedList;
 
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.transport.TileGenericPipe;
 
 public class WorldUtil {
 	private int _x;
@@ -55,11 +55,9 @@ public class WorldUtil {
 			if (tile == null) continue;
 			
 			if(flag) {
-				if(tilePipe instanceof TileGenericPipe) {
-					if(((TileGenericPipe)tilePipe).pipe != null) {
-						if(!((TileGenericPipe)tilePipe).pipe.canPipeConnect(tile, o)) {
-							continue;
-						}
+				if(SimpleServiceLocator.pipeInformaitonManager.isPipe(tilePipe)) {
+					if(!SimpleServiceLocator.pipeInformaitonManager.isPipeConnected(tile, o)) {
+						continue;
 					}
 				}
 			}

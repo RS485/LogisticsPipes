@@ -7,11 +7,11 @@ import buildcraft.transport.TravelingItem;
 import logisticspipes.interfaces.routing.ISpecialTileConnection;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.transport.TileGenericPipe;
 
 public class EnderIOHyperCubeConnection implements ISpecialTileConnection {
 	
@@ -32,7 +32,7 @@ public class EnderIOHyperCubeConnection implements ISpecialTileConnection {
 			LPPosition p = new LPPosition(tile);
 			p.moveForward(direction);
 			TileEntity canidate = p.getTileEntity(tile.getWorldObj());
-			if(canidate instanceof TileGenericPipe && SimpleServiceLocator.buildCraftProxy.checkPipesConnections(tile, canidate, direction)) {
+			if(canidate instanceof LogisticsTileGenericPipe && SimpleServiceLocator.buildCraftProxy.checkPipesConnections(tile, canidate, direction)) {
 				if(onlyOnePipe) {
 					onlyOnePipe = false;
 					break;
@@ -48,17 +48,17 @@ public class EnderIOHyperCubeConnection implements ISpecialTileConnection {
 		List<TileEntity> list = new ArrayList<TileEntity>();
 		for(TileEntity connected:connections) {
 			if(!SimpleServiceLocator.enderIOProxy.isSendAndReceive(connected)) continue;
-			TileGenericPipe pipe = null;
+			LogisticsTileGenericPipe pipe = null;
 			for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
 				LPPosition p = new LPPosition(connected);
 				p.moveForward(direction);
 				TileEntity canidate = p.getTileEntity(tile.getWorldObj());
-				if(canidate instanceof TileGenericPipe && SimpleServiceLocator.buildCraftProxy.checkPipesConnections(connected, canidate, direction)) {
+				if(canidate instanceof LogisticsTileGenericPipe && SimpleServiceLocator.buildCraftProxy.checkPipesConnections(connected, canidate, direction)) {
 					if(pipe != null) {
 						pipe = null;
 						break;
 					} else {
-						pipe = (TileGenericPipe) canidate;
+						pipe = (LogisticsTileGenericPipe) canidate;
 					}
 				}
 			}
@@ -83,8 +83,8 @@ public class EnderIOHyperCubeConnection implements ISpecialTileConnection {
 		List<TileEntity> list = getConnections(tile);
 		if(list.size() < 1) return;
 		TileEntity pipe = list.get(0);
-		if(pipe instanceof TileGenericPipe) {
-			((CoreRoutedPipe)((TileGenericPipe)pipe).pipe).queueUnroutedItemInformation(data.getItemIdentifierStack().clone(), data.getInfo());
+		if(pipe instanceof LogisticsTileGenericPipe) {
+			((CoreRoutedPipe)((LogisticsTileGenericPipe)pipe).pipe).queueUnroutedItemInformation(data.getItemIdentifierStack().clone(), data.getInfo());
 		} else {
 			new RuntimeException("Only LP pipes can be next to Teseracts to queue item informaiton").printStackTrace();
 		}

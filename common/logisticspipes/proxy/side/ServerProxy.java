@@ -16,6 +16,7 @@ import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.UpdateName;
+import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -35,8 +36,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.config.Configuration;
-import buildcraft.transport.Pipe;
-import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.server.FMLServerHandler;
 
@@ -213,7 +212,7 @@ public class ServerProxy implements IProxy {
 		}
 
 		final TileEntity tile = world.getTileEntity(x, y, z);
-		if (!(tile instanceof TileGenericPipe)) {
+		if (!(tile instanceof LogisticsTileGenericPipe)) {
 			return null;
 		}
 
@@ -258,7 +257,7 @@ public class ServerProxy implements IProxy {
 	}
 
 	@Override
-	public void setIconProviderFromPipe(ItemLogisticsPipe item, Pipe<?> dummyPipe) {}
+	public void setIconProviderFromPipe(ItemLogisticsPipe item, CoreUnroutedPipe dummyPipe) {}
 
 	@Override
 	public LogisticsModule getModuleFromGui() {

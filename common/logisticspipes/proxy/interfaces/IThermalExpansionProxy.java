@@ -2,7 +2,6 @@ package logisticspipes.proxy.interfaces;
 
 import java.util.List;
 
-import buildcraft.transport.TravelingItem;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;

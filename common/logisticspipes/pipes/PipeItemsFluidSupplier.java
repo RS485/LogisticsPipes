@@ -12,6 +12,7 @@ import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTree;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
@@ -33,7 +34,6 @@ import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
-import buildcraft.transport.TileGenericPipe;
 
 public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport {
 
@@ -44,7 +44,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 			@Override
 			public boolean canPipeConnect(TileEntity tile, ForgeDirection dir) {
 				if(super.canPipeConnect(tile, dir)) return true;
-				if(tile instanceof TileGenericPipe) return false;
+				if(SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) return false;
 				if (tile instanceof IFluidHandler) {
 					IFluidHandler liq = (IFluidHandler) tile;
 					if (liq.getTankInfo(dir.getOpposite()) != null && liq.getTankInfo(dir.getOpposite()).length > 0)
@@ -85,7 +85,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 		this.transport.markChunkModified(tile);
 		notifyOfItemArival(data.getInfo());
 		if (!(tile instanceof IFluidHandler)) return;
-		if (tile instanceof TileGenericPipe) return;
+		if (SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) return;
 		IFluidHandler container = (IFluidHandler) tile;
 		if (data.getItemIdentifierStack() == null) return;
 		FluidStack liquidId = FluidContainerRegistry.getFluidForFilledItem(data.getItemIdentifierStack().makeNormalStack());
@@ -126,7 +126,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 		super.throttledUpdateEntity();
 		WorldUtil worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
 		for (AdjacentTile tile :  worldUtil.getAdjacentTileEntities(true)){
-			if (!(tile.tile instanceof IFluidHandler) || tile.tile instanceof TileGenericPipe) continue;
+			if (!(tile.tile instanceof IFluidHandler) || SimpleServiceLocator.pipeInformaitonManager.isPipe(tile.tile)) continue;
 			IFluidHandler container = (IFluidHandler) tile.tile;
 			if (container.getTankInfo(ForgeDirection.UNKNOWN) == null || container.getTankInfo(ForgeDirection.UNKNOWN).length == 0) continue;
 			

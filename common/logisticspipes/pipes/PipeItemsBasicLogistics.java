@@ -37,7 +37,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 			public boolean canPipeConnect(TileEntity tile, ForgeDirection dir) {
 				if(super.canPipeConnect(tile, dir)) return true;
 				if(tile instanceof LogisticsSecurityTileEntity) {
-					ForgeDirection ori = OrientationsUtil.getOrientationOfTilewithPipe(this, tile);
+					ForgeDirection ori = OrientationsUtil.getOrientationOfTilewithTile(this.container, tile);
 					if(ori == null || ori == ForgeDirection.UNKNOWN || ori == ForgeDirection.DOWN || ori == ForgeDirection.UP) {
 						return false;
 					}

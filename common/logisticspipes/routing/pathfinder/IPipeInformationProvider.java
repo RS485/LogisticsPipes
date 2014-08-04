@@ -25,4 +25,7 @@ public interface IPipeInformationProvider {
 	public boolean isOutputOpen(ForgeDirection direction);
 	public boolean canConnect(IPipeInformationProvider provider, ForgeDirection direction, boolean flag);
 	public int getDistance();
+	public boolean isItemPipe();
+	public boolean isFluidPipe();
+	public boolean isPowerPipe();
 }

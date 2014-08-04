@@ -2,12 +2,14 @@ package logisticspipes.proxy.buildcraft;
 
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.basic.fluid.LogisticsFluidConnectorPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import buildcraft.transport.PipeTransportFluids;
+import buildcraft.transport.PipeTransportItems;
+import buildcraft.transport.PipeTransportPower;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.pipes.PipeItemsDiamond;
 import buildcraft.transport.pipes.PipeItemsIron;
@@ -23,7 +25,7 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 
 	@Override
 	public boolean isCorrect() {
-		return pipe != null && pipe.transport instanceof PipeTransportItems;
+		return pipe != null && pipe.pipe != null && pipe.pipe.transport instanceof PipeTransportItems;
 	}
 	
 	@Override
@@ -83,9 +85,6 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 	
 	@Override
 	public boolean divideNetwork() {
-		if (pipe.pipe instanceof LogisticsFluidConnectorPipe) {	
-			return true;
-		}
 		if (pipe.pipe instanceof PipeItemsObsidian) {			//Obsidian seperates networks
 			return true;
 		}
@@ -124,5 +123,20 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 	@Override
 	public int getDistance() {
 		return 1;
+	}
+
+	@Override
+	public boolean isItemPipe() {
+		return pipe != null && pipe.pipe != null && pipe.pipe.transport instanceof PipeTransportItems;
+	}
+
+	@Override
+	public boolean isFluidPipe() {
+		return pipe != null && pipe.pipe != null && pipe.pipe.transport instanceof PipeTransportFluids;
+	}
+
+	@Override
+	public boolean isPowerPipe() {
+		return pipe != null && pipe.pipe != null && pipe.pipe.transport instanceof PipeTransportPower;
 	}
 }

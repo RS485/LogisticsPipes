@@ -40,7 +40,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
 
 @CCType(name = "LogisticsPipes:Request")
 public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IRequestItems, IRequestAPI {
@@ -67,7 +66,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 	
 	@Override
 	public boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
-		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && SimpleServiceLocator.buildCraftProxy.canWrench(entityplayer, this.getX(), this.getY(), this.getZ())) {
+		if (SimpleServiceLocator.toolWrenchHandler.isWrenchEquipped(entityplayer) && SimpleServiceLocator.toolWrenchHandler.canWrench(entityplayer, this.getX(), this.getY(), this.getZ())) {
 			if(MainProxy.isServer(getWorld())) {
 				if (settings == null || settings.openRequest) {
 					openGui(entityplayer);
@@ -75,7 +74,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 					entityplayer.addChatMessage(new ChatComponentText("Permission denied"));
 				}
 			}
-			SimpleServiceLocator.buildCraftProxy.wrenchUsed(entityplayer, this.getX(), this.getY(), this.getZ());
+			SimpleServiceLocator.toolWrenchHandler.wrenchUsed(entityplayer, this.getX(), this.getY(), this.getZ());
 			return true;
 		}
 		return false;

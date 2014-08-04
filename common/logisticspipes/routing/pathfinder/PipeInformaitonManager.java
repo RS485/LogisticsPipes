@@ -86,4 +86,21 @@ public class PipeInformaitonManager {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	public boolean isNotAPipe(TileEntity tile) {
+		if(tile instanceof IPipeInformationProvider) {
+			return false;
+		} else for(Class<?> type:infoProvider.keySet()) {
+			if(type.isAssignableFrom(tile.getClass())) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public boolean isFluidPipe(TileEntity tile) {
+		IPipeInformationProvider info = this.getInformationProviderFor(tile);
+		if(info == null) return false;
+		return info.isFluidPipe();
+	}
 }

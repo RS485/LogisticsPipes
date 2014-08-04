@@ -10,6 +10,7 @@ package logisticspipes;
 
 import java.lang.reflect.Field;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 
 import logisticspipes.asm.LogisticsPipesClassInjector;
@@ -206,8 +207,8 @@ public class LogisticsPipes {
 			loader.registerTransformer("logisticspipes.asm.LogisticsPipesClassInjector");
 			e.printStackTrace();
 		}
-		PacketHandler.intialize();
-		NewGuiHandler.intialize();
+		PacketHandler.initialize();
+		NewGuiHandler.initialize();
 	}
 	
 	@Instance("LogisticsPipes")

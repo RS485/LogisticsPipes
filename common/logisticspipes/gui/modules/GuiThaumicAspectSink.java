@@ -63,7 +63,7 @@ public class GuiThaumicAspectSink extends ModuleBaseGui {
 
 		mc.fontRenderer.drawString("Aspect Reader", 26, 11, 0x404040);
 		mc.fontRenderer.drawString("Sunk Aspects", 8, 48, 0x404040);
-		fontRenderer.drawString("Inventory", 8, ySize - 92, 0x404040);
+		mc.fontRenderer.drawString("Inventory", 8, ySize - 92, 0x404040);
 
 		//handle clicks
 		if(6 <= mouseX && mouseX < 6 + 9 * 18 && 24 <= mouseY && mouseY < 24 + 18) {

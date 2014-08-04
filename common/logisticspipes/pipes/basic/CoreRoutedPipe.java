@@ -767,7 +767,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		NBTTagCompound powerNBT = new NBTTagCompound();
 		powerHandler.writeToNBT(powerNBT);
 		if(!powerNBT.hasNoTags())
-			nbttagcompound.setCompoundTag("powerHandler", powerNBT);
+			nbttagcompound.setTag("powerHandler", powerNBT);
 
 		NBTTagList sendqueue = new NBTTagList();
 		for(Triplet<IRoutedItem, ForgeDirection, ItemSendMode> p : _sendQueue) {

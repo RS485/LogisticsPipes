@@ -30,8 +30,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
-import buildcraft.transport.PipeTransportFluids;
-import buildcraft.transport.TileGenericPipe;
 
 public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider {
 	
@@ -168,7 +166,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 	
 	@Override
 	public boolean disconnectPipe(TileEntity tile, ForgeDirection dir) {
-		return tile instanceof TileGenericPipe && ((TileGenericPipe)tile).pipe != null && ((TileGenericPipe)tile).pipe.transport instanceof PipeTransportFluids;
+		return SimpleServiceLocator.pipeInformaitonManager.isFluidPipe(tile);
 	}
 	
 	@Override

@@ -8,6 +8,9 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
+import org.apache.logging.log4j.Level;
+
+import buildcraft.api.transport.PipeWire;
 import li.cil.oc.api.network.Arguments;
 import li.cil.oc.api.network.Context;
 import li.cil.oc.api.network.Environment;
@@ -15,6 +18,7 @@ import li.cil.oc.api.network.ManagedPeripheral;
 import li.cil.oc.api.network.Message;
 import li.cil.oc.api.network.Node;
 import li.cil.oc.api.network.SidedEnvironment;
+import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.asm.ModDependentField;
 import logisticspipes.asm.ModDependentInterface;
@@ -63,7 +67,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
 @ModDependentInterface(modId={"CoFHCore", "OpenComputers@1.3", "OpenComputers@1.3", "OpenComputers@1.3"}, interfacePath={"cofh.api.transport.IItemConduit", "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment"})
-public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeInformationProvider, IItemConduit, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IItemConduit {	
+public class LogisticsTileGenericPipe extends TileEntity implements IPipeInformationProvider, IItemConduit, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IItemConduit {	
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
 	
 	public boolean turtleConnect[] = new boolean[7];
@@ -270,7 +274,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 		for(int i=0;i<turtleConnect.length;i++) {
 			nbt.setBoolean("turtleConnect_" + i, turtleConnect[i]);
 		}
-		SimpleServiceLocator.openComputersProxy.handleLPWriteToNBT(this, nbttagcompound);
+		SimpleServiceLocator.openComputersProxy.handleLPWriteToNBT(this, nbt);
 	}
 
 	@Override
@@ -294,7 +298,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 		for(int i=0;i<turtleConnect.length;i++) {
 			turtleConnect[i] = nbt.getBoolean("turtleConnect_" + i);
 		}
-		SimpleServiceLocator.openComputersProxy.handleLPReadFromNBT(this, nbttagcompound);
+		SimpleServiceLocator.openComputersProxy.handleLPReadFromNBT(this, nbt);
 	}
 	
 	public boolean canPipeConnect(TileEntity with, ForgeDirection side) {
@@ -313,9 +317,9 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 
 		if(SimpleServiceLocator.ccProxy.isTurtle(with) && !turtleConnect[OrientationsUtil.getOrientationOfTilewithTile(this, with).ordinal()]) return false;
 
-		if(!SimpleServiceLocator.buildCraftProxy.checkConnectionOverride(with, side)) return false;
+		if(!SimpleServiceLocator.buildCraftProxy.checkConnectionOverride(with, side, this)) return false;
 
-		if(!SimpleServiceLocator.buildCraftProxy.checkForPipeConnection(with, side)) return false;
+		if(!SimpleServiceLocator.buildCraftProxy.checkForPipeConnection(with, side, this)) return false;
 
 		return pipe.canPipeConnect(with, side);
 	}
@@ -753,13 +757,13 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 
 		// WireState
 		for (PipeWire color : PipeWire.values()) {
-			renderState.wireMatrix.setWire(color, pipe.wireSet[color.ordinal()]);
+			renderState.wireMatrix.setWire(color, pipe.bcPipePart.getWireSet()[color.ordinal()]);
 
 			for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
 				renderState.wireMatrix.setWireConnected(color, direction, pipe.isWireConnectedTo(this.getTile(direction), color));
 			}
 
-			boolean lit = pipe.signalStrength[color.ordinal()] > 0;
+			boolean lit = pipe.bcPipePart.getSignalStrength()[color.ordinal()] > 0;
 
 			switch (color) {
 				case RED:

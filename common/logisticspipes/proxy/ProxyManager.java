@@ -3,13 +3,17 @@ package logisticspipes.proxy;
 import java.util.ArrayList;
 import java.util.List;
 
+import buildcraft.api.transport.PipeWire;
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.CoreUnroutedPipe;
+import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.bettersign.BetterSignProxy;
 import logisticspipes.proxy.bs.BetterStorageProxy;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
+import logisticspipes.proxy.buildcraft.pipeparts.IBCPipePart;
 import logisticspipes.proxy.cc.CCProxy;
 import logisticspipes.proxy.enderchest.EnderStorageProxy;
 import logisticspipes.proxy.enderio.EnderIOProxy;
@@ -47,6 +51,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.model.ModelSign;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -76,9 +81,32 @@ public class ProxyManager {
 			@Override public boolean isIPipeTile(TileEntity tile) {return false;}
 			@Override public void registerPipeInformationProvider() {}
 			@Override public void initProxy() {}
-			@Override public boolean checkForPipeConnection(TileEntity with, ForgeDirection side) {return false;}
-			@Override public boolean checkConnectionOverride(TileEntity with, ForgeDirection side) {return false;}
+			@Override public boolean checkForPipeConnection(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe) {return false;}
+			@Override public boolean checkConnectionOverride(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe) {return false;}
 			@Override public boolean isMachineManagingSolids(TileEntity tile) {return false;}
+			@Override public boolean isMachineManagingFluids(TileEntity tile) {return false;}
+			@Override public IBCPipePart getBCPipePart(CoreUnroutedPipe coreUnroutedPipe) {
+				return new IBCPipePart() {
+					@Override public void updateGate() {}
+					@Override public void writeToNBT(NBTTagCompound data) {}
+					@Override public void readFromNBT(NBTTagCompound data) {}
+					@Override public boolean hasGate() {return false;}
+					@Override public void addItemDrops(List<ItemStack> result) {}
+					@Override public void resetGate() {}
+					@Override public boolean isWireConnectedTo(TileEntity tile, PipeWire color) {return false;}
+					@Override public boolean isWired(PipeWire color) {return false;}
+					@Override public int isPoweringTo(int side) {return 0;}
+					@Override public void updateSignalStateForColor(PipeWire wire) {}
+					@Override public boolean[] getWireSet() {return null;}
+					@Override public ItemStack getGateItem() {return null;}
+					@Override public int[] getSignalStrength() {return null;}
+					@Override public void openGateGui(EntityPlayer player) {}
+				};
+			}
+			@Override public boolean handleBCClickOnPipe(ItemStack currentItem, CoreUnroutedPipe pipe, World world, int x, int y, int z, EntityPlayer player, int side, LogisticsBlockGenericPipe logisticsBlockGenericPipe) {return false;}
+			@Override public ItemStack getPipePlugItemStack() {return null;}
+			@Override public ItemStack getRobotTrationItemStack() {return null;}
+			@Override public boolean stripEquipment(World world, int x, int y, int z, EntityPlayer player, CoreUnroutedPipe pipe, LogisticsBlockGenericPipe block) {return false;}
 		}));
 		
 		SimpleServiceLocator.setForestryProxy(getWrappedProxy("Forestry", IForestryProxy.class, ForestryProxy.class, new IForestryProxy() {
@@ -242,6 +270,7 @@ public class ProxyManager {
 			@Override public void wrenchUsed(EntityPlayer entityplayer, int x, int y, int z) {}
 			@Override public boolean isWrenchEquipped(EntityPlayer entityplayer) {return false;}
 			@Override public boolean canWrench(EntityPlayer entityplayer, int x, int y, int z) {return false;}
+			@Override public boolean isWrench(Item item) {return false;}
 		}));
 	}
 }

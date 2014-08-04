@@ -26,7 +26,6 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.transport.TileGenericPipe;
 
 public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRoutedItem {
 
@@ -81,7 +80,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 
 	public ForgeDirection getPointedOrientation() {
 		for(ForgeDirection ori:ForgeDirection.values()) {
-			LPPosition pos = new LPPosition(this.container);
+			LPPosition pos = new LPPosition((TileEntity) this.container);
 			pos.moveForward(ori);
 			TileEntity tile = pos.getTileEntity(this.getWorld());
 			if(tile != null) {
@@ -136,7 +135,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 	public IInventory getRealInventory() {
 		TileEntity tile = getPointedTileEntity();
 		if (tile == null ) return null;
-		if (tile instanceof TileGenericPipe) return null;
+		if (SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) return null;
 		if (!(tile instanceof IInventory)) return null;
 		return InventoryHelper.getInventory((IInventory) tile);
 	}

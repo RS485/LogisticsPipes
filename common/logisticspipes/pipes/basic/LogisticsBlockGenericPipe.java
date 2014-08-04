@@ -8,12 +8,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
+import buildcraft.api.transport.PipeWire;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.asm.ModDependentMethodName;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.side.ClientProxy;
 import logisticspipes.textures.Textures;
 import logisticspipes.utils.MatrixTranformations;
@@ -23,6 +25,7 @@ import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EffectRenderer;
+import net.minecraft.client.particle.EntityDiggingFX;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -88,7 +91,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			return table.getTextureFor(l);
 		}
 		if (((LogisticsTileGenericPipe) tile).renderState.textureArray != null) {
-			return ((LogisticsTileGenericPipe) tile).renderState.textureArray[side];
+			return ((LogisticsTileGenericPipe) tile).renderState.textureArray[l];
 		}
 		return ((LogisticsTileGenericPipe) tile).renderState.currentTexture;
 	}
@@ -291,7 +294,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		}
 	}
 
-	private RaytraceResult doRayTrace(World world, int x, int y, int z, EntityPlayer player) {
+	public RaytraceResult doRayTrace(World world, int x, int y, int z, EntityPlayer player) {
 		double reachDistance = 5;
 
 		if (player instanceof EntityPlayerMP) {
@@ -569,7 +572,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	private static long lastRemovedDate = -1;
 
-	static enum Part {
+	public static enum Part {
 		Pipe,
 		Gate,
 		Facade,
@@ -577,7 +580,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		RobotStation
 	}
 
-	static class RaytraceResult {
+	public static class RaytraceResult {
 
 		public final Part hitPart;
 		public final MovingObjectPosition movingObjectPosition;
@@ -661,8 +664,8 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
 		TileEntity tile = world.getTileEntity(x, y, z);
 
-		if (tile instanceof ISolidSideTile) {
-			return ((ISolidSideTile) tile).isSolidOnSide(side);
+		if (tile instanceof LogisticsTileGenericPipe) {
+			return ((LogisticsTileGenericPipe) tile).isSolidOnSide(side);
 		}
 
 		return false;
@@ -761,22 +764,20 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		if (rayTraceResult != null && rayTraceResult.boundingBox != null) {
 			switch (rayTraceResult.hitPart) {
 			case Gate:
-					CoreUnroutedPipe pipe = getPipe(world, x, y, z);
-					return pipe.gate.getGateItem();
+				CoreUnroutedPipe pipe = getPipe(world, x, y, z);
+				return pipe.bcPipePart.getGateItem();
 			case Plug:
-					return new ItemStack(BuildCraftTransport.plugItem);
+				return SimpleServiceLocator.buildCraftProxy.getPipePlugItemStack();
 			case RobotStation:
-				return new ItemStack(BuildCraftTransport.robotStationItem);
+				return SimpleServiceLocator.buildCraftProxy.getRobotTrationItemStack();
 			case Pipe:
 				return new ItemStack(getPipe(world, x, y, z).item);
 			case Facade:
-				ForgeDirection dir = ForgeDirection
-						.getOrientation(target.sideHit);
+				ForgeDirection dir = ForgeDirection.getOrientation(target.sideHit);
 				FacadeMatrix matrix = getPipe(world, x, y, z).container.renderState.facadeMatrix;
 				Block block = matrix.getFacadeBlock(dir);
 				if (block != null) {
-					return ItemFacade.getFacade(block,
-							matrix.getFacadeMetaId(dir));
+					return ItemFacade.getFacade(block,matrix.getFacadeMetaId(dir));
 				}
 			}
 		}
@@ -832,7 +833,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			// Right click while sneaking with empty hand to strip equipment
 			// from the pipe.
 			if (player.isSneaking() && currentItem == null) {
-				if (stripEquipment(world, x, y, z, player, pipe)) {
+				if (SimpleServiceLocator.buildCraftProxy.stripEquipment(world, x, y, z, player, pipe, this)) {
 					return true;
 				}
 			} else if (currentItem == null) {
@@ -842,68 +843,12 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				return false;
 			} else if (currentItem.getItem() instanceof ItemLogisticsPipe) {
 				return false;
-			} else if (currentItem.getItem() instanceof IToolWrench) {
+			} else if (SimpleServiceLocator.toolWrenchHandler.isWrench(currentItem.getItem())) {
 				// Only check the instance at this point. Call the IToolWrench
 				// interface callbacks for the individual pipe/logic calls
 				return pipe.blockActivated(player);
-			} else if (PipeWire.RED.isPipeWire(currentItem)) {
-				if (addOrStripWire(player, pipe, PipeWire.RED)) {
-					return true;
-				}
-			} else if (PipeWire.BLUE.isPipeWire(currentItem)) {
-				if (addOrStripWire(player, pipe, PipeWire.BLUE)) {
-					return true;
-				}
-			} else if (PipeWire.GREEN.isPipeWire(currentItem)) {
-				if (addOrStripWire(player, pipe, PipeWire.GREEN)) {
-					return true;
-				}
-			} else if (PipeWire.YELLOW.isPipeWire(currentItem)) {
-				if (addOrStripWire(player, pipe, PipeWire.YELLOW)) {
-					return true;
-				}
-			} else if (currentItem.getItem() instanceof ItemGate) {
-				if (addOrStripGate(world, x, y, z, player, pipe)) {
-					return true;
-				}
-			} else if (currentItem.getItem() instanceof ItemPlug) {
-				if (addOrStripPlug(world, x, y, z, player, ForgeDirection.getOrientation(side), pipe)) {
-					return true;
-				}
-			} else if (currentItem.getItem() instanceof ItemRobotStation) {
-				if (addOrStripRobotStation(world, x, y, z, player, ForgeDirection.getOrientation(side), pipe)) {
-					return true;
-				}
-			} else if (currentItem.getItem() instanceof ItemFacade) {
-				if (addOrStripFacade(world, x, y, z, player, ForgeDirection.getOrientation(side), pipe)) {
-					return true;
-				}
-			} else if (currentItem.getItem () instanceof ItemRobot) {
-				if (!world.isRemote) {
-					RaytraceResult rayTraceResult = doRayTrace(world, x, y, z,
-							player);
-
-					if (rayTraceResult.hitPart == Part.RobotStation) {
-						EntityRobot robot = ((ItemRobot) currentItem.getItem())
-								.createRobot(world);
-
-						float px = x + 0.5F + rayTraceResult.sideHit.offsetX * 0.5F;
-						float py = y + 0.5F + rayTraceResult.sideHit.offsetY * 0.5F;
-						float pz = z + 0.5F + rayTraceResult.sideHit.offsetZ * 0.5F;
-
-						robot.setPosition(px, py, pz);
-						robot.setDockingStation(pipe.container,
-								rayTraceResult.sideHit);
-						robot.currentAI = new AIDocked();
-						world.spawnEntityInWorld(robot);
-
-						if (!player.capabilities.isCreativeMode) {
-							player.getCurrentEquippedItem().stackSize--;
-						}
-
-						return true;
-					}
-				}
+			} else if(SimpleServiceLocator.buildCraftProxy.handleBCClickOnPipe(currentItem, pipe, world, x, y, z, player, side, this)) {
+				return true;
 			}
 
 			boolean clickedOnGate = false;
@@ -917,7 +862,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			}
 
 			if (clickedOnGate) {
-				pipe.gate.openGui(player);
+				pipe.bcPipePart.openGateGui(player);
 				return true;
 			} else {
 				return pipe.blockActivated(player);
@@ -925,200 +870,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		}
 
 		return false;
-	}
-
-	private boolean addOrStripGate(World world, int x, int y, int z, EntityPlayer player, CoreUnroutedPipe pipe) {
-		if (addGate(player, pipe)) {
-			return true;
-		}
-		if (player.isSneaking()) {
-			RaytraceResult rayTraceResult = doRayTrace(world, x, y, z, player);
-			if (rayTraceResult != null && rayTraceResult.hitPart == Part.Gate) {
-				if (stripGate(pipe)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	private boolean addGate(EntityPlayer player, CoreUnroutedPipe pipe) {
-		if (!pipe.hasGate()) {
-			pipe.gate = GateFactory.makeGate(pipe, player.getCurrentEquippedItem());
-			if (!player.capabilities.isCreativeMode) {
-				player.getCurrentEquippedItem().splitStack(1);
-			}
-			pipe.container.scheduleRenderUpdate();
-			return true;
-		}
-		return false;
-	}
-
-	private boolean stripGate(CoreUnroutedPipe pipe) {
-		if (pipe.hasGate()) {
-			if (!pipe.container.getWorldObj().isRemote) {
-				pipe.gate.dropGate();
-			}
-			pipe.resetGate();
-			return true;
-		}
-		return false;
-	}
-
-	private boolean addOrStripWire(EntityPlayer player, CoreUnroutedPipe pipe, PipeWire color) {
-		if (addWire(pipe, color)) {
-			if (!player.capabilities.isCreativeMode) {
-				player.getCurrentEquippedItem().splitStack(1);
-			}
-			return true;
-		}
-		return player.isSneaking() && stripWire(pipe, color);
-	}
-
-	private boolean addWire(CoreUnroutedPipe pipe, PipeWire color) {
-		if (!pipe.wireSet[color.ordinal()]) {
-			pipe.wireSet[color.ordinal()] = true;
-			pipe.signalStrength[color.ordinal()] = 0;
-			pipe.container.scheduleNeighborChange();
-			return true;
-		}
-		return false;
-	}
-
-	private boolean stripWire(CoreUnroutedPipe pipe, PipeWire color) {
-		if (pipe.wireSet[color.ordinal()]) {
-			if (!pipe.container.getWorldObj().isRemote) {
-				dropWire(color, pipe);
-			}
-			pipe.wireSet[color.ordinal()] = false;
-			pipe.container.scheduleRenderUpdate();
-			return true;
-		}
-		return false;
-	}
-
-	private boolean addOrStripFacade(World world, int x, int y, int z, EntityPlayer player, ForgeDirection side, CoreUnroutedPipe pipe) {
-		RaytraceResult rayTraceResult = doRayTrace(world, x, y, z, player);
-		if (player.isSneaking()) {
-			if (rayTraceResult != null && rayTraceResult.hitPart == Part.Facade) {
-				if (stripFacade(pipe, rayTraceResult.sideHit)) {
-					return true;
-				}
-			}
-		}
-		if (rayTraceResult != null && (rayTraceResult.hitPart != Part.Facade)) {
-			if (addFacade(player, pipe, rayTraceResult.sideHit != null && rayTraceResult.sideHit != ForgeDirection.UNKNOWN ? rayTraceResult.sideHit : side)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean addFacade(EntityPlayer player, CoreUnroutedPipe pipe, ForgeDirection side) {
-		ItemStack stack = player.getCurrentEquippedItem();
-		if (stack != null && stack.getItem() instanceof ItemFacade && pipe.container.addFacade(side, ItemFacade.getType(stack), ItemFacade.getWireType(stack), ItemFacade.getBlocks(stack), ItemFacade.getMetaValues(stack))) {
-			if (!player.capabilities.isCreativeMode) {
-				stack.stackSize--;
-			}
-			return true;
-		}
-		return false;
-	}
-
-	private boolean stripFacade(CoreUnroutedPipe pipe, ForgeDirection side) {
-		return pipe.container.dropFacade(side);
-	}
-
-	private boolean addOrStripPlug(World world, int x, int y, int z, EntityPlayer player, ForgeDirection side, CoreUnroutedPipe pipe) {
-		RaytraceResult rayTraceResult = doRayTrace(world, x, y, z, player);
-		if (player.isSneaking()) {
-			if (rayTraceResult != null && rayTraceResult.hitPart == Part.Plug) {
-				if (stripPlug(pipe, rayTraceResult.sideHit)) {
-					return true;
-				}
-			}
-		}
-		if (rayTraceResult != null && (rayTraceResult.hitPart == Part.Pipe || rayTraceResult.hitPart == Part.Gate)) {
-			if (addPlug(player, pipe, rayTraceResult.sideHit != null && rayTraceResult.sideHit != ForgeDirection.UNKNOWN ? rayTraceResult.sideHit : side)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean addOrStripRobotStation(World world, int x, int y, int z, EntityPlayer player, ForgeDirection side, CoreUnroutedPipe pipe) {
-		RaytraceResult rayTraceResult = doRayTrace(world, x, y, z, player);
-		if (player.isSneaking()) {
-			if (rayTraceResult != null && rayTraceResult.hitPart == Part.RobotStation) {
-				if (stripRobotStation(pipe, rayTraceResult.sideHit)) {
-					return true;
-				}
-			}
-		}
-		if (rayTraceResult != null && (rayTraceResult.hitPart == Part.Pipe || rayTraceResult.hitPart == Part.Gate)) {
-			if (addRobotStation(player, pipe, rayTraceResult.sideHit != null && rayTraceResult.sideHit != ForgeDirection.UNKNOWN ? rayTraceResult.sideHit : side)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean addPlug(EntityPlayer player, CoreUnroutedPipe pipe, ForgeDirection side) {
-		ItemStack stack = player.getCurrentEquippedItem();
-		if (pipe.container.addPlug(side)) {
-			if (!player.capabilities.isCreativeMode) {
-				stack.stackSize--;
-			}
-			return true;
-		}
-		return false;
-	}
-
-	private boolean addRobotStation(EntityPlayer player, CoreUnroutedPipe pipe, ForgeDirection side) {
-		ItemStack stack = player.getCurrentEquippedItem();
-		if (pipe.container.addRobotStation(side)) {
-			if (!player.capabilities.isCreativeMode) {
-				stack.stackSize--;
-			}
-			return true;
-		}
-		return false;
-	}
-
-	private boolean stripPlug(CoreUnroutedPipe pipe, ForgeDirection side) {
-		return pipe.container.removeAndDropPlug(side);
-	}
-
-	private boolean stripRobotStation(CoreUnroutedPipe pipe, ForgeDirection side) {
-		return pipe.container.removeAndDropPlug(side);
-	}
-
-	private boolean stripEquipment(World world, int x, int y, int z, EntityPlayer player, CoreUnroutedPipe pipe) {
-		// Try to strip facades first
-		RaytraceResult rayTraceResult = doRayTrace(world, x, y, z, player);
-		if (rayTraceResult != null && rayTraceResult.hitPart == Part.Facade) {
-			if (stripFacade(pipe, rayTraceResult.sideHit)) {
-				return true;
-			}
-		}
-
-		// Try to strip wires second, starting with yellow.
-		for (PipeWire color : PipeWire.values()) {
-			if (stripWire(pipe, color)) {
-				return true;
-			}
-		}
-
-		return stripGate(pipe);
-	}
-
-	/**
-	 * Drops a pipe wire item of the passed color.
-	 *
-	 * @param pipeWire
-	 */
-	private void dropWire(PipeWire pipeWire, CoreUnroutedPipe pipe) {
-		pipe.dropItem(pipeWire.getStack());
 	}
 
 	@Override

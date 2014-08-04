@@ -2,6 +2,7 @@ package logisticspipes.pipes;
 
 import java.util.LinkedList;
 
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeFluidTransportLogistics;
@@ -11,7 +12,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidHandler;
-import buildcraft.transport.TileGenericPipe;
 
 public class PipeFluidExtractor extends PipeFluidInsertion {
 
@@ -30,7 +30,7 @@ public class PipeFluidExtractor extends PipeFluidInsertion {
 		if(!isNthTick(10)) return;
 		LinkedList<AdjacentTile> connected = this.getConnectedEntities();
 		for(AdjacentTile tile:connected) {
-			if(tile.tile instanceof IFluidHandler && !(tile.tile instanceof TileGenericPipe)) {
+			if(tile.tile instanceof IFluidHandler && SimpleServiceLocator.pipeInformaitonManager.isNotAPipe(tile.tile)) {
 				extractFrom((IFluidHandler) tile.tile, tile.orientation);
 			}
 		}

@@ -533,7 +533,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	}
 	
 	public void debugDumpData(boolean isClient) {
-		System.out.println((isClient?"Client":"Server") + " Item: " + itemID + ":" + itemDamage + " uniqueID " + uniqueID);
+		System.out.println((isClient?"Client":"Server") + " Item: " + Item.getIdFromItem(item) + ":" + itemDamage + " uniqueID " + uniqueID);
 		StringBuilder sb = new StringBuilder();
 		sb.append("Tag: ");
 		debugDumpTag(tag, sb);
@@ -554,37 +554,37 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 			return;
 		}
 		if(nbt instanceof NBTTagByte) {
-			sb.append("TagByte(name=\"" + nbt.getName() + "\",data=" + ((NBTTagByte)nbt).data + ")");
+			sb.append("TagByte(data=" + ((NBTTagByte)nbt).func_150290_f() + ")");
 		} else if(nbt instanceof NBTTagShort) {
-			sb.append("TagShort(name=\"" + nbt.getName() + "\",data=" + ((NBTTagShort)nbt).data + ")");
+			sb.append("TagShort(data=" + ((NBTTagShort)nbt).func_150289_e() + ")");
 		} else if(nbt instanceof NBTTagInt) {
-			sb.append("TagInt(name=\"" + nbt.getName() + "\",data=" + ((NBTTagInt)nbt).data + ")");
+			sb.append("TagInt(data=" + ((NBTTagInt)nbt).func_150287_d() + ")");
 		} else if(nbt instanceof NBTTagLong) {
-			sb.append("TagLong(name=\"" + nbt.getName() + "\",data=" + ((NBTTagLong)nbt).data + ")");
+			sb.append("TagLong(data=" + ((NBTTagLong)nbt).func_150291_c() + ")");
 		} else if(nbt instanceof NBTTagFloat) {
-			sb.append("TagFloat(name=\"" + nbt.getName() + "\",data=" + ((NBTTagFloat)nbt).data + ")");
+			sb.append("TagFloat(data=" + ((NBTTagFloat)nbt).func_150288_h() + ")");
 		} else if(nbt instanceof NBTTagDouble) {
-			sb.append("TagDouble(name=\"" + nbt.getName() + "\",data=" + ((NBTTagDouble)nbt).data + ")");
+			sb.append("TagDouble(data=" + ((NBTTagDouble)nbt).func_150286_g() + ")");
 		} else if(nbt instanceof NBTTagString) {
-			sb.append("TagString(name=\"" + nbt.getName() + "\",data=\"" + ((NBTTagString)nbt).data + "\")");
+			sb.append("TagString(data=\"" + ((NBTTagString)nbt).func_150285_a_() + "\")");
 		} else if(nbt instanceof NBTTagByteArray) {
-			sb.append("TagByteArray(name=\"" + nbt.getName() + "\",data=");
-			for(int i = 0; i < ((NBTTagByteArray)nbt).byteArray.length; i++) {
-				sb.append(((NBTTagByteArray)nbt).byteArray[i]);
-				if(i < ((NBTTagByteArray)nbt).byteArray.length - 1)
+			sb.append("TagByteArray(data=");
+			for(int i = 0; i < ((NBTTagByteArray)nbt).func_150292_c().length; i++) {
+				sb.append(((NBTTagByteArray)nbt).func_150292_c()[i]);
+				if(i < ((NBTTagByteArray)nbt).func_150292_c().length - 1)
 					sb.append(",");
 			}
 			sb.append(")");
 		} else if(nbt instanceof NBTTagIntArray) {
-			sb.append("TagIntArray(name=\"" + nbt.getName() + "\",data=");
-			for(int i = 0; i < ((NBTTagIntArray)nbt).intArray.length; i++) {
-				sb.append(((NBTTagIntArray)nbt).intArray[i]);
-				if(i < ((NBTTagIntArray)nbt).intArray.length - 1)
+			sb.append("TagIntArray(data=");
+			for(int i = 0; i < ((NBTTagIntArray)nbt).func_150302_c().length; i++) {
+				sb.append(((NBTTagIntArray)nbt).func_150302_c()[i]);
+				if(i < ((NBTTagIntArray)nbt).func_150302_c().length - 1)
 					sb.append(",");
 			}
 			sb.append(")");
 		} else if(nbt instanceof NBTTagList) {
-			sb.append("TagList(name=\"" + nbt.getName() + "\",data=");
+			sb.append("TagList(data=");
 			for(int i = 0; i < ((NBTTagList)nbt).tagList.size(); i++) {
 				debugDumpTag((NBTBase)(((NBTTagList)nbt).tagList.get(i)), sb);
 				if(i < ((NBTTagList)nbt).tagList.size() - 1)
@@ -592,7 +592,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 			}
 			sb.append(")");
 		} else if(nbt instanceof NBTTagCompound) {
-			sb.append("TagCompound(name=\"" + nbt.getName() + "\",data=");
+			sb.append("TagCompound(data=");
 			Object[] oe = ((NBTTagCompound)nbt).tagMap.entrySet().toArray();
 			for(int i = 0; i < oe.length; i++) {
 				Entry<String, NBTBase> e = (Entry<String, NBTBase>)(oe[i]);

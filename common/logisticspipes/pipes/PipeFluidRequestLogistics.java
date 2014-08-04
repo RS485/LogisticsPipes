@@ -26,7 +26,7 @@ public class PipeFluidRequestLogistics extends FluidRoutedPipe implements IReque
 	
 	@Override
 	public boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
-		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && SimpleServiceLocator.buildCraftProxy.canWrench(entityplayer, this.getX(), this.getY(), this.getZ())) {
+		if (SimpleServiceLocator.toolWrenchHandler.isWrenchEquipped(entityplayer) && SimpleServiceLocator.toolWrenchHandler.canWrench(entityplayer, this.getX(), this.getY(), this.getZ())) {
 			if(MainProxy.isServer(getWorld())) {
 				if (settings == null || settings.openRequest) {
 					openGui(entityplayer);
@@ -34,7 +34,7 @@ public class PipeFluidRequestLogistics extends FluidRoutedPipe implements IReque
 					entityplayer.addChatMessage(new ChatComponentText("Permission denied"));
 				}
 			}
-			SimpleServiceLocator.buildCraftProxy.wrenchUsed(entityplayer, this.getX(), this.getY(), this.getZ());
+			SimpleServiceLocator.toolWrenchHandler.wrenchUsed(entityplayer, this.getX(), this.getY(), this.getZ());
 			return true;
 		}
 		return false;

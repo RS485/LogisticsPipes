@@ -81,7 +81,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.FMLClientHandler;
 
 @CCType(name="LogisticsChassiePipe")
@@ -156,7 +155,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		TileEntity tile = pos.getTileEntity(getWorld());
 
 		if (tile == null) return false;
-		if (tile instanceof TileGenericPipe) return false;
+		if (SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) return false;
 		return SimpleServiceLocator.buildCraftProxy.checkPipesConnections(this.container, tile, connection);
 	}
 
@@ -412,7 +411,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	public boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
 		if (entityplayer.getCurrentEquippedItem() == null) return false;
 
-		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && entityplayer.isSneaking() && SimpleServiceLocator.buildCraftProxy.canWrench(entityplayer, this.getX(), this.getY(), this.getZ())) {
+		if (SimpleServiceLocator.toolWrenchHandler.isWrenchEquipped(entityplayer) && entityplayer.isSneaking() && SimpleServiceLocator.toolWrenchHandler.canWrench(entityplayer, this.getX(), this.getY(), this.getZ())) {
 			if(MainProxy.isServer(getWorld())) {
 				if (settings == null || settings.openGui) {
 					((PipeLogisticsChassi)this.container.pipe).nextOrientation();
@@ -420,7 +419,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
 				}
 			}
-			SimpleServiceLocator.buildCraftProxy.wrenchUsed(entityplayer, this.getX(), this.getY(), this.getZ());
+			SimpleServiceLocator.toolWrenchHandler.wrenchUsed(entityplayer, this.getX(), this.getY(), this.getZ());
 			return true;
 		}
 		

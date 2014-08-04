@@ -122,6 +122,11 @@ public class LogisticsWrapperHandler {
 	
 	@SuppressWarnings("unchecked")
 	public static <T> T getWrappedProxy(String modId, Class<T> interfaze, Class<? extends T> proxyClazz, T dummyProxy) throws NoSuchFieldException, SecurityException, ClassNotFoundException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
+		boolean ignoreModLoaded = false;
+		if(modId.startsWith("!")) {
+			ignoreModLoaded = true;
+			modId = modId.substring(1);
+		}
 		String fieldName = interfaze.getName().replace('.', '/');
 		String proxyName = interfaze.getSimpleName().substring(1);
 		if(!proxyName.endsWith("Proxy")) {
@@ -210,7 +215,7 @@ public class LogisticsWrapperHandler {
 		
 		T proxy = null;
 		Throwable e = null; 
-		if(ModStatusHelper.isModLoaded(modId)) {
+		if(ModStatusHelper.isModLoaded(modId) || ignoreModLoaded) {
 			try {
 				proxy = proxyClazz.newInstance();
 			} catch(Exception e1) {

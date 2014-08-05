@@ -54,7 +54,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 				return true;
 		}
 
-		return tile instanceof TileGenericPipe || SimpleServiceLocator.buildCraftProxy.isMachineManagingFluids(tile);
+		return tile instanceof LogisticsTileGenericPipe || SimpleServiceLocator.buildCraftProxy.isMachineManagingFluids(tile);
 	}
 	
 	@Override
@@ -114,7 +114,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 		if(tile instanceof LogisticsTileGenericPipe) {
 			if(((LogisticsTileGenericPipe)tile).pipe instanceof FluidRoutedPipe) return false;
 			if(!flag) return false;
-			if(((TileGenericPipe)tile).pipe == null || !(((TileGenericPipe)tile).pipe.transport instanceof IFluidHandler)) return false;
+			if(((LogisticsTileGenericPipe)tile).pipe == null || !(((LogisticsTileGenericPipe)tile).pipe.transport instanceof IFluidHandler)) return false;
 		}
 		return true;
 	}

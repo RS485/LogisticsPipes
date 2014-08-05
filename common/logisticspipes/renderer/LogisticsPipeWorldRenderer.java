@@ -152,61 +152,6 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 		renderblocks.flipTexture = false;
 	}
 
-	private void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z) {
-		FacadeRenderHelper.pipeFacadeRenderer(renderblocks, block, state, x, y, z);
-	}
-
-	private void pipePlugRenderer(RenderBlocks renderblocks, Block block, PipeRenderState state, int x, int y, int z) {
-
-		float zFightOffset = 1F / 4096F;
-
-		float[][] zeroState = new float[3][2];
-		// X START - END
-		zeroState[0][0] = 0.25F + zFightOffset;
-		zeroState[0][1] = 0.75F - zFightOffset;
-		// Y START - END
-		zeroState[1][0] = 0.125F;
-		zeroState[1][1] = 0.251F;
-		// Z START - END
-		zeroState[2][0] = 0.25F + zFightOffset;
-		zeroState[2][1] = 0.75F - zFightOffset;
-
-		state.currentTexture = BuildCraftTransport.instance.pipeIconProvider.getIcon(PipeIconProvider.TYPE.PipeStructureCobblestone.ordinal()); // Structure Pipe
-
-		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-			if (state.plugMatrix.isConnected(direction)) {
-				float[][] rotated = MatrixTranformations.deepClone(zeroState);
-				MatrixTranformations.transform(rotated, direction);
-
-				renderblocks.setRenderBounds(rotated[0][0], rotated[1][0], rotated[2][0], rotated[0][1], rotated[1][1], rotated[2][1]);
-				renderblocks.renderStandardBlock(block, x, y, z);
-			}
-		}
-
-		// X START - END
-		zeroState[0][0] = 0.25F + 0.125F / 2 + zFightOffset;
-		zeroState[0][1] = 0.75F - 0.125F / 2 + zFightOffset;
-		// Y START - END
-		zeroState[1][0] = 0.25F;
-		zeroState[1][1] = 0.25F + 0.125F;
-		// Z START - END
-		zeroState[2][0] = 0.25F + 0.125F / 2;
-		zeroState[2][1] = 0.75F - 0.125F / 2;
-
-		state.currentTexture = BuildCraftTransport.instance.pipeIconProvider.getIcon(PipeIconProvider.TYPE.PipeStructureCobblestone.ordinal()); // Structure Pipe
-
-		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-			if (state.plugMatrix.isConnected(direction)) {
-				float[][] rotated = MatrixTranformations.deepClone(zeroState);
-				MatrixTranformations.transform(rotated, direction);
-
-				renderblocks.setRenderBounds(rotated[0][0], rotated[1][0], rotated[2][0], rotated[0][1], rotated[1][1], rotated[2][1]);
-				renderblocks.renderStandardBlock(block, x, y, z);
-			}
-		}
-
-	}
-
 	@Override
 	public void renderInventoryBlock(Block block, int metadata, int modelID, RenderBlocks renderer) {}
 

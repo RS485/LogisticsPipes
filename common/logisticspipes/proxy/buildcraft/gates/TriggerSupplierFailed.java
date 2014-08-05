@@ -10,6 +10,7 @@ package logisticspipes.proxy.buildcraft.gates;
 
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
+import logisticspipes.proxy.buildcraft.gates.wrapperclasses.PipeWrapper;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import buildcraft.api.gates.ITriggerParameter;
 import buildcraft.transport.IPipeTrigger;
@@ -33,13 +34,15 @@ public class TriggerSupplierFailed extends LPTrigger implements IPipeTrigger{
 
 	@Override
 	public boolean isTriggerActive(Pipe pipe, ITriggerParameter parameter) {
-		if (pipe instanceof PipeItemsSupplierLogistics) {
-			PipeItemsSupplierLogistics supplier = (PipeItemsSupplierLogistics) pipe;
-			return supplier.isRequestFailed();
-		}
-		if (pipe instanceof PipeItemsFluidSupplier) {
-			PipeItemsFluidSupplier supplier = (PipeItemsFluidSupplier) pipe;
-			return supplier.isRequestFailed();
+		if(pipe instanceof PipeWrapper) {
+			if (((PipeWrapper)pipe).tile.pipe instanceof PipeItemsSupplierLogistics) {
+				PipeItemsSupplierLogistics supplier = (PipeItemsSupplierLogistics) ((PipeWrapper)pipe).tile.pipe;
+				return supplier.isRequestFailed();
+			}
+			if (((PipeWrapper)pipe).tile.pipe instanceof PipeItemsFluidSupplier) {
+				PipeItemsFluidSupplier supplier = (PipeItemsFluidSupplier) ((PipeWrapper)pipe).tile.pipe;
+				return supplier.isRequestFailed();
+			}
 		}
 		return false;
 	}

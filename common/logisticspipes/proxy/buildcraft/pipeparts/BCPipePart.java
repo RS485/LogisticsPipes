@@ -2,9 +2,19 @@ package logisticspipes.proxy.buildcraft.pipeparts;
 
 import java.util.List;
 
+import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.buildcraft.gates.wrapperclasses.PipeWrapper;
 import buildcraft.api.transport.PipeWire;
+import buildcraft.core.utils.Utils;
+import buildcraft.transport.BlockGenericPipe;
+import buildcraft.transport.Gate;
+import buildcraft.transport.PipeTransportStructure;
+import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.gates.GateFactory;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -17,9 +27,12 @@ public class BCPipePart implements IBCPipePart {
 	public int[] signalStrength = new int[]{0, 0, 0, 0};
 	public boolean[] wireSet = new boolean[]{false, false, false, false};
 	public Gate gate;
+	
+	public PipeWrapper wrapper;
 
 	public BCPipePart(LogisticsTileGenericPipe tile) {
 		this.container = tile;
+		wrapper = new PipeWrapper(tile);
 	}
 
 	@Override
@@ -56,7 +69,7 @@ public class BCPipePart implements IBCPipePart {
 		// Load gate if any
 		if (data.hasKey("Gate")) {
 			NBTTagCompound gateNBT = data.getCompoundTag("Gate");
-			gate = GateFactory.makeGate(this, gateNBT);
+			gate = GateFactory.makeGate(wrapper, gateNBT);
 		}
 
 		for (int i = 0; i < 4; ++i) {
@@ -82,16 +95,16 @@ public class BCPipePart implements IBCPipePart {
 		}
 
 		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-			if (container.hasFacade(direction)) {
-				result.add (container.getFacade(direction));
+			if (container.tilePart.hasFacade(direction)) {
+				result.add (container.tilePart.getFacade(direction));
 			}
 
-			if (container.hasPlug(direction)) {
-				result.add (new ItemStack(BuildCraftTransport.plugItem));
+			if (container.tilePart.hasPlug(direction)) {
+				result.add (SimpleServiceLocator.buildCraftProxy.getPipePlugItemStack());
 			}
 
-			if (container.hasRobotStation(direction)) {
-				result.add (new ItemStack(BuildCraftTransport.robotStationItem));
+			if (container.tilePart.hasRobotStation(direction)) {
+				result.add (SimpleServiceLocator.buildCraftProxy.getRobotStationItemStack());
 			}
 		}
 	}
@@ -104,6 +117,18 @@ public class BCPipePart implements IBCPipePart {
 
 	@Override
 	public boolean isWireConnectedTo(TileEntity tile, PipeWire color) {
+		if(tile instanceof LogisticsTileGenericPipe) {
+			LogisticsTileGenericPipe tilePipe = (LogisticsTileGenericPipe) tile;
+			if (!LogisticsBlockGenericPipe.isFullyDefined(tilePipe.pipe)) {
+				return false;
+			}
+
+			if (!tilePipe.pipe.bcPipePart.getWireSet()[color.ordinal()]) {
+				return false;
+			}
+
+			return Ut.checkPipesConnections(container, tile);
+		}
 		if (!(tile instanceof TileGenericPipe)) {
 			return false;
 		}
@@ -118,7 +143,7 @@ public class BCPipePart implements IBCPipePart {
 			return false;
 		}
 
-		return tilePipe.pipe.transport instanceof PipeTransportStructure || transport instanceof PipeTransportStructure || Utils.checkPipesConnections(container, tile);
+		return tilePipe.pipe.transport instanceof PipeTransportStructure || Utils.checkPipesConnections(container, tile);
 	}
 
 	@Override
@@ -160,13 +185,13 @@ public class BCPipePart implements IBCPipePart {
 		if (signalStrength[wire.ordinal()] > 1) {
 			for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {
 				TileEntity tile = container.getTile(o);
-
+				//TODO handle TileGenericPipe
 				if (tile instanceof LogisticsTileGenericPipe) {
 					LogisticsTileGenericPipe tilePipe = (LogisticsTileGenericPipe) tile;
 
-					if (LogisticsBlockGenericPipe.isFullyDefined(tilePipe.pipe) && tilePipe.pipe.wireSet[wire.ordinal()]) {
+					if (LogisticsBlockGenericPipe.isFullyDefined(tilePipe.pipe) && tilePipe.pipe.bcPipePart.getWireSet()[wire.ordinal()]) {
 						if (isWireConnectedTo(tile, wire)) {
-							tilePipe.pipe.receiveSignal(signalStrength[wire.ordinal()] - 1, wire);
+							tilePipe.pipe.bcPipePart.receiveSignal(signalStrength[wire.ordinal()] - 1, wire);
 						}
 					}
 				}
@@ -174,7 +199,8 @@ public class BCPipePart implements IBCPipePart {
 		}
 	}
 
-	private boolean receiveSignal(int signal, PipeWire color) {
+	@Override
+	public boolean receiveSignal(int signal, PipeWire color) {
 		if (container.getWorldObj() == null) {
 			return false;
 		}
@@ -183,7 +209,7 @@ public class BCPipePart implements IBCPipePart {
 
 		if (signal >= signalStrength[color.ordinal()] && signal != 0) {
 			signalStrength[color.ordinal()] = signal;
-			internalUpdateScheduled = true;
+			container.pipe.internalUpdateScheduled = true;
 
 			if (oldSignal == 0) {
 				container.scheduleRenderUpdate();
@@ -206,7 +232,7 @@ public class BCPipePart implements IBCPipePart {
 
 				if (LogisticsBlockGenericPipe.isFullyDefined(tilePipe.pipe)) {
 					if (isWireConnectedTo(tile, color)) {
-						foundBiggerSignal |= receiveSignal(tilePipe.pipe.signalStrength[color.ordinal()] - 1, color);
+						foundBiggerSignal |= receiveSignal(tilePipe.pipe.bcPipePart.getSignalStrength()[color.ordinal()] - 1, color);
 					}
 				}
 			}
@@ -219,7 +245,7 @@ public class BCPipePart implements IBCPipePart {
 
 			for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {
 				TileEntity tile = container.getTile(o);
-
+				//TODO handle TileGenericPipe
 				if (tile instanceof LogisticsTileGenericPipe) {
 					LogisticsTileGenericPipe tilePipe = (LogisticsTileGenericPipe) tile;
 
@@ -249,5 +275,21 @@ public class BCPipePart implements IBCPipePart {
 	@Override
 	public void openGateGui(EntityPlayer player) {
 		gate.openGui(player);
+	}
+
+	@Override
+	public boolean isGateActive() {
+		return gate != null && gate.isGateActive();
+	}
+
+	@Override
+	public Object getGate() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void makeGate(CoreUnroutedPipe pipe, ItemStack currentEquippedItem) {
+		gate = GateFactory.makeGate(wrapper, currentEquippedItem);
 	}
 }

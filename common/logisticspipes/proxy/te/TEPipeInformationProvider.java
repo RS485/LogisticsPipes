@@ -116,5 +116,20 @@ public class TEPipeInformationProvider implements IPipeInformationProvider {
 	@Override
 	public int getDistance() {
 		return conduit.getLength();
+	}
+
+	@Override
+	public boolean isItemPipe() {
+		return true;
+	}
+
+	@Override
+	public boolean isFluidPipe() {
+		return false;
+	}
+
+	@Override
+	public boolean isPowerPipe() {
+		return false;
 	}	
 }

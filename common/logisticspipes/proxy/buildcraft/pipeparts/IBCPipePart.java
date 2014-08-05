@@ -2,7 +2,9 @@ package logisticspipes.proxy.buildcraft.pipeparts;
 
 import java.util.List;
 
+import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import buildcraft.api.transport.PipeWire;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -23,4 +25,8 @@ public interface IBCPipePart {
 	ItemStack getGateItem();
 	int[] getSignalStrength();
 	void openGateGui(EntityPlayer player);
+	boolean isGateActive();
+	boolean receiveSignal(int i, PipeWire wire);
+	Object getGate();
+	void makeGate(CoreUnroutedPipe pipe, ItemStack currentEquippedItem);
 }

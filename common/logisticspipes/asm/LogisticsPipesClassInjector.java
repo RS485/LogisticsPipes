@@ -23,6 +23,7 @@ public class LogisticsPipesClassInjector implements IClassTransformer {
 	@Override
 	@SuppressWarnings("unchecked")
 	public byte[] transform(String name, String transformedName, byte[] bytes) {
+		if(bytes != null) return bytes;
 		try {
 			if(name.startsWith("logisticspipes.proxy.opencomputers.asm.BaseWrapperClass$") && name.endsWith("$OpenComputersWrapper")) {
 				String correctName = name.substring(56, name.length() - 21);

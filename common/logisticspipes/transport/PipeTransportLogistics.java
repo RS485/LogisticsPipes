@@ -15,7 +15,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import logisticspipes.Configs;
+import buildcraft.transport.TravelingItem;
+
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
@@ -123,7 +124,7 @@ public class PipeTransportLogistics {
 		Iterator<ItemIdentifierStack> iterator = _itemBuffer.keySet().iterator();
 		while(iterator.hasNext()) {
 			ItemIdentifierStack next = iterator.next();
-			SimpleServiceLocator.buildCraftProxy.dropItems(getWorld(), next.makeNormalStack(), this.getPipe().getX(), this.getPipe().getY(), this.getPipe().getZ());
+			MainProxy.dropItems(getWorld(), next.makeNormalStack(), this.getPipe().getX(), this.getPipe().getY(), this.getPipe().getZ());
 			iterator.remove();
 		}
 	}

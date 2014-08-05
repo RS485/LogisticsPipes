@@ -40,7 +40,7 @@ public class OpenComputersProxy implements IOpenComputersProxy {
 		if(tile.node != null && tile.node.host() == tile) {
 			final NBTTagCompound nodeNbt = new NBTTagCompound();
 			tile.node.save(nodeNbt);
-			nbt.setCompoundTag("oc:node", nodeNbt);
+			nbt.setTag("oc:node", nodeNbt);
 		}
 	}
 }

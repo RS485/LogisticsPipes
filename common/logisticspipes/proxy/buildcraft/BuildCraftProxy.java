@@ -15,7 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.lwjgl.opengl.GL11;
+
 import logisticspipes.Configs;
+import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.pipes.PipeBlockRequestTable;
@@ -65,17 +68,27 @@ import logisticspipes.proxy.buildcraft.gates.TriggerHasDestination;
 import logisticspipes.proxy.buildcraft.gates.TriggerNeedsPower;
 import logisticspipes.proxy.buildcraft.gates.TriggerSupplierFailed;
 import logisticspipes.proxy.buildcraft.pipeparts.BCPipePart;
+import logisticspipes.proxy.buildcraft.pipeparts.BCTilePart;
 import logisticspipes.proxy.buildcraft.pipeparts.IBCPipePart;
+import logisticspipes.proxy.buildcraft.pipeparts.IBCTilePart;
 import logisticspipes.proxy.interfaces.IBCProxy;
 import logisticspipes.renderer.LogisticsPipeBlockRenderer;
 import logisticspipes.renderer.LogisticsRenderPipe;
+import logisticspipes.renderer.state.FacadeMatrix;
+import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemClient;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
+import logisticspipes.utils.MatrixTranformations;
 import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -83,12 +96,15 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.BuildCraftTransport;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.IAction;
+import buildcraft.api.gates.IGateExpansion;
 import buildcraft.api.gates.ITrigger;
 import buildcraft.api.tools.IToolWrench;
 import buildcraft.api.transport.IPipeConnection;
@@ -97,23 +113,29 @@ import buildcraft.api.transport.IPipeTile.PipeType;
 import buildcraft.api.transport.PipeWire;
 import buildcraft.core.CoreConstants;
 import buildcraft.core.IMachine;
+import buildcraft.core.ITileBufferHolder;
 import buildcraft.core.ItemRobot;
 import buildcraft.core.inventory.InvUtils;
+import buildcraft.core.render.RenderEntityBlock;
+import buildcraft.core.render.RenderEntityBlock.RenderInfo;
 import buildcraft.core.robots.AIDocked;
 import buildcraft.core.robots.EntityRobot;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.BlockGenericPipe;
+import buildcraft.transport.Gate;
 import buildcraft.transport.ItemFacade;
 import buildcraft.transport.ItemPipe;
 import buildcraft.transport.ItemPlug;
 import buildcraft.transport.ItemRobotStation;
 import buildcraft.transport.Pipe;
+import buildcraft.transport.PipeIconProvider;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.TransportProxy;
 import buildcraft.transport.TransportProxyClient;
 import buildcraft.transport.TravelingItem;
 import buildcraft.transport.gates.ItemGate;
+import buildcraft.transport.render.FacadeRenderHelper;
 import buildcraft.transport.render.PipeRendererTESR;
 import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -406,7 +428,7 @@ public class BuildCraftProxy implements IBCProxy {
 	
 	private boolean addGate(EntityPlayer player, CoreUnroutedPipe pipe) {
 		if(!pipe.hasGate()) {
-			pipe.gate = GateFactory.makeGate(pipe, player.getCurrentEquippedItem());
+			pipe.bcPipePart.makeGate(pipe, player.getCurrentEquippedItem());
 			if(!player.capabilities.isCreativeMode) {
 				player.getCurrentEquippedItem().splitStack(1);
 			}
@@ -419,7 +441,7 @@ public class BuildCraftProxy implements IBCProxy {
 	private boolean stripGate(CoreUnroutedPipe pipe) {
 		if(pipe.hasGate()) {
 			if(!pipe.container.getWorldObj().isRemote) {
-				pipe.gate.dropGate();
+				((Gate)pipe.bcPipePart.getGate()).dropGate();
 			}
 			pipe.resetGate();
 			return true;
@@ -474,7 +496,7 @@ public class BuildCraftProxy implements IBCProxy {
 	
 	private boolean addFacade(EntityPlayer player, CoreUnroutedPipe pipe, ForgeDirection side) {
 		ItemStack stack = player.getCurrentEquippedItem();
-		if(stack != null && stack.getItem() instanceof ItemFacade && pipe.container.addFacade(side, ItemFacade.getType(stack), ItemFacade.getWireType(stack), ItemFacade.getBlocks(stack), ItemFacade.getMetaValues(stack))) {
+		if(stack != null && stack.getItem() instanceof ItemFacade && pipe.container.tilePart.addFacade(side, ItemFacade.getType(stack), ItemFacade.getWireType(stack), ItemFacade.getBlocks(stack), ItemFacade.getMetaValues(stack))) {
 			if(!player.capabilities.isCreativeMode) {
 				stack.stackSize--;
 			}
@@ -484,7 +506,7 @@ public class BuildCraftProxy implements IBCProxy {
 	}
 	
 	private boolean stripFacade(CoreUnroutedPipe pipe, ForgeDirection side) {
-		return pipe.container.dropFacade(side);
+		return pipe.container.tilePart.dropFacade(side);
 	}
 	
 	private boolean addOrStripPlug(World world, int x, int y, int z, EntityPlayer player, ForgeDirection side, CoreUnroutedPipe pipe, LogisticsBlockGenericPipe block) {
@@ -515,7 +537,7 @@ public class BuildCraftProxy implements IBCProxy {
 	
 	private boolean addPlug(EntityPlayer player, CoreUnroutedPipe pipe, ForgeDirection side) {
 		ItemStack stack = player.getCurrentEquippedItem();
-		if(pipe.container.addPlug(side)) {
+		if(pipe.container.tilePart.addPlug(side)) {
 			if(!player.capabilities.isCreativeMode) {
 				stack.stackSize--;
 			}
@@ -526,7 +548,7 @@ public class BuildCraftProxy implements IBCProxy {
 	
 	private boolean addRobotStation(EntityPlayer player, CoreUnroutedPipe pipe, ForgeDirection side) {
 		ItemStack stack = player.getCurrentEquippedItem();
-		if(pipe.container.addRobotStation(side)) {
+		if(pipe.container.tilePart.addRobotStation(side)) {
 			if(!player.capabilities.isCreativeMode) {
 				stack.stackSize--;
 			}
@@ -536,11 +558,11 @@ public class BuildCraftProxy implements IBCProxy {
 	}
 	
 	private boolean stripPlug(CoreUnroutedPipe pipe, ForgeDirection side) {
-		return pipe.container.removeAndDropPlug(side);
+		return pipe.container.tilePart.removeAndDropPlug(side);
 	}
 	
 	private boolean stripRobotStation(CoreUnroutedPipe pipe, ForgeDirection side) {
-		return pipe.container.removeAndDropPlug(side);
+		return pipe.container.tilePart.removeAndDropPlug(side);
 	}
 	
 	@Override
@@ -579,7 +601,399 @@ public class BuildCraftProxy implements IBCProxy {
 	}
 	
 	@Override
-	public ItemStack getRobotTrationItemStack() {
+	public ItemStack getRobotStationItemStack() {
 		return new ItemStack(BuildCraftTransport.robotStationItem);
+	}
+
+	@Override
+	public IBCTilePart getBCTilePart(LogisticsTileGenericPipe tile) {
+		return new BCTilePart(tile);
+	}
+
+	@Override
+	public void notifyOfChange(LogisticsTileGenericPipe pipe, TileEntity tile, ForgeDirection o) {
+		if (tile instanceof ITileBufferHolder) {
+			((ITileBufferHolder) tile).blockCreated(o, BuildCraftTransport.genericPipeBlock, pipe);
+		}
+		if (tile instanceof TileGenericPipe) {
+			((TileGenericPipe) tile).scheduleNeighborChange();
+		}
+	}
+
+	@Override
+	public void renderGatesWires(LogisticsTileGenericPipe pipe, double x, double y, double z) {
+		PipeRenderState state = pipe.renderState;
+
+		if (state.wireMatrix.hasWire(PipeWire.RED)) {
+			pipeWireRender(pipe, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MIN_POS, PipeWire.RED, x, y, z);
+		}
+
+		if (state.wireMatrix.hasWire(PipeWire.BLUE)) {
+			pipeWireRender(pipe, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, PipeWire.BLUE, x, y, z);
+		}
+
+		if (state.wireMatrix.hasWire(PipeWire.GREEN)) {
+			pipeWireRender(pipe, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, PipeWire.GREEN, x, y, z);
+		}
+
+		if (state.wireMatrix.hasWire(PipeWire.YELLOW)) {
+			pipeWireRender(pipe, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MAX_POS, PipeWire.YELLOW, x, y, z);
+		}
+
+		if (pipe.pipe.hasGate()) {
+			pipeGateRender(pipe, x, y, z);
+		}
+	}
+
+	private void pipeWireRender(LogisticsTileGenericPipe pipe, float cx, float cy, float cz, PipeWire color, double x, double y, double z) {
+
+		PipeRenderState state = pipe.renderState;
+
+		float minX = LPConstants.PIPE_MIN_POS;
+		float minY = LPConstants.PIPE_MIN_POS;
+		float minZ = LPConstants.PIPE_MIN_POS;
+
+		float maxX = LPConstants.PIPE_MAX_POS;
+		float maxY = LPConstants.PIPE_MAX_POS;
+		float maxZ = LPConstants.PIPE_MAX_POS;
+
+		boolean foundX = false, foundY = false, foundZ = false;
+
+		if (state.wireMatrix.isWireConnected(color, ForgeDirection.WEST)) {
+			minX = 0;
+			foundX = true;
+		}
+
+		if (state.wireMatrix.isWireConnected(color, ForgeDirection.EAST)) {
+			maxX = 1;
+			foundX = true;
+		}
+
+		if (state.wireMatrix.isWireConnected(color, ForgeDirection.DOWN)) {
+			minY = 0;
+			foundY = true;
+		}
+
+		if (state.wireMatrix.isWireConnected(color, ForgeDirection.UP)) {
+			maxY = 1;
+			foundY = true;
+		}
+
+		if (state.wireMatrix.isWireConnected(color, ForgeDirection.NORTH)) {
+			minZ = 0;
+			foundZ = true;
+		}
+
+		if (state.wireMatrix.isWireConnected(color, ForgeDirection.SOUTH)) {
+			maxZ = 1;
+			foundZ = true;
+		}
+
+		boolean center = false;
+
+		if (minX == 0 && maxX != 1 && (foundY || foundZ)) {
+			if (cx == LPConstants.PIPE_MIN_POS) {
+				maxX = LPConstants.PIPE_MIN_POS;
+			} else {
+				center = true;
+			}
+		}
+
+		if (minX != 0 && maxX == 1 && (foundY || foundZ)) {
+			if (cx == LPConstants.PIPE_MAX_POS) {
+				minX = LPConstants.PIPE_MAX_POS;
+			} else {
+				center = true;
+			}
+		}
+
+		if (minY == 0 && maxY != 1 && (foundX || foundZ)) {
+			if (cy == LPConstants.PIPE_MIN_POS) {
+				maxY = LPConstants.PIPE_MIN_POS;
+			} else {
+				center = true;
+			}
+		}
+
+		if (minY != 0 && maxY == 1 && (foundX || foundZ)) {
+			if (cy == LPConstants.PIPE_MAX_POS) {
+				minY = LPConstants.PIPE_MAX_POS;
+			} else {
+				center = true;
+			}
+		}
+
+		if (minZ == 0 && maxZ != 1 && (foundX || foundY)) {
+			if (cz == LPConstants.PIPE_MIN_POS) {
+				maxZ = LPConstants.PIPE_MIN_POS;
+			} else {
+				center = true;
+			}
+		}
+
+		if (minZ != 0 && maxZ == 1 && (foundX || foundY)) {
+			if (cz == LPConstants.PIPE_MAX_POS) {
+				minZ = LPConstants.PIPE_MAX_POS;
+			} else {
+				center = true;
+			}
+		}
+
+		boolean found = foundX || foundY || foundZ;
+
+		GL11.glPushMatrix();
+		GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
+		GL11.glEnable(GL11.GL_LIGHTING);
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		RenderHelper.disableStandardItemLighting();
+
+		GL11.glColor3f(1, 1, 1);
+		GL11.glTranslatef((float) x, (float) y, (float) z);
+
+		float scale = 1.001f;
+		GL11.glTranslatef(0.5F, 0.5F, 0.5F);
+		GL11.glScalef(scale, scale, scale);
+		GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
+
+
+		bindTexture(TextureMap.locationBlocksTexture);
+
+		RenderInfo renderBox = new RenderInfo();
+		renderBox.texture = BuildCraftTransport.instance.wireIconProvider.getIcon(state.wireMatrix.getWireIconIndex(color));
+
+		// Z render
+
+		if (minZ != LPConstants.PIPE_MIN_POS || maxZ != LPConstants.PIPE_MAX_POS || !found) {
+			renderBox.setBounds(cx == LPConstants.PIPE_MIN_POS ? cx - 0.05F : cx, cy == LPConstants.PIPE_MIN_POS ? cy - 0.05F : cy, minZ, cx == LPConstants.PIPE_MIN_POS ? cx
+					: cx + 0.05F, cy == LPConstants.PIPE_MIN_POS ? cy : cy + 0.05F, maxZ);
+			RenderEntityBlock.INSTANCE.renderBlock(renderBox, pipe.getWorldObj(), 0, 0, 0, pipe.xCoord, pipe.yCoord, pipe.zCoord, true, true);
+		}
+
+		// X render
+
+		if (minX != LPConstants.PIPE_MIN_POS || maxX != LPConstants.PIPE_MAX_POS || !found) {
+			renderBox.setBounds(minX, cy == LPConstants.PIPE_MIN_POS ? cy - 0.05F : cy, cz == LPConstants.PIPE_MIN_POS ? cz - 0.05F : cz, maxX, cy == LPConstants.PIPE_MIN_POS ? cy
+					: cy + 0.05F, cz == LPConstants.PIPE_MIN_POS ? cz : cz + 0.05F);
+			RenderEntityBlock.INSTANCE.renderBlock(renderBox, pipe.getWorldObj(), 0, 0, 0, pipe.xCoord, pipe.yCoord, pipe.zCoord, true, true);
+		}
+
+		// Y render
+
+		if (minY != LPConstants.PIPE_MIN_POS || maxY != LPConstants.PIPE_MAX_POS || !found) {
+			renderBox.setBounds(cx == LPConstants.PIPE_MIN_POS ? cx - 0.05F : cx, minY, cz == LPConstants.PIPE_MIN_POS ? cz - 0.05F : cz, cx == LPConstants.PIPE_MIN_POS ? cx
+					: cx + 0.05F, maxY, cz == LPConstants.PIPE_MIN_POS ? cz : cz + 0.05F);
+			RenderEntityBlock.INSTANCE.renderBlock(renderBox, pipe.getWorldObj(), 0, 0, 0, pipe.xCoord, pipe.yCoord, pipe.zCoord, true, true);
+		}
+
+		if (center || !found) {
+			renderBox.setBounds(cx == LPConstants.PIPE_MIN_POS ? cx - 0.05F : cx, cy == LPConstants.PIPE_MIN_POS ? cy - 0.05F : cy, cz == LPConstants.PIPE_MIN_POS ? cz - 0.05F : cz,
+					cx == LPConstants.PIPE_MIN_POS ? cx : cx + 0.05F, cy == LPConstants.PIPE_MIN_POS ? cy : cy + 0.05F, cz == LPConstants.PIPE_MIN_POS ? cz : cz + 0.05F);
+			RenderEntityBlock.INSTANCE.renderBlock(renderBox, pipe.getWorldObj(), 0, 0, 0, pipe.xCoord, pipe.yCoord, pipe.zCoord, true, true);
+		}
+
+		RenderHelper.enableStandardItemLighting();
+
+		GL11.glPopAttrib();
+		GL11.glPopMatrix();
+	}
+
+	private void pipeGateRender(LogisticsTileGenericPipe pipe, double x, double y, double z) {
+		GL11.glPushMatrix();
+		GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
+//		GL11.glEnable(GL11.GL_LIGHTING);
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glEnable(GL11.GL_CULL_FACE);
+//		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		RenderHelper.disableStandardItemLighting();
+
+		GL11.glColor3f(1, 1, 1);
+		GL11.glTranslatef((float) x, (float) y, (float) z);
+
+		bindTexture(TextureMap.locationBlocksTexture);
+
+		IIcon iconLogic;
+		if (pipe.renderState.isGateLit()) {
+			iconLogic = ((Gate)pipe.pipe.bcPipePart.getGate()).logic.getIconLit();
+		} else {
+			iconLogic = ((Gate)pipe.pipe.bcPipePart.getGate()).logic.getIconDark();
+		}
+
+		float translateCenter = 0;
+
+		// Render base gate
+		renderGate(pipe, iconLogic, 0, 0.1F, 0, 0);
+
+		float pulseStage = ((Gate)pipe.pipe.bcPipePart.getGate()).getPulseStage() * 2F;
+
+		if (pipe.renderState.isGatePulsing() || pulseStage != 0) {
+			// Render pulsing gate
+			float amplitude = 0.10F;
+			float start = 0.01F;
+
+			if (pulseStage < 1) {
+				translateCenter = (pulseStage * amplitude) + start;
+			} else {
+				translateCenter = amplitude - ((pulseStage - 1F) * amplitude) + start;
+			}
+
+			renderGate(pipe, iconLogic, 0, 0.13F, translateCenter, translateCenter);
+		}
+
+		IIcon materialIcon = ((Gate)pipe.pipe.bcPipePart.getGate()).material.getIconBlock();
+		if (materialIcon != null) {
+			renderGate(pipe, materialIcon, 1, 0.13F, translateCenter, translateCenter);
+		}
+
+		for (IGateExpansion expansion : ((Gate)pipe.pipe.bcPipePart.getGate()).expansions.keySet()) {
+			renderGate(pipe, expansion.getOverlayBlock(), 2, 0.13F, translateCenter, translateCenter);
+		}
+
+		RenderHelper.enableStandardItemLighting();
+
+		GL11.glPopAttrib();
+		GL11.glPopMatrix();
+	}
+
+	private void renderGate(LogisticsTileGenericPipe tile, IIcon icon, int layer, float trim, float translateCenter, float extraDepth) {
+		PipeRenderState state = tile.renderState;
+
+		RenderInfo renderBox = new RenderInfo();
+		renderBox.texture = icon;
+
+		float[][] zeroState = new float[3][2];
+		float min = LPConstants.PIPE_MIN_POS + trim / 2F;
+		float max = LPConstants.PIPE_MAX_POS - trim / 2F;
+
+		// X START - END
+		zeroState[0][0] = min;
+		zeroState[0][1] = max;
+		// Y START - END
+		zeroState[1][0] = LPConstants.PIPE_MIN_POS - 0.10F - 0.001F * layer;
+		zeroState[1][1] = LPConstants.PIPE_MIN_POS + 0.001F + 0.01F * layer + extraDepth;
+		// Z START - END
+		zeroState[2][0] = min;
+		zeroState[2][1] = max;
+
+		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+			if (shouldRenderNormalPipeSide(state, direction)) {
+				GL11.glPushMatrix();
+
+				float xt = direction.offsetX * translateCenter,
+						yt = direction.offsetY * translateCenter,
+						zt = direction.offsetZ * translateCenter;
+
+				GL11.glTranslatef(xt, yt, zt);
+
+				float[][] rotated = MatrixTranformations.deepClone(zeroState);
+				MatrixTranformations.transform(rotated, direction);
+
+				if (layer != 0) {
+					renderBox.setRenderSingleSide(direction.ordinal());
+				}
+				renderBox.setBounds(rotated[0][0], rotated[1][0], rotated[2][0], rotated[0][1], rotated[1][1], rotated[2][1]);
+				RenderEntityBlock.INSTANCE.renderBlock(renderBox, tile.getWorldObj(), 0, 0, 0, tile.xCoord, tile.yCoord, tile.zCoord, true, true);
+				GL11.glPopMatrix();
+			}
+		}
+	}
+	
+	private boolean shouldRenderNormalPipeSide(PipeRenderState state, ForgeDirection direction) {
+		return !state.pipeConnectionMatrix.isConnected(direction) && state.facadeMatrix.getFacadeBlock(direction) == null && !state.plugMatrix.isConnected(direction) && !state.robotStationMatrix.isConnected(direction) && !isOpenOrientation(state, direction);
+	}
+	
+	private boolean isOpenOrientation(PipeRenderState state, ForgeDirection direction) {
+		int connections = 0;
+		
+		ForgeDirection targetOrientation = ForgeDirection.UNKNOWN;
+		
+		for(ForgeDirection o: ForgeDirection.VALID_DIRECTIONS) {
+			if(state.pipeConnectionMatrix.isConnected(o)) {
+				
+				connections++;
+				
+				if(connections == 1) {
+					targetOrientation = o;
+				}
+			}
+		}
+		
+		if(connections > 1 || connections == 0) { return false; }
+		
+		return targetOrientation.getOpposite() == direction;
+	}
+
+	private void bindTexture(ResourceLocation p_147499_1_) {
+		TextureManager texturemanager = TileEntityRendererDispatcher.instance.field_147553_e;
+		if(texturemanager != null) {
+			texturemanager.bindTexture(p_147499_1_);
+		}
+	}
+
+	@Override
+	public void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z) {
+		FacadeRenderHelper.pipeFacadeRenderer(renderblocks, block, state, x, y, z);
+	}
+
+	@Override
+	public void pipePlugRenderer(RenderBlocks renderblocks, Block block, PipeRenderState state, int x, int y, int z) {
+
+		float zFightOffset = 1F / 4096F;
+
+		float[][] zeroState = new float[3][2];
+		// X START - END
+		zeroState[0][0] = 0.25F + zFightOffset;
+		zeroState[0][1] = 0.75F - zFightOffset;
+		// Y START - END
+		zeroState[1][0] = 0.125F;
+		zeroState[1][1] = 0.251F;
+		// Z START - END
+		zeroState[2][0] = 0.25F + zFightOffset;
+		zeroState[2][1] = 0.75F - zFightOffset;
+
+		state.currentTexture = BuildCraftTransport.instance.pipeIconProvider.getIcon(PipeIconProvider.TYPE.PipeStructureCobblestone.ordinal()); // Structure Pipe
+
+		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+			if (state.plugMatrix.isConnected(direction)) {
+				float[][] rotated = MatrixTranformations.deepClone(zeroState);
+				MatrixTranformations.transform(rotated, direction);
+
+				renderblocks.setRenderBounds(rotated[0][0], rotated[1][0], rotated[2][0], rotated[0][1], rotated[1][1], rotated[2][1]);
+				renderblocks.renderStandardBlock(block, x, y, z);
+			}
+		}
+
+		// X START - END
+		zeroState[0][0] = 0.25F + 0.125F / 2 + zFightOffset;
+		zeroState[0][1] = 0.75F - 0.125F / 2 + zFightOffset;
+		// Y START - END
+		zeroState[1][0] = 0.25F;
+		zeroState[1][1] = 0.25F + 0.125F;
+		// Z START - END
+		zeroState[2][0] = 0.25F + 0.125F / 2;
+		zeroState[2][1] = 0.75F - 0.125F / 2;
+
+		state.currentTexture = BuildCraftTransport.instance.pipeIconProvider.getIcon(PipeIconProvider.TYPE.PipeStructureCobblestone.ordinal()); // Structure Pipe
+
+		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+			if (state.plugMatrix.isConnected(direction)) {
+				float[][] rotated = MatrixTranformations.deepClone(zeroState);
+				MatrixTranformations.transform(rotated, direction);
+
+				renderblocks.setRenderBounds(rotated[0][0], rotated[1][0], rotated[2][0], rotated[0][1], rotated[1][1], rotated[2][1]);
+				renderblocks.renderStandardBlock(block, x, y, z);
+			}
+		}
+
+	}
+
+	@Override
+	public ItemStack getDropFacade(CoreUnroutedPipe pipe, ForgeDirection dir) {
+		FacadeMatrix matrix = pipe.container.renderState.facadeMatrix;
+		Block block = matrix.getFacadeBlock(dir);
+		if (block != null) {
+			return ItemFacade.getFacade(block,matrix.getFacadeMetaId(dir));
+		}
+		return null;
 	}
 }

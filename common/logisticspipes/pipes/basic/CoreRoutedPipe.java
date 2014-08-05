@@ -1081,7 +1081,6 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		if(this instanceof IRequireReliableTransport) {
 			((IRequireReliableTransport)this).itemLost(item, info);
 		}
-		//Override by subclasses //TODO
 	}
 
 	public boolean isLockedExit(ForgeDirection orientation) {
@@ -1108,7 +1107,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		if(getUpgradeManager().isSideDisconnected(side)) {
 			return false;
 		}
-		if(container != null && side != ForgeDirection.UNKNOWN && container.hasPlug(side)) {
+		if(container != null && side != ForgeDirection.UNKNOWN && container.tilePart.hasPlug(side)) {
 			return false;
 		}
 		if(!stillNeedReplace) {

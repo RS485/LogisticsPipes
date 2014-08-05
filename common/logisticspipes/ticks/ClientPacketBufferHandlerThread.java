@@ -157,7 +157,7 @@ public class ClientPacketBufferHandlerThread {
 			do {
 				flag = false;
 				Pair<EntityPlayer, byte[]> part = null;
-				synchronized (PacketBuffer) {
+				synchronized(PacketBuffer) {
 					if(PacketBuffer.size() > 0) {
 						flag = true;
 						part = PacketBuffer.pop();
@@ -166,14 +166,8 @@ public class ClientPacketBufferHandlerThread {
 				if(flag) {
 					try {
 						PacketHandler.onPacketData(new LPDataInputStream(part.getValue2()), part.getValue1());
-					} catch (IOException e) {
+					} catch(IOException e) {
 						e.printStackTrace();
-					}
-					int toHandle = retryPackets.size();
-					while(toHandle > 0) {
-						toHandle--;
-						Pair<EntityPlayer, ModernPacket> part = retryPackets.pop();
-						PacketHandler.onPacketData(part.getValue2(), part.getValue1());
 					}
 				}
 			} while(flag);

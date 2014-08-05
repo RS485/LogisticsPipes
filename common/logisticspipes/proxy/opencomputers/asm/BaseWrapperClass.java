@@ -30,6 +30,7 @@ import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -374,7 +375,7 @@ public abstract class BaseWrapperClass extends AbstractValue {
 			ItemStack stack = ItemStack.loadItemStackFromNBT(nbt);
 			if(stack != null) {
 				CCItemIdentifierBuilder builder = new CCItemIdentifierBuilder();
-				builder.setItemID(Double.valueOf(stack.itemID));
+				builder.setItemID(Double.valueOf(Item.getIdFromItem(stack.getItem())));
 				builder.setItemData(Double.valueOf(stack.getItemDamage()));
 				object = builder;
 				checkType();

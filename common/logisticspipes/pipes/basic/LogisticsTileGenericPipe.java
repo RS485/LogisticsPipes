@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.apache.logging.log4j.Level;
 
+import buildcraft.api.transport.IPipeTile;
 import buildcraft.api.transport.PipeWire;
 import li.cil.oc.api.network.Arguments;
 import li.cil.oc.api.network.Context;
@@ -31,6 +32,7 @@ import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.buildcraft.pipeparts.IBCTilePart;
 import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
 import logisticspipes.proxy.opencomputers.asm.BaseWrapperClass;
 import logisticspipes.proxy.te.LPConduitItem;
@@ -66,8 +68,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
-@ModDependentInterface(modId={"CoFHCore", "OpenComputers@1.3", "OpenComputers@1.3", "OpenComputers@1.3"}, interfacePath={"cofh.api.transport.IItemConduit", "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment"})
-public class LogisticsTileGenericPipe extends TileEntity implements IPipeInformationProvider, IItemConduit, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IItemConduit {	
+@ModDependentInterface(modId={"CoFHCore", "OpenComputers@1.3", "OpenComputers@1.3", "OpenComputers@1.3", "BuildCraft|Transport"}, interfacePath={"cofh.api.transport.IItemConduit", "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment", "buildcraft.api.transport.IPipeTile"})
+public class LogisticsTileGenericPipe extends TileEntity implements IPipeInformationProvider, IItemConduit, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IPipeTile {	
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
 	
 	public boolean turtleConnect[] = new boolean[7];
@@ -178,7 +180,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 		}
 
 		if (refreshRenderState) {
-			refreshRenderState();
+			tilePart.refreshRenderState();
 			refreshRenderState = false;
 		}
 
@@ -270,7 +272,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 			nbt.setInteger("pipeId", coreState.pipeId);
 		}
 
-		sideProperties.writeToNBT(nbt);
+		tilePart.writeToNBT(nbt);
 		for(int i=0;i<turtleConnect.length;i++) {
 			nbt.setBoolean("turtleConnect_" + i, turtleConnect[i]);
 		}
@@ -294,7 +296,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 			deletePipe = true;
 		}
 
-		sideProperties.readFromNBT(nbt);
+		tilePart.readFromNBT(nbt);
 		for(int i=0;i<turtleConnect.length;i++) {
 			turtleConnect[i] = nbt.getBoolean("turtleConnect_" + i);
 		}
@@ -309,7 +311,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 		if (with == null)
 			return false;
 
-		if (hasPlug(side))
+		if (tilePart.hasPlug(side))
 			return false;
 
 		if (!LogisticsBlockGenericPipe.isValid(pipe))
@@ -476,6 +478,21 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 
 	@Override
 	public boolean isOutputOpen(ForgeDirection direction) {
+		return true;
+	}
+
+	@Override
+	public boolean isItemPipe() {
+		return true;
+	}
+
+	@Override
+	public boolean isFluidPipe() {
+		return false;
+	}
+
+	@Override
+	public boolean isPowerPipe() {
 		return false;
 	}
 
@@ -489,6 +506,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 		return 1;
 	}
 
+	@ModDependentMethod(modId="BuildCraft|Transport")
 	public void acceptBCTravelingItem(TravelingItem item, ForgeDirection dir) {
 		((PipeTransportLogistics)this.pipe.transport).injectItem(item, dir);
 	}
@@ -496,11 +514,13 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 	/**
 	 * Used to determine where BC items can go.
 	 */
+	@ModDependentMethod(modId="BuildCraft|Transport")
 	public boolean isBCPipeConnected(TileGenericPipe container, ForgeDirection o) {
 		return container.isPipeConnected(o);
 	}
 	
 	@Override
+	@ModDependentMethod(modId="BuildCraft|Transport")
 	public int injectItem(ItemStack payload, boolean doAdd, ForgeDirection from) {
 		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof PipeTransportLogistics && isPipeConnected(from)) {
 			if (doAdd && MainProxy.isServer(this.getWorldObj())) {
@@ -563,7 +583,8 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 			return node();
 		}
 	}
-	
+
+	public IBCTilePart tilePart = SimpleServiceLocator.buildCraftProxy.getBCTilePart(this);
 
 	public boolean initialized = false;
 	public final PipeRenderState renderState = new PipeRenderState();
@@ -611,126 +632,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 			}
 		}
 	}
-
-	public static class SideProperties {
-		int[] facadeTypes = new int[ForgeDirection.VALID_DIRECTIONS.length];
-		int[] facadeWires = new int[ForgeDirection.VALID_DIRECTIONS.length];
-
-		Block[][] facadeBlocks = new Block[ForgeDirection.VALID_DIRECTIONS.length][2];
-		int[][] facadeMeta = new int[ForgeDirection.VALID_DIRECTIONS.length][2];
-
-		boolean[] plugs = new boolean[ForgeDirection.VALID_DIRECTIONS.length];
-		boolean[] robotStations = new boolean[ForgeDirection.VALID_DIRECTIONS.length];
-
-		public void writeToNBT (NBTTagCompound nbt) {
-			for (int i = 0; i < ForgeDirection.VALID_DIRECTIONS.length; i++) {
-				nbt.setInteger("facadeTypes[" + i + "]", facadeTypes[i]);
-				nbt.setInteger("facadeWires[" + i + "]", facadeWires[i]);
-
-				if (facadeBlocks[i][0] != null) {
-					nbt.setString("facadeBlocksStr[" + i + "][0]",
-							Block.blockRegistry.getNameForObject(facadeBlocks[i][0]));
-				} else {
-					// remove tag is useful in case we're overwritting an NBT
-					// already set, for example in a blueprint.
-					nbt.removeTag("facadeBlocksStr[" + i + "][0]");
-				}
-
-				if (facadeBlocks[i][1] != null) {
-					nbt.setString("facadeBlocksStr[" + i + "][1]",
-							Block.blockRegistry.getNameForObject(facadeBlocks[i][1]));
-				} else {
-					// remove tag is useful in case we're overwritting an NBT
-					// already set, for example in a blueprint.
-					nbt.removeTag("facadeBlocksStr[" + i + "][1]");
-				}
-
-				nbt.setInteger("facadeMeta[" + i + "][0]", facadeMeta[i][0]);
-				nbt.setInteger("facadeMeta[" + i + "][1]", facadeMeta[i][1]);
-
-				nbt.setBoolean("plug[" + i + "]", plugs[i]);
-				nbt.setBoolean("robotStation[" + i + "]", robotStations[i]);
-			}
-		}
-
-		public void readFromNBT (NBTTagCompound nbt) {
-			for (int i = 0; i < ForgeDirection.VALID_DIRECTIONS.length; i++) {
-				facadeTypes[i] = nbt.getInteger("facadeTypes[" + i + "]");
-				facadeWires[i] = nbt.getInteger("facadeWires[" + i + "]");
-
-				if (nbt.hasKey("facadeBlocks[" + i + "]")) {
-					// In this case, we're on legacy pre-6.0 facade loading
-					// mode.
-					int blockId = nbt.getInteger("facadeBlocks[" + i + "]");
-
-					if (blockId != 0) {
-						facadeBlocks[i][0] = (Block) Block.blockRegistry.getObjectById(blockId);
-					} else {
-						facadeBlocks[i][0] = null;
-					}
-
-					facadeBlocks[i][1] = null;
-
-					facadeMeta[i][0] = nbt.getInteger("facadeMeta[" + i + "]");
-					facadeMeta[i][1] = 0;
-				} else {
-					if (nbt.hasKey("facadeBlocksStr[" + i + "][0]")) {
-						facadeBlocks[i][0] = (Block) Block.blockRegistry.getObject
-								(nbt.getString("facadeBlocksStr[" + i + "][0]"));
-					} else {
-						facadeBlocks[i][0] = null;
-					}
-
-					if (nbt.hasKey("facadeBlocksStr[" + i + "][1]")) {
-						facadeBlocks[i][1] = (Block) Block.blockRegistry.getObject
-								(nbt.getString("facadeBlocksStr[" + i + "][1]"));
-					} else {
-						facadeBlocks[i][1] = null;
-					}
-
-					facadeMeta[i][0] = nbt.getInteger("facadeMeta[" + i + "][0]");
-					facadeMeta[i][1] = nbt.getInteger("facadeMeta[" + i + "][1]");
-				}
-
-				plugs[i] = nbt.getBoolean("plug[" + i + "]");
-				robotStations[i] = nbt.getBoolean("robotStation[" + i + "]");
-			}
-		}
-
-		public void rotateLeft() {
-			int[] newFacadeTypes = new int[ForgeDirection.VALID_DIRECTIONS.length];
-			int[] newFacadeWires = new int[ForgeDirection.VALID_DIRECTIONS.length];
-
-			Block[][] newFacadeBlocks = new Block[ForgeDirection.VALID_DIRECTIONS.length][2];
-			int[][] newFacadeMeta = new int[ForgeDirection.VALID_DIRECTIONS.length][2];
-
-			boolean[] newPlugs = new boolean[ForgeDirection.VALID_DIRECTIONS.length];
-			boolean[] newRobotStations = new boolean[ForgeDirection.VALID_DIRECTIONS.length];
-
-			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-				ForgeDirection r = dir.getRotation(ForgeDirection.UP);
-
-				newFacadeTypes[r.ordinal()] = facadeTypes[dir.ordinal()];
-				newFacadeWires[r.ordinal()] = facadeWires[dir.ordinal()];
-				newFacadeBlocks[r.ordinal()][0] = facadeBlocks[dir.ordinal()][0];
-				newFacadeBlocks[r.ordinal()][1] = facadeBlocks[dir.ordinal()][1];
-				newFacadeMeta[r.ordinal()][0] = facadeMeta[dir.ordinal()][0];
-				newFacadeMeta[r.ordinal()][1] = facadeMeta[dir.ordinal()][1];
-				newPlugs[r.ordinal()] = plugs[dir.ordinal()];
-				newRobotStations[r.ordinal()] = robotStations[dir.ordinal()];
-			}
-
-			facadeTypes = newFacadeTypes;
-			facadeWires = newFacadeWires;
-			facadeBlocks = newFacadeBlocks;
-			facadeMeta = newFacadeMeta;
-			plugs = newPlugs;
-			robotStations = newRobotStations;
-		}
-	}
-
-	private SideProperties sideProperties = new SideProperties();
-
+	
 	@Override
 	public void validate() {
 		super.validate();
@@ -739,90 +641,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 		bindPipe();
 		if (pipe != null) {
 			pipe.validate();
-		}
-	}
-
-	// PRECONDITION: worldObj must not be null
-	private void refreshRenderState() {
-		// Pipe connections;
-		for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {
-			renderState.pipeConnectionMatrix.setConnected(o, this.pipeConnectionsBuffer[o.ordinal()]);
-		}
-
-		// Pipe Textures
-		for (int i = 0; i < 7; i++) {
-			ForgeDirection o = ForgeDirection.getOrientation(i);
-			renderState.textureMatrix.setIconIndex(o, pipe.getIconIndex(o));
-		}
-
-		// WireState
-		for (PipeWire color : PipeWire.values()) {
-			renderState.wireMatrix.setWire(color, pipe.bcPipePart.getWireSet()[color.ordinal()]);
-
-			for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-				renderState.wireMatrix.setWireConnected(color, direction, pipe.isWireConnectedTo(this.getTile(direction), color));
-			}
-
-			boolean lit = pipe.bcPipePart.getSignalStrength()[color.ordinal()] > 0;
-
-			switch (color) {
-				case RED:
-					renderState.wireMatrix.setWireIndex(color, lit ? WireIconProvider.Texture_Red_Lit : WireIconProvider.Texture_Red_Dark);
-					break;
-				case BLUE:
-					renderState.wireMatrix.setWireIndex(color, lit ? WireIconProvider.Texture_Blue_Lit : WireIconProvider.Texture_Blue_Dark);
-					break;
-				case GREEN:
-					renderState.wireMatrix.setWireIndex(color, lit ? WireIconProvider.Texture_Green_Lit : WireIconProvider.Texture_Green_Dark);
-					break;
-				case YELLOW:
-					renderState.wireMatrix.setWireIndex(color, lit ? WireIconProvider.Texture_Yellow_Lit : WireIconProvider.Texture_Yellow_Dark);
-					break;
-				default:
-					break;
-
-			}
-		}
-
-		// Gate Textures and movement
-		renderState.setIsGateLit(pipe.gate != null ? pipe.gate.isGateActive() : false);
-		renderState.setIsGatePulsing(pipe.gate != null ? pipe.gate.isGatePulsing() : false);
-
-		// Facades
-		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-			int type = sideProperties.facadeTypes[direction.ordinal()];
-
-			if (type == ItemFacade.TYPE_BASIC) {
-				Block block = sideProperties.facadeBlocks[direction.ordinal()][0];
-				renderState.facadeMatrix.setFacade(direction, block, sideProperties.facadeMeta[direction.ordinal()][0]);
-			} else if (type == ItemFacade.TYPE_PHASED) {
-				PipeWire wire = PipeWire.fromOrdinal(sideProperties.facadeWires[direction.ordinal()]);
-				Block block = sideProperties.facadeBlocks[direction.ordinal()][0];
-				Block blockAlt = sideProperties.facadeBlocks[direction.ordinal()][1];
-				int meta = sideProperties.facadeMeta[direction.ordinal()][0];
-				int metaAlt = sideProperties.facadeMeta[direction.ordinal()][1];
-
-				if (isWireActive(wire)) {
-					renderState.facadeMatrix.setFacade(direction, blockAlt, metaAlt);
-				} else {
-					renderState.facadeMatrix.setFacade(direction, block, meta);
-				}
-			}
-		}
-
-		//Plugs
-		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-			renderState.plugMatrix.setConnected(direction, sideProperties.plugs[direction.ordinal()]);
-		}
-
-		//RobotStations
-		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-			renderState.robotStationMatrix.setConnected(direction, sideProperties.robotStations[direction.ordinal()]);
-		}
-
-		if (renderState.isDirty()) {
-			renderState.clean();
-			sendUpdateToClient();
 		}
 	}
 
@@ -839,13 +657,12 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 
 		for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {
 			TileEntity tile = getTile(o);
-
-			if (tile instanceof ITileBufferHolder) {
-				((ITileBufferHolder) tile).blockCreated(o, BuildCraftTransport.genericPipeBlock, this);
+			
+			if(tile instanceof LogisticsTileGenericPipe) {
+				((LogisticsTileGenericPipe)tile).scheduleNeighborChange();
 			}
-			if (tile instanceof TileGenericPipe) {
-				((TileGenericPipe) tile).scheduleNeighborChange();
-			}
+			
+			SimpleServiceLocator.buildCraftProxy.notifyOfChange(this, tile, o);
 		}
 
 		bindPipe();
@@ -976,6 +793,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 	}
 
 	@Override
+	//@ModDependentMethod(modId="BuildCraft|Transport")
 	public boolean isPipeConnected(ForgeDirection with) {
 		if (worldObj.isRemote) {
 			return renderState.pipeConnectionMatrix.isConnected(with);
@@ -984,11 +802,12 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 	}
 
 	@Override
+	//@ModDependentMethod(modId="BuildCraft|Transport")
 	public boolean isWireActive(PipeWire wire) {
 		if (pipe == null) {
 			return false;
 		}
-		return pipe.signalStrength[wire.ordinal()] > 0;
+		return pipe.bcPipePart.getSignalStrength()[wire.ordinal()] > 0;
 	}
 
 	@Override
@@ -1005,7 +824,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 	 */
 	@Override
 	public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
-		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof IFluidHandler && !hasPlug(from) && !hasRobotStation(from)) {
+		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof IFluidHandler && !tilePart.hasPlug(from) && !tilePart.hasRobotStation(from)) {
 			return ((IFluidHandler) pipe.transport).fill(from, resource, doFill);
 		} else {
 			return 0;
@@ -1014,7 +833,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 
 	@Override
 	public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
-		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof IFluidHandler && !hasPlug(from) && !hasRobotStation(from)) {
+		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof IFluidHandler && !tilePart.hasPlug(from) && !tilePart.hasRobotStation(from)) {
 			return ((IFluidHandler) pipe.transport).drain(from, maxDrain, doDrain);
 		} else {
 			return null;
@@ -1023,7 +842,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 
 	@Override
 	public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
-		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof IFluidHandler && !hasPlug(from) && !hasRobotStation(from)) {
+		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof IFluidHandler && !tilePart.hasPlug(from) && !tilePart.hasRobotStation(from)) {
 			return ((IFluidHandler) pipe.transport).drain(from, resource, doDrain);
 		} else {
 			return null;
@@ -1032,7 +851,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 
 	@Override
 	public boolean canFill(ForgeDirection from, Fluid fluid) {
-		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof IFluidHandler && !hasPlug(from) && !hasRobotStation(from)) {
+		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof IFluidHandler && !tilePart.hasPlug(from) && !tilePart.hasRobotStation(from)) {
 			return ((IFluidHandler) pipe.transport).canFill(from, fluid);
 		} else {
 			return false;
@@ -1041,7 +860,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 
 	@Override
 	public boolean canDrain(ForgeDirection from, Fluid fluid) {
-		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof IFluidHandler && !hasPlug(from) && !hasRobotStation(from)) {
+		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof IFluidHandler && !tilePart.hasPlug(from) && !tilePart.hasRobotStation(from)) {
 			return ((IFluidHandler) pipe.transport).canDrain(from, fluid);
 		} else {
 			return false;
@@ -1055,79 +874,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 
 	public void scheduleRenderUpdate() {
 		refreshRenderState = true;
-	}
-
-	public boolean addFacade(ForgeDirection direction, int type, int wire, Block[] blocks, int[] metaValues) {
-		if (this.getWorldObj().isRemote) {
-			return false;
-		}
-
-		if (hasFacade(direction)) {
-			dropFacadeItem(direction);
-		}
-
-		sideProperties.facadeTypes[direction.ordinal()] = type;
-
-		if (type == ItemFacade.TYPE_BASIC || wire == -1) {
-			sideProperties.facadeBlocks[direction.ordinal()][0] = blocks[0];
-			sideProperties.facadeMeta[direction.ordinal()][0] = metaValues[0];
-		} else {
-			sideProperties.facadeWires[direction.ordinal()] = wire;
-			sideProperties.facadeBlocks[direction.ordinal()][0] = blocks[0];
-			sideProperties.facadeMeta[direction.ordinal()][0] = metaValues[0];
-			sideProperties.facadeBlocks[direction.ordinal()][1] = blocks[1];
-			sideProperties.facadeMeta[direction.ordinal()][1] = metaValues[1];
-		}
-
-		worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, getBlock());
-
-		scheduleRenderUpdate();
-
-		return true;
-	}
-
-	public boolean hasFacade(ForgeDirection direction) {
-		if (direction == null || direction == ForgeDirection.UNKNOWN) {
-			return false;
-		} else if (this.getWorldObj().isRemote) {
-			return renderState.facadeMatrix.getFacadeBlock(direction) != null;
-		} else {
-			return sideProperties.facadeBlocks[direction.ordinal()][0] != null;
-		}
-	}
-
-	private void dropFacadeItem(ForgeDirection direction) {
-		InvUtils.dropItems(worldObj, getFacade(direction), this.xCoord, this.yCoord, this.zCoord);
-	}
-
-	public ItemStack getFacade(ForgeDirection direction) {
-		int type = sideProperties.facadeTypes[direction.ordinal()];
-
-		if (type == ItemFacade.TYPE_BASIC) {
-			return ItemFacade.getFacade(sideProperties.facadeBlocks[direction.ordinal()][0], sideProperties.facadeMeta[direction.ordinal()][0]);
-		} else {
-			return ItemFacade.getAdvancedFacade(PipeWire.fromOrdinal(sideProperties.facadeWires[direction.ordinal()]), sideProperties.facadeBlocks[direction.ordinal()][0], sideProperties.facadeMeta[direction.ordinal()][0], sideProperties.facadeBlocks[direction.ordinal()][1], sideProperties.facadeMeta[direction.ordinal()][1]);
-		}
-	}
-
-	public boolean dropFacade(ForgeDirection direction) {
-		if (!hasFacade(direction)) {
-			return false;
-		}
-
-		if (!worldObj.isRemote) {
-			dropFacadeItem(direction);
-			sideProperties.facadeTypes[direction.ordinal()] = 0;
-			sideProperties.facadeWires[direction.ordinal()] = -1;
-			sideProperties.facadeBlocks[direction.ordinal()][0] = null;
-			sideProperties.facadeMeta[direction.ordinal()][0] = 0;
-			sideProperties.facadeBlocks[direction.ordinal()][1] = null;
-			sideProperties.facadeMeta[direction.ordinal()][1] = 0;
-			worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, getBlock());
-			scheduleRenderUpdate();
-		}
-
-		return true;
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -1216,89 +962,8 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 	}
 
 	public boolean isSolidOnSide(ForgeDirection side) {
-		 return hasFacade(side);
+		 return tilePart.hasFacade(side);
 	}
-
-	public boolean hasPlug(ForgeDirection side) {
-		if (side == null || side == ForgeDirection.UNKNOWN) {
-			return false;
-		}
-
-		if (this.worldObj.isRemote) {
-			return renderState.plugMatrix.isConnected(side);
-		}
-
-		return sideProperties.plugs[side.ordinal()];
-	}
-
-	public boolean hasRobotStation(ForgeDirection side) {
-		if (side == null || side == ForgeDirection.UNKNOWN) {
-			return false;
-		}
-
-		if (this.worldObj.isRemote) {
-			return renderState.robotStationMatrix.isConnected(side);
-		}
-
-		return sideProperties.robotStations[side.ordinal()];
-	}
-
-	public boolean removeAndDropPlug(ForgeDirection side) {
-		if (!hasPlug(side)) {
-			return false;
-		}
-
-		if (!worldObj.isRemote) {
-			sideProperties.plugs[side.ordinal()] = false;
-			InvUtils.dropItems(worldObj, new ItemStack(BuildCraftTransport.plugItem), this.xCoord, this.yCoord, this.zCoord);
-			worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, getBlock());
-			scheduleNeighborChange(); //To force recalculation of connections
-			scheduleRenderUpdate();
-		}
-
-		return true;
-	}
-
-	public boolean removeAndDropRobotStation(ForgeDirection side) {
-		if (!hasRobotStation(side)) {
-			return false;
-		}
-
-		if (!worldObj.isRemote) {
-			sideProperties.robotStations[side.ordinal()] = false;
-			InvUtils.dropItems(worldObj, new ItemStack(BuildCraftTransport.robotStationItem), this.xCoord, this.yCoord, this.zCoord);
-			worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, getBlock());
-			scheduleNeighborChange(); //To force recalculation of connections
-			scheduleRenderUpdate();
-		}
-
-		return true;
-	}
-
-	public boolean addPlug(ForgeDirection forgeDirection) {
-		if (hasPlug(forgeDirection)) {
-			return false;
-		}
-
-		sideProperties.plugs[forgeDirection.ordinal()] = true;
-		worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, getBlock());
-		scheduleNeighborChange(); //To force recalculation of connections
-		scheduleRenderUpdate();
-		return true;
-	}
-
-	public boolean addRobotStation(ForgeDirection forgeDirection) {
-		if (hasRobotStation(forgeDirection)) {
-			return false;
-		}
-
-		sideProperties.robotStations[forgeDirection.ordinal()] = true;
-		worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, getBlock());
-		scheduleNeighborChange(); //To force recalculation of connections
-		scheduleRenderUpdate();
-		return true;
-	}
-
 
 	public Block getBlock() {
 		return getBlockType();
@@ -1311,5 +976,12 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 
 	public boolean isUseableByPlayer(EntityPlayer player) {
 		return worldObj.getTileEntity(xCoord, yCoord, zCoord) == this;
+	}
+
+	@Override
+	@ModDependentMethod(modId="BuildCraft|Transport")
+	public PipeType getPipeType() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -4,7 +4,11 @@ import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.buildcraft.pipeparts.IBCPipePart;
+import logisticspipes.proxy.buildcraft.pipeparts.IBCTilePart;
+import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.transport.LPTravelingItem;
+import net.minecraft.block.Block;
+import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -24,6 +28,12 @@ public interface IBCProxy {
 	IBCPipePart getBCPipePart(CoreUnroutedPipe coreUnroutedPipe);
 	boolean handleBCClickOnPipe(ItemStack currentItem, CoreUnroutedPipe pipe, World world, int x, int y, int z, EntityPlayer player, int side, LogisticsBlockGenericPipe logisticsBlockGenericPipe);
 	ItemStack getPipePlugItemStack();
-	ItemStack getRobotTrationItemStack();
+	ItemStack getRobotStationItemStack();
 	boolean stripEquipment(World world, int x, int y, int z, EntityPlayer player, CoreUnroutedPipe pipe, LogisticsBlockGenericPipe block);
+	IBCTilePart getBCTilePart(LogisticsTileGenericPipe tile);
+	void notifyOfChange(LogisticsTileGenericPipe pipe, TileEntity tile, ForgeDirection o);
+	void renderGatesWires(LogisticsTileGenericPipe pipe, double x, double y, double z);
+	void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z);
+	void pipePlugRenderer(RenderBlocks renderblocks, Block block, PipeRenderState state, int x, int y, int z);
+	ItemStack getDropFacade(CoreUnroutedPipe pipe, ForgeDirection dir);
 }

@@ -14,6 +14,7 @@ import logisticspipes.proxy.bettersign.BetterSignProxy;
 import logisticspipes.proxy.bs.BetterStorageProxy;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.buildcraft.pipeparts.IBCPipePart;
+import logisticspipes.proxy.buildcraft.pipeparts.IBCTilePart;
 import logisticspipes.proxy.cc.CCProxy;
 import logisticspipes.proxy.enderchest.EnderStorageProxy;
 import logisticspipes.proxy.enderio.EnderIOProxy;
@@ -43,6 +44,7 @@ import logisticspipes.proxy.opencomputers.OpenComputersProxy;
 import logisticspipes.proxy.te.ThermalExpansionProxy;
 import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 import logisticspipes.proxy.toolWrench.ToolWrenchProxy;
+import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -50,6 +52,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.model.ModelSign;
+import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -101,12 +104,39 @@ public class ProxyManager {
 					@Override public ItemStack getGateItem() {return null;}
 					@Override public int[] getSignalStrength() {return null;}
 					@Override public void openGateGui(EntityPlayer player) {}
+					@Override public boolean isGateActive() {return false;}
+					@Override public boolean receiveSignal(int i, PipeWire wire) {return false;}
+					@Override public Object getGate() {return null;}
+					@Override public void makeGate(CoreUnroutedPipe pipe, ItemStack currentEquippedItem) {}
 				};
 			}
 			@Override public boolean handleBCClickOnPipe(ItemStack currentItem, CoreUnroutedPipe pipe, World world, int x, int y, int z, EntityPlayer player, int side, LogisticsBlockGenericPipe logisticsBlockGenericPipe) {return false;}
 			@Override public ItemStack getPipePlugItemStack() {return null;}
-			@Override public ItemStack getRobotTrationItemStack() {return null;}
+			@Override public ItemStack getRobotStationItemStack() {return null;}
 			@Override public boolean stripEquipment(World world, int x, int y, int z, EntityPlayer player, CoreUnroutedPipe pipe, LogisticsBlockGenericPipe block) {return false;}
+			@Override public IBCTilePart getBCTilePart(LogisticsTileGenericPipe tile) {
+				return new IBCTilePart() {
+					@Override public void refreshRenderState() {}
+					@Override public boolean addFacade(ForgeDirection direction, int type, int wire, Block[] blocks, int[] metaValues) {return false;}
+					@Override public boolean hasFacade(ForgeDirection direction) {return false;}
+					@Override public void dropFacadeItem(ForgeDirection direction) {}
+					@Override public ItemStack getFacade(ForgeDirection direction) {return null;}
+					@Override public boolean dropFacade(ForgeDirection direction) {return false;}
+					@Override public boolean hasPlug(ForgeDirection side) {return false;}
+					@Override public boolean hasRobotStation(ForgeDirection side) {return false;}
+					@Override public boolean removeAndDropPlug(ForgeDirection side) {return false;}
+					@Override public boolean removeAndDropRobotStation(ForgeDirection side) {return false;}
+					@Override public boolean addPlug(ForgeDirection forgeDirection) {return false;}
+					@Override public boolean addRobotStation(ForgeDirection forgeDirection) {return false;}
+					@Override public void writeToNBT(NBTTagCompound nbt) {}
+					@Override public void readFromNBT(NBTTagCompound nbt) {}
+				};
+			}
+			@Override public void notifyOfChange(LogisticsTileGenericPipe pipe, TileEntity tile, ForgeDirection o) {}
+			@Override public void renderGatesWires(LogisticsTileGenericPipe pipe, double x, double y, double z) {}
+			@Override public void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z) {}
+			@Override public void pipePlugRenderer(RenderBlocks renderblocks, Block block, PipeRenderState state, int x, int y, int z) {}
+			@Override public ItemStack getDropFacade(CoreUnroutedPipe pipe, ForgeDirection dir) {return null;}
 		}));
 		
 		SimpleServiceLocator.setForestryProxy(getWrappedProxy("Forestry", IForestryProxy.class, ForestryProxy.class, new IForestryProxy() {

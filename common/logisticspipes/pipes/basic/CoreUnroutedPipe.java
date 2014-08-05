@@ -2,12 +2,14 @@ package logisticspipes.pipes.basic;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Random;
 
 import buildcraft.api.transport.PipeWire;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.pipeparts.IBCPipePart;
 import logisticspipes.renderer.IIconProvider;
@@ -31,7 +33,7 @@ public abstract class CoreUnroutedPipe {
 	
 	public IBCPipePart bcPipePart = SimpleServiceLocator.buildCraftProxy.getBCPipePart(this);
 
-	private boolean internalUpdateScheduled = false;
+	public boolean internalUpdateScheduled = false;
 	private boolean initialized = false;
 
 	public CoreUnroutedPipe(PipeTransportLogistics transport, Item item) {
@@ -184,15 +186,15 @@ public abstract class CoreUnroutedPipe {
 			return false;
 		}
 
-		if (container.hasFacade(side)) {
+		if (container.tilePart.hasFacade(side)) {
 			return false;
 		}
 
-		if (container.hasPlug(side)) {
+		if (container.tilePart.hasPlug(side)) {
 			return false;
 		}
 
-		if (container.hasRobotStation(side)) {
+		if (container.tilePart.hasRobotStation(side)) {
 			return false;
 		}
 
@@ -218,7 +220,7 @@ public abstract class CoreUnroutedPipe {
 		container.getWorldObj().notifyBlocksOfNeighborChange(container.xCoord + side.offsetX, container.yCoord + side.offsetY, container.zCoord + side.offsetZ, LogisticsPipes.LogisticsPipeBlock);
 	}
 
-	protected void updateNeighbors(boolean needSelf) {
+	public void updateNeighbors(boolean needSelf) {
 		if (needSelf) {
 			container.getWorldObj().notifyBlocksOfNeighborChange(container.xCoord, container.yCoord, container.zCoord, LogisticsPipes.LogisticsPipeBlock);
 		}
@@ -228,7 +230,7 @@ public abstract class CoreUnroutedPipe {
 	}
 
 	public void dropItem(ItemStack stack) {
-		InvUtils.dropItems(container.getWorldObj(), stack, container.xCoord, container.yCoord, container.zCoord);
+		MainProxy.dropItems(container.getWorldObj(), stack, container.xCoord, container.yCoord, container.zCoord);
 	}
 
 	public void onBlockRemoval() {

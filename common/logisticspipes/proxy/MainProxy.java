@@ -15,7 +15,9 @@ import logisticspipes.routing.debug.RoutingTableDebugUpdateThread;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.utils.PlayerCollectionList;
 import lombok.Getter;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
@@ -224,6 +226,12 @@ public class MainProxy {
 
 	public static void addTick() {
 		globalTick++;
+	}
+
+	public static EntityItem dropItems(World worldObj, ItemStack stack, int xCoord, int yCoord, int zCoord) {
+		EntityItem item = new EntityItem(worldObj, xCoord, yCoord, zCoord, stack);
+		worldObj.spawnEntityInWorld(item);
+		return item;
 	}
 }
 

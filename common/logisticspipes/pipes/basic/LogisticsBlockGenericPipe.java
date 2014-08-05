@@ -145,32 +145,32 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 			float facadeThickness = LPConstants.FACADE_THICKNESS;
 
-			if (tileG.hasFacade(ForgeDirection.EAST)) {
+			if (tileG.tilePart.hasFacade(ForgeDirection.EAST)) {
 				setBlockBounds(1 - facadeThickness, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 				super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			}
 
-			if (tileG.hasFacade(ForgeDirection.WEST)) {
+			if (tileG.tilePart.hasFacade(ForgeDirection.WEST)) {
 				setBlockBounds(0.0F, 0.0F, 0.0F, facadeThickness, 1.0F, 1.0F);
 				super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			}
 
-			if (tileG.hasFacade(ForgeDirection.UP)) {
+			if (tileG.tilePart.hasFacade(ForgeDirection.UP)) {
 				setBlockBounds(0.0F, 1 - facadeThickness, 0.0F, 1.0F, 1.0F, 1.0F);
 				super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			}
 
-			if (tileG.hasFacade(ForgeDirection.DOWN)) {
+			if (tileG.tilePart.hasFacade(ForgeDirection.DOWN)) {
 				setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, facadeThickness, 1.0F);
 				super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			}
 
-			if (tileG.hasFacade(ForgeDirection.SOUTH)) {
+			if (tileG.tilePart.hasFacade(ForgeDirection.SOUTH)) {
 				setBlockBounds(0.0F, 0.0F, 1 - facadeThickness, 1.0F, 1.0F, 1.0F);
 				super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			}
 
-			if (tileG.hasFacade(ForgeDirection.NORTH)) {
+			if (tileG.tilePart.hasFacade(ForgeDirection.NORTH)) {
 				setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, facadeThickness);
 				super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			}
@@ -363,7 +363,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		// facades
 
 		for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
-			if (tileG.hasFacade(side)) {
+			if (tileG.tilePart.hasFacade(side)) {
 				AxisAlignedBB bb = getFacadeBoundingBox(side);
 				setBlockBounds(bb);
 				boxes[13 + side.ordinal()] = bb;
@@ -375,7 +375,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		// plugs
 
 		for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
-			if (tileG.hasPlug(side)) {
+			if (tileG.tilePart.hasPlug(side)) {
 				AxisAlignedBB bb = getPlugBoundingBox(side);
 				setBlockBounds(bb);
 				boxes[19 + side.ordinal()] = bb;
@@ -387,7 +387,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		// robotStations
 
 		for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
-			if (tileG.hasRobotStation(side)) {
+			if (tileG.tilePart.hasRobotStation(side)) {
 				AxisAlignedBB bb = getRobotStationBoundingBox(side);
 				setBlockBounds(bb);
 				boxes[25 + side.ordinal()] = bb;
@@ -769,16 +769,12 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			case Plug:
 				return SimpleServiceLocator.buildCraftProxy.getPipePlugItemStack();
 			case RobotStation:
-				return SimpleServiceLocator.buildCraftProxy.getRobotTrationItemStack();
+				return SimpleServiceLocator.buildCraftProxy.getRobotStationItemStack();
 			case Pipe:
 				return new ItemStack(getPipe(world, x, y, z).item);
 			case Facade:
 				ForgeDirection dir = ForgeDirection.getOrientation(target.sideHit);
-				FacadeMatrix matrix = getPipe(world, x, y, z).container.renderState.facadeMatrix;
-				Block block = matrix.getFacadeBlock(dir);
-				if (block != null) {
-					return ItemFacade.getFacade(block,matrix.getFacadeMetaId(dir));
-				}
+				return SimpleServiceLocator.buildCraftProxy.getDropFacade(getPipe(world, x, y, z), dir);
 			}
 		}
 		return null;

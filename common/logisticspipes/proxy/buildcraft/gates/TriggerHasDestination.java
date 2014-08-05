@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.buildcraft.gates.wrapperclasses.PipeWrapper;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.item.ItemStack;
@@ -34,11 +35,13 @@ public class TriggerHasDestination extends LPTrigger implements IPipeTrigger {
 
 	@Override
 	public boolean isTriggerActive(Pipe pipe, ITriggerParameter parameter) {
-		if (pipe instanceof CoreRoutedPipe) {
-			if (parameter != null && parameter.getItem() != null) {
-				ItemStack item = parameter.getItem();
-				if (SimpleServiceLocator.logisticsManager.hasDestination(ItemIdentifier.get(item), false, ((CoreRoutedPipe) pipe).getRouter().getSimpleID(), new ArrayList<Integer>()) != null) {
-					return true;
+		if(pipe instanceof PipeWrapper) {
+			if (((PipeWrapper)pipe).tile.pipe instanceof CoreRoutedPipe) {
+				if (parameter != null && parameter.getItem() != null) {
+					ItemStack item = parameter.getItem();
+					if (SimpleServiceLocator.logisticsManager.hasDestination(ItemIdentifier.get(item), false, ((CoreRoutedPipe) ((PipeWrapper)pipe).tile.pipe).getRouter().getSimpleID(), new ArrayList<Integer>()) != null) {
+						return true;
+					}
 				}
 			}
 		}

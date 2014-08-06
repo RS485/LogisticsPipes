@@ -1,6 +1,7 @@
 package logisticspipes.ticks;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -14,6 +15,7 @@ public class LPTickHandler {
 	public void clientTick(ClientTickEvent event) {
 		FluidIdentifier.initFromForge(true);
 		SimpleServiceLocator.clientBufferHandler.clientTick(event);
+		MainProxy.proxy.tickClient();
 	}
 
 	@SubscribeEvent
@@ -21,5 +23,6 @@ public class LPTickHandler {
 		HudUpdateTick.tick();
 		SimpleServiceLocator.craftingPermissionManager.tick();
 		SimpleServiceLocator.serverBufferHandler.serverTick(event);
+		MainProxy.proxy.tickServer();
 	}
 }

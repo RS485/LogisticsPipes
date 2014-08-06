@@ -27,6 +27,7 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 			IIconProvider icons = pipe.getPipeIcons();
 			if (icons == null) return;
 			state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(ForgeDirection.UNKNOWN));
+			block.setRenderAllSides();
 			block.setBlockBounds(0, 0, 0, 1, 1, 1);
 			renderblocks.setRenderBoundsFromBlock(block);
 			renderblocks.renderStandardBlock(block, x, y, z);

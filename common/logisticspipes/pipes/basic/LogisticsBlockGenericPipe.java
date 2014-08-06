@@ -9,6 +9,10 @@ import java.util.Map;
 import java.util.Random;
 
 import buildcraft.api.transport.PipeWire;
+import buildcraft.core.IDropControlInventory;
+import buildcraft.core.TileBuildCraft;
+import buildcraft.core.inventory.InvUtils;
+import logisticspipes.Configs;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.asm.ModDependentMethodName;
@@ -17,6 +21,7 @@ import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.side.ClientProxy;
+import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.textures.Textures;
 import logisticspipes.utils.MatrixTranformations;
 import logisticspipes.utils.tuples.LPPosition;
@@ -32,6 +37,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -102,14 +108,11 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		TileEntity tile = world.getTileEntity(i, j, k);
 		if(tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe)tile).pipe instanceof PipeBlockRequestTable) {
 			setBlockBounds(0, 0, 0, 1, 1, 1);
-			AxisAlignedBB axisalignedbb1 = this.getCollisionBoundingBoxFromPool(world, i, j, k);
-			if(axisalignedbb1 != null && axisalignedbb.intersectsWith(axisalignedbb1)) {
-				arraylist.add(axisalignedbb1);
-			}
+			super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			return;
 		}
 		setBlockBounds(LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS);
-		//super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
+		super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 		if (tile instanceof LogisticsTileGenericPipe) {
 			LogisticsTileGenericPipe tileG = (LogisticsTileGenericPipe) tile;
 
@@ -602,10 +605,11 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	private static final ForgeDirection[] DIR_VALUES = ForgeDirection.values();
 	private boolean skippedFirstIconRegister;
 	private int renderMask = 0;
+	protected final Random rand = new Random();
 
 	@Override
 	public float getBlockHardness(World par1World, int par2, int par3, int par4) {
-		return BuildCraftTransport.pipeDurability;
+		return Configs.pipeDurability;
 	}
 
 	@Override
@@ -615,6 +619,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	@Override
 	public boolean canRenderInPass(int pass) {
+		LogisticsPipeWorldRenderer.renderPass = pass;
 		return true;
 	}
 
@@ -704,7 +709,11 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	@Override
 	public void breakBlock(World world, int x, int y, int z, Block block, int par6) {
-		Utils.preDestroyBlock(world, x, y, z);
+		TileEntity tile = world.getTileEntity(x, y, z);
+		if((tile instanceof LogisticsTileGenericPipe)) {
+			((LogisticsTileGenericPipe)tile).doDrop();
+			((LogisticsTileGenericPipe)tile).destroy();
+		}
 		removePipe(getPipe(world, x, y, z));
 		super.breakBlock(world, x, y, z, block, par6);
 	}
@@ -930,7 +939,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	/* Registration ******************************************************** */
 	public static ItemLogisticsPipe registerPipe(Class<? extends CoreUnroutedPipe> clas) {
 		ItemLogisticsPipe item = new ItemLogisticsPipe();
-		item.setUnlocalizedName("buildcraftPipe." + clas.getSimpleName().toLowerCase(Locale.ENGLISH));
+		item.setUnlocalizedName(clas.getSimpleName());
 		GameRegistry.registerItem(item, item.getUnlocalizedName());
 
 		pipes.put(item, clas);

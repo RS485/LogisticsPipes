@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetHandler;
 import net.minecraft.world.World;
+import net.minecraftforge.client.IItemRenderer;
 
 public interface IProxy {
 	public String getSide();
@@ -30,4 +31,5 @@ public interface IProxy {
 	public EntityPlayer getEntityPlayerFromNetHandler(INetHandler handler);
 	public void setIconProviderFromPipe(ItemLogisticsPipe item, CoreUnroutedPipe dummyPipe);
 	public LogisticsModule getModuleFromGui();
+	public IItemRenderer getPipeItemRenderer();
 }

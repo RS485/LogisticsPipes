@@ -51,7 +51,7 @@ public class PipeInformaitonManager {
 	}
 
 	public boolean canConnect(IPipeInformationProvider startPipe, IPipeInformationProvider provider, ForgeDirection direction, boolean flag) {
-		return startPipe.canConnect(provider, direction, flag) && provider.canConnect(startPipe, direction.getOpposite(), flag);
+		return startPipe.canConnect(provider.getTile(), direction, flag) && provider.canConnect(startPipe.getTile(), direction.getOpposite(), flag);
 	}
 
 	public boolean isPipe(TileEntity tile) {
@@ -79,11 +79,6 @@ public class PipeInformaitonManager {
 				}
 			}
 		}
-		return false;
-	}
-
-	public boolean isPipeConnected(TileEntity tile, ForgeDirection o) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

@@ -27,6 +27,7 @@ import static org.objectweb.asm.Opcodes.PUTFIELD;
 import static org.objectweb.asm.Opcodes.RETURN;
 import static org.objectweb.asm.Opcodes.V1_6;
 
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ import logisticspipes.proxy.interfaces.IGenericProgressProvider;
 import logisticspipes.utils.ModStatusHelper;
 import net.minecraft.launchwrapper.Launch;
 
+import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
@@ -211,7 +213,14 @@ public class LogisticsWrapperHandler {
 		
 		String lookfor = className.replace('/', '.');
 		
-		Class<?> clazz = loadClass(cw.toByteArray(), lookfor);
+		byte[] bytes = cw.toByteArray();
+		
+		if(LogisticsPipes.DEBUG) {
+			ClassReader cr = new ClassReader(bytes);
+			org.objectweb.asm.util.CheckClassAdapter.verify(cr, Launch.classLoader, false, new PrintWriter(System.err));
+		}
+		
+		Class<?> clazz = loadClass(bytes, lookfor);
 		
 		T proxy = null;
 		Throwable e = null; 
@@ -292,7 +301,11 @@ public class LogisticsWrapperHandler {
 		StringBuilder desc = new StringBuilder("(");
 		for(Class<?> clazz:method.getParameterTypes()) {
 			desc.append(getClassSignature(clazz));
-			eIndex++;
+			if(clazz == long.class || clazz == double.class) {
+				eIndex += 2;
+			} else {
+				eIndex += 1;
+			}
 		}
 		eIndex++;
 		desc.append(")");
@@ -378,19 +391,23 @@ public class LogisticsWrapperHandler {
 			if(clazz.isPrimitive()) {
 			    if(clazz == int.class || clazz == boolean.class || clazz == short.class || clazz == byte.class) {
 					mv.visitVarInsn(ILOAD, i);
+					i++;
 				} else if(clazz == long.class) {
 					mv.visitVarInsn(LLOAD, i);
+					i += 2;
 				} else if(clazz == float.class) {
 					mv.visitVarInsn(FLOAD, i);
+					i++;
 				} else if(clazz == double.class) {
 					mv.visitVarInsn(DLOAD, i);
+					i += 2;
 				} else {
 					throw new UnsupportedOperationException("Unmapped clazz: " + clazz.getName());
 				}
 			} else {
 				mv.visitVarInsn(ALOAD, i);
+				i++;
 			}
-			i++;
 		}
 	}
 	
@@ -398,6 +415,9 @@ public class LogisticsWrapperHandler {
 		int i=1;
 		for(Class<?> clazz:method.getParameterTypes()) {
 			mv.visitLocalVariable("par" + i, getClassSignature(clazz), null, l3, l8, i);
+			if(clazz == long.class || clazz == double.class) {
+				i++;
+			}
 			i++;
 		}
 	}

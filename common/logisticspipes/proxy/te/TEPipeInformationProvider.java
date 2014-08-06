@@ -105,12 +105,8 @@ public class TEPipeInformationProvider implements IPipeInformationProvider {
 	}
 	
 	@Override
-	public boolean canConnect(IPipeInformationProvider provider, ForgeDirection direction, boolean flag) {
-		if(provider.getTile() instanceof LogisticsTileGenericPipe) {
-			return SimpleServiceLocator.buildCraftProxy.checkPipesConnections((LogisticsTileGenericPipe)provider.getTile(), conduit.tile(), direction.getOpposite(), true);
-		} else {
-			return conduit.sideType[direction.ordinal()] != 0;
-		}
+	public boolean canConnect(TileEntity tile, ForgeDirection direction, boolean flag) {
+		return conduit.sideType[direction.ordinal()] != 0;
 	}
 
 	@Override

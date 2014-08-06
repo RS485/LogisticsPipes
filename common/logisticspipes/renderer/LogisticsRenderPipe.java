@@ -11,11 +11,10 @@ import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.signs.IPipeSign;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.renderer.state.PipeRenderState;
+import logisticspipes.renderer.CustomBlockRenderer.RenderInfo;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.transport.PipeTransportLogistics;
-import logisticspipes.utils.MatrixTranformations;
 import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.block.Block;
@@ -24,7 +23,6 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelSign;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -539,7 +537,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			block.minY = LPConstants.PIPE_MIN_POS + 0.01F;
 			block.maxY = block.minY + (size - 0.02F) * ratio;
 			
-			RenderEntityBlock.INSTANCE.renderBlock(block, world, 0, 0, 0, false, true);
+			CustomBlockRenderer.INSTANCE.renderBlock(block, world, 0, 0, 0, false, true);
 			
 			GL11.glEndList();
 			
@@ -557,7 +555,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			block.minZ = 0.5 - (size / 2 - 0.01) * ratio;
 			block.maxZ = 0.5 + (size / 2 - 0.01) * ratio;
 			
-			RenderEntityBlock.INSTANCE.renderBlock(block, world, 0, 0, 0, false, true);
+			CustomBlockRenderer.INSTANCE.renderBlock(block, world, 0, 0, 0, false, true);
 			
 			GL11.glEndList();
 			
@@ -575,7 +573,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			block.minY = LPConstants.PIPE_MIN_POS + 0.01;
 			block.maxY = block.minY + (size - 0.02F) * ratio;
 			
-			RenderEntityBlock.INSTANCE.renderBlock(block, world, 0, 0, 0, false, true);
+			CustomBlockRenderer.INSTANCE.renderBlock(block, world, 0, 0, 0, false, true);
 			
 			GL11.glEndList();
 			
@@ -593,7 +591,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			block.minZ = 0.5 - (size / 2 - 0.02) * ratio;
 			block.maxZ = 0.5 + (size / 2 - 0.02) * ratio;
 			
-			RenderEntityBlock.INSTANCE.renderBlock(block, world, 0, 0, 0, false, true);
+			CustomBlockRenderer.INSTANCE.renderBlock(block, world, 0, 0, 0, false, true);
 			
 			GL11.glEndList();
 			

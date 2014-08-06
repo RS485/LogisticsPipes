@@ -53,8 +53,10 @@ public class DummyContainer extends Container {
 		_playerInventory = player.inventory;
 		_dummyInventory = dummyInventory;
 		_controler = controler;
-		for(int i = 0; i < _controler.length; i++) {
-			_controler[i].guiOpenedByPlayer(player);
+		if(MainProxy.isServer()) {
+			for(int i = 0; i < _controler.length; i++) {
+				_controler[i].guiOpenedByPlayer(player);
+			}
 		}
 	}
 	

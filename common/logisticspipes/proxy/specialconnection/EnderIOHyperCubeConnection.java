@@ -8,6 +8,7 @@ import logisticspipes.interfaces.routing.ISpecialTileConnection;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.tileentity.TileEntity;
@@ -32,7 +33,7 @@ public class EnderIOHyperCubeConnection implements ISpecialTileConnection {
 			LPPosition p = new LPPosition(tile);
 			p.moveForward(direction);
 			TileEntity canidate = p.getTileEntity(tile.getWorldObj());
-			if(canidate instanceof LogisticsTileGenericPipe && SimpleServiceLocator.buildCraftProxy.checkPipesConnections(tile, canidate, direction)) {
+			if(canidate instanceof LogisticsTileGenericPipe && MainProxy.checkPipesConnections(tile, canidate, direction)) {
 				if(onlyOnePipe) {
 					onlyOnePipe = false;
 					break;
@@ -53,7 +54,7 @@ public class EnderIOHyperCubeConnection implements ISpecialTileConnection {
 				LPPosition p = new LPPosition(connected);
 				p.moveForward(direction);
 				TileEntity canidate = p.getTileEntity(tile.getWorldObj());
-				if(canidate instanceof LogisticsTileGenericPipe && SimpleServiceLocator.buildCraftProxy.checkPipesConnections(connected, canidate, direction)) {
+				if(canidate instanceof LogisticsTileGenericPipe && MainProxy.checkPipesConnections(connected, canidate, direction)) {
 					if(pipe != null) {
 						pipe = null;
 						break;

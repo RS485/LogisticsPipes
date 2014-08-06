@@ -120,7 +120,7 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 		super.onNeighborBlockChange(blockId);
 
 		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-			if (!Utils.checkPipesConnections(container.getTile(orientations[direction.ordinal()]), container)) {
+			if (!MainProxy.checkPipesConnections(container, container.getTile(orientations[direction.ordinal()]), orientations[direction.ordinal()])) {
 				if(MainProxy.isServer(getWorld())) {
 					FluidStack stack = sideTanks[direction.ordinal()].getFluid();
 					if(stack != null) {

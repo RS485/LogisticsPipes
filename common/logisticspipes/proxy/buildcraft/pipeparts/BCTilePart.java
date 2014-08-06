@@ -140,16 +140,6 @@ public class BCTilePart implements IBCTilePart {
 
 	@Override
 	public void refreshRenderState() {
-		// Pipe connections;
-		for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {
-			pipe.renderState.pipeConnectionMatrix.setConnected(o, pipe.pipeConnectionsBuffer[o.ordinal()]);
-		}
-
-		// Pipe Textures
-		for (int i = 0; i < 7; i++) {
-			ForgeDirection o = ForgeDirection.getOrientation(i);
-			pipe.renderState.textureMatrix.setIconIndex(o, pipe.pipe.getIconIndex(o));
-		}
 
 		// WireState
 		for (PipeWire color : PipeWire.values()) {
@@ -214,11 +204,6 @@ public class BCTilePart implements IBCTilePart {
 		//RobotStations
 		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
 			pipe.renderState.robotStationMatrix.setConnected(direction, sideProperties.robotStations[direction.ordinal()]);
-		}
-
-		if (pipe.renderState.isDirty()) {
-			pipe.renderState.clean();
-			pipe.sendUpdateToClient();
 		}
 	}
 

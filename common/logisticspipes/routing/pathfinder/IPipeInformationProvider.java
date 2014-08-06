@@ -23,7 +23,7 @@ public interface IPipeInformationProvider {
 	public boolean powerOnly();
 	public boolean isOnewayPipe();
 	public boolean isOutputOpen(ForgeDirection direction);
-	public boolean canConnect(IPipeInformationProvider provider, ForgeDirection direction, boolean flag);
+	public boolean canConnect(TileEntity to, ForgeDirection direction, boolean flag);
 	public int getDistance();
 	public boolean isItemPipe();
 	public boolean isFluidPipe();

@@ -10,9 +10,12 @@ import logisticspipes.blocks.crafting.FakePlayer;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.PacketInboundHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.routing.debug.RoutingTableDebugUpdateThread;
+import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.ticks.RoutingTableUpdateThread;
+import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.PlayerCollectionList;
 import lombok.Getter;
 import net.minecraft.entity.item.EntityItem;
@@ -22,6 +25,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.network.FMLEmbeddedChannel;
 import cpw.mods.fml.common.network.FMLOutboundHandler;
@@ -30,6 +34,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.relauncher.Side;
 
 public class MainProxy {
+	private MainProxy() {}
 	
 	@SidedProxy(clientSide = "logisticspipes.proxy.side.ClientProxy", serverSide = "logisticspipes.proxy.side.ServerProxy")
 	public static IProxy							proxy;
@@ -232,6 +237,31 @@ public class MainProxy {
 		EntityItem item = new EntityItem(worldObj, xCoord, yCoord, zCoord, stack);
 		worldObj.spawnEntityInWorld(item);
 		return item;
+	}
+
+	public static boolean checkPipesConnections(TileEntity from, TileEntity to) {
+		return checkPipesConnections(from, to, OrientationsUtil.getOrientationOfTilewithTile(from, to));
+	}
+	
+	public static boolean checkPipesConnections(TileEntity from, TileEntity to, ForgeDirection way) {
+		return checkPipesConnections(from, to, way, false);
+	}
+	
+	public static boolean checkPipesConnections(TileEntity from, TileEntity to, ForgeDirection way, boolean ignoreSystemDisconnection) {
+		IPipeInformationProvider fromInfo = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(from);
+		IPipeInformationProvider toInfo = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(to);
+		if(fromInfo == null && toInfo == null) return false;
+		if(fromInfo != null) {
+			if(!fromInfo.canConnect(to, way, ignoreSystemDisconnection)) return false;
+		}
+		if(toInfo != null) {
+			if(!toInfo.canConnect(from, way.getOpposite(), ignoreSystemDisconnection)) return false;
+		}
+		return true;
+	}
+
+	public static boolean isUpgradeManagerEquipped(EntityPlayer entityplayer) {
+		return entityplayer != null && entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsUpgradeManager;
 	}
 }
 

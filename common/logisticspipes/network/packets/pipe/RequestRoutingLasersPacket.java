@@ -36,6 +36,9 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 	
 	@Override
 	public void processPacket(EntityPlayer player) {
+		return;
+		//TODO
+		/*
 		LogisticsTileGenericPipe tile = this.getPipe(player.worldObj);
 		if(tile == null) return;
 		if(tile.pipe instanceof CoreRoutedPipe) {
@@ -65,6 +68,7 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 			lasers = compressLasers(lasers);
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingLaserPacket.class).setLasers(lasers), player);
 		}
+		*/
 	}
 
 	private void handleRouteInDirection(final TileGenericPipe pipe, ForgeDirection dir, ArrayList<IRouter> connectedRouters, final List<LaserData> lasers, EnumSet<PipeRoutingConnectionType> connectionType) {

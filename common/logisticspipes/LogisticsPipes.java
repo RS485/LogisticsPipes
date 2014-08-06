@@ -102,7 +102,7 @@ import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.renderer.FluidContainerRenderer;
 import logisticspipes.renderer.LogisticsHUDRenderer;
-import logisticspipes.renderer.LogisticsPipeBlockRenderer;
+import logisticspipes.renderer.LogisticsPipeItemRenderer;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.routing.pathfinder.PipeInformaitonManager;
@@ -588,9 +588,9 @@ public class LogisticsPipes {
 		
 		if(side.isClient()) {
 			if(pipe instanceof PipeBlockRequestTable) {
-				MinecraftForgeClient.registerItemRenderer(res, new LogisticsPipeBlockRenderer());
+				MinecraftForgeClient.registerItemRenderer(res, new LogisticsPipeItemRenderer(true));
 			} else {
-				MinecraftForgeClient.registerItemRenderer(res, TransportProxyClient.pipeItemRenderer);
+				MinecraftForgeClient.registerItemRenderer(res, MainProxy.proxy.getPipeItemRenderer());
 			}
 		}
 		if(clas != PipeItemsBasicLogistics.class) {
@@ -600,7 +600,6 @@ public class LogisticsPipes {
 				registerShapelessResetRecipe(res, 0, LogisticsPipes.LogisticsBasicPipe, 0);
 			}
 		}
-		GameRegistry.registerItem(res, res.getUnlocalizedName());
 		return res;
 	}
 

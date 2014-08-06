@@ -5,18 +5,22 @@ import logisticspipes.LPConstants;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.side.ClientProxy;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.textures.Textures;
 import logisticspipes.utils.MatrixTranformations;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler {
 
+	public static int renderPass = -1;
+	
 	public void renderPipe(RenderBlocks renderblocks, IBlockAccess iblockaccess, LogisticsBlockGenericPipe block, LogisticsTileGenericPipe pipe, int x, int y, int z) {
 		if(pipe.pipe instanceof PipeBlockRequestTable) {
 			PipeRenderState state = pipe.renderState;
@@ -34,89 +38,95 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 		if (icons == null)
 			return;
 
-		int connectivity = state.pipeConnectionMatrix.getMask();
-		float[] dim = new float[6];
-
+		if (renderPass == 0) {
+			int connectivity = state.pipeConnectionMatrix.getMask();
+			float[] dim = new float[6];
+	
+			
+			if(!pipe.isOpaque()) {
+				// render the unconnected pipe faces of the center block (if any)
+				if (connectivity != 0x3f) { // note: 0x3f = 0x111111 = all sides
+					resetToCenterDimensions(dim);
+					state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(ForgeDirection.UNKNOWN));
+					renderTwoWayBlock(renderblocks, block, x, y, z, dim, connectivity ^ 0x3f);
+				}
+				
+				// render the connecting pipe faces
+				for (int dir = 0; dir < 6; dir++) {
+					int mask = 1 << dir;
+					if ((connectivity & mask) == 0) continue; // no connection towards dir
+					
+					// center piece offsets
+					resetToCenterDimensions(dim);
+					
+					// extend block towards dir as it's connected to there
+					dim[dir / 2] = dir % 2 == 0 ? 0 : LPConstants.PIPE_MAX_POS;
+					dim[dir / 2 + 3] = dir % 2 == 0 ? LPConstants.PIPE_MIN_POS : 1;
 		
-		if(!pipe.isOpaque()) {
-			// render the unconnected pipe faces of the center block (if any)
-			if (connectivity != 0x3f) { // note: 0x3f = 0x111111 = all sides
-				resetToCenterDimensions(dim);
-				state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(ForgeDirection.UNKNOWN));
-				renderTwoWayBlock(renderblocks, block, x, y, z, dim, connectivity ^ 0x3f);
-			}
-			
-			// render the connecting pipe faces
-			for (int dir = 0; dir < 6; dir++) {
-				int mask = 1 << dir;
-				if ((connectivity & mask) == 0) continue; // no connection towards dir
-				
-				// center piece offsets
-				resetToCenterDimensions(dim);
-				
-				// extend block towards dir as it's connected to there
-				dim[dir / 2] = dir % 2 == 0 ? 0 : LPConstants.PIPE_MAX_POS;
-				dim[dir / 2 + 3] = dir % 2 == 0 ? LPConstants.PIPE_MIN_POS : 1;
+					// the mask points to all faces perpendicular to dir, i.e. dirs 0+1 -> mask 111100, 1+2 -> 110011, 3+5 -> 001111
+					int renderMask = (3 << (dir / 2 * 2)) ^ 0x3f;
+		
+					//workaround for 1.6 texture weirdness, rotate texture for N/S/E/W connections
+					renderblocks.uvRotateEast = renderblocks.uvRotateNorth = renderblocks.uvRotateWest = renderblocks.uvRotateSouth = (dir < 2) ? 0 : 1;
 	
-				// the mask points to all faces perpendicular to dir, i.e. dirs 0+1 -> mask 111100, 1+2 -> 110011, 3+5 -> 001111
-				int renderMask = (3 << (dir / 2 * 2)) ^ 0x3f;
+					// render sub block
+					state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(ForgeDirection.VALID_DIRECTIONS[dir]));
+		
+					renderTwoWayBlock(renderblocks, block, x, y, z, dim, renderMask);
+					renderblocks.uvRotateEast = renderblocks.uvRotateNorth = renderblocks.uvRotateWest = renderblocks.uvRotateSouth = 0;
+				}
+			} else {
+				// render the unconnected pipe faces of the center block (if any)
+				if (connectivity != 0x3f) { // note: 0x3f = 0x111111 = all sides
+					resetToCenterDimensions(dim);
+					
+					//Render opaque Layer
+					state.currentTexture = icons.getIcon(Textures.LOGISTICSPIPE_OPAQUE_TEXTURE.normal);
+					renderOneWayBlock(renderblocks, block, x, y, z, dim, connectivity ^ 0x3f);
+					
+					//Render Pipe Texture
+					state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(ForgeDirection.UNKNOWN));
+					renderOneWayBlock(renderblocks, block, x, y, z, dim, connectivity ^ 0x3f);
+				}
+				
+				// render the connecting pipe faces
+				for (int dir = 0; dir < 6; dir++) {
+					int mask = 1 << dir;
+					if ((connectivity & mask) == 0) continue; // no connection towards dir
+					
+					// center piece offsets
+					resetToCenterDimensions(dim);
+					
+					// extend block towards dir as it's connected to there
+					dim[dir / 2] = dir % 2 == 0 ? 0 : LPConstants.PIPE_MAX_POS;
+					dim[dir / 2 + 3] = dir % 2 == 0 ? LPConstants.PIPE_MIN_POS : 1;
+		
+					// the mask points to all faces perpendicular to dir, i.e. dirs 0+1 -> mask 111100, 1+2 -> 110011, 3+5 -> 001111
+					int renderMask = (3 << (dir / 2 * 2)) ^ 0x3f;
+					
+					//workaround for 1.6 texture weirdness, rotate texture for N/S/E/W connections
+					renderblocks.uvRotateEast = renderblocks.uvRotateNorth = renderblocks.uvRotateWest = renderblocks.uvRotateSouth = (dir < 2) ? 0 : 1;
 	
-				//workaround for 1.6 texture weirdness, rotate texture for N/S/E/W connections
-				renderblocks.uvRotateEast = renderblocks.uvRotateNorth = renderblocks.uvRotateWest = renderblocks.uvRotateSouth = (dir < 2) ? 0 : 1;
-
-				// render sub block
-				state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(ForgeDirection.VALID_DIRECTIONS[dir]));
-	
-				renderTwoWayBlock(renderblocks, block, x, y, z, dim, renderMask);
-				renderblocks.uvRotateEast = renderblocks.uvRotateNorth = renderblocks.uvRotateWest = renderblocks.uvRotateSouth = 0;
-			}
-		} else {
-			// render the unconnected pipe faces of the center block (if any)
-			if (connectivity != 0x3f) { // note: 0x3f = 0x111111 = all sides
-				resetToCenterDimensions(dim);
-				
-				//Render opaque Layer
-				state.currentTexture = icons.getIcon(Textures.LOGISTICSPIPE_OPAQUE_TEXTURE.normal);
-				renderOneWayBlock(renderblocks, block, x, y, z, dim, connectivity ^ 0x3f);
-				
-				//Render Pipe Texture
-				state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(ForgeDirection.UNKNOWN));
-				renderOneWayBlock(renderblocks, block, x, y, z, dim, connectivity ^ 0x3f);
-			}
-			
-			// render the connecting pipe faces
-			for (int dir = 0; dir < 6; dir++) {
-				int mask = 1 << dir;
-				if ((connectivity & mask) == 0) continue; // no connection towards dir
-				
-				// center piece offsets
-				resetToCenterDimensions(dim);
-				
-				// extend block towards dir as it's connected to there
-				dim[dir / 2] = dir % 2 == 0 ? 0 : LPConstants.PIPE_MAX_POS;
-				dim[dir / 2 + 3] = dir % 2 == 0 ? LPConstants.PIPE_MIN_POS : 1;
-	
-				// the mask points to all faces perpendicular to dir, i.e. dirs 0+1 -> mask 111100, 1+2 -> 110011, 3+5 -> 001111
-				int renderMask = (3 << (dir / 2 * 2)) ^ 0x3f;
-				
-				//workaround for 1.6 texture weirdness, rotate texture for N/S/E/W connections
-				renderblocks.uvRotateEast = renderblocks.uvRotateNorth = renderblocks.uvRotateWest = renderblocks.uvRotateSouth = (dir < 2) ? 0 : 1;
-
-				//Render opaque Layer
-				state.currentTexture = icons.getIcon(Textures.LOGISTICSPIPE_OPAQUE_TEXTURE.normal);
-				renderOneWayBlock(renderblocks, block, x, y, z, dim, 0x3f);
-				
-				// render sub block
-				state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(ForgeDirection.VALID_DIRECTIONS[dir]));
-				renderOneWayBlock(renderblocks, block, x, y, z, dim, renderMask);
-				renderblocks.uvRotateEast = renderblocks.uvRotateNorth = renderblocks.uvRotateWest = renderblocks.uvRotateSouth = 0;
+					//Render opaque Layer
+					state.currentTexture = icons.getIcon(Textures.LOGISTICSPIPE_OPAQUE_TEXTURE.normal);
+					renderOneWayBlock(renderblocks, block, x, y, z, dim, 0x3f);
+					
+					// render sub block
+					state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(ForgeDirection.VALID_DIRECTIONS[dir]));
+					renderOneWayBlock(renderblocks, block, x, y, z, dim, renderMask);
+					renderblocks.uvRotateEast = renderblocks.uvRotateNorth = renderblocks.uvRotateWest = renderblocks.uvRotateSouth = 0;
+				}
 			}
 		}
-
+		
 		renderblocks.setRenderBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-
-		pipeFacadeRenderer(renderblocks, block, state, x, y, z);
-		pipePlugRenderer(renderblocks, block, state, x, y, z);
+		
+		SimpleServiceLocator.buildCraftProxy.pipeFacadeRenderer(renderblocks, block, state, x, y, z);
+		
+		if (renderPass == 0) {
+			SimpleServiceLocator.buildCraftProxy.pipePlugRenderer(renderblocks, block, state, x, y, z);
+			SimpleServiceLocator.buildCraftProxy.pipeRobotStationRenderer(renderblocks, block, state, x, y, z);
+		}
 	}
 
 	private void resetToCenterDimensions(float[] dim) {
@@ -158,6 +168,12 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 	@Override
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
 		TileEntity tile = world.getTileEntity(x, y, z);
+
+		// Here to prevent Minecraft from crashing when nothing renders on render pass zero
+		// This is likely a bug, and has been submitted as an issue to the Forge team
+		renderer.setRenderBounds(0, 0, 0, 0, 0, 0);
+		renderer.renderStandardBlock(Blocks.stone, x, y, z);
+		renderer.setRenderBoundsFromBlock(block);
 
 		if (tile instanceof LogisticsTileGenericPipe) {
 			LogisticsTileGenericPipe pipeTile = (LogisticsTileGenericPipe) tile;

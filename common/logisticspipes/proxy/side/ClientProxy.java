@@ -25,6 +25,7 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.IProxy;
+import logisticspipes.renderer.LogisticsPipeItemRenderer;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.textures.Textures;
@@ -39,6 +40,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.common.DimensionManager;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
@@ -48,6 +50,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 public class ClientProxy implements IProxy {
 	
 	public static int	pipeModel = -1;
+	private IItemRenderer pipeRenderer;
 
 	@Override
 	public String getSide() {
@@ -199,5 +202,13 @@ public class ClientProxy implements IProxy {
 			return ((ModuleBaseGui) FMLClientHandler.instance().getClient().currentScreen).getModule();
 		}
 		return null;
+	}
+
+	@Override
+	public IItemRenderer getPipeItemRenderer() {
+		if(pipeRenderer == null) {
+			pipeRenderer = new LogisticsPipeItemRenderer(false);
+		}
+		return pipeRenderer;
 	}
 }

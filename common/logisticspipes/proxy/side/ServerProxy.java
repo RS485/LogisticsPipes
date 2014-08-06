@@ -34,6 +34,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.config.Configuration;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -261,6 +262,11 @@ public class ServerProxy implements IProxy {
 
 	@Override
 	public LogisticsModule getModuleFromGui() {
+		return null;
+	}
+
+	@Override
+	public IItemRenderer getPipeItemRenderer() {
 		return null;
 	}
 }

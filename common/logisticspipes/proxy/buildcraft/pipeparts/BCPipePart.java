@@ -1,18 +1,32 @@
 package logisticspipes.proxy.buildcraft.pipeparts;
 
+import java.lang.reflect.Field;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.buildcraft.BuildCraftProxy;
+import logisticspipes.proxy.buildcraft.gates.ActionDisableLogistics;
 import logisticspipes.proxy.buildcraft.gates.wrapperclasses.PipeWrapper;
+import buildcraft.api.gates.GateExpansions;
+import buildcraft.api.gates.IAction;
+import buildcraft.api.gates.IGateExpansion;
 import buildcraft.api.transport.PipeWire;
+import buildcraft.core.network.TilePacketWrapper;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.Gate;
+import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportStructure;
 import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.gates.GateDefinition;
 import buildcraft.transport.gates.GateFactory;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,6 +36,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class BCPipePart implements IBCPipePart {
+	
+	private static Field networkWrappersField;
 
 	public LogisticsTileGenericPipe container;
 	public int[] signalStrength = new int[]{0, 0, 0, 0};
@@ -30,9 +46,39 @@ public class BCPipePart implements IBCPipePart {
 	
 	public PipeWrapper wrapper;
 
+	private boolean resyncGateExpansions = false;
+	
 	public BCPipePart(LogisticsTileGenericPipe tile) {
 		this.container = tile;
-		wrapper = new PipeWrapper(tile);
+		try {
+			startWrapper();
+			wrapper = new PipeWrapper(tile);
+			stopWrapper();
+		} catch(IllegalArgumentException e) {
+			throw new RuntimeException(e);
+		} catch(IllegalAccessException e) {
+			throw new RuntimeException(e);
+		} catch(NoSuchFieldException e) {
+			throw new RuntimeException(e);
+		} catch(SecurityException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void startWrapper() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+		if(networkWrappersField == null) {
+			networkWrappersField = Pipe.class.getDeclaredField("networkWrappers");
+			networkWrappersField.setAccessible(true);
+		}
+		Map<Class, TilePacketWrapper> networkWrappers = (Map<Class, TilePacketWrapper>) networkWrappersField.get(null);
+		networkWrappers.put(PipeWrapper.class, null);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void stopWrapper() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+		Map<Class, TilePacketWrapper> networkWrappers = (Map<Class, TilePacketWrapper>) networkWrappersField.get(null);
+		networkWrappers.remove(PipeWrapper.class);
 	}
 
 	@Override
@@ -127,7 +173,7 @@ public class BCPipePart implements IBCPipePart {
 				return false;
 			}
 
-			return Ut.checkPipesConnections(container, tile);
+			return MainProxy.checkPipesConnections(container, tile);
 		}
 		if (!(tile instanceof TileGenericPipe)) {
 			return false;
@@ -291,5 +337,81 @@ public class BCPipePart implements IBCPipePart {
 	@Override
 	public void makeGate(CoreUnroutedPipe pipe, ItemStack currentEquippedItem) {
 		gate = GateFactory.makeGate(wrapper, currentEquippedItem);
+	}
+
+	public LinkedList<IAction> getActions() {
+		LinkedList<IAction> result = new LinkedList<IAction>();
+
+		if (hasGate()) {
+			gate.addActions(result);
+		}
+		
+		if(container.pipe instanceof CoreRoutedPipe) {
+			result.add(BuildCraftProxy.LogisticsDisableAction);
+		}
+		
+		return result;
+	}
+	
+	public void actionsActivated(Map<IAction, Boolean> actions) {
+		if(!(container.pipe instanceof CoreRoutedPipe)) return;
+		((CoreRoutedPipe)container.pipe).setEnabled(true);
+		// Activate the actions
+		for (Entry<IAction, Boolean> i : actions.entrySet()) {
+			if (i.getValue()) {
+				if (i.getKey() instanceof ActionDisableLogistics){
+					((CoreRoutedPipe)container.pipe).setEnabled(false);
+				}
+			}
+		}
+	}
+
+	@Override
+	public void updateCoreStateGateData() {
+		container.coreState.expansions.clear();
+		if (gate != null) {
+			container.coreState.gateMaterial = gate.material.ordinal();
+			container.coreState.gateLogic = gate.logic.ordinal();
+			for (IGateExpansion ex : gate.expansions.keySet()) {
+				container.coreState.expansions.add(GateExpansions.getServerExpansionID(ex.getUniqueIdentifier()));
+			}
+		} else {
+			container.coreState.gateMaterial = -1;
+			container.coreState.gateLogic = -1;
+		}
+	}
+
+	@Override
+	public void updateGateFromCoreStateData() {
+		if (container.coreState.gateMaterial == -1) {
+			gate = null;
+		} else if (gate == null) {
+			gate = GateFactory.makeGate(this.wrapper, GateDefinition.GateMaterial.fromOrdinal(container.coreState.gateMaterial), GateDefinition.GateLogic.fromOrdinal(container.coreState.gateLogic));
+		}
+
+		syncGateExpansions();
+	}
+
+	private void syncGateExpansions() {
+		resyncGateExpansions = false;
+		if (gate != null && !container.coreState.expansions.isEmpty()) {
+			for (byte id : container.coreState.expansions) {
+				IGateExpansion ex = GateExpansions.getExpansionClient(id);
+				if (ex != null) {
+					if (!gate.expansions.containsKey(ex)) {
+						gate.addGateExpansion(ex);
+					}
+				} else {
+					resyncGateExpansions = true;
+				}
+			}
+		}
+	}
+
+	@Override
+	public void checkResyncGate() {
+		if (resyncGateExpansions) {
+			syncGateExpansions();
+		}
 	}
 }

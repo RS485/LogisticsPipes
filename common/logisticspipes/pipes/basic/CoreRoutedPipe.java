@@ -953,7 +953,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 			return true;
 		}
 
-		if(SimpleServiceLocator.toolWrenchHandler.isUpgradeManagerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
+		if(MainProxy.isUpgradeManagerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
 			if(MainProxy.isServer(entityplayer.worldObj)) {
 				if (settings == null || settings.openUpgrades) {
 					getUpgradeManager().openGui(entityplayer, this);
@@ -1021,7 +1021,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		Iterator<AdjacentTile> iterator = adjacent.iterator();
 		while (iterator.hasNext()){
 			AdjacentTile tile = iterator.next();
-			if (!SimpleServiceLocator.buildCraftProxy.checkPipesConnections(this.container, tile.tile, tile.orientation)){
+			if (!MainProxy.checkPipesConnections(this.container, tile.tile, tile.orientation)){
 				iterator.remove();
 			}
 		}
@@ -1384,29 +1384,6 @@ outer:
 	
 	public boolean isFluidPipe() {
 		return false;
-	}
-	
-	/* --- Trigger --- */
-	@Override
-	public LinkedList<IAction> getActions() {
-		LinkedList<IAction> actions = super.getActions();
-		actions.add(BuildCraftProxy.LogisticsDisableAction);
-		return actions;
-	}
-	
-	@Override
-	protected void actionsActivated(Map<IAction, Boolean> actions) {
-		super.actionsActivated(actions);
-
-		setEnabled(true);
-		// Activate the actions
-		for (Entry<IAction, Boolean> i : actions.entrySet()) {
-			if (i.getValue()) {
-				if (i.getKey() instanceof ActionDisableLogistics){
-					setEnabled(false);
-				}
-			}
-		}
 	}
 	
 	/* --- CCCommands --- */

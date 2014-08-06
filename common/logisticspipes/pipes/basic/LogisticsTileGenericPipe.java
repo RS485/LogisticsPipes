@@ -12,6 +12,8 @@ import org.apache.logging.log4j.Level;
 
 import buildcraft.api.transport.IPipeTile;
 import buildcraft.api.transport.PipeWire;
+import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TravelingItem;
 import li.cil.oc.api.network.Arguments;
 import li.cil.oc.api.network.Context;
 import li.cil.oc.api.network.Environment;
@@ -28,6 +30,9 @@ import logisticspipes.interfaces.IClientState;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.packets.pipe.PipeTileStatePacket;
 import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.proxy.MainProxy;
@@ -165,9 +170,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 		pipe.updateEntity();
 
 		if (worldObj.isRemote) {
-			if (resyncGateExpansions) {
-				syncGateExpansions();
-			}
+			pipe.bcPipePart.checkResyncGate();
 
 			return;
 		}
@@ -180,25 +183,29 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 		}
 
 		if (refreshRenderState) {
+			// Pipe connections;
+			for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {
+				renderState.pipeConnectionMatrix.setConnected(o, pipeConnectionsBuffer[o.ordinal()]);
+			}
+			// Pipe Textures
+			for (int i = 0; i < 7; i++) {
+				ForgeDirection o = ForgeDirection.getOrientation(i);
+				renderState.textureMatrix.setIconIndex(o, pipe.getIconIndex(o));
+			}
 			tilePart.refreshRenderState();
+			
+			if (renderState.isDirty()) {
+				renderState.clean();
+				sendUpdateToClient();
+			}
+			
 			refreshRenderState = false;
 		}
 
 		if (sendClientUpdate) {
 			sendClientUpdate = false;
-
-			if (worldObj instanceof WorldServer) {
-				WorldServer world = (WorldServer) worldObj;
-				BuildCraftPacket updatePacket = getBCDescriptionPacket();
-
-				for (Object o : world.playerEntities) {
-					EntityPlayerMP player = (EntityPlayerMP) o;
-
-					if (world.getPlayerManager().isPlayerWatchingChunk (player, xCoord >> 4, zCoord >> 4)) {
-						BuildCraftCore.instance.sendToPlayer(player, updatePacket);
-					}
-				}
-			}
+			
+			MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(worldObj), getLPDescriptionPacket());
 		}
 		getRenderController().onUpdate();
 		if(!addedToNetwork) {
@@ -210,7 +217,12 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 	@Override
 	public Packet getDescriptionPacket() {
 		sendInitPacket = true;
-		return Utils.toPacket(getBCDescriptionPacket(), 1);
+		try {
+			return PacketHandler.toFMLPacket(getLPDescriptionPacket());
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override
@@ -497,8 +509,8 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 	}
 
 	@Override
-	public boolean canConnect(IPipeInformationProvider provider, ForgeDirection direction, boolean flag) {
-		return SimpleServiceLocator.buildCraftProxy.checkPipesConnections(this, provider.getTile(), direction, true);
+	public boolean canConnect(TileEntity to, ForgeDirection direction, boolean flag) {
+		return pipe.canPipeConnect(to, direction, flag);
 	}
 
 	@Override
@@ -600,7 +612,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 	private boolean blockNeighborChange = false;
 	private boolean refreshRenderState = false;
 	private boolean pipeBound = false;
-	private boolean resyncGateExpansions = false;
 
 	public class CoreState implements IClientState {
 
@@ -691,56 +702,43 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 
 	/* SMP */
 
-	public BuildCraftPacket getBCDescriptionPacket() {
+	public ModernPacket getLPDescriptionPacket() {
 		bindPipe();
 
-		PacketTileState packet = new PacketTileState(this.xCoord, this.yCoord, this.zCoord);
-		coreState.expansions.clear();
+		PipeTileStatePacket packet = PacketHandler.getPacket(PipeTileStatePacket.class);
+		
+		packet.setTilePos(this);
+		
+		pipe.bcPipePart.updateCoreStateGateData();
 
-		if (pipe != null && pipe.gate != null) {
-			coreState.gateMaterial = pipe.gate.material.ordinal();
-			coreState.gateLogic = pipe.gate.logic.ordinal();
-			for (IGateExpansion ex : pipe.gate.expansions.keySet()) {
-				coreState.expansions.add(GateExpansions.getServerExpansionID(ex.getUniqueIdentifier()));
-			}
-		} else {
-			coreState.gateMaterial = -1;
-			coreState.gateLogic = -1;
-		}
-
-		if (pipe != null && pipe.transport != null) {
-			pipe.transport.sendDescriptionPacket();
-		}
-
-		packet.addStateForSerialization((byte) 0, coreState);
-		packet.addStateForSerialization((byte) 1, renderState);
-
-		if (pipe instanceof IClientState) {
-			packet.addStateForSerialization((byte) 2, (IClientState) pipe);
-		}
+		packet.setCoreState(coreState);
+		packet.setRenderState(renderState);
+		packet.setPipe(pipe);
 
 		return packet;
 	}
 
-	public void sendUpdateToClient() {
-		sendClientUpdate = true;
-	}
-
-	@Override
-	public LinkedList<ITrigger> getTriggers() {
-		LinkedList<ITrigger> result = new LinkedList<ITrigger>();
-
-		if (BlockGenericPipe.isFullyDefined(pipe) && pipe.hasGate()) {
-			result.add(BuildCraftCore.triggerRedstoneActive);
-			result.add(BuildCraftCore.triggerRedstoneInactive);
+	public void afterStateUpdated() {
+		if (pipe == null && coreState.pipeId != 0) {
+			initialize(LogisticsBlockGenericPipe.createPipe((Item) Item.itemRegistry.getObjectById(coreState.pipeId)));
 		}
 
-		return result;
+		if (pipe == null) {
+			return;
+		}
+
+		pipe.bcPipePart.updateGateFromCoreStateData();
+
+		worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
+
+		if (renderState.needsRenderUpdate()) {
+			worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
+			renderState.clean();
+		}
 	}
 
-	@Override
-	public void blockRemoved(ForgeDirection from) {
-
+	public void sendUpdateToClient() {
+		sendClientUpdate = true;
 	}
 
 	public TileBuffer[] getTileCache() {
@@ -750,21 +748,10 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 		return tileBuffer;
 	}
 
-	@Override
 	public void blockCreated(ForgeDirection from, Block block, TileEntity tile) {
 		TileBuffer[] cache = getTileCache();
 		if (cache != null) {
 			cache[from.getOpposite().ordinal()].set(block, tile);
-		}
-	}
-
-	@Override
-	public Block getBlock(ForgeDirection to) {
-		TileBuffer[] cache = getTileCache();
-		if (cache != null) {
-			return cache[to.ordinal()].getBlock();
-		} else {
-			return null;
 		}
 	}
 
@@ -810,13 +797,14 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 		return pipe.bcPipePart.getSignalStrength()[wire.ordinal()] > 0;
 	}
 
-	@Override
-	public boolean doDrop() {
-		if (BlockGenericPipe.isValid(pipe)) {
-			return pipe.doDrop();
-		} else {
-			return false;
+	public void doDrop() {
+		if (LogisticsBlockGenericPipe.isValid(pipe)) {
+			pipe.doDrop();
 		}
+	}
+
+	public void destroy() {
+		
 	}
 
 	/**
@@ -885,72 +873,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 	}
 
 	@Override
-	public IClientState getStateInstance(byte stateId) {
-		switch (stateId) {
-			case 0:
-				return coreState;
-			case 1:
-				return renderState;
-			case 2:
-				return (IClientState) pipe;
-		}
-		throw new RuntimeException("Unknown state requested: " + stateId + " this is a bug!");
-	}
-
-	@Override
-	public void afterStateUpdated(byte stateId) {
-		if (!worldObj.isRemote) {
-			return;
-		}
-
-		switch (stateId) {
-			case 0:
-				if (pipe == null && coreState.pipeId != 0) {
-					initialize(BlockGenericPipe.createPipe((Item) Item.itemRegistry.getObjectById(coreState.pipeId)));
-				}
-
-				if (pipe == null) {
-					break;
-				}
-
-				if (coreState.gateMaterial == -1) {
-					pipe.gate = null;
-				} else if (pipe.gate == null) {
-					pipe.gate = GateFactory.makeGate(pipe, GateDefinition.GateMaterial.fromOrdinal(coreState.gateMaterial), GateDefinition.GateLogic.fromOrdinal(coreState.gateLogic));
-				}
-
-				syncGateExpansions();
-
-				worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
-				break;
-
-			case 1: {
-				if (renderState.needsRenderUpdate()) {
-					worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
-					renderState.clean();
-				}
-				break;
-			}
-		}
-	}
-
-	private void syncGateExpansions() {
-		resyncGateExpansions = false;
-		if (pipe.gate != null && !coreState.expansions.isEmpty()) {
-			for (byte id : coreState.expansions) {
-				IGateExpansion ex = GateExpansions.getExpansionClient(id);
-				if (ex != null) {
-					if (!pipe.gate.expansions.containsKey(ex)) {
-						pipe.gate.addGateExpansion(ex);
-					}
-				} else {
-					resyncGateExpansions = true;
-				}
-			}
-		}
-	}
-
-	@Override
 	@SideOnly(Side.CLIENT)
 	public double getMaxRenderDistanceSquared() {
 		return Configs.PIPE_CONTENTS_RENDER_DIST * Configs.PIPE_CONTENTS_RENDER_DIST;
@@ -981,7 +903,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 	@Override
 	@ModDependentMethod(modId="BuildCraft|Transport")
 	public PipeType getPipeType() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

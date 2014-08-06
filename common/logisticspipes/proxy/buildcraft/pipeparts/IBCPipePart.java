@@ -29,4 +29,7 @@ public interface IBCPipePart {
 	boolean receiveSignal(int i, PipeWire wire);
 	Object getGate();
 	void makeGate(CoreUnroutedPipe pipe, ItemStack currentEquippedItem);
+	void updateCoreStateGateData();
+	void updateGateFromCoreStateData();
+	void checkResyncGate();
 }

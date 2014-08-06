@@ -10,6 +10,7 @@ package logisticspipes.utils;
 
 import java.util.LinkedList;
 
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.tileentity.TileEntity;
@@ -56,7 +57,7 @@ public class WorldUtil {
 			
 			if(flag) {
 				if(SimpleServiceLocator.pipeInformaitonManager.isPipe(tilePipe)) {
-					if(!SimpleServiceLocator.pipeInformaitonManager.isPipeConnected(tile, o)) {
+					if(!MainProxy.checkPipesConnections(tile, tilePipe, o)) {
 						continue;
 					}
 				}

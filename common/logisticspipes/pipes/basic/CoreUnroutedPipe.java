@@ -9,6 +9,7 @@ import buildcraft.api.transport.PipeWire;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.IClientState;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.pipeparts.IBCPipePart;
@@ -25,7 +26,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldSettings.GameType;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public abstract class CoreUnroutedPipe {
+public abstract class CoreUnroutedPipe implements IClientState {
 
 	public LogisticsTileGenericPipe container;
 	public final PipeTransportLogistics transport;
@@ -246,27 +247,10 @@ public abstract class CoreUnroutedPipe {
 		bcPipePart.addItemDrops(result);
 		return result;
 	}
-
-	public boolean isTriggerActive(ITrigger trigger) {
-		return false;
-	}
-
-	public LinkedList<IAction> getActions() {
-		LinkedList<IAction> result = new LinkedList<IAction>();
-
-		if (hasGate()) {
-			gate.addActions(result);
-		}
-
-		return result;
-	}
-
+	
 	public void resetGate() {
 		bcPipePart.resetGate();
 		container.scheduleRenderUpdate();
-	}
-
-	protected void actionsActivated(Map<IAction, Boolean> actions) {
 	}
 
 	public LogisticsTileGenericPipe getContainer() {
@@ -332,5 +316,12 @@ public abstract class CoreUnroutedPipe {
 	public void onEntityCollidedWithBlock(Entity entity) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public boolean canPipeConnect(TileEntity tile, ForgeDirection direction, boolean flag) {
+		return canPipeConnect(tile, direction);
+	}
+
+	public void doDrop() {
 	}
 }

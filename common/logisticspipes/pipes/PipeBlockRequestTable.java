@@ -67,7 +67,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	@Override
 	public boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
 		//allow using upgrade manager
-		if(SimpleServiceLocator.buildCraftProxy.isUpgradeManagerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
+		if(MainProxy.isUpgradeManagerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
 			return false;
 		}
 		if(MainProxy.isServer(getWorld())) {

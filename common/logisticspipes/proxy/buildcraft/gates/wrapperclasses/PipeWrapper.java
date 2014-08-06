@@ -1,8 +1,10 @@
 package logisticspipes.proxy.buildcraft.gates.wrapperclasses;
 
+import java.util.LinkedList;
 import java.util.Map;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.buildcraft.pipeparts.BCPipePart;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.core.IIconProvider;
@@ -22,7 +24,7 @@ public class PipeWrapper extends Pipe<PipeTransport> {
 			}
 		}, null);
 		this.tile = pipe;
-		this.setTile(new TilePipeWrapper(this));
+		this.setTile(new TilePipeWrapper(this, tile));
 		this.wireSet = pipe.pipe.bcPipePart.getWireSet();
 	}
 
@@ -63,6 +65,11 @@ public class PipeWrapper extends Pipe<PipeTransport> {
 
 	@Override
 	protected void actionsActivated(Map<IAction, Boolean> actions) {
-		tile.pipe.actionsActivated(actions);
+		((BCPipePart)tile.pipe.bcPipePart).actionsActivated(actions);
+	}
+
+	@Override
+	public LinkedList<IAction> getActions() {
+		return ((BCPipePart)tile.pipe.bcPipePart).getActions();
 	}
 }

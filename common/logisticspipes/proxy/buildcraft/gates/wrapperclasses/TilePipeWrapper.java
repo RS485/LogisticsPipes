@@ -13,13 +13,13 @@ public class TilePipeWrapper extends TileGenericPipe {
 	
 	public final LogisticsTileGenericPipe tile;
 	
-	public TilePipeWrapper(PipeWrapper pipe) {
-		this.tile = pipe.tile;
-		this.xCoord = pipe.tile.xCoord;
-		this.yCoord = pipe.tile.yCoord;
-		this.zCoord = pipe.tile.zCoord;
+	public TilePipeWrapper(PipeWrapper pipe, final LogisticsTileGenericPipe tile) {
+		this.tile = tile;
+		this.xCoord = tile.xCoord;
+		this.yCoord = tile.yCoord;
+		this.zCoord = tile.zCoord;
 		this.pipe = pipe;
-		this.worldObj = pipe.tile.getWorldObj();
+		this.worldObj = tile.getWorldObj();
 		try {
 			Field field = TileGenericPipe.class.getDeclaredField("renderState");
 			field.setAccessible(true);

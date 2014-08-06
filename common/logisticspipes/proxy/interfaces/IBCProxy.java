@@ -36,4 +36,6 @@ public interface IBCProxy {
 	void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z);
 	void pipePlugRenderer(RenderBlocks renderblocks, Block block, PipeRenderState state, int x, int y, int z);
 	ItemStack getDropFacade(CoreUnroutedPipe pipe, ForgeDirection dir);
+	boolean canPipeConnect(TileEntity pipe, TileEntity tile, ForgeDirection direction);
+	void pipeRobotStationRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z);
 }

@@ -116,8 +116,8 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 	}
 
 	@Override
-	public boolean canConnect(IPipeInformationProvider provider, ForgeDirection direction, boolean flag) {
-		return SimpleServiceLocator.buildCraftProxy.checkPipesConnections(pipe, provider.getTile(), direction, true);
+	public boolean canConnect(TileEntity to, ForgeDirection direction, boolean flag) {
+		return SimpleServiceLocator.buildCraftProxy.canPipeConnect(pipe, to, direction);
 	}
 
 	@Override

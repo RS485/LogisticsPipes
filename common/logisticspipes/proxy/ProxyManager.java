@@ -84,8 +84,8 @@ public class ProxyManager {
 			@Override public boolean isIPipeTile(TileEntity tile) {return false;}
 			@Override public void registerPipeInformationProvider() {}
 			@Override public void initProxy() {}
-			@Override public boolean checkForPipeConnection(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe) {return false;}
-			@Override public boolean checkConnectionOverride(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe) {return false;}
+			@Override public boolean checkForPipeConnection(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe) {return true;}
+			@Override public boolean checkConnectionOverride(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe) {return true;}
 			@Override public boolean isMachineManagingSolids(TileEntity tile) {return false;}
 			@Override public boolean isMachineManagingFluids(TileEntity tile) {return false;}
 			@Override public IBCPipePart getBCPipePart(CoreUnroutedPipe coreUnroutedPipe) {
@@ -108,6 +108,9 @@ public class ProxyManager {
 					@Override public boolean receiveSignal(int i, PipeWire wire) {return false;}
 					@Override public Object getGate() {return null;}
 					@Override public void makeGate(CoreUnroutedPipe pipe, ItemStack currentEquippedItem) {}
+					@Override public void updateCoreStateGateData() {}
+					@Override public void updateGateFromCoreStateData() {}
+					@Override public void checkResyncGate() {}
 				};
 			}
 			@Override public boolean handleBCClickOnPipe(ItemStack currentItem, CoreUnroutedPipe pipe, World world, int x, int y, int z, EntityPlayer player, int side, LogisticsBlockGenericPipe logisticsBlockGenericPipe) {return false;}
@@ -137,6 +140,8 @@ public class ProxyManager {
 			@Override public void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z) {}
 			@Override public void pipePlugRenderer(RenderBlocks renderblocks, Block block, PipeRenderState state, int x, int y, int z) {}
 			@Override public ItemStack getDropFacade(CoreUnroutedPipe pipe, ForgeDirection dir) {return null;}
+			@Override public boolean canPipeConnect(TileEntity pipe, TileEntity tile, ForgeDirection direction) {return false;}
+			@Override public void pipeRobotStationRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z) {}
 		}));
 		
 		SimpleServiceLocator.setForestryProxy(getWrappedProxy("Forestry", IForestryProxy.class, ForestryProxy.class, new IForestryProxy() {

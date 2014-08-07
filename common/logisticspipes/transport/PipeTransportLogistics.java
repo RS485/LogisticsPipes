@@ -9,6 +9,7 @@
 package logisticspipes.transport;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -66,7 +67,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 public class PipeTransportLogistics {
 	
 	private final int																					_bufferTimeOut	= 20 * 2;														// 2 Seconds
-	private final HashMap<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>>	_itemBuffer		= new HashMap<ItemIdentifierStack, Pair<Integer, Integer>>();
+	private final List<Pair<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>>>_itemBuffer		= new ArrayList<Pair<ItemIdentifierStack, Pair<Integer, Integer>>>();
 	private Chunk																						chunk;
 	public LPItemList																					items = new LPItemList(this);
 	public LogisticsTileGenericPipe 																	container;
@@ -100,16 +101,16 @@ public class PipeTransportLogistics {
 		moveSolids();
 		if(!_itemBuffer.isEmpty()) {
 			List<LPTravelingItem> toAdd = new LinkedList<LPTravelingItem>();
-			Iterator<Entry<ItemIdentifierStack, Pair<Integer, Integer>>> iterator = _itemBuffer.entrySet().iterator();
+			Iterator<Pair<ItemIdentifierStack, Pair<Integer, Integer>>> iterator = _itemBuffer.iterator();
 			while(iterator.hasNext()) {
-				Entry<ItemIdentifierStack, Pair<Integer, Integer>> next = iterator.next();
-				int currentTimeOut = next.getValue().getValue1();
+				Pair<ItemIdentifierStack, Pair<Integer, Integer>> next = iterator.next();
+				int currentTimeOut = next.getValue2().getValue1();
 				if(currentTimeOut > 0) {
-					next.getValue().setValue1(currentTimeOut - 1);
+					next.getValue2().setValue1(currentTimeOut - 1);
 				} else {
-					LPTravelingItemServer item = SimpleServiceLocator.routedItemHelper.createNewTravelItem(next.getKey());
+					LPTravelingItemServer item = SimpleServiceLocator.routedItemHelper.createNewTravelItem(next.getValue1());
 					item.setDoNotBuffer(true);
-					item.setBufferCounter(next.getValue().getValue2() + 1);
+					item.setBufferCounter(next.getValue2().getValue2() + 1);
 					toAdd.add(item);
 					iterator.remove();
 				}
@@ -121,9 +122,9 @@ public class PipeTransportLogistics {
 	}
 	
 	public void dropBuffer() {
-		Iterator<ItemIdentifierStack> iterator = _itemBuffer.keySet().iterator();
+		Iterator<Pair<ItemIdentifierStack, Pair<Integer, Integer>>> iterator = _itemBuffer.iterator();
 		while(iterator.hasNext()) {
-			ItemIdentifierStack next = iterator.next();
+			ItemIdentifierStack next = iterator.next().getValue1();
 			MainProxy.dropItems(getWorld(), next.makeNormalStack(), this.getPipe().getX(), this.getPipe().getY(), this.getPipe().getZ());
 			iterator.remove();
 		}
@@ -236,7 +237,7 @@ public class PipeTransportLogistics {
 			return ForgeDirection.UNKNOWN;
 		}
 		if(value == ForgeDirection.UNKNOWN && !data.getDoNotBuffer() && data.getBufferCounter() < 5) {
-			_itemBuffer.put(data.getItemIdentifierStack(), new Pair<Integer, Integer>(20 * 2, data.getBufferCounter()));
+			_itemBuffer.add(new Pair<ItemIdentifierStack, Pair<Integer, Integer>>(data.getItemIdentifierStack(), new Pair<Integer, Integer>(20 * 2, data.getBufferCounter())));
 			return null;
 		}
 		
@@ -275,7 +276,7 @@ public class PipeTransportLogistics {
 		NBTTagList nbttaglist2 = nbt.getTagList("buffercontents", 10);
 		for(int i = 0; i < nbttaglist2.tagCount(); i++) {
 			NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttaglist2.getCompoundTagAt(i);
-			_itemBuffer.put(ItemIdentifierStack.getFromStack(ItemStack.loadItemStackFromNBT(nbttagcompound1)), new Pair<Integer, Integer>(_bufferTimeOut, 0));
+			_itemBuffer.add(new Pair<ItemIdentifierStack, Pair<Integer, Integer>>(ItemIdentifierStack.getFromStack(ItemStack.loadItemStackFromNBT(nbttagcompound1)), new Pair<Integer, Integer>(_bufferTimeOut, 0)));
 		}
 		
 	}
@@ -298,9 +299,9 @@ public class PipeTransportLogistics {
 		
 		NBTTagList nbttaglist2 = new NBTTagList();
 		
-		for(ItemIdentifierStack stack: _itemBuffer.keySet()) {
+		for(Pair<ItemIdentifierStack, Pair<Integer, Integer>> stack: _itemBuffer) {
 			NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-			stack.makeNormalStack().writeToNBT(nbttagcompound1);
+			stack.getValue1().makeNormalStack().writeToNBT(nbttagcompound1);
 			nbttaglist2.appendTag(nbttagcompound1);
 		}
 		nbt.setTag("buffercontents", nbttaglist2);

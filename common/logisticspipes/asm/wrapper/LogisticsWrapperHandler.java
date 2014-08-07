@@ -60,7 +60,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 public class LogisticsWrapperHandler {
-	private static final boolean DUMP = true;
+	private static final boolean DUMP = false;
 	
 	private static Map<String, Class<?>> lookupMap = new HashMap<String, Class<?>>();
 	public static List<AbstractWrapper> wrapperController = new ArrayList<AbstractWrapper>();

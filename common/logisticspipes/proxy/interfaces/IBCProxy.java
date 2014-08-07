@@ -25,7 +25,7 @@ public interface IBCProxy {
 	boolean checkConnectionOverride(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe);
 	boolean isMachineManagingSolids(TileEntity tile);
 	boolean isMachineManagingFluids(TileEntity tile);
-	IBCPipePart getBCPipePart(CoreUnroutedPipe coreUnroutedPipe);
+	IBCPipePart getBCPipePart(LogisticsTileGenericPipe tile);
 	boolean handleBCClickOnPipe(ItemStack currentItem, CoreUnroutedPipe pipe, World world, int x, int y, int z, EntityPlayer player, int side, LogisticsBlockGenericPipe logisticsBlockGenericPipe);
 	ItemStack getPipePlugItemStack();
 	ItemStack getRobotStationItemStack();
@@ -36,6 +36,7 @@ public interface IBCProxy {
 	void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z);
 	void pipePlugRenderer(RenderBlocks renderblocks, Block block, PipeRenderState state, int x, int y, int z);
 	ItemStack getDropFacade(CoreUnroutedPipe pipe, ForgeDirection dir);
+	/** Only used by the BC proxy internaly */
 	boolean canPipeConnect(TileEntity pipe, TileEntity tile, ForgeDirection direction);
 	void pipeRobotStationRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z);
 }

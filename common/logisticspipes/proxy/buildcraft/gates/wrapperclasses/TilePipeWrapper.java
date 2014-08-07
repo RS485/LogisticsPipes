@@ -28,7 +28,7 @@ public class TilePipeWrapper extends TileGenericPipe {
 			modifiersField.setAccessible(true);
 			modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
 			
-			field.set(null, new PipeRenderState() {
+			field.set(this, new PipeRenderState() {
 				@Override
 				public boolean isGatePulsing() {
 					return tile.renderState.isGatePulsing();

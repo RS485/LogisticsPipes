@@ -53,6 +53,8 @@ public class BCPipePart implements IBCPipePart {
 		try {
 			startWrapper();
 			wrapper = new PipeWrapper(tile);
+			wrapper.wireSet = getWireSet();
+			wrapper.gate = gate;
 			stopWrapper();
 		} catch(IllegalArgumentException e) {
 			throw new RuntimeException(e);
@@ -115,7 +117,7 @@ public class BCPipePart implements IBCPipePart {
 		// Load gate if any
 		if (data.hasKey("Gate")) {
 			NBTTagCompound gateNBT = data.getCompoundTag("Gate");
-			gate = GateFactory.makeGate(wrapper, gateNBT);
+			wrapper.gate = gate = GateFactory.makeGate(wrapper, gateNBT);
 		}
 
 		for (int i = 0; i < 4; ++i) {
@@ -158,7 +160,7 @@ public class BCPipePart implements IBCPipePart {
 	@Override
 	public void resetGate() {
 		gate.resetGate();
-		gate = null;
+		wrapper.gate = gate = null;
 	}
 
 	@Override
@@ -330,13 +332,12 @@ public class BCPipePart implements IBCPipePart {
 
 	@Override
 	public Object getGate() {
-		// TODO Auto-generated method stub
-		return null;
+		return gate;
 	}
 
 	@Override
 	public void makeGate(CoreUnroutedPipe pipe, ItemStack currentEquippedItem) {
-		gate = GateFactory.makeGate(wrapper, currentEquippedItem);
+		wrapper.gate = gate = GateFactory.makeGate(wrapper, currentEquippedItem);
 	}
 
 	public LinkedList<IAction> getActions() {
@@ -384,9 +385,9 @@ public class BCPipePart implements IBCPipePart {
 	@Override
 	public void updateGateFromCoreStateData() {
 		if (container.coreState.gateMaterial == -1) {
-			gate = null;
+			wrapper.gate = gate = null;
 		} else if (gate == null) {
-			gate = GateFactory.makeGate(this.wrapper, GateDefinition.GateMaterial.fromOrdinal(container.coreState.gateMaterial), GateDefinition.GateLogic.fromOrdinal(container.coreState.gateLogic));
+			wrapper.gate = gate = GateFactory.makeGate(this.wrapper, GateDefinition.GateMaterial.fromOrdinal(container.coreState.gateMaterial), GateDefinition.GateLogic.fromOrdinal(container.coreState.gateLogic));
 		}
 
 		syncGateExpansions();

@@ -26,10 +26,17 @@ public abstract class AbstractWrapper {
 		LogisticsPipes.log.fatal(message);
 		MainProxy.proxy.sendBroadCast(ChatColor.RED + message);
 	}
+
+	public void reEnable() {
+		if(this.state != WrapperState.Exception) return;
+		this.state = WrapperState.Enabled;
+		this.reason = null;
+	}
 	
 	public abstract void onDisable();
 	
 	public abstract String getName();
 	
 	public abstract String getTypeName();
+
 }

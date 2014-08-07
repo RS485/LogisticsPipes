@@ -25,7 +25,6 @@ public class PipeWrapper extends Pipe<PipeTransport> {
 		}, null);
 		this.tile = pipe;
 		this.setTile(new TilePipeWrapper(this, tile));
-		this.wireSet = pipe.pipe.bcPipePart.getWireSet();
 	}
 
 	@Override

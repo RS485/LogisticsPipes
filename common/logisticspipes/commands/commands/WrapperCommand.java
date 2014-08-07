@@ -1,7 +1,9 @@
 package logisticspipes.commands.commands;
 
 import logisticspipes.commands.abstracts.SubCommandHandler;
+import logisticspipes.commands.commands.wrapper.EnableCommand;
 import logisticspipes.commands.commands.wrapper.ListCommand;
+import logisticspipes.commands.commands.wrapper.ShowCommand;
 import net.minecraft.command.ICommandSender;
 
 public class WrapperCommand extends SubCommandHandler {
@@ -24,5 +26,7 @@ public class WrapperCommand extends SubCommandHandler {
 	@Override
 	public void registerSubCommands() {
 		this.registerSubCommand(new ListCommand());
+		this.registerSubCommand(new EnableCommand());
+		this.registerSubCommand(new ShowCommand());
 	}
 }

@@ -180,6 +180,10 @@ public class BuildCraftProxy implements IBCProxy {
 
 	@Override
 	public boolean canPipeConnect(TileEntity pipe, TileEntity with, ForgeDirection side) {
+		if(canPipeConnect == null) {
+			initProxy();
+		}
+		if(!(pipe instanceof TileGenericPipe)) throw new IllegalArgumentException();
 		try {
 			return (Boolean) canPipeConnect.invoke(pipe, with, side);
 		} catch (IllegalAccessException e) {
@@ -541,8 +545,8 @@ public class BuildCraftProxy implements IBCProxy {
 	}
 	
 	@Override
-	public IBCPipePart getBCPipePart(CoreUnroutedPipe pipe) {
-		return new BCPipePart(pipe.container);
+	public IBCPipePart getBCPipePart(LogisticsTileGenericPipe tile) {
+		return new BCPipePart(tile);
 	}
 	
 	@Override

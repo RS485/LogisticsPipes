@@ -32,7 +32,7 @@ public abstract class CoreUnroutedPipe implements IClientState {
 	public final PipeTransportLogistics transport;
 	public final Item item;
 	
-	public IBCPipePart bcPipePart = SimpleServiceLocator.buildCraftProxy.getBCPipePart(this);
+	public IBCPipePart bcPipePart;
 
 	public boolean internalUpdateScheduled = false;
 	private boolean initialized = false;
@@ -45,6 +45,7 @@ public abstract class CoreUnroutedPipe implements IClientState {
 	public void setTile(TileEntity tile) {
 		this.container = (LogisticsTileGenericPipe) tile;
 		transport.setTile((LogisticsTileGenericPipe) tile);
+		bcPipePart = SimpleServiceLocator.buildCraftProxy.getBCPipePart(this.container);
 	}
 
 	public boolean blockActivated(EntityPlayer entityplayer) {

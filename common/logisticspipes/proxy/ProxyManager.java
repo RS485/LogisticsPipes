@@ -88,7 +88,7 @@ public class ProxyManager {
 			@Override public boolean checkConnectionOverride(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe) {return true;}
 			@Override public boolean isMachineManagingSolids(TileEntity tile) {return false;}
 			@Override public boolean isMachineManagingFluids(TileEntity tile) {return false;}
-			@Override public IBCPipePart getBCPipePart(CoreUnroutedPipe coreUnroutedPipe) {
+			@Override public IBCPipePart getBCPipePart(LogisticsTileGenericPipe tile) {
 				return new IBCPipePart() {
 					@Override public void updateGate() {}
 					@Override public void writeToNBT(NBTTagCompound data) {}

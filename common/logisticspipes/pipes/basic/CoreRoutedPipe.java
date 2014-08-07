@@ -731,7 +731,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 
 	protected boolean isPowerProvider(ForgeDirection ori) {
 		TileEntity tilePipe = this.container.getTile(ori);
-		if(tilePipe == null || !SimpleServiceLocator.buildCraftProxy.canPipeConnect(this.container, tilePipe, ori)) {
+		if(tilePipe == null || !this.container.canPipeConnect(tilePipe, ori)) {
 			return false;
 		}
 

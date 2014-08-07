@@ -24,7 +24,7 @@ group= "rs485.logisticspipes" // http://maven.apache.org/guides/mini/guide-namin
 archivesBaseName = "logisticspipes"
 
 minecraft {
-    version = "1.7.2-10.12.1.1060"
+    version = "1.7.2-10.12.1.1079"
     assetDir = "run/assets"
     replace '@VERSION@', project.version
     replace '@MCVERSION@', "1.7.2"
@@ -70,6 +70,6 @@ processResources {
     }
 }
 dependencies {
-    compile 'com.mod-buildcraft:buildcraft:6.0.10:dev'
+    compile 'com.mod-buildcraft:buildcraft:6.0.16:dev'
     compile 'org.projectlombok:lombok:1.12.6'
 }

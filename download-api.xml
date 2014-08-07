@@ -9,6 +9,7 @@
 	<property name="ic2.dir"              value="${build.dir}/unpack/ic2"/>
 	<property name="cc.dir"               value="${build.dir}/unpack/cc"/>
 	<property name="thaumcraft.dir"       value="${build.dir}/unpack/thaumcraft"/>
+	<property name="ocapi.dir"            value="${build.dir}/unpack/ocapi"/>
 
 	<property name="downloadserver"       value="http://rs485.theZorro266.com"/>
 	<property name="downloadserver.dir"   value="external/"/>
@@ -16,8 +17,9 @@
 
 	<property name="forestry.filename"     value="forestry_1.7.2-2.4.1.15-api.zip"/>
 	<property name="ic2.filename"          value="industrialcraft-2-2.1.476-experimental-api.zip"/>
-	<property name="cc.filename"           value="ComputerCraftAPI1.62.zip"/>
+	<property name="cc.filename"           value="ComputerCraftAPI1.64pr4.zip"/>
 	<property name="thaumcraft.filename"   value="thaumcraft-api-87fd8a.zip"/>
+	<property name="ocapi.filename"        value="OpenComputersAPI-2.0.1-MC1.7.zip"/>
 
 	<target name="download">
 		<mkdir dir="${download.dir}"/>
@@ -26,6 +28,7 @@
 		<get src="${downloadserver.full}${ic2.filename}" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}${cc.filename}" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}${thaumcraft.filename}" dest="${download.dir}" usetimestamp="True"/>
+		<get src="${downloadserver.full}${ocapi.filename}" dest="${download.dir}" usetimestamp="True"/>
 		<echo message="Download finished"/>
 	</target>
 
@@ -53,6 +56,12 @@
 		<unzip dest="${thaumcraft.dir}" failOnEmptyArchive="true">
 			<fileset dir="${download.dir}">
 				<include name="${thaumcraft.filename}"/>
+			</fileset>
+		</unzip>
+
+		<unzip dest="${ocapi.dir}" failOnEmptyArchive="true">
+			<fileset dir="${download.dir}">
+				<include name="${ocapi.filename}"/>
 			</fileset>
 		</unzip>
 
@@ -87,5 +96,12 @@
 		</copy>
 
 		<echo message="Copied ThaumCraft API"/>
+
+		<!-- Copy OpenComputers API source -->
+		<copy todir="${api.dir}">
+			<fileset dir="${ocapi.dir}"/>
+		</copy>
+
+		<echo message="Copied OpenComputers API"/>
 	</target>
 </project>

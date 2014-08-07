@@ -3,5 +3,7 @@ jdk:
   - oraclejdk7
   - openjdk7
   - openjdk6
-before_script: gradlew extract
-script: gradlew assemble
+before_script:
+  - gradle extract
+script:
+  - gradle assemble

@@ -486,7 +486,7 @@ public class PipeTransportLogistics {
 			}
 		}
 		*/
-		if(!SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) return true;
+		//if(!SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) return false;
 		if(tile instanceof ISidedInventory) {
 			int[] slots = ((ISidedInventory)tile).getAccessibleSlotsFromSide(side.getOpposite().ordinal());
 			return slots != null && slots.length > 0;

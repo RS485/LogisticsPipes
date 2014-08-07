@@ -19,6 +19,12 @@ public abstract class AbstractWrapper {
 	private String			modId;
 	
 	public void handleException(Throwable e) {
+		if(!isEnabled()) {
+			if(LogisticsPipes.DEBUG) {
+				e.printStackTrace();
+			}
+			return;
+		}
 		e.printStackTrace();
 		this.state = WrapperState.Exception;
 		this.reason = e;
@@ -33,7 +39,13 @@ public abstract class AbstractWrapper {
 		this.reason = null;
 	}
 	
-	public abstract void onDisable();
+	protected final boolean isEnabled() {
+		return state == WrapperState.Enabled;
+	}
+	
+	protected final boolean canTryAnyway() {
+		return state != WrapperState.ModMissing;
+	}
 	
 	public abstract String getName();
 	

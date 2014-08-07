@@ -1,5 +1,6 @@
 package logisticspipes.proxy.buildcraft.pipeparts;
 
+import logisticspipes.asm.IgnoreDisabledProxy;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -18,6 +19,8 @@ public interface IBCTilePart {
 	boolean removeAndDropRobotStation(ForgeDirection side);
 	boolean addPlug(ForgeDirection forgeDirection);
 	boolean addRobotStation(ForgeDirection forgeDirection);
+	@IgnoreDisabledProxy
 	void writeToNBT(NBTTagCompound nbt);
+	@IgnoreDisabledProxy
 	void readFromNBT(NBTTagCompound nbt);
 }

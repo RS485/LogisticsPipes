@@ -84,8 +84,8 @@ public class ClassPipeTransportItemsHandler {
 						this.visitTypeInsn(Opcodes.CHECKCAST, "logisticspipes/pipes/basic/LogisticsTileGenericPipe");
 						this.visitVarInsn(Opcodes.ALOAD, 1);
 						this.visitVarInsn(Opcodes.ALOAD, 1);
-						this.visitFieldInsn(Opcodes.GETFIELD, "buildcraft/transport/TravelingItem", "output", "Lnet/minecraftforge/common/ForgeDirection;");
-						this.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "logisticspipes/pipes/basic/LogisticsTileGenericPipe", "acceptBCTravelingItem", "(Lbuildcraft/transport/TravelingItem;Lnet/minecraftforge/common/ForgeDirection;)V");
+						this.visitFieldInsn(Opcodes.GETFIELD, "buildcraft/transport/TravelingItem", "output", "Lnet/minecraftforge/common/util/ForgeDirection;");
+						this.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "logisticspipes/pipes/basic/LogisticsTileGenericPipe", "acceptBCTravelingItem", "(Lbuildcraft/transport/TravelingItem;Lnet/minecraftforge/common/util/ForgeDirection;)V");
 						Label l3 = new Label();
 						this.visitLabel(l3);
 						this.visitInsn(Opcodes.ICONST_1);
@@ -107,19 +107,19 @@ public class ClassPipeTransportItemsHandler {
 						super.visitVarInsn(Opcodes.ALOAD, 0);
 						super.visitFieldInsn(Opcodes.GETFIELD, "buildcraft/transport/PipeTransportItems", "container", "Lbuildcraft/transport/TileGenericPipe;");
 						super.visitVarInsn(Opcodes.ALOAD, 1);
-						super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "buildcraft/transport/TileGenericPipe", "getTile", "(Lnet/minecraftforge/common/ForgeDirection;)Lnet/minecraft/tileentity/TileEntity;");
+						super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "buildcraft/transport/TileGenericPipe", "getTile", "(Lnet/minecraftforge/common/util/ForgeDirection;)Lnet/minecraft/tileentity/TileEntity;");
 						super.visitTypeInsn(Opcodes.INSTANCEOF, "logisticspipes/pipes/basic/LogisticsTileGenericPipe");
 						Label l1 = new Label();
 						super.visitJumpInsn(Opcodes.IFEQ, l1);
 						super.visitVarInsn(Opcodes.ALOAD, 0);
 						super.visitFieldInsn(Opcodes.GETFIELD, "buildcraft/transport/PipeTransportItems", "container", "Lbuildcraft/transport/TileGenericPipe;");
 						super.visitVarInsn(Opcodes.ALOAD, 1);
-						super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "buildcraft/transport/TileGenericPipe", "getTile", "(Lnet/minecraftforge/common/ForgeDirection;)Lnet/minecraft/tileentity/TileEntity;");
+						super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "buildcraft/transport/TileGenericPipe", "getTile", "(Lnet/minecraftforge/common/util/ForgeDirection;)Lnet/minecraft/tileentity/TileEntity;");
 						super.visitTypeInsn(Opcodes.CHECKCAST, "logisticspipes/pipes/basic/LogisticsTileGenericPipe");
 						super.visitVarInsn(Opcodes.ALOAD, 0);
 						super.visitFieldInsn(Opcodes.GETFIELD, "buildcraft/transport/PipeTransportItems", "container", "Lbuildcraft/transport/TileGenericPipe;");
 						super.visitVarInsn(Opcodes.ALOAD, 1);
-						super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "logisticspipes/pipes/basic/LogisticsTileGenericPipe", "isBCPipeConnected", "(Lbuildcraft/transport/TileGenericPipe;Lnet/minecraftforge/common/ForgeDirection;)Z");
+						super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "logisticspipes/pipes/basic/LogisticsTileGenericPipe", "isBCPipeConnected", "(Lbuildcraft/transport/TileGenericPipe;Lnet/minecraftforge/common/util/ForgeDirection;)Z");
 						super.visitInsn(Opcodes.IRETURN);
 						super.visitLabel(l1);
 					}

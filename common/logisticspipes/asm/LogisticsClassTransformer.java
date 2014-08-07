@@ -524,7 +524,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			}
 		}
 		if(add) {
-			node.fields.add(new FieldNode(Opcodes.ACC_PUBLIC, "routedLPInfo", "Llogisticspipes/routing/ItemRoutingInformation;", null, null));
+			node.fields.add(new FieldNode(Opcodes.ACC_PUBLIC, "routedLPInfo", "Ljava/lang/Object;", null, null));
 		}
 		for(MethodNode m:node.methods) {
 			if(m.name.equals("toNBT") && m.desc.equals("(Lnet/minecraft/nbt/NBTTagCompound;)V")) {

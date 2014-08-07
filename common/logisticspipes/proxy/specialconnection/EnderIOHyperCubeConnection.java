@@ -3,7 +3,6 @@ package logisticspipes.proxy.specialconnection;
 import java.util.ArrayList;
 import java.util.List;
 
-import buildcraft.transport.TravelingItem;
 import logisticspipes.interfaces.routing.ISpecialTileConnection;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.CoreRoutedPipe;

@@ -9,9 +9,6 @@ import java.util.Map;
 import java.util.Random;
 
 import buildcraft.api.transport.PipeWire;
-import buildcraft.core.IDropControlInventory;
-import buildcraft.core.TileBuildCraft;
-import buildcraft.core.inventory.InvUtils;
 import logisticspipes.Configs;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;

@@ -39,4 +39,5 @@ public interface IBCProxy {
 	/** Only used by the BC proxy internaly */
 	boolean canPipeConnect(TileEntity pipe, TileEntity tile, ForgeDirection direction);
 	void pipeRobotStationRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z);
+	boolean isActive();
 }

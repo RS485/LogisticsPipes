@@ -1,8 +1,11 @@
 package logisticspipes.proxy.buildcraft.pipeparts;
 
 import java.util.List;
+import java.util.Map;
 
+import logisticspipes.asm.IgnoreDisabledProxy;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
+import buildcraft.api.gates.IAction;
 import buildcraft.api.transport.PipeWire;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
@@ -12,7 +15,9 @@ import net.minecraft.tileentity.TileEntity;
 
 public interface IBCPipePart {
 	void updateGate();
+	@IgnoreDisabledProxy
 	void writeToNBT(NBTTagCompound data);
+	@IgnoreDisabledProxy
 	void readFromNBT(NBTTagCompound data);
 	boolean hasGate();
 	void addItemDrops(List<ItemStack> result);
@@ -32,4 +37,5 @@ public interface IBCPipePart {
 	void updateCoreStateGateData();
 	void updateGateFromCoreStateData();
 	void checkResyncGate();
+	void actionsActivated(Object actions);
 }

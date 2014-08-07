@@ -8,6 +8,6 @@ import cpw.mods.fml.relauncher.FMLInjectionData;
 public class LogisticsAccessTransformer extends AccessTransformer {
 	
 	public LogisticsAccessTransformer() throws IOException {
-		super("lp_at.cfg");
+		super("logisticspipes_at.cfg");
 	}
 }

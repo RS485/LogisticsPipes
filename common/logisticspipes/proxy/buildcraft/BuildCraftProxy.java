@@ -20,6 +20,7 @@ import org.lwjgl.opengl.GL11;
 import logisticspipes.Configs;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.PipeFluidBasic;
@@ -159,7 +160,7 @@ public class BuildCraftProxy implements IBCProxy {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		String expectedBCVersion = "6.0.10";
+		String expectedBCVersion = "6.0.16";
 		if(BCVersion != null) {
 			if(!BCVersion.equals("@VERSION@") && !BCVersion.contains(expectedBCVersion)) {
 				throw new VersionNotSupportedException("BC", BCVersion, expectedBCVersion, "");
@@ -244,6 +245,7 @@ public class BuildCraftProxy implements IBCProxy {
 				} else {
 					//TODO is this needed ClientSide ?
 					//bcItem = TravelingItem.make();
+					return true;
 				}
 				LPPosition p = new LPPosition(tile.xCoord + 0.5F, tile.yCoord + CoreConstants.PIPE_MIN_POS, tile.zCoord + 0.5F);
 				if(item.output.getOpposite() == ForgeDirection.DOWN) {
@@ -548,6 +550,12 @@ public class BuildCraftProxy implements IBCProxy {
 	public IBCPipePart getBCPipePart(LogisticsTileGenericPipe tile) {
 		return new BCPipePart(tile);
 	}
+
+	@Override
+	public IBCTilePart getBCTilePart(LogisticsTileGenericPipe tile) {
+		//LogisticsWrapperHandler
+		return new BCTilePart(tile);
+	}
 	
 	@Override
 	public ItemStack getPipePlugItemStack() {
@@ -557,11 +565,6 @@ public class BuildCraftProxy implements IBCProxy {
 	@Override
 	public ItemStack getRobotStationItemStack() {
 		return new ItemStack(BuildCraftTransport.robotStationItem);
-	}
-
-	@Override
-	public IBCTilePart getBCTilePart(LogisticsTileGenericPipe tile) {
-		return new BCTilePart(tile);
 	}
 
 	@Override
@@ -1047,5 +1050,10 @@ public class BuildCraftProxy implements IBCProxy {
 			}
 		}
 
+	}
+
+	@Override
+	public boolean isActive() {
+		return true;
 	}
 }

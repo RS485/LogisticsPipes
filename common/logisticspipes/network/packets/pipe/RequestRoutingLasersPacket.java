@@ -8,12 +8,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import logisticspipes.Configs;
-import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IPaintPath;
 import logisticspipes.routing.IRouter;
@@ -24,7 +21,6 @@ import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.transport.TileGenericPipe;
 
 public class RequestRoutingLasersPacket extends CoordinatesPacket {
 	
@@ -70,8 +66,8 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 		}
 		*/
 	}
-
-	private void handleRouteInDirection(final TileGenericPipe pipe, ForgeDirection dir, ArrayList<IRouter> connectedRouters, final List<LaserData> lasers, EnumSet<PipeRoutingConnectionType> connectionType) {
+/*
+	private void handleRouteInDirection(final TileEntity pipe, ForgeDirection dir, ArrayList<IRouter> connectedRouters, final List<LaserData> lasers, EnumSet<PipeRoutingConnectionType> connectionType) {
 		System.out.println("Size: " + connectedRouters.size());
 		lasers.add(new LaserData(pipe.xCoord, pipe.yCoord, pipe.zCoord, dir, connectionType).setStartPipe(firstPipe));
 		firstPipe = false;
@@ -145,7 +141,7 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 		}
 		return lasers;
 	}
-
+*/
 	@Override
 	public ModernPacket template() {
 		return new RequestRoutingLasersPacket(getId());

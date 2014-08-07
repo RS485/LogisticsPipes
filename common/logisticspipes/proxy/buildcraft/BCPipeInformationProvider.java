@@ -25,7 +25,7 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 
 	@Override
 	public boolean isCorrect() {
-		return pipe != null && pipe.pipe != null && pipe.pipe.transport instanceof PipeTransportItems;
+		return pipe != null && pipe.pipe != null && pipe.pipe.transport instanceof PipeTransportItems && SimpleServiceLocator.buildCraftProxy.isActive();
 	}
 	
 	@Override
@@ -127,16 +127,16 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 
 	@Override
 	public boolean isItemPipe() {
-		return pipe != null && pipe.pipe != null && pipe.pipe.transport instanceof PipeTransportItems;
+		return pipe != null && pipe.pipe != null && pipe.pipe.transport instanceof PipeTransportItems && SimpleServiceLocator.buildCraftProxy.isActive();
 	}
 
 	@Override
 	public boolean isFluidPipe() {
-		return pipe != null && pipe.pipe != null && pipe.pipe.transport instanceof PipeTransportFluids;
+		return pipe != null && pipe.pipe != null && pipe.pipe.transport instanceof PipeTransportFluids && SimpleServiceLocator.buildCraftProxy.isActive();
 	}
 
 	@Override
 	public boolean isPowerPipe() {
-		return pipe != null && pipe.pipe != null && pipe.pipe.transport instanceof PipeTransportPower;
+		return pipe != null && pipe.pipe != null && pipe.pipe.transport instanceof PipeTransportPower && SimpleServiceLocator.buildCraftProxy.isActive();
 	}
 }

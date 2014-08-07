@@ -15,11 +15,6 @@ class CraftingRecipeProviderWrapper extends AbstractWrapper implements ICrafting
 	}
 	
 	@Override
-	public void onDisable() {
-		this.provider = null;
-	}
-	
-	@Override
 	public String getName() {
 		return name;
 	}
@@ -31,7 +26,7 @@ class CraftingRecipeProviderWrapper extends AbstractWrapper implements ICrafting
 
 	@Override
 	public boolean canOpenGui(TileEntity tile) {
-		if(this.state == WrapperState.Enabled) {
+		if(this.isEnabled()) {
 			try {
 				provider.canOpenGui(tile);
 			} catch(Exception e) {
@@ -45,7 +40,7 @@ class CraftingRecipeProviderWrapper extends AbstractWrapper implements ICrafting
 
 	@Override
 	public boolean importRecipe(TileEntity tile, ItemIdentifierInventory inventory) {
-		if(this.state == WrapperState.Enabled) {
+		if(this.isEnabled()) {
 			try {
 				provider.importRecipe(tile, inventory);
 			} catch(Exception e) {

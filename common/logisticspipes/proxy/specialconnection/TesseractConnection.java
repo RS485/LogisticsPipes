@@ -3,8 +3,6 @@ package logisticspipes.proxy.specialconnection;
 import java.util.ArrayList;
 import java.util.List;
 
-import buildcraft.api.core.Position;
-import buildcraft.transport.TravelingItem;
 import logisticspipes.interfaces.routing.ISpecialTileConnection;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -15,7 +13,6 @@ import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.transport.TileGenericPipe;
 
 public class TesseractConnection implements ISpecialTileConnection {
 	

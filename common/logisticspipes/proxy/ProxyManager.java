@@ -66,9 +66,9 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class ProxyManager {
-	public static <T> T getWrappedProxy(String modId, Class<T> interfaze, Class<? extends T> proxyClazz, T dummyProxy) {
+	public static <T> T getWrappedProxy(String modId, Class<T> interfaze, Class<? extends T> proxyClazz, T dummyProxy, Class<?>... object) {
 		try {
-			return LogisticsWrapperHandler.getWrappedProxy(modId, interfaze, proxyClazz, dummyProxy);
+			return LogisticsWrapperHandler.getWrappedProxy(modId, interfaze, proxyClazz, dummyProxy, object);
 		} catch(Exception e) {
 			if(e instanceof RuntimeException) {
 				throw (RuntimeException) e;
@@ -111,6 +111,7 @@ public class ProxyManager {
 					@Override public void updateCoreStateGateData() {}
 					@Override public void updateGateFromCoreStateData() {}
 					@Override public void checkResyncGate() {}
+					@Override public void actionsActivated(Object actions) {}
 				};
 			}
 			@Override public boolean handleBCClickOnPipe(ItemStack currentItem, CoreUnroutedPipe pipe, World world, int x, int y, int z, EntityPlayer player, int side, LogisticsBlockGenericPipe logisticsBlockGenericPipe) {return false;}
@@ -142,7 +143,8 @@ public class ProxyManager {
 			@Override public ItemStack getDropFacade(CoreUnroutedPipe pipe, ForgeDirection dir) {return null;}
 			@Override public boolean canPipeConnect(TileEntity pipe, TileEntity tile, ForgeDirection direction) {return false;}
 			@Override public void pipeRobotStationRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z) {}
-		}));
+			@Override public boolean isActive() {return false;}
+		}, IBCPipePart.class, IBCTilePart.class));
 		
 		SimpleServiceLocator.setForestryProxy(getWrappedProxy("Forestry", IForestryProxy.class, ForestryProxy.class, new IForestryProxy() {
 			@Override public boolean isBee(ItemStack item) {return false;}

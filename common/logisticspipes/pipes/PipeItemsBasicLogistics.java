@@ -68,7 +68,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	
 	private boolean isPowerJunction(ForgeDirection ori) {
 		TileEntity tilePipe = this.container.getTile(ori);
-		if(tilePipe == null || !SimpleServiceLocator.buildCraftProxy.canPipeConnect(this.container, tilePipe, ori)) {
+		if(tilePipe == null || !this.container.canPipeConnect(tilePipe, ori)) {
 			return false;
 		}
 

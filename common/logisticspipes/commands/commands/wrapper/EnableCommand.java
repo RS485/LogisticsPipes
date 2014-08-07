@@ -31,7 +31,10 @@ public class EnableCommand implements ICommandHandler {
 
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
-		if(args.length != 1) sender.addChatMessage(new ChatComponentText("Wrong amount of arguments"));
+		if(args.length != 1) {
+			sender.addChatMessage(new ChatComponentText("Wrong amount of arguments"));
+			return;
+		}
 		String name = args[0];
 		List<AbstractWrapper> list = new ArrayList<AbstractWrapper>(LogisticsWrapperHandler.wrapperController);
 		Iterator<AbstractWrapper> iter = list.iterator();

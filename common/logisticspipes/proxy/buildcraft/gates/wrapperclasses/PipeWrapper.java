@@ -64,7 +64,7 @@ public class PipeWrapper extends Pipe<PipeTransport> {
 
 	@Override
 	protected void actionsActivated(Map<IAction, Boolean> actions) {
-		((BCPipePart)tile.pipe.bcPipePart).actionsActivated(actions);
+		tile.pipe.bcPipePart.actionsActivated(actions);
 	}
 
 	@Override

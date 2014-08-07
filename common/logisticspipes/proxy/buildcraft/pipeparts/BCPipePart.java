@@ -100,28 +100,27 @@ public class BCPipePart implements IBCPipePart {
 
 	@Override
 	public void writeToNBT(NBTTagCompound data) {
+		for (int i = 0; i < 4; ++i) {
+			data.setBoolean("wireSet[" + i + "]", wireSet[i]);
+		}
 		// Save gate if any
 		if (gate != null) {
 			NBTTagCompound gateNBT = new NBTTagCompound();
 			gate.writeToNBT(gateNBT);
 			data.setTag("Gate", gateNBT);
 		}
-
-		for (int i = 0; i < 4; ++i) {
-			data.setBoolean("wireSet[" + i + "]", wireSet[i]);
-		}
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound data) {
+		for (int i = 0; i < 4; ++i) {
+			wireSet[i] = data.getBoolean("wireSet[" + i + "]");
+		}
+		
 		// Load gate if any
 		if (data.hasKey("Gate")) {
 			NBTTagCompound gateNBT = data.getCompoundTag("Gate");
 			wrapper.gate = gate = GateFactory.makeGate(wrapper, gateNBT);
-		}
-
-		for (int i = 0; i < 4; ++i) {
-			wireSet[i] = data.getBoolean("wireSet[" + i + "]");
 		}
 	}
 
@@ -171,7 +170,7 @@ public class BCPipePart implements IBCPipePart {
 				return false;
 			}
 
-			if (!tilePipe.pipe.bcPipePart.getWireSet()[color.ordinal()]) {
+			if (!getWireSet()[color.ordinal()]) {
 				return false;
 			}
 
@@ -354,7 +353,9 @@ public class BCPipePart implements IBCPipePart {
 		return result;
 	}
 	
-	public void actionsActivated(Map<IAction, Boolean> actions) {
+	@Override
+	public void actionsActivated(Object obj) {
+		Map<IAction, Boolean> actions = (Map<IAction, Boolean>) obj;
 		if(!(container.pipe instanceof CoreRoutedPipe)) return;
 		((CoreRoutedPipe)container.pipe).setEnabled(true);
 		// Activate the actions

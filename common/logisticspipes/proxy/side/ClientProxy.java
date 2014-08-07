@@ -172,7 +172,7 @@ public class ClientProxy implements IProxy {
 	@Override
 	public void sendBroadCast(String message) {
 		if(Minecraft.getMinecraft().thePlayer != null) {
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Client: " + message));
+			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("[LP] Client: " + message));
 		}
 	}
 

@@ -4,6 +4,7 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -69,7 +70,7 @@ public class ASMHookClass {
 			ConduitItem itemC = conduit.getConduitItem();
 			for(TravelingItem item:itemC.myItems) {
 				if(item.routedLPInfo != null) {
-					LPTravelingItemServer lpItem = new LPTravelingItemServer(item.routedLPInfo);
+					LPTravelingItemServer lpItem = new LPTravelingItemServer((ItemRoutingInformation) item.routedLPInfo);
 					lpItem.itemWasLost();
 				}
 			}
@@ -79,7 +80,7 @@ public class ASMHookClass {
 	public static void handleTETravelingItemSave(TravelingItem item, NBTTagCompound tag) {
 		if(item.routedLPInfo != null) {
 			NBTTagCompound nbt = new NBTTagCompound();
-			item.routedLPInfo.writeToNBT(nbt);
+			((ItemRoutingInformation) item.routedLPInfo).writeToNBT(nbt);
 			tag.setTag("LPRoutingInformation", nbt);
 		}
 	}
@@ -87,7 +88,7 @@ public class ASMHookClass {
 	public static void handleTETravelingItemLoad(TravelingItem item, NBTTagCompound tag) {
 		if(tag.hasKey("LPRoutingInformation")) {
 			item.routedLPInfo = new ItemRoutingInformation();
-			item.routedLPInfo.readFromNBT(tag.getCompoundTag("LPRoutingInformation"));
+			((ItemRoutingInformation) item.routedLPInfo).readFromNBT(tag.getCompoundTag("LPRoutingInformation"));
 		}
 	}
 }

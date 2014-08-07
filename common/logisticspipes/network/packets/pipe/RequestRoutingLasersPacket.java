@@ -105,7 +105,7 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 				}
 			}
 			for(ForgeDirection exitDir: routers.keySet()) {
-				handleRouteInDirection(connectedPipe.container, exitDir, routers.get(exitDir), lasers, map.get(connectedPipe).connectionDetails);
+				//handleRouteInDirection(connectedPipe.container, exitDir, routers.get(exitDir), lasers, map.get(connectedPipe).connectionDetails);
 			}
 		}
 	}

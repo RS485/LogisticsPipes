@@ -174,7 +174,7 @@ public class LPConduitItem extends ConduitItem {
 		} else {
 			ForgeDirection from = ForgeDirection.VALID_DIRECTIONS[travelingItem.direction];
 			if (LogisticsBlockGenericPipe.isValid(pipe.pipe) && pipe.pipe.transport instanceof PipeTransportLogistics) {
-				LPTravelingItemServer item = new LPTravelingItemServer(travelingItem.routedLPInfo);
+				LPTravelingItemServer item = new LPTravelingItemServer((ItemRoutingInformation) travelingItem.routedLPInfo);
 				item.refreshDestinationInformation();
 				((PipeTransportLogistics) pipe.pipe.transport).injectItem(item, from);
 			}

@@ -150,10 +150,8 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 	@Override
 	public void markDirty() {
 		updateContents();
-		if(MainProxy.isServer()) {
-			for (ISimpleInventoryEventHandler handler : _listener){
-				handler.InventoryChanged(this);
-			}
+		for (ISimpleInventoryEventHandler handler : _listener){
+			handler.InventoryChanged(this);
 		}
 	}
 

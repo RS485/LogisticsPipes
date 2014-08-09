@@ -226,6 +226,8 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 			cacheRecipe();
 			if(cache == null) return null;
 		}
+		if(resultInv.getIDStackInSlot(0) == null) return null;
+		
 		int[] toUse = new int[9];
 		int[] used = new int[inv.getSizeInventory()];
 outer:
@@ -258,7 +260,7 @@ outer:
 		if(!cache.matches(crafter, getWorld())) return null; //Fix MystCraft
 		ItemStack result = cache.getCraftingResult(crafter);
 		if(result == null) return null;
-		if(!ItemIdentifier.get(resultInv.getStackInSlot(0)).equalsWithoutNBT(ItemIdentifier.get(result))) return null;
+		if(!resultInv.getIDStackInSlot(0).getItem().equalsWithoutNBT(ItemIdentifier.get(result))) return null;
 		crafter = new AutoCraftingInventory(null);//TODO
 		for(int i=0;i<9;i++) {
 			int j = toUse[i];

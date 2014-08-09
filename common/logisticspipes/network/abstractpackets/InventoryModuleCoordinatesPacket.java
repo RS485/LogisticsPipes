@@ -57,6 +57,7 @@ public abstract class InventoryModuleCoordinatesPacket extends ModuleCoordinates
 		} else if(identList != null) {
 			data.writeByte(1);
 			for(ItemIdentifierStack stack:identList) {
+				if(stack == null) continue;
 				data.writeByte(1);
 				data.writeItemIdentifierStack(stack);
 			}
@@ -64,6 +65,7 @@ public abstract class InventoryModuleCoordinatesPacket extends ModuleCoordinates
 		} else if(identSet != null) {
 			data.writeByte(1);
 			for(ItemIdentifierStack stack:identSet) {
+				if(stack == null) continue;
 				data.writeByte(1);
 				data.writeItemIdentifierStack(stack);
 			}

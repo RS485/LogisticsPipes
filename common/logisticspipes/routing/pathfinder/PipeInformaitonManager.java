@@ -12,6 +12,7 @@ public class PipeInformaitonManager {
 	private Map<Class<?> /*TileEntity*/, Class<? extends IPipeInformationProvider>> infoProvider = new HashMap<Class<?>, Class<? extends IPipeInformationProvider>>();
 	
 	public IPipeInformationProvider getInformationProviderFor(TileEntity tile) {
+		if(tile == null) return null;
 		if(tile instanceof IPipeInformationProvider) {
 			return (IPipeInformationProvider) tile;
 		} else for(Class<?> type:infoProvider.keySet()) {

@@ -248,6 +248,7 @@ public class MainProxy {
 	}
 	
 	public static boolean checkPipesConnections(TileEntity from, TileEntity to, ForgeDirection way, boolean ignoreSystemDisconnection) {
+		if(from == null || to == null) return false;
 		IPipeInformationProvider fromInfo = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(from);
 		IPipeInformationProvider toInfo = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(to);
 		if(fromInfo == null && toInfo == null) return false;

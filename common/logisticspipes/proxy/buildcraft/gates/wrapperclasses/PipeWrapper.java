@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.buildcraft.pipeparts.BCPipePart;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.core.IIconProvider;
@@ -15,16 +14,21 @@ import buildcraft.transport.PipeTransport;
 
 public class PipeWrapper extends Pipe<PipeTransport> {
 	public final LogisticsTileGenericPipe tile;
+	public final TilePipeWrapper wrapper;
 	
 	public PipeWrapper(LogisticsTileGenericPipe pipe) {
 		super(new PipeTransport() {
 			@Override
 			public PipeType getPipeType() {
-				return null;
+				return PipeType.STRUCTURE;
 			}
 		}, null);
 		this.tile = pipe;
-		this.setTile(new TilePipeWrapper(this, tile));
+		this.setTile(wrapper = new TilePipeWrapper(this, tile));
+	}
+
+	public void updateWorld() {
+		wrapper.updateWorld();
 	}
 
 	@Override
@@ -69,6 +73,6 @@ public class PipeWrapper extends Pipe<PipeTransport> {
 
 	@Override
 	public LinkedList<IAction> getActions() {
-		return ((BCPipePart)tile.pipe.bcPipePart).getActions();
+		return (LinkedList<IAction>) tile.pipe.bcPipePart.getActions();
 	}
 }

@@ -157,7 +157,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 	//TODO replace with proper netty implementation
 	public static void onPacketData(final LPDataInputStream data, final EntityPlayer player) throws IOException {
 		if(player == null) return;
-		final int packetID = data.readInt();
+		final int packetID = data.readShort();
 		final ModernPacket packet = PacketHandler.packetlist.get(packetID).template();
 		packet.setDebugId(data.readInt());
 		packet.readData(data);

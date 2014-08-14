@@ -1,6 +1,7 @@
 package logisticspipes.proxy;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import buildcraft.api.transport.PipeWire;
@@ -54,6 +55,8 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.model.ModelSign;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -112,6 +115,10 @@ public class ProxyManager {
 					@Override public void updateGateFromCoreStateData() {}
 					@Override public void checkResyncGate() {}
 					@Override public void actionsActivated(Object actions) {}
+					@Override public void updateEntity() {}
+					@Override public Container getGateContainer(InventoryPlayer inventory) {return null;}
+					@Override public Object getClientGui(InventoryPlayer inventory) {return null;}
+					@Override public LinkedList<?> getActions() {return null;}
 				};
 			}
 			@Override public boolean handleBCClickOnPipe(ItemStack currentItem, CoreUnroutedPipe pipe, World world, int x, int y, int z, EntityPlayer player, int side, LogisticsBlockGenericPipe logisticsBlockGenericPipe) {return false;}
@@ -144,6 +151,7 @@ public class ProxyManager {
 			@Override public boolean canPipeConnect(TileEntity pipe, TileEntity tile, ForgeDirection direction) {return false;}
 			@Override public void pipeRobotStationRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z) {}
 			@Override public boolean isActive() {return false;}
+			@Override public Object getLPPipeType() {return null;}
 		}, IBCPipePart.class, IBCTilePart.class));
 		
 		SimpleServiceLocator.setForestryProxy(getWrappedProxy("Forestry", IForestryProxy.class, ForestryProxy.class, new IForestryProxy() {
@@ -238,7 +246,13 @@ public class ProxyManager {
 		}));
 		
 		SimpleServiceLocator.setNEIProxy(getWrappedProxy("NotEnoughItems", INEIProxy.class, NEIProxy.class, new INEIProxy() {
-			@Override @SideOnly(Side.CLIENT) public int getWidthForList(List<String> data, FontRenderer fontRenderer) {return 0;}
+			@Override @SideOnly(Side.CLIENT) public int getWidthForList(List<String> data, FontRenderer fontRenderer) {
+				int width = 0;
+				for(String s:data) {
+					width = Math.max(width, fontRenderer.getStringWidth(s) + 22);
+				}
+				return width;
+			}
 			@Override public List<String> getInfoForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver) {return new ArrayList<String>(0);}
 			@Override public ItemStack getItemForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver) {return null;}
 		}));

@@ -1,16 +1,8 @@
 package logisticspipes.asm;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
 
 import logisticspipes.Configs;
-import logisticspipes.LogisticsPipes;
-import logisticspipes.items.LogisticsFluidContainer;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.item.ItemIdentifierStack;
-import net.minecraft.item.ItemStack;
 
 
 public class LogisticsASMHookClass {

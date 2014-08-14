@@ -151,6 +151,9 @@ public class BuildCraftProxy implements IBCProxy {
 	public static IAction LogisticsDisableAction;
 	
 	private Method canPipeConnect;
+
+	public PipeType logisticsPipeType;
+	public PipeType wrapperPipeType;
 	
 	public BuildCraftProxy() {
 		String BCVersion = null;
@@ -1055,5 +1058,14 @@ public class BuildCraftProxy implements IBCProxy {
 	@Override
 	public boolean isActive() {
 		return true;
+	}
+
+	@Override
+	public PipeType getLPPipeType() {
+		if(logisticsPipeType == null) {
+			logisticsPipeType = net.minecraftforge.common.util.EnumHelper.addEnum(PipeType.class, "LOGISTICS", new Class<?>[]{}, new Object[]{});
+			wrapperPipeType = net.minecraftforge.common.util.EnumHelper.addEnum(PipeType.class, "WRAPPED-LOGISTICS", new Class<?>[]{}, new Object[]{});
+		}
+		return logisticsPipeType;
 	}
 }

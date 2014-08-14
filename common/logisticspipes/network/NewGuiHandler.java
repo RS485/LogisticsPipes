@@ -15,6 +15,7 @@ import logisticspipes.network.packets.gui.GUIPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import lombok.SneakyThrows;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
@@ -67,6 +68,7 @@ public class NewGuiHandler {
 		if(!(oPlayer instanceof EntityPlayerMP)) throw new UnsupportedOperationException("Gui can only be opened on the server side");
 		EntityPlayerMP player = (EntityPlayerMP) oPlayer;
 		Container container = guiProvider.getContainer(player);
+		if(container == null) return;
 		player.getNextWindowId();
         player.closeContainer();
         int windowId = player.currentWindowId;
@@ -90,9 +92,9 @@ public class NewGuiHandler {
 		int guiID = packet.getGuiID();
 		GuiProvider provider = guilist.get(guiID).template();
 		provider.readData(new LPDataInputStream(packet.getGuiData()));
-		LogisticsBaseGuiScreen screen;
+		GuiContainer screen;
 		try {
-			screen = (LogisticsBaseGuiScreen) provider.getClientGui(player);
+			screen = (GuiContainer) provider.getClientGui(player);
 		} catch(Exception e) {
 			LogisticsPipes.log.error(packet.getClass().getName());
 			LogisticsPipes.log.error(packet.toString());

@@ -165,12 +165,11 @@ public class ClientPacketBufferHandlerThread {
 				}
 				if(flag) {
 					//TODO Handle Packets
-					/*try {
+					try {
 						PacketHandler.onPacketData(new LPDataInputStream(part.getValue2()), part.getValue1());
 					} catch(IOException e) {
 						e.printStackTrace();
 					}
-					*/
 				}
 			} while(flag);
 		}

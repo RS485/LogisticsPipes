@@ -8,6 +8,7 @@ import java.util.Set;
 
 import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.asm.bc.ClassPipeHandler;
 import logisticspipes.asm.bc.ClassPipeTransportItemsHandler;
 import logisticspipes.utils.ModStatusHelper;
 import net.minecraft.launchwrapper.IClassTransformer;
@@ -69,7 +70,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 				return ClassPipeTransportItemsHandler.handlePipeTransportItems(bytes);
 			}
 			if(name.equals("buildcraft.transport.Pipe")) {
-				return handleBCPipeClass(bytes);
+				return ClassPipeHandler.handleBCPipeClass(bytes);
 			}
 			if(name.equals("thermalexpansion.part.conduit.ConduitBase")) {
 				Configs.load();
@@ -614,33 +615,6 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			}
 		}
 		ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-		node.accept(writer);
-		return writer.toByteArray();
-	}
-
-	private byte[] handleBCPipeClass(byte[] bytes) {
-		final ClassReader reader = new ClassReader(bytes);
-		final ClassNode node = new ClassNode();
-		reader.accept(node, 0);
-		for(MethodNode m:node.methods) {
-			if(m.name.equals("handlePipeEvent")) {
-				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
-					@Override
-					public void visitTryCatchBlock(Label start, Label end, Label handler, String type) {
-						super.visitTryCatchBlock(start, end, handler, type);
-						Label l3 = new Label();
-						super.visitLabel(l3);
-						super.visitLineNumber(89, l3);
-						super.visitVarInsn(Opcodes.ALOAD, 1);
-						super.visitVarInsn(Opcodes.ALOAD, 0);
-						super.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/proxy/buildcraft/BCEventHandler", "handle", "(Lbuildcraft/transport/pipes/events/PipeEvent;Lbuildcraft/transport/Pipe;)V");
-					}
-				};
-				m.accept(mv);
-				node.methods.set(node.methods.indexOf(m), mv);
-			}
-		}
-		ClassWriter writer = new ClassWriter(0);
 		node.accept(writer);
 		return writer.toByteArray();
 	}

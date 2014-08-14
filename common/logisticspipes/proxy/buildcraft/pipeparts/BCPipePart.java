@@ -6,15 +6,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import logisticspipes.network.NewGuiHandler;
+import logisticspipes.network.guis.proxy.bc.GateGui;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.buildcraft.BCPipeWireHooks;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
+import logisticspipes.proxy.buildcraft.BCPipeWireHooks.PipeClassReceiveSignal;
 import logisticspipes.proxy.buildcraft.gates.ActionDisableLogistics;
 import logisticspipes.proxy.buildcraft.gates.wrapperclasses.PipeWrapper;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.gates.GateExpansions;
 import buildcraft.api.gates.IAction;
 import buildcraft.api.gates.IGateExpansion;
@@ -28,12 +39,8 @@ import buildcraft.transport.PipeTransportStructure;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.gates.GateDefinition;
 import buildcraft.transport.gates.GateFactory;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.util.ForgeDirection;
+import buildcraft.transport.gui.ContainerGateInterface;
+import buildcraft.transport.gui.GuiGateInterface;
 
 public class BCPipePart implements IBCPipePart {
 	
@@ -43,6 +50,8 @@ public class BCPipePart implements IBCPipePart {
 	public int[] signalStrength = new int[]{0, 0, 0, 0};
 	public boolean[] wireSet = new boolean[]{false, false, false, false};
 	public Gate gate;
+	
+	private boolean init;
 	
 	public PipeWrapper wrapper;
 
@@ -54,6 +63,7 @@ public class BCPipePart implements IBCPipePart {
 			startWrapper();
 			wrapper = new PipeWrapper(tile);
 			wrapper.wireSet = getWireSet();
+			wrapper.signalStrength = getSignalStrength();
 			wrapper.gate = gate;
 			stopWrapper();
 		} catch(IllegalArgumentException e) {
@@ -64,6 +74,14 @@ public class BCPipePart implements IBCPipePart {
 			throw new RuntimeException(e);
 		} catch(SecurityException e) {
 			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public void updateEntity() {
+		if(!init) {
+			wrapper.updateWorld();
+			init = true;
 		}
 	}
 
@@ -170,7 +188,7 @@ public class BCPipePart implements IBCPipePart {
 				return false;
 			}
 
-			if (!getWireSet()[color.ordinal()]) {
+			if (!tilePipe.pipe.bcPipePart.getWireSet()[color.ordinal()]) {
 				return false;
 			}
 
@@ -232,7 +250,15 @@ public class BCPipePart implements IBCPipePart {
 		if (signalStrength[wire.ordinal()] > 1) {
 			for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {
 				TileEntity tile = container.getTile(o);
-				//TODO handle TileGenericPipe
+				if (tile instanceof TileGenericPipe) {
+					TileGenericPipe tilePipe = (TileGenericPipe) tile;
+
+					if (BlockGenericPipe.isFullyDefined(tilePipe.pipe) && tilePipe.pipe.wireSet[wire.ordinal()]) {
+						if (isWireConnectedTo(tile, wire)) {
+							((PipeClassReceiveSignal)tilePipe.pipe).receiveSignal(signalStrength[wire.ordinal()] - 1, wire);
+						}
+					}
+				}
 				if (tile instanceof LogisticsTileGenericPipe) {
 					LogisticsTileGenericPipe tilePipe = (LogisticsTileGenericPipe) tile;
 
@@ -269,6 +295,7 @@ public class BCPipePart implements IBCPipePart {
 	}
 
 	private void readNearbyPipesSignal(PipeWire color) {
+		
 		boolean foundBiggerSignal = false;
 
 		for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {
@@ -283,6 +310,15 @@ public class BCPipePart implements IBCPipePart {
 					}
 				}
 			}
+			if (tile instanceof TileGenericPipe) {
+				TileGenericPipe tilePipe = (TileGenericPipe) tile;
+
+				if (BlockGenericPipe.isFullyDefined(tilePipe.pipe)) {
+					if (isWireConnectedTo(tile, color)) {
+						foundBiggerSignal |= receiveSignal(tilePipe.pipe.signalStrength[color.ordinal()] - 1, color);
+					}
+				}
+			}
 		}
 
 		if (!foundBiggerSignal && signalStrength[color.ordinal()] != 0) {
@@ -292,12 +328,18 @@ public class BCPipePart implements IBCPipePart {
 
 			for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {
 				TileEntity tile = container.getTile(o);
-				//TODO handle TileGenericPipe
 				if (tile instanceof LogisticsTileGenericPipe) {
 					LogisticsTileGenericPipe tilePipe = (LogisticsTileGenericPipe) tile;
 
 					if (LogisticsBlockGenericPipe.isFullyDefined(tilePipe.pipe)) {
 						tilePipe.pipe.internalUpdateScheduled = true;
+					}
+				}
+				if (tile instanceof TileGenericPipe) {
+					TileGenericPipe tilePipe = (TileGenericPipe) tile;
+
+					if (BlockGenericPipe.isFullyDefined(tilePipe.pipe)) {
+						((PipeClassReceiveSignal)tilePipe.pipe).triggerInternalUpdateScheduled();
 					}
 				}
 			}
@@ -321,7 +363,9 @@ public class BCPipePart implements IBCPipePart {
 
 	@Override
 	public void openGateGui(EntityPlayer player) {
-		gate.openGui(player);
+		if (!player.worldObj.isRemote) {
+			NewGuiHandler.getGui(GateGui.class).setTilePos(container).open(player);
+		}
 	}
 
 	@Override
@@ -339,7 +383,8 @@ public class BCPipePart implements IBCPipePart {
 		wrapper.gate = gate = GateFactory.makeGate(wrapper, currentEquippedItem);
 	}
 
-	public LinkedList<IAction> getActions() {
+	@Override
+	public LinkedList<?> getActions() {
 		LinkedList<IAction> result = new LinkedList<IAction>();
 
 		if (hasGate()) {
@@ -347,7 +392,9 @@ public class BCPipePart implements IBCPipePart {
 		}
 		
 		if(container.pipe instanceof CoreRoutedPipe) {
-			result.add(BuildCraftProxy.LogisticsDisableAction);
+			if(BuildCraftProxy.LogisticsDisableAction != null) {
+				result.add(BuildCraftProxy.LogisticsDisableAction);
+			}
 		}
 		
 		return result;
@@ -415,5 +462,15 @@ public class BCPipePart implements IBCPipePart {
 		if (resyncGateExpansions) {
 			syncGateExpansions();
 		}
+	}
+
+	@Override
+	public Container getGateContainer(InventoryPlayer inventory) {
+		return new ContainerGateInterface(inventory, wrapper);
+	}
+
+	@Override
+	public Object getClientGui(InventoryPlayer inventory) {
+		return new GuiGateInterface(inventory, wrapper);
 	}
 }

@@ -15,6 +15,7 @@ import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
@@ -23,20 +24,24 @@ import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.utils.MathVector;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.GuiIngameForge;
+import net.minecraftforge.common.DimensionManager;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class LogisticsHUDRenderer {
@@ -289,8 +294,14 @@ public class LogisticsHUDRenderer {
 				progress = Math.max(progress - (2 * Math.max(1, (int) Math.floor((System.currentTimeMillis() - last) / 50.0D))), 0);
 			}
 			if(progress != 0) {
+				List<String> textData = new ArrayList<String>();
 				
-				List<String> textData = SimpleServiceLocator.neiProxy.getInfoForPosition(player.worldObj, player, box);
+				//TileEntity tile = new LPPosition(box.blockX, box.blockY, box.blockZ).getTileEntity(DimensionManager.getWorld(0));
+				//Insert debug code here
+				
+				if(textData.isEmpty()) {
+					textData = SimpleServiceLocator.neiProxy.getInfoForPosition(player.worldObj, player, box);
+				}
 				if(!textData.isEmpty()) {
 					double xCoord = box.blockX + 0.5D;
 					double yCoord = box.blockY + 0.5D;

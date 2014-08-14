@@ -64,6 +64,7 @@ public class LogisticsWrapperHandler {
 	
 	private static Map<String, Class<?>> lookupMap = new HashMap<String, Class<?>>();
 	public static List<AbstractWrapper> wrapperController = new ArrayList<AbstractWrapper>();
+	
 	private static Method m_defineClass = null;
 	
 	private LogisticsWrapperHandler() {}
@@ -217,7 +218,7 @@ public class LogisticsWrapperHandler {
 			
 			if(LogisticsPipes.DEBUG) {
 				if(DUMP) {
-					saveGeneratedClass(bytes, lookfor);
+					saveGeneratedClass(bytes, lookfor, "LP_WRAPPER_CLASSES");
 				}
 				ClassReader cr = new ClassReader(bytes);
 				org.objectweb.asm.util.CheckClassAdapter.verify(cr, Launch.classLoader, false, new PrintWriter(System.err));
@@ -332,7 +333,7 @@ public class LogisticsWrapperHandler {
 			
 			if(LogisticsPipes.DEBUG) {
 				if(DUMP) {
-					saveGeneratedClass(bytes, lookfor);
+					saveGeneratedClass(bytes, lookfor, "LP_WRAPPER_CLASSES");
 				}
 				ClassReader cr = new ClassReader(bytes);
 				org.objectweb.asm.util.CheckClassAdapter.verify(cr, Launch.classLoader, false, new PrintWriter(System.err));
@@ -593,9 +594,9 @@ public class LogisticsWrapperHandler {
 	
 	private static File	tempFolder	= null;
 	
-	private static void saveGeneratedClass(final byte[] data, final String transformedName) {
+	public static void saveGeneratedClass(final byte[] data, final String transformedName, final String folder) {
 		if(tempFolder == null) {
-			tempFolder = new File(Launch.minecraftHome, "LP_WRAPPER_CLASSES");
+			tempFolder = new File(Launch.minecraftHome, folder);
 		}
 		
 		final File outFile = new File(tempFolder, transformedName.replace('.', File.separatorChar) + ".class");

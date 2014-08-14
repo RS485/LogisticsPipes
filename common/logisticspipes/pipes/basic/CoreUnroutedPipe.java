@@ -107,6 +107,7 @@ public abstract class CoreUnroutedPipe implements IClientState {
 	public abstract int getIconIndex(ForgeDirection direction);
 
 	public void updateEntity() {
+		bcPipePart.updateEntity();
 		transport.updateEntity();
 
 		if (internalUpdateScheduled) {

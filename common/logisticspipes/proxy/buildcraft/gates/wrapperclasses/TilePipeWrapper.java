@@ -2,14 +2,19 @@ package logisticspipes.proxy.buildcraft.gates.wrapperclasses;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.LinkedList;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import buildcraft.BuildCraftCore;
+import buildcraft.api.gates.IOverrideDefaultTriggers;
+import buildcraft.api.gates.ITrigger;
+import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.PipeRenderState;
 import buildcraft.transport.TileGenericPipe;
 
-public class TilePipeWrapper extends TileGenericPipe {
+public class TilePipeWrapper extends TileGenericPipe implements IOverrideDefaultTriggers {
 	
 	public final LogisticsTileGenericPipe tile;
 	
@@ -19,7 +24,6 @@ public class TilePipeWrapper extends TileGenericPipe {
 		this.yCoord = tile.yCoord;
 		this.zCoord = tile.zCoord;
 		this.pipe = pipe;
-		this.worldObj = tile.getWorldObj();
 		try {
 			Field field = TileGenericPipe.class.getDeclaredField("renderState");
 			field.setAccessible(true);
@@ -39,6 +43,10 @@ public class TilePipeWrapper extends TileGenericPipe {
 		}
 	}
 
+	public void updateWorld() {
+		this.worldObj = tile.getWorldObj();
+	}
+
 	@Override
 	public void scheduleNeighborChange() {
 		tile.scheduleNeighborChange();
@@ -52,5 +60,14 @@ public class TilePipeWrapper extends TileGenericPipe {
 	@Override
 	public void scheduleRenderUpdate() {
 		tile.scheduleRenderUpdate();
+	}
+	
+	public LinkedList<ITrigger> getTriggers() {
+		LinkedList<ITrigger> result = new LinkedList<ITrigger>(); //TODO
+		if (BlockGenericPipe.isFullyDefined(pipe) && pipe.hasGate()) {
+			result.add(BuildCraftCore.triggerRedstoneActive);
+			result.add(BuildCraftCore.triggerRedstoneInactive);
+		}
+		return result;
 	}
 }

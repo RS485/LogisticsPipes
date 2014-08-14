@@ -1,5 +1,6 @@
 package logisticspipes.proxy.buildcraft.pipeparts;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +10,8 @@ import buildcraft.api.gates.IAction;
 import buildcraft.api.transport.PipeWire;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -38,4 +41,8 @@ public interface IBCPipePart {
 	void updateGateFromCoreStateData();
 	void checkResyncGate();
 	void actionsActivated(Object actions);
+	void updateEntity();
+	Container getGateContainer(InventoryPlayer inventory);
+	Object getClientGui(InventoryPlayer inventory);
+	LinkedList<?> getActions();
 }

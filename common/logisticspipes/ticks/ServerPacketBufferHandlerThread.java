@@ -65,6 +65,7 @@ public class ServerPacketBufferHandlerThread {
 								for(ModernPacket packet:packets) {
 									LPDataOutputStream t = new LPDataOutputStream();
 									t.writeShort(packet.getId());
+									t.writeInt(packet.getDebugId());
 									packet.writeData(t);
 									data.writeInt(t.size());
 									data.write(t.toByteArray());

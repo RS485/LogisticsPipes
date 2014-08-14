@@ -1,19 +1,11 @@
 package logisticspipes.pipes.basic;
 
-import io.netty.buffer.ByteBuf;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
-import org.apache.logging.log4j.Level;
-
-import buildcraft.api.transport.IPipeTile;
-import buildcraft.api.transport.PipeWire;
-import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.TravelingItem;
 import li.cil.oc.api.network.Arguments;
 import li.cil.oc.api.network.Context;
 import li.cil.oc.api.network.Environment;
@@ -34,7 +26,6 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.pipe.PipeTileStatePacket;
 import logisticspipes.pipes.PipeItemsFirewall;
-import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.pipeparts.IBCTilePart;
@@ -45,7 +36,6 @@ import logisticspipes.renderer.IIconProvider;
 import logisticspipes.renderer.LogisticsTileRenderController;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
-import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.OrientationsUtil;
@@ -54,20 +44,28 @@ import logisticspipes.utils.WorldUtil;
 import net.minecraft.block.Block;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
+
+import org.apache.logging.log4j.Level;
+
 import thermalexpansion.part.conduit.ConduitBase;
+import buildcraft.api.gates.IOverrideDefaultTriggers;
+import buildcraft.api.gates.ITrigger;
+import buildcraft.api.transport.IPipeTile;
+import buildcraft.api.transport.PipeWire;
+import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TravelingItem;
+import buildcraft.transport.triggers.TriggerPipeContents;
 import cofh.api.transport.IItemConduit;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -903,6 +901,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 	@Override
 	@ModDependentMethod(modId="BuildCraft|Transport")
 	public PipeType getPipeType() {
-		return null;
+		return (PipeType) SimpleServiceLocator.buildCraftProxy.getLPPipeType();
 	}
 }

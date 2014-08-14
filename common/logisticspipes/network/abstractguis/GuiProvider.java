@@ -9,6 +9,7 @@ import logisticspipes.utils.gui.DummyContainer;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
 
 @Accessors(chain=true)
 public abstract class GuiProvider {
@@ -28,7 +29,7 @@ public abstract class GuiProvider {
 	 * @return LogisticsBaseGuiScreen
 	 */
 	public abstract Object getClientGui(EntityPlayer player);
-	public abstract DummyContainer getContainer(EntityPlayer player);
+	public abstract Container getContainer(EntityPlayer player);
 	
 	public abstract GuiProvider template();
 	

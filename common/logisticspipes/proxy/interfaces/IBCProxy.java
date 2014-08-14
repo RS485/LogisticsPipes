@@ -1,5 +1,6 @@
 package logisticspipes.proxy.interfaces;
 
+import buildcraft.api.transport.IPipeTile.PipeType;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -40,4 +41,5 @@ public interface IBCProxy {
 	boolean canPipeConnect(TileEntity pipe, TileEntity tile, ForgeDirection direction);
 	void pipeRobotStationRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z);
 	boolean isActive();
+	Object getLPPipeType();
 }

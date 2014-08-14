@@ -111,8 +111,8 @@ public class RequestMonitorPopup extends SubGuiScreen {
 	public void initGui() {
 		super.initGui();
 		buttonList.clear();
-		this.buttonList.add(new SmallGuiButton(0, this.width / 2 - 90, this.height / 2 + 74, 80, 20, "Close"));
-		this.buttonList.add(new SmallGuiButton(1, this.width / 2 + 10, this.height / 2 + 74, 80, 20, "Save as Image"));
+		this.buttonList.add(new GuiButton(0, this.width / 2 - 90, this.height / 2 + 74, 80, 20, "Close"));
+		this.buttonList.add(new GuiButton(1, this.width / 2 + 10, this.height / 2 + 74, 80, 20, "Save as Image"));
 	}
 	
 	@Override
@@ -174,6 +174,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		this.createBoundary();
 		this.drawTransparentBack();
 		this.drawMap(par1, par2);
+		GL11.glTranslatef(0.0F, 0.0F, 100.0F);
 		super.drawScreen(par1, par2, par3);
 		if(tooltip != null) {
 			BasicGuiHelper.displayItemToolTip(tooltip, this.zLevel, guiLeft, guiTop, false, true);
@@ -367,6 +368,12 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		int innerLeftSide = leftSide + 16;
 		int innerTopSide = topSide + 17;
 		this.zLevel = 0.0F;
+
+		GL11.glTranslatef(0.0F, 0.0F, 100.0F);
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		this.mc.getTextureManager().bindTexture(achievementTextures);
+		this.drawTexturedModalRect(leftSide, topSide, 0, 0, this.xSize, this.ySize);
+		GL11.glTranslatef(0.0F, 0.0F, -100.0F);
 		
 		GL11.glDepthFunc(GL11.GL_GEQUAL);
 		GL11.glPushMatrix();
@@ -376,6 +383,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 		GL11.glEnable(GL11.GL_COLOR_MATERIAL);
+
 		
 		int moveBackgroundX = (mapX - minX) % 16;
 		int moveBackgroundY = (mapY - minY) % 16;

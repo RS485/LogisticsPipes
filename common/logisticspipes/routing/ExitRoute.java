@@ -66,6 +66,14 @@ public class ExitRoute implements Comparable<ExitRoute>{
 				this.connectionDetails.equals(that.connectionDetails) && 
 				this.distanceToDestination==that.distanceToDestination && 
 				this.destinationDistanceToRoot==that.destinationDistanceToRoot && 
+				this.destination==that.destination && 
+				this.filters.equals(that.filters);
+	}
+	
+	public boolean isSameWay(ExitRoute that) {
+		if(this.equals(that)) return true;
+		return this.connectionDetails.equals(that.connectionDetails) && 
+				this.destination==that.destination && 
 				this.filters.equals(that.filters);
 	}
 	

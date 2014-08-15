@@ -16,19 +16,42 @@ buildscript {
 }
 
 ant.importBuild 'download-api.xml'
+ant.importBuild 'load-fingerprint.xml'
 
 apply plugin: 'forge'
 
-version = "0.8"
+version = "0.8.0"
+def buildby = 'local'
+
+def ENV = System.getenv()
+if (ENV.BUILD_NUMBER) {
+	version += "." + ENV.BUILD_NUMBER
+	buildby = 'RS485-Jenkins'
+} else {
+	version += ".local"
+}
+
 group= "rs485.logisticspipes" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "logisticspipes"
 
 minecraft {
     version = "1.7.2-10.12.1.1079"
-    assetDir = "run/assets"
-    replace '@VERSION@', project.version
-    replace '@MCVERSION@', "1.7.2"
-    replace '@DEBUG@', "false"
+    runDir = "run/assets"
+    replace '%VERSION%', project.version
+    replace '%MCVERSION%', "1.7.2"
+    replace '%DEBUG%', "false"
+	replaceIn "LogisticsPipes.java"
+}
+
+jar {
+    manifest {
+        attributes(	'FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader', 
+					'FMLCorePluginContainsFMLMod': 'true',
+					'Implementation-Vendor': 'RS485',
+					'Implementation-Title': 'LogisticsPipes',
+					'Implementation-Version': version,
+					'Built-By': buildby )
+    }
 }
 
 // configure  the source folders
@@ -61,7 +84,7 @@ processResources {
         include 'mcmod.info'
         
         // replace version and mcversion
-        expand 'version':project.version, 'mcversion':project.minecraft.version
+		expand 'version':project.version, 'mcversion':project.minecraft.version
     }
         
     // copy everything else, thats not the mcmod.info
@@ -69,7 +92,28 @@ processResources {
         exclude 'mcmod.info'
     }
 }
+
 dependencies {
     compile 'com.mod-buildcraft:buildcraft:6.0.16:dev'
     compile 'org.projectlombok:lombok:1.12.6'
 }
+
+task deobfJar(type: Jar) {
+	from sourceSets.main.output
+	classifier = 'deobf'
+}
+
+task sourceJar(type: Jar) {
+	from sourceSets.main.allSource
+	classifier = 'sources'
+}
+
+artifacts {
+	archives deobfJar
+	archives sourceJar
+	archives jar
+}
+
+tasks.compileApiJava.dependsOn('extract')
+tasks.compileJava.dependsOn('loadFingerprints')
+tasks.assemble.dependsOn('sourceJar', 'deobfJar', 'signJars')

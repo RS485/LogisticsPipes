@@ -3,6 +3,7 @@ sign/**
 build/**
 output/**
 download/**
+eclipse**
 **/.classpath
 **/.project
 

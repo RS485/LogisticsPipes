@@ -8,19 +8,4 @@ public class LPConstants {
 	public static final float PIPE_MIN_POS = 0.25F;
 	public static final float PIPE_MAX_POS = 0.75F;
 
-	private static void test() {
-		if(isEnabled()) {
-			System.out.println();
-		}
-	}
-	
-	private static boolean isEnabled() {
-		return true;
-	}
-	
-	private static void test2() {
-		if(isEnabled() || true) {
-			System.out.println();
-		}
-	}
 }

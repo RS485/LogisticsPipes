@@ -205,12 +205,10 @@ public class ItemModule extends LogisticsItem {
 		registerModule(ENCHANTMENTSINK_MK2		, ModuleEnchantmentSinkMK2.class);
 		registerModule(CC_BASED_QUICKSORT		, ModuleCCBasedQuickSort.class);
 		registerModule(CC_BASED_ITEMSINK		, ModuleCCBasedItemSink.class);
-		if(LogisticsPipes.DEBUG) {
-			registerModule(CRAFTER					, ModuleCrafter.class);
-			registerModule(CRAFTER_MK2				, ModuleCrafterMK2.class);
-			registerModule(CRAFTER_MK3				, ModuleCrafterMK3.class);
-			registerModule(ACTIVE_SUPPLIER			, ModuleActiveSupplier.class);
-		}
+		registerModule(CRAFTER					, ModuleCrafter.class);
+		registerModule(CRAFTER_MK2				, ModuleCrafterMK2.class);
+		registerModule(CRAFTER_MK3				, ModuleCrafterMK3.class);
+		registerModule(ACTIVE_SUPPLIER			, ModuleActiveSupplier.class);
 	}
 
 	public void registerModule(int id, Class<? extends LogisticsModule> moduleClass) {

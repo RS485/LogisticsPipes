@@ -1,6 +1,4 @@
-{
-  "modinfoversion": 2,
-  "modlist": [{
+[{
     "modid": "LogisticsPipes|Main",
     "name": "Logistics Pipes",
     "description": "Logistics Pipes is an extensive overhaul of the Buildcraft pipe system. It allows for better distribution of items via pipes, more organised stockkeeping and easier automated crafting.",
@@ -36,5 +34,4 @@
     ],
     "dependants": [],
     "useDependencyInformation": "true"
-  }]
-}
+}]

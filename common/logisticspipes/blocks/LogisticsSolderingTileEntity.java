@@ -16,6 +16,8 @@ import logisticspipes.network.packets.block.RequestRotationPacket;
 import logisticspipes.network.packets.block.SolderingStationHeat;
 import logisticspipes.network.packets.block.SolderingStationInventory;
 import logisticspipes.network.packets.block.SolderingStationProgress;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.recipes.SolderingStationRecipes.SolderingStationRecipe;
@@ -23,6 +25,7 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -34,14 +37,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.api.power.IPowerReceptor;
-import buildcraft.api.power.PowerHandler;
-import buildcraft.api.power.PowerHandler.PowerReceiver;
-import buildcraft.api.power.PowerHandler.Type;
 
-public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTileEntity, IPowerReceptor, ISidedInventory, IGuiOpenControler, IRotationProvider {
+public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTileEntity, ISidedInventory, IGuiOpenControler, IRotationProvider {
 	
-	private PowerHandler provider;
 	private ItemIdentifierInventory inv = new ItemIdentifierInventory(12, "Soldering Inventory", 64);
 	public int heat = 0;
 	public int progress = 0;
@@ -51,10 +49,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 	
 	private PlayerCollectionList listener = new PlayerCollectionList();
 
-	public LogisticsSolderingTileEntity() {
-		provider = new PowerHandler(this, Type.MACHINE);
-		provider.configure(10, 100, 1000, 100); // never triggers doWork, as this is just an energy store, and tick does the actual work.
-	}
+	public LogisticsSolderingTileEntity() {}
 
 	public boolean checkSlot(ItemStack stack, int slotNumber) {
 		if(getRecipeForTaget() == null || getRecipeForTaget().length <= slotNumber) {
@@ -204,7 +199,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 	}
 	
 	private void updateHeat() {
-		MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(getWorld()), PacketHandler.getPacket(SolderingStationHeat.class).setInteger(this.heat).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
+		MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(getWorldObj()), PacketHandler.getPacket(SolderingStationHeat.class).setInteger(this.heat).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(SolderingStationHeat.class).setInteger(this.heat).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), listener);
 		}
 
@@ -218,7 +213,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 	
 	@Override
 	public void updateEntity() {
-		if(MainProxy.isClient(getWorld())) {
+		if(MainProxy.isClient(getWorldObj())) {
 			if(!init) {
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestRotationPacket.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 				init = true;
@@ -227,35 +222,61 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 		}
 		hasWork = hasWork();
 		if(hasWork && heat < 100) {
-			if(provider.useEnergy(1, 100, false) >= 1) {
-				heat += provider.useEnergy(1, 100, true);
-				if(heat > 100) {
-					heat = 100;
-				}
-				updateHeat();
-			} else {
-				if(getWorld().getTotalWorldTime() % 5 == 0) {
-					heat--;
-					if(heat < 0) {
-						heat = 0;
+			boolean usedEnergy = false;
+			for(ForgeDirection dir:ForgeDirection.VALID_DIRECTIONS) {
+				LPPosition pos = new LPPosition(this);
+				pos.moveForward(dir);
+				TileEntity tile = pos.getTileEntity(getWorldObj());
+				if(!(tile instanceof LogisticsTileGenericPipe)) continue;
+				LogisticsTileGenericPipe tPipe = (LogisticsTileGenericPipe) tile;
+				if(!(tPipe.pipe instanceof CoreRoutedPipe)) continue;
+				CoreRoutedPipe pipe = (CoreRoutedPipe) tPipe.pipe;
+				if(pipe.useEnergy(50)) {
+					heat += 5;
+					if(heat > 100) {
+						heat = 100;
 					}
 					updateHeat();
+					usedEnergy = true;
+					break;
 				}
+			}
+			if(!usedEnergy && getWorldObj().getTotalWorldTime() % 5 == 0) {
+				heat--;
+				if(heat < 0) {
+					heat = 0;
+				}
+				updateHeat();
 			}
 		} else if(!hasWork && heat > 0) {
 			heat--;
 			updateHeat();
 		}
 		if(hasWork && heat >= 100) {
-			progress += provider.useEnergy(1, 3, true);
-			if(progress >= 100) {
-				if(tryCraft()) {
-					progress = 0;
-				} else {
-					progress -= 50;
+			for(ForgeDirection dir:ForgeDirection.VALID_DIRECTIONS) {
+				LPPosition pos = new LPPosition(this);
+				pos.moveForward(dir);
+				TileEntity tile = pos.getTileEntity(getWorldObj());
+				if(!(tile instanceof LogisticsTileGenericPipe)) continue;
+				LogisticsTileGenericPipe tPipe = (LogisticsTileGenericPipe) tile;
+				if(!(tPipe.pipe instanceof CoreRoutedPipe)) continue;
+				CoreRoutedPipe pipe = (CoreRoutedPipe) tPipe.pipe;
+				if(pipe.useEnergy(30)) {
+					progress += 3;
+				} else if(pipe.useEnergy(20)) {
+					progress += 2;
+				} else if(pipe.useEnergy(10)) {
+					progress += 1;
 				}
+				if(progress >= 100) {
+					if(tryCraft()) {
+						progress = 0;
+					} else {
+						progress -= 50;
+					}
+				}
+				updateProgress();
 			}
-			updateProgress();
 		} else if(!hasWork && progress != 0) {
 			progress = 0;
 			updateProgress();
@@ -291,22 +312,6 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 		updateInventory();
 
 		return true;
-	}
-
-
-	@Override
-	public void doWork(PowerHandler workProvider) {
-		
-	}
-
-	@Override
-	public PowerReceiver getPowerReceiver(ForgeDirection side) {
-		return provider.getPowerReceiver();
-	}
-
-	@Override
-	public World getWorld() {
-		return this.getWorldObj();
 	}
 	
 	@Override
@@ -464,7 +469,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 	}
 	
 	public void onBlockBreak() {
-		inv.dropContents(getWorld(), xCoord, yCoord, zCoord);
+		inv.dropContents(getWorldObj(), xCoord, yCoord, zCoord);
 	}
 	
 	@Override

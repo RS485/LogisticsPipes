@@ -1,6 +1,5 @@
 package logisticspipes.proxy.interfaces;
 
-import buildcraft.api.transport.IPipeTile.PipeType;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;

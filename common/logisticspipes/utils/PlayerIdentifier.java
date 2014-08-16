@@ -53,12 +53,15 @@ public class PlayerIdentifier {
 	}
 	
 	public static PlayerIdentifier readFromNBT(NBTTagCompound nbt, String prefix) {
-		String id = null;
+		UUID id = null;
 		if(nbt.hasKey(prefix + "_id")) {
-			id = nbt.getString(prefix + "_id");
+			String tmp = nbt.getString(prefix + "_id");
+			try {
+				id = UUID.fromString(tmp);
+			} catch(Exception e) {}
 		}
 		String username = nbt.getString(prefix + "_name");
-		return get(username, UUID.fromString(id));
+		return get(username, id);
 	}
 	
 	public static PlayerIdentifier convertFromUsername(String name) {

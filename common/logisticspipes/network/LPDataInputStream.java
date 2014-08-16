@@ -25,6 +25,7 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.NBTSizeTracker;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -124,7 +125,7 @@ public class LPDataInputStream extends DataInputStream {
 		} else {
 			byte[] array = new byte[legth];
 			this.readFully(array);
-			return CompressedStreamTools.decompress(array);
+			return CompressedStreamTools.func_152457_a(array, new NBTSizeTracker(Long.MAX_VALUE));
 		}
 		
 	}

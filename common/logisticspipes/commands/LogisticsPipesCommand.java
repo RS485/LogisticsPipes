@@ -60,6 +60,6 @@ public class LogisticsPipesCommand extends CommandBase {
 	}
 	
 	public static boolean isOP(ICommandSender sender) {
-		return FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().getOps().contains(sender.getCommandSenderName().toLowerCase()) || (FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() && !FMLCommonHandler.instance().getMinecraftServerInstance().isServerInOnlineMode());
+		return Arrays.asList(FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().func_152603_m().func_152685_a()).contains(sender.getCommandSenderName().toLowerCase()) || (FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() && !FMLCommonHandler.instance().getMinecraftServerInstance().isServerInOnlineMode());
 	}
 }

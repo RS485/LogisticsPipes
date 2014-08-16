@@ -190,7 +190,9 @@ outer:
 		super.writeToNBT(par1nbtTagCompound);
 		inv.writeToNBT(par1nbtTagCompound, "inv");
 		matrix.writeToNBT(par1nbtTagCompound, "matrix");
-		placedBy.writeToNBT(par1nbtTagCompound, "placedBy");
+		if(placedBy != null) {
+			placedBy.writeToNBT(par1nbtTagCompound, "placedBy");
+		}
 		NBTTagList lst = new NBTTagList();
 		for(int i = 0; i < 9; i++) {
 			NBTTagCompound comp = new NBTTagCompound();

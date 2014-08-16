@@ -10,7 +10,6 @@ import buildcraft.api.core.BCLog;
 import buildcraft.core.DefaultProps;
 import buildcraft.core.utils.BlockUtil;
 import buildcraft.core.utils.MathUtils;
-import buildcraft.transport.IPipeTransportItemsHook;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TravelingItem;
 import buildcraft.transport.network.PacketPipeTransportTraveler;
@@ -33,10 +32,6 @@ public class InjectItemHook {
 
 		if (!pipe.container.getWorldObj().isRemote) {
 			item.output = pipe.resolveDestination(item);
-		}
-
-		if (pipe.container.pipe instanceof IPipeTransportItemsHook) {
-			((IPipeTransportItemsHook) pipe.container.pipe).entityEntered(item, inputOrientation);
 		}
 
 		PipeEventItem.Entered event = new PipeEventItem.Entered(item);

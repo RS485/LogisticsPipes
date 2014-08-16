@@ -187,7 +187,7 @@ public class LogisticsHUDRenderer {
 		if(!displayRenderer()) return;
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		if(displayCross) {
-			ScaledResolution res = new ScaledResolution(mc.gameSettings, mc.displayWidth, mc.displayHeight);
+			ScaledResolution res = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
 	        int width = res.getScaledWidth();
 	        int height = res.getScaledHeight();
 	        if (GuiIngameForge.renderCrosshairs && mc.ingameGUI != null) {

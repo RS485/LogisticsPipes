@@ -202,7 +202,7 @@ public class ItemDisplay {
 		int panelySize = 20;
 		int x = 2;
 		int y = 2;
-		ScaledResolution scaledresolution = new ScaledResolution(this.mc.gameSettings, this.mc.displayWidth, this.mc.displayHeight);
+		ScaledResolution scaledresolution = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
         int scaleX = scaledresolution.getScaledWidth();
         int scaleY = scaledresolution.getScaledHeight();
         int mouseX = Mouse.getX() * scaleX / this.mc.displayWidth - left;

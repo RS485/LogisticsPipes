@@ -2,6 +2,7 @@ package logisticspipes.utils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -10,23 +11,23 @@ import net.minecraft.nbt.NBTTagCompound;
 
 @Accessors(chain=true)
 public class PlayerIdentifier {
-	private static Map<String, PlayerIdentifier> idBased = new HashMap<String, PlayerIdentifier>();
+	private static Map<UUID, PlayerIdentifier> idBased = new HashMap<UUID, PlayerIdentifier>();
 	private static Map<String, PlayerIdentifier> nameBased = new HashMap<String, PlayerIdentifier>();
 	
-	private PlayerIdentifier(String username, String id) {
+	private PlayerIdentifier(String username, UUID id) {
 		this.username = username;
 		this.id = id;
 	}
 	
 	@Setter
 	public String username;
-	public final String id;
+	public final UUID id;
 	
 	public static PlayerIdentifier get(EntityPlayer player) {
 		return get(player.getGameProfile().getName(), player.getGameProfile().getId());
 	}
 	
-	public static PlayerIdentifier get(String username, String id) {
+	public static PlayerIdentifier get(String username, UUID id) {
 		if(idBased.containsKey(id)) {
 			return idBased.get(id).setUsername(username);
 		}
@@ -46,7 +47,7 @@ public class PlayerIdentifier {
 	
 	public void writeToNBT(NBTTagCompound nbt, String prefix) {
 		if(id != null) {
-			nbt.setString(prefix + "_id", id);
+			nbt.setString(prefix + "_id", id.toString());
 		}
 		nbt.setString(prefix + "_name", username);
 	}
@@ -57,7 +58,7 @@ public class PlayerIdentifier {
 			id = nbt.getString(prefix + "_id");
 		}
 		String username = nbt.getString(prefix + "_name");
-		return get(username, id);
+		return get(username, UUID.fromString(id));
 	}
 	
 	public static PlayerIdentifier convertFromUsername(String name) {
@@ -65,6 +66,6 @@ public class PlayerIdentifier {
 	}
 
 	public String getAsString() {
-		return id != null ? id : username;
+		return id != null ? id.toString() : username;
 	}
 }

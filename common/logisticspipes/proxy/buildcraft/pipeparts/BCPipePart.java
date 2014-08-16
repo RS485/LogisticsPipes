@@ -490,4 +490,9 @@ public class BCPipePart implements IBCPipePart {
 			updateSignalStateForColor(c);
 		}
 	}
+
+	@Override
+	public void refreshRedStoneInput(int redstoneInput) {
+		wrapper.container.redstoneInput = redstoneInput;
+	}
 }

@@ -24,6 +24,7 @@ public class TilePipeWrapper extends TileGenericPipe implements IOverrideDefault
 		this.yCoord = tile.yCoord;
 		this.zCoord = tile.zCoord;
 		this.pipe = pipe;
+		this.redstoneInput = tile.redstoneInput;
 		try {
 			Field field = TileGenericPipe.class.getDeclaredField("renderState");
 			field.setAccessible(true);

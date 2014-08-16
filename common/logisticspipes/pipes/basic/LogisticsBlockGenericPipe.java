@@ -795,6 +795,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		if (isValid(pipe)) {
 			pipe.container.scheduleNeighborChange();
 			pipe.container.redstoneInput = world.isBlockIndirectlyGettingPowered(x, y, z) ? 15 : world.getBlockPowerInput(x, y, z);
+			pipe.bcPipePart.refreshRedStoneInput(pipe.container.redstoneInput);
 		}
 	}
 

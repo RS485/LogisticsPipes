@@ -41,4 +41,5 @@ public interface IBCPipePart {
 	Object getClientGui(InventoryPlayer inventory);
 	LinkedList<?> getActions();
 	boolean isWired();
+	void refreshRedStoneInput(int redstoneInput);
 }

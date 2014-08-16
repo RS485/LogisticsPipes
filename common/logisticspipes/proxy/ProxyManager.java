@@ -118,6 +118,7 @@ public class ProxyManager {
 					@Override public Container getGateContainer(InventoryPlayer inventory) {return null;}
 					@Override public Object getClientGui(InventoryPlayer inventory) {return null;}
 					@Override public LinkedList<?> getActions() {return null;}
+					@Override public void refreshRedStoneInput(int redstoneInput) {}
 				};
 			}
 			@Override public boolean handleBCClickOnPipe(ItemStack currentItem, CoreUnroutedPipe pipe, World world, int x, int y, int z, EntityPlayer player, int side, LogisticsBlockGenericPipe logisticsBlockGenericPipe) {return false;}

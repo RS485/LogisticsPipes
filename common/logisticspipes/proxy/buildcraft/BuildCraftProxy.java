@@ -1061,6 +1061,11 @@ public class BuildCraftProxy implements IBCProxy {
 	}
 
 	@Override
+	public boolean isInstalled() {
+		return true;
+	}
+
+	@Override
 	public PipeType getLPPipeType() {
 		if(logisticsPipeType == null) {
 			logisticsPipeType = net.minecraftforge.common.util.EnumHelper.addEnum(PipeType.class, "LOGISTICS", new Class<?>[]{}, new Object[]{});

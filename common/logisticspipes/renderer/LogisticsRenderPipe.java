@@ -47,8 +47,6 @@ import net.minecraftforge.fluids.FluidStack;
 
 import org.lwjgl.opengl.GL11;
 
-import buildcraft.api.transport.PipeWire;
-
 
 public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 

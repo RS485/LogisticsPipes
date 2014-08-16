@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import buildcraft.api.transport.PipeWire;
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -99,16 +98,16 @@ public class ProxyManager {
 					@Override public boolean hasGate() {return false;}
 					@Override public void addItemDrops(List<ItemStack> result) {}
 					@Override public void resetGate() {}
-					@Override public boolean isWireConnectedTo(TileEntity tile, PipeWire color) {return false;}
-					@Override public boolean isWired(PipeWire color) {return false;}
+					@Override public boolean isWireConnectedTo(TileEntity tile, Object color) {return false;}
+					@Override public boolean isWired() {return false;}
 					@Override public int isPoweringTo(int side) {return 0;}
-					@Override public void updateSignalStateForColor(PipeWire wire) {}
+					@Override public void updateSignalState() {}
 					@Override public boolean[] getWireSet() {return null;}
 					@Override public ItemStack getGateItem() {return null;}
 					@Override public int[] getSignalStrength() {return null;}
 					@Override public void openGateGui(EntityPlayer player) {}
 					@Override public boolean isGateActive() {return false;}
-					@Override public boolean receiveSignal(int i, PipeWire wire) {return false;}
+					@Override public boolean receiveSignal(int i, Object wire) {return false;}
 					@Override public Object getGate() {return null;}
 					@Override public void makeGate(CoreUnroutedPipe pipe, ItemStack currentEquippedItem) {}
 					@Override public void updateCoreStateGateData() {}
@@ -152,6 +151,7 @@ public class ProxyManager {
 			@Override public void pipeRobotStationRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z) {}
 			@Override public boolean isActive() {return false;}
 			@Override public Object getLPPipeType() {return null;}
+			@Override public boolean isInstalled() {return false;}
 		}, IBCPipePart.class, IBCTilePart.class));
 		
 		SimpleServiceLocator.setForestryProxy(getWrappedProxy("Forestry", IForestryProxy.class, ForestryProxy.class, new IForestryProxy() {

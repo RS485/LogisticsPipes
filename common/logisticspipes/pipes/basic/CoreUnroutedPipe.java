@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
 
-import buildcraft.api.transport.PipeWire;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.LogisticsPipes;
@@ -142,9 +141,7 @@ public abstract class CoreUnroutedPipe implements IClientState {
 	}
 
 	public void updateSignalState() {
-		for (PipeWire c : PipeWire.values()) {
-			bcPipePart.updateSignalStateForColor(c);
-		}
+		bcPipePart.updateSignalState();
 	}
 
 	public boolean canConnectRedstone() {
@@ -167,17 +164,7 @@ public abstract class CoreUnroutedPipe implements IClientState {
 	}
 
 	public boolean isWired() {
-		for (PipeWire color : PipeWire.values()) {
-			if (isWired(color)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	public boolean isWired(PipeWire color) {
-		return bcPipePart.isWired(color);
+		return bcPipePart.isWired();
 	}
 
 	public boolean hasGate() {
@@ -257,10 +244,6 @@ public abstract class CoreUnroutedPipe implements IClientState {
 
 	public LogisticsTileGenericPipe getContainer() {
 		return container;
-	}
-
-	public boolean isWireConnectedTo(TileEntity tile, PipeWire color) {
-		return bcPipePart.isWireConnectedTo(tile, color);
 	}
 
 	public void dropContents() {

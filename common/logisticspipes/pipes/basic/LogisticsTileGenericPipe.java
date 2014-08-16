@@ -778,7 +778,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 	}
 
 	@Override
-	//@ModDependentMethod(modId="BuildCraft|Transport")
+	@ModDependentMethod(modId="BuildCraft|Transport")
 	public boolean isPipeConnected(ForgeDirection with) {
 		if (worldObj.isRemote) {
 			return renderState.pipeConnectionMatrix.isConnected(with);
@@ -787,7 +787,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 	}
 
 	@Override
-	//@ModDependentMethod(modId="BuildCraft|Transport")
+	@ModDependentMethod(modId="BuildCraft|Transport")
 	public boolean isWireActive(PipeWire wire) {
 		if (pipe == null) {
 			return false;

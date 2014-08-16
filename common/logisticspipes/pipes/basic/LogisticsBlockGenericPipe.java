@@ -8,7 +8,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
-import buildcraft.api.transport.PipeWire;
 import logisticspipes.Configs;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;

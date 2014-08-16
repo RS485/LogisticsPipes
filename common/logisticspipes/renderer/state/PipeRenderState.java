@@ -2,9 +2,11 @@ package logisticspipes.renderer.state;
 
 import java.io.IOException;
 
+import logisticspipes.asm.ModDependentField;
 import logisticspipes.interfaces.IClientState;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
+import logisticspipes.proxy.SimpleServiceLocator;
 import net.minecraft.util.IIcon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -13,11 +15,18 @@ public class PipeRenderState implements IClientState {
 
 	public final ConnectionMatrix pipeConnectionMatrix = new ConnectionMatrix();
 	public final TextureMatrix textureMatrix = new TextureMatrix();
-	public final WireMatrix wireMatrix = new WireMatrix();
+	@ModDependentField(modId="BuildCraft|Transport")
+	public WireMatrix wireMatrix;
 	public final ConnectionMatrix plugMatrix = new ConnectionMatrix();
 	public final ConnectionMatrix robotStationMatrix = new ConnectionMatrix();
 	public final FacadeMatrix facadeMatrix = new FacadeMatrix();
-
+	
+	public PipeRenderState() {
+		if(SimpleServiceLocator.buildCraftProxy.isInstalled()) {
+			wireMatrix = new WireMatrix();
+		}
+	}
+	
 	/*
 	 * This is a placeholder for the pipe renderer to set to a value that the BlockGenericPipe->TileGenericPipe will then return the the WorldRenderer
 	 */
@@ -58,14 +67,16 @@ public class PipeRenderState implements IClientState {
 		pipeConnectionMatrix.clean();
 		textureMatrix.clean();
 		facadeMatrix.clean();
-		wireMatrix.clean();
+		if(SimpleServiceLocator.buildCraftProxy.isInstalled()) {
+			wireMatrix.clean();
+		}
 		plugMatrix.clean();
 		robotStationMatrix.clean();
 	}
 
 	public boolean isDirty() {
 		return dirty || pipeConnectionMatrix.isDirty()
-				|| textureMatrix.isDirty() || wireMatrix.isDirty()
+				|| textureMatrix.isDirty() || (SimpleServiceLocator.buildCraftProxy.isInstalled() && wireMatrix.isDirty())
 				|| facadeMatrix.isDirty() || plugMatrix.isDirty()
 				|| robotStationMatrix.isDirty();
 	}
@@ -83,7 +94,9 @@ public class PipeRenderState implements IClientState {
 		data.writeInt(gateIconIndex);
 		pipeConnectionMatrix.writeData(data);
 		textureMatrix.writeData(data);
-		wireMatrix.writeData(data);
+		if(SimpleServiceLocator.buildCraftProxy.isInstalled()) {
+			wireMatrix.writeData(data);
+		}
 		facadeMatrix.writeData(data);
 		plugMatrix.writeData(data);
 		robotStationMatrix.writeData(data);
@@ -96,7 +109,9 @@ public class PipeRenderState implements IClientState {
 		gateIconIndex = data.readInt();
 		pipeConnectionMatrix.readData(data);
 		textureMatrix.readData(data);
-		wireMatrix.readData(data);
+		if(SimpleServiceLocator.buildCraftProxy.isInstalled()) {
+			wireMatrix.readData(data);
+		}
 		facadeMatrix.readData(data);
 		plugMatrix.readData(data);
 		robotStationMatrix.readData(data);

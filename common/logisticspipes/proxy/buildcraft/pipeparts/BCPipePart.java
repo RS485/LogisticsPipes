@@ -14,7 +14,6 @@ import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.buildcraft.BCPipeWireHooks;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.buildcraft.BCPipeWireHooks.PipeClassReceiveSignal;
 import logisticspipes.proxy.buildcraft.gates.ActionDisableLogistics;
@@ -181,7 +180,8 @@ public class BCPipePart implements IBCPipePart {
 	}
 
 	@Override
-	public boolean isWireConnectedTo(TileEntity tile, PipeWire color) {
+	public boolean isWireConnectedTo(TileEntity tile, Object oColor) {
+		PipeWire color = (PipeWire) oColor;
 		if(tile instanceof LogisticsTileGenericPipe) {
 			LogisticsTileGenericPipe tilePipe = (LogisticsTileGenericPipe) tile;
 			if (!LogisticsBlockGenericPipe.isFullyDefined(tilePipe.pipe)) {
@@ -211,7 +211,6 @@ public class BCPipePart implements IBCPipePart {
 		return tilePipe.pipe.transport instanceof PipeTransportStructure || Utils.checkPipesConnections(container, tile);
 	}
 
-	@Override
 	public boolean isWired(PipeWire color) {
 		return wireSet[color.ordinal()];
 	}
@@ -231,7 +230,6 @@ public class BCPipePart implements IBCPipePart {
 		return 0;
 	}
 
-	@Override
 	public void updateSignalStateForColor(PipeWire wire) {
 		if (!wireSet[wire.ordinal()]) {
 			return;
@@ -273,7 +271,8 @@ public class BCPipePart implements IBCPipePart {
 	}
 
 	@Override
-	public boolean receiveSignal(int signal, PipeWire color) {
+	public boolean receiveSignal(int signal, Object oColor) {
+		PipeWire color = (PipeWire) oColor;
 		if (container.getWorldObj() == null) {
 			return false;
 		}
@@ -401,6 +400,7 @@ public class BCPipePart implements IBCPipePart {
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public void actionsActivated(Object obj) {
 		Map<IAction, Boolean> actions = (Map<IAction, Boolean>) obj;
 		if(!(container.pipe instanceof CoreRoutedPipe)) return;
@@ -472,5 +472,22 @@ public class BCPipePart implements IBCPipePart {
 	@Override
 	public Object getClientGui(InventoryPlayer inventory) {
 		return new GuiGateInterface(inventory, wrapper);
+	}
+
+	@Override
+	public boolean isWired() {
+		for (PipeWire color : PipeWire.values()) {
+			if (isWired(color)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public void updateSignalState() {
+		for (PipeWire c : PipeWire.values()) {
+			updateSignalStateForColor(c);
+		}
 	}
 }

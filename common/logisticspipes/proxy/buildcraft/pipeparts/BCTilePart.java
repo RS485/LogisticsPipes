@@ -146,7 +146,7 @@ public class BCTilePart implements IBCTilePart {
 			pipe.renderState.wireMatrix.setWire(color, pipe.pipe.bcPipePart.getWireSet()[color.ordinal()]);
 
 			for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-				pipe.renderState.wireMatrix.setWireConnected(color, direction, pipe.pipe.isWireConnectedTo(pipe.getTile(direction), color));
+				pipe.renderState.wireMatrix.setWireConnected(color, direction, pipe.pipe.bcPipePart.isWireConnectedTo(pipe.getTile(direction), color));
 			}
 
 			boolean lit = pipe.pipe.bcPipePart.getSignalStrength()[color.ordinal()] > 0;

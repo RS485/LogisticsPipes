@@ -11,7 +11,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IClientState;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.buildcraft.pipeparts.IBCPipePart;
+import logisticspipes.proxy.buildcraft.subproxies.IBCPipePart;
 import logisticspipes.renderer.IIconProvider;
 import logisticspipes.transport.PipeTransportLogistics;
 import net.minecraft.entity.Entity;

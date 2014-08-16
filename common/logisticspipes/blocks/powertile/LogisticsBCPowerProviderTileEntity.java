@@ -25,7 +25,7 @@ public class LogisticsBCPowerProviderTileEntity extends LogisticsPowerProviderTi
 	@ModDependentField(modId="BuildCraft|Transport")
 	private PowerHandler powerFramework;
 	
-	@MjBattery(maxCapacity=1000)
+	@MjBattery(maxCapacity=1000, maxReceivedPerCycle=1000)
 	@ModDependentField(modId="BuildCraft|Transport")
 	public double bcMJBatery = 0;
 	

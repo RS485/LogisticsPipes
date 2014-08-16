@@ -265,6 +265,7 @@ public class LogisticsWrapperHandler {
 
 	@SuppressWarnings("unchecked")
 	public static <T> T getWrappedSubProxy(AbstractWrapper wrapper, Class<T> interfaze, T proxy, T dummyProxy) throws NoSuchFieldException, SecurityException, ClassNotFoundException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
+		if(proxy == null) return null;
 		String proxyName = interfaze.getSimpleName().substring(1);
 		String className = "logisticspipes/asm/wrapper/" + proxyName + "ProxyWrapper";
 		

@@ -4,8 +4,9 @@ import logisticspipes.asm.IgnoreDisabledProxy;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.buildcraft.pipeparts.IBCPipePart;
-import logisticspipes.proxy.buildcraft.pipeparts.IBCTilePart;
+import logisticspipes.proxy.buildcraft.subproxies.IBCPipePart;
+import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
+import logisticspipes.proxy.buildcraft.subproxies.ILPBCPowerProxy;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.transport.LPTravelingItem;
 import net.minecraft.block.Block;
@@ -44,4 +45,5 @@ public interface IBCProxy {
 	@IgnoreDisabledProxy
 	boolean isInstalled();
 	Object getLPPipeType();
+	ILPBCPowerProxy getPowerReceiver(TileEntity tile, ForgeDirection orientation);
 }

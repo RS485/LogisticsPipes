@@ -68,11 +68,13 @@ import logisticspipes.proxy.buildcraft.gates.TriggerCrafting;
 import logisticspipes.proxy.buildcraft.gates.TriggerHasDestination;
 import logisticspipes.proxy.buildcraft.gates.TriggerNeedsPower;
 import logisticspipes.proxy.buildcraft.gates.TriggerSupplierFailed;
-import logisticspipes.proxy.buildcraft.pipeparts.BCPipePart;
-import logisticspipes.proxy.buildcraft.pipeparts.BCTilePart;
-import logisticspipes.proxy.buildcraft.pipeparts.IBCPipePart;
-import logisticspipes.proxy.buildcraft.pipeparts.IBCTilePart;
 import logisticspipes.proxy.buildcraft.renderer.FacadeRenderHelper;
+import logisticspipes.proxy.buildcraft.subproxies.BCPipePart;
+import logisticspipes.proxy.buildcraft.subproxies.BCTilePart;
+import logisticspipes.proxy.buildcraft.subproxies.IBCPipePart;
+import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
+import logisticspipes.proxy.buildcraft.subproxies.ILPBCPowerProxy;
+import logisticspipes.proxy.buildcraft.subproxies.LPBCPowerProxy;
 import logisticspipes.proxy.interfaces.IBCProxy;
 import logisticspipes.renderer.LogisticsPipeItemRenderer;
 import logisticspipes.renderer.LogisticsRenderPipe;
@@ -108,6 +110,11 @@ import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.IAction;
 import buildcraft.api.gates.IGateExpansion;
 import buildcraft.api.gates.ITrigger;
+import buildcraft.api.mj.IBatteryObject;
+import buildcraft.api.mj.MjAPI;
+import buildcraft.api.power.IPowerReceptor;
+import buildcraft.api.power.PowerHandler;
+import buildcraft.api.power.PowerHandler.PowerReceiver;
 import buildcraft.api.tools.IToolWrench;
 import buildcraft.api.transport.IPipeConnection;
 import buildcraft.api.transport.IPipeTile;
@@ -556,7 +563,6 @@ public class BuildCraftProxy implements IBCProxy {
 
 	@Override
 	public IBCTilePart getBCTilePart(LogisticsTileGenericPipe tile) {
-		//LogisticsWrapperHandler
 		return new BCTilePart(tile);
 	}
 	
@@ -1072,5 +1078,24 @@ public class BuildCraftProxy implements IBCProxy {
 			wrapperPipeType = net.minecraftforge.common.util.EnumHelper.addEnum(PipeType.class, "WRAPPED-LOGISTICS", new Class<?>[]{}, new Object[]{});
 		}
 		return logisticsPipeType;
+	}
+
+	@Override
+	public ILPBCPowerProxy getPowerReceiver(TileEntity tile, ForgeDirection orientation) {
+		PowerReceiver receptor = null;
+		if(tile instanceof IPowerReceptor) {
+			receptor = ((IPowerReceptor)tile).getPowerReceiver(orientation.getOpposite());
+		}
+		final World world = tile.getWorldObj();
+		IBatteryObject battery = MjAPI.getMjBattery(tile, MjAPI.DEFAULT_POWER_FRAMEWORK, orientation.getOpposite());
+		if(battery != null) {
+			receptor = new PowerHandler(new IPowerReceptor() {
+				@Override public World getWorld() {return world;}
+				@Override public PowerReceiver getPowerReceiver(ForgeDirection paramForgeDirection) {return null;}
+				@Override public void doWork(PowerHandler paramPowerHandler) {}
+			}, PowerHandler.Type.MACHINE, battery).getPowerReceiver();
+		}
+		if(receptor == null) return null;
+		return new LPBCPowerProxy(receptor);
 	}
 }

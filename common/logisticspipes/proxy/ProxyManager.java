@@ -13,8 +13,9 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.bettersign.BetterSignProxy;
 import logisticspipes.proxy.bs.BetterStorageProxy;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
-import logisticspipes.proxy.buildcraft.pipeparts.IBCPipePart;
-import logisticspipes.proxy.buildcraft.pipeparts.IBCTilePart;
+import logisticspipes.proxy.buildcraft.subproxies.IBCPipePart;
+import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
+import logisticspipes.proxy.buildcraft.subproxies.ILPBCPowerProxy;
 import logisticspipes.proxy.cc.CCProxy;
 import logisticspipes.proxy.enderchest.EnderStorageProxy;
 import logisticspipes.proxy.enderio.EnderIOProxy;
@@ -153,7 +154,15 @@ public class ProxyManager {
 			@Override public boolean isActive() {return false;}
 			@Override public Object getLPPipeType() {return null;}
 			@Override public boolean isInstalled() {return false;}
-		}, IBCPipePart.class, IBCTilePart.class));
+			@Override public ILPBCPowerProxy getPowerReceiver(TileEntity tile, ForgeDirection orientation) {
+				return new ILPBCPowerProxy() {
+					@Override public double getMaxEnergyReceived() {return 0;}
+					@Override public double getMaxEnergyStored() {return 0;}
+					@Override public double getEnergyStored() {return 0;}
+					@Override public double receiveEnergy(double d, ForgeDirection orientation) {return 0;}
+				};
+			}
+		}, IBCPipePart.class, IBCTilePart.class, ILPBCPowerProxy.class));
 		
 		SimpleServiceLocator.setForestryProxy(getWrappedProxy("Forestry", IForestryProxy.class, ForestryProxy.class, new IForestryProxy() {
 			@Override public boolean isBee(ItemStack item) {return false;}

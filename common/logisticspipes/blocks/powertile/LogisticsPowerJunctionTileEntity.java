@@ -60,7 +60,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 	@ModDependentField(modId="BuildCraft|Transport")
 	private PowerHandler powerFramework;
 	
-	@MjBattery(maxCapacity=1000)
+	@MjBattery(maxCapacity=1000, maxReceivedPerCycle=1000)
 	@ModDependentField(modId="BuildCraft|Transport")
 	public double bcMJBatery = 0;
 	
@@ -147,6 +147,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 				addEnergy(availablelp);
 			}
 		}
+		if(freeSpace() <= 0) return;
 		space = freeSpace() / BuildCraftMultiplier;
 		if(space < minrequest)
 			space = minrequest;
@@ -187,7 +188,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 		super.updateEntity();
 		if(MainProxy.isServer(getWorld())) {
 			if(SimpleServiceLocator.buildCraftProxy.isActive()) {
-				if(freeSpace() > 0 && powerFramework.getEnergyStored() > 0) {
+				if(freeSpace() > 0 && (powerFramework.getEnergyStored() > 0 || bcMJBatery > 0)) {
 					addStoredMJ();
 				}
 			}

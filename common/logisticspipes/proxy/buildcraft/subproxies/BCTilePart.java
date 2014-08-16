@@ -1,4 +1,4 @@
-package logisticspipes.proxy.buildcraft.pipeparts;
+package logisticspipes.proxy.buildcraft.subproxies;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;

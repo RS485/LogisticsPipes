@@ -1,4 +1,4 @@
-package logisticspipes.proxy.buildcraft.pipeparts;
+package logisticspipes.proxy.buildcraft.subproxies;
 
 import java.util.LinkedList;
 import java.util.List;

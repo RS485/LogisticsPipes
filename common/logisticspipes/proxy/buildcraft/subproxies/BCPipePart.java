@@ -1,4 +1,4 @@
-package logisticspipes.proxy.buildcraft.pipeparts;
+package logisticspipes.proxy.buildcraft.subproxies;
 
 import java.lang.reflect.Field;
 import java.util.LinkedList;

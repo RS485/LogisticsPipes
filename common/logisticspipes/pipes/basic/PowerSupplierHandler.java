@@ -2,20 +2,24 @@ package logisticspipes.pipes.basic;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.WeakHashMap;
 
 import logisticspipes.blocks.powertile.LogisticsPowerProviderTileEntity;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.buildcraft.subproxies.ILPBCPowerProxy;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 
 public class PowerSupplierHandler {
 	private final static float INTERNAL_BC_BUFFER_MAX = 1000;
 	private final static float INTERNAL_RF_BUFFER_MAX = 10000;
 	private final static float INTERNAL_IC2_BUFFER_MAX = 2048 * 4;
+	private WeakHashMap<TileEntity, ILPBCPowerProxy> bcPowerTileCache = new WeakHashMap<TileEntity, ILPBCPowerProxy>();
 	
 	private final CoreRoutedPipe pipe;
 
@@ -43,9 +47,10 @@ public class PowerSupplierHandler {
 	}
 
 	public void update() {
-		//TODO: workout new BC power system
-		/*
-		if(this.pipe.getUpgradeManager().hasBCPowerSupplierUpgrade()) {
+		if(SimpleServiceLocator.buildCraftProxy.isActive() && this.pipe.getUpgradeManager().hasBCPowerSupplierUpgrade()) {
+			if(pipe.isNthTick(20 * 60 * 10)) {
+				bcPowerTileCache.clear();
+			}
 			//Use Buffer
 			WorldUtil worldUtil = new WorldUtil(this.pipe.getWorld(), this.pipe.getX(), this.pipe.getY(), this.pipe.getZ());
 			LinkedList<AdjacentTile> adjacent = worldUtil.getAdjacentTileEntities(false);
@@ -53,8 +58,14 @@ public class PowerSupplierHandler {
 			double[] need = new double[adjacent.size()];
 			int i=0;
 			for(AdjacentTile adTile:adjacent) {
-				if(adTile.tile instanceof IPowerReceptor && this.pipe.canPipeConnect(adTile.tile, adTile.orientation)) {
-					PowerReceiver receptor = ((IPowerReceptor)adTile.tile).getPowerReceiver(adTile.orientation.getOpposite());
+				if(this.pipe.canPipeConnect(adTile.tile, adTile.orientation)) {
+					ILPBCPowerProxy receptor = null;
+					if(!bcPowerTileCache.containsKey(adTile.tile)) {
+						receptor = SimpleServiceLocator.buildCraftProxy.getPowerReceiver(adTile.tile, adTile.orientation);
+						bcPowerTileCache.put(adTile.tile, receptor);
+					} else {
+						receptor = bcPowerTileCache.get(adTile.tile);
+					}
 					if(receptor != null) {
 						globalNeed += need[i] = Math.min(receptor.getMaxEnergyReceived(), receptor.getMaxEnergyStored() - receptor.getEnergyStored());
 					}
@@ -65,11 +76,11 @@ public class PowerSupplierHandler {
 				float fullfillable = Math.min(1, internal_BC_Buffer / globalNeed);
 				i = 0;
 				for(AdjacentTile adTile:adjacent) {
-					if(adTile.tile instanceof IPowerReceptor && this.pipe.canPipeConnect(adTile.tile, adTile.orientation)) {
-						PowerReceiver receptor = ((IPowerReceptor)adTile.tile).getPowerReceiver(adTile.orientation.getOpposite());
+					if(this.pipe.canPipeConnect(adTile.tile, adTile.orientation)) {
+						ILPBCPowerProxy receptor = SimpleServiceLocator.buildCraftProxy.getPowerReceiver(adTile.tile, adTile.orientation);
 						if(receptor != null) {
 							if(internal_BC_Buffer + 1 < need[i] * fullfillable) return;
-							double used = receptor.receiveEnergy(Type.PIPE, need[i] * fullfillable, adTile.orientation);
+							double used = receptor.receiveEnergy(need[i] * fullfillable, adTile.orientation);
 							if(used > 0) {
 								//MainProxy.sendPacketToAllWatchingChunk(this.pipe.getX(), this.pipe.getZ(), MainProxy.getDimensionForWorld(this.pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(LogisticsPowerProviderTileEntity.BC_COLOR).setPos(this.pipe.getLPPosition()).setRenderBall(true).setDir(adTile.orientation).setLength(0.5F));
 								((LogisticsTileGenericPipe)pipe.container).addLaser(adTile.orientation, 0.5F, LogisticsPowerProviderTileEntity.BC_COLOR, false, true);
@@ -113,8 +124,9 @@ public class PowerSupplierHandler {
 					}
 				}
 			}
+		} else if(!bcPowerTileCache.isEmpty()) {
+			bcPowerTileCache.clear();
 		}
-		*/
 		if(SimpleServiceLocator.thermalExpansionProxy.isTE() && this.pipe.getUpgradeManager().hasRFPowerSupplierUpgrade()) {
 			//Use Buffer
 			WorldUtil worldUtil = new WorldUtil(this.pipe.getWorld(), this.pipe.getX(), this.pipe.getY(), this.pipe.getZ());

@@ -172,8 +172,6 @@ public class LogisticsHUDRenderer {
 	private boolean checkItemStackForHUD(ItemStack stack) {
 		if(FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].getItem() instanceof IHUDArmor) {
 			return ((IHUDArmor)FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].getItem()).isEnabled(FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3]);
-		} else if(SimpleServiceLocator.mpsProxy.isMPSHelm(stack)) {
-			return SimpleServiceLocator.mpsProxy.hasActiveHUDModule(stack);
 		}
 		return false;
 	}
@@ -213,11 +211,7 @@ public class LogisticsHUDRenderer {
 		displayCross = false;
 		IHUDConfig config;
 		if(debugHUD == null) {
-			if(SimpleServiceLocator.mpsProxy.isMPSHelm(mc.thePlayer.inventory.armorInventory[3])) {
-				config = SimpleServiceLocator.mpsProxy.getConfigFor(mc.thePlayer.inventory.armorInventory[3]);
-			} else {
-				 config = new HUDConfig(mc.thePlayer.inventory.armorInventory[3]);
-			}
+			config = new HUDConfig(mc.thePlayer.inventory.armorInventory[3]);
 		} else {
 			config = new IHUDConfig() {
 				@Override public boolean isHUDSatellite() {return false;}
@@ -318,7 +312,11 @@ public class LogisticsHUDRenderer {
 					GL11.glScalef(0.01F, 0.01F, 1F);
 					
 					int heigth = Math.max(32, 10 * textData.size() + 15);
-					int width = Math.max(32, SimpleServiceLocator.neiProxy.getWidthForList(textData, mc.fontRenderer) + 15);
+					int width = 0;
+					for(String s:textData) {
+						width = Math.max(width, mc.fontRenderer.getStringWidth(s) + 22);
+					}
+					width = Math.max(32, width + 15);
 					
 					GL11.glColor4b((byte) 127, (byte) 127, (byte) 127, (byte) 96);
 					BasicGuiHelper.drawGuiBackGround(mc, (int) (( -0.5 * (width - 32)) * dProgress) - 16, (int) (( -0.5 * (heigth - 32)) * dProgress) - 16, (int) ((0.5 * (width - 32)) * dProgress) + 16, (int) ((0.5 * (heigth - 32)) * dProgress) + 16, 0, false);

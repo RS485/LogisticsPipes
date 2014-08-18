@@ -1,21 +1,13 @@
 package logisticspipes.nei;
 
-import static codechicken.nei.api.API.addSetRange;
-
-import java.util.Arrays;
-import java.util.Comparator;
-
 import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.GuiLogisticsCraftingTable;
 import logisticspipes.gui.GuiSolderingStation;
 import logisticspipes.gui.orderer.GuiRequestTable;
-import logisticspipes.proxy.buildcraft.BuildCraftProxy;
-import net.minecraft.item.Item;
-import codechicken.nei.MultiItemRange;
 import codechicken.nei.api.API;
 import codechicken.nei.api.IConfigureNEI;
-import codechicken.nei.forge.GuiContainerManager;
+import codechicken.nei.guihook.GuiContainerManager;
 import cpw.mods.fml.common.Mod;
 
 public class NEILogisticsPipesConfig implements IConfigureNEI {
@@ -32,32 +24,11 @@ public class NEILogisticsPipesConfig implements IConfigureNEI {
 		
 		GuiContainerManager.addDrawHandler(new DrawHandler());
 		
+		/*
 		MultiItemRange main = new MultiItemRange();
 		main.add(LogisticsPipes.LogisticsNetworkMonitior);
 		main.add(LogisticsPipes.LogisticsRemoteOrderer);
 		main.add(LogisticsPipes.LogisticsCraftingSignCreator);
-		
-		//Item[] pipeArray = BuildCraftProxy.pipelist.toArray(new Item[]{});
-		/*
-		Arrays.sort(pipeArray, new Comparator<Item>() {
-			@Override
-			public int compare(Item arg0, Item arg1) {
-				if(arg0.itemID < arg1.itemID) {
-					return -1;
-				} else if(arg0.itemID > arg1.itemID) {
-					return 1;
-				} else {
-					return 0;
-				}
-			}
-		});
-		MultiItemRange pipes = new MultiItemRange();
-		for(Item pipe: pipeArray) {
-			if(pipe != LogisticsPipes.LogisticsChassisPipeMk1 && pipe != LogisticsPipes.LogisticsChassisPipeMk2 && pipe != LogisticsPipes.LogisticsChassisPipeMk3 && pipe != LogisticsPipes.LogisticsChassisPipeMk4 && pipe != LogisticsPipes.LogisticsChassisPipeMk5) {
-				pipes.add(pipe);
-			}
-		}
-*/
 		
 		MultiItemRange pipesChassi = new MultiItemRange();
 		pipesChassi.add(LogisticsPipes.LogisticsChassisPipeMk1);
@@ -73,7 +44,8 @@ public class NEILogisticsPipesConfig implements IConfigureNEI {
 		addSetRange("LogisticsPipes.Modules", modules);
 		//addSetRange("LogisticsPipes.Pipes", pipes);
 		addSetRange("LogisticsPipes.Pipes.Chassi", pipesChassi);
-
+		*/
+		
 		API.registerRecipeHandler(new NEISolderingStationRecipeManager());
 		API.registerUsageHandler(new NEISolderingStationRecipeManager());
 		API.registerGuiOverlay(GuiSolderingStation.class, "solderingstation");

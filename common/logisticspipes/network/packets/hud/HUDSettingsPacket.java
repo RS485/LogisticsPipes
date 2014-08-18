@@ -41,16 +41,7 @@ public class HUDSettingsPacket extends ModernPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		if(player.inventory.getStackInSlot(slot) == null) return;
-		IHUDConfig config;
-		if(SimpleServiceLocator.mpsProxy.isMPSHand(player.inventory.getStackInSlot(slot))) {
-			if(SimpleServiceLocator.mpsProxy.isMPSHelm(player.inventory.armorItemInSlot(3))) {
-				config = SimpleServiceLocator.mpsProxy.getConfigFor(player.inventory.armorItemInSlot(3));
-			} else {
-				config = new HUDConfig(player.inventory.armorItemInSlot(3));
-			}
-		} else {
-			config = new HUDConfig(player.inventory.getStackInSlot(slot));
-		}
+		IHUDConfig config = new HUDConfig(player.inventory.getStackInSlot(slot));
 		switch(buttonId) {
 			case 0:
 				config.setHUDChassie(state);

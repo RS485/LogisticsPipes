@@ -361,7 +361,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 
 	@Override
 	@ModDependentMethod(modId="IC2")
-	public double demandedEnergyUnits() {
+	public double getDemandedEnergy() {
 		if(!addedToEnergyNet) return 0;
 		transferFromIC2Buffer();
 		//round up so we demand enough to completely fill visible storage
@@ -370,7 +370,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 
 	@Override
 	@ModDependentMethod(modId="IC2")
-	public double injectEnergyUnits(ForgeDirection directionFrom, double amount) {
+	public double injectEnergy(ForgeDirection directionFrom, double amount, double voltage) {
 		internalBuffer += amount * IC2Multiplier;
 		transferFromIC2Buffer();
 		return 0;
@@ -378,7 +378,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 
 	@Override
 	@ModDependentMethod(modId="IC2")
-	public int getMaxSafeInput() {
+	public int getSinkTier() {
 		return Integer.MAX_VALUE;
 	}
 	

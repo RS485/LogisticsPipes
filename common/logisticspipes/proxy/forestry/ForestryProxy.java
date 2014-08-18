@@ -124,7 +124,7 @@ public class ForestryProxy implements IForestryProxy {
 	public boolean isKnownAlleleId(String allele, World world) {
 		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele) instanceof IAlleleBeeSpecies)) return false;
 		if(!((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele)).isSecret()) return true;
-		return root.getBreedingTracker(world, MainProxy.proxy.getClientPlayer().getDisplayName()).isDiscovered((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele));
+		return root.getBreedingTracker(world, MainProxy.proxy.getClientPlayer().getGameProfile()).isDiscovered((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele));
 	}
 
 	/**

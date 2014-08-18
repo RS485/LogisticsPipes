@@ -63,6 +63,7 @@ public class ClientPacketBufferHandlerThread {
 							for(ModernPacket packet:packets) {
 								LPDataOutputStream t = new LPDataOutputStream();
 								t.writeShort(packet.getId());
+								t.writeInt(packet.getDebugId());
 								packet.writeData(t);
 								data.writeInt(t.size());
 								data.write(t.toByteArray());
@@ -164,7 +165,6 @@ public class ClientPacketBufferHandlerThread {
 					}
 				}
 				if(flag) {
-					//TODO Handle Packets
 					try {
 						PacketHandler.onPacketData(new LPDataInputStream(part.getValue2()), part.getValue1());
 					} catch(IOException e) {

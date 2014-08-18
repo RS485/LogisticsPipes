@@ -29,19 +29,24 @@ import net.minecraft.nbt.NBTTagString;
 
 import org.lwjgl.input.Keyboard;
 
-import codechicken.nei.forge.IContainerTooltipHandler;
+import codechicken.nei.guihook.IContainerTooltipHandler;
 
 public class DebugHelper implements IContainerTooltipHandler {
 	
 	private static long lastTime = 0;
 	
 	@Override
-	public List<String> handleTooltipFirst(GuiContainer gui, int mousex, int mousey, List<String> currenttip) {
+	public List<String> handleTooltip(GuiContainer gui, int mousex, int mousey, List<String> currenttip) {
 		return currenttip;
 	}
 
 	@Override
-	public List<String> handleItemTooltip(GuiContainer gui, final ItemStack itemstack, List<String> currenttip) {
+	public List<String> handleItemDisplayName(GuiContainer paramGuiContainer, ItemStack paramItemStack, List<String> paramList) {
+		return paramList;
+	}
+
+	@Override
+	public List<String> handleItemTooltip(GuiContainer gui, final ItemStack itemstack, int paramInt1, int paramInt2, List<String> currenttip) {
 		if(Configs.TOOLTIP_INFO && itemstack != null) {
 			if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Keyboard.isKeyDown(Keyboard.KEY_H)) {
 				if(lastTime + 1000 < System.currentTimeMillis()) {

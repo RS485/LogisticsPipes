@@ -147,11 +147,6 @@ public final class SimpleServiceLocator {
 		neiProxy = proxy;
 	}
 	
-	public static IModularPowersuitsProxy mpsProxy;
-	public static void setMPSProxy(IModularPowersuitsProxy proxy) {
-		mpsProxy = proxy;
-	}
-	
 	public static CraftingPermissionManager craftingPermissionManager;
 	public static void setCraftingPermissionManager(CraftingPermissionManager manager) {
 		craftingPermissionManager = manager;

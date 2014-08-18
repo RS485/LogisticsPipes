@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
-import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
@@ -33,13 +32,11 @@ import logisticspipes.proxy.interfaces.IFactorizationProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
 import logisticspipes.proxy.interfaces.IIronChestProxy;
-import logisticspipes.proxy.interfaces.IModularPowersuitsProxy;
 import logisticspipes.proxy.interfaces.INEIProxy;
 import logisticspipes.proxy.interfaces.IOpenComputersProxy;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
 import logisticspipes.proxy.interfaces.IToolWrenchProxy;
-import logisticspipes.proxy.mps.ModularPowersuitsProxy;
 import logisticspipes.proxy.nei.NEIProxy;
 import logisticspipes.proxy.opencomputers.OpenComputersProxy;
 import logisticspipes.proxy.te.ThermalExpansionProxy;
@@ -50,7 +47,6 @@ import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.block.Block;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.model.ModelSign;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -256,39 +252,8 @@ public class ProxyManager {
 		}));
 		
 		SimpleServiceLocator.setNEIProxy(getWrappedProxy("NotEnoughItems", INEIProxy.class, NEIProxy.class, new INEIProxy() {
-			@Override @SideOnly(Side.CLIENT) public int getWidthForList(List<String> data, FontRenderer fontRenderer) {
-				int width = 0;
-				for(String s:data) {
-					width = Math.max(width, fontRenderer.getStringWidth(s) + 22);
-				}
-				return width;
-			}
 			@Override public List<String> getInfoForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver) {return new ArrayList<String>(0);}
 			@Override public ItemStack getItemForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver) {return null;}
-		}));
-		
-		SimpleServiceLocator.setMPSProxy(getWrappedProxy("powersuits", IModularPowersuitsProxy.class, ModularPowersuitsProxy.class, new IModularPowersuitsProxy() {
-			@Override public boolean isMPSHelm(ItemStack stack) {return false;}
-			@Override public void initModules() {}
-			@Override public boolean hasActiveHUDModule(ItemStack stack) {return false;}
-			@Override public IHUDConfig getConfigFor(ItemStack itemStack) {
-				return new IHUDConfig() {
-					@Override public boolean isHUDSatellite() {return false;}
-					@Override public boolean isHUDProvider() {return false;}
-					@Override public boolean isHUDPowerLevel() {return false;}
-					@Override public boolean isHUDInvSysCon() {return false;}
-					@Override public boolean isHUDCrafting() {return false;}
-					@Override public boolean isHUDChassie() {return false;}
-					@Override public void setHUDChassie(boolean state) {}
-					@Override public void setHUDCrafting(boolean state) {}
-					@Override public void setHUDInvSysCon(boolean state) {}
-					@Override public void setHUDPowerJunction(boolean state) {}
-					@Override public void setHUDProvider(boolean state) {}
-					@Override public void setHUDSatellite(boolean state) {}
-				};
-			}
-			@Override public boolean isMPSHand(ItemStack stack) {return false;}
-			@Override public boolean hasHelmHUDInstalled(ItemStack stack) {return false;}
 		}));
 		
 		SimpleServiceLocator.setFactorizationProxy(getWrappedProxy("factorization", IFactorizationProxy.class, FactorizationProxy.class, new IFactorizationProxy() {

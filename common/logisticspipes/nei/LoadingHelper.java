@@ -1,7 +1,7 @@
 package logisticspipes.nei;
 
+import codechicken.nei.guihook.GuiContainerManager;
 import logisticspipes.Configs;
-import codechicken.nei.forge.GuiContainerManager;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class LoadingHelper {

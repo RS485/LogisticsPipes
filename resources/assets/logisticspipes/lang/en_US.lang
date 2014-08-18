@@ -240,7 +240,8 @@ tile.solderingstation=Soldering Station
 tile.logisticspowerjunction=Logistics Power Junction
 tile.logisticssecuritystation=Logistics Security Station
 tile.logisticscraftingtable=Logistics Crafting Table
-tile.logisticsfuzzycraftingtable=Logistics Fuzzy Crafting Tabletile.logisticsbcpowerprovider=Logistics MJ Power Provider
+tile.logisticsfuzzycraftingtable=Logistics Fuzzy Crafting Table
+tile.logisticsbcpowerprovider=Logistics MJ Power Provider
 tile.logisticsic2powerprovider=Logistics EU Power Provider
 tile.logisticstepowerprovider=Logistics RF Power Provider
 # Misc

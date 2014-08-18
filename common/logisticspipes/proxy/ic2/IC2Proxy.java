@@ -51,9 +51,9 @@ public class IC2Proxy implements IIC2Proxy {
 	 * @return Int value of current charge on electric item.
 	 * @param stack The stack to get charge for.
 	 */
-	private int getCharge(ItemStack stack) {
+	private double getCharge(ItemStack stack) {
 		if ((stack.getItem() instanceof IElectricItem) && stack.hasTagCompound()) {
-			return stack.getTagCompound().getInteger("charge");
+			return stack.getTagCompound().getDouble("charge"); //TODO is this still correct
 		} else {
 			return 0;
 		}
@@ -63,7 +63,7 @@ public class IC2Proxy implements IIC2Proxy {
 	 * @return Int value of maximum charge on electric item.
 	 * @param stack The stack to get max charge for.
 	 */
-	private int getMaxCharge(ItemStack stack) {
+	private double getMaxCharge(ItemStack stack) {
 		if (!(stack.getItem() instanceof IElectricItem)) return 0;
 		return ((IElectricItem) stack.getItem()).getMaxCharge(stack);
 	}
@@ -76,8 +76,8 @@ public class IC2Proxy implements IIC2Proxy {
 	public boolean isFullyCharged(ItemStack stack) {
 		if (!isElectricItem(stack)) return false;
 		if (((IElectricItem) stack.getItem()).getChargedItem(stack) != stack.getItem()) return false;
-		int charge = getCharge(stack);
-		int maxCharge = getMaxCharge(stack);
+		double charge = getCharge(stack);
+		double maxCharge = getMaxCharge(stack);
 		return charge == maxCharge;
 	}
 	
@@ -89,7 +89,7 @@ public class IC2Proxy implements IIC2Proxy {
 	public boolean isFullyDischarged(ItemStack stack) {
 		if (!isElectricItem(stack)) return false;
 		if (((IElectricItem) stack.getItem()).getEmptyItem(stack) != stack.getItem()) return false;
-		int charge = getCharge(stack);
+		double charge = getCharge(stack);
 		return charge == 0;
 	}
 	
@@ -101,8 +101,8 @@ public class IC2Proxy implements IIC2Proxy {
 	public boolean isPartiallyCharged(ItemStack stack) {
 		if (!isElectricItem(stack)) return false;
 		if (((IElectricItem) stack.getItem()).getChargedItem(stack) != stack.getItem()) return false;
-		int charge = getCharge(stack);
-		int maxCharge = getMaxCharge(stack);
+		double charge = getCharge(stack);
+		double maxCharge = getMaxCharge(stack);
 		return charge != maxCharge;
 	}
 	
@@ -298,10 +298,10 @@ public class IC2Proxy implements IIC2Proxy {
 
 	@Override
 	public double demandedEnergyUnits(TileEntity tile) {
-		return ((IEnergySink)tile).demandedEnergyUnits();
+		return ((IEnergySink)tile).getDemandedEnergy();
 	}
 
 	@Override
 	public double injectEnergyUnits(TileEntity tile, ForgeDirection opposite, double d) {
-		return ((IEnergySink)tile).injectEnergyUnits(opposite, d);
+		return ((IEnergySink)tile).injectEnergy(opposite, d, 1); //TODO check the voltage
 	}}

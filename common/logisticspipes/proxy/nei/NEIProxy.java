@@ -6,12 +6,10 @@ import java.util.Comparator;
 import java.util.List;
 
 import logisticspipes.proxy.interfaces.INEIProxy;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
-import codechicken.core.gui.GuiDraw;
 import codechicken.nei.api.ItemInfo;
 
 public class NEIProxy implements INEIProxy {
@@ -26,15 +24,6 @@ public class NEIProxy implements INEIProxy {
 			}
 		});
 		return ItemInfo.getText(items.get(0), world, player, objectMouseOver);
-	}
-
-	@Override
-	public int getWidthForList(List<String> textData, FontRenderer fontRenderer) {
-		int w = 0;
-		for (String s : textData) {
-			w = Math.max(w, GuiDraw.getStringWidthNoColours(fontRenderer, s)+22);
-		}
-		return w;
 	}
 
 	@Override

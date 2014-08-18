@@ -15,6 +15,13 @@ buildscript {
     }
 }
 
+repositories {
+	maven {
+		name 'CB Repo'
+		url "http://chickenbones.net/maven/"
+	}
+}
+
 ant.importBuild 'download-api.xml'
 ant.importBuild 'load-fingerprint.xml'
 
@@ -96,16 +103,20 @@ processResources {
 dependencies {
     compile 'com.mod-buildcraft:buildcraft:6.0.17:dev'
     compile 'org.projectlombok:lombok:1.12.6'
+    compile 'codechicken:NotEnoughItems:1.7.10-1.0.3.49:dev'
+    compile 'codechicken:CodeChickenCore:1.7.10-1.0.3.23:dev'
+    compile 'codechicken:CodeChickenLib:1.7.10-1.1.1.98:dev'
+    compile 'codechicken:EnderStorage:1.7.10-1.4.5.19:dev'
 }
 
 task deobfJar(type: Jar) {
 	from sourceSets.main.output
-	classifier = 'deobf'
+	classifier = 'dev'
 }
 
 task sourceJar(type: Jar) {
 	from sourceSets.main.allSource
-	classifier = 'sources'
+	classifier = 'src'
 }
 
 artifacts {

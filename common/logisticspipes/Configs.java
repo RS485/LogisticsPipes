@@ -179,14 +179,14 @@ public class Configs {
 						CHECK_FOR_UPDATES,
 						"Should LogisticsPipes check for updates?")
 				.getBoolean(false);
-		
+		/*
 		TE_PIPE_SUPPORT = CONFIGURATION
 				.get(Configuration.CATEGORY_GENERAL,
 						"TEPipeSupport",
 						TE_PIPE_SUPPORT,
 						"Enable Support for TE conduits to allow them to connect LP pipes." + NEW_LINE + "This feature MODIFIES TE. That means that bugs inside TE could be caused by LP." + NEW_LINE + "DON'T REPORT BUGS TO TE WITH THIS FEATURE ENABLED.")
 				.getBoolean(false);
-		
+		*/
 		OPAQUE = CONFIGURATION
 				.get(Configuration.CATEGORY_GENERAL,
 						"OpaquePipes",

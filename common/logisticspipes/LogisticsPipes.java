@@ -493,9 +493,6 @@ public class LogisticsPipes {
 		//Registering special particles
 		MainProxy.proxy.registerParticles();
 		
-		//init Modular Powersuits modules
-		SimpleServiceLocator.mpsProxy.initModules();
-		
 		//init Fluids
 		FluidIdentifier.initFromForge(false);
 

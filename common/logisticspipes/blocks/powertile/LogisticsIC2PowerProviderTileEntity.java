@@ -129,19 +129,19 @@ public class LogisticsIC2PowerProviderTileEntity extends LogisticsPowerProviderT
 
 	@Override
 	@ModDependentMethod(modId = "IC2")
-	public double demandedEnergyUnits() {
+	public double getDemandedEnergy() {
 		return freeSpace();
 	}
 
 	@Override
 	@ModDependentMethod(modId = "IC2")
-	public int getMaxSafeInput() {
+	public int getSinkTier() {
 		return Integer.MAX_VALUE;
 	}
 
 	@Override
 	@ModDependentMethod(modId = "IC2")
-	public double injectEnergyUnits(ForgeDirection dir, double amount) {
+	public double injectEnergy(ForgeDirection directionFrom, double amount, double voltage) {
 		addEnergy((float)amount);
 		return 0;
 	}

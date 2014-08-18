@@ -35,16 +35,7 @@ public class GuiHUDSettings extends LogisticsBaseGuiScreen {
 	public void initGui() {
 		super.initGui();
 		if(player.inventory.getStackInSlot(slot) != null) {
-			IHUDConfig config;
-			if(SimpleServiceLocator.mpsProxy.isMPSHand(player.inventory.getStackInSlot(slot))) {
-				if(SimpleServiceLocator.mpsProxy.isMPSHelm(player.inventory.armorItemInSlot(3))) {
-					config = SimpleServiceLocator.mpsProxy.getConfigFor(player.inventory.armorItemInSlot(3));
-				} else {
-					config = new HUDConfig(player.inventory.armorItemInSlot(3));
-				}
-			} else {
-				config = new HUDConfig(player.inventory.getStackInSlot(slot));
-			}
+			IHUDConfig config = new HUDConfig(player.inventory.getStackInSlot(slot));
 			this.buttonList.add(new GuiCheckBox(0, guiLeft + 30, guiTop +  10, 12, 12, config.isHUDChassie()));
 			this.buttonList.add(new GuiCheckBox(1, guiLeft + 30, guiTop +  30, 12, 12, config.isHUDCrafting()));
 			this.buttonList.add(new GuiCheckBox(2, guiLeft + 30, guiTop +  50, 12, 12, config.isHUDInvSysCon()));
@@ -71,14 +62,8 @@ public class GuiHUDSettings extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		if(SimpleServiceLocator.mpsProxy.isMPSHand(player.inventory.getStackInSlot(slot))) {
-			if(player.inventory.armorItemInSlot(3) == null || (!SimpleServiceLocator.mpsProxy.isMPSHelm(player.inventory.armorItemInSlot(3)) && player.inventory.armorItemInSlot(3).getItem() != LogisticsPipes.LogisticsHUDArmor)) {
-				this.mc.thePlayer.closeScreen();
-			}
-		} else {
-			if(player.inventory.getStackInSlot(slot) == null || player.inventory.getStackInSlot(slot).getItem() != LogisticsPipes.LogisticsHUDArmor) {
-				this.mc.thePlayer.closeScreen();
-			}
+		if(player.inventory.getStackInSlot(slot) == null || player.inventory.getStackInSlot(slot).getItem() != LogisticsPipes.LogisticsHUDArmor) {
+			this.mc.thePlayer.closeScreen();
 		}
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		mc.fontRenderer.drawString("HUD Chassie Pipe", guiLeft + 50, guiTop + 13, 0x4c4c4c);

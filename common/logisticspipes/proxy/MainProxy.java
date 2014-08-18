@@ -261,8 +261,8 @@ public class MainProxy {
 		return true;
 	}
 
-	public static boolean isUpgradeManagerEquipped(EntityPlayer entityplayer) {
-		return entityplayer != null && entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsUpgradeManager;
+	public static boolean isPipeControllerEquipped(EntityPlayer entityplayer) {
+		return entityplayer != null && entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsPipeControllerItem;
 	}
 }
 

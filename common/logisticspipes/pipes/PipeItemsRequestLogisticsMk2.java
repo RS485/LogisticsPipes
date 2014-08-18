@@ -25,7 +25,7 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 	@Override
 	public boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
 		//allow using upgrade manager
-		if(MainProxy.isUpgradeManagerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
+		if(MainProxy.isPipeControllerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
 			return false;
 		}
 		if(MainProxy.isServer(getWorld())) {

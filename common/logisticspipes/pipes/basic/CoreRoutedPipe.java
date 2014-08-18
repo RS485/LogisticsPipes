@@ -901,7 +901,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 			}
 		}
 
-		if (entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsPipeControllerItem) {
+		if (MainProxy.isPipeControllerEquipped(entityplayer)) {
 			if(MainProxy.isServer(entityplayer.worldObj)) {
 				if(settings == null || settings.openNetworkMonitor) {
 					NewGuiHandler.getGui(PipeController.class).setTilePos(container).open(entityplayer);
@@ -931,32 +931,10 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 			return true;
 		}
 
-		if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsNetworkMonitior) {
-			if(MainProxy.isServer(entityplayer.worldObj)) {
-				if(settings == null || settings.openNetworkMonitor) {
-					entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_RoutingStats_ID, getWorld(), getX(), getY(), getZ());
-				} else {
-					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
-				}
-			}
-			return true;
-		}
-
 		if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
 			if(MainProxy.isServer(entityplayer.worldObj)) {
 				if(settings == null || settings.openRequest) {
 					entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, getWorld(), getX(), getY(), getZ());
-				} else {
-					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
-				}
-			}
-			return true;
-		}
-
-		if(MainProxy.isUpgradeManagerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
-			if(MainProxy.isServer(entityplayer.worldObj)) {
-				if (settings == null || settings.openUpgrades) {
-					getUpgradeManager().openGui(entityplayer, this);
 				} else {
 					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
 				}

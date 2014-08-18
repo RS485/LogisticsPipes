@@ -11,7 +11,6 @@ package logisticspipes;
 import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
 
 import logisticspipes.asm.LogisticsPipesClassInjector;
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
@@ -28,9 +27,7 @@ import logisticspipes.items.ItemPipeSignCreator;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsBrokenItem;
 import logisticspipes.items.LogisticsFluidContainer;
-import logisticspipes.items.LogisticsItem;
 import logisticspipes.items.LogisticsItemCard;
-import logisticspipes.items.LogisticsNetworkManager;
 import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.logistics.LogisticsFluidManager;
@@ -77,7 +74,6 @@ import logisticspipes.proxy.ProxyManager;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.SpecialInventoryHandlerManager;
 import logisticspipes.proxy.SpecialTankHandlerManager;
-import logisticspipes.proxy.VersionNotSupportedException;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.computers.objects.LPGlobalCCAccess;
 import logisticspipes.proxy.forestry.ForestryProgressProvider;
@@ -129,7 +125,6 @@ import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.logging.log4j.Logger;
@@ -271,14 +266,12 @@ public class LogisticsPipes {
 	public static ItemUpgrade UpgradeItem;
 	
 	// Miscellaneous Items
-	public static Item LogisticsNetworkMonitior;
 	public static Item LogisticsRemoteOrderer;
 	public static Item LogisticsCraftingSignCreator;
 	public static ItemDisk LogisticsItemDisk;
 	public static Item LogisticsItemCard;
 	public static ItemHUDArmor LogisticsHUDArmor;
 	public static Item LogisticsParts;
-	public static Item LogisticsUpgradeManager;
 	public static Item LogisticsFluidContainer;
 	public static Item LogisticsBrokenItem;
 	public static Item LogisticsPipeControllerItem;
@@ -387,10 +380,6 @@ public class LogisticsPipes {
 			renderer = new FluidContainerRenderer();
 		}
 		
-		LogisticsNetworkMonitior = new LogisticsNetworkManager();
-		LogisticsNetworkMonitior.setUnlocalizedName("networkMonitorItem");
-		GameRegistry.registerItem(LogisticsNetworkMonitior, LogisticsNetworkMonitior.getUnlocalizedName());
-		
 		LogisticsItemCard = new LogisticsItemCard();
 		LogisticsItemCard.setUnlocalizedName("logisticsItemCard");
 		GameRegistry.registerItem(LogisticsItemCard, LogisticsItemCard.getUnlocalizedName());
@@ -436,11 +425,6 @@ public class LogisticsPipes {
 		UpgradeItem.setUnlocalizedName("itemUpgrade");
 		UpgradeItem.loadUpgrades();
 		GameRegistry.registerItem(UpgradeItem, UpgradeItem.getUnlocalizedName());
-		
-		//TODO make it visible in creative search
-		LogisticsUpgradeManager = new LogisticsItem();
-		LogisticsUpgradeManager.setUnlocalizedName("upgradeManagerItem");
-		GameRegistry.registerItem(LogisticsUpgradeManager, LogisticsUpgradeManager.getUnlocalizedName());
 		
 		LogisticsFluidContainer = new LogisticsFluidContainer();
 		LogisticsFluidContainer.setUnlocalizedName("logisticsFluidContainer");

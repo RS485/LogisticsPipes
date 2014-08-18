@@ -8,7 +8,6 @@ import logisticspipes.gui.GuiFluidSupplierPipe;
 import logisticspipes.gui.GuiFreqCardContent;
 import logisticspipes.gui.GuiInvSysConnector;
 import logisticspipes.gui.GuiProviderPipe;
-import logisticspipes.gui.GuiRoutingStats;
 import logisticspipes.gui.GuiSatellitePipe;
 import logisticspipes.gui.hud.GuiHUDSettings;
 import logisticspipes.gui.orderer.FluidGuiOrderer;
@@ -40,12 +39,9 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.IGuiHandler;
 
 public class GuiHandler implements IGuiHandler {
@@ -127,22 +123,7 @@ public class GuiHandler implements IGuiHandler {
 				if(pipe != null && pipe.pipe != null && pipe.pipe instanceof PipeFluidSatellite) {
 					return new DummyContainer(player.inventory, null);
 				}
-								
-				/*** Basic ***/
-			case GuiIDs.GUI_RoutingStats_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) return null;
-				return new DummyContainer(player, null, new IGuiOpenControler() {
-					@Override
-					public void guiOpenedByPlayer(EntityPlayer player) {
-						((CoreRoutedPipe)fpipe.pipe).playerStartWatching(player, 0);
-					}
-					
-					@Override
-					public void guiClosedByPlayer(EntityPlayer player) {
-						((CoreRoutedPipe)fpipe.pipe).playerStopWatching(player, 0);
-					}
-				});
-			
+				
 			case GuiIDs.GUI_Normal_Orderer_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) return null;
 				return new DummyContainer(player.inventory, null);
@@ -301,11 +282,6 @@ public class GuiHandler implements IGuiHandler {
 					return new GuiSatellitePipe((PipeFluidSatellite)pipe.pipe, player);
 				}
 				return null;
-				
-				/*** Modules ***/
-			case GuiIDs.GUI_RoutingStats_ID:
-				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) return null;
-				return new GuiRoutingStats(((CoreRoutedPipe)pipe.pipe).getRouter(), player);
 				
 			case GuiIDs.GUI_Normal_Orderer_ID:
 				return new NormalGuiOrderer(x, y, z, MainProxy.getDimensionForWorld(world), player);

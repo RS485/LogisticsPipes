@@ -46,4 +46,5 @@ public interface IBCProxy {
 	boolean isInstalled();
 	Object getLPPipeType();
 	ILPBCPowerProxy getPowerReceiver(TileEntity tile, ForgeDirection orientation);
+	void registerTrigger();
 }

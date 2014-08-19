@@ -207,6 +207,7 @@ public class BuildCraftProxy implements IBCProxy {
 		return false;
 	}
 
+	@Override
 	public void registerTrigger() {
 		ActionManager.registerTriggerProvider(new LogisticsTriggerProvider());
 		

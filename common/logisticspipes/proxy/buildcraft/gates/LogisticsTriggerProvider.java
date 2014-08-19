@@ -19,7 +19,9 @@ import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
+import logisticspipes.proxy.buildcraft.gates.wrapperclasses.TilePipeWrapper;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import buildcraft.api.gates.ITrigger;
@@ -30,28 +32,28 @@ public class LogisticsTriggerProvider implements ITriggerProvider {
 
 	@Override
 	public LinkedList<ITrigger> getPipeTriggers(IPipeTile pipe) {
-		if (pipe instanceof PipeItemsSupplierLogistics || pipe instanceof PipeItemsFluidSupplier) {
+		if(pipe instanceof TilePipeWrapper) {
+			LogisticsTileGenericPipe lPipe = ((TilePipeWrapper)pipe).tile;
 			LinkedList<ITrigger> triggers = new LinkedList<ITrigger>();
-			triggers.add(BuildCraftProxy.LogisticsFailedTrigger);
-			return triggers;
+			if (lPipe.pipe instanceof PipeItemsSupplierLogistics || lPipe.pipe instanceof PipeItemsFluidSupplier) {
+				triggers.add(BuildCraftProxy.LogisticsFailedTrigger);
+			}
+			if(lPipe.pipe instanceof PipeItemsCraftingLogistics) {
+				triggers.add(BuildCraftProxy.LogisticsCraftingTrigger);
+			}
+	        if (lPipe.pipe instanceof CoreRoutedPipe) {
+	            //Only show this conditional on Gates that can accept parameters
+	            if (((CoreRoutedPipe) lPipe.pipe).hasGate()) {
+	                Gate gate = (Gate) lPipe.pipe.bcPipePart.getGate();
+	                if ((gate.logic == GateDefinition.GateLogic.AND || gate.logic == GateDefinition.GateLogic.OR) && gate.material == GateDefinition.GateMaterial.DIAMOND) {
+	                    triggers.add(BuildCraftProxy.LogisticsHasDestinationTrigger);
+	                }
+	            }
+	        }
+	        if(!triggers.isEmpty()) {
+	        	return triggers;
+	        }
 		}
-		if(pipe instanceof PipeItemsCraftingLogistics) {
-			LinkedList<ITrigger> triggers = new LinkedList<ITrigger>();
-			triggers.add(BuildCraftProxy.LogisticsCraftingTrigger);
-			return triggers;
-		}
-        if (pipe instanceof CoreRoutedPipe) {
-            LinkedList<ITrigger> triggers = new LinkedList<ITrigger>();
-            //Only show this conditional on Gates that can accept parameters
-            if (((CoreRoutedPipe) pipe).hasGate()) {
-                Gate gate = ((Pipe<?>) pipe).gate;
-                if ((gate.logic == GateDefinition.GateLogic.AND || gate.logic == GateDefinition.GateLogic.OR)
-                        && gate.material == GateDefinition.GateMaterial.DIAMOND) {
-                    triggers.add(BuildCraftProxy.LogisticsHasDestinationTrigger);
-                }
-            }
-            return triggers;
-        }
         return null;
 	}
 	

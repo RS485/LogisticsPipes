@@ -410,7 +410,7 @@ public class LogisticsPipes {
 		LogisticsParts.setUnlocalizedName("logisticsParts");
 		GameRegistry.registerItem(LogisticsParts, LogisticsParts.getUnlocalizedName());
 		
-		//SimpleServiceLocator.buildCraftProxy.registerTrigger();
+		SimpleServiceLocator.buildCraftProxy.registerTrigger();
 		
 		ModuleItem = new ItemModule();
 		ModuleItem.setUnlocalizedName("itemModule");

@@ -37,8 +37,8 @@ public class TriggerHasDestination extends LPTrigger implements IPipeTrigger {
 	public boolean isTriggerActive(Pipe pipe, ITriggerParameter parameter) {
 		if(pipe instanceof PipeWrapper) {
 			if (((PipeWrapper)pipe).tile.pipe instanceof CoreRoutedPipe) {
-				if (parameter != null && parameter.getItem() != null) {
-					ItemStack item = parameter.getItem();
+				if (parameter != null && parameter.getItemStack() != null) {
+					ItemStack item = parameter.getItemStack();
 					if (SimpleServiceLocator.logisticsManager.hasDestination(ItemIdentifier.get(item), false, ((CoreRoutedPipe) ((PipeWrapper)pipe).tile.pipe).getRouter().getSimpleID(), new ArrayList<Integer>()) != null) {
 						return true;
 					}

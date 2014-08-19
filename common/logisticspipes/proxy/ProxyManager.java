@@ -158,6 +158,7 @@ public class ProxyManager {
 					@Override public double receiveEnergy(double d, ForgeDirection orientation) {return 0;}
 				};
 			}
+			@Override public void registerTrigger() {}
 		}, IBCPipePart.class, IBCTilePart.class, ILPBCPowerProxy.class));
 		
 		SimpleServiceLocator.setForestryProxy(getWrappedProxy("Forestry", IForestryProxy.class, ForestryProxy.class, new IForestryProxy() {

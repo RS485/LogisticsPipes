@@ -2,6 +2,7 @@ package logisticspipes.asm;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -60,12 +61,30 @@ public class LogisticsClassTransformer implements IClassTransformer {
 	
 	@Override
 	public byte[] transform(String name, String transformedName, byte[] bytes) {
+		Thread thread = Thread.currentThread();
+		if(thread.getName().equals("Minecraft main thread") || thread.getName().equals("main") || thread.getName().equals("Server thread")) { //Only clear when called from the main thread to avoid ConcurrentModificationException on start
+			clearNegativeInterfaceCache();
+		}
+		if(bytes == null) return null;
+		if(name.startsWith("logisticspipes.") || name.startsWith("net.minecraft") || LogisticsPipes.DEBUG) {
+			return applyLPTransforms(name, bytes);
+		}
+		byte[] tmp = bytes.clone();
+		bytes = applyLPTransforms(name, bytes);
+		if(!Arrays.equals(bytes, tmp)) {
+			final ClassReader reader = new ClassReader(bytes);
+			final ClassNode node = new ClassNode();
+			reader.accept(node, 0);
+			node.sourceFile = "[LP|ASM] " + node.sourceFile;
+			ClassWriter writer = new ClassWriter(0);
+			node.accept(writer);
+			bytes = writer.toByteArray();
+		}
+		return bytes;
+	}
+	
+	private byte[] applyLPTransforms(String name, byte[] bytes) {
 		try {
-			Thread thread = Thread.currentThread();
-			if(thread.getName().equals("Minecraft main thread") || thread.getName().equals("main") || thread.getName().equals("Server thread")) { //Only clear when called from the main thread to avoid ConcurrentModificationException on start
-				clearNegativeInterfaceCache();
-			}
-			if(bytes == null) return null;
 			if(name.equals("buildcraft.transport.PipeTransportItems")) {
 				return ClassPipeTransportItemsHandler.handlePipeTransportItems(bytes);
 			}

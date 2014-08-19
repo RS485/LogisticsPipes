@@ -155,12 +155,12 @@ public class LogisticsWrapperHandler {
 		Class<?> clazz = lookupMap.get(className);
 		if(clazz == null) {
 			String fieldName = interfaze.getName().replace('.', '/');
-			String classFile = interfaze.getSimpleName().substring(1) + "Wrapper.java";
+			//String classFile = interfaze.getSimpleName().substring(1) + "Wrapper.java";
 			ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 			
 			cw.visit(V1_6, ACC_PUBLIC + ACC_SUPER, className, null, "logisticspipes/asm/wrapper/AbstractWrapper", new String[] { fieldName });
 			
-			cw.visitSource(classFile, null);
+			cw.visitSource(".LP|ASM.dynamic", null);
 			
 			{
 				FieldVisitor fv = cw.visitField(ACC_PRIVATE, "proxy", "L" + fieldName + ";", null, null);
@@ -272,12 +272,12 @@ public class LogisticsWrapperHandler {
 		Class<?> clazz = lookupMap.get(className);
 		if(clazz == null) {
 			String fieldName = interfaze.getName().replace('.', '/');
-			String classFile = interfaze.getSimpleName().substring(1) + "Wrapper.java";
+			//String classFile = interfaze.getSimpleName().substring(1) + "Wrapper.java";
 			ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 			
 			cw.visit(V1_6, ACC_PUBLIC + ACC_SUPER, className, null, "logisticspipes/asm/wrapper/AbstractSubWrapper", new String[] { fieldName });
 			
-			cw.visitSource(classFile, null);
+			cw.visitSource(".LP|ASM.dynamic", null);
 			
 			{
 				FieldVisitor fv = cw.visitField(ACC_PRIVATE, "proxy", "L" + fieldName + ";", null, null);

@@ -307,6 +307,29 @@ public abstract class CoreUnroutedPipe implements IClientState {
 		return canPipeConnect(tile, direction);
 	}
 
-	public void doDrop() {
+	public final int getX() {
+		return this.container.xCoord;
+	}
+
+	public final int getY() {
+		return this.container.yCoord;
+	}
+
+	public final int getZ() {
+		return this.container.zCoord;
+	}
+
+	public boolean canBeDestroyed() {
+		return false;
+	}
+
+	public boolean destroyByPlayer() {
+		return false;
+	}
+
+	public void setPreventRemove(boolean flag) {}
+
+	public boolean preventRemove() {
+		return false;
 	}
 }

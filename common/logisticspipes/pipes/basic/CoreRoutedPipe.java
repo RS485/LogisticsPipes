@@ -151,7 +151,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	protected boolean _initialInit = true;
 	
 	private boolean enabled = true;
-	private boolean blockRemove = false;
+	private boolean preventRemove = false;
 	private boolean destroyByPlayer = false;
 	private PowerSupplierHandler powerHandler = new PowerSupplierHandler(this);
 	
@@ -513,46 +513,22 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	
 	@Override
 	public final void onBlockRemoval() {
-		//revertItemID();
-		if(canBeDestroyed() || destroyByPlayer) {
-			try {
-				onAllowedRemoval();
-				super.onBlockRemoval();
-				//invalidate() removes the router
+		try {
+			onAllowedRemoval();
+			super.onBlockRemoval();
+			//invalidate() removes the router
 //				if (logic instanceof BaseRoutingLogic){
 //					((BaseRoutingLogic)logic).destroy();
 //				}
-				//Just in case
-				pipecount = Math.max(pipecount - 1, 0);
-				
-				if (transport != null && transport instanceof PipeTransportLogistics){
-					transport.dropBuffer();
-				}
-				getUpgradeManager().dropUpgrades();
-			} catch(Exception e) {
-				e.printStackTrace();
+			//Just in case
+			pipecount = Math.max(pipecount - 1, 0);
+			
+			if (transport != null && transport instanceof PipeTransportLogistics){
+				transport.dropBuffer();
 			}
-		} else if(!blockRemove) {
-			/*
-			 * XXX: Move this to TE
-			final World worldCache = getWorld();
-			final int xCache = getX();
-			final int yCache = getY();
-			final int zCache = getZ();
-			final TileEntity tileCache = this.container;
-			blockRemove = true;
-			QueuedTasks.queueTask(new Callable<Object>() {
-				@Override
-				public Object call() throws Exception {
-					tileCache.validate();
-					worldCache.setBlock(xCache, yCache, zCache, BuildCraftTransport.genericPipeBlock);
-					worldCache.setTileEntity(xCache, yCache, zCache, tileCache);
-					worldCache.notifyBlockChange(xCache, yCache, zCache, BuildCraftTransport.genericPipeBlock);
-					blockRemove = false;
-					return null;
-				}
-			});
-			*/
+			getUpgradeManager().dropUpgrades();
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -577,62 +553,8 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	@Override
 	public void dropContents() {
 		if(MainProxy.isClient(getWorld())) return;
-		if(canBeDestroyed() || destroyByPlayer) {
-			super.dropContents();
-		} else {
-			//XXX do this in TE overrides
-			/*if(itemIDAccess == null) {
-				try {
-					itemIDAccess = Pipe.class.getDeclaredField("itemID");
-					itemIDAccess.setAccessible(true);
-				} catch (NoSuchFieldException e) {
-					e.printStackTrace();
-				} catch (SecurityException e) {
-					e.printStackTrace();
-				}
-			}
-			cachedItemID = itemID;
-			try {
-				itemIDAccess.setInt(this, LogisticsPipes.LogisticsBrokenItem.itemID);
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			}
-			final World worldCache = getWorld();
-			final int xCache = getX();
-			final int yCache = getY();
-			final int zCache = getZ();
-			final TileEntity tileCache = this.container;
-			blockRemove = true;
-			QueuedTasks.queueTask(new Callable<Object>() {
-				@Override
-				public Object call() throws Exception {
-					revertItemID();
-					worldCache.setBlock(xCache, yCache, zCache, LogisticsPipes.LogisticsPipeBlock);
-					worldCache.setTileEntity(xCache, yCache, zCache, tileCache);
-					worldCache.notifyBlockChange(xCache, yCache, zCache, LogisticsPipes.LogisticsPipeBlock);
-					blockRemove = false;
-					return null;
-				}
-			});*/
-		}
+		super.dropContents();
 	}
-
-	/*
-	private void revertItemID() {
-		if(cachedItemID != -1) {
-			try {
-				itemIDAccess.setInt(this, cachedItemID);
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			}
-			cachedItemID = -1;
-		}
-	}
-	*/
 
 	public void checkTexturePowered() {
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return;
@@ -1239,6 +1161,7 @@ outer:
 		return true;
 	}
 	
+	@Override
 	public boolean canBeDestroyed() {
 		ISecurityProvider sec = getSecurityProvider();
 		if(sec != null) {
@@ -1252,9 +1175,15 @@ outer:
 	public void setDestroyByPlayer() {
 		destroyByPlayer = true;
 	}
+
+	@Override
+	public boolean destroyByPlayer() {
+		return destroyByPlayer;
+	}
 	
-	public boolean blockRemove() {
-		return blockRemove;
+	@Override
+	public boolean preventRemove() {
+		return preventRemove;
 	}
 	
 	@CCSecurtiyCheck
@@ -1334,21 +1263,6 @@ outer:
 		} else {
 			return texture.unpowered;
 		}
-	}
-
-	@Override
-	public final int getX() {
-		return this.container.xCoord;
-	}
-
-	@Override
-	public final int getY() {
-		return this.container.yCoord;
-	}
-
-	@Override
-	public final int getZ() {
-		return this.container.zCoord;
 	}
 
 	public void addCrashReport(CrashReportCategory crashReportCategory) {
@@ -1802,5 +1716,9 @@ outer:
 	@Override
 	public DebugLogController getDebug() {
 		return debug;
+	}
+	
+	public void setPreventRemove(boolean flag) {
+		preventRemove = flag;
 	}
 }

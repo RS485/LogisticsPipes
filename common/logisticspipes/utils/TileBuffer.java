@@ -1,9 +1,9 @@
 package logisticspipes.utils;
 
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-
 import net.minecraftforge.common.util.ForgeDirection;
 
 public final class TileBuffer {
@@ -27,6 +27,11 @@ public final class TileBuffer {
 	}
 
 	public void refresh() {
+		if(tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe)tile).pipe != null && ((LogisticsTileGenericPipe)tile).pipe.preventRemove()) {
+			if(world.getBlock(this.x, this.y, this.z) == null) {
+				return;
+			}
+		}
 		tile = null;
 		block = null;
 

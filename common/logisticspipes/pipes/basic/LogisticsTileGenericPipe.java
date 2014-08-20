@@ -118,7 +118,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
     			pipe.invalidate();
     		}
     		super.invalidate();
-        } else if (!getCPipe().blockRemove()) {
+        } else if (!getCPipe().preventRemove()) {
             this.tileEntityInvalid = true;
     		initialized = false;
     		tileBuffer = null;
@@ -740,6 +740,9 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 
 	@Override
 	public TileEntity getTile(ForgeDirection to) {
+		if(((CoreRoutedPipe)pipe).debug.debugThisPipe && to == ForgeDirection.EAST) {
+			System.out.print("");
+		}
 		TileBuffer[] cache = getTileCache();
 		if (cache != null) {
 			return cache[to.ordinal()].getTile();
@@ -778,16 +781,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 			return false;
 		}
 		return pipe.bcPipePart.getSignalStrength()[wire.ordinal()] > 0;
-	}
-
-	public void doDrop() {
-		if (LogisticsBlockGenericPipe.isValid(pipe)) {
-			pipe.doDrop();
-		}
-	}
-
-	public void destroy() {
-		
 	}
 
 	/**
@@ -887,5 +880,13 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 	@ModDependentMethod(modId="BuildCraft|Transport")
 	public PipeType getPipeType() {
 		return (PipeType) SimpleServiceLocator.buildCraftProxy.getLPPipeType();
+	}
+
+	@Override
+	public boolean isInvalid() {
+		if(pipe != null && pipe.preventRemove()) {
+			return false;
+		}
+		return super.isInvalid();
 	}
 }

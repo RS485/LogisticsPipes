@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.Callable;
 
 import logisticspipes.Configs;
 import logisticspipes.LPConstants;
@@ -19,6 +20,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.side.ClientProxy;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.textures.Textures;
+import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.MatrixTranformations;
 import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.block.Block;
@@ -71,9 +73,11 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			}
 
 			if (pipe != null) {
-				if (pipe.item != null && pipe.item != LogisticsPipes.LogisticsBrokenItem) {
+				if (pipe.item != null && (pipe.canBeDestroyed() || pipe.destroyByPlayer())) {
 					pipe.dropContents();
 					list.add(new ItemStack(pipe.item, 1, damageDropped(metadata)));
+				} else if(pipe.item != null) {
+					cacheTileToPreventRemoval(pipe);
 				}
 			}
 		}
@@ -681,8 +685,12 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		if (!isValid(pipe)) {
 			return;
 		}
-
-		pipe.onBlockRemoval();
+		
+		if(pipe.canBeDestroyed() || pipe.destroyByPlayer()) {
+			pipe.onBlockRemoval();
+		} else if(pipe.preventRemove()) {
+			cacheTileToPreventRemoval(pipe);
+		}
 
 		World world = pipe.container.getWorldObj();
 
@@ -705,11 +713,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	@Override
 	public void breakBlock(World world, int x, int y, int z, Block block, int par6) {
-		TileEntity tile = world.getTileEntity(x, y, z);
-		if((tile instanceof LogisticsTileGenericPipe)) {
-			((LogisticsTileGenericPipe)tile).doDrop();
-			((LogisticsTileGenericPipe)tile).destroy();
-		}
 		removePipe(getPipe(world, x, y, z));
 		super.breakBlock(world, x, y, z, block, par6);
 	}
@@ -733,13 +736,11 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				pipe = pipeRemoved.get(new LPPosition(i, j, k));
 			}
 
-			if (pipe != null) {
-				Item k1 = pipe.item;
-
-				if (k1 != null) {
-					pipe.dropContents();
-					dropBlockAsItem(world, i, j, k, new ItemStack(k1, 1, damageDropped(l)));
-				}
+			if (pipe.item != null && (pipe.canBeDestroyed() || pipe.destroyByPlayer())) {
+				pipe.dropContents();
+				dropBlockAsItem(world, i, j, k, new ItemStack(pipe.item, 1, damageDropped(l)));
+			} else if(pipe.item != null) {
+				cacheTileToPreventRemoval(pipe);
 			}
 		}
 	}
@@ -749,17 +750,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		// Returns null to be safe - the id does not depend on the meta
 		return null;
 	}
-
-	/*@SideOnly(Side.CLIENT)
-	@Override
-	public int idPicked(World world, int i, int j, int k) {
-		CoreUnroutedPipe pipe = getPipe(world, i, j, k);
-
-		if (pipe == null)
-			return 0;
-		else
-			return pipe.itemID;
-	}*/
 
 	@SideOnly(Side.CLIENT)
 	@Override
@@ -1133,5 +1123,35 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			return facadeRenderColor;
 		}
 		return super.colorMultiplier(world, x, y, z);
+	}
+	
+	private static void cacheTileToPreventRemoval(CoreUnroutedPipe pipe) {
+		final World worldCache = pipe.getWorld();
+		final int xCache = pipe.getX();
+		final int yCache = pipe.getY();
+		final int zCache = pipe.getZ();
+		final TileEntity tileCache = pipe.container;
+		final CoreUnroutedPipe fPipe = pipe;
+		fPipe.setPreventRemove(true);
+		QueuedTasks.queueTask(new Callable<Object>() {
+			@Override
+			public Object call() throws Exception {
+				if(!fPipe.preventRemove()) return null;
+				boolean changed = false;
+				if(worldCache.getBlock(xCache, yCache, zCache) != LogisticsPipes.LogisticsPipeBlock) {
+					worldCache.setBlock(xCache, yCache, zCache, LogisticsPipes.LogisticsPipeBlock);
+					changed = true;
+				}
+				if(worldCache.getTileEntity(xCache, yCache, zCache) != tileCache) {
+					worldCache.setTileEntity(xCache, yCache, zCache, tileCache);
+					changed = true;
+				}
+				if(changed) {
+					worldCache.notifyBlockChange(xCache, yCache, zCache, LogisticsPipes.LogisticsPipeBlock);
+				}
+				fPipe.setPreventRemove(false);
+				return null;
+			}
+		});
 	}
 }

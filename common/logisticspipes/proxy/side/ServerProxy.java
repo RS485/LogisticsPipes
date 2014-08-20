@@ -269,4 +269,9 @@ public class ServerProxy implements IProxy {
 	public IItemRenderer getPipeItemRenderer() {
 		return null;
 	}
+
+	@Override
+	public boolean checkSinglePlayerOwner(String commandSenderName) {
+		return false;
+	}
 }

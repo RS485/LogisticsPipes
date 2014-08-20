@@ -32,4 +32,5 @@ public interface IProxy {
 	public void setIconProviderFromPipe(ItemLogisticsPipe item, CoreUnroutedPipe dummyPipe);
 	public LogisticsModule getModuleFromGui();
 	public IItemRenderer getPipeItemRenderer();
+	public boolean checkSinglePlayerOwner(String commandSenderName);
 }

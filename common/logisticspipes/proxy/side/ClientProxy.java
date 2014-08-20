@@ -36,6 +36,7 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
@@ -45,6 +46,7 @@ import net.minecraftforge.common.DimensionManager;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ClientProxy implements IProxy {
@@ -210,5 +212,10 @@ public class ClientProxy implements IProxy {
 			pipeRenderer = new LogisticsPipeItemRenderer(false);
 		}
 		return pipeRenderer;
+	}
+
+	@Override
+	public boolean checkSinglePlayerOwner(String commandSenderName) {
+		return FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() && FMLCommonHandler.instance().getMinecraftServerInstance() instanceof IntegratedServer && !((IntegratedServer)FMLCommonHandler.instance().getMinecraftServerInstance()).getPublic();
 	}
 }

@@ -740,9 +740,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 
 	@Override
 	public TileEntity getTile(ForgeDirection to) {
-		if(((CoreRoutedPipe)pipe).debug.debugThisPipe && to == ForgeDirection.EAST) {
-			System.out.print("");
-		}
 		TileBuffer[] cache = getTileCache();
 		if (cache != null) {
 			return cache[to.ordinal()].getTile();

@@ -23,7 +23,6 @@ import logisticspipes.pipefxhandlers.providers.EntityWhiteSparkleFXProvider;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.renderer.LogisticsPipeItemRenderer;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;

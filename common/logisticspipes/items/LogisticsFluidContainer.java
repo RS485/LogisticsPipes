@@ -61,7 +61,7 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 		if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 			FluidStack stack = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemIdentifierStack.getFromStack(par1ItemStack));
 			if(stack != null) {
-				par3List.add("Type:  " + stack.getFluid().getLocalizedName());
+				par3List.add("Type:  " + stack.getFluid().getLocalizedName(stack));
 				par3List.add("Value: " + stack.amount + "mB");
 			}
 		}

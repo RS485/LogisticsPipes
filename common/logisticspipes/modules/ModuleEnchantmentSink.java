@@ -3,19 +3,14 @@ package logisticspipes.modules;
 import java.util.Collection;
 
 import logisticspipes.modules.abstractmodules.LogisticsModule;
-
-import logisticspipes.api.IRoutedPowerProvider;
-import logisticspipes.interfaces.ISendRoutedItem;
-import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.IIcon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.util.IIcon;
 
 public class ModuleEnchantmentSink extends LogisticsModule {
 	

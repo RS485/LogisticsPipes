@@ -2,9 +2,9 @@ package logisticspipes.proxy.forestry;
 
 import java.lang.reflect.Field;
 
-import forestry.core.gadgets.TilePowered;
-import net.minecraft.tileentity.TileEntity;
 import logisticspipes.proxy.interfaces.IGenericProgressProvider;
+import net.minecraft.tileentity.TileEntity;
+import forestry.core.gadgets.TilePowered;
 
 public class ForestryProgressProvider implements IGenericProgressProvider {
 	

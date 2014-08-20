@@ -19,7 +19,6 @@ import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentTranslation;
 
 public class PipeItemsFirewall extends CoreRoutedPipe {
 

@@ -2,8 +2,6 @@ package logisticspipes.proxy.te;
 
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.tileentity.TileEntity;

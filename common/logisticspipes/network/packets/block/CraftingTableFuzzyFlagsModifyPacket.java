@@ -1,9 +1,9 @@
 package logisticspipes.network.packets.block;
 
-import net.minecraft.entity.player.EntityPlayer;
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.network.abstractpackets.Integer2CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class CraftingTableFuzzyFlagsModifyPacket extends Integer2CoordinatesPacket {
 

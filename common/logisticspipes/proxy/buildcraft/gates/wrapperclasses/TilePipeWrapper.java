@@ -4,9 +4,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import buildcraft.BuildCraftCore;
 import buildcraft.api.gates.IOverrideDefaultTriggers;
 import buildcraft.api.gates.ITrigger;

@@ -10,13 +10,9 @@ package logisticspipes.transport;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
-
-import buildcraft.transport.TravelingItem;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
@@ -63,6 +59,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.util.ForgeDirection;
+import buildcraft.transport.TravelingItem;
 
 public class PipeTransportLogistics {
 	

@@ -5,7 +5,6 @@ import java.util.List;
 
 import logisticspipes.interfaces.routing.ISpecialTileConnection;
 import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.transport.LPTravelingItem;
 import net.minecraft.tileentity.TileEntity;
 
 public class SpecialTileConnection {

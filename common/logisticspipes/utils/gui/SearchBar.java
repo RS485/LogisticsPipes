@@ -9,8 +9,6 @@ import net.minecraft.client.gui.FontRenderer;
 
 import org.lwjgl.input.Keyboard;
 
-import scala.Char;
-
 public class SearchBar {
 	protected String searchinput1 = "";
 	protected String searchinput2 = "";

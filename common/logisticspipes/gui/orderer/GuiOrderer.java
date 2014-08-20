@@ -35,7 +35,6 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 
 import org.lwjgl.input.Keyboard;
 

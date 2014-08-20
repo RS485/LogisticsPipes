@@ -59,13 +59,10 @@ import net.minecraftforge.fluids.IFluidHandler;
 import org.apache.logging.log4j.Level;
 
 import thermalexpansion.part.conduit.ConduitBase;
-import buildcraft.api.gates.IOverrideDefaultTriggers;
-import buildcraft.api.gates.ITrigger;
 import buildcraft.api.transport.IPipeTile;
 import buildcraft.api.transport.PipeWire;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.TravelingItem;
-import buildcraft.transport.triggers.TriggerPipeContents;
 import cofh.api.transport.IItemDuct;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

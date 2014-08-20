@@ -5,7 +5,6 @@ import java.io.IOException;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.NewGuiHandler;
-import logisticspipes.utils.gui.DummyContainer;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;

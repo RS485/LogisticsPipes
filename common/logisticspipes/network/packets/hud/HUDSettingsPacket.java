@@ -7,7 +7,6 @@ import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.proxy.SimpleServiceLocator;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

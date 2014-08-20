@@ -10,9 +10,6 @@ package logisticspipes.proxy.buildcraft.gates;
 
 import java.util.LinkedList;
 
-import buildcraft.api.transport.IPipeTile;
-import buildcraft.transport.Pipe;
-import buildcraft.transport.gates.GateDefinition;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
@@ -26,7 +23,9 @@ import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import buildcraft.api.gates.ITrigger;
 import buildcraft.api.gates.ITriggerProvider;
+import buildcraft.api.transport.IPipeTile;
 import buildcraft.transport.Gate;
+import buildcraft.transport.gates.GateDefinition;
 
 public class LogisticsTriggerProvider implements ITriggerProvider {
 

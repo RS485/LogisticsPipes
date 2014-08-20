@@ -8,16 +8,16 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
+import logisticspipes.utils.item.ItemIdentifier;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.util.ForgeDirection;
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.implementations.tiles.ITileStorageMonitorable;
 import appeng.api.networking.security.BaseActionSource;
 import appeng.api.storage.IStorageMonitorable;
 import appeng.api.storage.data.IAEItemStack;
-import logisticspipes.utils.item.ItemIdentifier;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.util.ForgeDirection;
 
 /*
  * Compatibility for Applied Energistics

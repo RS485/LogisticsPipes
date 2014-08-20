@@ -4,9 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import logisticspipes.renderer.CustomBlockRenderer.RenderInfo;
-
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -16,6 +13,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
+
+import org.lwjgl.opengl.GL11;
 
 public final class FluidRenderer {
 

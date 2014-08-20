@@ -1,7 +1,5 @@
 package logisticspipes.network.guis.item;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.GuiCardManager;
 import logisticspipes.interfaces.IGuiOpenControler;
@@ -9,6 +7,8 @@ import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.utils.CardManagmentInventory;
 import logisticspipes.utils.gui.DummyContainer;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 
 public class ItemMangerGui extends GuiProvider {
 	

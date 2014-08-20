@@ -3,14 +3,14 @@ package logisticspipes.gui.modules;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.lwjgl.opengl.GL11;
-
 import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.inventory.IInventory;
+
+import org.lwjgl.opengl.GL11;
 
 public class GuiThaumicAspectSink extends ModuleBaseGui {
 	

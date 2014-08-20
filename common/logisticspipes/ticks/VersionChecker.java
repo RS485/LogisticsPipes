@@ -9,14 +9,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.event.FMLInterModComms;
 import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
+import net.minecraft.nbt.NBTTagCompound;
 
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
-import net.minecraft.nbt.NBTTagCompound;
+
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.event.FMLInterModComms;
 
 
 public class VersionChecker extends Thread {

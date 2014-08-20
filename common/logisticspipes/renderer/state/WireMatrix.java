@@ -5,7 +5,6 @@ import java.util.BitSet;
 
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
-import io.netty.buffer.ByteBuf;
 import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.transport.PipeWire;
 

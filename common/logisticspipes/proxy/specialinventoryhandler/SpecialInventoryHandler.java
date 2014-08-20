@@ -2,13 +2,11 @@ package logisticspipes.proxy.specialinventoryhandler;
 
 import java.util.Map;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.transactor.ITransactor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.util.ForgeDirection;
 
 public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransactor {
 	public abstract boolean init();

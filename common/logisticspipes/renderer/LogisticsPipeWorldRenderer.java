@@ -1,6 +1,5 @@
 package logisticspipes.renderer;
 
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 import logisticspipes.LPConstants;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
@@ -9,13 +8,13 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.side.ClientProxy;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.textures.Textures;
-import logisticspipes.utils.MatrixTranformations;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
+import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler {
 

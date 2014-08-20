@@ -1,8 +1,5 @@
 package logisticspipes.recipes;
 
-import buildcraft.BuildCraftEnergy;
-import buildcraft.BuildCraftSilicon;
-import buildcraft.BuildCraftTransport;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.items.ItemModule;
@@ -17,6 +14,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
+import buildcraft.BuildCraftEnergy;
+import buildcraft.BuildCraftSilicon;
+import buildcraft.BuildCraftTransport;
 
 public class RecipeManager {
 	public static class LocalCraftingManager {

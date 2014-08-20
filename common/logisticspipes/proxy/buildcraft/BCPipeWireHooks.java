@@ -1,6 +1,5 @@
 package logisticspipes.proxy.buildcraft;
 
-import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.tileentity.TileEntity;

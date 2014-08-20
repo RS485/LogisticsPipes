@@ -3,8 +3,6 @@ package logisticspipes.interfaces.routing;
 import java.util.List;
 
 import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.transport.LPTravelingItem;
-
 import net.minecraft.tileentity.TileEntity;
 
 public interface ISpecialTileConnection {

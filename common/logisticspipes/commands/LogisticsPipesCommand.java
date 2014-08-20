@@ -12,7 +12,6 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
-import net.minecraft.server.integrated.IntegratedServer;
 import cpw.mods.fml.common.FMLCommonHandler;
 
 public class LogisticsPipesCommand extends CommandBase {

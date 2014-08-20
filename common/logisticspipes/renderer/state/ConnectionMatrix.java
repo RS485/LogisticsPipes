@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
-import io.netty.buffer.ByteBuf;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class ConnectionMatrix {

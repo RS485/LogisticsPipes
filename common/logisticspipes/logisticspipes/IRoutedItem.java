@@ -8,7 +8,6 @@
 
 package logisticspipes.logisticspipes;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,7 +15,6 @@ import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.order.IDistanceTracker;
-import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;

@@ -2,7 +2,6 @@ package logisticspipes.modules;
 
 import java.util.Collection;
 
-
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
@@ -18,9 +17,9 @@ import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.IIcon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.util.IIcon;
 
 //IHUDModuleHandler, 
 public class ModuleSatelite extends LogisticsModule{

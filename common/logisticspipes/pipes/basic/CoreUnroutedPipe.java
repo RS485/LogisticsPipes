@@ -1,12 +1,8 @@
 package logisticspipes.pipes.basic;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.Random;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IClientState;
 import logisticspipes.proxy.MainProxy;
@@ -24,6 +20,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSettings.GameType;
 import net.minecraftforge.common.util.ForgeDirection;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class CoreUnroutedPipe implements IClientState {
 

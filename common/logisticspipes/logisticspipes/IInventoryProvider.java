@@ -2,7 +2,6 @@ package logisticspipes.logisticspipes;
 
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ISendRoutedItem;
-import logisticspipes.interfaces.ISpawnParticles;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.routing.order.LogisticsOrderManager;
 import logisticspipes.utils.item.ItemIdentifier;

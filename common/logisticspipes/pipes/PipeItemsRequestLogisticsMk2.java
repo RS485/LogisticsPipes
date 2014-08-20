@@ -3,7 +3,6 @@ package logisticspipes.pipes;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;

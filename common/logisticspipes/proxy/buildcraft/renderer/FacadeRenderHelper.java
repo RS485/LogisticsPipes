@@ -1,7 +1,5 @@
 package logisticspipes.proxy.buildcraft.renderer;
 
-import buildcraft.BuildCraftTransport;
-import buildcraft.transport.PipeIconProvider;
 import logisticspipes.LPConstants;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;
@@ -13,6 +11,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.common.util.ForgeDirection;
+import buildcraft.BuildCraftTransport;
+import buildcraft.transport.PipeIconProvider;
 
 public final class FacadeRenderHelper {
 

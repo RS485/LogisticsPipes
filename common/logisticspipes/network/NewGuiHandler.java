@@ -13,7 +13,6 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.packets.gui.GUIPacket;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import lombok.SneakyThrows;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;

@@ -1,8 +1,8 @@
 package logisticspipes.proxy.ic2;
 
 import ic2.core.block.machine.tileentity.TileEntityStandardMachine;
-import net.minecraft.tileentity.TileEntity;
 import logisticspipes.proxy.interfaces.IGenericProgressProvider;
+import net.minecraft.tileentity.TileEntity;
 
 public class IC2ProgressProvider implements IGenericProgressProvider {
 	

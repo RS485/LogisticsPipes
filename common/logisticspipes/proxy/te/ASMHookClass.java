@@ -4,7 +4,6 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
-import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;

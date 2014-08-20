@@ -7,15 +7,10 @@ import logisticspipes.network.PacketHandler.InboundModernPacketWrapper;
 import logisticspipes.network.exception.TargetNotFoundException;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.INetHandler;
 
 import org.apache.logging.log4j.Level;
 
 import cpw.mods.fml.common.FMLLog;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.network.internal.FMLProxyPacket;
-import cpw.mods.fml.relauncher.Side;
 
 public class PacketInboundHandler extends SimpleChannelInboundHandler<InboundModernPacketWrapper> {
 	@Override

@@ -2,7 +2,6 @@ package logisticspipes.network.packets.pipe;
 
 import java.io.IOException;
 
-import net.minecraft.entity.player.EntityPlayer;
 import logisticspipes.interfaces.IClientState;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
@@ -11,6 +10,7 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class PipeTileStatePacket extends CoordinatesPacket {
 

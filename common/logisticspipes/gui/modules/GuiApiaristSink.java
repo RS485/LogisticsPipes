@@ -14,9 +14,9 @@ import logisticspipes.utils.gui.IItemTextureRenderSlot;
 import logisticspipes.utils.gui.ISmallColorRenderSlot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.IIcon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.util.IIcon;
 
 public class GuiApiaristSink extends ModuleBaseGui {
 

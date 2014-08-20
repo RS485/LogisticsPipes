@@ -1,7 +1,7 @@
 package logisticspipes.proxy.interfaces;
 
-import net.minecraft.nbt.NBTTagCompound;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import net.minecraft.nbt.NBTTagCompound;
 
 public interface IOpenComputersProxy {
 

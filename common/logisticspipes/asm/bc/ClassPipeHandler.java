@@ -1,12 +1,5 @@
 package logisticspipes.asm.bc;
 
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
-import net.minecraft.launchwrapper.Launch;
-
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;

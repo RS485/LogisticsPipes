@@ -10,8 +10,6 @@ package logisticspipes.items;
 
 import java.util.List;
 
-import org.apache.logging.log4j.Level;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
@@ -24,6 +22,9 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+
+import org.apache.logging.log4j.Level;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

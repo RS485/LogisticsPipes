@@ -1,6 +1,5 @@
 package logisticspipes.network.guis.module.inhand;
 
-import net.minecraft.entity.player.EntityPlayer;
 import logisticspipes.gui.GuiSupplierPipe;
 import logisticspipes.modules.ModuleActiveSupplier;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -8,6 +7,7 @@ import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.DummyModuleContainer;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class ActiveSupplierInHand extends ModuleInHandGuiProvider {
 	

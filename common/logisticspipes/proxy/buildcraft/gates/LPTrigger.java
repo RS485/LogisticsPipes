@@ -3,9 +3,7 @@ package logisticspipes.proxy.buildcraft.gates;
 
 import logisticspipes.textures.Textures;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
-import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.ITrigger;
 import buildcraft.api.gates.ITriggerParameter;

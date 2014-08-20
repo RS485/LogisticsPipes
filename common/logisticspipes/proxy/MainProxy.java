@@ -10,7 +10,6 @@ import logisticspipes.blocks.crafting.FakePlayer;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.PacketInboundHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.routing.debug.RoutingTableDebugUpdateThread;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;

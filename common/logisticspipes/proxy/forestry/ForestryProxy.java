@@ -2,7 +2,6 @@ package logisticspipes.proxy.forestry;
 
 import java.lang.reflect.Method;
 
-
 import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemModule;
@@ -22,6 +21,7 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import buildcraft.BuildCraftCore;
 import buildcraft.BuildCraftSilicon;
 import buildcraft.BuildCraftTransport;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.apiculture.EnumBeeChromosome;
@@ -29,7 +29,6 @@ import forestry.api.apiculture.EnumBeeType;
 import forestry.api.apiculture.IAlleleBeeSpecies;
 import forestry.api.apiculture.IBeeRoot;
 import forestry.api.core.ForestryAPI;
-import forestry.api.core.ItemInterface;
 import forestry.api.genetics.AlleleManager;
 import forestry.api.genetics.IAllele;
 import forestry.api.genetics.IAlleleSpecies;
@@ -42,8 +41,8 @@ public class ForestryProxy implements IForestryProxy {
 		Class<?> stringUtil = Class.forName("forestry.core.utils.StringUtil");
 		localize = stringUtil.getDeclaredMethod("localize", new Class[]{String.class});
 		localize.setAccessible(true);
-		propolis = ItemInterface.getItem("propolis").getItem();
-		pollen = ItemInterface.getItem("pollen").getItem();
+		propolis = GameRegistry.findItem("Forestry", "for.propolis");
+		pollen = GameRegistry.findItem("Forestry", "for.pollen");
 		honey = FluidRegistry.getFluidStack("honey", 1500);
 		root = (IBeeRoot) AlleleManager.alleleRegistry.getSpeciesRoot("rootBees");
 	}

@@ -8,7 +8,6 @@
 
 package logisticspipes.utils.item;
 
-import java.util.Comparator;
 import java.util.LinkedList;
 
 import logisticspipes.logisticspipes.IRoutedItem;

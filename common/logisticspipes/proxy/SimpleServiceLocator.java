@@ -25,7 +25,6 @@ import logisticspipes.proxy.interfaces.IFactorizationProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
 import logisticspipes.proxy.interfaces.IIronChestProxy;
-import logisticspipes.proxy.interfaces.IModularPowersuitsProxy;
 import logisticspipes.proxy.interfaces.INEIProxy;
 import logisticspipes.proxy.interfaces.IOpenComputersProxy;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;

@@ -1,8 +1,8 @@
 package logisticspipes.network.guis.module.inhand;
 
 import logisticspipes.gui.modules.GuiExtractor;
-import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
 import logisticspipes.utils.gui.DummyContainer;

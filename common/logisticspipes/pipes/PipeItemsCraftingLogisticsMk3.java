@@ -1,6 +1,5 @@
 package logisticspipes.pipes;
 
-import net.minecraft.item.Item;
 import logisticspipes.gui.hud.HUDCraftingMK3;
 import logisticspipes.interfaces.IBufferItems;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
@@ -11,6 +10,7 @@ import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import net.minecraft.item.Item;
 
 public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2 implements IBufferItems {
 	

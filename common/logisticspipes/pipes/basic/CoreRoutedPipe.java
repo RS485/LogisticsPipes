@@ -423,9 +423,6 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 				throw new UnsupportedOperationException("getItemSendMode() returned unhandled value. " + getItemSendMode().name() + " in "+this.getClass().getName());
 			}
 		}
-		if(this.debug.debugThisPipe) {
-			System.out.print("");
-		}
 		if(MainProxy.isClient(getWorld())) return;
 		checkTexturePowered();
 		if (!isEnabled()) return;

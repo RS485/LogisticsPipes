@@ -13,6 +13,7 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.MainProxy;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 
 @Accessors(chain=true)
@@ -30,14 +31,11 @@ public class PlayerListRequest extends ModernPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		List<String> list = new LinkedList<String>();
-		File root = DimensionManager.getCurrentSaveRootDirectory();
-		if(root == null) return;
-		if(!root.exists()) return;
-		File players = new File(root, "players");
-		if(!players.exists()) return;
-		for(String names:players.list()) {
-			if(names.endsWith(".dat") && new File(players, names).isFile()) {
-				list.add(names.substring(0, names.length() - 4));
+		for(WorldServer world:DimensionManager.getWorlds()) {
+			for(Object o:world.playerEntities) {
+				if(o instanceof EntityPlayer) {
+					list.add(((EntityPlayer)o).getGameProfile().getName());
+				}
 			}
 		}
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PlayerList.class).setStringList(list), player);

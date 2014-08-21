@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
+import logisticspipes.LogisticsPipes;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
@@ -35,6 +36,7 @@ public class DevEnvHelper {
 	
 	@SuppressWarnings("unchecked")
 	public static void detectCoreModInEclipseSettings() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException, IOException {
+		if(!LogisticsPipes.DEBUG || !new File(".classpath").exists()) return;
 		Method handleCascadingTweak = CoreModManager.class.getDeclaredMethod("handleCascadingTweak", File.class, JarFile.class, String.class, LaunchClassLoader.class, Integer.class);
 		handleCascadingTweak.setAccessible(true);
 		Method loadCoreMod = CoreModManager.class.getDeclaredMethod("loadCoreMod", LaunchClassLoader.class, String.class, File.class);

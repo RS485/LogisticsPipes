@@ -1,17 +1,15 @@
 package logisticspipes.asm;
 
-import java.io.File;
 import java.util.Map;
 
-import logisticspipes.LogisticsPipes;
+import net.minecraft.launchwrapper.Launch;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 
 public class LogisticsPipesCoreLoader implements IFMLLoadingPlugin {
 	
-	public LogisticsPipesCoreLoader() throws Exception	 {
-		if(LogisticsPipes.DEBUG && new File(".classpath").exists()) {//Only in eclipse debug env
-			DevEnvHelper.detectCoreModInEclipseSettings(); //Load CoreMods out of the class path
-		}
+	public LogisticsPipesCoreLoader() throws Exception {
+		Launch.classLoader.findClass("logisticspipes.asm.DevEnvHelper").getMethod("detectCoreModInEclipseSettings").invoke(null);
+		//DevEnvHelper.detectCoreModInEclipseSettings();
 	}
 	
 	@Override

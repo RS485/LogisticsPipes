@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISlotCheck;
@@ -479,7 +480,7 @@ public class DummyContainer extends Container {
 		if(slotId < 0) return superSlotClick(slotId, mouseButton, isShift, entityplayer);
 		Slot slot = (Slot)inventorySlots.get(slotId);
 		//debug dump
-		if(LogisticsPipes.DEBUG && slot != null) {
+		if(LPConstants.DEBUG && slot != null) {
 			ItemStack stack = slot.getStack();
 			if(stack != null) {
 				ItemIdentifier.get(stack).debugDumpData(entityplayer.worldObj.isRemote);

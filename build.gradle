@@ -48,6 +48,7 @@ minecraft {
     replace '%MCVERSION%', "1.7.10"
     replace '%DEBUG%', "false"
 	replaceIn "LogisticsPipes.java"
+	replaceIn "LPConstants.java"
 }
 
 jar {

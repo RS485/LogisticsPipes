@@ -2,7 +2,7 @@ package logisticspipes.network.abstractpackets;
 
 import java.io.IOException;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.LPConstants;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.LPDataInputStream;
@@ -124,7 +124,7 @@ public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
 
 	@Override
 	public <T> T getTile(World world, Class<T> clazz) {
-		if(LogisticsPipes.DEBUG && !moduleBased && type != null) {
+		if(LPConstants.DEBUG && !moduleBased && type != null) {
 			new Exception("ModulePacket was asked for a pipe").printStackTrace();
 		}
 		return super.getTile(world, clazz);

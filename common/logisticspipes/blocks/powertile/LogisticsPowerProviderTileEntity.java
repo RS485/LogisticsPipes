@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.LPConstants;
 import logisticspipes.gui.hud.HUDPowerLevel;
 import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.IGuiOpenControler;
@@ -318,7 +318,7 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 	@Override
 	public void func_145828_a(CrashReportCategory par1CrashReportCategory) {
 		super.func_145828_a(par1CrashReportCategory);
-		par1CrashReportCategory.addCrashSection("LP-Version", LogisticsPipes.VERSION);
+		par1CrashReportCategory.addCrashSection("LP-Version", LPConstants.VERSION);
 	}
 
 	public void handlePowerPacket(float float1) {

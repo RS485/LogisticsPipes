@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.LPConstants;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 
@@ -15,7 +15,7 @@ public class TargetNotFoundException extends RuntimeException {
 
 	public TargetNotFoundException(String message, ModernPacket packet) {
 		super(message);
-		if(!LogisticsPipes.DEBUG) return;
+		if(!LPConstants.DEBUG) return;
 		StackTraceElement[] astacktraceelement = PacketHandler.debugMap.get(packet.getDebugId());
 		if(astacktraceelement != null) {
 			List<StackTraceElement> list = new ArrayList<StackTraceElement>();

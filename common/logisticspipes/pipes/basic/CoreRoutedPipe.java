@@ -24,6 +24,7 @@ import java.util.UUID;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import logisticspipes.Configs;
+import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.asm.ModDependentMethod;
@@ -368,7 +369,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		// remove old items _inTransit -- these should have arrived, but have probably been lost instead. In either case, it will allow a re-send so that another attempt to re-fill the inventory can be made.		
 		while(this._inTransitToMe.peek()!=null && this._inTransitToMe.peek().getTickToTimeOut() <= 0){
 			final ItemRoutingInformation p=_inTransitToMe.poll();
-			if (LogisticsPipes.DEBUG) {
+			if (LPConstants.DEBUG) {
 				LogisticsPipes.log.info("Timed Out: "+p.getItem().getFriendlyName() + " (" + p.hashCode() + ")");
 			}
 			debug.log("Timed Out: "+p.getItem().getFriendlyName() + " (" + p.hashCode() + ")");
@@ -838,7 +839,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 					LogisticsHUDRenderer.instance().resetLasers();
 				}
 			}
-			if (LogisticsPipes.DEBUG) {
+			if (LPConstants.DEBUG) {
 				doDebugStuff(entityplayer);
 			}
 			return true;

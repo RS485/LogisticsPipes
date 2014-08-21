@@ -1,6 +1,6 @@
 package logisticspipes.textures;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.LPConstants;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.renderer.IIconProvider;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
@@ -233,7 +233,7 @@ public class Textures {
 			}
 		}
 		
-		if(LogisticsPipes.DEBUG) {
+		if(LPConstants.DEBUG) {
 			System.out.println("LP: pipetextures " + index);
 		}
 	}

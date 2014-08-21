@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import logisticspipes.Configs;
+import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.gui.hud.HUDChassiePipe;
@@ -260,7 +261,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 					((IRequireReliableTransport) module).itemArrived(item, info);
 				}
 			} else {
-				if(LogisticsPipes.DEBUG && info != null) {
+				if(LPConstants.DEBUG && info != null) {
 					System.out.println(item);
 					new RuntimeException("[ItemArrived] Information weren't ment for a chassi pipe").printStackTrace();
 				}
@@ -278,7 +279,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 					((IRequireReliableTransport) module).itemLost(item, info);
 				}
 			} else {
-				if(LogisticsPipes.DEBUG) {
+				if(LPConstants.DEBUG) {
 					System.out.println(item);
 					new RuntimeException("[ItemLost] Information weren't ment for a chassi pipe").printStackTrace();
 				}
@@ -296,7 +297,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 					return ((IBufferItems)module).addToBuffer(item, info);
 				}
 			} else {
-				if(LogisticsPipes.DEBUG) {
+				if(LPConstants.DEBUG) {
 					System.out.println(item);
 					new RuntimeException("[AddToBuffer] Information weren't ment for a chassi pipe").printStackTrace();
 				}

@@ -3,7 +3,7 @@ package logisticspipes.blocks;
 import java.util.LinkedList;
 import java.util.List;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.LPConstants;
 import logisticspipes.interfaces.ICraftingResultHandler;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.IGuiTileEntity;
@@ -500,7 +500,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 	@Override
 	public void func_145828_a(CrashReportCategory par1CrashReportCategory) {
 		super.func_145828_a(par1CrashReportCategory);
-		par1CrashReportCategory.addCrashSection("LP-Version", LogisticsPipes.VERSION);
+		par1CrashReportCategory.addCrashSection("LP-Version", LPConstants.VERSION);
 	}
 
 	@Override

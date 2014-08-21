@@ -10,6 +10,7 @@ import li.cil.oc.api.network.Arguments;
 import li.cil.oc.api.network.Callback;
 import li.cil.oc.api.network.Context;
 import li.cil.oc.api.prefab.AbstractValue;
+import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -212,11 +213,11 @@ public abstract class BaseWrapperClass extends AbstractValue {
 					}
 				}
 			} catch(NoSuchMethodException e) {
-				if(LogisticsPipes.DEBUG) {
+				if(LPConstants.DEBUG) {
 					e.printStackTrace();
 				}
 			} catch(SecurityException e) {
-				if(LogisticsPipes.DEBUG) {
+				if(LPConstants.DEBUG) {
 					e.printStackTrace();
 				}
 			}

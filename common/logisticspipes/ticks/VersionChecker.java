@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import logisticspipes.Configs;
+import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -36,9 +37,9 @@ public class VersionChecker extends Thread {
 	@SuppressWarnings({ "resource", "rawtypes", "unchecked" })
 	public void run() {
 		try {
-			if(LogisticsPipes.VERSION.equals("%"+"VERSION%:%DEBUG"+"%")) return;
-			if(LogisticsPipes.VERSION.contains("-")) return;
-			URL url = new URL("http://rs485.thezorro266.com/version/check.php?VERSION=" + LogisticsPipes.VERSION);
+			if(LPConstants.VERSION.equals("%"+"VERSION%:%DEBUG"+"%")) return;
+			if(LPConstants.VERSION.contains("-")) return;
+			URL url = new URL("http://rs485.thezorro266.com/version/check.php?VERSION=" + LPConstants.VERSION);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			InputStream inputStream = (InputStream) conn.getContent();
 			Scanner s = new Scanner(inputStream).useDelimiter("\\A");
@@ -102,7 +103,7 @@ public class VersionChecker extends Thread {
 	public static void sendIMCOutdatedMessage() {
 		if (Loader.isModLoaded("VersionChecker")) {
 			NBTTagCompound tag = new NBTTagCompound();
-			tag.setString("oldVersion", LogisticsPipes.VERSION);
+			tag.setString("oldVersion", LPConstants.VERSION);
 			tag.setString("newVersion", newVersion);
 			tag.setString("updateUrl", "http://ci.thezorro266.com/view/Logistics%20Pipes/");
 			tag.setBoolean("isDirectLink", false);

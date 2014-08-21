@@ -1,6 +1,6 @@
 package logisticspipes.gui;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.LPConstants;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.block.PowerJunctionCheatPacket;
@@ -59,7 +59,7 @@ public class GuiPowerJunction extends LogisticsBaseGuiScreen {
 	public void initGui() {
 		super.initGui();
 		this.buttonList.clear();
-		if (LogisticsPipes.DEBUG) {
+		if (LPConstants.DEBUG) {
 			this.buttonList.add(new GuiButton(0, guiLeft + 140, guiTop + 20, 20, 20, "+"));
 		}
 	}

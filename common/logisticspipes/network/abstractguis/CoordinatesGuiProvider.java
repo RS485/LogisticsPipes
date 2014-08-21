@@ -2,6 +2,7 @@ package logisticspipes.network.abstractguis;
 
 import java.io.IOException;
 
+import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
@@ -68,7 +69,7 @@ public abstract class CoordinatesGuiProvider extends GuiProvider {
 			return null;
 		}
 		if (!world.blockExists(getPosX(), getPosY(), getPosZ())) {
-			if(LogisticsPipes.DEBUG) {
+			if(LPConstants.DEBUG) {
 				LogisticsPipes.log.fatal(this.toString());
 				new RuntimeException("Couldn't find " + clazz.getName()).printStackTrace();
 			}
@@ -78,14 +79,14 @@ public abstract class CoordinatesGuiProvider extends GuiProvider {
 		final TileEntity tile = world.getTileEntity(getPosX(), getPosY(), getPosZ());
 		if(tile != null) {
 			if(!(clazz.isAssignableFrom(tile.getClass()))) {
-				if(LogisticsPipes.DEBUG) {
+				if(LPConstants.DEBUG) {
 					LogisticsPipes.log.fatal(this.toString());
 					new RuntimeException("Couldn't find " + clazz.getName() + ", found " + tile.getClass()).printStackTrace();
 				}
 				return null;
 			}
 		} else {
-			if(LogisticsPipes.DEBUG) {
+			if(LPConstants.DEBUG) {
 				LogisticsPipes.log.fatal(this.toString());
 				new RuntimeException("Couldn't find " + clazz.getName()).printStackTrace();
 			}

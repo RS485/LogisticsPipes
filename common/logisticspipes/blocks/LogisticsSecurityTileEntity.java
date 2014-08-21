@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IGuiOpenControler;
@@ -337,7 +338,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	@Override
 	public void func_145828_a(CrashReportCategory par1CrashReportCategory) {
 		super.func_145828_a(par1CrashReportCategory);
-		par1CrashReportCategory.addCrashSection("LP-Version", LogisticsPipes.VERSION);
+		par1CrashReportCategory.addCrashSection("LP-Version", LPConstants.VERSION);
 	}
 	
 	public World getWorld() {

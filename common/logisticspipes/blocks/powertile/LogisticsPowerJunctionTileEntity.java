@@ -5,7 +5,7 @@ import ic2.api.energy.tile.IEnergySink;
 import java.util.List;
 
 import logisticspipes.Configs;
-import logisticspipes.LogisticsPipes;
+import logisticspipes.LPConstants;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.asm.ModDependentField;
 import logisticspipes.asm.ModDependentInterface;
@@ -342,7 +342,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 	@Override
 	public void func_145828_a(CrashReportCategory par1CrashReportCategory) {
 		super.func_145828_a(par1CrashReportCategory);
-		par1CrashReportCategory.addCrashSection("LP-Version", LogisticsPipes.VERSION);
+		par1CrashReportCategory.addCrashSection("LP-Version", LPConstants.VERSION);
 	}
 
 	@Override

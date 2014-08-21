@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import logisticspipes.Configs;
-import logisticspipes.LogisticsPipes;
+import logisticspipes.LPConstants;
 import logisticspipes.asm.bc.ClassPipeHandler;
 import logisticspipes.asm.bc.ClassPipeTransportItemsHandler;
 import logisticspipes.utils.ModStatusHelper;
@@ -66,7 +66,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			clearNegativeInterfaceCache();
 		}
 		if(bytes == null) return null;
-		if(name.startsWith("logisticspipes.") || name.startsWith("net.minecraft") || LogisticsPipes.DEBUG) {
+		if(name.startsWith("logisticspipes.") || name.startsWith("net.minecraft") || LPConstants.DEBUG) {
 			return applyLPTransforms(name, bytes);
 		}
 		byte[] tmp = bytes.clone();
@@ -126,7 +126,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			}
 			return handleLPTransformation(bytes);
 		} catch(Exception e) {
-			if(LogisticsPipes.DEBUG) { //For better Debugging
+			if(LPConstants.DEBUG) { //For better Debugging
 				e.printStackTrace();
 				return bytes;
 			}
@@ -162,7 +162,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 				}
 			}
 		} catch(Exception e) {
-			if(LogisticsPipes.DEBUG) { //For better Debugging
+			if(LPConstants.DEBUG) { //For better Debugging
 				e.printStackTrace();
 			}
 		}

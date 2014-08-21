@@ -12,7 +12,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.LPConstants;
 import logisticspipes.utils.gui.extention.GuiExtentionController;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -142,7 +142,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 				fX.set(null, 0);
 				fY.set(null, 0);
 			} catch (Exception e) {
-				if(LogisticsPipes.DEBUG) e.printStackTrace();
+				if(LPConstants.DEBUG) e.printStackTrace();
 			}
 			//Draw super class (maybe NEI)
 			super.drawScreen(0, 0, par3);
@@ -155,7 +155,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 				fX.set(null, x);
 				fY.set(null, y);
 			} catch (Exception e) {
-				if(LogisticsPipes.DEBUG) e.printStackTrace();
+				if(LPConstants.DEBUG) e.printStackTrace();
 			}
 	        RenderHelper.disableStandardItemLighting();
 			GL11.glTranslatef(0.0F, 0.0F, 101.0F);

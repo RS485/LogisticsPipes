@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.asm.IgnoreDisabledProxy;
 import logisticspipes.proxy.DontLoadProxy;
@@ -216,7 +217,7 @@ public class LogisticsWrapperHandler {
 			
 			byte[] bytes = cw.toByteArray();
 			
-			if(LogisticsPipes.DEBUG) {
+			if(LPConstants.DEBUG) {
 				if(DUMP) {
 					saveGeneratedClass(bytes, lookfor, "LP_WRAPPER_CLASSES");
 				}
@@ -332,7 +333,7 @@ public class LogisticsWrapperHandler {
 			
 			byte[] bytes = cw.toByteArray();
 			
-			if(LogisticsPipes.DEBUG) {
+			if(LPConstants.DEBUG) {
 				if(DUMP) {
 					saveGeneratedClass(bytes, lookfor, "LP_WRAPPER_CLASSES");
 				}

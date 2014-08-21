@@ -2,6 +2,7 @@ package logisticspipes.network;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.PacketHandler.InboundModernPacketWrapper;
 import logisticspipes.network.exception.TargetNotFoundException;
@@ -17,13 +18,13 @@ public class PacketInboundHandler extends SimpleChannelInboundHandler<InboundMod
 	protected void channelRead0(ChannelHandlerContext ctx, InboundModernPacketWrapper msg) throws Exception {
 		try {
 			msg.packet.processPacket(msg.player);
-			if(LogisticsPipes.DEBUG) {
+			if(LPConstants.DEBUG) {
 				PacketHandler.debugMap.remove((Integer) msg.packet.getDebugId());
 			}
 		} catch(TargetNotFoundException e) {
 			if(msg.packet.retry() && MainProxy.isClient(msg.player.getEntityWorld())) {
 				SimpleServiceLocator.clientBufferHandler.queueFailedPacket(msg.packet, msg.player);
-			} else if(LogisticsPipes.DEBUG) {
+			} else if(LPConstants.DEBUG) {
 				LogisticsPipes.log.error(msg.packet.getClass().getName());
 				LogisticsPipes.log.error(msg.packet.toString());
 				e.printStackTrace();

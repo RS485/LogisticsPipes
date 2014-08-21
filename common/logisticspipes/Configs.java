@@ -31,7 +31,7 @@ public class Configs {
 	public static boolean LOGISTICS_POWER_USAGE_DISABLED = false;
 	public static boolean ENABLE_RESEARCH_SYSTEM = false;
 
-	public static boolean TOOLTIP_INFO = LogisticsPipes.DEBUG;
+	public static boolean TOOLTIP_INFO = LPConstants.DEBUG;
 	public static boolean MANDATORY_CARPENTER_RECIPES = true;
 	public static boolean ENABLE_PARTICLE_FX = true;
 

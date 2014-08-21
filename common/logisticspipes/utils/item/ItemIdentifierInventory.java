@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 
+import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.ISaveState;
 import logisticspipes.proxy.MainProxy;
@@ -112,7 +113,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 			_contents[i] = null;
 		} else {
 			if(!isValidStack(itemstack)) {
-				if(LogisticsPipes.DEBUG) {
+				if(LPConstants.DEBUG) {
 					new UnsupportedOperationException("Not valid for this Inventory: (" + itemstack + ")").printStackTrace();
 				}
 				return;
@@ -127,7 +128,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 			_contents[i] = null;
 		} else {
 			if(!isValidStack(itemstack)) {
-				if(LogisticsPipes.DEBUG) {
+				if(LPConstants.DEBUG) {
 					new UnsupportedOperationException("Not valid for this Inventory: (" + itemstack + ")").printStackTrace();
 				}
 				return;
@@ -267,7 +268,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 	
 	private int tryAddToSlot(int i, ItemStack stack, int realstacklimit) {
 		if(!isValidStack(stack)) {
-			if(LogisticsPipes.DEBUG) {
+			if(LPConstants.DEBUG) {
 				new UnsupportedOperationException("Not valid for this Inventory: (" + stack + ")").printStackTrace();
 			}
 			return 0;
@@ -297,7 +298,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 	public int addCompressed(ItemStack stack, boolean ignoreMaxStackSize) {
 		if(stack == null) return 0;
 		if(!isValidStack(stack)) {
-			if(LogisticsPipes.DEBUG) {
+			if(LPConstants.DEBUG) {
 				new UnsupportedOperationException("Not valid for this Inventory: (" + stack + ")").printStackTrace();
 			}
 			return stack.stackSize;

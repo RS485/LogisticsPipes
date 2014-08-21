@@ -216,10 +216,7 @@ public class LogisticsPipes {
 	//Log Requests
 	public static boolean DisplayRequests;
 
-	public static final boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "%DEBUG%".equals("true");
-	public static final String MCVersion = "%MCVERSION%";
-	public static final String VERSION = "%VERSION%:%DEBUG%";
-	public static final boolean DEV_BUILD = VERSION.contains(".dev.") || DEBUG;
+	public static final boolean DEV_BUILD = LPConstants.VERSION.contains(".dev.") || LPConstants.DEBUG;
 	public static boolean WATCHDOG = false;
 	
 	private boolean certificateError = false;
@@ -511,7 +508,7 @@ public class LogisticsPipes {
 	
 	@EventHandler
 	public void certificateWarning(FMLFingerprintViolationEvent warning) {
-		if(!DEBUG) {
+		if(!LPConstants.DEBUG) {
 			System.out.println("[LogisticsPipes|Certificate] Certificate not correct");
 			System.out.println("[LogisticsPipes|Certificate] Expected: " + warning.expectedFingerprint);
 			System.out.println("[LogisticsPipes|Certificate] File: " + warning.source.getAbsolutePath());

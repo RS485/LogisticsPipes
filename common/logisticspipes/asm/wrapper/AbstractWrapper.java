@@ -1,5 +1,6 @@
 package logisticspipes.asm.wrapper;
 
+import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.string.ChatColor;
@@ -20,7 +21,7 @@ public abstract class AbstractWrapper {
 	
 	public void handleException(Throwable e) {
 		if(!isEnabled()) {
-			if(LogisticsPipes.DEBUG) {
+			if(LPConstants.DEBUG) {
 				e.printStackTrace();
 			}
 			return;

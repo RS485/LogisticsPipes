@@ -2,7 +2,7 @@ package logisticspipes.commands.commands;
 
 import java.util.Arrays;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.LPConstants;
 import logisticspipes.commands.abstracts.SubCommandHandler;
 import logisticspipes.commands.commands.debug.CloseCommand;
 import logisticspipes.commands.commands.debug.HandCommand;
@@ -23,7 +23,7 @@ public class DebugCommand extends SubCommandHandler {
 
 	@Override
 	public boolean isCommandUsableBy(ICommandSender sender) {
-		return LogisticsPipes.DEBUG || Arrays.asList(allowedPlayers).contains(sender.getCommandSenderName());
+		return LPConstants.DEBUG || Arrays.asList(allowedPlayers).contains(sender.getCommandSenderName());
 	}
 
 	@Override

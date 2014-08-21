@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.LPConstants;
 import logisticspipes.asm.ClientSideOnlyMethodContent;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.OpenChatGui;
@@ -93,7 +93,7 @@ public class LPChatListener {
 				addSendMessages(realMessage.substring(20));
 				event.setCanceled(true);
 			}
-			if(realMessage.contains("LPDISPLAYMISSING") && LogisticsPipes.DEBUG) {
+			if(realMessage.contains("LPDISPLAYMISSING") && LPConstants.DEBUG) {
 				System.out.println("LIST:");
 				for(String key:StringUtil.untranslatedStrings) {
 					System.out.println(key);

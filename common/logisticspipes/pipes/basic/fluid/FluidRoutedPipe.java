@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.LPConstants;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
@@ -134,7 +134,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 				if(filled == 0) continue;
 				FluidStack drain = tank.drain(filled, true);
 				if(drain == null || filled != drain.amount) {
-					if(LogisticsPipes.DEBUG) {
+					if(LPConstants.DEBUG) {
 						throw new UnsupportedOperationException("Fluid Multiplication");
 					}
 				}
@@ -155,7 +155,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 				if(filled == 0) continue;
 				FluidStack drain = tank.drain(filled, true);
 				if(drain == null || filled != drain.amount) {
-					if(LogisticsPipes.DEBUG) {
+					if(LPConstants.DEBUG) {
 						throw new UnsupportedOperationException("Fluid Multiplication");
 					}
 				}

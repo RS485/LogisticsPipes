@@ -14,6 +14,7 @@ import li.cil.oc.api.network.Message;
 import li.cil.oc.api.network.Node;
 import li.cil.oc.api.network.SidedEnvironment;
 import logisticspipes.Configs;
+import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.asm.ModDependentField;
 import logisticspipes.asm.ModDependentInterface;
@@ -225,11 +226,11 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 		try {
 			super.func_145828_a(par1CrashReportCategory);
 		} catch(Exception e) {
-			if(LogisticsPipes.DEBUG) {
+			if(LPConstants.DEBUG) {
 				e.printStackTrace();
 			}
 		}
-		par1CrashReportCategory.addCrashSection("LP-Version", LogisticsPipes.VERSION);
+		par1CrashReportCategory.addCrashSection("LP-Version", LPConstants.VERSION);
 		if(this.pipe != null) {
 			par1CrashReportCategory.addCrashSection("Pipe", this.pipe.getClass().getCanonicalName());
 			if(this.pipe.transport != null) {

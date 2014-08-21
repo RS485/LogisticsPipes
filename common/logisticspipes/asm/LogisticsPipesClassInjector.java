@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.LPConstants;
 import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
 import logisticspipes.proxy.opencomputers.asm.ClassCreator;
 import net.minecraft.launchwrapper.IClassTransformer;
@@ -37,7 +37,7 @@ public class LogisticsPipesClassInjector implements IClassTransformer {
 				return bytes;
 			}
 		} catch(Exception e) {
-			if(LogisticsPipes.DEBUG) { // For better Debugging
+			if(LPConstants.DEBUG) { // For better Debugging
 				e.printStackTrace();
 				return bytes;
 			}

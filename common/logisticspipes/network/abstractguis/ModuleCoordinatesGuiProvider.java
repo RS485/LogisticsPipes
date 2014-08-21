@@ -2,6 +2,7 @@ package logisticspipes.network.abstractguis;
 
 import java.io.IOException;
 
+import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
@@ -48,7 +49,7 @@ public abstract class ModuleCoordinatesGuiProvider extends CoordinatesGuiProvide
 	public <T> T getLogisticsModule(World world, Class<T> clazz) {
 		LogisticsTileGenericPipe pipe = this.getPipe(world);
 		if(pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) {
-			if(LogisticsPipes.DEBUG) {
+			if(LPConstants.DEBUG) {
 				LogisticsPipes.log.fatal(this.toString());
 				new RuntimeException("Couldn't find " + clazz.getName() + ", pipe didn't exsist").printStackTrace();
 			}
@@ -61,7 +62,7 @@ public abstract class ModuleCoordinatesGuiProvider extends CoordinatesGuiProvide
 			throw new UnsupportedOperationException("NO IN_HAND FOR THIS PACKET TYPE");
 		} else {
 			if(!(pipe.pipe instanceof PipeLogisticsChassi)) {
-				if(LogisticsPipes.DEBUG) {
+				if(LPConstants.DEBUG) {
 					LogisticsPipes.log.fatal(this.toString());
 					new RuntimeException("Couldn't find " + clazz.getName() + ", pipe wasn't a chassi pipe").printStackTrace();
 				}
@@ -71,14 +72,14 @@ public abstract class ModuleCoordinatesGuiProvider extends CoordinatesGuiProvide
 		}
 		if(module != null) {
 			if(!(clazz.isAssignableFrom(module.getClass()))) {
-				if(LogisticsPipes.DEBUG) {
+				if(LPConstants.DEBUG) {
 					LogisticsPipes.log.fatal(this.toString());
 					new RuntimeException("Couldn't find " + clazz.getName() + ", found " + module.getClass()).printStackTrace();
 				}
 				return null;
 			}
 		} else {
-			if(LogisticsPipes.DEBUG) {
+			if(LPConstants.DEBUG) {
 				LogisticsPipes.log.fatal(this.toString());
 				new RuntimeException("Couldn't find " + clazz.getName()).printStackTrace();
 			}

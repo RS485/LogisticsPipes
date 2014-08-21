@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.exception.TargetNotFoundException;
@@ -49,7 +50,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 	// Suppressed because this cast should never fail.
 	public static <T extends ModernPacket> T getPacket(Class<T> clazz) {
 		T packet = (T) packetmap.get(clazz).template();
-		if(LogisticsPipes.DEBUG && MainProxy.proxy.getSide().equals("Client")) {
+		if(LPConstants.DEBUG && MainProxy.proxy.getSide().equals("Client")) {
 			StackTraceElement[] trace = Thread.currentThread().getStackTrace();
 			synchronized(debugMap) { //Unique id
 				int id = packetDebugID++;
@@ -167,13 +168,13 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 	private static void onPacketData(ModernPacket packet, final EntityPlayer player) {
 		try {
 			packet.processPacket(player);
-			if(LogisticsPipes.DEBUG) {
+			if(LPConstants.DEBUG) {
 				debugMap.remove((Integer) packet.getDebugId());
 			}
 		} catch(TargetNotFoundException e) {
 			if(packet.retry() && MainProxy.isClient(player.getEntityWorld())) {
 				SimpleServiceLocator.clientBufferHandler.queueFailedPacket(packet, player);
-			} else if(LogisticsPipes.DEBUG) {
+			} else if(LPConstants.DEBUG) {
 				LogisticsPipes.log.error(packet.getClass().getName());
 				LogisticsPipes.log.error(packet.toString());
 				e.printStackTrace();

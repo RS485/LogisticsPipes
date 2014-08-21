@@ -1,5 +1,6 @@
 package logisticspipes.commands.commands;
 
+import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.commands.abstracts.ICommandHandler;
 import logisticspipes.ticks.VersionChecker;
@@ -26,7 +27,7 @@ public class VersionCommand implements ICommandHandler {
 	
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
-		sender.addChatMessage(new ChatComponentText(String.format("LogisticsPipes %s for Minecraft %s.", LogisticsPipes.class.getAnnotation(Mod.class).version(), LogisticsPipes.MCVersion)));
+		sender.addChatMessage(new ChatComponentText(String.format("LogisticsPipes %s for Minecraft %s.", LogisticsPipes.class.getAnnotation(Mod.class).version(), LPConstants.MCVersion)));
     	if(VersionChecker.hasNewVersion) {
     		sender.addChatMessage(new ChatComponentText("Your LogisticsPipes version is outdated. The newest version is #" + VersionChecker.newVersion + "."));
     		sender.addChatMessage(new ChatComponentText("Use \"/logisticspipes changelog\" to see a changelog."));

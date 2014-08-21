@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.util.LinkedList;
 import java.util.List;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.LPConstants;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.gui.popup.GuiEditCCAccessTable;
 import logisticspipes.gui.popup.GuiSecurityStationPopup;
@@ -81,7 +81,7 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 		this.buttonList.add(new SmallGuiButton(4, guiLeft + 241, guiTop + 217, 30, 10, StringUtil.translate(PREFIX + "Open")));
 		this.buttonList.add(new GuiCheckBox(5, guiLeft + 160, guiTop + 42, 16, 16, _tile.allowCC));
 		this.buttonList.add(new SmallGuiButton(6, guiLeft + 162, guiTop + 60, 60, 10, StringUtil.translate(PREFIX + "EditTable")));
-		if(!SimpleServiceLocator.ccProxy.isCC() && !LogisticsPipes.DEBUG) {
+		if(!SimpleServiceLocator.ccProxy.isCC() && !LPConstants.DEBUG) {
 			((GuiButton)this.buttonList.get(5)).visible = false;
 			((GuiButton)this.buttonList.get(6)).visible = false;
 		}
@@ -128,7 +128,7 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 81, guiTop + 140);
 		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "SecurityStation"), guiLeft + 105, guiTop + 10, 0x404040);
 		mc.fontRenderer.drawString(_tile.getSecId() == null ? "null" : _tile.getSecId().toString(), guiLeft + 32, guiTop + 25, 0x404040);
-		if(SimpleServiceLocator.ccProxy.isCC() || LogisticsPipes.DEBUG) {
+		if(SimpleServiceLocator.ccProxy.isCC() || LPConstants.DEBUG) {
 			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "allowCCAccess") + ":", guiLeft + 10, guiTop + 46, 0x404040);
 			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "excludeIDs") + ":", guiLeft + 10, guiTop + 61, 0x404040);
 		}

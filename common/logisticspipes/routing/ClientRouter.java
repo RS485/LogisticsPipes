@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.LPConstants;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.routing.IFilter;
@@ -48,7 +48,7 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public boolean isRoutedExit(ForgeDirection connection) {
-		if(LogisticsPipes.DEBUG) {
+		if(LPConstants.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
 		return false;
@@ -56,7 +56,7 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public boolean hasRoute(int id, boolean flag, ItemIdentifier item) {
-		if(LogisticsPipes.DEBUG) {
+		if(LPConstants.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
 		return false;
@@ -64,7 +64,7 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public ExitRoute getExitFor(int id, boolean flag, ItemIdentifier item) {
-		if(LogisticsPipes.DEBUG) {
+		if(LPConstants.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
 		return null;
@@ -72,7 +72,7 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public ArrayList<List<ExitRoute>> getRouteTable() {
-		if(LogisticsPipes.DEBUG) {
+		if(LPConstants.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
 		return new ArrayList<List<ExitRoute>>();
@@ -80,7 +80,7 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public List<ExitRoute> getIRoutersByCost() {
-		if(LogisticsPipes.DEBUG) {
+		if(LPConstants.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
 		return new LinkedList<ExitRoute>();

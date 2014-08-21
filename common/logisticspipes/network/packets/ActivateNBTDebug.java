@@ -3,7 +3,7 @@ package logisticspipes.network.packets;
 import java.io.IOException;
 
 import logisticspipes.Configs;
-import logisticspipes.LogisticsPipes;
+import logisticspipes.LPConstants;
 import logisticspipes.nei.LoadingHelper;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
@@ -28,7 +28,7 @@ public class ActivateNBTDebug extends ModernPacket {
 		} catch(ClassNotFoundException e) {
 
 		} catch(Exception e1) {
-			if(LogisticsPipes.DEBUG) {
+			if(LPConstants.DEBUG) {
 				e1.printStackTrace();
 			}
 		}

@@ -3,7 +3,7 @@ package logisticspipes.renderer;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.LPConstants;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.pipe.SlotFinderNumberPacket;
@@ -58,7 +58,7 @@ public class LogisticsGuiOverrenderer {
 			fX.setAccessible(true);
 			fY.setAccessible(true);
 		} catch(Exception e) {
-			if(LogisticsPipes.DEBUG) e.printStackTrace();
+			if(LPConstants.DEBUG) e.printStackTrace();
 		}
 	}
 	
@@ -80,7 +80,7 @@ public class LogisticsGuiOverrenderer {
 				fY.set(null, 0);
 				hasBeenSaved = true;
 			} catch(Exception e) {
-				if(LogisticsPipes.DEBUG) e.printStackTrace();
+				if(LPConstants.DEBUG) e.printStackTrace();
 			}
 			while(Mouse.next()) {
 				if(Mouse.getEventButton() == 0 && Mouse.getEventButtonState()) {
@@ -99,7 +99,7 @@ public class LogisticsGuiOverrenderer {
 				fX.set(null, oldX);
 				fY.set(null, oldY);
 			} catch(Exception e) {
-				if(LogisticsPipes.DEBUG) e.printStackTrace();
+				if(LPConstants.DEBUG) e.printStackTrace();
 			}
 		}
 		if(isOverlaySlotActive) {

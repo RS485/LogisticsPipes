@@ -66,5 +66,5 @@ public interface IForestryProxy {
 	@SideOnly(Side.CLIENT)
 	public abstract IIcon getIconFromTextureManager(String name);
 
-	public abstract void addCraftingRecipes();
+	public abstract void addCraftingRecipes(ICraftingParts parts);
 }

@@ -9,6 +9,7 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.cc.wrapper.CCCommandWrapper;
 import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
 import logisticspipes.proxy.interfaces.ICCProxy;
+import logisticspipes.proxy.interfaces.ICraftingParts;
 import logisticspipes.recipes.CraftingDependency;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.RecipeManager.LocalCraftingManager;
@@ -16,7 +17,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import buildcraft.BuildCraftSilicon;
 import dan200.computercraft.ComputerCraft;
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -104,14 +104,14 @@ public class CCProxy implements ICCProxy {
 	}
 
 	@Override
-	public void addCraftingRecipes() {
+	public void addCraftingRecipes(ICraftingParts parts) {
 		LocalCraftingManager craftingManager = RecipeManager.craftingManager;
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CC_REMOTE_CONTROL), CraftingDependency.Upgrades, new Object[] { 
 			false, 
 			"rTr", 
 			"WCM", 
 			"rKr", 
-			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3),
+			Character.valueOf('C'), parts.getChipTear3(),
 			Character.valueOf('r'), Items.redstone, 
 			Character.valueOf('T'), Blocks.redstone_torch, 
 			Character.valueOf('W'), new ItemStack(ComputerCraft.Blocks.peripheral, 1, 1), 

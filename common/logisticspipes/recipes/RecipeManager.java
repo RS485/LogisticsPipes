@@ -6,6 +6,7 @@ import logisticspipes.items.ItemModule;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.proxy.interfaces.ICraftingParts;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
@@ -14,9 +15,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
-import buildcraft.BuildCraftEnergy;
-import buildcraft.BuildCraftSilicon;
-import buildcraft.BuildCraftTransport;
 
 public class RecipeManager {
 	public static class LocalCraftingManager {
@@ -53,50 +51,9 @@ public class RecipeManager {
 		}
 	}
 	
-	public static interface ICraftingParts {
-		Object getChipTear1(); // Iron
-		Object getChipTear2(); // Gold
-		Object getChipTear3(); // Diamond
-		Object getGearTear1(); // Iron
-		Object getGearTear2(); // Gold
-		Object getGearTear3(); // Diamond
-	}
-	
 	public static LocalCraftingManager craftingManager = new LocalCraftingManager();
 	
-	public static void loadRecipes() {
-		ICraftingParts parts = new ICraftingParts() {
-
-			@Override
-			public Object getChipTear1() {
-				return new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1);
-			}
-
-			@Override
-			public Object getChipTear2() {
-				return new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2);
-			}
-
-			@Override
-			public Object getChipTear3() {
-				return new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3);
-			}
-
-			@Override
-			public Object getGearTear1() {
-				return "gearIron";
-			}
-
-			@Override
-			public Object getGearTear2() {
-				return "gearGold";
-			}
-
-			@Override
-			public Object getGearTear3() {
-				return "gearDiamond";
-			}
-		};
+	public static void loadRecipes(ICraftingParts parts) {
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsFluidSupplierPipeMk1, 1), CraftingDependency.DistanceRequest, new Object[] {
 			"lPl",
 			" B ",
@@ -111,8 +68,8 @@ public class RecipeManager {
 			" G ",
 			Character.valueOf('G'), parts.getChipTear2(),
 			Character.valueOf('g'), Blocks.glass,
-			Character.valueOf('d'), BuildCraftTransport.pipeItemsDiamond,
-			Character.valueOf('c'), BuildCraftTransport.pipeItemsCobblestone,
+			Character.valueOf('d'), parts.getSortingLogic(),
+			Character.valueOf('c'), parts.getBasicTransport(),
 			Character.valueOf('r'), Blocks.redstone_torch
 		});
 		
@@ -122,8 +79,8 @@ public class RecipeManager {
 			" G ",
 			Character.valueOf('G'), parts.getGearTear2(),
 			Character.valueOf('g'), Blocks.glass,
-			Character.valueOf('d'), BuildCraftTransport.pipeItemsDiamond,
-			Character.valueOf('c'), BuildCraftTransport.pipeItemsCobblestone,
+			Character.valueOf('d'), parts.getSortingLogic(),
+			Character.valueOf('c'), parts.getBasicTransport(),
 			Character.valueOf('r'), Blocks.redstone_torch
 		});
 
@@ -757,19 +714,6 @@ public class RecipeManager {
 			Character.valueOf('Q'), Items.quartz
 		});
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_BC_POWERPROVIDER), CraftingDependency.Power_Distribution, new Object[] { 
-			false, 
-			"PEP", 
-			"CTC", 
-			"PGP", 
-			Character.valueOf('C'), parts.getChipTear1(),
-			Character.valueOf('G'), parts.getChipTear2(),
-			Character.valueOf('E'), new ItemStack(BuildCraftEnergy.engineBlock, 1, 1), 
-			Character.valueOf('T'), Blocks.redstone_block, 
-			Character.valueOf('P'), Items.paper
-		});
-		
-		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 0), CraftingDependency.Upgrades, new Object[] { 
 			false, 
 			"srs", 
@@ -987,18 +931,6 @@ public class RecipeManager {
 			Character.valueOf('P'), Items.paper
 		});
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_BC_SUPPLIER), CraftingDependency.Power_Distribution, new Object[] { 
-			false, 
-			"PEP", 
-			"CTC", 
-			"PGP", 
-			Character.valueOf('C'), parts.getChipTear1(),
-			Character.valueOf('G'), parts.getChipTear2(),
-			Character.valueOf('E'), new ItemStack(BuildCraftEnergy.engineBlock, 1, 1), 
-			Character.valueOf('T'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_TRANSPORTATION), 
-			Character.valueOf('P'), Items.paper
-		});
-		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CRAFTING_MONITORING), CraftingDependency.Upgrades, new Object[] { 
 			false, 
 			"RLR", 
@@ -1022,21 +954,12 @@ public class RecipeManager {
 			Character.valueOf('b'), dyes[15], 
 		});
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsFluidConnectorPipe, 4), CraftingDependency.Basic_Liquid, new Object[] {
-			"GPG",
-			"gLg",
-			Character.valueOf('L'), LogisticsPipes.LogisticsFluidBasicPipe,
-			Character.valueOf('P'), BuildCraftTransport.pipeFluidsGold,
-			Character.valueOf('G'), Blocks.glass,
-			Character.valueOf('g'), Items.gold_ingot
-		});
-		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsFluidBasicPipe, 1), CraftingDependency.Basic_Liquid, new Object[] {
 			"w",
 			"B",
 			"b",
 			Character.valueOf('B'), LogisticsPipes.LogisticsBasicPipe,
-			Character.valueOf('w'), BuildCraftTransport.pipeWaterproof,
+			Character.valueOf('w'), parts.getWaterProof(),
 			Character.valueOf('b'), Items.bucket
 		});
 		
@@ -1080,7 +1003,7 @@ public class RecipeManager {
 			"w",
 			"I",
 			Character.valueOf('I'), LogisticsPipes.LogisticsFluidInsertionPipe,
-			Character.valueOf('w'), BuildCraftTransport.pipeFluidsWood
+			Character.valueOf('w'), parts.getExtractorFluid()
 		});
 	}
 }

@@ -26,6 +26,7 @@ import logisticspipes.proxy.interfaces.IBCProxy;
 import logisticspipes.proxy.interfaces.IBetterSignProxy;
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
+import logisticspipes.proxy.interfaces.ICraftingParts;
 import logisticspipes.proxy.interfaces.IEnderIOProxy;
 import logisticspipes.proxy.interfaces.IEnderStorageProxy;
 import logisticspipes.proxy.interfaces.IFactorizationProxy;
@@ -159,6 +160,8 @@ public class ProxyManager {
 				};
 			}
 			@Override public void registerTrigger() {}
+			@Override public ICraftingParts getRecipeParts() {return null;}
+			@Override public void addCraftingRecipes(ICraftingParts parts) {}
 		}, IBCPipePart.class, IBCTilePart.class, ILPBCPowerProxy.class));
 		
 		SimpleServiceLocator.setForestryProxy(getWrappedProxy("Forestry", IForestryProxy.class, ForestryProxy.class, new IForestryProxy() {
@@ -185,7 +188,7 @@ public class ProxyManager {
 			@Override @SideOnly(Side.CLIENT) public IIcon getIconIndexForAlleleId(String id, int phase) {return null;}
 			@Override @SideOnly(Side.CLIENT) public int getColorForAlleleId(String id, int phase) {return 16777215;}
 			@Override @SideOnly(Side.CLIENT) public int getRenderPassesForAlleleId(String id) {return 0;}
-			@Override public void addCraftingRecipes() {}
+			@Override public void addCraftingRecipes(ICraftingParts parts) {}
 			@Override public String getNextAlleleId(String uid, World world) {return "";}
 			@Override public String getPrevAlleleId(String uid, World world) {return "";}
 			@Override @SideOnly(Side.CLIENT) public IIcon getIconFromTextureManager(String name) {return null;}
@@ -197,7 +200,7 @@ public class ProxyManager {
 			@Override public boolean isFullyCharged(ItemStack stack) {return false;}
 			@Override public boolean isFullyDischarged(ItemStack stack) {return false;}
 			@Override public boolean isPartiallyCharged(ItemStack stack) {return false;}
-			@Override public void addCraftingRecipes() {}
+			@Override public void addCraftingRecipes(ICraftingParts parts) {}
 			@Override public boolean hasIC2() {return false;}
 			@Override public void registerToEneryNet(TileEntity tile) {}
 			@Override public void unregisterToEneryNet(TileEntity tile) {}
@@ -217,7 +220,7 @@ public class ProxyManager {
 			@Override public boolean getTurtleConnect(LogisticsTileGenericPipe logisticsTileGenericPipe) {return false;}
 			@Override public int getLastCCID(LogisticsTileGenericPipe logisticsTileGenericPipe) {return 0;}
 			@Override public void handleMesssage(int computerId, Object message, LogisticsTileGenericPipe tile, int sourceId) {}
-			@Override public void addCraftingRecipes() {}
+			@Override public void addCraftingRecipes(ICraftingParts parts) {}
 			@Override public Object getAnswer(Object object) {return object;}
 		}));
 		
@@ -226,7 +229,7 @@ public class ProxyManager {
 			@Override public List<String> getListOfTagsForStack(ItemStack stack) {return null;}
 			@Override @SideOnly(Side.CLIENT) public void renderAspectsDown(ItemStack item, int x, int y, GuiScreen gui) {}
 			@Override @SideOnly(Side.CLIENT) public void renderAspectsInGrid(List<String> eTags, int x, int y, int legnth, int width, GuiScreen gui) {}
-			@Override public void addCraftingRecipes() {}
+			@Override public void addCraftingRecipes(ICraftingParts parts) {}
 		}));
 		
 		SimpleServiceLocator.setThermalExpansionProxy(getWrappedProxy("ThermalExpansion", IThermalExpansionProxy.class, ThermalExpansionProxy.class, new IThermalExpansionProxy() {
@@ -245,7 +248,7 @@ public class ProxyManager {
 			@Override public int getEnergyStored(TileEntity tile, ForgeDirection opposite) {return 0;}
 			@Override public boolean canInterface(TileEntity tile, ForgeDirection opposite) {return false;}
 			@Override public int receiveEnergy(TileEntity tile, ForgeDirection opposite, int i, boolean b) {return 0;}
-			@Override public void addCraftingRecipes() {}
+			@Override public void addCraftingRecipes(ICraftingParts parts) {}
 		}));
 		
 		SimpleServiceLocator.setBetterStorageProxy(getWrappedProxy("betterstorage", IBetterStorageProxy.class, BetterStorageProxy.class, new IBetterStorageProxy() {

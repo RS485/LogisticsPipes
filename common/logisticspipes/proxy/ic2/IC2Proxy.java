@@ -12,6 +12,7 @@ import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.interfaces.ICraftingParts;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -19,8 +20,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.BuildCraftCore;
-import buildcraft.BuildCraftSilicon;
 
 
 public class IC2Proxy implements IIC2Proxy {
@@ -53,7 +52,7 @@ public class IC2Proxy implements IIC2Proxy {
 	 */
 	private double getCharge(ItemStack stack) {
 		if ((stack.getItem() instanceof IElectricItem) && stack.hasTagCompound()) {
-			return stack.getTagCompound().getDouble("charge"); //TODO is this still correct
+			return stack.getTagCompound().getDouble("charge");
 		} else {
 			return 0;
 		}
@@ -110,13 +109,13 @@ public class IC2Proxy implements IIC2Proxy {
 	 * Adds crafting recipes to "IC2 Crafting"
 	 */
 	@Override
-	public void addCraftingRecipes() {
+	public void addCraftingRecipes(ICraftingParts parts) {
 		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICBUFFER), new Object[] { 
 			"CGC", 
 			"rBr", 
 			"CrC", 
 			Character.valueOf('C'), IC2Items.getItem("advancedCircuit"),
-			Character.valueOf('G'), BuildCraftCore.goldGearItem,
+			Character.valueOf('G'), parts.getGearTear2(),
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
@@ -126,7 +125,7 @@ public class IC2Proxy implements IIC2Proxy {
 			"rBr", 
 			"CrC", 
 			Character.valueOf('C'), IC2Items.getItem("advancedCircuit"),
-			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
+			Character.valueOf('G'), parts.getChipTear2(),
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
@@ -138,7 +137,7 @@ public class IC2Proxy implements IIC2Proxy {
 			"DrC", 
 			Character.valueOf('C'), IC2Items.getItem("electronicCircuit"),
 			Character.valueOf('D'), IC2Items.getItem("reBattery"),
-			Character.valueOf('G'), BuildCraftCore.goldGearItem,
+			Character.valueOf('G'), parts.getGearTear2(),
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
@@ -149,7 +148,7 @@ public class IC2Proxy implements IIC2Proxy {
 			"DrC", 
 			Character.valueOf('C'), IC2Items.getItem("electronicCircuit"),
 			Character.valueOf('D'), IC2Items.getItem("chargedReBattery"),
-			Character.valueOf('G'), BuildCraftCore.goldGearItem,
+			Character.valueOf('G'), parts.getGearTear2(),
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
@@ -161,7 +160,7 @@ public class IC2Proxy implements IIC2Proxy {
 			Character.valueOf('C'), IC2Items.getItem("electronicCircuit"),
 			Character.valueOf('c'), IC2Items.getItem("reBattery"),
 			Character.valueOf('D'), IC2Items.getItem("chargedReBattery"),
-			Character.valueOf('G'), BuildCraftCore.goldGearItem,
+			Character.valueOf('G'), parts.getGearTear2(),
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
@@ -173,7 +172,7 @@ public class IC2Proxy implements IIC2Proxy {
 			Character.valueOf('C'), IC2Items.getItem("electronicCircuit"),
 			Character.valueOf('c'), IC2Items.getItem("chargedReBattery"),
 			Character.valueOf('D'), IC2Items.getItem("reBattery"),
-			Character.valueOf('G'), BuildCraftCore.goldGearItem,
+			Character.valueOf('G'), parts.getGearTear2(),
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
@@ -184,7 +183,7 @@ public class IC2Proxy implements IIC2Proxy {
 			"DrC", 
 			Character.valueOf('C'), IC2Items.getItem("electronicCircuit"),
 			Character.valueOf('D'), IC2Items.getItem("reBattery"),
-			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
+			Character.valueOf('G'), parts.getChipTear2(),
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
@@ -195,7 +194,7 @@ public class IC2Proxy implements IIC2Proxy {
 			"DrC", 
 			Character.valueOf('C'), IC2Items.getItem("electronicCircuit"),
 			Character.valueOf('D'), IC2Items.getItem("chargedReBattery"),
-			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
+			Character.valueOf('G'), parts.getChipTear2(),
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});

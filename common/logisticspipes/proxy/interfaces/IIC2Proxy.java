@@ -16,7 +16,7 @@ public interface IIC2Proxy {
 	
 	public abstract boolean isPartiallyCharged(ItemStack stack);
 
-	public abstract void addCraftingRecipes();
+	public abstract void addCraftingRecipes(ICraftingParts parts);
 
 	public abstract boolean hasIC2();
 

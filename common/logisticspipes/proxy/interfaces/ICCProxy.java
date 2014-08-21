@@ -13,6 +13,6 @@ public interface ICCProxy {
 	public boolean getTurtleConnect(LogisticsTileGenericPipe logisticsTileGenericPipe);
 	public int getLastCCID(LogisticsTileGenericPipe logisticsTileGenericPipe);
 	public void handleMesssage(int computerId, Object message, LogisticsTileGenericPipe tile, int sourceId);
-	public void addCraftingRecipes();
+	public void addCraftingRecipes(ICraftingParts parts);
 	public Object getAnswer(Object object);
 }

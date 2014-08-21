@@ -13,6 +13,7 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.VersionNotSupportedException;
+import logisticspipes.proxy.interfaces.ICraftingParts;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
 import logisticspipes.recipes.CraftingDependency;
 import logisticspipes.recipes.RecipeManager;
@@ -227,7 +228,7 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 	}
 
 	@Override
-	public void addCraftingRecipes() {
+	public void addCraftingRecipes(ICraftingParts parts) {
 		LocalCraftingManager craftingManager = RecipeManager.craftingManager;
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_RF_SUPPLIER), CraftingDependency.Power_Distribution, new Object[] { 
 			false, 

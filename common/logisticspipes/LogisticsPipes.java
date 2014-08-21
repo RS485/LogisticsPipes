@@ -78,6 +78,7 @@ import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.computers.objects.LPGlobalCCAccess;
 import logisticspipes.proxy.forestry.ForestryProgressProvider;
 import logisticspipes.proxy.ic2.IC2ProgressProvider;
+import logisticspipes.proxy.interfaces.ICraftingParts;
 import logisticspipes.proxy.progressprovider.MachineProgressProvider;
 import logisticspipes.proxy.recipeproviders.AssemblyAdvancedWorkbench;
 import logisticspipes.proxy.recipeproviders.AssemblyTable;
@@ -257,7 +258,6 @@ public class LogisticsPipes {
 	public static Item LogisticsFluidSatellitePipe;
 	public static Item LogisticsFluidSupplierPipeMk1;
 	public static Item LogisticsFluidSupplierPipeMk2;
-	public static Item LogisticsFluidConnectorPipe;
 	public static Item LogisticsFluidInsertionPipe;
 	public static Item LogisticsFluidExtractorPipe;
 
@@ -450,11 +450,6 @@ public class LogisticsPipes {
 
 		registerPipes(event.getSide());
 		
-		SimpleServiceLocator.IC2Proxy.addCraftingRecipes();
-		SimpleServiceLocator.forestryProxy.addCraftingRecipes();
-		SimpleServiceLocator.thaumCraftProxy.addCraftingRecipes();
-		SimpleServiceLocator.ccProxy.addCraftingRecipes();
-		SimpleServiceLocator.thermalExpansionProxy.addCraftingRecipes();
 
 		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Factory", "AutoWorkbench", AutoWorkbench.class));
 		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Silicon", "AssemblyAdvancedWorkbench", AssemblyAdvancedWorkbench.class));
@@ -468,11 +463,22 @@ public class LogisticsPipes {
 		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("ThermalExpansion", "Generic", ThermalExpansionProgressProvider.class));
 		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("IC2", "Generic", IC2ProgressProvider.class));
 		
-		SolderingStationRecipes.loadRecipe();
 		
 		MainProxy.proxy.registerTileEntities();
 
-		RecipeManager.loadRecipes();
+		ICraftingParts parts = SimpleServiceLocator.buildCraftProxy.getRecipeParts();
+		//NO BC => NO RECIPES (for now)
+		if(parts != null) {
+			SimpleServiceLocator.IC2Proxy.addCraftingRecipes(parts);
+			SimpleServiceLocator.forestryProxy.addCraftingRecipes(parts);
+			SimpleServiceLocator.thaumCraftProxy.addCraftingRecipes(parts);
+			SimpleServiceLocator.ccProxy.addCraftingRecipes(parts);
+			SimpleServiceLocator.thermalExpansionProxy.addCraftingRecipes(parts);
+			SimpleServiceLocator.buildCraftProxy.addCraftingRecipes(parts);
+	
+			SolderingStationRecipes.loadRecipe(parts);
+			RecipeManager.loadRecipes(parts);
+		}
 		
 		//Registering special particles
 		MainProxy.proxy.registerParticles();

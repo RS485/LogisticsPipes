@@ -47,4 +47,6 @@ public interface IBCProxy {
 	Object getLPPipeType();
 	ILPBCPowerProxy getPowerReceiver(TileEntity tile, ForgeDirection orientation);
 	void registerTrigger();
+	ICraftingParts getRecipeParts();
+	void addCraftingRecipes(ICraftingParts parts);
 }

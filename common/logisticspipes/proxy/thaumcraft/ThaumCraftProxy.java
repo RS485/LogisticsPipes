@@ -5,6 +5,7 @@ import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemModule;
+import logisticspipes.proxy.interfaces.ICraftingParts;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -21,7 +22,6 @@ import thaumcraft.api.aspects.AspectList;
 import thaumcraft.client.lib.UtilsFX;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.lib.research.ScanManager;
-import buildcraft.BuildCraftSilicon;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -169,7 +169,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 	}
 
 	@Override
-	public void addCraftingRecipes() {
+	public void addCraftingRecipes(ICraftingParts parts) {
 
 		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.THAUMICASPECTSINK), new Object[] {
 			"wGe", 
@@ -180,7 +180,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 			Character.valueOf('f'), new ItemStack(itemShard, 1, 1), 
 			Character.valueOf('a'), new ItemStack(itemShard, 1, 0), 
 			
-			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
+			Character.valueOf('G'), parts.getChipTear1(), 
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});

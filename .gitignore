@@ -6,6 +6,8 @@ download/**
 eclipse**
 **/.classpath
 **/.project
+asm/**
+usercache.json
 
 ### Eclipse ###
 *.pydevproject

@@ -6,6 +6,7 @@ import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemModule;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.interfaces.ICraftingParts;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.init.Items;
@@ -18,9 +19,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-import buildcraft.BuildCraftCore;
-import buildcraft.BuildCraftSilicon;
-import buildcraft.BuildCraftTransport;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -371,14 +369,14 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void addCraftingRecipes() {
+	public void addCraftingRecipes(ICraftingParts parts) {
 		/* Carpenter recipes */
 		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
 			"CGC", 
 			"r r", 
 			"CrC", 
 			Character.valueOf('C'), propolis,
-			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
+			Character.valueOf('G'), parts.getGearTear1(), 
 			Character.valueOf('r'), Items.redstone,
 		});
 		
@@ -387,7 +385,7 @@ public class ForestryProxy implements IForestryProxy {
 			"r r", 
 			"CrC", 
 			Character.valueOf('C'), propolis,
-			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
+			Character.valueOf('G'), parts.getChipTear1(),
 			Character.valueOf('r'), Items.redstone,
 		});
 		
@@ -405,7 +403,7 @@ public class ForestryProxy implements IForestryProxy {
 			"CwC",
 			Character.valueOf('p'), pollen,
 			Character.valueOf('C'), propolis,
-			Character.valueOf('w'), BuildCraftTransport.pipeItemsWood,
+			Character.valueOf('w'), parts.getExtractorItem(),
 			Character.valueOf('r'), Items.redstone,
 		});
 		
@@ -426,7 +424,7 @@ public class ForestryProxy implements IForestryProxy {
 			"r r", 
 			"CrC", 
 			Character.valueOf('C'), propolis,
-			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
+			Character.valueOf('G'), parts.getGearTear1(), 
 			Character.valueOf('r'), Items.redstone,
 		});
 		
@@ -435,7 +433,7 @@ public class ForestryProxy implements IForestryProxy {
 			"r r", 
 			"CrC", 
 			Character.valueOf('C'), propolis,
-			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
+			Character.valueOf('G'), parts.getChipTear1(), 
 			Character.valueOf('r'), Items.redstone,
 		});
 		
@@ -455,7 +453,7 @@ public class ForestryProxy implements IForestryProxy {
 			"rBr", 
 			"CrC", 
 			Character.valueOf('C'), propolis,
-			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
+			Character.valueOf('G'), parts.getGearTear1(), 
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
@@ -465,7 +463,7 @@ public class ForestryProxy implements IForestryProxy {
 			"rBr", 
 			"CrC", 
 			Character.valueOf('C'), propolis,
-			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
+			Character.valueOf('G'), parts.getChipTear1(), 
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
@@ -485,7 +483,7 @@ public class ForestryProxy implements IForestryProxy {
 			"CwC",
 			Character.valueOf('p'), pollen,
 			Character.valueOf('C'), propolis,
-			Character.valueOf('w'), BuildCraftTransport.pipeItemsWood,
+			Character.valueOf('w'), parts.getExtractorItem(),
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK),
 		});
@@ -506,7 +504,7 @@ public class ForestryProxy implements IForestryProxy {
 			"rBr", 
 			"CrC", 
 			Character.valueOf('C'), propolis,
-			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
+			Character.valueOf('G'), parts.getGearTear1(), 
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)
 		});
@@ -516,7 +514,7 @@ public class ForestryProxy implements IForestryProxy {
 			"rBr", 
 			"CrC", 
 			Character.valueOf('C'), propolis,
-			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
+			Character.valueOf('G'), parts.getChipTear1(), 
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)
 		});

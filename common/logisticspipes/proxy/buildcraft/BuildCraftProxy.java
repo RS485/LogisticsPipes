@@ -14,6 +14,8 @@ import java.lang.reflect.Method;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.LogisticsSolidBlock;
+import logisticspipes.items.ItemUpgrade;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
@@ -36,6 +38,9 @@ import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
 import logisticspipes.proxy.buildcraft.subproxies.ILPBCPowerProxy;
 import logisticspipes.proxy.buildcraft.subproxies.LPBCPowerProxy;
 import logisticspipes.proxy.interfaces.IBCProxy;
+import logisticspipes.proxy.interfaces.ICraftingParts;
+import logisticspipes.recipes.CraftingDependency;
+import logisticspipes.recipes.RecipeManager;
 import logisticspipes.renderer.state.FacadeMatrix;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.transport.LPTravelingItem;
@@ -51,6 +56,8 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
@@ -60,6 +67,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
+import buildcraft.BuildCraftEnergy;
+import buildcraft.BuildCraftSilicon;
 import buildcraft.BuildCraftTransport;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.IAction;
@@ -1044,5 +1053,92 @@ public class BuildCraftProxy implements IBCProxy {
 		}
 		if(receptor == null) return null;
 		return new LPBCPowerProxy(receptor);
+	}
+
+	@Override
+	public ICraftingParts getRecipeParts() {
+		return new ICraftingParts() {
+			@Override
+			public ItemStack getChipTear1() {
+				return new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1);
+			}
+
+			@Override
+			public ItemStack getChipTear2() {
+				return new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2);
+			}
+
+			@Override
+			public ItemStack getChipTear3() {
+				return new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3);
+			}
+
+			@Override
+			public Object getGearTear1() {
+				return "gearIron";
+			}
+
+			@Override
+			public Object getGearTear2() {
+				return "gearGold";
+			}
+
+			@Override
+			public Object getGearTear3() {
+				return "gearDiamond";
+			}
+
+			@Override
+			public Object getSortingLogic() {
+				return BuildCraftTransport.pipeItemsDiamond;
+			}
+
+			@Override
+			public Object getBasicTransport() {
+				return BuildCraftTransport.pipeItemsCobblestone;
+			}
+
+			@Override
+			public Object getWaterProof() {
+				return BuildCraftTransport.pipeWaterproof;
+			}
+
+			@Override
+			public Object getExtractorItem() {
+				return BuildCraftTransport.pipeItemsWood;
+			}
+
+			@Override
+			public Object getExtractorFluid() {
+				return BuildCraftTransport.pipeFluidsWood;
+			}
+		};
+	}
+
+	@Override
+	public void addCraftingRecipes(ICraftingParts parts) {
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_BC_POWERPROVIDER), CraftingDependency.Power_Distribution, new Object[] { 
+			false, 
+			"PEP", 
+			"CTC", 
+			"PGP", 
+			Character.valueOf('C'), parts.getChipTear1(),
+			Character.valueOf('G'), parts.getChipTear2(),
+			Character.valueOf('E'), new ItemStack(BuildCraftEnergy.engineBlock, 1, 1), 
+			Character.valueOf('T'), Blocks.redstone_block, 
+			Character.valueOf('P'), Items.paper
+		});
+		
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_BC_SUPPLIER), CraftingDependency.Power_Distribution, new Object[] { 
+			false, 
+			"PEP", 
+			"CTC", 
+			"PGP", 
+			Character.valueOf('C'), parts.getChipTear1(),
+			Character.valueOf('G'), parts.getChipTear2(),
+			Character.valueOf('E'), new ItemStack(BuildCraftEnergy.engineBlock, 1, 1), 
+			Character.valueOf('T'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_TRANSPORTATION), 
+			Character.valueOf('P'), Items.paper
+		});
 	}
 }

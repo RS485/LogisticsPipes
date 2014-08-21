@@ -356,7 +356,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 
 	@Override
 	public ItemStack insertItem(ForgeDirection dir, ItemStack stack) {
-		if(this.injectItem(stack, false, dir) == stack.stackSize) {
+		if(this.injectItem(stack, true, dir) == stack.stackSize) {
 			return null;
 		} else {
 			return stack;

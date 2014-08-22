@@ -1,5 +1,6 @@
 package logisticspipes.proxy.side;
 
+import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
@@ -23,6 +24,7 @@ import logisticspipes.pipefxhandlers.providers.EntityWhiteSparkleFXProvider;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.renderer.LogisticsPipeItemRenderer;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;
@@ -50,7 +52,6 @@ import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ClientProxy implements IProxy {
 	
-	public static int	pipeModel = -1;
 	private IItemRenderer pipeRenderer;
 
 	@Override
@@ -74,11 +75,13 @@ public class ClientProxy implements IProxy {
 		GameRegistry.registerTileEntity(LogisticsCraftingTableTileEntity.class, "logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity");
 		GameRegistry.registerTileEntity(LogisticsTileGenericPipe.class, LogisticsPipes.logisticsTileGenericPipeMapping);
 		
-		pipeModel = RenderingRegistry.getNextAvailableRenderId();
+		LPConstants.pipeModel = RenderingRegistry.getNextAvailableRenderId();
 		
 		LogisticsRenderPipe lrp = new LogisticsRenderPipe();
 		ClientRegistry.bindTileEntitySpecialRenderer(LogisticsTileGenericPipe.class, lrp);
 		RenderingRegistry.registerBlockHandler(new LogisticsPipeWorldRenderer());
+
+		SimpleServiceLocator.buildCraftProxy.resetItemRotation();
 	}
 
 	@Override

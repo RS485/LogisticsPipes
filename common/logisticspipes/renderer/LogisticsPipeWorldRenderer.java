@@ -184,7 +184,7 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 
 	@Override
 	public int getRenderId() {
-		return ClientProxy.pipeModel;
+		return LPConstants.pipeModel;
 	}
 
 	@Override

@@ -16,6 +16,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public interface IBCProxy {
 	void resetItemRotation();
@@ -34,13 +36,13 @@ public interface IBCProxy {
 	boolean stripEquipment(World world, int x, int y, int z, EntityPlayer player, CoreUnroutedPipe pipe, LogisticsBlockGenericPipe block);
 	IBCTilePart getBCTilePart(LogisticsTileGenericPipe tile);
 	void notifyOfChange(LogisticsTileGenericPipe pipe, TileEntity tile, ForgeDirection o);
-	void renderGatesWires(LogisticsTileGenericPipe pipe, double x, double y, double z);
-	void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z);
-	void pipePlugRenderer(RenderBlocks renderblocks, Block block, PipeRenderState state, int x, int y, int z);
+	@SideOnly(Side.CLIENT) void renderGatesWires(LogisticsTileGenericPipe pipe, double x, double y, double z);
+	@SideOnly(Side.CLIENT) void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z);
+	@SideOnly(Side.CLIENT) void pipePlugRenderer(RenderBlocks renderblocks, Block block, PipeRenderState state, int x, int y, int z);
 	ItemStack getDropFacade(CoreUnroutedPipe pipe, ForgeDirection dir);
 	/** Only used by the BC proxy internaly */
 	boolean canPipeConnect(TileEntity pipe, TileEntity tile, ForgeDirection direction);
-	void pipeRobotStationRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z);
+	@SideOnly(Side.CLIENT) void pipeRobotStationRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z);
 	boolean isActive();
 	@IgnoreDisabledProxy
 	boolean isInstalled();

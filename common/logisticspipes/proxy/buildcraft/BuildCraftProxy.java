@@ -103,6 +103,8 @@ import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.TravelingItem;
 import buildcraft.transport.gates.ItemGate;
 import buildcraft.transport.render.PipeRendererTESR;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BuildCraftProxy implements IBCProxy {
 	
@@ -543,6 +545,7 @@ public class BuildCraftProxy implements IBCProxy {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void renderGatesWires(LogisticsTileGenericPipe pipe, double x, double y, double z) {
 		PipeRenderState state = pipe.renderState;
 
@@ -853,11 +856,13 @@ public class BuildCraftProxy implements IBCProxy {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z) {
 		FacadeRenderHelper.pipeFacadeRenderer(renderblocks, block, state, x, y, z);
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void pipePlugRenderer(RenderBlocks renderblocks, Block block, PipeRenderState state, int x, int y, int z) {
 
 		float zFightOffset = 1F / 4096F;
@@ -920,6 +925,7 @@ public class BuildCraftProxy implements IBCProxy {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void pipeRobotStationRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z) {
 		float width = 0.075F;
 

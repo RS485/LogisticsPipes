@@ -611,7 +611,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	@Override
 	public int getRenderType() {
-		return ClientProxy.pipeModel;
+		return LPConstants.pipeModel;
 	}
 
 	@Override

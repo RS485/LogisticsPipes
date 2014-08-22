@@ -12,5 +12,6 @@ public class LPConstants {
 	public static final String MCVersion = "%MCVERSION%";
 	public static final String VERSION = "%VERSION%:%DEBUG%";
 	public static final boolean DEV_BUILD = VERSION.contains(".dev.") || DEBUG;
-	
+
+	public static int	pipeModel = -1;
 }

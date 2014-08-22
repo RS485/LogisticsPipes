@@ -142,12 +142,12 @@ public class ProxyManager {
 				};
 			}
 			@Override public void notifyOfChange(LogisticsTileGenericPipe pipe, TileEntity tile, ForgeDirection o) {}
-			@Override public void renderGatesWires(LogisticsTileGenericPipe pipe, double x, double y, double z) {}
-			@Override public void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z) {}
-			@Override public void pipePlugRenderer(RenderBlocks renderblocks, Block block, PipeRenderState state, int x, int y, int z) {}
+			@Override @SideOnly(Side.CLIENT) public void renderGatesWires(LogisticsTileGenericPipe pipe, double x, double y, double z) {}
+			@Override @SideOnly(Side.CLIENT) public void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z) {}
+			@Override @SideOnly(Side.CLIENT) public void pipePlugRenderer(RenderBlocks renderblocks, Block block, PipeRenderState state, int x, int y, int z) {}
 			@Override public ItemStack getDropFacade(CoreUnroutedPipe pipe, ForgeDirection dir) {return null;}
 			@Override public boolean canPipeConnect(TileEntity pipe, TileEntity tile, ForgeDirection direction) {return false;}
-			@Override public void pipeRobotStationRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z) {}
+			@Override @SideOnly(Side.CLIENT) public void pipeRobotStationRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z) {}
 			@Override public boolean isActive() {return false;}
 			@Override public Object getLPPipeType() {return null;}
 			@Override public boolean isInstalled() {return false;}

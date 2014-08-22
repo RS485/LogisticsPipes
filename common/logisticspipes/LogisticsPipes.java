@@ -484,8 +484,6 @@ public class LogisticsPipes {
 		FluidIdentifier.initFromForge(false);
 
 		new VersionChecker();
-		
-		SimpleServiceLocator.buildCraftProxy.resetItemRotation();
 	}
 	
 	@EventHandler

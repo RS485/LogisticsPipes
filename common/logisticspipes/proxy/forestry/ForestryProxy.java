@@ -39,8 +39,8 @@ public class ForestryProxy implements IForestryProxy {
 		Class<?> stringUtil = Class.forName("forestry.core.utils.StringUtil");
 		localize = stringUtil.getDeclaredMethod("localize", new Class[]{String.class});
 		localize.setAccessible(true);
-		propolis = GameRegistry.findItem("Forestry", "for.propolis");
-		pollen = GameRegistry.findItem("Forestry", "for.pollen");
+		propolis = GameRegistry.findItem("Forestry", "propolis");
+		pollen = GameRegistry.findItem("Forestry", "pollen");
 		honey = FluidRegistry.getFluidStack("honey", 1500);
 		root = (IBeeRoot) AlleleManager.alleleRegistry.getSpeciesRoot("rootBees");
 	}

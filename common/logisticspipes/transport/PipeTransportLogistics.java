@@ -9,7 +9,6 @@
 package logisticspipes.transport;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,6 +27,7 @@ import logisticspipes.interfaces.routing.ITargetSlotInformation;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.pipe.ItemBufferSyncPacket;
 import logisticspipes.network.packets.pipe.PipeContentPacket;
 import logisticspipes.network.packets.pipe.PipeContentRequest;
 import logisticspipes.network.packets.pipe.PipePositionPacket;
@@ -47,6 +47,7 @@ import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
+import logisticspipes.utils.SyncList;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.entity.item.EntityItem;
@@ -63,16 +64,19 @@ import buildcraft.transport.TravelingItem;
 
 public class PipeTransportLogistics {
 	
-	private final int																					_bufferTimeOut	= 20 * 2;														// 2 Seconds
-	private final List<Pair<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>>>_itemBuffer		= new ArrayList<Pair<ItemIdentifierStack, Pair<Integer, Integer>>>();
-	private Chunk																						chunk;
-	public LPItemList																					items = new LPItemList(this);
-	public LogisticsTileGenericPipe 																	container;
+	private final int																						_bufferTimeOut	= 20 * 2;																// 2 Seconds
+	public final SyncList<Pair<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>>>	_itemBuffer		= new SyncList<Pair<ItemIdentifierStack, Pair<Integer, Integer>>>();
+	private Chunk																							chunk;
+	public LPItemList																						items			= new LPItemList(this);
+	public LogisticsTileGenericPipe																			container;
 
 	public void initialize() {
 		if(MainProxy.isServer(getWorld())) {
 			// cache chunk for marking dirty
 			chunk = getWorld().getChunkFromBlockCoords(container.xCoord, container.zCoord);
+			ItemBufferSyncPacket packet = PacketHandler.getPacket(ItemBufferSyncPacket.class);
+			packet.setTilePos(container);
+			_itemBuffer.setPacketType(packet, MainProxy.getDimensionForWorld(getWorld()), container.xCoord, container.zCoord);
 		}
 	}
 	
@@ -96,25 +100,28 @@ public class PipeTransportLogistics {
 	
 	public void updateEntity() {
 		moveSolids();
-		if(!_itemBuffer.isEmpty()) {
-			List<LPTravelingItem> toAdd = new LinkedList<LPTravelingItem>();
-			Iterator<Pair<ItemIdentifierStack, Pair<Integer, Integer>>> iterator = _itemBuffer.iterator();
-			while(iterator.hasNext()) {
-				Pair<ItemIdentifierStack, Pair<Integer, Integer>> next = iterator.next();
-				int currentTimeOut = next.getValue2().getValue1();
-				if(currentTimeOut > 0) {
-					next.getValue2().setValue1(currentTimeOut - 1);
-				} else {
-					LPTravelingItemServer item = SimpleServiceLocator.routedItemHelper.createNewTravelItem(next.getValue1());
-					item.setDoNotBuffer(true);
-					item.setBufferCounter(next.getValue2().getValue2() + 1);
-					toAdd.add(item);
-					iterator.remove();
+		if(MainProxy.isServer(getWorld())) {
+			if(!_itemBuffer.isEmpty()) {
+				List<LPTravelingItem> toAdd = new LinkedList<LPTravelingItem>();
+				Iterator<Pair<ItemIdentifierStack, Pair<Integer, Integer>>> iterator = _itemBuffer.iterator();
+				while(iterator.hasNext()) {
+					Pair<ItemIdentifierStack, Pair<Integer, Integer>> next = iterator.next();
+					int currentTimeOut = next.getValue2().getValue1();
+					if(currentTimeOut > 0) {
+						next.getValue2().setValue1(currentTimeOut - 1);
+					} else {
+						LPTravelingItemServer item = SimpleServiceLocator.routedItemHelper.createNewTravelItem(next.getValue1());
+						item.setDoNotBuffer(true);
+						item.setBufferCounter(next.getValue2().getValue2() + 1);
+						toAdd.add(item);
+						iterator.remove();
+					}
+				}
+				for(LPTravelingItem item: toAdd) {
+					this.injectItem(item, ForgeDirection.UP);
 				}
 			}
-			for(LPTravelingItem item: toAdd) {
-				this.injectItem(item, ForgeDirection.UP);
-			}
+			_itemBuffer.sendUpdateToWaters();
 		}
 	}
 	

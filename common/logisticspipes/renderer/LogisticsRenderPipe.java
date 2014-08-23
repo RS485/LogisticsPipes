@@ -15,6 +15,7 @@ import logisticspipes.renderer.CustomBlockRenderer.RenderInfo;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.transport.PipeTransportLogistics;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.block.Block;
@@ -105,7 +106,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			}
 		}
 		if(pipe.pipe instanceof CoreRoutedPipe) {
-			renderPipePipe((CoreRoutedPipe)pipe.pipe, x, y, z);
+			renderPipeSigns((CoreRoutedPipe)pipe.pipe, x, y, z);
 		}
 	}
 
@@ -142,16 +143,39 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			if(item == null || item.getItemIdentifierStack() == null) continue;
 			if(item.getContainer().xCoord != pipe.container.xCoord || item.getContainer().yCoord != pipe.container.yCoord || item.getContainer().zCoord != pipe.container.zCoord) continue;
 			ItemStack itemstack = item.getItemIdentifierStack().makeNormalStack();
-			doRenderItem(itemstack, x + pos.getXD(), y + pos.getYD(), z + pos.getZD(), light, item.getAge(), item.getHoverStart());
+			doRenderItem(itemstack, x + pos.getXD(), y + pos.getYD(), z + pos.getZD(), light, item.getAge(), item.getHoverStart(), 0.7F);
 			count++;
+		}
+		count = 0;
+		float dist = 0.135F;
+		LPPosition pos = new LPPosition(0.5D, 0.5D, 0.5D);
+		pos.moveForward(ForgeDirection.SOUTH, dist);
+		pos.moveForward(ForgeDirection.EAST, dist);
+		pos.moveForward(ForgeDirection.UP, dist);
+		for(Pair<ItemIdentifierStack, Pair<Integer, Integer>> item: pipe.transport._itemBuffer) {
+			if(item == null || item.getValue1() == null) continue;
+			ItemStack itemstack = item.getValue1().makeNormalStack();
+			doRenderItem(itemstack, x + pos.getXD(), y + pos.getYD(), z + pos.getZD(), light, 0, 0, 0.25F);
+			count++;
+			if(count >= 27) {
+				break;
+			} else if(count % 9 == 0) {
+				pos.moveForward(ForgeDirection.SOUTH, dist * 2);
+				pos.moveForward(ForgeDirection.EAST, dist * 2);
+				pos.moveForward(ForgeDirection.DOWN, dist);				
+			} else if(count % 3 == 0) {
+				pos.moveForward(ForgeDirection.SOUTH, dist * 2);
+				pos.moveForward(ForgeDirection.WEST, dist);
+			} else {
+				pos.moveForward(ForgeDirection.NORTH, dist);
+			}
 		}
 		
 		GL11.glEnable(2896 /* GL_LIGHTING */);
 		GL11.glPopMatrix();
 	}
 	
-	public void doRenderItem(ItemStack itemstack, double x, double y, double z, float light, int age, float hoverStart) {
-		float renderScale = 0.7f;
+	public void doRenderItem(ItemStack itemstack, double x, double y, double z, float light, int age, float hoverStart, float renderScale) {
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float)x, (float)y, (float)z);
 		GL11.glScalef(renderScale, renderScale, renderScale);
@@ -190,7 +214,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		return result;
 	}
 	
-	private void renderPipePipe(CoreRoutedPipe pipe, double x, double y, double z) {
+	private void renderPipeSigns(CoreRoutedPipe pipe, double x, double y, double z) {
 		if(!pipe.getPipeSigns().isEmpty()) {
 			List<Pair<ForgeDirection, IPipeSign>> list = pipe.getPipeSigns();
 			for(Pair<ForgeDirection, IPipeSign> pair: list) {

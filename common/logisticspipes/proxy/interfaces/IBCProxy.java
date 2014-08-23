@@ -51,4 +51,5 @@ public interface IBCProxy {
 	void registerTrigger();
 	ICraftingParts getRecipeParts();
 	void addCraftingRecipes(ICraftingParts parts);
+	Object overridePipeConnection(LogisticsTileGenericPipe pipe, Object type, ForgeDirection dir);
 }

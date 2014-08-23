@@ -162,6 +162,7 @@ public class ProxyManager {
 			@Override public void registerTrigger() {}
 			@Override public ICraftingParts getRecipeParts() {return null;}
 			@Override public void addCraftingRecipes(ICraftingParts parts) {}
+			@Override public Object overridePipeConnection(LogisticsTileGenericPipe pipe, Object type, ForgeDirection dir) {return null;}
 		}, IBCPipePart.class, IBCTilePart.class, ILPBCPowerProxy.class));
 		
 		SimpleServiceLocator.setForestryProxy(getWrappedProxy("Forestry", IForestryProxy.class, ForestryProxy.class, new IForestryProxy() {

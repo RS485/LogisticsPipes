@@ -58,6 +58,7 @@ import net.minecraftforge.fluids.IFluidHandler;
 
 import org.apache.logging.log4j.Level;
 
+import buildcraft.api.transport.IPipeConnection;
 import buildcraft.api.transport.IPipeTile;
 import buildcraft.api.transport.PipeWire;
 import buildcraft.transport.TileGenericPipe;
@@ -67,8 +68,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
-@ModDependentInterface(modId={"CoFHCore", "OpenComputers@1.3", "OpenComputers@1.3", "OpenComputers@1.3", "BuildCraft|Transport"}, interfacePath={"cofh.api.transport.IItemDuct", "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment", "buildcraft.api.transport.IPipeTile"})
-public class LogisticsTileGenericPipe extends TileEntity implements IPipeInformationProvider, IItemDuct, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IPipeTile {	
+@ModDependentInterface(modId={"CoFHCore", "OpenComputers@1.3", "OpenComputers@1.3", "OpenComputers@1.3", "BuildCraft|Transport", "BuildCraft|Transport"}, interfacePath={"cofh.api.transport.IItemDuct", "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment", "buildcraft.api.transport.IPipeTile", "buildcraft.api.transport.IPipeConnection"})
+public class LogisticsTileGenericPipe extends TileEntity implements IPipeInformationProvider, IItemDuct, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IPipeTile, IPipeConnection {	
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
 	
 	public boolean turtleConnect[] = new boolean[7];
@@ -310,7 +311,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 		if (with == null)
 			return false;
 
-		if (tilePart.hasPlug(side))
+		if (tilePart.hasPlug(side) || tilePart.hasRobotStation(side))
 			return false;
 
 		if (!LogisticsBlockGenericPipe.isValid(pipe))
@@ -321,7 +322,14 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 		if(!SimpleServiceLocator.buildCraftProxy.checkConnectionOverride(with, side, this)) return false;
 
 		if(!SimpleServiceLocator.buildCraftProxy.checkForPipeConnection(with, side, this)) return false;
-
+		if(with instanceof LogisticsTileGenericPipe) {
+			if(((LogisticsTileGenericPipe)with).tilePart.hasPlug(side.getOpposite()) || ((LogisticsTileGenericPipe)with).tilePart.hasRobotStation(side.getOpposite())) { return false; }
+			CoreUnroutedPipe otherPipe = ((LogisticsTileGenericPipe)with).pipe;
+			
+			if(!(LogisticsBlockGenericPipe.isValid(otherPipe))) { return false; }
+			
+			if(!(otherPipe.canPipeConnect(this, side.getOpposite()))) { return false; }
+		}
 		return pipe.canPipeConnect(with, side);
 	}
 	
@@ -856,5 +864,11 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 			return false;
 		}
 		return super.isInvalid();
+	}
+
+	@Override
+	@ModDependentMethod(modId="BuildCraft|Transport")
+	public ConnectOverride overridePipeConnection(PipeType type, ForgeDirection dir) {
+		return (ConnectOverride) SimpleServiceLocator.buildCraftProxy.overridePipeConnection(this, type, dir);
 	}
 }

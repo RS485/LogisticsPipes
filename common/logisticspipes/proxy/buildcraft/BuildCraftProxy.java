@@ -80,6 +80,7 @@ import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerHandler;
 import buildcraft.api.power.PowerHandler.PowerReceiver;
 import buildcraft.api.transport.IPipeConnection;
+import buildcraft.api.transport.IPipeConnection.ConnectOverride;
 import buildcraft.api.transport.IPipeTile;
 import buildcraft.api.transport.IPipeTile.PipeType;
 import buildcraft.api.transport.PipeWire;
@@ -249,8 +250,8 @@ public class BuildCraftProxy implements IBCProxy {
 
 			if (!BlockGenericPipe.isValid(otherPipe))
 				return false;
-
-			if (!otherPipe.canPipeConnect(pipe, side.getOpposite()))
+			
+			if(!(otherPipe.transport instanceof PipeTransportItems))
 				return false;
 		}
 		return true;
@@ -1146,5 +1147,15 @@ public class BuildCraftProxy implements IBCProxy {
 			Character.valueOf('T'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_TRANSPORTATION), 
 			Character.valueOf('P'), Items.paper
 		});
+	}
+
+	@Override
+	public Object overridePipeConnection(LogisticsTileGenericPipe pipe, Object type, ForgeDirection dir) {
+		TileEntity target = pipe.getTile(dir);
+		ConnectOverride result = ConnectOverride.DEFAULT;
+		if(LogisticsBlockGenericPipe.isFullyDefined(pipe.pipe) && target instanceof TileGenericPipe && !pipe.tilePart.hasPlug(dir) && !pipe.tilePart.hasRobotStation(dir)) {
+			result = ConnectOverride.CONNECT;
+		}
+		return result;
 	}
 }

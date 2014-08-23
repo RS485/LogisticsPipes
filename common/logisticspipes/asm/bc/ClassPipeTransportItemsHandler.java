@@ -45,27 +45,6 @@ public class ClassPipeTransportItemsHandler {
 			if(m.name.equals("injectItem")) {
 				iter.remove();
 			}
-			if(m.name.equals("canPipeConnect")) {
-				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
-					@Override
-					public void visitCode() {
-						super.visitCode();
-						Label l0 = new Label();
-						this.visitLabel(l0);
-						this.visitVarInsn(Opcodes.ALOAD, 1);
-						this.visitTypeInsn(Opcodes.INSTANCEOF, "logisticspipes/pipes/basic/LogisticsTileGenericPipe");
-						Label l1 = new Label();
-						this.visitJumpInsn(Opcodes.IFEQ, l1);
-						Label l2 = new Label();
-						this.visitLabel(l2);
-						this.visitInsn(Opcodes.ICONST_1);
-						this.visitInsn(Opcodes.IRETURN);
-						this.visitLabel(l1);
-					}
-				};
-				m.accept(mv);
-				node.methods.set(node.methods.indexOf(m), mv);
-			}
 			if(m.name.equals("passToNextPipe")) {
 				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
 					@Override

@@ -451,7 +451,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 
 	@Override
 	@ModDependentMethod(modId="CoFHCore")
-	public boolean canInterface(ForgeDirection from) {
+	public boolean canConnectEnergy(ForgeDirection from) {
 		return true;
 	}
 

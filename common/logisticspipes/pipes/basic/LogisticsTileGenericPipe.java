@@ -32,7 +32,6 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
 import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
 import logisticspipes.proxy.opencomputers.asm.BaseWrapperClass;
-import logisticspipes.proxy.te.LPConduitItem;
 import logisticspipes.renderer.IIconProvider;
 import logisticspipes.renderer.LogisticsTileRenderController;
 import logisticspipes.renderer.state.PipeRenderState;
@@ -59,7 +58,6 @@ import net.minecraftforge.fluids.IFluidHandler;
 
 import org.apache.logging.log4j.Level;
 
-import thermalexpansion.part.conduit.ConduitBase;
 import buildcraft.api.transport.IPipeTile;
 import buildcraft.api.transport.PipeWire;
 import buildcraft.transport.TileGenericPipe;
@@ -82,9 +80,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 
 	@ModDependentField(modId="ComputerCraft@1.6")
 	public IComputerAccess currentPC;
-
-	@ModDependentField(modId="ThermalExpansion")
-	public LPConduitItem[] localConduit;
 	
 	@ModDependentField(modId="OpenComputers@1.3")
 	public Node node;
@@ -124,7 +119,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
     			pipe.invalidate();
     		}
     		super.invalidate();
-            SimpleServiceLocator.thermalExpansionProxy.handleLPInternalConduitRemove(this);
 			SimpleServiceLocator.openComputersProxy.handleLPInvalidate(this);
         }
     }
@@ -134,7 +128,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 		if (pipe != null) {
 			pipe.onChunkUnload();
 		}
-		SimpleServiceLocator.thermalExpansionProxy.handleLPInternalConduitChunkUnload(this);
 		SimpleServiceLocator.openComputersProxy.handleLPChunkUnload(this);
 	}
 
@@ -144,7 +137,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 			sendInitPacket = false;
 			getRenderController().sendInit();
 		}
-		SimpleServiceLocator.thermalExpansionProxy.handleLPInternalConduitUpdate(this);
 		if (!worldObj.isRemote) {
 			if (deletePipe) {
 				worldObj.setBlockToAir(xCoord, yCoord, zCoord);
@@ -264,7 +256,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 				turtleConnect[i] = false;
 			}
 		}
-		SimpleServiceLocator.thermalExpansionProxy.handleLPInternalConduitNeighborChange(this);
 	}
 
 	@Override
@@ -361,24 +352,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 		} else {
 			return stack;
 		}
-	}
-
-	@ModDependentMethod(modId="ThermalExpansion")
-	public boolean canTEConduitConnect(ConduitBase conduit, int side) {
-        if (pipe == null) return false;
-        return pipe.canPipeConnect(conduit.getTile(), ForgeDirection.VALID_DIRECTIONS[side].getOpposite());
-    }
-
-	@ModDependentMethod(modId="ThermalExpansion")
-	public LPConduitItem getTEConduit(int side) {
-		if(localConduit == null) {
-			localConduit = new LPConduitItem[6];
-		}
-		if(localConduit[side] == null) {
-			localConduit[side] = new LPConduitItem(this, side);
-			localConduit[side].onNeighborChanged();
-		}
-		return localConduit[side];
 	}
 
 	public void addLaser(ForgeDirection dir, float length, int color, boolean reverse, boolean renderBall) {

@@ -14,6 +14,7 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
 import logisticspipes.LPConstants;
+import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
@@ -49,8 +50,8 @@ public class DevEnvHelper {
 		reparsedCoremods.setAccessible(true);
 		Field mcDir = CoreModManager.class.getDeclaredField("mcDir");
 		mcDir.setAccessible(true);
-		Field embedded = ModAccessTransformer.class.getDeclaredField("embedded");
-		embedded.setAccessible(true);
+		Field transformers = LaunchClassLoader.class.getDeclaredField("transformers");
+		transformers.setAccessible(true);
 		
 		LaunchClassLoader classLoader = Launch.classLoader;
 		
@@ -113,7 +114,7 @@ public class DevEnvHelper {
 			//AccessTransformer //For NEI
 			if(mfAttributes.getValue("AccessTransformer") != null) {
 				String cfg = mfAttributes.getValue("AccessTransformer");
-				((List<AccessTransformer>)embedded.get(null)).add(new AccessTransformer(cfg){});
+				((List<IClassTransformer>)transformers.get(classLoader)).add(new AccessTransformer(cfg){});
 			}
 			String cascadedTweaker = mfAttributes.getValue("TweakClass");
 			if(cascadedTweaker != null) {

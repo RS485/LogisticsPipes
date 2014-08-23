@@ -45,6 +45,7 @@ public class TesseractConnection implements ISpecialTileConnection {
 			return new ArrayList<TileEntity>(0);
 		}
 		List<? extends TileEntity> connections = SimpleServiceLocator.thermalExpansionProxy.getConnectedTesseracts(tile);
+		connections.remove(tile);
 		List<TileEntity> list = new ArrayList<TileEntity>();
 		for(TileEntity connected:connections) {
 			LogisticsTileGenericPipe pipe = null;

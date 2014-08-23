@@ -135,7 +135,7 @@ public class PowerSupplierHandler {
 			float[] need = new float[adjacent.size()];
 			int i=0;
 			for(AdjacentTile adTile:adjacent) {
-				if(SimpleServiceLocator.thermalExpansionProxy.isEnergyHandler(adTile.tile) && this.pipe.canPipeConnect(adTile.tile, adTile.orientation) && SimpleServiceLocator.thermalExpansionProxy.canInterface(adTile.tile, adTile.orientation.getOpposite())) {
+				if(SimpleServiceLocator.thermalExpansionProxy.isEnergyHandler(adTile.tile) && this.pipe.canPipeConnect(adTile.tile, adTile.orientation) && SimpleServiceLocator.thermalExpansionProxy.canConnectEnergy(adTile.tile, adTile.orientation.getOpposite())) {
 					globalNeed += need[i] = SimpleServiceLocator.thermalExpansionProxy.getMaxEnergyStored(adTile.tile, adTile.orientation.getOpposite()) - SimpleServiceLocator.thermalExpansionProxy.getEnergyStored(adTile.tile, adTile.orientation.getOpposite());
 				}
 				i++;
@@ -144,7 +144,7 @@ public class PowerSupplierHandler {
 				float fullfillable = Math.min(1, internal_RF_Buffer / globalNeed);
 				i = 0;
 				for(AdjacentTile adTile:adjacent) {
-					if(SimpleServiceLocator.thermalExpansionProxy.isEnergyHandler(adTile.tile) && this.pipe.canPipeConnect(adTile.tile, adTile.orientation) && SimpleServiceLocator.thermalExpansionProxy.canInterface(adTile.tile, adTile.orientation.getOpposite())) {
+					if(SimpleServiceLocator.thermalExpansionProxy.isEnergyHandler(adTile.tile) && this.pipe.canPipeConnect(adTile.tile, adTile.orientation) && SimpleServiceLocator.thermalExpansionProxy.canConnectEnergy(adTile.tile, adTile.orientation.getOpposite())) {
 						if(internal_RF_Buffer + 1 < need[i] * fullfillable) return;
 						int used = SimpleServiceLocator.thermalExpansionProxy.receiveEnergy(adTile.tile, adTile.orientation.getOpposite(), (int) (need[i] * fullfillable), false);
 						if(used > 0) {

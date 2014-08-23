@@ -77,7 +77,7 @@ public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTi
 	
 	@Override
 	@ModDependentMethod(modId="ThermalExpansion")
-	public boolean canInterface(ForgeDirection from) {
+	public boolean canConnectEnergy(ForgeDirection from) {
 		return true;
 	}
 	

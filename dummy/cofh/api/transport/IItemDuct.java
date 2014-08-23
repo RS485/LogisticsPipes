@@ -12,8 +12,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 public interface IItemDuct {
 
 	/**
-	 * Insert an ItemStack into the IItemDuct. Will only accept items if there is a valid destination. This returns what 
-is remaining of the original stack - a
+	 * Insert an ItemStack into the IItemDuct. Will only accept items if there is a valid destination. This returns what is remaining of the original stack - a
 	 * null return means that the entire stack was accepted/routed!
 	 * 
 	 * @param from
@@ -25,4 +24,3 @@ is remaining of the original stack - a
 	public ItemStack insertItem(ForgeDirection from, ItemStack item);
 
 }
-

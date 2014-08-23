@@ -350,12 +350,6 @@ public class PipeTransportLogistics {
 		if(this.getPipe() instanceof FluidRoutedPipe) {
 			if(((FluidRoutedPipe)this.getPipe()).endReached(arrivingItem, tile)) { return; }
 		}
-		if(SimpleServiceLocator.thermalExpansionProxy.isItemConduit(tile)) {
-			if(SimpleServiceLocator.thermalExpansionProxy.insertIntoConduit(arrivingItem, tile, getPipe())) {
-				// items.scheduleRemoval(arrivingItem);
-				return;
-			}
-		}
 		boolean isSpecialConnectionInformationTransition = false;
 		if(MainProxy.isServer(getWorld())) {
 			if(SimpleServiceLocator.specialtileconnection.needsInformationTransition(tile)) {

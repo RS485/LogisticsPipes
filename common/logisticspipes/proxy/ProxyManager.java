@@ -236,17 +236,10 @@ public class ProxyManager {
 			@Override public boolean isTesseract(TileEntity tile) {return false;}
 			@Override public boolean isTE() {return false;}
 			@Override public List<TileEntity> getConnectedTesseracts(TileEntity tile) {return new ArrayList<TileEntity>(0);}
-			@Override public boolean isItemConduit(TileEntity tile) {return false;}
-			@Override public void handleLPInternalConduitChunkUnload(LogisticsTileGenericPipe pipe) {}
-			@Override public void handleLPInternalConduitRemove(LogisticsTileGenericPipe pipe) {}
-			@Override public void handleLPInternalConduitNeighborChange(LogisticsTileGenericPipe logisticsTileGenericPipe) {}
-			@Override public void handleLPInternalConduitUpdate(LogisticsTileGenericPipe pipe) {}
-			@Override public boolean insertIntoConduit(LPTravelingItemServer arrivingItem, TileEntity tile, CoreRoutedPipe pipe) {return false;}
-			@Override public boolean isSideFree(TileEntity tile, int side) {return false;}
 			@Override public boolean isEnergyHandler(TileEntity tile) {return false;}
 			@Override public int getMaxEnergyStored(TileEntity tile, ForgeDirection opposite) {return 0;}
 			@Override public int getEnergyStored(TileEntity tile, ForgeDirection opposite) {return 0;}
-			@Override public boolean canInterface(TileEntity tile, ForgeDirection opposite) {return false;}
+			@Override public boolean canConnectEnergy(TileEntity tile, ForgeDirection opposite) {return false;}
 			@Override public int receiveEnergy(TileEntity tile, ForgeDirection opposite, int i, boolean b) {return 0;}
 			@Override public void addCraftingRecipes(ICraftingParts parts) {}
 		}));

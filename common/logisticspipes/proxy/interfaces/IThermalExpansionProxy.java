@@ -11,17 +11,10 @@ import net.minecraftforge.common.util.ForgeDirection;
 public interface IThermalExpansionProxy {
 	public boolean isTesseract(TileEntity tile);
 	public List<TileEntity> getConnectedTesseracts(TileEntity tile);
-	public boolean isItemConduit(TileEntity tile);
-	public void handleLPInternalConduitChunkUnload(LogisticsTileGenericPipe pipe);
-	public void handleLPInternalConduitRemove(LogisticsTileGenericPipe pipe);
-	public void handleLPInternalConduitNeighborChange(LogisticsTileGenericPipe pipe);
-	public void handleLPInternalConduitUpdate(LogisticsTileGenericPipe pipe);
-	public boolean insertIntoConduit(LPTravelingItemServer arrivingItem, TileEntity tile, CoreRoutedPipe pipe);
-	public boolean isSideFree(TileEntity tile, int side);
 	public boolean isEnergyHandler(TileEntity tile);
 	public int getMaxEnergyStored(TileEntity tile, ForgeDirection opposite);
 	public int getEnergyStored(TileEntity tile, ForgeDirection opposite);
-	public boolean canInterface(TileEntity tile, ForgeDirection opposite);
+	public boolean canConnectEnergy(TileEntity tile, ForgeDirection opposite);
 	public int receiveEnergy(TileEntity tile, ForgeDirection opposite, int i, boolean b);
 	public boolean isTE();
 	public void addCraftingRecipes(ICraftingParts parts);

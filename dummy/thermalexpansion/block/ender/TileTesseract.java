@@ -1,12 +1,8 @@
 package thermalexpansion.block.ender;
 
-import java.util.List;
-
+import cofh.api.transport.IEnderItemHandler;
 import net.minecraft.tileentity.TileEntity;
-import cofh.api.transport.IEnderAttuned;
 
-public class TileTesseract extends TileEntity {
-	public List<IEnderAttuned> getValidItemOutputs() {
-		return null;
-	}
+public abstract class TileTesseract extends TileEntity implements IEnderItemHandler {
+	
 }

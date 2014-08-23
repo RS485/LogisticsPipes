@@ -224,6 +224,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		super.writeToNBT(nbttagcompound);
 		_moduleInventory.writeToNBT(nbttagcompound, "chassi");
 		_module.writeToNBT(nbttagcompound);
+		if(pointedDirection == null) pointedDirection = ForgeDirection.UNKNOWN;
 		nbttagcompound.setInteger("Orientation", pointedDirection.ordinal());
 	}
 

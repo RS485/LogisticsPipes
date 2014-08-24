@@ -271,7 +271,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		
 		GL11.glTranslatef(0.0F, -0.3125F, -0.31F);
 		GL11.glRotatef(180, 0.0f, 1.0f, 0.0f);
-		SimpleServiceLocator.betterSignProxy.hideSignSticks(this.modelSign);
+		this.modelSign.signStick.showModel = false;
 		Minecraft.getMinecraft().renderEngine.bindTexture(SIGN);
 		
 		GL11.glPushMatrix();

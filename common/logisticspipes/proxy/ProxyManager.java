@@ -11,7 +11,6 @@ import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.bettersign.BetterSignProxy;
 import logisticspipes.proxy.bs.BetterStorageProxy;
 import logisticspipes.proxy.buildcraft.bc60.BuildCraftProxy;
 import logisticspipes.proxy.buildcraft.subproxies.IBCCoreState;
@@ -27,7 +26,6 @@ import logisticspipes.proxy.forestry.ForestryProxy;
 import logisticspipes.proxy.ic.IronChestProxy;
 import logisticspipes.proxy.ic2.IC2Proxy;
 import logisticspipes.proxy.interfaces.IBCProxy;
-import logisticspipes.proxy.interfaces.IBetterSignProxy;
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.ICraftingParts;
@@ -52,7 +50,6 @@ import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.model.ModelSign;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -282,12 +279,6 @@ public class ProxyManager {
 		
 		SimpleServiceLocator.setFactorizationProxy(getWrappedProxy("factorization", IFactorizationProxy.class, FactorizationProxy.class, new IFactorizationProxy() {
 			@Override public boolean isBarral(TileEntity tile) {return false;}
-		}));
-		
-		SimpleServiceLocator.setBetterSignProxy(getWrappedProxy("BetterSignsMod", IBetterSignProxy.class, BetterSignProxy.class, new IBetterSignProxy() {
-			@Override @SideOnly(Side.CLIENT) public void hideSignSticks(ModelSign model) {
-				model.signStick.showModel = false;
-			}
 		}));
 		
 		SimpleServiceLocator.setEnderIOProxy(getWrappedProxy("EnderIO", IEnderIOProxy.class, EnderIOProxy.class, new IEnderIOProxy() {

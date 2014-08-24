@@ -1,4 +1,4 @@
-package logisticspipes.proxy.buildcraft.gates.wrapperclasses;
+package logisticspipes.proxy.buildcraft.bc60.gates.wrapperclasses;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -36,7 +36,7 @@ public class TilePipeWrapper extends TileGenericPipe implements IOverrideDefault
 			field.set(this, new PipeRenderState() {
 				@Override
 				public boolean isGatePulsing() {
-					return tile.renderState.isGatePulsing();
+					return tile.renderState.bcRenderState.isGatePulsing();
 				}
 			});
 		} catch(Exception e) {

@@ -1,10 +1,10 @@
-package logisticspipes.proxy.buildcraft.gates;
+package logisticspipes.proxy.buildcraft.bc60.gates;
 
 import java.util.ArrayList;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.buildcraft.gates.wrapperclasses.PipeWrapper;
+import logisticspipes.proxy.buildcraft.bc60.gates.wrapperclasses.PipeWrapper;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.item.ItemStack;

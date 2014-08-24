@@ -6,7 +6,7 @@
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
-package logisticspipes.proxy.buildcraft.gates;
+package logisticspipes.proxy.buildcraft.bc60.gates;
 
 import java.util.LinkedList;
 
@@ -17,8 +17,8 @@ import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.buildcraft.BuildCraftProxy;
-import logisticspipes.proxy.buildcraft.gates.wrapperclasses.TilePipeWrapper;
+import logisticspipes.proxy.buildcraft.bc60.BuildCraftProxy;
+import logisticspipes.proxy.buildcraft.bc60.gates.wrapperclasses.TilePipeWrapper;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import buildcraft.api.gates.ITrigger;

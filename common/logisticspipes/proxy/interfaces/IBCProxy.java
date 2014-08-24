@@ -4,7 +4,9 @@ import logisticspipes.asm.IgnoreDisabledProxy;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.buildcraft.subproxies.IBCCoreState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePart;
+import logisticspipes.proxy.buildcraft.subproxies.IBCRenderState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
 import logisticspipes.proxy.buildcraft.subproxies.ILPBCPowerProxy;
 import logisticspipes.renderer.state.PipeRenderState;
@@ -52,4 +54,6 @@ public interface IBCProxy {
 	ICraftingParts getRecipeParts();
 	void addCraftingRecipes(ICraftingParts parts);
 	Object overridePipeConnection(LogisticsTileGenericPipe pipe, Object type, ForgeDirection dir);
+	IBCCoreState getBCCoreState();
+	IBCRenderState getBCRenderState();
 }

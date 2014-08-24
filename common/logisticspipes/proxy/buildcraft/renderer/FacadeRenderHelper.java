@@ -2,6 +2,7 @@ package logisticspipes.proxy.buildcraft.renderer;
 
 import logisticspipes.LPConstants;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
+import logisticspipes.proxy.buildcraft.bc60.subproxies.BCRenderState;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.utils.MatrixTranformations;
@@ -85,26 +86,28 @@ public final class FacadeRenderHelper {
 
 	public static void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z) {
 		state.textureArray = new IIcon[6];
-
+		
+		BCRenderState bcRenderState = (BCRenderState)state.bcRenderState.getOriginal();
+		
 		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-			Block renderBlock = state.facadeMatrix.getFacadeBlock(direction);
+			Block renderBlock = bcRenderState.facadeMatrix.getFacadeBlock(direction);
 
 			if (renderBlock != null) {
 				// If the facade is meant to render in the current pass
 				if (renderBlock.canRenderInPass(LogisticsPipeWorldRenderer.renderPass)) {
-					int renderMeta = state.facadeMatrix.getFacadeMetaId(direction);
+					int renderMeta = bcRenderState.facadeMatrix.getFacadeMetaId(direction);
 
 					for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
 						state.textureArray[side.ordinal()] = renderBlock.getIcon(side.ordinal(), renderMeta);
 						if (side == direction || side == direction.getOpposite()) {
 							block.setRenderSide(side, true);
 						} else {
-							block.setRenderSide(side, state.facadeMatrix.getFacadeBlock(side) == null);
+							block.setRenderSide(side, bcRenderState.facadeMatrix.getFacadeBlock(side) == null);
 						}
 					}
 
 					try {
-						LogisticsBlockGenericPipe.facadeRenderColor = Item.getItemFromBlock(state.facadeMatrix.getFacadeBlock(direction)).getColorFromItemStack(new ItemStack(renderBlock, 1, renderMeta), 0);
+						LogisticsBlockGenericPipe.facadeRenderColor = Item.getItemFromBlock(bcRenderState.facadeMatrix.getFacadeBlock(direction)).getColorFromItemStack(new ItemStack(renderBlock, 1, renderMeta), 0);
 					} catch (Throwable error) {
 					}
 
@@ -181,7 +184,7 @@ public final class FacadeRenderHelper {
 		// Always render connectors in pass 0
 		if (LogisticsPipeWorldRenderer.renderPass == 0) {
 			for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-				if (state.facadeMatrix.getFacadeBlock(direction) != null && !state.pipeConnectionMatrix.isConnected(direction)) {
+				if (bcRenderState.facadeMatrix.getFacadeBlock(direction) != null && !state.pipeConnectionMatrix.isConnected(direction)) {
 					float[][] rotated = MatrixTranformations.deepClone(zeroStateSupport);
 					MatrixTranformations.transform(rotated, direction);
 

@@ -1,7 +1,7 @@
-package logisticspipes.proxy.buildcraft.gates;
+package logisticspipes.proxy.buildcraft.bc60.gates;
 
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
-import logisticspipes.proxy.buildcraft.gates.wrapperclasses.PipeWrapper;
+import logisticspipes.proxy.buildcraft.bc60.gates.wrapperclasses.PipeWrapper;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import buildcraft.api.gates.ITriggerParameter;
 import buildcraft.transport.IPipeTrigger;

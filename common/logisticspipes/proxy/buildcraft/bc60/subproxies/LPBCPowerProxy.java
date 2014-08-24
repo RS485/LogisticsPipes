@@ -1,5 +1,6 @@
-package logisticspipes.proxy.buildcraft.subproxies;
+package logisticspipes.proxy.buildcraft.bc60.subproxies;
 
+import logisticspipes.proxy.buildcraft.subproxies.ILPBCPowerProxy;
 import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.power.PowerHandler.PowerReceiver;
 import buildcraft.api.power.PowerHandler.Type;

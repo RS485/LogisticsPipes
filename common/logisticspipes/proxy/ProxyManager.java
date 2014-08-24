@@ -1,18 +1,22 @@
 package logisticspipes.proxy;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.bettersign.BetterSignProxy;
 import logisticspipes.proxy.bs.BetterStorageProxy;
-import logisticspipes.proxy.buildcraft.BuildCraftProxy;
+import logisticspipes.proxy.buildcraft.bc60.BuildCraftProxy;
+import logisticspipes.proxy.buildcraft.subproxies.IBCCoreState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePart;
+import logisticspipes.proxy.buildcraft.subproxies.IBCRenderState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
 import logisticspipes.proxy.buildcraft.subproxies.ILPBCPowerProxy;
 import logisticspipes.proxy.cc.CCProxy;
@@ -45,7 +49,6 @@ import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 import logisticspipes.proxy.toolWrench.ToolWrenchProxy;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.transport.LPTravelingItem;
-import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
@@ -139,6 +142,8 @@ public class ProxyManager {
 					@Override public boolean addRobotStation(ForgeDirection forgeDirection) {return false;}
 					@Override public void writeToNBT(NBTTagCompound nbt) {}
 					@Override public void readFromNBT(NBTTagCompound nbt) {}
+					@Override public void invalidate() {}
+					@Override public void validate() {}
 				};
 			}
 			@Override public void notifyOfChange(LogisticsTileGenericPipe pipe, TileEntity tile, ForgeDirection o) {}
@@ -163,7 +168,28 @@ public class ProxyManager {
 			@Override public ICraftingParts getRecipeParts() {return null;}
 			@Override public void addCraftingRecipes(ICraftingParts parts) {}
 			@Override public Object overridePipeConnection(LogisticsTileGenericPipe pipe, Object type, ForgeDirection dir) {return null;}
-		}, IBCPipePart.class, IBCTilePart.class, ILPBCPowerProxy.class));
+			@Override public IBCCoreState getBCCoreState() {
+				return new IBCCoreState() {
+					@Override public void writeData(LPDataOutputStream data) throws IOException {}
+					@Override public void readData(LPDataInputStream data) throws IOException {}
+					@Override public Object getOriginal() {return null;}
+				};
+			}
+			@Override public IBCRenderState getBCRenderState() {
+				return new IBCRenderState() {
+					@Override public Object getOriginal() {return null;}
+					@Override public void clean() {}
+					@Override public boolean isDirty() {return false;}
+					@Override public boolean needsRenderUpdate() {return false;}
+					@Override public void writeData(LPDataOutputStream data) throws IOException {}
+					@Override public void readData(LPDataInputStream data) throws IOException {}
+					@Override public boolean isGatePulsing() {return false;}
+					@Override public boolean isGateLit() {return false;}
+					@Override public void setIsGateLit(boolean gateActive) {}
+					@Override public void setIsGatePulsing(boolean gateActive) {}
+				};
+			}
+		}, IBCPipePart.class, IBCTilePart.class, ILPBCPowerProxy.class, IBCCoreState.class, IBCRenderState.class));
 		
 		SimpleServiceLocator.setForestryProxy(getWrappedProxy("Forestry", IForestryProxy.class, ForestryProxy.class, new IForestryProxy() {
 			@Override public boolean isBee(ItemStack item) {return false;}

@@ -6,7 +6,7 @@
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
-package logisticspipes.proxy.buildcraft.gates;
+package logisticspipes.proxy.buildcraft.bc60.gates;
 
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 

@@ -1,4 +1,4 @@
-package logisticspipes.proxy.buildcraft.gates.wrapperclasses;
+package logisticspipes.proxy.buildcraft.bc60.gates.wrapperclasses;
 
 import java.util.LinkedList;
 import java.util.Map;

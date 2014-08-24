@@ -23,4 +23,6 @@ public interface IBCTilePart {
 	void writeToNBT(NBTTagCompound nbt);
 	@IgnoreDisabledProxy
 	void readFromNBT(NBTTagCompound nbt);
+	void invalidate();
+	void validate();
 }

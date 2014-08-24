@@ -1,4 +1,4 @@
-package logisticspipes.renderer.state;
+package logisticspipes.proxy.buildcraft.renderer;
 
 import java.io.IOException;
 

@@ -74,7 +74,7 @@ import logisticspipes.proxy.ProxyManager;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.SpecialInventoryHandlerManager;
 import logisticspipes.proxy.SpecialTankHandlerManager;
-import logisticspipes.proxy.buildcraft.BuildCraftProxy;
+import logisticspipes.proxy.buildcraft.bc60.BuildCraftProxy;
 import logisticspipes.proxy.computers.objects.LPGlobalCCAccess;
 import logisticspipes.proxy.forestry.ForestryProgressProvider;
 import logisticspipes.proxy.ic2.IC2ProgressProvider;

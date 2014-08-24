@@ -1,8 +1,9 @@
-package logisticspipes.proxy.buildcraft.subproxies;
+package logisticspipes.proxy.buildcraft.bc60.subproxies;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -13,10 +14,12 @@ import buildcraft.transport.WireIconProvider;
 
 public class BCTilePart implements IBCTilePart {
 	
-	public LogisticsTileGenericPipe pipe;
+	public final LogisticsTileGenericPipe pipe;
+	private final BCRenderState bcRenderState;
 	
 	public BCTilePart(LogisticsTileGenericPipe tile) {
 		this.pipe = tile;
+		bcRenderState = (BCRenderState) tile.renderState.bcRenderState.getOriginal();
 	}
 
 	static class SideProperties {
@@ -140,29 +143,29 @@ public class BCTilePart implements IBCTilePart {
 
 	@Override
 	public void refreshRenderState() {
-
+		
 		// WireState
 		for (PipeWire color : PipeWire.values()) {
-			pipe.renderState.wireMatrix.setWire(color, pipe.pipe.bcPipePart.getWireSet()[color.ordinal()]);
+			bcRenderState.wireMatrix.setWire(color, pipe.pipe.bcPipePart.getWireSet()[color.ordinal()]);
 
 			for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-				pipe.renderState.wireMatrix.setWireConnected(color, direction, pipe.pipe.bcPipePart.isWireConnectedTo(pipe.getTile(direction), color));
+				bcRenderState.wireMatrix.setWireConnected(color, direction, pipe.pipe.bcPipePart.isWireConnectedTo(pipe.getTile(direction), color));
 			}
 
 			boolean lit = pipe.pipe.bcPipePart.getSignalStrength()[color.ordinal()] > 0;
 
 			switch (color) {
 				case RED:
-					pipe.renderState.wireMatrix.setWireIndex(color, lit ? WireIconProvider.Texture_Red_Lit : WireIconProvider.Texture_Red_Dark);
+					bcRenderState.wireMatrix.setWireIndex(color, lit ? WireIconProvider.Texture_Red_Lit : WireIconProvider.Texture_Red_Dark);
 					break;
 				case BLUE:
-					pipe.renderState.wireMatrix.setWireIndex(color, lit ? WireIconProvider.Texture_Blue_Lit : WireIconProvider.Texture_Blue_Dark);
+					bcRenderState.wireMatrix.setWireIndex(color, lit ? WireIconProvider.Texture_Blue_Lit : WireIconProvider.Texture_Blue_Dark);
 					break;
 				case GREEN:
-					pipe.renderState.wireMatrix.setWireIndex(color, lit ? WireIconProvider.Texture_Green_Lit : WireIconProvider.Texture_Green_Dark);
+					bcRenderState.wireMatrix.setWireIndex(color, lit ? WireIconProvider.Texture_Green_Lit : WireIconProvider.Texture_Green_Dark);
 					break;
 				case YELLOW:
-					pipe.renderState.wireMatrix.setWireIndex(color, lit ? WireIconProvider.Texture_Yellow_Lit : WireIconProvider.Texture_Yellow_Dark);
+					bcRenderState.wireMatrix.setWireIndex(color, lit ? WireIconProvider.Texture_Yellow_Lit : WireIconProvider.Texture_Yellow_Dark);
 					break;
 				default:
 					break;
@@ -171,8 +174,8 @@ public class BCTilePart implements IBCTilePart {
 		}
 
 		// Gate Textures and movement
-		pipe.renderState.setIsGateLit(pipe.pipe.bcPipePart.isGateActive());
-		pipe.renderState.setIsGatePulsing(pipe.pipe.bcPipePart.isGateActive());
+		pipe.renderState.bcRenderState.setIsGateLit(pipe.pipe.bcPipePart.isGateActive());
+		pipe.renderState.bcRenderState.setIsGatePulsing(pipe.pipe.bcPipePart.isGateActive());
 
 		// Facades
 		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
@@ -180,7 +183,7 @@ public class BCTilePart implements IBCTilePart {
 
 			if (type == ItemFacade.TYPE_BASIC) {
 				Block block = sideProperties.facadeBlocks[direction.ordinal()][0];
-				pipe.renderState.facadeMatrix.setFacade(direction, block, sideProperties.facadeMeta[direction.ordinal()][0]);
+				bcRenderState.facadeMatrix.setFacade(direction, block, sideProperties.facadeMeta[direction.ordinal()][0]);
 			} else if (type == ItemFacade.TYPE_PHASED) {
 				PipeWire wire = PipeWire.fromOrdinal(sideProperties.facadeWires[direction.ordinal()]);
 				Block block = sideProperties.facadeBlocks[direction.ordinal()][0];
@@ -189,21 +192,21 @@ public class BCTilePart implements IBCTilePart {
 				int metaAlt = sideProperties.facadeMeta[direction.ordinal()][1];
 
 				if (pipe.isWireActive(wire)) {
-					pipe.renderState.facadeMatrix.setFacade(direction, blockAlt, metaAlt);
+					bcRenderState.facadeMatrix.setFacade(direction, blockAlt, metaAlt);
 				} else {
-					pipe.renderState.facadeMatrix.setFacade(direction, block, meta);
+					bcRenderState.facadeMatrix.setFacade(direction, block, meta);
 				}
 			}
 		}
 
 		//Plugs
 		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-			pipe.renderState.plugMatrix.setConnected(direction, sideProperties.plugs[direction.ordinal()]);
+			bcRenderState.plugMatrix.setConnected(direction, sideProperties.plugs[direction.ordinal()]);
 		}
 
 		//RobotStations
 		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-			pipe.renderState.robotStationMatrix.setConnected(direction, sideProperties.robotStations[direction.ordinal()]);
+			bcRenderState.robotStationMatrix.setConnected(direction, sideProperties.robotStations[direction.ordinal()]);
 		}
 	}
 
@@ -242,7 +245,7 @@ public class BCTilePart implements IBCTilePart {
 		if (direction == null || direction == ForgeDirection.UNKNOWN) {
 			return false;
 		} else if (pipe.getWorldObj().isRemote) {
-			return pipe.renderState.facadeMatrix.getFacadeBlock(direction) != null;
+			return bcRenderState.facadeMatrix.getFacadeBlock(direction) != null;
 		} else {
 			return sideProperties.facadeBlocks[direction.ordinal()][0] != null;
 		}
@@ -292,7 +295,7 @@ public class BCTilePart implements IBCTilePart {
 		}
 
 		if (pipe.getWorldObj().isRemote) {
-			return pipe.renderState.plugMatrix.isConnected(side);
+			return bcRenderState.plugMatrix.isConnected(side);
 		}
 
 		return sideProperties.plugs[side.ordinal()];
@@ -305,7 +308,7 @@ public class BCTilePart implements IBCTilePart {
 		}
 
 		if (pipe.getWorldObj().isRemote) {
-			return pipe.renderState.robotStationMatrix.isConnected(side);
+			return bcRenderState.robotStationMatrix.isConnected(side);
 		}
 
 		return sideProperties.robotStations[side.ordinal()];
@@ -380,4 +383,10 @@ public class BCTilePart implements IBCTilePart {
 	public void readFromNBT(NBTTagCompound nbt) {
 		sideProperties.readFromNBT(nbt);
 	}
+
+	@Override
+	public void invalidate() {}
+
+	@Override
+	public void validate() {}
 }

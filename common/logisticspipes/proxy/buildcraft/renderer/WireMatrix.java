@@ -1,10 +1,11 @@
-package logisticspipes.renderer.state;
+package logisticspipes.proxy.buildcraft.renderer;
 
 import java.io.IOException;
 import java.util.BitSet;
 
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
+import logisticspipes.renderer.state.ConnectionMatrix;
 import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.transport.PipeWire;
 

@@ -1,4 +1,4 @@
-package logisticspipes.proxy.buildcraft.subproxies;
+package logisticspipes.proxy.buildcraft.bc60.subproxies;
 
 import java.lang.reflect.Field;
 import java.util.LinkedList;
@@ -15,9 +15,10 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.BCPipeWireHooks.PipeClassReceiveSignal;
-import logisticspipes.proxy.buildcraft.BuildCraftProxy;
-import logisticspipes.proxy.buildcraft.gates.ActionDisableLogistics;
-import logisticspipes.proxy.buildcraft.gates.wrapperclasses.PipeWrapper;
+import logisticspipes.proxy.buildcraft.bc60.BuildCraftProxy;
+import logisticspipes.proxy.buildcraft.bc60.gates.ActionDisableLogistics;
+import logisticspipes.proxy.buildcraft.bc60.gates.wrapperclasses.PipeWrapper;
+import logisticspipes.proxy.buildcraft.subproxies.IBCPipePart;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -45,7 +46,8 @@ public class BCPipePart implements IBCPipePart {
 	
 	private static Field networkWrappersField;
 
-	public LogisticsTileGenericPipe container;
+	public final LogisticsTileGenericPipe container;
+	private final BCCoreState coreState;
 	public int[] signalStrength = new int[]{0, 0, 0, 0};
 	public boolean[] wireSet = new boolean[]{false, false, false, false};
 	public Gate gate;
@@ -58,6 +60,7 @@ public class BCPipePart implements IBCPipePart {
 	
 	public BCPipePart(LogisticsTileGenericPipe tile) {
 		this.container = tile;
+		this.coreState = (BCCoreState) tile.bcCoreState.getOriginal();
 		try {
 			startWrapper();
 			wrapper = new PipeWrapper(tile);
@@ -417,25 +420,25 @@ public class BCPipePart implements IBCPipePart {
 
 	@Override
 	public void updateCoreStateGateData() {
-		container.coreState.expansions.clear();
+		coreState.expansions.clear();
 		if (gate != null) {
-			container.coreState.gateMaterial = gate.material.ordinal();
-			container.coreState.gateLogic = gate.logic.ordinal();
+			coreState.gateMaterial = gate.material.ordinal();
+			coreState.gateLogic = gate.logic.ordinal();
 			for (IGateExpansion ex : gate.expansions.keySet()) {
-				container.coreState.expansions.add(GateExpansions.getServerExpansionID(ex.getUniqueIdentifier()));
+				coreState.expansions.add(GateExpansions.getServerExpansionID(ex.getUniqueIdentifier()));
 			}
 		} else {
-			container.coreState.gateMaterial = -1;
-			container.coreState.gateLogic = -1;
+			coreState.gateMaterial = -1;
+			coreState.gateLogic = -1;
 		}
 	}
 
 	@Override
 	public void updateGateFromCoreStateData() {
-		if (container.coreState.gateMaterial == -1) {
+		if (coreState.gateMaterial == -1) {
 			wrapper.gate = gate = null;
 		} else if (gate == null) {
-			wrapper.gate = gate = GateFactory.makeGate(this.wrapper, GateDefinition.GateMaterial.fromOrdinal(container.coreState.gateMaterial), GateDefinition.GateLogic.fromOrdinal(container.coreState.gateLogic));
+			wrapper.gate = gate = GateFactory.makeGate(this.wrapper, GateDefinition.GateMaterial.fromOrdinal(coreState.gateMaterial), GateDefinition.GateLogic.fromOrdinal(coreState.gateLogic));
 		}
 
 		syncGateExpansions();
@@ -443,8 +446,8 @@ public class BCPipePart implements IBCPipePart {
 
 	private void syncGateExpansions() {
 		resyncGateExpansions = false;
-		if (gate != null && !container.coreState.expansions.isEmpty()) {
-			for (byte id : container.coreState.expansions) {
+		if (gate != null && !coreState.expansions.isEmpty()) {
+			for (byte id : coreState.expansions) {
 				IGateExpansion ex = GateExpansions.getExpansionClient(id);
 				if (ex != null) {
 					if (!gate.expansions.containsKey(ex)) {

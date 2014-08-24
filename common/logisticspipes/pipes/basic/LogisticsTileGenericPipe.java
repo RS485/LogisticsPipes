@@ -29,6 +29,7 @@ import logisticspipes.network.packets.pipe.PipeTileStatePacket;
 import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.buildcraft.subproxies.IBCCoreState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
 import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
 import logisticspipes.proxy.opencomputers.asm.BaseWrapperClass;
@@ -121,8 +122,21 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
     		}
     		super.invalidate();
 			SimpleServiceLocator.openComputersProxy.handleLPInvalidate(this);
+			tilePart.invalidate();
         }
     }
+	
+	@Override
+	public void validate() {
+		super.validate();
+		initialized = false;
+		tileBuffer = null;
+		bindPipe();
+		if (pipe != null) {
+			pipe.validate();
+		}
+		tilePart.validate();
+	}
 
 	@Override
 	public void onChunkUnload() {
@@ -263,7 +277,12 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 	public void writeToNBT(NBTTagCompound nbt) {
 		super.writeToNBT(nbt);
 
-		nbt.setByte("redstoneInput", (byte) redstoneInput);
+		nbt.setInteger("redstoneInput", redstoneInput);
+		
+		for (int i = 0; i < ForgeDirection.VALID_DIRECTIONS.length; i++) {
+			final String key = "redstoneInputSide[" + i + "]";
+			nbt.setInteger(key, redstoneInputSide[i]);
+		}
 
 		if (pipe != null) {
 			nbt.setInteger("pipeId", Item.itemRegistry.getIDForObject(pipe.item));
@@ -283,7 +302,12 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
 
-		redstoneInput = nbt.getByte("redstoneInput");
+		redstoneInput = nbt.getInteger("redstoneInput");
+		
+		for (int i = 0; i < ForgeDirection.VALID_DIRECTIONS.length; i++) {
+			final String key = "redstoneInputSide[" + i + "]";
+			redstoneInputSide[i] = nbt.hasKey(key) ? nbt.getInteger(key) : 0;
+		}
 
 		coreState.pipeId = nbt.getInteger("pipeId");
 		pipe = LogisticsBlockGenericPipe.createPipe((Item) Item.itemRegistry.getObjectById(coreState.pipeId));
@@ -558,15 +582,15 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 		}
 	}
 
-	public IBCTilePart tilePart = SimpleServiceLocator.buildCraftProxy.getBCTilePart(this);
-
 	public boolean initialized = false;
 	public final PipeRenderState renderState = new PipeRenderState();
 	public final CoreState coreState = new CoreState();
+	public final IBCCoreState bcCoreState = SimpleServiceLocator.buildCraftProxy.getBCCoreState();
 	public boolean[] pipeConnectionsBuffer = new boolean[6];
 
 	public CoreUnroutedPipe pipe;
 	public int redstoneInput = 0;
+	public int[] redstoneInputSide = new int[ForgeDirection.VALID_DIRECTIONS.length];
 
 	private boolean deletePipe = false;
 	private TileBuffer[] tileBuffer;
@@ -575,45 +599,21 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 	private boolean refreshRenderState = false;
 	private boolean pipeBound = false;
 
+	public IBCTilePart tilePart = SimpleServiceLocator.buildCraftProxy.getBCTilePart(this);
+
 	public class CoreState implements IClientState {
-
 		public int pipeId = -1;
-		public int gateMaterial = -1;
-		public int gateLogic = -1;
-		public final Set<Byte> expansions = new HashSet<Byte>();
-
+		
 		@Override
 		public void writeData(LPDataOutputStream data) throws IOException {
 			data.writeInt(pipeId);
-			data.writeByte(gateMaterial);
-			data.writeByte(gateLogic);
-			data.writeByte(expansions.size());
-			for (Byte expansion : expansions) {
-				data.writeByte(expansion);
-			}
+			
 		}
 
 		@Override
 		public void readData(LPDataInputStream data) throws IOException {
 			pipeId = data.readInt();
-			gateMaterial = data.readByte();
-			gateLogic = data.readByte();
-			expansions.clear();
-			int numExp = data.readByte();
-			for (int i = 0; i < numExp; i++) {
-				expansions.add(data.readByte());
-			}
-		}
-	}
-	
-	@Override
-	public void validate() {
-		super.validate();
-		initialized = false;
-		tileBuffer = null;
-		bindPipe();
-		if (pipe != null) {
-			pipe.validate();
+			
 		}
 	}
 
@@ -674,6 +674,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 		pipe.bcPipePart.updateCoreStateGateData();
 
 		packet.setCoreState(coreState);
+		packet.setBcCoreState(bcCoreState);
 		packet.setRenderState(renderState);
 		packet.setPipe(pipe);
 

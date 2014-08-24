@@ -1,4 +1,4 @@
-package logisticspipes.proxy.buildcraft.gates;
+package logisticspipes.proxy.buildcraft.bc60.gates;
 
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;

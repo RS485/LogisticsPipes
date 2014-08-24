@@ -29,23 +29,23 @@ public class CCSinkResponder {
 		this.queuer = queuer;
 	}
 	
-	@CCCommand
+	@CCCommand(description="Returns the ItemIdentifier for the item that should be sinked")
 	public ItemIdentifier getItemIdentifier() {
 		return stack.getItem();
 	}
 	
-	@CCCommand
+	@CCCommand(description="Returns the amount of items that should be sinked")
 	public int getAmount() {
 		return stack.getStackSize();
 	}
 	
-	@CCCommand
+	@CCCommand(description="Sends the response to the CC QuickSort module to deny the sink")
 	public void denySink() {
 		done = true;
 		this.canSink = -1;
 	}
 	
-	@CCCommand
+	@CCCommand(description="Sends the response to the CC QuickSort module to accept the sink for the givven amount with the givven priority")
 	public void acceptSink(Double amount, Double priority) {
 		this.canSink = ((Double)(amount > 0 ? amount : 0D)).intValue();
 		this.priority = priority.intValue();

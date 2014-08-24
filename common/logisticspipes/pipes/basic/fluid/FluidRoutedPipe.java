@@ -40,7 +40,6 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	@Override
 	public void setTile(TileEntity tile) {
 		super.setTile(tile);
-		worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
 	}
 
 	@Override
@@ -90,6 +89,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	 */
 	
 	public final List<Pair<TileEntity,ForgeDirection>> getAdjacentTanks(boolean flag) {
+		if(worldUtil == null) worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
 		List<Pair<TileEntity,ForgeDirection>> tileList =  new ArrayList<Pair<TileEntity,ForgeDirection>>();
 		for(ForgeDirection dir:ForgeDirection.VALID_DIRECTIONS) {
 			TileEntity tile = worldUtil.getAdjacentTileEntitie(dir);

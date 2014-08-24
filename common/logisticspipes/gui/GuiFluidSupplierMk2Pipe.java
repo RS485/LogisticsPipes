@@ -10,8 +10,10 @@ import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.pipe.FluidSupplierAmount;
+import logisticspipes.network.packets.pipe.FluidSupplierMinMode;
 import logisticspipes.network.packets.pipe.FluidSupplierMode;
 import logisticspipes.pipes.PipeFluidSupplierMk2;
+import logisticspipes.pipes.PipeFluidSupplierMk2.MinMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
@@ -49,7 +51,8 @@ public class GuiFluidSupplierMk2Pipe extends GuiContainer implements IGuiIDHandl
 		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "TargetInv"), xSize / 2 - mc.fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "TargetInv"))/2, 6, 0x404040);
 		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Inventory"), 15, ySize - 95, 0x404040);
 		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Fluid") + ":", 25, 22, 0x404040);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Partialrequests") + ":", xSize - 140, ySize - 109, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Partial") + ":", xSize - 176, ySize - 109, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "minMode") + ":", xSize - 108, ySize - 109, 0x404040);
 		mc.fontRenderer.drawString(Integer.toString(logic.getAmount()), xSize / 2, 22, 0x404040);
 		mc.fontRenderer.drawString("+", 32, 39, 0x404040);
 		mc.fontRenderer.drawString("-", 32, 50, 0x404040);
@@ -72,7 +75,8 @@ public class GuiFluidSupplierMk2Pipe extends GuiContainer implements IGuiIDHandl
 	public void initGui() {
 		super.initGui();
        buttonList.clear();
-       buttonList.add(new GuiButton(0, width / 2 + 45, guiTop + ySize - 115, 30, 20, logic.isRequestingPartials() ? StringUtil.translate(PREFIX + "Yes") : StringUtil.translate(PREFIX + "No")));
+       buttonList.add(new GuiButton(0, width / 2 - 48, guiTop + ySize - 115, 30, 20, logic.isRequestingPartials() ? StringUtil.translate(PREFIX + "Yes") : StringUtil.translate(PREFIX + "No")));
+       buttonList.add(new GuiButton(1, width / 2 + 30, guiTop + ySize - 115, 55, 20, StringUtil.translate(PREFIX + logic.getMinMode().name())));
        buttonList.add(new SmallGuiButton(10, guiLeft + 40, guiTop + 37, 10, 10, "1"));
        buttonList.add(new SmallGuiButton(11, guiLeft + 40, guiTop + 48, 10, 10, "1"));
        buttonList.add(new SmallGuiButton(20, guiLeft + 51, guiTop + 37, 20, 10, "10"));
@@ -85,19 +89,22 @@ public class GuiFluidSupplierMk2Pipe extends GuiContainer implements IGuiIDHandl
 
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
-		if (guibutton.id == 0){
+		if (guibutton.id == 0) {
 			logic.setRequestingPartials(!logic.isRequestingPartials());
 			((GuiButton)buttonList.get(0)).displayString = logic.isRequestingPartials() ? StringUtil.translate(PREFIX + "Yes") : StringUtil.translate(PREFIX + "No");
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidSupplierMode.class).setInteger((logic.isRequestingPartials() ? 1 : 0)).setPosX(logic.getX()).setPosY(logic.getY()).setPosZ(logic.getZ()));
-		}
-		if((guibutton.id % 10 == 0 || guibutton.id % 10 == 1) && guibutton.id / 10 < 5 && guibutton.id / 10 > 0) {
+		} else if (guibutton.id == 1) {
+			int index = logic.getMinMode().ordinal() + 1;
+			if(index >= MinMode.values().length) index = 0;
+			logic.setMinMode(MinMode.values()[index]);
+			((GuiButton)buttonList.get(1)).displayString = StringUtil.translate(PREFIX + logic.getMinMode().name());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidSupplierMinMode.class).setInteger(logic.getMinMode().ordinal()).setPosX(logic.getX()).setPosY(logic.getY()).setPosZ(logic.getZ()));
+		} else if((guibutton.id % 10 == 0 || guibutton.id % 10 == 1) && guibutton.id / 10 < 5 && guibutton.id / 10 > 0) {
 			int change = 1;
 			if(guibutton.id % 10 == 1) change = -1;
 			change *= Math.pow(10, guibutton.id / 10 - 1);
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidSupplierAmount.class).setInteger(change).setPosX(this.logic.getX()).setPosY(this.logic.getY()).setPosZ(this.logic.getZ()));
-		}
-		super.actionPerformed(guibutton);
-		
+		} else super.actionPerformed(guibutton);
 	}
 	
 	@Override

@@ -308,10 +308,15 @@ gui.fluidbasic.Empty=Empty
 
 gui.fluidsuppliermk2.Inventory=Inventory
 gui.fluidsuppliermk2.Fluid=Fluid
-gui.fluidsuppliermk2.Partialrequests=Partial requests
+gui.fluidsuppliermk2.Partial=Partial
+gui.fluidsuppliermk2.minMode=Min. Mode
 gui.fluidsuppliermk2.Yes=Yes
 gui.fluidsuppliermk2.No=No
 gui.fluidsuppliermk2.TargetInv=Fluid to keep stocked
+gui.fluidsuppliermk2.NONE=None
+gui.fluidsuppliermk2.ONEBUCKET=1 Bucket
+gui.fluidsuppliermk2.TWOBUCKET=2 Buckets
+gui.fluidsuppliermk2.FIVEBUCKET=5 Buckets
 
 gui.fluidsupplier.TargetInv=Fluids to keep stocked
 gui.fluidsupplier.Inventory=Inventory

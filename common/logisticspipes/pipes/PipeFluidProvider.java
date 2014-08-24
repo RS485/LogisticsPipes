@@ -71,33 +71,35 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 			}
 			if(fallback) {
 				FluidTankInfo[] tanks = ((IFluidHandler)pair.getValue1()).getTankInfo(pair.getValue2().getOpposite());
-				for(FluidTankInfo tank:tanks) {
-					if(tank == null) continue;
-					FluidStack liquid;
-					if((liquid = tank.fluid) != null) {
-						if(order.getValue1().equals(FluidIdentifier.get(liquid))) {
-							int amount = Math.min(liquid.amount, amountToSend);
-							FluidStack drained = ((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), amount, false);
-							if(drained != null && order.getValue1().equals(FluidIdentifier.get(drained))) {
-								drained = ((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), amount, true);
-								while(drained.amount < amountToSend) {
-									FluidStack addition = ((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), amountToSend - drained.amount, false);
-									if(addition != null && order.getValue1().equals(FluidIdentifier.get(addition))) {
-										addition = ((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), amountToSend - drained.amount, true);
-										drained.amount += addition.amount;
-									} else {
-										break;
+				if(tanks != null) {
+					for(FluidTankInfo tank:tanks) {
+						if(tank == null) continue;
+						FluidStack liquid;
+						if((liquid = tank.fluid) != null) {
+							if(order.getValue1().equals(FluidIdentifier.get(liquid))) {
+								int amount = Math.min(liquid.amount, amountToSend);
+								FluidStack drained = ((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), amount, false);
+								if(drained != null && order.getValue1().equals(FluidIdentifier.get(drained))) {
+									drained = ((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), amount, true);
+									while(drained.amount < amountToSend) {
+										FluidStack addition = ((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), amountToSend - drained.amount, false);
+										if(addition != null && order.getValue1().equals(FluidIdentifier.get(addition))) {
+											addition = ((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), amountToSend - drained.amount, true);
+											drained.amount += addition.amount;
+										} else {
+											break;
+										}
 									}
+									amount = drained.amount;
+									amountToSend -= amount;
+									ItemIdentifierStack stack = SimpleServiceLocator.logisticsFluidManager.getFluidContainer(drained);
+									IRoutedItem item = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
+									item.setDestination(order.getValue3().getRouter().getSimpleID());
+									item.setTransportMode(TransportMode.Active);
+									this.queueRoutedItem(item, pair.getValue2());
+									manager.sendAmount(amount);
+									if(amountToSend <= 0) break;
 								}
-								amount = drained.amount;
-								amountToSend -= amount;
-								ItemIdentifierStack stack = SimpleServiceLocator.logisticsFluidManager.getFluidContainer(drained);
-								IRoutedItem item = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
-								item.setDestination(order.getValue3().getRouter().getSimpleID());
-								item.setTransportMode(TransportMode.Active);
-								this.queueRoutedItem(item, pair.getValue2());
-								manager.sendAmount(amount);
-								if(amountToSend <= 0) break;
 							}
 						}
 					}
@@ -131,18 +133,20 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 			}
 			if(fallback) {
 				FluidTankInfo[] tanks = ((IFluidHandler)pair.getValue1()).getTankInfo(pair.getValue2().getOpposite());
-				for(FluidTankInfo tank:tanks) {
-					if(tank == null) continue;
-					FluidStack liquid;
-					if((liquid = tank.fluid) != null && liquid.fluidID != 0) {
-						FluidIdentifier ident = FluidIdentifier.get(liquid);
-						if(((IFluidHandler)pair.getValue1()).canDrain(pair.getValue2().getOpposite(), liquid.getFluid())) {
-							if(((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), 1, false) != null) {
-								if(map.containsKey(ident)) {
-									long addition = ((long)map.get(ident)) + tank.fluid.amount;
-									map.put(ident, addition > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) addition);
-								} else {
-									map.put(ident, tank.fluid.amount);
+				if(tanks != null) {
+					for(FluidTankInfo tank:tanks) {
+						if(tank == null) continue;
+						FluidStack liquid;
+						if((liquid = tank.fluid) != null && liquid.fluidID != 0) {
+							FluidIdentifier ident = FluidIdentifier.get(liquid);
+							if(((IFluidHandler)pair.getValue1()).canDrain(pair.getValue2().getOpposite(), liquid.getFluid())) {
+								if(((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), 1, false) != null) {
+									if(map.containsKey(ident)) {
+										long addition = ((long)map.get(ident)) + tank.fluid.amount;
+										map.put(ident, addition > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) addition);
+									} else {
+										map.put(ident, tank.fluid.amount);
+									}
 								}
 							}
 						}
@@ -193,15 +197,17 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 			}
 			if(fallback) {
 				FluidTankInfo[] tanks = ((IFluidHandler)pair.getValue1()).getTankInfo(pair.getValue2().getOpposite());
-				for(FluidTankInfo tank:tanks) {
-					if(tank == null) continue;
-					FluidStack liquid;
-					if((liquid = tank.fluid) != null) {
-						if(request.getFluid().equals(FluidIdentifier.get(liquid))) {
-							if(((IFluidHandler)pair.getValue1()).canDrain(pair.getValue2().getOpposite(), liquid.getFluid())) {
-								if(((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), 1, false) != null) {
-									long addition = ((long) containedAmount) + liquid.amount;
-									containedAmount = addition > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) addition;
+				if(tanks != null) {
+					for(FluidTankInfo tank:tanks) {
+						if(tank == null) continue;
+						FluidStack liquid;
+						if((liquid = tank.fluid) != null) {
+							if(request.getFluid().equals(FluidIdentifier.get(liquid))) {
+								if(((IFluidHandler)pair.getValue1()).canDrain(pair.getValue2().getOpposite(), liquid.getFluid())) {
+									if(((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), 1, false) != null) {
+										long addition = ((long) containedAmount) + liquid.amount;
+										containedAmount = addition > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) addition;
+									}
 								}
 							}
 						}
@@ -251,14 +257,16 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 			}
 			if(fallback) {
 				FluidTankInfo[] tanks = ((IFluidHandler)pair.getValue1()).getTankInfo(pair.getValue2().getOpposite());
-				for(FluidTankInfo tank:tanks) {
-					if(tank == null) continue;
-					FluidStack liquid;
-					if((liquid = tank.fluid) != null && liquid.fluidID != 0) {
-						if(((IFluidHandler)pair.getValue1()).canDrain(pair.getValue2().getOpposite(), liquid.getFluid())) {
-							if(((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), 1, false) != null) {
-								FluidIdentifier ident = FluidIdentifier.get(liquid);
-								l1.add(ident.getItemIdentifier());
+				if(tanks != null) {
+					for(FluidTankInfo tank:tanks) {
+						if(tank == null) continue;
+						FluidStack liquid;
+						if((liquid = tank.fluid) != null && liquid.fluidID != 0) {
+							if(((IFluidHandler)pair.getValue1()).canDrain(pair.getValue2().getOpposite(), liquid.getFluid())) {
+								if(((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), 1, false) != null) {
+									FluidIdentifier ident = FluidIdentifier.get(liquid);
+									l1.add(ident.getItemIdentifier());
+								}
 							}
 						}
 					}

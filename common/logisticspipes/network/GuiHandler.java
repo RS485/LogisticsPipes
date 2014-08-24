@@ -18,6 +18,7 @@ import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.interfaces.ISlotClick;
 import logisticspipes.items.LogisticsItemCard;
+import logisticspipes.network.packets.pipe.FluidSupplierMinMode;
 import logisticspipes.network.packets.pipe.FluidSupplierMode;
 import logisticspipes.network.packets.pipe.InvSysConResistance;
 import logisticspipes.pipes.PipeBlockRequestTable;
@@ -99,6 +100,7 @@ public class GuiHandler implements IGuiHandler {
 				dummy.addFluidSlot(0, ((PipeFluidSupplierMk2)pipe.pipe).getDummyInventory(), 0, 0);
 				
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidSupplierMode.class).setInteger((((PipeFluidSupplierMk2)pipe.pipe).isRequestingPartials() ? 1 : 0)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidSupplierMinMode.class).setInteger(((PipeFluidSupplierMk2)pipe.pipe).getMinMode().ordinal()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), player);
 			    return dummy;
 				
 			case GuiIDs.GUI_ProviderPipe_ID:

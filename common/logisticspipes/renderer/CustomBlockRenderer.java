@@ -12,7 +12,7 @@ import net.minecraft.world.IBlockAccess;
 public final class CustomBlockRenderer {
 
 	public static CustomBlockRenderer INSTANCE = new CustomBlockRenderer();
-	protected RenderBlocks renderBlocks;
+	protected RenderBlocks renderBlocks = new RenderBlocks();
 
 	public static class RenderInfo {
 

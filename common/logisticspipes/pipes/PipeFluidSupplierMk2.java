@@ -17,21 +17,36 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTree;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifierInventory;
+import lombok.Getter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
 public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFluid, IRequireReliableFluidTransport {
 
 	private boolean _lastRequestFailed = false;
+
+	public enum MinMode {
+		NONE(0),
+		ONEBUCKET(1000),
+		TWOBUCKET(2000),
+		FIVEBUCKET(5000);
+		@Getter
+		private final int amount;
+		MinMode(int amount) {
+			this.amount = amount;
+		}
+	}
 
 	public PipeFluidSupplierMk2(Item item) {
 		super(item);
@@ -84,6 +99,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 	private final Map<FluidIdentifier, Integer> _requestedItems = new HashMap<FluidIdentifier, Integer>();
 	
 	private boolean _requestPartials = false;
+	private MinMode _bucketMinimum = MinMode.ONEBUCKET;
 
 	@Override
 	public void throttledUpdateEntity() {
@@ -106,7 +122,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 
 			//How much do I have?
 			HashMap<FluidIdentifier, Integer> haveFluids = new HashMap<FluidIdentifier, Integer>();
-			
+
 			FluidTankInfo[] result = container.getTankInfo(ForgeDirection.UNKNOWN);
 			for (FluidTankInfo slot : result){
 				if (slot.fluid == null || !wantFluids.containsKey(FluidIdentifier.get(slot.fluid))) continue;
@@ -115,6 +131,30 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 					haveFluids.put(FluidIdentifier.get(slot.fluid), slot.fluid.amount);
 				} else {
 					haveFluids.put(FluidIdentifier.get(slot.fluid), liquidWant +  slot.fluid.amount);
+				}
+			}
+			
+			//What does our sided internal tank have
+			if(tile.orientation.ordinal() < ((PipeFluidTransportLogistics)this.transport).sideTanks.length) {
+				FluidTank centerTank = ((PipeFluidTransportLogistics)this.transport).sideTanks[tile.orientation.ordinal()];
+				if (centerTank != null && centerTank.getFluid() != null && wantFluids.containsKey(FluidIdentifier.get(centerTank.getFluid()))) {
+					Integer liquidWant = haveFluids.get(FluidIdentifier.get(centerTank.getFluid()));
+					if (liquidWant==null){
+						haveFluids.put(FluidIdentifier.get(centerTank.getFluid()), centerTank.getFluid().amount);
+					} else {
+						haveFluids.put(FluidIdentifier.get(centerTank.getFluid()), liquidWant +  centerTank.getFluid().amount);
+					}
+				}
+			}
+			
+			//What does our center internal tank have
+			FluidTank centerTank = ((PipeFluidTransportLogistics)this.transport).internalTank;
+			if (centerTank != null && centerTank.getFluid() != null && wantFluids.containsKey(FluidIdentifier.get(centerTank.getFluid()))) {
+				Integer liquidWant = haveFluids.get(FluidIdentifier.get(centerTank.getFluid()));
+				if (liquidWant==null){
+					haveFluids.put(FluidIdentifier.get(centerTank.getFluid()), centerTank.getFluid().amount);
+				} else {
+					haveFluids.put(FluidIdentifier.get(centerTank.getFluid()), liquidWant +  centerTank.getFluid().amount);
 				}
 			}
 			
@@ -139,6 +179,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 			for (FluidIdentifier need : wantFluids.keySet()){
 				int countToRequest = wantFluids.get(need);
 				if (countToRequest < 1) continue;
+				if(_bucketMinimum.getAmount() != 0 && countToRequest < _bucketMinimum.getAmount()) continue;
 				
 				if(!useEnergy(11)) {
 					break;
@@ -175,6 +216,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 		dummyInventory.readFromNBT(nbttagcompound, "");
 		_requestPartials = nbttagcompound.getBoolean("requestpartials");
 		amount = nbttagcompound.getInteger("amount");
+		_bucketMinimum = MinMode.values()[nbttagcompound.getByte("_bucketMinimum")];
     }
 
 	@Override
@@ -183,6 +225,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
     	dummyInventory.writeToNBT(nbttagcompound, "");
     	nbttagcompound.setBoolean("requestpartials", _requestPartials);
     	nbttagcompound.setInteger("amount", amount);
+    	nbttagcompound.setByte("_bucketMinimum", (byte) _bucketMinimum.ordinal());
     }
 	
 	private void decreaseRequested(FluidIdentifier liquid, int remaining) {
@@ -230,6 +273,14 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 	
 	public void setRequestingPartials(boolean value){
 		_requestPartials = value;
+	}
+	
+	public MinMode getMinMode() {
+		return _bucketMinimum;
+	}
+	
+	public void setMinMode(MinMode value) {
+		this._bucketMinimum = value;
 	}
 
 	@Override

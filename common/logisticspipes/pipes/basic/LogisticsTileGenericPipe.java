@@ -148,7 +148,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 
 	@Override
 	public void updateEntity() {
-		if(sendInitPacket) {
+		if(sendInitPacket && MainProxy.isServer(getWorldObj())) {
 			sendInitPacket = false;
 			getRenderController().sendInit();
 		}

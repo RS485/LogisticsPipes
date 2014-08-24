@@ -75,7 +75,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 	 * enumerates all ModernPackets, sets their IDs and populate packetlist/packetmap
 	 */
 	@SuppressWarnings("unchecked")
-	@SneakyThrows({ IOException.class, InvocationTargetException.class, IllegalAccessException.class, InstantiationException.class})
+	@SneakyThrows({ IOException.class, InvocationTargetException.class, IllegalAccessException.class, InstantiationException.class, IllegalArgumentException.class, NoSuchMethodException.class, SecurityException.class})
 	// Suppression+sneakiness because these shouldn't ever fail, and if they do, it needs to fail.
 	public static final void initialize() {
 		final List<ClassInfo> classes = new ArrayList<ClassInfo>(ClassPath.from(PacketHandler.class.getClassLoader()).getTopLevelClassesRecursive("logisticspipes.network.packets"));
@@ -93,7 +93,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 
 		for (ClassInfo c : classes) {
 			final Class<?> cls = c.load();
-			final ModernPacket instance = (ModernPacket) cls.getConstructors()[0].newInstance(currentid);
+			final ModernPacket instance = (ModernPacket) cls.getConstructor(int.class).newInstance(currentid);
 			packetlist.add(instance);
 			packetmap.put((Class<? extends ModernPacket>) cls, instance);
 			currentid++;

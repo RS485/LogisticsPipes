@@ -720,8 +720,15 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 
 	@Override
 	public TileEntity getTile(ForgeDirection to) {
+		return getTile(to, false);
+	}
+
+	public TileEntity getTile(ForgeDirection to, boolean force) {
 		TileBuffer[] cache = getTileCache();
 		if (cache != null) {
+			if(force) {
+				cache[to.ordinal()].refresh();
+			}
 			return cache[to.ordinal()].getTile();
 		} else {
 			return null;

@@ -1161,10 +1161,12 @@ public class BuildCraftProxy implements IBCProxy {
 
 	@Override
 	public Object overridePipeConnection(LogisticsTileGenericPipe pipe, Object type, ForgeDirection dir) {
-		TileEntity target = pipe.getTile(dir);
+		TileEntity target = pipe.getTile(dir, true);
 		ConnectOverride result = ConnectOverride.DEFAULT;
 		if(LogisticsBlockGenericPipe.isFullyDefined(pipe.pipe) && target instanceof TileGenericPipe && !pipe.tilePart.hasPlug(dir) && !pipe.tilePart.hasRobotStation(dir)) {
 			result = ConnectOverride.CONNECT;
+		} else if(target instanceof TileGenericPipe) {
+			System.out.print("");
 		}
 		return result;
 	}

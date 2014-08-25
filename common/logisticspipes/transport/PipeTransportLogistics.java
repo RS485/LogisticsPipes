@@ -474,8 +474,11 @@ public class PipeTransportLogistics {
 			}
 		}
 		if(SimpleServiceLocator.betterStorageProxy.isBetterStorageCrate(tile) || SimpleServiceLocator.factorizationProxy.isBarral(tile)
-				//|| (Configs.TE_PIPE_SUPPORT && SimpleServiceLocator.thermalExpansionProxy.isItemConduit(tile) && SimpleServiceLocator.thermalExpansionProxy.isSideFree(tile, side.getOpposite().ordinal())) || (this.getPipe().getUpgradeManager().hasBCPowerSupplierUpgrade() && tile instanceof IPowerReceptor)
-				|| (this.getPipe().getUpgradeManager().hasRFPowerSupplierUpgrade() && SimpleServiceLocator.thermalExpansionProxy.isEnergyHandler(tile)) || (this.getPipe().getUpgradeManager().getIC2PowerLevel() > 0 && SimpleServiceLocator.IC2Proxy.isEnergySink(tile))) { return true; }
+				//|| (Configs.TE_PIPE_SUPPORT && SimpleServiceLocator.thermalExpansionProxy.isItemConduit(tile) && SimpleServiceLocator.thermalExpansionProxy.isSideFree(tile, side.getOpposite().ordinal())) 
+				|| (this.getPipe().getUpgradeManager().hasBCPowerSupplierUpgrade() && SimpleServiceLocator.buildCraftProxy.getPowerReceiver(tile, side.getOpposite()) != null)
+				|| (this.getPipe().getUpgradeManager().hasRFPowerSupplierUpgrade() && SimpleServiceLocator.thermalExpansionProxy.isEnergyHandler(tile))
+				|| (this.getPipe().getUpgradeManager().getIC2PowerLevel() > 0 && SimpleServiceLocator.IC2Proxy.isEnergySink(tile)))
+			return true;
 		/*
 		if(tile instanceof TileGenericPipe) {
 			Pipe<?> pipe2 = ((TileGenericPipe)tile).pipe;

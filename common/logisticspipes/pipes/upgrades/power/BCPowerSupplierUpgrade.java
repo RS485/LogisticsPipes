@@ -6,7 +6,7 @@ import logisticspipes.pipes.upgrades.IPipeUpgrade;
 public class BCPowerSupplierUpgrade implements IPipeUpgrade {
 	@Override
 	public boolean needsUpdate() {
-		return false;
+		return true;
 	}
 	
 	@Override

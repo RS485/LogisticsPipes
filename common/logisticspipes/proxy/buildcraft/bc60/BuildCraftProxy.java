@@ -17,6 +17,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe.Part;
@@ -1055,6 +1056,7 @@ public class BuildCraftProxy implements IBCProxy {
 
 	@Override
 	public ILPBCPowerProxy getPowerReceiver(TileEntity tile, ForgeDirection orientation) {
+		if(tile == null) return null;
 		PowerReceiver receptor = null;
 		if(tile instanceof IPowerReceptor) {
 			receptor = ((IPowerReceptor)tile).getPowerReceiver(orientation.getOpposite());
@@ -1165,8 +1167,6 @@ public class BuildCraftProxy implements IBCProxy {
 		ConnectOverride result = ConnectOverride.DEFAULT;
 		if(LogisticsBlockGenericPipe.isFullyDefined(pipe.pipe) && target instanceof TileGenericPipe && !pipe.tilePart.hasPlug(dir) && !pipe.tilePart.hasRobotStation(dir)) {
 			result = ConnectOverride.CONNECT;
-		} else if(target instanceof TileGenericPipe) {
-			System.out.print("");
 		}
 		return result;
 	}

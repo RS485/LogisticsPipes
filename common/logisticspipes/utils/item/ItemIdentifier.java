@@ -333,6 +333,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
 	public String getModName() {
 		UniqueIdentifier ui = GameRegistry.findUniqueIdentifierFor(this.item);
+		if(ui == null) return "UNKNOWN";
 		return ui.modId;
 	}
 	

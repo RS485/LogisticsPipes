@@ -4,6 +4,7 @@
 !/dummy
 !/gradle
 !/resources
+!/style
 
 !/.gitignore
 !/.travis.yml

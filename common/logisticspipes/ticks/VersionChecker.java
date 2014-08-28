@@ -52,7 +52,7 @@ public class VersionChecker extends Thread {
 			if(hasNew) {
 				VersionChecker.hasNewVersion = true;
 				VersionChecker.newVersion = Integer.toString(Double.valueOf(part.get("build").toString()).intValue());
-				LogisticsPipes.log.info("New LogisticsPipes" + (LogisticsPipes.DEV_BUILD?"-Dev":"") + " version found: #" + Double.valueOf(part.get("build").toString()).intValue());
+				LogisticsPipes.log.info("New LogisticsPipes" + (LPConstants.DEV_BUILD?"-Dev":"") + " version found: #" + Double.valueOf(part.get("build").toString()).intValue());
 				LinkedTreeMap changeLog = (LinkedTreeMap) part.get("changelog");
 				List<String> changeLogList = new ArrayList<String>();
 				if(changeLog != null) {

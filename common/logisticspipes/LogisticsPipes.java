@@ -209,14 +209,10 @@ public class LogisticsPipes {
 	
 	@Instance("LogisticsPipes")
 	public static LogisticsPipes instance;
-	
-	//Network CHannel
-	public static final String LOGISTICS_PIPES_CHANNEL_NAME = "BCLP"; // BCLP: Buildcraft-Logisticspipes
 
 	//Log Requests
 	public static boolean DisplayRequests;
 
-	public static final boolean DEV_BUILD = LPConstants.VERSION.contains(".dev.") || LPConstants.DEBUG;
 	public static boolean WATCHDOG = false;
 	
 	private boolean certificateError = false;
@@ -340,7 +336,7 @@ public class LogisticsPipes {
 			log.fatal("Certificate not correct");
 			log.fatal("This in not a LogisticsPipes version from RS485.");
 		}
-		if (DEV_BUILD) {
+		if (LPConstants.DEV_BUILD) {
 			log.debug("You are using a dev version.");
 			log.debug("While the dev versions contain cutting edge features, they may also contain more bugs.");
 			log.debug("Please report any you find to https://github.com/RS485/LogisticsPipes/issues");

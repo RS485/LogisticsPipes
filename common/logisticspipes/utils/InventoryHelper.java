@@ -6,6 +6,7 @@ import logisticspipes.utils.transactor.TransactorSimple;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.tileentity.TileEntityChest;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class InventoryHelper {
 	//BC getInventory with fixed doublechest halves ordering.
@@ -44,9 +45,9 @@ public class InventoryHelper {
 	}
 
 	//BC getTransactorFor using our getInventory
-	public static ITransactor getTransactorFor(Object object) {
+	public static ITransactor getTransactorFor(Object object, ForgeDirection dir) {
 		if(object instanceof IInventory) {
-			ITransactor t = SimpleServiceLocator.inventoryUtilFactory.getUtilForInv((IInventory)object, false, false, 0, 0);
+			ITransactor t = SimpleServiceLocator.inventoryUtilFactory.getUtilForInv((IInventory)object, dir, false, false, 0, 0);
 			if(t != null) {
 				return t;
 			}

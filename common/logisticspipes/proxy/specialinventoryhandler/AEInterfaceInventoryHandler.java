@@ -15,6 +15,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.implementations.tiles.ITileStorageMonitorable;
+import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.security.IActionHost;
 import appeng.api.networking.security.MachineSource;
@@ -28,24 +29,36 @@ import appeng.api.util.AECableType;
  */
 
 public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
+	
 	public boolean init = false;
 	private final ITileStorageMonitorable _tile;
 	private final boolean _hideOnePerStack;
-	MachineSource source = new MachineSource(new IActionHost() {
+	private final MachineSource source;
+	private final ForgeDirection dir;
+	
+	private class LPActionHost implements IActionHost {
+		public IGridNode node;
+		public LPActionHost(IGridNode node) {
+			this.node = node;
+		}
 		@Override public void securityBreak() {}
 		@Override public IGridNode getGridNode(ForgeDirection paramForgeDirection) {return null;}
 		@Override public AECableType getCableConnectionType(ForgeDirection paramForgeDirection) {return null;}
-		@Override public IGridNode getActionableNode() {return null;}
-	});
+		@Override public IGridNode getActionableNode() {return node;}
+	}
 
-	private AEInterfaceInventoryHandler(TileEntity tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+	private AEInterfaceInventoryHandler(TileEntity tile, ForgeDirection dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		_tile = (ITileStorageMonitorable)tile;
 		_hideOnePerStack = hideOnePerStack || hideOne;
+		source = new MachineSource(new LPActionHost(((IGridHost) tile).getGridNode(dir)));
+		this.dir = dir;
 	}
 
 	public AEInterfaceInventoryHandler() {
 		_tile = null;
 		_hideOnePerStack = false;
+		source = null;
+		dir = ForgeDirection.UNKNOWN;
 	}
 
 	@Override
@@ -56,12 +69,12 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public boolean isType(TileEntity tile) {
-		return tile instanceof ITileStorageMonitorable;
+		return tile instanceof ITileStorageMonitorable && tile instanceof IGridHost;
 	}
 
 	@Override
-	public SpecialInventoryHandler getUtilForTile(TileEntity tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
-		return new AEInterfaceInventoryHandler(tile, hideOnePerStack, hideOne, cropStart, cropEnd);
+	public SpecialInventoryHandler getUtilForTile(TileEntity tile, ForgeDirection dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+		return new AEInterfaceInventoryHandler(tile, dir, hideOnePerStack, hideOne, cropStart, cropEnd);
 	}
 
 	@Override
@@ -76,7 +89,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		} else {
 			result = new HashMap<ItemIdentifier, Integer>();
 		}
-		IStorageMonitorable tmp = _tile.getMonitorable(ForgeDirection.UNKNOWN, source);
+		IStorageMonitorable tmp = _tile.getMonitorable(dir, source);
 		for(IAEItemStack items: tmp.getItemInventory().getStorageList()) {
 			ItemIdentifier ident = ItemIdentifier.get(items.getItemStack());
 			Integer count = result.get(ident);
@@ -92,7 +105,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public Set<ItemIdentifier> getItems() {
 		Set<ItemIdentifier> result = new TreeSet<ItemIdentifier>();
-		IStorageMonitorable tmp = _tile.getMonitorable(ForgeDirection.UNKNOWN, source);
+		IStorageMonitorable tmp = _tile.getMonitorable(dir, source);
 		for(IAEItemStack items: tmp.getItemInventory().getStorageList()) {
 			ItemIdentifier ident = ItemIdentifier.get(items.getItemStack());
 			result.add(ident);
@@ -102,28 +115,28 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public ItemStack getSingleItem(ItemIdentifier item) {
-		IStorageMonitorable tmp = _tile.getMonitorable(ForgeDirection.UNKNOWN, source);
+		IStorageMonitorable tmp = _tile.getMonitorable(dir, source);
 		IAEItemStack stack = AEApi.instance().storage().createItemStack(item.makeNormalStack(1));
 		return tmp.getItemInventory().extractItems(stack, Actionable.MODULATE, source).getItemStack();
 	}
 
 	@Override
 	public ItemStack getMultipleItems(ItemIdentifier item, int count) {
-		IStorageMonitorable tmp = _tile.getMonitorable(ForgeDirection.UNKNOWN, source);
+		IStorageMonitorable tmp = _tile.getMonitorable(dir, source);
 		IAEItemStack stack = AEApi.instance().storage().createItemStack(item.makeNormalStack(count));
 		return tmp.getItemInventory().extractItems(stack, Actionable.MODULATE, source).getItemStack();
 	}
 
 	@Override
 	public boolean containsItem(ItemIdentifier item) {
-		IStorageMonitorable tmp = _tile.getMonitorable(ForgeDirection.UNKNOWN, source);
+		IStorageMonitorable tmp = _tile.getMonitorable(dir, source);
 		IAEItemStack stack = AEApi.instance().storage().createItemStack(item.unsafeMakeNormalStack(1));
 		return tmp.getItemInventory().extractItems(stack, Actionable.SIMULATE, source) != null;
 	}
 
 	@Override
 	public boolean containsUndamagedItem(ItemIdentifier item) {
-		IStorageMonitorable tmp = _tile.getMonitorable(ForgeDirection.UNKNOWN, source);
+		IStorageMonitorable tmp = _tile.getMonitorable(dir, source);
 		for(IAEItemStack items: tmp.getItemInventory().getStorageList()) {
 			ItemIdentifier ident = ItemIdentifier.get(items.getItemStack());
 			if(ident.equals(item)) {
@@ -140,7 +153,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public int roomForItem(ItemIdentifier item, int count) {
-		IStorageMonitorable tmp = _tile.getMonitorable(ForgeDirection.UNKNOWN, source);
+		IStorageMonitorable tmp = _tile.getMonitorable(dir, source);
 		while(count > 0) {
 			IAEItemStack stack = AEApi.instance().storage().createItemStack(item.makeNormalStack(count));
 			if(tmp.getItemInventory().canAccept(stack)) {
@@ -156,7 +169,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		ItemStack st = stack.copy();
 		IAEItemStack tst = AEApi.instance().storage().createItemStack(stack);
 		
-		IStorageMonitorable tmp = _tile.getMonitorable(ForgeDirection.UNKNOWN, source);
+		IStorageMonitorable tmp = _tile.getMonitorable(dir, source);
 		IAEItemStack overflow = tmp.getItemInventory().injectItems(tst, Actionable.MODULATE, source);
 		if(overflow != null) {
 			st.stackSize -= overflow.getStackSize();

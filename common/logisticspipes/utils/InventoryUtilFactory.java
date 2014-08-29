@@ -15,6 +15,7 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class InventoryUtilFactory {
 	private final LinkedList<SpecialInventoryHandler> handler = new LinkedList<SpecialInventoryHandler>();
@@ -39,23 +40,23 @@ public class InventoryUtilFactory {
 		return null;
 	}
 
-	public SpecialInventoryHandler getUtilForInv(IInventory inv, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+	public SpecialInventoryHandler getUtilForInv(IInventory inv, ForgeDirection dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		TileEntity tile = getTileEntityFromInventory(inv);
 		if(tile == null) return null;
 		for(SpecialInventoryHandler invHandler:handler) {
 			if(invHandler.isType(tile)) {
-				return invHandler.getUtilForTile(tile, hideOnePerStack, hideOne, cropStart, cropEnd);
+				return invHandler.getUtilForTile(tile, dir, hideOnePerStack, hideOne, cropStart, cropEnd);
 			}
 		}
 		return null;
 	}
 
 	public IInventoryUtil getInventoryUtil(IInventory inv) {
-		return getHidingInventoryUtil(inv, false, false, 0, 0);
+		return getHidingInventoryUtil(inv, ForgeDirection.UNKNOWN, false, false, 0, 0);
 	}
 
-	public IInventoryUtil getHidingInventoryUtil(IInventory inv, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
-		IInventoryUtil util = getUtilForInv(inv, hideOnePerStack, hideOne, cropStart, cropEnd);
+	public IInventoryUtil getHidingInventoryUtil(IInventory inv, ForgeDirection dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+		IInventoryUtil util = getUtilForInv(inv, dir, hideOnePerStack, hideOne, cropStart, cropEnd);
 		if (util == null) {
 			util = new InventoryUtil(InventoryHelper.getInventory(inv), hideOnePerStack, hideOne, cropStart, cropEnd);;
 		}

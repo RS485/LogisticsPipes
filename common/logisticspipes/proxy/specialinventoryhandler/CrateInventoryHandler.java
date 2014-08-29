@@ -63,7 +63,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public SpecialInventoryHandler getUtilForTile(TileEntity tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+	public SpecialInventoryHandler getUtilForTile(TileEntity tile, ForgeDirection dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		return new CrateInventoryHandler(tile, hideOnePerStack, hideOne, cropStart, cropEnd);
 	}
 

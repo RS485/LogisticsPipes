@@ -343,7 +343,7 @@ public class PipeTransportLogistics {
 		}
 	}
 	
-	protected void handleTileReachedServer(LPTravelingItemServer arrivingItem, TileEntity tile) {
+	protected void handleTileReachedServer(LPTravelingItemServer arrivingItem, TileEntity tile, ForgeDirection dir) {
 		ItemIdentifierStack itemStack = arrivingItem.getItemIdentifierStack().clone();
 		if(getPipe() instanceof PipeItemsFluidSupplier) {
 			((PipeItemsFluidSupplier)getPipe()).endReached(arrivingItem, tile);
@@ -417,7 +417,7 @@ public class PipeTransportLogistics {
 					if(manager.hasSneakyUpgrade()) {
 						insertion = manager.getSneakyOrientation();
 					}
-					ItemStack added = InventoryHelper.getTransactorFor(tile).add(itemStack.makeNormalStack(), insertion, true);
+					ItemStack added = InventoryHelper.getTransactorFor(tile, dir.getOpposite()).add(itemStack.makeNormalStack(), insertion, true);
 					
 					itemStack.lowerStackSize(added.stackSize);
 					if(added.stackSize > 0) tookSome = true;
@@ -428,7 +428,7 @@ public class PipeTransportLogistics {
 					for(int i = 0; i < dirs.length; i++) {
 						ForgeDirection insertion = dirs[i];
 						if(insertion == null) continue;
-						ItemStack added = InventoryHelper.getTransactorFor(tile).add(itemStack.makeNormalStack(), insertion, true);
+						ItemStack added = InventoryHelper.getTransactorFor(tile, dir.getOpposite()).add(itemStack.makeNormalStack(), insertion, true);
 						
 						itemStack.lowerStackSize(added.stackSize);
 						if(added.stackSize > 0) tookSome = true;
@@ -545,7 +545,7 @@ public class PipeTransportLogistics {
 				TileEntity tile = container.getTile(item.output);
 				if(items.scheduleRemoval(item)) {
 					if(MainProxy.isServer(container.getWorldObj())) {
-						handleTileReachedServer((LPTravelingItemServer)item, tile);
+						handleTileReachedServer((LPTravelingItemServer)item, tile, item.output);
 					} else {
 						handleTileReachedClient((LPTravelingItemClient)item, tile);
 					}

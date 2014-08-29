@@ -1446,19 +1446,19 @@ outer:
 		if (inv instanceof net.minecraft.inventory.ISidedInventory) inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) inv, this.getPointedOrientation().getOpposite(), forExtraction);
 		switch(mode){
 			case LeaveFirst:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, false, false, 1, 0);
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, this.getPointedOrientation().getOpposite(), false, false, 1, 0);
 			case LeaveLast:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, false, false, 0, 1);
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, this.getPointedOrientation().getOpposite(), false, false, 0, 1);
 			case LeaveFirstAndLast:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, false, false, 1, 1);
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, this.getPointedOrientation().getOpposite(), false, false, 1, 1);
 			case Leave1PerStack:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, true, false, 0, 0);
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, this.getPointedOrientation().getOpposite(), true, false, 0, 0);
 			case Leave1PerType:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, false, true, 0, 0);
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, this.getPointedOrientation().getOpposite(), false, true, 0, 0);
 			default:
 				break;
 		}
-		return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, false, false, 0, 0);
+		return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, this.getPointedOrientation().getOpposite(), false, false, 0, 0);
 	}
 
 	@Override

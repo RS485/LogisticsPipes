@@ -8,7 +8,6 @@
 
 package logisticspipes.pipes;
 
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -202,19 +201,19 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		ExtractionMode mode = getExtractionMode();
 		switch(mode){
 			case LeaveFirst:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 1, 0);
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, tile.orientation.getOpposite(), false, false, 1, 0);
 			case LeaveLast:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 0, 1);
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, tile.orientation.getOpposite(), false, false, 0, 1);
 			case LeaveFirstAndLast:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 1, 1);
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, tile.orientation.getOpposite(), false, false, 1, 1);
 			case Leave1PerStack:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, true, false, 0, 0);
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, tile.orientation.getOpposite(), true, false, 0, 0);
 			case Leave1PerType:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, true, 0, 0);
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, tile.orientation.getOpposite(), false, true, 0, 0);
 			default:
 				break;
 		}
-		return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 0, 0);
+		return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, tile.orientation.getOpposite(), false, false, 0, 0);
 	}
 
 	@Override

@@ -123,7 +123,7 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISi
 				toadd.setStackSize(Math.min(toadd.getStackSize(), toadd.getItem().getMaxStackSize()));
 				if(_service.getOrderManager().hasOrders(RequestType.CRAFTING)) {
 					toadd.setStackSize(Math.min(toadd.getStackSize(), ((IInventory)tile.tile).getInventoryStackLimit()));
-					ItemStack added = InventoryHelper.getTransactorFor(tile.tile).add(toadd.makeNormalStack(), insertion, true);
+					ItemStack added = InventoryHelper.getTransactorFor(tile.tile, tile.orientation.getOpposite()).add(toadd.makeNormalStack(), insertion, true);
 					slot.setStackSize(slot.getStackSize() - added.stackSize);
 					if(added.stackSize != 0) {
 						change = true;

@@ -88,8 +88,6 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	private boolean doContentUpdate = true;
 	
 	protected ModuleProvider myModule;
-	private ForgeDirection temporaryDirection;
-		
 	public PipeItemsProviderLogistics(Item item) {
 		super(item);
 	}
@@ -450,7 +448,6 @@ outer:
 
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
-		//GuiProxy.openGuiProviderPipe(entityplayer.inventory, providingInventory, this);
 		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_ProviderPipe_ID, getWorld(), getX(), getY(), getZ());
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeMode.class).setInteger(getExtractionMode().ordinal()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), entityplayer);
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeInclude.class).setInteger(isExcludeFilter() ? 1 : 0).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), entityplayer);

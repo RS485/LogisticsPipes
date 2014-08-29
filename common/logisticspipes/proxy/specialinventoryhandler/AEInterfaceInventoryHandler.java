@@ -15,9 +15,12 @@ import net.minecraftforge.common.util.ForgeDirection;
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.implementations.tiles.ITileStorageMonitorable;
-import appeng.api.networking.security.BaseActionSource;
+import appeng.api.networking.IGridNode;
+import appeng.api.networking.security.IActionHost;
+import appeng.api.networking.security.MachineSource;
 import appeng.api.storage.IStorageMonitorable;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.api.util.AECableType;
 
 /*
  * Compatibility for Applied Energistics
@@ -28,9 +31,12 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	public boolean init = false;
 	private final ITileStorageMonitorable _tile;
 	private final boolean _hideOnePerStack;
-	BaseActionSource source = new BaseActionSource() {
-		@Override public boolean isMachine() {return true;}
-	};
+	MachineSource source = new MachineSource(new IActionHost() {
+		@Override public void securityBreak() {}
+		@Override public IGridNode getGridNode(ForgeDirection paramForgeDirection) {return null;}
+		@Override public AECableType getCableConnectionType(ForgeDirection paramForgeDirection) {return null;}
+		@Override public IGridNode getActionableNode() {return null;}
+	});
 
 	private AEInterfaceInventoryHandler(TileEntity tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		_tile = (ITileStorageMonitorable)tile;

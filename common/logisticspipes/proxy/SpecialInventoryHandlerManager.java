@@ -24,7 +24,7 @@ public class SpecialInventoryHandlerManager {
 			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new CrateInventoryHandler());
 		}
 
-		if(Loader.isModLoaded("AppliedEnergistics")) {
+		if(Loader.isModLoaded("AppliedEnergistics2-Core")) {
 			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new AEInterfaceInventoryHandler());
 		}
 

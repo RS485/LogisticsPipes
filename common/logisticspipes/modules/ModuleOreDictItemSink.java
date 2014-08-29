@@ -2,11 +2,11 @@ package logisticspipes.modules;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import logisticspipes.gui.hud.modules.HUDOreDictItemSink;
@@ -90,7 +90,7 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 	public LogisticsModule getSubModule(int slot) {return null;}
 
 	private void buildOreItemIdMap() {
-		oreItemIdMap = new TreeMap<Item, Set<Integer>>();
+		oreItemIdMap = new HashMap<Item, Set<Integer>>();
 		oreHudList = new ArrayList<ItemIdentifierStack>(oreList.size());
 		for(String orename : oreList) {
 			if(orename == null || orename.equals(""))

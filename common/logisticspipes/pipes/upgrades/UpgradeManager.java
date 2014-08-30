@@ -62,6 +62,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	private boolean hasCraftingMonitoringUpgrade = false;
 	private boolean hasOpaqueUpgrade = false;
 	private int craftingCleanup = 0;
+	private boolean hasLogicControll = false;
 	
 	private boolean needsContainerPositionUpdate = false;
 	
@@ -140,6 +141,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		hasCraftingMonitoringUpgrade = false;
 		hasOpaqueUpgrade = false;
 		craftingCleanup = 0;
+		hasLogicControll = false;
 		for(int i=0;i<upgrades.length;i++) {
 			IPipeUpgrade upgrade = upgrades[i];
 			if(upgrade instanceof SneakyUpgrade && sneakyOrientation == ForgeDirection.UNKNOWN && !isCombinedSneakyUpgrade) {
@@ -176,6 +178,8 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 				hasOpaqueUpgrade = true;
 			} else if(upgrade instanceof CraftingCleanupUpgrade) {
 				craftingCleanup += inv.getStackInSlot(i).stackSize;
+			} else if(upgrade instanceof LogicControllerUpgrade) {
+				hasLogicControll = true;
 			}
 		}
 		liquidCrafter = Math.min(liquidCrafter, ItemUpgrade.MAX_LIQUID_CRAFTER);
@@ -443,5 +447,9 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 
 	public int getCrafterCleanup() {
 		return craftingCleanup;
+	}
+
+	public boolean hasLogicControll() {
+		return hasLogicControll;
 	}
 }

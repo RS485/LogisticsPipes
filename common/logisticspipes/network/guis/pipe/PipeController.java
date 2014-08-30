@@ -91,6 +91,7 @@ public class PipeController extends CoordinatesGuiProvider {
 				return true;
 			}
     	}, 1);
+    	dummy.addRestrictedSlot(0, pipe.container.logicController.diskInv, 14, 36, LogisticsPipes.LogisticsItemDisk);
 		return dummy;
 	}
 	

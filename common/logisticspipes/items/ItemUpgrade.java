@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.LPConstants;
 import logisticspipes.pipes.upgrades.AdvancedSatelliteUpgrade;
 import logisticspipes.pipes.upgrades.CCRemoteControlUpgrade;
 import logisticspipes.pipes.upgrades.CombinedSneakyUpgrade;
@@ -13,6 +14,7 @@ import logisticspipes.pipes.upgrades.CraftingMonitoringUpgrade;
 import logisticspipes.pipes.upgrades.FluidCraftingUpgrade;
 import logisticspipes.pipes.upgrades.FuzzyCraftingUpgrade;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
+import logisticspipes.pipes.upgrades.LogicControllerUpgrade;
 import logisticspipes.pipes.upgrades.OpaqueUpgrade;
 import logisticspipes.pipes.upgrades.PatternUpgrade;
 import logisticspipes.pipes.upgrades.PowerTransportationUpgrade;
@@ -85,6 +87,7 @@ public class ItemUpgrade extends LogisticsItem {
 	public static final int CC_REMOTE_CONTROL = 40;
 	public static final int CRAFTING_MONITORING = 41;
 	public static final int OPAQUE_UPGRADE = 42;
+	public static final int LOGIC_CONTROLLER_UPGRADE = 43;
 	
 	//Values
 	public static final int MAX_LIQUID_CRAFTER = 3;
@@ -172,6 +175,9 @@ public class ItemUpgrade extends LogisticsItem {
 		registerUpgrade(CRAFTING_MONITORING, CraftingMonitoringUpgrade.class, 27);
 		registerUpgrade(OPAQUE_UPGRADE, OpaqueUpgrade.class, 28);
 		registerUpgrade(CRAFTING_CLEANUP, CraftingCleanupUpgrade.class, 29);
+		if(LPConstants.DEBUG) {
+			registerUpgrade(LOGIC_CONTROLLER_UPGRADE, LogicControllerUpgrade.class, 30);
+		}
 	}
 	
 	public void registerUpgrade(int id, Class<? extends IPipeUpgrade> moduleClass, int textureId) {
@@ -246,7 +252,7 @@ public class ItemUpgrade extends LogisticsItem {
 
 	@Override
 	public void registerIcons(IIconRegister par1IIconRegister) {
-		icons=new IIcon[30];
+		icons=new IIcon[31];
 		icons[0]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyUP");
 		icons[1]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyDOWN");
 		icons[2]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyNORTH");
@@ -280,6 +286,7 @@ public class ItemUpgrade extends LogisticsItem {
 		icons[27]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/CraftingMonitoring");
 		icons[28]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/OpaqueUpgrade");
 		icons[29]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/CraftingCleanup");
+		icons[30]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/LogicController");
 	}
 
 	@Override

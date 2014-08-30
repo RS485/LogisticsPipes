@@ -21,6 +21,8 @@ import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.interfaces.IClientState;
 import logisticspipes.interfaces.routing.IFilter;
+import logisticspipes.logic.LogicController;
+import logisticspipes.logic.interfaces.ILogicControllerTile;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.PacketHandler;
@@ -70,7 +72,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
 @ModDependentInterface(modId={"CoFHCore", "OpenComputers@1.3", "OpenComputers@1.3", "OpenComputers@1.3", "BuildCraft|Transport", "BuildCraft|Transport"}, interfacePath={"cofh.api.transport.IItemDuct", "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment", "buildcraft.api.transport.IPipeTile", "buildcraft.api.transport.IPipeConnection"})
-public class LogisticsTileGenericPipe extends TileEntity implements IPipeInformationProvider, IItemDuct, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IPipeTile, IPipeConnection {	
+public class LogisticsTileGenericPipe extends TileEntity implements IPipeInformationProvider, IItemDuct, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IPipeTile, IPipeConnection, ILogicControllerTile {	
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
 	
 	public boolean turtleConnect[] = new boolean[7];
@@ -88,6 +90,8 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 	private boolean addedToNetwork = false;
 	
 	private boolean sendInitPacket = true;
+	
+	public LogicController logicController = new LogicController();
 	
 	public LogisticsTileGenericPipe() {
 		if(SimpleServiceLocator.ccProxy.isCC()) {
@@ -296,6 +300,10 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 			nbt.setBoolean("turtleConnect_" + i, turtleConnect[i]);
 		}
 		SimpleServiceLocator.openComputersProxy.handleLPWriteToNBT(this, nbt);
+		
+		NBTTagCompound logicNBT = new NBTTagCompound();
+		logicController.writeToNBT(logicNBT);
+		nbt.setTag("logicController", logicNBT);
 	}
 
 	@Override
@@ -325,6 +333,8 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 			turtleConnect[i] = nbt.getBoolean("turtleConnect_" + i);
 		}
 		SimpleServiceLocator.openComputersProxy.handleLPReadFromNBT(this, nbt);
+		
+		logicController.readFromNBT(nbt.getCompoundTag("logicController"));
 	}
 	
 	public boolean canPipeConnect(TileEntity with, ForgeDirection side) {
@@ -878,5 +888,10 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 	@ModDependentMethod(modId="BuildCraft|Transport")
 	public ConnectOverride overridePipeConnection(PipeType type, ForgeDirection dir) {
 		return (ConnectOverride) SimpleServiceLocator.buildCraftProxy.overridePipeConnection(this, type, dir);
+	}
+
+	@Override
+	public LogicController getLogicController() {
+		return logicController;
 	}
 }

@@ -8,16 +8,21 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsItemCard;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.block.LogicControllerPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
 import logisticspipes.pipes.upgrades.SneakyUpgrade;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen.Colors;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtil;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
@@ -38,8 +43,10 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 	private final List<Slot>		TAB_SLOTS_1_1		= new ArrayList<Slot>();
 	private final List<Slot>		TAB_SLOTS_1_2		= new ArrayList<Slot>();
 	private final List<Slot>		TAB_SLOTS_2			= new ArrayList<Slot>();
+	private final List<Slot>		TAB_SLOTS_4			= new ArrayList<Slot>();
+	
+	private final List<GuiButton>	TAB_BUTTON_4		= new ArrayList<GuiButton>();
 	private final CoreRoutedPipe	pipe;
-	private boolean					redstoneControll	= false;
 	
 	public GuiPipeController(final EntityPlayer player, final CoreRoutedPipe pipe) {
 		super(180, 220, 0, 0);
@@ -92,21 +99,37 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 			}
 		}, 1));
 		
+		TAB_SLOTS_4.add(dummy.addRestrictedSlot(0, pipe.container.logicController.diskInv, 14, 36, LogisticsPipes.LogisticsItemDisk));
+		
 		this.inventorySlots = dummy;
 	}
 	
 	@Override
+	public void initGui() {
+		super.initGui();
+		buttonList.clear();
+		TAB_BUTTON_4.add(addButton(new GuiButton(0, guiLeft + 10, guiTop + 70, 160, 20, "Edit Logic Controller")));
+	}
+
+	@Override
+	protected void actionPerformed(GuiButton p_146284_1_) {
+		if(p_146284_1_.id == 0) {
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(LogicControllerPacket.class).setTilePos(pipe.container));
+		}
+	}
+
+	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int mouse_x, int mouse_y) {
-		if(current_Tab == 3 && !redstoneControll) {
+		if(current_Tab == 3 && !pipe.getUpgradeManager().hasLogicControll()) {
 			current_Tab = 0;
 		}
 		GL11.glColor4d(1.0D, 1.0D, 1.0D, 1.0D);
 		for(int i = 0; i < TAB_COUNT; i++) {
-			if(i == 3 && !redstoneControll) {
+			if(i == 3 && !pipe.getUpgradeManager().hasLogicControll()) {
 				GL11.glColor4d(0.4D, 0.4D, 0.4D, 1.0D);
 			}
 			BasicGuiHelper.drawGuiBackGround(mc, guiLeft + (25 * i) + 2, guiTop - 2, guiLeft + 27 + (25 * i), guiTop + 35, zLevel, false, true, true, false, true);
-			if(i == 3 && !redstoneControll) {
+			if(i == 3 && !pipe.getUpgradeManager().hasLogicControll()) {
 				GL11.glColor4d(1.0D, 1.0D, 1.0D, 1.0D);
 			}
 		}
@@ -139,9 +162,6 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		RenderHelper.enableGUIStandardItemLighting();
 		ItemStack stack2 = new ItemStack(Blocks.redstone_torch);
-		if(!redstoneControll) {
-			stack2 = new ItemStack(Blocks.redstone_torch); // TODO idle
-		}
 		itemRender.renderItemAndEffectIntoGUI(fontRendererObj, getMC().renderEngine, stack2, guiLeft + 81, guiTop + 1);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -162,6 +182,9 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 			}
 		} else if(current_Tab == 1) {
 			BasicGuiHelper.drawSlotBackground(mc, guiLeft + 9, guiTop + 41);
+		} else if(current_Tab == 3) {
+			drawRect(guiLeft + 12, guiTop + 34, guiLeft + 32, guiTop + 54, Colors.Black);
+			drawRect(guiLeft + 14, guiTop + 36, guiLeft + 30, guiTop + 52, Colors.DarkGrey);
 		}
 		
 		super.drawGuiContainerBackgroundLayer(f, mouse_x, mouse_y);
@@ -172,7 +195,7 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 		if(par3 == 0 && par1 > guiLeft && par1 < guiLeft + 220 && par2 > guiTop && par2 < guiTop + 20) {
 			par1 -= guiLeft + 3;
 			int select = Math.max(0, Math.min(par1 / 25, TAB_COUNT - 1));
-			if(select != 3 || redstoneControll) {
+			if(select != 3 || pipe.getUpgradeManager().hasLogicControll()) {
 				this.current_Tab = select;
 			}
 		} else {
@@ -246,6 +269,7 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 		if(TAB_SLOTS_1_1.contains(slot) && current_Tab != 0) return;
 		if(TAB_SLOTS_1_2.contains(slot) && (current_Tab != 0 || !pipe.getUpgradeManager().hasCombinedSneakyUpgrade())) return;
 		if(TAB_SLOTS_2.contains(slot) && current_Tab != 1) return;
+		if(TAB_SLOTS_4.contains(slot) && current_Tab != 3) return;
 		super.func_146977_a(slot);
 	}
 	
@@ -255,16 +279,18 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 		if(TAB_SLOTS_1_1.contains(slot) && current_Tab != 0) return false;
 		if(TAB_SLOTS_1_2.contains(slot) && (current_Tab != 0 || !pipe.getUpgradeManager().hasCombinedSneakyUpgrade())) return false;
 		if(TAB_SLOTS_2.contains(slot) && current_Tab != 1) return false;
+		if(TAB_SLOTS_4.contains(slot) && current_Tab != 3) return false;
 		return true;
 	}
 	
-	/*
-	 * @SuppressWarnings("unchecked")
-	 * protected void checkButtons() {
-	 * super.checkButtons();
-	 * for(GuiButton button:(List<GuiButton>) this.buttonList) {
-	 * //TODO
-	 * }
-	 * }
-	 */
+	@SuppressWarnings("unchecked")
+	protected void checkButtons() {
+		super.checkButtons();
+		for(GuiButton button: (List<GuiButton>)this.buttonList) {
+			if(TAB_BUTTON_4.contains(button)) {
+				button.visible = current_Tab == 3;
+				button.enabled = pipe.container.logicController.diskInv.getStackInSlot(0) != null;
+			}
+		}
+	}
 }

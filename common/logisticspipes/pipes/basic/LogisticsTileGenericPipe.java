@@ -2,9 +2,7 @@ package logisticspipes.pipes.basic;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Set;
 
 import li.cil.oc.api.network.Arguments;
 import li.cil.oc.api.network.Context;

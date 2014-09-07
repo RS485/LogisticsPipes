@@ -44,7 +44,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 	public final List<String> oreList = new LinkedList<String>();
-	//map of ItemID:<set of damagevalues>, empty set if wildcard damage
+	//map of Item:<set of damagevalues>, empty set if wildcard damage
 	private Map<Item, Set<Integer>> oreItemIdMap;
 
 	private IHUDModuleRenderer HUD = new HUDOreDictItemSink(this);
@@ -93,8 +93,6 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 		oreItemIdMap = new HashMap<Item, Set<Integer>>();
 		oreHudList = new ArrayList<ItemIdentifierStack>(oreList.size());
 		for(String orename : oreList) {
-			if(orename == null || orename.equals(""))
-				continue;
 			List<ItemStack> items = OreDictionary.getOres(orename);
 			ItemStack stackForHud = null;
 			for(ItemStack stack:items) {
@@ -131,7 +129,9 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 		oreList.clear();
 		int limit = nbttagcompound.getInteger("listSize");
 		for(int i = 0; i < limit; i++) {
-			oreList.add(nbttagcompound.getString("Ore" + i));
+			String oreName = nbttagcompound.getString("Ore" + i);
+			if(!oreName.equals(""))
+				oreList.add(nbttagcompound.getString("Ore" + i));
 		}
 		oreItemIdMap = null;
 	}

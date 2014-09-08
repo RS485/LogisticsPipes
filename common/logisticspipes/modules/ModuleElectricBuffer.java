@@ -5,7 +5,9 @@ import java.util.List;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.pipefxhandlers.Particles;
+import logisticspipes.pipes.PipeLogisticsChassi.ChassiTargetInformation;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
@@ -47,7 +49,14 @@ public class ModuleElectricBuffer extends LogisticsModule {
 		return this._service.getZ();
 	}
 
-	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ElectricBuffer, 0, true, false, 1, 0);
+	private SinkReply _sinkReply;
+	
+	@Override
+	public void registerPosition(ModulePositionType slot, int positionInt) {
+		super.registerPosition(slot, positionInt);
+		_sinkReply = new SinkReply(FixedPriority.ElectricBuffer, 0, true, false, 1, 0, new ChassiTargetInformation(this.getPositionInt()));
+	}
+	
 	@Override
 	public SinkReply sinksItem(ItemIdentifier stack, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if (bestPriority >= FixedPriority.ElectricBuffer.ordinal()) return null;

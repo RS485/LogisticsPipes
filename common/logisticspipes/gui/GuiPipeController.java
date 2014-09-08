@@ -51,12 +51,12 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 	public GuiPipeController(final EntityPlayer player, final CoreRoutedPipe pipe) {
 		super(180, 220, 0, 0);
 		this.pipe = pipe;
-		DummyContainer dummy = new DummyContainer(player, null, pipe.getUpgradeManager().getGuiController());
+		DummyContainer dummy = new DummyContainer(player, null, pipe.getOriginalUpgradeManager().getGuiController());
 		dummy.addNormalSlotsForPlayerInventory(10, 135);
 		
 		// TAB_1 SLOTS
 		for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
-			TAB_SLOTS_1_1.add(dummy.addRestrictedSlot(pipeSlot, pipe.getUpgradeManager().getInv(), 10 + pipeSlot * 18, 42, new ISlotCheck() {
+			TAB_SLOTS_1_1.add(dummy.addRestrictedSlot(pipeSlot, pipe.getOriginalUpgradeManager().getInv(), 10 + pipeSlot * 18, 42, new ISlotCheck() {
 				@Override
 				public boolean isStackAllowed(ItemStack itemStack) {
 					if(itemStack == null) return false;
@@ -71,7 +71,7 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 		}
 		
 		for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
-			TAB_SLOTS_1_2.add(dummy.addRestrictedSlot(pipeSlot, pipe.getUpgradeManager().getSneakyInv(), 10 + pipeSlot * 18, 78, new ISlotCheck() {
+			TAB_SLOTS_1_2.add(dummy.addRestrictedSlot(pipeSlot, pipe.getOriginalUpgradeManager().getSneakyInv(), 10 + pipeSlot * 18, 78, new ISlotCheck() {
 				@Override
 				public boolean isStackAllowed(ItemStack itemStack) {
 					if(itemStack == null) return false;
@@ -88,7 +88,7 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 		}
 		
 		// TAB_2 SLOTS
-		TAB_SLOTS_2.add(dummy.addStaticRestrictedSlot(0, pipe.getUpgradeManager().getSecInv(), 10, 42, new ISlotCheck() {
+		TAB_SLOTS_2.add(dummy.addStaticRestrictedSlot(0, pipe.getOriginalUpgradeManager().getSecInv(), 10, 42, new ISlotCheck() {
 			@Override
 			public boolean isStackAllowed(ItemStack itemStack) {
 				if(itemStack == null) return false;
@@ -120,16 +120,16 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int mouse_x, int mouse_y) {
-		if(current_Tab == 3 && !pipe.getUpgradeManager().hasLogicControll()) {
+		if(current_Tab == 3 && !pipe.getOriginalUpgradeManager().hasLogicControll()) {
 			current_Tab = 0;
 		}
 		GL11.glColor4d(1.0D, 1.0D, 1.0D, 1.0D);
 		for(int i = 0; i < TAB_COUNT; i++) {
-			if(i == 3 && !pipe.getUpgradeManager().hasLogicControll()) {
+			if(i == 3 && !pipe.getOriginalUpgradeManager().hasLogicControll()) {
 				GL11.glColor4d(0.4D, 0.4D, 0.4D, 1.0D);
 			}
 			BasicGuiHelper.drawGuiBackGround(mc, guiLeft + (25 * i) + 2, guiTop - 2, guiLeft + 27 + (25 * i), guiTop + 35, zLevel, false, true, true, false, true);
-			if(i == 3 && !pipe.getUpgradeManager().hasLogicControll()) {
+			if(i == 3 && !pipe.getOriginalUpgradeManager().hasLogicControll()) {
 				GL11.glColor4d(1.0D, 1.0D, 1.0D, 1.0D);
 			}
 		}
@@ -175,7 +175,7 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 			for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
 				BasicGuiHelper.drawSlotBackground(mc, guiLeft + 9 + pipeSlot * 18, guiTop + 41);
 			}
-			if(pipe.getUpgradeManager().hasCombinedSneakyUpgrade()) {
+			if(pipe.getOriginalUpgradeManager().hasCombinedSneakyUpgrade()) {
 				for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
 					BasicGuiHelper.drawSlotBackground(mc, guiLeft + 9 + pipeSlot * 18, guiTop + 77);
 				}
@@ -195,7 +195,7 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 		if(par3 == 0 && par1 > guiLeft && par1 < guiLeft + 220 && par2 > guiTop && par2 < guiTop + 20) {
 			par1 -= guiLeft + 3;
 			int select = Math.max(0, Math.min(par1 / 25, TAB_COUNT - 1));
-			if(select != 3 || pipe.getUpgradeManager().hasLogicControll()) {
+			if(select != 3 || pipe.getOriginalUpgradeManager().hasLogicControll()) {
 				this.current_Tab = select;
 			}
 		} else {
@@ -209,12 +209,12 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "inventory"), 10, 122, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
 		if(current_Tab == 0) {
 			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "upgrade"), 10, 28, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
-			if(pipe.getUpgradeManager().hasCombinedSneakyUpgrade()) {
+			if(pipe.getOriginalUpgradeManager().hasCombinedSneakyUpgrade()) {
 				mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "sneakyUpgrades"), 10, 64, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
 			}
 		} else if(current_Tab == 1) {
 			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "security"), 10, 28, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
-			ItemStack itemStack = pipe.getUpgradeManager().getSecInv().getStackInSlot(0);
+			ItemStack itemStack = pipe.getOriginalUpgradeManager().getSecInv().getStackInSlot(0);
 			if(itemStack != null) {
 				UUID id = UUID.fromString(itemStack.getTagCompound().getString("UUID"));
 				mc.fontRenderer.drawString("Id: ", 10, 68, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
@@ -267,7 +267,7 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 	@Override
 	protected void func_146977_a(Slot slot) {
 		if(TAB_SLOTS_1_1.contains(slot) && current_Tab != 0) return;
-		if(TAB_SLOTS_1_2.contains(slot) && (current_Tab != 0 || !pipe.getUpgradeManager().hasCombinedSneakyUpgrade())) return;
+		if(TAB_SLOTS_1_2.contains(slot) && (current_Tab != 0 || !pipe.getOriginalUpgradeManager().hasCombinedSneakyUpgrade())) return;
 		if(TAB_SLOTS_2.contains(slot) && current_Tab != 1) return;
 		if(TAB_SLOTS_4.contains(slot) && current_Tab != 3) return;
 		super.func_146977_a(slot);
@@ -277,7 +277,7 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 	protected boolean isMouseOverSlot(Slot slot, int par2, int par3) {
 		if(!super.isMouseOverSlot(slot, par2, par3)) return false;
 		if(TAB_SLOTS_1_1.contains(slot) && current_Tab != 0) return false;
-		if(TAB_SLOTS_1_2.contains(slot) && (current_Tab != 0 || !pipe.getUpgradeManager().hasCombinedSneakyUpgrade())) return false;
+		if(TAB_SLOTS_1_2.contains(slot) && (current_Tab != 0 || !pipe.getOriginalUpgradeManager().hasCombinedSneakyUpgrade())) return false;
 		if(TAB_SLOTS_2.contains(slot) && current_Tab != 1) return false;
 		if(TAB_SLOTS_4.contains(slot) && current_Tab != 3) return false;
 		return true;

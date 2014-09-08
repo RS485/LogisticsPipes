@@ -22,11 +22,13 @@ import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.interfaces.IBufferItems;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IItemAdvancedExistance;
+import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.interfaces.ISpecialInsertion;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.routing.ITargetSlotInformation;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.pipe.ItemBufferSyncPacket;
 import logisticspipes.network.packets.pipe.PipeContentPacket;
@@ -34,11 +36,12 @@ import logisticspipes.network.packets.pipe.PipeContentRequest;
 import logisticspipes.network.packets.pipe.PipePositionPacket;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
+import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.PipeLogisticsChassi.ChassiTargetInformation;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
-import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.LPRoutedBCTravelingItem;
@@ -384,7 +387,19 @@ public class PipeTransportLogistics {
 						return;
 					}
 				}
-				UpgradeManager manager = getPipe().getUpgradeManager();
+				ISlotUpgradeManager manager;
+				{
+					ModulePositionType slot = null;
+					int positionInt = -1;
+					if(arrivingItem.getInfo().targetInfo instanceof ChassiTargetInformation) {
+						positionInt = ((ChassiTargetInformation)arrivingItem.getInfo().targetInfo).getModuleSlot();
+						slot = ModulePositionType.SLOT;
+					} else if(LPConstants.DEBUG && this.container.pipe instanceof PipeLogisticsChassi) {
+						System.out.println(arrivingItem);
+						new RuntimeException("[ItemLost] Information weren't ment for a chassi pipe").printStackTrace();
+					}
+					manager = getPipe().getUpgradeManager(slot, positionInt);
+				}
 				boolean tookSome = false;
 				if(arrivingItem.getAdditionalTargetInformation() instanceof ITargetSlotInformation) {
 

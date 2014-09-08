@@ -222,6 +222,7 @@ outer:
 				} else {
 					item.setTransportMode(TransportMode.Active);
 				}
+				item.setAdditionalTargetInformation(bestReply.getValue2().addInfo);
 			}
 			return item;
 		}

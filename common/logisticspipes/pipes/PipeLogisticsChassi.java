@@ -256,8 +256,8 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	@Override
 	public void itemArrived(ItemIdentifierStack item, IAdditionalTargetInformation info) {
 		if(MainProxy.isServer(this.getWorld())) {
-			if(info instanceof ChasseTargetInformation) {
-				ChasseTargetInformation target = (ChasseTargetInformation) info;
+			if(info instanceof ChassiTargetInformation) {
+				ChassiTargetInformation target = (ChassiTargetInformation) info;
 				LogisticsModule module = _module.getSubModule(target.moduleSlot);
 				if(module instanceof IRequireReliableTransport) {
 					((IRequireReliableTransport) module).itemArrived(item, info);
@@ -274,8 +274,8 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	@Override
 	public void itemLost(ItemIdentifierStack item, IAdditionalTargetInformation info) {
 		if(MainProxy.isServer(this.getWorld())) {
-			if(info instanceof ChasseTargetInformation) {
-				ChasseTargetInformation target = (ChasseTargetInformation) info;
+			if(info instanceof ChassiTargetInformation) {
+				ChassiTargetInformation target = (ChassiTargetInformation) info;
 				LogisticsModule module = _module.getSubModule(target.moduleSlot);
 				if(module instanceof IRequireReliableTransport) {
 					((IRequireReliableTransport) module).itemLost(item, info);
@@ -292,8 +292,8 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	@Override
 	public int addToBuffer(ItemIdentifierStack item, IAdditionalTargetInformation info) {
 		if(MainProxy.isServer(this.getWorld())) {
-			if(info instanceof ChasseTargetInformation) {
-				ChasseTargetInformation target = (ChasseTargetInformation) info;
+			if(info instanceof ChassiTargetInformation) {
+				ChassiTargetInformation target = (ChassiTargetInformation) info;
 				LogisticsModule module = _module.getSubModule(target.moduleSlot);
 				if(module instanceof IBufferItems) {
 					return ((IBufferItems)module).addToBuffer(item, info);
@@ -710,11 +710,11 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		return 0;
 	}
 	
-	public static class ChasseTargetInformation implements IAdditionalTargetInformation {
+	public static class ChassiTargetInformation implements IAdditionalTargetInformation {
 		@Getter
 		private final int moduleSlot;
 		
-		public ChasseTargetInformation(int slot) {
+		public ChassiTargetInformation(int slot) {
 			this.moduleSlot = slot;
 		}
 	}

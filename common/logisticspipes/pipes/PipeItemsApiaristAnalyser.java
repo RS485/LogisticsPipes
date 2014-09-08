@@ -115,7 +115,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 	}
 
 	@Override
-	public IInventoryUtil getSneakyInventory(boolean forExtract) {
+	public IInventoryUtil getSneakyInventory(boolean forExtract, ModulePositionType slot, int positionInt) {
 		return null; //Unused
 	}
 

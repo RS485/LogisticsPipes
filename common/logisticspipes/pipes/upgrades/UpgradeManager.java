@@ -5,7 +5,9 @@ import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IGuiOpenControler;
+import logisticspipes.interfaces.IPipeUpgradeManager;
 import logisticspipes.interfaces.ISlotCheck;
+import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.NewGuiHandler;
@@ -27,7 +29,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class UpgradeManager implements ISimpleInventoryEventHandler {
+public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgradeManager, IPipeUpgradeManager {
 	
 	@Getter
 	private SimpleStackInventory inv = new SimpleStackInventory(9, "UpgradeInventory", 16);

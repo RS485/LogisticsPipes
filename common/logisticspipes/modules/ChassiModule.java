@@ -13,6 +13,7 @@ import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
 import logisticspipes.network.guis.pipe.ChassiGuiProvider;
 import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.PipeLogisticsChassi.ChassiTargetInformation;
 import logisticspipes.proxy.computers.objects.CCSinkResponder;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -65,7 +66,7 @@ public class ChassiModule extends LogisticsGuiModule {
 
 		if (bestresult == null) return null;
 		//Always deny items when we can't put the item anywhere
-		IInventoryUtil invUtil = _parentPipe.getSneakyInventory(false);
+		IInventoryUtil invUtil = _parentPipe.getSneakyInventory(false, ModulePositionType.SLOT, ((ChassiTargetInformation)bestresult.addInfo).getModuleSlot());
 		if (invUtil == null) return null;
 		int roomForItem = invUtil.roomForItem(item); 
 		if (roomForItem < 1) return null;

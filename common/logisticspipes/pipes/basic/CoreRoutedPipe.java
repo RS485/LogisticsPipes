@@ -1713,4 +1713,9 @@ outer:
 	public void setPreventRemove(boolean flag) {
 		preventRemove = flag;
 	}
+
+	@Override
+	public boolean isRoutedPipe() {
+		return true;
+	}
 }

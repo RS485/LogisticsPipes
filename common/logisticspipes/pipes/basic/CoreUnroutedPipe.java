@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.api.ILPPipe;
 import logisticspipes.interfaces.IClientState;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -23,7 +24,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class CoreUnroutedPipe implements IClientState {
+public abstract class CoreUnroutedPipe implements IClientState, ILPPipe {
 
 	public LogisticsTileGenericPipe container;
 	public final PipeTransportLogistics transport;
@@ -328,6 +329,11 @@ public abstract class CoreUnroutedPipe implements IClientState {
 	public void setPreventRemove(boolean flag) {}
 
 	public boolean preventRemove() {
+		return false;
+	}
+
+	@Override
+	public boolean isRoutedPipe() {
 		return false;
 	}
 }

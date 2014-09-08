@@ -14,6 +14,8 @@ import li.cil.oc.api.network.SidedEnvironment;
 import logisticspipes.Configs;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.api.ILPPipe;
+import logisticspipes.api.ILPPipeTile;
 import logisticspipes.asm.ModDependentField;
 import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
@@ -70,7 +72,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
 @ModDependentInterface(modId={"CoFHCore", "OpenComputers@1.3", "OpenComputers@1.3", "OpenComputers@1.3", "BuildCraft|Transport", "BuildCraft|Transport"}, interfacePath={"cofh.api.transport.IItemDuct", "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment", "buildcraft.api.transport.IPipeTile", "buildcraft.api.transport.IPipeConnection"})
-public class LogisticsTileGenericPipe extends TileEntity implements IPipeInformationProvider, IItemDuct, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IPipeTile, IPipeConnection, ILogicControllerTile {	
+public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile, IPipeInformationProvider, IItemDuct, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IPipeTile, IPipeConnection, ILogicControllerTile {	
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
 	
 	public boolean turtleConnect[] = new boolean[7];
@@ -891,5 +893,10 @@ public class LogisticsTileGenericPipe extends TileEntity implements IPipeInforma
 	@Override
 	public LogicController getLogicController() {
 		return logicController;
+	}
+
+	@Override
+	public ILPPipe getLPPipe() {
+		return pipe;
 	}
 }

@@ -32,8 +32,10 @@ import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.interfaces.IClientState;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IPipeServiceProvider;
+import logisticspipes.interfaces.IPipeUpgradeManager;
 import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.interfaces.ISecurityProvider;
+import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
@@ -53,6 +55,7 @@ import logisticspipes.logisticspipes.RouteLayer;
 import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
@@ -214,7 +217,15 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		return _transportLayer;
 	}
 
-	public UpgradeManager getUpgradeManager() {
+	public ISlotUpgradeManager getUpgradeManager(ModulePositionType slot, int positionInt) {
+		return upgradeManager;
+	}
+	
+	public IPipeUpgradeManager getUpgradeManager() {
+		return upgradeManager;
+	}
+	
+	public UpgradeManager getOriginalUpgradeManager() {
 		return upgradeManager;
 	}
 	
@@ -376,7 +387,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		}
 		//update router before ticking logic/transport
 		getRouter().update(getWorld().getTotalWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit, this);
-		getUpgradeManager().securityTick();
+		getOriginalUpgradeManager().securityTick();
 		super.updateEntity();
 		
 		// from BaseRoutingLogic
@@ -518,7 +529,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 			if (transport != null && transport instanceof PipeTransportLogistics){
 				transport.dropBuffer();
 			}
-			getUpgradeManager().dropUpgrades();
+			getOriginalUpgradeManager().dropUpgrades();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -803,7 +814,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	public final boolean blockActivated(EntityPlayer entityplayer) {
 		SecuritySettings settings = null;
 		if(MainProxy.isServer(entityplayer.worldObj)) {
-			LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(getUpgradeManager().getSecurityID());
+			LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(getOriginalUpgradeManager().getSecurityID());
 			if(station != null) {
 				settings = station.getSecuritySettingsForPlayer(entityplayer, true);
 			}
@@ -866,7 +877,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 			return true;
 		}
 
-		if(!(entityplayer.isSneaking()) && getUpgradeManager().tryIserting(getWorld(), entityplayer)) {
+		if(!(entityplayer.isSneaking()) && getOriginalUpgradeManager().tryIserting(getWorld(), entityplayer)) {
 			return true;
 		}
 
@@ -1012,11 +1023,11 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	}
 	
 	public UUID getSecurityID() {
-		return getUpgradeManager().getSecurityID();
+		return getOriginalUpgradeManager().getSecurityID();
 	}
 
 	public void insetSecurityID(UUID id) {
-		getUpgradeManager().insetSecurityID(id);
+		getOriginalUpgradeManager().insetSecurityID(id);
 	}
 	
 	/* Power System */
@@ -1136,11 +1147,11 @@ outer:
 	}
 	
 	public ISecurityProvider getSecurityProvider() {
-		return SimpleServiceLocator.securityStationManager.getStation(getUpgradeManager().getSecurityID());
+		return SimpleServiceLocator.securityStationManager.getStation(getOriginalUpgradeManager().getSecurityID());
 	}
 	
 	public boolean canBeDestroyedByPlayer(EntityPlayer entityPlayer) {
-		LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(getUpgradeManager().getSecurityID());
+		LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(getOriginalUpgradeManager().getSecurityID());
 		if(station != null) {
 			return station.getSecuritySettingsForPlayer(entityPlayer, true).removePipes;
 		}
@@ -1452,8 +1463,8 @@ outer:
 	}
 
 	@Override
-	public IInventoryUtil getSneakyInventory(boolean forExtraction) {
-		UpgradeManager manager = getUpgradeManager();
+	public IInventoryUtil getSneakyInventory(boolean forExtraction, ModulePositionType slot, int positionInt) {
+		ISlotUpgradeManager manager = getUpgradeManager(slot, positionInt);
 		ForgeDirection insertion = this.getPointedOrientation().getOpposite();
 		if(manager.hasSneakyUpgrade()) {
 			insertion = manager.getSneakyOrientation();
@@ -1516,6 +1527,7 @@ outer:
 				itemToSend.setTransportMode(TransportMode.Passive);
 			}
 		}
+		itemToSend.setAdditionalTargetInformation(reply.getValue2().addInfo);
 		queueRoutedItem(itemToSend, getPointedOrientation(), mode);
 		return itemToSend;
 	}

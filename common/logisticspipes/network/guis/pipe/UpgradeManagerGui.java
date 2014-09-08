@@ -25,7 +25,7 @@ public class UpgradeManagerGui extends CoordinatesGuiProvider {
 	public DummyContainer getContainer(EntityPlayer player) {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld());
 		if(pipe == null || !((pipe.pipe instanceof CoreRoutedPipe))) return null;
-		return ((CoreRoutedPipe)pipe.pipe).getUpgradeManager().getDummyContainer(player);
+		return ((CoreRoutedPipe)pipe.pipe).getOriginalUpgradeManager().getDummyContainer(player);
 	}
 
 	@Override

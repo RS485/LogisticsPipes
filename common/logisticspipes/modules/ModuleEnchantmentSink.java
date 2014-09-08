@@ -3,6 +3,8 @@ package logisticspipes.modules;
 import java.util.Collection;
 
 import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
+import logisticspipes.pipes.PipeLogisticsChassi.ChassiTargetInformation;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -45,8 +47,14 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 	}
 
 
-	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.EnchantmentItemSink, 0, true, false, 1, 0);
+	private SinkReply _sinkReply;
 
+	@Override
+	public void registerPosition(ModulePositionType slot, int positionInt) {
+		super.registerPosition(slot, positionInt);
+		_sinkReply = new SinkReply(FixedPriority.EnchantmentItemSink, 0, true, false, 1, 0, new ChassiTargetInformation(this.getPositionInt()));
+	}
+	
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		// check to see if a better route is already found

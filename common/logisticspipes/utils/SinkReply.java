@@ -1,5 +1,8 @@
 package logisticspipes.utils;
 
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
+
 public final class SinkReply {
 	
 	public enum FixedPriority {
@@ -29,8 +32,9 @@ public final class SinkReply {
 	public final int energyUse;
 	public final int maxNumberOfItems;
 	public final BufferMode bufferMode;
+	public final IAdditionalTargetInformation addInfo;
 	
-	public SinkReply(FixedPriority fixedPriority, int customPriority, boolean isPassive, boolean isDefault, int energyUse, int maxNumberOfItems) {
+	public SinkReply(FixedPriority fixedPriority, int customPriority, boolean isPassive, boolean isDefault, int energyUse, int maxNumberOfItems, IAdditionalTargetInformation addInfo) {
 		this.fixedPriority = fixedPriority;
 		this.customPriority = customPriority;
 		this.isPassive = isPassive;
@@ -38,6 +42,7 @@ public final class SinkReply {
 		this.energyUse = energyUse;
 		this.maxNumberOfItems = maxNumberOfItems;
 		this.bufferMode = BufferMode.NONE;
+		this.addInfo = addInfo;
 	}
 	
 	public SinkReply(SinkReply base, int maxNumberOfItems) {
@@ -48,6 +53,7 @@ public final class SinkReply {
 		this.energyUse = base.energyUse;
 		this.maxNumberOfItems = maxNumberOfItems;
 		this.bufferMode = BufferMode.NONE;
+		this.addInfo = base.addInfo;
 	}
 	
 	public SinkReply(SinkReply base, int maxNumberOfItems, BufferMode bufferMode) {
@@ -58,5 +64,6 @@ public final class SinkReply {
 		this.energyUse = base.energyUse;
 		this.maxNumberOfItems = maxNumberOfItems;
 		this.bufferMode = bufferMode;
+		this.addInfo = base.addInfo;
 	}
 }

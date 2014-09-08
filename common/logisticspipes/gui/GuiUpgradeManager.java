@@ -23,7 +23,7 @@ public class GuiUpgradeManager extends LogisticsBaseGuiScreen {
 	
 	public GuiUpgradeManager(EntityPlayer player, CoreRoutedPipe pipe) {
 		super(175, SMALL_SIZE, 0, 0);
-		this.upgrade = pipe.getUpgradeManager();
+		this.upgrade = pipe.getOriginalUpgradeManager();
 		this.player = player;
 		this.inventorySlots = upgrade.getDummyContainer(player);
 	}

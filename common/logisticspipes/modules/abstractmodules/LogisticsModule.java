@@ -43,10 +43,11 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 	protected ModulePositionType slot;
 	@Getter
 	protected int positionInt;
+
 	/**
 	 * Registers the slot type the module is in
 	 */
-	public final void registerPosition(ModulePositionType slot, int positionInt) {
+	public void registerPosition(ModulePositionType slot, int positionInt) {
 		this.slot = slot;
 		this.positionInt = positionInt;
 	}

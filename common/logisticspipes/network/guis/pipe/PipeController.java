@@ -36,7 +36,7 @@ public class PipeController extends CoordinatesGuiProvider {
 		LogisticsTileGenericPipe tile = this.getPipe(player.getEntityWorld());
 		if(tile == null || !(tile.pipe instanceof CoreRoutedPipe)) return null;
 		final CoreRoutedPipe pipe = (CoreRoutedPipe) tile.pipe;
-		DummyContainer dummy = new DummyContainer(player, null, pipe.getUpgradeManager().getGuiController(), new IGuiOpenControler() {
+		DummyContainer dummy = new DummyContainer(player, null, pipe.getOriginalUpgradeManager().getGuiController(), new IGuiOpenControler() {
 			//Network Statistics
 			@Override
 			public void guiOpenedByPlayer(EntityPlayer player) {
@@ -51,7 +51,7 @@ public class PipeController extends CoordinatesGuiProvider {
 		dummy.addNormalSlotsForPlayerInventory(0, 0);
 		// TAB_1 SLOTS
 		for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
-	    	dummy.addRestrictedSlot(pipeSlot, pipe.getUpgradeManager().getInv(), 8 + pipeSlot * 18, 18, new ISlotCheck() {
+	    	dummy.addRestrictedSlot(pipeSlot, pipe.getOriginalUpgradeManager().getInv(), 8 + pipeSlot * 18, 18, new ISlotCheck() {
 				@Override
 				public boolean isStackAllowed(ItemStack itemStack) {
 					if(itemStack == null) return false;
@@ -65,7 +65,7 @@ public class PipeController extends CoordinatesGuiProvider {
 	    	});
 	    }
 		for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
-	    	dummy.addRestrictedSlot(pipeSlot, pipe.getUpgradeManager().getSneakyInv(), 8 + pipeSlot * 18, 48, new ISlotCheck() {
+	    	dummy.addRestrictedSlot(pipeSlot, pipe.getOriginalUpgradeManager().getSneakyInv(), 8 + pipeSlot * 18, 48, new ISlotCheck() {
 				@Override
 				public boolean isStackAllowed(ItemStack itemStack) {
 					if(itemStack == null) return false;
@@ -81,7 +81,7 @@ public class PipeController extends CoordinatesGuiProvider {
 	    	});
 	    }
 		// TAB_2 SLOTS
-    	dummy.addStaticRestrictedSlot(0, pipe.getUpgradeManager().getSecInv(), 8 + 8 * 18, 18, new ISlotCheck() {
+    	dummy.addStaticRestrictedSlot(0, pipe.getOriginalUpgradeManager().getSecInv(), 8 + 8 * 18, 18, new ISlotCheck() {
 			@Override
 			public boolean isStackAllowed(ItemStack itemStack) {
 				if(itemStack == null) return false;

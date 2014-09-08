@@ -16,6 +16,7 @@ import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.IPipeServiceProvider;
+import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.ICraftItems;
@@ -28,6 +29,7 @@ import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
@@ -60,7 +62,7 @@ import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
-import logisticspipes.pipes.PipeLogisticsChassi.ChasseTargetInformation;
+import logisticspipes.pipes.PipeLogisticsChassi.ChassiTargetInformation;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.pipes.upgrades.UpgradeManager;
@@ -162,7 +164,13 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		_invRequester = (IRequestItems)service;
 	}
 	
-	protected static final SinkReply	_sinkReply	= new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0);
+	protected SinkReply	_sinkReply;
+	
+	@Override
+	public void registerPosition(ModulePositionType slot, int positionInt) {
+		super.registerPosition(slot, positionInt);
+		_sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0, new ChassiTargetInformation(this.getPositionInt()));
+	}
 	
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
@@ -452,15 +460,15 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		return template;
 	}
 
-	private UpgradeManager getUpgradeManager() {
+	protected ISlotUpgradeManager getUpgradeManager() {
 		if(_service==null) // should only happen for in-hand config.
 			return null;
-		return _service.getUpgradeManager();
+		return _service.getUpgradeManager(this.slot, this.positionInt);
 	}
 
 	public boolean isSatelliteConnected() {
 	final List<ExitRoute> routes = getRouter().getIRoutersByCost();
-		if(!_service.getUpgradeManager().isAdvancedSatelliteCrafter()) {
+		if(!getUpgradeManager().isAdvancedSatelliteCrafter()) {
 			if(satelliteId == 0) return true;
 			for (final PipeItemsSatelliteLogistics satellite : PipeItemsSatelliteLogistics.AllSatellites) {
 				if (satellite.satelliteId == satelliteId) {
@@ -1389,7 +1397,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		return null;
 	}
 	
-	public static class CraftingChassieInformation extends ChasseTargetInformation {
+	public static class CraftingChassieInformation extends ChassiTargetInformation {
 		@Getter
 		private final int craftingSlot;
 		public CraftingChassieInformation(int craftingSlot, int moduleSlot) {

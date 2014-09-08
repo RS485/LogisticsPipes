@@ -116,8 +116,8 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISi
 				ItemIdentifierStack slot = inv.getIDStackInSlot(i);
 				if(slot == null) continue;
 				ForgeDirection insertion = tile.orientation.getOpposite();
-				if(_service.getUpgradeManager().hasSneakyUpgrade()) {
-					insertion = _service.getUpgradeManager().getSneakyOrientation();
+				if(getUpgradeManager().hasSneakyUpgrade()) {
+					insertion = getUpgradeManager().getSneakyOrientation();
 				}
 				ItemIdentifierStack toadd = slot.clone();
 				toadd.setStackSize(Math.min(toadd.getStackSize(), toadd.getItem().getMaxStackSize()));

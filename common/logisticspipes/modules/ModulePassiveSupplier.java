@@ -19,6 +19,7 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
 import logisticspipes.network.packets.module.ModuleInventory;
+import logisticspipes.pipes.PipeLogisticsChassi.ChassiTargetInformation;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
@@ -51,12 +52,19 @@ public class ModulePassiveSupplier extends LogisticsSimpleFilterModule implement
 		return _filterInventory;
 	}
 	
-	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.PassiveSupplier, 0, true, false, 2, 0);
+	private SinkReply _sinkReply;
+
+	@Override
+	public void registerPosition(ModulePositionType slot, int positionInt) {
+		super.registerPosition(slot, positionInt);
+		_sinkReply = new SinkReply(FixedPriority.PassiveSupplier, 0, true, false, 2, 0, new ChassiTargetInformation(this.getPositionInt()));
+	}
+	
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 
-		IInventoryUtil targetUtil = _service.getSneakyInventory(false);
+		IInventoryUtil targetUtil = _service.getSneakyInventory(false, slot, positionInt);
 		if (targetUtil == null) return null;
 		
 		if (!_filterInventory.containsItem(item)) return null;

@@ -30,7 +30,7 @@ import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
 import logisticspipes.network.packets.module.ModuleInventory;
 import logisticspipes.pipefxhandlers.Particles;
-import logisticspipes.pipes.PipeLogisticsChassi.ChasseTargetInformation;
+import logisticspipes.pipes.PipeLogisticsChassi.ChassiTargetInformation;
 import logisticspipes.pipes.basic.debug.StatusEntry;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -209,7 +209,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 			if (inv.getSizeInventory() < 1) continue;
 			IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
 			
-			if(_service.getUpgradeManager().hasPatternUpgrade()) {
+			if(_service.getUpgradeManager(this.slot, this.positionInt).hasPatternUpgrade()) {
 				createPatternRequest(invUtil);
 			} else {
 				createSupplyRequest(invUtil);
@@ -536,7 +536,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 
 	@Override
 	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
-		return NewGuiHandler.getGui(ActiveSupplierSlot.class).setPatternUpgarde(this.hasPatternUpgrade()).setSlotArray(slotArray).setMode((_service.getUpgradeManager().hasPatternUpgrade() ? getPatternMode() : getSupplyMode()).ordinal()).setLimit(isLimited);
+		return NewGuiHandler.getGui(ActiveSupplierSlot.class).setPatternUpgarde(this.hasPatternUpgrade()).setSlotArray(slotArray).setMode((_service.getUpgradeManager(this.slot, this.positionInt).hasPatternUpgrade() ? getPatternMode() : getSupplyMode()).ordinal()).setLimit(isLimited);
 	}
 
 	@Override
@@ -565,8 +565,8 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 	}
 
 	public boolean hasPatternUpgrade() {
-		if(_service != null && _service.getUpgradeManager() != null) {
-			return _service.getUpgradeManager().hasPatternUpgrade();
+		if(_service != null && _service.getUpgradeManager(this.slot, this.positionInt) != null) {
+			return _service.getUpgradeManager(this.slot, this.positionInt).hasPatternUpgrade();
 		}
 		return false;
 	}
@@ -600,7 +600,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 		
 	}
 	
-	public class SupplierTargetInformation extends ChasseTargetInformation {
+	public class SupplierTargetInformation extends ChassiTargetInformation {
 
 		public SupplierTargetInformation() {
 			super(ModuleActiveSupplier.this.getPositionInt());

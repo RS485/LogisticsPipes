@@ -51,6 +51,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsPromise;
+import logisticspipes.routing.LogisticsPromise.PromiseType;
 import logisticspipes.routing.order.IOrderInfoProvider.RequestType;
 import logisticspipes.routing.order.LogisticsOrder;
 import logisticspipes.routing.order.LogisticsOrderManager;
@@ -69,7 +70,6 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.util.ForgeDirection;
 
 public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvideItems, IHeadUpDisplayRendererProvider, IChestContentReceiver, IChangeListener, IOrderManagerContentReceiver {
 
@@ -273,7 +273,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		int canProvide = getAvailableItemCount(tree.getStackItem());
 		canProvide -= donePromisses;
 		if (canProvide < 1) return;
-		LogisticsPromise promise = new LogisticsPromise(tree.getStackItem(), Math.min(canProvide, tree.getMissingItemCount()), this);
+		LogisticsPromise promise = new LogisticsPromise(tree.getStackItem(), Math.min(canProvide, tree.getMissingItemCount()), this, PromiseType.PROVIDER);
 		tree.addPromise(promise);
 	}
 	

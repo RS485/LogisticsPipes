@@ -6,7 +6,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 public class LogisticsExtraPromise extends LogisticsPromise {
 	
 	public LogisticsExtraPromise(ItemIdentifier item, int numberOfItems, IProvideItems sender, boolean provided) {
-		super(item, numberOfItems, sender);
+		super(item, numberOfItems, sender, null);
 		this.provided = provided;
 	}
 

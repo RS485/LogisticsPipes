@@ -27,6 +27,7 @@ import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.LogisticsPromise;
+import logisticspipes.routing.LogisticsPromise.PromiseType;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
@@ -255,7 +256,7 @@ public class RequestTreeNode {
 	protected void buildUsedMap(Map<ItemIdentifier,Integer> used, Map<ItemIdentifier,Integer> missing) {
 		int usedcount = 0;
 		for(LogisticsPromise promise:promises) {
-			if(promise.sender instanceof IProvideItems && !(promise.sender instanceof ICraftItems)) {
+			if(promise.type == PromiseType.PROVIDER) {
 				usedcount += promise.numberOfItems;
 			}
 		}

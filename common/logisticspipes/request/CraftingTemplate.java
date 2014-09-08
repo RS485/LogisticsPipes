@@ -16,6 +16,7 @@ import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.routing.LogisticsPromise;
+import logisticspipes.routing.LogisticsPromise.PromiseType;
 import logisticspipes.utils.CraftingRequirement;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -70,7 +71,7 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 	}
 	
 	public LogisticsPromise generatePromise(int nResultSets) {
-		return new LogisticsPromise(_result.getItem(), _result.getStackSize() * nResultSets, _crafter);
+		return new LogisticsPromise(_result.getItem(), _result.getStackSize() * nResultSets, _crafter, PromiseType.CRAFTING);
 	}
 	
 	//TODO: refactor so that other classes don't reach through the template to the crafter.

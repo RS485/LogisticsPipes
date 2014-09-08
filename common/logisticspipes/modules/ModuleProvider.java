@@ -43,6 +43,7 @@ import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsPromise;
+import logisticspipes.routing.LogisticsPromise.PromiseType;
 import logisticspipes.routing.order.IOrderInfoProvider.RequestType;
 import logisticspipes.routing.order.LogisticsOrder;
 import logisticspipes.utils.PlayerCollectionList;
@@ -180,7 +181,7 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 		int canProvide = getAvailableItemCount(tree.getStackItem());
 		canProvide -= donePromisses;
 		if (canProvide < 1) return;
-		LogisticsPromise promise = new LogisticsPromise(tree.getStackItem(), Math.min(canProvide, tree.getMissingItemCount()), (IProvideItems) _service);
+		LogisticsPromise promise = new LogisticsPromise(tree.getStackItem(), Math.min(canProvide, tree.getMissingItemCount()), (IProvideItems) _service, PromiseType.PROVIDER);
 		tree.addPromise(promise);
 	}
 

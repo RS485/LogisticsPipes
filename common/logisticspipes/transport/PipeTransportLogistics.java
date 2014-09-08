@@ -9,6 +9,7 @@
 package logisticspipes.transport;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -608,13 +609,14 @@ public class PipeTransportLogistics {
 	
 	protected void neighborChange() {}
 	
-	public void dropContents() {
+	public List<ItemStack> dropContents() {
+		List<ItemStack> list = new ArrayList<ItemStack>();
 		if(MainProxy.isServer(this.getWorld())) {
 			for(LPTravelingItem item: items) {
-				dropItem((LPTravelingItemServer) item);
+				list.add(item.getItemIdentifierStack().makeNormalStack());
 			}
 		}
-		items.clear();
+		return list;
 	}
 	
 	public boolean delveIntoUnloadedChunks() {

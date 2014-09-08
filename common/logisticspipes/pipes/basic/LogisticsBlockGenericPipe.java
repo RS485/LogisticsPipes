@@ -71,7 +71,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 			if (pipe != null) {
 				if (pipe.item != null && (pipe.canBeDestroyed() || pipe.destroyByPlayer())) {
-					pipe.dropContents();
+					list.addAll(pipe.dropContents());
 					list.add(new ItemStack(pipe.item, 1, damageDropped(metadata)));
 				} else if(pipe.item != null) {
 					cacheTileToPreventRemoval(pipe);
@@ -734,7 +734,9 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			}
 
 			if (pipe.item != null && (pipe.canBeDestroyed() || pipe.destroyByPlayer())) {
-				pipe.dropContents();
+				for(ItemStack stack:pipe.dropContents()) {
+					dropBlockAsItem(world, i, j, k, stack);
+				}
 				dropBlockAsItem(world, i, j, k, new ItemStack(pipe.item, 1, damageDropped(l)));
 			} else if(pipe.item != null) {
 				cacheTileToPreventRemoval(pipe);

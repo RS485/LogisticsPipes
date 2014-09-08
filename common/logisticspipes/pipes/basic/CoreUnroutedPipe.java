@@ -1,6 +1,7 @@
 package logisticspipes.pipes.basic;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import logisticspipes.LogisticsPipes;
@@ -245,8 +246,8 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe {
 		return container;
 	}
 
-	public void dropContents() {
-		transport.dropContents();
+	public List<ItemStack> dropContents() {
+		return transport.dropContents();
 	}
 
 	/**

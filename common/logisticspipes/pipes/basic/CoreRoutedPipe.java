@@ -541,12 +541,6 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 			router.clearInterests();
 		}
 	}
-	
-	@Override
-	public void dropContents() {
-		if(MainProxy.isClient(getWorld())) return;
-		super.dropContents();
-	}
 
 	public void checkTexturePowered() {
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return;

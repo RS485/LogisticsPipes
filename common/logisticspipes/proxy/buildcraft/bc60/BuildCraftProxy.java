@@ -135,10 +135,9 @@ public class BuildCraftProxy implements IBCProxy {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		String expectedBCVersion = "6.0.17";
 		if(BCVersion != null) {
-			if(!BCVersion.equals("@VERSION@") && !BCVersion.contains(expectedBCVersion)) {
-				throw new VersionNotSupportedException("BC", BCVersion, expectedBCVersion, "");
+			if(!BCVersion.equals("@VERSION@") && !BCVersion.contains("6.0.18") && !BCVersion.contains("6.0.17")) {
+				throw new VersionNotSupportedException("BC", BCVersion, "6.0.17 - 6.0.18", "");
 			}
 		} else {
 			LogisticsPipes.log.info("Couldn't check the BC Version.");

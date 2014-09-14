@@ -1,7 +1,5 @@
 package logisticspipes.proxy.specialinventoryhandler;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -9,6 +7,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.bs.ICrateStorageProxy;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -16,21 +16,11 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 public class CrateInventoryHandler extends SpecialInventoryHandler {
 
-	private static Class <? extends Object> crateClass;
-	private static Method getPileData;
-	private static Class <? extends Object> cratePileDataClass;
-	private static Method getNumItems;
-	private static Method removeItems;
-	private static Method getItemStack;
-	private static Method getItemCount;
-	private static Method spaceForItem;
-	private static Method addItems;
-
-	private final TileEntity _tile;
+	private final ICrateStorageProxy _tile;
 	private final boolean _hideOnePerStack;
 
 	private CrateInventoryHandler(TileEntity tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
-		_tile = tile;
+		_tile = SimpleServiceLocator.betterStorageProxy.getCrateStorageProxy(tile);
 		_hideOnePerStack = hideOnePerStack || hideOne;
 	}
 
@@ -41,25 +31,12 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public boolean init() {
-		try {
-			crateClass = Class.forName("net.mcft.copy.betterstorage.tile.crate.TileEntityCrate");
-			getPileData = crateClass.getDeclaredMethod("getPileData", new Class[]{});
-			cratePileDataClass = Class.forName("net.mcft.copy.betterstorage.tile.crate.CratePileData");
-			getNumItems = cratePileDataClass.getDeclaredMethod("getNumItems", new Class[]{});
-			removeItems = cratePileDataClass.getDeclaredMethod("removeItems", new Class[]{ItemStack.class, int.class});
-			getItemStack = cratePileDataClass.getDeclaredMethod("getItemStack", new Class[]{int.class});
-			getItemCount = cratePileDataClass.getDeclaredMethod("getItemCount", new Class[]{ItemStack.class});
-			spaceForItem = cratePileDataClass.getDeclaredMethod("spaceForItem", new Class[]{ItemStack.class});
-			addItems = cratePileDataClass.getDeclaredMethod("addItems", new Class[]{ItemStack.class});
-			return true;
-		} catch(Exception e) {
-			return false;
-		}
+		return true;
 	}
 
 	@Override
 	public boolean isType(TileEntity tile) {
-		return crateClass.isAssignableFrom(tile.getClass());
+		return SimpleServiceLocator.betterStorageProxy.isBetterStorageCrate(tile);
 	}
 
 	@Override
@@ -70,19 +47,8 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public Set<ItemIdentifier> getItems() {
 		Set<ItemIdentifier> result = new TreeSet<ItemIdentifier>();
-		try {
-			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
-			int numitems = (Integer) getNumItems.invoke(cratePileData, new Object[]{});
-			for(int i = 0; i < numitems; i++) {
-				ItemStack itemStack = (ItemStack) getItemStack.invoke(cratePileData, new Object[]{i});
-				result.add(ItemIdentifier.get(itemStack));
-			}
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+		for(ItemStack stack : _tile.getContents()) {
+			result.add(ItemIdentifier.get(stack));
 		}
 		return result;
 	}
@@ -92,87 +58,44 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	}
 		
 	private Map<ItemIdentifier, Integer> getItemsAndCount(boolean linked) {
-		try {
-			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
-			int numitems = (Integer) getNumItems.invoke(cratePileData, new Object[]{});
-			HashMap<ItemIdentifier, Integer> map = new HashMap<ItemIdentifier, Integer>((int)(numitems * 1.5));
-			for(int i = 0; i < numitems; i++) {
-				ItemStack itemStack = (ItemStack) getItemStack.invoke(cratePileData, new Object[]{i});
-				ItemIdentifier itemId = ItemIdentifier.get(itemStack);
-				int stackSize = itemStack.stackSize - (_hideOnePerStack?1:0);
-				Integer m = map.get(itemId);
-				if (m==null){
-					map.put(itemId, stackSize);
-				} else {
-					map.put(itemId, m + stackSize);
-				}
+		HashMap<ItemIdentifier, Integer> map = new HashMap<ItemIdentifier, Integer>((int)(_tile.getUniqueItems() * 1.5));
+		for(ItemStack stack : _tile.getContents()) {
+			ItemIdentifier itemId = ItemIdentifier.get(stack);
+			int stackSize = stack.stackSize - (_hideOnePerStack?1:0);
+			Integer m = map.get(itemId);
+			if (m==null){
+				map.put(itemId, stackSize);
+			} else {
+				map.put(itemId, m + stackSize);
 			}
-			return map;
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
 		}
-		return new HashMap<ItemIdentifier, Integer>();
+		return map;
 	}
 
 	@Override
 	public ItemStack getSingleItem(ItemIdentifier itemIdent) {
-		try {
-			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
-			int count = (Integer) getItemCount.invoke(cratePileData, new Object[]{itemIdent.unsafeMakeNormalStack(1)});
-			if (count <= (_hideOnePerStack?1:0)) return null;
-			return (ItemStack) removeItems.invoke(cratePileData, new Object[]{itemIdent.makeNormalStack(1), 1});
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
-		return null;
+		int count = _tile.getItemCount(itemIdent.unsafeMakeNormalStack(1));
+		if (count <= (_hideOnePerStack?1:0)) return null;
+		return _tile.extractItems(itemIdent.makeNormalStack(1), 1);
 	}
 
 	@Override
 	public boolean containsItem(ItemIdentifier itemIdent) {
-		try {
-			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
-			int count = (Integer) getItemCount.invoke(cratePileData, new Object[]{itemIdent.unsafeMakeNormalStack(1)});
-			return (count > 0);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
-		return false;
+		int count = _tile.getItemCount(itemIdent.unsafeMakeNormalStack(1));
+		return (count > 0);
 	}
 
 	@Override
 	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
-		try {
-			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
-			if (!itemIdent.isDamageable()) {
-				int count = (Integer) getItemCount.invoke(cratePileData, new Object[]{itemIdent.unsafeMakeNormalStack(1)});
-				return (count > 0);
+		if (!itemIdent.isDamageable()) {
+			int count = _tile.getItemCount(itemIdent.unsafeMakeNormalStack(1));
+			return (count > 0);
+		}
+		for(ItemStack stack : _tile.getContents()) {
+			ItemIdentifier itemId = ItemIdentifier.get(stack).getUndamaged();
+			if(itemId.equals(itemIdent)) {
+				return true;
 			}
-			int numitems = (Integer) getNumItems.invoke(cratePileData, new Object[]{});
-			for(int i = 0; i < numitems; i++) {
-				ItemStack itemStack = (ItemStack) getItemStack.invoke(cratePileData, new Object[]{i});
-				ItemIdentifier itemId = ItemIdentifier.get(itemStack).getUndamaged();
-				if(itemId.equals(itemIdent)) {
-					return true;
-				}
-			}
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
 		}
 		return false;
 	}
@@ -184,18 +107,8 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public int roomForItem(ItemIdentifier itemIdent, int count) {
-		try {
-			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
-			int space = (Integer) spaceForItem.invoke(cratePileData, new Object[]{itemIdent.unsafeMakeNormalStack(1)});
-			return space;
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
-		return 0;
+		int space = _tile.getSpaceForItem(itemIdent.unsafeMakeNormalStack(1));
+		return space;
 	}
 
 	@Override
@@ -204,19 +117,10 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 		st.stackSize = 0;
 		if(doAdd) {
 			ItemStack tst = stack.copy();
-			try {
-				Object cratePileData = getPileData.invoke(_tile, new Object[]{});
-				ItemStack overflow = (ItemStack) addItems.invoke(cratePileData, new Object[]{tst});
-				st.stackSize = stack.stackSize;
-				if(overflow != null) {
-					st.stackSize -= overflow.stackSize;
-				}
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
+			ItemStack overflow = _tile.insertItems(tst);
+			st.stackSize = stack.stackSize;
+			if(overflow != null) {
+				st.stackSize -= overflow.stackSize;
 			}
 		} else {
 			int space = roomForItem(ItemIdentifier.get(stack), 0);
@@ -260,18 +164,9 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 		Entry<ItemIdentifier, Integer> entry = cached.get(i);
 		ItemStack stack = entry.getKey().makeNormalStack(j);
 		ItemStack extracted = null;
-		try {
-			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
-			int count = (Integer) getItemCount.invoke(cratePileData, new Object[]{stack});
-			if (count <= (_hideOnePerStack?1:0)) return null;
-			extracted = (ItemStack) removeItems.invoke(cratePileData, new Object[]{stack, 1});
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
+		int count = _tile.getItemCount(stack);
+		if (count <= (_hideOnePerStack?1:0)) return null;
+		extracted = _tile.extractItems(stack, 1);
 		entry.setValue(entry.getValue() - j);
 		return extracted;
 	}

@@ -12,6 +12,7 @@ import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.bs.BetterStorageProxy;
+import logisticspipes.proxy.bs.ICrateStorageProxy;
 import logisticspipes.proxy.buildcraft.bc60.BuildCraftProxy;
 import logisticspipes.proxy.buildcraft.subproxies.IBCCoreState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePart;
@@ -270,7 +271,17 @@ public class ProxyManager {
 		
 		SimpleServiceLocator.setBetterStorageProxy(getWrappedProxy("betterstorage", IBetterStorageProxy.class, BetterStorageProxy.class, new IBetterStorageProxy() {
 			@Override public boolean isBetterStorageCrate(TileEntity tile) {return false;}
-		}));
+			@Override public ICrateStorageProxy getCrateStorageProxy(TileEntity tile) {
+				return new ICrateStorageProxy() {
+					@Override public Iterable<ItemStack> getContents() {return null;}
+					@Override public int getUniqueItems() {return 0;}
+					@Override public int getItemCount(ItemStack stack) {return 0;}
+					@Override public ItemStack extractItems(ItemStack stack, int count) {return null;}
+					@Override public int getSpaceForItem(ItemStack stack) {return 0;}
+					@Override public ItemStack insertItems(ItemStack stack) {return stack;}
+				};
+			}
+		}, ICrateStorageProxy.class));
 		
 		SimpleServiceLocator.setNEIProxy(getWrappedProxy("NotEnoughItems", INEIProxy.class, NEIProxy.class, new INEIProxy() {
 			@Override public List<String> getInfoForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver) {return new ArrayList<String>(0);}

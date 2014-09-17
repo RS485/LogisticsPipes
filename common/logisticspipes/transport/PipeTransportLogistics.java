@@ -577,11 +577,13 @@ public class PipeTransportLogistics {
 		if(MainProxy.isServer(this.getWorld())) {
 			if(item instanceof LPRoutedBCTravelingItem) {
 				ItemRoutingInformation info = ((LPRoutedBCTravelingItem)item).getRoutingInformation();
+				info.setItem(ItemIdentifierStack.getFromStack(item.getItemStack()));
 				LPTravelingItemServer lpItem = new LPTravelingItemServer(info);
 				this.injectItem(lpItem, inputOrientation);
 			} else {
 				ItemRoutingInformation info = LPRoutedBCTravelingItem.restoreFromExtraNBTData(item);
 				if(info != null) {
+					info.setItem(ItemIdentifierStack.getFromStack(item.getItemStack()));
 					LPTravelingItemServer lpItem = new LPTravelingItemServer(info);
 					this.injectItem(lpItem, inputOrientation);
 				} else {

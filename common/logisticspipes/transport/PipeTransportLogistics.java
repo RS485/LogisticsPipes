@@ -387,7 +387,7 @@ public class PipeTransportLogistics {
 						return;
 					}
 				}
-				ISlotUpgradeManager manager;
+				ISlotUpgradeManager slotManager;
 				{
 					ModulePositionType slot = null;
 					int positionInt = -1;
@@ -396,9 +396,9 @@ public class PipeTransportLogistics {
 						slot = ModulePositionType.SLOT;
 					} else if(LPConstants.DEBUG && this.container.pipe instanceof PipeLogisticsChassi) {
 						System.out.println(arrivingItem);
-						new RuntimeException("[ItemLost] Information weren't ment for a chassi pipe").printStackTrace();
+						new RuntimeException("[ItemInsertion] Information weren't ment for a chassi pipe").printStackTrace();
 					}
-					manager = getPipe().getUpgradeManager(slot, positionInt);
+					slotManager = getPipe().getUpgradeManager(slot, positionInt);
 				}
 				boolean tookSome = false;
 				if(arrivingItem.getAdditionalTargetInformation() instanceof ITargetSlotInformation) {
@@ -433,10 +433,10 @@ public class PipeTransportLogistics {
 					}
 				}
 				// sneaky insertion
-				if(!manager.hasCombinedSneakyUpgrade()) {
+				if(!getPipe().getUpgradeManager().hasCombinedSneakyUpgrade() || slotManager.hasOwnSneakyUpgrade()) {
 					ForgeDirection insertion = arrivingItem.output.getOpposite();
-					if(manager.hasSneakyUpgrade()) {
-						insertion = manager.getSneakyOrientation();
+					if(slotManager.hasSneakyUpgrade()) {
+						insertion = slotManager.getSneakyOrientation();
 					}
 					ItemStack added = InventoryHelper.getTransactorFor(tile, dir.getOpposite()).add(arrivingItem.getItemIdentifierStack().makeNormalStack(), insertion, true);
 					
@@ -465,7 +465,7 @@ public class PipeTransportLogistics {
 						return; // every item has been inserted. 
 					}
 				} else {
-					ForgeDirection[] dirs = manager.getCombinedSneakyOrientation();
+					ForgeDirection[] dirs = getPipe().getUpgradeManager().getCombinedSneakyOrientation();
 					for(int i = 0; i < dirs.length; i++) {
 						ForgeDirection insertion = dirs[i];
 						if(insertion == null) continue;

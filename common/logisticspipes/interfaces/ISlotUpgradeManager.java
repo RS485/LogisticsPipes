@@ -11,6 +11,5 @@ public interface ISlotUpgradeManager {
 	int getCrafterCleanup();
 	boolean hasSneakyUpgrade();
 	ForgeDirection getSneakyOrientation();
-	boolean hasCombinedSneakyUpgrade();
-	ForgeDirection[] getCombinedSneakyOrientation();
+	boolean hasOwnSneakyUpgrade();
 }

@@ -1,34 +1,32 @@
 package logisticspipes.pipes.upgrades;
 
-import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
-import logisticspipes.pipes.PipeItemsCraftingLogistics;
+import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 
-public class FluidCraftingUpgrade implements IPipeUpgrade {
-
+public class UpgradeModuleUpgrade implements IPipeUpgrade {
 	@Override
 	public boolean needsUpdate() {
 		return false;
 	}
-
+	
 	@Override
 	public boolean isAllowedForPipe(CoreRoutedPipe pipe) {
-		return pipe instanceof PipeItemsCraftingLogistics;
+		return pipe instanceof PipeLogisticsChassi;
 	}
 
 	@Override
 	public boolean isAllowedForModule(LogisticsModule pipe) {
-		return pipe instanceof ModuleCrafter;
+		return false;
 	}
 
 	@Override
 	public String[] getAllowedPipes() {
-		return new String[]{"crafting"};
+		return new String[]{"chassi"};
 	}
 
 	@Override
 	public String[] getAllowedModules() {
-		return new String[]{"crafting"};
+		return new String[]{};
 	}
 }

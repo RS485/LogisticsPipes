@@ -13,5 +13,8 @@ public interface IPipeUpgradeManager {
 	boolean hasCCRemoteControlUpgrade();
 	boolean hasCraftingMonitoringUpgrade();
 	boolean isOpaque();
+	boolean hasUpgradeModuleUpgrade();
+	boolean hasCombinedSneakyUpgrade();
+	ForgeDirection[] getCombinedSneakyOrientation();
 	
 }

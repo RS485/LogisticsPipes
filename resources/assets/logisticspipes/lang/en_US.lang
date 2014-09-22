@@ -233,6 +233,20 @@ item.CCRemoteControlUpgrade=CC Remote Control Upgrade
 item.CraftingMonitoringUpgrade=Crafting Monitoring Upgrade
 item.OpaqueUpgrade=Opaque Upgrade
 item.CraftingCleanupUpgrade=Crafting Cleanup Upgrade
+item.LogicControllerUpgrade=Logic Controller Upgrade
+item.UpgradeModuleUpgrade=Upgrade Module Upgrade
+
+#Upgrade info
+
+item.upgrade.info.both=Can be applied to %cYELLOW {0} %cRESET %cGRAY pipes and %cYELLOW {1} %cRESET %cGRAY modules
+item.upgrade.info.pipe=Can be applied to %cYELLOW {0} %cRESET %cGRAY pipes
+item.upgrade.info.module=Can be applied to %cYELLOW {0} %cRESET %cGRAY modules
+item.upgrade.info.all=All
+item.upgrade.info.crafting=Crafting
+item.upgrade.info.itemsink=Item Sink
+item.upgrade.info.supplier=Supllier
+item.upgrade.info.requestblock=Request Block
+item.upgrade.info.chassi=Chassi
 
 # Blocks
 

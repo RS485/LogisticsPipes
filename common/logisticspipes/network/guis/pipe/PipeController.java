@@ -56,7 +56,7 @@ public class PipeController extends CoordinatesGuiProvider {
 				public boolean isStackAllowed(ItemStack itemStack) {
 					if(itemStack == null) return false;
 					if(itemStack.getItem() == LogisticsPipes.UpgradeItem) {
-						if(!LogisticsPipes.UpgradeItem.getUpgradeForItem(itemStack, null).isAllowed(pipe)) return false;
+						if(!LogisticsPipes.UpgradeItem.getUpgradeForItem(itemStack, null).isAllowedForPipe(pipe)) return false;
 					} else {
 						return false;
 					}
@@ -72,7 +72,7 @@ public class PipeController extends CoordinatesGuiProvider {
 					if(itemStack.getItem() == LogisticsPipes.UpgradeItem) {
 						IPipeUpgrade upgrade = LogisticsPipes.UpgradeItem.getUpgradeForItem(itemStack, null);
 						if(!(upgrade instanceof SneakyUpgrade)) return false;
-						if(!upgrade.isAllowed(pipe)) return false;
+						if(!upgrade.isAllowedForPipe(pipe)) return false;
 					} else {
 						return false;
 					}

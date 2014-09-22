@@ -157,7 +157,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	protected TransportLayer _transportLayer;
 	protected final PriorityBlockingQueue<ItemRoutingInformation> _inTransitToMe = new PriorityBlockingQueue<ItemRoutingInformation>(10, new ItemRoutingInformation.DelayComparator());
 	
-	private UpgradeManager upgradeManager = new UpgradeManager(this);
+	protected UpgradeManager upgradeManager = new UpgradeManager(this);
 	protected LogisticsOrderManager _orderManager = null;
 	
 	public int stat_session_sent;

@@ -65,6 +65,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 	private boolean hasOpaqueUpgrade = false;
 	private int craftingCleanup = 0;
 	private boolean hasLogicControll = false;
+	private boolean hasUpgradeModuleUpgarde = false;
 	
 	private boolean needsContainerPositionUpdate = false;
 	
@@ -144,6 +145,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 		hasOpaqueUpgrade = false;
 		craftingCleanup = 0;
 		hasLogicControll = false;
+		hasUpgradeModuleUpgarde = false;
 		for(int i=0;i<upgrades.length;i++) {
 			IPipeUpgrade upgrade = upgrades[i];
 			if(upgrade instanceof SneakyUpgrade && sneakyOrientation == ForgeDirection.UNKNOWN && !isCombinedSneakyUpgrade) {
@@ -182,6 +184,8 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 				craftingCleanup += inv.getStackInSlot(i).stackSize;
 			} else if(upgrade instanceof LogicControllerUpgrade) {
 				hasLogicControll = true;
+			} else if(upgrade instanceof UpgradeModuleUpgrade) {
+				hasUpgradeModuleUpgarde = true;
 			}
 		}
 		liquidCrafter = Math.min(liquidCrafter, ItemUpgrade.MAX_LIQUID_CRAFTER);
@@ -274,7 +278,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 				public boolean isStackAllowed(ItemStack itemStack) {
 					if(itemStack == null) return false;
 					if(itemStack.getItem() == LogisticsPipes.UpgradeItem) {
-						if(!LogisticsPipes.UpgradeItem.getUpgradeForItem(itemStack, null).isAllowed(pipe)) return false;
+						if(!LogisticsPipes.UpgradeItem.getUpgradeForItem(itemStack, null).isAllowedForPipe(pipe)) return false;
 					} else {
 						return false;
 					}
@@ -303,7 +307,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 					if(itemStack.getItem() == LogisticsPipes.UpgradeItem) {
 						IPipeUpgrade upgrade = LogisticsPipes.UpgradeItem.getUpgradeForItem(itemStack, null);
 						if(!(upgrade instanceof SneakyUpgrade)) return false;
-						if(!upgrade.isAllowed(pipe)) return false;
+						if(!upgrade.isAllowedForPipe(pipe)) return false;
 					} else {
 						return false;
 					}
@@ -333,7 +337,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.UpgradeItem) {
 			if(MainProxy.isClient(world)) return true;
 			IPipeUpgrade upgrade = LogisticsPipes.UpgradeItem.getUpgradeForItem(entityplayer.getCurrentEquippedItem(), null);
-			if(upgrade.isAllowed(pipe)) {
+			if(upgrade.isAllowedForPipe(pipe)) {
 				if(isCombinedSneakyUpgrade) {
 					if(upgrade instanceof SneakyUpgrade) {
 						if(insertIntInv(entityplayer, sneakyInv)) return true;
@@ -453,5 +457,15 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 
 	public boolean hasLogicControll() {
 		return hasLogicControll;
+	}
+
+	@Override
+	public boolean hasUpgradeModuleUpgrade() {
+		return hasUpgradeModuleUpgarde;
+	}
+
+	@Override
+	public boolean hasOwnSneakyUpgrade() {
+		return false;
 	}
 }

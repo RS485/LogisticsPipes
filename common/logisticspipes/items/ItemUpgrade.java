@@ -1,9 +1,15 @@
 package logisticspipes.items;
 
 import java.lang.reflect.InvocationTargetException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.lwjgl.input.Keyboard;
+
+import scala.actors.threadpool.Arrays;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.LPConstants;
 import logisticspipes.pipes.upgrades.AdvancedSatelliteUpgrade;
 import logisticspipes.pipes.upgrades.CCRemoteControlUpgrade;
@@ -19,6 +25,7 @@ import logisticspipes.pipes.upgrades.OpaqueUpgrade;
 import logisticspipes.pipes.upgrades.PatternUpgrade;
 import logisticspipes.pipes.upgrades.PowerTransportationUpgrade;
 import logisticspipes.pipes.upgrades.SpeedUpgrade;
+import logisticspipes.pipes.upgrades.UpgradeModuleUpgrade;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeDOWN;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeEAST;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeNORTH;
@@ -39,6 +46,7 @@ import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeWEST;
 import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
@@ -86,6 +94,7 @@ public class ItemUpgrade extends LogisticsItem {
 	public static final int CRAFTING_MONITORING = 41;
 	public static final int OPAQUE_UPGRADE = 42;
 	public static final int LOGIC_CONTROLLER_UPGRADE = 43;
+	public static final int UPGRADE_MODULE_UPGRADE = 44;
 	
 	//Values
 	public static final int MAX_LIQUID_CRAFTER = 3;
@@ -175,6 +184,7 @@ public class ItemUpgrade extends LogisticsItem {
 		if(LPConstants.DEBUG) {
 			registerUpgrade(LOGIC_CONTROLLER_UPGRADE, LogicControllerUpgrade.class, 30);
 		}
+		registerUpgrade(UPGRADE_MODULE_UPGRADE, UpgradeModuleUpgrade.class, 31);
 	}
 	
 	public void registerUpgrade(int id, Class<? extends IPipeUpgrade> moduleClass, int textureId) {
@@ -249,7 +259,7 @@ public class ItemUpgrade extends LogisticsItem {
 
 	@Override
 	public void registerIcons(IIconRegister par1IIconRegister) {
-		icons=new IIcon[31];
+		icons=new IIcon[32];
 		icons[0]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyUP");
 		icons[1]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyDOWN");
 		icons[2]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyNORTH");
@@ -284,6 +294,7 @@ public class ItemUpgrade extends LogisticsItem {
 		icons[28]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/OpaqueUpgrade");
 		icons[29]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/CraftingCleanup");
 		icons[30]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/LogicController");
+		icons[31]=par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/UpgradeModule");
 	}
 
 	@Override
@@ -297,5 +308,50 @@ public class ItemUpgrade extends LogisticsItem {
 			}
 		}
 		return icons[0];
+	}
+
+	public static String SHIFT_INFO_PREFIX = "item.upgrade.info.";
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void addInformation(ItemStack stack, EntityPlayer par2EntityPlayer, List list, boolean flag) {
+		super.addInformation(stack, par2EntityPlayer, list, flag);
+		IPipeUpgrade upgrade = getUpgradeForItem(stack, null);
+		if(upgrade == null) return;
+		List<String> pipe = Arrays.asList(upgrade.getAllowedPipes());
+		List<String> module = Arrays.asList(upgrade.getAllowedModules());
+		if(pipe.isEmpty() && module.isEmpty()) return;
+		if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+			if(!pipe.isEmpty() && !module.isEmpty()) {
+				//Can be applied to {0} pipes and {1} modules
+				String base = StringUtil.translate(SHIFT_INFO_PREFIX + "both");
+				list.add(MessageFormat.format(base, join(pipe), join(module)));
+			} else if(!pipe.isEmpty()) {
+				//Can be applied to {0} pipes
+				String base = StringUtil.translate(SHIFT_INFO_PREFIX + "pipe");
+				list.add(MessageFormat.format(base, join(pipe)));
+			} else if(!module.isEmpty()) {
+				//Can be applied to {0} modules
+				String base = StringUtil.translate(SHIFT_INFO_PREFIX + "module");
+				list.add(MessageFormat.format(base, join(module)));
+			}
+		} else {
+			String baseKey = MessageFormat.format("{0}.tip", stack.getItem().getUnlocalizedName(stack));
+			String key = baseKey + 1;
+			String translation = StringUtil.translate(key);
+			if(translation.equals(key)) {
+				list.add(StringUtil.translate(StringUtil.KEY_HOLDSHIFT));
+			}
+		}
+	}
+	
+	private String join(List<String> join) {
+		StringBuilder builder = new StringBuilder();
+		for(int i=0; i < join.size() - 1; i++) {
+			builder.append(StringUtil.translate(SHIFT_INFO_PREFIX + join.get(i)));
+		}
+		builder.append(StringUtil.translate(SHIFT_INFO_PREFIX + join.get(join.size() - 1)));
+		return builder.toString();
 	}
 }

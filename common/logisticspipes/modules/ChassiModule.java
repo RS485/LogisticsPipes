@@ -174,7 +174,7 @@ public class ChassiModule extends LogisticsGuiModule {
 
 	@Override
 	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
-		return NewGuiHandler.getGui(ChassiGuiProvider.class);
+		return NewGuiHandler.getGui(ChassiGuiProvider.class).setFlag(this._parentPipe.getUpgradeManager().hasUpgradeModuleUpgrade());
 	}
 
 	@Override

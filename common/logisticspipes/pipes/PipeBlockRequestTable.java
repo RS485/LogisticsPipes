@@ -1,7 +1,9 @@
 package logisticspipes.pipes;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -13,6 +15,7 @@ import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.block.CraftingSetType;
 import logisticspipes.network.packets.orderer.OrderWatchRemovePacket;
 import logisticspipes.network.packets.orderer.OrdererWatchPacket;
 import logisticspipes.pipefxhandlers.Particles;
@@ -58,6 +61,8 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	private PlayerCollectionList localGuiWatcher = new PlayerCollectionList();
 	public Map<Integer, Pair<ItemIdentifierStack, LinkedLogisticsOrderList>> watchedRequests = new HashMap<Integer, Pair<ItemIdentifierStack, LinkedLogisticsOrderList>>();
 	private int localLastUsedWatcherId = 0;
+
+	public ItemIdentifier targetType = null;
 
 	public PipeBlockRequestTable(Item item) {
 		super(item);
@@ -206,19 +211,105 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	}
 	
 	public void cacheRecipe() {
+		ItemIdentifier oldTargetType = targetType;
 		cache = null;
 		resultInv.clearInventorySlotContents(0);
-		AutoCraftingInventory craftInv = new AutoCraftingInventory(null);//TODO
+		AutoCraftingInventory craftInv = new AutoCraftingInventory(null);
 		for(int i=0; i<9;i++) {
 			craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
 		}
+		List<IRecipe> list = new ArrayList<IRecipe>();
 		for(IRecipe r : CraftingUtil.getRecipeList()) {
 			if(r.matches(craftInv, getWorld())) {
-				cache = r;
-				resultInv.setInventorySlotContents(0, r.getCraftingResult(craftInv));
-				break;
+				list.add(r);
 			}
 		}
+		if(list.size() == 1) {
+			cache = list.get(0);
+			resultInv.setInventorySlotContents(0, cache.getCraftingResult(craftInv));
+			targetType = null;
+		} else if(list.size() > 1) {
+			if(targetType != null) {
+				for(IRecipe recipe:list) {
+					craftInv = new AutoCraftingInventory(null);
+					for(int i=0; i<9;i++) {
+						craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
+					}
+					ItemStack result = recipe.getCraftingResult(craftInv);
+					if(targetType == ItemIdentifier.get(result)) {
+						resultInv.setInventorySlotContents(0, result);
+						cache = recipe;
+						break;
+					}
+				}
+			}
+			if(cache == null) {
+				cache = list.get(0);
+				ItemStack result = cache.getCraftingResult(craftInv);
+				resultInv.setInventorySlotContents(0, result);
+				targetType = ItemIdentifier.get(result);
+			}
+		} else {
+			targetType = null;
+		}
+		if(targetType != oldTargetType && !localGuiWatcher.isEmpty() && this.getWorld() != null && MainProxy.isServer(this.getWorld())) {
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(this.container), localGuiWatcher);
+		}
+	}
+
+	public void cycleRecipe(boolean down) {
+		cacheRecipe();
+		if(targetType == null) return;
+		cache = null;
+		AutoCraftingInventory craftInv = new AutoCraftingInventory(null);
+		for(int i=0; i<9;i++) {
+			craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
+		}
+		List<IRecipe> list = new ArrayList<IRecipe>();
+		for(IRecipe r : CraftingUtil.getRecipeList()) {
+			if(r.matches(craftInv, getWorld())) {
+				list.add(r);
+			}
+		}
+		if(list.size() > 1) {
+			boolean found = false;
+			IRecipe prev = null;
+			for(IRecipe recipe:list) {
+				if(found) {
+					cache = recipe;
+					break;
+				}
+				craftInv = new AutoCraftingInventory(null);
+				for(int i=0; i<9;i++) {
+					craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
+				}
+				if(targetType == ItemIdentifier.get(recipe.getCraftingResult(craftInv))) {
+					if(down) {
+						found = true;
+					} else {
+						if(prev == null) {
+							cache = list.get(list.size() - 1);
+						} else {
+							cache = prev;
+						}
+						break;
+					}
+				}
+				prev = recipe;
+			}
+			if(cache == null) {
+				cache = list.get(0);
+			}
+			craftInv = new AutoCraftingInventory(null);
+			for(int i=0; i<9;i++) {
+				craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
+			}
+			targetType = ItemIdentifier.get(cache.getCraftingResult(craftInv));
+		}
+		if(!localGuiWatcher.isEmpty() && this.getWorld() != null && MainProxy.isServer(this.getWorld())) {
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(this.container), localGuiWatcher);
+		}
+		cacheRecipe();
 	}
 
 	public ItemStack getOutput() {
@@ -381,6 +472,7 @@ outer:
 	@Override
 	public void guiOpenedByPlayer(EntityPlayer player) {
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrderWatchRemovePacket.class).setInteger(-1).setTilePos(this.container), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(this.container), player);
 		localGuiWatcher.add(player);
 		for(Entry<Integer, Pair<ItemIdentifierStack, LinkedLogisticsOrderList>> entry:watchedRequests.entrySet()) {
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererWatchPacket.class).setOrders(entry.getValue().getValue2()).setStack(entry.getValue().getValue1()).setInteger(entry.getKey()).setTilePos(this.container), player);

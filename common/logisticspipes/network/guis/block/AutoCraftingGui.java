@@ -9,6 +9,7 @@ import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class AutoCraftingGui extends CoordinatesGuiProvider {
@@ -18,6 +19,7 @@ public class AutoCraftingGui extends CoordinatesGuiProvider {
 	boolean[] ignore_nbt = new boolean[9];
 	boolean[] use_od = new boolean[9];
 	boolean[] use_category = new boolean[9];
+	ItemIdentifier targetType;
 	
 	public AutoCraftingGui(int id) {
 		super(id);
@@ -35,6 +37,7 @@ public class AutoCraftingGui extends CoordinatesGuiProvider {
 				tile.fuzzyFlags[i].use_category = use_category[i];
 			}
 		}
+		tile.targetType = targetType;
 		return new GuiLogisticsCraftingTable(player, tile);
 	}
 
@@ -42,7 +45,7 @@ public class AutoCraftingGui extends CoordinatesGuiProvider {
 	public DummyContainer getContainer(EntityPlayer player) {
 		LogisticsCraftingTableTileEntity tile = this.getTile(player.getEntityWorld(), LogisticsCraftingTableTileEntity.class);
 		if(tile == null) return null;
-		DummyContainer dummy = new DummyContainer(player.inventory, tile.matrix);
+		DummyContainer dummy = new DummyContainer(player, tile.matrix, tile);
 
 		for(int X=0;X<3;X++) {
 			for(int Y=0;Y<3;Y++) {
@@ -62,6 +65,7 @@ public class AutoCraftingGui extends CoordinatesGuiProvider {
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
 		super.writeData(data);
+		data.writeItemIdentifier(targetType);
 		data.writeBoolean(isFuzzy);
 		if(isFuzzy) {
 			for(int i=0;i<9;i++) {
@@ -76,6 +80,7 @@ public class AutoCraftingGui extends CoordinatesGuiProvider {
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);
+		targetType = data.readItemIdentifier();
 		if(data.readBoolean()) {
 			for(int i=0;i<9;i++) {
 				ignore_dmg[i] = data.readBoolean();
@@ -97,6 +102,7 @@ public class AutoCraftingGui extends CoordinatesGuiProvider {
 				use_category[i] = tile.fuzzyFlags[i].use_category;
 			}
 		}
+		this.targetType = tile.targetType;
 		return this;
 	}
 

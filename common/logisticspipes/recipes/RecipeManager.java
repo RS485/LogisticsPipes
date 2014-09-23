@@ -1,5 +1,6 @@
 package logisticspipes.recipes;
 
+import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.items.ItemModule;
@@ -54,6 +55,25 @@ public class RecipeManager {
 	public static LocalCraftingManager craftingManager = new LocalCraftingManager();
 	
 	public static void loadRecipes(ICraftingParts parts) {
+		if(LPConstants.DEBUG) {
+			craftingManager.addRecipe(new ItemStack(Blocks.stone, 1), CraftingDependency.DistanceRequest, new Object[] {
+				"w",
+				Character.valueOf('w'), Blocks.log
+			});
+			craftingManager.addRecipe(new ItemStack(Blocks.dirt, 1), CraftingDependency.DistanceRequest, new Object[] {
+				"w",
+				Character.valueOf('w'), Blocks.log
+			});
+			craftingManager.addRecipe(new ItemStack(Blocks.dirt, 1, 3), CraftingDependency.DistanceRequest, new Object[] {
+				"w",
+				Character.valueOf('w'), Blocks.log
+			});
+			craftingManager.addRecipe(new ItemStack(Blocks.obsidian, 1), CraftingDependency.DistanceRequest, new Object[] {
+				"w",
+				Character.valueOf('w'), Blocks.log
+			});
+		}
+		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsFluidSupplierPipeMk1, 1), CraftingDependency.DistanceRequest, new Object[] {
 			"lPl",
 			" B ",

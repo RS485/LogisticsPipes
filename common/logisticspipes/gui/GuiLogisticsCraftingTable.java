@@ -3,12 +3,17 @@ package logisticspipes.gui;
 import java.util.Arrays;
 
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.block.CraftingCycleRecipe;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.CraftingRequirement;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
+import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtil;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 
 import org.lwjgl.opengl.GL11;
@@ -20,6 +25,8 @@ public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
 	private int fuzzyPanelSelection	= -1;
 	private int fuzzyPanelHover     = -1;
 	private int fuzzyPanelHoverTime = 0;
+	
+	private GuiButton[] sycleButtons = new GuiButton[2];
 	
 	public GuiLogisticsCraftingTable(EntityPlayer player, LogisticsCraftingTableTileEntity crafter) {
 		super(176, 218, 0, 0);
@@ -42,7 +49,18 @@ public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
 	}
 	
 	@Override
+	public void initGui() {
+		super.initGui();
+		buttonList.clear();
+		(sycleButtons[0] = addButton(new SmallGuiButton(0, guiLeft + 144, guiTop + 25, 15, 10, "/\\"))).visible = false;
+		(sycleButtons[1] = addButton(new SmallGuiButton(1, guiLeft + 144, guiTop + 37, 15, 10, "\\/"))).visible = false;
+	}
+
+	@Override
 	protected void drawGuiContainerBackgroundLayer(float fA, int iA, int jA) {
+		for(int i=0;i<sycleButtons.length;i++) {
+			sycleButtons[i].visible = this._crafter.targetType != null;
+		}
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		for(int x=0;x<3;x++) {
@@ -141,7 +159,13 @@ public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
 		}
 	}
 
-	
+	@Override
+	protected void actionPerformed(GuiButton button) {
+		if(button.id == 0 || button.id == 1) {
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingCycleRecipe.class).setDown(button.id == 1).setTilePos(_crafter));
+		}
+	}
+
 	private boolean isMouseInFuzzyPanel(int mx, int my) {
 		if(fuzzyPanelSelection == -1) return false;
 		int posX = -60;
@@ -155,8 +179,6 @@ public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
 		if(isMouseInFuzzyPanel(mouseX - guiLeft, mouseY - guiTop)) return;
 		super.mouseMovedOrUp(mouseX, mouseY, which);
 	}
-	
-
 	
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int par3) {

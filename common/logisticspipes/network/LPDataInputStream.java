@@ -147,12 +147,18 @@ public class LPDataInputStream extends DataInputStream {
 		return array;
 	}
 	
-	public ItemIdentifierStack readItemIdentifierStack() throws IOException {
+	public ItemIdentifier readItemIdentifier() throws IOException {
+		if(!this.readBoolean()) return null;
 		int itemID = this.readInt();
-		int stacksize = this.readInt();
 		int damage = this.readInt();
 		NBTTagCompound tag = this.readNBTTagCompound();
-		return new ItemIdentifierStack(ItemIdentifier.get(Item.getItemById(itemID), damage, tag), stacksize);
+		return ItemIdentifier.get(Item.getItemById(itemID), damage, tag);
+	}
+	
+	public ItemIdentifierStack readItemIdentifierStack() throws IOException {
+		ItemIdentifier item = this.readItemIdentifier();
+		int stacksize = this.readInt();
+		return new ItemIdentifierStack(item, stacksize);
 	}
 	
 	public <T> List<T> readList(IReadListObject<T> handler) throws IOException {

@@ -26,6 +26,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
@@ -43,6 +44,7 @@ public class DummyContainer extends Container {
 	private long					lastClicked;
 	private long					lastDragnDropLockup;
 	boolean							wasDummyLookup;
+	boolean 						overrideMCAntiSend;
 
 	public DummyContainer(IInventory playerInventory, IInventory dummyInventory) {
 		_playerInventory = playerInventory;
@@ -505,6 +507,7 @@ public class DummyContainer extends Container {
 		if(currentlyEquippedStack == null && isShift == 6) { return currentlyEquippedStack; }
 		
 		if(slot instanceof HandelableSlot) {
+			overrideMCAntiSend = true;
 			if(currentlyEquippedStack == null) {
 				inventoryplayer.setItemStack(((HandelableSlot)slot).getProvidedStack());
 				return null;
@@ -718,5 +721,31 @@ public class DummyContainer extends Container {
 			return;
 		}
 		super.putStackInSlot(par1, par2ItemStack);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void detectAndSendChanges() {
+		for(int i = 0; i < this.inventorySlots.size(); ++i) {
+			ItemStack itemstack = ((Slot)this.inventorySlots.get(i)).getStack();
+			ItemStack itemstack1 = (ItemStack)this.inventoryItemStacks.get(i);
+			
+			if(!ItemStack.areItemStacksEqual(itemstack1, itemstack)) {
+				itemstack1 = itemstack == null ? null : itemstack.copy();
+				this.inventoryItemStacks.set(i, itemstack1);
+				
+				for(int j = 0; j < this.crafters.size(); ++j) {
+					boolean revert = false;
+					if(overrideMCAntiSend && this.crafters.get(j) instanceof EntityPlayerMP && ((EntityPlayerMP)this.crafters.get(j)).isChangingQuantityOnly) {
+						((EntityPlayerMP)this.crafters.get(j)).isChangingQuantityOnly = false;
+						revert = true;
+					}
+					((ICrafting)this.crafters.get(j)).sendSlotContents(this, i, itemstack1);
+					if(revert) {
+						((EntityPlayerMP)this.crafters.get(j)).isChangingQuantityOnly = true;
+					}
+				}
+			}
+		}
+		overrideMCAntiSend = false;
 	}
 }

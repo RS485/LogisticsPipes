@@ -16,6 +16,7 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
+import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.item.Item;
@@ -130,11 +131,20 @@ public class LPDataOutputStream extends DataOutputStream {
 		return byteStream.toByteArray();
 	}
 
+	public void writeItemIdentifier(ItemIdentifier item) throws IOException {
+		if(item == null) {
+			this.writeBoolean(false);
+			return;
+		}
+		this.writeBoolean(true);
+		this.writeInt(Item.getIdFromItem(item.item));
+		this.writeInt(item.itemDamage);
+		this.writeNBTTagCompound(item.tag);
+	}
+
 	public void writeItemIdentifierStack(ItemIdentifierStack stack) throws IOException {
-		this.writeInt(Item.getIdFromItem(stack.getItem().item));
+		this.writeItemIdentifier(stack.getItem());
 		this.writeInt(stack.getStackSize());
-		this.writeInt(stack.getItem().itemDamage);
-		this.writeNBTTagCompound(stack.getItem().tag);
 	}
 	
 	public <T> void writeList(List<T> list, IWriteListObject<T> handler) throws IOException {

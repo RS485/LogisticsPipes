@@ -1,8 +1,12 @@
 package logisticspipes.blocks.crafting;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import logisticspipes.Configs;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.blocks.LogisticsSolidBlock;
+import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.IGuiTileEntity;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
@@ -10,10 +14,12 @@ import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.guis.block.AutoCraftingGui;
 import logisticspipes.network.packets.block.CraftingTableFuzzyFlagsModifyPacket;
+import logisticspipes.network.packets.block.CraftingSetType;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.CraftingRequirement;
 import logisticspipes.utils.CraftingUtil;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
+import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.PlayerIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
@@ -29,16 +35,20 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.Constants;
 
-public class LogisticsCraftingTableTileEntity extends TileEntity implements IGuiTileEntity, ISimpleInventoryEventHandler, IInventory {
+public class LogisticsCraftingTableTileEntity extends TileEntity implements IGuiTileEntity, ISimpleInventoryEventHandler, IInventory, IGuiOpenControler {
 	
 	public ItemIdentifierInventory inv = new ItemIdentifierInventory(18, "Crafting Resources", 64);
 	public ItemIdentifierInventory matrix = new ItemIdentifierInventory(9, "Crafting Matrix", 1);
 	public ItemIdentifierInventory resultInv = new ItemIdentifierInventory(1, "Crafting Result", 1);
+	
+	public ItemIdentifier targetType = null;
 	//just use CraftingRequirement to store flags; field "stack" is ignored
 	public CraftingRequirement[] fuzzyFlags = new CraftingRequirement[9];
 	private IRecipe cache;
 	private EntityPlayer fake;
 	private PlayerIdentifier placedBy = null;
+	
+	private PlayerCollectionList guiWatcher = new PlayerCollectionList();
 	
 	public LogisticsCraftingTableTileEntity() {
 		matrix.addListener(this);
@@ -47,19 +57,105 @@ public class LogisticsCraftingTableTileEntity extends TileEntity implements IGui
 	}
 	
 	public void cacheRecipe() {
+		ItemIdentifier oldTargetType = targetType;
 		cache = null;
 		resultInv.clearInventorySlotContents(0);
 		AutoCraftingInventory craftInv = new AutoCraftingInventory(placedBy);
 		for(int i=0; i<9;i++) {
 			craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
 		}
+		List<IRecipe> list = new ArrayList<IRecipe>();
 		for(IRecipe r : CraftingUtil.getRecipeList()) {
 			if(r.matches(craftInv, getWorldObj())) {
-				cache = r;
-				resultInv.setInventorySlotContents(0, r.getCraftingResult(craftInv));
-				break;
+				list.add(r);
 			}
 		}
+		if(list.size() == 1) {
+			cache = list.get(0);
+			resultInv.setInventorySlotContents(0, cache.getCraftingResult(craftInv));
+			targetType = null;
+		} else if(list.size() > 1) {
+			if(targetType != null) {
+				for(IRecipe recipe:list) {
+					craftInv = new AutoCraftingInventory(placedBy);
+					for(int i=0; i<9;i++) {
+						craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
+					}
+					ItemStack result = recipe.getCraftingResult(craftInv);
+					if(targetType == ItemIdentifier.get(result)) {
+						resultInv.setInventorySlotContents(0, result);
+						cache = recipe;
+						break;
+					}
+				}
+			}
+			if(cache == null) {
+				cache = list.get(0);
+				ItemStack result = cache.getCraftingResult(craftInv);
+				resultInv.setInventorySlotContents(0, result);
+				targetType = ItemIdentifier.get(result);
+			}
+		} else {
+			targetType = null;
+		}
+		if(targetType != oldTargetType && !guiWatcher.isEmpty() && this.getWorldObj() != null && MainProxy.isServer(this.getWorldObj())) {
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(this), guiWatcher);
+		}
+	}
+
+	public void cycleRecipe(boolean down) {
+		cacheRecipe();
+		if(targetType == null) return;
+		cache = null;
+		AutoCraftingInventory craftInv = new AutoCraftingInventory(placedBy);
+		for(int i=0; i<9;i++) {
+			craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
+		}
+		List<IRecipe> list = new ArrayList<IRecipe>();
+		for(IRecipe r : CraftingUtil.getRecipeList()) {
+			if(r.matches(craftInv, getWorldObj())) {
+				list.add(r);
+			}
+		}
+		if(list.size() > 1) {
+			boolean found = false;
+			IRecipe prev = null;
+			for(IRecipe recipe:list) {
+				if(found) {
+					cache = recipe;
+					break;
+				}
+				craftInv = new AutoCraftingInventory(placedBy);
+				for(int i=0; i<9;i++) {
+					craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
+				}
+				if(targetType == ItemIdentifier.get(recipe.getCraftingResult(craftInv))) {
+					if(down) {
+						found = true;
+					} else {
+						if(prev == null) {
+							cache = list.get(list.size() - 1);
+						} else {
+							cache = prev;
+						}
+						break;
+					}
+				}
+				prev = recipe;
+			}
+			if(cache == null) {
+				cache = list.get(0);
+			}
+			craftInv = new AutoCraftingInventory(placedBy);
+			for(int i=0; i<9;i++) {
+				craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
+			}
+			targetType = ItemIdentifier.get(cache.getCraftingResult(craftInv));
+		}
+		if(!guiWatcher.isEmpty() && this.getWorldObj() != null && MainProxy.isServer(this.getWorldObj())) {
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(this), guiWatcher);
+		}
+		cacheRecipe();
 	}
 	
 	private boolean testFuzzy(ItemIdentifier item, ItemIdentifierStack item2, int slot) {
@@ -182,6 +278,9 @@ outer:
 				fuzzyFlags[i].use_category = comp.getBoolean("use_category");
 			}
 		}
+		if(par1nbtTagCompound.hasKey("targetType")) {
+			targetType = ItemIdentifier.get(ItemStack.loadItemStackFromNBT(par1nbtTagCompound.getCompoundTag("targetType")));
+		}
 		cacheRecipe();
 	}
 
@@ -203,6 +302,13 @@ outer:
 			lst.appendTag(comp);
 		}
 		par1nbtTagCompound.setTag("fuzzyFlags", lst);
+		if(targetType != null) {
+			NBTTagCompound type = new NBTTagCompound();
+			targetType.makeNormalStack(1).writeToNBT(type);
+			par1nbtTagCompound.setTag("targetType", type);
+		} else {
+			par1nbtTagCompound.removeTag("targetType");
+		}
 	}
 
 	@Override
@@ -318,5 +424,15 @@ outer:
 	@Override
 	public CoordinatesGuiProvider getGuiProvider() {
 		return NewGuiHandler.getGui(AutoCraftingGui.class).setCraftingTable(this);
+	}
+
+	@Override
+	public void guiOpenedByPlayer(EntityPlayer player) {
+		guiWatcher.add(player);
+	}
+
+	@Override
+	public void guiClosedByPlayer(EntityPlayer player) {
+		guiWatcher.remove(player);
 	}
 }

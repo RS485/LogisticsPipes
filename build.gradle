@@ -27,7 +27,7 @@ ant.importBuild 'build-ant.xml'
 
 apply plugin: 'forge'
 
-version = "0.8.2"
+version = "0.9.0"
 def buildby = 'local'
 
 def ENV = System.getenv()

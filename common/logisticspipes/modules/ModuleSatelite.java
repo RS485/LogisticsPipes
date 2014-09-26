@@ -50,14 +50,7 @@ public class ModuleSatelite extends LogisticsModule{
 		return this.pipe.getZ();
 	}
 	
-	private SinkReply _sinkReply;
-
-	@Override
-	public void registerPosition(ModulePositionType slot, int positionInt) {
-		super.registerPosition(slot, positionInt);
-		_sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0, new ChassiTargetInformation(this.getPositionInt()));
-	}
-	
+	private SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0, null);
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;

@@ -34,6 +34,7 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 	public List<TileEntity> getConnectedTesseracts(TileEntity tile) {
 		List<IEnderItemHandler> interfaces = RegistryEnderAttuned.getLinkedItemOutputs((TileTesseract)tile);
 	    List<TileEntity> validOutputs = new LinkedList<TileEntity>();
+	    if(interfaces == null) return validOutputs;
 	    for (IEnderItemHandler object: interfaces) {
 	    	if(object.canReceiveItems() && object.canSendItems() && object instanceof TileEntity) {
 	    		validOutputs.add((TileEntity) object);

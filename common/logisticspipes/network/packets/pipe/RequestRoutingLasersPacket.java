@@ -113,6 +113,7 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 					}
 				}
 			}
+			if(result == null) continue;
 			if(!sort.containsKey(resultPipe)) {
 				sort.put(resultPipe, new ArrayList<ExitRoute>());
 			}

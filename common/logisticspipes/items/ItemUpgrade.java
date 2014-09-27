@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.lwjgl.input.Keyboard;
 
-import scala.actors.threadpool.Arrays;
+import java.util.Arrays;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.LPConstants;

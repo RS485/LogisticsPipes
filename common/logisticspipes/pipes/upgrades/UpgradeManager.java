@@ -36,7 +36,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	private SimpleStackInventory sneakyInv = new SimpleStackInventory(9, "SneakyUpgradeInventory", 1);
 	@Getter
 	private SimpleStackInventory secInv = new SimpleStackInventory(1, "SecurityInventory", 16);
-	private IPipeUpgrade[] upgrades = new IPipeUpgrade[8];
+	private IPipeUpgrade[] upgrades = new IPipeUpgrade[9];
 	private IPipeUpgrade[] sneakyUpgrades = new IPipeUpgrade[9];
 	private CoreRoutedPipe pipe;
 	private int securityDelay = 0;
@@ -114,7 +114,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	@Override
 	public void InventoryChanged(IInventory inventory) {
 		boolean needUpdate = false;
-		for(int i=0;i<inv.getSizeInventory() - 1;i++) {
+		for(int i=0;i<inv.getSizeInventory();i++) {
 			ItemStack item = inv.getStackInSlot(i);
 			if(item != null) {
 				needUpdate |= updateModule(i, upgrades, inv);
@@ -334,10 +334,10 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 			if(upgrade.isAllowed(pipe)) {
 				if(isCombinedSneakyUpgrade) {
 					if(upgrade instanceof SneakyUpgrade) {
-						if(insertIntInv(entityplayer, sneakyInv, 0)) return true;
+						if(insertIntInv(entityplayer, sneakyInv)) return true;
 					}
 				}
-				if(insertIntInv(entityplayer, inv, 1)) return true;
+				if(insertIntInv(entityplayer, inv)) return true;
 			}
 		}
 		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsItemCard && entityplayer.getCurrentEquippedItem().getItemDamage() == LogisticsItemCard.SEC_CARD) {
@@ -352,8 +352,8 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		return false;
 	}
 	
-	private boolean insertIntInv(EntityPlayer entityplayer, SimpleStackInventory inv, int sub) {
-		for(int i=0;i<inv.getSizeInventory() - sub;i++) {
+	private boolean insertIntInv(EntityPlayer entityplayer, SimpleStackInventory inv) {
+		for(int i=0;i<inv.getSizeInventory();i++) {
 			ItemStack item = inv.getStackInSlot(i);
 			if(item == null) {
 				inv.setInventorySlotContents(i, entityplayer.getCurrentEquippedItem().splitStack(1));

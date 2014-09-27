@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import logisticspipes.Configs;
+import logisticspipes.LPConstants;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -69,7 +70,9 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 				handleRouteInDirection(tile, dir, routers.get(dir), lasers, EnumSet.allOf(PipeRoutingConnectionType.class), new Log(){
 					@Override
 					void log(String log) {
-						System.out.println(dir.name() + ": " + log);
+						if(LPConstants.DEBUG) {
+							System.out.println(dir.name() + ": " + log);
+						}
 					}
 				});
 			}
@@ -79,7 +82,9 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 	}
 
 	private void handleRouteInDirection(final LogisticsTileGenericPipe pipe, ForgeDirection dir, ArrayList<ExitRoute> connectedRouters, final List<LaserData> lasers, EnumSet<PipeRoutingConnectionType> connectionType, final Log log) {
-		log.log("Size: " + connectedRouters.size());
+		if(LPConstants.DEBUG) {
+			log.log("Size: " + connectedRouters.size());
+		}
 		lasers.add(new LaserData(pipe.xCoord, pipe.yCoord, pipe.zCoord, dir, connectionType).setStartPipe(firstPipe));
 		firstPipe = false;
 		HashMap<CoreRoutedPipe, ExitRoute> map = PathFinder.paintAndgetConnectedRoutingPipes(pipe, dir, Configs.LOGISTICS_DETECTION_COUNT, Configs.LOGISTICS_DETECTION_LENGTH, new IPaintPath() {
@@ -137,7 +142,9 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 				handleRouteInDirection(connectedPipe.getKey().container, exitDir, routers.get(exitDir), lasers, map.get(connectedPipe.getKey()).connectionDetails, new Log(){
 					@Override
 					void log(String logString) {
-						log.log(exitDir.name() + ": " + logString);
+						if(LPConstants.DEBUG) {
+							log.log(exitDir.name() + ": " + logString);
+						}
 					}
 				});
 

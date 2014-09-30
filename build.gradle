@@ -42,7 +42,7 @@ group= "rs485.logisticspipes" // http://maven.apache.org/guides/mini/guide-namin
 archivesBaseName = "logisticspipes"
 
 minecraft {
-    version = "1.7.10-10.13.0.1197"
+    version = "1.7.10-10.13.1.1217"
     runDir = "run/assets"
     replace '%VERSION%', project.version
     replace '%MCVERSION%', "1.7.10"

@@ -46,7 +46,7 @@ public class ClassPipeTransportItemsHandler {
 				iter.remove();
 			}
 			if(m.name.equals("passToNextPipe")) {
-				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+				MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
 					@Override
 					public void visitCode() {
 						super.visitCode();
@@ -75,7 +75,7 @@ public class ClassPipeTransportItemsHandler {
 				node.methods.set(node.methods.indexOf(m), mv);
 			}
 			if(m.name.equals("canReceivePipeObjects")) {
-				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+				MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
 					@Override
 					public void visitCode() {
 						super.visitCode();

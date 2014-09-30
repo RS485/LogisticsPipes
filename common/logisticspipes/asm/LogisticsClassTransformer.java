@@ -231,7 +231,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 							if(loaded) {
 								final String oldName = m.name;
 								m.name = newName;
-								MethodNode newM = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+								MethodNode newM = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
 									@Override
 									public void visitMethodInsn(int opcode, String owner, String name, String desc) {
 										if(name.equals(oldName) && owner.equals(node.superName)) {
@@ -293,7 +293,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 		reader.accept(node, 0);
 		for(MethodNode m:node.methods) {
 			if(m.name.equals("getCompleteReport") || m.name.equals("func_71502_e")) {
-				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+				MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
 					private STATE state = STATE.SEARCHING;
 					
 					@Override
@@ -333,7 +333,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 		reader.accept(node, 0);
 		for(MethodNode m:node.methods) {
 			if(m.name.equals("wrapLuaObject") && m.desc.equals("(Ldan200/computercraft/api/lua/ILuaObject;)Lorg/luaj/vm2/LuaTable;")) {
-				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+				MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
 					@Override
 					public void visitInsn(int opcode) {
 						if(opcode == Opcodes.ARETURN) {
@@ -364,7 +364,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 				node.methods.set(node.methods.indexOf(m), mv);
 			}
 			if(m.name.equals("toObject") && m.desc.equals("(Lorg/luaj/vm2/LuaValue;)Ljava/lang/Object;")) {
-				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+				MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
 					boolean added = false;
 					@Override
 					public void visitLineNumber(int line, Label start) {

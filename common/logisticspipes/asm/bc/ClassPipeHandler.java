@@ -26,7 +26,7 @@ public class ClassPipeHandler {
 		
 		for(MethodNode m:node.methods) {
 			if(m.name.equals("handlePipeEvent")) {
-				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+				MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
 					@Override
 					public void visitTryCatchBlock(Label start, Label end, Label handler, String type) {
 						super.visitTryCatchBlock(start, end, handler, type);
@@ -42,7 +42,7 @@ public class ClassPipeHandler {
 				node.methods.set(node.methods.indexOf(m), mv);
 			}
 			if(m.name.equals("isWireConnectedTo")) {
-				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+				MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
 					@Override
 					public void visitCode() {
 						super.visitCode();
@@ -78,7 +78,7 @@ public class ClassPipeHandler {
 				m.instructions.insert(current, toAdd);
 			}
 			if(m.name.equals("readNearbyPipesSignal")) {
-				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+				MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
 					boolean handled = false;
 					@Override
 					public void visitInsn(int opcode) {

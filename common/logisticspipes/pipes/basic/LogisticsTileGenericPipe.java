@@ -506,6 +506,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 
 	@Override
 	public boolean canConnect(TileEntity to, ForgeDirection direction, boolean flag) {
+		if(pipe == null) return false;
 		return pipe.canPipeConnect(to, direction, flag);
 	}
 

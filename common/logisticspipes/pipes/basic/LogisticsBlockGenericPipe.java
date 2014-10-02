@@ -965,7 +965,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			return true;
 		}
 
-		boolean placed = world.setBlock(i, j, k, block, meta, 3);
+		boolean placed = world.setBlock(i, j, k, block, meta, 2);
 
 		if (placed) {
 			TileEntity tile = world.getTileEntity(i, j, k);
@@ -974,6 +974,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				tilePipe.initialize(pipe);
 				tilePipe.sendUpdateToClient();
 			}
+			world.notifyBlockChange(i, j, k, block);
 		}
 
 		return placed;

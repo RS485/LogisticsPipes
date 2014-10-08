@@ -356,10 +356,12 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	}
 	
 	private void updateContentListener() {
-		Set<ItemIdentifierStack> newList = getExpectedItems();
-		if(!newList.equals(oldList)) {
-			oldList=newList;
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(OrdererManagerContent.class).setIdentSet(newList).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+		if(!localModeWatchers.isEmpty()) {
+			Set<ItemIdentifierStack> newList = getExpectedItems();
+			if(!newList.equals(oldList)) {
+				oldList=newList;
+				MainProxy.sendToPlayerList(PacketHandler.getPacket(OrdererManagerContent.class).setIdentSet(newList).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+			}
 		}
 	}
 

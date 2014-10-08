@@ -1,8 +1,12 @@
 package logisticspipes.pipes;
 
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
@@ -40,7 +44,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
-import logisticspipes.utils.tuples.Quartet;
+import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -54,7 +58,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	
 	private boolean init = false;
 	//list of Itemdentifier, amount, destinationsimpleid, transportmode
-	private LinkedList<Quartet<ItemIdentifier,Integer,Integer,TransportMode>> destination = new LinkedList<Quartet<ItemIdentifier,Integer,Integer,TransportMode>>();
+	private HashMap<ItemIdentifier,List<Triplet<Integer,Integer,TransportMode>>> itemsOnRoute = new HashMap<ItemIdentifier,List<Triplet<Integer,Integer,TransportMode>>>();
 	public ItemIdentifierInventory inv = new ItemIdentifierInventory(1, "Freq. card", 1);
 	public int resistance;
 	public Set<ItemIdentifierStack> oldList = new TreeSet<ItemIdentifierStack>();
@@ -101,22 +105,25 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 				CRP.refreshRender(true);
 			}
 		}
-		if(destination.size() > 0) {
+		if(itemsOnRoute.size() > 0) {
 			checkConnectedInvs();
 		}
 	}
 
 	private void checkConnectedInvs() {
-		WorldUtil wUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
-		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
-			if(tile.tile instanceof IInventory) {
-				IInventory inv = InventoryHelper.getInventory((IInventory) tile.tile);
-				if(inv instanceof net.minecraft.inventory.ISidedInventory) {
-					inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory)inv, tile.orientation.getOpposite(),false);
-				}
-				if(checkOneConnectedInv(inv,tile.orientation)) {
-					updateContentListener();
-					break;
+		if(!itemsOnRoute.isEmpty()) { // don't check the inventory if you don't want anything
+	
+			WorldUtil wUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
+			for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
+				if(tile.tile instanceof IInventory) {
+					IInventory inv = InventoryHelper.getInventory((IInventory) tile.tile);
+					if(inv instanceof net.minecraft.inventory.ISidedInventory) {
+						inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory)inv, tile.orientation.getOpposite(),false);
+					}
+					if(checkOneConnectedInv(inv,tile.orientation)) {
+						updateContentListener();
+						break;
+					}
 				}
 			}
 		}
@@ -124,22 +131,35 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	
 	private boolean checkOneConnectedInv(IInventory inv, ForgeDirection dir) {
 		boolean contentchanged = false;
-		for(int i=0; i<inv.getSizeInventory();i++) {
-			ItemStack stack = inv.getStackInSlot(i);
-			if(stack != null) {
-				ItemIdentifier ident = ItemIdentifier.get(stack);
-				for(Quartet<ItemIdentifier,Integer,Integer,TransportMode> pair:destination) {
-					if(pair.getValue1().equals(ident)) {
-						int tosend = Math.min(pair.getValue2(), stack.stackSize);
-						if(!useEnergy(6)) break;
-						sendStack(inv.decrStackSize(i, tosend),pair.getValue3(),dir, pair.getValue4());
-						if(tosend < pair.getValue2()) {
-							pair.setValue2(pair.getValue2() - tosend);
-						} else {
-							destination.remove(pair);
+		if(!itemsOnRoute.isEmpty()) { // don't check the inventory if you don't want anything
+			for(int i=0; i<inv.getSizeInventory();i++) {
+				ItemStack stack = inv.getStackInSlot(i);
+				if(stack != null) {
+					ItemIdentifier ident = ItemIdentifier.get(stack);
+					List<Triplet<Integer, Integer, TransportMode>> needs = itemsOnRoute.get(ident);
+					if(needs!=null) {
+						for (Iterator<Triplet<Integer, Integer, TransportMode>> iterator = needs.iterator(); iterator.hasNext();) {
+							Triplet<Integer, Integer, TransportMode> need = iterator.next();
+							int tosend = Math.min(need.getValue1(), stack.stackSize);
+							if(!useEnergy(6)) break;
+							sendStack(inv.decrStackSize(i, tosend),need.getValue2(),dir, need.getValue3());
+							if(tosend < need.getValue1()) {
+								need.setValue1(need.getValue1() - tosend); // need partially satisfied from this stack
+								break; // one stack per tick limit?
+							} else {
+								iterator.remove(); // we sent part of a stack, lets see if anyone where needs this.
+								if(needs.isEmpty()) {
+									itemsOnRoute.remove(ident);
+								}
+								stack = inv.getStackInSlot(i); // update the stack
+								if(!ItemIdentifier.get(stack).equals(ident)) { // we have an unstable inventory, get(i) can change after a decrStackSize() call
+									break;
+								}
+								
+							}
+							contentchanged = true;
 						}
-						contentchanged = true;
-						break;
+						break;				
 					}
 				}
 			}
@@ -190,16 +210,17 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 
 	public Set<ItemIdentifierStack> getExpectedItems() {
 		// got to be a TreeMap, because a TreeSet doesn't have the ability to retrieve the key.
-		TreeMap<ItemIdentifierStack,?> list = new TreeMap<ItemIdentifierStack,Integer>();
-		for(Quartet<ItemIdentifier,Integer,Integer,TransportMode> pair:destination) {
-			ItemIdentifierStack currentStack = new ItemIdentifierStack(pair.getValue1(), pair.getValue2());
-			Entry<ItemIdentifierStack,?> entry = list.ceilingEntry(currentStack);
-			if(entry!=null && entry.getKey().getItem().equals(currentStack.getItem())){
-				entry.getKey().setStackSize(entry.getKey().getStackSize() + currentStack.getStackSize());
-			} else 
-				list.put(currentStack,null);
+		Set<ItemIdentifierStack> list = new TreeSet<ItemIdentifierStack>();
+		for(Entry<ItemIdentifier, List<Triplet<Integer, Integer, TransportMode>>> entry:itemsOnRoute.entrySet()) {
+			if(entry.getValue().isEmpty())
+				continue;
+			ItemIdentifierStack currentStack = new ItemIdentifierStack(entry.getKey(),0);
+			for(Triplet<Integer, Integer, TransportMode> e:entry.getValue()) {
+				currentStack.setStackSize(currentStack.getStackSize()+e.getValue1());
+			}
+			list.add(currentStack);
 		}
-		return list.keySet();
+		return list;
 	}
 	
 	@Override
@@ -307,7 +328,12 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	@Override
 	public void addItem(ItemIdentifier item, int amount, int destinationId, TransportMode mode) {
 		if(item != null && destinationId >= 0) {
-			destination.addLast(new Quartet<ItemIdentifier,Integer,Integer,TransportMode>(item, amount, destinationId, mode));
+			List<Triplet<Integer, Integer, TransportMode>> entry = itemsOnRoute.get(item);
+			if(entry == null) {
+				entry = new LinkedList<Triplet<Integer, Integer, TransportMode>>();
+				itemsOnRoute.put(item,entry);
+			}
+			entry.add(new Triplet<Integer,Integer,TransportMode>(amount, destinationId, mode));
 			updateContentListener();
 		}
 	}

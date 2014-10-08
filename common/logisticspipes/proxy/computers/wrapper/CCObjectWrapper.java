@@ -11,6 +11,7 @@ import logisticspipes.proxy.computers.interfaces.CCQueued;
 import logisticspipes.proxy.computers.interfaces.CCSecurtiyCheck;
 import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeDefinition;
+import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.proxy.computers.objects.CCFilterInventory;
 import logisticspipes.proxy.computers.objects.CCItemIdentifier;
 import logisticspipes.proxy.computers.objects.CCItemIdentifierInventory;
@@ -30,7 +31,7 @@ public class CCObjectWrapper {
 	
 	private static Map<Class<?>, CCWrapperInformation> ccMapings = new HashMap<Class<?>, CCWrapperInformation>();
 	private static Map<Object, Object> wrappedObjects = new WeakHashMap<Object, Object>();
-	private static Map<Class<?>, ILPCCTypeDefinition> specialMappings = new HashMap<Class<?>, ILPCCTypeDefinition>();
+	private static Map<Class<? extends ILPCCTypeHolder>, ILPCCTypeDefinition> specialMappings = new HashMap<Class<? extends ILPCCTypeHolder>, ILPCCTypeDefinition>();
 	static {
 		specialMappings.put(ItemIdentifier.class, new CCItemIdentifier());
 		specialMappings.put(ItemIdentifierStack.class, new CCItemIdentifierStack());
@@ -54,6 +55,7 @@ public class CCObjectWrapper {
 	
 	public static Object checkForAnnotations(final Object input, final ICommandWrapper wrapper) {
 		if(input == null) return null;
+		if(input instanceof ILPCCTypeHolder && ((ILPCCTypeHolder)input).getCCType() != null) return ((ILPCCTypeHolder)input).getCCType();
 		Object wrapped = input;
 		if(specialMappings.containsKey(input.getClass())) {
 			wrapped = specialMappings.get(input.getClass()).getTypeFor(input);
@@ -68,7 +70,11 @@ public class CCObjectWrapper {
 		if(!info.isCCType) {
 			return wrapped;	
 		}
-		if(wrappedObjects.containsKey(input)) {
+		if(input instanceof ILPCCTypeHolder) {
+			Object finalWrapped = wrapper.getWrappedObject(info, wrapped);
+			((ILPCCTypeHolder)input).setCCType(finalWrapped);
+			return finalWrapped;
+		} else if(wrappedObjects.containsKey(input)) {
 			return wrappedObjects.get(input);
 		} else {
 			Object finalWrapped = wrapper.getWrappedObject(info, wrapped);

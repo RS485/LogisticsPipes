@@ -3,12 +3,16 @@ package logisticspipes.proxy.computers.objects;
 import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCType;
+import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import lombok.Getter;
 
 @CCType(name="CCItemSinkRequest")
-public class CCSinkResponder {
+public class CCSinkResponder implements ILPCCTypeHolder {
+	
+	private Object ccType;
+	
 	@Getter
 	private final ItemIdentifierStack stack;
 	@Getter
@@ -50,5 +54,15 @@ public class CCSinkResponder {
 		this.canSink = ((Double)(amount > 0 ? amount : 0D)).intValue();
 		this.priority = priority.intValue();
 		done = true;
+	}
+
+	@Override
+	public void setCCType(Object type) {
+		ccType = type;
+	}
+
+	@Override
+	public Object getCCType() {
+		return ccType;
 	}
 }

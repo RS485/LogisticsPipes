@@ -18,6 +18,7 @@ import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.ISaveState;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import net.minecraft.entity.item.EntityItem;
@@ -28,8 +29,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 
-public class ItemIdentifierInventory implements IInventory, ISaveState {
+public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTypeHolder {
 
+	private Object ccType;
 	private ItemIdentifierStack[] _contents;
 	private final String _name;
 	private final int _stackLimit;
@@ -456,5 +458,15 @@ public class ItemIdentifierInventory implements IInventory, ISaveState {
 			return FluidIdentifier.get(stack.getItem()) != null;
 		}
 		return true;
+	}
+
+	@Override
+	public void setCCType(Object type) {
+		ccType = type;
+	}
+
+	@Override
+	public Object getCCType() {
+		return ccType;
 	}
 }

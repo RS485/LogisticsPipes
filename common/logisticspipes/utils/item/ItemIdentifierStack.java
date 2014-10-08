@@ -12,12 +12,15 @@ import java.util.LinkedList;
 
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
+import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack>{
+public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack>, ILPCCTypeHolder {
+	
+	private Object ccType;
 	private final ItemIdentifier _item;
 	private int stackSize;
 	
@@ -137,5 +140,15 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 		if(c==0)
 			return getStackSize()-o.getStackSize();
 		return c;
+	}
+
+	@Override
+	public void setCCType(Object type) {
+		ccType = type;
+	}
+
+	@Override
+	public Object getCCType() {
+		return ccType;
 	}
 }

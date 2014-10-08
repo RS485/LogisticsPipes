@@ -10,6 +10,7 @@ import logisticspipes.interfaces.IClientState;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePart;
+import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.renderer.IIconProvider;
 import logisticspipes.transport.PipeTransportLogistics;
 import net.minecraft.entity.Entity;
@@ -25,8 +26,10 @@ import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class CoreUnroutedPipe implements IClientState, ILPPipe {
+public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTypeHolder {
 
+	private Object ccType;
+	
 	public LogisticsTileGenericPipe container;
 	public final PipeTransportLogistics transport;
 	public final Item item;
@@ -336,5 +339,15 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe {
 	@Override
 	public boolean isRoutedPipe() {
 		return false;
+	}
+
+	@Override
+	public void setCCType(Object type) {
+		ccType = type;
+	}
+
+	@Override
+	public Object getCCType() {
+		return ccType;
 	}
 }

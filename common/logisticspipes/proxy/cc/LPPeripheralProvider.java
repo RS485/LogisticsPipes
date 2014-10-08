@@ -18,6 +18,7 @@ public class LPPeripheralProvider implements IPeripheralProvider {
 			}
 		}
 		if(tile instanceof LogisticsTileGenericPipe) {
+			if(((LogisticsTileGenericPipe)tile).pipe == null) return null;
 			return new LPPeripheralTilePipeWrapper((LogisticsTileGenericPipe)tile, ForgeDirection.VALID_DIRECTIONS[side]);
 		}
 		return null;

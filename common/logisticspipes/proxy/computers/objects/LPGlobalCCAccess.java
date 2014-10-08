@@ -4,9 +4,12 @@ import java.util.Map;
 
 import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCType;
+import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 
 @CCType(name="LP Global Access")
-public class LPGlobalCCAccess {
+public class LPGlobalCCAccess implements ILPCCTypeHolder {
+
+	private Object ccType;
 	
 	@CCCommand(description="Tryes to give more information about the givven object")
 	public String identify(Object object) {
@@ -35,5 +38,15 @@ public class LPGlobalCCAccess {
 	@CCCommand(description="Creates a new ItemIdentifier Builder")
 	public CCItemIdentifierBuilder getItemIdentifierBuilder() {
 		return new CCItemIdentifierBuilder();
+	}
+
+	@Override
+	public void setCCType(Object type) {
+		ccType = type;
+	}
+
+	@Override
+	public Object getCCType() {
+		return ccType;
 	}
 }

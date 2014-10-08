@@ -4,11 +4,15 @@ import java.util.List;
 
 import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCType;
+import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.item.Item;
 
 @CCType(name="ItemIdentifierBuilder")
-public class CCItemIdentifierBuilder {
+public class CCItemIdentifierBuilder implements ILPCCTypeHolder {
+
+	private Object ccType;
+	
 	private int itemID = 0;
 	private int itemData = 0;
 	
@@ -44,5 +48,15 @@ public class CCItemIdentifierBuilder {
 		Item item = Item.getItemById(itemID);
 		if(item == null) throw new UnsupportedOperationException("Not a valid ItemIdentifier");
 		return ItemIdentifier.getMatchingNBTIdentifier(item, itemData);
+	}
+
+	@Override
+	public void setCCType(Object type) {
+		ccType = type;
+	}
+
+	@Override
+	public Object getCCType() {
+		return ccType;
 	}
 }

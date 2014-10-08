@@ -24,6 +24,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.utils.FinalNBTTagCompound;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -51,7 +52,7 @@ import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
  * 
  *  A ItemIdentifier is immutable, singleton and most importantly UNIQUE!
  */
-public final class ItemIdentifier implements Comparable<ItemIdentifier> {
+public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTypeHolder {
 	//a key to look up a ItemIdentifier by Item:damage:tag
 	private static class ItemKey {
 		public final Item item;
@@ -141,6 +142,8 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		this.tag = tag;
 		this.uniqueID = uniqueID;
 	}
+	
+	private Object ccType;
 	
 	public final Item item;
 	public final int itemDamage;
@@ -606,5 +609,15 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		} else {
 			sb.append(nbt.getClass().getName() + "(?)");
 		}
+	}
+
+	@Override
+	public void setCCType(Object type) {
+		ccType = type;
+	}
+
+	@Override
+	public Object getCCType() {
+		return ccType;
 	}
 }

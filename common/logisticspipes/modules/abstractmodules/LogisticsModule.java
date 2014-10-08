@@ -10,6 +10,7 @@ import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.ISaveState;
 import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCType;
+import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.proxy.computers.objects.CCSinkResponder;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -21,8 +22,10 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @CCType(name="LogisticsModule")
-public abstract class LogisticsModule implements ISaveState {
+public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 
+	private Object ccType;
+	
 	protected IWorldProvider _world;
 	protected IPipeServiceProvider _service;
 
@@ -157,5 +160,15 @@ public abstract class LogisticsModule implements ISaveState {
 	 * typically used when the neighboring block changes
 	 */
 	public void clearCache() {
+	}
+
+	@Override
+	public void setCCType(Object type) {
+		ccType = type;
+	}
+
+	@Override
+	public Object getCCType() {
+		return ccType;
 	}
 }

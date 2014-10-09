@@ -325,23 +325,17 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		return resistance;
 	}
 
-	@Override
-	public void addItem(ItemIdentifier item, int amount, int destinationId, TransportMode mode) {
-		ItemRoutingInformation info =new ItemRoutingInformation();
-		info.setItem(new ItemIdentifierStack(item,amount));
-		info.destinationint=destinationId;
-		info._transportMode=mode;
-		addItem(item,amount,info);
-	}
 
-	public void addItem(ItemIdentifier item, int amount, ItemRoutingInformation info) 
+	@Override
+	public void addItem(ItemRoutingInformation info) 
 		
 	{
-		if(item != null && info.destinationint >= 0) {
-			List<ItemRoutingInformation> entry = itemsOnRoute.get(item);
+		if(info.getItem() != null && info.getItem().getStackSize() >0 && info.destinationint >= 0) {
+			ItemIdentifier insertedType = info.getItem().getItem();
+			List<ItemRoutingInformation> entry = itemsOnRoute.get(insertedType);
 			if(entry == null) {
 				entry = new LinkedList<ItemRoutingInformation>(); // linked list as this is almost always very small, but experiences random removal
-				itemsOnRoute.put(item,entry);
+				itemsOnRoute.put(insertedType,entry);
 			}
 			entry.add(info);
 			updateContentListener();
@@ -363,13 +357,15 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		return false;
 	}
 	
-	public void handleItemEnterInv(ItemIdentifierStack item, ItemRoutingInformation info, TileEntity tile) {
+	public void handleItemEnterInv(ItemRoutingInformation info, TileEntity tile) {
+		if(info.getItem().getStackSize()==0)
+			return; // system.throw("why you try to insert empty stack?");
 		if(isConnectedInv(tile)) {
 			if(hasRemoteConnection()) {
 				CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
 				if(CRP instanceof IDirectRoutingConnection) {
 					IDirectRoutingConnection pipe = (IDirectRoutingConnection) CRP;
-					pipe.addItem(item.getItem(), item.getStackSize(), info);
+					pipe.addItem(info);
 					spawnParticle(Particles.OrangeParticle, 4);
 				}
 			}

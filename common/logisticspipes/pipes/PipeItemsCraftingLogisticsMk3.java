@@ -52,6 +52,9 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 		return (ModuleCrafterMK3)craftingModule;
 	}
 
+	/**
+	 * does not claim ownership of stack.
+	 */
 	@Override
 	public int addToBuffer(ItemIdentifierStack stack, IAdditionalTargetInformation info) {
 		return getMk3Module().addToBuffer(stack, info);

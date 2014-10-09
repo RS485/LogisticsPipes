@@ -16,9 +16,9 @@ public class TransportInvConnection extends PipeTransportLogistics {
 	}
 	
 	@Override
-	protected void insertedItemStack(ItemIdentifierStack item, ItemRoutingInformation info, TileEntity tile) {
+	protected void insertedItemStack(ItemRoutingInformation info, TileEntity tile) {
 		if(tile instanceof IInventory) {
-			((PipeItemsInvSysConnector)this.container.pipe).handleItemEnterInv(item, info, tile);
+			((PipeItemsInvSysConnector)this.container.pipe).handleItemEnterInv(info, tile);
 		}
 	}
 }

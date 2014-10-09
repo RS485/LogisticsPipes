@@ -154,7 +154,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 									itemsOnRoute.remove(ident);
 								}
 								stack = inv.getStackInSlot(i); // update the stack, as we just send some of it.
-								if(!ItemIdentifier.get(stack).equals(ident)) { // we have an unstable inventory, get(i) can change after a decrStackSize() call
+								if(stack == null || !ItemIdentifier.get(stack).equals(ident)) { // we have an unstable inventory, get(i) can change after a decrStackSize() call
 									break;
 								}
 								

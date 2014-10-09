@@ -186,7 +186,7 @@ public class PipeTransportLogistics {
 			return;
 		
 		if(getPipe() instanceof IBufferItems) {
-			item.getItemIdentifierStack().setStackSize(((IBufferItems)getPipe()).addToBuffer(stack, item.getAdditionalTargetInformation()));
+			item.getItemIdentifierStack().setStackSize(((IBufferItems)getPipe()).addToBuffer(item.getItemIdentifierStack(), item.getAdditionalTargetInformation()));
 			if(item.getItemIdentifierStack().getStackSize() <= 0) return;
 		}
 		
@@ -423,41 +423,59 @@ public class PipeTransportLogistics {
 					if(manager.hasSneakyUpgrade()) {
 						insertion = manager.getSneakyOrientation();
 					}
-					ItemStack added = InventoryHelper.getTransactorFor(tile, dir.getOpposite()).add(itemStack.makeNormalStack(), insertion, true);
+					ItemStack added = InventoryHelper.getTransactorFor(tile, dir.getOpposite()).add(arrivingItem.getItemIdentifierStack().makeNormalStack(), insertion, true);
 					
-					itemStack.lowerStackSize(added.stackSize);
-					if(added.stackSize > 0) tookSome = true;
+					arrivingItem.getItemIdentifierStack().lowerStackSize(added.stackSize);
+
+					if(added.stackSize > 0 && arrivingItem instanceof IRoutedItem) tookSome = true;
+						((IRoutedItem)arrivingItem).setBufferCounter(0);
 					
-					insertedItemStack(ItemIdentifierStack.getFromStack(added), arrivingItem.getInfo(), tile);
+					ItemRoutingInformation info ;
+					
+					if(arrivingItem.getItemIdentifierStack().getStackSize() > 0) {
+						// we have some leftovers, we are splitting the stack, we need to clone the info
+						info = arrivingItem.getInfo().clone();
+						// For InvSysCon
+						info.getItem().setStackSize(added.stackSize);
+						insertedItemStack(info, tile);
+					} else {
+						info = arrivingItem.getInfo();
+						info.getItem().setStackSize(added.stackSize);
+						// For InvSysCon
+						insertedItemStack(info, tile);
+						
+						// back to normal code, break if we've inserted everything, all items disposed of.
+						return; // every item has been inserted. 
+					}
 				} else {
 					ForgeDirection[] dirs = manager.getCombinedSneakyOrientation();
 					for(int i = 0; i < dirs.length; i++) {
 						ForgeDirection insertion = dirs[i];
 						if(insertion == null) continue;
-						ItemStack added = InventoryHelper.getTransactorFor(tile, dir.getOpposite()).add(itemStack.makeNormalStack(), insertion, true);
+						ItemStack added = InventoryHelper.getTransactorFor(tile, dir.getOpposite()).add(arrivingItem.getItemIdentifierStack().makeNormalStack(), insertion, true);
 						
-						itemStack.lowerStackSize(added.stackSize);
-						if(added.stackSize > 0) tookSome = true;
-						
+						arrivingItem.getItemIdentifierStack().lowerStackSize(added.stackSize);
+						if(added.stackSize > 0 && arrivingItem instanceof IRoutedItem) { 
+							tookSome = true;
+							((IRoutedItem)arrivingItem).setBufferCounter(0);
+						}
 						ItemRoutingInformation info ;
 						
-						if(arrivingItem.getItemIdentifierStack.getStacksize() > 0) {
+						if(arrivingItem.getItemIdentifierStack().getStackSize() > 0) {
 							// we have some leftovers, we are splitting the stack, we need to clone the info
-							info = arrivingInfo.getInfo().clone();
+							info = arrivingItem.getInfo().clone();
 							// For InvSysCon
 							info.getItem().setStackSize(added.stackSize);
 							insertedItemStack(info, tile);
 						} else {
+							info = arrivingItem.getInfo();
 							info.getItem().setStackSize(added.stackSize);
 							// For InvSysCon
 							insertedItemStack(info, tile);
 							// back to normal code, break if we've inserted everything, all items disposed of.
-							break;
+							return;// every item has been inserted.
 						}
 					}
-				}
-				if(arrivingItem.getItemIdentifierStack().getStackSize() > 0 && tookSome && arrivingItem instanceof IRoutedItem) {
-					((IRoutedItem)arrivingItem).setBufferCounter(0);
 				}
 				
 				if(arrivingItem.getItemIdentifierStack().getStackSize() > 0) {

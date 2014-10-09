@@ -175,6 +175,9 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISi
 		inv.readFromNBT(nbttagcompound, "buffer");
 	}
 
+	/**
+	 * does not claim ownership of the stack
+	 */
 	@Override
 	public int addToBuffer(ItemIdentifierStack stack, IAdditionalTargetInformation info) {
 		return inv.addCompressed(stack.makeNormalStack(), true);

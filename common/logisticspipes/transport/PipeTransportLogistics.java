@@ -174,22 +174,25 @@ public class PipeTransportLogistics {
 		injectItem((LPTravelingItem)SimpleServiceLocator.routedItemHelper.getServerTravelingItem(item), inputOrientation);
 	}
 	
-	protected void reverseItem(LPTravelingItemServer item, ItemIdentifierStack stack) {
+	/**
+	 * emit the supplied item. This function assumes ownershop of the item, and you may assume that it is now either buffered by the pipe
+	 * or moving through the pipe.
+	 * @param item the item that just bounced off an inventory. In the case of a pipe with a buffer, this function will alter item.
+	 */
+	protected void reverseItem(LPTravelingItemServer item) {
 		if(item.isCorrupted())
 		// Safe guard - if for any reason the item is corrupted at this
 		// stage, avoid adding it to the pipe to avoid further exceptions.
 			return;
 		
 		if(getPipe() instanceof IBufferItems) {
-			stack.setStackSize(((IBufferItems)getPipe()).addToBuffer(stack, item.getAdditionalTargetInformation()));
-			if(stack.getStackSize() <= 0) return;
+			item.getItemIdentifierStack().setStackSize(((IBufferItems)getPipe()).addToBuffer(stack, item.getAdditionalTargetInformation()));
+			if(item.getItemIdentifierStack().getStackSize() <= 0) return;
 		}
 		
 		// Assign new ID to update ItemStack content
 		item.id = item.getNextId();
 		
-		item.getInfo().setItem(stack);
-
 		if(item.getPosition() >= 1.0F) {
 			item.setPosition(item.getPosition() - 1.0F);
 		}
@@ -345,7 +348,6 @@ public class PipeTransportLogistics {
 	}
 	
 	protected void handleTileReachedServer(LPTravelingItemServer arrivingItem, TileEntity tile, ForgeDirection dir) {
-		ItemIdentifierStack itemStack = arrivingItem.getItemIdentifierStack().clone();
 		if(getPipe() instanceof PipeItemsFluidSupplier) {
 			((PipeItemsFluidSupplier)getPipe()).endReached(arrivingItem, tile);
 			if(arrivingItem.getItemIdentifierStack().getStackSize() <= 0) { return; }
@@ -368,6 +370,8 @@ public class PipeTransportLogistics {
 		if(tile instanceof LogisticsTileGenericPipe || SimpleServiceLocator.buildCraftProxy.isIPipeTile(tile)) {
 			if(passToNextPipe(arrivingItem, tile)) return;
 		} else if(tile instanceof IInventory) {
+
+
 			// items.scheduleRemoval(arrivingItem);
 			if(MainProxy.isServer(getWorld())) {
 				// destroy the item on exit if it isn't exitable
@@ -376,13 +380,14 @@ public class PipeTransportLogistics {
 				if(arrivingItem instanceof IRoutedItem) {
 					IRoutedItem routed = (IRoutedItem)arrivingItem;
 					if(routed.getTransportMode() != TransportMode.Active && !getPipe().getTransportLayer().stillWantItem(routed)) {
-						reverseItem(arrivingItem, itemStack);
+						reverseItem(arrivingItem);
 						return;
 					}
 				}
 				UpgradeManager manager = getPipe().getUpgradeManager();
 				boolean tookSome = false;
 				if(arrivingItem.getAdditionalTargetInformation() instanceof ITargetSlotInformation) {
+
 					ITargetSlotInformation information = (ITargetSlotInformation) arrivingItem.getAdditionalTargetInformation();
 					IInventory inv = (IInventory)tile;
 					if(inv instanceof ISidedInventory) inv = new SidedInventoryMinecraftAdapter((ISidedInventory)inv, ForgeDirection.UNKNOWN, false);
@@ -392,12 +397,12 @@ public class PipeTransportLogistics {
 						int amount = information.getAmount();
 						if(util.getSizeInventory() > slot) {
 							ItemStack content = util.getStackInSlot(slot);
-							ItemStack toAdd = itemStack.makeNormalStack();
+							ItemStack toAdd = arrivingItem.getItemIdentifierStack().makeNormalStack();
 							toAdd.stackSize = Math.min(toAdd.stackSize, Math.max(0, amount - (content != null ? content.stackSize : 0)));
 							if(toAdd.stackSize > 0) {
 								if(util.getSizeInventory() > slot) {
 									int added = ((ISpecialInsertion)util).addToSlot(toAdd, slot);
-									itemStack.lowerStackSize(added);
+									arrivingItem.getItemIdentifierStack().lowerStackSize(added);
 									if(added > 0) {
 										tookSome = true;
 									}
@@ -405,8 +410,8 @@ public class PipeTransportLogistics {
 							}
 						}
 						if(information.isLimited()) {
-							if(itemStack.getStackSize() > 0) {
-								reverseItem(arrivingItem, itemStack);
+							if(arrivingItem.getItemIdentifierStack().getStackSize() > 0) {
+								reverseItem(arrivingItem);
 							}
 							return;
 						}
@@ -434,21 +439,33 @@ public class PipeTransportLogistics {
 						itemStack.lowerStackSize(added.stackSize);
 						if(added.stackSize > 0) tookSome = true;
 						
-						// For InvSysCon
-						insertedItemStack(ItemIdentifierStack.getFromStack(added), arrivingItem.getInfo(), tile);
-						if(itemStack.getStackSize() <= 0) break;
+						ItemRoutingInformation info ;
+						
+						if(arrivingItem.getItemIdentifierStack.getStacksize() > 0) {
+							// we have some leftovers, we are splitting the stack, we need to clone the info
+							info = arrivingInfo.getInfo().clone();
+							// For InvSysCon
+							info.getItem().setStackSize(added.stackSize);
+							insertedItemStack(info, tile);
+						} else {
+							info.getItem().setStackSize(added.stackSize);
+							// For InvSysCon
+							insertedItemStack(info, tile);
+							// back to normal code, break if we've inserted everything, all items disposed of.
+							break;
+						}
 					}
 				}
-				if(itemStack.getStackSize() > 0 && tookSome && arrivingItem instanceof IRoutedItem) {
+				if(arrivingItem.getItemIdentifierStack().getStackSize() > 0 && tookSome && arrivingItem instanceof IRoutedItem) {
 					((IRoutedItem)arrivingItem).setBufferCounter(0);
 				}
 				
-				if(itemStack.getStackSize() > 0) {
-					reverseItem(arrivingItem, itemStack);
+				if(arrivingItem.getItemIdentifierStack().getStackSize() > 0) {
+					reverseItem(arrivingItem);
 				}
 			}
 			return;// the item is handled
-		}
+		}// end of insert into IInventory
 		dropItem(arrivingItem);
 	}
 	
@@ -464,7 +481,7 @@ public class PipeTransportLogistics {
 		return true;
 	}
 	
-	protected void insertedItemStack(ItemIdentifierStack item, ItemRoutingInformation info, TileEntity tile) {}
+	protected void insertedItemStack(ItemRoutingInformation info, TileEntity tile) {}
 	
 	public boolean canPipeConnect(TileEntity tile, ForgeDirection side) {
 		if(tile instanceof ILogisticsPowerProvider || tile instanceof ISubSystemPowerProvider) {

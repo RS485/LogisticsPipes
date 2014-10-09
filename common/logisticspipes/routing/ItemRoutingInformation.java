@@ -24,6 +24,20 @@ public class ItemRoutingInformation {
 		}
 	}
 	
+	public ItemRoutingInformation clone() {
+		ItemRoutingInformation that = new ItemRoutingInformation();
+		that.destinationint = this.destinationint ;
+		that.destinationUUID = this.destinationUUID ;
+		that.arrived = this.arrived ;
+		that.bufferCounter = this.bufferCounter ;
+		that._doNotBuffer = this._doNotBuffer ;
+		that._transportMode  = this._transportMode ;
+		that.jamlist = new ArrayList(this.jamlist) ;
+		that.tracker = this.tracker ;
+		that.targetInfo = this.targetInfo ;
+		return that;
+	}
+	
 	public int destinationint = -1;
 	public UUID destinationUUID;
 	public boolean arrived;

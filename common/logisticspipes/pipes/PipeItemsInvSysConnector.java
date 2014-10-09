@@ -44,7 +44,6 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
-import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -57,8 +56,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectRoutingConnection, IHeadUpDisplayRendererProvider, IOrderManagerContentReceiver{
 	
 	private boolean init = false;
-	//list of Itemdentifier, amount, destinationsimpleid, transportmode
-	private HashMap<ItemIdentifier,List<Triplet<Integer,Integer,TransportMode>>> itemsOnRoute = new HashMap<ItemIdentifier,List<Triplet<Integer,Integer,TransportMode>>>();
+	private HashMap<ItemIdentifier,List<ItemRoutingInformation>> itemsOnRoute = new HashMap<ItemIdentifier,List<ItemRoutingInformation>>();
 	public ItemIdentifierInventory inv = new ItemIdentifierInventory(1, "Freq. card", 1);
 	public int resistance;
 	public Set<ItemIdentifierStack> oldList = new TreeSet<ItemIdentifierStack>();
@@ -136,22 +134,26 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 				ItemStack stack = inv.getStackInSlot(i);
 				if(stack != null) {
 					ItemIdentifier ident = ItemIdentifier.get(stack);
-					List<Triplet<Integer, Integer, TransportMode>> needs = itemsOnRoute.get(ident);
+					List<ItemRoutingInformation> needs = itemsOnRoute.get(ident);
 					if(needs!=null) {
-						for (Iterator<Triplet<Integer, Integer, TransportMode>> iterator = needs.iterator(); iterator.hasNext();) {
-							Triplet<Integer, Integer, TransportMode> need = iterator.next();
-							int tosend = Math.min(need.getValue1(), stack.stackSize);
+						for (Iterator<ItemRoutingInformation> iterator = needs.iterator(); iterator.hasNext();) {
+							ItemRoutingInformation need = iterator.next();
+							int tosend = Math.min(need.getItem().getStackSize(), stack.stackSize);
 							if(!useEnergy(6)) break;
-							sendStack(inv.decrStackSize(i, tosend),need.getValue2(),dir, need.getValue3());
-							if(tosend < need.getValue1()) {
-								need.setValue1(need.getValue1() - tosend); // need partially satisfied from this stack
-								break; // one stack per tick limit?
+							if(tosend < need.getItem().getStackSize()) {
+								// if the stack size is not yet equal to what we put in, wait a bit before sending it on, otherwise we have to split the info
+//								need.getItem().setStackSize(need.getItem().getStackSize() - tosend); // need partially satisfied from this stack
+//								break; // one stack per tick limit?
 							} else {
-								iterator.remove(); // we sent part of a stack, lets see if anyone where needs this.
+								// assert sent == need.getItemStack()
+								ItemStack sent = inv.decrStackSize(i, tosend);
+								sendStack(need,dir); 
+								
+								iterator.remove(); // finished with this need, we sent part of a stack, lets see if anyone where needs the current item type.
 								if(needs.isEmpty()) {
 									itemsOnRoute.remove(ident);
 								}
-								stack = inv.getStackInSlot(i); // update the stack
+								stack = inv.getStackInSlot(i); // update the stack, as we just send some of it.
 								if(!ItemIdentifier.get(stack).equals(ident)) { // we have an unstable inventory, get(i) can change after a decrStackSize() call
 									break;
 								}
@@ -167,10 +169,8 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		return contentchanged;
 	}
 
-	public void sendStack(ItemStack stack, int destination, ForgeDirection dir, TransportMode mode) {
-		IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
-		itemToSend.setDestination(destination);
-		itemToSend.setTransportMode(mode);
+	public void sendStack(ItemRoutingInformation info, ForgeDirection dir) {
+		IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(info);
 		super.queueRoutedItem(itemToSend, dir);
 		spawnParticle(Particles.OrangeParticle, 4);
 	}
@@ -211,12 +211,12 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	public Set<ItemIdentifierStack> getExpectedItems() {
 		// got to be a TreeMap, because a TreeSet doesn't have the ability to retrieve the key.
 		Set<ItemIdentifierStack> list = new TreeSet<ItemIdentifierStack>();
-		for(Entry<ItemIdentifier, List<Triplet<Integer, Integer, TransportMode>>> entry:itemsOnRoute.entrySet()) {
+		for(Entry<ItemIdentifier, List<ItemRoutingInformation>> entry:itemsOnRoute.entrySet()) {
 			if(entry.getValue().isEmpty())
 				continue;
 			ItemIdentifierStack currentStack = new ItemIdentifierStack(entry.getKey(),0);
-			for(Triplet<Integer, Integer, TransportMode> e:entry.getValue()) {
-				currentStack.setStackSize(currentStack.getStackSize()+e.getValue1());
+			for(ItemRoutingInformation e:entry.getValue()) {
+				currentStack.setStackSize(currentStack.getStackSize()+e.getItem().getStackSize());
 			}
 			list.add(currentStack);
 		}
@@ -327,13 +327,23 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 
 	@Override
 	public void addItem(ItemIdentifier item, int amount, int destinationId, TransportMode mode) {
-		if(item != null && destinationId >= 0) {
-			List<Triplet<Integer, Integer, TransportMode>> entry = itemsOnRoute.get(item);
+		ItemRoutingInformation info =new ItemRoutingInformation();
+		info.setItem(new ItemIdentifierStack(item,amount));
+		info.destinationint=destinationId;
+		info._transportMode=mode;
+		addItem(item,amount,info);
+	}
+
+	public void addItem(ItemIdentifier item, int amount, ItemRoutingInformation info) 
+		
+	{
+		if(item != null && info.destinationint >= 0) {
+			List<ItemRoutingInformation> entry = itemsOnRoute.get(item);
 			if(entry == null) {
-				entry = new LinkedList<Triplet<Integer, Integer, TransportMode>>();
+				entry = new LinkedList<ItemRoutingInformation>(); // linked list as this is almost always very small, but experiences random removal
 				itemsOnRoute.put(item,entry);
 			}
-			entry.add(new Triplet<Integer,Integer,TransportMode>(amount, destinationId, mode));
+			entry.add(info);
 			updateContentListener();
 		}
 	}
@@ -359,7 +369,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 				CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
 				if(CRP instanceof IDirectRoutingConnection) {
 					IDirectRoutingConnection pipe = (IDirectRoutingConnection) CRP;
-					pipe.addItem(item.getItem(), item.getStackSize(), info.destinationint, info._transportMode);
+					pipe.addItem(item.getItem(), item.getStackSize(), info);
 					spawnParticle(Particles.OrangeParticle, 4);
 				}
 			}

@@ -35,6 +35,7 @@ public class ItemRoutingInformation {
 		that.jamlist = new ArrayList(this.jamlist) ;
 		that.tracker = this.tracker ;
 		that.targetInfo = this.targetInfo ;
+		that.item=this.getItem().clone();
 		return that;
 	}
 	

@@ -15,6 +15,7 @@ import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.RenderHelper;
@@ -92,7 +93,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 	public void drawScreen(int mouseX, int mouseY, float par3) {
 		GL11.glEnable(GL11.GL_BLEND);
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		fontRendererObj.renderString("Test", guiLeft + 10, guiTop + 6, 0x404040, false);
+		fontRendererObj.renderString(StringUtil.translate("misc.selectOreDict"), guiLeft + 10, guiTop + 6, 0x404040, false);
 		GL11.glTranslated(0, 0, 100);
 		for(int x=0; x<3;x++) {
 			for(int y=0;y<3;y++) {

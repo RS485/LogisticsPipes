@@ -20,3 +20,4 @@
 !/gradlew
 !/gradlew.bat
 !/build-ant.xml
+!/build-bc61.gradle

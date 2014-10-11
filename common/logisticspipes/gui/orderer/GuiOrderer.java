@@ -265,9 +265,4 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		super.resetSubGui();
 		refreshItems();
 	}
-	
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Normal_Orderer_ID;
-	}
 }

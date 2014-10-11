@@ -6,8 +6,6 @@
 
 package logisticspipes.gui;
 
-import logisticspipes.interfaces.IGuiIDHandlerProvider;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.pipe.FluidSupplierAmount;
 import logisticspipes.network.packets.pipe.FluidSupplierMinMode;
@@ -17,13 +15,13 @@ import logisticspipes.pipes.PipeFluidSupplierMk2.MinMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.IInventory;
 
-public class GuiFluidSupplierMk2Pipe extends GuiContainer implements IGuiIDHandlerProvider {
+public class GuiFluidSupplierMk2Pipe extends LogisticsBaseGuiScreen {
 	private static final String PREFIX = "gui.fluidsuppliermk2.";
 	
 	private PipeFluidSupplierMk2 logic;
@@ -110,10 +108,5 @@ public class GuiFluidSupplierMk2Pipe extends GuiContainer implements IGuiIDHandl
 	@Override
 	public void onGuiClosed() {
 		super.onGuiClosed();
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_FluidSupplier_ID;
 	}
 }

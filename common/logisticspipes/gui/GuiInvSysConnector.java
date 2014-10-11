@@ -171,11 +171,6 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 		}
 	}
 
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Inv_Sys_Connector_ID;
-	}
-
 	public void handleContentAnswer(Collection<ItemIdentifierStack> allItems) {
 		_allItems.clear();
 		_allItems.addAll(allItems);

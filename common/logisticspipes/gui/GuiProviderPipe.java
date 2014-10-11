@@ -8,23 +8,21 @@
 
 package logisticspipes.gui;
 
-import logisticspipes.interfaces.IGuiIDHandlerProvider;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.ProviderPipeIncludePacket;
 import logisticspipes.network.packets.module.ProviderPipeNextModePacket;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiProviderPipe extends GuiContainer implements IGuiIDHandlerProvider{
+public class GuiProviderPipe extends LogisticsBaseGuiScreen {
 	private static final String PREFIX = "gui.providerpipe.";
 	
 	private PipeItemsProviderLogistics logic;
@@ -94,10 +92,4 @@ public class GuiProviderPipe extends GuiContainer implements IGuiIDHandlerProvid
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_ProviderPipe_ID;
-	}
-	
 }

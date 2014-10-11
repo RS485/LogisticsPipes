@@ -8,20 +8,18 @@
 
 package logisticspipes.gui;
 
-import logisticspipes.interfaces.IGuiIDHandlerProvider;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiSatellitePipe extends GuiContainer implements IGuiIDHandlerProvider {
+public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 
 	private PipeItemsSatelliteLogistics _satellite;
 	private PipeFluidSatellite _liquidSatellite;
@@ -109,10 +107,5 @@ public class GuiSatellitePipe extends GuiContainer implements IGuiIDHandlerProvi
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_SatelitePipe_ID;
 	}
 }

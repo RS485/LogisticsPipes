@@ -25,11 +25,6 @@ public class GuiFluidBasic extends LogisticsBaseGuiScreen {
 	}
 
 	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Fluid_Basic_ID;
-	}
-
-	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 45);

@@ -100,11 +100,11 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 			} else {
 				liquidLeft = -(liquidCrafter * 40)  + (i * 40);
 			}
-			fluidSlotIDs[i] = extentionController.registerControlledSlot(dummy.addFluidSlot(i, module.getFluidInventory(), liquidLeft + 11, 24));
+			fluidSlotIDs[i] = extentionControllerLeft.registerControlledSlot(dummy.addFluidSlot(i, module.getFluidInventory(), liquidLeft + 11, 24));
 		}
 		
 		if(hasByproductExtractor) {
-			byproductSlotID = extentionController.registerControlledSlot(dummy.addDummySlot(10, - 26, 29));
+			byproductSlotID = extentionControllerLeft.registerControlledSlot(dummy.addDummySlot(10, - 26, 29));
 		} else {
 			byproductSlotID = -1;
 		}
@@ -112,7 +112,7 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 		cleanupSlotIDs = new int[cleanupSize * 3];
 		for(int y = 0;y < cleanupSize;y++) {
 			for(int x=0;x < 3;x++) {
-				cleanupSlotIDs[y * 3 + x] = extentionController.registerControlledSlot(dummy.addDummySlot(y * 3 + x, module.getCleanupInventory(), x * 18 - 57, y * 18 + 13));
+				cleanupSlotIDs[y * 3 + x] = extentionControllerLeft.registerControlledSlot(dummy.addDummySlot(y * 3 + x, module.getCleanupInventory(), x * 18 - 57, y * 18 + 13));
 			}
 		}
 		
@@ -129,7 +129,7 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 	@Override
 	public void initGui() {
 		super.initGui();
-		extentionController.clear();
+		extentionControllerLeft.clear();
 		buttonList.clear();
 		FluidCraftingExtention extention = null;
 		if(!isAdvancedSat) {
@@ -141,8 +141,8 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 			addButton(normalButtonArray[4] = new SmallGuiButton(20, (width - xSize) / 2 + 155, (height - ySize) / 2 + 85, 10, 10, ">"));
 			addButton(normalButtonArray[5] = new SmallGuiButton(21, (width - xSize) / 2 + 120, (height - ySize) / 2 + 85, 10, 10, "<"));
 			if(liquidCrafter != 0) {
-				extention.registerButton(extentionController.registerControlledButton(addButton(normalButtonArray[6] = new SmallGuiButton(22, guiLeft - (liquidCrafter * 40) / 2 + 5, guiTop + 158, 10, 10, ">"))));
-				extention.registerButton(extentionController.registerControlledButton(addButton(normalButtonArray[7] = new SmallGuiButton(23, guiLeft - (liquidCrafter * 40) / 2 - 15, guiTop + 158, 10, 10, "<"))));
+				extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(normalButtonArray[6] = new SmallGuiButton(22, guiLeft - (liquidCrafter * 40) / 2 + 5, guiTop + 158, 10, 10, ">"))));
+				extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(normalButtonArray[7] = new SmallGuiButton(23, guiLeft - (liquidCrafter * 40) / 2 - 15, guiTop + 158, 10, 10, "<"))));
 			}
 		} else {
 			for(int i = 0; i < 9; i++) {
@@ -165,37 +165,37 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 				liquidLeft = guiLeft - (liquidCrafter * 40) + (i * 40);
 			}
 			liquidGuiParts[i] = new GuiButton[10];
-			extention.registerButton(extentionController.registerControlledButton(addButton(liquidGuiParts[i][0] = new SmallGuiButton(100 + 10 * i + 0, liquidLeft + 22, guiTop + 65, 10, 10, "+"))));
-			extention.registerButton(extentionController.registerControlledButton(addButton(liquidGuiParts[i][1] = new SmallGuiButton(100 + 10 * i + 1, liquidLeft + 22, guiTop + 85, 10, 10, "+"))));
-			extention.registerButton(extentionController.registerControlledButton(addButton(liquidGuiParts[i][2] = new SmallGuiButton(100 + 10 * i + 2, liquidLeft + 22, guiTop + 105, 10, 10, "+"))));
-			extention.registerButton(extentionController.registerControlledButton(addButton(liquidGuiParts[i][3] = new SmallGuiButton(100 + 10 * i + 3, liquidLeft + 22, guiTop + 125, 10, 10, "+"))));
-			extention.registerButton(extentionController.registerControlledButton(addButton(liquidGuiParts[i][4] = new SmallGuiButton(100 + 10 * i + 4, liquidLeft + 8, guiTop + 65, 10, 10, "-"))));
-			extention.registerButton(extentionController.registerControlledButton(addButton(liquidGuiParts[i][5] = new SmallGuiButton(100 + 10 * i + 5, liquidLeft + 8, guiTop + 85, 10, 10, "-"))));
-			extention.registerButton(extentionController.registerControlledButton(addButton(liquidGuiParts[i][6] = new SmallGuiButton(100 + 10 * i + 6, liquidLeft + 8, guiTop + 105, 10, 10, "-"))));
-			extention.registerButton(extentionController.registerControlledButton(addButton(liquidGuiParts[i][7] = new SmallGuiButton(100 + 10 * i + 7, liquidLeft + 8, guiTop + 125, 10, 10, "-"))));
+			extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][0] = new SmallGuiButton(100 + 10 * i + 0, liquidLeft + 22, guiTop + 65, 10, 10, "+"))));
+			extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][1] = new SmallGuiButton(100 + 10 * i + 1, liquidLeft + 22, guiTop + 85, 10, 10, "+"))));
+			extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][2] = new SmallGuiButton(100 + 10 * i + 2, liquidLeft + 22, guiTop + 105, 10, 10, "+"))));
+			extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][3] = new SmallGuiButton(100 + 10 * i + 3, liquidLeft + 22, guiTop + 125, 10, 10, "+"))));
+			extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][4] = new SmallGuiButton(100 + 10 * i + 4, liquidLeft + 8, guiTop + 65, 10, 10, "-"))));
+			extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][5] = new SmallGuiButton(100 + 10 * i + 5, liquidLeft + 8, guiTop + 85, 10, 10, "-"))));
+			extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][6] = new SmallGuiButton(100 + 10 * i + 6, liquidLeft + 8, guiTop + 105, 10, 10, "-"))));
+			extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][7] = new SmallGuiButton(100 + 10 * i + 7, liquidLeft + 8, guiTop + 125, 10, 10, "-"))));
 			if(isAdvancedSat) {
-				extention.registerButton(extentionController.registerControlledButton(addButton(liquidGuiParts[i][8] = new SmallGuiButton(100 + 10 * i + 8, liquidLeft + 5, guiTop + 158, 10, 10, "<"))));
-				extention.registerButton(extentionController.registerControlledButton(addButton(liquidGuiParts[i][9] = new SmallGuiButton(100 + 10 * i + 9, liquidLeft + 25, guiTop + 158, 10, 10, ">"))));
-				extentionController.addExtention(extention);
+				extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][8] = new SmallGuiButton(100 + 10 * i + 8, liquidLeft + 5, guiTop + 158, 10, 10, "<"))));
+				extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][9] = new SmallGuiButton(100 + 10 * i + 9, liquidLeft + 25, guiTop + 158, 10, 10, ">"))));
+				extentionControllerLeft.addExtention(extention);
 			}
 			extention.registerSlot(fluidSlotIDs[i]);
 		}
 		if(!isAdvancedSat && liquidCrafter != 0) {
-			extentionController.addExtention(extention);
+			extentionControllerLeft.addExtention(extention);
 		}
 		if(hasByproductExtractor) {
 			ByproductExtention byproductExtention = new ByproductExtention();
 			byproductExtention.registerSlot(byproductSlotID);
-			extentionController.addExtention(byproductExtention);
+			extentionControllerLeft.addExtention(byproductExtention);
 		}
 		if(cleanupSize > 0) {
 			CleanupExtention cleanupExtention = new CleanupExtention();
-			cleanupExtention.registerButton(extentionController.registerControlledButton(addButton(cleanupModeButton = new SmallGuiButton(24, guiLeft - 56, guiTop + 18 + (18 * cleanupSize), 50, 10, StringUtil.translate(PREFIX + (_pipe.cleanupModeIsExclude ? "Exclude" : "Include"))))));
-			cleanupExtention.registerButton(extentionController.registerControlledButton(addButton(new SmallGuiButton(25, guiLeft - 56, guiTop + 32 + (18 * cleanupSize), 50, 10, StringUtil.translate(PREFIX + "Import")))));
+			cleanupExtention.registerButton(extentionControllerLeft.registerControlledButton(addButton(cleanupModeButton = new SmallGuiButton(24, guiLeft - 56, guiTop + 18 + (18 * cleanupSize), 50, 10, StringUtil.translate(PREFIX + (_pipe.cleanupModeIsExclude ? "Exclude" : "Include"))))));
+			cleanupExtention.registerButton(extentionControllerLeft.registerControlledButton(addButton(new SmallGuiButton(25, guiLeft - 56, guiTop + 32 + (18 * cleanupSize), 50, 10, StringUtil.translate(PREFIX + "Import")))));
 			for(int i=0;i<cleanupSize * 3;i++) {
 				cleanupExtention.registerSlot(cleanupSlotIDs[i]);
 			}
-			extentionController.addExtention(cleanupExtention);
+			extentionControllerLeft.addExtention(cleanupExtention);
 		}
 	}
 	
@@ -271,7 +271,7 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 				return;
 			case 4:
 				_pipe.openAttachedGui(_player);
-				LogisticsEventListener.addGuiToReopen(_pipe.getX(), _pipe.getY(), _pipe.getZ(), getGuiID());
+				//LogisticsEventListener.addGuiToReopen(_pipe.getX(), _pipe.getY(), _pipe.getZ(), 0); //TODO reactivate this
 				return;
 			case 20:
 				_pipe.priorityUp(_player);

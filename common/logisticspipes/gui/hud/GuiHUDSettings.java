@@ -45,11 +45,6 @@ public class GuiHUDSettings extends LogisticsBaseGuiScreen {
 			this.closeGui();
 		}
 	}
-	
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_HUD_Settings;
-	}
 
 	@Override
 	protected void actionPerformed(GuiButton button) {

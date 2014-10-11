@@ -2,6 +2,7 @@ package logisticspipes.asm.bc;
 
 import java.util.logging.Level;
 
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.LPRoutedBCTravelingItem;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -73,13 +74,13 @@ public class InjectItemHook {
 			}
 
 			if (stackCount > PipeTransportItems.MAX_PIPE_STACKS) {
-				BCLog.logger.log(Level.WARNING, String.format("Pipe exploded at %d,%d,%d because it had too many stacks: %d", pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord, stackCount));
+				SimpleServiceLocator.buildCraftProxy.logWarning(String.format("Pipe exploded at %d,%d,%d because it had too many stacks: %d", pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord, stackCount));
 				destroyPipe(pipe);
 				return;
 			}
 
 			if (numItems > PipeTransportItems.MAX_PIPE_ITEMS) {
-				BCLog.logger.log(Level.WARNING, String.format("Pipe exploded at %d,%d,%d because it had too many items: %d", pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord, numItems));
+				SimpleServiceLocator.buildCraftProxy.logWarning(String.format("Pipe exploded at %d,%d,%d because it had too many items: %d", pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord, numItems));
 				destroyPipe(pipe);
 			}
 		}

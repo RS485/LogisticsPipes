@@ -1,4 +1,4 @@
-package logisticspipes.proxy.buildcraft.renderer;
+package logisticspipes.proxy.buildcraft.bc60.renderer;
 
 import java.io.IOException;
 import java.util.BitSet;

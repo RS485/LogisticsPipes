@@ -6,11 +6,12 @@
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
-package logisticspipes.proxy.buildcraft.bc60;
+package logisticspipes.proxy.buildcraft.bc61;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.logging.Level;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
@@ -27,19 +28,19 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.VersionNotSupportedException;
 import logisticspipes.proxy.buildcraft.BCPipeInformationProvider;
 import logisticspipes.proxy.buildcraft.LPRoutedBCTravelingItem;
-import logisticspipes.proxy.buildcraft.bc60.gates.ActionDisableLogistics;
-import logisticspipes.proxy.buildcraft.bc60.gates.LogisticsTriggerProvider;
-import logisticspipes.proxy.buildcraft.bc60.gates.TriggerCrafting;
-import logisticspipes.proxy.buildcraft.bc60.gates.TriggerHasDestination;
-import logisticspipes.proxy.buildcraft.bc60.gates.TriggerNeedsPower;
-import logisticspipes.proxy.buildcraft.bc60.gates.TriggerSupplierFailed;
-import logisticspipes.proxy.buildcraft.bc60.subproxies.BCCoreState;
-import logisticspipes.proxy.buildcraft.bc60.subproxies.BCPipePart;
-import logisticspipes.proxy.buildcraft.bc60.subproxies.BCRenderState;
-import logisticspipes.proxy.buildcraft.bc60.subproxies.BCTilePart;
-import logisticspipes.proxy.buildcraft.bc60.subproxies.LPBCPowerProxy;
-import logisticspipes.proxy.buildcraft.renderer.FacadeMatrix;
-import logisticspipes.proxy.buildcraft.renderer.FacadeRenderHelper;
+import logisticspipes.proxy.buildcraft.bc61.gates.ActionDisableLogistics;
+import logisticspipes.proxy.buildcraft.bc61.gates.LogisticsTriggerProvider;
+import logisticspipes.proxy.buildcraft.bc61.gates.TriggerCrafting;
+import logisticspipes.proxy.buildcraft.bc61.gates.TriggerHasDestination;
+import logisticspipes.proxy.buildcraft.bc61.gates.TriggerNeedsPower;
+import logisticspipes.proxy.buildcraft.bc61.gates.TriggerSupplierFailed;
+import logisticspipes.proxy.buildcraft.bc61.recipeprovider.AssemblyTable;
+import logisticspipes.proxy.buildcraft.bc61.renderer.FacadeRenderHelper;
+import logisticspipes.proxy.buildcraft.bc61.subproxies.BCCoreState;
+import logisticspipes.proxy.buildcraft.bc61.subproxies.BCPipePart;
+import logisticspipes.proxy.buildcraft.bc61.subproxies.BCRenderState;
+import logisticspipes.proxy.buildcraft.bc61.subproxies.BCTilePart;
+import logisticspipes.proxy.buildcraft.bc61.subproxies.LPBCPowerProxy;
 import logisticspipes.proxy.buildcraft.subproxies.IBCCoreState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePart;
 import logisticspipes.proxy.buildcraft.subproxies.IBCRenderState;
@@ -47,6 +48,7 @@ import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
 import logisticspipes.proxy.buildcraft.subproxies.ILPBCPowerProxy;
 import logisticspipes.proxy.interfaces.IBCProxy;
 import logisticspipes.proxy.interfaces.ICraftingParts;
+import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.recipes.CraftingDependency;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.renderer.state.PipeRenderState;
@@ -54,6 +56,7 @@ import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.MatrixTranformations;
+import logisticspipes.utils.ReflectionHelper;
 import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -77,10 +80,12 @@ import org.lwjgl.opengl.GL11;
 import buildcraft.BuildCraftEnergy;
 import buildcraft.BuildCraftSilicon;
 import buildcraft.BuildCraftTransport;
+import buildcraft.api.core.BCLog;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.IAction;
 import buildcraft.api.gates.IGateExpansion;
 import buildcraft.api.gates.ITrigger;
+import buildcraft.api.gates.StatementManager;
 import buildcraft.api.mj.IBatteryObject;
 import buildcraft.api.mj.MjAPI;
 import buildcraft.api.power.IPowerReceptor;
@@ -94,10 +99,12 @@ import buildcraft.api.transport.PipeWire;
 import buildcraft.core.CoreConstants;
 import buildcraft.core.IMachine;
 import buildcraft.core.ITileBufferHolder;
+import buildcraft.core.ItemMapLocation;
 import buildcraft.core.ItemRobot;
 import buildcraft.core.render.RenderEntityBlock;
 import buildcraft.core.render.RenderEntityBlock.RenderInfo;
 import buildcraft.core.robots.AIDocked;
+import buildcraft.core.robots.DockingStation;
 import buildcraft.core.robots.EntityRobot;
 import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.Gate;
@@ -109,8 +116,10 @@ import buildcraft.transport.PipeIconProvider;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.TravelingItem;
+import buildcraft.transport.gates.GateFactory;
 import buildcraft.transport.gates.ItemGate;
 import buildcraft.transport.render.PipeRendererTESR;
+import buildcraft.transport.utils.FacadeMatrix;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -136,8 +145,8 @@ public class BuildCraftProxy implements IBCProxy {
 			e.printStackTrace();
 		}
 		if(BCVersion != null) {
-			if(!BCVersion.equals("@VERSION@") && !BCVersion.contains("6.0.18") && !BCVersion.contains("6.0.17")) {
-				throw new VersionNotSupportedException("BC", BCVersion, "6.0.17 - 6.0.18", "");
+			if(!BCVersion.equals("@VERSION@") && !BCVersion.contains("6.1.1")) {
+				throw new VersionNotSupportedException("BC", BCVersion, "6.1.1", "");
 			}
 		} else {
 			LogisticsPipes.log.info("Couldn't check the BC Version.");
@@ -173,7 +182,7 @@ public class BuildCraftProxy implements IBCProxy {
 
 	@Override
 	public void registerTrigger() {
-		ActionManager.registerTriggerProvider(new LogisticsTriggerProvider());
+		StatementManager.registerTriggerProvider(new LogisticsTriggerProvider());
 		
 		/* Triggers */
 		LogisticsFailedTrigger = new TriggerSupplierFailed();
@@ -183,6 +192,7 @@ public class BuildCraftProxy implements IBCProxy {
 		
 		/* Actions */
 		LogisticsDisableAction = new ActionDisableLogistics();
+
 	}
 	
 	public void resetItemRotation() {
@@ -250,7 +260,7 @@ public class BuildCraftProxy implements IBCProxy {
 	@Override
 	public boolean checkForPipeConnection(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe) {
 		if (with instanceof TileGenericPipe) {
-			if (((TileGenericPipe) with).hasPlug(side.getOpposite()))
+			if (ReflectionHelper.invokePrivateMethodCatched(Boolean.class, TileGenericPipe.class, with, "hasBlockingPluggable", new Class[]{ForgeDirection.class}, new Object[]{side.getOpposite()}).booleanValue()) //((TileGenericPipe) with).hasBlockingPluggable(side.getOpposite())
 				return false;
 			Pipe otherPipe = ((TileGenericPipe) with).pipe;
 
@@ -297,7 +307,10 @@ public class BuildCraftProxy implements IBCProxy {
 	
 	@Override
 	public boolean handleBCClickOnPipe(ItemStack currentItem, CoreUnroutedPipe pipe, World world, int x, int y, int z, EntityPlayer player, int side, LogisticsBlockGenericPipe block) {
-		if(PipeWire.RED.isPipeWire(currentItem)) {
+		if (currentItem.getItem() instanceof ItemMapLocation) {
+			// We want to be able to record pipe locations
+			return false;
+		} else if(PipeWire.RED.isPipeWire(currentItem)) {
 			if(addOrStripWire(player, pipe, PipeWire.RED)) { return true; }
 		} else if(PipeWire.BLUE.isPipeWire(currentItem)) {
 			if(addOrStripWire(player, pipe, PipeWire.BLUE)) { return true; }
@@ -306,7 +319,7 @@ public class BuildCraftProxy implements IBCProxy {
 		} else if(PipeWire.YELLOW.isPipeWire(currentItem)) {
 			if(addOrStripWire(player, pipe, PipeWire.YELLOW)) { return true; }
 		} else if(currentItem.getItem() instanceof ItemGate) {
-			if(addOrStripGate(world, x, y, z, player, pipe, block)) { return true; }
+			if(addOrStripGate(world, x, y, z, player, ForgeDirection.getOrientation(side), pipe, block)) { return true; }
 		} else if(currentItem.getItem() instanceof ItemPlug) {
 			if(addOrStripPlug(world, x, y, z, player, ForgeDirection.getOrientation(side), pipe, block)) { return true; }
 		} else if(currentItem.getItem() instanceof ItemRobotStation) {
@@ -317,67 +330,60 @@ public class BuildCraftProxy implements IBCProxy {
 			if(!world.isRemote) {
 				RaytraceResult rayTraceResult = block.doRayTrace(world, x, y, z, player);
 				
-				if(rayTraceResult.hitPart == Part.RobotStation) {
-					EntityRobot robot = ((ItemRobot)currentItem.getItem()).createRobot(world);
-					
-					float px = x + 0.5F + rayTraceResult.sideHit.offsetX * 0.5F;
-					float py = y + 0.5F + rayTraceResult.sideHit.offsetY * 0.5F;
-					float pz = z + 0.5F + rayTraceResult.sideHit.offsetZ * 0.5F;
-					
-					robot.setPosition(px, py, pz);
-					
-					//robot.setDockingStation(pipe.container, rayTraceResult.sideHit);
-					robot.dockingStation.x = pipe.container.xCoord;
-					robot.dockingStation.y = pipe.container.yCoord;
-					robot.dockingStation.z = pipe.container.zCoord;
-					robot.dockingStation.side = rayTraceResult.sideHit;
-					
-					robot.currentAI = new AIDocked();
-					world.spawnEntityInWorld(robot);
-					
-					if(!player.capabilities.isCreativeMode) {
-						player.getCurrentEquippedItem().stackSize--;
+				if (rayTraceResult != null && rayTraceResult.hitPart == Part.RobotStation) {
+					DockingStation station = (DockingStation) pipe.container.tilePart.getStation(rayTraceResult.sideHit);
+
+					if (!station.isTaken()) {
+						EntityRobot robot = ((ItemRobot) currentItem.getItem()).createRobot(currentItem, world);
+						robot.setUniqueRobotId(robot.getRegistry().getNextRobotId());
+						robot.setEnergy(EntityRobot.MAX_ENERGY);
+
+						float px = x + 0.5F + rayTraceResult.sideHit.offsetX * 0.5F;
+						float py = y + 0.5F + rayTraceResult.sideHit.offsetY * 0.5F;
+						float pz = z + 0.5F + rayTraceResult.sideHit.offsetZ * 0.5F;
+
+						robot.setPosition(px, py, pz);
+						station.takeAsMain(robot);
+						robot.dock(robot.getLinkedStation());
+						world.spawnEntityInWorld(robot);
+
+						if (!player.capabilities.isCreativeMode) {
+							player.getCurrentEquippedItem().stackSize--;
+						}
 					}
-					
-					return true;
 				}
 			}
 		}
 		return false;
 	}
 	
-	private boolean addOrStripGate(World world, int x, int y, int z, EntityPlayer player, CoreUnroutedPipe pipe, LogisticsBlockGenericPipe block) {
-		if(addGate(player, pipe)) { return true; }
+	private boolean addOrStripGate(World world, int x, int y, int z, EntityPlayer player, ForgeDirection side, CoreUnroutedPipe pipe, LogisticsBlockGenericPipe block) {
+		RaytraceResult rayTraceResult = block.doRayTrace(world, x, y, z, player);
 		if(player.isSneaking()) {
-			RaytraceResult rayTraceResult = block.doRayTrace(world, x, y, z, player);
 			if(rayTraceResult != null && rayTraceResult.hitPart == Part.Gate) {
-				if(stripGate(pipe)) { return true; }
+				if (pipe.bcPipePart.hasGate(rayTraceResult.sideHit)) {
+					return pipe.container.tilePart.dropSideItems(rayTraceResult.sideHit);
+				}
+			}
+		}
+		if (rayTraceResult != null && (rayTraceResult.hitPart == Part.Pipe)) {
+			if (!pipe.hasGate(side) && addGate(player, pipe, rayTraceResult.sideHit != null && rayTraceResult.sideHit != ForgeDirection.UNKNOWN ? rayTraceResult.sideHit : side)) {
+				return true;
 			}
 		}
 		return false;
 	}
 	
-	private boolean addGate(EntityPlayer player, CoreUnroutedPipe pipe) {
-		if(!pipe.hasGate()) {
-			pipe.bcPipePart.makeGate(pipe, player.getCurrentEquippedItem());
-			if(!player.capabilities.isCreativeMode) {
-				player.getCurrentEquippedItem().splitStack(1);
+	private boolean addGate(EntityPlayer player, CoreUnroutedPipe pipe, ForgeDirection side) {
+		ItemStack stack = player.getCurrentEquippedItem();
+		if (stack != null && stack.getItem() instanceof ItemGate && pipe.container.tilePart.addGate(side, GateFactory.makeGate((Pipe<?>) pipe.bcPipePart.getWrapped(), stack, side))) { // pipe.bcPipePart.makeGate(pipe, player.getCurrentEquippedItem());
+			if (!player.capabilities.isCreativeMode) {
+				stack.stackSize--;
 			}
-			pipe.container.scheduleRenderUpdate();
 			return true;
 		}
 		return false;
-	}
-	
-	private boolean stripGate(CoreUnroutedPipe pipe) {
-		if(pipe.hasGate()) {
-			if(!pipe.container.getWorldObj().isRemote) {
-				((Gate)pipe.bcPipePart.getGate()).dropGate();
-			}
-			pipe.resetGate();
-			return true;
-		}
-		return false;
+		
 	}
 	
 	private boolean addOrStripWire(EntityPlayer player, CoreUnroutedPipe pipe, PipeWire color) {
@@ -394,7 +400,8 @@ public class BuildCraftProxy implements IBCProxy {
 		if(!pipe.bcPipePart.getWireSet()[color.ordinal()]) {
 			pipe.bcPipePart.getWireSet()[color.ordinal()] = true;
 			pipe.bcPipePart.getSignalStrength()[color.ordinal()] = 0;
-			pipe.container.scheduleNeighborChange();
+			pipe.updateSignalState();
+			pipe.container.scheduleRenderUpdate();
 			return true;
 		}
 		return false;
@@ -405,7 +412,17 @@ public class BuildCraftProxy implements IBCProxy {
 			if(!pipe.container.getWorldObj().isRemote) {
 				dropWire(color, pipe);
 			}
+			pipe.bcPipePart.getSignalStrength()[color.ordinal()] = 0;
 			pipe.bcPipePart.getWireSet()[color.ordinal()] = false;
+
+			pipe.updateSignalState();
+
+			LogisticsBlockGenericPipe.updateNeighbourSignalState(pipe);
+
+			if (LogisticsBlockGenericPipe.isFullyDefined(pipe)) {
+				pipe.bcPipePart.resolveActions();
+			}
+
 			pipe.container.scheduleRenderUpdate();
 			return true;
 		}
@@ -416,10 +433,12 @@ public class BuildCraftProxy implements IBCProxy {
 		RaytraceResult rayTraceResult = block.doRayTrace(world, x, y, z, player);
 		if(player.isSneaking()) {
 			if(rayTraceResult != null && rayTraceResult.hitPart == Part.Facade) {
-				if(stripFacade(pipe, rayTraceResult.sideHit)) { return true; }
+				if (pipe.container.tilePart.hasFacade(rayTraceResult.sideHit)) {
+					return pipe.container.tilePart.dropSideItems(rayTraceResult.sideHit);
+				}
 			}
 		}
-		if(rayTraceResult != null && (rayTraceResult.hitPart != Part.Facade)) {
+		if(rayTraceResult != null && (rayTraceResult.hitPart == Part.Pipe)) {
 			if(addFacade(player, pipe, rayTraceResult.sideHit != null && rayTraceResult.sideHit != ForgeDirection.UNKNOWN ? rayTraceResult.sideHit : side)) { return true; }
 		}
 		return false;
@@ -427,7 +446,7 @@ public class BuildCraftProxy implements IBCProxy {
 	
 	private boolean addFacade(EntityPlayer player, CoreUnroutedPipe pipe, ForgeDirection side) {
 		ItemStack stack = player.getCurrentEquippedItem();
-		if(stack != null && stack.getItem() instanceof ItemFacade && pipe.container.tilePart.addFacade(side, ItemFacade.getType(stack), ItemFacade.getWireType(stack), ItemFacade.getBlocks(stack), ItemFacade.getMetaValues(stack))) {
+		if(stack != null && stack.getItem() instanceof ItemFacade && pipe.container.tilePart.addFacade(side, ItemFacade.getFacadeStates(stack))) {
 			if(!player.capabilities.isCreativeMode) {
 				stack.stackSize--;
 			}
@@ -436,18 +455,14 @@ public class BuildCraftProxy implements IBCProxy {
 		return false;
 	}
 	
-	private boolean stripFacade(CoreUnroutedPipe pipe, ForgeDirection side) {
-		return pipe.container.tilePart.dropFacade(side);
-	}
-	
 	private boolean addOrStripPlug(World world, int x, int y, int z, EntityPlayer player, ForgeDirection side, CoreUnroutedPipe pipe, LogisticsBlockGenericPipe block) {
 		RaytraceResult rayTraceResult = block.doRayTrace(world, x, y, z, player);
 		if(player.isSneaking()) {
 			if(rayTraceResult != null && rayTraceResult.hitPart == Part.Plug) {
-				if(stripPlug(pipe, rayTraceResult.sideHit)) { return true; }
+				if(pipe.container.tilePart.dropSideItems(rayTraceResult.sideHit)) { return true; }
 			}
 		}
-		if(rayTraceResult != null && (rayTraceResult.hitPart == Part.Pipe || rayTraceResult.hitPart == Part.Gate)) {
+		if(rayTraceResult != null && (rayTraceResult.hitPart == Part.Pipe)) {
 			if(addPlug(player, pipe, rayTraceResult.sideHit != null && rayTraceResult.sideHit != ForgeDirection.UNKNOWN ? rayTraceResult.sideHit : side)) { return true; }
 		}
 		return false;
@@ -457,10 +472,10 @@ public class BuildCraftProxy implements IBCProxy {
 		RaytraceResult rayTraceResult = block.doRayTrace(world, x, y, z, player);
 		if(player.isSneaking()) {
 			if(rayTraceResult != null && rayTraceResult.hitPart == Part.RobotStation) {
-				if(stripRobotStation(pipe, rayTraceResult.sideHit)) { return true; }
+				if(pipe.container.tilePart.dropSideItems(rayTraceResult.sideHit)) { return true; }
 			}
 		}
-		if(rayTraceResult != null && (rayTraceResult.hitPart == Part.Pipe || rayTraceResult.hitPart == Part.Gate)) {
+		if(rayTraceResult != null && (rayTraceResult.hitPart == Part.Pipe)) {
 			if(addRobotStation(player, pipe, rayTraceResult.sideHit != null && rayTraceResult.sideHit != ForgeDirection.UNKNOWN ? rayTraceResult.sideHit : side)) { return true; }
 		}
 		return false;
@@ -488,20 +503,14 @@ public class BuildCraftProxy implements IBCProxy {
 		return false;
 	}
 	
-	private boolean stripPlug(CoreUnroutedPipe pipe, ForgeDirection side) {
-		return pipe.container.tilePart.removeAndDropPlug(side);
-	}
-	
-	private boolean stripRobotStation(CoreUnroutedPipe pipe, ForgeDirection side) {
-		return pipe.container.tilePart.removeAndDropPlug(side);
-	}
-	
 	@Override
 	public boolean stripEquipment(World world, int x, int y, int z, EntityPlayer player, CoreUnroutedPipe pipe, LogisticsBlockGenericPipe block) {
 		// Try to strip facades first
 		RaytraceResult rayTraceResult = block.doRayTrace(world, x, y, z, player);
 		if(rayTraceResult != null && rayTraceResult.hitPart == Part.Facade) {
-			if(stripFacade(pipe, rayTraceResult.sideHit)) { return true; }
+			if(pipe.container.tilePart.dropSideItems(rayTraceResult.sideHit)) {
+				return true;
+			}
 		}
 		
 		// Try to strip wires second, starting with yellow.
@@ -509,7 +518,7 @@ public class BuildCraftProxy implements IBCProxy {
 			if(stripWire(pipe, color)) { return true; }
 		}
 		
-		return stripGate(pipe);
+		return false;
 	}
 	
 	/**
@@ -554,6 +563,9 @@ public class BuildCraftProxy implements IBCProxy {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void renderGatesWires(LogisticsTileGenericPipe pipe, double x, double y, double z) {
+		
+		renderGates(pipe, x, y, z);
+		
 		BCRenderState bcRenderState = (BCRenderState) pipe.renderState.bcRenderState.getOriginal();
 
 		if (bcRenderState.wireMatrix.hasWire(PipeWire.RED)) {
@@ -570,10 +582,6 @@ public class BuildCraftProxy implements IBCProxy {
 
 		if (bcRenderState.wireMatrix.hasWire(PipeWire.YELLOW)) {
 			pipeWireRender(pipe, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MAX_POS, PipeWire.YELLOW, x, y, z);
-		}
-
-		if (pipe.pipe.hasGate()) {
-			pipeGateRender(pipe, x, y, z);
 		}
 	}
 
@@ -731,7 +739,17 @@ public class BuildCraftProxy implements IBCProxy {
 		GL11.glPopMatrix();
 	}
 
-	private void pipeGateRender(LogisticsTileGenericPipe pipe, double x, double y, double z) {
+	private void renderGates(LogisticsTileGenericPipe pipe, double x, double y, double z) {
+		for (Gate gate : (Gate[]) pipe.pipe.bcPipePart.getGates()) {
+			if (gate != null) {
+				renderGate(pipe, x, y, z, gate, gate.getDirection());
+			}
+		}
+	}
+
+	private void renderGate(LogisticsTileGenericPipe pipe, double x, double y, double z, Gate gate, ForgeDirection direction) {
+		BCRenderState bcRenderState = (BCRenderState) pipe.renderState.bcRenderState.getOriginal();
+	
 		GL11.glPushMatrix();
 		GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
 //		GL11.glEnable(GL11.GL_LIGHTING);
@@ -746,20 +764,20 @@ public class BuildCraftProxy implements IBCProxy {
 		bindTexture(TextureMap.locationBlocksTexture);
 
 		IIcon iconLogic;
-		if (pipe.renderState.bcRenderState.isGateLit()) {
-			iconLogic = ((Gate)pipe.pipe.bcPipePart.getGate()).logic.getIconLit();
+		if (bcRenderState.gateMatrix.isGateLit(direction)) {
+			iconLogic = gate.logic.getIconLit();
 		} else {
-			iconLogic = ((Gate)pipe.pipe.bcPipePart.getGate()).logic.getIconDark();
+			iconLogic = gate.logic.getIconDark();
 		}
 
 		float translateCenter = 0;
 
 		// Render base gate
-		renderGate(pipe, iconLogic, 0, 0.1F, 0, 0);
+		renderGate(pipe, iconLogic, 0, 0.1F, 0, 0, direction);
 
-		float pulseStage = ((Gate)pipe.pipe.bcPipePart.getGate()).getPulseStage() * 2F;
+		float pulseStage = gate.getPulseStage() * 2F;
 
-		if (pipe.renderState.bcRenderState.isGatePulsing() || pulseStage != 0) {
+		if (bcRenderState.gateMatrix.isGatePulsing(direction) || pulseStage != 0) {
 			// Render pulsing gate
 			float amplitude = 0.10F;
 			float start = 0.01F;
@@ -770,16 +788,16 @@ public class BuildCraftProxy implements IBCProxy {
 				translateCenter = amplitude - ((pulseStage - 1F) * amplitude) + start;
 			}
 
-			renderGate(pipe, iconLogic, 0, 0.13F, translateCenter, translateCenter);
+			renderGate(pipe, iconLogic, 0, 0.13F, translateCenter, translateCenter, direction);
 		}
 
-		IIcon materialIcon = ((Gate)pipe.pipe.bcPipePart.getGate()).material.getIconBlock();
+		IIcon materialIcon = gate.material.getIconBlock();
 		if (materialIcon != null) {
-			renderGate(pipe, materialIcon, 1, 0.13F, translateCenter, translateCenter);
+			renderGate(pipe, materialIcon, 1, 0.13F, translateCenter, translateCenter, direction);
 		}
 
-		for (IGateExpansion expansion : ((Gate)pipe.pipe.bcPipePart.getGate()).expansions.keySet()) {
-			renderGate(pipe, expansion.getOverlayBlock(), 2, 0.13F, translateCenter, translateCenter);
+		for (IGateExpansion expansion : gate.expansions.keySet()) {
+			renderGate(pipe, expansion.getOverlayBlock(), 2, 0.13F, translateCenter, translateCenter, direction);
 		}
 
 		RenderHelper.enableStandardItemLighting();
@@ -788,10 +806,7 @@ public class BuildCraftProxy implements IBCProxy {
 		GL11.glPopMatrix();
 	}
 
-	private void renderGate(LogisticsTileGenericPipe tile, IIcon icon, int layer, float trim, float translateCenter, float extraDepth) {
-		PipeRenderState state = tile.renderState;
-		BCRenderState bcRenderState = (BCRenderState) state.bcRenderState.getOriginal();
-		
+	private void renderGate(LogisticsTileGenericPipe tile, IIcon icon, int layer, float trim, float translateCenter, float extraDepth, ForgeDirection direction) {
 		RenderInfo renderBox = new RenderInfo();
 		renderBox.texture = icon;
 
@@ -808,28 +823,22 @@ public class BuildCraftProxy implements IBCProxy {
 		// Z START - END
 		zeroState[2][0] = min;
 		zeroState[2][1] = max;
+		GL11.glPushMatrix();
 
-		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-			if (shouldRenderNormalPipeSide(state, bcRenderState, direction)) {
-				GL11.glPushMatrix();
+		float xt = direction.offsetX * translateCenter, yt = direction.offsetY * translateCenter, zt = direction.offsetZ * translateCenter;
 
-				float xt = direction.offsetX * translateCenter,
-						yt = direction.offsetY * translateCenter,
-						zt = direction.offsetZ * translateCenter;
+		GL11.glTranslatef(xt, yt, zt);
 
-				GL11.glTranslatef(xt, yt, zt);
+		float[][] rotated = MatrixTranformations.deepClone(zeroState);
+		MatrixTranformations.transform(rotated, direction);
 
-				float[][] rotated = MatrixTranformations.deepClone(zeroState);
-				MatrixTranformations.transform(rotated, direction);
-
-				if (layer != 0) {
-					renderBox.setRenderSingleSide(direction.ordinal());
-				}
-				renderBox.setBounds(rotated[0][0], rotated[1][0], rotated[2][0], rotated[0][1], rotated[1][1], rotated[2][1]);
-				RenderEntityBlock.INSTANCE.renderBlock(renderBox, tile.getWorldObj(), 0, 0, 0, tile.xCoord, tile.yCoord, tile.zCoord, true, true);
-				GL11.glPopMatrix();
-			}
+		if (layer != 0) {
+			renderBox.setRenderSingleSide(direction.ordinal());
 		}
+
+		renderBox.setBounds(rotated[0][0], rotated[1][0], rotated[2][0], rotated[0][1], rotated[1][1], rotated[2][1]);
+		RenderEntityBlock.INSTANCE.renderBlock(renderBox, tile.getWorldObj(), 0, 0, 0, tile.xCoord, tile.yCoord, tile.zCoord, true, true);
+		GL11.glPopMatrix();
 	}
 	
 	private boolean shouldRenderNormalPipeSide(PipeRenderState state, BCRenderState bcRenderState, ForgeDirection direction) {
@@ -1164,7 +1173,7 @@ public class BuildCraftProxy implements IBCProxy {
 	public Object overridePipeConnection(LogisticsTileGenericPipe pipe, Object type, ForgeDirection dir) {
 		TileEntity target = pipe.getTile(dir, true);
 		ConnectOverride result = ConnectOverride.DEFAULT;
-		if(LogisticsBlockGenericPipe.isFullyDefined(pipe.pipe) && target instanceof TileGenericPipe && !pipe.tilePart.hasPlug(dir) && !pipe.tilePart.hasRobotStation(dir)) {
+		if(LogisticsBlockGenericPipe.isFullyDefined(pipe.pipe) && target instanceof TileGenericPipe && !pipe.tilePart.hasBlockingPluggable(dir)) {
 			result = ConnectOverride.CONNECT;
 		}
 		return result;
@@ -1178,5 +1187,22 @@ public class BuildCraftProxy implements IBCProxy {
 	@Override
 	public IBCRenderState getBCRenderState() {
 		return new BCRenderState();
+	}
+
+	@Override
+	public void checkUpdateNeighbour(TileEntity tile) {
+		if(tile instanceof TileGenericPipe) {
+			((TileGenericPipe) tile).pipe.updateSignalState();
+		}
+	}
+
+	@Override
+	public void logWarning(String format) {
+		BCLog.logger.warn(format);
+	}
+
+	@Override
+	public Class<? extends ICraftingRecipeProvider> getAssemblyTableProviderClass() {
+		return AssemblyTable.class;
 	}
 }

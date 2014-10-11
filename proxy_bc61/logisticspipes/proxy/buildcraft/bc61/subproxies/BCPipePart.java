@@ -1,10 +1,11 @@
-package logisticspipes.proxy.buildcraft.bc60.subproxies;
+package logisticspipes.proxy.buildcraft.bc61.subproxies;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.guis.proxy.bc.GateGui;
@@ -15,10 +16,12 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.BCPipeWireHooks.PipeClassReceiveSignal;
-import logisticspipes.proxy.buildcraft.bc60.BuildCraftProxy;
-import logisticspipes.proxy.buildcraft.bc60.gates.ActionDisableLogistics;
-import logisticspipes.proxy.buildcraft.bc60.gates.wrapperclasses.PipeWrapper;
+import logisticspipes.proxy.buildcraft.bc61.BuildCraftProxy;
+import logisticspipes.proxy.buildcraft.bc61.gates.ActionDisableLogistics;
+import logisticspipes.proxy.buildcraft.bc61.gates.wrapperclasses.PipeWrapper;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePart;
+import logisticspipes.utils.ReflectionHelper;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -26,9 +29,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.api.gates.GateExpansions;
+import buildcraft.api.gates.ActionState;
 import buildcraft.api.gates.IAction;
 import buildcraft.api.gates.IGateExpansion;
+import buildcraft.api.transport.IPipePluggable;
 import buildcraft.api.transport.PipeWire;
 import buildcraft.core.network.TilePacketWrapper;
 import buildcraft.core.utils.Utils;
@@ -37,8 +41,9 @@ import buildcraft.transport.Gate;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportStructure;
 import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.gates.GateDefinition;
+import buildcraft.transport.gates.ActionSlot;
 import buildcraft.transport.gates.GateFactory;
+import buildcraft.transport.gates.ItemGate;
 import buildcraft.transport.gui.ContainerGateInterface;
 import buildcraft.transport.gui.GuiGateInterface;
 
@@ -50,8 +55,12 @@ public class BCPipePart implements IBCPipePart {
 	private final BCCoreState coreState;
 	public int[] signalStrength = new int[]{0, 0, 0, 0};
 	public boolean[] wireSet = new boolean[]{false, false, false, false};
-	public Gate gate;
-	
+	public final Gate[] gates = new Gate[ForgeDirection.VALID_DIRECTIONS.length];
+
+	private boolean closed = false;
+
+	private ArrayList<ActionState> actionStates = new ArrayList<ActionState>();
+
 	private boolean init;
 	
 	public PipeWrapper wrapper;
@@ -66,7 +75,7 @@ public class BCPipePart implements IBCPipePart {
 			wrapper = new PipeWrapper(tile);
 			wrapper.wireSet = getWireSet();
 			wrapper.signalStrength = getSignalStrength();
-			wrapper.gate = gate;
+			ReflectionHelper.setFinalField(Pipe.class, "gates", wrapper, this.gates); //wrapper.gates = gates;
 			stopWrapper();
 		} catch(IllegalArgumentException e) {
 			throw new RuntimeException(e);
@@ -106,7 +115,14 @@ public class BCPipePart implements IBCPipePart {
 	@Override
 	public void updateGate() {
 		// Update the gate if we have any
-		if (gate != null) {
+		closed = false;
+		actionStates.clear();
+
+		// Update the gate if we have any
+		for (Gate gate : gates) {
+			if (gate == null) {
+				continue;
+			}
 			if (container.getWorldObj().isRemote) {
 				// on client, only update the graphical pulse if needed
 				gate.updatePulse();
@@ -114,6 +130,16 @@ public class BCPipePart implements IBCPipePart {
 				// on server, do the internal gate update
 				gate.resolveActions();
 				gate.tick();
+			}
+		}
+
+	}
+
+	@Override
+	public void resolveActions() {
+		for (Gate gate : gates) {
+			if (gate != null) {
+				gate.resolveActions();
 			}
 		}
 	}
@@ -124,10 +150,16 @@ public class BCPipePart implements IBCPipePart {
 			data.setBoolean("wireSet[" + i + "]", wireSet[i]);
 		}
 		// Save gate if any
-		if (gate != null) {
-			NBTTagCompound gateNBT = new NBTTagCompound();
-			gate.writeToNBT(gateNBT);
-			data.setTag("Gate", gateNBT);
+		for (int i = 0; i < ForgeDirection.VALID_DIRECTIONS.length; i++) {
+			final String key = "Gate[" + i + "]";
+			Gate gate = gates[i];
+			if (gate != null) {
+				NBTTagCompound gateNBT = new NBTTagCompound();
+				gate.writeToNBT(gateNBT);
+				data.setTag(key, gateNBT);
+			} else {
+				data.removeTag(key);
+			}
 		}
 	}
 
@@ -138,15 +170,32 @@ public class BCPipePart implements IBCPipePart {
 		}
 		
 		// Load gate if any
+		for (int i = 0; i < ForgeDirection.VALID_DIRECTIONS.length; i++) {
+			final String key = "Gate[" + i + "]";
+			gates[i] = data.hasKey(key) ? GateFactory.makeGate(wrapper, data.getCompoundTag(key)) : null;
+		}
+
+		// Legacy support
 		if (data.hasKey("Gate")) {
-			NBTTagCompound gateNBT = data.getCompoundTag("Gate");
-			wrapper.gate = gate = GateFactory.makeGate(wrapper, gateNBT);
+			for (int i = 0; i < ForgeDirection.VALID_DIRECTIONS.length; i++) {
+				container.tilePart.setGate(GateFactory.makeGate(wrapper, data.getCompoundTag("Gate")), i);
+			}
+			data.removeTag("Gate");
 		}
 	}
 
-	@Override
 	public boolean hasGate() {
-		return gate != null;
+		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+			if (hasGate(direction)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean hasGate(ForgeDirection side) {
+		return container.tilePart.hasGate(side);
 	}
 
 	@Override
@@ -157,8 +206,10 @@ public class BCPipePart implements IBCPipePart {
 			}
 		}
 
-		if (hasGate()) {
-			result.add(gate.getGateItem());
+		for (Gate gate : gates) {
+			if (gate != null) {
+				result.add(gate.getGateItem());
+			}
 		}
 
 		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
@@ -178,8 +229,16 @@ public class BCPipePart implements IBCPipePart {
 
 	@Override
 	public void resetGate() {
-		gate.resetGate();
-		wrapper.gate = gate = null;
+		for (int i = 0; i < gates.length; i++) {
+			Gate gate = gates[i];
+			if (gate != null) {
+				gate.resetGate();
+			}
+			gates[i] = null;
+		}
+
+		this.container.pipe.internalUpdateScheduled = true;
+		container.scheduleRenderUpdate();
 	}
 
 	@Override
@@ -218,19 +277,31 @@ public class BCPipePart implements IBCPipePart {
 		return wireSet[color.ordinal()];
 	}
 
+	private int getMaxRedstoneOutput() {
+		int max = 0;
+
+		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+			Gate gate = gates[dir.ordinal()];
+
+			if (gate != null && gate.getRedstoneOutput() > max) {
+				max = gate.getRedstoneOutput();
+			}
+		}
+
+		return max;
+	}
+
 	@Override
 	public int isPoweringTo(int side) {
-		if (gate != null && gate.getRedstoneOutput() > 0) {
-			ForgeDirection o = ForgeDirection.getOrientation(side).getOpposite();
-			TileEntity tile = container.getTile(o);
-	
-			if (tile instanceof LogisticsTileGenericPipe && container.isPipeConnected(o)) {
-				return 0;
-			}
-	
-			return gate.getRedstoneOutput();
+		ForgeDirection o = ForgeDirection.getOrientation(side).getOpposite();
+
+		TileEntity tile = container.getTile(o);
+
+		if (tile instanceof TileGenericPipe && container.isPipeConnected(o)) {
+			return 0;
+		} else {
+			return getMaxRedstoneOutput();
 		}
-		return 0;
 	}
 
 	public void updateSignalStateForColor(PipeWire wire) {
@@ -239,10 +310,15 @@ public class BCPipePart implements IBCPipePart {
 		}
 
 		// STEP 1: compute internal signal strength
+		boolean readNearbySignal = true;
+		for (Gate gate : gates) {
+			if (gate != null && gate.broadcastSignal.get(wire.ordinal())) {
+				receiveSignal(255, wire);
+				readNearbySignal = false;
+			}
+		}
 
-		if (gate != null && gate.broadcastSignal.get(wire.ordinal())) {
-			receiveSignal(255, wire);
-		} else {
+		if (readNearbySignal) {
 			readNearbyPipesSignal(wire);
 		}
 
@@ -354,8 +430,9 @@ public class BCPipePart implements IBCPipePart {
 	}
 
 	@Override
-	public ItemStack getGateItem() {
-		return gate.getGateItem();
+	public ItemStack getGateItem(int side) {
+		Gate gate = gates[side];
+		return gate != null ? gate.getGateItem() : null;
 	}
 
 	@Override
@@ -364,34 +441,30 @@ public class BCPipePart implements IBCPipePart {
 	}
 
 	@Override
-	public void openGateGui(EntityPlayer player) {
+	public void openGateGui(EntityPlayer player, int side) {
 		if (!player.worldObj.isRemote) {
-			NewGuiHandler.getGui(GateGui.class).setTilePos(container).open(player);
+			NewGuiHandler.getGui(GateGui.class).setSide(side).setTilePos(container).open(player);
 		}
 	}
 
 	@Override
 	public boolean isGateActive() {
-		return gate != null && gate.isGateActive();
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Object getGate() {
-		return gate;
+	public Object getGate(int i) {
+		return gates[i];
 	}
 
 	@Override
 	public void makeGate(CoreUnroutedPipe pipe, ItemStack currentEquippedItem) {
-		wrapper.gate = gate = GateFactory.makeGate(wrapper, currentEquippedItem);
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public LinkedList<?> getActions() {
 		LinkedList<IAction> result = new LinkedList<IAction>();
-
-		if (hasGate()) {
-			gate.addActions(result);
-		}
 		
 		if(container.pipe instanceof CoreRoutedPipe) {
 			if(BuildCraftProxy.LogisticsDisableAction != null) {
@@ -405,56 +478,56 @@ public class BCPipePart implements IBCPipePart {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void actionsActivated(Object obj) {
-		Map<IAction, Boolean> actions = (Map<IAction, Boolean>) obj;
+		Collection<ActionSlot> actions = (Collection<ActionSlot>) obj;
 		if(!(container.pipe instanceof CoreRoutedPipe)) return;
 		((CoreRoutedPipe)container.pipe).setEnabled(true);
 		// Activate the actions
-		for (Entry<IAction, Boolean> i : actions.entrySet()) {
-			if (i.getValue()) {
-				if (i.getKey() instanceof ActionDisableLogistics){
-					((CoreRoutedPipe)container.pipe).setEnabled(false);
-				}
+		for (ActionSlot slot : actions) {
+			if (slot.action instanceof ActionDisableLogistics) {
+				((CoreRoutedPipe)container.pipe).setEnabled(false);
 			}
 		}
 	}
 
 	@Override
 	public void updateCoreStateGateData() {
-		coreState.expansions.clear();
-		if (gate != null) {
-			coreState.gateMaterial = gate.material.ordinal();
-			coreState.gateLogic = gate.logic.ordinal();
-			for (IGateExpansion ex : gate.expansions.keySet()) {
-				coreState.expansions.add(GateExpansions.getServerExpansionID(ex.getUniqueIdentifier()));
-			}
-		} else {
-			coreState.gateMaterial = -1;
-			coreState.gateLogic = -1;
+		for (int i = 0; i < ForgeDirection.VALID_DIRECTIONS.length; i++) {
+			IPipePluggable pluggable = (IPipePluggable) this.container.tilePart.getPluggables(i);
+			((BCCoreState)this.container.bcCoreState.getOriginal()).gates[i] = pluggable instanceof ItemGate.GatePluggable ? (ItemGate.GatePluggable) pluggable : null;
 		}
 	}
 
 	@Override
 	public void updateGateFromCoreStateData() {
-		if (coreState.gateMaterial == -1) {
-			wrapper.gate = gate = null;
-		} else if (gate == null) {
-			wrapper.gate = gate = GateFactory.makeGate(this.wrapper, GateDefinition.GateMaterial.fromOrdinal(coreState.gateMaterial), GateDefinition.GateLogic.fromOrdinal(coreState.gateLogic));
+		for (int i = 0; i < ForgeDirection.VALID_DIRECTIONS.length; i++) {
+			final ItemGate.GatePluggable gatePluggable = coreState.gates[i];
+			if (gatePluggable == null) {
+				wrapper.gates[i] = gates[i] = null;
+				continue;
+			}
+			Gate gate = gates[i];
+			if (gate == null || gate.logic != gatePluggable.logic || gate.material != gatePluggable.material) {
+				wrapper.gates[i] = gates[i] = GateFactory.makeGate(this.wrapper, gatePluggable.material, gatePluggable.logic, ForgeDirection.getOrientation(i));
+			}
 		}
-
+		
 		syncGateExpansions();
 	}
 
 	private void syncGateExpansions() {
 		resyncGateExpansions = false;
-		if (gate != null && !coreState.expansions.isEmpty()) {
-			for (byte id : coreState.expansions) {
-				IGateExpansion ex = GateExpansions.getExpansionClient(id);
-				if (ex != null) {
-					if (!gate.expansions.containsKey(ex)) {
-						gate.addGateExpansion(ex);
+		for (int i = 0; i < ForgeDirection.VALID_DIRECTIONS.length; i++) {
+			Gate gate = gates[i];
+			ItemGate.GatePluggable gatePluggable = coreState.gates[i];
+			if (gate != null && gatePluggable.expansions.length > 0) {
+				for (IGateExpansion expansion : gatePluggable.expansions) {
+					if (expansion != null) {
+						if (!gate.expansions.containsKey(expansion)) {
+							gate.addGateExpansion(expansion);
+						}
+					} else {
+						resyncGateExpansions = true;
 					}
-				} else {
-					resyncGateExpansions = true;
 				}
 			}
 		}
@@ -468,13 +541,20 @@ public class BCPipePart implements IBCPipePart {
 	}
 
 	@Override
-	public Container getGateContainer(InventoryPlayer inventory) {
-		return new ContainerGateInterface(inventory, wrapper);
+	public Container getGateContainer(InventoryPlayer inventory, int side) {
+		ContainerGateInterface gui =  new ContainerGateInterface(inventory, wrapper);
+		gui.setGate(side);
+		return gui;
 	}
 
 	@Override
-	public Object getClientGui(InventoryPlayer inventory) {
-		return new GuiGateInterface(inventory, wrapper);
+	public Object getClientGui(InventoryPlayer inventory, int side) {
+		GuiGateInterface gui = new GuiGateInterface(inventory, wrapper);
+		gui.mc = Minecraft.getMinecraft();
+		gui.setGate(this.gates[side]);
+		((ContainerGateInterface)gui.inventorySlots).setGate(side);
+		gui.slots.clear();
+		return gui;
 	}
 
 	@Override
@@ -497,5 +577,15 @@ public class BCPipePart implements IBCPipePart {
 	@Override
 	public void refreshRedStoneInput(int redstoneInput) {
 		wrapper.container.redstoneInput = redstoneInput;
+	}
+
+	@Override
+	public Object getGates() {
+		return gates;
+	}
+
+	@Override
+	public Object getWrapped() {
+		return wrapper;
 	}
 }

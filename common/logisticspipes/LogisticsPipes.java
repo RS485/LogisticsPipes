@@ -74,14 +74,12 @@ import logisticspipes.proxy.ProxyManager;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.SpecialInventoryHandlerManager;
 import logisticspipes.proxy.SpecialTankHandlerManager;
-import logisticspipes.proxy.buildcraft.bc60.BuildCraftProxy;
 import logisticspipes.proxy.computers.objects.LPGlobalCCAccess;
 import logisticspipes.proxy.forestry.ForestryProgressProvider;
 import logisticspipes.proxy.ic2.IC2ProgressProvider;
 import logisticspipes.proxy.interfaces.ICraftingParts;
 import logisticspipes.proxy.progressprovider.MachineProgressProvider;
 import logisticspipes.proxy.recipeproviders.AssemblyAdvancedWorkbench;
-import logisticspipes.proxy.recipeproviders.AssemblyTable;
 import logisticspipes.proxy.recipeproviders.AutoWorkbench;
 import logisticspipes.proxy.recipeproviders.ImmibisCraftingTableMk2;
 import logisticspipes.proxy.recipeproviders.LogisticsCraftingTable;
@@ -322,8 +320,6 @@ public class LogisticsPipes {
 		FMLCommonHandler.instance().bus().register(eventListener);
 		MinecraftForge.EVENT_BUS.register(new LPChatListener());
 		textures.registerBlockIcons(null);
-		
-		SimpleServiceLocator.buildCraftProxy.initProxy();
 
 		FMLCommonHandler.instance().bus().register(DebugGuiTickHandler.instance());
 	}
@@ -342,8 +338,6 @@ public class LogisticsPipes {
 			log.debug("Please report any you find to https://github.com/RS485/LogisticsPipes/issues");
 		}
 		SimpleServiceLocator.setPipeInformationManager(new PipeInformaitonManager());
-		SimpleServiceLocator.setBuildCraftProxy(new BuildCraftProxy());
-		SimpleServiceLocator.buildCraftProxy.registerPipeInformationProvider();
 
 		if (Configs.EASTER_EGGS) {
 			Calendar calendar = Calendar.getInstance();
@@ -363,6 +357,9 @@ public class LogisticsPipes {
 		ProxyManager.load();
 		SpecialInventoryHandlerManager.load();
 		SpecialTankHandlerManager.load();
+
+		SimpleServiceLocator.buildCraftProxy.registerPipeInformationProvider();
+		SimpleServiceLocator.buildCraftProxy.initProxy();
 
 		SimpleServiceLocator.specialpipeconnection.registerHandler(new TeleportPipes());
 		SimpleServiceLocator.specialtileconnection.registerHandler(new TesseractConnection());
@@ -446,7 +443,9 @@ public class LogisticsPipes {
 
 		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Factory", "AutoWorkbench", AutoWorkbench.class));
 		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Silicon", "AssemblyAdvancedWorkbench", AssemblyAdvancedWorkbench.class));
-		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Silicon", "AssemblyTable", AssemblyTable.class));
+		if(SimpleServiceLocator.buildCraftProxy.getAssemblyTableProviderClass() != null) {
+			SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Silicon", "AssemblyTable", SimpleServiceLocator.buildCraftProxy.getAssemblyTableProviderClass()));
+		}
 		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("Railcraft", "RollingMachine", RollingMachine.class));
 		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("Tubestuff", "ImmibisCraftingTableMk2", ImmibisCraftingTableMk2.class));
 		SimpleServiceLocator.addCraftingRecipeProvider(new SolderingStation());

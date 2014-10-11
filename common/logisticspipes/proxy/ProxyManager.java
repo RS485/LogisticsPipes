@@ -13,7 +13,6 @@ import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.bs.BetterStorageProxy;
 import logisticspipes.proxy.bs.ICrateStorageProxy;
-import logisticspipes.proxy.buildcraft.bc60.BuildCraftProxy;
 import logisticspipes.proxy.buildcraft.subproxies.IBCCoreState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePart;
 import logisticspipes.proxy.buildcraft.subproxies.IBCRenderState;
@@ -30,6 +29,7 @@ import logisticspipes.proxy.interfaces.IBCProxy;
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.ICraftingParts;
+import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IEnderIOProxy;
 import logisticspipes.proxy.interfaces.IEnderStorageProxy;
 import logisticspipes.proxy.interfaces.IFactorizationProxy;
@@ -48,6 +48,7 @@ import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 import logisticspipes.proxy.toolWrench.ToolWrenchProxy;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.transport.LPTravelingItem;
+import logisticspipes.utils.ModStatusHelper;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
@@ -78,8 +79,9 @@ public class ProxyManager {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static void load() {
-		SimpleServiceLocator.setBuildCraftProxy(getWrappedProxy("BuildCraft|Transport", IBCProxy.class, BuildCraftProxy.class, new IBCProxy() {
+		IBCProxy bcDummyProxy = new IBCProxy() {
 			@Override public void resetItemRotation() {}
 			@Override public boolean insertIntoBuildcraftPipe(TileEntity tile, LPTravelingItem item) {return false;}
 			@Override public boolean isIPipeTile(TileEntity tile) {return false;}
@@ -94,30 +96,33 @@ public class ProxyManager {
 					@Override public void updateGate() {}
 					@Override public void writeToNBT(NBTTagCompound data) {}
 					@Override public void readFromNBT(NBTTagCompound data) {}
-					@Override public boolean hasGate() {return false;}
 					@Override public void addItemDrops(List<ItemStack> result) {}
 					@Override public void resetGate() {}
 					@Override public boolean isWireConnectedTo(TileEntity tile, Object color) {return false;}
 					@Override public boolean isWired() {return false;}
 					@Override public int isPoweringTo(int side) {return 0;}
 					@Override public void updateSignalState() {}
-					@Override public boolean[] getWireSet() {return null;}
-					@Override public ItemStack getGateItem() {return null;}
-					@Override public int[] getSignalStrength() {return null;}
-					@Override public void openGateGui(EntityPlayer player) {}
+					@Override public boolean[] getWireSet() {return new boolean[4];}
+					@Override public int[] getSignalStrength() {return new int[4];}
 					@Override public boolean isGateActive() {return false;}
 					@Override public boolean receiveSignal(int i, Object wire) {return false;}
-					@Override public Object getGate() {return null;}
 					@Override public void makeGate(CoreUnroutedPipe pipe, ItemStack currentEquippedItem) {}
 					@Override public void updateCoreStateGateData() {}
 					@Override public void updateGateFromCoreStateData() {}
 					@Override public void checkResyncGate() {}
 					@Override public void actionsActivated(Object actions) {}
 					@Override public void updateEntity() {}
-					@Override public Container getGateContainer(InventoryPlayer inventory) {return null;}
-					@Override public Object getClientGui(InventoryPlayer inventory) {return null;}
+					@Override public Container getGateContainer(InventoryPlayer inventory, int side) {return null;}
+					@Override public Object getClientGui(InventoryPlayer inventory, int side) {return null;}
 					@Override public LinkedList<?> getActions() {return null;}
 					@Override public void refreshRedStoneInput(int redstoneInput) {}
+					@Override public boolean hasGate(ForgeDirection sideHit) {return false;}
+					@Override public ItemStack getGateItem(int side) {return null;}
+					@Override public void openGateGui(EntityPlayer player, int side) {}
+					@Override public Object getGate(int i) {return null;}
+					@Override public Object getGates() {return null;}
+					@Override public void resolveActions() {}
+					@Override public Object getWrapped() {return null;}
 				};
 			}
 			@Override public boolean handleBCClickOnPipe(ItemStack currentItem, CoreUnroutedPipe pipe, World world, int x, int y, int z, EntityPlayer player, int side, LogisticsBlockGenericPipe logisticsBlockGenericPipe) {return false;}
@@ -142,6 +147,16 @@ public class ProxyManager {
 					@Override public void readFromNBT(NBTTagCompound nbt) {}
 					@Override public void invalidate() {}
 					@Override public void validate() {}
+					@Override public Object getPluggables(int i) {return null;}
+					@Override public void updateEntity() {}
+					@Override public boolean hasGate(ForgeDirection side) {return false;}
+					@Override public void setGate(Object makeGate, int i) {}
+					@Override public boolean hasEnabledFacade(ForgeDirection dir) {return false;}
+					@Override public boolean dropSideItems(ForgeDirection sideHit) {return false;}
+					@Override public boolean hasBlockingPluggable(ForgeDirection side) {return false;}
+					@Override public Object getStation(ForgeDirection sideHit) {return null;}
+					@Override public boolean addGate(ForgeDirection side, Object makeGate) {return false;}
+					@Override public boolean addFacade(ForgeDirection direction, Object states) {return false;}
 				};
 			}
 			@Override public void notifyOfChange(LogisticsTileGenericPipe pipe, TileEntity tile, ForgeDirection o) {}
@@ -187,7 +202,20 @@ public class ProxyManager {
 					@Override public void setIsGatePulsing(boolean gateActive) {}
 				};
 			}
-		}, IBCPipePart.class, IBCTilePart.class, ILPBCPowerProxy.class, IBCCoreState.class, IBCRenderState.class));
+			@Override public void checkUpdateNeighbour(TileEntity tile) {}
+			@Override public void logWarning(String format) {}
+			@Override public Class<? extends ICraftingRecipeProvider> getAssemblyTableProviderClass() {return null;}
+		};
+		
+		try {
+			if(ModStatusHelper.isModLoaded("BuildCraft|Transport@6.1")) {
+				SimpleServiceLocator.setBuildCraftProxy(getWrappedProxy("BuildCraft|Transport", IBCProxy.class, (Class<? extends IBCProxy>) Class.forName("logisticspipes.proxy.buildcraft.bc61.BuildCraftProxy"), bcDummyProxy, IBCPipePart.class, IBCTilePart.class, ILPBCPowerProxy.class, IBCCoreState.class, IBCRenderState.class));
+			} else {
+				SimpleServiceLocator.setBuildCraftProxy(getWrappedProxy("BuildCraft|Transport", IBCProxy.class, (Class<? extends IBCProxy>) Class.forName("logisticspipes.proxy.buildcraft.bc60.BuildCraftProxy"), bcDummyProxy, IBCPipePart.class, IBCTilePart.class, ILPBCPowerProxy.class, IBCCoreState.class, IBCRenderState.class));
+			}
+		} catch(ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
 		
 		SimpleServiceLocator.setForestryProxy(getWrappedProxy("Forestry", IForestryProxy.class, ForestryProxy.class, new IForestryProxy() {
 			@Override public boolean isBee(ItemStack item) {return false;}

@@ -56,4 +56,8 @@ public interface IBCProxy {
 	Object overridePipeConnection(LogisticsTileGenericPipe pipe, Object type, ForgeDirection dir);
 	IBCCoreState getBCCoreState();
 	IBCRenderState getBCRenderState();
+	/** BC6.0 */
+	void checkUpdateNeighbour(TileEntity tile);
+	void logWarning(String format);
+	Class<? extends ICraftingRecipeProvider> getAssemblyTableProviderClass();
 }

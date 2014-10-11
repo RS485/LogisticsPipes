@@ -5,6 +5,8 @@
 !/gradle
 !/resources
 !/style
+!/proxy_bc60
+!/proxy_bc61
 
 !/.gitignore
 !/.travis.yml
@@ -17,4 +19,4 @@
 !/expect.tcl
 !/gradlew
 !/gradlew.bat
-!/load-fingerprint.xml
+!/build-ant.xml

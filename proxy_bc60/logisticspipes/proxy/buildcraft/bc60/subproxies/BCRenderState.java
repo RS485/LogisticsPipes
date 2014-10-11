@@ -4,9 +4,8 @@ import java.io.IOException;
 
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.buildcraft.renderer.FacadeMatrix;
-import logisticspipes.proxy.buildcraft.renderer.WireMatrix;
+import logisticspipes.proxy.buildcraft.bc60.renderer.FacadeMatrix;
+import logisticspipes.proxy.buildcraft.bc60.renderer.WireMatrix;
 import logisticspipes.proxy.buildcraft.subproxies.IBCRenderState;
 import logisticspipes.renderer.state.ConnectionMatrix;
 

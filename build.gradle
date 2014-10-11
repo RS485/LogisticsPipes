@@ -23,11 +23,11 @@ repositories {
 }
 
 ant.importBuild 'download-api.xml'
-ant.importBuild 'load-fingerprint.xml'
+ant.importBuild 'build-ant.xml'
 
 apply plugin: 'forge'
 
-version = "0.8.0"
+version = "0.8.1"
 def buildby = 'local'
 
 def ENV = System.getenv()
@@ -40,6 +40,9 @@ if (ENV.BUILD_NUMBER) {
 
 group= "rs485.logisticspipes" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "logisticspipes"
+
+ant.version = version
+ant.archivesBaseName = archivesBaseName
 
 minecraft {
     version = "1.7.10-10.13.1.1217"
@@ -67,6 +70,7 @@ sourceSets {
     main {
         java {
             srcDir 'common'
+            srcDir 'proxy_bc60'
             // exclude 'some exclusion'
             // include 'some inclusion'
         }
@@ -128,4 +132,4 @@ artifacts {
 
 tasks.compileApiJava.dependsOn('extract')
 tasks.compileJava.dependsOn('loadFingerprints')
-tasks.assemble.dependsOn('sourceJar', 'deobfJar', 'signJars')
+tasks.assemble.dependsOn('deobfJar', 'sourceJar', 'addBC61', 'signJars')

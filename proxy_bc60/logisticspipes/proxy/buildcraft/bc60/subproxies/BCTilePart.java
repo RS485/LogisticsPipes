@@ -389,4 +389,56 @@ public class BCTilePart implements IBCTilePart {
 
 	@Override
 	public void validate() {}
+
+	@Override
+	public Object getPluggables(int i) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void updateEntity() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean hasGate(ForgeDirection side) {
+		return pipe.pipe.bcPipePart.hasGate(side);
+	}
+
+	@Override
+	public boolean hasEnabledFacade(ForgeDirection dir) {
+		return hasFacade(dir);
+	}
+
+	@Override
+	public boolean hasBlockingPluggable(ForgeDirection side) {
+		return this.hasPlug(side) || this.hasRobotStation(side);
+	}
+
+	@Override
+	public void setGate(Object makeGate, int i) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean dropSideItems(ForgeDirection sideHit) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Object getStation(ForgeDirection sideHit) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean addGate(ForgeDirection side, Object makeGate) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean addFacade(ForgeDirection direction, Object states) {
+		throw new UnsupportedOperationException();
+	}
 }

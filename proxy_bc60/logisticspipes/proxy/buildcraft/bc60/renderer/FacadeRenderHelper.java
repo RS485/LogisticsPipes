@@ -1,4 +1,4 @@
-package logisticspipes.proxy.buildcraft.renderer;
+package logisticspipes.proxy.buildcraft.bc60.renderer;
 
 import logisticspipes.LPConstants;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;

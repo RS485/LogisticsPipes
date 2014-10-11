@@ -6,7 +6,7 @@
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
-package logisticspipes.proxy.buildcraft.bc60.gates;
+package logisticspipes.proxy.buildcraft.bc61.gates;
 
 import java.util.LinkedList;
 
@@ -17,15 +17,13 @@ import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.buildcraft.bc60.BuildCraftProxy;
-import logisticspipes.proxy.buildcraft.bc60.gates.wrapperclasses.TilePipeWrapper;
+import logisticspipes.proxy.buildcraft.bc61.BuildCraftProxy;
+import logisticspipes.proxy.buildcraft.bc61.gates.wrapperclasses.TilePipeWrapper;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import buildcraft.api.gates.ITrigger;
 import buildcraft.api.gates.ITriggerProvider;
 import buildcraft.api.transport.IPipeTile;
-import buildcraft.transport.Gate;
-import buildcraft.transport.gates.GateDefinition;
 
 public class LogisticsTriggerProvider implements ITriggerProvider {
 
@@ -42,12 +40,7 @@ public class LogisticsTriggerProvider implements ITriggerProvider {
 			}
 	        if (lPipe.pipe instanceof CoreRoutedPipe) {
 	            //Only show this conditional on Gates that can accept parameters
-	            if (((CoreRoutedPipe) lPipe.pipe).hasGate()) {
-	                Gate gate = (Gate) lPipe.pipe.bcPipePart.getGate();
-	                if ((gate.logic == GateDefinition.GateLogic.AND || gate.logic == GateDefinition.GateLogic.OR) && gate.material == GateDefinition.GateMaterial.DIAMOND) {
-	                    triggers.add(BuildCraftProxy.LogisticsHasDestinationTrigger);
-	                }
-	            }
+	            triggers.add(BuildCraftProxy.LogisticsHasDestinationTrigger);
 	        }
 	        if(!triggers.isEmpty()) {
 	        	return triggers;

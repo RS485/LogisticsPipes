@@ -3,6 +3,7 @@ package logisticspipes.proxy.buildcraft.subproxies;
 import java.util.LinkedList;
 import java.util.List;
 
+import buildcraft.transport.Pipe;
 import logisticspipes.asm.IgnoreDisabledProxy;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,6 +12,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public interface IBCPipePart {
 	void updateGate();
@@ -18,28 +20,31 @@ public interface IBCPipePart {
 	void writeToNBT(NBTTagCompound data);
 	@IgnoreDisabledProxy
 	void readFromNBT(NBTTagCompound data);
-	boolean hasGate();
+	boolean hasGate(ForgeDirection sideHit);
 	void addItemDrops(List<ItemStack> result);
 	void resetGate();
 	boolean isWireConnectedTo(TileEntity tile, Object color);
 	int isPoweringTo(int side);
 	void updateSignalState();
 	boolean[] getWireSet();
-	ItemStack getGateItem();
+	ItemStack getGateItem(int side);
 	int[] getSignalStrength();
-	void openGateGui(EntityPlayer player);
+	void openGateGui(EntityPlayer player, int side);
 	boolean isGateActive();
 	boolean receiveSignal(int i, Object wire);
-	Object getGate();
+	Object getGate(int i);
 	void makeGate(CoreUnroutedPipe pipe, ItemStack currentEquippedItem);
 	void updateCoreStateGateData();
 	void updateGateFromCoreStateData();
 	void checkResyncGate();
 	void actionsActivated(Object actions);
 	void updateEntity();
-	Container getGateContainer(InventoryPlayer inventory);
-	Object getClientGui(InventoryPlayer inventory);
+	Container getGateContainer(InventoryPlayer inventory, int side);
+	Object getClientGui(InventoryPlayer inventory, int side);
 	LinkedList<?> getActions();
 	boolean isWired();
 	void refreshRedStoneInput(int redstoneInput);
+	Object getGates();
+	void resolveActions();
+	Object getWrapped();
 }

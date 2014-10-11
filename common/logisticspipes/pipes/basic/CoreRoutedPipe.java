@@ -993,7 +993,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		if(getUpgradeManager().isSideDisconnected(side)) {
 			return false;
 		}
-		if(container != null && side != ForgeDirection.UNKNOWN && container.tilePart.hasPlug(side)) {
+		if(container != null && side != ForgeDirection.UNKNOWN && container.tilePart.hasBlockingPluggable(side)) {
 			return false;
 		}
 		if(!stillNeedReplace) {

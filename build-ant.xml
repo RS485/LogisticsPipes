@@ -1,0 +1,118 @@
+<project name="LogisticsPipes" default="extract">
+	<!-- Properties -->
+	<property name="build.dir"            value="build"/>
+	<property name="result.dir"           value="${build.dir}/libs"/>
+	<property name="download.dir"         value="${build.dir}/download"/>
+	<property name="antcontlib.dir"       value="${build.dir}/antcontlib"/>
+	
+	<property name="sign.dir"             value="/home/jenkins/.sign"/>
+	
+	<property name="downloadserver"       value="http://rs485.theZorro266.com"/>
+	<property name="downloadserver.dir"   value="external/"/>
+	<property name="downloadserver.full"  value="${downloadserver}/${downloadserver.dir}"/>
+	
+	<property name="antcont.version"      value="1.0b3"/>
+
+	<target name="loadFingerprints" depends="sourceMainJava">
+		<mkdir dir="${download.dir}"/>
+		<get src="${downloadserver.full}ant-contrib-${antcont.version}-bin.zip" dest="${download.dir}" usetimestamp="True"/>
+		<unzip dest="${antcontlib.dir}" failOnEmptyArchive="true">
+			<fileset dir="${download.dir}">
+				<include name="ant-contrib-${antcont.version}-bin.zip"/>
+			</fileset>
+		</unzip>
+		<!-- Pull in ant-contrib for if task -->
+		<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+			<classpath>
+				<pathelement location="${antcontlib.dir}/ant-contrib/ant-contrib-${antcont.version}.jar"/>
+			</classpath>
+		</taskdef>
+		<if>
+			<available file="${sign.dir}/.fingerprint"/>
+			<then>
+				<echo message="Loading FingerPrint"/>
+				<loadfile property="fingerprint" srcFile="${sign.dir}/.fingerprint"/>
+				<replace file="${build.dir}/sources/java/logisticspipes/LogisticsPipes.java" token="%------------CERTIFICATE-SUM-----------%" value='*/ certificateFingerprint="${fingerprint}", /*'/>
+			</then>
+		</if>
+	</target>
+
+	<target name="signJars" depends="addBC61, loadFingerprints, deobfJar, sourceJar, jar">
+		<if>
+			<available file="${sign.dir}/.fingerprint"/>
+			<then>
+				<echo message="Loading SignSettings"/>
+				<loadfile property="key" srcFile="${sign.dir}/.key"/>
+				<signjar alias="RS485" keystore="${sign.dir}/.keystore" storepass="${key}">
+					<path>
+						<fileset dir="${result.dir}" includes="**/*.jar" />
+					</path>
+				</signjar>
+			</then>
+		</if>
+	</target>
+	
+	<target name="addBC61" depends="loadFingerprints, deobfJar, sourceJar, jar">
+		<echo message="Generating BC6.1 part"/>
+		<echo message="#############################################################################"/>
+		<trycatch>
+			<try>
+				<exec executable="gradlew.bat" output="build-bc61.log" failonerror="true" osfamily="windows">
+					<arg value="-b"/>
+					<arg value="build-bc61.gradle"/>
+					<arg value="assemble"/>			
+				</exec>
+				<exec executable="gradle" output="build-bc61.log" failonerror="true" osfamily="unix">
+					<arg value="-b"/>
+					<arg value="build-bc61.gradle"/>
+					<arg value="assemble"/>			
+				</exec>
+			</try>
+			<finally>
+				<loadfile property="message" srcFile="build-bc61.log"/>
+				<echo message="${message}"/>
+				<delete file="build-bc61.log"/>
+				<echo message="#############################################################################"/>
+			</finally>
+		</trycatch>
+		<echo message="BC6.1 part Generated"/>
+		
+		<echo message="BC6.1 inserting obf"/>
+		<unzip src="${result.dir}/logisticspipes-bc61.jar" dest="${result.dir}/logisticspipes-bc61">
+			<patternset>
+				<include name="logisticspipes/proxy/buildcraft/bc61/**/*.class"/>
+			</patternset>
+		</unzip>
+		<delete file="${result.dir}/logisticspipes-bc61.jar"/>
+		<zip destfile="${result.dir}/${archivesBaseName}-${version}.jar" update="true">
+			<zipfileset dir="${result.dir}/logisticspipes-bc61/" includes="**/*.class"/>
+		</zip>
+		<delete dir="${result.dir}/logisticspipes-bc61/"/>
+		
+		<echo message="BC6.1 inserting dev"/>
+		<unzip src="${result.dir}/logisticspipes-bc61-dev.jar" dest="${result.dir}/logisticspipes-bc61-dev">
+			<patternset>
+				<include name="logisticspipes/proxy/buildcraft/bc61/**/*.class"/>
+			</patternset>
+		</unzip>
+		<delete file="${result.dir}/logisticspipes-bc61-dev.jar"/>
+		<zip destfile="${result.dir}/${archivesBaseName}-${version}-dev.jar" update="true">
+			<zipfileset dir="${result.dir}/logisticspipes-bc61-dev/" includes="**/*.class"/>
+		</zip>
+		<delete dir="${result.dir}/logisticspipes-bc61-dev/"/>
+		
+		<echo message="BC6.1 inserting src"/>
+		<unzip src="${result.dir}/logisticspipes-bc61-src.jar" dest="${result.dir}/logisticspipes-bc61-src">
+			<patternset>
+				<include name="logisticspipes/proxy/buildcraft/bc61/**/*.java"/>
+			</patternset>
+		</unzip>
+		<delete file="${result.dir}/logisticspipes-bc61-src.jar"/>
+		<zip destfile="${result.dir}/${archivesBaseName}-${version}-src.jar" update="true">
+			<zipfileset dir="${result.dir}/logisticspipes-bc61-src/" includes="**/*.java"/>
+		</zip>
+		<delete dir="${result.dir}/logisticspipes-bc61-src/"/>
+		
+		<echo message="BC6.1 part inserted"/>
+	</target>
+</project>

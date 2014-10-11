@@ -2,13 +2,10 @@ package logisticspipes.renderer.state;
 
 import java.io.IOException;
 
-import logisticspipes.asm.ModDependentField;
 import logisticspipes.interfaces.IClientState;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.buildcraft.renderer.FacadeMatrix;
-import logisticspipes.proxy.buildcraft.renderer.WireMatrix;
 import logisticspipes.proxy.buildcraft.subproxies.IBCRenderState;
 import net.minecraft.util.IIcon;
 import cpw.mods.fml.relauncher.Side;

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
+import buildcraft.transport.TileGenericPipe;
 import logisticspipes.Configs;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
@@ -20,6 +21,7 @@ import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.textures.Textures;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.MatrixTranformations;
+import logisticspipes.utils.TileBuffer;
 import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
@@ -145,32 +147,32 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 			float facadeThickness = LPConstants.FACADE_THICKNESS;
 
-			if (tileG.tilePart.hasFacade(ForgeDirection.EAST)) {
+			if (tileG.tilePart.hasEnabledFacade(ForgeDirection.EAST)) {
 				setBlockBounds(1 - facadeThickness, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 				super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			}
 
-			if (tileG.tilePart.hasFacade(ForgeDirection.WEST)) {
+			if (tileG.tilePart.hasEnabledFacade(ForgeDirection.WEST)) {
 				setBlockBounds(0.0F, 0.0F, 0.0F, facadeThickness, 1.0F, 1.0F);
 				super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			}
 
-			if (tileG.tilePart.hasFacade(ForgeDirection.UP)) {
+			if (tileG.tilePart.hasEnabledFacade(ForgeDirection.UP)) {
 				setBlockBounds(0.0F, 1 - facadeThickness, 0.0F, 1.0F, 1.0F, 1.0F);
 				super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			}
 
-			if (tileG.tilePart.hasFacade(ForgeDirection.DOWN)) {
+			if (tileG.tilePart.hasEnabledFacade(ForgeDirection.DOWN)) {
 				setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, facadeThickness, 1.0F);
 				super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			}
 
-			if (tileG.tilePart.hasFacade(ForgeDirection.SOUTH)) {
+			if (tileG.tilePart.hasEnabledFacade(ForgeDirection.SOUTH)) {
 				setBlockBounds(0.0F, 0.0F, 1 - facadeThickness, 1.0F, 1.0F, 1.0F);
 				super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			}
 
-			if (tileG.tilePart.hasFacade(ForgeDirection.NORTH)) {
+			if (tileG.tilePart.hasEnabledFacade(ForgeDirection.NORTH)) {
 				setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, facadeThickness);
 				super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			}
@@ -706,6 +708,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 		pipeRemoved.put(new LPPosition(x, y, z), pipe);
 		world.removeTileEntity(x, y, z);
+		updateNeighbourSignalState(pipe);
 	}
 
 	@Override
@@ -759,7 +762,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			switch (rayTraceResult.hitPart) {
 			case Gate:
 				CoreUnroutedPipe pipe = getPipe(world, x, y, z);
-				return pipe.bcPipePart.getGateItem();
+				return pipe.bcPipePart.getGateItem(rayTraceResult.sideHit.ordinal());
 			case Plug:
 				return SimpleServiceLocator.buildCraftProxy.getPipePlugItemStack();
 			case RobotStation:
@@ -784,6 +787,12 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		if (isValid(pipe)) {
 			pipe.container.scheduleNeighborChange();
 			pipe.container.redstoneInput = world.isBlockIndirectlyGettingPowered(x, y, z) ? 15 : world.getBlockPowerInput(x, y, z);
+			
+			for (int i = 0; i < ForgeDirection.VALID_DIRECTIONS.length; i++) {
+				ForgeDirection d = ForgeDirection.getOrientation(i);
+				pipe.container.redstoneInputSide[i] = world.isBlockProvidingPowerTo(x + d.offsetY, y + d.offsetY, z + d.offsetZ, i);
+			}
+			
 			pipe.bcPipePart.refreshRedStoneInput(pipe.container.redstoneInput);
 		}
 	}
@@ -841,23 +850,15 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			} else if(SimpleServiceLocator.buildCraftProxy.handleBCClickOnPipe(currentItem, pipe, world, x, y, z, player, side, this)) {
 				return true;
 			}
-
-			boolean clickedOnGate = false;
-
 			if (pipe.hasGate()) {
 				RaytraceResult rayTraceResult = doRayTrace(world, x, y, z, player);
 
 				if (rayTraceResult != null && rayTraceResult.hitPart == Part.Gate) {
-					clickedOnGate = true;
+					pipe.bcPipePart.openGateGui(player, rayTraceResult.sideHit.ordinal());
+					return true;
 				}
 			}
-
-			if (clickedOnGate) {
-				pipe.bcPipePart.openGateGui(player);
-				return true;
-			} else {
-				return pipe.blockActivated(player);
-			}
+			return pipe.blockActivated(player);
 		}
 
 		return false;
@@ -1123,6 +1124,21 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			return facadeRenderColor;
 		}
 		return super.colorMultiplier(world, x, y, z);
+	}
+	
+	public static void updateNeighbourSignalState(CoreUnroutedPipe pipe) {
+		TileBuffer[] neighbours = pipe.container.getTileCache();
+
+		if (neighbours != null) {
+			for (int i = 0; i < 6; i++) {
+				if (neighbours[i] != null && neighbours[i].getTile() != null && !neighbours[i].getTile().isInvalid()) {
+					SimpleServiceLocator.buildCraftProxy.checkUpdateNeighbour(neighbours[i].getTile());
+					if(neighbours[i].getTile() instanceof LogisticsTileGenericPipe) {
+						((LogisticsTileGenericPipe) neighbours[i].getTile()).pipe.updateSignalState();
+					}
+				}
+			}
+		}
 	}
 	
 	private static void cacheTileToPreventRemoval(CoreUnroutedPipe pipe) {

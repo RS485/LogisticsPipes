@@ -1,4 +1,4 @@
-package logisticspipes.proxy.recipeproviders;
+package logisticspipes.proxy.buildcraft.bc61.recipeprovider;
 
 import java.util.List;
 
@@ -8,9 +8,12 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
+import buildcraft.api.recipes.IFlexibleCrafter;
+import buildcraft.api.recipes.IFlexibleRecipe;
 import buildcraft.core.recipes.AssemblyRecipeManager;
-import buildcraft.core.recipes.AssemblyRecipeManager.AssemblyRecipe;
+import buildcraft.core.recipes.FlexibleRecipe;
 import buildcraft.silicon.TileAssemblyTable;
 
 public class AssemblyTable implements ICraftingRecipeProvider {
@@ -27,26 +30,35 @@ public class AssemblyTable implements ICraftingRecipeProvider {
 		TileAssemblyTable table = (TileAssemblyTable) tile;
 
 		//current pipe inputs/outputs
-		ItemIdentifierInventory inputs = new ItemIdentifierInventory(inventory.getSizeInventory() - 2, "AssemblyTableDummyInv", 64, false);
+		final ItemIdentifierInventory inputs = new ItemIdentifierInventory(inventory.getSizeInventory() - 2, "AssemblyTableDummyInv", 64, false);
 		for(int i = 0; i< inventory.getSizeInventory() - 2; i++)
 			inputs.setInventorySlotContents(i, inventory.getIDStackInSlot(i));
 		ItemStack output = inventory.getStackInSlot(inventory.getSizeInventory() - 2);
 
 		//see if there's a recipe planned in the table that matches the current pipe settings, if yes take the next, otherwise take the first
-		AssemblyRecipe firstRecipe = null;
-		AssemblyRecipe nextRecipe = null;
+		FlexibleRecipe<ItemStack> firstRecipe = null;
+		FlexibleRecipe<ItemStack> nextRecipe = null;
 		boolean takeNext = false;
-		for (AssemblyRecipe r : AssemblyRecipeManager.INSTANCE.getRecipes()) {
+		for (IFlexibleRecipe<ItemStack> r : AssemblyRecipeManager.INSTANCE.getRecipes()) {
+			if(!(r instanceof FlexibleRecipe)) continue;
+			if(!((FlexibleRecipe<ItemStack>)r).inputFluids.isEmpty()) continue;
 			if(table.isPlanned(r)) {
 				if(firstRecipe == null) {
-					firstRecipe = r;
+					firstRecipe = (FlexibleRecipe<ItemStack>) r;
 				}
 				if(takeNext) {
-					nextRecipe = r;
+					nextRecipe = (FlexibleRecipe<ItemStack>) r;
 					break;
 				}
-				if(output != null && ItemStack.areItemStacksEqual(output, r.output)) {
-					if(r.canBeDone(inputs)) {
+				if(output != null && ItemStack.areItemStacksEqual(output, ((FlexibleRecipe<ItemStack>)r).output)) {
+					if(((FlexibleRecipe<ItemStack>)r).canBeCrafted(new IFlexibleCrafter() { // Read Proxy to IInventory
+						@Override public int getCraftingItemStackSize() {return inputs.getSizeInventory();}
+						@Override public ItemStack getCraftingItemStack(int paramInt) {return inputs.getStackInSlot(paramInt);}
+						@Override public int getCraftingFluidStackSize() {return 0;}
+						@Override public FluidStack getCraftingFluidStack(int paramInt) {return null;}
+						@Override public ItemStack decrCraftingItemgStack(int paramInt1, int paramInt2) {return null;}
+						@Override public FluidStack decrCraftingFluidStack(int paramInt1, int paramInt2) {return null;}
+					})) {
 						takeNext = true;
 					}
 				}
@@ -64,7 +76,7 @@ public class AssemblyTable implements ICraftingRecipeProvider {
 				inventory.clearInventorySlotContents(i);
 			}
 			int i = 0;
-			for(Object input : nextRecipe.getInputs()) {
+			for(Object input : nextRecipe.inputItems) {
 				ItemStack processed = null;
 				if (input instanceof String) {
 					List<ItemStack> ores = OreDictionary.getOres((String) input);

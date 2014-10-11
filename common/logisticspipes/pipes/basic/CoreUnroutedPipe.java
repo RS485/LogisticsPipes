@@ -148,10 +148,11 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	}
 
 	public boolean canConnectRedstone() {
-		if (hasGate()) {
-			return true;
+		for (ForgeDirection dir: ForgeDirection.VALID_DIRECTIONS) {
+			if (this.bcPipePart.hasGate(dir)) {
+				return true;
+			}
 		}
-
 		return false;
 	}
 
@@ -170,43 +171,18 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		return bcPipePart.isWired();
 	}
 
+	@Deprecated
 	public boolean hasGate() {
-		return bcPipePart.hasGate();
+		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+			if (hasGate(direction)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public boolean hasGate(ForgeDirection side) {
-		if (!hasGate()) {
-			return false;
-		}
-
-		if (container.tilePart.hasFacade(side)) {
-			return false;
-		}
-
-		if (container.tilePart.hasPlug(side)) {
-			return false;
-		}
-
-		if (container.tilePart.hasRobotStation(side)) {
-			return false;
-		}
-
-		int connections = 0;
-		ForgeDirection targetOrientation = ForgeDirection.UNKNOWN;
-		for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {
-			if (container.isPipeConnected(o)) {
-				connections++;
-				if (connections == 1) {
-					targetOrientation = o;
-				}
-			}
-		}
-
-		if (connections > 1 || connections == 0) {
-			return true;
-		}
-
-		return targetOrientation.getOpposite() != side;
+		return container.tilePart.hasGate(side);
 	}
 
 	protected void notifyBlocksOfNeighborChange(ForgeDirection side) {

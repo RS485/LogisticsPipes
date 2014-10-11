@@ -197,4 +197,12 @@ public class LPDataInputStream extends DataInputStream {
 			}}));
 		return list;
 	}
+
+	public byte[] readByteArray() throws IOException {
+		byte[] array = new byte[this.readInt()];
+		for(int i=0;i<array.length;i++) {
+			array[i] = this.readByte();
+		}
+		return array;
+	}
 }

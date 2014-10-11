@@ -61,6 +61,7 @@ import net.minecraftforge.fluids.IFluidHandler;
 
 import org.apache.logging.log4j.Level;
 
+import buildcraft.api.core.EnumColor;
 import buildcraft.api.transport.IPipeConnection;
 import buildcraft.api.transport.IPipeTile;
 import buildcraft.api.transport.PipeWire;
@@ -152,6 +153,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 
 	@Override
 	public void updateEntity() {
+		tilePart.updateEntity();
 		if(sendInitPacket && MainProxy.isServer(getWorldObj())) {
 			sendInitPacket = false;
 			getRenderController().sendInit();
@@ -345,7 +347,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 		if (with == null)
 			return false;
 
-		if (tilePart.hasPlug(side) || tilePart.hasRobotStation(side))
+		if (tilePart.hasBlockingPluggable(side)) //tilePart.hasPlug(side) || tilePart.hasRobotStation(side)
 			return false;
 
 		if (!LogisticsBlockGenericPipe.isValid(pipe))
@@ -357,7 +359,9 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 
 		if(!SimpleServiceLocator.buildCraftProxy.checkForPipeConnection(with, side, this)) return false;
 		if(with instanceof LogisticsTileGenericPipe) {
-			if(((LogisticsTileGenericPipe)with).tilePart.hasPlug(side.getOpposite()) || ((LogisticsTileGenericPipe)with).tilePart.hasRobotStation(side.getOpposite())) { return false; }
+			if(((LogisticsTileGenericPipe)with).tilePart.hasBlockingPluggable(side.getOpposite())) {
+				return false;
+			}
 			CoreUnroutedPipe otherPipe = ((LogisticsTileGenericPipe)with).pipe;
 			
 			if(!(LogisticsBlockGenericPipe.isValid(otherPipe))) { return false; }
@@ -538,6 +542,12 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 			return payload.stackSize;
 		}
 		return 0;
+	}
+
+	//@Override //Only part of BC 6.1.x
+	@ModDependentMethod(modId="BuildCraft|Transport@6.1")
+	public int injectItem(ItemStack payload, boolean doAdd, ForgeDirection from, EnumColor color) {
+		return injectItem(payload, doAdd, from);
 	}
 	
 	public boolean isOpaque() {
@@ -899,5 +909,12 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 	@Override
 	public ILPPipe getLPPipe() {
 		return pipe;
+	}
+	
+	public void notifyBlockChanged() {
+		worldObj.notifyBlockOfNeighborChange(xCoord, yCoord, zCoord, getBlock());
+		scheduleRenderUpdate();
+		sendUpdateToClient();
+		LogisticsBlockGenericPipe.updateNeighbourSignalState(pipe);
 	}
 }

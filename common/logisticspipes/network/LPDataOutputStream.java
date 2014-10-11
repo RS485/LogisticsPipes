@@ -174,4 +174,11 @@ public class LPDataOutputStream extends DataOutputStream {
 				data.writeLinkedLogisticsOrderList(order);
 			}});
 	}
+
+	public void writeByteArray(byte[] array) throws IOException {
+		this.writeInt(array.length);
+		for(int i=0;i<array.length;i++) {
+			this.writeByte(array[i]);
+		}
+	}
 }

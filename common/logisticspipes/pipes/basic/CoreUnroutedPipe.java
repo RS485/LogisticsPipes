@@ -173,12 +173,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 
 	@Deprecated
 	public boolean hasGate() {
-		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-			if (hasGate(direction)) {
-				return true;
-			}
-		}
-		return false;
+		return bcPipePart.hasGate();
 	}
 
 	public boolean hasGate(ForgeDirection side) {

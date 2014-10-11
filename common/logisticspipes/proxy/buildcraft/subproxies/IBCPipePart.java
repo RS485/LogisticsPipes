@@ -47,4 +47,5 @@ public interface IBCPipePart {
 	Object getGates();
 	void resolveActions();
 	Object getWrapped();
+	boolean hasGate();
 }

@@ -184,6 +184,7 @@ public class BCPipePart implements IBCPipePart {
 		}
 	}
 
+	@Override
 	public boolean hasGate() {
 		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
 			if (hasGate(direction)) {

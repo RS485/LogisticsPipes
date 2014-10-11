@@ -123,6 +123,7 @@ public class ProxyManager {
 					@Override public Object getGates() {return null;}
 					@Override public void resolveActions() {}
 					@Override public Object getWrapped() {return null;}
+					@Override public boolean hasGate() {return false;}
 				};
 			}
 			@Override public boolean handleBCClickOnPipe(ItemStack currentItem, CoreUnroutedPipe pipe, World world, int x, int y, int z, EntityPlayer player, int side, LogisticsBlockGenericPipe logisticsBlockGenericPipe) {return false;}

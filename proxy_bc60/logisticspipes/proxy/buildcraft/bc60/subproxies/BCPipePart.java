@@ -146,7 +146,22 @@ public class BCPipePart implements IBCPipePart {
 
 	@Override
 	public boolean hasGate(ForgeDirection side) {
-		return gate != null;
+		if(gate == null) return false;
+		if(container.tilePart.hasFacade(side)) return false;
+		if(container.tilePart.hasPlug(side)) return false;
+		if(container.tilePart.hasRobotStation(side)) return false;
+		int connections = 0;
+		ForgeDirection targetOrientation = ForgeDirection.UNKNOWN;
+		for(ForgeDirection o: ForgeDirection.VALID_DIRECTIONS) {
+			if(container.isPipeConnected(o)) {
+				connections++;
+				if(connections == 1) {
+					targetOrientation = o;
+				}
+			}
+		}
+		if(connections > 1 || connections == 0) return true;
+		return targetOrientation.getOpposite() != side;
 	}
 
 	@Override
@@ -512,5 +527,10 @@ public class BCPipePart implements IBCPipePart {
 	@Override
 	public Object getWrapped() {
 		return this.wrapper;
+	}
+
+	@Override
+	public boolean hasGate() {
+		return gate != null;
 	}
 }

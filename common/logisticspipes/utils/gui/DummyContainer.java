@@ -538,6 +538,15 @@ public class DummyContainer extends Container {
 					}
 					return;
 				}
+				FluidIdentifier ident = FluidIdentifier.get(currentlyEquippedStack);
+				if(ident != null) {
+					if(mouseButton == 0) {
+						slot.putStack(ident.getItemIdentifier().unsafeMakeNormalStack(1));
+					} else {
+						slot.putStack(null);
+					}
+					return;
+				}
 			}
 			FluidIdentifier ident = null;
 			if(slot.getStack() != null) {
@@ -556,6 +565,11 @@ public class DummyContainer extends Container {
 					ident = FluidIdentifier.last();
 				}
 			} else {
+				if(ident == null) {
+					if(MainProxy.isClient(entityplayer.getEntityWorld())) {
+						MainProxy.proxy.openFluidSelectGui(slotId);
+					}
+				}
 				ident = null;
 			}
 			if(ident == null) {

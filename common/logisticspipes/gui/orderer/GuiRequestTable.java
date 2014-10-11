@@ -236,7 +236,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		for(final Entry<Integer, Pair<ItemIdentifierStack, LinkedLogisticsOrderList>> entry:_table.watchedRequests.entrySet()) {
 			if(!handledExtention.get(entry.getKey())) {
 				handledExtention.set(entry.getKey());
-				extentionController.addExtention(new GuiExtention() {
+				extentionControllerLeft.addExtention(new GuiExtention() {
 					
 					private Map<Pair<Integer, Integer>, IOrderInfoProvider> ordererPosition = new HashMap<Pair<Integer, Integer>, IOrderInfoProvider>();
 					private int height;
@@ -247,7 +247,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 					@Override
 					public void renderForground(int left, int top) {
 						if(!_table.watchedRequests.containsKey(entry.getKey())) {
-							extentionController.removeExtention(this);
+							extentionControllerLeft.removeExtention(this);
 							if(isFullyExtended() && localControlledButton != null) {
 								buttonList.remove(localControlledButton);
 								localControlledButton = null;
@@ -477,7 +477,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			Macrobutton.visible = showRequest;
 			orderIdForButton = -1;
 		} else if(guibutton.id == 100) {
-			this.extentionController.retract();
+			this.extentionControllerLeft.retract();
 			this.setSubGui(new RequestMonitorPopup(_table, orderIdForButton));
 		} else if (guibutton.id == 18) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskRequestConectPacket.class).setPosX(_table.getX()).setPosY(_table.getY()).setPosZ(_table.getZ()));
@@ -496,11 +496,6 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		}
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitListPacket.class).setIdentList(list).setTilePos(_table.container));
 		refreshItems();
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Request_Table_ID;
 	}
 
 	protected int getStackAmount() {

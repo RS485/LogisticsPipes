@@ -2,9 +2,11 @@ package logisticspipes.nei;
 
 import logisticspipes.gui.GuiLogisticsCraftingTable;
 import logisticspipes.gui.orderer.GuiRequestTable;
+import logisticspipes.gui.popup.GuiRecipeImport;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.NEISetCraftingRecipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -18,15 +20,20 @@ public class LogisticsCraftingOverlayHandler implements IOverlayHandler {
 	public void overlayRecipe(GuiContainer firstGui, IRecipeHandler recipe, int recipeIndex, boolean shift) {
 		
 		TileEntity tile;
+		LogisticsBaseGuiScreen gui;
 		if(firstGui instanceof GuiLogisticsCraftingTable) {
 			tile = ((GuiLogisticsCraftingTable)firstGui)._crafter;
+			gui = (GuiLogisticsCraftingTable)firstGui;
 		} else if(firstGui instanceof GuiRequestTable) {
 			tile = ((GuiRequestTable)firstGui)._table.container;
+			gui = (GuiRequestTable)firstGui;
 		} else {
 			return;
 		}
 		
 		ItemStack[] stack = new ItemStack[9];
+		ItemStack[][] stacks = new ItemStack[9][];
+		boolean hasCanidates = false;
 		NEISetCraftingRecipe packet = PacketHandler.getPacket(NEISetCraftingRecipe.class);
 		for(PositionedStack ps : recipe.getIngredientStacks(recipeIndex)) {
 			int x = (ps.relx - 25) / 18;
@@ -38,8 +45,16 @@ public class LogisticsCraftingOverlayHandler implements IOverlayHandler {
 			}
 			if(slot < 9) {
 				stack[slot] = ps.items[0];
+				stacks[slot] = ps.items;
+				if(ps.items.length > 1) {
+					hasCanidates = true;
+				}
 			}
 		}
-		MainProxy.sendPacketToServer(packet.setContent(stack).setPosX(tile.xCoord).setPosY(tile.yCoord).setPosZ(tile.zCoord));
+		if(hasCanidates) {
+			gui.setSubGui(new GuiRecipeImport(tile, stacks));
+		} else {
+			MainProxy.sendPacketToServer(packet.setContent(stack).setPosX(tile.xCoord).setPosY(tile.yCoord).setPosZ(tile.zCoord));
+		}
 	}
 }

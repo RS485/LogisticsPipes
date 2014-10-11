@@ -272,4 +272,7 @@ public class ServerProxy implements IProxy {
 	public boolean checkSinglePlayerOwner(String commandSenderName) {
 		return false;
 	}
+
+	@Override
+	public void openFluidSelectGui(int slotId) {}
 }

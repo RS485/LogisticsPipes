@@ -95,6 +95,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		fontRendererObj.renderString(StringUtil.translate("misc.selectOreDict"), guiLeft + 10, guiTop + 6, 0x404040, false);
 		GL11.glTranslated(0, 0, 100);
+		Object[] tooltip = null;
 		for(int x=0; x<3;x++) {
 			for(int y=0;y<3;y++) {
 				RenderHelper.enableGUIStandardItemLighting();
@@ -112,6 +113,18 @@ public class GuiRecipeImport extends SubGuiScreen {
 				itemRenderer.renderItemAndEffectIntoGUI(font, this.mc.renderEngine, itemStack, guiLeft + 45 + x * 18, guiTop + 20 + y * 18);
 				// With empty string, because damage value indicator struggles with the depth
 				itemRenderer.renderItemOverlayIntoGUI(font, this.mc.renderEngine, itemStack, guiLeft + 45 + x * 18, guiTop + 20 + y * 18, null);
+				
+				if(guiLeft + 45 + x * 18 < mouseX && mouseX < guiLeft + 45 + x * 18 + 16
+				 && guiTop + 20 + y * 18 < mouseY && mouseY < guiTop + 20 + y * 18 + 16 && !this.hasSubGui()) {
+					GL11.glDisable(GL11.GL_LIGHTING);
+					GL11.glDisable(GL11.GL_DEPTH_TEST);
+					GL11.glColorMask(true, true, true, false);
+					this.drawGradientRect(guiLeft + 45 + x * 18, guiTop + 20 + y * 18, guiLeft + 45 + x * 18 + 16, guiTop + 20 + y * 18 + 16, -2130706433, -2130706433);
+					GL11.glColorMask(true, true, true, true);
+					GL11.glEnable(GL11.GL_LIGHTING);
+					GL11.glEnable(GL11.GL_DEPTH_TEST);
+					tooltip = new Object[] { guiLeft + mouseX, guiTop + mouseY, itemStack };
+				}
 			}
 		}
 		int x = 0;
@@ -131,7 +144,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 			itemRenderer.renderItemOverlayIntoGUI(font, this.mc.renderEngine, itemStack, guiLeft + 20 + x * 40, guiTop + 90 + y * 40, "");
 			
 			if(guiLeft + 20 + x * 40 < mouseX && mouseX < guiLeft + 20 + x * 40 + 16
-			 && guiTop + 90 + y * 40 < mouseY && mouseY < guiTop + 90 + y * 40 + 16) {
+			 && guiTop + 90 + y * 40 < mouseY && mouseY < guiTop + 90 + y * 40 + 16 && !this.hasSubGui()) {
 				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
 				GL11.glColorMask(true, true, true, false);
@@ -139,6 +152,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 				GL11.glColorMask(true, true, true, true);
 				GL11.glEnable(GL11.GL_LIGHTING);
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
+				tooltip = new Object[] { guiLeft + mouseX, guiTop + mouseY, itemStack };
 			}
 			
 			x++;
@@ -149,6 +163,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 		}
 		GL11.glTranslated(0, 0, -100);
 		super.drawScreen(mouseX, mouseY, par3);
+		BasicGuiHelper.displayItemToolTip(tooltip, this, this.zLevel, guiLeft, guiTop);
 	}
 	
 	@Override

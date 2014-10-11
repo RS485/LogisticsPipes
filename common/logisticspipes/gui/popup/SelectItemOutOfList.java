@@ -51,6 +51,7 @@ public class SelectItemOutOfList extends SubGuiScreen {
 		String pageString = Integer.toString(page + 1) + "/" + Integer.toString(maxPage);
 		fontRendererObj.renderString(pageString, guiLeft + 128 - (fontRendererObj.getStringWidth(pageString) / 2), guiTop + 6, 0x404040, false);
 		GL11.glTranslated(0, 0, 100);
+		Object[] tooltip = null;
 		int x = 0;
 		int y = - page * 10;
 		for(ItemIdentifierStack stack: canidate) {
@@ -68,7 +69,7 @@ public class SelectItemOutOfList extends SubGuiScreen {
 				itemRenderer.renderItemOverlayIntoGUI(font, this.mc.renderEngine, itemStack, guiLeft + 5 + x * 18, guiTop + 17 + y * 18, "");
 				
 				if(guiLeft + 5 + x * 18 < mouseX && mouseX < guiLeft + 5 + x * 18 + 16
-				&& guiTop + 17 + y * 18 < mouseY && mouseY < guiTop + 17 + y * 18 + 16) {
+				&& guiTop + 17 + y * 18 < mouseY && mouseY < guiTop + 17 + y * 18 + 16 && !this.hasSubGui()) {
 					GL11.glDisable(GL11.GL_LIGHTING);
 					GL11.glDisable(GL11.GL_DEPTH_TEST);
 					GL11.glColorMask(true, true, true, false);
@@ -76,6 +77,7 @@ public class SelectItemOutOfList extends SubGuiScreen {
 					GL11.glColorMask(true, true, true, true);
 					GL11.glEnable(GL11.GL_LIGHTING);
 					GL11.glEnable(GL11.GL_DEPTH_TEST);
+					tooltip = new Object[] { guiLeft + mouseX, guiTop + mouseY, itemStack };
 				}
 			}
 			
@@ -88,6 +90,7 @@ public class SelectItemOutOfList extends SubGuiScreen {
 		}
 		super.drawScreen(mouseX, mouseY, par3);
 		GL11.glTranslated(0, 0, -100);
+		if(!this.hasSubGui()) BasicGuiHelper.displayItemToolTip(tooltip, this, this.zLevel, guiLeft, guiTop);
 	}
 	
 	@Override

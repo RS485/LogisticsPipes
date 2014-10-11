@@ -33,4 +33,5 @@ public interface IProxy {
 	public LogisticsModule getModuleFromGui();
 	public IItemRenderer getPipeItemRenderer();
 	public boolean checkSinglePlayerOwner(String commandSenderName);
+	public void openFluidSelectGui(int slotId);
 }

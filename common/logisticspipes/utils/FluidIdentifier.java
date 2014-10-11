@@ -1,7 +1,10 @@
 package logisticspipes.utils;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.locks.Lock;
@@ -268,6 +271,13 @@ public class FluidIdentifier {
 		}
 		rlock.unlock();
 		return last;
+	}
+
+	public static List<FluidIdentifier> all() {
+		rlock.lock();
+		List<FluidIdentifier> list = Collections.unmodifiableList(_fluidIdentifierCache);
+		rlock.unlock();
+		return list;
 	}
 
 	public ItemIdentifier getItemIdentifier() {

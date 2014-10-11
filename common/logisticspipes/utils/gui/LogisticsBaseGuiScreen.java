@@ -13,21 +13,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.LPConstants;
+import logisticspipes.asm.ModDependentInterface;
+import logisticspipes.asm.ModDependentMethod;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.gui.DummyContainerSlotClick;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.extention.GuiExtentionController;
+import logisticspipes.utils.gui.extention.GuiExtentionController.GuiSide;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import codechicken.nei.VisiblityData;
+import codechicken.nei.api.INEIGuiHandler;
+import codechicken.nei.api.TaggedInventoryArea;
 
-public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISubGuiControler {
+@ModDependentInterface(modId={"NotEnoughItems"}, interfacePath={"codechicken.nei.INEIGuiHandler"})
+public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISubGuiControler, INEIGuiHandler {
 	
 	public enum Colors
 	{
@@ -52,7 +63,8 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	
 	private SubGuiScreen subGui;
 	protected List<IRenderSlot> slots = new ArrayList<IRenderSlot>();
-	protected GuiExtentionController extentionController = new GuiExtentionController();
+	protected GuiExtentionController extentionControllerLeft = new GuiExtentionController(GuiSide.LEFT);
+	protected GuiExtentionController extentionControllerRight = new GuiExtentionController(GuiSide.RIGHT);
 	private GuiButton selectedButton;
 	
 	public LogisticsBaseGuiScreen(int xSize, int ySize, int xCenterOffset, int yCenterOffset){
@@ -84,7 +96,8 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 		
 		this.xCenter = (right + guiLeft) / 2;
 		this.yCenter = (bottom + guiTop) / 2;
-		extentionController.setMaxBottom(bottom);
+		extentionControllerLeft.setMaxBottom(bottom);
+		extentionControllerRight.setMaxBottom(bottom);
 	}
 	
 	@Override
@@ -197,27 +210,32 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	}
 
 	protected void renderExtentions() {
-		extentionController.render(guiLeft, guiTop);		
+		extentionControllerLeft.render(guiLeft, guiTop);
+		extentionControllerRight.render(guiLeft + xSize, guiTop);		
 	}
 
 	@Override
 	protected void func_146977_a(Slot slot) {
-		if(extentionController.renderSlot(slot)) {
+		if(extentionControllerLeft.renderSlot(slot) && extentionControllerRight.renderSlot(slot)) {
 			super.func_146977_a(slot);
 		}
 	}
 
 	@Override
 	protected boolean isMouseOverSlot(Slot par1Slot, int par2, int par3) {
-		if(!extentionController.renderSelectSlot(par1Slot)) return false;
+		if(!extentionControllerLeft.renderSelectSlot(par1Slot)) return false;
+		if(!extentionControllerRight.renderSelectSlot(par1Slot)) return false;
 		return super.isMouseOverSlot(par1Slot, par2, par3);
 	}
 
 	@SuppressWarnings("unchecked")
 	protected void checkButtons() {
 		for(GuiButton button:(List<GuiButton>) this.buttonList) {
-			if(extentionController.renderButtonControlled(button)) {
-				button.visible = extentionController.renderButton(button);
+			if(extentionControllerLeft.renderButtonControlled(button)) {
+				button.visible = extentionControllerLeft.renderButton(button);
+			}
+			if(extentionControllerRight.renderButtonControlled(button)) {
+				button.visible = extentionControllerRight.renderButton(button);
 			}
 		}
 	}
@@ -257,7 +275,10 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		if(par1 < guiLeft) {
-			extentionController.mouseOver(par1, par2);
+			extentionControllerLeft.mouseOver(par1, par2);
+		}
+		if(par1 > guiLeft + xSize) {
+			extentionControllerRight.mouseOver(par1, par2);
 		}
 		for(IRenderSlot slot:slots) {
 			if(slot instanceof IItemTextureRenderSlot) {
@@ -303,7 +324,10 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 			super.mouseClicked(par1, par2, par3);
 		}
 		if(par3 == 0 && par1 < guiLeft && !mouseCanPressButton(par1, par2) && !isOverSlot(par1, par2)) {
-			extentionController.mouseClicked(par1, par2, par3);
+			extentionControllerLeft.mouseClicked(par1, par2, par3);
+		}
+		if(par3 == 0 && par1 > guiLeft + xSize && !mouseCanPressButton(par1, par2) && !isOverSlot(par1, par2)) {
+			extentionControllerRight.mouseClicked(par1, par2, par3);
 		}
 	}
 
@@ -376,8 +400,56 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	public Minecraft getMC() {
 		return mc;
 	}
+	
+	@Override
+	@ModDependentMethod(modId="NotEnoughItems")
+	public List<TaggedInventoryArea> getInventoryAreas(GuiContainer gui) {
+		return null;
+	}
 
-	public int getGuiID() {
-		return 0;
+	@Override
+	@ModDependentMethod(modId="NotEnoughItems")
+	public Iterable<Integer> getItemSpawnSlots(GuiContainer gui, ItemStack stack) {
+		return null;
+	}
+
+	@Override
+	@ModDependentMethod(modId="NotEnoughItems")
+	public boolean handleDragNDrop(GuiContainer gui, int mouseX, int mouseY, ItemStack stack, int button) {
+		if(gui instanceof LogisticsBaseGuiScreen && gui.inventorySlots instanceof DummyContainer && stack != null) {
+			Slot result = null;
+			int pos = -1;
+			for (int k = 0; k < this.inventorySlots.inventorySlots.size(); ++k) {
+				Slot slot = (Slot) this.inventorySlots.inventorySlots.get(k);
+				if (this.isMouseOverSlot(slot, mouseX, mouseY)) {
+					result = slot;
+					pos = k;
+					break;
+				}
+			}
+			if(result != null) {
+				if(result instanceof DummySlot || result instanceof ColorSlot || result instanceof FluidSlot) {
+					((DummyContainer)gui.inventorySlots).handleDummyClick(result, pos, stack, button, 0, this.mc.thePlayer);
+					MainProxy.sendPacketToServer(PacketHandler.getPacket(DummyContainerSlotClick.class).setSlotId(pos).setStack(stack).setButton(button));
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	@Override
+	@ModDependentMethod(modId="NotEnoughItems")
+	public boolean hideItemPanelSlot(GuiContainer gui, int x, int y, int w, int h) {
+		if(gui instanceof LogisticsBaseGuiScreen) {
+			return ((LogisticsBaseGuiScreen)gui).extentionControllerRight.isOverPanel(x, y, w, h);
+		}
+		return false;
+	}
+
+	@Override
+	@ModDependentMethod(modId="NotEnoughItems")
+	public VisiblityData modifyVisiblity(GuiContainer gui, VisiblityData currentVisibility) {
+		return null;
 	}
 }

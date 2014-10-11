@@ -1,5 +1,9 @@
 package logisticspipes.gui;
 
+import java.util.List;
+
+import codechicken.nei.VisiblityData;
+import codechicken.nei.api.TaggedInventoryArea;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISlotCheck;
@@ -7,6 +11,7 @@ import logisticspipes.utils.CardManagmentInventory;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 

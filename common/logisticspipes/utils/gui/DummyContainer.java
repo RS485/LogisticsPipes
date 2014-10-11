@@ -517,6 +517,11 @@ public class DummyContainer extends Container {
 		
 		if(slot instanceof UnmodifiableSlot) { return currentlyEquippedStack; }
 		
+		handleDummyClick(slot, slotId, currentlyEquippedStack, mouseButton, isShift, entityplayer);
+		return currentlyEquippedStack;
+	}
+	
+	public void handleDummyClick(Slot slot, int slotId, ItemStack currentlyEquippedStack, int mouseButton, int isShift, EntityPlayer entityplayer) {
 		if(slot instanceof FluidSlot) {
 			if(currentlyEquippedStack != null) {
 				FluidStack liquidId = FluidContainerRegistry.getFluidForFilledItem(currentlyEquippedStack);
@@ -531,7 +536,7 @@ public class DummyContainer extends Container {
 					} else {
 						slot.putStack(null);
 					}
-					return currentlyEquippedStack;
+					return;
 				}
 			}
 			FluidIdentifier ident = null;
@@ -561,7 +566,7 @@ public class DummyContainer extends Container {
 			if(entityplayer instanceof EntityPlayerMP && MainProxy.isServer(entityplayer.worldObj)) {
 				((EntityPlayerMP)entityplayer).sendSlotContents(this, slotId, slot.getStack());
 			}
-			return currentlyEquippedStack;
+			return;
 		}
 		
 		if(slot instanceof ColorSlot) {
@@ -586,7 +591,7 @@ public class DummyContainer extends Container {
 			if(entityplayer instanceof EntityPlayerMP && MainProxy.isServer(entityplayer.worldObj)) {
 				((EntityPlayerMP)entityplayer).sendSlotContents(this, slotId, slot.getStack());
 			}
-			return currentlyEquippedStack;
+			return;
 		}
 		
 		if(slot instanceof DummySlot) ((DummySlot)slot).setRedirectCall(true);
@@ -605,7 +610,7 @@ public class DummyContainer extends Container {
 				slot.putStack(null);
 			}
 			if(slot instanceof DummySlot) ((DummySlot)slot).setRedirectCall(false);
-			return currentlyEquippedStack;
+			return;
 		}
 		
 		if(!slot.getHasStack()) {
@@ -618,7 +623,7 @@ public class DummyContainer extends Container {
 			}
 			slot.putStack(tstack);
 			if(slot instanceof DummySlot) ((DummySlot)slot).setRedirectCall(false);
-			return currentlyEquippedStack;
+			return;
 		}
 		
 		ItemIdentifier currentItem = ItemIdentifier.get(currentlyEquippedStack);
@@ -640,7 +645,7 @@ public class DummyContainer extends Container {
 				slot.putStack(tstack);
 			}
 			if(slot instanceof DummySlot) ((DummySlot)slot).setRedirectCall(false);
-			return currentlyEquippedStack;
+			return;
 		}
 		
 		ItemStack tstack = currentlyEquippedStack.copy();
@@ -649,7 +654,7 @@ public class DummyContainer extends Container {
 		}
 		slot.putStack(tstack);
 		if(slot instanceof DummySlot) ((DummySlot)slot).setRedirectCall(false);
-		return currentlyEquippedStack;
+		return;
 	}
 	
 	@Override

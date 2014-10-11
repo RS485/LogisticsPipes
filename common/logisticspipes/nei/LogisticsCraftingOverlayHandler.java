@@ -1,5 +1,9 @@
 package logisticspipes.nei;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import logisticspipes.gui.GuiLogisticsCraftingTable;
 import logisticspipes.gui.orderer.GuiRequestTable;
 import logisticspipes.gui.popup.GuiRecipeImport;
@@ -10,6 +14,8 @@ import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.oredict.OreDictionary;
+import scala.actors.threadpool.Arrays;
 import codechicken.nei.PositionedStack;
 import codechicken.nei.api.IOverlayHandler;
 import codechicken.nei.recipe.IRecipeHandler;
@@ -45,8 +51,19 @@ public class LogisticsCraftingOverlayHandler implements IOverlayHandler {
 			}
 			if(slot < 9) {
 				stack[slot] = ps.items[0];
-				stacks[slot] = ps.items;
-				if(ps.items.length > 1) {
+				@SuppressWarnings("unchecked")
+				List<ItemStack> list = new ArrayList<ItemStack>(Arrays.asList(ps.items));
+				Iterator<ItemStack> iter = list.iterator();
+				while(iter.hasNext()) {
+					ItemStack wildCardCheckStack = iter.next();
+					if(wildCardCheckStack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+						iter.remove();
+						wildCardCheckStack.getItem().getSubItems(wildCardCheckStack.getItem(), wildCardCheckStack.getItem().getCreativeTab(), list);
+						iter = list.iterator();
+					}
+				}
+				stacks[slot] = list.toArray(new ItemStack[0]);
+				if(stacks[slot].length > 1) {
 					hasCanidates = true;
 				}
 			}

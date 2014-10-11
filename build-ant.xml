@@ -62,7 +62,7 @@
 					<arg value="build-bc61.gradle"/>
 					<arg value="assemble"/>			
 				</exec>
-				<exec executable="gradle" output="build-bc61.log" failonerror="true" osfamily="unix">
+				<exec executable="./gradlew" output="build-bc61.log" failonerror="true" osfamily="unix">
 					<arg value="-b"/>
 					<arg value="build-bc61.gradle"/>
 					<arg value="assemble"/>			

@@ -268,8 +268,8 @@ misc.extractionmode.LeaveLast=Leave last stack
 misc.extractionmode.LeaveFirstAndLast=Leave first & last stack
 misc.extractionmode.Leave1PerStack=Leave 1 item per stack
 misc.extractionmode.Leave1PerType=Leave 1 item per type
-
-
+misc.selectType=Select Type
+misc.selectOreDict=Select OreDict Type
 
 #Misc Chat messages
 

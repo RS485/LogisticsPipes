@@ -254,6 +254,8 @@ public class ClientProxy implements IProxy {
 				}
 				nextGui.setSubGui(subGui);
 			}
+		} else {
+			throw new UnsupportedOperationException(String.valueOf(Minecraft.getMinecraft().currentScreen));
 		}
 	}
 }

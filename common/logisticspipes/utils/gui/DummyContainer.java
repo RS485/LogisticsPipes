@@ -552,34 +552,12 @@ public class DummyContainer extends Container {
 			if(slot.getStack() != null) {
 				ident = FluidIdentifier.get(ItemIdentifier.get(slot.getStack()));
 			}
-			if(mouseButton == 0) {
-				if(ident != null) {
-					ident = ident.next();
-				} else {
-					ident = FluidIdentifier.first();
-				}
-			} else if(mouseButton == 1) {
-				if(ident != null) {
-					ident = ident.prev();
-				} else {
-					ident = FluidIdentifier.last();
-				}
-			} else {
-				if(ident == null) {
-					if(MainProxy.isClient(entityplayer.getEntityWorld())) {
-						MainProxy.proxy.openFluidSelectGui(slotId);
-					}
-				}
-				ident = null;
-			}
 			if(ident == null) {
-				slot.putStack(null);
-			} else {
-				slot.putStack(ident.getItemIdentifier().unsafeMakeNormalStack(1));
+				if(MainProxy.isClient(entityplayer.getEntityWorld())) {
+					MainProxy.proxy.openFluidSelectGui(slotId);
+				}
 			}
-			if(entityplayer instanceof EntityPlayerMP && MainProxy.isServer(entityplayer.worldObj)) {
-				((EntityPlayerMP)entityplayer).sendSlotContents(this, slotId, slot.getStack());
-			}
+			slot.putStack(null);
 			return;
 		}
 		

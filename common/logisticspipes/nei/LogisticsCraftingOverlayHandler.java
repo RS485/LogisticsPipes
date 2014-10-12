@@ -1,6 +1,7 @@
 package logisticspipes.nei;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -15,7 +16,6 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.oredict.OreDictionary;
-import scala.actors.threadpool.Arrays;
 import codechicken.nei.PositionedStack;
 import codechicken.nei.api.IOverlayHandler;
 import codechicken.nei.recipe.IRecipeHandler;
@@ -51,7 +51,6 @@ public class LogisticsCraftingOverlayHandler implements IOverlayHandler {
 			}
 			if(slot < 9) {
 				stack[slot] = ps.items[0];
-				@SuppressWarnings("unchecked")
 				List<ItemStack> list = new ArrayList<ItemStack>(Arrays.asList(ps.items));
 				Iterator<ItemStack> iter = list.iterator();
 				while(iter.hasNext()) {

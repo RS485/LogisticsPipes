@@ -56,6 +56,7 @@ public class PipeInformaitonManager {
 	}
 
 	public boolean isPipe(TileEntity tile) {
+		if(tile == null) return false;
 		if(tile instanceof IPipeInformationProvider) {
 			return true;
 		} else for(Class<?> type:infoProvider.keySet()) {

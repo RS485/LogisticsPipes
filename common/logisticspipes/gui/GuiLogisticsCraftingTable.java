@@ -64,13 +64,15 @@ public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
 				items[i] = _crafter.matrix.getIDStackInSlot(i);
 			}
 		}
+
+		// Draw this part without depth
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		BasicGuiHelper.renderItemIdentifierStackListIntoGui(Arrays.asList(items), null, 0, guiLeft + 8, guiTop + 80, 9, 9, 18, 18, mc, false, false);
-		
-		GL11.glDisable(2929 /*GL_DEPTH_TEST*/);
-		for(int a=0;a<9;a++) {
+
+		for (int a = 0; a < 9; a++) {
 			drawRect(guiLeft + 8 + (a * 18), guiTop + 80, guiLeft + 24 + (a * 18), guiTop + 96, 0xc08b8b8b);
 		}
-		GL11.glEnable(2929 /*GL_DEPTH_TEST*/);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
 	}
 	
 	@Override

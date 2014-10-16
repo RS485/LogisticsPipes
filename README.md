@@ -12,6 +12,10 @@ If you want to understand the sheer amount of changes we have made to the source
 Credits for the code goes to all [contributors](https://github.com/RS485/LogisticsPipes/contributors).
 Credits for the idea and basic code goes to Krapht.
 
+##Translate
+
+See [Crowdin](https://crowdin.com/project/logistics-pipes) for translations.
+
 ##Builds
 
 See our [Jenkins](http://ci.thezorro266.com/view/Logistics Pipes/).

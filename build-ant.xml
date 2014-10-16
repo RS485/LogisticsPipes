@@ -4,8 +4,10 @@
 	<property name="result.dir"           value="${build.dir}/libs"/>
 	<property name="download.dir"         value="${build.dir}/download"/>
 	<property name="antcontlib.dir"       value="${build.dir}/antcontlib"/>
+	<property name="resource.dir"         value="${build.dir}/resources/main"/>
 	
 	<property name="sign.dir"             value="/home/jenkins/.sign"/>
+	<property name="crowdin.dir"          value="/home/jenkins/.crowdin"/>
 	
 	<property name="downloadserver"       value="http://rs485.theZorro266.com"/>
 	<property name="downloadserver.dir"   value="external/"/>
@@ -13,7 +15,7 @@
 	
 	<property name="antcont.version"      value="1.0b3"/>
 
-	<target name="loadFingerprints" depends="sourceMainJava">
+	<target name="loadAntContrib">
 		<mkdir dir="${download.dir}"/>
 		<get src="${downloadserver.full}ant-contrib-${antcont.version}-bin.zip" dest="${download.dir}" usetimestamp="True"/>
 		<unzip dest="${antcontlib.dir}" failOnEmptyArchive="true">
@@ -27,12 +29,60 @@
 				<pathelement location="${antcontlib.dir}/ant-contrib/ant-contrib-${antcont.version}.jar"/>
 			</classpath>
 		</taskdef>
+	</target>
+
+	<target name="loadFingerprints" depends="loadAntContrib, sourceMainJava">
 		<if>
 			<available file="${sign.dir}/.fingerprint"/>
 			<then>
 				<echo message="Loading FingerPrint"/>
 				<loadfile property="fingerprint" srcFile="${sign.dir}/.fingerprint"/>
 				<replace file="${build.dir}/sources/java/logisticspipes/LogisticsPipes.java" token="%------------CERTIFICATE-SUM-----------%" value='*/ certificateFingerprint="${fingerprint}", /*'/>
+			</then>
+		</if>
+	</target>
+
+	<target name="downloadCrowdin" depends="loadAntContrib">
+		<if>
+			<available file="${crowdin.dir}/.token"/>
+			<then>
+				<trycatch>
+					<try>
+						<echo message="Loading Token"/>
+						<loadfile property="crowdintoken" srcFile="${crowdin.dir}/.token"/>
+						<echo message="Building Crowdin"/>
+						<get src="https://api.crowdin.net/api/project/logistics-pipes/export?key=${crowdintoken}" dest="${download.dir}/crowdin-build.log"/>
+						<echo message="Downloading Crowdin"/>
+						<get src="https://api.crowdin.net/api/project/logistics-pipes/download/all.zip?key=${crowdintoken}" dest="${download.dir}/crowdin-language.zip"/>
+					</try>
+					<catch>
+						<fail>Failed to Download Crowdin.</fail>
+					</catch>
+				</trycatch>
+			</then>
+		</if>
+	</target>
+
+	<target name="integradeCrowdin" depends="downloadCrowdin">
+		<if>
+			<available file="${crowdin.dir}/.token"/>
+			<then>
+				<echo message="Integrating Crowdin"/>
+				<unzip dest="${download.dir}/crowdin-language/" failOnEmptyArchive="true">
+					<fileset dir="${download.dir}">
+						<include name="crowdin-language.zip"/>
+					</fileset>
+					<mapper type="flatten"/>
+					<patternset>
+						<exclude name="**/en_US.lang"/>
+					</patternset>
+				</unzip>
+				<copy todir="${resource.dir}/assets/logisticspipes/lang/">
+					<fileset dir="${download.dir}/crowdin-language/">
+						<include name="**.lang"/>
+					</fileset>
+				</copy>
+				<delete dir="${download.dir}/crowdin-language/"/>
 			</then>
 		</if>
 	</target>

@@ -11,6 +11,7 @@ import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.blocks.powertile.LogisticsIC2PowerProviderTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
+import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
 import logisticspipes.gui.modules.ModuleBaseGui;
 import logisticspipes.gui.popup.SelectItemOutOfList;
 import logisticspipes.gui.popup.SelectItemOutOfList.IHandleItemChoise;
@@ -35,6 +36,7 @@ import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.renderer.LogisticsPipeItemRenderer;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.renderer.LogisticsRenderPipe;
+import logisticspipes.renderer.LogisticsSolidBlockWorldRenderer;
 import logisticspipes.textures.Textures;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
@@ -83,12 +85,15 @@ public class ClientProxy implements IProxy {
 		GameRegistry.registerTileEntity(LogisticsSecurityTileEntity.class, "logisticspipes.blocks.LogisticsSecurityTileEntity");
 		GameRegistry.registerTileEntity(LogisticsCraftingTableTileEntity.class, "logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity");
 		GameRegistry.registerTileEntity(LogisticsTileGenericPipe.class, LogisticsPipes.logisticsTileGenericPipeMapping);
+		GameRegistry.registerTileEntity(LogisticsStatisticsTileEntity.class, "logisticspipes.blocks.stats.LogisticsStatisticsTileEntity");
 		
 		LPConstants.pipeModel = RenderingRegistry.getNextAvailableRenderId();
+		LPConstants.solidBlockModel = RenderingRegistry.getNextAvailableRenderId();
 		
 		LogisticsRenderPipe lrp = new LogisticsRenderPipe();
 		ClientRegistry.bindTileEntitySpecialRenderer(LogisticsTileGenericPipe.class, lrp);
 		RenderingRegistry.registerBlockHandler(new LogisticsPipeWorldRenderer());
+		RenderingRegistry.registerBlockHandler(new LogisticsSolidBlockWorldRenderer());
 
 		SimpleServiceLocator.buildCraftProxy.resetItemRotation();
 	}

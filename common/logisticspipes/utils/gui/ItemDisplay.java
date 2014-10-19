@@ -57,6 +57,7 @@ public class ItemDisplay {
 	private final ISpecialItemRenderer renderer;
 	private final RenderItem itemRenderer = new RenderItem();
 	private int left, top, height, width;
+	private int itemsPerPage;
 	private final int[] amountChangeMode;
 	private final boolean shiftPageChange;
 	private final Minecraft mc = FMLClientHandler.instance().getClient();
@@ -71,6 +72,7 @@ public class ItemDisplay {
     	this.top = top;
     	this.width = width;
     	this.height = height;
+		this.itemsPerPage = this.width * this.height / (20 * 20);
     	if(amountChangeMode.length != 4) throw new UnsupportedOperationException("amountChangeMode.length needs to be 4");
     	this.amountChangeMode = amountChangeMode;
     	this.shiftPageChange = shiftPageChange;
@@ -81,6 +83,7 @@ public class ItemDisplay {
     	this.top = top;
     	this.width = width;
     	this.height = height;
+		this.itemsPerPage = this.width * this.height / (20 * 20);
 	}
 	
 	public void setItemList(Collection<ItemIdentifierStack> allItems) {
@@ -165,7 +168,7 @@ public class ItemDisplay {
 	}
 
 	public void renderPageNumber(int x, int y) {
-		maxPage = (getSearchedItemNumber() - 1) / 70;
+		maxPage = (getSearchedItemNumber() - 1) / this.itemsPerPage;
 		if(maxPage == -1) maxPage = 0;
 		if (page > maxPage){
 			page = maxPage;
@@ -177,7 +180,7 @@ public class ItemDisplay {
 	private int getSearchedItemNumber() {
 		int count = 0;
 		for(ItemIdentifierStack item : _allItems) {
-			if(search.itemSearched(item.getItem())) {
+			if(search == null || search.itemSearched(item.getItem())) {
 				count++;
 			}
 		}
@@ -233,13 +236,13 @@ public class ItemDisplay {
 
 			for (ItemIdentifierStack itemIdentifierStack : _allItems) {
 				ItemIdentifier item = itemIdentifierStack.getItem();
-				if (!search.itemSearched(item))
+				if (search != null && !search.itemSearched(item))
 					continue;
 				ppi++;
-
-				if (ppi <= 70 * page)
+				
+				if (ppi <= itemsPerPage * page)
 					continue;
-				if (ppi > 70 * (page + 1))
+				if (ppi > itemsPerPage * (page + 1))
 					break;
 
 				ItemStack itemstack = itemIdentifierStack.unsafeMakeNormalStack();
@@ -270,7 +273,7 @@ public class ItemDisplay {
 					screen.drawRect(x - 2, y - 2, x + panelxSize - 2, y + panelySize - 2, Colors.Black);
 					screen.drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.LightGrey);
 					screen.drawRect(x, y, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
-					renderer.specialItemRendering(itemIdentifierStack.getItem(), x, y);
+					if(renderer != null) renderer.specialItemRendering(itemIdentifierStack.getItem(), x, y);
 				}
 
 				String s = StringUtil.getFormatedStackSize(itemstack.stackSize);
@@ -293,7 +296,7 @@ public class ItemDisplay {
 				font.drawStringWithShadow(s, x + 19 - 2 - font.getStringWidth(s), y + 6 + 3, 16777215);
 
 				x += panelxSize;
-				if (x > 200) {
+				if (x > this.width) {
 					x = 2;
 					y += panelySize;
 				}

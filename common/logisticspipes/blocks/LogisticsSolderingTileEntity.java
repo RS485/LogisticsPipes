@@ -34,13 +34,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTileEntity, ISidedInventory, IGuiOpenControler, IRotationProvider {
+public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ISidedInventory, IGuiOpenControler {
 	
 	private ItemIdentifierInventory inv = new ItemIdentifierInventory(12, "Soldering Inventory", 64);
 	public int heat = 0;
 	public int progress = 0;
 	public boolean hasWork = false;
-	public int rotation = 0;
 	private boolean init = false;
 	
 	private PlayerCollectionList listener = new PlayerCollectionList();
@@ -176,18 +175,17 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 		}
 		return null;
 	}
+	
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
 		inv.readFromNBT(nbt, "");
-		rotation = nbt.getInteger("rotation");
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbt) {
 		super.writeToNBT(nbt);
 		inv.writeToNBT(nbt, "");
-		nbt.setInteger("rotation", rotation);
 	}
 
 	private boolean hasWork() {
@@ -360,100 +358,6 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 		inv.closeInventory();
 	}
 
-	/*
-	@Override
-	public int addItem(ItemStack stack, boolean doAdd, ForgeDirection from) {
-		if(stack == null) return 0;
-		if(stack.getItem() == null) return 0;
-		if (stack.getItem() == Items.iron_ingot) {
-			ItemStack iron = inv.getStackInSlot(9);
-			if (iron == null) {
-				iron = new ItemStack(Items.iron_ingot, 0, 0);
-				inv.setInventorySlotContents(9, iron);
-			}
-			int freespace = 64 - iron.stackSize;
-			int toAdd = Math.min(stack.stackSize, freespace);
-			if (doAdd) {
-				iron.stackSize += toAdd;
-				inv.markDirty();
-				super.markDirty();
-			}
-			if (iron.stackSize == 0) {
-				inv.clearInventorySlotContents(9);
-			}
-			return toAdd;
-		}
-		ItemStack[] recipe = getRecipeForTaget();
-		if(recipe == null) return 0;
-		
-		int availableslots = 0;
-		int itemsinslots = 0;
-		int i=0;
-		for(ItemStack itemstack:recipe) {
-			if(itemstack == null) {
-				i++;
-				continue;
-			}
-			if(stack.getItem() == itemstack.getItem() && stack.getItemDamage() == itemstack.getItemDamage()) {
-				availableslots++;
-				ItemStack slot = inv.getStackInSlot(i);
-				if(slot != null) {
-					itemsinslots += slot.stackSize;
-				}
-			}
-			i++;
-		}
-		int toadd = Math.min(availableslots * 64 - itemsinslots, stack.stackSize);
-		if(!doAdd) {
-			return toadd;
-		}
-		if(toadd <= 0) {
-			return 0;
-		}
-		itemsinslots += toadd;
-		int itemsperslot = itemsinslots / availableslots;
-		int itemsextra = itemsinslots - (itemsperslot * availableslots);
-		i = 0;
-		for(ItemStack itemstack:recipe) {
-			if(itemstack == null) {
-				i++;
-				continue;
-			}
-			if(stack.getItem() == itemstack.getItem() && stack.getItemDamage() == itemstack.getItemDamage()) {
-				if(itemsperslot == 0 && itemsextra == 0) {
-					inv.clearInventorySlotContents(i);
-				} else {
-					ItemStack slot = inv.getStackInSlot(i);
-					if(slot == null) {
-						slot = stack.copy();
-					}
-					slot.stackSize = itemsperslot;
-					if(itemsextra > 0) {
-						slot.stackSize++;
-						itemsextra--;
-					}
-					inv.setInventorySlotContents(i, slot);
-				}
-			}
-			i++;
-		}
-		inv.markDirty();
-		super.markDirty();
-		return toadd;
-	}
-
-	@Override
-	public ItemStack[] extractItem(boolean doRemove, ForgeDirection from, int maxItemCount) {
-		ItemStack[] tmp = new ItemStack[] { inv.getStackInSlot(10) };
-		if (doRemove) {
-			inv.clearInventorySlotContents(10);
-			inv.markDirty();
-			super.markDirty();
-		}
-		return tmp;
-	}
-	*/
-
 	@Override
 	public void guiOpenedByPlayer(EntityPlayer player) {
 		listener.add(player);
@@ -467,11 +371,6 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 	public void onBlockBreak() {
 		inv.dropContents(getWorldObj(), xCoord, yCoord, zCoord);
 	}
-	
-	@Override
-	public int getRotation() {
-		return rotation;
-	}
 
 	@Override
 	public int getFrontTexture() {
@@ -480,11 +379,6 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 		} else {
 			return 8;
 		}
-	}
-
-	@Override
-	public void setRotation(int rotation) {
-		this.rotation = rotation;
 	}
 
 	@Override
@@ -515,14 +409,11 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 
 	@Override
 	public boolean canInsertItem(int var1, ItemStack var2, int var3) {
-		// TODO Auto-generated method stub
-		return false;
+		return var1 < 10;
 	}
 
 	@Override
 	public boolean canExtractItem(int var1, ItemStack var2, int var3) {
-		// TODO Auto-generated method stub
-		return false;
+		return var1 == 10;
 	}
-
 }

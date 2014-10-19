@@ -9,6 +9,7 @@ import logisticspipes.LPConstants;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
+import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.gui.hud.HUDPowerLevel;
 import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.IGuiOpenControler;
@@ -39,7 +40,7 @@ import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 
 @ModDependentInterface(modId={"IC2", "ComputerCraft@1.6", "CoFHCore", "BuildCraft|Transport"}, interfacePath={"ic2.api.energy.tile.IEnergySink", "dan200.computercraft.api.peripheral.IPeripheral", "cofh.api.energy.IEnergyHandler", "buildcraft.api.power.IPowerReceptor"})
-public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGuiTileEntity, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IPeripheral, IEnergyHandler {
+public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IPeripheral, IEnergyHandler {
 
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
 	

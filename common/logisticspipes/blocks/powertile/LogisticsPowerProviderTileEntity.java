@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import logisticspipes.LPConstants;
+import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.gui.hud.HUDPowerLevel;
 import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.IGuiOpenControler;
@@ -44,7 +45,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public abstract class LogisticsPowerProviderTileEntity extends TileEntity implements IGuiTileEntity, ISubSystemPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler {
+public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ISubSystemPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler {
 	public static final int BC_COLOR = 0x00ffff;
 	public static final int RF_COLOR = 0xff0000;
 	public static final int IC2_COLOR = 0xffff00;

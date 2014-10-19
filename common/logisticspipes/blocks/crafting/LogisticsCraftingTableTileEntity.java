@@ -6,6 +6,7 @@ import java.util.List;
 import logisticspipes.Configs;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.blocks.LogisticsSolidBlock;
+import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.IGuiTileEntity;
 import logisticspipes.network.NewGuiHandler;
@@ -35,7 +36,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.Constants;
 
-public class LogisticsCraftingTableTileEntity extends TileEntity implements IGuiTileEntity, ISimpleInventoryEventHandler, IInventory, IGuiOpenControler {
+public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ISimpleInventoryEventHandler, IInventory, IGuiOpenControler {
 	
 	public ItemIdentifierInventory inv = new ItemIdentifierInventory(18, "Crafting Resources", 64);
 	public ItemIdentifierInventory matrix = new ItemIdentifierInventory(9, "Crafting Matrix", 1);

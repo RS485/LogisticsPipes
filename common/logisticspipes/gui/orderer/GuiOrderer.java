@@ -79,15 +79,6 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 	public void initGui() {
 		super.initGui();
 		
-		this.guiLeft =  width/2 - xSize/2 + xCenterOffset;
-		this.guiTop = height/2 - ySize/2  + yCenterOffset;
-		
-		this.right = width/2 + xSize/2 + xCenterOffset;
-		this.bottom = height/2 + ySize/2 + yCenterOffset;
-		
-		this.xCenter = (right + guiLeft) / 2;
-		this.yCenter = (bottom + guiTop) / 2;
-		
 		buttonList.clear();
 		buttonList.add(new GuiButton(0, right - 55, bottom - 25, 50,20,"Request")); // Request
 		buttonList.add(new SmallGuiButton(1, right - 15, guiTop + 5, 10 ,10 ,">")); // Next page

@@ -14,6 +14,7 @@ public class LPConstants {
 	public static final boolean DEV_BUILD = VERSION.contains(".dev.") || DEBUG;
 
 	public static int	pipeModel = -1;
+	public static int	solidBlockModel = -1;
 	
 	public static final String computerCraftModID = "ComputerCraft@1.7";
 	

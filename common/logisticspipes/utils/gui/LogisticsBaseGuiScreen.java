@@ -114,8 +114,8 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	public void setSubGui(SubGuiScreen gui) {
 		if(subGui == null) {
 			subGui = gui;
-			subGui.setWorldAndResolution(this.mc, this.width, this.height);
 			subGui.register(this);
+			subGui.setWorldAndResolution(this.mc, this.width, this.height);
 			subGui.initGui();
 		}
 	}
@@ -399,6 +399,11 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	
 	public Minecraft getMC() {
 		return mc;
+	}
+
+	@Override
+	public LogisticsBaseGuiScreen getBaseScreen() {
+		return this;
 	}
 	
 	@Override

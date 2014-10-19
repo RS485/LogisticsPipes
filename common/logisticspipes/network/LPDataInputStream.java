@@ -132,7 +132,7 @@ public class LPDataInputStream extends DataInputStream {
 	}
 	
 	public boolean[] readBooleanArray() throws IOException {
-		boolean[] array = new boolean[this.readByte()];
+		boolean[] array = new boolean[this.readInt()];
 		BitSet set = this.readBitSet();
 		for(int i=0;i<array.length;i++) {
 			array[i] = set.get(i);
@@ -141,7 +141,7 @@ public class LPDataInputStream extends DataInputStream {
 	}
 	
 	public int[] readIntegerArray() throws IOException {
-		int[] array = new int[this.readByte()];
+		int[] array = new int[this.readInt()];
 		for(int i=0;i<array.length;i++) {
 			array[i] = this.readInt();
 		}
@@ -216,5 +216,13 @@ public class LPDataInputStream extends DataInputStream {
 	public ByteBuf readByteBuf() throws IOException {
 		byte[] bytes = this.readByteArray();
 		return Unpooled.copiedBuffer(bytes);
+	}
+
+	public long[] readLongArray() throws IOException {
+		long[] array = new long[this.readInt()];
+		for(int i=0;i<array.length;i++) {
+			array[i] = this.readLong();
+		}
+		return array;
 	}
 }

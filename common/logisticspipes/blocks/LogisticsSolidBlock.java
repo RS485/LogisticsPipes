@@ -1,10 +1,12 @@
 package logisticspipes.blocks;
 
 
+import logisticspipes.LPConstants;
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.blocks.powertile.LogisticsIC2PowerProviderTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
+import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
 import logisticspipes.interfaces.IGuiTileEntity;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.proxy.MainProxy;
@@ -30,12 +32,13 @@ public class LogisticsSolidBlock extends BlockContainer {
 	public static final int LOGISTICS_SECURITY_STATION = 2;
 	public static final int LOGISTICS_AUTOCRAFTING_TABLE = 3;
 	public static final int LOGISTICS_FUZZYCRAFTING_TABLE = 4;
+	public static final int LOGISTICS_STATISTICS_TABLE = 5;
 
 	//Power Provider
 	public static final int LOGISTICS_RF_POWERPROVIDER = 11;
 	public static final int LOGISTICS_IC2_POWERPROVIDER = 12;
 	
-	private static final IIcon[] icons = new IIcon[17];
+	private static final IIcon[] icons = new IIcon[18];
 	
 	public LogisticsSolidBlock() {
 		super(Material.iron);
@@ -46,6 +49,15 @@ public class LogisticsSolidBlock extends BlockContainer {
 	@Override
 	public void onBlockClicked(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer) {
 		super.onBlockClicked(par1World, par2, par3, par4, par5EntityPlayer);
+	}
+
+	@Override
+	public void onNeighborChange(IBlockAccess world, int x, int y, int z, int tileX, int tileY, int tileZ) {
+		super.onNeighborChange(world, x, y, z, tileX, tileY, tileZ);
+		TileEntity tile = world.getTileEntity(x, y, z);
+		if(tile instanceof LogisticsSolidTileEntity) {
+			((LogisticsSolidTileEntity)tile).notifyOfBlockChange();
+		}
 	}
 
 	@Override
@@ -70,8 +82,8 @@ public class LogisticsSolidBlock extends BlockContainer {
 			((LogisticsCraftingTableTileEntity)tile).placedBy(entity);
 		}
 		if(tile instanceof IRotationProvider) {
-			double x = tile.xCoord - entity.posX;
-			double z = tile.zCoord - entity.posZ;
+			double x = tile.xCoord + 0.5 - entity.posX;
+			double z = tile.zCoord + 0.5 - entity.posZ;
 			double w = Math.atan2(x, z);
 			double halfPI = Math.PI / 2;
 			double halfhalfPI = halfPI / 2;
@@ -104,6 +116,11 @@ public class LogisticsSolidBlock extends BlockContainer {
 	}
 
 	@Override
+	public int getRenderType() {
+		return LPConstants.solidBlockModel;
+	}
+
+	@Override
 	public IIcon getIcon(int side, int meta) {
 		return getRotatedTexture(meta, side, 2, 0);
 	}
@@ -120,6 +137,8 @@ public class LogisticsSolidBlock extends BlockContainer {
 			case LOGISTICS_AUTOCRAFTING_TABLE:
 			case LOGISTICS_FUZZYCRAFTING_TABLE:
 				return new LogisticsCraftingTableTileEntity();
+			case LOGISTICS_STATISTICS_TABLE:
+				return new LogisticsStatisticsTileEntity();
 			case LOGISTICS_RF_POWERPROVIDER:
 				return new LogisticsRFPowerProviderTileEntity();
 			case LOGISTICS_IC2_POWERPROVIDER:
@@ -137,6 +156,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 		case LOGISTICS_SECURITY_STATION:
 		case LOGISTICS_AUTOCRAFTING_TABLE:
 		case LOGISTICS_FUZZYCRAFTING_TABLE:
+		case LOGISTICS_STATISTICS_TABLE:
 		case LOGISTICS_RF_POWERPROVIDER:
 		case LOGISTICS_IC2_POWERPROVIDER:
 			return par1;
@@ -159,7 +179,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(IIconRegister par1IIconRegister) {
-		for(int i=0;i<17;i++) {
+		for(int i=0;i<icons.length;i++) {
 			icons[i]=par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/"+i);
 		}
 	}
@@ -254,6 +274,15 @@ public class LogisticsSolidBlock extends BlockContainer {
 				return icons[12];
 			default: //Front
 				return icons[10];
+			}
+		case LOGISTICS_STATISTICS_TABLE:
+			switch (side) {
+			case 1: //TOP
+				return icons[17];
+			case 0: //Bottom
+				return icons[5];
+			default: //Front
+				return icons[6];
 			}
 		case LOGISTICS_RF_POWERPROVIDER:
 			switch (side) {

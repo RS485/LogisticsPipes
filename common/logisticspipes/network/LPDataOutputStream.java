@@ -112,7 +112,7 @@ public class LPDataOutputStream extends DataOutputStream {
 	}
 	
 	public void writeBooleanArray(boolean[] array) throws IOException {
-		this.writeByte(array.length);
+		this.writeInt(array.length);
 		BitSet set = new BitSet();
 		for(int i=0;i<array.length;i++) {
 			set.set(i, array[i]);
@@ -121,7 +121,7 @@ public class LPDataOutputStream extends DataOutputStream {
 	}
 	
 	public void writeIntegerArray(int[] array) throws IOException {
-		this.writeByte(array.length);
+		this.writeInt(array.length);
 		for(int i=0;i<array.length;i++) {
 			this.writeInt(array[i]);
 		}
@@ -189,6 +189,13 @@ public class LPDataOutputStream extends DataOutputStream {
 		this.writeInt(array.length);
 		for(int i=0;i<array.length;i++) {
 			this.writeByte(array[i]);
+		}
+	}
+	
+	public void writeLongArray(long[] array) throws IOException {
+		this.writeInt(array.length);
+		for(int i=0;i<array.length;i++) {
+			this.writeLong(array[i]);
 		}
 	}
 }

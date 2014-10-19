@@ -715,6 +715,26 @@ public class RecipeManager {
 			Character.valueOf('Q'), Items.quartz
 		});
 		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_STATISTICS_TABLE), CraftingDependency.Advanced_Information, new Object[] {
+			"iDi",
+			"rBr",
+			"iii",
+			Character.valueOf('D'), parts.getGearTear2(),
+			Character.valueOf('r'), Items.redstone,
+			Character.valueOf('B'), LogisticsPipes.LogisticsBasicPipe,
+			Character.valueOf('i'), Items.iron_ingot
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_STATISTICS_TABLE), CraftingDependency.Advanced_Information, new Object[] {
+			"iDi",
+			"rBr",
+			"iii",
+			Character.valueOf('D'), parts.getChipTear2(),
+			Character.valueOf('r'), Items.redstone,
+			Character.valueOf('B'), LogisticsPipes.LogisticsBasicPipe,
+			Character.valueOf('i'), Items.iron_ingot
+		});
+		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 0), CraftingDependency.Upgrades, new Object[] { 
 			false, 
 			"srs", 

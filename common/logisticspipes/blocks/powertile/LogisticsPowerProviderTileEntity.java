@@ -29,6 +29,8 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.computers.interfaces.CCCommand;
+import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
@@ -41,10 +43,10 @@ import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+@CCType(name="LogisticsPowerProvider")
 public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ISubSystemPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler {
 	public static final int BC_COLOR = 0x00ffff;
 	public static final int RF_COLOR = 0xff0000;
@@ -169,7 +171,14 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 
 	protected abstract float getMaxProvidePerTick();
 	
+	@CCCommand(description="Returns the color for the power provided by this power provider")
 	protected abstract int getLaserColor();
+
+	@CCCommand(description="Returns the max. amount of storable power")
+	public abstract int getMaxStorage();
+
+	@CCCommand(description="Returns the power type stored in this power provider")
+	public abstract String getBrand();
 
 	@Override
 	public void invalidate() {
@@ -215,6 +224,7 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 	}
 
 	@Override
+	@CCCommand(description="Returns the current power level for this power provider")
 	public float getPowerLevel() {
 		return lastUpdateStorage;
 	}

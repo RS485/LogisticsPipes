@@ -19,6 +19,7 @@ import logisticspipes.api.ILPPipeTile;
 import logisticspipes.asm.ModDependentField;
 import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
+import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.interfaces.IClientState;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logic.LogicController;
@@ -35,6 +36,7 @@ import logisticspipes.proxy.buildcraft.subproxies.IBCCoreState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
 import logisticspipes.proxy.buildcraft.subproxies.IConnectionOverrideResult;
 import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
+import logisticspipes.proxy.opencomputers.IOCTile;
 import logisticspipes.proxy.opencomputers.asm.BaseWrapperClass;
 import logisticspipes.renderer.IIconProvider;
 import logisticspipes.renderer.LogisticsTileRenderController;
@@ -74,7 +76,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
 @ModDependentInterface(modId={"CoFHCore", "OpenComputers@1.3", "OpenComputers@1.3", "OpenComputers@1.3", "BuildCraft|Transport", "BuildCraft|Transport"}, interfacePath={"cofh.api.transport.IItemDuct", "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment", "buildcraft.api.transport.IPipeTile", "buildcraft.api.transport.IPipeConnection"})
-public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile, IPipeInformationProvider, IItemDuct, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IPipeTile, IPipeConnection, ILogicControllerTile {	
+public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILPPipeTile, IPipeInformationProvider, IItemDuct, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IPipeTile, IPipeConnection, ILogicControllerTile {	
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
 	
 	public boolean turtleConnect[] = new boolean[7];
@@ -127,7 +129,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
     			pipe.invalidate();
     		}
     		super.invalidate();
-			SimpleServiceLocator.openComputersProxy.handleLPInvalidate(this);
+			SimpleServiceLocator.openComputersProxy.handleInvalidate(this);
 			tilePart.invalidate();
         }
     }
@@ -149,7 +151,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 		if (pipe != null) {
 			pipe.onChunkUnload();
 		}
-		SimpleServiceLocator.openComputersProxy.handleLPChunkUnload(this);
+		SimpleServiceLocator.openComputersProxy.handleChunkUnload(this);
 	}
 
 	@Override
@@ -300,7 +302,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 		for(int i=0;i<turtleConnect.length;i++) {
 			nbt.setBoolean("turtleConnect_" + i, turtleConnect[i]);
 		}
-		SimpleServiceLocator.openComputersProxy.handleLPWriteToNBT(this, nbt);
+		SimpleServiceLocator.openComputersProxy.handleWriteToNBT(this, nbt);
 		
 		NBTTagCompound logicNBT = new NBTTagCompound();
 		logicController.writeToNBT(logicNBT);
@@ -341,7 +343,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 		for(int i=0;i<turtleConnect.length;i++) {
 			turtleConnect[i] = nbt.getBoolean("turtleConnect_" + i);
 		}
-		SimpleServiceLocator.openComputersProxy.handleLPReadFromNBT(this, nbt);
+		SimpleServiceLocator.openComputersProxy.handleReadFromNBT(this, nbt);
 		
 		logicController.readFromNBT(nbt.getCompoundTag("logicController"));
 	}
@@ -599,17 +601,22 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 	@SideOnly(Side.CLIENT)
 	@ModDependentMethod(modId="OpenComputers@1.3")
 	public boolean canConnect(ForgeDirection dir) {
-		return !(this.getTile(dir) instanceof LogisticsTileGenericPipe);
+		return !(this.getTile(dir) instanceof LogisticsTileGenericPipe) && !(this.getTile(dir) instanceof LogisticsSolidTileEntity);
 	}
 
 	@Override
 	@ModDependentMethod(modId="OpenComputers@1.3")
 	public Node sidedNode(ForgeDirection dir) {
-		if(this.getTile(dir) instanceof LogisticsTileGenericPipe) {
+		if(this.getTile(dir) instanceof LogisticsTileGenericPipe || this.getTile(dir) instanceof LogisticsSolidTileEntity) {
 			return null;
 		} else {
 			return node();
 		}
+	}
+
+	@Override
+	public Object getOCNode() {
+		return node();
 	}
 
 	public boolean initialized = false;

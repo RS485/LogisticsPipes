@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
+import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
@@ -42,6 +43,7 @@ import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
 import logisticspipes.proxy.interfaces.IToolWrenchProxy;
 import logisticspipes.proxy.nei.NEIProxy;
+import logisticspipes.proxy.opencomputers.IOCTile;
 import logisticspipes.proxy.opencomputers.OpenComputersProxy;
 import logisticspipes.proxy.te.ThermalExpansionProxy;
 import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
@@ -322,11 +324,12 @@ public class ProxyManager {
 		
 		SimpleServiceLocator.setOpenComputersProxy(getWrappedProxy("OpenComputers@1.3", IOpenComputersProxy.class, OpenComputersProxy.class, new IOpenComputersProxy() {
 			@Override public void initLogisticsTileGenericPipe(LogisticsTileGenericPipe tile) {}
-			@Override public void handleLPWriteToNBT(LogisticsTileGenericPipe tile, NBTTagCompound nbt) {}
-			@Override public void handleLPReadFromNBT(LogisticsTileGenericPipe tile, NBTTagCompound nbt) {}
-			@Override public void handleLPInvalidate(LogisticsTileGenericPipe tile) {}
-			@Override public void handleLPChunkUnload(LogisticsTileGenericPipe tile) {}
-			@Override public void addToNetwork(LogisticsTileGenericPipe tile) {}
+			@Override public void initLogisticsSolidTileEntity(LogisticsSolidTileEntity tile) {}
+			@Override public void handleWriteToNBT(IOCTile tile, NBTTagCompound nbt) {}
+			@Override public void handleReadFromNBT(IOCTile tile, NBTTagCompound nbt) {}
+			@Override public void handleInvalidate(IOCTile tile) {}
+			@Override public void handleChunkUnload(IOCTile tile) {}
+			@Override public void addToNetwork(TileEntity tile) {}
 		}));
 		
 		SimpleServiceLocator.setToolWrenchProxy(getWrappedProxy("!IToolWrench", IToolWrenchProxy.class, ToolWrenchProxy.class, new IToolWrenchProxy() {

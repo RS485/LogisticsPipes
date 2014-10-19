@@ -9,5 +9,7 @@ public interface ISubGuiControler {
 	public boolean hasSubGui();
 	
 	public SubGuiScreen getSubGui();
+	
+	public LogisticsBaseGuiScreen getBaseScreen();
 
 }

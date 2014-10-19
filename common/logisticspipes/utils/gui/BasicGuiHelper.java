@@ -475,6 +475,7 @@ public class BasicGuiHelper {
     	zLevel = 0;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(LOCK_ICON);
+		GL11.glEnable(GL11.GL_BLEND);
 		
 		Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
@@ -491,6 +492,7 @@ public class BasicGuiHelper {
     	zLevel = 0;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(LINES_ICON);
+		GL11.glEnable(GL11.GL_BLEND);
 		
 		Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
@@ -507,6 +509,7 @@ public class BasicGuiHelper {
     	zLevel = 0;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(STATS_ICON);
+		GL11.glEnable(GL11.GL_BLEND);
 		
 		Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();

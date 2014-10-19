@@ -249,7 +249,6 @@ item.upgrade.info.requestblock=Request Block
 item.upgrade.info.chassi=Chassi
 
 # Blocks
-
 tile.solderingstation=Soldering Station
 tile.logisticspowerjunction=Logistics Power Junction
 tile.logisticssecuritystation=Logistics Security Station
@@ -258,8 +257,9 @@ tile.logisticsfuzzycraftingtable=Logistics Fuzzy Crafting Table
 tile.logisticsbcpowerprovider=Logistics MJ Power Provider
 tile.logisticsic2powerprovider=Logistics EU Power Provider
 tile.logisticstepowerprovider=Logistics RF Power Provider
-# Misc
+tile.logisticsstatisticstable=Logistics Statistics Table
 
+# Misc
 itemGroup.Logistics_Pipes=Logistics Pipes
 misc.holdshift=<Hold %cYELLOW %cITALIC Shift %cRESET %cGRAY for details>
 misc.extractionmode.Normal=Normal
@@ -410,3 +410,9 @@ gui.pipecontroller.Sent=Sent
 gui.pipecontroller.Recieved=Recieved
 gui.pipecontroller.Relayed=Relayed
 gui.pipecontroller.RoutingTableSize=RoutingTableSize
+
+gui.networkstatistics.amount=Track amount
+gui.networkstatistics.crafting=View active crafting tasks
+gui.networkstatistics.gettasks=Acquire tasks
+gui.networkstatistics.add.alreadytracked=This item type is already tracked
+

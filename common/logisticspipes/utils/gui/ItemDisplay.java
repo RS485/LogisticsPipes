@@ -13,7 +13,6 @@ import logisticspipes.interfaces.ISpecialItemRenderer;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen.Colors;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.string.StringUtil;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -273,24 +272,8 @@ public class ItemDisplay {
 					renderer.specialItemRendering(itemIdentifierStack.getItem(), x, y);
 				}
 
-				String s = StringUtil.getFormatedStackSize(itemstack.stackSize);
-				
-				FontRenderer font = itemstack.getItem().getFontRenderer(itemstack);
-				if (font == null)
-					font = fontRenderer;
-
-				itemRenderer.zLevel = 100.0F;
-				GL11.glEnable(GL11.GL_DEPTH_TEST);
-				GL11.glEnable(GL11.GL_LIGHTING);
-				itemRenderer.renderItemAndEffectIntoGUI(font, screen.getMC().renderEngine, itemstack, x, y);
-				// With empty string, because damage value indicator struggles with the depth
-				itemRenderer.renderItemOverlayIntoGUI(font, screen.getMC().renderEngine, itemstack, x, y, "");
-				GL11.glDisable(GL11.GL_LIGHTING);
-				GL11.glDisable(GL11.GL_DEPTH_TEST);
-				itemRenderer.zLevel = 0.0F;
-
-				// Draw number
-				font.drawStringWithShadow(s, x + 19 - 2 - font.getStringWidth(s), y + 6 + 3, 16777215);
+				// Use BasicGuiHelper to render an ItemStack
+				BasicGuiHelper.renderItemStack(itemstack, x, y, 100.0F, screen.getMC().renderEngine, itemRenderer, fontRenderer, true);
 
 				x += panelxSize;
 				if (x > 200) {

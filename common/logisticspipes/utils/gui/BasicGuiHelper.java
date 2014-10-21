@@ -9,18 +9,19 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen.Colors;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.ForgeHooksClient;
 
+import net.minecraftforge.client.ForgeHooksClient;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
@@ -59,27 +60,77 @@ public class BasicGuiHelper {
 			}
 	}
 
-	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left , int top, int columns, int items, int xSize, int ySize, Minecraft mc, boolean displayAmount, boolean forcenumber) {
-		renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, mc, displayAmount, forcenumber, true);
+	public static void renderItemStack(ItemStack itemstack, int posX, int posY, float zLevel, TextureManager texManager,
+									   RenderItem itemRenderer, FontRenderer fontRenderer, boolean displayAmount) {
+		GL11.glEnable(GL11.GL_LIGHTING);
+
+		// Rendering the block/item with depth and lightning, but without text
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		if (!ForgeHooksClient.renderInventoryItem(new RenderBlocks(), texManager, itemstack, true, zLevel, posX, posY))
+		{
+			itemRenderer.zLevel += zLevel;
+			itemRenderer.renderItemIntoGUI(fontRenderer, texManager, itemstack, posX, posY, false);
+			if (itemstack.hasEffect(0)) {
+				GL11.glTranslatef(0F, 0F, 1F);
+				itemRenderer.renderEffect(texManager, posX, posY);
+				GL11.glTranslatef(0F, 0F, -1F);
+			}
+			itemRenderer.zLevel -= zLevel;
+		}
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		itemRenderer.renderItemOverlayIntoGUI(fontRenderer, texManager, itemstack, posX, posY, "");
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+
+		// if we want to render the amount, do that
+		if (displayAmount) {
+			FontRenderer specialFontRenderer = itemstack.getItem().getFontRenderer(itemstack);
+			// There MAY be a special font renderer. We will support that as long as the method exists.
+			if (specialFontRenderer != null) {
+				fontRenderer = specialFontRenderer;
+			}
+
+			GL11.glDisable(GL11.GL_LIGHTING);
+			String amountString = StringUtil.getFormatedStackSize(itemstack.stackSize);
+			fontRenderer.drawStringWithShadow(amountString, posX + 16 - fontRenderer.getStringWidth(amountString), posY + 8, 0xFFFFFFFF);
+		}
 	}
 
-	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left , int top, int columns, int items, int xSize, int ySize, Minecraft mc, boolean displayAmount, boolean forcenumber, boolean color) {
-		renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, mc, displayAmount, forcenumber, true, false);
+	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch,
+															int page, int left, int top, int columns, int items, int xSize,
+															int ySize, Minecraft mc, boolean displayAmount, boolean forcenumber) {
+
+		renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, mc,
+											 displayAmount, forcenumber, true);
 	}
 
-	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, Minecraft mc, boolean displayAmount, boolean forcenumber, boolean color, boolean disableEffect) {
-		GL11.glPushMatrix();
+	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch,
+															int page, int left, int top, int columns, int items, int xSize,
+															int ySize, Minecraft mc, boolean displayAmount, boolean forcenumber, boolean color) {
+
+		renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, mc,
+											 displayAmount, forcenumber, true, false);
+	}
+
+	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch,
+															int page, int left, int top, int columns, int items, int xSize,
+															int ySize, Minecraft mc, boolean displayAmount, boolean forcenumber,
+															boolean color, boolean disableEffect) {
+		RenderHelper.enableGUIStandardItemLighting();
+		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);
+
+		// The only thing that ever sets NORMALIZE are slimes. It never gets disabled and it interferes with our lightning in the HUD.
+		GL11.glDisable(GL11.GL_NORMALIZE);
+
 		int ppi = 0;
 		int column = 0;
 		int row = 0;
 		FontRenderer fontRenderer = mc.fontRenderer;
-		RenderItem renderItem = new RenderItem();
-		RenderBlocks renderBlocks = new RenderBlocks();
-		renderItem.renderWithColor = color;
-		for(ItemIdentifierStack itemStack: _allItems) {
-			if(itemStack == null) {
+		RenderItem itemRenderer = new RenderItem();
+		itemRenderer.renderWithColor = color;
+		for (ItemIdentifierStack itemStack : _allItems) {
+			if (itemStack == null) {
 				column++;
-				if(column >= columns) {
+				if (column >= columns) {
 					row++;
 					column = 0;
 				}
@@ -87,62 +138,27 @@ public class BasicGuiHelper {
 				continue;
 			}
 			ItemIdentifier item = itemStack.getItem();
-			if(IItemSearch != null && !IItemSearch.itemSearched(item)) continue;
+			if (IItemSearch != null && !IItemSearch.itemSearched(item)) continue;
 			ppi++;
-			
-			if(ppi <= items * page) continue;
-			if(ppi > items * (page + 1)) continue;
-			ItemStack st = itemStack.unsafeMakeNormalStack();
+
+			if (ppi <= items * page) continue;
+			if (ppi > items * (page + 1)) continue;
+			ItemStack itemstack = itemStack.unsafeMakeNormalStack();
 			int x = left + xSize * column;
-			int y = top + ySize * row;
-			
-			GL11.glDisable(GL11.GL_LIGHTING);
-			
-			if(st != null) {
-				if(disableEffect) {
-					if(st != null) {
-						if( !ForgeHooksClient.renderInventoryItem(renderBlocks, mc.renderEngine, st, renderItem.renderWithColor, renderItem.zLevel, x, y)) {
-							renderItem.renderItemIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
-						}
-					}
-				} else {
-					GL11.glTranslated(0, 0, 3.0);
-					renderItem.renderItemAndEffectIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
-					GL11.glTranslated(0, 0, -3.0);
-				}
+			int y = top + ySize * row + 1;
+
+			if (itemstack != null) {
+				BasicGuiHelper.renderItemStack(itemstack, x, y, 100.0F, mc.renderEngine, itemRenderer, fontRenderer, displayAmount);
 			}
-			
-			GL11.glEnable(GL11.GL_LIGHTING);
-			
-			if(displayAmount) {
-				String s;
-				if(st.stackSize == 1 && !forcenumber) {
-					s = "";
-				} else if(st.stackSize < 1000) {
-					s = st.stackSize + "";
-				} else if(st.stackSize < 100000) {
-					s = st.stackSize / 1000 + "K";
-				} else if(st.stackSize < 1000000) {
-					s = "0M" + st.stackSize / 100000;
-				} else {
-					s = st.stackSize / 1000000 + "M";
-				}
-				
-				GL11.glDisable(GL11.GL_LIGHTING);
-				GL11.glTranslated(0.0D, 0.0D, 100.0D);
-				drawStringWithShadow(fontRenderer, s, x + 16 - fontRenderer.getStringWidth(s), y + 8, 0xFFFFFF);
-				GL11.glTranslated(0.0D, 0.0D, -100.0D);
-				GL11.glEnable(GL11.GL_LIGHTING);
-			}
-			
+
 			column++;
-			if(column >= columns) {
+			if (column >= columns) {
 				row++;
 				column = 0;
 			}
 		}
-		GL11.glDisable(GL11.GL_LIGHTING);
-		GL11.glPopMatrix();
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		RenderHelper.disableStandardItemLighting();
 	}
 	
 

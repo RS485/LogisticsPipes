@@ -8,6 +8,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 public class ConnectionMatrix {
 	private int mask = 0;
+	private int isBCPipeMask = 0;
 	private boolean dirty = false;
 
 	public boolean isConnected(ForgeDirection direction) {
@@ -19,6 +20,22 @@ public class ConnectionMatrix {
 		if (isConnected(direction) != value) {
 			// invert the direction.ordinal()'th bit of mask
 			mask ^= 1 << direction.ordinal();
+			dirty = true;
+		}
+		if(!value) {
+			setBCConnected(direction, false);
+		}
+	}
+	
+	public boolean isBCConnected(ForgeDirection direction) {
+		// test if the direction.ordinal()'th bit of mask is set
+		return (isBCPipeMask & (1 << direction.ordinal())) != 0;
+	}
+
+	public void setBCConnected(ForgeDirection direction, boolean value) {
+		if (isBCConnected(direction) != value) {
+			// invert the direction.ordinal()'th bit of mask
+			isBCPipeMask ^= 1 << direction.ordinal();
 			dirty = true;
 		}
 	}
@@ -42,6 +59,7 @@ public class ConnectionMatrix {
 
 	public void writeData(LPDataOutputStream data) throws IOException {
 		data.writeByte(mask);
+		data.writeByte(isBCPipeMask);
 	}
 
 	public void readData(LPDataInputStream data) throws IOException {
@@ -49,6 +67,12 @@ public class ConnectionMatrix {
 
 		if (newMask != mask) {
 			mask = newMask;
+			dirty = true;
+		}
+		
+		newMask = data.readByte();
+		if(newMask != isBCPipeMask) {
+			isBCPipeMask = newMask;
 			dirty = true;
 		}
 	}

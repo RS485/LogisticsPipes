@@ -194,6 +194,7 @@ public class ProxyManager {
 			@Override public void checkUpdateNeighbour(TileEntity tile) {}
 			@Override public void logWarning(String format) {}
 			@Override public Class<? extends ICraftingRecipeProvider> getAssemblyTableProviderClass() {return null;}
+			@Override public boolean isTileGenericPipe(TileEntity tile) {return false;}
 		};
 		
 		try {

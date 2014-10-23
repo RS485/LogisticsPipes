@@ -1,13 +1,16 @@
 package logisticspipes.commands;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import logisticspipes.LPConstants;
 import logisticspipes.commands.abstracts.ICommandHandler;
 import logisticspipes.commands.exception.CommandNotFoundException;
 import logisticspipes.commands.exception.LPCommandException;
 import logisticspipes.commands.exception.PermissionDeniedException;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.renderer.newpipe.LogisticsNewPipeWorldRenderer;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -48,7 +51,17 @@ public class LogisticsPipesCommand extends CommandBase {
 			throw new WrongUsageException("Type '" + this.getCommandUsage(sender) + "' for help.");
 		}
 		try {
-			mainCommand.executeCommand(sender, arguments);
+			boolean managed = false;
+			if(LPConstants.DEBUG) {
+				//Check for unlisted Debug commands
+				if(arguments[0].equalsIgnoreCase("reloadModel")) {
+					LogisticsNewPipeWorldRenderer.loadModels();
+					managed = true;
+				}
+			}
+			if(!managed) {
+				mainCommand.executeCommand(sender, arguments);
+			}
 		} catch(LPCommandException e) {
 			if(e instanceof PermissionDeniedException) {
 				throw new CommandException("You are not allowed to execute that command now.");

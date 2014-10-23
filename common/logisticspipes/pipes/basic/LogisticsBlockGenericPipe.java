@@ -19,6 +19,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCClickResult;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePluggable;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;
+import logisticspipes.renderer.newpipe.LogisticsNewPipeWorldRenderer;
 import logisticspipes.textures.Textures;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.MatrixTranformations;
@@ -867,6 +868,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(IIconRegister iconRegister) {
+		LogisticsNewPipeWorldRenderer.registerTextures(iconRegister);
 		if (!skippedFirstIconRegister) {
 			skippedFirstIconRegister = true;
 			return;

@@ -48,4 +48,5 @@ public interface IBCProxy {
 	IBCRenderTESR getBCRenderTESR();
 	@SideOnly(Side.CLIENT) void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, LogisticsTileGenericPipe pipe, int x, int y, int z, int renderPass);
 	int getFacadeRenderColor();
+	boolean isTileGenericPipe(TileEntity tile);
 }

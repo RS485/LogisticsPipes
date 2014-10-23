@@ -67,13 +67,13 @@ public class LogisticsOrderManager implements Iterable<LogisticsOrder> {
 		return _orders.getFirst().setInProgress(true);
 	}*/
 
-	/* NOT multi-access SAFE -- changes the state of the stack so the returned element is on top*/
+	/* only multi-access SAFE when type is null; all other access patterns may change the state of the stack so the returned element is on top*/
 	public LogisticsOrder peekAtTopRequest(RequestType type) {
 		if(_orders.size()==0)
 			return null;
 		LogisticsOrder top = _orders.getFirst().setInProgress(true);
 		int loopCount=0;
-		while(top.getType()!=type){
+		while(type != null & top.getType()!=type){
 			loopCount++;
 			if(loopCount>_orders.size()) {
 				return null;

@@ -24,6 +24,14 @@ public class ProviderModuleGuiProvider extends ModuleCoordinatesGuiProvider {
 	@Setter
 	private int extractorMode;
 	
+	@Getter
+	@Setter
+	private boolean isActive;
+	
+	@Getter
+	@Setter
+	private ForgeDirection sneakyOrientation;
+	
 	public ProviderModuleGuiProvider(int id) {
 		super(id);
 	}
@@ -34,6 +42,8 @@ public class ProviderModuleGuiProvider extends ModuleCoordinatesGuiProvider {
 		if(module == null) return null;
 		module.setFilterExcluded(exclude);
 		module.setExtractionMode(extractorMode);
+		module.setSneakyDirection(sneakyOrientation);
+		module.setIsActive(isActive);
 		return new logisticspipes.gui.modules.GuiProvider(player.inventory, module);
 	}
 
@@ -65,6 +75,8 @@ public class ProviderModuleGuiProvider extends ModuleCoordinatesGuiProvider {
 		super.writeData(data);
 		data.writeBoolean(exclude);
 		data.writeInt(extractorMode);
+		data.writeBoolean(isActive);
+		data.writeForgeDirection(sneakyOrientation);
 	}
 
 	@Override
@@ -72,5 +84,7 @@ public class ProviderModuleGuiProvider extends ModuleCoordinatesGuiProvider {
 		super.readData(data);
 		exclude = data.readBoolean();
 		extractorMode = data.readInt();
+		isActive = data.readBoolean();
+		sneakyOrientation = data.readForgeDirection();
 	}
 }

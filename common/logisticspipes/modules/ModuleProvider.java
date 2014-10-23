@@ -60,6 +60,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
+import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -149,9 +150,9 @@ ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatch
 	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
 		return NewGuiHandler.getGui(ProviderModuleGuiProvider.class)
 				.setExtractorMode(this.getExtractionMode().ordinal())
-				.setExclude(isExcludeFilter)
-				.setIsActive(isActive);
-				.setSneakyDirection(_sneakyDirection);
+				.setExclude(isExcludeFilter);
+				//.setIsActive(isActive)
+				//.setSneakyDirection(_sneakyDirection);
 	}
 
 	@Override
@@ -189,7 +190,7 @@ ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatch
 	@Override
 	public void tick() {
 		//if(true) return;
-		if (++currentTick < ticksToAction) return;
+		//if (++currentTick < ticksToAction) return;
 		currentTick = 0;
 		checkUpdate(null);
 		int itemsleft = itemsToExtract();

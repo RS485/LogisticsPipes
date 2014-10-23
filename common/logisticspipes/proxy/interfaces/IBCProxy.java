@@ -60,4 +60,5 @@ public interface IBCProxy {
 	void checkUpdateNeighbour(TileEntity tile);
 	void logWarning(String format);
 	Class<? extends ICraftingRecipeProvider> getAssemblyTableProviderClass();
+	boolean isTileGenericPipe(TileEntity tile);
 }

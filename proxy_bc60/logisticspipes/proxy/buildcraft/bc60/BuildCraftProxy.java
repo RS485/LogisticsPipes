@@ -1195,4 +1195,9 @@ public class BuildCraftProxy implements IBCProxy {
 	public Class<? extends ICraftingRecipeProvider> getAssemblyTableProviderClass() {
 		return AssemblyTable.class;
 	}
+
+	@Override
+	public boolean isTileGenericPipe(TileEntity tile) {
+		return tile instanceof TileGenericPipe;
+	}
 }

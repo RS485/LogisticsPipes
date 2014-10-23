@@ -25,6 +25,7 @@ import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
@@ -34,6 +35,7 @@ import logisticspipes.network.guis.module.inpipe.ProviderModuleGuiProvider;
 import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
 import logisticspipes.network.packets.module.ModuleInventory;
+import logisticspipes.network.packets.modules.ExtractorModuleMode;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
@@ -51,6 +53,7 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.tuples.Pair;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -61,13 +64,19 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @CCType(name="Provider Module")
-public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive {
+public class ModuleProvider extends LogisticsSneakyDirectionModule implements 
+ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive 
+{
 	
 	private List<ILegacyActiveModule> _previousLegacyModules = new LinkedList<ILegacyActiveModule>();
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Items to provide (or empty for all)", 1);
+	private ForgeDirection _sneakyDirection = ForgeDirection.UNKNOWN;
+
+	private boolean isActive = true;
 	
-	protected final int ticksToAction = 6;
+	protected final int ticksToActiveAction = 6;
+	protected final int ticksToPassiveAction = 100;
 	protected int currentTick = 0;
 	
 	protected boolean isExcludeFilter = false;
@@ -86,22 +95,63 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound, "");
+		isActive = nbttagcompound.getBoolean("isActive");
 		isExcludeFilter = nbttagcompound.getBoolean("filterisexclude");
 		_extractionMode = ExtractionMode.getMode(nbttagcompound.getInteger("extractionMode"));
+		if(nbttagcompound.hasKey("sneakydirection")) {
+			_sneakyDirection = ForgeDirection.values()[nbttagcompound.getInteger("sneakydirection")];
+		} else if(nbttagcompound.hasKey("sneakyorientation")) {
+			//convert sneakyorientation to sneakydirection
+			int t = nbttagcompound.getInteger("sneakyorientation");
+			switch(t) {
+			default:
+			case 0:
+				_sneakyDirection = ForgeDirection.UNKNOWN;
+				break;
+			case 1:
+				_sneakyDirection = ForgeDirection.UP;
+				break;
+			case 2:
+				_sneakyDirection = ForgeDirection.SOUTH;
+				break;
+			case 3:
+				_sneakyDirection = ForgeDirection.DOWN;
+				break;
+			}
+		}
+
 		
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.writeToNBT(nbttagcompound, "");
+    	nbttagcompound.setBoolean("isActive", isActive);
     	nbttagcompound.setBoolean("filterisexclude", isExcludeFilter);
     	nbttagcompound.setInteger("extractionMode", _extractionMode.ordinal());
+		nbttagcompound.setInteger("sneakydirection", _sneakyDirection.ordinal());
 
+	}
+	
+	@Override
+	public ForgeDirection getSneakyDirection(){
+		return _sneakyDirection;
 	}
 
 	@Override
+	public void setSneakyDirection(ForgeDirection sneakyDirection){
+		_sneakyDirection = sneakyDirection;
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(ExtractorModuleMode.class).setDirection(_sneakyDirection).setModulePos(this), localModeWatchers);
+	}
+
+
+	@Override
 	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
-		return NewGuiHandler.getGui(ProviderModuleGuiProvider.class).setExtractorMode(this.getExtractionMode().ordinal()).setExclude(isExcludeFilter);
+		return NewGuiHandler.getGui(ProviderModuleGuiProvider.class)
+				.setExtractorMode(this.getExtractionMode().ordinal())
+				.setExclude(isExcludeFilter)
+				.setIsActive(isActive);
+				.setSneakyDirection(_sneakyDirection);
 	}
 
 	@Override
@@ -118,7 +168,8 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 	}
 	
 	protected int itemsToExtract() {
-		return 8;
+		// if active and you have an order, then run at active speed, else fallback to passive send
+		return (isActive & _service.getOrderManager().peekAtTopRequest(null)!=null)?8:1;
 	}
 
 	protected int stacksToExtract() {
@@ -155,6 +206,60 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 			stacksleft -= 1;
 			itemsleft -= sent;
 		}
+		
+		//Extract Item
+		IInventory realInventory = _service.getRealInventory();
+		if (realInventory == null) return;
+		ForgeDirection extractOrientation = _sneakyDirection;
+		if(extractOrientation == ForgeDirection.UNKNOWN) {
+			extractOrientation = _service.inventoryOrientation().getOpposite();
+		}
+
+		IInventoryUtil targetUtil = _service.getSneakyInventory(extractOrientation,true);
+
+		if(stacksleft<=0 || itemsleft <=0 || isActive == true)
+			return;
+		
+		for (int i = 0; i < targetUtil.getSizeInventory(); i++){
+			
+			ItemStack slot = targetUtil.getStackInSlot(i);
+			if (slot == null) continue;
+			ItemIdentifier slotitem = ItemIdentifier.get(slot);
+			List<Integer> jamList = new LinkedList<Integer>();
+			Pair<Integer, SinkReply> reply = _service.hasDestination(slotitem, true, jamList);
+			if (reply == null) continue;
+
+			while(reply != null && itemsleft>0) {
+				int count = Math.min(itemsleft, slot.stackSize);
+				count = Math.min(count, slotitem.getMaxStackSize());
+				if(reply.getValue2().maxNumberOfItems > 0) {
+					count = Math.min(count, reply.getValue2().maxNumberOfItems);
+				}
+
+				while(!_service.useEnergy(neededEnergy() * count) && count > 0) {
+					_service.spawnParticle(Particles.OrangeParticle, 2);
+					count--;
+				}
+
+				if(count <= 0) {
+					break;
+				}
+
+				ItemStack stackToSend = targetUtil.decrStackSize(i, count);
+				if(stackToSend == null || stackToSend.stackSize == 0) break;
+				count = stackToSend.stackSize;
+				_service.sendStack(stackToSend, reply, itemSendMode());
+				itemsleft -= count;
+				if(itemsleft <= 0) break;
+				slot = targetUtil.getStackInSlot(i);
+				if (slot == null) break;
+				jamList.add(reply.getValue1());
+				reply = _service.hasDestination(ItemIdentifier.get(slot), true, jamList);
+			}
+			break;
+		}
+
+		
 	}
 
 	@Override
@@ -307,6 +412,13 @@ outer:
 		this.isExcludeFilter = isExcludeFilter;
 	}
 
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setIsActive(boolean isActive) {
+		this.isActive = isActive;
+	}
 	public ExtractionMode getExtractionMode(){
 		return _extractionMode;
 	}

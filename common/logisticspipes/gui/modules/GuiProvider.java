@@ -52,6 +52,12 @@ public class GuiProvider extends ModuleBaseGui {
 			return _provider.isExcludeFilter() ? "Exclude" : "Include";
 		}
        }));
+       buttonList.add(new GuiStringHandlerButton(0, width / 2 + 50, height / 2 - 38, 45, 20, new GuiStringHandlerButton.StringHandler() {
+		@Override
+		public String getContent() {
+			return _provider.isActive() ? "Send" : "Hold";
+		}
+       }));
        buttonList.add(new GuiButton(1, width / 2 - 90, height / 2 - 41, 38, 20, "Switch"));
 	}
 	
@@ -61,6 +67,9 @@ public class GuiProvider extends ModuleBaseGui {
 			_provider.setFilterExcluded(!_provider.isExcludeFilter());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleIncludePacket.class).setModulePos(_provider));
 		} else if (guibutton.id == 1){
+			_provider.setIsActive(!_provider.isActive());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleNextModePacket.class).setModulePos(_provider));
+		}else if (guibutton.id == 2){
 			_provider.nextExtractionMode();
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleNextModePacket.class).setModulePos(_provider));
 		}
@@ -82,5 +91,6 @@ public class GuiProvider extends ModuleBaseGui {
 		mc.fontRenderer.drawString(_provider.getFilterInventory().getInventoryName(), xSize / 2 - mc.fontRenderer.getStringWidth(_provider.getFilterInventory().getInventoryName())/2, 6, 0x404040);
 		mc.fontRenderer.drawString("Inventory", 18, ySize - 102, 0x404040);
 		mc.fontRenderer.drawString("Mode: " + _provider.getExtractionMode().getExtractionModeString(), 9, ySize - 112, 0x404040);
+		mc.fontRenderer.drawString("Excess Inventory: " + _provider.getExtractionMode().getExtractionModeString(), 9, ySize - 112, 0x404040);
 	}
 }

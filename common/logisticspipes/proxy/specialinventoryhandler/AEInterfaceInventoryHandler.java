@@ -1,17 +1,5 @@
 package logisticspipes.proxy.specialinventoryhandler;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeSet;
-
-import logisticspipes.utils.item.ItemIdentifier;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.util.ForgeDirection;
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.implementations.tiles.ITileStorageMonitorable;
@@ -22,6 +10,13 @@ import appeng.api.networking.security.MachineSource;
 import appeng.api.storage.IStorageMonitorable;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.AECableType;
+import logisticspipes.utils.item.ItemIdentifier;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.util.ForgeDirection;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 /*
  * Compatibility for Applied Energistics
@@ -29,41 +24,34 @@ import appeng.api.util.AECableType;
  */
 
 public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
-	
-	public boolean init = false;
-	private final ITileStorageMonitorable _tile;
-	private final boolean _hideOnePerStack;
+
+	private final ITileStorageMonitorable tile;
+	private final boolean hideOnePerStack;
 	private final MachineSource source;
 	private final ForgeDirection dir;
-	
-	private class LPActionHost implements IActionHost {
-		public IGridNode node;
-		public LPActionHost(IGridNode node) {
-			this.node = node;
-		}
-		@Override public void securityBreak() {}
-		@Override public IGridNode getGridNode(ForgeDirection paramForgeDirection) {return null;}
-		@Override public AECableType getCableConnectionType(ForgeDirection paramForgeDirection) {return null;}
-		@Override public IGridNode getActionableNode() {return node;}
-	}
+	public boolean init = false;
+	LinkedList<Entry<ItemIdentifier, Integer>> cached;
 
 	private AEInterfaceInventoryHandler(TileEntity tile, ForgeDirection dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
-		_tile = (ITileStorageMonitorable)tile;
-		_hideOnePerStack = hideOnePerStack || hideOne;
+		if (dir.equals(ForgeDirection.UNKNOWN)) {
+			throw new IllegalArgumentException("The direction must not be unknown");
+		}
+		this.tile = (ITileStorageMonitorable) tile;
+		this.hideOnePerStack = hideOnePerStack || hideOne;
 		source = new MachineSource(new LPActionHost(((IGridHost) tile).getGridNode(dir)));
 		this.dir = dir;
 	}
 
 	public AEInterfaceInventoryHandler() {
-		_tile = null;
-		_hideOnePerStack = false;
+		tile = null;
+		hideOnePerStack = false;
 		source = null;
 		dir = ForgeDirection.UNKNOWN;
 	}
 
 	@Override
 	public boolean init() {
-		init=true;
+		init = true;
 		return true;
 	}
 
@@ -81,22 +69,22 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	public Map<ItemIdentifier, Integer> getItemsAndCount() {
 		return getItemsAndCount(false);
 	}
-	
+
 	private Map<ItemIdentifier, Integer> getItemsAndCount(boolean linked) {
 		Map<ItemIdentifier, Integer> result;
-		if(linked) {
+		if (linked) {
 			result = new LinkedHashMap<ItemIdentifier, Integer>();
 		} else {
 			result = new HashMap<ItemIdentifier, Integer>();
 		}
-		IStorageMonitorable tmp = _tile.getMonitorable(dir, source);
-		for(IAEItemStack items: tmp.getItemInventory().getStorageList()) {
+		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
+		for (IAEItemStack items : tmp.getItemInventory().getStorageList()) {
 			ItemIdentifier ident = ItemIdentifier.get(items.getItemStack());
 			Integer count = result.get(ident);
-			if(count != null) {
-				result.put(ident, (int) (count + items.getStackSize() - (_hideOnePerStack ? 1:0)));
+			if (count != null) {
+				result.put(ident, (int) (count + items.getStackSize() - (hideOnePerStack ? 1 : 0)));
 			} else {
-				result.put(ident, (int) (items.getStackSize() - (_hideOnePerStack ? 1:0)));
+				result.put(ident, (int) (items.getStackSize() - (hideOnePerStack ? 1 : 0)));
 			}
 		}
 		return result;
@@ -105,8 +93,8 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public Set<ItemIdentifier> getItems() {
 		Set<ItemIdentifier> result = new TreeSet<ItemIdentifier>();
-		IStorageMonitorable tmp = _tile.getMonitorable(dir, source);
-		for(IAEItemStack items: tmp.getItemInventory().getStorageList()) {
+		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
+		for (IAEItemStack items : tmp.getItemInventory().getStorageList()) {
 			ItemIdentifier ident = ItemIdentifier.get(items.getItemStack());
 			result.add(ident);
 		}
@@ -115,31 +103,31 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public ItemStack getSingleItem(ItemIdentifier item) {
-		IStorageMonitorable tmp = _tile.getMonitorable(dir, source);
+		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
 		IAEItemStack stack = AEApi.instance().storage().createItemStack(item.makeNormalStack(1));
 		return tmp.getItemInventory().extractItems(stack, Actionable.MODULATE, source).getItemStack();
 	}
 
 	@Override
 	public ItemStack getMultipleItems(ItemIdentifier item, int count) {
-		IStorageMonitorable tmp = _tile.getMonitorable(dir, source);
+		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
 		IAEItemStack stack = AEApi.instance().storage().createItemStack(item.makeNormalStack(count));
 		return tmp.getItemInventory().extractItems(stack, Actionable.MODULATE, source).getItemStack();
 	}
 
 	@Override
 	public boolean containsItem(ItemIdentifier item) {
-		IStorageMonitorable tmp = _tile.getMonitorable(dir, source);
+		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
 		IAEItemStack stack = AEApi.instance().storage().createItemStack(item.unsafeMakeNormalStack(1));
 		return tmp.getItemInventory().extractItems(stack, Actionable.SIMULATE, source) != null;
 	}
 
 	@Override
 	public boolean containsUndamagedItem(ItemIdentifier item) {
-		IStorageMonitorable tmp = _tile.getMonitorable(dir, source);
-		for(IAEItemStack items: tmp.getItemInventory().getStorageList()) {
+		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
+		for (IAEItemStack items : tmp.getItemInventory().getStorageList()) {
 			ItemIdentifier ident = ItemIdentifier.get(items.getItemStack());
-			if(ident.equals(item)) {
+			if (ident.equals(item)) {
 				return true;
 			}
 		}
@@ -153,10 +141,10 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public int roomForItem(ItemIdentifier item, int count) {
-		IStorageMonitorable tmp = _tile.getMonitorable(dir, source);
-		while(count > 0) {
+		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
+		while (count > 0) {
 			IAEItemStack stack = AEApi.instance().storage().createItemStack(item.makeNormalStack(count));
-			if(tmp.getItemInventory().canAccept(stack)) {
+			if (tmp.getItemInventory().canAccept(stack)) {
 				return count;
 			}
 			count--;
@@ -168,10 +156,10 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	public ItemStack add(ItemStack stack, ForgeDirection from, boolean doAdd) {
 		ItemStack st = stack.copy();
 		IAEItemStack tst = AEApi.instance().storage().createItemStack(stack);
-		
-		IStorageMonitorable tmp = _tile.getMonitorable(dir, source);
+
+		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
 		IAEItemStack overflow = tmp.getItemInventory().injectItems(tst, Actionable.MODULATE, source);
-		if(overflow != null) {
+		if (overflow != null) {
 			st.stackSize -= overflow.getStackSize();
 		}
 		return st;
@@ -182,36 +170,61 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		return true;
 	}
 
-	LinkedList<Entry<ItemIdentifier, Integer>> cached;
-
 	@Override
 	public int getSizeInventory() {
-		if(cached == null) initCache();
+		if (cached == null) initCache();
 		return cached.size();
 	}
-	
+
 	public void initCache() {
 		Map<ItemIdentifier, Integer> map = getItemsAndCount(true);
-		cached = new LinkedList<Map.Entry<ItemIdentifier,Integer>>();
-		for(Entry<ItemIdentifier, Integer> e:map.entrySet()) {
+		cached = new LinkedList<Map.Entry<ItemIdentifier, Integer>>();
+		for (Entry<ItemIdentifier, Integer> e : map.entrySet()) {
 			cached.add(e);
 		}
 	}
 
 	@Override
 	public ItemStack getStackInSlot(int i) {
-		if(cached == null) initCache();
+		if (cached == null) initCache();
 		Entry<ItemIdentifier, Integer> entry = cached.get(i);
-		if(entry.getValue() == 0) return null;
+		if (entry.getValue() == 0) return null;
 		return entry.getKey().makeNormalStack(entry.getValue());
 	}
 
 	@Override
 	public ItemStack decrStackSize(int i, int j) {
-		if(cached == null) initCache();
+		if (cached == null) initCache();
 		Entry<ItemIdentifier, Integer> entry = cached.get(i);
 		ItemStack extracted = this.getMultipleItems(entry.getKey(), j);
 		entry.setValue(entry.getValue() - j);
 		return extracted;
+	}
+
+	private class LPActionHost implements IActionHost {
+		public IGridNode node;
+
+		public LPActionHost(IGridNode node) {
+			this.node = node;
+		}
+
+		@Override
+		public void securityBreak() {
+		}
+
+		@Override
+		public IGridNode getGridNode(ForgeDirection paramForgeDirection) {
+			return null;
+		}
+
+		@Override
+		public AECableType getCableConnectionType(ForgeDirection paramForgeDirection) {
+			return null;
+		}
+
+		@Override
+		public IGridNode getActionableNode() {
+			return node;
+		}
 	}
 }

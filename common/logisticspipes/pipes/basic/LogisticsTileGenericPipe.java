@@ -208,6 +208,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 			// Pipe connections;
 			for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {
 				renderState.pipeConnectionMatrix.setConnected(o, pipeConnectionsBuffer[o.ordinal()]);
+				renderState.pipeConnectionMatrix.setBCConnected(o, pipeBCConnectionsBuffer[o.ordinal()]);
 			}
 			// Pipe Textures
 			for (int i = 0; i < 7; i++) {
@@ -623,6 +624,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	public boolean initialized = false;
 	
 	public boolean[] pipeConnectionsBuffer = new boolean[6];
+	public boolean[] pipeBCConnectionsBuffer = new boolean[6];
 
 	public CoreUnroutedPipe pipe;
 	//public int redstoneInput = 0;
@@ -787,6 +789,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 			t.refresh();
 
 			pipeConnectionsBuffer[side.ordinal()] = canPipeConnect(t.getTile(), side);
+			pipeBCConnectionsBuffer[side.ordinal()] = SimpleServiceLocator.buildCraftProxy.isTileGenericPipe(t.getTile());
 		}
 	}
 

@@ -37,6 +37,7 @@ import logisticspipes.renderer.LogisticsPipeItemRenderer;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.renderer.LogisticsSolidBlockWorldRenderer;
+import logisticspipes.renderer.newpipe.LogisticsNewPipeWorldRenderer;
 import logisticspipes.textures.Textures;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
@@ -92,7 +93,14 @@ public class ClientProxy implements IProxy {
 		
 		LogisticsRenderPipe lrp = new LogisticsRenderPipe();
 		ClientRegistry.bindTileEntitySpecialRenderer(LogisticsTileGenericPipe.class, lrp);
-		RenderingRegistry.registerBlockHandler(new LogisticsPipeWorldRenderer());
+		
+		/*
+		if(LPConstants.DEBUG) {
+			RenderingRegistry.registerBlockHandler(new LogisticsNewPipeWorldRenderer());
+		} else {//*/
+			RenderingRegistry.registerBlockHandler(new LogisticsPipeWorldRenderer());
+		//}
+		
 		RenderingRegistry.registerBlockHandler(new LogisticsSolidBlockWorldRenderer());
 
 		SimpleServiceLocator.buildCraftProxy.resetItemRotation();

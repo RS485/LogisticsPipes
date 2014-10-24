@@ -153,6 +153,13 @@ public class MainProxy {
 		}
 	}
 
+	// ignores dimension; more stringent check done inside sendPacketToAllWatching
+	public static boolean isAnyoneWatching(int X, int Z, int dimensionID){
+		ChunkCoordIntPair chunk = new ChunkCoordIntPair(X >> 4, Z >> 4);
+		PlayerCollectionList players = LogisticsEventListener.watcherList.get(chunk);
+		return !players.isEmptyWithoutCheck();
+	}
+	
 	public static void sendPacketToAllWatchingChunk(int X, int Z, int dimensionId, ModernPacket packet) {
 		if(!MainProxy.isServer()) {
 			System.err.println("sendPacketToAllWatchingChunk called clientside !");

@@ -1,10 +1,12 @@
 package logisticspipes.proxy.buildcraft;
 
+import scala.actors.threadpool.Arrays;
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.routing.ItemRoutingInformation;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import buildcraft.transport.TravelingItem;
 
@@ -24,6 +26,30 @@ public class LPRoutedBCTravelingItem extends TravelingItem {
 		this.setInsertionHandler(LP_INSERTIONHANDLER);
 	}
 	
+	private SecurityManager	hackToGetCaller	= new SecurityManager() {
+		@Override
+		public Object getSecurityContext() {
+			return this.getClassContext();
+		}
+	};
+	
+	@Override
+	public ItemStack getItemStack() {
+		Class<?>[] caller = (Class<?>[]) hackToGetCaller.getSecurityContext();
+		if(caller[2].getName().equals("buildcraft.transport.network.PacketPipeTransportItemStackRequest")) {
+			ItemStack stack = super.getItemStack();
+			if(stack == null) return stack;
+			stack = stack.copy();
+			if(!stack.hasTagCompound()) {
+				stack.setTagCompound(new NBTTagCompound());
+			}
+			stack.getTagCompound().setString("LogsitcsPipes_ITEM_ON_TRANSPORTATION", "YES");
+			return stack;
+		} else {
+			return super.getItemStack();
+		}
+	}
+
 	@Getter
 	@Setter
 	private ItemRoutingInformation routingInformation;

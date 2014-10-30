@@ -98,6 +98,7 @@ import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.renderer.FluidContainerRenderer;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.renderer.LogisticsPipeItemRenderer;
+import logisticspipes.renderer.newpipe.LogisticsNewPipeItemRenderer;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.routing.pathfinder.PipeInformaitonManager;
@@ -560,12 +561,16 @@ public class LogisticsPipes {
 		res.setUnlocalizedName(clas.getSimpleName());
 		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.createPipe(res);
 		if(pipe instanceof CoreRoutedPipe) {
-			res.setPipeIconIndex(((CoreRoutedPipe)pipe).getTextureType(ForgeDirection.UNKNOWN).normal);
+			res.setPipeIconIndex(((CoreRoutedPipe)pipe).getTextureType(ForgeDirection.UNKNOWN).normal, ((CoreRoutedPipe)pipe).getTextureType(ForgeDirection.UNKNOWN).newTexture);
 		}
 		
 		if(side.isClient()) {
 			if(pipe instanceof PipeBlockRequestTable) {
-				MinecraftForgeClient.registerItemRenderer(res, new LogisticsPipeItemRenderer(true));
+				if(Configs.USE_NEW_PIPE_RENDERER) {
+					MinecraftForgeClient.registerItemRenderer(res, new LogisticsNewPipeItemRenderer(true));
+				} else {
+					MinecraftForgeClient.registerItemRenderer(res, new LogisticsPipeItemRenderer(true));
+				}
 			} else {
 				MinecraftForgeClient.registerItemRenderer(res, MainProxy.proxy.getPipeItemRenderer());
 			}

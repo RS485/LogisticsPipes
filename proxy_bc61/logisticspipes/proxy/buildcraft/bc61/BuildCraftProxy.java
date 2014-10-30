@@ -574,19 +574,19 @@ public class BuildCraftProxy implements IBCProxy {
 		BCRenderState bcRenderState = (BCRenderState) pipe.renderState.bcRenderState.getOriginal();
 
 		if (bcRenderState.wireMatrix.hasWire(PipeWire.RED)) {
-			pipeWireRender(pipe, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MIN_POS, PipeWire.RED, x, y, z);
+			pipeWireRender(pipe, LPConstants.BC_PIPE_MIN_POS, LPConstants.BC_PIPE_MAX_POS, LPConstants.BC_PIPE_MIN_POS, PipeWire.RED, x, y, z);
 		}
 
 		if (bcRenderState.wireMatrix.hasWire(PipeWire.BLUE)) {
-			pipeWireRender(pipe, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, PipeWire.BLUE, x, y, z);
+			pipeWireRender(pipe, LPConstants.BC_PIPE_MAX_POS, LPConstants.BC_PIPE_MAX_POS, LPConstants.BC_PIPE_MAX_POS, PipeWire.BLUE, x, y, z);
 		}
 
 		if (bcRenderState.wireMatrix.hasWire(PipeWire.GREEN)) {
-			pipeWireRender(pipe, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, PipeWire.GREEN, x, y, z);
+			pipeWireRender(pipe, LPConstants.BC_PIPE_MAX_POS, LPConstants.BC_PIPE_MIN_POS, LPConstants.BC_PIPE_MIN_POS, PipeWire.GREEN, x, y, z);
 		}
 
 		if (bcRenderState.wireMatrix.hasWire(PipeWire.YELLOW)) {
-			pipeWireRender(pipe, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MAX_POS, PipeWire.YELLOW, x, y, z);
+			pipeWireRender(pipe, LPConstants.BC_PIPE_MIN_POS, LPConstants.BC_PIPE_MIN_POS, LPConstants.BC_PIPE_MAX_POS, PipeWire.YELLOW, x, y, z);
 		}
 	}
 
@@ -595,13 +595,13 @@ public class BuildCraftProxy implements IBCProxy {
 		PipeRenderState state = pipe.renderState;
 		BCRenderState bcRenderState = (BCRenderState) state.bcRenderState.getOriginal();
 		
-		float minX = LPConstants.PIPE_MIN_POS;
-		float minY = LPConstants.PIPE_MIN_POS;
-		float minZ = LPConstants.PIPE_MIN_POS;
+		float minX = LPConstants.BC_PIPE_MIN_POS;
+		float minY = LPConstants.BC_PIPE_MIN_POS;
+		float minZ = LPConstants.BC_PIPE_MIN_POS;
 
-		float maxX = LPConstants.PIPE_MAX_POS;
-		float maxY = LPConstants.PIPE_MAX_POS;
-		float maxZ = LPConstants.PIPE_MAX_POS;
+		float maxX = LPConstants.BC_PIPE_MAX_POS;
+		float maxY = LPConstants.BC_PIPE_MAX_POS;
+		float maxZ = LPConstants.BC_PIPE_MAX_POS;
 
 		boolean foundX = false, foundY = false, foundZ = false;
 
@@ -638,48 +638,48 @@ public class BuildCraftProxy implements IBCProxy {
 		boolean center = false;
 
 		if (minX == 0 && maxX != 1 && (foundY || foundZ)) {
-			if (cx == LPConstants.PIPE_MIN_POS) {
-				maxX = LPConstants.PIPE_MIN_POS;
+			if (cx == LPConstants.BC_PIPE_MIN_POS) {
+				maxX = LPConstants.BC_PIPE_MIN_POS;
 			} else {
 				center = true;
 			}
 		}
 
 		if (minX != 0 && maxX == 1 && (foundY || foundZ)) {
-			if (cx == LPConstants.PIPE_MAX_POS) {
-				minX = LPConstants.PIPE_MAX_POS;
+			if (cx == LPConstants.BC_PIPE_MAX_POS) {
+				minX = LPConstants.BC_PIPE_MAX_POS;
 			} else {
 				center = true;
 			}
 		}
 
 		if (minY == 0 && maxY != 1 && (foundX || foundZ)) {
-			if (cy == LPConstants.PIPE_MIN_POS) {
-				maxY = LPConstants.PIPE_MIN_POS;
+			if (cy == LPConstants.BC_PIPE_MIN_POS) {
+				maxY = LPConstants.BC_PIPE_MIN_POS;
 			} else {
 				center = true;
 			}
 		}
 
 		if (minY != 0 && maxY == 1 && (foundX || foundZ)) {
-			if (cy == LPConstants.PIPE_MAX_POS) {
-				minY = LPConstants.PIPE_MAX_POS;
+			if (cy == LPConstants.BC_PIPE_MAX_POS) {
+				minY = LPConstants.BC_PIPE_MAX_POS;
 			} else {
 				center = true;
 			}
 		}
 
 		if (minZ == 0 && maxZ != 1 && (foundX || foundY)) {
-			if (cz == LPConstants.PIPE_MIN_POS) {
-				maxZ = LPConstants.PIPE_MIN_POS;
+			if (cz == LPConstants.BC_PIPE_MIN_POS) {
+				maxZ = LPConstants.BC_PIPE_MIN_POS;
 			} else {
 				center = true;
 			}
 		}
 
 		if (minZ != 0 && maxZ == 1 && (foundX || foundY)) {
-			if (cz == LPConstants.PIPE_MAX_POS) {
-				minZ = LPConstants.PIPE_MAX_POS;
+			if (cz == LPConstants.BC_PIPE_MAX_POS) {
+				minZ = LPConstants.BC_PIPE_MAX_POS;
 			} else {
 				center = true;
 			}
@@ -710,31 +710,31 @@ public class BuildCraftProxy implements IBCProxy {
 
 		// Z render
 
-		if (minZ != LPConstants.PIPE_MIN_POS || maxZ != LPConstants.PIPE_MAX_POS || !found) {
-			renderBox.setBounds(cx == LPConstants.PIPE_MIN_POS ? cx - 0.05F : cx, cy == LPConstants.PIPE_MIN_POS ? cy - 0.05F : cy, minZ, cx == LPConstants.PIPE_MIN_POS ? cx
-					: cx + 0.05F, cy == LPConstants.PIPE_MIN_POS ? cy : cy + 0.05F, maxZ);
+		if (minZ != LPConstants.BC_PIPE_MIN_POS || maxZ != LPConstants.BC_PIPE_MAX_POS || !found) {
+			renderBox.setBounds(cx == LPConstants.BC_PIPE_MIN_POS ? cx - 0.05F : cx, cy == LPConstants.BC_PIPE_MIN_POS ? cy - 0.05F : cy, minZ, cx == LPConstants.BC_PIPE_MIN_POS ? cx
+					: cx + 0.05F, cy == LPConstants.BC_PIPE_MIN_POS ? cy : cy + 0.05F, maxZ);
 			RenderEntityBlock.INSTANCE.renderBlock(renderBox, pipe.getWorldObj(), 0, 0, 0, pipe.xCoord, pipe.yCoord, pipe.zCoord, true, true);
 		}
 
 		// X render
 
-		if (minX != LPConstants.PIPE_MIN_POS || maxX != LPConstants.PIPE_MAX_POS || !found) {
-			renderBox.setBounds(minX, cy == LPConstants.PIPE_MIN_POS ? cy - 0.05F : cy, cz == LPConstants.PIPE_MIN_POS ? cz - 0.05F : cz, maxX, cy == LPConstants.PIPE_MIN_POS ? cy
-					: cy + 0.05F, cz == LPConstants.PIPE_MIN_POS ? cz : cz + 0.05F);
+		if (minX != LPConstants.BC_PIPE_MIN_POS || maxX != LPConstants.BC_PIPE_MAX_POS || !found) {
+			renderBox.setBounds(minX, cy == LPConstants.BC_PIPE_MIN_POS ? cy - 0.05F : cy, cz == LPConstants.BC_PIPE_MIN_POS ? cz - 0.05F : cz, maxX, cy == LPConstants.BC_PIPE_MIN_POS ? cy
+					: cy + 0.05F, cz == LPConstants.BC_PIPE_MIN_POS ? cz : cz + 0.05F);
 			RenderEntityBlock.INSTANCE.renderBlock(renderBox, pipe.getWorldObj(), 0, 0, 0, pipe.xCoord, pipe.yCoord, pipe.zCoord, true, true);
 		}
 
 		// Y render
 
-		if (minY != LPConstants.PIPE_MIN_POS || maxY != LPConstants.PIPE_MAX_POS || !found) {
-			renderBox.setBounds(cx == LPConstants.PIPE_MIN_POS ? cx - 0.05F : cx, minY, cz == LPConstants.PIPE_MIN_POS ? cz - 0.05F : cz, cx == LPConstants.PIPE_MIN_POS ? cx
-					: cx + 0.05F, maxY, cz == LPConstants.PIPE_MIN_POS ? cz : cz + 0.05F);
+		if (minY != LPConstants.BC_PIPE_MIN_POS || maxY != LPConstants.BC_PIPE_MAX_POS || !found) {
+			renderBox.setBounds(cx == LPConstants.BC_PIPE_MIN_POS ? cx - 0.05F : cx, minY, cz == LPConstants.BC_PIPE_MIN_POS ? cz - 0.05F : cz, cx == LPConstants.BC_PIPE_MIN_POS ? cx
+					: cx + 0.05F, maxY, cz == LPConstants.BC_PIPE_MIN_POS ? cz : cz + 0.05F);
 			RenderEntityBlock.INSTANCE.renderBlock(renderBox, pipe.getWorldObj(), 0, 0, 0, pipe.xCoord, pipe.yCoord, pipe.zCoord, true, true);
 		}
 
 		if (center || !found) {
-			renderBox.setBounds(cx == LPConstants.PIPE_MIN_POS ? cx - 0.05F : cx, cy == LPConstants.PIPE_MIN_POS ? cy - 0.05F : cy, cz == LPConstants.PIPE_MIN_POS ? cz - 0.05F : cz,
-					cx == LPConstants.PIPE_MIN_POS ? cx : cx + 0.05F, cy == LPConstants.PIPE_MIN_POS ? cy : cy + 0.05F, cz == LPConstants.PIPE_MIN_POS ? cz : cz + 0.05F);
+			renderBox.setBounds(cx == LPConstants.BC_PIPE_MIN_POS ? cx - 0.05F : cx, cy == LPConstants.BC_PIPE_MIN_POS ? cy - 0.05F : cy, cz == LPConstants.BC_PIPE_MIN_POS ? cz - 0.05F : cz,
+					cx == LPConstants.BC_PIPE_MIN_POS ? cx : cx + 0.05F, cy == LPConstants.BC_PIPE_MIN_POS ? cy : cy + 0.05F, cz == LPConstants.BC_PIPE_MIN_POS ? cz : cz + 0.05F);
 			RenderEntityBlock.INSTANCE.renderBlock(renderBox, pipe.getWorldObj(), 0, 0, 0, pipe.xCoord, pipe.yCoord, pipe.zCoord, true, true);
 		}
 
@@ -816,15 +816,15 @@ public class BuildCraftProxy implements IBCProxy {
 		renderBox.texture = icon;
 
 		float[][] zeroState = new float[3][2];
-		float min = LPConstants.PIPE_MIN_POS + trim / 2F;
-		float max = LPConstants.PIPE_MAX_POS - trim / 2F;
+		float min = LPConstants.BC_PIPE_MIN_POS + trim / 2F;
+		float max = LPConstants.BC_PIPE_MAX_POS - trim / 2F;
 
 		// X START - END
 		zeroState[0][0] = min;
 		zeroState[0][1] = max;
 		// Y START - END
-		zeroState[1][0] = LPConstants.PIPE_MIN_POS - 0.10F - 0.001F * layer;
-		zeroState[1][1] = LPConstants.PIPE_MIN_POS + 0.001F + 0.01F * layer + extraDepth;
+		zeroState[1][0] = LPConstants.BC_PIPE_MIN_POS - 0.10F - 0.001F * layer;
+		zeroState[1][1] = LPConstants.BC_PIPE_MIN_POS + 0.001F + 0.01F * layer + extraDepth;
 		// Z START - END
 		zeroState[2][0] = min;
 		zeroState[2][1] = max;

@@ -3,7 +3,10 @@ package logisticspipes.renderer.state;
 import java.io.IOException;
 import java.util.List;
 
+import org.lwjgl.opengl.GL11;
+
 import codechicken.lib.render.CCModel;
+import codechicken.lib.render.CCRenderState.IVertexOperation;
 import codechicken.lib.render.uv.IconTransformation;
 import logisticspipes.interfaces.IClientState;
 import logisticspipes.network.LPDataInputStream;
@@ -21,8 +24,11 @@ public class PipeRenderState implements IClientState {
 	public final TextureMatrix textureMatrix = new TextureMatrix();
 	public final IBCRenderState bcRenderState = SimpleServiceLocator.buildCraftProxy.getBCRenderState();
 	
-	public List<Pair<CCModel, IconTransformation>> cachedRenderer = null;
+	public List<Pair<CCModel, IVertexOperation[]>> cachedRenderer = null;
 	public boolean solidSidesCache[] = new boolean[6];
+	
+	public int[] buffer = null;
+	public int renderListId = -1;
 	/*
 	 * This is a placeholder for the pipe renderer to set to a value that the BlockGenericPipe->TileGenericPipe will then return the the WorldRenderer
 	 */

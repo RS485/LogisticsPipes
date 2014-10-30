@@ -42,7 +42,9 @@ public class LPDataInputStream extends DataInputStream {
 	}
 	
 	public ForgeDirection readForgeDirection() throws IOException {
-		return ForgeDirection.values()[in.read()];
+		int dir = in.read();
+		if(dir == 10) return null;
+		return ForgeDirection.values()[dir];
 	}
 	
 	public ExitRoute readExitRoute(World world) throws IOException {

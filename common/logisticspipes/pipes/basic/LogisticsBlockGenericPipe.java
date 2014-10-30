@@ -17,6 +17,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewPipeWorldRenderer;
+import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.textures.Textures;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.MatrixTranformations;
@@ -200,7 +201,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				break;
 			}
 			case Pipe: {
-				float scale = 0.08F;
+				float scale = 0.001F;
 				box = box.expand(scale, scale, scale);
 				break;
 			}
@@ -219,6 +220,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			this.setBlockBoundsBasedOnState(world, x, y, z);
 			origin = origin.addVector(( -x), ( -y), ( -z));
 			direction = direction.addVector(( -x), ( -y), ( -z));
+			this.setBlockBounds(0, 0, 0, 1, 1, 1);
 			Vec3 vec32 = origin.getIntermediateWithXValue(direction, this.minX);
 			Vec3 vec33 = origin.getIntermediateWithXValue(direction, this.maxX);
 			Vec3 vec34 = origin.getIntermediateWithYValue(direction, this.minY);
@@ -449,16 +451,16 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 
 	private AxisAlignedBB getGateBoundingBox(ForgeDirection side) {
-		float min = LPConstants.PIPE_MIN_POS + 0.05F;
-		float max = LPConstants.PIPE_MAX_POS - 0.05F;
+		float min = LPConstants.BC_PIPE_MIN_POS + 0.05F;
+		float max = LPConstants.BC_PIPE_MAX_POS - 0.05F;
 
 		float[][] bounds = new float[3][2];
 		// X START - END
 		bounds[0][0] = min;
 		bounds[0][1] = max;
 		// Y START - END
-		bounds[1][0] = LPConstants.PIPE_MIN_POS - 0.10F;
-		bounds[1][1] = LPConstants.PIPE_MIN_POS;
+		bounds[1][0] = LPConstants.BC_PIPE_MIN_POS - 0.10F;
+		bounds[1][1] = LPConstants.BC_PIPE_MIN_POS;
 		// Z START - END
 		bounds[2][0] = min;
 		bounds[2][1] = max;
@@ -667,8 +669,9 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	@Override
 	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
 		TileEntity tile = world.getTileEntity(x, y, z);
-
+		
 		if (tile instanceof LogisticsTileGenericPipe) {
+			if(((LogisticsTileGenericPipe)tile).pipe instanceof PipeBlockRequestTable) return true;
 			return ((LogisticsTileGenericPipe) tile).isSolidOnSide(side);
 		}
 
@@ -953,7 +956,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 		CoreUnroutedPipe dummyPipe = createPipe(item);
 		if (dummyPipe != null) {
-			item.setPipeIconIndex(dummyPipe.getIconIndexForItem());
+			item.setPipeIconIndex(dummyPipe.getIconIndexForItem(), dummyPipe.getTextureIndex());
 			MainProxy.proxy.setIconProviderFromPipe(item, dummyPipe);
 		}
 
@@ -1022,7 +1025,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(IIconRegister iconRegister) {
-		LogisticsNewPipeWorldRenderer.registerTextures(iconRegister);
+		LogisticsNewRenderPipe.registerTextures(iconRegister);
 		if (!skippedFirstIconRegister) {
 			skippedFirstIconRegister = true;
 			return;

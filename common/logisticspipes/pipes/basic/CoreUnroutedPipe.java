@@ -321,4 +321,6 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public Object getCCType() {
 		return ccType;
 	}
+	
+	public abstract int getTextureIndex();
 }

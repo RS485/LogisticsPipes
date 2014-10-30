@@ -43,14 +43,14 @@ public final class FacadeRenderHelper {
 		zeroStateFacade[2][1] = 1.0F;
 
 		// X START - END
-		zeroStateSupport[0][0] = LPConstants.PIPE_MIN_POS;
-		zeroStateSupport[0][1] = LPConstants.PIPE_MAX_POS;
+		zeroStateSupport[0][0] = LPConstants.BC_PIPE_MIN_POS;
+		zeroStateSupport[0][1] = LPConstants.BC_PIPE_MAX_POS;
 		// Y START - END
 		zeroStateSupport[1][0] = LPConstants.FACADE_THICKNESS;
-		zeroStateSupport[1][1] = LPConstants.PIPE_MIN_POS;
+		zeroStateSupport[1][1] = LPConstants.BC_PIPE_MIN_POS;
 		// Z START - END
-		zeroStateSupport[2][0] = LPConstants.PIPE_MIN_POS;
-		zeroStateSupport[2][1] = LPConstants.PIPE_MAX_POS;
+		zeroStateSupport[2][0] = LPConstants.BC_PIPE_MIN_POS;
+		zeroStateSupport[2][1] = LPConstants.BC_PIPE_MAX_POS;
 
 		xOffsets[0] = zFightOffset;
 		xOffsets[1] = zFightOffset;
@@ -126,31 +126,31 @@ public final class FacadeRenderHelper {
 					// Hollow facade
 					if (state.pipeConnectionMatrix.isConnected(direction)) {
 						float[][] rotated = MatrixTranformations.deepClone(zeroStateFacade);
-						rotated[0][0] = LPConstants.PIPE_MIN_POS - zFightOffset * 4;
-						rotated[0][1] = LPConstants.PIPE_MAX_POS + zFightOffset * 4;
+						rotated[0][0] = LPConstants.BC_PIPE_MIN_POS - zFightOffset * 4;
+						rotated[0][1] = LPConstants.BC_PIPE_MAX_POS + zFightOffset * 4;
 						rotated[2][0] = 0.0F;
-						rotated[2][1] = LPConstants.PIPE_MIN_POS - zFightOffset * 2;
+						rotated[2][1] = LPConstants.BC_PIPE_MIN_POS - zFightOffset * 2;
 						MatrixTranformations.transform(rotated, direction);
 						setRenderBounds(renderblocks, rotated, direction);
 						renderblocks.renderStandardBlock(block, x, y, z);
 
 						rotated = MatrixTranformations.deepClone(zeroStateFacade);
-						rotated[0][0] = LPConstants.PIPE_MIN_POS - zFightOffset * 4;
-						rotated[0][1] = LPConstants.PIPE_MAX_POS + zFightOffset * 4;
-						rotated[2][0] = LPConstants.PIPE_MAX_POS + zFightOffset * 2;
+						rotated[0][0] = LPConstants.BC_PIPE_MIN_POS - zFightOffset * 4;
+						rotated[0][1] = LPConstants.BC_PIPE_MAX_POS + zFightOffset * 4;
+						rotated[2][0] = LPConstants.BC_PIPE_MAX_POS + zFightOffset * 2;
 						MatrixTranformations.transform(rotated, direction);
 						setRenderBounds(renderblocks, rotated, direction);
 						renderblocks.renderStandardBlock(block, x, y, z);
 
 						rotated = MatrixTranformations.deepClone(zeroStateFacade);
 						rotated[0][0] = 0.0F;
-						rotated[0][1] = LPConstants.PIPE_MIN_POS - zFightOffset * 2;
+						rotated[0][1] = LPConstants.BC_PIPE_MIN_POS - zFightOffset * 2;
 						MatrixTranformations.transform(rotated, direction);
 						setRenderBounds(renderblocks, rotated, direction);
 						renderblocks.renderStandardBlock(block, x, y, z);
 
 						rotated = MatrixTranformations.deepClone(zeroStateFacade);
-						rotated[0][0] = LPConstants.PIPE_MAX_POS + zFightOffset * 2;
+						rotated[0][0] = LPConstants.BC_PIPE_MAX_POS + zFightOffset * 2;
 						rotated[0][1] = 1F;
 						MatrixTranformations.transform(rotated, direction);
 						setRenderBounds(renderblocks, rotated, direction);

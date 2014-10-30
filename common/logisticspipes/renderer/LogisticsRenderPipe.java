@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import logisticspipes.Configs;
 import logisticspipes.LPConstants;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
@@ -12,6 +13,8 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.signs.IPipeSign;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.CustomBlockRenderer.RenderInfo;
+import logisticspipes.renderer.newpipe.LogisticsNewPipeItemBoxRenderer;
+import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.transport.PipeTransportLogistics;
@@ -72,6 +75,9 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		public int[] centerVertical = new int[LIQUID_STAGES];
 	}
 	
+	public static LogisticsNewRenderPipe secondRenderer = null;
+	public static LogisticsNewPipeItemBoxRenderer boxRenderer = null;
+	
 	public LogisticsRenderPipe() {
 		super();
 		customRenderItem = new RenderItem() {
@@ -90,12 +96,14 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		dummyEntityItem.hoverStart = 0;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float f) {
 		if(!(tileentity instanceof LogisticsTileGenericPipe)) return;
+		double distance = Math.pow(Minecraft.getMinecraft().thePlayer.lastTickPosX - tileentity.xCoord, 2) + Math.pow(Minecraft.getMinecraft().thePlayer.lastTickPosY - tileentity.yCoord, 2) + Math.pow(Minecraft.getMinecraft().thePlayer.lastTickPosZ - tileentity.zCoord, 2);
+		if(secondRenderer != null) secondRenderer.renderTileEntityAt((LogisticsTileGenericPipe)tileentity, x, y, z, f, distance);
 		LogisticsTileGenericPipe pipe = ((LogisticsTileGenericPipe)tileentity);
 		if(pipe.pipe == null) return;
+		if(Configs.PIPE_CONTENTS_RENDER_DIST * Configs.PIPE_CONTENTS_RENDER_DIST < distance) return;
 		SimpleServiceLocator.buildCraftProxy.renderGatesWires(pipe, x, y, z);
 		if(!pipe.isOpaque()) {
 			if(pipe.pipe.transport instanceof PipeFluidTransportLogistics) {
@@ -176,6 +184,9 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 	}
 	
 	public void doRenderItem(ItemStack itemstack, double x, double y, double z, float light, int age, float hoverStart, float renderScale) {
+		if(boxRenderer != null) {
+			boxRenderer.doRenderItem(itemstack, light, x, y, z);
+		}
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float)x, (float)y, (float)z);
 		GL11.glScalef(renderScale, renderScale, renderScale);
@@ -538,7 +549,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		block.baseBlock = fluid.getBlock();
 		block.texture = fluid.getStillIcon();
 		
-		float size = LPConstants.PIPE_MAX_POS - LPConstants.PIPE_MIN_POS;
+		float size = LPConstants.BC_PIPE_MAX_POS - LPConstants.BC_PIPE_MIN_POS;
 		
 		// render size
 		
@@ -551,12 +562,12 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			GL11.glNewList(d.sideHorizontal[s], 4864 /* GL_COMPILE */);
 			
 			block.minX = 0.0F;
-			block.minZ = LPConstants.PIPE_MIN_POS + 0.01F;
+			block.minZ = LPConstants.BC_PIPE_MIN_POS + 0.01F;
 			
-			block.maxX = block.minX + size / 2F + 0.01F;
+			block.maxX = block.minX + 0.2F + 0.01F;
 			block.maxZ = block.minZ + size - 0.02F;
 			
-			block.minY = LPConstants.PIPE_MIN_POS + 0.01F;
+			block.minY = LPConstants.BC_PIPE_MIN_POS + 0.01F;
 			block.maxY = block.minY + (size - 0.02F) * ratio;
 			
 			CustomBlockRenderer.INSTANCE.renderBlock(block, world, 0, 0, 0, false, true);
@@ -586,13 +597,13 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			d.centerHorizontal[s] = GLAllocation.generateDisplayLists(1);
 			GL11.glNewList(d.centerHorizontal[s], 4864 /* GL_COMPILE */);
 			
-			block.minX = LPConstants.PIPE_MIN_POS + 0.01;
-			block.minZ = LPConstants.PIPE_MIN_POS + 0.01;
+			block.minX = LPConstants.BC_PIPE_MIN_POS + 0.01;
+			block.minZ = LPConstants.BC_PIPE_MIN_POS + 0.01;
 			
 			block.maxX = block.minX + size - 0.02;
 			block.maxZ = block.minZ + size - 0.02;
 			
-			block.minY = LPConstants.PIPE_MIN_POS + 0.01;
+			block.minY = LPConstants.BC_PIPE_MIN_POS + 0.01;
 			block.maxY = block.minY + (size - 0.02F) * ratio;
 			
 			CustomBlockRenderer.INSTANCE.renderBlock(block, world, 0, 0, 0, false, true);
@@ -604,8 +615,8 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			d.centerVertical[s] = GLAllocation.generateDisplayLists(1);
 			GL11.glNewList(d.centerVertical[s], 4864 /* GL_COMPILE */);
 			
-			block.minY = LPConstants.PIPE_MIN_POS + 0.01;
-			block.maxY = LPConstants.PIPE_MAX_POS - 0.01;
+			block.minY = LPConstants.BC_PIPE_MIN_POS + 0.01;
+			block.maxY = LPConstants.BC_PIPE_MAX_POS - 0.01;
 			
 			block.minX = 0.5 - (size / 2 - 0.02) * ratio;
 			block.maxX = 0.5 + (size / 2 - 0.02) * ratio;

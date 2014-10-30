@@ -39,7 +39,11 @@ public class LPDataOutputStream extends DataOutputStream {
 	}
 	
 	public void writeForgeDirection(ForgeDirection dir) throws IOException {
-		out.write(dir.ordinal());
+		if(dir == null) {
+			out.write(10);
+		} else {
+			out.write(dir.ordinal());
+		}
 	}
 	
 	public void writeExitRoute(ExitRoute route) throws IOException {

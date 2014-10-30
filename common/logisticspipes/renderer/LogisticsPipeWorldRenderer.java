@@ -20,23 +20,31 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 
 	public static int renderPass = -1;
 	
-	public void renderPipe(RenderBlocks renderblocks, IBlockAccess iblockaccess, LogisticsBlockGenericPipe block, LogisticsTileGenericPipe pipe, int x, int y, int z) {
+	public boolean renderPipe(RenderBlocks renderblocks, IBlockAccess iblockaccess, LogisticsBlockGenericPipe block, LogisticsTileGenericPipe pipe, int x, int y, int z) {
 		if(pipe.pipe instanceof PipeBlockRequestTable) {
+			if(LogisticsPipeWorldRenderer.renderPass != 0) return false;
 			PipeRenderState state = pipe.renderState;
 			IIconProvider icons = pipe.getPipeIcons();
-			if (icons == null) return;
+			if (icons == null) return false;
 			state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(ForgeDirection.UNKNOWN));
 			block.setRenderAllSides();
 			block.setBlockBounds(0, 0, 0, 1, 1, 1);
 			renderblocks.setRenderBoundsFromBlock(block);
 			renderblocks.renderStandardBlock(block, x, y, z);
-			return;
+			return true;
 		}
+
+		// Here to prevent Minecraft from crashing when nothing renders on render pass zero
+		// This is likely a bug, and has been submitted as an issue to the Forge team
+		renderblocks.setRenderBounds(0, 0, 0, 0, 0, 0);
+		renderblocks.renderStandardBlock(Blocks.stone, x, y, z);
+		renderblocks.setRenderBoundsFromBlock(block);
+
 		PipeRenderState state = pipe.renderState;
 		IIconProvider icons = pipe.getPipeIcons();
 		
 		if (icons == null)
-			return;
+			return false;
 
 		if (renderPass == 0) {
 			int connectivity = state.pipeConnectionMatrix.getMask();
@@ -127,6 +135,7 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 			SimpleServiceLocator.buildCraftProxy.pipePlugRenderer(renderblocks, block, state, x, y, z);
 			SimpleServiceLocator.buildCraftProxy.pipeRobotStationRenderer(renderblocks, block, state, x, y, z);
 		}
+		return true;
 	}
 
 	private void resetToCenterDimensions(float[] dim) {
@@ -168,18 +177,8 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 	@Override
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
 		TileEntity tile = world.getTileEntity(x, y, z);
-
-		// Here to prevent Minecraft from crashing when nothing renders on render pass zero
-		// This is likely a bug, and has been submitted as an issue to the Forge team
-		renderer.setRenderBounds(0, 0, 0, 0, 0, 0);
-		renderer.renderStandardBlock(Blocks.stone, x, y, z);
-		renderer.setRenderBoundsFromBlock(block);
-
-		if (tile instanceof LogisticsTileGenericPipe) {
-			LogisticsTileGenericPipe pipeTile = (LogisticsTileGenericPipe) tile;
-			renderPipe(renderer, world, (LogisticsBlockGenericPipe) block, pipeTile, x, y, z);
-		}
-		return true;
+		LogisticsTileGenericPipe pipeTile = (LogisticsTileGenericPipe) tile;
+		return renderPipe(renderer, world, (LogisticsBlockGenericPipe) block, pipeTile, x, y, z);
 	}
 
 	@Override

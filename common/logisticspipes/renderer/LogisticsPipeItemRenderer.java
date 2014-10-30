@@ -1,6 +1,5 @@
 package logisticspipes.renderer;
 
-import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import net.minecraft.block.Block;
@@ -17,6 +16,9 @@ import org.lwjgl.opengl.GL11;
 public class LogisticsPipeItemRenderer implements IItemRenderer {
 	
 	private final boolean renderAsBlock;
+
+	private static final float PIPE_MIN_POS = 0.25F;
+	private static final float PIPE_MAX_POS = 0.75F;
 	
 	public LogisticsPipeItemRenderer(boolean flag) {
 		renderAsBlock = flag;
@@ -38,7 +40,8 @@ public class LogisticsPipeItemRenderer implements IItemRenderer {
 			icon = ((TextureMap) Minecraft.getMinecraft().getTextureManager().getTexture(TextureMap.locationBlocksTexture)).getAtlasSprite("missingno");
 		}
 
-		block.setBlockBounds(LPConstants.PIPE_MIN_POS, 0.0F, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MAX_POS, 1.0F, LPConstants.PIPE_MAX_POS);
+		block.setBlockBounds(PIPE_MIN_POS, 0.0F, PIPE_MIN_POS, PIPE_MAX_POS, 1.0F, PIPE_MAX_POS);
+		//block.setBlockBounds(PIPE_MIN_POS, PIPE_MIN_POS, PIPE_MIN_POS, PIPE_MAX_POS, PIPE_MAX_POS, PIPE_MAX_POS);
 		block.setBlockBoundsForItemRender();
 		render.setRenderBoundsFromBlock(block);
 

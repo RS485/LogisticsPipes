@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -19,8 +20,6 @@ import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
 import org.apache.logging.log4j.Level;
-
-import scala.actors.threadpool.Arrays;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ObjectArrays;

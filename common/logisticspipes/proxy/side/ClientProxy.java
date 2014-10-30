@@ -3,6 +3,7 @@ package logisticspipes.proxy.side;
 import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.Configs;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
@@ -37,6 +38,7 @@ import logisticspipes.renderer.LogisticsPipeItemRenderer;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.renderer.LogisticsSolidBlockWorldRenderer;
+import logisticspipes.renderer.newpipe.LogisticsNewPipeItemRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewPipeWorldRenderer;
 import logisticspipes.textures.Textures;
 import logisticspipes.utils.FluidIdentifier;
@@ -94,12 +96,11 @@ public class ClientProxy implements IProxy {
 		LogisticsRenderPipe lrp = new LogisticsRenderPipe();
 		ClientRegistry.bindTileEntitySpecialRenderer(LogisticsTileGenericPipe.class, lrp);
 		
-		/*
-		if(LPConstants.DEBUG) {
+		if(Configs.USE_NEW_PIPE_RENDERER) {
 			RenderingRegistry.registerBlockHandler(new LogisticsNewPipeWorldRenderer());
-		} else {//*/
+		} else {
 			RenderingRegistry.registerBlockHandler(new LogisticsPipeWorldRenderer());
-		//}
+		}
 		
 		RenderingRegistry.registerBlockHandler(new LogisticsSolidBlockWorldRenderer());
 
@@ -187,7 +188,9 @@ public class ClientProxy implements IProxy {
 	@Override
 	public void addLogisticsPipesOverride(IIconRegister par1IIconRegister, int index, String override1, String override2, boolean flag) {
 		if(par1IIconRegister != null) {
-			if(flag) {
+			if("NewPipeTexture".equals(override2) && !override1.contains("status_overlay")) {
+				Textures.LPnewPipeIconProvider.setIcon(index, par1IIconRegister.registerIcon("logisticspipes:"+override1.replace("pipes/", "pipes/new_texture/")));
+			} else if(flag) {
 				Textures.LPpipeIconProvider.setIcon(index, par1IIconRegister.registerIcon("logisticspipes:"+override1));
 			} else {
 				Textures.LPpipeIconProvider.setIcon(index, par1IIconRegister.registerIcon("logisticspipes:"+override1.replace("pipes/", "pipes/overlay_gen/")+"/"+override2.replace("pipes/status_overlay/","")));
@@ -233,7 +236,11 @@ public class ClientProxy implements IProxy {
 	@Override
 	public IItemRenderer getPipeItemRenderer() {
 		if(pipeRenderer == null) {
-			pipeRenderer = new LogisticsPipeItemRenderer(false);
+			if(Configs.USE_NEW_PIPE_RENDERER) {
+				pipeRenderer = new LogisticsNewPipeItemRenderer(false);
+			} else {
+				pipeRenderer = new LogisticsPipeItemRenderer(false);
+			}
 		}
 		return pipeRenderer;
 	}

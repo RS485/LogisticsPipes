@@ -5,12 +5,14 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.renderer.IIconProvider;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import logisticspipes.textures.provider.LPPipeIconProvider;
+import logisticspipes.textures.provider.LPPipeIconTransformerProvider;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.IIcon;
 import cpw.mods.fml.common.FMLCommonHandler;
 
 public class Textures {
 	private int index = 0;
+	private int newTextureIndex = 0;
 	public static TextureType empty = new TextureType();
 	static {
 		empty.normal = 0;
@@ -33,6 +35,7 @@ public class Textures {
 	public Textures() {
 		LPactionIconProvider = new LPActionTriggerIconProvider();
 		LPpipeIconProvider = new LPPipeIconProvider();
+		LPnewPipeIconProvider = new LPPipeIconTransformerProvider();
 	}
 
 	public static TextureType LOGISTICSPIPE_TEXTURE							= empty;
@@ -163,6 +166,7 @@ public class Textures {
 	public static String				LOGISTICS_SOLID_BLOCK							= LOGISTICSPIPE_TEXTURE_FILE;
 	public static IIconProvider			LPactionIconProvider;
 	public static LPPipeIconProvider	LPpipeIconProvider;
+	public static LPPipeIconTransformerProvider	LPnewPipeIconProvider;
 
 	//this gets called with null par1IIconRegister from preinit, and later with non-null from textureprestitch
 	public void registerBlockIcons(IIconRegister par1IIconRegister) {
@@ -170,8 +174,9 @@ public class Textures {
 		MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, 0, "empty", "", true);
 		MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, 1, "empty", "", true);
 		MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, 2, "empty", "", true);
-		
+
 		index = 3;
+		newTextureIndex = 0;
 		
 		// Standalone pipes
 		LOGISTICSPIPE_TEXTURE 						= registerTexture(par1IIconRegister, LOGISTICSPIPE_TEXTURE_FILE);
@@ -268,7 +273,11 @@ public class Textures {
 					MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, texture.powered,fileName,LOGISTICSPIPE_OVERLAY_POWERED_TEXTURE_FILE,false);
 					MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, texture.unpowered,fileName,LOGISTICSPIPE_OVERLAY_UNPOWERED_TEXTURE_FILE,false);
 				}
-			} 
+				if(!fileName.contains("status_overlay")) {
+					texture.newTexture = newTextureIndex++;
+					MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, texture.newTexture, fileName, "NewPipeTexture", true);
+				}
+			}
 		return texture;
 	}
 	
@@ -284,6 +293,7 @@ public class Textures {
 		public int normal;
 		public int powered;
 		public int unpowered;
+		public int newTexture;
 		public String fileName = "";
 	}
 }

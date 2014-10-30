@@ -50,11 +50,13 @@ import logisticspipes.utils.WorldUtil;
 import net.minecraft.block.Block;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
@@ -870,7 +872,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	@Override
 	@SideOnly(Side.CLIENT)
 	public double getMaxRenderDistanceSquared() {
-		return Configs.PIPE_CONTENTS_RENDER_DIST * Configs.PIPE_CONTENTS_RENDER_DIST;
+		return 64*4 * 64*4;
 	}
 
 	@Override
@@ -1000,5 +1002,11 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	public void setWorldObj(World world) {
 		super.setWorldObj(world);
 		tilePart.setWorldObj_LP(world);
+	}
+	
+	@SideOnly(Side.CLIENT)
+	@Override
+	public AxisAlignedBB getRenderBoundingBox() {
+		return AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 1, zCoord + 1);
 	}
 }

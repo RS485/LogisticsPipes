@@ -141,7 +141,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	private static int pipecount = 0;
 	protected int _delayOffset = 0;
 	
-	private boolean _textureBufferPowered;
+	public boolean _textureBufferPowered;
 	
 	protected boolean _initialInit = true;
 	
@@ -565,6 +565,9 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		}
 	}
 	
+	public int getTextureIndex() {
+		return getCenterTexture().newTexture;
+	}
 	
 	public abstract TextureType getCenterTexture();
 	

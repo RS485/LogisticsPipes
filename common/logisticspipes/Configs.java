@@ -33,6 +33,7 @@ public class Configs {
 	public static boolean TOOLTIP_INFO = LPConstants.DEBUG;
 	public static boolean MANDATORY_CARPENTER_RECIPES = true;
 	public static boolean ENABLE_PARTICLE_FX = true;
+	public static boolean USE_NEW_PIPE_RENDERER = true;
 
 	// GuiOrderer Popup setting
 	public static boolean DISPLAY_POPUP = true;

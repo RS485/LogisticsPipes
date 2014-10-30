@@ -626,6 +626,7 @@ public class LogisticsNewRenderPipe {
 			GL11.glPushMatrix();
 			GL11.glTranslated(x, y, z);
 			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ZERO);
 			GL11.glCallList(renderState.renderListId);
 			GL11.glDisable(GL11.GL_BLEND);
 			GL11.glTranslated(-x, -y, -z);

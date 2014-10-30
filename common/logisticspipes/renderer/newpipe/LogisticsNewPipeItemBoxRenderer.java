@@ -68,21 +68,21 @@ public class LogisticsNewPipeItemBoxRenderer {
 		block.baseBlock = fluid.getFluid().getBlock();
 		block.texture = fluid.getFluid().getStillIcon();
 		
-		float ratio = pos * 1.0F / RENDER_SIZE;
+		float ratio = pos * 1.0F / (RENDER_SIZE - 1);
 		
 		// CENTER HORIZONTAL
 		
 		array[pos] = GLAllocation.generateDisplayLists(1);
 		GL11.glNewList(array[pos], 4864 /* GL_COMPILE */);
 		
-		block.minX = 0.3 + 0.01;
-		block.maxX = 0.7 - 0.01;
+		block.minX = 0.32;
+		block.maxX = 0.68;
 		
-		block.minY = 0.3 + 0.01;
-		block.maxY = 0.3 + (0.4 - 0.01F) * ratio;
+		block.minY = 0.32;
+		block.maxY = 0.32 + (0.68 - 0.32) * ratio;
 		
-		block.minZ = 0.3 + 0.01;
-		block.maxZ = 0.7 - 0.01;
+		block.minZ = 0.32;
+		block.maxZ = 0.68;
 		
 		CustomBlockRenderer.INSTANCE.renderBlock(block, Minecraft.getMinecraft().theWorld, 0, 0, 0, false, true);
 		

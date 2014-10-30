@@ -11,6 +11,7 @@ import logisticspipes.commands.exception.LPCommandException;
 import logisticspipes.commands.exception.PermissionDeniedException;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.renderer.newpipe.LogisticsNewPipeWorldRenderer;
+import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -54,10 +55,6 @@ public class LogisticsPipesCommand extends CommandBase {
 			boolean managed = false;
 			if(LPConstants.DEBUG) {
 				//Check for unlisted Debug commands
-				if(arguments[0].equalsIgnoreCase("reloadModel")) {
-					LogisticsNewPipeWorldRenderer.loadModels();
-					managed = true;
-				}
 			}
 			if(!managed) {
 				mainCommand.executeCommand(sender, arguments);

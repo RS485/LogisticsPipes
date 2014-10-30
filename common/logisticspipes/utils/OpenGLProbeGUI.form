@@ -9,18 +9,6 @@
       <size top="5" left="5" bottom="5" right="5"/>
     </border>
     <children>
-      <component id="7f938" class="javax.swing.JTable" binding="variableMonitorTable">
-        <constraints>
-          <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <minimum-size width="320" height="200"/>
-            <preferred-size width="320" height="200"/>
-          </grid>
-          <gridbag top="0" left="0" bottom="5" right="0" weightx="1.0" weighty="1.0"/>
-        </constraints>
-        <properties>
-          <enabled value="false"/>
-        </properties>
-      </component>
       <component id="a0a71" class="javax.swing.JButton" binding="closeButton" default-binding="true">
         <constraints>
           <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
@@ -58,6 +46,24 @@
           <text value=""/>
         </properties>
       </component>
+      <scrollpane id="baf7c" binding="monitorTableScrollPane">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <gridbag top="0" left="0" bottom="5" right="0" weightx="1.0" weighty="1.0"/>
+        </constraints>
+        <properties>
+          <horizontalScrollBarPolicy value="31"/>
+        </properties>
+        <border type="none"/>
+        <children>
+          <component id="7f938" class="javax.swing.JTable" binding="variableMonitorTable">
+            <constraints/>
+            <properties>
+              <enabled value="false"/>
+            </properties>
+          </component>
+        </children>
+      </scrollpane>
     </children>
   </grid>
 </form>

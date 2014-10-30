@@ -13,6 +13,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -55,6 +56,7 @@ public class OpenGLDebugger {
 		private JButton closeButton;
 		private JButton addButton;
 		private JTextField addTextField;
+		private JScrollPane monitorTableScrollPane;
 
 		private ArrayList<Integer> tableList;
 
@@ -97,13 +99,17 @@ public class OpenGLDebugger {
 
 				@Override
 				public Object getValueAt(int rowIndex, int columnIndex) {
-					switch (columnIndex) {
-						case 0:
-							return niceToHave.get(tableList.get(rowIndex));
-						case 1:
-							return glVariables.get(tableList.get(rowIndex));
-						default:
-							return "<NOVALUE>";
+					try {
+						switch (columnIndex) {
+							case 0:
+								return niceToHave.get(tableList.get(rowIndex));
+							case 1:
+								return glVariables.get(tableList.get(rowIndex));
+							default:
+								return "<NOVALUE>";
+						}
+					} catch (IndexOutOfBoundsException e) {
+						return "<EXCEPTION>";
 					}
 				}
 			};
@@ -125,7 +131,9 @@ public class OpenGLDebugger {
 
 		@Override
 		public void run() {
-			glVariablesToCheck.put(GL11.GL_LIGHTING, GLTypes.BOOLEAN);
+			for (Integer key : niceToHave.keySet()) {
+				glVariablesToCheck.put(key, GLTypes.BOOLEAN);
+			}
 			pack();
 			setVisible(true);
 
@@ -146,10 +154,7 @@ public class OpenGLDebugger {
 		}
 
 		private void updateVariables() {
-			tableList.clear();
-			for (Integer key : glVariables.keySet()) {
-				tableList.add(key);
-			}
+			tableList = new ArrayList<Integer>(glVariables.keySet());
 			Collections.sort(tableList);
 
 			variableMonitorTable.updateUI();
@@ -166,20 +171,9 @@ public class OpenGLDebugger {
 			mainPanel = new JPanel();
 			mainPanel.setLayout(new GridBagLayout());
 			mainPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5), null));
-			variableMonitorTable = new JTable();
-			variableMonitorTable.setEnabled(false);
-			GridBagConstraints gbc;
-			gbc = new GridBagConstraints();
-			gbc.gridx = 0;
-			gbc.gridy = 0;
-			gbc.gridwidth = 3;
-			gbc.weightx = 1.0;
-			gbc.weighty = 1.0;
-			gbc.fill = GridBagConstraints.BOTH;
-			gbc.insets = new Insets(0, 0, 5, 0);
-			mainPanel.add(variableMonitorTable, gbc);
 			closeButton = new JButton();
 			closeButton.setText("Close");
+			GridBagConstraints gbc;
 			gbc = new GridBagConstraints();
 			gbc.gridx = 2;
 			gbc.gridy = 1;
@@ -203,6 +197,20 @@ public class OpenGLDebugger {
 			gbc.anchor = GridBagConstraints.WEST;
 			gbc.fill = GridBagConstraints.HORIZONTAL;
 			mainPanel.add(addTextField, gbc);
+			monitorTableScrollPane = new JScrollPane();
+			monitorTableScrollPane.setHorizontalScrollBarPolicy(31);
+			gbc = new GridBagConstraints();
+			gbc.gridx = 0;
+			gbc.gridy = 0;
+			gbc.gridwidth = 3;
+			gbc.weightx = 1.0;
+			gbc.weighty = 1.0;
+			gbc.fill = GridBagConstraints.BOTH;
+			gbc.insets = new Insets(0, 0, 5, 0);
+			mainPanel.add(monitorTableScrollPane, gbc);
+			variableMonitorTable = new JTable();
+			variableMonitorTable.setEnabled(false);
+			monitorTableScrollPane.setViewportView(variableMonitorTable);
 		}
 
 		/**
@@ -263,8 +271,15 @@ public class OpenGLDebugger {
 	private void saveOpenGLStuff() {
 		debuggerLock.lock();
 		try {
-			for (Integer key : glVariablesToCheck.keySet()) {
-				glVariables.put(key, GL11.glGetBoolean(key));
+			Iterator<Integer> i = glVariablesToCheck.keySet().iterator();
+			while (i.hasNext()) {
+				Integer key = i.next();
+				Object value = GL11.glGetBoolean(key);
+				if (GL11.glGetError() == GL11.GL_INVALID_ENUM) {
+					i.remove();
+				} else {
+					glVariables.put(key, value);
+				}
 			}
 			glVariablesUpdated = true;
 			glVariablesCondition.signal();
@@ -279,7 +294,8 @@ public class OpenGLDebugger {
 		boolean almostEnd = false;
 		boolean end = false;
 		while (!end) {
-			String nextGL = String.format("%s.%s%d", "org.lwjgl.opengl", "GL", crawlerVersion);
+			String packageGL = String.format("%s%d", "GL", crawlerVersion);
+			String nextGL = String.format("%s.%s", "org.lwjgl.opengl", packageGL);
 			try {
 				crawlerVersion++;
 				Class glClass = GL11.class.getClassLoader().loadClass(nextGL);
@@ -299,7 +315,7 @@ public class OpenGLDebugger {
 							System.out.printf("NiceToHave: ID %d exists. Replacing %s with %s!!%n", id, niceToHave.remove(id), nice);
 						}
 						*/
-						niceToHave.put(id, nice);
+						niceToHave.put(id, String.format("%s.%s", packageGL, nice));
 					} catch (IllegalArgumentException e) {
 						System.out.printf("NiceToHave: Illegal Argument!%nNiceToHave: %s%n", e);
 					} catch (IllegalAccessException e) {

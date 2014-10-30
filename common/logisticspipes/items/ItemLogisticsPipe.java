@@ -36,6 +36,8 @@ public class ItemLogisticsPipe extends LogisticsItem {
 	@SideOnly(Side.CLIENT)
 	private IIconProvider iconProvider;
 	private int pipeIconIndex;
+	private int newPipeIconIndex;
+	private int newPipeRenderList = -1;
 	
 	public ItemLogisticsPipe() {
 		super();
@@ -126,8 +128,9 @@ public class ItemLogisticsPipe extends LogisticsItem {
 		this.iconProvider = iconProvider;
 	}
 
-	public void setPipeIconIndex(int index) {
+	public void setPipeIconIndex(int index, int newIndex) {
 		this.pipeIconIndex = index;
+		this.newPipeIconIndex = newIndex;
 	}
 
 	@Override
@@ -138,6 +141,19 @@ public class ItemLogisticsPipe extends LogisticsItem {
 		} else {
 			return null;
 		}
+	}
+
+	public int getNewPipeIconIndex() {
+		return this.newPipeIconIndex;
+	}
+
+	public int getNewPipeRenderList() {
+		return this.newPipeRenderList;
+	}
+	
+	public void setNewPipeRenderList(int list) {
+		if(newPipeRenderList != -1) throw new UnsupportedOperationException("Can't reset this");
+		newPipeRenderList = list;
 	}
 
 	@Override

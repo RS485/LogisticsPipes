@@ -31,6 +31,7 @@ public class FluidContainerRenderer implements IItemRenderer {
 	private final EntityItem dummyEntityItem = new EntityItem(null);
 	private boolean useThis = true;
 	private RenderItem renderItem;
+	public static boolean skipNext;
 
 	@Override
 	public boolean handleRenderType(ItemStack item, ItemRenderType type) {
@@ -64,6 +65,10 @@ public class FluidContainerRenderer implements IItemRenderer {
 
 	@Override
 	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
+		if(skipNext) {
+			skipNext = false;
+			return;
+		}
 		GL11.glPushMatrix();
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		if (item.getItem() instanceof LogisticsFluidContainer) {

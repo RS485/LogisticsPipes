@@ -1,6 +1,5 @@
 package logisticspipes.proxy.buildcraft;
 
-import scala.actors.threadpool.Arrays;
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.routing.ItemRoutingInformation;
 import lombok.Getter;

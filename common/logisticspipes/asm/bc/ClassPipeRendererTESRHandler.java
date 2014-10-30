@@ -27,7 +27,7 @@ public class ClassPipeRendererTESRHandler {
 						this.visitVarInsn(Opcodes.DLOAD, 4);
 						this.visitVarInsn(Opcodes.DLOAD, 6);
 						this.visitVarInsn(Opcodes.FLOAD, 8);
-						this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/bc/RenderItemInPipeHook", "renderItemInPipe", "(Lbuildcraft/transport/TravelingItem;DDDF)V", false);
+						this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/bc/RenderItemInPipeHook", "renderItemInPipe", "(Lbuildcraft/transport/TravelingItem;DDDF)V");
 					}
 				};
 				m.accept(mv);

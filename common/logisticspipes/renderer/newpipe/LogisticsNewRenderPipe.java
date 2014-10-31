@@ -639,8 +639,11 @@ public class LogisticsNewRenderPipe {
 		Map<Corner, Integer> connectionAtCorner = new HashMap<Corner, Integer>();
 		List<Mount> mountCanidates = new ArrayList<Mount>(Arrays.asList(Mount.values()));
 		
+		int connectionCount = 0;
+		
 		for(ForgeDirection dir:ForgeDirection.VALID_DIRECTIONS) {
 			if(renderState.pipeConnectionMatrix.isConnected(dir)) {
+				connectionCount++;
 				if(renderState.pipeConnectionMatrix.isBCConnected(dir)) {
 					IVertexOperation[] texture = new IVertexOperation[]{basicTexture};
 					if(renderState.textureMatrix.isRouted()) {
@@ -731,7 +734,9 @@ public class LogisticsNewRenderPipe {
 		
 		for(Corner corner: Corner.values()) {
 			IconTransformation cornerTexture = basicTexture;
-			if(!renderState.textureMatrix.isHasPower()) {
+			if(!renderState.textureMatrix.isHasPower() && renderState.textureMatrix.isRouted()) {
+				cornerTexture = inactiveTexture;
+			} else if(!renderState.textureMatrix.isRouted() && connectionCount > 2) {
 				cornerTexture = inactiveTexture;
 			}
 			int count = connectionAtCorner.containsKey(corner) ? connectionAtCorner.get(corner) : 0;

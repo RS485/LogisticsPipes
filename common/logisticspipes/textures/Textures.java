@@ -31,6 +31,12 @@ public class Textures {
 		empty_2.powered = 2;
 		empty_2.unpowered = 2;
 	}
+	public static SmallTextureType smallEmpty = new SmallTextureType();
+	static {
+		smallEmpty.normal = 0;
+		smallEmpty.newTexture = 0;
+	}
+	
 	
 	public Textures() {
 		LPactionIconProvider = new LPActionTriggerIconProvider();
@@ -85,6 +91,8 @@ public class Textures {
 	public static TextureType LOGISTICSPIPE_LIQUID_EXTRACTOR				= empty;
 	public static TextureType LOGISTICSPIPE_LIQUID_SATELLITE				= empty;
 	public static TextureType LOGISTICSPIPE_OPAQUE_TEXTURE					= empty;
+	
+	public static SmallTextureType LOGISTICSPIPE_BASIC_TRANSPORT_TEXTURE	= smallEmpty;
 	
 	public static IIcon LOGISTICS_REQUEST_TABLE[]							= new IIcon[0];
 	
@@ -163,6 +171,8 @@ public class Textures {
 	public static String				LOGISTICSPIPE_OVERLAY_UNPOWERED_TEXTURE_FILE	= "pipes/status_overlay/un-powered-pipe";
 	public static String				LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE			= "pipes/status_overlay/un-overlayed";
 	
+	public static String				LOGISTICSPIPE_BASIC_TRANSPORT_TEXTURE_FILE		= "pipes/transport/basic";
+	
 	public static String				LOGISTICS_SOLID_BLOCK							= LOGISTICSPIPE_TEXTURE_FILE;
 	public static IIconProvider			LPactionIconProvider;
 	public static LPPipeIconProvider	LPpipeIconProvider;
@@ -231,6 +241,9 @@ public class Textures {
 		LOGISTICSPIPE_CHASSI4_TEXTURE 				= registerTexture(par1IIconRegister, LOGISTICSPIPE_CHASSI4_TEXTURE_FILE);
 		LOGISTICSPIPE_CHASSI5_TEXTURE 				= registerTexture(par1IIconRegister, LOGISTICSPIPE_CHASSI5_TEXTURE_FILE);
 		
+		//Transport
+		LOGISTICSPIPE_BASIC_TRANSPORT_TEXTURE 		= registerSmallTexture(par1IIconRegister, LOGISTICSPIPE_BASIC_TRANSPORT_TEXTURE_FILE);
+		
 		if(MainProxy.isClient() && par1IIconRegister != null) {
 			LOGISTICS_REQUEST_TABLE = new IIcon[5];
 			for(int i = 0;i < 5;i++) {
@@ -255,7 +268,7 @@ public class Textures {
 	 * @param fileName - name of texture
 	 * @param flag - 2 - register single texture without overlay, 1/0 register with overlay
 	 */
-	
+
 	private TextureType registerTexture(IIconRegister par1IIconRegister, String fileName, int flag) {
 		TextureType texture = new TextureType();
 			texture.normal = index++;
@@ -281,6 +294,19 @@ public class Textures {
 		return texture;
 	}
 	
+	private SmallTextureType registerSmallTexture(IIconRegister par1IIconRegister, String fileName) {
+		SmallTextureType texture = new SmallTextureType();
+		texture.normal = index++;
+		texture.fileName = fileName;
+		boolean isClient = MainProxy.isClient();
+		if(isClient) {
+			MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, texture.normal, fileName, "", true);
+		}
+		texture.newTexture = newTextureIndex++;
+		MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, texture.newTexture, fileName, "NewPipeTexture", true);
+		return texture;
+	}
+
 	private int registerSingleTexture(IIconRegister par1IIconRegister, String fileName) {
 		int texture = index++;
 		if(FMLCommonHandler.instance().getEffectiveSide().isClient()) {
@@ -293,6 +319,12 @@ public class Textures {
 		public int normal;
 		public int powered;
 		public int unpowered;
+		public int newTexture;
+		public String fileName = "";
+	}
+	
+	public static class SmallTextureType {
+		public int normal;
 		public int newTexture;
 		public String fileName = "";
 	}

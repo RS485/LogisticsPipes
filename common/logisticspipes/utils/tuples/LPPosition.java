@@ -1,7 +1,7 @@
 package logisticspipes.utils.tuples;
 
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
@@ -22,7 +22,7 @@ public class LPPosition extends Triplet<Double, Double, Double> {
 		super((double)tile.xCoord, (double)tile.yCoord, (double)tile.zCoord);
 	}
 	
-	public LPPosition(CoreRoutedPipe pipe) {
+	public LPPosition(CoreUnroutedPipe pipe) {
 		super((double)pipe.getX(), (double)pipe.getY(), (double)pipe.getZ());
 	}
 	

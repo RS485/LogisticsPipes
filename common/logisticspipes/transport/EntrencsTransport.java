@@ -10,6 +10,10 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 public class EntrencsTransport extends PipeTransportLogistics {
 	
+	public EntrencsTransport() {
+		super(true);
+	}
+
 	public PipeItemsSystemEntranceLogistics pipe;
 	
 	@Override

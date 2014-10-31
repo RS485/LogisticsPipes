@@ -133,7 +133,6 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	}
 
 	protected boolean stillNeedReplace = true;
-	public DebugLogController debug = new DebugLogController(this);
 	
 	protected IRouter router;
 	protected String routerId;
@@ -190,7 +189,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	protected IPipeSign[] signItem = new IPipeSign[6];
 	private boolean isOpaqueClientSide = false;
 	public CoreRoutedPipe(Item item) {
-		this(new PipeTransportLogistics(), item);
+		this(new PipeTransportLogistics(true), item);
 	}
 
 	public CoreRoutedPipe(PipeTransportLogistics transport, Item item) {
@@ -1248,12 +1247,6 @@ outer:
 	}
 	
 	@Override
-	@SideOnly(Side.CLIENT)
-	public IIconProvider getIconProvider() {
-		return Textures.LPpipeIconProvider;
-	}
-	
-	@Override
 	public final int getIconIndex(ForgeDirection connection) {
 		TextureType texture = getTextureType(connection);
 		if(_textureBufferPowered) {
@@ -1272,10 +1265,6 @@ outer:
 	
 	protected void addRouterCrashReport(CrashReportCategory crashReportCategory) {
 		crashReportCategory.addCrashSection("Router", this.getRouter().toString());
-	}
-	
-	public boolean isFluidPipe() {
-		return false;
 	}
 	
 	/* --- CCCommands --- */
@@ -1419,19 +1408,6 @@ outer:
 
 	public void handleIC2PowerArival(float toSend) {
 		powerHandler.addIC2Power(toSend);
-	}
-
-	@Override
-	public String toString() {
-		return super.toString() + " (" + this.getX() + ", " + this.getY() + ", " + this.getZ() + ")";
-	}
-
-	public LPPosition getLPPosition() {
-		return new LPPosition(this);
-	}
-
-	public WorldUtil getWorldUtil() {
-		return new WorldUtil(this.getWorld(), this.getX(), this.getY(), this.getZ());
 	}
 	
 
@@ -1658,12 +1634,6 @@ outer:
 			return signItem[dir.ordinal()];
 		}
 		return null;
-	}
-
-	public void triggerDebug() {
-		if(this.debug.debugThisPipe) {
-			System.out.print("");
-		}
 	}
 
 	@Override

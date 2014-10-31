@@ -69,6 +69,7 @@ import logisticspipes.pipes.PipeLogisticsChassiMk5;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
+import logisticspipes.pipes.unrouted.PipeItemsBasicTransport;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.ProxyManager;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -252,6 +253,9 @@ public class LogisticsPipes {
 	public static Item LogisticsFluidSupplierPipeMk2;
 	public static Item LogisticsFluidInsertionPipe;
 	public static Item LogisticsFluidExtractorPipe;
+	
+	//Transport Pipes
+	public static Item BasicTransportPipe;
 
 	// Logistics Modules/Upgrades
 	public static ItemModule ModuleItem;
@@ -553,6 +557,8 @@ public class LogisticsPipes {
 		LogisticsPipes.LogisticsFluidSupplierPipeMk2 = createPipe(PipeFluidSupplierMk2.class, "Logistics Fluid Supplier Pipe Mk2", side);
 	
 		LogisticsPipes.logisticsRequestTable = createPipe(PipeBlockRequestTable.class, "Request Table", side);
+		
+		LogisticsPipes.BasicTransportPipe = createPipe(PipeItemsBasicTransport.class, "Basic Transport Pipe", side);
 	}
 	
 	protected Item createPipe(Class <? extends CoreUnroutedPipe> clas, String descr, Side side) {

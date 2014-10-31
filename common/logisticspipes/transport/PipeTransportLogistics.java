@@ -10,9 +10,11 @@ package logisticspipes.transport;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
@@ -34,11 +36,11 @@ import logisticspipes.network.packets.pipe.ItemBufferSyncPacket;
 import logisticspipes.network.packets.pipe.PipeContentPacket;
 import logisticspipes.network.packets.pipe.PipeContentRequest;
 import logisticspipes.network.packets.pipe.PipePositionPacket;
-import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.PipeLogisticsChassi.ChassiTargetInformation;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
@@ -53,6 +55,7 @@ import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SyncList;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.IInventory;
@@ -73,6 +76,11 @@ public class PipeTransportLogistics {
 	private Chunk																							chunk;
 	public LPItemList																						items			= new LPItemList(this);
 	public LogisticsTileGenericPipe																			container;
+	public final boolean isRouted;
+
+	public PipeTransportLogistics(boolean isRouted) {
+		this.isRouted = isRouted;
+	}
 
 	public void initialize() {
 		if(MainProxy.isServer(getWorld())) {
@@ -98,8 +106,13 @@ public class PipeTransportLogistics {
 		}
 	}
 	
-	protected CoreRoutedPipe getPipe() {
-		return (CoreRoutedPipe)container.pipe;
+	protected CoreUnroutedPipe getPipe() {
+		return (CoreUnroutedPipe)container.pipe;
+	}
+	
+	protected CoreRoutedPipe getRoutedPipe() {
+		if(!isRouted) throw new UnsupportedOperationException("Can't use a Transport pipe as a routing pipe");
+		return (CoreRoutedPipe) container.pipe;
 	}
 	
 	public void updateEntity() {
@@ -218,16 +231,44 @@ public class PipeTransportLogistics {
 	}
 	
 	public ForgeDirection resolveDestination(LPTravelingItemServer data) {
-		
+		if(isRouted) {
+			return resolveRoutedDestination(data);
+		} else {
+			return resolveUnroutedDestination(data);
+		}
+	}
+
+	public ForgeDirection resolveUnroutedDestination(LPTravelingItemServer data) {
+		List<ForgeDirection> dirs = new ArrayList<ForgeDirection>(Arrays.asList(ForgeDirection.VALID_DIRECTIONS));
+		dirs.remove(data.input.getOpposite());
+		Iterator<ForgeDirection> iter = dirs.iterator();
+		while(iter.hasNext()) {
+			ForgeDirection dir = iter.next();
+			LPPosition pos = getPipe().getLPPosition();
+			pos.moveForward(dir);
+			TileEntity tile = pos.getTileEntity(getWorld());
+			if(!SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) {
+				iter.remove();
+			}
+		}
+		if(dirs.isEmpty()) {
+			return ForgeDirection.UNKNOWN;
+		}
+		int num = new Random().nextInt(dirs.size());
+		return dirs.get(num);
+	}
+
+	public ForgeDirection resolveRoutedDestination(LPTravelingItemServer data) {
+					
 		if(data != null && data.getItemIdentifierStack() != null) {
-			getPipe().relayedItem(data.getItemIdentifierStack().getStackSize());
+			getRoutedPipe().relayedItem(data.getItemIdentifierStack().getStackSize());
 		}
 		
 		ForgeDirection blocked = null;
 		
 		if(data.getDestinationUUID() == null) {
 			ItemIdentifierStack stack = data.getItemIdentifierStack();
-			ItemRoutingInformation result = getPipe().getQueuedForItemStack(stack);
+			ItemRoutingInformation result = getRoutedPipe().getQueuedForItemStack(stack);
 			if(result != null) {
 				data.setInformation(result);
 				data.getInfo().setItem(stack.clone());
@@ -236,11 +277,11 @@ public class PipeTransportLogistics {
 		}
 		
 		ForgeDirection value;
-		if(this.getPipe().stillNeedReplace() || this.getPipe().initialInit()) {
+		if(this.getRoutedPipe().stillNeedReplace() || this.getRoutedPipe().initialInit()) {
 			data.setDoNotBuffer(false);
 			value = ForgeDirection.UNKNOWN;
 		} else
-			value = getPipe().getRouteLayer().getOrientationForItem(data, blocked);
+			value = getRoutedPipe().getRouteLayer().getOrientationForItem(data, blocked);
 		if(value == null && MainProxy.isClient(getWorld())) {
 			return null;
 		} else if(value == null) {
@@ -252,7 +293,7 @@ public class PipeTransportLogistics {
 			return null;
 		}
 		
-		if(value != ForgeDirection.UNKNOWN && !getPipe().getRouter().isRoutedExit(value)) {
+		if(value != ForgeDirection.UNKNOWN && !getRoutedPipe().getRouter().isRoutedExit(value)) {
 			if(!isItemExitable(data.getItemIdentifierStack())) { return null; }
 		}
 		
@@ -341,12 +382,14 @@ public class PipeTransportLogistics {
 		
 		}
 		
-		float multiplyerSpeed = 1.0F + (0.02F * getPipe().getUpgradeManager().getSpeedUpgradeCount());
-		float multiplyerPower = 1.0F + (0.03F * getPipe().getUpgradeManager().getSpeedUpgradeCount());
-		
-		float add = Math.max(item.getSpeed(), LPConstants.PIPE_NORMAL_SPEED * defaultBoost * multiplyerPower) - item.getSpeed();
-		if(getPipe().useEnergy((int)(add * 50 + 0.5))) {
-			item.setSpeed(Math.min(Math.max(item.getSpeed(), LPConstants.PIPE_NORMAL_SPEED * defaultBoost * multiplyerSpeed), 1.0F));
+		if(isRouted) {
+			float multiplyerSpeed = 1.0F + (0.02F * getRoutedPipe().getUpgradeManager().getSpeedUpgradeCount());
+			float multiplyerPower = 1.0F + (0.03F * getRoutedPipe().getUpgradeManager().getSpeedUpgradeCount());
+			
+			float add = Math.max(item.getSpeed(), LPConstants.PIPE_NORMAL_SPEED * defaultBoost * multiplyerPower) - item.getSpeed();
+			if(getRoutedPipe().useEnergy((int)(add * 50 + 0.5))) {
+				item.setSpeed(Math.min(Math.max(item.getSpeed(), LPConstants.PIPE_NORMAL_SPEED * defaultBoost * multiplyerSpeed), 1.0F));
+			}
 		}
 	}
 	
@@ -357,8 +400,8 @@ public class PipeTransportLogistics {
 		}
 		
 		this.markChunkModified(tile);
-		if(MainProxy.isServer(getWorld()) && arrivingItem.getInfo() != null && arrivingItem.getArrived()) {
-			getPipe().notifyOfItemArival(arrivingItem.getInfo());
+		if(MainProxy.isServer(getWorld()) && arrivingItem.getInfo() != null && arrivingItem.getArrived() && isRouted) {
+			getRoutedPipe().notifyOfItemArival(arrivingItem.getInfo());
 		}
 		if(this.getPipe() instanceof FluidRoutedPipe) {
 			if(((FluidRoutedPipe)this.getPipe()).endReached(arrivingItem, tile)) { return; }
@@ -372,7 +415,7 @@ public class PipeTransportLogistics {
 		}
 		if(tile instanceof LogisticsTileGenericPipe || SimpleServiceLocator.buildCraftProxy.isIPipeTile(tile)) {
 			if(passToNextPipe(arrivingItem, tile)) return;
-		} else if(tile instanceof IInventory) {
+		} else if(tile instanceof IInventory && isRouted) {
 
 
 			// items.scheduleRemoval(arrivingItem);
@@ -382,7 +425,7 @@ public class PipeTransportLogistics {
 				// last chance for chassi to back out
 				if(arrivingItem instanceof IRoutedItem) {
 					IRoutedItem routed = (IRoutedItem)arrivingItem;
-					if(routed.getTransportMode() != TransportMode.Active && !getPipe().getTransportLayer().stillWantItem(routed)) {
+					if(routed.getTransportMode() != TransportMode.Active && !getRoutedPipe().getTransportLayer().stillWantItem(routed)) {
 						reverseItem(arrivingItem);
 						return;
 					}
@@ -398,7 +441,7 @@ public class PipeTransportLogistics {
 						System.out.println(arrivingItem);
 						new RuntimeException("[ItemInsertion] Information weren't ment for a chassi pipe").printStackTrace();
 					}
-					slotManager = getPipe().getUpgradeManager(slot, positionInt);
+					slotManager = getRoutedPipe().getUpgradeManager(slot, positionInt);
 				}
 				boolean tookSome = false;
 				if(arrivingItem.getAdditionalTargetInformation() instanceof ITargetSlotInformation) {
@@ -433,7 +476,7 @@ public class PipeTransportLogistics {
 					}
 				}
 				// sneaky insertion
-				if(!getPipe().getUpgradeManager().hasCombinedSneakyUpgrade() || slotManager.hasOwnSneakyUpgrade()) {
+				if(!getRoutedPipe().getUpgradeManager().hasCombinedSneakyUpgrade() || slotManager.hasOwnSneakyUpgrade()) {
 					ForgeDirection insertion = arrivingItem.output.getOpposite();
 					if(slotManager.hasSneakyUpgrade()) {
 						insertion = slotManager.getSneakyOrientation();
@@ -465,7 +508,7 @@ public class PipeTransportLogistics {
 						return; // every item has been inserted. 
 					}
 				} else {
-					ForgeDirection[] dirs = getPipe().getUpgradeManager().getCombinedSneakyOrientation();
+					ForgeDirection[] dirs = getRoutedPipe().getUpgradeManager().getCombinedSneakyOrientation();
 					for(int i = 0; i < dirs.length; i++) {
 						ForgeDirection insertion = dirs[i];
 						if(insertion == null) continue;
@@ -519,33 +562,37 @@ public class PipeTransportLogistics {
 	protected void insertedItemStack(ItemRoutingInformation info, TileEntity tile) {}
 	
 	public boolean canPipeConnect(TileEntity tile, ForgeDirection side) {
-		if(tile instanceof ILogisticsPowerProvider || tile instanceof ISubSystemPowerProvider) {
-			ForgeDirection ori = OrientationsUtil.getOrientationOfTilewithTile(this.container, tile);
-			if(ori != null && ori != ForgeDirection.UNKNOWN) {
-				if((tile instanceof LogisticsPowerJunctionTileEntity || tile instanceof ISubSystemPowerProvider) && !OrientationsUtil.isSide(ori)) { return false; }
-				return true;
+		if(isRouted) {
+			if(tile instanceof ILogisticsPowerProvider || tile instanceof ISubSystemPowerProvider) {
+				ForgeDirection ori = OrientationsUtil.getOrientationOfTilewithTile(this.container, tile);
+				if(ori != null && ori != ForgeDirection.UNKNOWN) {
+					if((tile instanceof LogisticsPowerJunctionTileEntity || tile instanceof ISubSystemPowerProvider) && !OrientationsUtil.isSide(ori)) { return false; }
+					return true;
+				}
 			}
-		}
-		if(SimpleServiceLocator.betterStorageProxy.isBetterStorageCrate(tile) || SimpleServiceLocator.factorizationProxy.isBarral(tile)
-				//|| (Configs.TE_PIPE_SUPPORT && SimpleServiceLocator.thermalExpansionProxy.isItemConduit(tile) && SimpleServiceLocator.thermalExpansionProxy.isSideFree(tile, side.getOpposite().ordinal())) 
-				|| (this.getPipe().getUpgradeManager().hasRFPowerSupplierUpgrade() && SimpleServiceLocator.thermalExpansionProxy.isEnergyHandler(tile))
-				|| (this.getPipe().getUpgradeManager().getIC2PowerLevel() > 0 && SimpleServiceLocator.IC2Proxy.isEnergySink(tile)))
-			return true;
-		/*
-		if(tile instanceof TileGenericPipe) {
-			Pipe<?> pipe2 = ((TileGenericPipe)tile).pipe;
-			if(BlockGenericPipe.isValid(pipe2)) {
-				if(!(pipe2.transport instanceof PipeTransportItems) && !(pipe2.transport instanceof PipeTransportLogistics)) return false;
+			if(SimpleServiceLocator.betterStorageProxy.isBetterStorageCrate(tile) || SimpleServiceLocator.factorizationProxy.isBarral(tile)
+					//|| (Configs.TE_PIPE_SUPPORT && SimpleServiceLocator.thermalExpansionProxy.isItemConduit(tile) && SimpleServiceLocator.thermalExpansionProxy.isSideFree(tile, side.getOpposite().ordinal())) 
+					|| (this.getRoutedPipe().getUpgradeManager().hasRFPowerSupplierUpgrade() && SimpleServiceLocator.thermalExpansionProxy.isEnergyHandler(tile))
+					|| (this.getRoutedPipe().getUpgradeManager().getIC2PowerLevel() > 0 && SimpleServiceLocator.IC2Proxy.isEnergySink(tile)))
 				return true;
+			/*
+			if(tile instanceof TileGenericPipe) {
+				Pipe<?> pipe2 = ((TileGenericPipe)tile).pipe;
+				if(BlockGenericPipe.isValid(pipe2)) {
+					if(!(pipe2.transport instanceof PipeTransportItems) && !(pipe2.transport instanceof PipeTransportLogistics)) return false;
+					return true;
+				}
 			}
+			*/
+			//if(!SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) return false;
+			if(tile instanceof ISidedInventory) {
+				int[] slots = ((ISidedInventory)tile).getAccessibleSlotsFromSide(side.getOpposite().ordinal());
+				return slots != null && slots.length > 0;
+			}
+			return SimpleServiceLocator.pipeInformaitonManager.isPipe(tile) || (tile instanceof IInventory && ((IInventory)tile).getSizeInventory() > 0) || SimpleServiceLocator.buildCraftProxy.isMachineManagingSolids(tile);
+		} else {
+			return SimpleServiceLocator.pipeInformaitonManager.isPipe(tile);
 		}
-		*/
-		//if(!SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) return false;
-		if(tile instanceof ISidedInventory) {
-			int[] slots = ((ISidedInventory)tile).getAccessibleSlotsFromSide(side.getOpposite().ordinal());
-			return slots != null && slots.length > 0;
-		}
-		return SimpleServiceLocator.pipeInformaitonManager.isPipe(tile) || (tile instanceof IInventory && ((IInventory)tile).getSizeInventory() > 0);
 	}
 	
 	/*
@@ -630,12 +677,14 @@ public class PipeTransportLogistics {
 				ItemRoutingInformation info = ((LPRoutedBCTravelingItem)item).getRoutingInformation();
 				info.setItem(ItemIdentifierStack.getFromStack(item.getItemStack()));
 				LPTravelingItemServer lpItem = new LPTravelingItemServer(info);
+				lpItem.setSpeed(item.getSpeed());
 				this.injectItem(lpItem, inputOrientation);
 			} else {
 				ItemRoutingInformation info = LPRoutedBCTravelingItem.restoreFromExtraNBTData(item);
 				if(info != null) {
 					info.setItem(ItemIdentifierStack.getFromStack(item.getItemStack()));
 					LPTravelingItemServer lpItem = new LPTravelingItemServer(info);
+					lpItem.setSpeed(item.getSpeed());
 					this.injectItem(lpItem, inputOrientation);
 				} else {
 					LPTravelingItemServer lpItem = SimpleServiceLocator.routedItemHelper.createNewTravelItem(item.getItemStack());
@@ -708,7 +757,7 @@ public class PipeTransportLogistics {
 		if(items.get(travelId) == null) {
 			items.add(item);
 		}
-		getPipe().spawnParticle(Particles.OrangeParticle, 1);
+		//getPipe().spawnParticle(Particles.OrangeParticle, 1);
 	}
 	
 	private void sendItemContentRequest(int travelId) {

@@ -30,7 +30,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	private ModuleItemSink itemSinkModule;
 
 	public PipeItemsBasicLogistics(Item item) {
-		super(new PipeTransportLogistics() {
+		super(new PipeTransportLogistics(true) {
 
 			@Override
 			public boolean canPipeConnect(TileEntity tile, ForgeDirection dir) {

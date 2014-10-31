@@ -40,7 +40,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 	private boolean _lastRequestFailed = false;
 	
 	public PipeItemsFluidSupplier(Item item) {
-		super(new PipeTransportLogistics() {
+		super(new PipeTransportLogistics(true) {
 			@Override
 			public boolean canPipeConnect(TileEntity tile, ForgeDirection dir) {
 				if(super.canPipeConnect(tile, dir)) return true;

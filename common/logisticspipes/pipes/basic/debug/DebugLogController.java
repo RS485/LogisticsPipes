@@ -7,7 +7,7 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.debug.SendNewLogLine;
 import logisticspipes.network.packets.debug.SendNewLogWindow;
 import logisticspipes.network.packets.debug.UpdateStatusEntries;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.PlayerCollectionList;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,12 +16,12 @@ public class DebugLogController {
 	
 	private static int nextID = 0;
 	private final int ID = nextID++;
-	public final CoreRoutedPipe pipe;
+	public final CoreUnroutedPipe pipe;
 	public boolean debugThisPipe = false;
 	private List<StatusEntry> oldList = new ArrayList<StatusEntry>();
 	private PlayerCollectionList players = new PlayerCollectionList();
 	
-	public DebugLogController(CoreRoutedPipe pipe) {
+	public DebugLogController(CoreUnroutedPipe pipe) {
 		this.pipe = pipe;
 	}
 	

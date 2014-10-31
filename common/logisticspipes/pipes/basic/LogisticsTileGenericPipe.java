@@ -115,11 +115,8 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		bcPlugableState = tilePart.getBCPlugableState();
 	}
 	
-	public CoreRoutedPipe getCPipe() {
-		if(pipe instanceof CoreRoutedPipe) {
-			return (CoreRoutedPipe) pipe;
-		}
-		return null;
+	public CoreUnroutedPipe getPipe() {
+		return pipe;
 	}
 
     @Override
@@ -132,7 +129,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
     			pipe.invalidate();
     		}
     		super.invalidate();
-        } else if (!getCPipe().preventRemove()) {
+        } else if (!getPipe().preventRemove()) {
             this.tileEntityInvalid = true;
     		initialized = false;
     		tileBuffer = null;
@@ -459,7 +456,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 
 	@Override
 	public boolean isInitialised() {
-		return initialized && !this.getRoutingPipe().stillNeedReplace();
+		return initialized && (!isRoutingPipe() || !this.getRoutingPipe().stillNeedReplace());
 	}
 
 	@Override
@@ -566,7 +563,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	}
 	
 	public boolean isOpaque() {
-		return getCPipe().isOpaque();
+		return pipe.isOpaque();
 	}
 
 	@Override

@@ -8,7 +8,9 @@ import net.minecraft.tileentity.TileEntity;
 
 public class TransportInvConnection extends PipeTransportLogistics {
 	
-	public TransportInvConnection() {}
+	public TransportInvConnection() {
+		super(true);
+	}
 
 	@Override
 	protected boolean isItemExitable(ItemIdentifierStack stack) {

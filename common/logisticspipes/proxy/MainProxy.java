@@ -157,6 +157,7 @@ public class MainProxy {
 	public static boolean isAnyoneWatching(int X, int Z, int dimensionID){
 		ChunkCoordIntPair chunk = new ChunkCoordIntPair(X >> 4, Z >> 4);
 		PlayerCollectionList players = LogisticsEventListener.watcherList.get(chunk);
+		if(players == null) return false;
 		return !players.isEmptyWithoutCheck();
 	}
 	

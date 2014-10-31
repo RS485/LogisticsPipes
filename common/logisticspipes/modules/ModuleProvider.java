@@ -74,7 +74,7 @@ ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatch
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Items to provide (or empty for all)", 1);
 	private ForgeDirection _sneakyDirection = ForgeDirection.UNKNOWN;
 
-	private boolean isActive = true;
+	private boolean isActive = false;
 	
 	protected final int ticksToActiveAction = 6;
 	protected final int ticksToPassiveAction = 100;

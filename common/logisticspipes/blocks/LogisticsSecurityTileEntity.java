@@ -346,11 +346,6 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 	}
 
 	@Override
-	public boolean canUpdate() {
-		return false;
-	}
-
-	@Override
 	public CoordinatesGuiProvider getGuiProvider() {
 		return NewGuiHandler.getGui(SecurityStationGui.class);
 	}

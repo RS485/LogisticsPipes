@@ -40,7 +40,6 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	public int heat = 0;
 	public int progress = 0;
 	public boolean hasWork = false;
-	private boolean init = false;
 	
 	private PlayerCollectionList listener = new PlayerCollectionList();
 
@@ -195,25 +194,19 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	private void updateHeat() {
 		MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(getWorldObj()), PacketHandler.getPacket(SolderingStationHeat.class).setInteger(this.heat).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(SolderingStationHeat.class).setInteger(this.heat).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), listener);
-		}
+	}
 
 	private void updateProgress() {
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(SolderingStationProgress.class).setInteger(this.progress).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), listener);
-		}
+	}
 	
 	private void updateInventory() {
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(SolderingStationInventory.class).setInventory(this).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), listener);
-		}
+	}
 	
 	@Override
 	public void updateEntity() {
-		if(MainProxy.isClient(getWorldObj())) {
-			if(!init) {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestRotationPacket.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
-				init = true;
-			}
-			return;
-		}
+		super.updateEntity();
 		hasWork = hasWork();
 		if(hasWork && heat < 100) {
 			boolean usedEnergy = false;

@@ -357,10 +357,6 @@ outer:
 		return true;
 	}
 
-	public boolean canUpdate() {
-		return false;
-	}
-
 	@Override
 	public void openInventory() {}
 

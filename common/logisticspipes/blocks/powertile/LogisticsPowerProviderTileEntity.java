@@ -75,6 +75,7 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 	
 	@Override
 	public void updateEntity() {
+		super.updateEntity();
 		pauseRequesting = false;
 		if(!init) {
 			if(MainProxy.isClient(getWorld())) {

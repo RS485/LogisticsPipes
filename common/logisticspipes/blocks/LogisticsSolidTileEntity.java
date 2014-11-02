@@ -11,7 +11,10 @@ import logisticspipes.asm.ModDependentField;
 import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.interfaces.IRotationProvider;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.block.RequestRotationPacket;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCType;
@@ -34,15 +37,15 @@ public class LogisticsSolidTileEntity extends TileEntity implements ILPCCTypeHol
 
 	private boolean addedToNetwork = false;
 	private Object ccType = null;
+	private boolean init = false;
+	public int rotation = 0;
+
+	@ModDependentField(modId="OpenComputers@1.3")
+	public Node node;
 
 	public LogisticsSolidTileEntity() {
 		SimpleServiceLocator.openComputersProxy.initLogisticsSolidTileEntity(this);
 	}
-
-	@ModDependentField(modId="OpenComputers@1.3")
-	public Node node;
-	
-	public int rotation = 0;
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
@@ -71,8 +74,20 @@ public class LogisticsSolidTileEntity extends TileEntity implements ILPCCTypeHol
 			addedToNetwork = true;
 			SimpleServiceLocator.openComputersProxy.addToNetwork(this);
 		}
+		if(MainProxy.isClient(getWorldObj())) {
+			if(!init) {
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestRotationPacket.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
+				init = true;
+			}
+			return;
+		}
 	}
 
+	@Override
+	public final boolean canUpdate() {
+		return true;
+	}
+	
 	@Override
 	public void invalidate() {
 		super.invalidate();

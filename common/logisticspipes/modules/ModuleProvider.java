@@ -130,8 +130,9 @@ ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatch
     	nbttagcompound.setBoolean("isActive", isActive);
     	nbttagcompound.setBoolean("filterisexclude", isExcludeFilter);
     	nbttagcompound.setInteger("extractionMode", _extractionMode.ordinal());
-		nbttagcompound.setInteger("sneakydirection", _sneakyDirection.ordinal());
-
+    	if(_sneakyDirection != null) {
+    		nbttagcompound.setInteger("sneakydirection", _sneakyDirection.ordinal());
+    	}
 	}
 	
 	@Override
@@ -170,7 +171,8 @@ ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatch
 	
 	protected int itemsToExtract() {
 		// if active and you have an order, then run at active speed, else fallback to passive send
-		return (isActive & _service.getOrderManager().peekAtTopRequest(null)!=null)?8:1;
+		//return (isActive & _service.getOrderManager().peekAtTopRequest(null)!=null)?8:1;
+		return 8;
 	}
 
 	protected int stacksToExtract() {
@@ -208,6 +210,7 @@ ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatch
 			itemsleft -= sent;
 		}
 		
+		/*
 		//Extract Item
 		IInventory realInventory = _service.getRealInventory();
 		if (realInventory == null) return;
@@ -259,7 +262,7 @@ ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatch
 			}
 			break;
 		}
-
+		*/
 		
 	}
 

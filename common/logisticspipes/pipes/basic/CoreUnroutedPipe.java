@@ -366,7 +366,6 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public IPipeUpgradeManager getUpgradeManager() {
 		return new IPipeUpgradeManager() {
 			@Override public boolean hasPowerPassUpgrade() {return false;}
-			@Override public boolean hasBCPowerSupplierUpgrade() {return false;}
 			@Override public boolean hasRFPowerSupplierUpgrade() {return false;}
 			@Override public int getIC2PowerLevel() {return 0;}
 			@Override public int getSpeedUpgradeCount() {return 0;}

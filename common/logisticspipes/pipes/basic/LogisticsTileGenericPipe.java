@@ -105,10 +105,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		}
 		SimpleServiceLocator.openComputersProxy.initLogisticsTileGenericPipe(this);
 	}
-	
-	public CoreUnroutedPipe getPipe() {
-		return pipe;
-	}
 
     @Override
     public void invalidate() {
@@ -120,7 +116,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
     			pipe.invalidate();
     		}
     		super.invalidate();
-        } else if (!getPipe().preventRemove()) {
+        } else if (!pipe.preventRemove()) {
             this.tileEntityInvalid = true;
     		initialized = false;
     		tileBuffer = null;

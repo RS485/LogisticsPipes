@@ -52,25 +52,27 @@ public class GuiProvider extends ModuleBaseGui {
 			return _provider.isExcludeFilter() ? "Exclude" : "Include";
 		}
        }));
-       buttonList.add(new GuiStringHandlerButton(0, width / 2 + 50, height / 2 - 38, 45, 20, new GuiStringHandlerButton.StringHandler() {
+       /*
+       buttonList.add(new GuiStringHandlerButton(2, width / 2 + 50, height / 2 - 38, 45, 20, new GuiStringHandlerButton.StringHandler() {
 		@Override
 		public String getContent() {
 			return _provider.isActive() ? "Send" : "Hold";
 		}
        }));
+       */
        buttonList.add(new GuiButton(1, width / 2 - 90, height / 2 - 41, 38, 20, "Switch"));
 	}
 	
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
-		if (guibutton.id == 0){
+		if (guibutton.id == 0) {
 			_provider.setFilterExcluded(!_provider.isExcludeFilter());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleIncludePacket.class).setModulePos(_provider));
-		} else if (guibutton.id == 1){
-			_provider.setIsActive(!_provider.isActive());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleNextModePacket.class).setModulePos(_provider));
-		}else if (guibutton.id == 2){
+		} else if (guibutton.id == 1) {
 			_provider.nextExtractionMode();
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleNextModePacket.class).setModulePos(_provider));
+		} else if (guibutton.id == 2) {
+			_provider.setIsActive(!_provider.isActive());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleNextModePacket.class).setModulePos(_provider));
 		}
 		super.actionPerformed(guibutton);

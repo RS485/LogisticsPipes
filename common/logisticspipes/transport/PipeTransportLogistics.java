@@ -589,7 +589,7 @@ public class PipeTransportLogistics {
 				int[] slots = ((ISidedInventory)tile).getAccessibleSlotsFromSide(side.getOpposite().ordinal());
 				return slots != null && slots.length > 0;
 			}
-			return SimpleServiceLocator.pipeInformaitonManager.isPipe(tile) || (tile instanceof IInventory && ((IInventory)tile).getSizeInventory() > 0) || SimpleServiceLocator.buildCraftProxy.isMachineManagingSolids(tile);
+			return SimpleServiceLocator.pipeInformaitonManager.isPipe(tile) || (tile instanceof IInventory && ((IInventory)tile).getSizeInventory() > 0);
 		} else {
 			return SimpleServiceLocator.pipeInformaitonManager.isPipe(tile);
 		}

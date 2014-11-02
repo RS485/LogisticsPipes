@@ -43,7 +43,7 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 
 @ModDependentInterface(modId={"IC2", "CoFHCore", "BuildCraft|Transport"}, interfacePath={"ic2.api.energy.tile.IEnergySink", "cofh.api.energy.IEnergyHandler", "buildcraft.api.power.IPowerReceptor"})
 @CCType(name="LogisticsPowerJunction")
-public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, IPowerReceptor, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IEnergyHandler {
+public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IEnergyHandler {
 
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
 	
@@ -329,8 +329,6 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 		return Integer.MAX_VALUE;
 	}
 	
-	@Override
-
 	@Override
 	public boolean isHUDInvalid() {
 		return this.isInvalid();

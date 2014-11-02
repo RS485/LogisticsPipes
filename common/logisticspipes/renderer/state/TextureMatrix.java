@@ -59,8 +59,8 @@ public class TextureMatrix {
 				if(isSubPowerInDir[i] != cPipe.getRouter().isSubPoweredExit(ForgeDirection.getOrientation(i))) dirty = true;
 				isSubPowerInDir[i] = cPipe.getRouter().isSubPoweredExit(ForgeDirection.getOrientation(i));
 			}
-			if(hasPowerUpgrade != (cPipe.getUpgradeManager().hasBCPowerSupplierUpgrade() || cPipe.getUpgradeManager().hasRFPowerSupplierUpgrade() || cPipe.getUpgradeManager().getIC2PowerLevel() > 0)) dirty = true;
-			hasPowerUpgrade = cPipe.getUpgradeManager().hasBCPowerSupplierUpgrade() || cPipe.getUpgradeManager().hasRFPowerSupplierUpgrade() || cPipe.getUpgradeManager().getIC2PowerLevel() > 0;
+			if(hasPowerUpgrade != (cPipe.getUpgradeManager().hasRFPowerSupplierUpgrade() || cPipe.getUpgradeManager().getIC2PowerLevel() > 0)) dirty = true;
+			hasPowerUpgrade = cPipe.getUpgradeManager().hasRFPowerSupplierUpgrade() || cPipe.getUpgradeManager().getIC2PowerLevel() > 0;
 			if(hasPower != (cPipe._textureBufferPowered || Configs.LOGISTICS_POWER_USAGE_DISABLED)) dirty = true;
 			hasPower = cPipe._textureBufferPowered || Configs.LOGISTICS_POWER_USAGE_DISABLED;
 			if(isFluid != cPipe.isFluidPipe()) dirty = true;

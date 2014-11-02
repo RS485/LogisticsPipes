@@ -41,7 +41,10 @@ import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 
-@ModDependentInterface(modId={"IC2", "CoFHAPI|energy", "BuildCraft|Transport"}, interfacePath={"ic2.api.energy.tile.IEnergySink", "cofh.api.energy.IEnergyHandler", "buildcraft.api.power.IPowerReceptor"})@CCType(name="LogisticsPowerJunction")public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, IPowerReceptor, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IEnergyHandler {
+@ModDependentInterface(modId={"IC2", "CoFHAPI|energy", "BuildCraft|Transport"}, interfacePath={"ic2.api.energy.tile.IEnergySink", "cofh.api.energy.IEnergyHandler", "buildcraft.api.power.IPowerReceptor"})
+@CCType(name="LogisticsPowerJunction")
+public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IEnergyHandler {
+
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
 	
 	// true if it needs more power, turns off at full, turns on at 50%.
@@ -326,8 +329,6 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 		return Integer.MAX_VALUE;
 	}
 	
-	@Override
-
 	@Override
 	public boolean isHUDInvalid() {
 		return this.isInvalid();

@@ -8,11 +8,11 @@ import logisticspipes.proxy.buildcraft.bc61.gates.wrapperclasses.PipeWrapper;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.item.ItemStack;
-import buildcraft.api.gates.ITriggerParameter;
-import buildcraft.transport.IPipeTrigger;
+import buildcraft.api.statements.IStatementParameter;
+import buildcraft.api.statements.ITriggerInternal;
 import buildcraft.transport.Pipe;
 
-public class TriggerHasDestination extends LPTrigger {
+public class TriggerHasDestination extends LPTrigger implements ITriggerInternal {
 
 	public TriggerHasDestination() {
 		super("LogisticsPipes:trigger.hasDestination");
@@ -29,11 +29,11 @@ public class TriggerHasDestination extends LPTrigger {
 	}
 
 	@Override
-	public boolean isTriggerActive(Pipe pipe, ITriggerParameter parameter) {
+	public boolean isTriggerActive(Pipe pipe, IStatementParameter parameter) {
 		if(pipe instanceof PipeWrapper) {
 			if (((PipeWrapper)pipe).tile.pipe instanceof CoreRoutedPipe) {
-				if (parameter != null && parameter.getItemStackToDraw() != null) {
-					ItemStack item = parameter.getItemStackToDraw();
+				if (parameter != null && parameter.getItemStack() != null) {
+					ItemStack item = parameter.getItemStack();
 					if (SimpleServiceLocator.logisticsManager.hasDestination(ItemIdentifier.get(item), false, ((CoreRoutedPipe) ((PipeWrapper)pipe).tile.pipe).getRouter().getSimpleID(), new ArrayList<Integer>()) != null) {
 						return true;
 					}

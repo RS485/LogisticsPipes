@@ -7,7 +7,6 @@ import java.util.List;
 import logisticspipes.Configs;
 import logisticspipes.LPConstants;
 import logisticspipes.api.ILogisticsPowerProvider;
-import logisticspipes.asm.ModDependentField;
 import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.gui.hud.HUDPowerLevel;
@@ -34,35 +33,22 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.api.mj.MjBattery;
-import buildcraft.api.power.IPowerReceptor;
-import buildcraft.api.power.PowerHandler;
-import buildcraft.api.power.PowerHandler.PowerReceiver;
-import buildcraft.api.power.PowerHandler.Type;
 import cofh.api.energy.IEnergyHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 
 @ModDependentInterface(modId={"IC2", "ComputerCraft@1.6", "CoFHCore", "BuildCraft|Transport"}, interfacePath={"ic2.api.energy.tile.IEnergySink", "dan200.computercraft.api.peripheral.IPeripheral", "cofh.api.energy.IEnergyHandler", "buildcraft.api.power.IPowerReceptor"})
-public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGuiTileEntity, IPowerReceptor, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IPeripheral, IEnergyHandler {
+public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGuiTileEntity, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IPeripheral, IEnergyHandler {
 
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
 	
 	// true if it needs more power, turns off at full, turns on at 50%.
 	public boolean needMorePowerTriggerCheck = true;
 	
-	public final int BuildCraftMultiplier = 5;
 	public final int IC2Multiplier = 2;
 	public final int RFDivisor = 2;
 	public final int MAX_STORAGE = 2000000;
-
-	@ModDependentField(modId="BuildCraft|Transport")
-	private PowerHandler powerFramework;
-	
-	@MjBattery(maxCapacity=1000, maxReceivedPerCycle=1000)
-	@ModDependentField(modId="BuildCraft|Transport")
-	public double bcMJBatery = 0;
 	
 	private int internalStorage = 0;
   	private int lastUpdateStorage = 0;
@@ -79,10 +65,6 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 	private IHeadUpDisplayRenderer HUD;
 	
 	public LogisticsPowerJunctionTileEntity() {
-		if(SimpleServiceLocator.buildCraftProxy.isInstalled()) {
-			powerFramework = new PowerHandler(this, Type.STORAGE);
-			powerFramework.configure(1, 250, 1000, 750); // never triggers doWork, as this is just an energy store, and tick does the actual work.
-		}
 		HUD = new HUDPowerLevel(this);
 	}
 
@@ -134,64 +116,27 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 		if(internalStorage == MAX_STORAGE)
 			needMorePowerTriggerCheck=false;
 	}
-	
-	private void addStoredMJ() {
-		float space = freeSpace() / BuildCraftMultiplier;
-		float minrequest = 1.01f / BuildCraftMultiplier;	//we round down, so always ask for a bit over 1LP-equivalent
-		if(space < minrequest)
-			space = minrequest;
-		int availablelp = (int)(powerFramework.useEnergy(minrequest, space, false) * BuildCraftMultiplier);
-		if(availablelp > 0) {
-			float totake = (float)availablelp / BuildCraftMultiplier;
-			if(powerFramework.useEnergy(totake, totake, true) == totake) {
-				addEnergy(availablelp);
-			}
-		}
-		if(freeSpace() <= 0) return;
-		space = freeSpace() / BuildCraftMultiplier;
-		if(space < minrequest)
-			space = minrequest;
-		availablelp = (int) (Math.min(bcMJBatery, space) * BuildCraftMultiplier);
-		if(availablelp > 0) {
-			float totake = (float) availablelp / BuildCraftMultiplier;
-			bcMJBatery -= totake;
-			addEnergy(availablelp);
-		}
-	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound par1nbtTagCompound) {
 		super.readFromNBT(par1nbtTagCompound);
-		if(SimpleServiceLocator.buildCraftProxy.isInstalled()) {
-			powerFramework.readFromNBT(par1nbtTagCompound);
-		}
 		internalStorage = par1nbtTagCompound.getInteger("powerLevel");
 		if(par1nbtTagCompound.hasKey("needMorePowerTriggerCheck")) {
 			needMorePowerTriggerCheck = par1nbtTagCompound.getBoolean("needMorePowerTriggerCheck");
 		}
-		bcMJBatery = par1nbtTagCompound.getDouble("bcMJBatery");
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound par1nbtTagCompound) {
 		super.writeToNBT(par1nbtTagCompound);
-		if(SimpleServiceLocator.buildCraftProxy.isInstalled()) {
-			powerFramework.writeToNBT(par1nbtTagCompound);
-		}
 		par1nbtTagCompound.setInteger("powerLevel", internalStorage);
 		par1nbtTagCompound.setBoolean("needMorePowerTriggerCheck", needMorePowerTriggerCheck);
-		par1nbtTagCompound.setDouble("bcMJBatery", bcMJBatery);
 	}
 
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
 		if(MainProxy.isServer(getWorld())) {
-			if(SimpleServiceLocator.buildCraftProxy.isActive()) {
-				if(freeSpace() > 0 && (powerFramework.getEnergyStored() > 0 || bcMJBatery > 0)) {
-					addStoredMJ();
-				}
-			}
 			if(internalStorage != lastUpdateStorage) {
 				updateClients();
 			}
@@ -242,10 +187,6 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 			addedToEnergyNet = false;
 		}
 	}
-
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public void doWork(PowerHandler p) {}
 
 	@Override
 	public int getPowerLevel() {
@@ -413,12 +354,6 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 	@Override
 	@ModDependentMethod(modId="ComputerCraft@1.6")
 	public void detach(IComputerAccess computer) {}
-	
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public PowerReceiver getPowerReceiver(ForgeDirection side) {
-		return powerFramework.getPowerReceiver();
-	}
 
 	@Override
 	public boolean isHUDInvalid() {

@@ -2,6 +2,9 @@ package logisticspipes.asm.bc;
 
 import java.util.Iterator;
 
+import logisticspipes.LPConstants;
+import logisticspipes.asm.util.ASMHelper;
+
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
@@ -9,6 +12,8 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
+
+import cpw.mods.fml.common.FMLCommonHandler;
 
 public class ClassPipeTransportItemsHandler {
 	
@@ -39,6 +44,20 @@ public class ClassPipeTransportItemsHandler {
 		final ClassNode node = new ClassNode();
 		ClassReader reader = new ClassReader(bytes);
 		reader.accept(node, 0);
+		
+		if(LPConstants.DEBUG) {
+			boolean noChecksumMatch = false;
+		
+			if(!"04995B97C582DD0F2D87261ED45300C8E0E241DE".equals(ASMHelper.getCheckSumForMethod(reader, "injectItem"))) noChecksumMatch = true;
+			if(!"B86793A66EEF402E3CC025CFA27A1A5DC34EAD73".equals(ASMHelper.getCheckSumForMethod(reader, "passToNextPipe"))) noChecksumMatch = true;
+			if(!"571590203DD7DC1855223F11137BC8839D7AAA9B".equals(ASMHelper.getCheckSumForMethod(reader, "canReceivePipeObjects"))) noChecksumMatch = true;
+
+			if(noChecksumMatch) {
+				new UnsupportedOperationException("This LP version isn't compatible with the installed BC version.").printStackTrace();
+				FMLCommonHandler.instance().exitJava(1, true);
+			}
+		}
+		
 		Iterator<MethodNode> iter = node.methods.iterator();
 		while(iter.hasNext()) {
 			MethodNode m = iter.next();

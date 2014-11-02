@@ -14,12 +14,4 @@ public interface IBCRenderState {
 	boolean needsRenderUpdate();
 	void writeData(LPDataOutputStream data) throws IOException;
 	void readData(LPDataInputStream data) throws IOException;
-	/** BC6.0 */
-	boolean isGatePulsing();
-	/** BC6.0 */
-	boolean isGateLit();
-	/** BC6.0 */
-	void setIsGateLit(boolean gateActive);
-	/** BC6.0 */
-	void setIsGatePulsing(boolean gateActive);
 }

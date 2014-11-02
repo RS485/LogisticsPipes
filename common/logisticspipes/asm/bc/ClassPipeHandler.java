@@ -1,5 +1,8 @@
 package logisticspipes.asm.bc;
 
+import logisticspipes.LPConstants;
+import logisticspipes.asm.util.ASMHelper;
+
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
@@ -14,12 +17,28 @@ import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
+import cpw.mods.fml.common.FMLCommonHandler;
+
 public class ClassPipeHandler {
 
 	public static byte[] handleBCPipeClass(byte[] bytes) {
 		final ClassReader reader = new ClassReader(bytes);
 		final ClassNode node = new ClassNode();
 		reader.accept(node, 0);
+		
+		if(LPConstants.DEBUG) {
+			boolean noChecksumMatch = false;
+		
+			if(!"1186D85A51274E12CF04FA5042472CCBFC3D5FAD".equals(ASMHelper.getCheckSumForMethod(reader, "handlePipeEvent"))) noChecksumMatch = true;
+			if(!"4754C914043A5A98D74E7E3AAF7E5D582F88C7AE".equals(ASMHelper.getCheckSumForMethod(reader, "isWireConnectedTo"))) noChecksumMatch = true;
+			if(!"51DAD91C172630D4FFBF23B490A344B5F02E1B5C".equals(ASMHelper.getCheckSumForMethod(reader, "updateSignalStateForColor"))) noChecksumMatch = true;
+			if(!"9E1892DBBFCF2F45E93C83CB568D975B39FB176A".equals(ASMHelper.getCheckSumForMethod(reader, "readNearbyPipesSignal"))) noChecksumMatch = true;
+			
+			if(noChecksumMatch) {
+				new UnsupportedOperationException("This LP version isn't compatible with the installed BC version.").printStackTrace();
+				FMLCommonHandler.instance().exitJava(1, true);
+			}
+		}
 		
 		node.signature += "Llogisticspipes/proxy/buildcraft/BCPipeWireHooks$PipeClassReceiveSignal;";
 		node.interfaces.add("logisticspipes/proxy/buildcraft/BCPipeWireHooks$PipeClassReceiveSignal");

@@ -29,9 +29,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.api.gates.ActionState;
-import buildcraft.api.gates.IAction;
 import buildcraft.api.gates.IGateExpansion;
+import buildcraft.api.statements.ActionState;
+import buildcraft.api.statements.IActionInternal;
 import buildcraft.api.transport.IPipePluggable;
 import buildcraft.api.transport.PipeWire;
 import buildcraft.core.network.TilePacketWrapper;
@@ -41,9 +41,9 @@ import buildcraft.transport.Gate;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportStructure;
 import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.gates.ActionSlot;
 import buildcraft.transport.gates.GateFactory;
 import buildcraft.transport.gates.ItemGate;
+import buildcraft.transport.gates.StatementSlot;
 import buildcraft.transport.gui.ContainerGateInterface;
 import buildcraft.transport.gui.GuiGateInterface;
 
@@ -56,8 +56,6 @@ public class BCPipePart implements IBCPipePart {
 	public int[] signalStrength = new int[]{0, 0, 0, 0};
 	public boolean[] wireSet = new boolean[]{false, false, false, false};
 	public final Gate[] gates = new Gate[ForgeDirection.VALID_DIRECTIONS.length];
-
-	private boolean closed = false;
 
 	private ArrayList<ActionState> actionStates = new ArrayList<ActionState>();
 
@@ -115,9 +113,11 @@ public class BCPipePart implements IBCPipePart {
 	@Override
 	public void updateGate() {
 		// Update the gate if we have any
-		closed = false;
 		actionStates.clear();
-
+		
+		if (!container.getWorldObj().isRemote) {
+			preGateActions();
+		}
 		// Update the gate if we have any
 		for (Gate gate : gates) {
 			if (gate == null) {
@@ -177,9 +177,7 @@ public class BCPipePart implements IBCPipePart {
 
 		// Legacy support
 		if (data.hasKey("Gate")) {
-			for (int i = 0; i < ForgeDirection.VALID_DIRECTIONS.length; i++) {
-				container.tilePart.setGate(GateFactory.makeGate(wrapper, data.getCompoundTag("Gate")), i);
-			}
+			container.tilePart.setGate(GateFactory.makeGate(wrapper, data.getCompoundTag("Gate")), 0);
 			data.removeTag("Gate");
 		}
 	}
@@ -278,18 +276,29 @@ public class BCPipePart implements IBCPipePart {
 		return wireSet[color.ordinal()];
 	}
 
-	private int getMaxRedstoneOutput() {
-		int max = 0;
-
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-			Gate gate = gates[dir.ordinal()];
-
-			if (gate != null && gate.getRedstoneOutput() > max) {
-				max = gate.getRedstoneOutput();
+	public int getMaxRedstoneOutput(ForgeDirection dir) {
+		int output = 0;
+		
+		for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
+			output = Math.max(output, getRedstoneOutput(side));
+			if (side == dir) {
+				output = Math.max(output, getRedstoneOutputSide(side));
 			}
 		}
+		
+		return output;
+	}
 
-		return max;
+	private int getRedstoneOutput(ForgeDirection dir) {
+		Gate gate = gates[dir.ordinal()];
+
+		return gate != null ? gate.getRedstoneOutput() : 0;
+	}
+
+	private int getRedstoneOutputSide(ForgeDirection dir) {
+		Gate gate = gates[dir.ordinal()];
+
+		return gate != null ? gate.getSidedRedstoneOutput() : 0;
 	}
 
 	@Override
@@ -301,7 +310,7 @@ public class BCPipePart implements IBCPipePart {
 		if (tile instanceof TileGenericPipe && container.isPipeConnected(o)) {
 			return 0;
 		} else {
-			return getMaxRedstoneOutput();
+			return getMaxRedstoneOutput(o);
 		}
 	}
 
@@ -465,7 +474,7 @@ public class BCPipePart implements IBCPipePart {
 
 	@Override
 	public LinkedList<?> getActions() {
-		LinkedList<IAction> result = new LinkedList<IAction>();
+		LinkedList<IActionInternal> result = new LinkedList<IActionInternal>();
 		
 		if(container.pipe instanceof CoreRoutedPipe) {
 			if(BuildCraftProxy.LogisticsDisableAction != null) {
@@ -476,15 +485,19 @@ public class BCPipePart implements IBCPipePart {
 		return result;
 	}
 	
+	private void preGateActions() {
+		if(!(container.pipe instanceof CoreRoutedPipe)) return;
+		((CoreRoutedPipe)container.pipe).setEnabled(true);
+	}
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public void actionsActivated(Object obj) {
-		Collection<ActionSlot> actions = (Collection<ActionSlot>) obj;
+		Collection<StatementSlot> actions = (Collection<StatementSlot>) obj;
 		if(!(container.pipe instanceof CoreRoutedPipe)) return;
-		((CoreRoutedPipe)container.pipe).setEnabled(true);
 		// Activate the actions
-		for (ActionSlot slot : actions) {
-			if (slot.action instanceof ActionDisableLogistics) {
+		for (StatementSlot slot : actions) {
+			if (slot.statement instanceof ActionDisableLogistics) {
 				((CoreRoutedPipe)container.pipe).setEnabled(false);
 			}
 		}
@@ -581,12 +594,21 @@ public class BCPipePart implements IBCPipePart {
 	}
 
 	@Override
-	public Object getGates() {
-		return gates;
+	public Object getWrapped() {
+		return wrapper;
+	}
+
+	public boolean isWireActive(PipeWire wire) {
+		return signalStrength[wire.ordinal()] > 0;
 	}
 
 	@Override
-	public Object getWrapped() {
-		return wrapper;
+	public Object getOriginal() {
+		return this;
+	}
+
+	@Override
+	public Object getGates() {
+		return gates;
 	}
 }

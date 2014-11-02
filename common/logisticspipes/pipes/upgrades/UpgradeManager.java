@@ -11,7 +11,6 @@ import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.guis.pipe.UpgradeManagerGui;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.upgrades.power.BCPowerSupplierUpgrade;
 import logisticspipes.pipes.upgrades.power.IC2PowerSupplierUpgrade;
 import logisticspipes.pipes.upgrades.power.RFPowerSupplierUpgrade;
 import logisticspipes.proxy.MainProxy;
@@ -55,7 +54,6 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	private String uuidS = null;
 	private boolean hasPatternUpgrade = false;
 	private boolean hasPowerPassUpgrade = false;
-	private boolean hasBCPowerUpgrade = false;
 	private boolean hasRFPowerUpgrade = false;
 	private int getIC2PowerLevel = 0;
 	private boolean	hasCCRemoteControlUpgrade = false;
@@ -134,7 +132,6 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		hasByproductExtractor = false;
 		hasPatternUpgrade = false;
 		hasPowerPassUpgrade = false;
-		hasBCPowerUpgrade = false;
 		hasRFPowerUpgrade = false;
 		getIC2PowerLevel = 0;
 		hasCCRemoteControlUpgrade = false;
@@ -164,8 +161,6 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 				hasPatternUpgrade = true;
 			} else if(upgrade instanceof PowerTransportationUpgrade) {
 				hasPowerPassUpgrade = true;
-			} else if(upgrade instanceof BCPowerSupplierUpgrade) {
-				hasBCPowerUpgrade = true;
 			} else if(upgrade instanceof RFPowerSupplierUpgrade) {
 				hasRFPowerUpgrade = true;
 			} else if(upgrade instanceof IC2PowerSupplierUpgrade) {
@@ -418,11 +413,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	}
 
 	public boolean hasPowerPassUpgrade() {
-		return hasPowerPassUpgrade || hasBCPowerUpgrade || hasRFPowerUpgrade || getIC2PowerLevel > 0;
-	}
-	
-	public boolean hasBCPowerSupplierUpgrade() {
-		return hasBCPowerUpgrade;
+		return hasPowerPassUpgrade || hasRFPowerUpgrade || getIC2PowerLevel > 0;
 	}
 	
 	public boolean hasRFPowerSupplierUpgrade() {

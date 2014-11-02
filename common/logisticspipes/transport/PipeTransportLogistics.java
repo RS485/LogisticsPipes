@@ -513,7 +513,6 @@ public class PipeTransportLogistics {
 		}
 		if(SimpleServiceLocator.betterStorageProxy.isBetterStorageCrate(tile) || SimpleServiceLocator.factorizationProxy.isBarral(tile)
 				//|| (Configs.TE_PIPE_SUPPORT && SimpleServiceLocator.thermalExpansionProxy.isItemConduit(tile) && SimpleServiceLocator.thermalExpansionProxy.isSideFree(tile, side.getOpposite().ordinal())) 
-				|| (this.getPipe().getUpgradeManager().hasBCPowerSupplierUpgrade() && SimpleServiceLocator.buildCraftProxy.getPowerReceiver(tile, side.getOpposite()) != null)
 				|| (this.getPipe().getUpgradeManager().hasRFPowerSupplierUpgrade() && SimpleServiceLocator.thermalExpansionProxy.isEnergyHandler(tile))
 				|| (this.getPipe().getUpgradeManager().getIC2PowerLevel() > 0 && SimpleServiceLocator.IC2Proxy.isEnergySink(tile)))
 			return true;
@@ -531,7 +530,7 @@ public class PipeTransportLogistics {
 			int[] slots = ((ISidedInventory)tile).getAccessibleSlotsFromSide(side.getOpposite().ordinal());
 			return slots != null && slots.length > 0;
 		}
-		return SimpleServiceLocator.pipeInformaitonManager.isPipe(tile) || (tile instanceof IInventory && ((IInventory)tile).getSizeInventory() > 0) || SimpleServiceLocator.buildCraftProxy.isMachineManagingSolids(tile);
+		return SimpleServiceLocator.pipeInformaitonManager.isPipe(tile) || (tile instanceof IInventory && ((IInventory)tile).getSizeInventory() > 0);
 	}
 	
 	/*

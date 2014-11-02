@@ -8,7 +8,7 @@ import logisticspipes.proxy.buildcraft.subproxies.IBCCoreState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePart;
 import logisticspipes.proxy.buildcraft.subproxies.IBCRenderState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
-import logisticspipes.proxy.buildcraft.subproxies.ILPBCPowerProxy;
+import logisticspipes.proxy.buildcraft.subproxies.IConnectionOverrideResult;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.transport.LPTravelingItem;
 import net.minecraft.block.Block;
@@ -28,9 +28,7 @@ public interface IBCProxy {
 	void registerPipeInformationProvider();
 	void initProxy();
 	boolean checkForPipeConnection(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe);
-	boolean checkConnectionOverride(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe);
-	boolean isMachineManagingSolids(TileEntity tile);
-	boolean isMachineManagingFluids(TileEntity tile);
+	IConnectionOverrideResult checkConnectionOverride(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe);
 	IBCPipePart getBCPipePart(LogisticsTileGenericPipe tile);
 	boolean handleBCClickOnPipe(ItemStack currentItem, CoreUnroutedPipe pipe, World world, int x, int y, int z, EntityPlayer player, int side, LogisticsBlockGenericPipe logisticsBlockGenericPipe);
 	ItemStack getPipePlugItemStack();
@@ -49,14 +47,12 @@ public interface IBCProxy {
 	@IgnoreDisabledProxy
 	boolean isInstalled();
 	Object getLPPipeType();
-	ILPBCPowerProxy getPowerReceiver(TileEntity tile, ForgeDirection orientation);
 	void registerTrigger();
 	ICraftingParts getRecipeParts();
 	void addCraftingRecipes(ICraftingParts parts);
 	Object overridePipeConnection(LogisticsTileGenericPipe pipe, Object type, ForgeDirection dir);
 	IBCCoreState getBCCoreState();
 	IBCRenderState getBCRenderState();
-	/** BC6.0 */
 	void checkUpdateNeighbour(TileEntity tile);
 	void logWarning(String format);
 	Class<? extends ICraftingRecipeProvider> getAssemblyTableProviderClass();

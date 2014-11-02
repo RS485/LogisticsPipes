@@ -25,7 +25,6 @@ import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeNORTH;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeSOUTH;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeUP;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeWEST;
-import logisticspipes.pipes.upgrades.power.BCPowerSupplierUpgrade;
 import logisticspipes.pipes.upgrades.power.IC2EVPowerSupplierUpgrade;
 import logisticspipes.pipes.upgrades.power.IC2HVPowerSupplierUpgrade;
 import logisticspipes.pipes.upgrades.power.IC2LVPowerSupplierUpgrade;
@@ -76,7 +75,6 @@ public class ItemUpgrade extends LogisticsItem {
 	
 	//Power Upgrades
 	public static final int POWER_TRANSPORTATION = 30;
-	public static final int POWER_BC_SUPPLIER = 31;
 	public static final int POWER_RF_SUPPLIER = 32;
 	public static final int POWER_IC2_LV_SUPPLIER = 33;
 	public static final int POWER_IC2_MV_SUPPLIER = 34;
@@ -165,7 +163,6 @@ public class ItemUpgrade extends LogisticsItem {
 		registerUpgrade(SUPPLIER_PATTERN, PatternUpgrade.class, 17);
 		registerUpgrade(FUZZY_CRAFTING, FuzzyCraftingUpgrade.class, 18);
 		registerUpgrade(POWER_TRANSPORTATION, PowerTransportationUpgrade.class, 19);
-		registerUpgrade(POWER_BC_SUPPLIER, BCPowerSupplierUpgrade.class, 20);
 		registerUpgrade(POWER_RF_SUPPLIER, RFPowerSupplierUpgrade.class, 21);
 		registerUpgrade(POWER_IC2_LV_SUPPLIER, IC2LVPowerSupplierUpgrade.class, 22);
 		registerUpgrade(POWER_IC2_MV_SUPPLIER, IC2MVPowerSupplierUpgrade.class, 23);

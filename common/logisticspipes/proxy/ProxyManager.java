@@ -17,7 +17,7 @@ import logisticspipes.proxy.buildcraft.subproxies.IBCCoreState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePart;
 import logisticspipes.proxy.buildcraft.subproxies.IBCRenderState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
-import logisticspipes.proxy.buildcraft.subproxies.ILPBCPowerProxy;
+import logisticspipes.proxy.buildcraft.subproxies.IConnectionOverrideResult;
 import logisticspipes.proxy.cc.CCProxy;
 import logisticspipes.proxy.enderchest.EnderStorageProxy;
 import logisticspipes.proxy.enderio.EnderIOProxy;
@@ -48,7 +48,6 @@ import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 import logisticspipes.proxy.toolWrench.ToolWrenchProxy;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.transport.LPTravelingItem;
-import logisticspipes.utils.ModStatusHelper;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
@@ -88,9 +87,12 @@ public class ProxyManager {
 			@Override public void registerPipeInformationProvider() {}
 			@Override public void initProxy() {}
 			@Override public boolean checkForPipeConnection(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe) {return true;}
-			@Override public boolean checkConnectionOverride(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe) {return true;}
-			@Override public boolean isMachineManagingSolids(TileEntity tile) {return false;}
-			@Override public boolean isMachineManagingFluids(TileEntity tile) {return false;}
+			@Override public IConnectionOverrideResult checkConnectionOverride(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe) {
+				return new IConnectionOverrideResult() {
+					@Override public boolean forceConnect() {return false;}
+					@Override public boolean forceDisconnect() {return false;}
+				};
+			}
 			@Override public IBCPipePart getBCPipePart(LogisticsTileGenericPipe tile) {
 				return new IBCPipePart() {
 					@Override public void updateGate() {}
@@ -124,6 +126,7 @@ public class ProxyManager {
 					@Override public void resolveActions() {}
 					@Override public Object getWrapped() {return null;}
 					@Override public boolean hasGate() {return false;}
+					@Override public Object getOriginal() {return this;}
 				};
 			}
 			@Override public boolean handleBCClickOnPipe(ItemStack currentItem, CoreUnroutedPipe pipe, World world, int x, int y, int z, EntityPlayer player, int side, LogisticsBlockGenericPipe logisticsBlockGenericPipe) {return false;}
@@ -133,15 +136,10 @@ public class ProxyManager {
 			@Override public IBCTilePart getBCTilePart(LogisticsTileGenericPipe tile) {
 				return new IBCTilePart() {
 					@Override public void refreshRenderState() {}
-					@Override public boolean addFacade(ForgeDirection direction, int type, int wire, Block[] blocks, int[] metaValues) {return false;}
 					@Override public boolean hasFacade(ForgeDirection direction) {return false;}
-					@Override public void dropFacadeItem(ForgeDirection direction) {}
 					@Override public ItemStack getFacade(ForgeDirection direction) {return null;}
-					@Override public boolean dropFacade(ForgeDirection direction) {return false;}
 					@Override public boolean hasPlug(ForgeDirection side) {return false;}
 					@Override public boolean hasRobotStation(ForgeDirection side) {return false;}
-					@Override public boolean removeAndDropPlug(ForgeDirection side) {return false;}
-					@Override public boolean removeAndDropRobotStation(ForgeDirection side) {return false;}
 					@Override public boolean addPlug(ForgeDirection forgeDirection) {return false;}
 					@Override public boolean addRobotStation(ForgeDirection forgeDirection) {return false;}
 					@Override public void writeToNBT(NBTTagCompound nbt) {}
@@ -170,14 +168,6 @@ public class ProxyManager {
 			@Override public boolean isActive() {return false;}
 			@Override public Object getLPPipeType() {return null;}
 			@Override public boolean isInstalled() {return false;}
-			@Override public ILPBCPowerProxy getPowerReceiver(TileEntity tile, ForgeDirection orientation) {
-				return new ILPBCPowerProxy() {
-					@Override public double getMaxEnergyReceived() {return 0;}
-					@Override public double getMaxEnergyStored() {return 0;}
-					@Override public double getEnergyStored() {return 0;}
-					@Override public double receiveEnergy(double d, ForgeDirection orientation) {return 0;}
-				};
-			}
 			@Override public void registerTrigger() {}
 			@Override public ICraftingParts getRecipeParts() {return null;}
 			@Override public void addCraftingRecipes(ICraftingParts parts) {}
@@ -197,10 +187,6 @@ public class ProxyManager {
 					@Override public boolean needsRenderUpdate() {return false;}
 					@Override public void writeData(LPDataOutputStream data) throws IOException {}
 					@Override public void readData(LPDataInputStream data) throws IOException {}
-					@Override public boolean isGatePulsing() {return false;}
-					@Override public boolean isGateLit() {return false;}
-					@Override public void setIsGateLit(boolean gateActive) {}
-					@Override public void setIsGatePulsing(boolean gateActive) {}
 				};
 			}
 			@Override public void checkUpdateNeighbour(TileEntity tile) {}
@@ -209,11 +195,7 @@ public class ProxyManager {
 		};
 		
 		try {
-			if(ModStatusHelper.isModLoaded("BuildCraft|Transport@6.1")) {
-				SimpleServiceLocator.setBuildCraftProxy(getWrappedProxy("BuildCraft|Transport", IBCProxy.class, (Class<? extends IBCProxy>) Class.forName("logisticspipes.proxy.buildcraft.bc61.BuildCraftProxy"), bcDummyProxy, IBCPipePart.class, IBCTilePart.class, ILPBCPowerProxy.class, IBCCoreState.class, IBCRenderState.class));
-			} else {
-				SimpleServiceLocator.setBuildCraftProxy(getWrappedProxy("BuildCraft|Transport", IBCProxy.class, (Class<? extends IBCProxy>) Class.forName("logisticspipes.proxy.buildcraft.bc60.BuildCraftProxy"), bcDummyProxy, IBCPipePart.class, IBCTilePart.class, ILPBCPowerProxy.class, IBCCoreState.class, IBCRenderState.class));
-			}
+			SimpleServiceLocator.setBuildCraftProxy(getWrappedProxy("BuildCraft|Transport", IBCProxy.class, (Class<? extends IBCProxy>) Class.forName("logisticspipes.proxy.buildcraft.bc61.BuildCraftProxy"), bcDummyProxy, IBCPipePart.class, IBCTilePart.class, IBCCoreState.class, IBCRenderState.class));
 		} catch(ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}

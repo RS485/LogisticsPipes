@@ -24,7 +24,7 @@ public class BCCoreState implements IBCCoreState {
 			data.writeBoolean(gateValid);
 			if (gateValid) {
 				ByteBuf buffer = Unpooled.buffer();
-				gate.writeToByteByf(buffer);
+				gate.writeToByteBuf(buffer);
 				data.writeByteArray(buffer.array());
 			}
 		}

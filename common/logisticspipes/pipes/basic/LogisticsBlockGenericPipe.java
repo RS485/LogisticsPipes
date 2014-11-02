@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
-import buildcraft.transport.TileGenericPipe;
 import logisticspipes.Configs;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
@@ -16,7 +15,6 @@ import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.side.ClientProxy;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.textures.Textures;
 import logisticspipes.ticks.QueuedTasks;
@@ -25,6 +23,7 @@ import logisticspipes.utils.TileBuffer;
 import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
+import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EffectRenderer;
@@ -786,16 +785,36 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 		if (isValid(pipe)) {
 			pipe.container.scheduleNeighborChange();
-			pipe.container.redstoneInput = world.isBlockIndirectlyGettingPowered(x, y, z) ? 15 : world.getBlockPowerInput(x, y, z);
+			pipe.container.redstoneInput = 0;
 			
 			for (int i = 0; i < ForgeDirection.VALID_DIRECTIONS.length; i++) {
 				ForgeDirection d = ForgeDirection.getOrientation(i);
-				pipe.container.redstoneInputSide[i] = world.isBlockProvidingPowerTo(x + d.offsetY, y + d.offsetY, z + d.offsetZ, i);
+				pipe.container.redstoneInputSide[i] = getRedstoneInputToPipe(world, x, y, z, d);
+				if (pipe.container.redstoneInput < pipe.container.redstoneInputSide[i]) {
+					pipe.container.redstoneInput = pipe.container.redstoneInputSide[i];
+				}
 			}
 			
 			pipe.bcPipePart.refreshRedStoneInput(pipe.container.redstoneInput);
 		}
 	}
+
+	private int getRedstoneInputToPipe(World world, int x, int y, int z,
+			ForgeDirection d) {
+		int i = d.ordinal();
+		int input = world.isBlockProvidingPowerTo(x + d.offsetX, y + d.offsetY, z + d.offsetZ, i);
+		if (input == 0) {
+			input = world.getIndirectPowerLevelTo(x + d.offsetX, y + d.offsetY, z + d.offsetZ, i);
+			if (input == 0 && d != ForgeDirection.DOWN) {
+				Block block = world.getBlock(x + d.offsetX, y + d.offsetY, z + d.offsetZ);
+				if (block instanceof BlockRedstoneWire) {
+					return world.getBlockMetadata(x + d.offsetX, y + d.offsetY, z + d.offsetZ);
+				}
+			}
+		}
+		return input;
+	}
+
 
 	@Override
 	public int onBlockPlaced(World world, int x, int y, int z, int side, float par6, float par7, float par8, int meta) {

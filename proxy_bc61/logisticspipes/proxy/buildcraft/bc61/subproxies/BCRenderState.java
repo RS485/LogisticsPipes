@@ -40,7 +40,7 @@ public class BCRenderState implements IBCRenderState {
 
 	@Override
 	public boolean isDirty() {
-		return dirty || wireMatrix.isDirty() || facadeMatrix.isDirty() || plugMatrix.isDirty() || robotStationMatrix.isDirty();
+		return dirty || wireMatrix.isDirty() || facadeMatrix.isDirty() || plugMatrix.isDirty() || robotStationMatrix.isDirty() || gateMatrix.isDirty();
 	}
 
 	@Override
@@ -74,25 +74,5 @@ public class BCRenderState implements IBCRenderState {
 		facadeMatrix.readData(buf);
 		robotStationMatrix.readData(buf);
 		gateMatrix.readData(buf);
-	}
-
-	@Override
-	public boolean isGatePulsing() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public boolean isGateLit() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void setIsGateLit(boolean gateActive) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void setIsGatePulsing(boolean gateActive) {
-		throw new UnsupportedOperationException();
 	}
 }

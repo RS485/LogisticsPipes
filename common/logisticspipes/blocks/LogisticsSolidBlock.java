@@ -2,7 +2,6 @@ package logisticspipes.blocks;
 
 
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
-import logisticspipes.blocks.powertile.LogisticsBCPowerProviderTileEntity;
 import logisticspipes.blocks.powertile.LogisticsIC2PowerProviderTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
@@ -33,7 +32,6 @@ public class LogisticsSolidBlock extends BlockContainer {
 	public static final int LOGISTICS_FUZZYCRAFTING_TABLE = 4;
 
 	//Power Provider
-	public static final int LOGISTICS_BC_POWERPROVIDER = 10;
 	public static final int LOGISTICS_RF_POWERPROVIDER = 11;
 	public static final int LOGISTICS_IC2_POWERPROVIDER = 12;
 	
@@ -122,8 +120,6 @@ public class LogisticsSolidBlock extends BlockContainer {
 			case LOGISTICS_AUTOCRAFTING_TABLE:
 			case LOGISTICS_FUZZYCRAFTING_TABLE:
 				return new LogisticsCraftingTableTileEntity();
-			case LOGISTICS_BC_POWERPROVIDER:
-				return new LogisticsBCPowerProviderTileEntity();
 			case LOGISTICS_RF_POWERPROVIDER:
 				return new LogisticsRFPowerProviderTileEntity();
 			case LOGISTICS_IC2_POWERPROVIDER:
@@ -141,7 +137,6 @@ public class LogisticsSolidBlock extends BlockContainer {
 		case LOGISTICS_SECURITY_STATION:
 		case LOGISTICS_AUTOCRAFTING_TABLE:
 		case LOGISTICS_FUZZYCRAFTING_TABLE:
-		case LOGISTICS_BC_POWERPROVIDER:
 		case LOGISTICS_RF_POWERPROVIDER:
 		case LOGISTICS_IC2_POWERPROVIDER:
 			return par1;
@@ -259,15 +254,6 @@ public class LogisticsSolidBlock extends BlockContainer {
 				return icons[12];
 			default: //Front
 				return icons[10];
-			}
-		case LOGISTICS_BC_POWERPROVIDER:
-			switch (side) {
-			case 1: //TOP
-				return icons[13];
-			case 0: //Bottom
-				return icons[5];
-			default: //Front
-				return icons[6];
 			}
 		case LOGISTICS_RF_POWERPROVIDER:
 			switch (side) {

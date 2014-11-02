@@ -3,7 +3,7 @@ package logisticspipes.proxy.buildcraft.subproxies;
 import java.util.LinkedList;
 import java.util.List;
 
-import buildcraft.transport.Pipe;
+import buildcraft.transport.Gate;
 import logisticspipes.asm.IgnoreDisabledProxy;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import net.minecraft.entity.player.EntityPlayer;
@@ -44,8 +44,9 @@ public interface IBCPipePart {
 	LinkedList<?> getActions();
 	boolean isWired();
 	void refreshRedStoneInput(int redstoneInput);
-	Object getGates();
 	void resolveActions();
 	Object getWrapped();
 	boolean hasGate();
+	Object getOriginal();
+	Object getGates();
 }

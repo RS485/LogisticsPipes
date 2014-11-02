@@ -8,6 +8,7 @@
 
 package logisticspipes.proxy.buildcraft.bc61.gates;
 
+import java.util.Collection;
 import java.util.LinkedList;
 
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
@@ -21,17 +22,20 @@ import logisticspipes.proxy.buildcraft.bc61.BuildCraftProxy;
 import logisticspipes.proxy.buildcraft.bc61.gates.wrapperclasses.TilePipeWrapper;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
-import buildcraft.api.gates.ITrigger;
-import buildcraft.api.gates.ITriggerProvider;
+import net.minecraftforge.common.util.ForgeDirection;
+import buildcraft.api.statements.IStatementContainer;
+import buildcraft.api.statements.ITriggerExternal;
+import buildcraft.api.statements.ITriggerInternal;
+import buildcraft.api.statements.ITriggerProvider;
 import buildcraft.api.transport.IPipeTile;
 
 public class LogisticsTriggerProvider implements ITriggerProvider {
 
 	@Override
-	public LinkedList<ITrigger> getPipeTriggers(IPipeTile pipe) {
+	public Collection<ITriggerInternal> getInternalTriggers(IStatementContainer pipe) {
 		if(pipe instanceof TilePipeWrapper) {
 			LogisticsTileGenericPipe lPipe = ((TilePipeWrapper)pipe).tile;
-			LinkedList<ITrigger> triggers = new LinkedList<ITrigger>();
+			LinkedList<ITriggerInternal> triggers = new LinkedList<ITriggerInternal>();
 			if (lPipe.pipe instanceof PipeItemsSupplierLogistics || lPipe.pipe instanceof PipeItemsFluidSupplier) {
 				triggers.add(BuildCraftProxy.LogisticsFailedTrigger);
 			}
@@ -50,14 +54,14 @@ public class LogisticsTriggerProvider implements ITriggerProvider {
 	}
 	
 	@Override
-	public LinkedList<ITrigger> getNeighborTriggers(Block block, TileEntity tile) {
+	public Collection<ITriggerExternal> getExternalTriggers(ForgeDirection paramForgeDirection, TileEntity tile) {
 		if(tile instanceof LogisticsPowerJunctionTileEntity){
-			LinkedList<ITrigger> triggers = new  LinkedList<ITrigger>();
+			LinkedList<ITriggerExternal> triggers = new  LinkedList<ITriggerExternal>();
 			triggers.add(BuildCraftProxy.LogisticsNeedPowerTrigger);
 			return triggers;
 		}
 		if(tile instanceof LogisticsSolderingTileEntity){
-			LinkedList<ITrigger> triggers = new  LinkedList<ITrigger>();
+			LinkedList<ITriggerExternal> triggers = new  LinkedList<ITriggerExternal>();
 			triggers.add(BuildCraftProxy.LogisticsNeedPowerTrigger);
 			return triggers;
 		}

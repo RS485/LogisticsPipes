@@ -33,6 +33,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCCoreState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
+import logisticspipes.proxy.buildcraft.subproxies.IConnectionOverrideResult;
 import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
 import logisticspipes.proxy.opencomputers.asm.BaseWrapperClass;
 import logisticspipes.renderer.IIconProvider;
@@ -62,9 +63,9 @@ import net.minecraftforge.fluids.IFluidHandler;
 import org.apache.logging.log4j.Level;
 
 import buildcraft.api.core.EnumColor;
+import buildcraft.api.transport.IPipe;
 import buildcraft.api.transport.IPipeConnection;
 import buildcraft.api.transport.IPipeTile;
-import buildcraft.api.transport.PipeWire;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.TravelingItem;
 import cofh.api.transport.IItemDuct;
@@ -283,11 +284,9 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 	public void writeToNBT(NBTTagCompound nbt) {
 		super.writeToNBT(nbt);
 
-		nbt.setInteger("redstoneInput", redstoneInput);
-		
 		for (int i = 0; i < ForgeDirection.VALID_DIRECTIONS.length; i++) {
 			final String key = "redstoneInputSide[" + i + "]";
-			nbt.setInteger(key, redstoneInputSide[i]);
+			nbt.setByte(key, (byte) redstoneInputSide[i]);
 		}
 
 		if (pipe != null) {
@@ -312,15 +311,23 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
 
-		redstoneInput = nbt.getInteger("redstoneInput");
+		redstoneInput = 0;
 		
 		for (int i = 0; i < ForgeDirection.VALID_DIRECTIONS.length; i++) {
 			final String key = "redstoneInputSide[" + i + "]";
-			redstoneInputSide[i] = nbt.hasKey(key) ? nbt.getInteger(key) : 0;
+			if (nbt.hasKey(key)) {
+				redstoneInputSide[i] = nbt.getByte(key);
+				
+				if (redstoneInputSide[i] > redstoneInput) {
+					redstoneInput = redstoneInputSide[i];
+				}
+			} else {
+				redstoneInputSide[i] = 0;
+			}
 		}
 
 		coreState.pipeId = nbt.getInteger("pipeId");
-		pipe = LogisticsBlockGenericPipe.createPipe((Item) Item.itemRegistry.getObjectById(coreState.pipeId));
+		pipe = LogisticsBlockGenericPipe.createPipe((Item) Item.getItemById(coreState.pipeId));
 		bindPipe();
 
 		if (pipe != null) {
@@ -347,7 +354,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 		if (with == null)
 			return false;
 
-		if (tilePart.hasBlockingPluggable(side)) //tilePart.hasPlug(side) || tilePart.hasRobotStation(side)
+		if (tilePart.hasBlockingPluggable(side))
 			return false;
 
 		if (!LogisticsBlockGenericPipe.isValid(pipe))
@@ -355,7 +362,9 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 
 		if(SimpleServiceLocator.ccProxy.isTurtle(with) && !turtleConnect[OrientationsUtil.getOrientationOfTilewithTile(this, with).ordinal()]) return false;
 
-		if(!SimpleServiceLocator.buildCraftProxy.checkConnectionOverride(with, side, this)) return false;
+		IConnectionOverrideResult result = SimpleServiceLocator.buildCraftProxy.checkConnectionOverride(with, side, this);
+		if(result.forceDisconnect()) return false;
+		if(result.forceConnect()) return true;
 
 		if(!SimpleServiceLocator.buildCraftProxy.checkForPipeConnection(with, side, this)) return false;
 		if(with instanceof LogisticsTileGenericPipe) {
@@ -779,15 +788,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 		return pipeConnectionsBuffer[with.ordinal()];
 	}
 
-	@Override
-	@ModDependentMethod(modId="BuildCraft|Transport")
-	public boolean isWireActive(PipeWire wire) {
-		if (pipe == null) {
-			return false;
-		}
-		return pipe.bcPipePart.getSignalStrength()[wire.ordinal()] > 0;
-	}
-
 	/**
 	 * ITankContainer implementation *
 	 */
@@ -916,5 +916,17 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 		scheduleRenderUpdate();
 		sendUpdateToClient();
 		LogisticsBlockGenericPipe.updateNeighbourSignalState(pipe);
+	}
+
+	@Override
+	@ModDependentMethod(modId="BuildCraft|Transport")
+	public TileEntity getAdjacentTile(ForgeDirection dir) {
+		return getTile(dir);
+	}
+
+	@Override
+	@ModDependentMethod(modId="BuildCraft|Transport")
+	public IPipe getPipe() {
+		return null;
 	}
 }

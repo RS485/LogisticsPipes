@@ -4,16 +4,14 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.buildcraft.bc61.subproxies.BCPipePart;
-import logisticspipes.utils.ReflectionHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.core.IIconProvider;
-import buildcraft.api.gates.IAction;
+import buildcraft.api.statements.IActionInternal;
 import buildcraft.api.transport.IPipeTile.PipeType;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransport;
-import buildcraft.transport.gates.ActionSlot;
+import buildcraft.transport.gates.StatementSlot;
 
 public class PipeWrapper extends Pipe<PipeTransport> {
 	public final LogisticsTileGenericPipe tile;
@@ -70,12 +68,12 @@ public class PipeWrapper extends Pipe<PipeTransport> {
 	}
 	
 	@Override
-	protected void actionsActivated(Collection<ActionSlot> actions) {
+	protected void actionsActivated(Collection<StatementSlot> actions) {
 		tile.pipe.bcPipePart.actionsActivated(actions);
 	}
 
 	@Override
-	public LinkedList<IAction> getActions() {
-		return (LinkedList<IAction>) tile.pipe.bcPipePart.getActions();
+	public LinkedList<IActionInternal> getActions() {
+		return (LinkedList<IActionInternal>) tile.pipe.bcPipePart.getActions();
 	}
 }

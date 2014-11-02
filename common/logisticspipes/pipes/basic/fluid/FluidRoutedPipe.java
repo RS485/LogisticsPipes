@@ -51,7 +51,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 				return true;
 		}
 
-		return tile instanceof LogisticsTileGenericPipe || SimpleServiceLocator.buildCraftProxy.isMachineManagingFluids(tile);
+		return tile instanceof LogisticsTileGenericPipe;
 	}
 	
 	@Override

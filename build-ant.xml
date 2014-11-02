@@ -87,7 +87,7 @@
 		</if>
 	</target>
 
-	<target name="signJars" depends="addBC61, loadFingerprints, deobfJar, sourceJar, jar">
+	<target name="signJars" depends="loadFingerprints, deobfJar, sourceJar, jar">
 		<if>
 			<available file="${sign.dir}/.fingerprint"/>
 			<then>
@@ -102,6 +102,7 @@
 		</if>
 	</target>
 	
+	<!--
 	<target name="addBC61" depends="loadFingerprints, deobfJar, sourceJar, jar">
 		<echo message="Generating BC6.1 part"/>
 		<echo message="#############################################################################"/>
@@ -165,4 +166,5 @@
 		
 		<echo message="BC6.1 part inserted"/>
 	</target>
+	-->
 </project>

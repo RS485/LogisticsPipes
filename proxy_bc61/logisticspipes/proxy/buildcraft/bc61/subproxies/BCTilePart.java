@@ -8,11 +8,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.ForgeDirection;
+import buildcraft.api.core.BCLog;
 import buildcraft.api.transport.IPipePluggable;
 import buildcraft.api.transport.PipeWire;
 import buildcraft.core.inventory.InvUtils;
 import buildcraft.core.robots.DockingStation;
-import buildcraft.core.utils.BCLog;
 import buildcraft.transport.Gate;
 import buildcraft.transport.ItemFacade;
 import buildcraft.transport.ItemPlug;
@@ -25,11 +25,19 @@ public class BCTilePart implements IBCTilePart {
 	
 	public final LogisticsTileGenericPipe pipe;
 	private final BCRenderState bcRenderState;
+	private BCPipePart bcPipePart;
 	private boolean attachPluggables = false;
 	
 	public BCTilePart(LogisticsTileGenericPipe tile) {
 		this.pipe = tile;
 		bcRenderState = (BCRenderState) tile.renderState.bcRenderState.getOriginal();
+	}
+
+	private BCPipePart getBCPipePart() {
+		if(bcPipePart == null) {
+			bcPipePart = (BCPipePart) pipe.pipe.bcPipePart.getOriginal();
+		}
+		return bcPipePart;
 	}
 
 	public static class SideProperties {
@@ -60,14 +68,14 @@ public class BCTilePart implements IBCTilePart {
 					NBTTagCompound pluggableData = nbt.getCompoundTag(key);
 					Class<?> pluggableClass = Class.forName(pluggableData.getString("pluggableClass"));
 					if (!IPipePluggable.class.isAssignableFrom(pluggableClass)) {
-						BCLog.logger.warning("Wrong pluggable class: " + pluggableClass);
+						BCLog.logger.warn("Wrong pluggable class: " + pluggableClass);
 						continue;
 					}
 					IPipePluggable pluggable = (IPipePluggable) pluggableClass.newInstance();
 					pluggable.readFromNBT(pluggableData);
 					pluggables[i] = pluggable;
 				} catch (Exception e) {
-					BCLog.logger.warning("Failed to load side state");
+					BCLog.logger.warn("Failed to load side state");
 					e.printStackTrace();
 				}
 			}
@@ -226,7 +234,7 @@ public class BCTilePart implements IBCTilePart {
 					defaultState = state;
 					continue;
 				}
-				if (pipe.isWireActive(state.wire)) {
+				if (getBCPipePart().isWireActive(state.wire)) {
 					activeState = state;
 					break;
 				}
@@ -271,31 +279,6 @@ public class BCTilePart implements IBCTilePart {
 	}
 
 	@Override
-	public boolean addFacade(ForgeDirection direction, int type, int wire, Block[] blocks, int[] metaValues) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void dropFacadeItem(ForgeDirection direction) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public boolean dropFacade(ForgeDirection direction) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public boolean removeAndDropPlug(ForgeDirection side) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public boolean removeAndDropRobotStation(ForgeDirection side) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public boolean addPlug(ForgeDirection direction) {
 		return setPluggable(direction, new ItemPlug.PlugPluggable());
 	}
@@ -313,6 +296,7 @@ public class BCTilePart implements IBCTilePart {
 	@Override
 	public boolean addGate(ForgeDirection direction, Object gate) {
 		((Gate)gate).setDirection(direction);
+		getBCPipePart().gates[direction.ordinal()] = (Gate) gate;
 		return setPluggable(direction, new ItemGate.GatePluggable((Gate)gate));
 	}
 
@@ -390,7 +374,7 @@ public class BCTilePart implements IBCTilePart {
 	public void setGate(Object gate, int direction) {
 		if (sideProperties.pluggables[direction] == null) {
 			((Gate)gate).setDirection(ForgeDirection.getOrientation(direction));
-			((Gate[])pipe.pipe.bcPipePart.getGates())[direction] = (Gate) gate;
+			getBCPipePart().gates[direction] = (Gate) gate;
 			sideProperties.pluggables[direction] = new ItemGate.GatePluggable((Gate)gate);
 		}
 	}

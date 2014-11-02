@@ -11,14 +11,10 @@ package logisticspipes.proxy.buildcraft.bc61;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.logging.Level;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
-import logisticspipes.blocks.LogisticsSolidBlock;
-import logisticspipes.items.ItemUpgrade;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe.Part;
@@ -40,17 +36,14 @@ import logisticspipes.proxy.buildcraft.bc61.subproxies.BCCoreState;
 import logisticspipes.proxy.buildcraft.bc61.subproxies.BCPipePart;
 import logisticspipes.proxy.buildcraft.bc61.subproxies.BCRenderState;
 import logisticspipes.proxy.buildcraft.bc61.subproxies.BCTilePart;
-import logisticspipes.proxy.buildcraft.bc61.subproxies.LPBCPowerProxy;
 import logisticspipes.proxy.buildcraft.subproxies.IBCCoreState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePart;
 import logisticspipes.proxy.buildcraft.subproxies.IBCRenderState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
-import logisticspipes.proxy.buildcraft.subproxies.ILPBCPowerProxy;
+import logisticspipes.proxy.buildcraft.subproxies.IConnectionOverrideResult;
 import logisticspipes.proxy.interfaces.IBCProxy;
 import logisticspipes.proxy.interfaces.ICraftingParts;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
-import logisticspipes.recipes.CraftingDependency;
-import logisticspipes.recipes.RecipeManager;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
@@ -66,9 +59,8 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
@@ -77,38 +69,33 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
-import buildcraft.BuildCraftEnergy;
 import buildcraft.BuildCraftSilicon;
 import buildcraft.BuildCraftTransport;
 import buildcraft.api.core.BCLog;
-import buildcraft.api.gates.ActionManager;
-import buildcraft.api.gates.IAction;
+import buildcraft.api.events.RobotPlacementEvent;
 import buildcraft.api.gates.IGateExpansion;
-import buildcraft.api.gates.ITrigger;
-import buildcraft.api.gates.StatementManager;
-import buildcraft.api.mj.IBatteryObject;
-import buildcraft.api.mj.MjAPI;
-import buildcraft.api.power.IPowerReceptor;
-import buildcraft.api.power.PowerHandler;
-import buildcraft.api.power.PowerHandler.PowerReceiver;
+import buildcraft.api.robots.EntityRobotBase;
+import buildcraft.api.statements.IActionInternal;
+import buildcraft.api.statements.ITriggerExternal;
+import buildcraft.api.statements.ITriggerInternal;
+import buildcraft.api.statements.StatementManager;
 import buildcraft.api.transport.IPipeConnection;
 import buildcraft.api.transport.IPipeConnection.ConnectOverride;
 import buildcraft.api.transport.IPipeTile;
 import buildcraft.api.transport.IPipeTile.PipeType;
 import buildcraft.api.transport.PipeWire;
 import buildcraft.core.CoreConstants;
-import buildcraft.core.IMachine;
 import buildcraft.core.ITileBufferHolder;
 import buildcraft.core.ItemMapLocation;
 import buildcraft.core.ItemRobot;
 import buildcraft.core.render.RenderEntityBlock;
 import buildcraft.core.render.RenderEntityBlock.RenderInfo;
-import buildcraft.core.robots.AIDocked;
 import buildcraft.core.robots.DockingStation;
 import buildcraft.core.robots.EntityRobot;
 import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.Gate;
 import buildcraft.transport.ItemFacade;
+import buildcraft.transport.ItemGateCopier;
 import buildcraft.transport.ItemPlug;
 import buildcraft.transport.ItemRobotStation;
 import buildcraft.transport.Pipe;
@@ -120,16 +107,17 @@ import buildcraft.transport.gates.GateFactory;
 import buildcraft.transport.gates.ItemGate;
 import buildcraft.transport.render.PipeRendererTESR;
 import buildcraft.transport.utils.FacadeMatrix;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class BuildCraftProxy implements IBCProxy {
 	
-	public static ITrigger LogisticsFailedTrigger;
-	public static ITrigger LogisticsCraftingTrigger;
-	public static ITrigger LogisticsNeedPowerTrigger;
-	public static ITrigger LogisticsHasDestinationTrigger;
-	public static IAction LogisticsDisableAction;
+	public static ITriggerInternal LogisticsFailedTrigger;
+	public static ITriggerInternal LogisticsCraftingTrigger;
+	public static ITriggerExternal LogisticsNeedPowerTrigger;
+	public static ITriggerInternal LogisticsHasDestinationTrigger;
+	public static IActionInternal LogisticsDisableAction;
 	
 	private Method canPipeConnect;
 
@@ -144,9 +132,13 @@ public class BuildCraftProxy implements IBCProxy {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		if(BCVersion != null) {
-			if(!BCVersion.equals("@VERSION@") && !BCVersion.contains("6.1.1")) {
-				throw new VersionNotSupportedException("BC", BCVersion, "6.1.1", "");
+		if(BCVersion != null && !BCVersion.equals("@VERSION@")) {
+			if(!BCVersion.contains("6.1")) {
+				throw new VersionNotSupportedException("BC", BCVersion, "6.1.5", "");
+			} else if(BCVersion.contains("6.1.0") || BCVersion.contains("6.1.1") || BCVersion.contains("6.1.2") || BCVersion.contains("6.1.3") || BCVersion.contains("6.1.4")) {
+				throw new VersionNotSupportedException("BC", BCVersion, "6.1.5", "");
+			} else if(!BCVersion.contains("6.1.5")) {
+				LogisticsPipes.log.error("The BC version you are using is untested with this LP version. It may work but it could also destroy your world. Use at your own risk. Recommanded BC version for this LP version is BC 6.1.5");
 			}
 		} else {
 			LogisticsPipes.log.info("Couldn't check the BC Version.");
@@ -274,41 +266,47 @@ public class BuildCraftProxy implements IBCProxy {
 	}
 
 	@Override
-	public boolean checkConnectionOverride(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe) {
+	public IConnectionOverrideResult checkConnectionOverride(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe) {
 		if (with instanceof IPipeConnection) {
 			IPipeConnection.ConnectOverride override = ((IPipeConnection) with).overridePipeConnection(PipeType.ITEM, side.getOpposite());
 			if(override == IPipeConnection.ConnectOverride.DISCONNECT) {
-				//if it doesn't don't want to connect to item pipes, how about fluids?
+				//if it doesn't want to connect to item pipes, how about fluids?
 				if(pipe.pipe.transport instanceof PipeFluidTransportLogistics || pipe.pipe instanceof PipeItemsFluidSupplier) {
 					override = ((IPipeConnection) with).overridePipeConnection(PipeType.FLUID, side.getOpposite());
 				}
 				if(override == IPipeConnection.ConnectOverride.DISCONNECT) {
 					//nope, maybe you'd like some BC power?
-					if(pipe.getCPipe().getUpgradeManager().hasBCPowerSupplierUpgrade()) {
+					if(pipe.getCPipe().getUpgradeManager().hasRFPowerSupplierUpgrade()) {
 						override = ((IPipeConnection) with).overridePipeConnection(PipeType.POWER, side.getOpposite());
 					}
 				}
 			}
-			if (override == IPipeConnection.ConnectOverride.DISCONNECT)
-				return false;
+			if (override == IPipeConnection.ConnectOverride.DISCONNECT) {
+				return new IConnectionOverrideResult() {
+					@Override public boolean forceConnect() {return false;}
+					@Override public boolean forceDisconnect() {return true;}
+				};
+			}
+			
+			if(override == IPipeConnection.ConnectOverride.CONNECT) {
+				return new IConnectionOverrideResult() {
+					@Override public boolean forceConnect() {return true;}
+					@Override public boolean forceDisconnect() {return false;}
+				};
+			}
 		}
-		return true;
-	}
-
-	@Override
-	public boolean isMachineManagingSolids(TileEntity tile) {
-		return tile instanceof IMachine && ((IMachine)tile).manageSolids();
-	}
-
-	@Override
-	public boolean isMachineManagingFluids(TileEntity tile) {
-		return tile instanceof IMachine && ((IMachine) tile).manageFluids();
+		return new IConnectionOverrideResult() {
+			@Override public boolean forceConnect() {return false;}
+			@Override public boolean forceDisconnect() {return false;}
+		};
 	}
 	
 	@Override
 	public boolean handleBCClickOnPipe(ItemStack currentItem, CoreUnroutedPipe pipe, World world, int x, int y, int z, EntityPlayer player, int side, LogisticsBlockGenericPipe block) {
 		if (currentItem.getItem() instanceof ItemMapLocation) {
 			// We want to be able to record pipe locations
+			return false;
+		} else if (currentItem.getItem() instanceof ItemGateCopier) {
 			return false;
 		} else if(PipeWire.RED.isPipeWire(currentItem)) {
 			if(addOrStripWire(player, pipe, PipeWire.RED)) { return true; }
@@ -334,21 +332,28 @@ public class BuildCraftProxy implements IBCProxy {
 					DockingStation station = (DockingStation) pipe.container.tilePart.getStation(rayTraceResult.sideHit);
 
 					if (!station.isTaken()) {
-						EntityRobot robot = ((ItemRobot) currentItem.getItem()).createRobot(currentItem, world);
-						robot.setUniqueRobotId(robot.getRegistry().getNextRobotId());
-						robot.setEnergy(EntityRobot.MAX_ENERGY);
-
-						float px = x + 0.5F + rayTraceResult.sideHit.offsetX * 0.5F;
-						float py = y + 0.5F + rayTraceResult.sideHit.offsetY * 0.5F;
-						float pz = z + 0.5F + rayTraceResult.sideHit.offsetZ * 0.5F;
-
-						robot.setPosition(px, py, pz);
-						station.takeAsMain(robot);
-						robot.dock(robot.getLinkedStation());
-						world.spawnEntityInWorld(robot);
-
-						if (!player.capabilities.isCreativeMode) {
-							player.getCurrentEquippedItem().stackSize--;
+						if(ItemRobot.getRobotNBT(currentItem) == null) { return true; }
+						RobotPlacementEvent robotEvent = new RobotPlacementEvent(player, ((NBTTagCompound)currentItem.stackTagCompound.getTag("board")).getString("id"));
+						FMLCommonHandler.instance().bus().post(robotEvent);
+						if(robotEvent.isCanceled()) { return true; }
+						EntityRobot robot = ((ItemRobot)currentItem.getItem()).createRobot(currentItem, world);
+						
+						if(robot != null && robot.getRegistry() != null) {
+							robot.setUniqueRobotId(robot.getRegistry().getNextRobotId());
+							robot.getBattery().setEnergy(EntityRobotBase.MAX_ENERGY);
+							
+							float px = x + 0.5F + rayTraceResult.sideHit.offsetX * 0.5F;
+							float py = y + 0.5F + rayTraceResult.sideHit.offsetY * 0.5F;
+							float pz = z + 0.5F + rayTraceResult.sideHit.offsetZ * 0.5F;
+							
+							robot.setPosition(px, py, pz);
+							station.takeAsMain(robot);
+							robot.dock(robot.getLinkedStation());
+							world.spawnEntityInWorld(robot);
+							
+							if(!player.capabilities.isCreativeMode) {
+								player.getCurrentEquippedItem().stackSize--;
+							}
 						}
 					}
 				}
@@ -939,7 +944,7 @@ public class BuildCraftProxy implements IBCProxy {
 		FacadeMatrix matrix = ((BCRenderState)pipe.container.renderState.bcRenderState.getOriginal()).facadeMatrix;
 		Block block = matrix.getFacadeBlock(dir);
 		if (block != null) {
-			return ItemFacade.getFacade(block,matrix.getFacadeMetaId(dir));
+			return  BuildCraftTransport.facadeItem.getFacadeForBlock(block,matrix.getFacadeMetaId(dir));
 		}
 		return null;
 	}
@@ -1063,26 +1068,6 @@ public class BuildCraftProxy implements IBCProxy {
 	}
 
 	@Override
-	public ILPBCPowerProxy getPowerReceiver(TileEntity tile, ForgeDirection orientation) {
-		if(tile == null) return null;
-		PowerReceiver receptor = null;
-		if(tile instanceof IPowerReceptor) {
-			receptor = ((IPowerReceptor)tile).getPowerReceiver(orientation.getOpposite());
-		}
-		final World world = tile.getWorldObj();
-		IBatteryObject battery = MjAPI.getMjBattery(tile, MjAPI.DEFAULT_POWER_FRAMEWORK, orientation.getOpposite());
-		if(battery != null) {
-			receptor = new PowerHandler(new IPowerReceptor() {
-				@Override public World getWorld() {return world;}
-				@Override public PowerReceiver getPowerReceiver(ForgeDirection paramForgeDirection) {return null;}
-				@Override public void doWork(PowerHandler paramPowerHandler) {}
-			}, PowerHandler.Type.MACHINE, battery).getPowerReceiver();
-		}
-		if(receptor == null) return null;
-		return new LPBCPowerProxy(receptor);
-	}
-
-	@Override
 	public ICraftingParts getRecipeParts() {
 		return new ICraftingParts() {
 			@Override
@@ -1143,31 +1128,7 @@ public class BuildCraftProxy implements IBCProxy {
 	}
 
 	@Override
-	public void addCraftingRecipes(ICraftingParts parts) {
-		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_BC_POWERPROVIDER), CraftingDependency.Power_Distribution, new Object[] { 
-			false, 
-			"PEP", 
-			"CTC", 
-			"PGP", 
-			Character.valueOf('C'), parts.getChipTear1(),
-			Character.valueOf('G'), parts.getChipTear2(),
-			Character.valueOf('E'), new ItemStack(BuildCraftEnergy.engineBlock, 1, 1), 
-			Character.valueOf('T'), Blocks.redstone_block, 
-			Character.valueOf('P'), Items.paper
-		});
-		
-		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_BC_SUPPLIER), CraftingDependency.Power_Distribution, new Object[] { 
-			false, 
-			"PEP", 
-			"CTC", 
-			"PGP", 
-			Character.valueOf('C'), parts.getChipTear1(),
-			Character.valueOf('G'), parts.getChipTear2(),
-			Character.valueOf('E'), new ItemStack(BuildCraftEnergy.engineBlock, 1, 1), 
-			Character.valueOf('T'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_TRANSPORTATION), 
-			Character.valueOf('P'), Items.paper
-		});
-	}
+	public void addCraftingRecipes(ICraftingParts parts) {}
 
 	@Override
 	public Object overridePipeConnection(LogisticsTileGenericPipe pipe, Object type, ForgeDirection dir) {

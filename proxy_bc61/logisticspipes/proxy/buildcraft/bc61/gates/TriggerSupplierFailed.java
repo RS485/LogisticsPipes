@@ -12,11 +12,11 @@ import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.proxy.buildcraft.bc61.gates.wrapperclasses.PipeWrapper;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
-import buildcraft.api.gates.ITriggerParameter;
-import buildcraft.transport.IPipeTrigger;
+import buildcraft.api.statements.IStatementParameter;
+import buildcraft.api.statements.ITriggerInternal;
 import buildcraft.transport.Pipe;
 
-public class TriggerSupplierFailed extends LPTrigger {
+public class TriggerSupplierFailed extends LPTrigger implements ITriggerInternal {
 
 	public TriggerSupplierFailed() {
 		super("LogisticsPipes:trigger.supplierFailed");
@@ -33,7 +33,7 @@ public class TriggerSupplierFailed extends LPTrigger {
 	}
 
 	@Override
-	public boolean isTriggerActive(Pipe pipe, ITriggerParameter parameter) {
+	public boolean isTriggerActive(Pipe pipe, IStatementParameter parameter) {
 		if(pipe instanceof PipeWrapper) {
 			if (((PipeWrapper)pipe).tile.pipe instanceof PipeItemsSupplierLogistics) {
 				PipeItemsSupplierLogistics supplier = (PipeItemsSupplierLogistics) ((PipeWrapper)pipe).tile.pipe;

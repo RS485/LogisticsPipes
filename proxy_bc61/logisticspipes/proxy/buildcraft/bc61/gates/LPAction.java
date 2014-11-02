@@ -13,13 +13,13 @@ package logisticspipes.proxy.buildcraft.bc61.gates;
 import logisticspipes.textures.Textures;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.IIcon;
-import buildcraft.api.gates.IAction;
-import buildcraft.api.gates.IStatementParameter;
-import buildcraft.api.gates.StatementManager;
+import buildcraft.api.statements.IActionInternal;
+import buildcraft.api.statements.IStatementParameter;
+import buildcraft.api.statements.StatementManager;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract  class LPAction implements IAction {
+public abstract  class LPAction implements IActionInternal {
 
 	protected final String uniqueTag;
 
@@ -69,7 +69,7 @@ public abstract  class LPAction implements IAction {
 	}
 
 	@Override
-	public buildcraft.api.gates.IAction rotateLeft() {
+	public IActionInternal rotateLeft() {
 		return this;
 	}
 }

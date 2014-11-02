@@ -180,16 +180,16 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		return container.tilePart.hasGate(side);
 	}
 
-	protected void notifyBlocksOfNeighborChange(ForgeDirection side) {
-		container.getWorldObj().notifyBlocksOfNeighborChange(container.xCoord + side.offsetX, container.yCoord + side.offsetY, container.zCoord + side.offsetZ, LogisticsPipes.LogisticsPipeBlock);
+	protected void notifyBlockOfNeighborChange(ForgeDirection side) {
+		container.getWorldObj().notifyBlockOfNeighborChange(container.xCoord + side.offsetX, container.yCoord + side.offsetY, container.zCoord + side.offsetZ, LogisticsPipes.LogisticsPipeBlock);
 	}
 
 	public void updateNeighbors(boolean needSelf) {
 		if (needSelf) {
-			container.getWorldObj().notifyBlocksOfNeighborChange(container.xCoord, container.yCoord, container.zCoord, LogisticsPipes.LogisticsPipeBlock);
+			container.getWorldObj().notifyBlockOfNeighborChange(container.xCoord, container.yCoord, container.zCoord, LogisticsPipes.LogisticsPipeBlock);
 		}
 		for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
-			notifyBlocksOfNeighborChange(side);
+			notifyBlockOfNeighborChange(side);
 		}
 	}
 

@@ -567,7 +567,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 			return getRoutedTexture(connection);
 		} else {
 			TextureType texture = getNonRoutedTexture(connection);
-			if(this.getUpgradeManager().hasBCPowerSupplierUpgrade() || this.getUpgradeManager().hasRFPowerSupplierUpgrade() || this.getUpgradeManager().getIC2PowerLevel() > 0) {
+			if(this.getUpgradeManager().hasRFPowerSupplierUpgrade() || this.getUpgradeManager().getIC2PowerLevel() > 0) {
 				if(texture.fileName.equals(Textures.LOGISTICSPIPE_NOTROUTED_TEXTURE.fileName)) {
 					texture = Textures.LOGISTICSPIPE_NOTROUTED_POWERED_TEXTURE;
 				} else if(texture.fileName.equals(Textures.LOGISTICSPIPE_LIQUID_TEXTURE.fileName)) {
@@ -1397,10 +1397,6 @@ outer:
 	
 	final void destroy(){ // no overide, put code in OnBlockRemoval
 		
-	}
-
-	public void handleBCPowerArival(float toSend) {
-		powerHandler.addBCPower(toSend);
 	}
 
 	public void handleRFPowerArival(float toSend) {

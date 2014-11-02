@@ -1,6 +1,7 @@
 package logisticspipes.proxy.buildcraft.bc61.gates.wrapperclasses;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.buildcraft.bc61.subproxies.BCRenderState;
@@ -9,13 +10,15 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.BuildCraftCore;
-import buildcraft.api.gates.IOverrideDefaultTriggers;
-import buildcraft.api.gates.ITrigger;
+import buildcraft.api.statements.IActionExternal;
+import buildcraft.api.statements.IOverrideDefaultStatements;
+import buildcraft.api.statements.ITriggerExternal;
+import buildcraft.api.statements.ITriggerInternal;
 import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.PipeRenderState;
 import buildcraft.transport.TileGenericPipe;
 
-public class TilePipeWrapper extends TileGenericPipe implements IOverrideDefaultTriggers {
+public class TilePipeWrapper extends TileGenericPipe implements IOverrideDefaultStatements {
 	
 	public final LogisticsTileGenericPipe tile;
 	
@@ -60,12 +63,24 @@ public class TilePipeWrapper extends TileGenericPipe implements IOverrideDefault
 		tile.scheduleRenderUpdate();
 	}
 	
-	public LinkedList<ITrigger> getTriggers() {
-		LinkedList<ITrigger> result = new LinkedList<ITrigger>(); //TODO
-		if (BlockGenericPipe.isFullyDefined(pipe) && pipe.hasGate()) {
+	public LinkedList<ITriggerInternal> getTriggers() {
+		LinkedList<ITriggerInternal> result = new LinkedList<ITriggerInternal>();
+		if (BlockGenericPipe.isFullyDefined(pipe)) {
 			result.add(BuildCraftCore.triggerRedstoneActive);
 			result.add(BuildCraftCore.triggerRedstoneInactive);
 		}
 		return result;
+	}
+
+	@Override
+	public List<IActionExternal> overrideActions() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<ITriggerExternal> overrideTriggers() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

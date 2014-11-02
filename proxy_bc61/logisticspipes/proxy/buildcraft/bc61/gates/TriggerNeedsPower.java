@@ -6,10 +6,11 @@ import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.gates.IGate;
-import buildcraft.api.gates.ITileTrigger;
-import buildcraft.api.gates.ITriggerParameter;
+import buildcraft.api.statements.IStatementContainer;
+import buildcraft.api.statements.IStatementParameter;
+import buildcraft.api.statements.ITriggerExternal;
 
-public class TriggerNeedsPower extends LPTrigger {
+public class TriggerNeedsPower extends LPTrigger implements ITriggerExternal {
 
 	public TriggerNeedsPower() {
 		super("LogisticsPipes:trigger.nodeRequestsRecharge");
@@ -24,19 +25,16 @@ public class TriggerNeedsPower extends LPTrigger {
 	public String getDescription() {
 		return "Needs More Power";
 	}
-	
+
 	@Override
-	public boolean isTriggerActive(IGate gate, ITriggerParameter[] trigger) {
-		for(ForgeDirection dir: ForgeDirection.VALID_DIRECTIONS) {
-			TileEntity tile = gate.getPipe().getAdjacentTile(dir);
-			if(tile instanceof LogisticsPowerJunctionTileEntity) {
-				LogisticsPowerJunctionTileEntity LPJTE = (LogisticsPowerJunctionTileEntity)tile;
-				if(LPJTE.needMorePowerTriggerCheck) return true;
-			}
-			if(tile instanceof LogisticsSolderingTileEntity) {
-				LogisticsSolderingTileEntity LSTE = (LogisticsSolderingTileEntity)tile;
-				if(LSTE.hasWork) return true;
-			}
+	public boolean isTriggerActive(TileEntity tile, ForgeDirection dir, IStatementContainer paramIStatementContainer, IStatementParameter[] paramArrayOfIStatementParameter) {
+		if(tile instanceof LogisticsPowerJunctionTileEntity) {
+			LogisticsPowerJunctionTileEntity LPJTE = (LogisticsPowerJunctionTileEntity)tile;
+			if(LPJTE.needMorePowerTriggerCheck) return true;
+		}
+		if(tile instanceof LogisticsSolderingTileEntity) {
+			LogisticsSolderingTileEntity LSTE = (LogisticsSolderingTileEntity)tile;
+			if(LSTE.hasWork) return true;
 		}
 		return false;
 	}

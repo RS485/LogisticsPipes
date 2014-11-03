@@ -42,7 +42,7 @@ public class ClassPipeItemsSandstoneHandler {
 				mv.visitVarInsn(Opcodes.ALOAD, 0);
 				mv.visitFieldInsn(Opcodes.GETFIELD, "buildcraft/transport/pipes/PipeItemsSandstone", "container", "Lbuildcraft/transport/TileGenericPipe;");
 				mv.visitVarInsn(Opcodes.ALOAD, 1);
-				mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "buildcraft/transport/TileGenericPipe", "getAdjacentTile", "(Lnet/minecraftforge/common/util/ForgeDirection;)Lnet/minecraft/tileentity/TileEntity;", false);
+				mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "buildcraft/transport/TileGenericPipe", "getAdjacentTile", "(Lnet/minecraftforge/common/util/ForgeDirection;)Lnet/minecraft/tileentity/TileEntity;");
 				mv.visitTypeInsn(Opcodes.INSTANCEOF, "logisticspipes/pipes/basic/LogisticsTileGenericPipe");
 				Label l1 = new Label();
 				mv.visitJumpInsn(Opcodes.IFEQ, l1);

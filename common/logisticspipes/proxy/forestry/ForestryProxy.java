@@ -2,8 +2,8 @@ package logisticspipes.proxy.forestry;
 
 import java.lang.reflect.Method;
 
-import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Configs;
 import logisticspipes.items.ItemModule;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.interfaces.ICraftingParts;

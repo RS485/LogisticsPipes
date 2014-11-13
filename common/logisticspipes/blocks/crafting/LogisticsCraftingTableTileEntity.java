@@ -3,10 +3,10 @@ package logisticspipes.blocks.crafting;
 import java.util.ArrayList;
 import java.util.List;
 
-import logisticspipes.Configs;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
+import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.IGuiTileEntity;
 import logisticspipes.network.NewGuiHandler;

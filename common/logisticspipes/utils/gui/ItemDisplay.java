@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import logisticspipes.Configs;
+import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ISpecialItemRenderer;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen.Colors;
 import logisticspipes.utils.item.ItemIdentifier;

@@ -1,6 +1,6 @@
 package logisticspipes.recipes;
 
-import logisticspipes.Configs;
+import logisticspipes.config.Configs;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.PlayerIdentifier;

@@ -1,7 +1,9 @@
 package logisticspipes.renderer;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.PlayerConfig;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
+import logisticspipes.renderer.newpipe.LogisticsNewPipeItemRenderer;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -14,6 +16,9 @@ import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
 
 public class LogisticsPipeItemRenderer implements IItemRenderer {
+
+	private PlayerConfig config = LogisticsPipes.getClientPlayerConfig();
+	private LogisticsNewPipeItemRenderer newRenderer;
 	
 	private final boolean renderAsBlock;
 
@@ -21,6 +26,7 @@ public class LogisticsPipeItemRenderer implements IItemRenderer {
 	private static final float PIPE_MAX_POS = 0.75F;
 	
 	public LogisticsPipeItemRenderer(boolean flag) {
+		newRenderer = new LogisticsNewPipeItemRenderer(flag);
 		renderAsBlock = flag;
 	}
 
@@ -126,6 +132,9 @@ public class LogisticsPipeItemRenderer implements IItemRenderer {
 
 	@Override
 	public boolean handleRenderType(ItemStack item, ItemRenderType type) {
+		if(config.isUseNewRenderer()) {
+			return newRenderer.handleRenderType(item, type);
+		}
 		switch (type) {
 		case ENTITY:
 			return true;
@@ -142,11 +151,15 @@ public class LogisticsPipeItemRenderer implements IItemRenderer {
 
 	@Override
 	public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper) {
-		return true;
+		return config.isUseNewRenderer() ? newRenderer.shouldUseRenderHelper(type, item, helper) : true;
 	}
 
 	@Override
 	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
+		if(config.isUseNewRenderer()) {
+			newRenderer.renderItem(type, item, data);
+			return;
+		}
 		switch (type) {
 			case ENTITY:
 				renderItem((RenderBlocks) data[0], item, -0.5f, -0.5f, -0.5f);

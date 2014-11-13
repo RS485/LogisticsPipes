@@ -1,7 +1,8 @@
-package logisticspipes;
+package logisticspipes.config;
 
 import java.io.File;
 
+import logisticspipes.LPConstants;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import cpw.mods.fml.common.Loader;
@@ -24,7 +25,6 @@ public class Configs {
 
 	public static int LOGISTICS_HUD_RENDER_DISTANCE = 15;
 	
-	public static int PIPE_CONTENTS_RENDER_DIST = 24; //TODO
 	public static float	pipeDurability = 0.25F; //TODO
 
 	public static boolean LOGISTICS_POWER_USAGE_DISABLED = false;
@@ -33,7 +33,6 @@ public class Configs {
 	public static boolean TOOLTIP_INFO = LPConstants.DEBUG;
 	public static boolean MANDATORY_CARPENTER_RECIPES = true;
 	public static boolean ENABLE_PARTICLE_FX = true;
-	public static boolean USE_NEW_PIPE_RENDERER = true;
 
 	// GuiOrderer Popup setting
 	public static boolean DISPLAY_POPUP = true;

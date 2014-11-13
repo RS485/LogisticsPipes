@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILPPipe;
+import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IClientState;
 import logisticspipes.interfaces.IPipeUpgradeManager;
 import logisticspipes.pipes.basic.debug.DebugLogController;
@@ -45,6 +45,8 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public IBCPipePart bcPipePart;
 
 	private boolean initialized = false;
+	
+	private boolean oldRendererState;
 
 	public CoreUnroutedPipe(PipeTransportLogistics transport, Item item) {
 		this.transport = transport;
@@ -117,6 +119,13 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 
 	public void updateEntity() {
 		transport.updateEntity();
+		
+		if(MainProxy.isClient(getWorld())) {
+			if(oldRendererState != (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer() && !container.renderState.forceRenderOldPipe)) {
+				oldRendererState = (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer() && !container.renderState.forceRenderOldPipe);
+				getWorld().markBlockForUpdate(this.getX(), this.getY(), this.getZ());
+			}
+		}
 	}
 
 	public void writeToNBT(NBTTagCompound data) {

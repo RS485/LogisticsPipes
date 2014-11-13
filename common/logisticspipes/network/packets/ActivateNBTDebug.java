@@ -2,8 +2,8 @@ package logisticspipes.network.packets;
 
 import java.io.IOException;
 
-import logisticspipes.Configs;
 import logisticspipes.LPConstants;
+import logisticspipes.config.Configs;
 import logisticspipes.nei.LoadingHelper;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;

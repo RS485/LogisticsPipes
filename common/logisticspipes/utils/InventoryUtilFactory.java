@@ -51,8 +51,13 @@ public class InventoryUtilFactory {
 		return null;
 	}
 
+	@Deprecated
 	public IInventoryUtil getInventoryUtil(IInventory inv) {
-		return getHidingInventoryUtil(inv, ForgeDirection.UNKNOWN, false, false, 0, 0);
+		return getInventoryUtil(inv, ForgeDirection.UNKNOWN);
+	}
+	
+	public IInventoryUtil getInventoryUtil(IInventory inv, ForgeDirection dir) {
+		return getHidingInventoryUtil(inv, dir, false, false, 0, 0);
 	}
 
 	public IInventoryUtil getHidingInventoryUtil(IInventory inv, ForgeDirection dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {

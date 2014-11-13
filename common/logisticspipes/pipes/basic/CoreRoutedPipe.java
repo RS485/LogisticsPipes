@@ -1466,7 +1466,7 @@ outer:
 		IInventory inv = getRealInventory();
 		if(inv == null) return null;
 		if (inv instanceof net.minecraft.inventory.ISidedInventory) inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) inv, _sneakyOrientation, forExtraction);
-		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
+		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv, _sneakyOrientation);
 	}
 
 	@Override

@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import lombok.Setter;
+import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -19,9 +19,10 @@ public class PlayerIdentifier {
 		this.id = id;
 	}
 	
-	@Setter
-	public String username;
-	public final UUID id;
+	@Getter
+	private String username;
+	@Getter
+	private UUID id;
 	
 	public static PlayerIdentifier get(EntityPlayer player) {
 		return get(player.getGameProfile().getName(), player.getGameProfile().getId());
@@ -70,5 +71,20 @@ public class PlayerIdentifier {
 
 	public String getAsString() {
 		return id != null ? id.toString() : username;
+	}
+	
+	public PlayerIdentifier setUsername(String string) {
+		if(username == null || username.isEmpty()) {
+			username = string;
+		}
+		return this;
+	}
+	
+	public PlayerIdentifier setID(UUID uuid) {
+		if(id == null) {
+			id = uuid;
+			idBased.put(id, this);
+		}
+		return this;
 	}
 }

@@ -11,9 +11,11 @@ import java.util.Queue;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import logisticspipes.config.PlayerConfig;
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.PlayerConfigToClientPacket;
 import logisticspipes.network.packets.chassis.ChestGuiClosed;
 import logisticspipes.network.packets.chassis.ChestGuiOpened;
 import logisticspipes.network.packets.gui.GuiReopenPacket;
@@ -27,6 +29,7 @@ import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.ticks.VersionChecker;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.PlayerCollectionList;
+import logisticspipes.utils.PlayerIdentifier;
 import logisticspipes.utils.QuickSortChestMarkerStorage;
 import logisticspipes.utils.WorldUtil;
 import lombok.AllArgsConstructor;
@@ -57,6 +60,11 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class LogisticsEventListener {
+
+	public static final WeakHashMap<EntityPlayer, List<WeakReference<ModuleQuickSort>>> chestQuickSortConnection = new WeakHashMap<EntityPlayer, List<WeakReference<ModuleQuickSort>>>();
+	public static Map<ChunkCoordIntPair, PlayerCollectionList> watcherList = new ConcurrentHashMap<ChunkCoordIntPair, PlayerCollectionList>();
+	int taskCount = 0;
+	public static Map<PlayerIdentifier, PlayerConfig> playerConfigs = new HashMap<PlayerIdentifier, PlayerConfig>();
 	
 	@SubscribeEvent
 	public void onEntitySpawn(EntityJoinWorldEvent event) {
@@ -81,8 +89,6 @@ public class LogisticsEventListener {
 			LogisticsPipes.textures.registerBlockIcons(event.map);
 		}
 	}
-	
-	public static final WeakHashMap<EntityPlayer, List<WeakReference<ModuleQuickSort>>> chestQuickSortConnection = new WeakHashMap<EntityPlayer, List<WeakReference<ModuleQuickSort>>>();
 	
 	@SubscribeEvent
 	public void onPlayerInteract(final PlayerInteractEvent event) {
@@ -154,10 +160,6 @@ public class LogisticsEventListener {
 		}
 	}
 
-	public static Map<ChunkCoordIntPair, PlayerCollectionList> watcherList = new ConcurrentHashMap<ChunkCoordIntPair, PlayerCollectionList>();
-
-	int taskCount = 0;
-	
 	@SubscribeEvent
 	public void watchChunk(Watch event) {
 		if(!watcherList.containsKey(event.chunk)) {
@@ -184,11 +186,17 @@ public class LogisticsEventListener {
 			event.player.addChatComponentMessage(new ChatComponentText("Use \"/logisticspipes changelog\" to see a changelog."));
 		}
 		SimpleServiceLocator.serverBufferHandler.clear(event.player);
+		PlayerConfig config = getPlayerConfig(PlayerIdentifier.get(event.player));
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PlayerConfigToClientPacket.class).setConfig(config), event.player);
 	}
 
 	@SubscribeEvent
 	public void onPlayerLogout(PlayerLoggedOutEvent event) {
 		SimpleServiceLocator.serverBufferHandler.clear(event.player);
+		PlayerIdentifier ident = PlayerIdentifier.get(event.player);
+		PlayerConfig config = getPlayerConfig(ident);
+		config.writeToFile();
+		playerConfigs.remove(ident);
 	}
 
 	@AllArgsConstructor
@@ -244,5 +252,22 @@ public class LogisticsEventListener {
 	@SubscribeEvent
 	public void clientLoggedIn(ClientConnectedToServerEvent event) {
 		SimpleServiceLocator.clientBufferHandler.clear();
+	}
+	
+	public static void serverShutdown() {
+		for(PlayerConfig config:playerConfigs.values()) {
+			config.writeToFile();
+		}
+		playerConfigs.clear();
+	}
+	
+	public static PlayerConfig getPlayerConfig(PlayerIdentifier ident) {
+		PlayerConfig config = playerConfigs.get(ident);
+		if(config == null) {
+			config = new PlayerConfig(ident);
+			config.readFromFile();
+			playerConfigs.put(ident, config);
+		}
+		return config;
 	}
 }

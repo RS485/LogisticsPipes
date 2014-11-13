@@ -143,7 +143,7 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 		GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		RenderHelper.enableGUIStandardItemLighting();
-		ItemStack stack = new ItemStack(LogisticsPipes.UpgradeItem, ItemUpgrade.SNEAKY_COMBINATION);
+		ItemStack stack = new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.SNEAKY_COMBINATION);
 		itemRender.renderItemAndEffectIntoGUI(fontRendererObj, getMC().renderEngine, stack, guiLeft + 6, guiTop + 4);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);

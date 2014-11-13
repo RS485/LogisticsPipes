@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import logisticspipes.Configs;
+import logisticspipes.config.Configs;
 import logisticspipes.gui.popup.GuiRequestPopup;
 import logisticspipes.interfaces.ISpecialItemRenderer;
 import logisticspipes.network.GuiIDs;

@@ -25,12 +25,7 @@ import codechicken.lib.render.uv.IconTransformation;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandler {
-
-	public LogisticsNewPipeWorldRenderer() {
-		LogisticsRenderPipe.secondRenderer = new LogisticsNewRenderPipe();
-		LogisticsRenderPipe.boxRenderer = new LogisticsNewPipeItemBoxRenderer();
-	}
-
+	
 	@Override
 	public void renderInventoryBlock(Block block, int metadata, int modelID, RenderBlocks renderer) {}
 

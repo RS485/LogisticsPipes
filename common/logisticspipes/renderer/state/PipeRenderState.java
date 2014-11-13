@@ -3,11 +3,6 @@ package logisticspipes.renderer.state;
 import java.io.IOException;
 import java.util.List;
 
-import org.lwjgl.opengl.GL11;
-
-import codechicken.lib.render.CCModel;
-import codechicken.lib.render.CCRenderState.IVertexOperation;
-import codechicken.lib.render.uv.IconTransformation;
 import logisticspipes.interfaces.IClientState;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
@@ -17,6 +12,8 @@ import logisticspipes.proxy.buildcraft.subproxies.IBCRenderState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.util.IIcon;
+import codechicken.lib.render.CCModel;
+import codechicken.lib.render.CCRenderState.IVertexOperation;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -27,6 +24,7 @@ public class PipeRenderState implements IClientState {
 	public final IBCRenderState bcRenderState;
 	
 	public List<Pair<CCModel, IVertexOperation[]>> cachedRenderer = null;
+	public boolean forceRenderOldPipe = false;
 	public boolean solidSidesCache[] = new boolean[6];
 	
 	public int[] buffer = null;

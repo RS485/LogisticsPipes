@@ -17,6 +17,8 @@ import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.commands.LogisticsPipesCommand;
 import logisticspipes.commands.chathelper.LPChatListener;
+import logisticspipes.config.Configs;
+import logisticspipes.config.PlayerConfig;
 import logisticspipes.items.ItemDisk;
 import logisticspipes.items.ItemHUDArmor;
 import logisticspipes.items.ItemLogisticsPipe;
@@ -99,7 +101,6 @@ import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.renderer.FluidContainerRenderer;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.renderer.LogisticsPipeItemRenderer;
-import logisticspipes.renderer.newpipe.LogisticsNewPipeItemRenderer;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.routing.pathfinder.PipeInformaitonManager;
@@ -278,7 +279,7 @@ public class LogisticsPipes {
 	
 	// Logistics Blocks
 	public static Block LogisticsSolidBlock;
-    public static Block LogisticsPipeBlock;
+    public static LogisticsBlockGenericPipe LogisticsPipeBlock;
 
 	public static Textures textures = new Textures();
 	
@@ -289,6 +290,8 @@ public class LogisticsPipes {
 	public static Logger log;
 
 	private static LPGlobalCCAccess	generalAccess;
+
+	private static PlayerConfig playerConfig;
 	
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
@@ -505,6 +508,7 @@ public class LogisticsPipes {
 		if(event.getSide().equals(Side.CLIENT)) {
 			LogisticsHUDRenderer.instance().clear();
 		}
+		LogisticsEventListener.serverShutdown();
 	}
 	
 	@EventHandler
@@ -580,11 +584,7 @@ public class LogisticsPipes {
 		
 		if(side.isClient()) {
 			if(pipe instanceof PipeBlockRequestTable) {
-				if(Configs.USE_NEW_PIPE_RENDERER) {
-					MinecraftForgeClient.registerItemRenderer(res, new LogisticsNewPipeItemRenderer(true));
-				} else {
-					MinecraftForgeClient.registerItemRenderer(res, new LogisticsPipeItemRenderer(true));
-				}
+				MinecraftForgeClient.registerItemRenderer(res, new LogisticsPipeItemRenderer(true));
 			} else {
 				MinecraftForgeClient.registerItemRenderer(res, MainProxy.proxy.getPipeItemRenderer());
 			}
@@ -607,5 +607,12 @@ public class LogisticsPipes {
 			}
 			CraftingManager.getInstance().addShapelessRecipe(new ItemStack(toItem, j, fromData), obj);
 		}
+	}
+	
+	public static PlayerConfig getClientPlayerConfig() {
+		if(playerConfig == null) {
+			playerConfig = new PlayerConfig(true, null);
+		}
+		return playerConfig;
 	}
 }

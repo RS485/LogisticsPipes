@@ -27,8 +27,8 @@ import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import logisticspipes.Configs;
 import logisticspipes.api.ILogisticsPowerProvider;
+import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IRoutingDebugAdapter;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.routing.IFilter;

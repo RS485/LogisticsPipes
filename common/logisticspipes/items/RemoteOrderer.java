@@ -3,8 +3,8 @@ package logisticspipes.items;
 
 import java.util.List;
 
-import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Configs;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.pipe.RequestPipeDimension;

@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Configs;
 import logisticspipes.gui.popup.GuiDiskPopup;
 import logisticspipes.gui.popup.GuiRequestPopup;
 import logisticspipes.gui.popup.RequestMonitorPopup;

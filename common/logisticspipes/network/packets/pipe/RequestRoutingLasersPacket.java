@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import logisticspipes.Configs;
 import logisticspipes.LPConstants;
+import logisticspipes.config.Configs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;

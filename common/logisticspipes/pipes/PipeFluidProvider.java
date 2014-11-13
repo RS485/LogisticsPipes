@@ -75,7 +75,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 					for(FluidTankInfo tank:tanks) {
 						if(tank == null) continue;
 						FluidStack liquid;
-						if((liquid = tank.fluid) != null) {
+						if((liquid = tank.fluid) != null && liquid.fluidID != 0) {
 							if(order.getValue1().equals(FluidIdentifier.get(liquid))) {
 								int amount = Math.min(liquid.amount, amountToSend);
 								FluidStack drained = ((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), amount, false);
@@ -201,7 +201,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 					for(FluidTankInfo tank:tanks) {
 						if(tank == null) continue;
 						FluidStack liquid;
-						if((liquid = tank.fluid) != null) {
+						if((liquid = tank.fluid) != null && liquid.fluidID != 0) {
 							if(request.getFluid().equals(FluidIdentifier.get(liquid))) {
 								if(((IFluidHandler)pair.getValue1()).canDrain(pair.getValue2().getOpposite(), liquid.getFluid())) {
 									if(((IFluidHandler)pair.getValue1()).drain(pair.getValue2().getOpposite(), 1, false) != null) {

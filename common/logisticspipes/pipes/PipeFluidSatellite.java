@@ -111,9 +111,11 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 			if(!(pair.getValue1() instanceof IFluidHandler)) continue;
 			IFluidHandler tankContainer = (IFluidHandler) pair.getValue1();
 			FluidTankInfo[] tanks = tankContainer.getTankInfo(pair.getValue2().getOpposite());
+			if(tanks == null) continue;
 			for(FluidTankInfo tank: tanks) {
+				if(tank == null) continue;
 				FluidStack liquid = tank.fluid;
-				if(liquid != null) {
+				if(liquid != null && liquid.fluidID != 0) {
 					addToList(FluidIdentifier.get(liquid).getItemIdentifier().makeStack(liquid.amount));
 				}
 			}

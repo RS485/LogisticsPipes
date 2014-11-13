@@ -174,6 +174,9 @@ public class FluidIdentifier {
 	}
 	
 	private int getFreeSpaceInsideTank(FluidTankInfo tanks) {
+		if(tanks == null) {
+			return 0;
+		}
 		FluidStack liquid = tanks.fluid;
 		if(liquid == null || liquid.fluidID <= 0) {
 			return tanks.capacity;

@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import logisticspipes.Configs;
 import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Configs;
+import logisticspipes.config.PlayerConfig;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -74,9 +76,10 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		public int[] centerHorizontal = new int[LIQUID_STAGES];
 		public int[] centerVertical = new int[LIQUID_STAGES];
 	}
-	
-	public static LogisticsNewRenderPipe secondRenderer = null;
-	public static LogisticsNewPipeItemBoxRenderer boxRenderer = null;
+
+	public static LogisticsNewRenderPipe secondRenderer = new LogisticsNewRenderPipe();
+	public static LogisticsNewPipeItemBoxRenderer boxRenderer = new LogisticsNewPipeItemBoxRenderer();
+	private PlayerConfig config = LogisticsPipes.getClientPlayerConfig();
 	
 	public LogisticsRenderPipe() {
 		super();
@@ -100,10 +103,12 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 	public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float f) {
 		if(!(tileentity instanceof LogisticsTileGenericPipe)) return;
 		double distance = Math.pow(Minecraft.getMinecraft().thePlayer.lastTickPosX - tileentity.xCoord, 2) + Math.pow(Minecraft.getMinecraft().thePlayer.lastTickPosY - tileentity.yCoord, 2) + Math.pow(Minecraft.getMinecraft().thePlayer.lastTickPosZ - tileentity.zCoord, 2);
-		if(secondRenderer != null) secondRenderer.renderTileEntityAt((LogisticsTileGenericPipe)tileentity, x, y, z, f, distance);
+		if(config.isUseNewRenderer()) {
+			secondRenderer.renderTileEntityAt((LogisticsTileGenericPipe)tileentity, x, y, z, f, distance);
+		}
 		LogisticsTileGenericPipe pipe = ((LogisticsTileGenericPipe)tileentity);
 		if(pipe.pipe == null) return;
-		if(Configs.PIPE_CONTENTS_RENDER_DIST * Configs.PIPE_CONTENTS_RENDER_DIST < distance) return;
+		if(config.getRenderPipeContentDistance() * config.getRenderPipeContentDistance() < distance) return;
 		SimpleServiceLocator.buildCraftProxy.renderGatesWires(pipe, x, y, z);
 		if(!pipe.isOpaque()) {
 			if(pipe.pipe.transport instanceof PipeFluidTransportLogistics) {
@@ -184,7 +189,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 	}
 	
 	public void doRenderItem(ItemStack itemstack, double x, double y, double z, float light, int age, float hoverStart, float renderScale) {
-		if(boxRenderer != null) {
+		if(config.isUseNewRenderer()) {
 			boxRenderer.doRenderItem(itemstack, light, x, y, z);
 		}
 		GL11.glPushMatrix();

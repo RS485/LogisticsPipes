@@ -3,7 +3,6 @@ package logisticspipes.proxy.side;
 import java.util.ArrayList;
 import java.util.List;
 
-import logisticspipes.Configs;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
@@ -38,8 +37,6 @@ import logisticspipes.renderer.LogisticsPipeItemRenderer;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.renderer.LogisticsSolidBlockWorldRenderer;
-import logisticspipes.renderer.newpipe.LogisticsNewPipeItemRenderer;
-import logisticspipes.renderer.newpipe.LogisticsNewPipeWorldRenderer;
 import logisticspipes.textures.Textures;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
@@ -96,11 +93,7 @@ public class ClientProxy implements IProxy {
 		LogisticsRenderPipe lrp = new LogisticsRenderPipe();
 		ClientRegistry.bindTileEntitySpecialRenderer(LogisticsTileGenericPipe.class, lrp);
 		
-		if(Configs.USE_NEW_PIPE_RENDERER) {
-			RenderingRegistry.registerBlockHandler(new LogisticsNewPipeWorldRenderer());
-		} else {
-			RenderingRegistry.registerBlockHandler(new LogisticsPipeWorldRenderer());
-		}
+		RenderingRegistry.registerBlockHandler(new LogisticsPipeWorldRenderer());
 		
 		RenderingRegistry.registerBlockHandler(new LogisticsSolidBlockWorldRenderer());
 
@@ -236,11 +229,7 @@ public class ClientProxy implements IProxy {
 	@Override
 	public IItemRenderer getPipeItemRenderer() {
 		if(pipeRenderer == null) {
-			if(Configs.USE_NEW_PIPE_RENDERER) {
-				pipeRenderer = new LogisticsNewPipeItemRenderer(false);
-			} else {
-				pipeRenderer = new LogisticsPipeItemRenderer(false);
-			}
+			pipeRenderer = new LogisticsPipeItemRenderer(false);
 		}
 		return pipeRenderer;
 	}

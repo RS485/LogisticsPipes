@@ -2,7 +2,7 @@ package logisticspipes.renderer.state;
 
 import java.io.IOException;
 
-import logisticspipes.Configs;
+import logisticspipes.config.Configs;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.pipes.basic.CoreRoutedPipe;

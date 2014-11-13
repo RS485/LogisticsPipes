@@ -4,12 +4,12 @@ import ic2.api.energy.tile.IEnergySink;
 
 import java.util.List;
 
-import logisticspipes.Configs;
 import logisticspipes.LPConstants;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
+import logisticspipes.config.Configs;
 import logisticspipes.gui.hud.HUDPowerLevel;
 import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.IGuiOpenControler;

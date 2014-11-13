@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
-import logisticspipes.Configs;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Configs;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.proxy.MainProxy;

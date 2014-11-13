@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import logisticspipes.Configs;
 import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
 import logisticspipes.blocks.stats.TrackingTask;
+import logisticspipes.config.Configs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.block.AddItemToTrackPacket;
 import logisticspipes.network.packets.block.RequestAmountTaskSubGui;

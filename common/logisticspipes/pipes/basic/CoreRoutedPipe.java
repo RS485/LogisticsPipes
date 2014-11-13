@@ -23,12 +23,12 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.PriorityBlockingQueue;
 
-import logisticspipes.Configs;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
+import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IClientState;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IPipeServiceProvider;

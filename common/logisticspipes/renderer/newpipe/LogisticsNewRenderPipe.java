@@ -10,9 +10,10 @@ import java.util.Map.Entry;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.PlayerConfig;
 import logisticspipes.pipes.PipeBlockRequestTable;
-import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.textures.Textures;
 import logisticspipes.utils.tuples.LPPosition;
@@ -35,7 +36,6 @@ import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.CCRenderState.IVertexOperation;
 import codechicken.lib.render.uv.IconTransformation;
-import codechicken.lib.render.uv.UVScale;
 import codechicken.lib.render.uv.UVTransformationList;
 import codechicken.lib.render.uv.UVTranslation;
 import codechicken.lib.vec.Scale;
@@ -264,8 +264,6 @@ public class LogisticsNewRenderPipe {
 	public static IconTransformation statusBCTexture;
 
 	private static final ResourceLocation	BLOCKS	= new ResourceLocation("textures/atlas/blocks.png");
-
-	private static int blockRenderListId = -1;
 
 	static {
 		loadModels();
@@ -552,85 +550,64 @@ public class LogisticsNewRenderPipe {
 		}
 	}
 
+	private PlayerConfig config = LogisticsPipes.getClientPlayerConfig();
+	
 	public void renderTileEntityAt(LogisticsTileGenericPipe pipeTile, double x, double y, double z, float f, double distance) {
 		
 		if(pipeTile.pipe instanceof PipeBlockRequestTable) return;
-		//Thread.dumpStack();
 		Minecraft.getMinecraft().getTextureManager().bindTexture(BLOCKS);
+		PipeRenderState renderState = pipeTile.renderState;
 		
-		if(distance > 64*64) {
-			if(blockRenderListId == -1) {
-				blockRenderListId = GLAllocation.generateDisplayLists(1);
-				GL11.glNewList(blockRenderListId, GL11.GL_COMPILE);
-				Tessellator tess = Tessellator.instance;
+		if(renderState.renderListId == -1) {
+			renderState.renderListId = GLAllocation.generateDisplayLists(1); //TODO Add garbage collector for these
+		}
+		
+		if(distance > config.getRenderPipeDistance() * config.getRenderPipeDistance()) {
+			if(config.isUseFallbackRenderer()) {
+				renderState.forceRenderOldPipe = true;
+			}
+		} else {
+			renderState.forceRenderOldPipe = false;
+			if(renderState.cachedRenderer == null) {
+				List<Pair<CCModel, IVertexOperation[]>> objectsToRender = new ArrayList<Pair<CCModel, IVertexOperation[]>>();
+				fillObjectsToRenderList(objectsToRender, pipeTile, renderState);
+				renderState.cachedRenderer = objectsToRender;
 				
-				RenderBlocks renderer = new RenderBlocks();
-				renderer.blockAccess = pipeTile.getWorldObj();
+				GL11.glNewList(renderState.renderListId, GL11.GL_COMPILE);
+	
+				Tessellator tess = Tessellator.instance;
+				CCRenderState.reset();
+				CCRenderState.useNormals = true;
+				CCRenderState.alphaOverride = 0xff;
+	
+				int brightness = new LPPosition((TileEntity)pipeTile).getBlock(pipeTile.getWorldObj()).getMixedBrightnessForBlock(pipeTile.getWorldObj(), pipeTile.xCoord, pipeTile.yCoord, pipeTile.zCoord);
 				
 				tess.setColorOpaque_F(1F, 1F, 1F);
-
+				tess.setBrightness(brightness);
+				
 				tess.startDrawingQuads();
-				Block block = new LPPosition((TileEntity)pipeTile).getBlock(pipeTile.getWorldObj());
-				block.setBlockBounds(0.15F, 0.15F, 0.15F, 0.85F, 0.85F, 0.85F);
-				renderer.setRenderBoundsFromBlock(block);
-				tess.addTranslation(-pipeTile.xCoord, -pipeTile.yCoord, -pipeTile.zCoord);
-				renderer.renderStandardBlock(block, pipeTile.xCoord, pipeTile.yCoord, pipeTile.zCoord);
-				tess.addTranslation(pipeTile.xCoord, pipeTile.yCoord, pipeTile.zCoord);
-
+				for(Pair<CCModel, IVertexOperation[]> model:renderState.cachedRenderer) {
+					if(model == null) {
+						CCRenderState.alphaOverride = 0xa0;
+					} else {
+						model.getValue1().render(model.getValue2());
+					}
+				}
+				CCRenderState.alphaOverride = 0xff;
 				tess.draw();
-
+				
 				GL11.glEndList();
 			}
-			GL11.glPushMatrix();
-			GL11.glTranslated(x, y, z);
-			GL11.glCallList(blockRenderListId);
-			GL11.glTranslated(-x, -y, -z);
-			GL11.glPopMatrix();
-			return;
-		}
-		PipeRenderState renderState = pipeTile.renderState;
-		if(renderState.cachedRenderer == null) {
-			List<Pair<CCModel, IVertexOperation[]>> objectsToRender = new ArrayList<Pair<CCModel, IVertexOperation[]>>();
-			fillObjectsToRenderList(objectsToRender, pipeTile, renderState);
-			renderState.cachedRenderer = objectsToRender;
-			
-			if(renderState.renderListId == -1) {
-				renderState.renderListId = GLAllocation.generateDisplayLists(1); //TODO Add garbage collector for these
+			if(renderState.renderListId != -1) {
+				GL11.glPushMatrix();
+				GL11.glTranslated(x, y, z);
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ZERO);
+				GL11.glCallList(renderState.renderListId);
+				GL11.glDisable(GL11.GL_BLEND);
+				GL11.glTranslated(-x, -y, -z);
+				GL11.glPopMatrix();
 			}
-			GL11.glNewList(renderState.renderListId, GL11.GL_COMPILE);
-
-			Tessellator tess = Tessellator.instance;
-			CCRenderState.reset();
-			CCRenderState.useNormals = true;
-			CCRenderState.alphaOverride = 0xff;
-
-			int brightness = new LPPosition((TileEntity)pipeTile).getBlock(pipeTile.getWorldObj()).getMixedBrightnessForBlock(pipeTile.getWorldObj(), pipeTile.xCoord, pipeTile.yCoord, pipeTile.zCoord);
-			
-			tess.setColorOpaque_F(1F, 1F, 1F);
-			tess.setBrightness(brightness);
-			
-			tess.startDrawingQuads();
-			for(Pair<CCModel, IVertexOperation[]> model:renderState.cachedRenderer) {
-				if(model == null) {
-					CCRenderState.alphaOverride = 0xa0;
-				} else {
-					model.getValue1().render(model.getValue2());
-				}
-			}
-			CCRenderState.alphaOverride = 0xff;
-			tess.draw();
-			
-			GL11.glEndList();
-		}
-		if(renderState.renderListId != -1) {
-			GL11.glPushMatrix();
-			GL11.glTranslated(x, y, z);
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ZERO);
-			GL11.glCallList(renderState.renderListId);
-			GL11.glDisable(GL11.GL_BLEND);
-			GL11.glTranslated(-x, -y, -z);
-			GL11.glPopMatrix();
 		}
 	}
 

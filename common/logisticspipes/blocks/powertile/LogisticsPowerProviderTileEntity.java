@@ -1,8 +1,8 @@
 package logisticspipes.blocks.powertile;
 
-import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -36,7 +36,7 @@ import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.WorldUtil;
-import logisticspipes.utils.tuples.LPPosition;
+import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -107,21 +107,11 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 												for(IFilter filter:exit.filters) {
 													if(filter.blockPower()) continue outerRouters;
 												}
-												//MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, sourceRouter.getDimension(), PacketHandler.getPacket(PowerPacketLaser.class).setColor(this.getLaserColor()).setPos(sourceRouter.getLPPosition()).setDir(adjacent.orientation.getOpposite()).setReverse(true).setLength(1));
 												CoreRoutedPipe pipe = sourceRouter.getPipe();
 												if(pipe != null && pipe.container instanceof LogisticsTileGenericPipe) {
 													((LogisticsTileGenericPipe)pipe.container).addLaser(adjacent.orientation.getOpposite(), 1, this.getLaserColor(), true, true);
 												}
-												try {
-													currentlyUsedPos.add(sourceRouter.getLPPosition());
-													sendPowerLaserPackets(sourceRouter, destinationRouter, exit.exitOrientation, exit.exitOrientation != adjacent.orientation);
-													currentlyUsedPos.remove(sourceRouter.getLPPosition());
-												} catch(StackOverflowError error) {
-													for(LPPosition pos:currentlyUsedPos) {
-														System.out.println(pos);
-													}
-													throw error;
-												}
+												sendPowerLaserPackets(sourceRouter, destinationRouter, exit.exitOrientation, exit.exitOrientation != adjacent.orientation);
 												internalStorage -= toSend;
 												handlePower(destinationRouter.getPipe(), toSend);
 												break outerTiles;
@@ -146,30 +136,30 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 
 	protected abstract void handlePower(CoreRoutedPipe pipe, float toSend);
 
-	private List<LPPosition> currentlyUsedPos = new ArrayList<LPPosition>();
-
 	private void sendPowerLaserPackets(IRouter sourceRouter, IRouter destinationRouter, ForgeDirection exitOrientation, boolean addBall) {
 		if(sourceRouter == destinationRouter) return;
-		List<ExitRoute> exits = sourceRouter.getRoutersOnSide(exitOrientation);
-		for(ExitRoute exit:exits) {
-			if(exit.containsFlag(PipeRoutingConnectionType.canPowerSubSystemFrom)) { // Find only result (caused by only straight connections)
-				int distance = sourceRouter.getDistanceToNextPowerPipe(exit.exitOrientation);
-				//MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, sourceRouter.getDimension(), PacketHandler.getPacket(PowerPacketLaser.class).setColor(this.getLaserColor()).setPos(sourceRouter.getLPPosition()).setDir(exit.exitOrientation).setRenderBall(true).setLength(distance));
-				CoreRoutedPipe pipe = sourceRouter.getPipe();
-				if(pipe != null && pipe.container instanceof LogisticsTileGenericPipe) {
-					((LogisticsTileGenericPipe)pipe.container).addLaser(exit.exitOrientation, distance, this.getLaserColor(), false, addBall);
-				}
-				sourceRouter = exit.destination; // Use new sourceRouter
-				if(sourceRouter == destinationRouter) return;
-				outerRouters:
-				for(ExitRoute newExit:sourceRouter.getDistanceTo(destinationRouter)) {
-					if(newExit.containsFlag(PipeRoutingConnectionType.canPowerSubSystemFrom)) {
-						for(IFilter filter:newExit.filters) {
-							if(filter.blockPower()) continue outerRouters;
+		LinkedList<Triplet<IRouter, ForgeDirection, Boolean>> todo = new LinkedList<Triplet<IRouter,ForgeDirection,Boolean>>();
+		todo.add(new Triplet<IRouter, ForgeDirection, Boolean>(sourceRouter, exitOrientation, addBall));
+		while(!todo.isEmpty()) {
+			Triplet<IRouter, ForgeDirection, Boolean> part = todo.pollFirst();
+			List<ExitRoute> exits = part.getValue1().getRoutersOnSide(part.getValue2());
+			for(ExitRoute exit:exits) {
+				if(exit.containsFlag(PipeRoutingConnectionType.canPowerSubSystemFrom)) { // Find only result (caused by only straight connections)
+					int distance = part.getValue1().getDistanceToNextPowerPipe(exit.exitOrientation);
+					CoreRoutedPipe pipe = part.getValue1().getPipe();
+					if(pipe != null && pipe.container instanceof LogisticsTileGenericPipe) {
+						((LogisticsTileGenericPipe)pipe.container).addLaser(exit.exitOrientation, distance, this.getLaserColor(), false, part.getValue3());
+					}
+					IRouter nextRouter = exit.destination; // Use new sourceRouter
+					if(nextRouter == destinationRouter) return;
+					outerRouters:
+					for(ExitRoute newExit:nextRouter.getDistanceTo(destinationRouter)) {
+						if(newExit.containsFlag(PipeRoutingConnectionType.canPowerSubSystemFrom)) {
+							for(IFilter filter:newExit.filters) {
+								if(filter.blockPower()) continue outerRouters;
+							}
+							todo.addLast(new Triplet<IRouter, ForgeDirection, Boolean>(nextRouter, newExit.exitOrientation, newExit.exitOrientation != exit.exitOrientation));
 						}
-						currentlyUsedPos.add(sourceRouter.getLPPosition());
-						sendPowerLaserPackets(sourceRouter, destinationRouter, newExit.exitOrientation, newExit.exitOrientation != exit.exitOrientation);
-						currentlyUsedPos.remove(sourceRouter.getLPPosition());
 					}
 				}
 			}

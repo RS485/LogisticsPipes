@@ -52,6 +52,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
+import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -207,7 +208,11 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 			
 			IInventory inv = (IInventory) tile.tile;
 			if (inv.getSizeInventory() < 1) continue;
-			IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
+			ForgeDirection dir = tile.orientation;
+			if(this._service.getUpgradeManager().hasSneakyUpgrade()) {
+				dir = this._service.getUpgradeManager().getSneakyOrientation();
+			}
+			IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv, dir);
 			
 			if(_service.getUpgradeManager().hasPatternUpgrade()) {
 				createPatternRequest(invUtil);

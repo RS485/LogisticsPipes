@@ -179,7 +179,11 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			if(base instanceof net.minecraft.inventory.ISidedInventory) {
 				base = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory)base, tile.orientation.getOpposite(), false);
 			}
-			IInventoryUtil inv = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(base);
+			ForgeDirection dir = tile.orientation;
+			if(this.getUpgradeManager().hasSneakyUpgrade()) {
+				dir = this.getUpgradeManager().getSneakyOrientation();
+			}
+			IInventoryUtil inv = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(base, dir);
 			count += inv.roomForItem(item, 9999);
 		}
 		if(includeInTransit) {

@@ -112,7 +112,7 @@ public class SelectItemOutOfList extends SubGuiScreen {
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int button) {
 		int x=0;
-		int y=0;
+		int y=-page * 10;
 		int count=0;
 		for(ItemIdentifierStack stack: canidate) {
 			if(y >= 0) {

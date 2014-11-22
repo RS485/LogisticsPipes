@@ -89,6 +89,7 @@ import logisticspipes.proxy.recipeproviders.LogisticsCraftingTable;
 import logisticspipes.proxy.recipeproviders.RollingMachine;
 import logisticspipes.proxy.recipeproviders.SolderingStation;
 import logisticspipes.proxy.specialconnection.EnderIOHyperCubeConnection;
+import logisticspipes.proxy.specialconnection.EnderIOTransceiverConnection;
 import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
 import logisticspipes.proxy.specialconnection.SpecialTileConnection;
 import logisticspipes.proxy.specialconnection.TeleportPipes;
@@ -369,7 +370,8 @@ public class LogisticsPipes {
 		SimpleServiceLocator.specialpipeconnection.registerHandler(new TeleportPipes());
 		SimpleServiceLocator.specialtileconnection.registerHandler(new TesseractConnection());
 		SimpleServiceLocator.specialtileconnection.registerHandler(new EnderIOHyperCubeConnection());
-		
+		SimpleServiceLocator.specialtileconnection.registerHandler(new EnderIOTransceiverConnection());
+
 		Object renderer = null;
 		if(isClient) {
 			renderer = new FluidContainerRenderer();

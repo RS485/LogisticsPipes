@@ -10,6 +10,7 @@ package logisticspipes.routing.pathfinder;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -219,7 +220,7 @@ public class PathFinder {
 			int resistance = 0;
 			
 			if(root) {
-				List<TileEntity> list = SimpleServiceLocator.specialtileconnection.getConnectedPipes(tile);
+				Collection<TileEntity> list = SimpleServiceLocator.specialtileconnection.getConnectedPipes(tile);
 				if(!list.isEmpty()) {
 					for(TileEntity pipe:list) {
 						connections.add(new Pair<TileEntity, ForgeDirection>(pipe, direction));

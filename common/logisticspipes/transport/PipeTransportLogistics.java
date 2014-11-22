@@ -150,18 +150,20 @@ public class PipeTransportLogistics {
 			iterator.remove();
 		}
 	}
-	
-	public void injectItem(LPTravelingItemServer item, ForgeDirection inputOrientation) {
-		injectItem((LPTravelingItem)item, inputOrientation);
+
+	public int injectItem(LPTravelingItemServer item, ForgeDirection inputOrientation) {
+		return injectItem((LPTravelingItem)item, inputOrientation);
 	}
-	
-	public void injectItem(LPTravelingItem item, ForgeDirection inputOrientation) {
+
+	public int injectItem(LPTravelingItem item, ForgeDirection inputOrientation) {
 		if(item.isCorrupted())
 		// Safe guard - if for any reason the item is corrupted at this
 		// stage, avoid adding it to the pipe to avoid further exceptions.
-			return;
+			return 0;
 		getPipe().triggerDebug();
-		
+
+		int originalCount = item.getItemIdentifierStack().getStackSize();
+
 		item.input = inputOrientation;
 		
 		while(item.getPosition() >= 1.0F) {
@@ -172,7 +174,7 @@ public class PipeTransportLogistics {
 			readjustSpeed((LPTravelingItemServer)item);
 			item.output = resolveDestination((LPTravelingItemServer)item);
 			if(item.output == null) {
-				return; // don't do anything
+				return 0;
 			}
 			getPipe().debug.log("Injected Item: [" + item.input + ", " + item.output + "] (" + ((LPTravelingItemServer)item).getInfo());
 		} else {
@@ -184,10 +186,12 @@ public class PipeTransportLogistics {
 		if(MainProxy.isServer(container.getWorldObj()) && !getPipe().isOpaque()) {
 			sendItemPacket((LPTravelingItemServer)item);
 		}
+
+		return originalCount - item.getItemIdentifierStack().getStackSize();
 	}
 	
-	public void injectItem(IRoutedItem item, ForgeDirection inputOrientation) {
-		injectItem((LPTravelingItem)SimpleServiceLocator.routedItemHelper.getServerTravelingItem(item), inputOrientation);
+	public int injectItem(IRoutedItem item, ForgeDirection inputOrientation) {
+		return injectItem((LPTravelingItem)SimpleServiceLocator.routedItemHelper.getServerTravelingItem(item), inputOrientation);
 	}
 	
 	/**
@@ -260,10 +264,6 @@ public class PipeTransportLogistics {
 
 	public ForgeDirection resolveRoutedDestination(LPTravelingItemServer data) {
 					
-		if(data != null && data.getItemIdentifierStack() != null) {
-			getRoutedPipe().relayedItem(data.getItemIdentifierStack().getStackSize());
-		}
-		
 		ForgeDirection blocked = null;
 		
 		if(data.getDestinationUUID() == null) {
@@ -271,11 +271,15 @@ public class PipeTransportLogistics {
 			ItemRoutingInformation result = getRoutedPipe().getQueuedForItemStack(stack);
 			if(result != null) {
 				data.setInformation(result);
-				data.getInfo().setItem(stack.clone());
+				data.getInfo().setItem(stack);
 				blocked = data.input.getOpposite();
 			}
 		}
-		
+
+		if(data.getItemIdentifierStack() != null) {
+			getPipe().relayedItem(data.getItemIdentifierStack().getStackSize());
+		}
+
 		ForgeDirection value;
 		if(this.getRoutedPipe().stillNeedReplace() || this.getRoutedPipe().initialInit()) {
 			data.setDoNotBuffer(false);

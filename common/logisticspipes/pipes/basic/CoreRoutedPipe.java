@@ -9,9 +9,11 @@
 package logisticspipes.pipes.basic;
 
 import java.io.IOException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -19,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.TreeMap;
+import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -123,6 +127,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import sun.java2d.opengl.OGLRenderQueue;
 
 @CCType(name = "LogisticsPipes:Normal")
 public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClientState, IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IPipeServiceProvider, IQueueCCEvent {
@@ -171,7 +176,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	
 	protected final LinkedList<Triplet<IRoutedItem, ForgeDirection, ItemSendMode>> _sendQueue = new LinkedList<Triplet<IRoutedItem, ForgeDirection, ItemSendMode>>();
 	
-	protected final Map<ItemIdentifierStack, ItemRoutingInformation> queuedDataForUnroutedItems = new HashMap<ItemIdentifierStack, ItemRoutingInformation>();
+	protected final Map<ItemIdentifier, Queue<Pair<Integer, ItemRoutingInformation>>> queuedDataForUnroutedItems = Collections.synchronizedMap(new TreeMap<ItemIdentifier, Queue<Pair<Integer, ItemRoutingInformation>>>());
 	
 	public final PlayerCollectionList watchers = new PlayerCollectionList();
 
@@ -1201,14 +1206,36 @@ outer:
 
 	public void queueUnroutedItemInformation(ItemIdentifierStack item, ItemRoutingInformation informaiton) {
 		if(item != null) {
-			queuedDataForUnroutedItems.put(item, informaiton);
+			synchronized (queuedDataForUnroutedItems) {
+				Queue<Pair<Integer, ItemRoutingInformation>> queue = queuedDataForUnroutedItems.get(item.getItem());
+				if (queue == null) {
+					queuedDataForUnroutedItems.put(item.getItem(), queue = new LinkedList<Pair<Integer, ItemRoutingInformation>>());
+				}
+				queue.add(new Pair<Integer, ItemRoutingInformation>(item.getStackSize(), informaiton));
+			}
 		}
 	}
 	
-	public ItemRoutingInformation getQueuedForItemStack(ItemIdentifierStack itemIdentifierStack) {
-		for(ItemIdentifierStack item:queuedDataForUnroutedItems.keySet()) {
-			if(item.equals(itemIdentifierStack)) {
-				return queuedDataForUnroutedItems.remove(item);
+	public ItemRoutingInformation getQueuedForItemStack(ItemIdentifierStack item) {
+		synchronized (queuedDataForUnroutedItems) {
+			Queue<Pair<Integer, ItemRoutingInformation>> queue = queuedDataForUnroutedItems.get(item.getItem());
+			if (queue == null || queue.isEmpty()) {
+				return null;
+			}
+
+			Pair<Integer, ItemRoutingInformation> pair = queue.peek();
+			int wantItem = pair.getValue1();
+
+			if (wantItem <= item.getStackSize()) {
+				if (queue.remove() != pair) {
+					LogisticsPipes.log.fatal("Item queue mismatch");
+					return null;
+				}
+				if (queue.isEmpty()) {
+					queuedDataForUnroutedItems.remove(item.getItem());
+				}
+				item.setStackSize(wantItem);
+				return pair.getValue2();
 			}
 		}
 		return null;

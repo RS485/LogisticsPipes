@@ -40,6 +40,7 @@ import logisticspipes.renderer.IIconProvider;
 import logisticspipes.renderer.LogisticsTileRenderController;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
+import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.OrientationsUtil;
@@ -402,9 +403,12 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 
 	@Override
 	public ItemStack insertItem(ForgeDirection dir, ItemStack stack) {
-		if(this.injectItem(stack, true, dir) == stack.stackSize) {
+		int keep = injectItem(stack, true, dir);
+		if (keep == 0) {
 			return null;
 		} else {
+			stack = stack.copy();
+			stack.stackSize = keep;
 			return stack;
 		}
 	}
@@ -544,11 +548,17 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 	@Override
 	@ModDependentMethod(modId="BuildCraft|Transport")
 	public int injectItem(ItemStack payload, boolean doAdd, ForgeDirection from) {
-		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof PipeTransportLogistics && isPipeConnected(from)) {
+		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport != null && isPipeConnected(from)) {
 			if (doAdd && MainProxy.isServer(this.getWorldObj())) {
-				((PipeTransportLogistics) pipe.transport).injectItem(SimpleServiceLocator.routedItemHelper.createNewTravelItem(payload), from.getOpposite());
+				ItemStack consumedStack = payload.copy();
+				int lastIterLeft;
+				do {
+					lastIterLeft = consumedStack.stackSize;
+					LPTravelingItem.LPTravelingItemServer travelingItem = SimpleServiceLocator.routedItemHelper.createNewTravelItem(consumedStack);
+					consumedStack.stackSize = pipe.transport.injectItem(travelingItem, from.getOpposite());
+				} while(consumedStack.stackSize != lastIterLeft && consumedStack.stackSize != 0);
+				return consumedStack.stackSize;
 			}
-			return payload.stackSize;
 		}
 		return 0;
 	}

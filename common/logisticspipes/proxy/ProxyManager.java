@@ -306,7 +306,9 @@ public class ProxyManager {
 		SimpleServiceLocator.setEnderIOProxy(getWrappedProxy("EnderIO", IEnderIOProxy.class, EnderIOProxy.class, new IEnderIOProxy() {
 			@Override public boolean isSendAndReceive(TileEntity tile) {return false;}
 			@Override public boolean isHyperCube(TileEntity tile) {return false;}
+			@Override public boolean isTransceiver(TileEntity tile) {return false;}
 			@Override public List<TileEntity> getConnectedHyperCubes(TileEntity tile) {return new ArrayList<TileEntity>(0);}
+			@Override public List<TileEntity> getConnectedTransceivers(TileEntity tile) {return null;}
 			@Override public boolean isEnderIO() {return false;}
 		}));
 

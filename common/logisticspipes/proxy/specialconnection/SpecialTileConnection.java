@@ -1,6 +1,7 @@
 package logisticspipes.proxy.specialconnection;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import logisticspipes.interfaces.routing.ISpecialTileConnection;
@@ -17,7 +18,7 @@ public class SpecialTileConnection {
 		}
 	}
 	
-	public List<TileEntity> getConnectedPipes(TileEntity tile) {
+	public Collection<TileEntity> getConnectedPipes(TileEntity tile) {
 		for(ISpecialTileConnection connectionHandler:handler) {
 			if(connectionHandler.isType(tile)) {
 				return connectionHandler.getConnections(tile);
@@ -39,6 +40,7 @@ public class SpecialTileConnection {
 		for(ISpecialTileConnection connectionHandler:handler) {
 			if(connectionHandler.isType(tile)) {
 				connectionHandler.transmit(tile, arrivingItem);
+				break;
 			}
 		}
 	}

@@ -1071,10 +1071,10 @@ public class RecipeManager {
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 8), CraftingDependency.Basic, new Object[] {
-			" I ",
+			" G ",
 			"oCo",
 			" R ",
-			Character.valueOf('I'), Items.iron_ingot,
+			Character.valueOf('G'), Items.gold_ingot,
 			Character.valueOf('R'), Items.redstone,
 			Character.valueOf('o'), "dyeOrange", 
 			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 2)
@@ -1093,7 +1093,7 @@ public class RecipeManager {
 			" d ",
 			" C ",
 			" R ",
-			Character.valueOf('s'), "dyeOrange",
+			Character.valueOf('d'), "dyeOrange",
 			Character.valueOf('R'), Items.redstone, 
 			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7)
 		});
@@ -1114,10 +1114,11 @@ public class RecipeManager {
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 13), CraftingDependency.Basic, new Object[] {
-			"rIr",
+			"r r",
 			"RCR",
+			"g g",
+			Character.valueOf('g'), Items.gold_nugget,
 			Character.valueOf('r'), "dyeRed",
-			Character.valueOf('I'), Items.iron_ingot,
 			Character.valueOf('R'), Items.redstone, 
 			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7)
 		});
@@ -1133,12 +1134,12 @@ public class RecipeManager {
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 15), CraftingDependency.Basic, new Object[] {
-			" I ",
+			" G ",
 			"LCL",
 			"gRg",
 			Character.valueOf('g'), Items.gold_nugget,
 			Character.valueOf('L'), "dyeBlue",
-			Character.valueOf('I'), Items.iron_ingot,
+			Character.valueOf('G'), Items.gold_ingot,
 			Character.valueOf('R'), Items.redstone, 
 			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7)
 		});

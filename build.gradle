@@ -108,10 +108,10 @@ processResources {
 dependencies {
     compile files("build/download/buildcraft-6.1.5-dev.jar")
     compile 'org.projectlombok:lombok:1.12.6'
-    compile 'codechicken:NotEnoughItems:1.7.10-1.0.3.49:dev'
-    compile 'codechicken:CodeChickenCore:1.7.10-1.0.3.23:dev'
+    compile 'codechicken:NotEnoughItems:1.7.10-1.0.3.68:dev'
+    compile 'codechicken:CodeChickenCore:1.7.10-1.0.4.29:dev'
     compile 'codechicken:CodeChickenLib:1.7.10-1.1.1.98:dev'
-    compile 'codechicken:EnderStorage:1.7.10-1.4.5.19:dev'
+    compile 'codechicken:EnderStorage:1.7.10-1.4.5.26:dev'
 }
 
 task deobfJar(type: Jar) {

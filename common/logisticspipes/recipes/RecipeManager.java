@@ -1026,5 +1026,121 @@ public class RecipeManager {
 			Character.valueOf('I'), LogisticsPipes.LogisticsFluidInsertionPipe,
 			Character.valueOf('w'), parts.getExtractorFluid()
 		});
+		
+		ItemStack sand = new ItemStack(Blocks.sand);
+		craftingManager.addShapelessRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 0),CraftingDependency.Basic, sand, sand);
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 2, 1), CraftingDependency.Basic, new Object[] {
+			"sgs",
+			"gsg",
+			"sgs",
+			Character.valueOf('s'), new ItemStack(LogisticsPipes.PipeParts,1 ,0),
+			Character.valueOf('g'), Items.gold_nugget
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 2, 2), CraftingDependency.Basic, new Object[] {
+			" g ",
+			"sss",
+			Character.valueOf('s'), new ItemStack(LogisticsPipes.PipeParts,1 ,0),
+			Character.valueOf('g'), Items.gold_nugget
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 3), CraftingDependency.Basic, new Object[] {
+			" D ",
+			"RCR",
+			Character.valueOf('D'), Items.diamond,
+			Character.valueOf('R'), Items.redstone,
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 1)
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 4), CraftingDependency.Basic, new Object[] {
+			" I ",
+			"RCR",
+			Character.valueOf('I'), Items.iron_ingot,
+			Character.valueOf('R'), Items.redstone,
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 1)
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 7), CraftingDependency.Basic, new Object[] {
+			" I ",
+			" C ",
+			" R ",
+			Character.valueOf('I'), Items.iron_ingot,
+			Character.valueOf('R'), Items.redstone,
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 2)
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 8), CraftingDependency.Basic, new Object[] {
+			" I ",
+			"oCo",
+			" R ",
+			Character.valueOf('I'), Items.iron_ingot,
+			Character.valueOf('R'), Items.redstone,
+			Character.valueOf('o'), "dyeOrange", 
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 2)
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 9), CraftingDependency.Basic, new Object[] {
+			" D ",
+			" C ",
+			" R ",
+			Character.valueOf('D'), Items.diamond,
+			Character.valueOf('R'), Items.redstone, 
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7)
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 10), CraftingDependency.Basic, new Object[] {
+			" d ",
+			" C ",
+			" R ",
+			Character.valueOf('s'), "dyeOrange",
+			Character.valueOf('R'), Items.redstone, 
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7)
+		});
+		
+		ItemStack glowdust = new ItemStack(Items.glowstone_dust);
+		ItemStack plate = new ItemStack(LogisticsPipes.PipeParts, 1, 7);
+		craftingManager.addShapelessRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 11),CraftingDependency.Basic, plate, glowdust, glowdust);
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 12), CraftingDependency.Basic, new Object[] {
+			"RIR",
+			"LCL",
+			" g ",
+			Character.valueOf('g'), Items.gold_nugget,
+			Character.valueOf('L'), "dyeBlue",
+			Character.valueOf('I'), Items.iron_ingot,
+			Character.valueOf('R'), Items.redstone, 
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7)
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 13), CraftingDependency.Basic, new Object[] {
+			"rIr",
+			"RCR",
+			Character.valueOf('r'), "dyeRed",
+			Character.valueOf('I'), Items.iron_ingot,
+			Character.valueOf('R'), Items.redstone, 
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7)
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 14), CraftingDependency.Basic, new Object[] {
+			" I ",
+			"LCL",
+			" R ",
+			Character.valueOf('L'), "dyeBlue",
+			Character.valueOf('I'), Items.iron_ingot,
+			Character.valueOf('R'), Items.redstone, 
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 2)
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 15), CraftingDependency.Basic, new Object[] {
+			" I ",
+			"LCL",
+			"gRg",
+			Character.valueOf('g'), Items.gold_nugget,
+			Character.valueOf('L'), "dyeBlue",
+			Character.valueOf('I'), Items.iron_ingot,
+			Character.valueOf('R'), Items.redstone, 
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7)
+		});
 	}
 }

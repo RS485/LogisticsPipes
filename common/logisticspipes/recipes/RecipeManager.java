@@ -1080,15 +1080,6 @@ public class RecipeManager {
 			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 2)
 		});
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 9), CraftingDependency.Basic, new Object[] {
-			" D ",
-			" C ",
-			" R ",
-			Character.valueOf('D'), Items.diamond,
-			Character.valueOf('R'), Items.redstone, 
-			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7)
-		});
-		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 10), CraftingDependency.Basic, new Object[] {
 			" d ",
 			" C ",

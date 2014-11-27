@@ -10,7 +10,7 @@ public class LogisticsPipesCoreLoader implements IFMLLoadingPlugin {
 	public LogisticsPipesCoreLoader() throws Exception {
 		byte[] bs = Launch.classLoader.getClassBytes("net.minecraft.world.World");
 		if(bs != null) {
-			Launch.classLoader.findClass("logisticspipes.asm.DevEnvHelper").getMethod("detectCoreModInEclipseSettings").invoke(null);
+			//Launch.classLoader.findClass("logisticspipes.asm.DevEnvHelper").getMethod("detectCoreModInEclipseSettings").invoke(null);
 		}
 	}
 	

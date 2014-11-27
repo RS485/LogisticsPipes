@@ -141,6 +141,42 @@ public class SolderingStationRecipes {
 				new ItemStack(Blocks.chest,3),
 				parts.getChipTear3()}, 
 			new ItemStack(LogisticsPipes.logisticsRequestTable,1), null));
+		
+		recipes.add(new SolderingStationRecipe(new ItemStack[] {
+				new ItemStack(Items.redstone,1),
+				new ItemStack(Items.diamond,1),
+				new ItemStack(Items.redstone,1),
+				null,
+				new ItemStack(LogisticsPipes.PipeParts, 1, 3),
+				null,
+				new ItemStack(Items.redstone,1),
+				new ItemStack(Items.diamond,1),
+				new ItemStack(Items.redstone,1)},
+			new ItemStack(LogisticsPipes.PipeParts, 1, 5), null));
+		
+		recipes.add(new SolderingStationRecipe(new ItemStack[] {
+				new ItemStack(Items.dye,1,14),
+				new ItemStack(Items.diamond,1),
+				new ItemStack(Items.dye,1,14),
+				null,
+				new ItemStack(LogisticsPipes.PipeParts, 1, 3),
+				null,
+				new ItemStack(Items.dye,1,14),
+				new ItemStack(Items.diamond,1),
+				new ItemStack(Items.dye,1,14)},
+			new ItemStack(LogisticsPipes.PipeParts, 1, 6), null));
+		
+		recipes.add(new SolderingStationRecipe(new ItemStack[] {
+				null,
+				null,
+				null,
+				new ItemStack(Items.diamond,1),
+				new ItemStack(LogisticsPipes.PipeParts, 1, 7),
+				new ItemStack(Items.diamond,1),
+				null,
+				null,
+				null},
+			new ItemStack(LogisticsPipes.PipeParts, 1, 9), null));
 	}
 	
 	public static List<SolderingStationRecipe> getRecipes() {

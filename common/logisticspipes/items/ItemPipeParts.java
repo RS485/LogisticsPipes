@@ -20,8 +20,8 @@ public class ItemPipeParts extends LogisticsItem
 	@Override
 	public void registerIcons(IIconRegister iconreg)
 	{
-		_icons=new IIcon[12];
-		for(int i=0;i<12;i++)
+		_icons=new IIcon[16];
+		for(int i=0;i<16;i++)
 		{
 			_icons[i]=iconreg.registerIcon("logisticspipes:"+getUnlocalizedName().replace("item.", "")+"/"+i);
 		}
@@ -29,7 +29,7 @@ public class ItemPipeParts extends LogisticsItem
 	
 	@Override
 	public IIcon getIconFromDamage(int i) {
-    		return _icons[i%12];
+    		return _icons[i%16];
     }
 	
 	@Override
@@ -59,6 +59,14 @@ public class ItemPipeParts extends LogisticsItem
     		return "item.interfaceStatistic";
     	case 11:
     		return "item.interfaceUI";
+    	case 12:
+    		return "item.interfaceExtraction";
+    	case 13:
+    		return "item.interfaceSupply";
+    	case 14:
+    		return "item.interfaceEnergy";
+    	case 15:
+    		return "item.interfaceProvider";
     	}
 		return super.getUnlocalizedName(par1ItemStack);
 	}
@@ -83,5 +91,9 @@ public class ItemPipeParts extends LogisticsItem
 		par3List.add(new ItemStack(this, 1, 9));
 		par3List.add(new ItemStack(this, 1, 10));
 		par3List.add(new ItemStack(this, 1, 11));
+		par3List.add(new ItemStack(this, 1, 12));
+		par3List.add(new ItemStack(this, 1, 13));
+		par3List.add(new ItemStack(this, 1, 14));
+		par3List.add(new ItemStack(this, 1, 15));
     }
 }

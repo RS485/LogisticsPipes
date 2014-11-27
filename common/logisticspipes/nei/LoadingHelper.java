@@ -1,6 +1,6 @@
 package logisticspipes.nei;
 
-import logisticspipes.Configs;
+import logisticspipes.config.Configs;
 import codechicken.nei.guihook.GuiContainerManager;
 import cpw.mods.fml.client.FMLClientHandler;
 

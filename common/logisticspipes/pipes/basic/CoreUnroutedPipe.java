@@ -6,13 +6,20 @@ import java.util.Random;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILPPipe;
+import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IClientState;
+import logisticspipes.interfaces.IPipeUpgradeManager;
+import logisticspipes.pipes.basic.debug.DebugLogController;
+import logisticspipes.pipes.basic.debug.StatusEntry;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePart;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.renderer.IIconProvider;
+import logisticspipes.textures.Textures;
 import logisticspipes.transport.PipeTransportLogistics;
+import logisticspipes.utils.WorldUtil;
+import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -29,15 +36,18 @@ import cpw.mods.fml.relauncher.SideOnly;
 public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTypeHolder {
 
 	private Object ccType;
-	
+
 	public LogisticsTileGenericPipe container;
 	public final PipeTransportLogistics transport;
 	public final Item item;
+	public DebugLogController debug = new DebugLogController(this);
 	
 	public IBCPipePart bcPipePart;
 
 	public boolean internalUpdateScheduled = false;
 	private boolean initialized = false;
+	
+	private boolean oldRendererState;
 
 	public CoreUnroutedPipe(PipeTransportLogistics transport, Item item) {
 		this.transport = transport;
@@ -95,8 +105,10 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	 * @return An array of icons
 	 */
 	@SideOnly(Side.CLIENT)
-	public abstract IIconProvider getIconProvider();
-
+	public IIconProvider getIconProvider() {
+		return Textures.LPpipeIconProvider;
+	}
+	
 	/**
 	 * Should return the index in the array returned by GetTextureIcons() for a
 	 * specified direction
@@ -117,6 +129,13 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 			internalUpdateScheduled = false;
 		}
 		bcPipePart.updateGate();
+		
+		if(MainProxy.isClient(getWorld())) {
+			if(oldRendererState != (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer() && !container.renderState.forceRenderOldPipe)) {
+				oldRendererState = (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer() && !container.renderState.forceRenderOldPipe);
+				getWorld().markBlockForUpdate(this.getX(), this.getY(), this.getZ());
+			}
+		}
 	}
 
 	private void internalUpdate() {
@@ -311,6 +330,10 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public boolean isRoutedPipe() {
 		return false;
 	}
+	
+	public boolean isFluidPipe() {
+		return false;
+	}
 
 	@Override
 	public void setCCType(Object type) {
@@ -320,5 +343,48 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	@Override
 	public Object getCCType() {
 		return ccType;
+	}
+	
+	public abstract int getTextureIndex();
+
+	public void triggerDebug() {
+		if(this.debug.debugThisPipe) {
+			System.out.print("");
+		}
+	}
+
+	public void addStatusInformation(List<StatusEntry> status) {}
+
+	public boolean isOpaque() {
+		return Configs.OPAQUE;
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + " (" + this.getX() + ", " + this.getY() + ", " + this.getZ() + ")";
+	}
+
+	public LPPosition getLPPosition() {
+		return new LPPosition(this);
+	}
+
+	public WorldUtil getWorldUtil() {
+		return new WorldUtil(this.getWorld(), this.getX(), this.getY(), this.getZ());
+	}
+
+	public IPipeUpgradeManager getUpgradeManager() {
+		return new IPipeUpgradeManager() {
+			@Override public boolean hasPowerPassUpgrade() {return false;}
+			@Override public boolean hasRFPowerSupplierUpgrade() {return false;}
+			@Override public int getIC2PowerLevel() {return 0;}
+			@Override public int getSpeedUpgradeCount() {return 0;}
+			@Override public boolean isSideDisconnected(ForgeDirection side) {return false;}
+			@Override public boolean hasCCRemoteControlUpgrade() {return false;}
+			@Override public boolean hasCraftingMonitoringUpgrade() {return false;}
+			@Override public boolean isOpaque() {return false;}
+			@Override public boolean hasUpgradeModuleUpgrade() {return false;}
+			@Override public boolean hasCombinedSneakyUpgrade() {return false;}
+			@Override public ForgeDirection[] getCombinedSneakyOrientation() {return null;}
+		};
 	}
 }

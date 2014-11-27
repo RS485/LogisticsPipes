@@ -42,7 +42,9 @@ public class LPDataInputStream extends DataInputStream {
 	}
 	
 	public ForgeDirection readForgeDirection() throws IOException {
-		return ForgeDirection.values()[in.read()];
+		int dir = in.read();
+		if(dir == 10) return null;
+		return ForgeDirection.values()[dir];
 	}
 	
 	public ExitRoute readExitRoute(World world) throws IOException {
@@ -131,7 +133,7 @@ public class LPDataInputStream extends DataInputStream {
 	}
 	
 	public boolean[] readBooleanArray() throws IOException {
-		boolean[] array = new boolean[this.readByte()];
+		boolean[] array = new boolean[this.readInt()];
 		BitSet set = this.readBitSet();
 		for(int i=0;i<array.length;i++) {
 			array[i] = set.get(i);
@@ -140,19 +142,25 @@ public class LPDataInputStream extends DataInputStream {
 	}
 	
 	public int[] readIntegerArray() throws IOException {
-		int[] array = new int[this.readByte()];
+		int[] array = new int[this.readInt()];
 		for(int i=0;i<array.length;i++) {
 			array[i] = this.readInt();
 		}
 		return array;
 	}
 	
-	public ItemIdentifierStack readItemIdentifierStack() throws IOException {
+	public ItemIdentifier readItemIdentifier() throws IOException {
+		if(!this.readBoolean()) return null;
 		int itemID = this.readInt();
-		int stacksize = this.readInt();
 		int damage = this.readInt();
 		NBTTagCompound tag = this.readNBTTagCompound();
-		return new ItemIdentifierStack(ItemIdentifier.get(Item.getItemById(itemID), damage, tag), stacksize);
+		return ItemIdentifier.get(Item.getItemById(itemID), damage, tag);
+	}
+	
+	public ItemIdentifierStack readItemIdentifierStack() throws IOException {
+		ItemIdentifier item = this.readItemIdentifier();
+		int stacksize = this.readInt();
+		return new ItemIdentifierStack(item, stacksize);
 	}
 	
 	public <T> List<T> readList(IReadListObject<T> handler) throws IOException {
@@ -202,6 +210,14 @@ public class LPDataInputStream extends DataInputStream {
 		byte[] array = new byte[this.readInt()];
 		for(int i=0;i<array.length;i++) {
 			array[i] = this.readByte();
+		}
+		return array;
+	}
+
+	public long[] readLongArray() throws IOException {
+		long[] array = new long[this.readInt()];
+		for(int i=0;i<array.length;i++) {
+			array[i] = this.readLong();
 		}
 		return array;
 	}

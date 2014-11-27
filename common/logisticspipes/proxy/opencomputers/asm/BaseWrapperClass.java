@@ -12,6 +12,7 @@ import li.cil.oc.api.network.Context;
 import li.cil.oc.api.prefab.AbstractValue;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
@@ -381,6 +382,25 @@ public abstract class BaseWrapperClass extends AbstractValue {
 				object = builder;
 				checkType();
 			}
+		} else if(type.equals("LogisticsSolidTileEntity")) {
+			int x = nbt.getInteger("X");
+			int y = nbt.getInteger("Y");
+			int z = nbt.getInteger("Z");
+			final LPPosition pos = new LPPosition(x, y, z);
+			final int dim = nbt.getInteger("Dim");
+			QueuedTasks.queueTask(new Callable<Object>() {
+				@Override
+				public Object call() throws Exception {
+					World world = DimensionManager.getWorld(dim);
+					if(world != null) {
+						TileEntity tile = pos.getTileEntity(world);
+						if(tile instanceof LogisticsSolidTileEntity) {
+							object = (LogisticsSolidTileEntity)tile;
+							checkType();
+						}
+					}
+					return null;
+				}});
 		} else {
 			System.out.println("Unknown type to load");
 		}
@@ -407,6 +427,13 @@ public abstract class BaseWrapperClass extends AbstractValue {
 		} else if(object instanceof CCItemIdentifierBuilder) {
 			nbt.setString("Type", "CCItemIdentifierBuilder");
 			((CCItemIdentifierBuilder)object).build().makeNormalStack(1).writeToNBT(nbt);
+		} else if(object instanceof LogisticsSolidTileEntity) {
+			LPPosition pos = ((LogisticsSolidTileEntity)object).getLPPosition();
+			nbt.setString("Type", "LogisticsSolidTileEntity");
+			nbt.setInteger("Dim", MainProxy.getDimensionForWorld(((LogisticsSolidTileEntity)object).getWorldObj()));
+			nbt.setInteger("X", pos.getX());
+			nbt.setInteger("Y", pos.getY());
+			nbt.setInteger("Z", pos.getZ());
 		} else {
 			System.out.println("Couldn't find mapping for: " + object.getClass());
 		}

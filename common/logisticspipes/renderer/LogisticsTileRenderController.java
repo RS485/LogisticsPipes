@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import logisticspipes.Configs;
+import logisticspipes.config.Configs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.block.PowerPacketLaser;
 import logisticspipes.pipefxhandlers.PipeFXLaserPowerBall;

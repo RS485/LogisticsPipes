@@ -26,6 +26,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
@@ -43,6 +44,7 @@ public class DummyContainer extends Container {
 	private long					lastClicked;
 	private long					lastDragnDropLockup;
 	boolean							wasDummyLookup;
+	boolean 						overrideMCAntiSend;
 
 	public DummyContainer(IInventory playerInventory, IInventory dummyInventory) {
 		_playerInventory = playerInventory;
@@ -505,6 +507,7 @@ public class DummyContainer extends Container {
 		if(currentlyEquippedStack == null && isShift == 6) { return currentlyEquippedStack; }
 		
 		if(slot instanceof HandelableSlot) {
+			overrideMCAntiSend = true;
 			if(currentlyEquippedStack == null) {
 				inventoryplayer.setItemStack(((HandelableSlot)slot).getProvidedStack());
 				return null;
@@ -514,6 +517,11 @@ public class DummyContainer extends Container {
 		
 		if(slot instanceof UnmodifiableSlot) { return currentlyEquippedStack; }
 		
+		handleDummyClick(slot, slotId, currentlyEquippedStack, mouseButton, isShift, entityplayer);
+		return currentlyEquippedStack;
+	}
+	
+	public void handleDummyClick(Slot slot, int slotId, ItemStack currentlyEquippedStack, int mouseButton, int isShift, EntityPlayer entityplayer) {
 		if(slot instanceof FluidSlot) {
 			if(currentlyEquippedStack != null) {
 				FluidStack liquidId = FluidContainerRegistry.getFluidForFilledItem(currentlyEquippedStack);
@@ -528,37 +536,29 @@ public class DummyContainer extends Container {
 					} else {
 						slot.putStack(null);
 					}
-					return currentlyEquippedStack;
+					return;
+				}
+				FluidIdentifier ident = FluidIdentifier.get(currentlyEquippedStack);
+				if(ident != null) {
+					if(mouseButton == 0) {
+						slot.putStack(ident.getItemIdentifier().unsafeMakeNormalStack(1));
+					} else {
+						slot.putStack(null);
+					}
+					return;
 				}
 			}
 			FluidIdentifier ident = null;
 			if(slot.getStack() != null) {
 				ident = FluidIdentifier.get(ItemIdentifier.get(slot.getStack()));
 			}
-			if(mouseButton == 0) {
-				if(ident != null) {
-					ident = ident.next();
-				} else {
-					ident = FluidIdentifier.first();
-				}
-			} else if(mouseButton == 1) {
-				if(ident != null) {
-					ident = ident.prev();
-				} else {
-					ident = FluidIdentifier.last();
-				}
-			} else {
-				ident = null;
-			}
 			if(ident == null) {
-				slot.putStack(null);
-			} else {
-				slot.putStack(ident.getItemIdentifier().unsafeMakeNormalStack(1));
+				if(MainProxy.isClient(entityplayer.getEntityWorld())) {
+					MainProxy.proxy.openFluidSelectGui(slotId);
+				}
 			}
-			if(entityplayer instanceof EntityPlayerMP && MainProxy.isServer(entityplayer.worldObj)) {
-				((EntityPlayerMP)entityplayer).sendSlotContents(this, slotId, slot.getStack());
-			}
-			return currentlyEquippedStack;
+			slot.putStack(null);
+			return;
 		}
 		
 		if(slot instanceof ColorSlot) {
@@ -583,7 +583,7 @@ public class DummyContainer extends Container {
 			if(entityplayer instanceof EntityPlayerMP && MainProxy.isServer(entityplayer.worldObj)) {
 				((EntityPlayerMP)entityplayer).sendSlotContents(this, slotId, slot.getStack());
 			}
-			return currentlyEquippedStack;
+			return;
 		}
 		
 		if(slot instanceof DummySlot) ((DummySlot)slot).setRedirectCall(true);
@@ -602,7 +602,7 @@ public class DummyContainer extends Container {
 				slot.putStack(null);
 			}
 			if(slot instanceof DummySlot) ((DummySlot)slot).setRedirectCall(false);
-			return currentlyEquippedStack;
+			return;
 		}
 		
 		if(!slot.getHasStack()) {
@@ -615,7 +615,7 @@ public class DummyContainer extends Container {
 			}
 			slot.putStack(tstack);
 			if(slot instanceof DummySlot) ((DummySlot)slot).setRedirectCall(false);
-			return currentlyEquippedStack;
+			return;
 		}
 		
 		ItemIdentifier currentItem = ItemIdentifier.get(currentlyEquippedStack);
@@ -637,7 +637,7 @@ public class DummyContainer extends Container {
 				slot.putStack(tstack);
 			}
 			if(slot instanceof DummySlot) ((DummySlot)slot).setRedirectCall(false);
-			return currentlyEquippedStack;
+			return;
 		}
 		
 		ItemStack tstack = currentlyEquippedStack.copy();
@@ -646,7 +646,7 @@ public class DummyContainer extends Container {
 		}
 		slot.putStack(tstack);
 		if(slot instanceof DummySlot) ((DummySlot)slot).setRedirectCall(false);
-		return currentlyEquippedStack;
+		return;
 	}
 	
 	@Override
@@ -718,5 +718,31 @@ public class DummyContainer extends Container {
 			return;
 		}
 		super.putStackInSlot(par1, par2ItemStack);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void detectAndSendChanges() {
+		for(int i = 0; i < this.inventorySlots.size(); ++i) {
+			ItemStack itemstack = ((Slot)this.inventorySlots.get(i)).getStack();
+			ItemStack itemstack1 = (ItemStack)this.inventoryItemStacks.get(i);
+			
+			if(!ItemStack.areItemStacksEqual(itemstack1, itemstack)) {
+				itemstack1 = itemstack == null ? null : itemstack.copy();
+				this.inventoryItemStacks.set(i, itemstack1);
+				
+				for(int j = 0; j < this.crafters.size(); ++j) {
+					boolean revert = false;
+					if(overrideMCAntiSend && this.crafters.get(j) instanceof EntityPlayerMP && ((EntityPlayerMP)this.crafters.get(j)).isChangingQuantityOnly) {
+						((EntityPlayerMP)this.crafters.get(j)).isChangingQuantityOnly = false;
+						revert = true;
+					}
+					((ICrafting)this.crafters.get(j)).sendSlotContents(this, i, itemstack1);
+					if(revert) {
+						((EntityPlayerMP)this.crafters.get(j)).isChangingQuantityOnly = true;
+					}
+				}
+			}
+		}
+		overrideMCAntiSend = false;
 	}
 }

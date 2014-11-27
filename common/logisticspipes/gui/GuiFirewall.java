@@ -1,6 +1,5 @@
 package logisticspipes.gui;
 
-import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
@@ -41,11 +40,6 @@ public class GuiFirewall extends LogisticsBaseGuiScreen {
 		buttonList.add(new GuiStringHandlerButton(2, width / 2 + 23, height / 2 + 93 - 139, 60 , 20, new StringHandler() {@Override public String getContent() {return pipe.isBlockCrafer() ? blocked : allowed;}}));
 		buttonList.add(new GuiStringHandlerButton(3, width / 2 + 23, height / 2 + 126- 139, 60 , 20, new StringHandler() {@Override public String getContent() {return pipe.isBlockSorting() ? blocked : allowed;}}));
 		buttonList.add(new GuiStringHandlerButton(4, width / 2 + 23, height / 2 + 160- 139, 60 , 20, new StringHandler() {@Override public String getContent() {return pipe.isBlockPower() ? blocked : allowed;}}));
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_FIREWALL;
 	}
 
 	@Override

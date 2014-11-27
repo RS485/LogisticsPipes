@@ -11,7 +11,6 @@ import li.cil.oc.api.network.ManagedPeripheral;
 import li.cil.oc.api.network.Message;
 import li.cil.oc.api.network.Node;
 import li.cil.oc.api.network.SidedEnvironment;
-import logisticspipes.Configs;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILPPipe;
@@ -19,6 +18,8 @@ import logisticspipes.api.ILPPipeTile;
 import logisticspipes.asm.ModDependentField;
 import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
+import logisticspipes.blocks.LogisticsSolidTileEntity;
+import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IClientState;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logic.LogicController;
@@ -35,6 +36,7 @@ import logisticspipes.proxy.buildcraft.subproxies.IBCCoreState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
 import logisticspipes.proxy.buildcraft.subproxies.IConnectionOverrideResult;
 import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
+import logisticspipes.proxy.opencomputers.IOCTile;
 import logisticspipes.proxy.opencomputers.asm.BaseWrapperClass;
 import logisticspipes.renderer.IIconProvider;
 import logisticspipes.renderer.LogisticsTileRenderController;
@@ -48,11 +50,13 @@ import logisticspipes.utils.WorldUtil;
 import net.minecraft.block.Block;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
@@ -74,7 +78,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
 @ModDependentInterface(modId={"CoFHCore", "OpenComputers@1.3", "OpenComputers@1.3", "OpenComputers@1.3", "BuildCraft|Transport", "BuildCraft|Transport"}, interfacePath={"cofh.api.transport.IItemDuct", "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment", "buildcraft.api.transport.IPipeTile", "buildcraft.api.transport.IPipeConnection"})
-public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile, IPipeInformationProvider, IItemDuct, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IPipeTile, IPipeConnection, ILogicControllerTile {	
+public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILPPipeTile, IPipeInformationProvider, IItemDuct, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IPipeTile, IPipeConnection, ILogicControllerTile {	
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
 	
 	public boolean turtleConnect[] = new boolean[7];
@@ -101,13 +105,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 		}
 		SimpleServiceLocator.openComputersProxy.initLogisticsTileGenericPipe(this);
 	}
-	
-	public CoreRoutedPipe getCPipe() {
-		if(pipe instanceof CoreRoutedPipe) {
-			return (CoreRoutedPipe) pipe;
-		}
-		return null;
-	}
 
     @Override
     public void invalidate() {
@@ -119,7 +116,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
     			pipe.invalidate();
     		}
     		super.invalidate();
-        } else if (!getCPipe().preventRemove()) {
+        } else if (!pipe.preventRemove()) {
             this.tileEntityInvalid = true;
     		initialized = false;
     		tileBuffer = null;
@@ -127,7 +124,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
     			pipe.invalidate();
     		}
     		super.invalidate();
-			SimpleServiceLocator.openComputersProxy.handleLPInvalidate(this);
+			SimpleServiceLocator.openComputersProxy.handleInvalidate(this);
 			tilePart.invalidate();
         }
     }
@@ -149,7 +146,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 		if (pipe != null) {
 			pipe.onChunkUnload();
 		}
-		SimpleServiceLocator.openComputersProxy.handleLPChunkUnload(this);
+		SimpleServiceLocator.openComputersProxy.handleChunkUnload(this);
 	}
 
 	@Override
@@ -196,12 +193,16 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 			// Pipe connections;
 			for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {
 				renderState.pipeConnectionMatrix.setConnected(o, pipeConnectionsBuffer[o.ordinal()]);
+				renderState.pipeConnectionMatrix.setBCConnected(o, pipeBCConnectionsBuffer[o.ordinal()]);
 			}
 			// Pipe Textures
 			for (int i = 0; i < 7; i++) {
 				ForgeDirection o = ForgeDirection.getOrientation(i);
 				renderState.textureMatrix.setIconIndex(o, pipe.getIconIndex(o));
 			}
+			//New Pipe Texture States
+			renderState.textureMatrix.refreshStates(pipe);
+			
 			tilePart.refreshRenderState();
 			
 			if (renderState.isDirty()) {
@@ -300,7 +301,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 		for(int i=0;i<turtleConnect.length;i++) {
 			nbt.setBoolean("turtleConnect_" + i, turtleConnect[i]);
 		}
-		SimpleServiceLocator.openComputersProxy.handleLPWriteToNBT(this, nbt);
+		SimpleServiceLocator.openComputersProxy.handleWriteToNBT(this, nbt);
 		
 		NBTTagCompound logicNBT = new NBTTagCompound();
 		logicController.writeToNBT(logicNBT);
@@ -341,7 +342,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 		for(int i=0;i<turtleConnect.length;i++) {
 			turtleConnect[i] = nbt.getBoolean("turtleConnect_" + i);
 		}
-		SimpleServiceLocator.openComputersProxy.handleLPReadFromNBT(this, nbt);
+		SimpleServiceLocator.openComputersProxy.handleReadFromNBT(this, nbt);
 		
 		logicController.readFromNBT(nbt.getCompoundTag("logicController"));
 	}
@@ -447,8 +448,8 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 	}
 
 	@Override
-	public boolean isInitialised() { //TODO: check for more ???
-		return initialized && !this.getRoutingPipe().stillNeedReplace();
+	public boolean isInitialised() {
+		return initialized && (!isRoutingPipe() || !this.getRoutingPipe().stillNeedReplace());
 	}
 
 	@Override
@@ -560,7 +561,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 	}
 	
 	public boolean isOpaque() {
-		return getCPipe().isOpaque();
+		return pipe.isOpaque();
 	}
 
 	@Override
@@ -599,17 +600,22 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 	@SideOnly(Side.CLIENT)
 	@ModDependentMethod(modId="OpenComputers@1.3")
 	public boolean canConnect(ForgeDirection dir) {
-		return !(this.getTile(dir) instanceof LogisticsTileGenericPipe);
+		return !(this.getTile(dir) instanceof LogisticsTileGenericPipe) && !(this.getTile(dir) instanceof LogisticsSolidTileEntity);
 	}
 
 	@Override
 	@ModDependentMethod(modId="OpenComputers@1.3")
 	public Node sidedNode(ForgeDirection dir) {
-		if(this.getTile(dir) instanceof LogisticsTileGenericPipe) {
+		if(this.getTile(dir) instanceof LogisticsTileGenericPipe || this.getTile(dir) instanceof LogisticsSolidTileEntity) {
 			return null;
 		} else {
 			return node();
 		}
+	}
+
+	@Override
+	public Object getOCNode() {
+		return node();
 	}
 
 	public boolean initialized = false;
@@ -617,6 +623,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 	public final CoreState coreState = new CoreState();
 	public final IBCCoreState bcCoreState = SimpleServiceLocator.buildCraftProxy.getBCCoreState();
 	public boolean[] pipeConnectionsBuffer = new boolean[6];
+	public boolean[] pipeBCConnectionsBuffer = new boolean[6];
 
 	public CoreUnroutedPipe pipe;
 	public int redstoneInput = 0;
@@ -776,6 +783,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 			t.refresh();
 
 			pipeConnectionsBuffer[side.ordinal()] = canPipeConnect(t.getTile(), side);
+			pipeBCConnectionsBuffer[side.ordinal()] = SimpleServiceLocator.buildCraftProxy.isTileGenericPipe(t.getTile());
 		}
 	}
 
@@ -856,7 +864,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 	@Override
 	@SideOnly(Side.CLIENT)
 	public double getMaxRenderDistanceSquared() {
-		return Configs.PIPE_CONTENTS_RENDER_DIST * Configs.PIPE_CONTENTS_RENDER_DIST;
+		return 64*4 * 64*4;
 	}
 
 	@Override
@@ -928,5 +936,11 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 	@ModDependentMethod(modId="BuildCraft|Transport")
 	public IPipe getPipe() {
 		return null;
+	}
+	
+	@SideOnly(Side.CLIENT)
+	@Override
+	public AxisAlignedBB getRenderBoundingBox() {
+		return AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 1, zCoord + 1);
 	}
 }

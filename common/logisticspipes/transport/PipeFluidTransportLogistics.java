@@ -25,6 +25,7 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 	public FluidStack[] renderCache = new FluidStack[7];
 	
 	public PipeFluidTransportLogistics() {
+		super(true);
 		for(ForgeDirection dir:ForgeDirection.VALID_DIRECTIONS) {
 			sideTanks[dir.ordinal()] = new FluidTank(getSideCapacity());
 		}

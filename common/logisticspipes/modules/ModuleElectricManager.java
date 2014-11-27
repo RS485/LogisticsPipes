@@ -15,6 +15,7 @@ import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
@@ -26,6 +27,7 @@ import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
 import logisticspipes.network.packets.module.ElectricManagetMode;
 import logisticspipes.network.packets.module.ModuleInventory;
 import logisticspipes.pipefxhandlers.Particles;
+import logisticspipes.pipes.PipeLogisticsChassi.ChassiTargetInformation;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -75,7 +77,14 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 	}
 
 
-	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ElectricManager, 0, true, false, 1, 1);
+	private SinkReply _sinkReply;
+	
+	@Override
+	public void registerPosition(ModulePositionType slot, int positionInt) {
+		super.registerPosition(slot, positionInt);
+		_sinkReply = new SinkReply(FixedPriority.ElectricManager, 0, true, false, 1, 1, new ChassiTargetInformation(this.getPositionInt()));
+	}
+	
 	@Override
 	public SinkReply sinksItem(ItemIdentifier stackID, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if (bestPriority >= FixedPriority.ElectricManager.ordinal()) return null;
@@ -124,7 +133,7 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 		if (++currentTick  < ticksToAction) return;
 		currentTick = 0;
 
-		IInventoryUtil inv = _service.getSneakyInventory(true);
+		IInventoryUtil inv = _service.getSneakyInventory(true, slot, positionInt);
 		if(inv == null) return;
 		for(int i=0; i < inv.getSizeInventory(); i++) {
 			ItemStack stack = inv.getStackInSlot(i);

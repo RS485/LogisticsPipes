@@ -5,7 +5,9 @@ import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IGuiOpenControler;
+import logisticspipes.interfaces.IPipeUpgradeManager;
 import logisticspipes.interfaces.ISlotCheck;
+import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.NewGuiHandler;
@@ -27,7 +29,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class UpgradeManager implements ISimpleInventoryEventHandler {
+public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgradeManager, IPipeUpgradeManager {
 	
 	@Getter
 	private SimpleStackInventory inv = new SimpleStackInventory(9, "UpgradeInventory", 16);
@@ -61,6 +63,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	private boolean hasOpaqueUpgrade = false;
 	private int craftingCleanup = 0;
 	private boolean hasLogicControll = false;
+	private boolean hasUpgradeModuleUpgarde = false;
 	
 	private boolean needsContainerPositionUpdate = false;
 	
@@ -139,6 +142,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		hasOpaqueUpgrade = false;
 		craftingCleanup = 0;
 		hasLogicControll = false;
+		hasUpgradeModuleUpgarde = false;
 		for(int i=0;i<upgrades.length;i++) {
 			IPipeUpgrade upgrade = upgrades[i];
 			if(upgrade instanceof SneakyUpgrade && sneakyOrientation == ForgeDirection.UNKNOWN && !isCombinedSneakyUpgrade) {
@@ -175,6 +179,8 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 				craftingCleanup += inv.getStackInSlot(i).stackSize;
 			} else if(upgrade instanceof LogicControllerUpgrade) {
 				hasLogicControll = true;
+			} else if(upgrade instanceof UpgradeModuleUpgrade) {
+				hasUpgradeModuleUpgarde = true;
 			}
 		}
 		liquidCrafter = Math.min(liquidCrafter, ItemUpgrade.MAX_LIQUID_CRAFTER);
@@ -267,7 +273,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 				public boolean isStackAllowed(ItemStack itemStack) {
 					if(itemStack == null) return false;
 					if(itemStack.getItem() == LogisticsPipes.UpgradeItem) {
-						if(!LogisticsPipes.UpgradeItem.getUpgradeForItem(itemStack, null).isAllowed(pipe)) return false;
+						if(!LogisticsPipes.UpgradeItem.getUpgradeForItem(itemStack, null).isAllowedForPipe(pipe)) return false;
 					} else {
 						return false;
 					}
@@ -296,7 +302,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 					if(itemStack.getItem() == LogisticsPipes.UpgradeItem) {
 						IPipeUpgrade upgrade = LogisticsPipes.UpgradeItem.getUpgradeForItem(itemStack, null);
 						if(!(upgrade instanceof SneakyUpgrade)) return false;
-						if(!upgrade.isAllowed(pipe)) return false;
+						if(!upgrade.isAllowedForPipe(pipe)) return false;
 					} else {
 						return false;
 					}
@@ -326,7 +332,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.UpgradeItem) {
 			if(MainProxy.isClient(world)) return true;
 			IPipeUpgrade upgrade = LogisticsPipes.UpgradeItem.getUpgradeForItem(entityplayer.getCurrentEquippedItem(), null);
-			if(upgrade.isAllowed(pipe)) {
+			if(upgrade.isAllowedForPipe(pipe)) {
 				if(isCombinedSneakyUpgrade) {
 					if(upgrade instanceof SneakyUpgrade) {
 						if(insertIntInv(entityplayer, sneakyInv)) return true;
@@ -442,5 +448,15 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 
 	public boolean hasLogicControll() {
 		return hasLogicControll;
+	}
+
+	@Override
+	public boolean hasUpgradeModuleUpgrade() {
+		return hasUpgradeModuleUpgarde;
+	}
+
+	@Override
+	public boolean hasOwnSneakyUpgrade() {
+		return false;
 	}
 }

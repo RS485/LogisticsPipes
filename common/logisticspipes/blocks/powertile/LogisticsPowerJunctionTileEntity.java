@@ -4,11 +4,12 @@ import ic2.api.energy.tile.IEnergySink;
 
 import java.util.List;
 
-import logisticspipes.Configs;
 import logisticspipes.LPConstants;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
+import logisticspipes.blocks.LogisticsSolidTileEntity;
+import logisticspipes.config.Configs;
 import logisticspipes.gui.hud.HUDPowerLevel;
 import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.IGuiOpenControler;
@@ -25,6 +26,8 @@ import logisticspipes.network.packets.hud.HUDStartBlockWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopBlockWatchingPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.computers.interfaces.CCCommand;
+import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.utils.PlayerCollectionList;
 import net.minecraft.crash.CrashReportCategory;
@@ -38,8 +41,9 @@ import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 
-@ModDependentInterface(modId={"IC2", "ComputerCraft@1.6", "CoFHCore", "BuildCraft|Transport"}, interfacePath={"ic2.api.energy.tile.IEnergySink", "dan200.computercraft.api.peripheral.IPeripheral", "cofh.api.energy.IEnergyHandler", "buildcraft.api.power.IPowerReceptor"})
-public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGuiTileEntity, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IPeripheral, IEnergyHandler {
+@ModDependentInterface(modId={"IC2", "CoFHCore", "BuildCraft|Transport"}, interfacePath={"ic2.api.energy.tile.IEnergySink", "cofh.api.energy.IEnergyHandler", "buildcraft.api.power.IPowerReceptor"})
+@CCType(name="LogisticsPowerJunction")
+public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IEnergyHandler {
 
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
 	
@@ -189,6 +193,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 	}
 
 	@Override
+	@CCCommand(description="Returns the currently stored power")
 	public int getPowerLevel() {
 		return internalStorage;
 	}
@@ -204,6 +209,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 	}
 
 	@Override
+	@CCCommand(description="Returns the max. storable power")
 	public int getMaxStorage() {
 		return MAX_STORAGE;
 	}
@@ -323,38 +329,6 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 		return Integer.MAX_VALUE;
 	}
 	
-	@Override
-	@ModDependentMethod(modId="ComputerCraft@1.6")
-	public String getType() {
-		return "LogisticsPowerJunction";
-	}
-	
-	@Override
-	@ModDependentMethod(modId="ComputerCraft@1.6")
-	public String[] getMethodNames() {
-		return new String[]{"getPowerLevel"};
-	}
-	
-	@Override
-	@ModDependentMethod(modId="ComputerCraft@1.6")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
-		return new Object[]{this.getPowerLevel()};
-	}
-	
-	@Override
-	@ModDependentMethod(modId="ComputerCraft@1.6")
-	public boolean equals(IPeripheral other) {
-		return this.equals((Object) other);
-	}
-	
-	@Override
-	@ModDependentMethod(modId="ComputerCraft@1.6")
-	public void attach(IComputerAccess computer) {}
-	
-	@Override
-	@ModDependentMethod(modId="ComputerCraft@1.6")
-	public void detach(IComputerAccess computer) {}
-
 	@Override
 	public boolean isHUDInvalid() {
 		return this.isInvalid();

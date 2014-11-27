@@ -1,5 +1,8 @@
 package logisticspipes.proxy.side;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
@@ -8,9 +11,14 @@ import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.blocks.powertile.LogisticsIC2PowerProviderTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
+import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
 import logisticspipes.gui.modules.ModuleBaseGui;
+import logisticspipes.gui.popup.SelectItemOutOfList;
+import logisticspipes.gui.popup.SelectItemOutOfList.IHandleItemChoise;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.gui.DummyContainerSlotClick;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
 import logisticspipes.pipefxhandlers.providers.EntityBlueSparkleFXProvider;
@@ -28,8 +36,13 @@ import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.renderer.LogisticsPipeItemRenderer;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.renderer.LogisticsRenderPipe;
+import logisticspipes.renderer.LogisticsSolidBlockWorldRenderer;
 import logisticspipes.textures.Textures;
+import logisticspipes.utils.FluidIdentifier;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
+import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -72,12 +85,17 @@ public class ClientProxy implements IProxy {
 		GameRegistry.registerTileEntity(LogisticsSecurityTileEntity.class, "logisticspipes.blocks.LogisticsSecurityTileEntity");
 		GameRegistry.registerTileEntity(LogisticsCraftingTableTileEntity.class, "logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity");
 		GameRegistry.registerTileEntity(LogisticsTileGenericPipe.class, LogisticsPipes.logisticsTileGenericPipeMapping);
+		GameRegistry.registerTileEntity(LogisticsStatisticsTileEntity.class, "logisticspipes.blocks.stats.LogisticsStatisticsTileEntity");
 		
 		LPConstants.pipeModel = RenderingRegistry.getNextAvailableRenderId();
+		LPConstants.solidBlockModel = RenderingRegistry.getNextAvailableRenderId();
 		
 		LogisticsRenderPipe lrp = new LogisticsRenderPipe();
 		ClientRegistry.bindTileEntitySpecialRenderer(LogisticsTileGenericPipe.class, lrp);
+		
 		RenderingRegistry.registerBlockHandler(new LogisticsPipeWorldRenderer());
+		
+		RenderingRegistry.registerBlockHandler(new LogisticsSolidBlockWorldRenderer());
 
 		SimpleServiceLocator.buildCraftProxy.resetItemRotation();
 	}
@@ -163,7 +181,9 @@ public class ClientProxy implements IProxy {
 	@Override
 	public void addLogisticsPipesOverride(IIconRegister par1IIconRegister, int index, String override1, String override2, boolean flag) {
 		if(par1IIconRegister != null) {
-			if(flag) {
+			if("NewPipeTexture".equals(override2) && !override1.contains("status_overlay")) {
+				Textures.LPnewPipeIconProvider.setIcon(index, par1IIconRegister.registerIcon("logisticspipes:"+override1.replace("pipes/", "pipes/new_texture/")));
+			} else if(flag) {
 				Textures.LPpipeIconProvider.setIcon(index, par1IIconRegister.registerIcon("logisticspipes:"+override1));
 			} else {
 				Textures.LPpipeIconProvider.setIcon(index, par1IIconRegister.registerIcon("logisticspipes:"+override1.replace("pipes/", "pipes/overlay_gen/")+"/"+override2.replace("pipes/status_overlay/","")));
@@ -217,5 +237,34 @@ public class ClientProxy implements IProxy {
 	@Override
 	public boolean checkSinglePlayerOwner(String commandSenderName) {
 		return FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() && FMLCommonHandler.instance().getMinecraftServerInstance() instanceof IntegratedServer && !((IntegratedServer)FMLCommonHandler.instance().getMinecraftServerInstance()).getPublic();
+	}
+
+	@Override
+	public void openFluidSelectGui(final int slotId) {
+		if(Minecraft.getMinecraft().currentScreen instanceof LogisticsBaseGuiScreen) {
+			final List<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>();
+			for(FluidIdentifier fluid: FluidIdentifier.all()) {
+				if(fluid == null) continue;
+				list.add(fluid.getItemIdentifier().makeStack(1));
+			}
+			SelectItemOutOfList subGui = new SelectItemOutOfList(list, new IHandleItemChoise() {
+				@Override
+				public void handleItemChoise(int slot) {
+					MainProxy.sendPacketToServer(PacketHandler.getPacket(DummyContainerSlotClick.class).setSlotId(slotId).setStack(list.get(slot).makeNormalStack()).setButton(0));
+				}
+			});
+			LogisticsBaseGuiScreen gui = (LogisticsBaseGuiScreen)Minecraft.getMinecraft().currentScreen;
+			if(!gui.hasSubGui()) {
+				gui.setSubGui(subGui);
+			} else {
+				SubGuiScreen nextGui = gui.getSubGui();
+				while(nextGui.hasSubGui()) {
+					nextGui = nextGui.getSubGui();
+				}
+				nextGui.setSubGui(subGui);
+			}
+		} else {
+			throw new UnsupportedOperationException(String.valueOf(Minecraft.getMinecraft().currentScreen));
+		}
 	}
 }

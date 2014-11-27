@@ -1,11 +1,13 @@
 package logisticspipes.renderer;
 
 import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
+import logisticspipes.config.PlayerConfig;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.side.ClientProxy;
+import logisticspipes.renderer.newpipe.LogisticsNewPipeWorldRenderer;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.textures.Textures;
 import net.minecraft.block.Block;
@@ -20,23 +22,34 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 
 	public static int renderPass = -1;
 	
-	public void renderPipe(RenderBlocks renderblocks, IBlockAccess iblockaccess, LogisticsBlockGenericPipe block, LogisticsTileGenericPipe pipe, int x, int y, int z) {
+	private PlayerConfig config = LogisticsPipes.getClientPlayerConfig();
+	private LogisticsNewPipeWorldRenderer newRenderer = new LogisticsNewPipeWorldRenderer();
+	
+	public static boolean renderPipe(RenderBlocks renderblocks, IBlockAccess iblockaccess, LogisticsBlockGenericPipe block, LogisticsTileGenericPipe pipe, int x, int y, int z) {
 		if(pipe.pipe instanceof PipeBlockRequestTable) {
+			if(LogisticsPipeWorldRenderer.renderPass != 0) return false;
 			PipeRenderState state = pipe.renderState;
 			IIconProvider icons = pipe.getPipeIcons();
-			if (icons == null) return;
+			if (icons == null) return false;
 			state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(ForgeDirection.UNKNOWN));
 			block.setRenderAllSides();
 			block.setBlockBounds(0, 0, 0, 1, 1, 1);
 			renderblocks.setRenderBoundsFromBlock(block);
 			renderblocks.renderStandardBlock(block, x, y, z);
-			return;
+			return true;
 		}
+
+		// Here to prevent Minecraft from crashing when nothing renders on render pass zero
+		// This is likely a bug, and has been submitted as an issue to the Forge team
+		renderblocks.setRenderBounds(0, 0, 0, 0, 0, 0);
+		renderblocks.renderStandardBlock(Blocks.stone, x, y, z);
+		renderblocks.setRenderBoundsFromBlock(block);
+
 		PipeRenderState state = pipe.renderState;
 		IIconProvider icons = pipe.getPipeIcons();
 		
 		if (icons == null)
-			return;
+			return false;
 
 		if (renderPass == 0) {
 			int connectivity = state.pipeConnectionMatrix.getMask();
@@ -60,8 +73,8 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 					resetToCenterDimensions(dim);
 					
 					// extend block towards dir as it's connected to there
-					dim[dir / 2] = dir % 2 == 0 ? 0 : LPConstants.PIPE_MAX_POS;
-					dim[dir / 2 + 3] = dir % 2 == 0 ? LPConstants.PIPE_MIN_POS : 1;
+					dim[dir / 2] = dir % 2 == 0 ? 0 : LPConstants.BC_PIPE_MAX_POS;
+					dim[dir / 2 + 3] = dir % 2 == 0 ? LPConstants.BC_PIPE_MIN_POS : 1;
 		
 					// the mask points to all faces perpendicular to dir, i.e. dirs 0+1 -> mask 111100, 1+2 -> 110011, 3+5 -> 001111
 					int renderMask = (3 << (dir / 2 * 2)) ^ 0x3f;
@@ -98,8 +111,8 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 					resetToCenterDimensions(dim);
 					
 					// extend block towards dir as it's connected to there
-					dim[dir / 2] = dir % 2 == 0 ? 0 : LPConstants.PIPE_MAX_POS;
-					dim[dir / 2 + 3] = dir % 2 == 0 ? LPConstants.PIPE_MIN_POS : 1;
+					dim[dir / 2] = dir % 2 == 0 ? 0 : LPConstants.BC_PIPE_MAX_POS;
+					dim[dir / 2 + 3] = dir % 2 == 0 ? LPConstants.BC_PIPE_MIN_POS : 1;
 		
 					// the mask points to all faces perpendicular to dir, i.e. dirs 0+1 -> mask 111100, 1+2 -> 110011, 3+5 -> 001111
 					int renderMask = (3 << (dir / 2 * 2)) ^ 0x3f;
@@ -127,17 +140,18 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 			SimpleServiceLocator.buildCraftProxy.pipePlugRenderer(renderblocks, block, state, x, y, z);
 			SimpleServiceLocator.buildCraftProxy.pipeRobotStationRenderer(renderblocks, block, state, x, y, z);
 		}
+		return true;
 	}
 
-	private void resetToCenterDimensions(float[] dim) {
-		for (int i = 0; i < 3; i++) dim[i] = LPConstants.PIPE_MIN_POS;
-		for (int i = 3; i < 6; i++) dim[i] = LPConstants.PIPE_MAX_POS;
+	private static void resetToCenterDimensions(float[] dim) {
+		for (int i = 0; i < 3; i++) dim[i] = LPConstants.BC_PIPE_MIN_POS;
+		for (int i = 3; i < 6; i++) dim[i] = LPConstants.BC_PIPE_MAX_POS;
 	}
 
 	/**
 	 * Render a block with normal and inverted vertex order so back face culling doesn't have any effect.
 	 */
-	private void renderOneWayBlock(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, int x, int y, int z, float[] dim, int mask) {
+	private static void renderOneWayBlock(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, int x, int y, int z, float[] dim, int mask) {
 		assert mask != 0;
 
 		block.setRenderMask(mask);
@@ -148,7 +162,7 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 	/**
 	 * Render a block with normal and inverted vertex order so back face culling doesn't have any effect.
 	 */
-	private void renderTwoWayBlock(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, int x, int y, int z, float[] dim, int mask) {
+	private static void renderTwoWayBlock(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, int x, int y, int z, float[] dim, int mask) {
 		assert mask != 0;
 
 		block.setRenderMask(mask);
@@ -168,18 +182,11 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 	@Override
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
 		TileEntity tile = world.getTileEntity(x, y, z);
-
-		// Here to prevent Minecraft from crashing when nothing renders on render pass zero
-		// This is likely a bug, and has been submitted as an issue to the Forge team
-		renderer.setRenderBounds(0, 0, 0, 0, 0, 0);
-		renderer.renderStandardBlock(Blocks.stone, x, y, z);
-		renderer.setRenderBoundsFromBlock(block);
-
-		if (tile instanceof LogisticsTileGenericPipe) {
-			LogisticsTileGenericPipe pipeTile = (LogisticsTileGenericPipe) tile;
-			renderPipe(renderer, world, (LogisticsBlockGenericPipe) block, pipeTile, x, y, z);
+		LogisticsTileGenericPipe pipeTile = (LogisticsTileGenericPipe) tile;
+		if(config.isUseNewRenderer() && !pipeTile.renderState.forceRenderOldPipe) {
+			return newRenderer.renderWorldBlock(world, x, y, z, block, modelId, renderer);
 		}
-		return true;
+		return renderPipe(renderer, world, (LogisticsBlockGenericPipe) block, pipeTile, x, y, z);
 	}
 
 	@Override

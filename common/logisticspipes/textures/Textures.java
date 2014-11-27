@@ -5,12 +5,14 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.renderer.IIconProvider;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import logisticspipes.textures.provider.LPPipeIconProvider;
+import logisticspipes.textures.provider.LPPipeIconTransformerProvider;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.IIcon;
 import cpw.mods.fml.common.FMLCommonHandler;
 
 public class Textures {
 	private int index = 0;
+	private int newTextureIndex = 0;
 	public static TextureType empty = new TextureType();
 	static {
 		empty.normal = 0;
@@ -29,10 +31,17 @@ public class Textures {
 		empty_2.powered = 2;
 		empty_2.unpowered = 2;
 	}
+	public static SmallTextureType smallEmpty = new SmallTextureType();
+	static {
+		smallEmpty.normal = 0;
+		smallEmpty.newTexture = 0;
+	}
+	
 	
 	public Textures() {
 		LPactionIconProvider = new LPActionTriggerIconProvider();
 		LPpipeIconProvider = new LPPipeIconProvider();
+		LPnewPipeIconProvider = new LPPipeIconTransformerProvider();
 	}
 
 	public static TextureType LOGISTICSPIPE_TEXTURE							= empty;
@@ -82,6 +91,8 @@ public class Textures {
 	public static TextureType LOGISTICSPIPE_LIQUID_EXTRACTOR				= empty;
 	public static TextureType LOGISTICSPIPE_LIQUID_SATELLITE				= empty;
 	public static TextureType LOGISTICSPIPE_OPAQUE_TEXTURE					= empty;
+	
+	public static SmallTextureType LOGISTICSPIPE_BASIC_TRANSPORT_TEXTURE	= smallEmpty;
 	
 	public static IIcon LOGISTICS_REQUEST_TABLE[]							= new IIcon[0];
 	
@@ -160,9 +171,12 @@ public class Textures {
 	public static String				LOGISTICSPIPE_OVERLAY_UNPOWERED_TEXTURE_FILE	= "pipes/status_overlay/un-powered-pipe";
 	public static String				LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE			= "pipes/status_overlay/un-overlayed";
 	
+	public static String				LOGISTICSPIPE_BASIC_TRANSPORT_TEXTURE_FILE		= "pipes/transport/basic";
+	
 	public static String				LOGISTICS_SOLID_BLOCK							= LOGISTICSPIPE_TEXTURE_FILE;
 	public static IIconProvider			LPactionIconProvider;
 	public static LPPipeIconProvider	LPpipeIconProvider;
+	public static LPPipeIconTransformerProvider	LPnewPipeIconProvider;
 
 	//this gets called with null par1IIconRegister from preinit, and later with non-null from textureprestitch
 	public void registerBlockIcons(IIconRegister par1IIconRegister) {
@@ -170,8 +184,9 @@ public class Textures {
 		MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, 0, "empty", "", true);
 		MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, 1, "empty", "", true);
 		MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, 2, "empty", "", true);
-		
+
 		index = 3;
+		newTextureIndex = 0;
 		
 		// Standalone pipes
 		LOGISTICSPIPE_TEXTURE 						= registerTexture(par1IIconRegister, LOGISTICSPIPE_TEXTURE_FILE);
@@ -226,6 +241,9 @@ public class Textures {
 		LOGISTICSPIPE_CHASSI4_TEXTURE 				= registerTexture(par1IIconRegister, LOGISTICSPIPE_CHASSI4_TEXTURE_FILE);
 		LOGISTICSPIPE_CHASSI5_TEXTURE 				= registerTexture(par1IIconRegister, LOGISTICSPIPE_CHASSI5_TEXTURE_FILE);
 		
+		//Transport
+		LOGISTICSPIPE_BASIC_TRANSPORT_TEXTURE 		= registerSmallTexture(par1IIconRegister, LOGISTICSPIPE_BASIC_TRANSPORT_TEXTURE_FILE);
+		
 		if(MainProxy.isClient() && par1IIconRegister != null) {
 			LOGISTICS_REQUEST_TABLE = new IIcon[5];
 			for(int i = 0;i < 5;i++) {
@@ -250,7 +268,7 @@ public class Textures {
 	 * @param fileName - name of texture
 	 * @param flag - 2 - register single texture without overlay, 1/0 register with overlay
 	 */
-	
+
 	private TextureType registerTexture(IIconRegister par1IIconRegister, String fileName, int flag) {
 		TextureType texture = new TextureType();
 			texture.normal = index++;
@@ -268,10 +286,27 @@ public class Textures {
 					MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, texture.powered,fileName,LOGISTICSPIPE_OVERLAY_POWERED_TEXTURE_FILE,false);
 					MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, texture.unpowered,fileName,LOGISTICSPIPE_OVERLAY_UNPOWERED_TEXTURE_FILE,false);
 				}
-			} 
+				if(!fileName.contains("status_overlay")) {
+					texture.newTexture = newTextureIndex++;
+					MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, texture.newTexture, fileName, "NewPipeTexture", true);
+				}
+			}
 		return texture;
 	}
 	
+	private SmallTextureType registerSmallTexture(IIconRegister par1IIconRegister, String fileName) {
+		SmallTextureType texture = new SmallTextureType();
+		texture.normal = index++;
+		texture.fileName = fileName;
+		boolean isClient = MainProxy.isClient();
+		if(isClient) {
+			MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, texture.normal, fileName, "", true);
+		}
+		texture.newTexture = newTextureIndex++;
+		MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, texture.newTexture, fileName, "NewPipeTexture", true);
+		return texture;
+	}
+
 	private int registerSingleTexture(IIconRegister par1IIconRegister, String fileName) {
 		int texture = index++;
 		if(FMLCommonHandler.instance().getEffectiveSide().isClient()) {
@@ -284,6 +319,13 @@ public class Textures {
 		public int normal;
 		public int powered;
 		public int unpowered;
+		public int newTexture;
+		public String fileName = "";
+	}
+	
+	public static class SmallTextureType {
+		public int normal;
+		public int newTexture;
 		public String fileName = "";
 	}
 }

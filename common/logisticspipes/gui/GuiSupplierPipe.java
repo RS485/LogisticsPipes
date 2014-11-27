@@ -8,7 +8,6 @@
 
 package logisticspipes.gui;
 
-import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import logisticspipes.modules.ModuleActiveSupplier;
 import logisticspipes.modules.ModuleActiveSupplier.PatternMode;
 import logisticspipes.modules.ModuleActiveSupplier.SupplyMode;
@@ -29,7 +28,7 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiSupplierPipe extends LogisticsBaseGuiScreen implements IGuiIDHandlerProvider {
+public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 	private static final String PREFIX = "gui.supplierpipe.";
 	
 	private ModuleActiveSupplier module; 

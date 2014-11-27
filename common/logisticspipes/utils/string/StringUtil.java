@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 
@@ -97,7 +98,7 @@ public class StringUtil {
 		}
 	}
 
-	public static String getFormatedStackSize(int stackSize) {
+	public static String getFormatedStackSize(long stackSize) {
 		String s;
 		if (stackSize == 1) {
 			s = "";
@@ -119,5 +120,15 @@ public class StringUtil {
 		value *= 100;
 		int percent = (int) value;
 		return Integer.toString(percent) + "%";
+	}
+
+	public static String getWithMaxWidth(String name, int width, FontRenderer fontRenderer) {
+		boolean changed = false;
+		while(fontRenderer.getStringWidth(name) > width) {
+			name = name.substring(0, name.length() - 2);
+			changed = true;
+		}
+		if(changed) name += "...";
+		return name;
 	}
 }

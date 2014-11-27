@@ -17,9 +17,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import logisticspipes.Configs;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Configs;
 import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.gui.hud.HUDChassiePipe;
 import logisticspipes.interfaces.IBufferItems;
@@ -29,6 +29,7 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILegacyActiveModule;
 import logisticspipes.interfaces.ISendQueueContentRecieiver;
 import logisticspipes.interfaces.ISendRoutedItem;
+import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IFilter;
@@ -51,6 +52,7 @@ import logisticspipes.network.packets.pipe.RequestChassiOrientationPacket;
 import logisticspipes.network.packets.pipe.SendQueueContent;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.upgrades.ModuleUpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.computers.interfaces.CCCommand;
@@ -88,6 +90,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	private final ChassiModule _module;
 	private final ItemIdentifierInventory _moduleInventory;
+	private final ModuleUpgradeManager[] _upgradeManagers;
 	private boolean switchOrientationOnTick = true;
 	private boolean init = false;
 	
@@ -102,6 +105,10 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		super(item);
 		_moduleInventory = new ItemIdentifierInventory(getChassiSize(), "Chassi pipe", 1);
 		_moduleInventory.addListener(this);
+		_upgradeManagers = new ModuleUpgradeManager[getChassiSize()];
+		for(int i=0;i<getChassiSize();i++) {
+			_upgradeManagers[i] = new ModuleUpgradeManager(this, this.upgradeManager);
+		}
 		_module = new ChassiModule(getChassiSize(), this);
 		HUD = new HUDChassiePipe(this, _module, _moduleInventory);
 		pointedDirection=ForgeDirection.UNKNOWN;
@@ -163,6 +170,10 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		return this._moduleInventory;
 	}
 
+	public ModuleUpgradeManager getModuleUpgradeManager(int slot) {
+		return _upgradeManagers[slot];
+	}
+
 	@Override
 	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_TEXTURE;
@@ -202,7 +213,6 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		switchOrientationOnTick = true;
 	}
 
-
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		try {
@@ -215,6 +225,9 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 				convertFromMeta = true;
 			}
 			switchOrientationOnTick = (pointedDirection == ForgeDirection.UNKNOWN);
+			for(int i=0; i<getChassiSize(); i++) {
+				_upgradeManagers[i].readFromNBT(nbttagcompound, Integer.toString(i));
+			}
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -227,6 +240,9 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		_module.writeToNBT(nbttagcompound);
 		if(pointedDirection == null) pointedDirection = ForgeDirection.UNKNOWN;
 		nbttagcompound.setInteger("Orientation", pointedDirection.ordinal());
+		for(int i=0; i<getChassiSize(); i++) {
+			_upgradeManagers[i].writeToNBT(nbttagcompound, Integer.toString(i));
+		}
 	}
 
 	@Override
@@ -256,8 +272,8 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	@Override
 	public void itemArrived(ItemIdentifierStack item, IAdditionalTargetInformation info) {
 		if(MainProxy.isServer(this.getWorld())) {
-			if(info instanceof ChasseTargetInformation) {
-				ChasseTargetInformation target = (ChasseTargetInformation) info;
+			if(info instanceof ChassiTargetInformation) {
+				ChassiTargetInformation target = (ChassiTargetInformation) info;
 				LogisticsModule module = _module.getSubModule(target.moduleSlot);
 				if(module instanceof IRequireReliableTransport) {
 					((IRequireReliableTransport) module).itemArrived(item, info);
@@ -274,8 +290,8 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	@Override
 	public void itemLost(ItemIdentifierStack item, IAdditionalTargetInformation info) {
 		if(MainProxy.isServer(this.getWorld())) {
-			if(info instanceof ChasseTargetInformation) {
-				ChasseTargetInformation target = (ChasseTargetInformation) info;
+			if(info instanceof ChassiTargetInformation) {
+				ChassiTargetInformation target = (ChassiTargetInformation) info;
 				LogisticsModule module = _module.getSubModule(target.moduleSlot);
 				if(module instanceof IRequireReliableTransport) {
 					((IRequireReliableTransport) module).itemLost(item, info);
@@ -292,8 +308,8 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	@Override
 	public int addToBuffer(ItemIdentifierStack item, IAdditionalTargetInformation info) {
 		if(MainProxy.isServer(this.getWorld())) {
-			if(info instanceof ChasseTargetInformation) {
-				ChasseTargetInformation target = (ChasseTargetInformation) info;
+			if(info instanceof ChassiTargetInformation) {
+				ChassiTargetInformation target = (ChassiTargetInformation) info;
 				LogisticsModule module = _module.getSubModule(target.moduleSlot);
 				if(module instanceof IBufferItems) {
 					return ((IBufferItems)module).addToBuffer(item, info);
@@ -704,17 +720,28 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	}
 	
 	@Override
+	public ISlotUpgradeManager getUpgradeManager(ModulePositionType slot, int positionInt) {
+		if(slot != ModulePositionType.SLOT || positionInt > _upgradeManagers.length) {
+			if(LPConstants.DEBUG) {
+				new UnsupportedOperationException("Position info arn't for a chassi pipe. (" + slot + "/" + positionInt + ")").printStackTrace();
+			}
+			return super.getUpgradeManager(slot, positionInt);
+		}
+		return _upgradeManagers[positionInt];
+	}
+
+	@Override
 	public int getTodo() {
 		// TODO Auto-generated method stub
 		// probably not needed, the chasi order manager handles the count, would need to store origin to specifically know this.
 		return 0;
 	}
 	
-	public static class ChasseTargetInformation implements IAdditionalTargetInformation {
+	public static class ChassiTargetInformation implements IAdditionalTargetInformation {
 		@Getter
 		private final int moduleSlot;
 		
-		public ChasseTargetInformation(int slot) {
+		public ChassiTargetInformation(int slot) {
 			this.moduleSlot = slot;
 		}
 	}

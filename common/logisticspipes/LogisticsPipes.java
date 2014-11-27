@@ -17,12 +17,15 @@ import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.commands.LogisticsPipesCommand;
 import logisticspipes.commands.chathelper.LPChatListener;
+import logisticspipes.config.Configs;
+import logisticspipes.config.PlayerConfig;
 import logisticspipes.items.ItemDisk;
 import logisticspipes.items.ItemHUDArmor;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.ItemParts;
 import logisticspipes.items.ItemPipeController;
+import logisticspipes.items.ItemPipeParts;
 import logisticspipes.items.ItemPipeSignCreator;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsBrokenItem;
@@ -69,6 +72,7 @@ import logisticspipes.pipes.PipeLogisticsChassiMk5;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
+import logisticspipes.pipes.unrouted.PipeItemsBasicTransport;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.ProxyManager;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -251,6 +255,9 @@ public class LogisticsPipes {
 	public static Item LogisticsFluidSupplierPipeMk2;
 	public static Item LogisticsFluidInsertionPipe;
 	public static Item LogisticsFluidExtractorPipe;
+	
+	//Transport Pipes
+	public static Item BasicTransportPipe;
 
 	// Logistics Modules/Upgrades
 	public static ItemModule ModuleItem;
@@ -263,13 +270,14 @@ public class LogisticsPipes {
 	public static Item LogisticsItemCard;
 	public static ItemHUDArmor LogisticsHUDArmor;
 	public static Item LogisticsParts;
+	public static Item PipeParts;
 	public static Item LogisticsFluidContainer;
 	public static Item LogisticsBrokenItem;
 	public static Item LogisticsPipeControllerItem;
 	
 	// Logistics Blocks
 	public static Block LogisticsSolidBlock;
-    public static Block LogisticsPipeBlock;
+    public static LogisticsBlockGenericPipe LogisticsPipeBlock;
 
 	public static Textures textures = new Textures();
 	
@@ -280,6 +288,8 @@ public class LogisticsPipes {
 	public static Logger log;
 
 	private static LPGlobalCCAccess	generalAccess;
+
+	private static PlayerConfig playerConfig;
 	
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
@@ -400,6 +410,10 @@ public class LogisticsPipes {
 		LogisticsParts.setUnlocalizedName("logisticsParts");
 		GameRegistry.registerItem(LogisticsParts, LogisticsParts.getUnlocalizedName());
 		
+		PipeParts = new ItemPipeParts();
+		PipeParts.setUnlocalizedName("pipeParts");
+		GameRegistry.registerItem(PipeParts, PipeParts.getUnlocalizedName());
+		
 		SimpleServiceLocator.buildCraftProxy.registerTrigger();
 		
 		ModuleItem = new ItemModule();
@@ -492,6 +506,7 @@ public class LogisticsPipes {
 		if(event.getSide().equals(Side.CLIENT)) {
 			LogisticsHUDRenderer.instance().clear();
 		}
+		LogisticsEventListener.serverShutdown();
 	}
 	
 	@EventHandler
@@ -552,6 +567,8 @@ public class LogisticsPipes {
 		LogisticsPipes.LogisticsFluidSupplierPipeMk2 = createPipe(PipeFluidSupplierMk2.class, "Logistics Fluid Supplier Pipe Mk2", side);
 	
 		LogisticsPipes.logisticsRequestTable = createPipe(PipeBlockRequestTable.class, "Request Table", side);
+		
+		LogisticsPipes.BasicTransportPipe = createPipe(PipeItemsBasicTransport.class, "Basic Transport Pipe", side);
 	}
 	
 	protected Item createPipe(Class <? extends CoreUnroutedPipe> clas, String descr, Side side) {
@@ -560,7 +577,7 @@ public class LogisticsPipes {
 		res.setUnlocalizedName(clas.getSimpleName());
 		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.createPipe(res);
 		if(pipe instanceof CoreRoutedPipe) {
-			res.setPipeIconIndex(((CoreRoutedPipe)pipe).getTextureType(ForgeDirection.UNKNOWN).normal);
+			res.setPipeIconIndex(((CoreRoutedPipe)pipe).getTextureType(ForgeDirection.UNKNOWN).normal, ((CoreRoutedPipe)pipe).getTextureType(ForgeDirection.UNKNOWN).newTexture);
 		}
 		
 		if(side.isClient()) {
@@ -588,5 +605,12 @@ public class LogisticsPipes {
 			}
 			CraftingManager.getInstance().addShapelessRecipe(new ItemStack(toItem, j, fromData), obj);
 		}
+	}
+	
+	public static PlayerConfig getClientPlayerConfig() {
+		if(playerConfig == null) {
+			playerConfig = new PlayerConfig(true, null);
+		}
+		return playerConfig;
 	}
 }

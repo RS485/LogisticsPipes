@@ -8,16 +8,21 @@
 
 package logisticspipes.gui;
 
+import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.items.ItemModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.guis.pipe.ChassiGuiProvider;
 import logisticspipes.network.packets.chassis.ChassisGUI;
 import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.upgrades.ModuleUpgradeManager;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
+import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -35,13 +40,15 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 	private int left;
 	private int top;
 	
-	public GuiChassiPipe(EntityPlayer player, PipeLogisticsChassi chassi) { //, GuiScreen previousGui) {
+	private boolean hasUpgradeModuleUpgarde;
+	
+	public GuiChassiPipe(EntityPlayer player, PipeLogisticsChassi chassi, boolean hasUpgradeModuleUpgarde) { //, GuiScreen previousGui) {
 		super(null);
 		_player = player;
 		_chassiPipe = chassi;
 		_moduleInventory = chassi.getModuleInventory();
 		//_previousGui = previousGui;
-		
+		this.hasUpgradeModuleUpgarde = hasUpgradeModuleUpgarde;
 		
 		DummyContainer dummy = new DummyContainer(_player.inventory, _moduleInventory);
 		if (_chassiPipe.getChassiSize() < 5){
@@ -58,6 +65,25 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 			dummy.addModuleSlot(5, _moduleInventory, 19, 109, _chassiPipe);
 			dummy.addModuleSlot(6, _moduleInventory, 19, 129, _chassiPipe);
 			dummy.addModuleSlot(7, _moduleInventory, 19, 149, _chassiPipe);
+		}
+		
+		if(hasUpgradeModuleUpgarde) {
+			for(int i=0; i < _chassiPipe.getChassiSize(); i++) {
+				final int fI = i;
+				ModuleUpgradeManager upgradeManager = _chassiPipe.getModuleUpgradeManager(i);
+				dummy.addRestrictedSlot(0, upgradeManager.getInv(), 145, 9 + i * 20, new ISlotCheck() {
+					@Override
+					public boolean isStackAllowed(ItemStack itemStack) {
+						return ChassiGuiProvider.checkStack(itemStack, _chassiPipe, fI);
+					}
+				});
+				dummy.addRestrictedSlot(1, upgradeManager.getInv(), 165, 9 + i * 20, new ISlotCheck() {
+					@Override
+					public boolean isStackAllowed(ItemStack itemStack) {
+						return ChassiGuiProvider.checkStack(itemStack, _chassiPipe, fI);
+					}
+				});
+			}
 		}
 		
 		this.inventorySlots = dummy;
@@ -105,7 +131,6 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 			}
 		}
 	}
-
 	
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
@@ -142,15 +167,21 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 		if (this._moduleInventory == null) return "";
 		if (this._moduleInventory.getStackInSlot(slot) == null) return "";
 		if (!(this._moduleInventory.getStackInSlot(slot).getItem() instanceof ItemModule)) return "";
-		return ((ItemModule)this._moduleInventory.getStackInSlot(slot).getItem()).getItemStackDisplayName(this._moduleInventory.getStackInSlot(slot));
+		String name = ((ItemModule)this._moduleInventory.getStackInSlot(slot).getItem()).getItemStackDisplayName(this._moduleInventory.getStackInSlot(slot));
+		if(!hasUpgradeModuleUpgarde) return name;
+		return StringUtil.getWithMaxWidth(name, 100, this.fontRendererObj);
 	}
 	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(_chassiPipe.getChassiGUITexture());
-		int j = guiLeft;
-		int k = guiTop;
-		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
+		drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
+		if(hasUpgradeModuleUpgarde) {
+			for(int i=0; i < _chassiPipe.getChassiSize(); i++) {
+				BasicGuiHelper.drawSlotBackground(mc, guiLeft + 144, guiTop + 8 + i * 20);
+				BasicGuiHelper.drawSlotBackground(mc, guiLeft + 164, guiTop + 8 + i * 20);
+			}
+		}
 	}
 }

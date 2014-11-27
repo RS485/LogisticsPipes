@@ -23,17 +23,19 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.PriorityBlockingQueue;
 
-import logisticspipes.Configs;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
+import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IClientState;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IPipeServiceProvider;
+import logisticspipes.interfaces.IPipeUpgradeManager;
 import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.interfaces.ISecurityProvider;
+import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
@@ -53,6 +55,7 @@ import logisticspipes.logisticspipes.RouteLayer;
 import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
@@ -130,7 +133,6 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	}
 
 	protected boolean stillNeedReplace = true;
-	public DebugLogController debug = new DebugLogController(this);
 	
 	protected IRouter router;
 	protected String routerId;
@@ -138,7 +140,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	private static int pipecount = 0;
 	protected int _delayOffset = 0;
 	
-	private boolean _textureBufferPowered;
+	public boolean _textureBufferPowered;
 	
 	protected boolean _initialInit = true;
 	
@@ -154,7 +156,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	protected TransportLayer _transportLayer;
 	protected final PriorityBlockingQueue<ItemRoutingInformation> _inTransitToMe = new PriorityBlockingQueue<ItemRoutingInformation>(10, new ItemRoutingInformation.DelayComparator());
 	
-	private UpgradeManager upgradeManager = new UpgradeManager(this);
+	protected UpgradeManager upgradeManager = new UpgradeManager(this);
 	protected LogisticsOrderManager _orderManager = null;
 	
 	public int stat_session_sent;
@@ -187,7 +189,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	protected IPipeSign[] signItem = new IPipeSign[6];
 	private boolean isOpaqueClientSide = false;
 	public CoreRoutedPipe(Item item) {
-		this(new PipeTransportLogistics(), item);
+		this(new PipeTransportLogistics(true), item);
 	}
 
 	public CoreRoutedPipe(PipeTransportLogistics transport, Item item) {
@@ -214,7 +216,15 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		return _transportLayer;
 	}
 
-	public UpgradeManager getUpgradeManager() {
+	public ISlotUpgradeManager getUpgradeManager(ModulePositionType slot, int positionInt) {
+		return upgradeManager;
+	}
+	
+	public IPipeUpgradeManager getUpgradeManager() {
+		return upgradeManager;
+	}
+	
+	public UpgradeManager getOriginalUpgradeManager() {
 		return upgradeManager;
 	}
 	
@@ -376,7 +386,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		}
 		//update router before ticking logic/transport
 		getRouter().update(getWorld().getTotalWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit, this);
-		getUpgradeManager().securityTick();
+		getOriginalUpgradeManager().securityTick();
 		super.updateEntity();
 		
 		// from BaseRoutingLogic
@@ -518,7 +528,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 			if (transport != null && transport instanceof PipeTransportLogistics){
 				transport.dropBuffer();
 			}
-			getUpgradeManager().dropUpgrades();
+			getOriginalUpgradeManager().dropUpgrades();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -554,6 +564,9 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		}
 	}
 	
+	public int getTextureIndex() {
+		return getCenterTexture().newTexture;
+	}
 	
 	public abstract TextureType getCenterTexture();
 	
@@ -803,7 +816,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	public final boolean blockActivated(EntityPlayer entityplayer) {
 		SecuritySettings settings = null;
 		if(MainProxy.isServer(entityplayer.worldObj)) {
-			LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(getUpgradeManager().getSecurityID());
+			LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(getOriginalUpgradeManager().getSecurityID());
 			if(station != null) {
 				settings = station.getSecuritySettingsForPlayer(entityplayer, true);
 			}
@@ -866,7 +879,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 			return true;
 		}
 
-		if(!(entityplayer.isSneaking()) && getUpgradeManager().tryIserting(getWorld(), entityplayer)) {
+		if(!(entityplayer.isSneaking()) && getOriginalUpgradeManager().tryIserting(getWorld(), entityplayer)) {
 			return true;
 		}
 
@@ -1012,11 +1025,11 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	}
 	
 	public UUID getSecurityID() {
-		return getUpgradeManager().getSecurityID();
+		return getOriginalUpgradeManager().getSecurityID();
 	}
 
 	public void insetSecurityID(UUID id) {
-		getUpgradeManager().insetSecurityID(id);
+		getOriginalUpgradeManager().insetSecurityID(id);
 	}
 	
 	/* Power System */
@@ -1136,11 +1149,11 @@ outer:
 	}
 	
 	public ISecurityProvider getSecurityProvider() {
-		return SimpleServiceLocator.securityStationManager.getStation(getUpgradeManager().getSecurityID());
+		return SimpleServiceLocator.securityStationManager.getStation(getOriginalUpgradeManager().getSecurityID());
 	}
 	
 	public boolean canBeDestroyedByPlayer(EntityPlayer entityPlayer) {
-		LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(getUpgradeManager().getSecurityID());
+		LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(getOriginalUpgradeManager().getSecurityID());
 		if(station != null) {
 			return station.getSecuritySettingsForPlayer(entityPlayer, true).removePipes;
 		}
@@ -1234,12 +1247,6 @@ outer:
 	}
 	
 	@Override
-	@SideOnly(Side.CLIENT)
-	public IIconProvider getIconProvider() {
-		return Textures.LPpipeIconProvider;
-	}
-	
-	@Override
 	public final int getIconIndex(ForgeDirection connection) {
 		TextureType texture = getTextureType(connection);
 		if(_textureBufferPowered) {
@@ -1258,10 +1265,6 @@ outer:
 	
 	protected void addRouterCrashReport(CrashReportCategory crashReportCategory) {
 		crashReportCategory.addCrashSection("Router", this.getRouter().toString());
-	}
-	
-	public boolean isFluidPipe() {
-		return false;
 	}
 	
 	/* --- CCCommands --- */
@@ -1406,19 +1409,6 @@ outer:
 	public void handleIC2PowerArival(float toSend) {
 		powerHandler.addIC2Power(toSend);
 	}
-
-	@Override
-	public String toString() {
-		return super.toString() + " (" + this.getX() + ", " + this.getY() + ", " + this.getZ() + ")";
-	}
-
-	public LPPosition getLPPosition() {
-		return new LPPosition(this);
-	}
-
-	public WorldUtil getWorldUtil() {
-		return new WorldUtil(this.getWorld(), this.getX(), this.getY(), this.getZ());
-	}
 	
 
 	/*** IInventoryProvider ***/
@@ -1452,8 +1442,8 @@ outer:
 	}
 
 	@Override
-	public IInventoryUtil getSneakyInventory(boolean forExtraction) {
-		UpgradeManager manager = getUpgradeManager();
+	public IInventoryUtil getSneakyInventory(boolean forExtraction, ModulePositionType slot, int positionInt) {
+		ISlotUpgradeManager manager = getUpgradeManager(slot, positionInt);
 		ForgeDirection insertion = this.getPointedOrientation().getOpposite();
 		if(manager.hasSneakyUpgrade()) {
 			insertion = manager.getSneakyOrientation();
@@ -1516,6 +1506,7 @@ outer:
 				itemToSend.setTransportMode(TransportMode.Passive);
 			}
 		}
+		itemToSend.setAdditionalTargetInformation(reply.getValue2().addInfo);
 		queueRoutedItem(itemToSend, getPointedOrientation(), mode);
 		return itemToSend;
 	}
@@ -1643,12 +1634,6 @@ outer:
 			return signItem[dir.ordinal()];
 		}
 		return null;
-	}
-
-	public void triggerDebug() {
-		if(this.debug.debugThisPipe) {
-			System.out.print("");
-		}
 	}
 
 	@Override

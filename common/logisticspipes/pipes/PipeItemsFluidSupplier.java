@@ -40,7 +40,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 	private boolean _lastRequestFailed = false;
 	
 	public PipeItemsFluidSupplier(Item item) {
-		super(new PipeTransportLogistics() {
+		super(new PipeTransportLogistics(true) {
 			@Override
 			public boolean canPipeConnect(TileEntity tile, ForgeDirection dir) {
 				if(super.canPipeConnect(tile, dir)) return true;
@@ -91,8 +91,8 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 		FluidStack liquidId = FluidContainerRegistry.getFluidForFilledItem(data.getItemIdentifierStack().makeNormalStack());
 		if (liquidId == null) return;
 		ForgeDirection orientation = data.output.getOpposite();
-		if(getUpgradeManager().hasSneakyUpgrade()) {
-			orientation = getUpgradeManager().getSneakyOrientation();
+		if(getOriginalUpgradeManager().hasSneakyUpgrade()) {
+			orientation = getOriginalUpgradeManager().getSneakyOrientation();
 		}
 		while (data.getItemIdentifierStack().getStackSize() > 0 && container.fill(orientation, liquidId, false) == liquidId.amount && this.useEnergy(5)) {
 			container.fill(orientation, liquidId.copy(), true);

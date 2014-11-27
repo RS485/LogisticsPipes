@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Configs;
 import logisticspipes.gui.popup.GuiDiskPopup;
 import logisticspipes.gui.popup.GuiRequestPopup;
 import logisticspipes.gui.popup.RequestMonitorPopup;
@@ -18,6 +18,7 @@ import logisticspipes.interfaces.ISlotClick;
 import logisticspipes.interfaces.ISpecialItemRenderer;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.block.CraftingCycleRecipe;
 import logisticspipes.network.packets.orderer.DiskRequestConectPacket;
 import logisticspipes.network.packets.orderer.OrdererRefreshRequestPacket;
 import logisticspipes.network.packets.orderer.RequestComponentPacket;
@@ -79,6 +80,8 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 	
 	private BitSet handledExtention = new BitSet();
 	private int orderIdForButton;
+	
+	private GuiButton[] sycleButtons = new GuiButton[2];
 	
 	public GuiRequestTable(EntityPlayer entityPlayer, PipeBlockRequestTable table) {
 		super(410, 240, 0, 0);
@@ -151,6 +154,9 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		buttonList.add(new SmallGuiButton(17, guiLeft + 173, guiTop + 5, 36, 10, "Hide")); // Hide
 		buttonList.add(Macrobutton = new SmallGuiButton(18, right - 55, bottom - 60, 50, 10, "Disk"));
 		Macrobutton.enabled = false;
+		
+		(sycleButtons[0] = addButton(new SmallGuiButton(21, guiLeft + 124, guiTop + 30, 15, 10, "/\\"))).visible = false;
+		(sycleButtons[1] = addButton(new SmallGuiButton(22, guiLeft + 124, guiTop + 42, 15, 10, "\\/"))).visible = false;
 
 		if(search == null) search = new SearchBar(mc.fontRenderer, this, guiLeft + 205, bottom - 78, 200, 15);
 		search.reposition(guiLeft + 205, bottom - 78, 200, 15);
@@ -177,6 +183,9 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 	
 	@Override
 	public void drawGuiContainerBackgroundLayer(float f, int i, int j) {
+		for(int c=0;c<sycleButtons.length;c++) {
+			sycleButtons[c].visible = this._table.targetType != null;
+		}
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right - (showRequest ? 0 : 105), bottom, zLevel, true);
 
 		drawRect(guiLeft + 162, guiTop + 23, guiLeft + 182, guiTop + 43, Colors.Black);
@@ -227,7 +236,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		for(final Entry<Integer, Pair<ItemIdentifierStack, LinkedLogisticsOrderList>> entry:_table.watchedRequests.entrySet()) {
 			if(!handledExtention.get(entry.getKey())) {
 				handledExtention.set(entry.getKey());
-				extentionController.addExtention(new GuiExtention() {
+				extentionControllerLeft.addExtention(new GuiExtention() {
 					
 					private Map<Pair<Integer, Integer>, IOrderInfoProvider> ordererPosition = new HashMap<Pair<Integer, Integer>, IOrderInfoProvider>();
 					private int height;
@@ -238,7 +247,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 					@Override
 					public void renderForground(int left, int top) {
 						if(!_table.watchedRequests.containsKey(entry.getKey())) {
-							extentionController.removeExtention(this);
+							extentionControllerLeft.removeExtention(this);
 							if(isFullyExtended() && localControlledButton != null) {
 								buttonList.remove(localControlledButton);
 								localControlledButton = null;
@@ -468,13 +477,15 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			Macrobutton.visible = showRequest;
 			orderIdForButton = -1;
 		} else if(guibutton.id == 100) {
-			this.extentionController.retract();
+			this.extentionControllerLeft.retract();
 			this.setSubGui(new RequestMonitorPopup(_table, orderIdForButton));
 		} else if (guibutton.id == 18) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskRequestConectPacket.class).setPosX(_table.getX()).setPosY(_table.getY()).setPosZ(_table.getZ()));
 			this.setSubGui(new GuiDiskPopup(this));
 		} else if (guibutton.id == 20) {
 			itemDisplay.cycle();
+		} else if(guibutton.id == 21 || guibutton.id == 22) {
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingCycleRecipe.class).setDown(guibutton.id == 22).setTilePos(this._table.container));
 		}
 	}
 
@@ -485,11 +496,6 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		}
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitListPacket.class).setIdentList(list).setTilePos(_table.container));
 		refreshItems();
-	}
-
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Request_Table_ID;
 	}
 
 	protected int getStackAmount() {

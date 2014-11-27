@@ -44,7 +44,7 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenControler, ISecurityProvider, IGuiTileEntity {
+public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implements IGuiOpenControler, ISecurityProvider, IGuiTileEntity {
 	
 	public ItemIdentifierInventory inv = new ItemIdentifierInventory(1, "ID Slots", 64);
 	private PlayerCollectionList listener = new PlayerCollectionList();
@@ -343,11 +343,6 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	
 	public World getWorld() {
 		return this.getWorldObj();
-	}
-
-	@Override
-	public boolean canUpdate() {
-		return false;
 	}
 
 	@Override

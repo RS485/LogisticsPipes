@@ -96,8 +96,8 @@ public class SubGuiScreen extends GuiScreen implements ISubGuiControler {
 	public void setSubGui(SubGuiScreen gui) {
 		if(subGui == null) {
 			subGui = gui;
-			subGui.setWorldAndResolution(this.mc, this.width, this.height);
 			subGui.register(this);
+			subGui.setWorldAndResolution(this.mc, this.width, this.height);
 			subGui.initGui();
 		}
 	}
@@ -122,5 +122,10 @@ public class SubGuiScreen extends GuiScreen implements ISubGuiControler {
 	@Override
 	public SubGuiScreen getSubGui() {
 		return subGui;
+	}
+
+	@Override
+	public LogisticsBaseGuiScreen getBaseScreen() {
+		return controler.getBaseScreen();
 	}
 }

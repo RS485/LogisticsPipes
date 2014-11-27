@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import logisticspipes.Configs;
+import logisticspipes.config.Configs;
 import logisticspipes.gui.popup.GuiRequestPopup;
 import logisticspipes.interfaces.ISpecialItemRenderer;
 import logisticspipes.network.GuiIDs;
@@ -78,15 +78,6 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 	@Override
 	public void initGui() {
 		super.initGui();
-		
-		this.guiLeft =  width/2 - xSize/2 + xCenterOffset;
-		this.guiTop = height/2 - ySize/2  + yCenterOffset;
-		
-		this.right = width/2 + xSize/2 + xCenterOffset;
-		this.bottom = height/2 + ySize/2 + yCenterOffset;
-		
-		this.xCenter = (right + guiLeft) / 2;
-		this.yCenter = (bottom + guiTop) / 2;
 		
 		buttonList.clear();
 		buttonList.add(new GuiButton(0, right - 55, bottom - 25, 50,20,"Request")); // Request
@@ -264,10 +255,5 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 	public void resetSubGui() {
 		super.resetSubGui();
 		refreshItems();
-	}
-	
-	@Override
-	public int getGuiID() {
-		return GuiIDs.GUI_Normal_Orderer_ID;
 	}
 }

@@ -40,7 +40,7 @@ public class PipePositionPacket extends CoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe tile = this.getPipe(player.getEntityWorld());
-		if(tile == null) return;
+		if(tile == null || tile.pipe == null || tile.pipe.transport == null) return;
 		((PipeTransportLogistics)tile.pipe.transport).handleItemPositionPacket(travelId, input, output, speed, position);
 	}
 	

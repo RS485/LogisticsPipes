@@ -600,11 +600,12 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	public Set<ItemIdentifier> getSpecificInterests() {
 		Set<ItemIdentifier> l1 = new TreeSet<ItemIdentifier>();
 		//if we don't have a pointed inventory we can't be interested in anything
-		if(getSneakyInventory(false) == null) return l1;
+		if(getRealInventory() == null) return l1;
 		for (int moduleIndex = 0; moduleIndex < this.getChassiSize(); moduleIndex++){
 			LogisticsModule module = _module.getSubModule(moduleIndex);
 			if(module!=null && module.interestedInAttachedInventory()) {
-				IInventoryUtil inv = getSneakyInventory(false);
+				IInventoryUtil inv = getSneakyInventory(false, module.getSlot(), module.getPositionInt());
+				if(inv == null) continue;
 				Set<ItemIdentifier> items = inv.getItems();
 				l1.addAll(items);
 

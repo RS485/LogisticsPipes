@@ -211,8 +211,8 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 			IInventory inv = (IInventory) tile.tile;
 			if (inv.getSizeInventory() < 1) continue;
 			ForgeDirection dir = tile.orientation;
-			if(this._service.getUpgradeManager().hasSneakyUpgrade()) {
-				dir = this._service.getUpgradeManager().getSneakyOrientation();
+			if(this._service.getUpgradeManager(this.slot, this.positionInt).hasSneakyUpgrade()) {
+				dir = this._service.getUpgradeManager(this.slot, this.positionInt).getSneakyOrientation();
 			}
 			IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv, dir);
 			

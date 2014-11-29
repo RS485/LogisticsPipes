@@ -9,7 +9,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.BuildCraftTransport;
 import buildcraft.api.core.BCLog;
 import buildcraft.core.DefaultProps;
-import buildcraft.core.utils.BlockUtil;
+import buildcraft.core.utils.BlockUtils;
 import buildcraft.core.utils.MathUtils;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TravelingItem;
@@ -87,7 +87,7 @@ public class InjectItemHook {
 	}
 
 	private static void destroyPipe(PipeTransportItems pipe) {
-		BlockUtil.explodeBlock(pipe.container.getWorldObj(), pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord);
+		BlockUtils.explodeBlock(pipe.container.getWorldObj(), pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord);
 		pipe.container.getWorldObj().setBlockToAir(pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord);
 	}
 

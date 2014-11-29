@@ -34,7 +34,6 @@ import buildcraft.api.statements.ActionState;
 import buildcraft.api.statements.IActionInternal;
 import buildcraft.api.transport.IPipePluggable;
 import buildcraft.api.transport.PipeWire;
-import buildcraft.core.network.TilePacketWrapper;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.Gate;
@@ -49,8 +48,6 @@ import buildcraft.transport.gui.GuiGateInterface;
 
 public class BCPipePart implements IBCPipePart {
 	
-	private static Field networkWrappersField;
-
 	public final LogisticsTileGenericPipe container;
 	private final BCCoreState coreState;
 	public int[] signalStrength = new int[]{0, 0, 0, 0};
@@ -69,12 +66,10 @@ public class BCPipePart implements IBCPipePart {
 		this.container = tile;
 		this.coreState = (BCCoreState) tile.bcCoreState.getOriginal();
 		try {
-			startWrapper();
 			wrapper = new PipeWrapper(tile);
 			wrapper.wireSet = getWireSet();
 			wrapper.signalStrength = getSignalStrength();
 			ReflectionHelper.setFinalField(Pipe.class, "gates", wrapper, this.gates); //wrapper.gates = gates;
-			stopWrapper();
 		} catch(IllegalArgumentException e) {
 			throw new RuntimeException(e);
 		} catch(IllegalAccessException e) {
@@ -92,22 +87,6 @@ public class BCPipePart implements IBCPipePart {
 			wrapper.updateWorld();
 			init = true;
 		}
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void startWrapper() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
-		if(networkWrappersField == null) {
-			networkWrappersField = Pipe.class.getDeclaredField("networkWrappers");
-			networkWrappersField.setAccessible(true);
-		}
-		Map<Class, TilePacketWrapper> networkWrappers = (Map<Class, TilePacketWrapper>) networkWrappersField.get(null);
-		networkWrappers.put(PipeWrapper.class, null);
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void stopWrapper() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
-		Map<Class, TilePacketWrapper> networkWrappers = (Map<Class, TilePacketWrapper>) networkWrappersField.get(null);
-		networkWrappers.remove(PipeWrapper.class);
 	}
 
 	@Override

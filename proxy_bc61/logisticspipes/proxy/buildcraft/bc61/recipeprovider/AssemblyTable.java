@@ -56,7 +56,7 @@ public class AssemblyTable implements ICraftingRecipeProvider {
 						@Override public ItemStack getCraftingItemStack(int paramInt) {return inputs.getStackInSlot(paramInt);}
 						@Override public int getCraftingFluidStackSize() {return 0;}
 						@Override public FluidStack getCraftingFluidStack(int paramInt) {return null;}
-						@Override public ItemStack decrCraftingItemgStack(int paramInt1, int paramInt2) {return null;}
+						@Override public ItemStack decrCraftingItemStack(int paramInt1, int paramInt2) {return null;}
 						@Override public FluidStack decrCraftingFluidStack(int paramInt1, int paramInt2) {return null;}
 					})) {
 						takeNext = true;

@@ -22,7 +22,7 @@
 	<property name="thaumcraft.filename"   value="Thaumcraft-1.7.2-4.1.1.14-api.zip"/>
 	<property name="ocapi.filename"        value="OpenComputersAPI-2.0.1-MC1.7.zip"/>
 	<property name="appeng.filename"       value="appliedenergistics2-rv0-stable-10-api.zip"/>
-	<property name="bc61.filename"         value="buildcraft-6.1.5-dev.jar"/>
+	<property name="bc62.filename"         value="buildcraft-6.2.0-dev.jar"/>
 
 	<target name="download">
 		<mkdir dir="${download.dir}"/>
@@ -33,7 +33,7 @@
 		<get src="${downloadserver.full}${thaumcraft.filename}" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}${ocapi.filename}" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}${appeng.filename}" dest="${download.dir}" usetimestamp="True"/>
-		<get src="${downloadserver.full}${bc61.filename}" dest="${download.dir}" usetimestamp="True"/>
+		<get src="${downloadserver.full}${bc62.filename}" dest="${download.dir}" usetimestamp="True"/>
 		<echo message="Download finished"/>
 	</target>
 

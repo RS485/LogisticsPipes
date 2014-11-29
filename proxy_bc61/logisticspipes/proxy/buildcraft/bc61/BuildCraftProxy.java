@@ -133,12 +133,10 @@ public class BuildCraftProxy implements IBCProxy {
 			e.printStackTrace();
 		}
 		if(BCVersion != null && !BCVersion.equals("@VERSION@")) {
-			if(!BCVersion.contains("6.1")) {
-				throw new VersionNotSupportedException("BC", BCVersion, "6.1.5", "");
-			} else if(BCVersion.contains("6.1.0") || BCVersion.contains("6.1.1") || BCVersion.contains("6.1.2") || BCVersion.contains("6.1.3") || BCVersion.contains("6.1.4")) {
-				throw new VersionNotSupportedException("BC", BCVersion, "6.1.5", "");
-			} else if(!BCVersion.contains("6.1.5")) {
-				LogisticsPipes.log.error("The BC version you are using is untested with this LP version. It may work but it could also destroy your world. Use at your own risk. Recommanded BC version for this LP version is BC 6.1.5");
+			if(!BCVersion.contains("6.2")) {
+				throw new VersionNotSupportedException("BC", BCVersion, "6.2.0", "");
+			} else if(!BCVersion.contains("6.2.0")) {
+				LogisticsPipes.log.error("The BC version you are using is untested with this LP version. It may work but it could also destroy your world. Use at your own risk. Recommanded BC version for this LP version is BC 6.2.0");
 			}
 		} else {
 			LogisticsPipes.log.info("Couldn't check the BC Version.");

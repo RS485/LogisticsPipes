@@ -87,11 +87,68 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		}
 	}
 	
+	private static interface IDamagedIdentifierHolder {
+		ItemIdentifier get(int damage);
+		void set(int damage, ItemIdentifier ret);
+		void ensureCapacity(int damage);
+	}
+	
+	private static class MapDamagedItentifierHolder implements IDamagedIdentifierHolder {
+		private ConcurrentHashMap<Integer, ItemIdentifier> holder;
+
+		public MapDamagedItentifierHolder() {
+			holder = new ConcurrentHashMap<Integer, ItemIdentifier>(4096, 0.5f, 1);
+		}
+
+		@Override
+		public ItemIdentifier get(int damage) {
+			return holder.get(damage);
+		}
+
+		@Override
+		public void set(int damage, ItemIdentifier item) {
+			holder.put(damage, item);
+		}
+
+		@Override
+		public void ensureCapacity(int damage) {}
+	}
+	
+	private static class ArrayDamagedItentifierHolder implements IDamagedIdentifierHolder {
+		private AtomicReferenceArray<ItemIdentifier> holder;
+
+		public ArrayDamagedItentifierHolder(int damage) {
+			//round to nearest superior power of 2
+			int newlen = 1 << (32 - Integer.numberOfLeadingZeros(damage + 1));
+			holder = new AtomicReferenceArray<ItemIdentifier>(newlen);
+		}
+
+		@Override
+		public ItemIdentifier get(int damage) {
+			return holder.get(damage);
+		}
+
+		@Override
+		public void set(int damage, ItemIdentifier ident) {
+			holder.set(damage, ident);
+		}
+
+		@Override
+		public void ensureCapacity(int damage) {
+			int newlen = 1 << (32 - Integer.numberOfLeadingZeros(damage + 1));
+			AtomicReferenceArray<ItemIdentifier> newdamages = new AtomicReferenceArray<ItemIdentifier>(newlen);
+			for(int i = 0; i < holder.length(); i++) {
+				newdamages.set(i, holder.get(i));
+			}
+			holder = newdamages;
+		}
+	}
+	
 	//array of ItemIdentifiers for damage=0,tag=null items
 	private final static ConcurrentHashMap<Item, ItemIdentifier> simpleIdentifiers = new ConcurrentHashMap<Item, ItemIdentifier>(4096, 0.5f, 1);
 
 	//array of arrays for items with damage>0 and tag==null
-	private final static ConcurrentHashMap<Item, AtomicReferenceArray<ItemIdentifier>> damageIdentifiers = new ConcurrentHashMap<Item, AtomicReferenceArray<ItemIdentifier>>(4096, 0.5f, 1);
+	private final static ConcurrentHashMap<Item, IDamagedIdentifierHolder> damageIdentifiers = new ConcurrentHashMap<Item, IDamagedIdentifierHolder>(4096, 0.5f, 1);
 
 	//map for id+damage+tag -> ItemIdentifier lookup
 	private final static HashMap<ItemKey, IDReference> keyRefMap = new HashMap<ItemKey, IDReference>(1024, 0.5f);
@@ -170,19 +227,16 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 
 	private static ItemIdentifier getOrCreateDamage(Item item, int damage) {
 		//again no locking, we can end up removing or overwriting ItemIdentifiers concurrently added by another thread, but that doesn't affect anything.
-		AtomicReferenceArray<ItemIdentifier> damages = damageIdentifiers.get(item);
+		IDamagedIdentifierHolder damages = damageIdentifiers.get(item);
 		if(damages == null) {
-			//round to nearest superior power of 2
-			int newlen = 1 << (32 - Integer.numberOfLeadingZeros(damage + 1));
-			damages = new AtomicReferenceArray<ItemIdentifier>(newlen);
+			if(item.getMaxDamage() < 32767) {
+				damages = new ArrayDamagedItentifierHolder(damage);
+			} else {
+				damages = new MapDamagedItentifierHolder();
+			}
 			damageIdentifiers.put(item, damages);
-		} else if(damages.length() <= damage) {
-			int newlen = 1 << (32 - Integer.numberOfLeadingZeros(damage + 1));
-			AtomicReferenceArray<ItemIdentifier> newdamages = new AtomicReferenceArray<ItemIdentifier>(newlen);
-			for(int i = 0; i < damages.length(); i++)
-				newdamages.set(i, damages.get(i));
-			damageIdentifiers.put(item, newdamages);
-			damages = newdamages;
+		} else {
+			damages.ensureCapacity(damage);
 		}
 		ItemIdentifier ret = damages.get(damage);
 		if(ret != null) {
@@ -233,7 +287,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 	}
 
 	public static ItemIdentifier get(Item item, int itemUndamagableDamage, NBTTagCompound tag)	{
-		if(itemUndamagableDamage < 0 || itemUndamagableDamage > 32767) {
+		if(itemUndamagableDamage < 0) {
 			throw new IllegalArgumentException("Item Damage out of range");
 		}
 		if(tag == null && itemUndamagableDamage == 0) {

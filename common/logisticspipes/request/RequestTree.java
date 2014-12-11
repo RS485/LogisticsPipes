@@ -101,6 +101,8 @@ public class RequestTree extends RequestTreeNode {
 
 	protected void promiseAdded(LogisticsPromise promise) {
 		FinalPair<IProvideItems,ItemIdentifier> key = new FinalPair<IProvideItems,ItemIdentifier>(promise.sender, promise.item);
+		if(_promisetotals == null)
+			_promisetotals = new HashMap<FinalPair<IProvideItems,ItemIdentifier>,Integer>();
 		_promisetotals.put(key, getExistingPromisesFor(key) + promise.numberOfItems);
 	}
 

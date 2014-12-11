@@ -277,7 +277,7 @@ public class PipeTransportLogistics {
 		}
 
 		if(data.getItemIdentifierStack() != null) {
-			getPipe().relayedItem(data.getItemIdentifierStack().getStackSize());
+			getRoutedPipe().relayedItem(data.getItemIdentifierStack().getStackSize());
 		}
 
 		ForgeDirection value;

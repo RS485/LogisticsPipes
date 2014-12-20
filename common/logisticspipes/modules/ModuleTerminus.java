@@ -121,7 +121,9 @@ public class ModuleTerminus extends LogisticsSimpleFilterModule implements IClie
 
 	@Override
 	public void InventoryChanged(IInventory inventory) {
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(inventory)).setModulePos(this), localModeWatchers);
+		if(MainProxy.isServer(_world.getWorld())) {
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(inventory)).setModulePos(this), localModeWatchers);
+		}
 	}
 
 	@Override

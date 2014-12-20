@@ -1218,12 +1218,12 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	private ItemStack extract(AdjacentTile tile, ItemIdentifier item, int amount) {
 		if (tile.tile instanceof LogisticsCraftingTableTileEntity) {
-			return extractFromLogisticsCraftingTable((LogisticsCraftingTableTileEntity)tile.tile, item, amount);
+			return extractFromLogisticsCraftingTable((LogisticsCraftingTableTileEntity)tile.tile, item, amount, tile.orientation);
 		} else if (tile.tile instanceof net.minecraft.inventory.ISidedInventory) {
 			IInventory sidedadapter = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) tile.tile, ForgeDirection.UNKNOWN, true);
-			return extractFromIInventory(sidedadapter, item, amount);
+			return extractFromIInventory(sidedadapter, item, amount, tile.orientation);
 		} else if (tile.tile instanceof IInventory) {
-			return extractFromIInventory((IInventory)tile.tile, item, amount);
+			return extractFromIInventory((IInventory)tile.tile, item, amount, tile.orientation);
 		}
 		return null;
 	}
@@ -1231,15 +1231,15 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	private ItemStack extractFiltered(AdjacentTile tile, ItemIdentifierInventory inv, boolean isExcluded, int filterInvLimit) {
 		if (tile.tile instanceof net.minecraft.inventory.ISidedInventory) {
 			IInventory sidedadapter = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) tile.tile, ForgeDirection.UNKNOWN, true);
-			return extractFromIInventoryFiltered(sidedadapter, inv, isExcluded, filterInvLimit);
+			return extractFromIInventoryFiltered(sidedadapter, inv, isExcluded, filterInvLimit, tile.orientation);
 		} else if (tile.tile instanceof IInventory) {
-			return extractFromIInventoryFiltered((IInventory)tile.tile, inv, isExcluded, filterInvLimit);
+			return extractFromIInventoryFiltered((IInventory)tile.tile, inv, isExcluded, filterInvLimit, tile.orientation);
 		}
 		return null;
 	}
 	
-	private ItemStack extractFromIInventory(IInventory inv, ItemIdentifier wanteditem, int count){
-		IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
+	private ItemStack extractFromIInventory(IInventory inv, ItemIdentifier wanteditem, int count, ForgeDirection dir) {
+		IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv, dir);
 		int available = invUtil.itemCount(wanteditem);
 		if(available == 0) return null;
 		if(!_service.useEnergy(neededEnergy() * Math.min(count, available))) {
@@ -1248,8 +1248,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		return invUtil.getMultipleItems(wanteditem, Math.min(count, available));
 	}
 
-	private ItemStack extractFromIInventoryFiltered(IInventory inv, ItemIdentifierInventory filter, boolean isExcluded, int filterInvLimit) {
-		IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
+	private ItemStack extractFromIInventoryFiltered(IInventory inv, ItemIdentifierInventory filter, boolean isExcluded, int filterInvLimit, ForgeDirection dir) {
+		IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv, dir);
 		ItemIdentifier wanteditem = null;
 		for(ItemIdentifier item:invUtil.getItemsAndCount().keySet()) {
 			if(isExcluded) {
@@ -1289,8 +1289,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		return invUtil.getMultipleItems(wanteditem, Math.min(64, available));
 	}
 	
-	private ItemStack extractFromLogisticsCraftingTable(LogisticsCraftingTableTileEntity tile, ItemIdentifier wanteditem, int count) {
-		ItemStack extracted = extractFromIInventory(tile, wanteditem, count);
+	private ItemStack extractFromLogisticsCraftingTable(LogisticsCraftingTableTileEntity tile, ItemIdentifier wanteditem, int count, ForgeDirection dir) {
+		ItemStack extracted = extractFromIInventory(tile, wanteditem, count, dir);
 		if(extracted != null) {
 			return extracted;
 		}

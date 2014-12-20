@@ -30,6 +30,7 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.CraftingUtil;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
+import logisticspipes.utils.item.DictItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -312,7 +313,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		cacheRecipe();
 	}
 
-	public ItemStack getOutput() {
+	public ItemStack getOutput(boolean oreDict) {
 		if(cache == null) {
 			cacheRecipe();
 			if(cache == null) return null;
@@ -329,14 +330,28 @@ outer:
 				continue;
 			}
 			ItemIdentifier ident = ItemIdentifier.get(item);
+			DictItemIdentifier dictIdent = null;
 			for(int j=0;j<inv.getSizeInventory();j++) {
 				item = inv.getStackInSlot(j);
 				if(item == null) continue;
-				if(ident.equalsForCrafting(ItemIdentifier.get(item))) {
+				ItemIdentifier withIdent = ItemIdentifier.get(item);
+				if(ident.equalsForCrafting(withIdent)) {
 					if(item.stackSize > used[j]) {
 						used[j]++;
 						toUse[i] = j;
 						continue outer;
+					}
+				}
+				if(oreDict) {
+					if(dictIdent == null) {
+						dictIdent = ident.getDictIdentifiers();
+					}
+					if(dictIdent.canMatch(withIdent.getDictIdentifiers(), true, false)) {
+						if(item.stackSize > used[j]) {
+							used[j]++;
+							toUse[i] = j;
+							continue outer;
+						}
 					}
 				}
 			}
@@ -388,7 +403,9 @@ outer:
 	}
 
 	public ItemStack getResultForClick() {
-		ItemStack result = getOutput();
+		ItemStack result = getOutput(true);
+		if(result == null)
+			result = getOutput(false);
 		if(result == null)
 			return null;
 		result.stackSize = inv.addCompressed(result, false);

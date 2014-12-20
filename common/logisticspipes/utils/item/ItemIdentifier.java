@@ -211,6 +211,8 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 
 	private ItemIdentifier _IDIgnoringNBT=null;
 	private ItemIdentifier _IDIgnoringDamage=null;
+	private DictItemIdentifier _dict;
+	private boolean canHaveDict = true;
 
 	public static boolean allowNullsForTesting;
 	
@@ -590,6 +592,14 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		return this.item instanceof LogisticsFluidContainer;
 	}
 	
+	public DictItemIdentifier getDictIdentifiers() {
+		if(_dict == null && canHaveDict) {
+			_dict = DictItemIdentifier.getDictItemIdentifier(this);
+			canHaveDict = false;
+		}
+		return _dict;
+	}
+	
 	public void debugDumpData(boolean isClient) {
 		System.out.println((isClient?"Client":"Server") + " Item: " + Item.getIdFromItem(item) + ":" + itemDamage + " uniqueID " + uniqueID);
 		StringBuilder sb = new StringBuilder();
@@ -603,6 +613,9 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		} else {
 			System.out.println("Undamaged:");
 			this.getUndamaged().debugDumpData(isClient);
+		}
+		if(this.getDictIdentifiers() != null) {
+			this.getDictIdentifiers().debugDumpData(isClient);
 		}
 	}
 	

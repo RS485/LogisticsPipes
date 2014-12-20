@@ -605,8 +605,7 @@ outer:
 		int workSetsAvailable = nCraftingSets;
 		ArrayList<SubRequestGroup>lastNodes = new ArrayList<SubRequestGroup>(stacks.size());
 		for(Triplet<CraftingRequirement, IRequestItems, IAdditionalTargetInformation> stack:stacks) {
-			if(stack.getValue1().isUnique())
-			{
+			if(stack.getValue1().isUnique()) {
 				RequestTreeNode node = new RequestTreeNode(template,stack.getValue1().stack, stack.getValue2(), this, RequestTree.defaultRequestFlags, stack.getValue3());
 				SubRequestGroup grp = new SubRequestGroup();
 				grp.addNode(node);
@@ -614,22 +613,21 @@ outer:
 				if(!node.isDone()) {
 					failed = true;
 				}
-			}
-			else
-			{
-				ArrayList<ItemIdentifier> subtitutes = stack.getValue1().GetSubtitutes(this.target);
+			} else {
+				ArrayList<ItemIdentifier> subtitutes = stack.getValue1().getSubtitutes(this.target);
 				int req = stack.getValue1().stack.getStackSize();
 				SubRequestGroup grp = new SubRequestGroup();
-				for(ItemIdentifier i : subtitutes)
-				{
-					if(req <= 0)
+				for(ItemIdentifier i : subtitutes) {
+					if(req <= 0) {
 						break;
+					}
 					RequestTreeNode node = new RequestTreeNode(template, new ItemIdentifierStack(i, req), stack.getValue2(), this, RequestTree.defaultRequestFlags, stack.getValue3());
 					req -= node.getPromiseItemCount();
 					grp.addNode(node);
 				}
-				if(req > 0)
+				if(req > 0) {
 					failed = true;
+				}
 				lastNodes.add(grp);
 			}
 		}
@@ -644,8 +642,9 @@ outer:
 		}
 		if(failed) {
 			for (SubRequestGroup g:lastNodes) {
-				for(RequestTreeNode n : g.getNodes())
+				for(RequestTreeNode n : g.getNodes()) {
 					n.destroy(); // drop the failed requests.
+				}
 			}
 			for (FluidRequestTreeNode n:lastFluidNode) {
 				n.destroy(); // drop the failed requests.
@@ -682,28 +681,26 @@ outer:
 
 			boolean failed = false;
 			for(Triplet<CraftingRequirement, IRequestItems, IAdditionalTargetInformation> stack:stacks) {
-				if(stack.getValue1().isUnique())
-				{
+				if(stack.getValue1().isUnique()) {
 					RequestTreeNode node = new RequestTreeNode(template,stack.getValue1().stack, stack.getValue2(), this, RequestTree.defaultRequestFlags, stack.getValue3());
 					newChildren.add(node);
 					if(!node.isDone()) {
 						failed = true;
 					}
-				}
-				else
-				{
-					ArrayList<ItemIdentifier> subtitutes = stack.getValue1().GetSubtitutes(this.target);
+				} else {
+					ArrayList<ItemIdentifier> subtitutes = stack.getValue1().getSubtitutes(this.target);
 					int req = stack.getValue1().stack.getStackSize();
-					for(ItemIdentifier i : subtitutes)
-					{
-						if(req <= 0)
+					for(ItemIdentifier i : subtitutes) {
+						if(req <= 0) {
 							break;
+						}
 						RequestTreeNode node = new RequestTreeNode(template, new ItemIdentifierStack(i, req), stack.getValue2(), this, RequestTree.defaultRequestFlags, stack.getValue3());
 						req -= node.getPromiseItemCount();
 						newChildren.add(node);
 					}
-					if(req > 0)
+					if(req > 0) {
 						failed = true;
+					}
 				}
 			}
 			List<Triplet<FluidIdentifier, Integer, IRequestFluid>> liquids = template.getComponentFluid(workSets);

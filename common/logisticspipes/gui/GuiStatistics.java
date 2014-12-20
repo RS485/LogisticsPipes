@@ -226,7 +226,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 					long highest = Long.MIN_VALUE;
 					int first = (15 * move_left);
 					
-					for (int i=first;i <= first + 15;i++) {
+					for (int i=first;i <= first + 15 && i < data.length;i++) {
 						long point = data[i];
 						if (point > highest) highest = point;
 						if (point < lowest) lowest = point;

@@ -83,6 +83,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 			result = new HashMap<ItemIdentifier, Integer>();
 		}
 		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
+		if(tmp == null || tmp.getItemInventory() == null || tmp.getItemInventory().getStorageList() == null) return result;
 		for (IAEItemStack items : tmp.getItemInventory().getStorageList()) {
 			ItemIdentifier ident = ItemIdentifier.get(items.getItemStack());
 			Integer count = result.get(ident);
@@ -99,6 +100,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	public Set<ItemIdentifier> getItems() {
 		Set<ItemIdentifier> result = new TreeSet<ItemIdentifier>();
 		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
+		if(tmp == null || tmp.getItemInventory() == null || tmp.getItemInventory().getStorageList() == null) return result;
 		for (IAEItemStack items : tmp.getItemInventory().getStorageList()) {
 			ItemIdentifier ident = ItemIdentifier.get(items.getItemStack());
 			result.add(ident);
@@ -109,6 +111,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public ItemStack getSingleItem(ItemIdentifier item) {
 		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
+		if(tmp == null || tmp.getItemInventory() == null) return null;
 		IAEItemStack stack = AEApi.instance().storage().createItemStack(item.makeNormalStack(1));
 		return tmp.getItemInventory().extractItems(stack, Actionable.MODULATE, source).getItemStack();
 	}
@@ -116,6 +119,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public ItemStack getMultipleItems(ItemIdentifier item, int count) {
 		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
+		if(tmp == null || tmp.getItemInventory() == null) return null;
 		IAEItemStack stack = AEApi.instance().storage().createItemStack(item.makeNormalStack(count));
 		return tmp.getItemInventory().extractItems(stack, Actionable.MODULATE, source).getItemStack();
 	}
@@ -123,6 +127,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public boolean containsItem(ItemIdentifier item) {
 		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
+		if(tmp == null || tmp.getItemInventory() == null) return false;
 		IAEItemStack stack = AEApi.instance().storage().createItemStack(item.unsafeMakeNormalStack(1));
 		return tmp.getItemInventory().extractItems(stack, Actionable.SIMULATE, source) != null;
 	}
@@ -130,6 +135,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public boolean containsUndamagedItem(ItemIdentifier item) {
 		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
+		if(tmp == null || tmp.getItemInventory() == null || tmp.getItemInventory().getStorageList() == null) return false;
 		for (IAEItemStack items : tmp.getItemInventory().getStorageList()) {
 			ItemIdentifier ident = ItemIdentifier.get(items.getItemStack());
 			if (ident.equals(item)) {

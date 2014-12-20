@@ -68,8 +68,8 @@ public class LPChatListener {
 	@SubscribeEvent
 	public void clientChat(ClientChatReceivedEvent event) {
 		IChatComponent message = event.message;
-		if(message != null && message.getFormattedText() != null) {
-			String realMessage = "";
+		if(message != null) {
+			String realMessage = null;
 			try {
 				realMessage = message.getFormattedText();
 			} catch(ClassCastException e) {
@@ -77,26 +77,28 @@ public class LPChatListener {
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
-			if(realMessage.equals("%LPCLEARCHAT%")) {
-				clearChat();
-				event.setCanceled(true);
-			}
-			if(realMessage.equals("%LPSTORESENDMESSAGE%")) {
-				storeSendMessages();
-				event.setCanceled(true);
-			}
-			if(realMessage.equals("%LPRESTORESENDMESSAGE%")) {
-				restoreSendMessages();
-				event.setCanceled(true);
-			}
-			if(realMessage.startsWith("%LPADDTOSENDMESSAGE%")) {
-				addSendMessages(realMessage.substring(20));
-				event.setCanceled(true);
-			}
-			if(realMessage.contains("LPDISPLAYMISSING") && LPConstants.DEBUG) {
-				System.out.println("LIST:");
-				for(String key:StringUtil.untranslatedStrings) {
-					System.out.println(key);
+			if(realMessage != null) {
+				if(realMessage.equals("%LPCLEARCHAT%")) {
+					clearChat();
+					event.setCanceled(true);
+				}
+				if(realMessage.equals("%LPSTORESENDMESSAGE%")) {
+					storeSendMessages();
+					event.setCanceled(true);
+				}
+				if(realMessage.equals("%LPRESTORESENDMESSAGE%")) {
+					restoreSendMessages();
+					event.setCanceled(true);
+				}
+				if(realMessage.startsWith("%LPADDTOSENDMESSAGE%")) {
+					addSendMessages(realMessage.substring(20));
+					event.setCanceled(true);
+				}
+				if(realMessage.contains("LPDISPLAYMISSING") && LPConstants.DEBUG) {
+					System.out.println("LIST:");
+					for(String key:StringUtil.untranslatedStrings) {
+						System.out.println(key);
+					}
 				}
 			}
 		}

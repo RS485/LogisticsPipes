@@ -113,7 +113,9 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
 		if(tmp == null || tmp.getItemInventory() == null) return null;
 		IAEItemStack stack = AEApi.instance().storage().createItemStack(item.makeNormalStack(1));
-		return tmp.getItemInventory().extractItems(stack, Actionable.MODULATE, source).getItemStack();
+		IAEItemStack extract = tmp.getItemInventory().extractItems(stack, Actionable.MODULATE, source);
+		if(extract == null) return null;
+		return extract.getItemStack();
 	}
 
 	@Override
@@ -121,7 +123,9 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
 		if(tmp == null || tmp.getItemInventory() == null) return null;
 		IAEItemStack stack = AEApi.instance().storage().createItemStack(item.makeNormalStack(count));
-		return tmp.getItemInventory().extractItems(stack, Actionable.MODULATE, source).getItemStack();
+		IAEItemStack extract = tmp.getItemInventory().extractItems(stack, Actionable.MODULATE, source);
+		if(extract == null) return null;
+		return extract.getItemStack();
 	}
 
 	@Override
@@ -153,6 +157,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public int roomForItem(ItemIdentifier item, int count) {
 		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
+		if(tmp == null || tmp.getItemInventory() == null) return 0;
 		while (count > 0) {
 			IAEItemStack stack = AEApi.instance().storage().createItemStack(item.makeNormalStack(count));
 			if (tmp.getItemInventory().canAccept(stack)) {
@@ -169,6 +174,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		IAEItemStack tst = AEApi.instance().storage().createItemStack(stack);
 
 		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
+		if(tmp == null || tmp.getItemInventory() == null) return st;
 		IAEItemStack overflow = tmp.getItemInventory().injectItems(tst, Actionable.MODULATE, source);
 		if (overflow != null) {
 			st.stackSize -= overflow.getStackSize();

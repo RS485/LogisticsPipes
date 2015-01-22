@@ -1,4 +1,4 @@
-package logisticspipes.proxy.buildcraft.bc61.recipeprovider;
+package logisticspipes.proxy.buildcraft.recipeprovider;
 
 import java.util.List;
 

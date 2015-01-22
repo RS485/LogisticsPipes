@@ -1,11 +1,20 @@
 package logisticspipes.network;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufOutputStream;
+import io.netty.buffer.ByteBufProcessor;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.channels.GatheringByteChannel;
+import java.nio.channels.ScatteringByteChannel;
+import java.nio.charset.Charset;
 import java.util.BitSet;
 import java.util.EnumSet;
 import java.util.List;
@@ -180,5 +189,20 @@ public class LPDataOutputStream extends DataOutputStream {
 		for(int i=0;i<array.length;i++) {
 			this.writeByte(array[i]);
 		}
+	}
+
+	public void writeByteBuf(ByteBuf buf) throws IOException {
+		buf = buf.copy();
+		buf.setIndex(0, 0);
+		byte[] bytes;
+		int length = buf.readableBytes();
+
+		if (buf.hasArray()) {
+		    bytes = buf.array();
+		} else {
+		    bytes = new byte[length];
+		    buf.getBytes(buf.readerIndex(), bytes);
+		}
+		this.writeByteArray(bytes);
 	}
 }

@@ -6,7 +6,7 @@
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
-package logisticspipes.proxy.buildcraft.bc61.gates;
+package logisticspipes.proxy.buildcraft.gates;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -18,8 +18,8 @@ import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.buildcraft.bc61.BuildCraftProxy;
-import logisticspipes.proxy.buildcraft.bc61.gates.wrapperclasses.TilePipeWrapper;
+import logisticspipes.proxy.buildcraft.BuildCraftProxy;
+import logisticspipes.proxy.buildcraft.subproxies.LPBCPipe;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -33,8 +33,8 @@ public class LogisticsTriggerProvider implements ITriggerProvider {
 
 	@Override
 	public Collection<ITriggerInternal> getInternalTriggers(IStatementContainer pipe) {
-		if(pipe instanceof TilePipeWrapper) {
-			LogisticsTileGenericPipe lPipe = ((TilePipeWrapper)pipe).tile;
+		if(pipe instanceof LPBCPipe) {
+			LogisticsTileGenericPipe lPipe = ((LPBCPipe)pipe).pipe;
 			LinkedList<ITriggerInternal> triggers = new LinkedList<ITriggerInternal>();
 			if (lPipe.pipe instanceof PipeItemsSupplierLogistics || lPipe.pipe instanceof PipeItemsFluidSupplier) {
 				triggers.add(BuildCraftProxy.LogisticsFailedTrigger);

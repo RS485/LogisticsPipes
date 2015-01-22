@@ -28,16 +28,16 @@ public class GateGui extends CoordinatesGuiProvider {
 	@Override
 	public Object getClientGui(EntityPlayer player) {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld());
-		if(pipe.pipe == null) return null;
-		if(!pipe.pipe.hasGate(ForgeDirection.getOrientation(side))) return null;
+		if(pipe == null || pipe.tilePart == null) return null;
+		if(!pipe.tilePart.hasGate(ForgeDirection.getOrientation(side))) return null;
 		return pipe.pipe.bcPipePart.getClientGui(player.inventory, side);
 	}
 
 	@Override
 	public Container getContainer(EntityPlayer player) {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld());
-		if(pipe.pipe == null) return null;
-		if(!pipe.pipe.hasGate(ForgeDirection.getOrientation(side))) return null;
+		if(pipe == null || pipe.tilePart == null) return null;
+		if(!pipe.tilePart.hasGate(ForgeDirection.getOrientation(side))) return null;
 		return pipe.pipe.bcPipePart.getGateContainer(player.inventory, side);
 	}
 

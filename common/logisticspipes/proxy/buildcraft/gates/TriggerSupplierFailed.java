@@ -6,11 +6,11 @@
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
-package logisticspipes.proxy.buildcraft.bc61.gates;
+package logisticspipes.proxy.buildcraft.gates;
 
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
-import logisticspipes.proxy.buildcraft.bc61.gates.wrapperclasses.PipeWrapper;
+import logisticspipes.proxy.buildcraft.subproxies.LPBCPipe;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import buildcraft.api.statements.IStatementParameter;
 import buildcraft.api.statements.ITriggerInternal;
@@ -34,13 +34,13 @@ public class TriggerSupplierFailed extends LPTrigger implements ITriggerInternal
 
 	@Override
 	public boolean isTriggerActive(Pipe pipe, IStatementParameter parameter) {
-		if(pipe instanceof PipeWrapper) {
-			if (((PipeWrapper)pipe).tile.pipe instanceof PipeItemsSupplierLogistics) {
-				PipeItemsSupplierLogistics supplier = (PipeItemsSupplierLogistics) ((PipeWrapper)pipe).tile.pipe;
+		if(pipe instanceof LPBCPipe) {
+			if (((LPBCPipe)pipe).pipe.pipe instanceof PipeItemsSupplierLogistics) {
+				PipeItemsSupplierLogistics supplier = (PipeItemsSupplierLogistics) ((LPBCPipe)pipe).pipe.pipe;
 				return supplier.isRequestFailed();
 			}
-			if (((PipeWrapper)pipe).tile.pipe instanceof PipeItemsFluidSupplier) {
-				PipeItemsFluidSupplier supplier = (PipeItemsFluidSupplier) ((PipeWrapper)pipe).tile.pipe;
+			if (((LPBCPipe)pipe).pipe.pipe instanceof PipeItemsFluidSupplier) {
+				PipeItemsFluidSupplier supplier = (PipeItemsFluidSupplier) ((LPBCPipe)pipe).pipe.pipe;
 				return supplier.isRequestFailed();
 			}
 		}

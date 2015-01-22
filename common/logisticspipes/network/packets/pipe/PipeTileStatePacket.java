@@ -8,7 +8,6 @@ import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.buildcraft.subproxies.IBCCoreState;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.entity.player.EntityPlayer;
@@ -20,9 +19,9 @@ public class PipeTileStatePacket extends CoordinatesPacket {
 
 	@Setter
 	private IClientState coreState;
-
-	@Setter
-	private IBCCoreState bcCoreState;
+	
+	@Setter 
+	private IClientState bcPluggableState;
 
 	@Setter
 	private IClientState pipe;
@@ -34,7 +33,7 @@ public class PipeTileStatePacket extends CoordinatesPacket {
 	private byte[] bytesCoreState;
 	
 	@Getter
-	private byte[] bytesBCCoreState;
+	private byte[] bytesBCPluggableState;
 	
 	@Getter
 	private byte[] bytesPipe;
@@ -50,7 +49,7 @@ public class PipeTileStatePacket extends CoordinatesPacket {
 		try {
 			tile.renderState.readData(new LPDataInputStream(bytesRenderState));
 			tile.coreState.readData(new LPDataInputStream(bytesCoreState));
-			tile.bcCoreState.readData(new LPDataInputStream(bytesBCCoreState));
+			tile.bcPlugableState.readData(new LPDataInputStream(bytesBCPluggableState));
 			tile.afterStateUpdated();
 			tile.pipe.readData(new LPDataInputStream(bytesPipe));
 		} catch(IOException e) {
@@ -77,9 +76,9 @@ public class PipeTileStatePacket extends CoordinatesPacket {
 		bytes = out.toByteArray();
 		data.writeInt(bytes.length);
 		data.write(bytes);
-		
+
 		out = new LPDataOutputStream();
-		bcCoreState.writeData(out);
+		bcPluggableState.writeData(out);
 		bytes = out.toByteArray();
 		data.writeInt(bytes.length);
 		data.write(bytes);
@@ -98,8 +97,8 @@ public class PipeTileStatePacket extends CoordinatesPacket {
 		data.read(bytesRenderState);
 		bytesCoreState = new byte[data.readInt()];
 		data.read(bytesCoreState);
-		bytesBCCoreState = new byte[data.readInt()];
-		data.read(bytesBCCoreState);
+		bytesBCPluggableState = new byte[data.readInt()];
+		data.read(bytesBCPluggableState);
 		bytesPipe = new byte[data.readInt()];
 		data.read(bytesPipe);
 	}

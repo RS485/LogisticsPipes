@@ -5,7 +5,7 @@ import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.side.ClientProxy;
+import logisticspipes.proxy.buildcraft.subproxies.IBCPipePluggable;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.textures.Textures;
 import net.minecraft.block.Block;
@@ -121,11 +121,13 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 		
 		renderblocks.setRenderBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 		
-		SimpleServiceLocator.buildCraftProxy.pipeFacadeRenderer(renderblocks, block, state, x, y, z);
+		SimpleServiceLocator.buildCraftProxy.pipeFacadeRenderer(renderblocks, block, pipe, x, y, z, renderPass);
 		
-		if (renderPass == 0) {
-			SimpleServiceLocator.buildCraftProxy.pipePlugRenderer(renderblocks, block, state, x, y, z);
-			SimpleServiceLocator.buildCraftProxy.pipeRobotStationRenderer(renderblocks, block, state, x, y, z);
+		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+			if (pipe.tilePart.hasPipePluggable(dir)) {
+				IBCPipePluggable p = pipe.tilePart.getBCPipePluggable(dir);
+				p.renderPluggable(renderblocks, dir, renderPass, x, y, z);
+			}
 		}
 	}
 

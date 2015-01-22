@@ -2,7 +2,6 @@ package logisticspipes.asm.bc;
 
 import java.util.Iterator;
 
-import logisticspipes.LPConstants;
 import logisticspipes.asm.util.ASMHelper;
 
 import org.objectweb.asm.ClassReader;
@@ -45,17 +44,14 @@ public class ClassPipeTransportItemsHandler {
 		ClassReader reader = new ClassReader(bytes);
 		reader.accept(node, 0);
 		
-		if(LPConstants.DEBUG) {
-			boolean noChecksumMatch = false;
+		boolean noChecksumMatch = false;
 		
-			if(!"04995B97C582DD0F2D87261ED45300C8E0E241DE".equals(ASMHelper.getCheckSumForMethod(reader, "injectItem"))) noChecksumMatch = true;
-			if(!"B86793A66EEF402E3CC025CFA27A1A5DC34EAD73".equals(ASMHelper.getCheckSumForMethod(reader, "passToNextPipe"))) noChecksumMatch = true;
-			if(!"571590203DD7DC1855223F11137BC8839D7AAA9B".equals(ASMHelper.getCheckSumForMethod(reader, "canReceivePipeObjects"))) noChecksumMatch = true;
+		if(!"956E67FF1103A53C970F22669CF70624DE3D4CF8".equals(ASMHelper.getCheckSumForMethod(reader, "injectItem"))) noChecksumMatch = true;
 
-			if(noChecksumMatch) {
-				new UnsupportedOperationException("This LP version isn't compatible with the installed BC version.").printStackTrace();
-				FMLCommonHandler.instance().exitJava(1, true);
-			}
+		if(noChecksumMatch) {
+			System.out.println("injectItem:" + ASMHelper.getCheckSumForMethod(reader, "injectItem"));
+			new UnsupportedOperationException("This LP version isn't compatible with the installed BC version.").printStackTrace();
+			FMLCommonHandler.instance().exitJava(1, true);
 		}
 		
 		Iterator<MethodNode> iter = node.methods.iterator();
@@ -63,66 +59,6 @@ public class ClassPipeTransportItemsHandler {
 			MethodNode m = iter.next();
 			if(m.name.equals("injectItem")) {
 				iter.remove();
-			}
-			if(m.name.equals("passToNextPipe")) {
-				MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
-					@Override
-					public void visitCode() {
-						super.visitCode();
-						Label l0 = new Label();
-						this.visitLabel(l0);
-						this.visitVarInsn(Opcodes.ALOAD, 2);
-						this.visitTypeInsn(Opcodes.INSTANCEOF, "logisticspipes/pipes/basic/LogisticsTileGenericPipe");
-						Label l1 = new Label();
-						this.visitJumpInsn(Opcodes.IFEQ, l1);
-						Label l2 = new Label();
-						this.visitLabel(l2);
-						this.visitVarInsn(Opcodes.ALOAD, 2);
-						this.visitTypeInsn(Opcodes.CHECKCAST, "logisticspipes/pipes/basic/LogisticsTileGenericPipe");
-						this.visitVarInsn(Opcodes.ALOAD, 1);
-						this.visitVarInsn(Opcodes.ALOAD, 1);
-						this.visitFieldInsn(Opcodes.GETFIELD, "buildcraft/transport/TravelingItem", "output", "Lnet/minecraftforge/common/util/ForgeDirection;");
-						this.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "logisticspipes/pipes/basic/LogisticsTileGenericPipe", "acceptBCTravelingItem", "(Lbuildcraft/transport/TravelingItem;Lnet/minecraftforge/common/util/ForgeDirection;)V");
-						Label l3 = new Label();
-						this.visitLabel(l3);
-						this.visitInsn(Opcodes.ICONST_1);
-						this.visitInsn(Opcodes.IRETURN);
-						this.visitLabel(l1);
-					}
-				};
-				m.accept(mv);
-				node.methods.set(node.methods.indexOf(m), mv);
-			}
-			if(m.name.equals("canReceivePipeObjects")) {
-				MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
-					@Override
-					public void visitCode() {
-						super.visitCode();
-						Label l0 = new Label();
-						super.visitLabel(l0);
-						super.visitLineNumber(247, l0);
-						super.visitVarInsn(Opcodes.ALOAD, 0);
-						super.visitFieldInsn(Opcodes.GETFIELD, "buildcraft/transport/PipeTransportItems", "container", "Lbuildcraft/transport/TileGenericPipe;");
-						super.visitVarInsn(Opcodes.ALOAD, 1);
-						super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "buildcraft/transport/TileGenericPipe", "getTile", "(Lnet/minecraftforge/common/util/ForgeDirection;)Lnet/minecraft/tileentity/TileEntity;");
-						super.visitTypeInsn(Opcodes.INSTANCEOF, "logisticspipes/pipes/basic/LogisticsTileGenericPipe");
-						Label l1 = new Label();
-						super.visitJumpInsn(Opcodes.IFEQ, l1);
-						super.visitVarInsn(Opcodes.ALOAD, 0);
-						super.visitFieldInsn(Opcodes.GETFIELD, "buildcraft/transport/PipeTransportItems", "container", "Lbuildcraft/transport/TileGenericPipe;");
-						super.visitVarInsn(Opcodes.ALOAD, 1);
-						super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "buildcraft/transport/TileGenericPipe", "getTile", "(Lnet/minecraftforge/common/util/ForgeDirection;)Lnet/minecraft/tileentity/TileEntity;");
-						super.visitTypeInsn(Opcodes.CHECKCAST, "logisticspipes/pipes/basic/LogisticsTileGenericPipe");
-						super.visitVarInsn(Opcodes.ALOAD, 0);
-						super.visitFieldInsn(Opcodes.GETFIELD, "buildcraft/transport/PipeTransportItems", "container", "Lbuildcraft/transport/TileGenericPipe;");
-						super.visitVarInsn(Opcodes.ALOAD, 1);
-						super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "logisticspipes/pipes/basic/LogisticsTileGenericPipe", "isBCPipeConnected", "(Lbuildcraft/transport/TileGenericPipe;Lnet/minecraftforge/common/util/ForgeDirection;)Z");
-						super.visitInsn(Opcodes.IRETURN);
-						super.visitLabel(l1);
-					}
-				};
-				m.accept(mv);
-				node.methods.set(node.methods.indexOf(m), mv);
 			}
 		}
 		insertNewInjectItemMethod(node);

@@ -11,6 +11,7 @@ import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.signs.IPipeSign;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.buildcraft.subproxies.IBCRenderTESR;
 import logisticspipes.renderer.CustomBlockRenderer.RenderInfo;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeFluidTransportLogistics;
@@ -60,10 +61,9 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 	private final int[] angleZ = { 90, 270, 0, 0, 0, 0 };
 	
 	private HashMap<Integer, DisplayFluidList> displayFluidLists = new HashMap<Integer, DisplayFluidList>();
-
     private ModelSign modelSign = new ModelSign();
-
 	private RenderBlocks renderBlocks = new RenderBlocks();
+	private IBCRenderTESR bcRenderer = SimpleServiceLocator.buildCraftProxy.getBCRenderTESR();
 	
 	private class DisplayFluidList {
 		public int[] sideHorizontal = new int[LIQUID_STAGES];
@@ -90,13 +90,13 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		dummyEntityItem.hoverStart = 0;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float f) {
 		if(!(tileentity instanceof LogisticsTileGenericPipe)) return;
 		LogisticsTileGenericPipe pipe = ((LogisticsTileGenericPipe)tileentity);
 		if(pipe.pipe == null) return;
-		SimpleServiceLocator.buildCraftProxy.renderGatesWires(pipe, x, y, z);
+		bcRenderer.renderWires(pipe, x, y, z);
+		bcRenderer.renderGates(pipe, x, y, z);
 		if(!pipe.isOpaque()) {
 			if(pipe.pipe.transport instanceof PipeFluidTransportLogistics) {
 				renderFluids(pipe.pipe, x, y, z);

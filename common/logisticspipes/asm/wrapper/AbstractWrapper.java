@@ -7,6 +7,7 @@ import logisticspipes.utils.string.ChatColor;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 
 public abstract class AbstractWrapper {
 	@Getter
@@ -19,12 +20,16 @@ public abstract class AbstractWrapper {
 	@Setter(value = AccessLevel.PACKAGE)
 	private String			modId;
 	
+	@SneakyThrows(Throwable.class)
 	public void handleException(Throwable e) {
 		if(!isEnabled()) {
 			if(LPConstants.DEBUG) {
 				e.printStackTrace();
 			}
 			return;
+		}
+		if(LPConstants.DEBUG) {
+			throw e;
 		}
 		e.printStackTrace();
 		this.state = WrapperState.Exception;

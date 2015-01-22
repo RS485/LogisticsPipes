@@ -36,7 +36,6 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	
 	public IBCPipePart bcPipePart;
 
-	public boolean internalUpdateScheduled = false;
 	private boolean initialized = false;
 
 	public CoreUnroutedPipe(PipeTransportLogistics transport, Item item) {
@@ -47,7 +46,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public void setTile(TileEntity tile) {
 		this.container = (LogisticsTileGenericPipe) tile;
 		transport.setTile((LogisticsTileGenericPipe) tile);
-		bcPipePart = SimpleServiceLocator.buildCraftProxy.getBCPipePart(this.container);
+		bcPipePart = ((LogisticsTileGenericPipe) tile).tilePart.getBCPipePart();
 	}
 
 	public boolean blockActivated(EntityPlayer entityplayer) {
@@ -63,8 +62,6 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 
 	public void onNeighborBlockChange(int blockId) {
 		transport.onNeighborBlockChange(blockId);
-
-		updateSignalState();
 	}
 
 	public boolean canPipeConnect(TileEntity tile, ForgeDirection side) {
@@ -109,28 +106,15 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public abstract int getIconIndex(ForgeDirection direction);
 
 	public void updateEntity() {
-		bcPipePart.updateEntity();
 		transport.updateEntity();
-
-		if (internalUpdateScheduled) {
-			internalUpdate();
-			internalUpdateScheduled = false;
-		}
-		bcPipePart.updateGate();
-	}
-
-	private void internalUpdate() {
-		updateSignalState();
 	}
 
 	public void writeToNBT(NBTTagCompound data) {
 		transport.writeToNBT(data);
-		bcPipePart.writeToNBT(data);
 	}
 
 	public void readFromNBT(NBTTagCompound data) {
 		transport.readFromNBT(data);
-		bcPipePart.readFromNBT(data);
 	}
 
 	public boolean needsInit() {
@@ -139,45 +123,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 
 	public void initialize() {
 		transport.initialize();
-		updateSignalState();
 		initialized = true;
-	}
-
-	public void updateSignalState() {
-		bcPipePart.updateSignalState();
-	}
-
-	public boolean canConnectRedstone() {
-		for (ForgeDirection dir: ForgeDirection.VALID_DIRECTIONS) {
-			if (this.bcPipePart.hasGate(dir)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public int isPoweringTo(int side) {
-		return bcPipePart.isPoweringTo(side);
-	}
-
-	public int isIndirectlyPoweringTo(int l) {
-		return isPoweringTo(l);
-	}
-
-	public void randomDisplayTick(Random random) {
-	}
-
-	public boolean isWired() {
-		return bcPipePart.isWired();
-	}
-
-	@Deprecated
-	public boolean hasGate() {
-		return bcPipePart.hasGate();
-	}
-
-	public boolean hasGate(ForgeDirection side) {
-		return container.tilePart.hasGate(side);
 	}
 
 	protected void notifyBlockOfNeighborChange(ForgeDirection side) {
@@ -209,11 +155,6 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		ArrayList<ItemStack> result = new ArrayList<ItemStack>();
 		bcPipePart.addItemDrops(result);
 		return result;
-	}
-	
-	public void resetGate() {
-		bcPipePart.resetGate();
-		container.scheduleRenderUpdate();
 	}
 
 	public LogisticsTileGenericPipe getContainer() {

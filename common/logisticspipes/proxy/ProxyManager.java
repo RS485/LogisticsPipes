@@ -2,7 +2,6 @@ package logisticspipes.proxy;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
@@ -13,9 +12,13 @@ import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.bs.BetterStorageProxy;
 import logisticspipes.proxy.bs.ICrateStorageProxy;
-import logisticspipes.proxy.buildcraft.subproxies.IBCCoreState;
+import logisticspipes.proxy.buildcraft.BuildCraftProxy;
+import logisticspipes.proxy.buildcraft.subproxies.IBCClickResult;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePart;
+import logisticspipes.proxy.buildcraft.subproxies.IBCPipePluggable;
+import logisticspipes.proxy.buildcraft.subproxies.IBCPluggableState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCRenderState;
+import logisticspipes.proxy.buildcraft.subproxies.IBCRenderTESR;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
 import logisticspipes.proxy.buildcraft.subproxies.IConnectionOverrideResult;
 import logisticspipes.proxy.cc.CCProxy;
@@ -46,7 +49,6 @@ import logisticspipes.proxy.opencomputers.OpenComputersProxy;
 import logisticspipes.proxy.te.ThermalExpansionProxy;
 import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 import logisticspipes.proxy.toolWrench.ToolWrenchProxy;
-import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.block.Block;
@@ -78,127 +80,103 @@ public class ProxyManager {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static void load() {
-		IBCProxy bcDummyProxy = new IBCProxy() {
+		SimpleServiceLocator.setBuildCraftProxy(getWrappedProxy("BuildCraft|Transport", IBCProxy.class, BuildCraftProxy.class, new IBCProxy() {
 			@Override public void resetItemRotation() {}
 			@Override public boolean insertIntoBuildcraftPipe(TileEntity tile, LPTravelingItem item) {return false;}
 			@Override public boolean isIPipeTile(TileEntity tile) {return false;}
 			@Override public void registerPipeInformationProvider() {}
 			@Override public void initProxy() {}
-			@Override public boolean checkForPipeConnection(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe) {return true;}
+			@Override public boolean checkForPipeConnection(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe) {return false;}
 			@Override public IConnectionOverrideResult checkConnectionOverride(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe) {
 				return new IConnectionOverrideResult() {
 					@Override public boolean forceConnect() {return false;}
 					@Override public boolean forceDisconnect() {return false;}
 				};
 			}
-			@Override public IBCPipePart getBCPipePart(LogisticsTileGenericPipe tile) {
-				return new IBCPipePart() {
-					@Override public void updateGate() {}
-					@Override public void writeToNBT(NBTTagCompound data) {}
-					@Override public void readFromNBT(NBTTagCompound data) {}
-					@Override public void addItemDrops(List<ItemStack> result) {}
-					@Override public void resetGate() {}
-					@Override public boolean isWireConnectedTo(TileEntity tile, Object color) {return false;}
-					@Override public boolean isWired() {return false;}
-					@Override public int isPoweringTo(int side) {return 0;}
-					@Override public void updateSignalState() {}
-					@Override public boolean[] getWireSet() {return new boolean[4];}
-					@Override public int[] getSignalStrength() {return new int[4];}
-					@Override public boolean isGateActive() {return false;}
-					@Override public boolean receiveSignal(int i, Object wire) {return false;}
-					@Override public void makeGate(CoreUnroutedPipe pipe, ItemStack currentEquippedItem) {}
-					@Override public void updateCoreStateGateData() {}
-					@Override public void updateGateFromCoreStateData() {}
-					@Override public void checkResyncGate() {}
-					@Override public void actionsActivated(Object actions) {}
-					@Override public void updateEntity() {}
-					@Override public Container getGateContainer(InventoryPlayer inventory, int side) {return null;}
-					@Override public Object getClientGui(InventoryPlayer inventory, int side) {return null;}
-					@Override public LinkedList<?> getActions() {return null;}
-					@Override public void refreshRedStoneInput(int redstoneInput) {}
-					@Override public boolean hasGate(ForgeDirection sideHit) {return false;}
-					@Override public ItemStack getGateItem(int side) {return null;}
-					@Override public void openGateGui(EntityPlayer player, int side) {}
-					@Override public Object getGate(int i) {return null;}
-					@Override public Object getGates() {return null;}
-					@Override public void resolveActions() {}
-					@Override public Object getWrapped() {return null;}
-					@Override public boolean hasGate() {return false;}
-					@Override public Object getOriginal() {return this;}
-				};
-			}
-			@Override public boolean handleBCClickOnPipe(ItemStack currentItem, CoreUnroutedPipe pipe, World world, int x, int y, int z, EntityPlayer player, int side, LogisticsBlockGenericPipe logisticsBlockGenericPipe) {return false;}
-			@Override public ItemStack getPipePlugItemStack() {return null;}
-			@Override public ItemStack getRobotStationItemStack() {return null;}
-			@Override public boolean stripEquipment(World world, int x, int y, int z, EntityPlayer player, CoreUnroutedPipe pipe, LogisticsBlockGenericPipe block) {return false;}
-			@Override public IBCTilePart getBCTilePart(LogisticsTileGenericPipe tile) {
-				return new IBCTilePart() {
-					@Override public void refreshRenderState() {}
-					@Override public boolean hasFacade(ForgeDirection direction) {return false;}
-					@Override public ItemStack getFacade(ForgeDirection direction) {return null;}
-					@Override public boolean hasPlug(ForgeDirection side) {return false;}
-					@Override public boolean hasRobotStation(ForgeDirection side) {return false;}
-					@Override public boolean addPlug(ForgeDirection forgeDirection) {return false;}
-					@Override public boolean addRobotStation(ForgeDirection forgeDirection) {return false;}
-					@Override public void writeToNBT(NBTTagCompound nbt) {}
-					@Override public void readFromNBT(NBTTagCompound nbt) {}
-					@Override public void invalidate() {}
-					@Override public void validate() {}
-					@Override public Object getPluggables(int i) {return null;}
-					@Override public void updateEntity() {}
-					@Override public boolean hasGate(ForgeDirection side) {return false;}
-					@Override public void setGate(Object makeGate, int i) {}
-					@Override public boolean hasEnabledFacade(ForgeDirection dir) {return false;}
-					@Override public boolean dropSideItems(ForgeDirection sideHit) {return false;}
-					@Override public boolean hasBlockingPluggable(ForgeDirection side) {return false;}
-					@Override public Object getStation(ForgeDirection sideHit) {return null;}
-					@Override public boolean addGate(ForgeDirection side, Object makeGate) {return false;}
-					@Override public boolean addFacade(ForgeDirection direction, Object states) {return false;}
-				};
-			}
-			@Override public void notifyOfChange(LogisticsTileGenericPipe pipe, TileEntity tile, ForgeDirection o) {}
-			@Override @SideOnly(Side.CLIENT) public void renderGatesWires(LogisticsTileGenericPipe pipe, double x, double y, double z) {}
-			@Override @SideOnly(Side.CLIENT) public void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z) {}
-			@Override @SideOnly(Side.CLIENT) public void pipePlugRenderer(RenderBlocks renderblocks, Block block, PipeRenderState state, int x, int y, int z) {}
-			@Override public ItemStack getDropFacade(CoreUnroutedPipe pipe, ForgeDirection dir) {return null;}
 			@Override public boolean canPipeConnect(TileEntity pipe, TileEntity tile, ForgeDirection direction) {return false;}
-			@Override @SideOnly(Side.CLIENT) public void pipeRobotStationRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z) {}
 			@Override public boolean isActive() {return false;}
-			@Override public Object getLPPipeType() {return null;}
 			@Override public boolean isInstalled() {return false;}
+			@Override public Object getLPPipeType() {return null;}
 			@Override public void registerTrigger() {}
 			@Override public ICraftingParts getRecipeParts() {return null;}
 			@Override public void addCraftingRecipes(ICraftingParts parts) {}
-			@Override public Object overridePipeConnection(LogisticsTileGenericPipe pipe, Object type, ForgeDirection dir) {return null;}
-			@Override public IBCCoreState getBCCoreState() {
-				return new IBCCoreState() {
-					@Override public void writeData(LPDataOutputStream data) throws IOException {}
-					@Override public void readData(LPDataInputStream data) throws IOException {}
-					@Override public Object getOriginal() {return null;}
-				};
-			}
-			@Override public IBCRenderState getBCRenderState() {
-				return new IBCRenderState() {
-					@Override public Object getOriginal() {return null;}
-					@Override public void clean() {}
-					@Override public boolean isDirty() {return false;}
-					@Override public boolean needsRenderUpdate() {return false;}
-					@Override public void writeData(LPDataOutputStream data) throws IOException {}
-					@Override public void readData(LPDataInputStream data) throws IOException {}
-				};
-			}
-			@Override public void checkUpdateNeighbour(TileEntity tile) {}
-			@Override public void logWarning(String format) {}
 			@Override public Class<? extends ICraftingRecipeProvider> getAssemblyTableProviderClass() {return null;}
-		};
-		
-		try {
-			SimpleServiceLocator.setBuildCraftProxy(getWrappedProxy("BuildCraft|Transport", IBCProxy.class, (Class<? extends IBCProxy>) Class.forName("logisticspipes.proxy.buildcraft.bc61.BuildCraftProxy"), bcDummyProxy, IBCPipePart.class, IBCTilePart.class, IBCCoreState.class, IBCRenderState.class));
-		} catch(ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		}
+			@Override public void notifyOfChange(LogisticsTileGenericPipe logisticsTileGenericPipe, TileEntity tile, ForgeDirection o) {}
+			@Override public IBCTilePart getBCTilePart(LogisticsTileGenericPipe logisticsTileGenericPipe) {
+				return new IBCTilePart() {
+					@Override public boolean hasBlockingPluggable(ForgeDirection side) {return false;}
+					@Override public void writeToNBT_LP(NBTTagCompound nbt) {}
+					@Override public void readFromNBT_LP(NBTTagCompound nbt) {}
+					@Override public boolean isSolidOnSide(ForgeDirection side) {return false;}
+					@Override public void invalidate_LP() {}
+					@Override public void validate_LP() {}
+					@Override public void updateEntity_LP() {}
+					@Override public void scheduleNeighborChange() {}
+					@Override public boolean hasGate(ForgeDirection orientation) {return false;}
+					@Override public IBCRenderState getBCRenderState() {
+						return new IBCRenderState() {
+							@Override public boolean needsRenderUpdate() {return false;}
+							@Override public boolean isDirty() {return false;}
+							@Override public void writeData_LP(LPDataOutputStream data) {}
+							@Override public void readData_LP(LPDataInputStream data) {}
+							@Override public void clean() {}
+						};
+					}
+					@Override public IBCPipePart getBCPipePart() {
+						return new IBCPipePart() {
+							@Override public void openGateGui(EntityPlayer player, int ordinal) {}
+							@Override public boolean hasGate() {return false;}
+							@Override public boolean canConnectRedstone() {return false;}
+							@Override public int isPoweringTo(int l) {return 0;}
+							@Override public int isIndirectlyPoweringTo(int l) {return 0;}
+							@Override public Object getClientGui(InventoryPlayer inventory, int side) {return null;}
+							@Override public Container getGateContainer(InventoryPlayer inventory, int side) {return null;}
+							@Override public void addItemDrops(ArrayList<ItemStack> result) {}
+							@Override public Object getOriginal() {return null;}
+						};
+					}
+					@Override public IBCPluggableState getBCPlugableState() {
+						return new IBCPluggableState() {
+							@Override public void writeData(LPDataOutputStream data) throws IOException {}
+							@Override public void readData(LPDataInputStream data) throws IOException {}
+						};
+					}
+					@Override public boolean hasEnabledFacade(ForgeDirection dir) {return false;}
+					@Override public IBCPipePluggable getBCPipePluggable(ForgeDirection sideHit) {
+						return new IBCPipePluggable() {
+							@Override public ItemStack[] getDropItems(LogisticsTileGenericPipe container) {return new ItemStack[]{};}
+							@Override public boolean isBlocking() {return false;}
+							@Override public Object getOriginal() {return null;}
+							@Override public void renderPluggable(RenderBlocks renderblocks, ForgeDirection dir, int renderPass, int x, int y, int z) {}
+						};
+					}
+					@Override public void readOldRedStone(NBTTagCompound nbt) {}
+					@Override public void disablePluggableAccess() {}
+					@Override public void reenablePluggableAccess() {}
+					@Override public void afterStateUpdated() {}
+					@Override public Object getOriginal() {return null;}
+					@Override public boolean hasPipePluggable(ForgeDirection dir) {return false;}
+					@Override public void setWorldObj_LP(World world) {}
+				};
+			}
+			@Override public IBCClickResult handleBCClickOnPipe(World world, int x, int y, int z, EntityPlayer player, int side, float xOffset, float yOffset, float zOffset, CoreUnroutedPipe pipe) {
+				return new IBCClickResult() {
+					@Override public boolean handled() {return false;}
+					@Override public boolean blocked() {return false;}
+				};
+			}
+			@Override public void callBCNeighborBlockChange(World world, int x, int y, int z, Block block) {}
+			@Override public void callBCRemovePipe(World world, int x, int y, int z) {}
+			@Override public void logWarning(String format) {}
+			@Override public IBCRenderTESR getBCRenderTESR() {
+				return new IBCRenderTESR() {
+					@Override public void renderWires(LogisticsTileGenericPipe pipe, double x, double y, double z) {}
+					@Override public void renderGates(LogisticsTileGenericPipe pipe, double x, double y, double z) {}
+				};
+			}
+			@Override public void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, LogisticsTileGenericPipe pipe, int x, int y, int z, int renderPass) {}
+		}, IBCTilePart.class, IBCPipePart.class, IBCPipePluggable.class, IBCPluggableState.class, IBCRenderState.class, IBCRenderTESR.class));
 		
 		SimpleServiceLocator.setForestryProxy(getWrappedProxy("Forestry", IForestryProxy.class, ForestryProxy.class, new IForestryProxy() {
 			@Override public boolean isBee(ItemStack item) {return false;}

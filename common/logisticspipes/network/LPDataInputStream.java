@@ -2,6 +2,7 @@ package logisticspipes.network;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.Unpooled;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -204,5 +205,10 @@ public class LPDataInputStream extends DataInputStream {
 			array[i] = this.readByte();
 		}
 		return array;
+	}
+
+	public ByteBuf readByteBuf() throws IOException {
+		byte[] bytes = this.readByteArray();
+		return Unpooled.copiedBuffer(bytes);
 	}
 }

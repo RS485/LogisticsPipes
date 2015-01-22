@@ -1,4 +1,4 @@
-package logisticspipes.proxy.buildcraft.bc61.gates;
+package logisticspipes.proxy.buildcraft.gates;
 
 
 import logisticspipes.textures.Textures;

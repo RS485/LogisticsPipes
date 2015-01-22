@@ -1,7 +1,7 @@
-package logisticspipes.proxy.buildcraft.bc61.gates;
+package logisticspipes.proxy.buildcraft.gates;
 
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
-import logisticspipes.proxy.buildcraft.bc61.gates.wrapperclasses.PipeWrapper;
+import logisticspipes.proxy.buildcraft.subproxies.LPBCPipe;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import buildcraft.api.statements.IStatementParameter;
 import buildcraft.api.statements.ITriggerInternal;
@@ -15,9 +15,9 @@ public class TriggerCrafting extends LPTrigger implements ITriggerInternal {
 
 	@Override
 	public boolean isTriggerActive(Pipe pipe, IStatementParameter parameter) {
-		if(pipe instanceof PipeWrapper) {
-			if (!(((PipeWrapper)pipe).tile.pipe instanceof PipeItemsCraftingLogistics)) return false;
-			return ((PipeItemsCraftingLogistics)((PipeWrapper)pipe).tile.pipe).getLogisticsModule().waitingForCraft;
+		if(pipe instanceof LPBCPipe) {
+			if (!(((LPBCPipe)pipe).pipe.pipe instanceof PipeItemsCraftingLogistics)) return false;
+			return ((PipeItemsCraftingLogistics)((LPBCPipe)pipe).pipe.pipe).getLogisticsModule().waitingForCraft;
 		}
 		return false;
 	}

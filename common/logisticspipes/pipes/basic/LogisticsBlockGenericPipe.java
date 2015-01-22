@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
+import buildcraft.transport.gates.GatePluggable;
 import logisticspipes.Configs;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
@@ -15,6 +16,8 @@ import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.buildcraft.subproxies.IBCClickResult;
+import logisticspipes.proxy.buildcraft.subproxies.IBCPipePluggable;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.textures.Textures;
 import logisticspipes.ticks.QueuedTasks;
@@ -191,9 +194,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		if (rayTraceResult != null && rayTraceResult.boundingBox != null) {
 			AxisAlignedBB box = rayTraceResult.boundingBox;
 			switch (rayTraceResult.hitPart) {
-			case Gate:
-			case Plug:
-			case RobotStation: {
+			case Pluggable: {
 				float scale = 0.001F;
 				box = box.expand(scale, scale, scale);
 				break;
@@ -203,8 +204,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				box = box.expand(scale, scale, scale);
 				break;
 			}
-			case Facade:
-				break;
 			}
 			return box.getOffsetBoundingBox(x, y, z);
 		}
@@ -349,51 +348,15 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			}
 		}
 
-		// gates
+		// pluggables
 
 		for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
-			if (pipe.hasGate(side)) {
-				AxisAlignedBB bb = getGateBoundingBox(side);
+			if (tileG.getPipePluggable(side) != null) {
+				AxisAlignedBB bb = tileG.getPipePluggable(side).getBoundingBox(side);
 				setBlockBounds(bb);
 				boxes[7 + side.ordinal()] = bb;
 				hits[7 + side.ordinal()] = super.collisionRayTrace(world, x, y, z, origin, direction);
 				sideHit[7 + side.ordinal()] = side;
-			}
-		}
-
-		// facades
-
-		for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
-			if (tileG.tilePart.hasFacade(side)) {
-				AxisAlignedBB bb = getFacadeBoundingBox(side);
-				setBlockBounds(bb);
-				boxes[13 + side.ordinal()] = bb;
-				hits[13 + side.ordinal()] = super.collisionRayTrace(world, x, y, z, origin, direction);
-				sideHit[13 + side.ordinal()] = side;
-			}
-		}
-
-		// plugs
-
-		for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
-			if (tileG.tilePart.hasPlug(side)) {
-				AxisAlignedBB bb = getPlugBoundingBox(side);
-				setBlockBounds(bb);
-				boxes[19 + side.ordinal()] = bb;
-				hits[19 + side.ordinal()] = super.collisionRayTrace(world, x, y, z, origin, direction);
-				sideHit[19 + side.ordinal()] = side;
-			}
-		}
-
-		// robotStations
-
-		for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
-			if (tileG.tilePart.hasRobotStation(side)) {
-				AxisAlignedBB bb = getRobotStationBoundingBox(side);
-				setBlockBounds(bb);
-				boxes[25 + side.ordinal()] = bb;
-				hits[25 + side.ordinal()] = super.collisionRayTrace(world, x, y, z, origin, direction);
-				sideHit[25 + side.ordinal()] = side;
 			}
 		}
 
@@ -429,14 +392,8 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 			if (minIndex < 7) {
 				hitPart = Part.Pipe;
-			} else if (minIndex < 13) {
-				hitPart = Part.Gate;
-			} else if (minIndex < 19) {
-				hitPart = Part.Facade;
-			} else if (minIndex < 25) {
-				hitPart = Part.Plug;
 			} else {
-				hitPart = Part.RobotStation;
+				hitPart = Part.Pluggable;
 			}
 
 			return new RaytraceResult(hitPart, hits[minIndex], boxes[minIndex], sideHit[minIndex]);
@@ -445,73 +402,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	private void setBlockBounds(AxisAlignedBB bb) {
 		setBlockBounds((float) bb.minX, (float) bb.minY, (float) bb.minZ, (float) bb.maxX, (float) bb.maxY, (float) bb.maxZ);
-	}
-
-	private AxisAlignedBB getGateBoundingBox(ForgeDirection side) {
-		float min = LPConstants.PIPE_MIN_POS + 0.05F;
-		float max = LPConstants.PIPE_MAX_POS - 0.05F;
-
-		float[][] bounds = new float[3][2];
-		// X START - END
-		bounds[0][0] = min;
-		bounds[0][1] = max;
-		// Y START - END
-		bounds[1][0] = LPConstants.PIPE_MIN_POS - 0.10F;
-		bounds[1][1] = LPConstants.PIPE_MIN_POS;
-		// Z START - END
-		bounds[2][0] = min;
-		bounds[2][1] = max;
-
-		MatrixTranformations.transform(bounds, side);
-		return AxisAlignedBB.getBoundingBox(bounds[0][0], bounds[1][0], bounds[2][0], bounds[0][1], bounds[1][1], bounds[2][1]);
-	}
-
-	private AxisAlignedBB getFacadeBoundingBox(ForgeDirection side) {
-		float[][] bounds = new float[3][2];
-		// X START - END
-		bounds[0][0] = 0.0F;
-		bounds[0][1] = 1.0F;
-		// Y START - END
-		bounds[1][0] = 0.0F;
-		bounds[1][1] = LPConstants.FACADE_THICKNESS;
-		// Z START - END
-		bounds[2][0] = 0.0F;
-		bounds[2][1] = 1.0F;
-
-		MatrixTranformations.transform(bounds, side);
-		return AxisAlignedBB.getBoundingBox(bounds[0][0], bounds[1][0], bounds[2][0], bounds[0][1], bounds[1][1], bounds[2][1]);
-	}
-
-	private AxisAlignedBB getPlugBoundingBox(ForgeDirection side) {
-		float[][] bounds = new float[3][2];
-		// X START - END
-		bounds[0][0] = 0.25F;
-		bounds[0][1] = 0.75F;
-		// Y START - END
-		bounds[1][0] = 0.125F;
-		bounds[1][1] = 0.251F;
-		// Z START - END
-		bounds[2][0] = 0.25F;
-		bounds[2][1] = 0.75F;
-
-		MatrixTranformations.transform(bounds, side);
-		return AxisAlignedBB.getBoundingBox(bounds[0][0], bounds[1][0], bounds[2][0], bounds[0][1], bounds[1][1], bounds[2][1]);
-	}
-
-	private AxisAlignedBB getRobotStationBoundingBox(ForgeDirection side) {
-		float[][] bounds = new float[3][2];
-		// X START - END
-		bounds[0][0] = 0.25F;
-		bounds[0][1] = 0.75F;
-		// Y START - END
-		bounds[1][0] = 0.125F;
-		bounds[1][1] = 0.251F;
-		// Z START - END
-		bounds[2][0] = 0.25F;
-		bounds[2][1] = 0.75F;
-
-		MatrixTranformations.transform(bounds, side);
-		return AxisAlignedBB.getBoundingBox(bounds[0][0], bounds[1][0], bounds[2][0], bounds[0][1], bounds[1][1], bounds[2][1]);
 	}
 
 	private AxisAlignedBB getPipeBoundingBox(ForgeDirection side) {
@@ -575,10 +465,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	public static enum Part {
 		Pipe,
-		Gate,
-		Facade,
-		Plug,
-		RobotStation
+		Pluggable
 	}
 
 	public static class RaytraceResult {
@@ -707,13 +594,13 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 		pipeRemoved.put(new LPPosition(x, y, z), pipe);
 		world.removeTileEntity(x, y, z);
-		updateNeighbourSignalState(pipe);
 	}
 
 	@Override
 	public void breakBlock(World world, int x, int y, int z, Block block, int par6) {
 		removePipe(getPipe(world, x, y, z));
 		super.breakBlock(world, x, y, z, block, par6);
+		SimpleServiceLocator.buildCraftProxy.callBCRemovePipe(world, x, y, z);
 	}
 
 	@Override
@@ -759,18 +646,16 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 		if (rayTraceResult != null && rayTraceResult.boundingBox != null) {
 			switch (rayTraceResult.hitPart) {
-			case Gate:
-				CoreUnroutedPipe pipe = getPipe(world, x, y, z);
-				return pipe.bcPipePart.getGateItem(rayTraceResult.sideHit.ordinal());
-			case Plug:
-				return SimpleServiceLocator.buildCraftProxy.getPipePlugItemStack();
-			case RobotStation:
-				return SimpleServiceLocator.buildCraftProxy.getRobotStationItemStack();
+				case Pluggable: {
+					CoreUnroutedPipe pipe = getPipe(world, x, y, z);
+					IBCPipePluggable pluggable = pipe.container.tilePart.getBCPipePluggable(rayTraceResult.sideHit);
+					ItemStack[] drops = pluggable.getDropItems(pipe.container);
+					if (drops != null && drops.length > 0) {
+						return drops[0];
+					}
+				}
 			case Pipe:
 				return new ItemStack(getPipe(world, x, y, z).item);
-			case Facade:
-				ForgeDirection dir = ForgeDirection.getOrientation(target.sideHit);
-				return SimpleServiceLocator.buildCraftProxy.getDropFacade(getPipe(world, x, y, z), dir);
 			}
 		}
 		return null;
@@ -785,36 +670,9 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 		if (isValid(pipe)) {
 			pipe.container.scheduleNeighborChange();
-			pipe.container.redstoneInput = 0;
-			
-			for (int i = 0; i < ForgeDirection.VALID_DIRECTIONS.length; i++) {
-				ForgeDirection d = ForgeDirection.getOrientation(i);
-				pipe.container.redstoneInputSide[i] = getRedstoneInputToPipe(world, x, y, z, d);
-				if (pipe.container.redstoneInput < pipe.container.redstoneInputSide[i]) {
-					pipe.container.redstoneInput = pipe.container.redstoneInputSide[i];
-				}
-			}
-			
-			pipe.bcPipePart.refreshRedStoneInput(pipe.container.redstoneInput);
 		}
+		SimpleServiceLocator.buildCraftProxy.callBCNeighborBlockChange(world, x, y, z, block);
 	}
-
-	private int getRedstoneInputToPipe(World world, int x, int y, int z,
-			ForgeDirection d) {
-		int i = d.ordinal();
-		int input = world.isBlockProvidingPowerTo(x + d.offsetX, y + d.offsetY, z + d.offsetZ, i);
-		if (input == 0) {
-			input = world.getIndirectPowerLevelTo(x + d.offsetX, y + d.offsetY, z + d.offsetZ, i);
-			if (input == 0 && d != ForgeDirection.DOWN) {
-				Block block = world.getBlock(x + d.offsetX, y + d.offsetY, z + d.offsetZ);
-				if (block instanceof BlockRedstoneWire) {
-					return world.getBlockMetadata(x + d.offsetX, y + d.offsetY, z + d.offsetZ);
-				}
-			}
-		}
-		return input;
-	}
-
 
 	@Override
 	public int onBlockPlaced(World world, int x, int y, int z, int side, float par6, float par7, float par8, int meta) {
@@ -849,13 +707,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		if (isValid(pipe)) {
 			ItemStack currentItem = player.getCurrentEquippedItem();
 
-			// Right click while sneaking with empty hand to strip equipment
-			// from the pipe.
-			if (player.isSneaking() && currentItem == null) {
-				if (SimpleServiceLocator.buildCraftProxy.stripEquipment(world, x, y, z, player, pipe, this)) {
-					return true;
-				}
-			} else if (currentItem == null) {
+			if (currentItem == null) {
 				// Fall through the end of the test
 			} else if (currentItem.getItem() == Items.sign) {
 				// Sign will be placed anyway, so lets show the sign gui
@@ -866,13 +718,18 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				// Only check the instance at this point. Call the IToolWrench
 				// interface callbacks for the individual pipe/logic calls
 				return pipe.blockActivated(player);
-			} else if(SimpleServiceLocator.buildCraftProxy.handleBCClickOnPipe(currentItem, pipe, world, x, y, z, player, side, this)) {
+			}
+			IBCClickResult result = SimpleServiceLocator.buildCraftProxy.handleBCClickOnPipe(world, x, y, z, player, side, xOffset, yOffset, zOffset, pipe);
+			if(result.handled()) {
 				return true;
 			}
-			if (pipe.hasGate()) {
+			if(result.blocked()) {
+				return false;
+			}
+			if (pipe.bcPipePart.hasGate()) {
 				RaytraceResult rayTraceResult = doRayTrace(world, x, y, z, player);
 
-				if (rayTraceResult != null && rayTraceResult.hitPart == Part.Gate) {
+				if (rayTraceResult != null && rayTraceResult.hitPart == Part.Pluggable && pipe.container.getPipePluggable(rayTraceResult.sideHit) instanceof GatePluggable) {
 					pipe.bcPipePart.openGateGui(player, rayTraceResult.sideHit.ordinal());
 					return true;
 				}
@@ -899,7 +756,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		CoreUnroutedPipe pipe = getPipe(world, x, y, z);
 
 		if (isValid(pipe)) {
-			return pipe.canConnectRedstone();
+			return pipe.bcPipePart.canConnectRedstone();
 		} else {
 			return false;
 		}
@@ -910,7 +767,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		CoreUnroutedPipe pipe = getPipe(iblockaccess, x, y, z);
 
 		if (isValid(pipe)) {
-			return pipe.isPoweringTo(l);
+			return pipe.bcPipePart.isPoweringTo(l);
 		} else {
 			return 0;
 		}
@@ -926,19 +783,9 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		CoreUnroutedPipe pipe = getPipe(world, i, j, k);
 
 		if (isValid(pipe)) {
-			return pipe.isIndirectlyPoweringTo(l);
+			return pipe.bcPipePart.isIndirectlyPoweringTo(l);
 		} else {
 			return 0;
-		}
-	}
-
-	@SuppressWarnings({"all"})
-	@Override
-	public void randomDisplayTick(World world, int i, int j, int k, Random random) {
-		CoreUnroutedPipe pipe = getPipe(world, i, j, k);
-
-		if (isValid(pipe)) {
-			pipe.randomDisplayTick(random);
 		}
 	}
 
@@ -1143,21 +990,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			return facadeRenderColor;
 		}
 		return super.colorMultiplier(world, x, y, z);
-	}
-	
-	public static void updateNeighbourSignalState(CoreUnroutedPipe pipe) {
-		TileBuffer[] neighbours = pipe.container.getTileCache();
-
-		if (neighbours != null) {
-			for (int i = 0; i < 6; i++) {
-				if (neighbours[i] != null && neighbours[i].getTile() != null && !neighbours[i].getTile().isInvalid()) {
-					SimpleServiceLocator.buildCraftProxy.checkUpdateNeighbour(neighbours[i].getTile());
-					if(neighbours[i].getTile() instanceof LogisticsTileGenericPipe) {
-						((LogisticsTileGenericPipe) neighbours[i].getTile()).pipe.updateSignalState();
-					}
-				}
-			}
-		}
 	}
 	
 	private static void cacheTileToPreventRemoval(CoreUnroutedPipe pipe) {

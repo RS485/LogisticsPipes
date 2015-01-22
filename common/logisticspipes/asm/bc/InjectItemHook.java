@@ -1,13 +1,10 @@
 package logisticspipes.asm.bc;
 
-import java.util.logging.Level;
-
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.LPRoutedBCTravelingItem;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.BuildCraftTransport;
-import buildcraft.api.core.BCLog;
 import buildcraft.core.DefaultProps;
 import buildcraft.core.utils.BlockUtils;
 import buildcraft.core.utils.MathUtils;
@@ -35,11 +32,12 @@ public class InjectItemHook {
 			item.output = pipe.resolveDestination(item);
 		}
 
-		PipeEventItem.Entered event = new PipeEventItem.Entered(item);
-		pipe.container.pipe.handlePipeEvent(event);
-		if (event.cancelled)
-			return;
 
+		PipeEventItem.Entered event = new PipeEventItem.Entered(item);
+		pipe.container.pipe.eventBus.handleEvent(PipeEventItem.Entered.class, event);
+		if (event.cancelled) {
+			return;
+		}
 		pipe.items.add(item);
 
 		if (!pipe.container.getWorldObj().isRemote) {

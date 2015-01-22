@@ -1,10 +1,10 @@
-package logisticspipes.proxy.buildcraft.bc61.gates;
+package logisticspipes.proxy.buildcraft.gates;
 
 import java.util.ArrayList;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.buildcraft.bc61.gates.wrapperclasses.PipeWrapper;
+import logisticspipes.proxy.buildcraft.subproxies.LPBCPipe;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.item.ItemStack;
@@ -30,11 +30,11 @@ public class TriggerHasDestination extends LPTrigger implements ITriggerInternal
 
 	@Override
 	public boolean isTriggerActive(Pipe pipe, IStatementParameter parameter) {
-		if(pipe instanceof PipeWrapper) {
-			if (((PipeWrapper)pipe).tile.pipe instanceof CoreRoutedPipe) {
+		if(pipe instanceof LPBCPipe) {
+			if (((LPBCPipe)pipe).pipe.pipe instanceof CoreRoutedPipe) {
 				if (parameter != null && parameter.getItemStack() != null) {
 					ItemStack item = parameter.getItemStack();
-					if (SimpleServiceLocator.logisticsManager.hasDestination(ItemIdentifier.get(item), false, ((CoreRoutedPipe) ((PipeWrapper)pipe).tile.pipe).getRouter().getSimpleID(), new ArrayList<Integer>()) != null) {
+					if (SimpleServiceLocator.logisticsManager.hasDestination(ItemIdentifier.get(item), false, ((CoreRoutedPipe) ((LPBCPipe)pipe).pipe.pipe).getRouter().getSimpleID(), new ArrayList<Integer>()) != null) {
 						return true;
 					}
 				}

@@ -174,7 +174,11 @@ public class LogisticsPipes {
 			}
 		}
 		if(!found) {
-			throw new RuntimeException("LogisticsPipes could not find its class transformer. If you are running MC from an IDE make sure to copy the 'LogisticsPipes_dummy.jar' to your mods folder. If you are running MC normal please report this as a bug at 'https://github.com/RS485/LogisticsPipes/issues'.");
+			if(LPConstants.DEBUG) {
+				throw new RuntimeException("LogisticsPipes could not find its class transformer. If you are running MC from an IDE make sure to copy the 'LogisticsPipes_dummy.jar' to your mods folder. If you are running MC normal please report this as a bug at 'https://github.com/RS485/LogisticsPipes/issues'.");
+			} else {
+				throw new RuntimeException("LogisticsPipes could not find its class transformer. Your download seems to be corrupt/modified. Please redownload LP from our Jenkins [http://ci.thezorro266.com/] and move it into your mods folder.");
+			}
 		}
 		try {
 			Field fTransformers = LaunchClassLoader.class.getDeclaredField("transformers");

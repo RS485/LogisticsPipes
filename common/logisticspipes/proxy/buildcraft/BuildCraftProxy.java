@@ -35,10 +35,8 @@ import logisticspipes.utils.ReflectionHelper;
 import logisticspipes.utils.tuples.LPPosition;
 import lombok.SneakyThrows;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -82,7 +80,6 @@ public class BuildCraftProxy implements IBCProxy {
 	private Method canPipeConnect;
 
 	public PipeType logisticsPipeType;
-	public PipeType wrapperPipeType;
 	
 	public BuildCraftProxy() {
 		String BCVersion = null;
@@ -181,7 +178,7 @@ public class BuildCraftProxy implements IBCProxy {
 		if (with instanceof TileGenericPipe) {
 			if (ReflectionHelper.invokePrivateMethodCatched(Boolean.class, TileGenericPipe.class, with, "hasBlockingPluggable", new Class[]{ForgeDirection.class}, new Object[]{side.getOpposite()}).booleanValue()) //((TileGenericPipe) with).hasBlockingPluggable(side.getOpposite())
 				return false;
-			Pipe otherPipe = ((TileGenericPipe) with).pipe;
+			Pipe<?> otherPipe = ((TileGenericPipe) with).pipe;
 
 			if (!BlockGenericPipe.isValid(otherPipe))
 				return false;
@@ -260,7 +257,6 @@ public class BuildCraftProxy implements IBCProxy {
 	public Object getLPPipeType() {
 		if(logisticsPipeType == null) {
 			logisticsPipeType = net.minecraftforge.common.util.EnumHelper.addEnum(PipeType.class, "LOGISTICS", new Class<?>[]{}, new Object[]{});
-			wrapperPipeType = net.minecraftforge.common.util.EnumHelper.addEnum(PipeType.class, "WRAPPED-LOGISTICS", new Class<?>[]{}, new Object[]{});
 		}
 		return logisticsPipeType;
 	}

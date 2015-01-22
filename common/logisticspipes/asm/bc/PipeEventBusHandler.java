@@ -21,10 +21,12 @@ public class PipeEventBusHandler {
 		
 		boolean noChecksumMatch = false;
 
-		if(!"3A490EE1D1DE3A386D528D5CADBFA7F536DBC708".equals(ASMHelper.getCheckSumForMethod(reader, "handleEvent"))) noChecksumMatch = true;
+		String sumHandleEvent = ASMHelper.getCheckSumForMethod(reader, "handleEvent");
+		
+		if(!"3A490EE1D1DE3A386D528D5CADBFA7F536DBC708".equals(sumHandleEvent) && !"33411F8DE31E738A237712C1E0AD2013C8CAB253".equals(sumHandleEvent)) noChecksumMatch = true;
 		
 		if(noChecksumMatch) {
-			System.out.println("handleEvent:" + ASMHelper.getCheckSumForMethod(reader, "handleEvent"));
+			System.out.println("handleEvent: " + sumHandleEvent);
 			new UnsupportedOperationException("This LP version isn't compatible with the installed BC version.").printStackTrace();
 			FMLCommonHandler.instance().exitJava(1, true);
 		}

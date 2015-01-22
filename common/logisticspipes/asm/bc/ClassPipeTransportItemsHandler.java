@@ -46,10 +46,12 @@ public class ClassPipeTransportItemsHandler {
 		
 		boolean noChecksumMatch = false;
 		
-		if(!"956E67FF1103A53C970F22669CF70624DE3D4CF8".equals(ASMHelper.getCheckSumForMethod(reader, "injectItem"))) noChecksumMatch = true;
+		String sumInjectItem = ASMHelper.getCheckSumForMethod(reader, "injectItem");
+		
+		if(!"956E67FF1103A53C970F22669CF70624DE3D4CF8".equals(sumInjectItem) && !"E7C1D1F202E00935B89B35E7F2A46B97E1FDC6F7".equals(sumInjectItem)) noChecksumMatch = true;
 
 		if(noChecksumMatch) {
-			System.out.println("injectItem:" + ASMHelper.getCheckSumForMethod(reader, "injectItem"));
+			System.out.println("injectItem: " + sumInjectItem);
 			new UnsupportedOperationException("This LP version isn't compatible with the installed BC version.").printStackTrace();
 			FMLCommonHandler.instance().exitJava(1, true);
 		}

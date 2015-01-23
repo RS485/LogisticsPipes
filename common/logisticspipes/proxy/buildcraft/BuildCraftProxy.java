@@ -204,7 +204,7 @@ public class BuildCraftProxy implements IBCProxy {
 				}
 				if(override == IPipeConnection.ConnectOverride.DISCONNECT) {
 					//nope, maybe you'd like some BC power?
-					if(pipe.getCPipe().getUpgradeManager().hasRFPowerSupplierUpgrade()) {
+					if(pipe.pipe.getUpgradeManager().hasRFPowerSupplierUpgrade()) {
 						override = ((IPipeConnection) with).overridePipeConnection(PipeType.POWER, side.getOpposite());
 					}
 				}
@@ -441,6 +441,11 @@ public class BuildCraftProxy implements IBCProxy {
 				ReflectionHelper.invokePrivateMethod(Object.class, PipeRendererTESR.class, renderer, "renderGates", new Class[]{TileGenericPipe.class, double.class, double.class, double.class}, new Object[]{tgPipe, x, y, z});
 			}
 		};
+	}
+
+	@Override
+	public boolean isTileGenericPipe(TileEntity tile) {
+		return tile instanceof TileGenericPipe;
 	}
 
 	@Override

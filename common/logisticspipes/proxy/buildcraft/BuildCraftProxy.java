@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
@@ -440,6 +442,7 @@ public class BuildCraftProxy implements IBCProxy {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, LogisticsTileGenericPipe pipe, int x, int y, int z, int renderPass) {
 		TileGenericPipe tile = (TileGenericPipe) pipe.tilePart.getOriginal();
 		PipeRendererWorld.renderPass = renderPass;

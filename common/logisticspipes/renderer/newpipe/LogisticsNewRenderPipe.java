@@ -13,7 +13,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.config.PlayerConfig;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.renderer.LogisticsPipeWorldRenderer;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.textures.Textures;
 import logisticspipes.utils.tuples.LPPosition;
@@ -21,8 +21,6 @@ import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Quartet;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GLAllocation;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.tileentity.TileEntity;
@@ -36,6 +34,7 @@ import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.CCRenderState.IVertexOperation;
 import codechicken.lib.render.uv.IconTransformation;
+import codechicken.lib.render.uv.UVScale;
 import codechicken.lib.render.uv.UVTransformationList;
 import codechicken.lib.render.uv.UVTranslation;
 import codechicken.lib.vec.Scale;
@@ -558,8 +557,12 @@ public class LogisticsNewRenderPipe {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(BLOCKS);
 		PipeRenderState renderState = pipeTile.renderState;
 		
-		if(renderState.renderListId == -1) {
-			renderState.renderListId = GLAllocation.generateDisplayLists(1); //TODO Add garbage collector for these
+		if(renderState.renderList != null && renderState.renderList.isInvalid()) {
+			renderState.renderList = null;
+		}
+		
+		if(renderState.renderList == null) {
+			renderState.renderList = SimpleServiceLocator.renderListHandler.getNewRenderList();
 		}
 		
 		if(distance > config.getRenderPipeDistance() * config.getRenderPipeDistance()) {
@@ -568,12 +571,15 @@ public class LogisticsNewRenderPipe {
 			}
 		} else {
 			renderState.forceRenderOldPipe = false;
+			boolean recalculateList = false;
 			if(renderState.cachedRenderer == null) {
 				List<Pair<CCModel, IVertexOperation[]>> objectsToRender = new ArrayList<Pair<CCModel, IVertexOperation[]>>();
 				fillObjectsToRenderList(objectsToRender, pipeTile, renderState);
 				renderState.cachedRenderer = objectsToRender;
-				
-				GL11.glNewList(renderState.renderListId, GL11.GL_COMPILE);
+				recalculateList = true;
+			}
+			if(!renderState.renderList.isFilled() || recalculateList) {
+				renderState.renderList.startListCompile();
 	
 				Tessellator tess = Tessellator.instance;
 				CCRenderState.reset();
@@ -596,14 +602,14 @@ public class LogisticsNewRenderPipe {
 				CCRenderState.alphaOverride = 0xff;
 				tess.draw();
 				
-				GL11.glEndList();
+				renderState.renderList.stopCompile();
 			}
-			if(renderState.renderListId != -1) {
+			if(renderState.renderList != null) {
 				GL11.glPushMatrix();
 				GL11.glTranslated(x, y, z);
 				GL11.glEnable(GL11.GL_BLEND);
 				GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ZERO);
-				GL11.glCallList(renderState.renderListId);
+				renderState.renderList.render();
 				GL11.glDisable(GL11.GL_BLEND);
 				GL11.glTranslated(-x, -y, -z);
 				GL11.glPopMatrix();
@@ -685,7 +691,7 @@ public class LogisticsNewRenderPipe {
 							objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(model, new IVertexOperation[]{new UVTransformationList(new UVScale(1, 6F/8), redTexture)}));
 						}
 					}
-					*/
+					//*/
 				}
 				for(Edge edge:Edge.values()) {
 					if(edge.part1 == dir || edge.part2 == dir) {

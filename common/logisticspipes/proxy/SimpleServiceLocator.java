@@ -34,6 +34,7 @@ import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
 import logisticspipes.proxy.specialconnection.SpecialTileConnection;
 import logisticspipes.proxy.specialtankhandler.SpecialTankHandler;
 import logisticspipes.recipes.CraftingPermissionManager;
+import logisticspipes.renderer.newpipe.GLRenderListHandler;
 import logisticspipes.routing.IRouterManager;
 import logisticspipes.routing.pathfinder.PipeInformaitonManager;
 import logisticspipes.ticks.ClientPacketBufferHandlerThread;
@@ -189,8 +190,14 @@ public final class SimpleServiceLocator {
 	public static void setOpenComputersProxy(IOpenComputersProxy proxy) {
 		openComputersProxy = proxy;
 	}
+	
 	public static IToolWrenchProxy toolWrenchHandler;
 	public static void setToolWrenchProxy(IToolWrenchProxy handler) {
 		toolWrenchHandler = handler;
+	}
+
+	public static GLRenderListHandler renderListHandler;
+	public static void setRenderListHandler(GLRenderListHandler handler) {
+		renderListHandler = handler;
 	}
 }

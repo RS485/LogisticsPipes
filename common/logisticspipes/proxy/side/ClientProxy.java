@@ -37,6 +37,7 @@ import logisticspipes.renderer.LogisticsPipeItemRenderer;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.renderer.LogisticsSolidBlockWorldRenderer;
+import logisticspipes.renderer.newpipe.GLRenderListHandler;
 import logisticspipes.textures.Textures;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
@@ -98,6 +99,8 @@ public class ClientProxy implements IProxy {
 		RenderingRegistry.registerBlockHandler(new LogisticsSolidBlockWorldRenderer());
 
 		SimpleServiceLocator.buildCraftProxy.resetItemRotation();
+		
+		SimpleServiceLocator.setRenderListHandler(new GLRenderListHandler());
 	}
 
 	@Override
@@ -204,6 +207,7 @@ public class ClientProxy implements IProxy {
 	@Override
 	public void tickClient() {
 		MainProxy.addTick();
+		SimpleServiceLocator.renderListHandler.tick();
 	}
 
 	@Override

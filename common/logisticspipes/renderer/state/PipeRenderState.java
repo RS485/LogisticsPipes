@@ -10,6 +10,7 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCRenderState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
+import logisticspipes.renderer.newpipe.GLRenderList;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.util.IIcon;
 import codechicken.lib.render.CCModel;
@@ -28,7 +29,7 @@ public class PipeRenderState implements IClientState {
 	public boolean solidSidesCache[] = new boolean[6];
 	
 	public int[] buffer = null;
-	public int renderListId = -1;
+	public GLRenderList renderList;
 	/*
 	 * This is a placeholder for the pipe renderer to set to a value that the BlockGenericPipe->TileGenericPipe will then return the the WorldRenderer
 	 */

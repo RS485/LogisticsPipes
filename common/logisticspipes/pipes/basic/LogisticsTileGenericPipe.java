@@ -211,6 +211,8 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 				ForgeDirection o = ForgeDirection.getOrientation(i);
 				renderState.textureMatrix.setIconIndex(o, pipe.getIconIndex(o));
 			}
+			//New Pipe Texture States
+			renderState.textureMatrix.refreshStates(pipe);
 			
 			if (renderState.isDirty()) {
 				renderState.clean();

@@ -123,6 +123,11 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 	@Override
 	@SneakyThrows({NoSuchFieldException.class, SecurityException.class, IllegalArgumentException.class, IllegalAccessException.class, NoSuchMethodException.class, InvocationTargetException.class})
 	public void updateEntity_LP() {
+		//Make sure we still have the same TE values
+		this.xCoord = lpPipe.xCoord;
+		this.yCoord = lpPipe.yCoord;
+		this.zCoord = lpPipe.zCoord;
+		
 		if (attachPluggables) {
 			attachPluggables = false;
 			// Attach callback

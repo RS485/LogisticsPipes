@@ -177,6 +177,7 @@ public class ProxyManager {
 					@Override public void renderGates(LogisticsTileGenericPipe pipe, double x, double y, double z) {}
 				};
 			}
+			@Override public boolean isTileGenericPipe(TileEntity tile) {return false;}
 			@Override @SideOnly(Side.CLIENT) public void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, LogisticsTileGenericPipe pipe, int x, int y, int z, int renderPass) {}
 		}, IBCTilePart.class, IBCPipePart.class, IBCPipePluggable.class, IBCPluggableState.class, IBCRenderState.class, IBCRenderTESR.class));
 		

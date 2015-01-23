@@ -8,6 +8,7 @@ import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.buildcraft.subproxies.IBCPipePluggable;
 import logisticspipes.renderer.IIconProvider;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.renderer.LogisticsRenderPipe;
@@ -50,9 +51,15 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 		
 		
 		tess.addTranslation(0.00002F, 0.00002F, 0.00002F);
-		SimpleServiceLocator.buildCraftProxy.pipeFacadeRenderer(renderer, (LogisticsBlockGenericPipe) block, renderState, x, y, z);
-		SimpleServiceLocator.buildCraftProxy.pipePlugRenderer(renderer, (LogisticsBlockGenericPipe) block, renderState, x, y, z);
-		SimpleServiceLocator.buildCraftProxy.pipeRobotStationRenderer(renderer, (LogisticsBlockGenericPipe) block, renderState, x, y, z);
+		renderer.setRenderBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+		SimpleServiceLocator.buildCraftProxy.pipeFacadeRenderer(renderer, (LogisticsBlockGenericPipe) block, pipeTile, x, y, z, LogisticsPipeWorldRenderer.renderPass);
+		
+		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+			if (pipeTile.tilePart.hasPipePluggable(dir)) {
+				IBCPipePluggable p = pipeTile.tilePart.getBCPipePluggable(dir);
+				p.renderPluggable(renderer, dir, LogisticsPipeWorldRenderer.renderPass, x, y, z);
+			}
+		}
 		tess.addTranslation(-0.00002F, -0.00002F, -0.00002F);
 		
 		boolean solidSides[] = new boolean[6];

@@ -140,6 +140,8 @@ public class ProxyManager {
 						return new IBCPluggableState() {
 							@Override public void writeData(LPDataOutputStream data) throws IOException {}
 							@Override public void readData(LPDataInputStream data) throws IOException {}
+							@Override public boolean isDirty() {return false;}
+							@Override public void clean() {}
 						};
 					}
 					@Override public boolean hasEnabledFacade(ForgeDirection dir) {return false;}

@@ -215,12 +215,17 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 			
 			if (renderState.isDirty()) {
 				renderState.clean();
+				sendUpdateToClient();
 			}
-			sendUpdateToClient();
 			
 			refreshRenderState = false;
 		}
 
+		if (bcPlugableState.isDirty()) {
+			bcPlugableState.clean();
+			sendUpdateToClient();
+		}
+		
 		if (sendClientUpdate) {
 			sendClientUpdate = false;
 			

@@ -52,7 +52,7 @@ public class TesseractConnection implements ISpecialTileConnection {
 			for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
 				LPPosition p = new LPPosition(connected);
 				p.moveForward(direction);
-				TileEntity canidate = p.getTileEntity(tile.getWorldObj());
+				TileEntity canidate = p.getTileEntity(connected.getWorldObj());
 				if(canidate instanceof LogisticsTileGenericPipe && MainProxy.checkPipesConnections(connected, canidate, direction)) {
 					if(pipe != null) {
 						pipe = null;

@@ -17,6 +17,10 @@ import net.minecraft.world.World;
 @ToString
 public abstract class CoordinatesPacket extends ModernPacket {
 
+	public enum LTGPCompletionCheck {
+		NONE, PIPE, TRANSPORT;
+	}
+
 	public CoordinatesPacket(int id) {
 		super(id);
 	}
@@ -72,6 +76,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	 */
 	public <T> T getTile(World world, Class<T> clazz) {
 		if (world == null) {
+			targetNotFound("World was null");
 			return null;
 		}
 		if (!world.blockExists(getPosX(), getPosY(), getPosZ())) {
@@ -98,7 +103,22 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	 * @return
 	 */
 	public LogisticsTileGenericPipe getPipe(World world) {
-		return getTile(world, LogisticsTileGenericPipe.class);
+		return getPipe(world, LTGPCompletionCheck.NONE);
+	}
+	
+	public LogisticsTileGenericPipe getPipe(World world, LTGPCompletionCheck check) {
+		LogisticsTileGenericPipe pipe = getTile(world, LogisticsTileGenericPipe.class);
+		if(check == LTGPCompletionCheck.PIPE || check == LTGPCompletionCheck.TRANSPORT) {
+			if(pipe.pipe == null) {
+				targetNotFound("The found pipe didn't have a loaded pipe field");
+			}
+		}
+		if(check == LTGPCompletionCheck.TRANSPORT) {
+			if(pipe.pipe.transport == null) {
+				targetNotFound("The found pipe didn't have a loaded transport field");
+			}
+		}
+		return pipe;
 	}
 	
 	protected void targetNotFound(String message) {

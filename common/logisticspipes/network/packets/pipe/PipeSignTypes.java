@@ -29,7 +29,7 @@ public class PipeSignTypes extends CoordinatesPacket {
 	
 	@Override
 	public void processPacket(EntityPlayer player) {
-		LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld());
+		LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld(), LTGPCompletionCheck.PIPE);
 		if(pipe == null) return;
 		((CoreRoutedPipe)pipe.pipe).handleSignPacket(types);
 	}

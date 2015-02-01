@@ -554,8 +554,8 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 		return 0;
 	}
 
-	//@Override //Only part of BC 6.1.x
-	@ModDependentMethod(modId="BuildCraft|Transport@6.1")
+	@Override
+	@ModDependentMethod(modId="BuildCraft|Transport")
 	public int injectItem(ItemStack payload, boolean doAdd, ForgeDirection from, EnumColor color) {
 		return injectItem(payload, doAdd, from);
 	}

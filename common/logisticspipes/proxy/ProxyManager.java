@@ -22,6 +22,7 @@ import logisticspipes.proxy.buildcraft.subproxies.IBCRenderTESR;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
 import logisticspipes.proxy.buildcraft.subproxies.IConnectionOverrideResult;
 import logisticspipes.proxy.cc.CCProxy;
+import logisticspipes.proxy.ec.ExtraCellsProxy;
 import logisticspipes.proxy.enderchest.EnderStorageProxy;
 import logisticspipes.proxy.enderio.EnderIOProxy;
 import logisticspipes.proxy.factorization.FactorizationProxy;
@@ -35,6 +36,7 @@ import logisticspipes.proxy.interfaces.ICraftingParts;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IEnderIOProxy;
 import logisticspipes.proxy.interfaces.IEnderStorageProxy;
+import logisticspipes.proxy.interfaces.IExtraCellsProxy;
 import logisticspipes.proxy.interfaces.IFactorizationProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
@@ -65,6 +67,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.Fluid;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -314,6 +317,10 @@ public class ProxyManager {
 			@Override public boolean isWrenchEquipped(EntityPlayer entityplayer) {return false;}
 			@Override public boolean canWrench(EntityPlayer entityplayer, int x, int y, int z) {return false;}
 			@Override public boolean isWrench(Item item) {return false;}
+		}));
+		
+		SimpleServiceLocator.setExtraCellsProxy(getWrappedProxy("extracells", IExtraCellsProxy.class, ExtraCellsProxy.class, new IExtraCellsProxy() {
+			@Override public boolean canSeeFluidInNetwork(Fluid fluid) {return true;}
 		}));
 	}
 }

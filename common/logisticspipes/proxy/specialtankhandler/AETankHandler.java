@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cpw.mods.fml.common.Loader;
 import appeng.api.AEApi;
 import appeng.api.implementations.tiles.ITileStorageMonitorable;
 import appeng.api.config.Actionable;
@@ -16,8 +15,10 @@ import appeng.api.networking.security.MachineSource;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.IStorageMonitorable;
 import appeng.api.util.AECableType;
+import appeng.api.util.DimensionalCoord;
 import appeng.api.storage.data.IAEFluidStack;
 import logisticspipes.interfaces.ISpecialTankAccessHandler;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.FluidIdentifier;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -25,7 +26,6 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
-import buildcraft.factory.TileTank;
 
 public class AETankHandler implements ISpecialTankAccessHandler {
 
@@ -36,12 +36,26 @@ public class AETankHandler implements ISpecialTankAccessHandler {
 
 	@Override
 	public boolean isType(TileEntity tile) {
-		return tile instanceof ITileStorageMonitorable;
+		return tile instanceof ITileStorageMonitorable && tile instanceof IGridHost;
 	}
 
 	@Override
 	public List<TileEntity> getBaseTilesFor(TileEntity tile) {
 		List<TileEntity> tiles = new ArrayList<TileEntity>(1);
+		if(tile instanceof IGridHost){
+			IGridHost host = (IGridHost) tile;
+			IGridNode node = host.getGridNode(ForgeDirection.UNKNOWN);
+			if(node != null){
+				try{
+					DimensionalCoord coord = node.getGrid().getPivot().getGridBlock().getLocation();
+					TileEntity mainTile = coord.getWorld().getTileEntity(coord.x, coord.y, coord.z);
+					if(mainTile != null){
+						tiles.add(mainTile);
+						return tiles;
+					}
+				}catch(Throwable e){}
+			}
+		}
 		tiles.add(tile);
 		return tiles;
 	}
@@ -61,7 +75,7 @@ public class AETankHandler implements ISpecialTankAccessHandler {
 					continue;
 				IMEMonitor<IAEFluidStack> fluids = monitor.getFluidInventory();
 				for(IAEFluidStack stack : fluids.getStorageList()){
-					if(isFluidVisible(stack.getFluid()))
+					if(SimpleServiceLocator.extraCellsProxy.canSeeFluidInNetwork(stack.getFluid()))
 						map.put(FluidIdentifier.get(stack.getFluid().getID(), stack.getTagCompound() != null ? stack.getTagCompound().getNBTTagCompoundCopy() : null), stack.getStackSize());
 				}
 				return map;
@@ -118,21 +132,5 @@ public class AETankHandler implements ISpecialTankAccessHandler {
 		public IGridNode getActionableNode() {
 			return node;
 		}
-	}
-	
-	
-	//Disable fluids that don't show in the Fluid Terminal
-	private boolean isFluidVisible(Fluid fluid){
-		if(fluid == null)
-			return true;
-		try{
-			if(Loader.isModLoaded("extracells")){
-				Class clazz = Class.forName("extracells.api.ECApi");
-				Object instance = clazz.getMethod("instance").invoke(null);
-				Class clazz2 = instance.getClass();
-				return (Boolean) clazz2.getDeclaredMethod("canFluidSeeInTerminal", Fluid.class).invoke(instance, fluid);
-			}
-		}catch(Throwable e){}
-		return true;
 	}
 }

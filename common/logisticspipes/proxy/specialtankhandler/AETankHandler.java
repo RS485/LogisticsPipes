@@ -8,6 +8,8 @@ import java.util.Map;
 import appeng.api.AEApi;
 import appeng.api.implementations.tiles.ITileStorageMonitorable;
 import appeng.api.config.Actionable;
+import appeng.api.networking.IGrid;
+import appeng.api.networking.IGridBlock;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.security.IActionHost;
@@ -21,6 +23,7 @@ import logisticspipes.interfaces.ISpecialTankAccessHandler;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.FluidIdentifier;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
@@ -46,14 +49,11 @@ public class AETankHandler implements ISpecialTankAccessHandler {
 			IGridHost host = (IGridHost) tile;
 			IGridNode node = host.getGridNode(ForgeDirection.UNKNOWN);
 			if(node != null){
-				try{
-					DimensionalCoord coord = node.getGrid().getPivot().getGridBlock().getLocation();
-					TileEntity mainTile = coord.getWorld().getTileEntity(coord.x, coord.y, coord.z);
-					if(mainTile != null){
-						tiles.add(mainTile);
-						return tiles;
-					}
-				}catch(Throwable e){}
+				TileEntity base = getBaseTileEntity(node);
+				if(base != null){
+					tiles.add(base);
+					return tiles;
+				}
 			}
 		}
 		tiles.add(tile);
@@ -105,6 +105,25 @@ public class AETankHandler implements ISpecialTankAccessHandler {
 			}
 		}
 		return null;
+	}
+	
+	private TileEntity getBaseTileEntity(IGridNode node){
+		IGrid grid = node.getGrid();
+		if(grid == null)
+			return null;
+		IGridNode pivot = grid.getPivot();
+		if(pivot == null)
+			return null;
+		IGridBlock block = pivot.getGridBlock();
+		if(block == null)
+			return null;
+		DimensionalCoord coord = block.getLocation();
+		if(coord == null)
+			return null;
+		World world = coord.getWorld();
+		if(world == null)
+			return null;
+		return world.getTileEntity(coord.x, coord.y, coord.z);
 	}
 	
 	private class LPActionHost implements IActionHost {

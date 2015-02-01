@@ -20,6 +20,7 @@ import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IEnderIOProxy;
 import logisticspipes.proxy.interfaces.IEnderStorageProxy;
+import logisticspipes.proxy.interfaces.IExtraCellsProxy;
 import logisticspipes.proxy.interfaces.IFactorizationProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
@@ -192,5 +193,10 @@ public final class SimpleServiceLocator {
 	public static IToolWrenchProxy toolWrenchHandler;
 	public static void setToolWrenchProxy(IToolWrenchProxy handler) {
 		toolWrenchHandler = handler;
+	}
+	
+	public static IExtraCellsProxy extraCellsProxy;
+	public static void setExtraCellsProxy(IExtraCellsProxy proxy) {
+		extraCellsProxy = proxy;
 	}
 }

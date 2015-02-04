@@ -90,7 +90,7 @@ public class ProxyManager {
 			@Override public boolean isIPipeTile(TileEntity tile) {return false;}
 			@Override public void registerPipeInformationProvider() {}
 			@Override public void initProxy() {}
-			@Override public boolean checkForPipeConnection(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe) {return false;}
+			@Override public boolean checkForPipeConnection(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe) {return true;}
 			@Override public IConnectionOverrideResult checkConnectionOverride(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe) {
 				return new IConnectionOverrideResult() {
 					@Override public boolean forceConnect() {return false;}

@@ -1,6 +1,7 @@
 package logisticspipes.utils;
 
 import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.ModAPIManager;
 import cpw.mods.fml.common.ModContainer;
 
 public class ModStatusHelper {
@@ -15,8 +16,10 @@ public class ModStatusHelper {
 				}
 			}
 			return false;
+		} else if(Loader.isModLoaded(modId)) {
+			return true;
 		} else {
-			return Loader.isModLoaded(modId);
+			return ModAPIManager.INSTANCE.hasAPI(modId);
 		}
 	}
 }

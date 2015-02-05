@@ -22,6 +22,8 @@ import logisticspipes.proxy.buildcraft.subproxies.IBCRenderTESR;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
 import logisticspipes.proxy.buildcraft.subproxies.IConnectionOverrideResult;
 import logisticspipes.proxy.cc.CCProxy;
+import logisticspipes.proxy.cofh.CoFHPowerProxy;
+import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyReceiver;
 import logisticspipes.proxy.ec.ExtraCellsProxy;
 import logisticspipes.proxy.enderchest.EnderStorageProxy;
 import logisticspipes.proxy.enderio.EnderIOProxy;
@@ -32,6 +34,7 @@ import logisticspipes.proxy.ic2.IC2Proxy;
 import logisticspipes.proxy.interfaces.IBCProxy;
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
+import logisticspipes.proxy.interfaces.ICoFHPowerProxy;
 import logisticspipes.proxy.interfaces.ICraftingParts;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IEnderIOProxy;
@@ -255,12 +258,6 @@ public class ProxyManager {
 			@Override public boolean isTesseract(TileEntity tile) {return false;}
 			@Override public boolean isTE() {return false;}
 			@Override public List<TileEntity> getConnectedTesseracts(TileEntity tile) {return new ArrayList<TileEntity>(0);}
-			@Override public boolean isEnergyHandler(TileEntity tile) {return false;}
-			@Override public int getMaxEnergyStored(TileEntity tile, ForgeDirection opposite) {return 0;}
-			@Override public int getEnergyStored(TileEntity tile, ForgeDirection opposite) {return 0;}
-			@Override public boolean canConnectEnergy(TileEntity tile, ForgeDirection opposite) {return false;}
-			@Override public int receiveEnergy(TileEntity tile, ForgeDirection opposite, int i, boolean b) {return 0;}
-			@Override public void addCraftingRecipes(ICraftingParts parts) {}
 		}));
 		
 		SimpleServiceLocator.setBetterStorageProxy(getWrappedProxy("betterstorage", IBetterStorageProxy.class, BetterStorageProxy.class, new IBetterStorageProxy() {
@@ -322,5 +319,19 @@ public class ProxyManager {
 		SimpleServiceLocator.setExtraCellsProxy(getWrappedProxy("extracells", IExtraCellsProxy.class, ExtraCellsProxy.class, new IExtraCellsProxy() {
 			@Override public boolean canSeeFluidInNetwork(Fluid fluid) {return true;}
 		}));
+		
+		SimpleServiceLocator.setCoFHPowerProxy(getWrappedProxy("CoFHAPI|energy", ICoFHPowerProxy.class, CoFHPowerProxy.class, new ICoFHPowerProxy() {
+			@Override public boolean isEnergyReceiver(TileEntity tile) {return false;}
+			@Override public ICoFHEnergyReceiver getEnergyReceiver(TileEntity tile) {
+				return new ICoFHEnergyReceiver() {
+					@Override public int getMaxEnergyStored(ForgeDirection opposite) {return 0;}
+					@Override public int getEnergyStored(ForgeDirection opposite) {return 0;}
+					@Override public boolean canConnectEnergy(ForgeDirection opposite) {return false;}
+					@Override public int receiveEnergy(ForgeDirection opposite, int i, boolean b) {return 0;}
+				};
+			}
+			@Override public boolean isAvailable() {return false;}
+			@Override public void addCraftingRecipes(ICraftingParts parts) {}
+		}, ICoFHEnergyReceiver.class));
 	}
 }

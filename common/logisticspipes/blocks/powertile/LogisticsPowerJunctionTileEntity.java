@@ -38,7 +38,7 @@ import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 
-@ModDependentInterface(modId={"IC2", "ComputerCraft@1.6", "CoFHCore", "BuildCraft|Transport"}, interfacePath={"ic2.api.energy.tile.IEnergySink", "dan200.computercraft.api.peripheral.IPeripheral", "cofh.api.energy.IEnergyHandler", "buildcraft.api.power.IPowerReceptor"})
+@ModDependentInterface(modId={"IC2", "ComputerCraft@1.6", "CoFHAPI|energy", "BuildCraft|Transport"}, interfacePath={"ic2.api.energy.tile.IEnergySink", "dan200.computercraft.api.peripheral.IPeripheral", "cofh.api.energy.IEnergyHandler", "buildcraft.api.power.IPowerReceptor"})
 public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGuiTileEntity, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IPeripheral, IEnergyHandler {
 
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
@@ -361,7 +361,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 	}
 
 	@Override
-	@ModDependentMethod(modId="CoFHCore")
+	@ModDependentMethod(modId="CoFHAPI|energy")
 	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
 		if(freeSpace() < 1)
 			return 0;
@@ -379,25 +379,25 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 	}
 
 	@Override
-	@ModDependentMethod(modId="CoFHCore")
+	@ModDependentMethod(modId="CoFHAPI|energy")
 	public int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate) {
 		return 0;
 	}
 
 	@Override
-	@ModDependentMethod(modId="CoFHCore")
+	@ModDependentMethod(modId="CoFHAPI|energy")
 	public boolean canConnectEnergy(ForgeDirection from) {
 		return true;
 	}
 
 	@Override
-	@ModDependentMethod(modId="CoFHCore")
+	@ModDependentMethod(modId="CoFHAPI|energy")
 	public int getEnergyStored(ForgeDirection from) {
 		return internalStorage * RFDivisor + internalRFbuffer;
 	}
 
 	@Override
-	@ModDependentMethod(modId="CoFHCore")
+	@ModDependentMethod(modId="CoFHAPI|energy")
 	public int getMaxEnergyStored(ForgeDirection from) {
 		return MAX_STORAGE * RFDivisor;
 	}

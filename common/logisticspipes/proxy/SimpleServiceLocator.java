@@ -17,6 +17,7 @@ import logisticspipes.logistics.ILogisticsManager;
 import logisticspipes.proxy.interfaces.IBCProxy;
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
+import logisticspipes.proxy.interfaces.ICoFHPowerProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IEnderIOProxy;
 import logisticspipes.proxy.interfaces.IEnderStorageProxy;
@@ -198,5 +199,10 @@ public final class SimpleServiceLocator {
 	public static IExtraCellsProxy extraCellsProxy;
 	public static void setExtraCellsProxy(IExtraCellsProxy proxy) {
 		extraCellsProxy = proxy;
+	}
+	
+	public static ICoFHPowerProxy cofhPowerProxy;
+	public static void setCoFHPowerProxy(ICoFHPowerProxy proxy) {
+		cofhPowerProxy = proxy;
 	}
 }

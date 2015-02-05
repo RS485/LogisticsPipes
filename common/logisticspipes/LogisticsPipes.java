@@ -469,7 +469,7 @@ public class LogisticsPipes {
 			SimpleServiceLocator.forestryProxy.addCraftingRecipes(parts);
 			SimpleServiceLocator.thaumCraftProxy.addCraftingRecipes(parts);
 			SimpleServiceLocator.ccProxy.addCraftingRecipes(parts);
-			SimpleServiceLocator.thermalExpansionProxy.addCraftingRecipes(parts);
+			SimpleServiceLocator.cofhPowerProxy.addCraftingRecipes(parts);
 			SimpleServiceLocator.buildCraftProxy.addCraftingRecipes(parts);
 	
 			SolderingStationRecipes.loadRecipe(parts);

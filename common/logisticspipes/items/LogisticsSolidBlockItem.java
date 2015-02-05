@@ -65,7 +65,7 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 		par3List.add(new ItemStack(this,1,LogisticsSolidBlock.LOGISTICS_SECURITY_STATION));
 		par3List.add(new ItemStack(this,1,LogisticsSolidBlock.LOGISTICS_AUTOCRAFTING_TABLE));
 		par3List.add(new ItemStack(this,1,LogisticsSolidBlock.LOGISTICS_FUZZYCRAFTING_TABLE));
-		if(SimpleServiceLocator.thermalExpansionProxy.isTE()) {
+		if(SimpleServiceLocator.cofhPowerProxy.isAvailable()) {
 			par3List.add(new ItemStack(this,1,LogisticsSolidBlock.LOGISTICS_RF_POWERPROVIDER));
 		}
 		if(SimpleServiceLocator.IC2Proxy.hasIC2()) {

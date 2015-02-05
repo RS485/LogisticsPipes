@@ -7,6 +7,7 @@ import logisticspipes.blocks.powertile.LogisticsPowerProviderTileEntity;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyReceiver;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.tuples.Pair;
@@ -38,7 +39,7 @@ public class PowerSupplierHandler {
 	}
 
 	public void update() {
-		if(SimpleServiceLocator.thermalExpansionProxy.isTE() && this.pipe.getUpgradeManager().hasRFPowerSupplierUpgrade()) {
+		if(SimpleServiceLocator.cofhPowerProxy.isAvailable() && this.pipe.getUpgradeManager().hasRFPowerSupplierUpgrade()) {
 			//Use Buffer
 			WorldUtil worldUtil = new WorldUtil(this.pipe.getWorld(), this.pipe.getX(), this.pipe.getY(), this.pipe.getZ());
 			LinkedList<AdjacentTile> adjacent = worldUtil.getAdjacentTileEntities(false);
@@ -46,8 +47,11 @@ public class PowerSupplierHandler {
 			float[] need = new float[adjacent.size()];
 			int i=0;
 			for(AdjacentTile adTile:adjacent) {
-				if(SimpleServiceLocator.thermalExpansionProxy.isEnergyHandler(adTile.tile) && this.pipe.canPipeConnect(adTile.tile, adTile.orientation) && SimpleServiceLocator.thermalExpansionProxy.canConnectEnergy(adTile.tile, adTile.orientation.getOpposite())) {
-					globalNeed += need[i] = SimpleServiceLocator.thermalExpansionProxy.getMaxEnergyStored(adTile.tile, adTile.orientation.getOpposite()) - SimpleServiceLocator.thermalExpansionProxy.getEnergyStored(adTile.tile, adTile.orientation.getOpposite());
+				if(SimpleServiceLocator.cofhPowerProxy.isEnergyReceiver(adTile.tile) && this.pipe.canPipeConnect(adTile.tile, adTile.orientation)) {
+					ICoFHEnergyReceiver handler = SimpleServiceLocator.cofhPowerProxy.getEnergyReceiver(adTile.tile);
+					if(handler.canConnectEnergy(adTile.orientation.getOpposite())) {
+						globalNeed += need[i] = handler.getMaxEnergyStored(adTile.orientation.getOpposite()) - handler.getEnergyStored(adTile.orientation.getOpposite());
+					}
 				}
 				i++;
 			}
@@ -55,17 +59,19 @@ public class PowerSupplierHandler {
 				float fullfillable = Math.min(1, internal_RF_Buffer / globalNeed);
 				i = 0;
 				for(AdjacentTile adTile:adjacent) {
-					if(SimpleServiceLocator.thermalExpansionProxy.isEnergyHandler(adTile.tile) && this.pipe.canPipeConnect(adTile.tile, adTile.orientation) && SimpleServiceLocator.thermalExpansionProxy.canConnectEnergy(adTile.tile, adTile.orientation.getOpposite())) {
-						if(internal_RF_Buffer + 1 < need[i] * fullfillable) return;
-						int used = SimpleServiceLocator.thermalExpansionProxy.receiveEnergy(adTile.tile, adTile.orientation.getOpposite(), (int) (need[i] * fullfillable), false);
-						if(used > 0) {
-							//MainProxy.sendPacketToAllWatchingChunk(this.pipe.getX(), this.pipe.getZ(), MainProxy.getDimensionForWorld(this.pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(LogisticsPowerProviderTileEntity.RF_COLOR).setPos(this.pipe.getLPPosition()).setRenderBall(true).setDir(adTile.orientation).setLength(0.5F));
-							((LogisticsTileGenericPipe)pipe.container).addLaser(adTile.orientation, 0.5F, LogisticsPowerProviderTileEntity.RF_COLOR, false, true);
-							internal_RF_Buffer -= used;
-						}
-						if(internal_RF_Buffer < 0) {
-							internal_RF_Buffer = 0;
-							return;
+					if(SimpleServiceLocator.cofhPowerProxy.isEnergyReceiver(adTile.tile) && this.pipe.canPipeConnect(adTile.tile, adTile.orientation)) {
+						ICoFHEnergyReceiver handler = SimpleServiceLocator.cofhPowerProxy.getEnergyReceiver(adTile.tile);
+						if(handler.canConnectEnergy(adTile.orientation.getOpposite())) {
+							if(internal_RF_Buffer + 1 < need[i] * fullfillable) return;
+							int used = handler.receiveEnergy(adTile.orientation.getOpposite(), (int) (need[i] * fullfillable), false);
+							if(used > 0) {
+								((LogisticsTileGenericPipe)pipe.container).addLaser(adTile.orientation, 0.5F, LogisticsPowerProviderTileEntity.RF_COLOR, false, true);
+								internal_RF_Buffer -= used;
+							}
+							if(internal_RF_Buffer < 0) {
+								internal_RF_Buffer = 0;
+								return;
+							}
 						}
 					}
 					i++;

@@ -11,18 +11,18 @@ import net.minecraftforge.common.util.ForgeDirection;
 import cofh.api.energy.EnergyStorage;
 import cofh.api.energy.IEnergyHandler;
 
-@ModDependentInterface(modId={"ThermalExpansion"}, interfacePath={"cofh.api.energy.IEnergyHandler"})
+@ModDependentInterface(modId={"CoFHAPI|energy"}, interfacePath={"cofh.api.energy.IEnergyHandler"})
 public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTileEntity implements IEnergyHandler {
 	
 	public static final int MAX_STORAGE = 10000000;
 	public static final int MAX_MAXMODE = 8;
 	public static final int MAX_PROVIDE_PER_TICK = 10000; //TODO
 	
-	@ModDependentField(modId="ThermalExpansion")
+	@ModDependentField(modId="CoFHAPI|energy")
 	private EnergyStorage	storage;
 	
 	public LogisticsRFPowerProviderTileEntity() {
-		if(SimpleServiceLocator.thermalExpansionProxy.isTE()) {
+		if(SimpleServiceLocator.cofhPowerProxy.isAvailable()) {
 			storage	= new EnergyStorage(10000);
 		}
 	}
@@ -38,7 +38,7 @@ public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTi
 	}
 	
 	private void addStoredRF() {
-		if(SimpleServiceLocator.thermalExpansionProxy.isTE()) {
+		if(SimpleServiceLocator.cofhPowerProxy.isAvailable()) {
 			int space = freeSpace();
 			int available = (int)(storage.extractEnergy(space, true));
 			if(available > 0) {
@@ -64,31 +64,31 @@ public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTi
 	}
 	
 	@Override
-	@ModDependentMethod(modId="ThermalExpansion")
+	@ModDependentMethod(modId="CoFHAPI|energy")
 	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
 		return this.storage.receiveEnergy(maxReceive, simulate);
 	}
 	
 	@Override
-	@ModDependentMethod(modId="ThermalExpansion")
+	@ModDependentMethod(modId="CoFHAPI|energy")
 	public int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate) {
 		return this.storage.extractEnergy(maxExtract, simulate);
 	}
 	
 	@Override
-	@ModDependentMethod(modId="ThermalExpansion")
+	@ModDependentMethod(modId="CoFHAPI|energy")
 	public boolean canConnectEnergy(ForgeDirection from) {
 		return true;
 	}
 	
 	@Override
-	@ModDependentMethod(modId="ThermalExpansion")
+	@ModDependentMethod(modId="CoFHAPI|energy")
 	public int getEnergyStored(ForgeDirection from) {
 		return this.storage.getEnergyStored();
 	}
 	
 	@Override
-	@ModDependentMethod(modId="ThermalExpansion")
+	@ModDependentMethod(modId="CoFHAPI|energy")
 	public int getMaxEnergyStored(ForgeDirection from) {
 		return this.storage.getMaxEnergyStored();
 	}
@@ -101,7 +101,7 @@ public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTi
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
-		if(SimpleServiceLocator.thermalExpansionProxy.isTE()) {
+		if(SimpleServiceLocator.cofhPowerProxy.isAvailable()) {
 			storage.readFromNBT(nbt);
 		}
 	}
@@ -109,7 +109,7 @@ public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTi
 	@Override
 	public void writeToNBT(NBTTagCompound nbt) {
 		super.writeToNBT(nbt);
-		if(SimpleServiceLocator.thermalExpansionProxy.isTE()) {
+		if(SimpleServiceLocator.cofhPowerProxy.isAvailable()) {
 			storage.writeToNBT(nbt);
 		}
 	}

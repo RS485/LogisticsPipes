@@ -25,6 +25,7 @@ import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.ItemParts;
 import logisticspipes.items.ItemPipeController;
+import logisticspipes.items.ItemPipeParts;
 import logisticspipes.items.ItemPipeSignCreator;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsBrokenItem;
@@ -274,6 +275,7 @@ public class LogisticsPipes {
 	public static Item LogisticsItemCard;
 	public static ItemHUDArmor LogisticsHUDArmor;
 	public static Item LogisticsParts;
+	public static Item PipeParts;
 	public static Item LogisticsFluidContainer;
 	public static Item LogisticsBrokenItem;
 	public static Item LogisticsPipeControllerItem;
@@ -413,6 +415,10 @@ public class LogisticsPipes {
 		LogisticsParts = new ItemParts();
 		LogisticsParts.setUnlocalizedName("logisticsParts");
 		GameRegistry.registerItem(LogisticsParts, LogisticsParts.getUnlocalizedName());
+		
+		PipeParts = new ItemPipeParts();
+		PipeParts.setUnlocalizedName("pipeParts");
+		GameRegistry.registerItem(PipeParts, PipeParts.getUnlocalizedName());
 		
 		SimpleServiceLocator.buildCraftProxy.registerTrigger();
 		

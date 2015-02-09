@@ -64,33 +64,20 @@ public class RecipeManager {
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsBasicPipe, 8), CraftingDependency.Basic, new Object[] {
-			"grg",
-			"cdc",
-			" G ",
-			Character.valueOf('G'), parts.getChipTear2(),
-			Character.valueOf('g'), Blocks.glass,
-			Character.valueOf('d'), parts.getSortingLogic(),
-			Character.valueOf('c'), parts.getBasicTransport(),
-			Character.valueOf('r'), Blocks.redstone_torch
-		});
-		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsBasicPipe, 8), CraftingDependency.Basic, new Object[] {
-			"grg",
-			"cdc",
-			" G ",
-			Character.valueOf('G'), parts.getGearTear2(),
-			Character.valueOf('g'), Blocks.glass,
-			Character.valueOf('d'), parts.getSortingLogic(),
-			Character.valueOf('c'), parts.getBasicTransport(),
-			Character.valueOf('r'), Blocks.redstone_torch
+			" R ",
+			"UCU",
+			" E ",
+			Character.valueOf('R'), new ItemStack(LogisticsPipes.PipeParts, 1, 7),
+			Character.valueOf('U'), LogisticsPipes.BasicTransportPipe,
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 3),
+			Character.valueOf('E'), new ItemStack(LogisticsPipes.PipeParts, 1, 14),
 		});
 
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsProviderPipeMk1, 1), CraftingDependency.Basic, new Object[] {
 			" G ",
-			"rPr",
+			" P ",
 			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe,
-			Character.valueOf('G'), parts.getGearTear2(),
-			Character.valueOf('r'), Items.redstone
+			Character.valueOf('G'), new ItemStack(LogisticsPipes.PipeParts, 1, 15),
 		});
 
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsProviderPipeMk1, 1), CraftingDependency.Basic, new Object[] {
@@ -106,7 +93,7 @@ public class RecipeManager {
 			"U",
 			"B",
 			Character.valueOf('B'), LogisticsPipes.LogisticsProviderPipeMk1,
-			Character.valueOf('U'), parts.getGearTear3()
+			Character.valueOf('U'), new ItemStack(LogisticsPipes.PipeParts, 1, 15)
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsProviderPipeMk2, 1), CraftingDependency.Fast_Crafting, new Object[] {
@@ -119,10 +106,8 @@ public class RecipeManager {
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsCraftingPipeMk1, 1), CraftingDependency.Basic, new Object[] {
 			"r",
 			"P",
-			"S",
 			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe,
-			Character.valueOf('S'), "gearStone",
-			Character.valueOf('r'), Items.redstone
+			Character.valueOf('r'), new ItemStack(LogisticsPipes.PipeParts, 1, 8),
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSatellitePipe, 1), CraftingDependency.DistanceRequest, new Object[] {
@@ -140,10 +125,10 @@ public class RecipeManager {
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsRequestPipeMk1, 1), CraftingDependency.Basic, new Object[] {
 			"g",
 			"P",
-			"i",
+			"s",
 			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe,
-			Character.valueOf('g'), parts.getGearTear2(),
-			Character.valueOf('i'), parts.getGearTear1()
+			Character.valueOf('g'), new ItemStack(LogisticsPipes.PipeParts, 1, 7),
+			Character.valueOf('s'), new ItemStack(LogisticsPipes.PipeParts, 1, 13)
 		});
 
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsRequestPipeMk1, 1), CraftingDependency.Basic, new Object[] {
@@ -160,7 +145,7 @@ public class RecipeManager {
 			"B",
 			"r",
 			Character.valueOf('B'), LogisticsPipes.LogisticsRequestPipeMk1,
-			Character.valueOf('U'), parts.getGearTear3(),
+			Character.valueOf('U'), new ItemStack(LogisticsPipes.PipeParts, 1, 7),
 			Character.valueOf('r'), Items.redstone
 		});
 		
@@ -176,7 +161,7 @@ public class RecipeManager {
 			"B",
 			"r",
 			Character.valueOf('B'), LogisticsPipes.LogisticsCraftingPipeMk1,
-			Character.valueOf('U'), parts.getGearTear2(),
+			Character.valueOf('U'), new ItemStack(LogisticsPipes.PipeParts, 1, 8),
 			Character.valueOf('r'), Items.redstone
 		});
 		
@@ -238,10 +223,9 @@ public class RecipeManager {
 
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ITEMSINK), CraftingDependency.Modular_Pipes, new Object[] {
 			"CGC",
-			"rBr",
+			" B ",
 			Character.valueOf('C'), "dyeGreen",
-			Character.valueOf('G'), parts.getGearTear1(),
-			Character.valueOf('r'), Items.redstone,
+			Character.valueOf('G'), new ItemStack(LogisticsPipes.PipeParts, 1, 7),
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
 		
@@ -255,10 +239,9 @@ public class RecipeManager {
 
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.PASSIVE_SUPPLIER), CraftingDependency.Modular_Pipes, new Object[] {
 			"CGC",
-			"rBr",
+			" B ",
 			Character.valueOf('C'), "dyeRed",
-			Character.valueOf('G'), parts.getGearTear1(),
-			Character.valueOf('r'), Items.redstone,
+			Character.valueOf('G'), new ItemStack(LogisticsPipes.PipeParts, 1, 13),
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
 		
@@ -274,7 +257,7 @@ public class RecipeManager {
 			"CGC",
 			"rBr",
 			Character.valueOf('C'), "dyeBlue",
-			Character.valueOf('G'), parts.getGearTear1(),
+			Character.valueOf('G'), new ItemStack(LogisticsPipes.PipeParts, 1, 12),
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
@@ -298,7 +281,7 @@ public class RecipeManager {
 			"U",
 			"B",
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.EXTRACTOR),
-			Character.valueOf('U'), parts.getGearTear2()
+			Character.valueOf('U'), new ItemStack(LogisticsPipes.PipeParts, 1, 12)
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.EXTRACTOR_MK2), CraftingDependency.High_Tech_Modules, new Object[] {
@@ -312,7 +295,7 @@ public class RecipeManager {
 			"U",
 			"B",
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ADVANCED_EXTRACTOR),
-			Character.valueOf('U'), parts.getGearTear2()
+			Character.valueOf('U'), new ItemStack(LogisticsPipes.PipeParts, 1, 12)
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ADVANCED_EXTRACTOR_MK2), CraftingDependency.High_Tech_Modules, new Object[] {
@@ -321,19 +304,12 @@ public class RecipeManager {
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.EXTRACTOR_MK2),
 			Character.valueOf('U'), Items.redstone
 		});
-
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ADVANCED_EXTRACTOR_MK2), CraftingDependency.High_Tech_Modules, new Object[] {
-			"U",
-			"B",
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ADVANCED_EXTRACTOR),
-			Character.valueOf('U'), parts.getChipTear2()
-		});
-
+		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.EXTRACTOR_MK3), CraftingDependency.High_Tech_Modules, new Object[] {
 			"U",
 			"B",
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.EXTRACTOR_MK2),
-			Character.valueOf('U'), parts.getGearTear3()
+			Character.valueOf('U'), new ItemStack(LogisticsPipes.PipeParts, 1, 12)
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.EXTRACTOR_MK3), CraftingDependency.High_Tech_Modules, new Object[] {
@@ -347,7 +323,7 @@ public class RecipeManager {
 			"U",
 			"B",
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ADVANCED_EXTRACTOR_MK2),
-			Character.valueOf('U'), parts.getGearTear3()
+			Character.valueOf('U'), new ItemStack(LogisticsPipes.PipeParts, 1, 12)
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ADVANCED_EXTRACTOR_MK3), CraftingDependency.High_Tech_Modules, new Object[] {
@@ -368,7 +344,7 @@ public class RecipeManager {
 			"CGC",
 			"rBr",
 			Character.valueOf('C'), "dyeOrange",
-			Character.valueOf('G'), parts.getGearTear1(),
+			Character.valueOf('G'), new ItemStack(LogisticsPipes.PipeParts, 1, 7),
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
@@ -385,7 +361,7 @@ public class RecipeManager {
 			"CGC",
 			"rBr",
 			Character.valueOf('C'), "dyeBlue",
-			Character.valueOf('G'), parts.getGearTear3(),
+			Character.valueOf('G'), new ItemStack(LogisticsPipes.PipeParts, 1, 3),
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
@@ -403,7 +379,7 @@ public class RecipeManager {
 			"rBr",
 			Character.valueOf('C'), "dyeBlack",
 			Character.valueOf('D'), "dyePurple",
-			Character.valueOf('G'), parts.getGearTear1(),
+			Character.valueOf('G'), new ItemStack(LogisticsPipes.PipeParts, 1, 7),
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
@@ -421,7 +397,7 @@ public class RecipeManager {
 			"CGC",
 			"rBr",
 			Character.valueOf('C'), "dyeBlue",
-			Character.valueOf('G'), parts.getGearTear2(),
+			Character.valueOf('G'), new ItemStack(LogisticsPipes.PipeParts, 1, 15),
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
@@ -438,7 +414,7 @@ public class RecipeManager {
 			"U",
 			"B",
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.PROVIDER),
-			Character.valueOf('U'), parts.getGearTear3()
+			Character.valueOf('U'), new ItemStack(LogisticsPipes.PipeParts, 1, 15)
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.PROVIDER_MK2), CraftingDependency.High_Tech_Modules, new Object[] {
@@ -452,7 +428,7 @@ public class RecipeManager {
 			"U",
 			"B",
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ITEMSINK),
-			Character.valueOf('U'), parts.getGearTear2()
+			Character.valueOf('U'), Items.gold_ingot
 		});
 
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.MODBASEDITEMSINK), CraftingDependency.Sink_Modules, new Object[] {
@@ -479,7 +455,7 @@ public class RecipeManager {
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ENCHANTMENTSINK_MK2), CraftingDependency.Sink_Modules, new Object[] {
 			"U",
 			"B",
-			Character.valueOf('U'), parts.getChipTear2(),
+			Character.valueOf('U'), Items.gold_ingot,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ENCHANTMENTSINK)
 		});
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ENCHANTMENTSINK_MK2), CraftingDependency.Sink_Modules, new Object[] {
@@ -578,19 +554,20 @@ public class RecipeManager {
 			"d",
 			"P",
 			Character.valueOf('P'), LogisticsPipes.LogisticsChassisPipeMk4,
-			Character.valueOf('d'), parts.getChipTear3()
+			Character.valueOf('d'), new ItemStack(LogisticsPipes.PipeParts, 1, 3)
 		});
 
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsPipeControllerItem, 1), CraftingDependency.Basic, new Object[] {
-			"g g",
+			"gig",
 			" G ",
 			" g ",
 			Character.valueOf('g'), Items.gold_ingot,
-			Character.valueOf('G'), parts.getGearTear2()
+			Character.valueOf('G'), new ItemStack(LogisticsPipes.PipeParts, 1, 7),
+			Character.valueOf('i'), new ItemStack(LogisticsPipes.PipeParts, 1, 11)
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsPipeControllerItem, 1), CraftingDependency.Basic, new Object[] {
-			"g g",
+			"gig",
 			" G ",
 			" g ",
 			Character.valueOf('g'), Items.gold_ingot,
@@ -602,7 +579,8 @@ public class RecipeManager {
 			"gg",
 			"DD",
 			Character.valueOf('g'), Blocks.glass,
-			Character.valueOf('D'), parts.getGearTear3()
+			Character.valueOf('D'), parts.getGearTear3(),
+			Character.valueOf('i'), new ItemStack(LogisticsPipes.PipeParts, 1, 11)
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsRemoteOrderer, 1, 0), CraftingDependency.DistanceRequest, new Object[] {
@@ -610,7 +588,7 @@ public class RecipeManager {
 			"gg",
 			"DD",
 			Character.valueOf('g'), Blocks.glass,
-			Character.valueOf('D'), parts.getChipTear3()
+			Character.valueOf('D'), new ItemStack(LogisticsPipes.PipeParts, 1, 11)
 		});
 		
 		String[] dyes = 
@@ -646,9 +624,9 @@ public class RecipeManager {
 			"G G",
 			" S ",
 			" D ",
-			Character.valueOf('G'), parts.getGearTear2(),
+			Character.valueOf('G'), Items.gold_ingot,
 			Character.valueOf('S'), Items.sign,
-			Character.valueOf('D'), parts.getGearTear3()
+			Character.valueOf('D'), new ItemStack(LogisticsPipes.PipeParts, 1, 4)
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsCraftingSignCreator, 1), CraftingDependency.Information_System, new Object[] {
@@ -682,7 +660,7 @@ public class RecipeManager {
 			"iDi",
 			"rBr",
 			"iii",
-			Character.valueOf('D'), parts.getGearTear3(),
+			Character.valueOf('D'), new ItemStack(LogisticsPipes.PipeParts, 1, 5),
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), LogisticsPipes.LogisticsBasicPipe,
 			Character.valueOf('i'), Items.iron_ingot
@@ -705,7 +683,7 @@ public class RecipeManager {
 			Character.valueOf('w'), "plankWood",
 			Character.valueOf('C'), Blocks.crafting_table,
 			Character.valueOf('S'), Blocks.chest,
-			Character.valueOf('G'), "gearStone"
+			Character.valueOf('G'), new ItemStack(LogisticsPipes.PipeParts, 1, 4)
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_FUZZYCRAFTING_TABLE), CraftingDependency.Basic, new Object[] { 
@@ -719,7 +697,7 @@ public class RecipeManager {
 			"iDi",
 			"rBr",
 			"iii",
-			Character.valueOf('D'), parts.getGearTear2(),
+			Character.valueOf('D'), new ItemStack(LogisticsPipes.PipeParts, 1, 6),
 			Character.valueOf('r'), Items.redstone,
 			Character.valueOf('B'), LogisticsPipes.LogisticsBasicPipe,
 			Character.valueOf('i'), Items.iron_ingot
@@ -740,7 +718,7 @@ public class RecipeManager {
 			"srs", 
 			"rCr", 
 			"PrP", 
-			Character.valueOf('C'), parts.getChipTear1(),
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7),
 			Character.valueOf('r'), Items.redstone, 
 			Character.valueOf('P'), Items.paper, 
 			Character.valueOf('s'), Items.slime_ball
@@ -751,7 +729,7 @@ public class RecipeManager {
 			"PrP", 
 			"rCr", 
 			"srs", 
-			Character.valueOf('C'), parts.getChipTear1(),
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7),
 			Character.valueOf('r'), Items.redstone, 
 			Character.valueOf('P'), Items.paper, 
 			Character.valueOf('s'), Items.slime_ball
@@ -762,7 +740,7 @@ public class RecipeManager {
 			"PsP", 
 			"rCr", 
 			"PrP", 
-			Character.valueOf('C'), parts.getChipTear1(),
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7),
 			Character.valueOf('r'), Items.redstone, 
 			Character.valueOf('P'), Items.paper, 
 			Character.valueOf('s'), Items.slime_ball
@@ -773,7 +751,7 @@ public class RecipeManager {
 			"PrP", 
 			"rCr", 
 			"PsP", 
-			Character.valueOf('C'), parts.getChipTear1(),
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7),
 			Character.valueOf('r'), Items.redstone, 
 			Character.valueOf('P'), Items.paper, 
 			Character.valueOf('s'), Items.slime_ball
@@ -784,7 +762,7 @@ public class RecipeManager {
 			"PrP", 
 			"sCr", 
 			"PrP", 
-			Character.valueOf('C'), parts.getChipTear1(),
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7),
 			Character.valueOf('r'), Items.redstone, 
 			Character.valueOf('P'), Items.paper, 
 			Character.valueOf('s'), Items.slime_ball
@@ -795,7 +773,7 @@ public class RecipeManager {
 			"PrP", 
 			"rCs", 
 			"PrP", 
-			Character.valueOf('C'), parts.getChipTear1(),
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7),
 			Character.valueOf('r'), Items.redstone, 
 			Character.valueOf('P'), Items.paper, 
 			Character.valueOf('s'), Items.slime_ball
@@ -806,7 +784,7 @@ public class RecipeManager {
 			"PrP", 
 			"rCr", 
 			"PrP", 
-			Character.valueOf('C'), parts.getChipTear1(),
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7),
 			Character.valueOf('r'), Items.redstone, 
 			Character.valueOf('P'), Items.paper
 		});
@@ -816,7 +794,7 @@ public class RecipeManager {
 			"PrP", 
 			"rCr", 
 			"PrP", 
-			Character.valueOf('C'), parts.getChipTear1(),
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7),
 			Character.valueOf('r'), Items.gold_ingot, 
 			Character.valueOf('P'), Items.paper
 		});
@@ -826,7 +804,7 @@ public class RecipeManager {
 			"PrP", 
 			"rCr", 
 			"PrP", 
-			Character.valueOf('C'), parts.getChipTear2(),
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 8),
 			Character.valueOf('r'), Items.iron_ingot, 
 			Character.valueOf('P'), Items.paper
 		});
@@ -836,7 +814,7 @@ public class RecipeManager {
 			"RbR", 
 			"bCb", 
 			"RbR", 
-			Character.valueOf('C'), parts.getChipTear2(),
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 8),
 			Character.valueOf('R'), Items.redstone, 
 			Character.valueOf('b'), Items.glass_bottle, 
 		});
@@ -846,9 +824,9 @@ public class RecipeManager {
 			"RgR", 
 			"gCg", 
 			"RgR", 
-			Character.valueOf('C'), parts.getChipTear1(),
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 8),
 			Character.valueOf('R'), Items.redstone, 
-			Character.valueOf('g'), "gearWood"
+			Character.valueOf('g'), "plankWood"
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 10), CraftingDependency.Upgrades, new Object[] { 
@@ -856,7 +834,7 @@ public class RecipeManager {
 			"srs", 
 			"rCr", 
 			"PrP", 
-			Character.valueOf('C'), parts.getChipTear1(),
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7),
 			Character.valueOf('r'), Items.redstone, 
 			Character.valueOf('P'), Items.paper, 
 			Character.valueOf('s'), Items.iron_ingot
@@ -867,7 +845,7 @@ public class RecipeManager {
 			"PrP", 
 			"rCr", 
 			"srs", 
-			Character.valueOf('C'), parts.getChipTear1(),
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7),
 			Character.valueOf('r'), Items.redstone, 
 			Character.valueOf('P'), Items.paper, 
 			Character.valueOf('s'), Items.iron_ingot
@@ -878,7 +856,7 @@ public class RecipeManager {
 			"PsP", 
 			"rCr", 
 			"PrP", 
-			Character.valueOf('C'), parts.getChipTear1(),
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7),
 			Character.valueOf('r'), Items.redstone, 
 			Character.valueOf('P'), Items.paper, 
 			Character.valueOf('s'), Items.iron_ingot
@@ -889,7 +867,7 @@ public class RecipeManager {
 			"PrP", 
 			"rCr", 
 			"PsP", 
-			Character.valueOf('C'), parts.getChipTear1(),
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7),
 			Character.valueOf('r'), Items.redstone, 
 			Character.valueOf('P'), Items.paper, 
 			Character.valueOf('s'), Items.iron_ingot
@@ -900,7 +878,7 @@ public class RecipeManager {
 			"PrP", 
 			"sCr", 
 			"PrP", 
-			Character.valueOf('C'), parts.getChipTear1(),
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7),
 			Character.valueOf('r'), Items.redstone, 
 			Character.valueOf('P'), Items.paper, 
 			Character.valueOf('s'), Items.iron_ingot
@@ -911,7 +889,7 @@ public class RecipeManager {
 			"PrP", 
 			"rCs", 
 			"PrP", 
-			Character.valueOf('C'), parts.getChipTear1(),
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7),
 			Character.valueOf('r'), Items.redstone, 
 			Character.valueOf('P'), Items.paper, 
 			Character.valueOf('s'), Items.iron_ingot
@@ -922,7 +900,7 @@ public class RecipeManager {
 			"Rhy", 
 			"iCi", 
 			"riR", 
-			Character.valueOf('C'), parts.getChipTear1(),
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 13),
 			Character.valueOf('R'), Items.redstone, 
 			Character.valueOf('r'), dyes[1], 
 			Character.valueOf('y'), dyes[11], 
@@ -935,7 +913,7 @@ public class RecipeManager {
 			"PrP", 
 			"rCr", 
 			"PrP", 
-			Character.valueOf('C'), parts.getChipTear2(),
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 8),
 			Character.valueOf('r'), Items.quartz, 
 			Character.valueOf('P'), Items.paper
 		});
@@ -945,7 +923,7 @@ public class RecipeManager {
 			"PRP", 
 			"CGC", 
 			"PLP", 
-			Character.valueOf('C'), parts.getChipTear1(),
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 14),
 			Character.valueOf('R'), Blocks.redstone_block, 
 			Character.valueOf('G'), Blocks.glowstone, 
 			Character.valueOf('L'), Blocks.lapis_block, 
@@ -957,7 +935,7 @@ public class RecipeManager {
 			"RLR", 
 			"aCb", 
 			"RPR", 
-			Character.valueOf('C'), parts.getChipTear3(),
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 8),
 			Character.valueOf('P'), new ItemStack(LogisticsPipes.LogisticsCraftingPipeMk2, 1, 0), 
 			Character.valueOf('R'), Items.redstone,
 			Character.valueOf('L'), "dyeBlue",
@@ -970,7 +948,7 @@ public class RecipeManager {
 			"RbR", 
 			"bCb", 
 			"RbR", 
-			Character.valueOf('C'), parts.getChipTear1(),
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 2),
 			Character.valueOf('R'), Items.redstone, 
 			Character.valueOf('b'), dyes[15], 
 		});
@@ -980,7 +958,7 @@ public class RecipeManager {
 			"B",
 			"b",
 			Character.valueOf('B'), LogisticsPipes.LogisticsBasicPipe,
-			Character.valueOf('w'), parts.getWaterProof(),
+			Character.valueOf('w'), Items.string,
 			Character.valueOf('b'), Items.bucket
 		});
 		
@@ -1024,7 +1002,123 @@ public class RecipeManager {
 			"w",
 			"I",
 			Character.valueOf('I'), LogisticsPipes.LogisticsFluidInsertionPipe,
-			Character.valueOf('w'), parts.getExtractorFluid()
+			Character.valueOf('w'), "plankWood"
+		});
+		
+		ItemStack sand = new ItemStack(Blocks.sand);
+		craftingManager.addShapelessRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 0),CraftingDependency.Basic, sand, sand);
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 2, 1), CraftingDependency.Basic, new Object[] {
+			"sgs",
+			"gsg",
+			"sgs",
+			Character.valueOf('s'), new ItemStack(LogisticsPipes.PipeParts,1 ,0),
+			Character.valueOf('g'), Items.gold_nugget
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 2, 2), CraftingDependency.Basic, new Object[] {
+			" g ",
+			"sss",
+			Character.valueOf('s'), new ItemStack(LogisticsPipes.PipeParts,1 ,0),
+			Character.valueOf('g'), Items.gold_nugget
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 3), CraftingDependency.Basic, new Object[] {
+			" D ",
+			"RCR",
+			Character.valueOf('D'), Items.diamond,
+			Character.valueOf('R'), Items.redstone,
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 1)
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 4), CraftingDependency.Basic, new Object[] {
+			" I ",
+			"RCR",
+			Character.valueOf('I'), Items.iron_ingot,
+			Character.valueOf('R'), Items.redstone,
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 1)
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 7), CraftingDependency.Basic, new Object[] {
+			" I ",
+			" C ",
+			" R ",
+			Character.valueOf('I'), Items.iron_ingot,
+			Character.valueOf('R'), Items.redstone,
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 2)
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 8), CraftingDependency.Basic, new Object[] {
+			" G ",
+			"oCo",
+			" R ",
+			Character.valueOf('G'), Items.gold_ingot,
+			Character.valueOf('R'), Items.redstone,
+			Character.valueOf('o'), "dyeOrange", 
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 2)
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 10), CraftingDependency.Basic, new Object[] {
+			" d ",
+			" C ",
+			" R ",
+			Character.valueOf('d'), "dyeOrange",
+			Character.valueOf('R'), Items.redstone, 
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7)
+		});
+		
+		ItemStack glowdust = new ItemStack(Items.glowstone_dust);
+		ItemStack plate = new ItemStack(LogisticsPipes.PipeParts, 1, 7);
+		craftingManager.addShapelessRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 11),CraftingDependency.Basic, plate, glowdust, glowdust);
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 12), CraftingDependency.Basic, new Object[] {
+			"RIR",
+			"LCL",
+			" g ",
+			Character.valueOf('g'), Items.gold_nugget,
+			Character.valueOf('L'), "dyeBlue",
+			Character.valueOf('I'), Items.iron_ingot,
+			Character.valueOf('R'), Items.redstone, 
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7)
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 13), CraftingDependency.Basic, new Object[] {
+			"r r",
+			"RCR",
+			"g g",
+			Character.valueOf('g'), Items.gold_nugget,
+			Character.valueOf('r'), "dyeRed",
+			Character.valueOf('R'), Items.redstone, 
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7)
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 14), CraftingDependency.Basic, new Object[] {
+			" I ",
+			"LCL",
+			" R ",
+			Character.valueOf('L'), "dyeBlue",
+			Character.valueOf('I'), Items.iron_ingot,
+			Character.valueOf('R'), Items.redstone, 
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 2)
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.PipeParts, 1, 15), CraftingDependency.Basic, new Object[] {
+			" G ",
+			"LCL",
+			"gRg",
+			Character.valueOf('g'), Items.gold_nugget,
+			Character.valueOf('L'), "dyeBlue",
+			Character.valueOf('G'), Items.gold_ingot,
+			Character.valueOf('R'), Items.redstone, 
+			Character.valueOf('C'), new ItemStack(LogisticsPipes.PipeParts, 1, 7)
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.BasicTransportPipe, 8), CraftingDependency.Basic, new Object[] {
+			"SGS",
+			" R ",
+			Character.valueOf('S'), Items.iron_ingot,
+			Character.valueOf('G'), Blocks.glass_pane,
+			Character.valueOf('R'), Items.redstone
 		});
 	}
 }

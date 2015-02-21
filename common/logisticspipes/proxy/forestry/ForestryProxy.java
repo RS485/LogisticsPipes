@@ -371,162 +371,164 @@ public class ForestryProxy implements IForestryProxy {
 	@Override
 	public void addCraftingRecipes(ICraftingParts parts) {
 		/* Carpenter recipes */
-		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
-			"CGC", 
-			"r r", 
-			"CrC", 
-			Character.valueOf('C'), propolis,
-			Character.valueOf('G'), parts.getGearTear1(), 
-			Character.valueOf('r'), Items.redstone,
-		});
-		
-		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
-			"CGC", 
-			"r r", 
-			"CrC", 
-			Character.valueOf('C'), propolis,
-			Character.valueOf('G'), parts.getChipTear1(),
-			Character.valueOf('r'), Items.redstone,
-		});
-		
-		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEESINK), new Object[] { 
-			"CrC", 
-			"r r", 
-			"CrC", 
-			Character.valueOf('C'), propolis,
-			Character.valueOf('r'), Items.redstone,
-		});
-				
-		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTREFILLER), new Object[] {
-			" p ",
-			"r r",
-			"CwC",
-			Character.valueOf('p'), pollen,
-			Character.valueOf('C'), propolis,
-			Character.valueOf('w'), parts.getExtractorItem(),
-			Character.valueOf('r'), Items.redstone,
-		});
-		
-		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTTERMINUS), new Object[] { 
-			"CGD", 
-			"r r", 
-			"DrC", 
-			Character.valueOf('C'), "dyeBlack",
-			Character.valueOf('D'), "dyePurple",
-			Character.valueOf('G'), pollen, 
-			Character.valueOf('r'), Items.redstone,
-		});
-		
-		
-		
-		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0), new ItemStack(LogisticsPipes.LogisticsApiaristAnalyzerPipe, 1, 0), new Object[] { 
-			"CGC", 
-			"r r", 
-			"CrC", 
-			Character.valueOf('C'), propolis,
-			Character.valueOf('G'), parts.getGearTear1(), 
-			Character.valueOf('r'), Items.redstone,
-		});
-		
-		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0), new ItemStack(LogisticsPipes.LogisticsApiaristAnalyzerPipe, 1, 0), new Object[] { 
-			"CGC", 
-			"r r", 
-			"CrC", 
-			Character.valueOf('C'), propolis,
-			Character.valueOf('G'), parts.getChipTear1(), 
-			Character.valueOf('r'), Items.redstone,
-		});
-		
-		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0), new ItemStack(LogisticsPipes.LogisticsApiaristSinkPipe, 1, 0), new Object[] { 
-			"CrC", 
-			"r r", 
-			"CrC", 
-			Character.valueOf('C'), propolis,
-			Character.valueOf('r'), Items.redstone,
-		});
-		
-		if (Configs.MANDATORY_CARPENTER_RECIPES) return;
-				
-		/* Regular recipes */
-		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
-			"CGC", 
-			"rBr", 
-			"CrC", 
-			Character.valueOf('C'), propolis,
-			Character.valueOf('G'), parts.getGearTear1(), 
-			Character.valueOf('r'), Items.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-		});
-		
-		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
-			"CGC", 
-			"rBr", 
-			"CrC", 
-			Character.valueOf('C'), propolis,
-			Character.valueOf('G'), parts.getChipTear1(), 
-			Character.valueOf('r'), Items.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-		});
-		
-		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEESINK), new Object[] { 
-			"CrC", 
-			"rBr", 
-			"CrC", 
-			Character.valueOf('C'), propolis,
-			Character.valueOf('r'), Items.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ITEMSINK)
-		});
-		
-		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTREFILLER), new Object[] {
-			" p ",
-			"rBr",
-			"CwC",
-			Character.valueOf('p'), pollen,
-			Character.valueOf('C'), propolis,
-			Character.valueOf('w'), parts.getExtractorItem(),
-			Character.valueOf('r'), Items.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK),
-		});
-
-		CraftingManager.getInstance().getRecipeList().add(new ShapedOreRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTTERMINUS), new Object[] { 
-			"CGD", 
-			"rBr", 
-			"DrC", 
-			Character.valueOf('C'), "dyeBlack",
-			Character.valueOf('D'), "dyePurple",
-			Character.valueOf('G'), pollen, 
-			Character.valueOf('r'), Items.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-		}));
-		
-		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyzerPipe, 1, 0), new Object[] { 
-			"CGC", 
-			"rBr", 
-			"CrC", 
-			Character.valueOf('C'), propolis,
-			Character.valueOf('G'), parts.getGearTear1(), 
-			Character.valueOf('r'), Items.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)
-		});
-		
-		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyzerPipe, 1, 0), new Object[] { 
-			"CGC", 
-			"rBr", 
-			"CrC", 
-			Character.valueOf('C'), propolis,
-			Character.valueOf('G'), parts.getChipTear1(), 
-			Character.valueOf('r'), Items.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)
-		});
-		
-		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristSinkPipe, 1, 0), new Object[] { 
-			"CrC", 
-			"rBr", 
-			"CrC", 
-			Character.valueOf('C'), propolis,
-			Character.valueOf('r'), Items.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)
-		});
+		if(!Configs.MANDATORY_CARPENTER_RECIPES)
+		{
+			RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
+				"CGC", 
+				"r r", 
+				"CrC", 
+				Character.valueOf('C'), propolis,
+				Character.valueOf('G'), parts.getGearTear1(), 
+				Character.valueOf('r'), Items.redstone,
+			});
+			
+			RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
+				"CGC", 
+				"r r", 
+				"CrC", 
+				Character.valueOf('C'), propolis,
+				Character.valueOf('G'), parts.getChipTear1(),
+				Character.valueOf('r'), Items.redstone,
+			});
+			
+			RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEESINK), new Object[] { 
+				"CrC", 
+				"r r", 
+				"CrC", 
+				Character.valueOf('C'), propolis,
+				Character.valueOf('r'), Items.redstone,
+			});
+					
+			RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTREFILLER), new Object[] {
+				" p ",
+				"r r",
+				"CwC",
+				Character.valueOf('p'), pollen,
+				Character.valueOf('C'), propolis,
+				Character.valueOf('w'), parts.getExtractorItem(),
+				Character.valueOf('r'), Items.redstone,
+			});
+			
+			RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTTERMINUS), new Object[] { 
+				"CGD", 
+				"r r", 
+				"DrC", 
+				Character.valueOf('C'), "dyeBlack",
+				Character.valueOf('D'), "dyePurple",
+				Character.valueOf('G'), pollen, 
+				Character.valueOf('r'), Items.redstone,
+			});
+			
+			
+			
+			RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0), new ItemStack(LogisticsPipes.LogisticsApiaristAnalyzerPipe, 1, 0), new Object[] { 
+				"CGC", 
+				"r r", 
+				"CrC", 
+				Character.valueOf('C'), propolis,
+				Character.valueOf('G'), parts.getGearTear1(), 
+				Character.valueOf('r'), Items.redstone,
+			});
+			
+			RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0), new ItemStack(LogisticsPipes.LogisticsApiaristAnalyzerPipe, 1, 0), new Object[] { 
+				"CGC", 
+				"r r", 
+				"CrC", 
+				Character.valueOf('C'), propolis,
+				Character.valueOf('G'), parts.getChipTear1(), 
+				Character.valueOf('r'), Items.redstone,
+			});
+			
+			RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0), new ItemStack(LogisticsPipes.LogisticsApiaristSinkPipe, 1, 0), new Object[] { 
+				"CrC", 
+				"r r", 
+				"CrC", 
+				Character.valueOf('C'), propolis,
+				Character.valueOf('r'), Items.redstone,
+			});
+		}
+		else {
+			/* Regular recipes */
+			CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
+				"CGC", 
+				"rBr", 
+				"CrC", 
+				Character.valueOf('C'), propolis,
+				Character.valueOf('G'), parts.getGearTear1(), 
+				Character.valueOf('r'), Items.redstone,
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+			});
+			
+			CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
+				"CGC", 
+				"rBr", 
+				"CrC", 
+				Character.valueOf('C'), propolis,
+				Character.valueOf('G'), parts.getChipTear1(), 
+				Character.valueOf('r'), Items.redstone,
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+			});
+			
+			CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEESINK), new Object[] { 
+				"CrC", 
+				"rBr", 
+				"CrC", 
+				Character.valueOf('C'), propolis,
+				Character.valueOf('r'), Items.redstone,
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ITEMSINK)
+			});
+			
+			CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTREFILLER), new Object[] {
+				" p ",
+				"rBr",
+				"CwC",
+				Character.valueOf('p'), pollen,
+				Character.valueOf('C'), propolis,
+				Character.valueOf('w'), parts.getExtractorItem(),
+				Character.valueOf('r'), Items.redstone,
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK),
+			});
+	
+			CraftingManager.getInstance().getRecipeList().add(new ShapedOreRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTTERMINUS), new Object[] { 
+				"CGD", 
+				"rBr", 
+				"DrC", 
+				Character.valueOf('C'), "dyeBlack",
+				Character.valueOf('D'), "dyePurple",
+				Character.valueOf('G'), pollen, 
+				Character.valueOf('r'), Items.redstone,
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+			}));
+			
+			CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyzerPipe, 1, 0), new Object[] { 
+				"CGC", 
+				"rBr", 
+				"CrC", 
+				Character.valueOf('C'), propolis,
+				Character.valueOf('G'), parts.getGearTear1(), 
+				Character.valueOf('r'), Items.redstone,
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)
+			});
+			
+			CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyzerPipe, 1, 0), new Object[] { 
+				"CGC", 
+				"rBr", 
+				"CrC", 
+				Character.valueOf('C'), propolis,
+				Character.valueOf('G'), parts.getChipTear1(), 
+				Character.valueOf('r'), Items.redstone,
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)
+			});
+			
+			CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristSinkPipe, 1, 0), new Object[] { 
+				"CrC", 
+				"rBr", 
+				"CrC", 
+				Character.valueOf('C'), propolis,
+				Character.valueOf('r'), Items.redstone,
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)
+			});
+		}
 	}
 	
 	/**

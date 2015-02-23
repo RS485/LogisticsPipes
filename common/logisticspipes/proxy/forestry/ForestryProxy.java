@@ -370,7 +370,7 @@ public class ForestryProxy implements IForestryProxy {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void addCraftingRecipes(ICraftingParts parts) {
-		if(!Configs.MANDATORY_CARPENTER_RECIPES)
+		if(Configs.MANDATORY_CARPENTER_RECIPES)
 		{
 			/* Carpenter recipes */
 			RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 

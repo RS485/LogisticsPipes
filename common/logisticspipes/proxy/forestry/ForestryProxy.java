@@ -41,7 +41,7 @@ public class ForestryProxy implements IForestryProxy {
 		localize.setAccessible(true);
 		propolis = GameRegistry.findItem("Forestry", "propolis");
 		pollen = GameRegistry.findItem("Forestry", "pollen");
-		honey = FluidRegistry.getFluidStack("honey", 1500);
+		honey = FluidRegistry.getFluidStack("for.honey", 1500);
 		root = (IBeeRoot) AlleleManager.alleleRegistry.getSpeciesRoot("rootBees");
 	}
 	
@@ -370,9 +370,9 @@ public class ForestryProxy implements IForestryProxy {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void addCraftingRecipes(ICraftingParts parts) {
-		/* Carpenter recipes */
-		if(!Configs.MANDATORY_CARPENTER_RECIPES)
+		if(Configs.MANDATORY_CARPENTER_RECIPES)
 		{
+			/* Carpenter recipes */
 			RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
 				"CGC", 
 				"r r", 

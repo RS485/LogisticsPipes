@@ -46,6 +46,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import buildcraft.BuildCraftEnergy;
+import buildcraft.BuildCraftFactory;
 import buildcraft.BuildCraftSilicon;
 import buildcraft.BuildCraftTransport;
 import buildcraft.api.core.BCLog;
@@ -333,6 +335,21 @@ public class BuildCraftProxy implements IBCProxy {
 			@Override
 			public Object getExtractorFluid() {
 				return BuildCraftTransport.pipeFluidsWood;
+			}
+
+			@Override
+			public Object getBlockDynamo() {
+				return new ItemStack(BuildCraftEnergy.engineBlock, 1, 2);
+			}
+
+			@Override
+			public Object getPowerCoilSilver() {
+				return getChipTear1();
+			}
+
+			@Override
+			public Object getPowerCoilGold() {
+				return getChipTear2();
 			}
 		};
 	}

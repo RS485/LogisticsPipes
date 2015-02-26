@@ -45,4 +45,92 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 	public boolean isTE() {
 		return true;
 	}
+
+	@Override
+	public ICraftingParts getRecipeParts() {
+		return new ICraftingParts() {
+
+			@Override
+			public ItemStack getChipTear1() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public ItemStack getChipTear2() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public ItemStack getChipTear3() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public Object getGearTear1() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public Object getGearTear2() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public Object getGearTear3() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public Object getSortingLogic() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public Object getBasicTransport() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public Object getWaterProof() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public Object getExtractorItem() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public Object getExtractorFluid() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public Object getBlockDynamo() {
+				return new ItemStack(TEBlocks.blockDynamo, 1, 0);
+			}
+
+			@Override
+			public Object getPowerCoilSilver() {
+				return TEItems.powerCoilSilver;
+			}
+
+			@Override
+			public Object getPowerCoilGold() {
+				return TEItems.powerCoilGold;
+			}
+			
+		};
+	}
 }

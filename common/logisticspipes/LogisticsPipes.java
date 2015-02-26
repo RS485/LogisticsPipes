@@ -475,6 +475,10 @@ public class LogisticsPipes {
 			SolderingStationRecipes.loadRecipe(parts);
 			RecipeManager.loadRecipes(parts);
 		}
+		parts = SimpleServiceLocator.thermalExpansionProxy.getRecipeParts();
+		if(parts != null) {
+			SimpleServiceLocator.cofhPowerProxy.addCraftingRecipes(parts);
+		}
 		
 		//Registering special particles
 		MainProxy.proxy.registerParticles();

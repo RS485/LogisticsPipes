@@ -14,4 +14,8 @@ public interface ICraftingParts {
 	Object getWaterProof(); // Pipe Waterproof
 	Object getExtractorItem(); // Wooden Pipe
 	Object getExtractorFluid(); // Fluid Wooden pipe
+	Object getBlockDynamo(); // For RF Power Provider
+	Object getPowerCoilSilver();
+	Object getPowerCoilGold();
+	
 }

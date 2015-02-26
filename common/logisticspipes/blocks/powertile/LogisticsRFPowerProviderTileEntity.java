@@ -1,14 +1,13 @@
 package logisticspipes.blocks.powertile;
 
-import logisticspipes.asm.ModDependentField;
 import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyStorage;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
-import cofh.api.energy.EnergyStorage;
 import cofh.api.energy.IEnergyHandler;
 
 @ModDependentInterface(modId={"CoFHAPI|energy"}, interfacePath={"cofh.api.energy.IEnergyHandler"})
@@ -18,13 +17,10 @@ public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTi
 	public static final int MAX_MAXMODE = 8;
 	public static final int MAX_PROVIDE_PER_TICK = 10000; //TODO
 	
-	@ModDependentField(modId="CoFHAPI|energy")
-	private EnergyStorage	storage;
+	private ICoFHEnergyStorage storage;
 	
 	public LogisticsRFPowerProviderTileEntity() {
-		if(SimpleServiceLocator.cofhPowerProxy.isAvailable()) {
-			storage	= new EnergyStorage(10000);
-		}
+		storage = SimpleServiceLocator.cofhPowerProxy.getEnergyStorage(10000);
 	}
 
 	public void addEnergy(float amount) {
@@ -38,13 +34,11 @@ public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTi
 	}
 	
 	private void addStoredRF() {
-		if(SimpleServiceLocator.cofhPowerProxy.isAvailable()) {
-			int space = freeSpace();
-			int available = (int)(storage.extractEnergy(space, true));
-			if(available > 0) {
-				if(storage.extractEnergy(available, false) == available) {
-					addEnergy(available);
-				}
+		int space = freeSpace();
+		int available = (int)(storage.extractEnergy(space, true));
+		if(available > 0) {
+			if(storage.extractEnergy(available, false) == available) {
+				addEnergy(available);
 			}
 		}
 	}
@@ -101,17 +95,13 @@ public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTi
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
-		if(SimpleServiceLocator.cofhPowerProxy.isAvailable()) {
-			storage.readFromNBT(nbt);
-		}
+		storage.readFromNBT(nbt);
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbt) {
 		super.writeToNBT(nbt);
-		if(SimpleServiceLocator.cofhPowerProxy.isAvailable()) {
-			storage.writeToNBT(nbt);
-		}
+		storage.writeToNBT(nbt);
 	}
 
 	@Override

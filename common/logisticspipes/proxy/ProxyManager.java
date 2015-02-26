@@ -24,6 +24,7 @@ import logisticspipes.proxy.buildcraft.subproxies.IConnectionOverrideResult;
 import logisticspipes.proxy.cc.CCProxy;
 import logisticspipes.proxy.cofh.CoFHPowerProxy;
 import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyReceiver;
+import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyStorage;
 import logisticspipes.proxy.ec.ExtraCellsProxy;
 import logisticspipes.proxy.enderchest.EnderStorageProxy;
 import logisticspipes.proxy.enderio.EnderIOProxy;
@@ -258,6 +259,7 @@ public class ProxyManager {
 			@Override public boolean isTesseract(TileEntity tile) {return false;}
 			@Override public boolean isTE() {return false;}
 			@Override public List<TileEntity> getConnectedTesseracts(TileEntity tile) {return new ArrayList<TileEntity>(0);}
+			@Override public ICraftingParts getRecipeParts() {return null;}
 		}));
 		
 		SimpleServiceLocator.setBetterStorageProxy(getWrappedProxy("betterstorage", IBetterStorageProxy.class, BetterStorageProxy.class, new IBetterStorageProxy() {
@@ -330,8 +332,18 @@ public class ProxyManager {
 					@Override public int receiveEnergy(ForgeDirection opposite, int i, boolean b) {return 0;}
 				};
 			}
-			@Override public boolean isAvailable() {return false;}
 			@Override public void addCraftingRecipes(ICraftingParts parts) {}
-		}, ICoFHEnergyReceiver.class));
+			@Override public ICoFHEnergyStorage getEnergyStorage(int i) {
+				return new ICoFHEnergyStorage() {
+					@Override public int extractEnergy(int space, boolean b) {return 0;}
+					@Override public int receiveEnergy(int maxReceive, boolean simulate) {return 0;}
+					@Override public int getEnergyStored() {return 0;}
+					@Override public int getMaxEnergyStored() {return 0;}
+					@Override public void readFromNBT(NBTTagCompound nbt) {}
+					@Override public void writeToNBT(NBTTagCompound nbt) {}
+				};
+			}
+			@Override public boolean isAvailable() {return false;}
+		}, ICoFHEnergyReceiver.class, ICoFHEnergyStorage.class));
 	}
 }

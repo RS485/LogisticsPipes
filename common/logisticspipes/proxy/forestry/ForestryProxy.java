@@ -8,6 +8,9 @@ import logisticspipes.items.ItemModule;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.interfaces.ICraftingParts;
 import logisticspipes.proxy.interfaces.IForestryProxy;
+import logisticspipes.recipes.CraftingDependency;
+import logisticspipes.recipes.RecipeManager;
+import logisticspipes.recipes.RecipeManager.LocalCraftingManager;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -367,10 +370,8 @@ public class ForestryProxy implements IForestryProxy {
 	/**
 	 * Void method, called to initialize LogisticsPipes' Forestry recipes.
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public void addCraftingRecipes(ICraftingParts parts) {
-		if(Configs.MANDATORY_CARPENTER_RECIPES)
 		{
 			/* Carpenter recipes */
 			RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
@@ -447,9 +448,10 @@ public class ForestryProxy implements IForestryProxy {
 				Character.valueOf('r'), Items.redstone,
 			});
 		}
-		else {
+		if(!Configs.MANDATORY_CARPENTER_RECIPES) {
+			LocalCraftingManager manager = RecipeManager.craftingManager;
 			/* Regular recipes */
-			CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
+			manager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), CraftingDependency.High_Tech_Modules, new Object[] { 
 				"CGC", 
 				"rBr", 
 				"CrC", 
@@ -459,7 +461,7 @@ public class ForestryProxy implements IForestryProxy {
 				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 			});
 			
-			CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
+			manager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), CraftingDependency.High_Tech_Modules, new Object[] { 
 				"CGC", 
 				"rBr", 
 				"CrC", 
@@ -469,7 +471,7 @@ public class ForestryProxy implements IForestryProxy {
 				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 			});
 			
-			CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEESINK), new Object[] { 
+			manager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEESINK), CraftingDependency.High_Tech_Modules, new Object[] { 
 				"CrC", 
 				"rBr", 
 				"CrC", 
@@ -478,7 +480,7 @@ public class ForestryProxy implements IForestryProxy {
 				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ITEMSINK)
 			});
 			
-			CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTREFILLER), new Object[] {
+			manager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTREFILLER), CraftingDependency.High_Tech_Modules, new Object[] {
 				" p ",
 				"rBr",
 				"CwC",
@@ -489,7 +491,7 @@ public class ForestryProxy implements IForestryProxy {
 				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK),
 			});
 	
-			CraftingManager.getInstance().getRecipeList().add(new ShapedOreRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTTERMINUS), new Object[] { 
+			manager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTTERMINUS), CraftingDependency.High_Tech_Modules, new Object[] { 
 				"CGD", 
 				"rBr", 
 				"DrC", 
@@ -498,9 +500,9 @@ public class ForestryProxy implements IForestryProxy {
 				Character.valueOf('G'), pollen, 
 				Character.valueOf('r'), Items.redstone,
 				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-			}));
+			});
 			
-			CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyzerPipe, 1, 0), new Object[] { 
+			manager.addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyzerPipe, 1, 0), CraftingDependency.High_Tech_Modules, new Object[] { 
 				"CGC", 
 				"rBr", 
 				"CrC", 
@@ -510,7 +512,7 @@ public class ForestryProxy implements IForestryProxy {
 				Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)
 			});
 			
-			CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyzerPipe, 1, 0), new Object[] { 
+			manager.addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyzerPipe, 1, 0), CraftingDependency.High_Tech_Modules, new Object[] { 
 				"CGC", 
 				"rBr", 
 				"CrC", 
@@ -520,7 +522,7 @@ public class ForestryProxy implements IForestryProxy {
 				Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)
 			});
 			
-			CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristSinkPipe, 1, 0), new Object[] { 
+			manager.addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristSinkPipe, 1, 0), CraftingDependency.High_Tech_Modules, new Object[] { 
 				"CrC", 
 				"rBr", 
 				"CrC", 

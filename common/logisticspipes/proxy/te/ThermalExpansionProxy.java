@@ -3,21 +3,13 @@ package logisticspipes.proxy.te;
 import java.util.LinkedList;
 import java.util.List;
 
-import logisticspipes.LogisticsPipes;
-import logisticspipes.blocks.LogisticsSolidBlock;
-import logisticspipes.items.ItemUpgrade;
 import logisticspipes.proxy.interfaces.ICraftingParts;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
-import logisticspipes.recipes.CraftingDependency;
-import logisticspipes.recipes.RecipeManager;
-import logisticspipes.recipes.RecipeManager.LocalCraftingManager;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import thermalexpansion.block.TEBlocks;
-import thermalexpansion.block.ender.TileTesseract;
-import thermalexpansion.item.TEItems;
+import cofh.thermalexpansion.block.TEBlocks;
+import cofh.thermalexpansion.block.ender.TileTesseract;
+import cofh.thermalexpansion.item.TEItems;
 import cofh.api.transport.IEnderItemHandler;
 import cofh.api.transport.RegistryEnderAttuned;
 

@@ -1,4 +1,4 @@
-package thermalexpansion.block;
+package cofh.thermalexpansion.block;
 
 import net.minecraft.block.Block;
 

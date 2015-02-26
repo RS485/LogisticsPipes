@@ -1,4 +1,4 @@
-package thermalexpansion.item;
+package cofh.thermalexpansion.item;
 
 import net.minecraft.item.ItemStack;
 

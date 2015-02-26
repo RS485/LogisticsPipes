@@ -2,7 +2,7 @@ package logisticspipes.proxy.te;
 
 import logisticspipes.proxy.interfaces.IGenericProgressProvider;
 import net.minecraft.tileentity.TileEntity;
-import thermalexpansion.block.machine.TileMachineBase;
+import cofh.thermalexpansion.block.machine.TileMachineBase;
 
 public class ThermalExpansionProgressProvider implements IGenericProgressProvider {
 	

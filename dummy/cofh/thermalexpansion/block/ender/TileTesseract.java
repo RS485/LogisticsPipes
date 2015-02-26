@@ -1,4 +1,4 @@
-package thermalexpansion.block.ender;
+package cofh.thermalexpansion.block.ender;
 
 import cofh.api.transport.IEnderItemHandler;
 import net.minecraft.tileentity.TileEntity;

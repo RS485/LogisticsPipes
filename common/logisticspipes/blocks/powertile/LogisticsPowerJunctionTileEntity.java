@@ -38,7 +38,7 @@ import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 
-@ModDependentInterface(modId={"IC2", "ComputerCraft@1.6", "CoFHAPI|energy", "BuildCraft|Transport"}, interfacePath={"ic2.api.energy.tile.IEnergySink", "dan200.computercraft.api.peripheral.IPeripheral", "cofh.api.energy.IEnergyHandler", "buildcraft.api.power.IPowerReceptor"})
+@ModDependentInterface(modId={"IC2", LPConstants.computerCraftModID, "CoFHAPI|energy", "BuildCraft|Transport"}, interfacePath={"ic2.api.energy.tile.IEnergySink", "dan200.computercraft.api.peripheral.IPeripheral", "cofh.api.energy.IEnergyHandler", "buildcraft.api.power.IPowerReceptor"})
 public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGuiTileEntity, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IPeripheral, IEnergyHandler {
 
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
@@ -324,35 +324,35 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 	}
 	
 	@Override
-	@ModDependentMethod(modId="ComputerCraft@1.6")
+	@ModDependentMethod(modId=LPConstants.computerCraftModID)
 	public String getType() {
 		return "LogisticsPowerJunction";
 	}
 	
 	@Override
-	@ModDependentMethod(modId="ComputerCraft@1.6")
+	@ModDependentMethod(modId=LPConstants.computerCraftModID)
 	public String[] getMethodNames() {
 		return new String[]{"getPowerLevel"};
 	}
 	
 	@Override
-	@ModDependentMethod(modId="ComputerCraft@1.6")
+	@ModDependentMethod(modId=LPConstants.computerCraftModID)
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
 		return new Object[]{this.getPowerLevel()};
 	}
 	
 	@Override
-	@ModDependentMethod(modId="ComputerCraft@1.6")
+	@ModDependentMethod(modId=LPConstants.computerCraftModID)
 	public boolean equals(IPeripheral other) {
 		return this.equals((Object) other);
 	}
 	
 	@Override
-	@ModDependentMethod(modId="ComputerCraft@1.6")
+	@ModDependentMethod(modId=LPConstants.computerCraftModID)
 	public void attach(IComputerAccess computer) {}
 	
 	@Override
-	@ModDependentMethod(modId="ComputerCraft@1.6")
+	@ModDependentMethod(modId=LPConstants.computerCraftModID)
 	public void detach(IComputerAccess computer) {}
 
 	@Override

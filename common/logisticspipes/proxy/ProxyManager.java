@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.LPConstants;
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
@@ -233,7 +234,7 @@ public class ProxyManager {
 			@Override public double injectEnergyUnits(TileEntity tile, ForgeDirection opposite, double d) {return d;}
 		}));
 		
-		SimpleServiceLocator.setCCProxy(getWrappedProxy("ComputerCraft@1.6", ICCProxy.class, CCProxy.class, new ICCProxy() {
+		SimpleServiceLocator.setCCProxy(getWrappedProxy(LPConstants.computerCraftModID, ICCProxy.class, CCProxy.class, new ICCProxy() {
 			@Override public boolean isTurtle(TileEntity tile) {return false;}
 			@Override public boolean isComputer(TileEntity tile) {return false;}
 			@Override public boolean isCC() {return false;}

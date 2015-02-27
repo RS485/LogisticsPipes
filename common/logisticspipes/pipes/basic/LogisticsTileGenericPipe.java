@@ -82,10 +82,10 @@ public class LogisticsTileGenericPipe extends TileEntity implements ILPPipeTile,
 	
 	private LogisticsTileRenderController renderController;
 
-	@ModDependentField(modId="ComputerCraft@1.6")
+	@ModDependentField(modId=LPConstants.computerCraftModID)
 	public HashMap<IComputerAccess, ForgeDirection> connections;
 
-	@ModDependentField(modId="ComputerCraft@1.6")
+	@ModDependentField(modId=LPConstants.computerCraftModID)
 	public IComputerAccess currentPC;
 	
 	@ModDependentField(modId="OpenComputers@1.3")

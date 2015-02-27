@@ -1357,7 +1357,7 @@ outer:
 	}
 	
 	@CCCommand(description="Returns the access to the pipe of the givven router UUID")
-	@ModDependentMethod(modId="ComputerCraft@1.6")
+	@ModDependentMethod(modId=LPConstants.computerCraftModID)
 	@CCDirectCall
 	public Object getPipeForUUID(String sUuid) throws PermissionException {
 		if(!getUpgradeManager().hasCCRemoteControlUpgrade()) throw new PermissionException();

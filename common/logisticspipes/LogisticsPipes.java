@@ -499,6 +499,7 @@ public class LogisticsPipes {
 		forName("buildcraft.transport.PipeTransportItems");
 		forName("buildcraft.transport.PipeEventBus");
 		forName("buildcraft.transport.render.PipeRendererTESR");
+		forName("buildcraft.transport.render.FacadeRenderHelper");
 		forName("net.minecraft.crash.CrashReport");
 		forName("dan200.computercraft.core.lua.LuaJLuaMachine");
 		forName("cofh.thermaldynamics.block.TileMultiBlock");

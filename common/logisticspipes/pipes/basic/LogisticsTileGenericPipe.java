@@ -1,6 +1,7 @@
 package logisticspipes.pipes.basic;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -69,7 +70,6 @@ import net.minecraftforge.fluids.IFluidHandler;
 
 import org.apache.logging.log4j.Level;
 
-import scala.actors.threadpool.Arrays;
 import buildcraft.api.core.EnumColor;
 import buildcraft.api.transport.IPipe;
 import buildcraft.api.transport.IPipeTile;

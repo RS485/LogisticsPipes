@@ -22,8 +22,8 @@ public class ClassTravelingItemHandler {
 		boolean noChecksumMatch = false;
 		String sumHandleEvent1 = ASMHelper.getCheckSumForMethod(reader, "toNBT", "(Lnet/minecraft/nbt/NBTTagCompound;)V");
 		String sumHandleEvent2 = ASMHelper.getCheckSumForMethod(reader, "<init>", "(Lnet/minecraft/nbt/NBTTagCompound;)V");
-		if(!"093EBF1B662D30236BFAA7ACB99A28F8892129D8".equals(sumHandleEvent1)) noChecksumMatch = true;
-		if(!"A445D208BF7DAC96EE833588CB2DE73A641689EF".equals(sumHandleEvent2)) noChecksumMatch = true;
+		if(!"093EBF1B662D30236BFAA7ACB99A28F8892129D8".equals(sumHandleEvent1) && !"A08A65438C985EC67BFF98B2799825CCB68A2DD4".equals(sumHandleEvent1)) noChecksumMatch = true;
+		if(!"A445D208BF7DAC96EE833588CB2DE73A641689EF".equals(sumHandleEvent2) && !"D75E0B54783F85E1794826B2B26F700254CF90C6".equals(sumHandleEvent2)) noChecksumMatch = true;
 		if(noChecksumMatch) {
 			System.out.println("toNBT: " + sumHandleEvent1);
 			System.out.println("<init>: " + sumHandleEvent2);

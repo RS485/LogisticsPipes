@@ -19,8 +19,8 @@ public class ClassRenderDuctItemsHandler {
 		reader.accept(node, 0);
 		
 		boolean noChecksumMatch = false;
-		String sumHandleEvent = ASMHelper.getCheckSumForMethod(reader, "renderTravelingItems", "(Ljava/util/Iterator;Lcofh/thermaldynamics/ducts/item/TileItemDuct;Lnet/minecraft/world/World;DDDF)V");
-		if(!"3153BA5332E6AF00B5A7A4FA3C3CBEDB61D8C70A".equals(sumHandleEvent)) noChecksumMatch = true;
+		final String sumHandleEvent = ASMHelper.getCheckSumForMethod(reader, "renderTravelingItems", "(Ljava/util/Iterator;Lcofh/thermaldynamics/ducts/item/TileItemDuct;Lnet/minecraft/world/World;DDDF)V");
+		if(!"3153BA5332E6AF00B5A7A4FA3C3CBEDB61D8C70A".equals(sumHandleEvent) && !"B29A29E5275940E837FDE72E41D315CAC4A2D5A0".equals(sumHandleEvent)) noChecksumMatch = true;
 		if(noChecksumMatch) {
 			System.out.println("renderTravelingItems: " + sumHandleEvent);
 			new UnsupportedOperationException("This LP version isn't compatible with the installed TD version.").printStackTrace();
@@ -37,7 +37,13 @@ public class ClassRenderDuctItemsHandler {
 						if(owner.equals("org/lwjgl/opengl/GL11") && name.equals("glScalef") && desc.equals("(FFF)V")) {
 							Label l = new Label();
 							this.visitLabel(l);
-							this.visitVarInsn(Opcodes.ALOAD, 12);
+							if("3153BA5332E6AF00B5A7A4FA3C3CBEDB61D8C70A".equals(sumHandleEvent)) {
+								this.visitVarInsn(Opcodes.ALOAD, 12);
+							} else if("B29A29E5275940E837FDE72E41D315CAC4A2D5A0".equals(sumHandleEvent)) {
+								this.visitVarInsn(Opcodes.ALOAD, 11);
+							} else {
+								throw new UnsupportedOperationException();
+							}
 							this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/td/ThermalDynamicsHooks", "renderItemTransportBox", "(Lcofh/thermaldynamics/ducts/item/TravelingItem;)V", false);
 						}
 					}

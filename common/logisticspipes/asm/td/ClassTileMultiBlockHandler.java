@@ -21,7 +21,7 @@ public class ClassTileMultiBlockHandler {
 		boolean noChecksumMatch = false;
 		String sumHandleEvent1 = ASMHelper.getCheckSumForMethod(reader, "getAdjTileEntitySafe", "(I)Lnet/minecraft/tileentity/TileEntity;");
 		String sumHandleEvent2 = ASMHelper.getCheckSumForMethod(reader, "getConnectedSide", "(B)Lcofh/thermaldynamics/multiblock/IMultiBlock;");
-		if(!"81F531AAAC7AC9CD38CDB49C8EDA994E13A1115A".equals(sumHandleEvent1)) noChecksumMatch = true;
+		if(!"81F531AAAC7AC9CD38CDB49C8EDA994E13A1115A".equals(sumHandleEvent1) && !"3DE0E5DD8E9440EB02475A8CB32C1B3409AA02E9".equals(sumHandleEvent1)) noChecksumMatch = true;
 		if(!"4C27D2EFAA3F5647ED61D72510E959DE9AFBB98E".equals(sumHandleEvent2)) noChecksumMatch = true;
 		if(noChecksumMatch) {
 			System.out.println("getAdjTileEntitySafe: " + sumHandleEvent1);

@@ -12,6 +12,10 @@ import logisticspipes.asm.bc.ClassFacadeRenderHelperHandler;
 import logisticspipes.asm.bc.PipeEventBusHandler;
 import logisticspipes.asm.bc.ClassPipeRendererTESRHandler;
 import logisticspipes.asm.bc.ClassPipeTransportItemsHandler;
+import logisticspipes.asm.bc.PipeEventBusHandler;
+import logisticspipes.asm.td.ClassRenderDuctItemsHandler;
+import logisticspipes.asm.td.ClassTileMultiBlockHandler;
+import logisticspipes.asm.td.ClassTravelingItemHandler;
 import logisticspipes.utils.ModStatusHelper;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.LaunchClassLoader;
@@ -103,6 +107,15 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			}
 			if(name.equals("dan200.computercraft.core.lua.LuaJLuaMachine")) {
 				return handleCCLuaJLuaMachine(bytes);
+			}
+			if(name.equals("cofh.thermaldynamics.block.TileMultiBlock")) {
+				return ClassTileMultiBlockHandler.handleTileMultiBlockClass(bytes);
+			}
+			if(name.equals("cofh.thermaldynamics.ducts.item.TravelingItem")) {
+				return ClassTravelingItemHandler.handleTravelingItemClass(bytes);
+			}
+			if(name.equals("cofh.thermaldynamics.render.RenderDuctItems")) {
+				return ClassRenderDuctItemsHandler.handleRenderDuctItemsClass(bytes);
 			}
 			if(!name.startsWith("logisticspipes.")) {
 				return bytes;

@@ -93,6 +93,7 @@ import logisticspipes.routing.IRouterQueuedTask;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.routing.order.LogisticsOrderManager;
+import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.security.PermissionException;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
@@ -1006,20 +1007,29 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	
 	public boolean globalIgnoreConnectionDisconnection = false;
 	
+	@Override
 	public final boolean canPipeConnect(TileEntity tile, ForgeDirection dir, boolean ignoreSystemDisconnection) {
 		ForgeDirection side = OrientationsUtil.getOrientationOfTilewithTile(this.container, tile);
-		if(getUpgradeManager().isSideDisconnected(side)) {
+		if(isSideBlocked(side, ignoreSystemDisconnection)) {
 			return false;
 		}
+		return (super.canPipeConnect(tile, dir) || logisitcsIsPipeConnected(tile, dir)) && !disconnectPipe(tile, dir);
+	}
+	
+	@Override
+	public final boolean isSideBlocked(ForgeDirection side, boolean ignoreSystemDisconnection) {
+		if(getUpgradeManager().isSideDisconnected(side)) {
+			return true;
+		}
 		if(container != null && side != ForgeDirection.UNKNOWN && container.tilePart.hasBlockingPluggable(side)) {
-			return false;
+			return true;
 		}
 		if(!stillNeedReplace) {
 			if(getRouter().isSideDisconneceted(side) && !ignoreSystemDisconnection && !globalIgnoreConnectionDisconnection) {
-				return false;
+				return true;
 			}
 		}
-		return (super.canPipeConnect(tile, dir) || logisitcsIsPipeConnected(tile, dir)) && !disconnectPipe(tile, dir);
+		return false;
 	}
 	
 	public void connectionUpdate() {
@@ -1719,5 +1729,20 @@ outer:
 	@Override
 	public boolean isRoutedPipe() {
 		return true;
+	}
+
+	@Override
+	public int getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, int traveled, int max, List<LPPosition> visited) {
+		if(!stillNeedReplace) {
+			if(this.getRouterId() == destinationint) {
+				return 0;
+			}
+			ExitRoute route = this.getRouter().getExitFor(destinationint, isActive, ident);
+			if(route != null && route.exitOrientation != ignore) {
+				if(route.distanceToDestination + traveled >= max) return Integer.MAX_VALUE;
+				return route.distanceToDestination;
+			}
+		}
+		return Integer.MAX_VALUE;
 	}
 }

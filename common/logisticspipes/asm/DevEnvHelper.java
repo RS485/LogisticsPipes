@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -204,7 +205,6 @@ public class DevEnvHelper {
 			String path = f.getAbsolutePath().toString();
 			if(path.endsWith("LP_DEOBF.jar")) {
 				URL toMove = f.toURI().toURL();
-				//Launch.classLoader.addURL(toMove);
 				addURL.invoke(ucp, toMove);
 				Enumeration<URL> tmp = Launch.classLoader.findResources("notToBeFound");
 				while(tmp.hasMoreElements()) {tmp.nextElement();}

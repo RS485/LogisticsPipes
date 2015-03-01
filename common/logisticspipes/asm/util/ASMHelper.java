@@ -23,11 +23,15 @@ public class ASMHelper {
 
 	private static final String	HEXES	= "0123456789ABCDEF";
 	
-	public static String getCheckSumForMethod(ClassReader classReader, String methodName) {
+	public static String getContentForMethod(ClassReader classReader, String methodName, boolean newLine) {
+		return getContentForMethod(classReader, methodName, "", newLine);
+	}
+	
+	public static String getContentForMethod(ClassReader classReader, String methodName, String desc, boolean newLine) {
         StringWriter stringWriter = new StringWriter();
 		PrintWriter printWriter = new PrintWriter(stringWriter);
 		TraceClassVisitor traceClassVisitor = new TraceClassVisitor(null, new MethodTextifier(), printWriter);
-		FilterClassVisitor myClassVisitor = new FilterClassVisitor(traceClassVisitor, methodName);
+		FilterClassVisitor myClassVisitor = new FilterClassVisitor(traceClassVisitor, methodName, desc);
 		classReader.accept(myClassVisitor, ClassReader.SKIP_DEBUG);
 		BufferedReader reader = new BufferedReader(new StringReader(stringWriter.toString()));
 		StringBuilder builder = new StringBuilder();
@@ -45,11 +49,26 @@ public class ASMHelper {
 				}
 				builder.append(" ");
 				builder.append(line);
+				if(newLine) {
+					builder.append(System.lineSeparator());
+				}
 			}
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
-		return toSHA1(builder.toString().getBytes());
+		return builder.toString();
+	}
+	
+	public static String getCheckSumForMethod(ClassReader classReader, String methodName) {
+		return getCheckSumForMethod(classReader, methodName, "");
+	}
+	
+	public static String getCheckSumForMethod(ClassReader classReader, String methodName, String desc) {
+		String result = getContentForMethod(classReader, methodName, desc, false);
+		if(result.isEmpty()) {
+			throw new NoSuchMethodError();
+		}
+		return toSHA1(result.getBytes());
 	}
 	
 	public static String toSHA1(byte[] convertme) {
@@ -74,15 +93,17 @@ public class ASMHelper {
 	
 	private static class FilterClassVisitor extends ClassVisitor {
 		private final String methodName;
+		private final String methodDesc;
 		
-		public FilterClassVisitor(TraceClassVisitor traceClassVisitor, String methodName) {
+		public FilterClassVisitor(TraceClassVisitor traceClassVisitor, String methodName, String desc) {
 			super(Opcodes.ASM4, traceClassVisitor);
 			this.methodName = methodName;
+			this.methodDesc = desc;
 		}
 
 		@Override
 		public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-			if(methodName.equals(name)) {
+			if(methodName.equals(name) && (methodDesc.isEmpty() || methodDesc.equals(desc))) {
 				return new FilterMaxVisitMethodVisitor(super.visitMethod(access, name, desc, signature, exceptions));
 			}
 			return null;

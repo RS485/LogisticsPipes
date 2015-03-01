@@ -18,6 +18,7 @@ import logisticspipes.proxy.buildcraft.subproxies.IBCRenderTESR;
 import logisticspipes.renderer.CustomBlockRenderer.RenderInfo;
 import logisticspipes.renderer.newpipe.LogisticsNewPipeItemBoxRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
+import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.transport.PipeTransportLogistics;
@@ -79,10 +80,11 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 
 	public static LogisticsNewRenderPipe secondRenderer = new LogisticsNewRenderPipe();
 	public static LogisticsNewPipeItemBoxRenderer boxRenderer = new LogisticsNewPipeItemBoxRenderer();
-	private PlayerConfig config = LogisticsPipes.getClientPlayerConfig();
+	public static PlayerConfig config;
 	
 	public LogisticsRenderPipe() {
 		super();
+		config = LogisticsPipes.getClientPlayerConfig();
 		customRenderItem = new RenderItem() {
 			@Override
 			public boolean shouldBob() {
@@ -143,6 +145,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			}
 			
 			float fPos = item.getPosition() + item.getSpeed() * f;
+			double boxScale = 1;
 			
 			if(fPos < 0.5) {
 				if(item.input == ForgeDirection.UNKNOWN) continue;
@@ -153,11 +156,20 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 				if(!pipe.container.renderState.pipeConnectionMatrix.isConnected(item.output)) continue;
 				pos.moveForward(item.output, fPos - 0.5F);
 			}
+			if(pipe.container.renderState.pipeConnectionMatrix.isTDConnected(item.input.getOpposite())) {
+				boxScale = (fPos * (1 - 0.65)) + 0.65;
+			}
+			if(pipe.container.renderState.pipeConnectionMatrix.isTDConnected(item.output)) {
+				boxScale = ((1 - fPos) * (1 - 0.65)) + 0.65;
+			}
+			if(pipe.container.renderState.pipeConnectionMatrix.isTDConnected(item.input.getOpposite()) && pipe.container.renderState.pipeConnectionMatrix.isTDConnected(item.output)) {
+				boxScale = 0.65;
+			}
 			
 			if(item == null || item.getItemIdentifierStack() == null) continue;
 			if(item.getContainer().xCoord != pipe.container.xCoord || item.getContainer().yCoord != pipe.container.yCoord || item.getContainer().zCoord != pipe.container.zCoord) continue;
 			ItemStack itemstack = item.getItemIdentifierStack().makeNormalStack();
-			doRenderItem(itemstack, x + pos.getXD(), y + pos.getYD(), z + pos.getZD(), light, item.getAge(), item.getHoverStart(), 0.7F);
+			doRenderItem(itemstack, x + pos.getXD(), y + pos.getYD(), z + pos.getZD(), light, item.getAge(), item.getHoverStart(), 0.7F, boxScale, 0);
 			count++;
 		}
 		count = 0;
@@ -169,7 +181,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		for(Pair<ItemIdentifierStack, Pair<Integer, Integer>> item: pipe.transport._itemBuffer) {
 			if(item == null || item.getValue1() == null) continue;
 			ItemStack itemstack = item.getValue1().makeNormalStack();
-			doRenderItem(itemstack, x + pos.getXD(), y + pos.getYD(), z + pos.getZD(), light, 0, 0, 0.25F);
+			doRenderItem(itemstack, x + pos.getXD(), y + pos.getYD(), z + pos.getZD(), light, 0, 0, 0.25F, 0, 0);
 			count++;
 			if(count >= 27) {
 				break;
@@ -189,9 +201,9 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		GL11.glPopMatrix();
 	}
 	
-	public void doRenderItem(ItemStack itemstack, double x, double y, double z, float light, int age, float hoverStart, float renderScale) {
-		if(config.isUseNewRenderer()) {
-			boxRenderer.doRenderItem(itemstack, light, x, y, z);
+	public void doRenderItem(ItemStack itemstack, double x, double y, double z, float light, int age, float hoverStart, float renderScale, double boxScale, int rotation) {
+		if(config.isUseNewRenderer() && boxScale != 0) {
+			boxRenderer.doRenderItem(itemstack, light, x, y, z, boxScale);
 		}
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float)x, (float)y, (float)z);

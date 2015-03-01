@@ -20,7 +20,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public interface IBCProxy {
 	void resetItemRotation();
-	boolean insertIntoBuildcraftPipe(TileEntity tile, LPTravelingItem item);
 	boolean isIPipeTile(TileEntity tile);
 	void registerPipeInformationProvider();
 	void initProxy();

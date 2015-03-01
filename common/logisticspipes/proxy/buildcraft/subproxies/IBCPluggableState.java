@@ -9,6 +9,5 @@ import logisticspipes.network.LPDataOutputStream;
 public interface IBCPluggableState extends IClientState {
 	void writeData(LPDataOutputStream data) throws IOException;
 	void readData(LPDataInputStream data) throws IOException;
-	boolean isDirty();
-	void clean();
+	boolean isDirty(boolean clean);
 }

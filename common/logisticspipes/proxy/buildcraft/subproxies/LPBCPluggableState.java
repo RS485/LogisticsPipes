@@ -29,21 +29,16 @@ public class LPBCPluggableState extends PipePluggableState implements IBCPluggab
 	}
 	
 	@SneakyThrows({IOException.class})
-	public boolean isDirty() {
+	public boolean isDirty(boolean clean) {
 		LPDataOutputStream buffer = new LPDataOutputStream();
 		ByteBuf buf = Unpooled.buffer(128);
 		this.writeData(buf);
 		buffer.writeByteBuf(buf);
 		byte[] newBuffer = buffer.toByteArray();
-		return !Arrays.equals(newBuffer, oldBuffer);
-	}
-
-	@SneakyThrows({IOException.class})
-	public void clean() {
-		LPDataOutputStream buffer = new LPDataOutputStream();
-		ByteBuf buf = Unpooled.buffer(128);
-		this.writeData(buf);
-		buffer.writeByteBuf(buf);
-		oldBuffer = buffer.toByteArray();
+		boolean result = !Arrays.equals(newBuffer, oldBuffer);
+		if(clean && result) {
+			oldBuffer = newBuffer;
+		}
+		return result;
 	}
 }

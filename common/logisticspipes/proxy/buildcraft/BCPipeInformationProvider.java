@@ -1,16 +1,25 @@
 package logisticspipes.proxy.buildcraft;
 
+import java.util.List;
+
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
+import logisticspipes.transport.LPTravelingItem;
+import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import buildcraft.core.CoreConstants;
+import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.PipeTransportFluids;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.PipeTransportPower;
 import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TravelingItem;
 import buildcraft.transport.pipes.PipeItemsDiamond;
 import buildcraft.transport.pipes.PipeItemsIron;
 import buildcraft.transport.pipes.PipeItemsObsidian;
@@ -138,5 +147,57 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 	@Override
 	public boolean isPowerPipe() {
 		return pipe != null && pipe.pipe != null && pipe.pipe.transport instanceof PipeTransportPower && SimpleServiceLocator.buildCraftProxy.isActive();
+	}
+
+	@Override
+	public int getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, int traveled, int max, List<LPPosition> visited) {
+		if(traveled >= max) return Integer.MAX_VALUE;
+		for(ForgeDirection dir: ForgeDirection.VALID_DIRECTIONS) {
+			if(ignore == dir) continue;
+			IPipeInformationProvider information = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(getTile(dir));
+			if(information != null) {
+				LPPosition pos = new LPPosition(information);
+				if(visited.contains(pos)) continue;
+				visited.add(pos);
+				int result = information.getDistanceTo(destinationint, dir.getOpposite(), ident, isActive, traveled + this.getDistance(), max, visited);
+				visited.remove(pos);
+				if(result == Integer.MAX_VALUE) {
+					return result;
+				}
+				return result + this.getDistance();
+			}
+		}
+		return Integer.MAX_VALUE;
+	}
+
+	@Override
+	public boolean acceptItem(LPTravelingItem item, TileEntity from) {
+		if(BlockGenericPipe.isValid(pipe.pipe) && pipe.pipe.transport instanceof PipeTransportItems) {
+			TravelingItem bcItem = null;
+			if(item instanceof LPTravelingItemServer) {
+				LPRoutedBCTravelingItem lpBCItem = new LPRoutedBCTravelingItem();
+				lpBCItem.setRoutingInformation(((LPTravelingItemServer)item).getInfo());
+				lpBCItem.saveToExtraNBTData();
+				bcItem = lpBCItem;
+			} else {
+				return true;
+			}
+			LPPosition p = new LPPosition(pipe.xCoord + 0.5F, pipe.yCoord + CoreConstants.PIPE_MIN_POS, pipe.zCoord + 0.5F);
+			if(item.output.getOpposite() == ForgeDirection.DOWN) {
+				p.moveForward(item.output.getOpposite(), 0.24F);
+			} else if(item.output.getOpposite() == ForgeDirection.UP) {
+				p.moveForward(item.output.getOpposite(), 0.74F);
+			} else {
+				p.moveForward(item.output.getOpposite(), 0.49F);
+			}
+			bcItem.setPosition(p.getXD(), p.getYD(), p.getZD());
+			bcItem.setSpeed(item.getSpeed());
+			if(item.getItemIdentifierStack() != null) {
+				bcItem.setItemStack(item.getItemIdentifierStack().makeNormalStack());
+			}
+			((PipeTransportItems)pipe.pipe.transport).injectItem(bcItem, item.output);
+			return true;
+		}
+		return false;
 	}
 }

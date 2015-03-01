@@ -16,9 +16,11 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePart;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.renderer.IIconProvider;
+import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.textures.Textures;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.WorldUtil;
+import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -233,7 +235,6 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	}
 
 	public void onEntityCollidedWithBlock(Entity entity) {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -241,6 +242,10 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		return canPipeConnect(tile, direction);
 	}
 
+	public boolean isSideBlocked(ForgeDirection side, boolean ignoreSystemDisconnection) {
+		return false;
+	}
+	
 	public final int getX() {
 		return this.container.xCoord;
 	}
@@ -327,5 +332,23 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 			@Override public boolean hasCombinedSneakyUpgrade() {return false;}
 			@Override public ForgeDirection[] getCombinedSneakyOrientation() {return null;}
 		};
+	}
+
+	public int getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, int travled, int max, List<LPPosition> visited) {
+		int lowest = Integer.MAX_VALUE;
+		for(ForgeDirection dir: ForgeDirection.VALID_DIRECTIONS) {
+			if(ignore == dir) continue;
+			IPipeInformationProvider information = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(this.container.getTile(dir));
+			if(information != null) {
+				LPPosition pos = new LPPosition(information);
+				if(visited.contains(pos)) continue;
+				visited.add(pos);
+				
+				lowest = information.getDistanceTo(destinationint, dir.getOpposite(), ident, isActive, travled, Math.min(max, lowest), visited);
+				
+				visited.remove(pos);
+			}
+		}
+		return lowest;
 	}
 }

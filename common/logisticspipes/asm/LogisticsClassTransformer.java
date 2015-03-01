@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import logisticspipes.LPConstants;
+import logisticspipes.asm.bc.ClassFacadeRenderHelperHandler;
 import logisticspipes.asm.bc.PipeEventBusHandler;
 import logisticspipes.asm.bc.ClassPipeTransportItemsHandler;
 import logisticspipes.utils.ModStatusHelper;
@@ -89,6 +90,9 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			}
 			if(name.equals("buildcraft.transport.PipeEventBus")) {
 				return PipeEventBusHandler.handleBCPipeEventBusClass(bytes);
+			}
+			if(name.equals("buildcraft.transport.render.FacadeRenderHelper")) {
+				return ClassFacadeRenderHelperHandler.handleFacadeRenderHelperClass(bytes);
 			}
 			if(name.equals("net.minecraft.crash.CrashReport")) {
 				return handleCrashReportClass(bytes);

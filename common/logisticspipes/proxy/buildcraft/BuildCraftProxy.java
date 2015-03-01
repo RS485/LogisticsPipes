@@ -467,4 +467,9 @@ public class BuildCraftProxy implements IBCProxy {
 		PipeRendererWorld.renderPass = renderPass;
 		FacadeRenderHelper.pipeFacadeRenderer(renderblocks, FakeBlock.INSTANCE, tile, tile.renderState, x, y, z);
 	}
+
+	@Override
+	public int getFacadeRenderColor() {
+		return BlockGenericPipe.facadeRenderColor;
+	}
 }

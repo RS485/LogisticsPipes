@@ -457,7 +457,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
     }
     
 
-	public static int facadeRenderColor = -1;
 	public static Map<Item, Class<? extends CoreUnroutedPipe>> pipes = new HashMap<Item, Class<? extends CoreUnroutedPipe>>();
 	public static Map<LPPosition, CoreUnroutedPipe> pipeRemoved = new HashMap<LPPosition, CoreUnroutedPipe>();
 
@@ -986,6 +985,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	@Override
 	public int colorMultiplier(IBlockAccess world, int x, int y, int z) {
+		int facadeRenderColor = SimpleServiceLocator.buildCraftProxy.getFacadeRenderColor();
 		if (facadeRenderColor != -1) {
 			return facadeRenderColor;
 		}

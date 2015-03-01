@@ -2,27 +2,17 @@ package logisticspipes.proxy.buildcraft.subproxies;
 
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.logging.log4j.Level;
-
-import scala.actors.threadpool.Arrays;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.ReflectionHelper;
 import lombok.SneakyThrows;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.BuildCraftCore;
-import buildcraft.api.core.BCLog;
 import buildcraft.api.transport.pluggable.PipePluggable;
-import buildcraft.core.TileBuffer;
-import buildcraft.core.network.BuildCraftPacket;
 import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.render.FakeBlock;
@@ -263,6 +253,9 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 
 	@Override
 	public Object getOriginal() {
+		this.xCoord = lpPipe.xCoord;
+		this.yCoord = lpPipe.yCoord;
+		this.zCoord = lpPipe.zCoord;
 		return this;
 	}
 

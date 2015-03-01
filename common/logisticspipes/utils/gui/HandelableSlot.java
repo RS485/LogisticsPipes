@@ -1,6 +1,7 @@
 package logisticspipes.utils.gui;
 
 import logisticspipes.interfaces.ISlotClick;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -22,4 +23,10 @@ public class HandelableSlot extends Slot {
 	public ItemStack getProvidedStack() {
 		return _handler.getResultForClick();
 	}
+
+	@Override
+	public boolean canTakeStack(EntityPlayer p_82869_1_) {
+		return false;
+	}
+	
 }

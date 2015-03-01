@@ -25,7 +25,6 @@ public class TDPart implements ITDPart {
 		if(opposite.ordinal() < 6) {
 			LPItemDuct duct =  thermalDynamicsDucts[opposite.ordinal()];
 			if(duct == null) {
-				Thread.dumpStack();
 				duct = thermalDynamicsDucts[opposite.ordinal()] = new LPItemDuct(pipe, opposite);
 				if(MainProxy.isServer(pipe.getWorldObj())) {
 					TickHandler.addMultiBlockToCalculate(duct);

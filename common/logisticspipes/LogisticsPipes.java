@@ -357,6 +357,7 @@ public class LogisticsPipes {
 	
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
+		loadClasses();
 		
 		boolean isClient = event.getSide() == Side.CLIENT;
 		
@@ -366,6 +367,7 @@ public class LogisticsPipes {
 
 		SimpleServiceLocator.buildCraftProxy.registerPipeInformationProvider();
 		SimpleServiceLocator.buildCraftProxy.initProxy();
+		SimpleServiceLocator.thermalDynamicsProxy.registerPipeInformationProvider();
 
 		SimpleServiceLocator.specialpipeconnection.registerHandler(new TeleportPipes());
 		SimpleServiceLocator.specialtileconnection.registerHandler(new TesseractConnection());
@@ -492,6 +494,24 @@ public class LogisticsPipes {
 		new VersionChecker();
 	}
 	
+	private void loadClasses() {
+		//Try to load all classes to let out checksums get generated
+		forName("buildcraft.transport.PipeTransportItems");
+		forName("buildcraft.transport.PipeEventBus");
+		forName("buildcraft.transport.render.PipeRendererTESR");
+		forName("net.minecraft.crash.CrashReport");
+		forName("dan200.computercraft.core.lua.LuaJLuaMachine");
+		forName("cofh.thermaldynamics.block.TileMultiBlock");
+		forName("cofh.thermaldynamics.ducts.item.TravelingItem");
+		forName("cofh.thermaldynamics.render.RenderDuctItems");
+	}
+
+	private void forName(String string) {
+		try {
+			Class.forName(string);
+		} catch(Exception e) {}
+	}
+
 	@EventHandler
 	public void cleanup(FMLServerStoppingEvent event) {
 		SimpleServiceLocator.routerManager.serverStopClean();

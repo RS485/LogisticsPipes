@@ -3,7 +3,6 @@ package logisticspipes.renderer.newpipe;
 import java.util.HashMap;
 import java.util.Map;
 
-import logisticspipes.LPConstants;
 import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.CustomBlockRenderer;
@@ -27,7 +26,7 @@ public class LogisticsNewPipeItemBoxRenderer {
 	private static final ResourceLocation	BLOCKS	= new ResourceLocation("textures/atlas/blocks.png");
 	private static final Map<FluidIdentifier, int[]> renderLists = new HashMap<FluidIdentifier, int[]>();
 	
-	public void doRenderItem(ItemStack itemstack, float light, double x, double y, double z) {
+	public void doRenderItem(ItemStack itemstack, float light, double x, double y, double z, double boxScale) {
 		if(renderList == -1) {
 			renderList = GLAllocation.generateDisplayLists(1);
 			GL11.glNewList(renderList, GL11.GL_COMPILE);
@@ -37,12 +36,14 @@ public class LogisticsNewPipeItemBoxRenderer {
 			tess.draw();
 			GL11.glEndList();
 		}
-		y -= 0.5;
-		z -= 0.5;
-		x -= 0.5;
 		GL11.glTranslated(x, y, z);
 		Minecraft.getMinecraft().getTextureManager().bindTexture(BLOCKS);
+		GL11.glScaled(boxScale, boxScale, boxScale);
+		GL11.glTranslated(-0.5, -0.5, -0.5);
 		GL11.glCallList(renderList);
+		GL11.glTranslated(0.5, 0.5, 0.5);
+		GL11.glScaled(1/boxScale, 1/boxScale, 1/boxScale);
+		GL11.glTranslated(-0.5, -0.5, -0.5);
 		if(itemstack != null && itemstack.getItem() instanceof LogisticsFluidContainer) {
 			FluidStack f = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemIdentifierStack.getFromStack(itemstack));
 			if(f != null) {
@@ -59,6 +60,7 @@ public class LogisticsNewPipeItemBoxRenderer {
 			}
 		}
 		GL11.glTranslated(-x, -y, -z);
+		GL11.glTranslated(0.5, 0.5, 0.5);
 	}
 	
 	private int getRenderListFor(FluidStack fluid) {

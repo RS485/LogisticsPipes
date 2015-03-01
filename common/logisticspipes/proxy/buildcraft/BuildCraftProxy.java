@@ -122,40 +122,6 @@ public class BuildCraftProxy implements IBCProxy {
 	}
 
 	@Override
-	public boolean insertIntoBuildcraftPipe(TileEntity tile, LPTravelingItem item) {
-		if(tile instanceof TileGenericPipe) {
-			TileGenericPipe pipe = (TileGenericPipe)tile;
-			if(BlockGenericPipe.isValid(pipe.pipe) && pipe.pipe.transport instanceof PipeTransportItems) {
-				TravelingItem bcItem = null;
-				if(item instanceof LPTravelingItemServer) {
-					LPRoutedBCTravelingItem lpBCItem = new LPRoutedBCTravelingItem();
-					lpBCItem.setRoutingInformation(((LPTravelingItemServer)item).getInfo());
-					lpBCItem.saveToExtraNBTData();
-					bcItem = lpBCItem;
-				} else {
-					return true;
-				}
-				LPPosition p = new LPPosition(tile.xCoord + 0.5F, tile.yCoord + CoreConstants.PIPE_MIN_POS, tile.zCoord + 0.5F);
-				if(item.output.getOpposite() == ForgeDirection.DOWN) {
-					p.moveForward(item.output.getOpposite(), 0.24F);
-				} else if(item.output.getOpposite() == ForgeDirection.UP) {
-					p.moveForward(item.output.getOpposite(), 0.74F);
-				} else {
-					p.moveForward(item.output.getOpposite(), 0.49F);
-				}
-				bcItem.setPosition(p.getXD(), p.getYD(), p.getZD());
-				bcItem.setSpeed(item.getSpeed());
-				if(item.getItemIdentifierStack() != null) {
-					bcItem.setItemStack(item.getItemIdentifierStack().makeNormalStack());
-				}
-				((PipeTransportItems)pipe.pipe.transport).injectItem(bcItem, item.output);
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@Override
 	public boolean isIPipeTile(TileEntity tile) {
 		return tile instanceof IPipeTile;
 	}
@@ -392,6 +358,7 @@ public class BuildCraftProxy implements IBCProxy {
 		if("Pluggable".equals(type)) {
 			pipe.container.tilePart.reenablePluggableAccess();
 		}
+		world.notifyBlocksOfNeighborChange(x, y, z, LogisticsPipes.LogisticsPipeBlock); //Again because not all changes have been applied before the call inside the BC method is made.
 		boolean block = false;
 		if(!result) {
 			ItemStack currentItem = player.getCurrentEquippedItem();

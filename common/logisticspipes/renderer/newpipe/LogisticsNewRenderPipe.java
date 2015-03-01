@@ -627,7 +627,7 @@ public class LogisticsNewRenderPipe {
 		for(ForgeDirection dir:ForgeDirection.VALID_DIRECTIONS) {
 			if(renderState.pipeConnectionMatrix.isConnected(dir)) {
 				connectionCount++;
-				if(renderState.pipeConnectionMatrix.isBCConnected(dir)) {
+				if(renderState.pipeConnectionMatrix.isBCConnected(dir) || renderState.pipeConnectionMatrix.isTDConnected(dir)) {
 					IVertexOperation[] texture = new IVertexOperation[]{basicTexture};
 					if(renderState.textureMatrix.isRouted()) {
 						if(renderState.textureMatrix.isRoutedInDir(dir)) {

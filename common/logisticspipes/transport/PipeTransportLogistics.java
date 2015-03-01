@@ -48,6 +48,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.LPRoutedBCTravelingItem;
 import logisticspipes.routing.ItemRoutingInformation;
+import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemClient;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.InventoryHelper;
@@ -417,7 +418,7 @@ public class PipeTransportLogistics {
 				SimpleServiceLocator.specialtileconnection.transmit(tile, arrivingItem);
 			}
 		}
-		if(tile instanceof LogisticsTileGenericPipe || SimpleServiceLocator.buildCraftProxy.isIPipeTile(tile)) {
+		if(SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) {
 			if(passToNextPipe(arrivingItem, tile)) return;
 		} else if(tile instanceof IInventory && isRouted) {
 
@@ -552,7 +553,7 @@ public class PipeTransportLogistics {
 	}
 	
 	protected void handleTileReachedClient(LPTravelingItemClient arrivingItem, TileEntity tile) {
-		if(tile instanceof LogisticsTileGenericPipe || SimpleServiceLocator.buildCraftProxy.isIPipeTile(tile)) {
+		if(SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) {
 			passToNextPipe(arrivingItem, tile);
 		}
 		// Just ignore any other case
@@ -666,14 +667,10 @@ public class PipeTransportLogistics {
 	}
 	
 	private boolean passToNextPipe(LPTravelingItem item, TileEntity tile) {
-		if(tile instanceof LogisticsTileGenericPipe) {
-			LogisticsTileGenericPipe pipe = (LogisticsTileGenericPipe)tile;
-			if(LogisticsBlockGenericPipe.isValid(pipe.pipe) && pipe.pipe.transport instanceof PipeTransportLogistics) {
-				((PipeTransportLogistics)pipe.pipe.transport).injectItem(item, item.output);
-				return true;
-			}
+		IPipeInformationProvider information = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(tile);
+		if(information != null) {
+			return information.acceptItem(item, this.container);
 		}
-		if(SimpleServiceLocator.buildCraftProxy.insertIntoBuildcraftPipe(tile, item)) { return true; }
 		return false;
 	}
 	

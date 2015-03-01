@@ -49,20 +49,23 @@ import logisticspipes.proxy.interfaces.IIC2Proxy;
 import logisticspipes.proxy.interfaces.IIronChestProxy;
 import logisticspipes.proxy.interfaces.INEIProxy;
 import logisticspipes.proxy.interfaces.IOpenComputersProxy;
+import logisticspipes.proxy.interfaces.ITDProxy;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
 import logisticspipes.proxy.interfaces.IToolWrenchProxy;
 import logisticspipes.proxy.nei.NEIProxy;
 import logisticspipes.proxy.opencomputers.IOCTile;
 import logisticspipes.proxy.opencomputers.OpenComputersProxy;
+import logisticspipes.proxy.td.ThermalDynamicsProxy;
+import logisticspipes.proxy.td.subproxies.ITDPart;
 import logisticspipes.proxy.te.ThermalExpansionProxy;
 import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 import logisticspipes.proxy.toolWrench.ToolWrenchProxy;
-import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -93,7 +96,6 @@ public class ProxyManager {
 	public static void load() {
 		SimpleServiceLocator.setBuildCraftProxy(getWrappedProxy("BuildCraft|Transport", IBCProxy.class, BuildCraftProxy.class, new IBCProxy() {
 			@Override public void resetItemRotation() {}
-			@Override public boolean insertIntoBuildcraftPipe(TileEntity tile, LPTravelingItem item) {return false;}
 			@Override public boolean isIPipeTile(TileEntity tile) {return false;}
 			@Override public void registerPipeInformationProvider() {}
 			@Override public void initProxy() {}
@@ -150,8 +152,7 @@ public class ProxyManager {
 						return new IBCPluggableState() {
 							@Override public void writeData(LPDataOutputStream data) throws IOException {}
 							@Override public void readData(LPDataInputStream data) throws IOException {}
-							@Override public boolean isDirty() {return false;}
-							@Override public void clean() {}
+							@Override public boolean isDirty(boolean clean) {return false;}
 						};
 					}
 					@Override public boolean hasEnabledFacade(ForgeDirection dir) {return false;}
@@ -353,5 +354,24 @@ public class ProxyManager {
 			}
 			@Override public boolean isAvailable() {return false;}
 		}, ICoFHEnergyReceiver.class, ICoFHEnergyStorage.class));
+
+		SimpleServiceLocator.setThermalDynamicsProxy(getWrappedProxy("ThermalDynamics", ITDProxy.class, ThermalDynamicsProxy.class, new ITDProxy() {
+			@Override public ITDPart getTDPart(final LogisticsTileGenericPipe pipe) {
+				return new ITDPart() {
+					@Override public TileEntity getInternalDuctForSide(ForgeDirection opposite) {return pipe;}
+					@Override public void setWorldObj_LP(World world) {}
+					@Override public void invalidate() {}
+					@Override public void onChunkUnload() {}
+					@Override public void scheduleNeighborChange() {}
+					@Override public void connectionsChanged() {}
+				};
+			}
+			@Override public boolean isActive() {return false;}
+			@Override public void registerPipeInformationProvider() {}
+			@Override public boolean isItemDuct(TileEntity tile) {return false;}
+			@Override public void renderPipeConnections(LogisticsTileGenericPipe pipeTile, RenderBlocks renderer) {}
+			@Override public void registerTextures(IIconRegister iconRegister) {}
+			@Override public boolean isBlockedSide(TileEntity with, ForgeDirection opposite) {return false;}
+		}, ITDPart.class));
 	}
 }

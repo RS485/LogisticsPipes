@@ -17,8 +17,8 @@ public class PipeDebugResponse extends CoordinatesPacket {
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe tile = this.getPipe(player.getEntityWorld());
 		if(tile != null) {
-			((CoreRoutedPipe) tile.pipe).debug.debugThisPipe = !((CoreRoutedPipe) tile.pipe).debug.debugThisPipe;
-			if(((CoreRoutedPipe) tile.pipe).debug.debugThisPipe) {
+			tile.pipe.debug.debugThisPipe = !tile.pipe.debug.debugThisPipe;
+			if(tile.pipe.debug.debugThisPipe) {
 				player.addChatComponentMessage(new ChatComponentText("Debug enabled on Server"));
 			} else {
 				player.addChatComponentMessage(new ChatComponentText("Debug disabled on Server"));

@@ -31,7 +31,7 @@ public class LPItemDuct extends TileItemDuct {
 
 	@Override
 	public void transferItem(TravelingItem item) {
-		ItemRoutingInformation info = item.lpRoutingInformation;
+		ItemRoutingInformation info = (ItemRoutingInformation) item.lpRoutingInformation;
 		info.setItem(ItemIdentifierStack.getFromStack(item.stack));
 		LPTravelingItemServer lpItem = new LPTravelingItemServer(info);
 		lpItem.setSpeed(info._transportMode == TransportMode.Active ? 0.3F : 0.2F);

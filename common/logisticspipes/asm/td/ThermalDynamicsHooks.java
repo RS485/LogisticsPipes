@@ -28,14 +28,14 @@ public class ThermalDynamicsHooks {
 
 	public static void travelingItemToNBT(TravelingItem travelingItem, NBTTagCompound paramNBTTagCompound) {
 		NBTTagCompound save = new NBTTagCompound();
-		travelingItem.lpRoutingInformation.writeToNBT(save);
+		((ItemRoutingInformation)travelingItem.lpRoutingInformation).writeToNBT(save);
 		paramNBTTagCompound.setTag("LPRoutingInformation", save);
 	}
 
 	public static void travelingItemNBTContructor(TravelingItem travelingItem, NBTTagCompound paramNBTTagCompound) {
 		if(!paramNBTTagCompound.hasKey("LPRoutingInformation")) return;
 		travelingItem.lpRoutingInformation = new ItemRoutingInformation();
-		travelingItem.lpRoutingInformation.readFromNBT(paramNBTTagCompound.getCompoundTag("LPRoutingInformation"));
+		((ItemRoutingInformation)travelingItem.lpRoutingInformation).readFromNBT(paramNBTTagCompound.getCompoundTag("LPRoutingInformation"));
 	}
 
 	public static void renderItemTransportBox(TravelingItem item) {

@@ -32,7 +32,7 @@ public class ClassTravelingItemHandler {
 		}
 
 		{
-			FieldVisitor fv = node.visitField(Opcodes.ACC_PUBLIC, "lpRoutingInformation", "Llogisticspipes/routing/ItemRoutingInformation;", null, null);
+			FieldVisitor fv = node.visitField(Opcodes.ACC_PUBLIC, "lpRoutingInformation", "Ljava/lang/Object;", null, null);
 			fv.visitEnd();
 		}
 

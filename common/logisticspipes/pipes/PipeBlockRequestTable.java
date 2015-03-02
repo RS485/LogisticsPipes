@@ -330,7 +330,6 @@ outer:
 				continue;
 			}
 			ItemIdentifier ident = ItemIdentifier.get(item);
-			DictItemIdentifier dictIdent = null;
 			for(int j=0;j<inv.getSizeInventory();j++) {
 				item = inv.getStackInSlot(j);
 				if(item == null) continue;
@@ -343,10 +342,7 @@ outer:
 					}
 				}
 				if(oreDict) {
-					if(dictIdent == null) {
-						dictIdent = ident.getDictIdentifiers();
-					}
-					if(dictIdent.canMatch(withIdent.getDictIdentifiers(), true, false)) {
+					if(ident.getDictIdentifiers() != null && withIdent.getDictIdentifiers() != null && ident.getDictIdentifiers().canMatch(withIdent.getDictIdentifiers(), true, false)) {
 						if(item.stackSize > used[j]) {
 							used[j]++;
 							toUse[i] = j;

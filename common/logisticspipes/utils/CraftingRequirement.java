@@ -46,7 +46,9 @@ public class CraftingRequirement
 	
 	public boolean testItem(ItemIdentifierStack other) {
 		if(use_od || use_category) {
-			if(stack.getItem().getDictIdentifiers().canMatch(other.getItem().getDictIdentifiers(), true, use_category)) { return true; }
+			if(stack.getItem().getDictIdentifiers() != null && other.getItem().getDictIdentifiers() != null) {
+				if(stack.getItem().getDictIdentifiers().canMatch(other.getItem().getDictIdentifiers(), true, use_category)) { return true; }
+			}
 		}
 		ItemStack stack_n = stack.makeNormalStack();
 		ItemStack other_n = other.makeNormalStack();

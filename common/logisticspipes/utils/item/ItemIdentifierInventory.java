@@ -8,9 +8,11 @@
 
 package logisticspipes.utils.item;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -21,6 +23,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
+import logisticspipes.utils.tuples.Pair;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -29,7 +32,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 
-public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTypeHolder {
+public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTypeHolder, Iterable<Pair<ItemIdentifierStack, Integer>> {
 
 	private Object ccType;
 	private ItemIdentifierStack[] _contents;
@@ -468,5 +471,29 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 	@Override
 	public Object getCCType() {
 		return ccType;
+	}
+
+	@Override
+	public Iterator<Pair<ItemIdentifierStack, Integer>> iterator() {
+		final Iterator<ItemIdentifierStack> iter = Arrays.asList(_contents).iterator();
+		return new Iterator<Pair<ItemIdentifierStack, Integer>>() {
+			int pos = -1;
+			
+			@Override
+			public boolean hasNext() {
+				return iter.hasNext();
+			}
+
+			@Override
+			public Pair<ItemIdentifierStack, Integer> next() {
+				pos++;
+				return new Pair<ItemIdentifierStack, Integer>(iter.next(), pos);
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		};
 	}
 }

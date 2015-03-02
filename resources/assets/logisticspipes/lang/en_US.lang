@@ -221,7 +221,7 @@ item.AdvancedSatelliteUpgrade=Advanced Satellite Upgrade
 item.FluidCraftingUpgrade=Fluid Crafting Upgrade
 item.CraftingByproductUpgrade=Crafting Byproduct Extraction Upgrade
 item.PatternUpgrade=Placement Rules Upgrade
-item.FuzzyCraftingUpgrade=Fuzzy Crafting Upgrade
+item.FuzzyUpgrade=Fuzzy Upgrade
 item.PowerTransportationUpgrade=Power Transportation Upgrade
 item.BCPowerSupplierUpgrade=BC Power Supplier Upgrade
 item.RFPowerSupplierUpgrade=TE Power Supplier Upgrade
@@ -238,15 +238,17 @@ item.UpgradeModuleUpgrade=Upgrade Module Upgrade
 
 #Upgrade info
 
-item.upgrade.info.both=Can be applied to %cYELLOW {0} %cRESET %cGRAY pipes and %cYELLOW {1} %cRESET %cGRAY modules
+item.upgrade.info.both1=Can be applied to %cYELLOW {0} %cRESET %cGRAY pipes
+item.upgrade.info.both2=and %cYELLOW {0} %cRESET %cGRAY modules
 item.upgrade.info.pipe=Can be applied to %cYELLOW {0} %cRESET %cGRAY pipes
 item.upgrade.info.module=Can be applied to %cYELLOW {0} %cRESET %cGRAY modules
 item.upgrade.info.all=All
 item.upgrade.info.crafting=Crafting
 item.upgrade.info.itemsink=Item Sink
-item.upgrade.info.supplier=Supllier
+item.upgrade.info.supplier=Supplier
 item.upgrade.info.requestblock=Request Block
 item.upgrade.info.chassi=Chassi
+item.upgrade.info.basic=Basic
 
 # Blocks
 tile.solderingstation=Soldering Station
@@ -291,6 +293,13 @@ lp.hud.config.satellite.enabled=Enabled Satellite.
 lp.hud.config.satellite.disabled=Disabled Satellite.
 
 # GUI
+
+gui.itemsink.Yes=Yes
+gui.itemsink.No=No
+gui.itemsink.Inventory=Inventory
+gui.itemsink.Defaultroute=Default route
+gui.itemsink.IgnoreData=Ignore Data
+gui.itemsink.IgnoreNBT=Ignore NBT
 
 gui.crafting.Inputs=Inputs
 gui.crafting.Inventory=Inventory
@@ -416,3 +425,7 @@ gui.networkstatistics.crafting=View active crafting tasks
 gui.networkstatistics.gettasks=Acquire tasks
 gui.networkstatistics.add.alreadytracked=This item type is already tracked
 
+gui.settings.pipenewrenderer=Use New Renderer
+gui.settings.pipefallbackrenderer=Use Fallback Renderer
+gui.settings.piperenderdistance=Max. Distance for new Renderer
+gui.settings.pipecontentrenderdistance=Max. Distance for Pipe Content

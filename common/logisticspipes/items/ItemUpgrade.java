@@ -18,7 +18,7 @@ import logisticspipes.pipes.upgrades.CraftingByproductUpgrade;
 import logisticspipes.pipes.upgrades.CraftingCleanupUpgrade;
 import logisticspipes.pipes.upgrades.CraftingMonitoringUpgrade;
 import logisticspipes.pipes.upgrades.FluidCraftingUpgrade;
-import logisticspipes.pipes.upgrades.FuzzyCraftingUpgrade;
+import logisticspipes.pipes.upgrades.FuzzyUpgrade;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
 import logisticspipes.pipes.upgrades.LogicControllerUpgrade;
 import logisticspipes.pipes.upgrades.OpaqueUpgrade;
@@ -170,7 +170,7 @@ public class ItemUpgrade extends LogisticsItem {
 		registerUpgrade(LIQUID_CRAFTING, FluidCraftingUpgrade.class, 15);
 		registerUpgrade(CRAFTING_BYPRODUCT_EXTRACTOR, CraftingByproductUpgrade.class, 16);
 		registerUpgrade(SUPPLIER_PATTERN, PatternUpgrade.class, 17);
-		registerUpgrade(FUZZY_CRAFTING, FuzzyCraftingUpgrade.class, 18);
+		registerUpgrade(FUZZY_CRAFTING, FuzzyUpgrade.class, 18);
 		registerUpgrade(POWER_TRANSPORTATION, PowerTransportationUpgrade.class, 19);
 		registerUpgrade(POWER_RF_SUPPLIER, RFPowerSupplierUpgrade.class, 21);
 		registerUpgrade(POWER_IC2_LV_SUPPLIER, IC2LVPowerSupplierUpgrade.class, 22);
@@ -324,9 +324,12 @@ public class ItemUpgrade extends LogisticsItem {
 		if(pipe.isEmpty() && module.isEmpty()) return;
 		if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
 			if(!pipe.isEmpty() && !module.isEmpty()) {
-				//Can be applied to {0} pipes and {1} modules
-				String base = StringUtil.translate(SHIFT_INFO_PREFIX + "both");
-				list.add(MessageFormat.format(base, join(pipe), join(module)));
+				//Can be applied to {0} pipes
+				//and {0} modules
+				String base1 = StringUtil.translate(SHIFT_INFO_PREFIX + "both1");
+				String base2 = StringUtil.translate(SHIFT_INFO_PREFIX + "both2");
+				list.add(MessageFormat.format(base1, join(pipe)));
+				list.add(MessageFormat.format(base2, join(module)));
 			} else if(!pipe.isEmpty()) {
 				//Can be applied to {0} pipes
 				String base = StringUtil.translate(SHIFT_INFO_PREFIX + "pipe");
@@ -348,8 +351,13 @@ public class ItemUpgrade extends LogisticsItem {
 	
 	private String join(List<String> join) {
 		StringBuilder builder = new StringBuilder();
-		for(int i=0; i < join.size() - 1; i++) {
+		for(int i=0; i < join.size() - 2; i++) {
 			builder.append(StringUtil.translate(SHIFT_INFO_PREFIX + join.get(i)));
+			builder.append(", ");
+		}
+		if(join.size() > 1) {
+			builder.append(StringUtil.translate(SHIFT_INFO_PREFIX + join.get(join.size() - 2)));
+			builder.append(" and ");
 		}
 		builder.append(StringUtil.translate(SHIFT_INFO_PREFIX + join.get(join.size() - 1)));
 		return builder.toString();

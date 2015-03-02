@@ -19,7 +19,7 @@ public class ItemSinkInHand extends ModuleInHandGuiProvider {
 	public Object getClientGui(EntityPlayer player) {
 		LogisticsModule module = this.getLogisticsModule(player);
 		if(!(module instanceof ModuleItemSink)) return null;
-		return new GuiItemSink(player.inventory, (ModuleItemSink) module);
+		return new GuiItemSink(player.inventory, (ModuleItemSink) module, false);
 	}
 
 	@Override

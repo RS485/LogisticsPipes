@@ -7,7 +7,7 @@ public interface ISlotUpgradeManager {
 	boolean isAdvancedSatelliteCrafter();
 	boolean hasByproductExtractor();
 	int getFluidCrafter();
-	boolean isFuzzyCrafter();
+	boolean isFuzzyUpgrade();
 	int getCrafterCleanup();
 	boolean hasSneakyUpgrade();
 	ForgeDirection getSneakyOrientation();

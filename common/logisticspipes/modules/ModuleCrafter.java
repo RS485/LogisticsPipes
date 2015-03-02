@@ -414,7 +414,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			if (resourceStack == null || resourceStack.getStackSize() == 0) continue;
 			CraftingRequirement req = new CraftingRequirement();
 			req.stack = resourceStack;
-			if(getUpgradeManager().isFuzzyCrafter())
+			if(getUpgradeManager().isFuzzyUpgrade())
 			{
 				if((fuzzyCraftingFlagArray[i] & 0x1) != 0)
 					req.use_od = true;
@@ -754,7 +754,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				.setLiquidCrafter(getUpgradeManager().getFluidCrafter())
 				.setAmount(amount)
 				.setHasByproductExtractor(getUpgradeManager().hasByproductExtractor())
-				.setFuzzy(getUpgradeManager().isFuzzyCrafter())
+				.setFuzzy(getUpgradeManager().isFuzzyUpgrade())
 				.setCleanupSize(getUpgradeManager().getCrafterCleanup())
 				.setCleanupExclude(cleanupModeIsExclude);
 	}
@@ -810,7 +810,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			}
 			MainProxy.sendPacketToAllWatchingChunk(this.getX(), this.getZ(), MainProxy.getDimensionForWorld(getWorld()), packet);
 			
-			if(fuzzyFlagsChanged && this.getUpgradeManager().isFuzzyCrafter()) {
+			if(fuzzyFlagsChanged && this.getUpgradeManager().isFuzzyUpgrade()) {
 				for(int i = 0; i < 9; i++) {
 					final ModernPacket pak = PacketHandler.getPacket(CraftingFuzzyFlag.class).setInteger2(fuzzyCraftingFlagArray[i]).setInteger(i).setModulePos(this);
 					if(player != null) MainProxy.sendPacketToPlayer(pak, player);

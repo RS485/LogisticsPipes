@@ -214,6 +214,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 
 	private ItemIdentifier _IDIgnoringNBT=null;
 	private ItemIdentifier _IDIgnoringDamage=null;
+	private ItemIdentifier _IDIgnoringData=null;
 	private DictItemIdentifier _dict;
 	private boolean canHaveDict = true;
 
@@ -352,6 +353,17 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 			}
 		}
 		return _IDIgnoringNBT;
+	}
+
+	public ItemIdentifier getIgnoringData() {
+		if(_IDIgnoringData == null) {
+			if(itemDamage == 0) {
+				_IDIgnoringData = this;
+			} else {
+				_IDIgnoringData = get(item, 0, tag);
+			}
+		}
+		return _IDIgnoringData;
 	}
 
 	public String getDebugName() {

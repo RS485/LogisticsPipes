@@ -24,7 +24,7 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 	
 	private ForgeDirection sneakyOrientation = ForgeDirection.UNKNOWN;
 	private boolean isAdvancedCrafter = false;
-	private boolean isFuzzyCrafter = false;
+	private boolean isFuzzyUpgrade = false;
 	private int liquidCrafter = 0;
 	private boolean hasByproductExtractor = false;
 	private boolean hasPatternUpgrade = false;
@@ -57,8 +57,8 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 	}
 	
 	@Override
-	public boolean isFuzzyCrafter() {
-		return isFuzzyCrafter ? true : parent.isFuzzyCrafter();
+	public boolean isFuzzyUpgrade() {
+		return isFuzzyUpgrade ? true : parent.isFuzzyUpgrade();
 	}
 	
 	@Override
@@ -97,7 +97,7 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 		//update sneaky direction, speed upgrade count and disconnection
 		sneakyOrientation = ForgeDirection.UNKNOWN;
 		isAdvancedCrafter = false;
-		isFuzzyCrafter = false;
+		isFuzzyUpgrade = false;
 		liquidCrafter = 0;
 		hasByproductExtractor = false;
 		hasPatternUpgrade = false;
@@ -108,8 +108,8 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 				sneakyOrientation = ((SneakyUpgrade) upgrade).getSneakyOrientation();
 			} else if(upgrade instanceof AdvancedSatelliteUpgrade) {
 				isAdvancedCrafter = true;
-			} else if(upgrade instanceof FuzzyCraftingUpgrade) {
-				isFuzzyCrafter = true;
+			} else if(upgrade instanceof FuzzyUpgrade) {
+				isFuzzyUpgrade = true;
 			} else if(upgrade instanceof FluidCraftingUpgrade) {
 				liquidCrafter += inv.getStackInSlot(i).stackSize;
 			} else if(upgrade instanceof CraftingByproductUpgrade) {

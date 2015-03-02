@@ -1,6 +1,7 @@
 package logisticspipes.network.guis.module.inpipe;
 
 import java.io.IOException;
+import java.util.BitSet;
 
 import logisticspipes.gui.modules.GuiItemSink;
 import logisticspipes.modules.ModuleItemSink;
@@ -16,10 +17,22 @@ import net.minecraft.entity.player.EntityPlayer;
 
 @Accessors(chain=true)
 public class ItemSinkSlot extends ModuleCoordinatesGuiProvider {
-	
+
 	@Getter
 	@Setter
 	private boolean isDefaultRoute;
+	
+	@Getter
+	@Setter
+	private boolean hasFuzzyUpgrade;
+
+	@Getter
+	@Setter
+	private BitSet ignoreData;
+	
+	@Getter
+	@Setter
+	private BitSet ignoreNBT;
 	
 	public ItemSinkSlot(int id) {
 		super(id);
@@ -29,12 +42,18 @@ public class ItemSinkSlot extends ModuleCoordinatesGuiProvider {
 	public void writeData(LPDataOutputStream data) throws IOException {
 		super.writeData(data);
 		data.writeBoolean(isDefaultRoute);
+		data.writeBoolean(hasFuzzyUpgrade);
+		data.writeBitSet(ignoreData);
+		data.writeBitSet(ignoreNBT);
 	}
 
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);
 		isDefaultRoute = data.readBoolean();
+		hasFuzzyUpgrade = data.readBoolean();
+		ignoreData = data.readBitSet();
+		ignoreNBT = data.readBitSet();
 	}
 
 	@Override
@@ -42,7 +61,9 @@ public class ItemSinkSlot extends ModuleCoordinatesGuiProvider {
 		ModuleItemSink module = this.getLogisticsModule(player.getEntityWorld(), ModuleItemSink.class);
 		if(module == null) return null;
 		module.setDefaultRoute(isDefaultRoute);
-		return new GuiItemSink(player.inventory, module);
+		module.setIgnoreData(ignoreData);
+		module.setIgnoreNBT(ignoreNBT);
+		return new GuiItemSink(player.inventory, module, hasFuzzyUpgrade);
 	}
 
 	@Override

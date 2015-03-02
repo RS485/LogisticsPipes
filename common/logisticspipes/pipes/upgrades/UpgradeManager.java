@@ -48,7 +48,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 	private int speedUpgradeCount = 0;
 	private final EnumSet<ForgeDirection> disconnectedSides = EnumSet.noneOf(ForgeDirection.class);
 	private boolean isAdvancedCrafter = false;
-	private boolean isFuzzyCrafter = false;
+	private boolean isFuzzyUpgrade = false;
 	private boolean isCombinedSneakyUpgrade = false;
 	private int liquidCrafter = 0;
 	private boolean hasByproductExtractor = false;
@@ -127,7 +127,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 		sneakyOrientation = ForgeDirection.UNKNOWN;
 		speedUpgradeCount = 0;
 		isAdvancedCrafter = false;
-		isFuzzyCrafter = false;
+		isFuzzyUpgrade = false;
 		boolean combinedBuffer = isCombinedSneakyUpgrade;
 		isCombinedSneakyUpgrade = false;
 		liquidCrafter = 0;
@@ -153,8 +153,8 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 				disconnectedSides.add(((ConnectionUpgrade)upgrade).getSide());
 			} else if(upgrade instanceof AdvancedSatelliteUpgrade) {
 				isAdvancedCrafter = true;
-			} else if(upgrade instanceof FuzzyCraftingUpgrade) {
-				isFuzzyCrafter = true;
+			} else if(upgrade instanceof FuzzyUpgrade) {
+				isFuzzyUpgrade = true;
 			} else if(upgrade instanceof CombinedSneakyUpgrade && sneakyOrientation == ForgeDirection.UNKNOWN) {
 				isCombinedSneakyUpgrade = true;
 			} else if(upgrade instanceof FluidCraftingUpgrade) {
@@ -402,8 +402,8 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 		return isAdvancedCrafter;
 	}
 	
-	public boolean isFuzzyCrafter() {
-		return isFuzzyCrafter;
+	public boolean isFuzzyUpgrade() {
+		return isFuzzyUpgrade;
 	}
 	
 	public int getFluidCrafter() {

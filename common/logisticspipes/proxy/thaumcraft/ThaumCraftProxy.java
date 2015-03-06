@@ -4,7 +4,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Configs;
 import logisticspipes.items.ItemModule;
+import logisticspipes.items.ItemPipeComponents;
 import logisticspipes.proxy.interfaces.ICraftingParts;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import net.minecraft.client.Minecraft;
@@ -170,21 +172,36 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 
 	@Override
 	public void addCraftingRecipes(ICraftingParts parts) {
-
-		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.THAUMICASPECTSINK), new Object[] {
-			"wGe", 
-			"rBr", 
-			"fra", 
-			Character.valueOf('w'), new ItemStack(itemShard, 1, 2), 
-			Character.valueOf('e'), new ItemStack(itemShard, 1, 3), 
-			Character.valueOf('f'), new ItemStack(itemShard, 1, 1), 
-			Character.valueOf('a'), new ItemStack(itemShard, 1, 0), 
-			
-			Character.valueOf('G'), parts.getChipTear1(), 
-			Character.valueOf('r'), Items.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-		});
-		
+		if(!Configs.ENABLE_BETA_RECIPES) {
+			CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.THAUMICASPECTSINK), new Object[] {
+				"wGe", 
+				"rBr", 
+				"fra", 
+				Character.valueOf('w'), new ItemStack(itemShard, 1, 2), 
+				Character.valueOf('e'), new ItemStack(itemShard, 1, 3), 
+				Character.valueOf('f'), new ItemStack(itemShard, 1, 1), 
+				Character.valueOf('a'), new ItemStack(itemShard, 1, 0), 
+				
+				Character.valueOf('G'), parts.getChipTear1(), 
+				Character.valueOf('r'), Items.redstone,
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+			});
+		}
+		if(Configs.ENABLE_BETA_RECIPES) {
+			CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.THAUMICASPECTSINK), new Object[] {
+				"wGe", 
+				"rBr", 
+				"fra", 
+				Character.valueOf('w'), new ItemStack(itemShard, 1, 2), 
+				Character.valueOf('e'), new ItemStack(itemShard, 1, 3), 
+				Character.valueOf('f'), new ItemStack(itemShard, 1, 1), 
+				Character.valueOf('a'), new ItemStack(itemShard, 1, 0), 
+				
+				Character.valueOf('G'), new ItemStack(LogisticsPipes.LogisticsPipeComponents, 1, ItemPipeComponents.ITEM_MICROPACKAGER), 
+				Character.valueOf('r'), Items.redstone,
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+			});
+		}
 	}
 	
 	@Override

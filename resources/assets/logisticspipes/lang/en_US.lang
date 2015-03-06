@@ -4,6 +4,11 @@
 # Example '%cYELLOW ' (The space behind will be removed)
 
 # Pipes
+item.PipeItemsBasicTransport=Unrouted Transport Pipe
+item.PipeItemsBasicTransport.tip1=Type: Simple Transport Pipe
+item.PipeItemsBasicTransport.tip2= - Serves for the Transport of Items
+item.PipeItemsBasicTransport.tip3= - Doesn´t route Stuff
+item.PipeItemsBasicTransport.tip4= - Can´t access Inventories
 
 item.PipeItemsBasicLogistics=Basic Logistics Pipe
 item.PipeItemsBasicLogistics.tip1=Type: Passive push destination
@@ -149,6 +154,12 @@ item.PipeBlockRequestTable=Logistics Request Table
 # Modules
 
 #TODO: Add shift tooltip information
+item.structframe=Structural Pipe Frame
+item.microservo=Micro Servo
+item.routeprocess=Routing Logic Processor
+item.micropackager=Micro Packager
+item.microcapsulator=Micro Capsulator
+item.logicexpander=Logic Expansion Circuit
 item.ModuleBlank=Blank Module
 item.ModuleItemSink=ItemSink module
 item.ModulePassiveSupplier=Passive Supplier module

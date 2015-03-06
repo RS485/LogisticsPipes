@@ -9,7 +9,9 @@ import ic2.api.item.IElectricItem;
 import ic2.api.recipe.Recipes;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidBlock;
+import logisticspipes.config.Configs;
 import logisticspipes.items.ItemModule;
+import logisticspipes.items.ItemPipeComponents;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.interfaces.ICraftingParts;
@@ -110,149 +112,230 @@ public class IC2Proxy implements IIC2Proxy {
 	 */
 	@Override
 	public void addCraftingRecipes(ICraftingParts parts) {
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICBUFFER), new Object[] { 
-			"CGC", 
-			"rBr", 
-			"CrC", 
-			Character.valueOf('C'), IC2Items.getItem("advancedCircuit"),
-			Character.valueOf('G'), parts.getGearTear2(),
-			Character.valueOf('r'), Items.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-		});
-		
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICBUFFER), new Object[] { 
-			" G ", 
-			"rBr", 
-			"CrC", 
-			Character.valueOf('C'), IC2Items.getItem("advancedCircuit"),
-			Character.valueOf('G'), parts.getChipTear2(),
-			Character.valueOf('r'), Items.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-		});
-
-
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
-			"CGD", 
-			"rBr", 
-			"DrC", 
-			Character.valueOf('C'), IC2Items.getItem("electronicCircuit"),
-			Character.valueOf('D'), IC2Items.getItem("reBattery"),
-			Character.valueOf('G'), parts.getGearTear2(),
-			Character.valueOf('r'), Items.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-		});
-		
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
-			"CGD", 
-			"rBr", 
-			"DrC", 
-			Character.valueOf('C'), IC2Items.getItem("electronicCircuit"),
-			Character.valueOf('D'), IC2Items.getItem("chargedReBattery"),
-			Character.valueOf('G'), parts.getGearTear2(),
-			Character.valueOf('r'), Items.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-		});
-		
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
-			"CGc", 
-			"rBr", 
-			"DrC", 
-			Character.valueOf('C'), IC2Items.getItem("electronicCircuit"),
-			Character.valueOf('c'), IC2Items.getItem("reBattery"),
-			Character.valueOf('D'), IC2Items.getItem("chargedReBattery"),
-			Character.valueOf('G'), parts.getGearTear2(),
-			Character.valueOf('r'), Items.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-		});
-		
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
-			"CGc", 
-			"rBr", 
-			"DrC", 
-			Character.valueOf('C'), IC2Items.getItem("electronicCircuit"),
-			Character.valueOf('c'), IC2Items.getItem("chargedReBattery"),
-			Character.valueOf('D'), IC2Items.getItem("reBattery"),
-			Character.valueOf('G'), parts.getGearTear2(),
-			Character.valueOf('r'), Items.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-		});
-
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
-			" G ", 
-			"rBr", 
-			"DrC", 
-			Character.valueOf('C'), IC2Items.getItem("electronicCircuit"),
-			Character.valueOf('D'), IC2Items.getItem("reBattery"),
-			Character.valueOf('G'), parts.getChipTear2(),
-			Character.valueOf('r'), Items.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-		});
-		
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
-			" G ", 
-			"rBr", 
-			"DrC", 
-			Character.valueOf('C'), IC2Items.getItem("electronicCircuit"),
-			Character.valueOf('D'), IC2Items.getItem("chargedReBattery"),
-			Character.valueOf('G'), parts.getChipTear2(),
-			Character.valueOf('r'), Items.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-		});
-		
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_LV_SUPPLIER), new Object[] { 
-			"PSP", 
-			"OBO", 
-			"PTP", 
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_TRANSPORTATION),
-			Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), 
-			Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), 
-			Character.valueOf('T'), IC2Items.getItem("transformerUpgrade"), 
-			Character.valueOf('P'), Items.paper
-		});
-		
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_MV_SUPPLIER), new Object[] { 
-			"PSP", 
-			"OBO", 
-			"PTP", 
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_LV_SUPPLIER),
-			Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), 
-			Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), 
-			Character.valueOf('T'), IC2Items.getItem("transformerUpgrade"), 
-			Character.valueOf('P'), Items.paper
-		});
-		
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_HV_SUPPLIER), new Object[] { 
-			"PSP", 
-			"OBO", 
-			"PTP", 
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_MV_SUPPLIER),
-			Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), 
-			Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), 
-			Character.valueOf('T'), IC2Items.getItem("transformerUpgrade"), 
-			Character.valueOf('P'), Items.paper
-		});
-		
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_EV_SUPPLIER), new Object[] { 
-			"PSP", 
-			"OBO", 
-			"PTP", 
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_HV_SUPPLIER),
-			Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), 
-			Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), 
-			Character.valueOf('T'), IC2Items.getItem("transformerUpgrade"), 
-			Character.valueOf('P'), Items.paper
-		});
-		
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_IC2_POWERPROVIDER), new Object[] { 
-			"PSP", 
-			"OBO", 
-			"PTP", 
-			Character.valueOf('B'), Blocks.redstone_block,
-			Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), 
-			Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), 
-			Character.valueOf('T'), IC2Items.getItem("transformerUpgrade"), 
-			Character.valueOf('P'), Items.paper
-		});
+		if(!Configs.ENABLE_BETA_RECIPES) {
+			Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICBUFFER), new Object[] { 
+				"CGC", 
+				"rBr", 
+				"CrC", 
+				Character.valueOf('C'), IC2Items.getItem("advancedCircuit"),
+				Character.valueOf('G'), parts.getGearTear2(),
+				Character.valueOf('r'), Items.redstone,
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+			});
+			
+			Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICBUFFER), new Object[] { 
+				" G ", 
+				"rBr", 
+				"CrC", 
+				Character.valueOf('C'), IC2Items.getItem("advancedCircuit"),
+				Character.valueOf('G'), parts.getChipTear2(),
+				Character.valueOf('r'), Items.redstone,
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+			});
+	
+	
+			Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
+				"CGD", 
+				"rBr", 
+				"DrC", 
+				Character.valueOf('C'), IC2Items.getItem("electronicCircuit"),
+				Character.valueOf('D'), IC2Items.getItem("reBattery"),
+				Character.valueOf('G'), parts.getGearTear2(),
+				Character.valueOf('r'), Items.redstone,
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+			});
+			
+			Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
+				"CGD", 
+				"rBr", 
+				"DrC", 
+				Character.valueOf('C'), IC2Items.getItem("electronicCircuit"),
+				Character.valueOf('D'), IC2Items.getItem("chargedReBattery"),
+				Character.valueOf('G'), parts.getGearTear2(),
+				Character.valueOf('r'), Items.redstone,
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+			});
+			
+			Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
+				"CGc", 
+				"rBr", 
+				"DrC", 
+				Character.valueOf('C'), IC2Items.getItem("electronicCircuit"),
+				Character.valueOf('c'), IC2Items.getItem("reBattery"),
+				Character.valueOf('D'), IC2Items.getItem("chargedReBattery"),
+				Character.valueOf('G'), parts.getGearTear2(),
+				Character.valueOf('r'), Items.redstone,
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+			});
+			
+			Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
+				"CGc", 
+				"rBr", 
+				"DrC", 
+				Character.valueOf('C'), IC2Items.getItem("electronicCircuit"),
+				Character.valueOf('c'), IC2Items.getItem("chargedReBattery"),
+				Character.valueOf('D'), IC2Items.getItem("reBattery"),
+				Character.valueOf('G'), parts.getGearTear2(),
+				Character.valueOf('r'), Items.redstone,
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+			});
+	
+			Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
+				" G ", 
+				"rBr", 
+				"DrC", 
+				Character.valueOf('C'), IC2Items.getItem("electronicCircuit"),
+				Character.valueOf('D'), IC2Items.getItem("reBattery"),
+				Character.valueOf('G'), parts.getChipTear2(),
+				Character.valueOf('r'), Items.redstone,
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+			});
+			
+			Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
+				" G ", 
+				"rBr", 
+				"DrC", 
+				Character.valueOf('C'), IC2Items.getItem("electronicCircuit"),
+				Character.valueOf('D'), IC2Items.getItem("chargedReBattery"),
+				Character.valueOf('G'), parts.getChipTear2(),
+				Character.valueOf('r'), Items.redstone,
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+			});
+			
+			Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_LV_SUPPLIER), new Object[] { 
+				"PSP", 
+				"OBO", 
+				"PTP", 
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_TRANSPORTATION),
+				Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), 
+				Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), 
+				Character.valueOf('T'), IC2Items.getItem("transformerUpgrade"), 
+				Character.valueOf('P'), Items.paper
+			});
+			
+			Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_MV_SUPPLIER), new Object[] { 
+				"PSP", 
+				"OBO", 
+				"PTP", 
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_LV_SUPPLIER),
+				Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), 
+				Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), 
+				Character.valueOf('T'), IC2Items.getItem("transformerUpgrade"), 
+				Character.valueOf('P'), Items.paper
+			});
+			
+			Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_HV_SUPPLIER), new Object[] { 
+				"PSP", 
+				"OBO", 
+				"PTP", 
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_MV_SUPPLIER),
+				Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), 
+				Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), 
+				Character.valueOf('T'), IC2Items.getItem("transformerUpgrade"), 
+				Character.valueOf('P'), Items.paper
+			});
+			
+			Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_EV_SUPPLIER), new Object[] { 
+				"PSP", 
+				"OBO", 
+				"PTP", 
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_HV_SUPPLIER),
+				Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), 
+				Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), 
+				Character.valueOf('T'), IC2Items.getItem("transformerUpgrade"), 
+				Character.valueOf('P'), Items.paper
+			});
+			
+			Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_IC2_POWERPROVIDER), new Object[] { 
+				"PSP", 
+				"OBO", 
+				"PTP", 
+				Character.valueOf('B'), Blocks.redstone_block,
+				Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), 
+				Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), 
+				Character.valueOf('T'), IC2Items.getItem("transformerUpgrade"), 
+				Character.valueOf('P'), Items.paper
+			});
+		}
+		if(Configs.ENABLE_BETA_RECIPES) {
+			ItemStack packager = new ItemStack(LogisticsPipes.LogisticsPipeComponents, 1, ItemPipeComponents.ITEM_MICROPACKAGER);
+			
+			Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICBUFFER), new Object[] { 
+				"CGC", 
+				"rBr", 
+				"CrC", 
+				Character.valueOf('C'), IC2Items.getItem("advancedCircuit"),
+				Character.valueOf('G'), packager,
+				Character.valueOf('r'), Items.redstone,
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+			});
+			
+			Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
+				"CGD", 
+				"rBr", 
+				"DrC", 
+				Character.valueOf('C'), IC2Items.getItem("electronicCircuit"),
+				Character.valueOf('D'), IC2Items.getItem("reBattery"),
+				Character.valueOf('G'), packager,
+				Character.valueOf('r'), Items.redstone,
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+			});
+			
+			Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_LV_SUPPLIER), new Object[] { 
+				"PSP", 
+				"OBO", 
+				"PTP", 
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_TRANSPORTATION),
+				Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), 
+				Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), 
+				Character.valueOf('T'), IC2Items.getItem("transformerUpgrade"), 
+				Character.valueOf('P'), Items.paper
+			});
+			
+			Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_MV_SUPPLIER), new Object[] { 
+				"PSP", 
+				"OBO", 
+				"PTP", 
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_LV_SUPPLIER),
+				Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), 
+				Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), 
+				Character.valueOf('T'), IC2Items.getItem("transformerUpgrade"), 
+				Character.valueOf('P'), Items.paper
+			});
+			
+			Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_HV_SUPPLIER), new Object[] { 
+				"PSP", 
+				"OBO", 
+				"PTP", 
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_MV_SUPPLIER),
+				Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), 
+				Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), 
+				Character.valueOf('T'), IC2Items.getItem("transformerUpgrade"), 
+				Character.valueOf('P'), Items.paper
+			});
+			
+			Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_EV_SUPPLIER), new Object[] { 
+				"PSP", 
+				"OBO", 
+				"PTP", 
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_HV_SUPPLIER),
+				Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), 
+				Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), 
+				Character.valueOf('T'), IC2Items.getItem("transformerUpgrade"), 
+				Character.valueOf('P'), Items.paper
+			});
+			
+			Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_IC2_POWERPROVIDER), new Object[] { 
+				"PSP", 
+				"OBO", 
+				"PTP", 
+				Character.valueOf('B'), Blocks.redstone_block,
+				Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), 
+				Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), 
+				Character.valueOf('T'), IC2Items.getItem("transformerUpgrade"), 
+				Character.valueOf('P'), Items.paper
+			});
+		}
 	}
 	
 	/**

@@ -32,6 +32,7 @@ public class Configs {
 
 	public static boolean TOOLTIP_INFO = LPConstants.DEBUG;
 	public static boolean MANDATORY_CARPENTER_RECIPES = true;
+	public static boolean ENABLE_BETA_RECIPES = false;
 	public static boolean ENABLE_PARTICLE_FX = true;
 
 	// GuiOrderer Popup setting
@@ -119,10 +120,16 @@ public class Configs {
 						MANDATORY_CARPENTER_RECIPES,
 						"Whether or not the Carpenter is required to craft Forestry related pipes/modules.")
 				.getBoolean(false);
+		ENABLE_BETA_RECIPES = CONFIGURATION
+				.get(Configuration.CATEGORY_GENERAL,
+						"enableBetaRecipes",
+						ENABLE_BETA_RECIPES,
+						"Wether or not the Beta-Recipes for Stuff shall be used for pipes/modules.")
+						.getBoolean(false);
 		ENABLE_PARTICLE_FX = CONFIGURATION.get(Configuration.CATEGORY_GENERAL,
 				"enableParticleFX", ENABLE_PARTICLE_FX,
-				"Whether or not special particles will spawn.").getBoolean(
-				false);
+				"Whether or not special particles will spawn.")
+				.getBoolean(false);
 
 		if(CONFIGURATION.hasKey(CATEGORY_MULTITHREAD, "enabled")) {
 			//ConfigCategory.remove is deprecated, but there's no other way to remove a key-value pair without completely recreating the config...

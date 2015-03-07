@@ -11,11 +11,13 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.AutoCraftingInventory;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.IRequestWatcher;
+import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.block.CraftingSetType;
+import logisticspipes.network.packets.block.RequestRotationPacket;
 import logisticspipes.network.packets.orderer.OrderWatchRemovePacket;
 import logisticspipes.network.packets.orderer.OrdererWatchPacket;
 import logisticspipes.pipefxhandlers.Particles;
@@ -30,7 +32,6 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.CraftingUtil;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.item.DictItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -47,7 +48,7 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements ISimpleInventoryEventHandler, IRequestWatcher, IGuiOpenControler {
+public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements ISimpleInventoryEventHandler, IRequestWatcher, IGuiOpenControler, IRotationProvider {
 
 	public SimpleStackInventory diskInv = new SimpleStackInventory(1, "Disk Slot", 1);
 	public SimpleStackInventory inv = new SimpleStackInventory(27, "Crafting Resources", 64);
@@ -58,6 +59,8 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	private EntityPlayer fake;
 	private int delay = 0;
 	private int tick = 0;
+	private int rotation;
+	private boolean init = false;
 	
 	private PlayerCollectionList localGuiWatcher = new PlayerCollectionList();
 	public Map<Integer, Pair<ItemIdentifierStack, LinkedLogisticsOrderList>> watchedRequests = new HashMap<Integer, Pair<ItemIdentifierStack, LinkedLogisticsOrderList>>();
@@ -91,6 +94,13 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		super.ignoreDisableUpdateEntity();
 		if(tick++ == 5) {
 			this.getWorld().func_147479_m(this.getX(), this.getY(), this.getZ());
+		}
+		if(MainProxy.isClient(this.getWorld())) {
+			if(!init) {
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestRotationPacket.class).setPosX(this.getX()).setPosY(this.getY()).setPosZ(this.getZ()));
+				init = true;
+			}
+			return;
 		}
 		if(MainProxy.isClient(getWorld())) return;
 		if(tick % 2 == 0 && !localGuiWatcher.isEmpty()) {
@@ -184,21 +194,39 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 
 	public IIcon getTextureFor(int l) {
 		ForgeDirection dir = ForgeDirection.getOrientation(l);
-		switch(dir) {
-			case UP:
-				return Textures.LOGISTICS_REQUEST_TABLE[0];
-			case DOWN:
-				return Textures.LOGISTICS_REQUEST_TABLE[1];
-			default:
-				if(this.container.renderState.pipeConnectionMatrix.isConnected(dir)) {
-					if (this.container.renderState.textureMatrix.getTextureIndex(dir) == 1) {
-						return Textures.LOGISTICS_REQUEST_TABLE[2];
+		if(LogisticsPipes.getClientPlayerConfig().isUseNewRenderer()) {
+			switch(dir) {
+				case UP:
+				case DOWN:
+					return Textures.LOGISTICS_REQUEST_TABLE_NEW_EMPTY;
+				default:
+					if(this.container.renderState.pipeConnectionMatrix.isConnected(dir)) {
+						if (this.container.renderState.textureMatrix.getTextureIndex(dir) == 1) {
+							return Textures.LOGISTICS_REQUEST_TABLE_NEW_ROUTED;
+						} else {
+							return Textures.LOGISTICS_REQUEST_TABLE_NEW_UNROUTED;
+						}
 					} else {
-						return Textures.LOGISTICS_REQUEST_TABLE[3];
+						return Textures.LOGISTICS_REQUEST_TABLE_NEW_EMPTY;
 					}
-				} else {
-					return Textures.LOGISTICS_REQUEST_TABLE[4];
-				}
+			}
+		} else {
+			switch(dir) {
+				case UP:
+					return Textures.LOGISTICS_REQUEST_TABLE[0];
+				case DOWN:
+					return Textures.LOGISTICS_REQUEST_TABLE[1];
+				default:
+					if(this.container.renderState.pipeConnectionMatrix.isConnected(dir)) {
+						if (this.container.renderState.textureMatrix.getTextureIndex(dir) == 1) {
+							return Textures.LOGISTICS_REQUEST_TABLE[2];
+						} else {
+							return Textures.LOGISTICS_REQUEST_TABLE[3];
+						}
+					} else {
+						return Textures.LOGISTICS_REQUEST_TABLE[4];
+					}
+			}
 		}
 	}
 
@@ -431,6 +459,7 @@ outer:
 		matrix.readFromNBT(par1nbtTagCompound, "matrix");
 		toSortInv.readFromNBT(par1nbtTagCompound, "toSortInv");
 		diskInv.readFromNBT(par1nbtTagCompound, "diskInv");
+		rotation = par1nbtTagCompound.getInteger("blockRotation");
 		//TODO NPEs on world load
 		//cacheRecipe();
 	}
@@ -442,6 +471,7 @@ outer:
 		matrix.writeToNBT(par1nbtTagCompound, "matrix");
 		toSortInv.writeToNBT(par1nbtTagCompound, "toSortInv");
 		diskInv.writeToNBT(par1nbtTagCompound, "diskInv");
+		par1nbtTagCompound.setInteger("blockRotation", rotation);
 	}
 
 	@Override
@@ -517,5 +547,21 @@ outer:
 
 	public ItemStack getDisk() {
 		return diskInv.getStackInSlot(0);
+	}
+
+	@Override
+	public int getRotation() {
+		return rotation;
+	}
+
+	@Override
+	public void setRotation(int rotation) {
+		this.rotation = rotation;
+	}
+
+	@Override
+	public int getFrontTexture() {
+		//Unused for Pipes
+		return 0;
 	}
 }

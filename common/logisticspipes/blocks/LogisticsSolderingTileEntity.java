@@ -207,6 +207,7 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
+		if(MainProxy.isClient(getWorldObj())) return;
 		hasWork = hasWork();
 		if(hasWork && heat < 100) {
 			boolean usedEnergy = false;

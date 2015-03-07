@@ -1,7 +1,8 @@
 package logisticspipes.renderer.newpipe;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import logisticspipes.LPConstants;
 import logisticspipes.pipes.PipeBlockRequestTable;
@@ -11,10 +12,11 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePluggable;
 import logisticspipes.renderer.IIconProvider;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;
-import logisticspipes.renderer.LogisticsRenderPipe;
+import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer.BlockRotation;
+import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer.CoverSides;
 import logisticspipes.renderer.state.PipeRenderState;
+import logisticspipes.textures.Textures;
 import logisticspipes.utils.tuples.LPPosition;
-import logisticspipes.utils.tuples.Pair;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
@@ -22,10 +24,16 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
 import codechicken.lib.render.CCModel;
+import codechicken.lib.render.CCRenderState;
+import codechicken.lib.render.CCRenderState.IVertexOperation;
 import codechicken.lib.render.uv.IconTransformation;
+import codechicken.lib.vec.Scale;
+import codechicken.lib.vec.Translation;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandler {
+	
+	private Map<BlockRotation, CCModel> requestBlock = null;
 	
 	@Override
 	public void renderInventoryBlock(Block block, int metadata, int modelID, RenderBlocks renderer) {}
@@ -41,11 +49,41 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 			if(LogisticsPipeWorldRenderer.renderPass != 0) return false;
 			IIconProvider icons = pipeTile.getPipeIcons();
 			if (icons == null) return false;
+			if(requestBlock == null || true) {
+				requestBlock = new HashMap<BlockRotation, CCModel>();
+				for(BlockRotation rot:BlockRotation.values()) {
+					requestBlock.put(rot, LogisticsNewSolidBlockWorldRenderer.block.get(rot).copy().apply(new Scale(0.999)).apply(new Translation(0.0005, 0.0005, 0.0005)));
+				}
+			}
+			
 			renderState.currentTexture = icons.getIcon(renderState.textureMatrix.getTextureIndex(ForgeDirection.UNKNOWN));
 			((LogisticsBlockGenericPipe)block).setRenderAllSides();
 			block.setBlockBounds(0, 0, 0, 1, 1, 1);
 			renderer.setRenderBoundsFromBlock(block);
 			renderer.renderStandardBlock(block, x, y, z);
+			
+			CCRenderState.reset();
+			CCRenderState.useNormals = true;
+			CCRenderState.alphaOverride = 0xff;
+			
+			BlockRotation rotation = BlockRotation.getRotation(((PipeBlockRequestTable)pipeTile.pipe).getRotation());
+			
+			int brightness = new LPPosition(x, y, z).getBlock(world).getMixedBrightnessForBlock(world, x, y, z);
+			
+			tess.setColorOpaque_F(1F, 1F, 1F);
+			tess.setBrightness(brightness);
+			
+			IconTransformation icon = new IconTransformation(Textures.LOGISTICS_REQUEST_TABLE_NEW);
+			
+			requestBlock.get(rotation).render(new IVertexOperation[]{new Translation(x, y, z), icon});
+			
+			for(CoverSides side:CoverSides.values()) {
+				if(!pipeTile.renderState.pipeConnectionMatrix.isConnected(side.getDir(rotation))) {
+					LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation).render(new IVertexOperation[]{new Translation(x, y, z), icon});
+					LogisticsNewSolidBlockWorldRenderer.texturePlate_Inner.get(side).get(rotation).render(new IVertexOperation[]{new Translation(x, y, z), icon});
+				}
+			}
+			
 			return true;
 		}
 		

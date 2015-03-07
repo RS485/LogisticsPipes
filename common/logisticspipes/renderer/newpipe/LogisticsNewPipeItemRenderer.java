@@ -1,47 +1,33 @@
 package logisticspipes.renderer.newpipe;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
-import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemLogisticsPipe;
-import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe.Corner;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe.Edge;
-import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe.Mount;
-import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe.Support;
-import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe.Turn_Corner;
+import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer.BlockRotation;
+import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer.CoverSides;
 import logisticspipes.textures.Textures;
-import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
 import codechicken.lib.render.CCModel;
+import codechicken.lib.render.CCRenderState.IVertexOperation;
 import codechicken.lib.render.uv.IconTransformation;
 
 public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 	
 	private final boolean renderAsBlock;
 
-	private static final float PIPE_MIN_POS = 0.25F;
-	private static final float PIPE_MAX_POS = 0.75F;
-	
 	public LogisticsNewPipeItemRenderer(boolean flag) {
 		renderAsBlock = flag;
 	}
@@ -109,41 +95,30 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 	}
 	
 	private void renderBlockItem(RenderBlocks render, ItemStack item, float translateX, float translateY, float translateZ) {
-		Tessellator tessellator = Tessellator.instance;
-
-		Block block = LogisticsPipes.LogisticsPipeBlock;
-		
-		block.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-		block.setBlockBoundsForItemRender();
-		render.setRenderBoundsFromBlock(block);
+		GL11.glPushAttrib(GL11.GL_COLOR_BUFFER_BIT); //don't break other mods' guis when holding a pipe
+		//force transparency
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glEnable(GL11.GL_BLEND);
 
 		GL11.glTranslatef(translateX, translateY, translateZ);
-		tessellator.startDrawingQuads();
-		tessellator.setNormal(0.0F, -1F, 0.0F);
-		render.renderFaceYNeg(block, 0.0D, 0.0D, 0.0D, LogisticsBlockGenericPipe.getRequestTableTextureFromSide(0));
-		tessellator.draw();
-		tessellator.startDrawingQuads();
-		tessellator.setNormal(0.0F, 1.0F, 0.0F);
-		render.renderFaceYPos(block, 0.0D, 0.0D, 0.0D, LogisticsBlockGenericPipe.getRequestTableTextureFromSide(1));
-		tessellator.draw();
-		tessellator.startDrawingQuads();
-		tessellator.setNormal(0.0F, 0.0F, -1F);
-		render.renderFaceZNeg(block, 0.0D, 0.0D, 0.0D, LogisticsBlockGenericPipe.getRequestTableTextureFromSide(2));
-		tessellator.draw();
-		tessellator.startDrawingQuads();
-		tessellator.setNormal(0.0F, 0.0F, 1.0F);
-		render.renderFaceZPos(block, 0.0D, 0.0D, 0.0D, LogisticsBlockGenericPipe.getRequestTableTextureFromSide(3));
-		tessellator.draw();
-		tessellator.startDrawingQuads();
-		tessellator.setNormal(-1F, 0.0F, 0.0F);
-		render.renderFaceXNeg(block, 0.0D, 0.0D, 0.0D, LogisticsBlockGenericPipe.getRequestTableTextureFromSide(4));
-		tessellator.draw();
-		tessellator.startDrawingQuads();
-		tessellator.setNormal(1.0F, 0.0F, 0.0F);
-		render.renderFaceXPos(block, 0.0D, 0.0D, 0.0D, LogisticsBlockGenericPipe.getRequestTableTextureFromSide(5));
-		tessellator.draw();
-		GL11.glTranslatef(0.5F, 0.5F, 0.5F);
+		Block block = LogisticsPipes.LogisticsPipeBlock;
+		Tessellator tess = Tessellator.instance;
+		
+		BlockRotation rotation = BlockRotation.ZERO;
+		
+		tess.startDrawingQuads();
+		
+		IconTransformation icon = new IconTransformation(Textures.LOGISTICS_REQUEST_TABLE_NEW);
+		
+		//Draw
+		LogisticsNewSolidBlockWorldRenderer.block.get(rotation).render(new IVertexOperation[]{icon});
+		for(CoverSides side:CoverSides.values()) {
+			LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation).render(new IVertexOperation[]{icon});
+		}
+		tess.draw();
 		block.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+
+		GL11.glPopAttrib(); // nicely leave the rendering how it was
 	}
 	
 	private void renderItem(RenderBlocks render, ItemStack item, float translateX, float translateY, float translateZ) {
@@ -181,16 +156,32 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
 		switch (type) {
 			case ENTITY:
-				renderItem((RenderBlocks) data[0], item, -0.5f, -0.5f, -0.5f);
+				if(renderAsBlock) {
+					renderItem((RenderBlocks) data[0], item, -0.5f, -0.5f, -0.5f);
+				} else {
+					renderItem((RenderBlocks) data[0], item, -0.5f, -0.5f, -0.5f);
+				}
 				break;
 			case EQUIPPED:
-				renderItem((RenderBlocks) data[0], item, -0.4f, 0.50f, 0.35f);
+				if(renderAsBlock) {
+					renderItem((RenderBlocks) data[0], item, 0f, 0f, 0f);
+				} else {
+					renderItem((RenderBlocks) data[0], item, -0.4f, 0.50f, 0.35f);
+				}
 				break;
 			case EQUIPPED_FIRST_PERSON:
-				renderItem((RenderBlocks) data[0], item, -0.4f, 0.50f, 0.35f);
+				if(renderAsBlock) {
+					renderItem((RenderBlocks) data[0], item, 0f, 0.0f, 0.0f);
+				} else {
+					renderItem((RenderBlocks) data[0], item, -0.4f, 0.50f, 0.35f);
+				}
 				break;
 			case INVENTORY:
-				renderItem((RenderBlocks) data[0], item, -0.5f, -0.5f, -0.5f);
+				if(renderAsBlock) {
+					renderItem((RenderBlocks) data[0], item, -0.5f, -0.5f, -0.5f);
+				} else {
+					renderItem((RenderBlocks) data[0], item, -0.5f, -0.5f, -0.5f);
+				}
 				break;
 			default:
 		}

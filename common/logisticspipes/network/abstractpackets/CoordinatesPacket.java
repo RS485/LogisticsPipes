@@ -95,7 +95,45 @@ public abstract class CoordinatesPacket extends ModernPacket {
 		}
 		return (T) tile;
 	}
+	
+	@SuppressWarnings("unchecked")
+	/**
+	 * Retrieves tileEntity or CoreUnroutedPipe at packet coordinates if any.
+	 * 
+	 * @param world
+	 * @param clazz
+	 * @return TileEntity
+	 */
+	public <T> T getTileOrPipe(World world, Class<T> clazz) {
+		if (world == null) {
+			targetNotFound("World was null");
+			return null;
+		}
+		if (!world.blockExists(getPosX(), getPosY(), getPosZ())) {
+			targetNotFound("Couldn't find " + clazz.getName());
+			return null;
+		}
 
+		final TileEntity tile = world.getTileEntity(getPosX(), getPosY(), getPosZ());
+		if(tile != null) {
+			if(clazz.isAssignableFrom(tile.getClass())) {
+				return (T) tile;
+			}
+			if(tile instanceof LogisticsTileGenericPipe) {
+				if(((LogisticsTileGenericPipe)tile).pipe != null && clazz.isAssignableFrom(((LogisticsTileGenericPipe)tile).pipe.getClass())) {
+					return (T) ((LogisticsTileGenericPipe)tile).pipe;
+				}
+				targetNotFound("Couldn't find " + clazz.getName() + ", found pipe with " + tile.getClass());
+				return null;
+			}
+		} else {
+			targetNotFound("Couldn't find " + clazz.getName());
+			return null;
+		}
+		targetNotFound("Couldn't find " + clazz.getName() + ", found " + tile.getClass());
+		return null;
+	}
+	
 	/**
 	 * Retrieves pipe at packet coordinates if any.
 	 * 

@@ -22,6 +22,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -39,7 +40,18 @@ public class LogisticsSolidBlock extends BlockContainer {
 	public static final int LOGISTICS_IC2_POWERPROVIDER = 12;
 	
 	private static final IIcon[] icons = new IIcon[18];
-	
+	private static final IIcon[] newTextures = new IIcon[10];
+
+	@Override
+	public boolean isOpaqueCube() {
+		return false;
+	}
+
+	@Override
+	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
+		return true;
+	}
+
 	public LogisticsSolidBlock() {
 		super(Material.iron);
 		this.setCreativeTab(CreativeTabs.tabBlock);
@@ -182,6 +194,16 @@ public class LogisticsSolidBlock extends BlockContainer {
 		for(int i=0;i<icons.length;i++) {
 			icons[i]=par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/"+i);
 		}
+		newTextures[0] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/baseTexture"); // Base
+		newTextures[1] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/solderTexture"); // SOLDERING_STATION
+		newTextures[9] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/solderTexture_active"); // SOLDERING_STATION Active
+		newTextures[2] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/powerTexture"); // LOGISTICS_POWER_JUNCTION
+		newTextures[3] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/securityTexture"); // LOGISTICS_SECURITY_STATION
+		newTextures[4] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/craftingTexture"); // LOGISTICS_AUTOCRAFTING_TABLE
+		newTextures[5] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/fuzzycraftingTexture"); // LOGISTICS_FUZZYCRAFTING_TABLE
+		newTextures[6] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/statisticsTexture"); // LOGISTICS_STATISTICS_TABLE
+		newTextures[7] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/powerRFTexture"); // LOGISTICS_RF_POWERPROVIDER
+		newTextures[8] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/powerIC2Texture"); // LOGISTICS_IC2_POWERPROVIDER
 	}
 	
 	private IIcon getRotatedTexture(int meta, int side, int rotation, int front) {
@@ -305,5 +327,41 @@ public class LogisticsSolidBlock extends BlockContainer {
 		default:
 			return icons[0];
 		}
+	}
+	
+	public static IIcon getNewIcon(IBlockAccess access, int x, int y, int z) {
+		int meta = access.getBlockMetadata(x, y, z);
+		if(meta == SOLDERING_STATION) {
+			TileEntity tile = access.getTileEntity(x, y, z);
+			if(tile instanceof IRotationProvider) {
+				if(((IRotationProvider)tile).getFrontTexture() == 3) {
+					return newTextures[9];
+				}
+			}
+		}
+		return getNewIcon(meta);
+	}
+
+	public static IIcon getNewIcon(int meta) {
+		switch (meta) {
+			case SOLDERING_STATION:
+				return newTextures[1];
+			case LOGISTICS_POWER_JUNCTION:
+				return newTextures[2];
+			case LOGISTICS_SECURITY_STATION:
+				return newTextures[3];
+			case LOGISTICS_AUTOCRAFTING_TABLE:
+				return newTextures[4];
+			case LOGISTICS_FUZZYCRAFTING_TABLE:
+				return newTextures[5];
+			case LOGISTICS_STATISTICS_TABLE:
+				return newTextures[6];
+			case LOGISTICS_RF_POWERPROVIDER:
+				return newTextures[7];
+			case LOGISTICS_IC2_POWERPROVIDER:
+				return newTextures[8];
+			default:
+				return newTextures[0];
+			}
 	}
 }

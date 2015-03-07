@@ -22,11 +22,14 @@ public class ClassTravelingItemHandler {
 		boolean noChecksumMatch = false;
 		String sumHandleEvent1 = ASMHelper.getCheckSumForMethod(reader, "toNBT", "(Lnet/minecraft/nbt/NBTTagCompound;)V");
 		String sumHandleEvent2 = ASMHelper.getCheckSumForMethod(reader, "<init>", "(Lnet/minecraft/nbt/NBTTagCompound;)V");
-		if(!"093EBF1B662D30236BFAA7ACB99A28F8892129D8".equals(sumHandleEvent1) && !"A08A65438C985EC67BFF98B2799825CCB68A2DD4".equals(sumHandleEvent1)) noChecksumMatch = true;
-		if(!"A445D208BF7DAC96EE833588CB2DE73A641689EF".equals(sumHandleEvent2) && !"D75E0B54783F85E1794826B2B26F700254CF90C6".equals(sumHandleEvent2)) noChecksumMatch = true;
+		String sumHandleEvent3 = ASMHelper.getCheckSumForMethod(reader, "writePacket", "(Lcofh/core/network/PacketCoFHBase;)V");
+		if(!"32EE544498CBD0F3FF0B9ACB92D2B3A08BDAB8D7".equals(sumHandleEvent1) && !"0D19759D08F6CDE773BDF4B6B6A99AADD8DE765F".equals(sumHandleEvent1)) noChecksumMatch = true;
+		if(!"1B8743B2E8AB2804A8605B8165E30F75AF531B3B".equals(sumHandleEvent2) && !"8FD4C845CA8BCA11DB79968D61C47BC3789F1410".equals(sumHandleEvent2)) noChecksumMatch = true;
+		if(!"C7204D0FD96CE512F34AAA64466CE67CAD477514".equals(sumHandleEvent3)) noChecksumMatch = true;
 		if(noChecksumMatch) {
 			System.out.println("toNBT: " + sumHandleEvent1);
 			System.out.println("<init>: " + sumHandleEvent2);
+			System.out.println("writePacket: " + sumHandleEvent3);
 			new UnsupportedOperationException("This LP version isn't compatible with the installed TD version.").printStackTrace();
 			FMLCommonHandler.instance().exitJava(1, true);
 		}
@@ -69,7 +72,20 @@ public class ClassTravelingItemHandler {
 				m.accept(mv);
 				node.methods.set(node.methods.indexOf(m), mv);
 			}
-			
+			if(m.name.equals("writePacket") && m.desc.equals("(Lcofh/core/network/PacketCoFHBase;)V")) {
+				MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+					@Override
+					public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
+						if(opcode == Opcodes.INVOKEVIRTUAL && "cofh/core/network/PacketCoFHBase".equals(owner) && "addItemStack".equals(name) && "(Lnet/minecraft/item/ItemStack;)Lcofh/core/network/PacketCoFHBase;".equals(desc)) {
+							this.visitVarInsn(Opcodes.ALOAD, 0);
+							this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/td/ThermalDynamicsHooks", "handleItemSendPacket", "(Lnet/minecraft/item/ItemStack;Lcofh/thermaldynamics/ducts/item/TravelingItem;)Lnet/minecraft/item/ItemStack;", false);
+						}
+						super.visitMethodInsn(opcode, owner, name, desc, itf);
+					}
+				};
+				m.accept(mv);
+				node.methods.set(node.methods.indexOf(m), mv);
+			}
 		}
 		
 		ClassWriter writer = new ClassWriter(0/*ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES*/);

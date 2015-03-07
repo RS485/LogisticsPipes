@@ -1,10 +1,16 @@
 package logisticspipes.proxy.td;
 
+import java.util.ArrayList;
+
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
+import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.tuples.Pair;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -26,16 +32,31 @@ public class LPItemDuct extends TileItemDuct {
 
 	@Override
 	public RouteInfo canRouteItem(ItemStack arg0) {
+		if(arg0 != null) {
+			if(pipe.pipe.isRoutedPipe()) {
+				if(SimpleServiceLocator.logisticsManager.hasDestination(ItemIdentifier.get(arg0), true, ((CoreRoutedPipe)pipe.pipe).getRouterId(), new ArrayList<Integer>()) != null) {
+					return new RouteInfo(0, (byte) dir.getOpposite().ordinal());
+				}
+			}
+		}
 		return noRoute;
 	}
 
 	@Override
 	public void transferItem(TravelingItem item) {
 		ItemRoutingInformation info = (ItemRoutingInformation) item.lpRoutingInformation;
-		info.setItem(ItemIdentifierStack.getFromStack(item.stack));
-		LPTravelingItemServer lpItem = new LPTravelingItemServer(info);
-		lpItem.setSpeed(info._transportMode == TransportMode.Active ? 0.3F : 0.2F);
-		pipe.pipe.transport.injectItem(lpItem, ForgeDirection.getOrientation(item.direction));
+		if(info != null) {
+			info.setItem(ItemIdentifierStack.getFromStack(item.stack));
+			LPTravelingItemServer lpItem = new LPTravelingItemServer(info);
+			lpItem.setSpeed(info._transportMode == TransportMode.Active ? 0.3F : 0.2F);
+			pipe.pipe.transport.injectItem(lpItem, ForgeDirection.getOrientation(item.direction));
+		} else if(item.stack != null) {
+			int consumed = pipe.injectItem(item.stack, true, dir);
+			item.stack.stackSize -= consumed;
+			if(item.stack.stackSize > 0) {
+				pipe.pipe.transport._itemBuffer.add(new Pair<ItemIdentifierStack, Pair<Integer, Integer>>(ItemIdentifierStack.getFromStack(item.stack), new Pair<Integer, Integer>(20 * 2, 0)));				
+			}
+		}
 	}
 
 	@Override

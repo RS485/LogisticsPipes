@@ -553,19 +553,19 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		return container.isPipeConnected(o);
 	}
 	
-	@Override
-	@ModDependentMethod(modId="BuildCraft|Transport")
+	//@Override
+	//@ModDependentMethod(modId="BuildCraft|Transport")
 	public int injectItem(ItemStack payload, boolean doAdd, ForgeDirection from) {
 		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport != null && isPipeConnected(from)) {
 			if (doAdd && MainProxy.isServer(this.getWorldObj())) {
-				ItemStack consumedStack = payload.copy();
+				ItemStack leftStack = payload.copy();
 				int lastIterLeft;
 				do {
-					lastIterLeft = consumedStack.stackSize;
-					LPTravelingItem.LPTravelingItemServer travelingItem = SimpleServiceLocator.routedItemHelper.createNewTravelItem(consumedStack);
-					consumedStack.stackSize = pipe.transport.injectItem(travelingItem, from.getOpposite());
-				} while(consumedStack.stackSize != lastIterLeft && consumedStack.stackSize != 0);
-				return consumedStack.stackSize;
+					lastIterLeft = leftStack.stackSize;
+					LPTravelingItem.LPTravelingItemServer travelingItem = SimpleServiceLocator.routedItemHelper.createNewTravelItem(leftStack);
+					leftStack.stackSize = pipe.transport.injectItem(travelingItem, from.getOpposite());
+				} while(leftStack.stackSize != lastIterLeft && leftStack.stackSize != 0);
+				return payload.stackSize - leftStack.stackSize;
 			}
 		}
 		return 0;

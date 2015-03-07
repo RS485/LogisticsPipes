@@ -21,8 +21,8 @@ public class ClassTileMultiBlockHandler {
 		boolean noChecksumMatch = false;
 		String sumHandleEvent1 = ASMHelper.getCheckSumForMethod(reader, "getAdjTileEntitySafe", "(I)Lnet/minecraft/tileentity/TileEntity;");
 		String sumHandleEvent2 = ASMHelper.getCheckSumForMethod(reader, "getConnectedSide", "(B)Lcofh/thermaldynamics/multiblock/IMultiBlock;");
-		if(!"81F531AAAC7AC9CD38CDB49C8EDA994E13A1115A".equals(sumHandleEvent1) && !"3DE0E5DD8E9440EB02475A8CB32C1B3409AA02E9".equals(sumHandleEvent1)) noChecksumMatch = true;
-		if(!"4C27D2EFAA3F5647ED61D72510E959DE9AFBB98E".equals(sumHandleEvent2)) noChecksumMatch = true;
+		if(!"BB668C42E20853AB00C7028E3513E1EE1AC3993F".equals(sumHandleEvent1) && !"3DE0E5DD8E9440EB02475A8CB32C1B3409AA02E9".equals(sumHandleEvent1)) noChecksumMatch = true;
+		if(!"4EE8022AB118A7B07590CC98C4AAF340382A57C9".equals(sumHandleEvent2)) noChecksumMatch = true; // Make sure it is the corrected method
 		if(noChecksumMatch) {
 			System.out.println("getAdjTileEntitySafe: " + sumHandleEvent1);
 			System.out.println("getConnectedSide: " + sumHandleEvent2);
@@ -47,21 +47,6 @@ public class ClassTileMultiBlockHandler {
 							this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/td/ThermalDynamicsHooks", "checkGetTileEntity", "(Lnet/minecraft/tileentity/TileEntity;ILcofh/thermaldynamics/block/TileMultiBlock;)Lnet/minecraft/tileentity/TileEntity;", false);
 						}
 						super.visitInsn(opcode);
-					}
-				};
-				m.accept(mv);
-				node.methods.set(node.methods.indexOf(m), mv);
-			}
-			if(m.name.equals("getConnectedSide") && m.desc.equals("(B)Lcofh/thermaldynamics/multiblock/IMultiBlock;")) {
-				MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
-					@Override
-					public void visitTypeInsn(int opcode, String type) {
-						if(opcode == Opcodes.CHECKCAST) {
-							this.visitVarInsn(Opcodes.ILOAD, 1);
-							this.visitVarInsn(Opcodes.ALOAD, 0);
-							this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/td/ThermalDynamicsHooks", "checkGetTileEntity", "(Lnet/minecraft/tileentity/TileEntity;BLcofh/thermaldynamics/block/TileMultiBlock;)Lnet/minecraft/tileentity/TileEntity;", false);
-						}
-						super.visitTypeInsn(opcode, type);
 					}
 				};
 				m.accept(mv);

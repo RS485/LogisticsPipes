@@ -3,6 +3,7 @@ package logisticspipes.asm.td;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.routing.ItemRoutingInformation;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -21,15 +22,13 @@ public class ThermalDynamicsHooks {
 		}
 		return tile;
 	}
-	
-	public static TileEntity checkGetTileEntity(TileEntity tile, byte side, TileMultiBlock source) {
-		return ThermalDynamicsHooks.checkGetTileEntity(tile, (int) side, source);
-	}
 
 	public static void travelingItemToNBT(TravelingItem travelingItem, NBTTagCompound paramNBTTagCompound) {
-		NBTTagCompound save = new NBTTagCompound();
-		((ItemRoutingInformation)travelingItem.lpRoutingInformation).writeToNBT(save);
-		paramNBTTagCompound.setTag("LPRoutingInformation", save);
+		if(travelingItem.lpRoutingInformation != null) {
+			NBTTagCompound save = new NBTTagCompound();
+			((ItemRoutingInformation)travelingItem.lpRoutingInformation).writeToNBT(save);
+			paramNBTTagCompound.setTag("LPRoutingInformation", save);
+		}
 	}
 
 	public static void travelingItemNBTContructor(TravelingItem travelingItem, NBTTagCompound paramNBTTagCompound) {
@@ -40,8 +39,23 @@ public class ThermalDynamicsHooks {
 
 	public static void renderItemTransportBox(TravelingItem item) {
 		if(!LogisticsRenderPipe.config.isUseNewRenderer()) return;
-		double scale = 0.65 / 0.6;
-		LogisticsRenderPipe.boxRenderer.doRenderItem(null, 10, 0, 0, 0, scale);
+		if(item.stack.hasTagCompound()) {
+			if(item.stack.getTagCompound().getString("LogsitcsPipes_ITEM_ON_TRANSPORTATION").equals("YES")) {
+				double scale = 0.65 / 0.6;
+				LogisticsRenderPipe.boxRenderer.doRenderItem(null, 10, 0, 0, 0, scale);
+			}
+		}
 	}
 	
+	public static ItemStack handleItemSendPacket(ItemStack stack, TravelingItem item) {
+		if(item.stack == null) return null;
+		if(item.lpRoutingInformation != null) {
+			stack = stack.copy();
+			if(!stack.hasTagCompound()) {
+				stack.setTagCompound(new NBTTagCompound());
+			}
+			stack.getTagCompound().setString("LogsitcsPipes_ITEM_ON_TRANSPORTATION", "YES");
+		}
+		return stack;
+	}
 }

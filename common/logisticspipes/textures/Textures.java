@@ -93,8 +93,12 @@ public class Textures {
 	public static TextureType LOGISTICSPIPE_OPAQUE_TEXTURE					= empty;
 	
 	public static SmallTextureType LOGISTICSPIPE_BASIC_TRANSPORT_TEXTURE	= smallEmpty;
-	
+
 	public static IIcon LOGISTICS_REQUEST_TABLE[]							= new IIcon[0];
+	public static IIcon LOGISTICS_REQUEST_TABLE_NEW							= null;
+	public static IIcon LOGISTICS_REQUEST_TABLE_NEW_ROUTED					= null;
+	public static IIcon LOGISTICS_REQUEST_TABLE_NEW_UNROUTED				= null;
+	public static IIcon LOGISTICS_REQUEST_TABLE_NEW_EMPTY					= null;
 	
 	public static int LOGISTICSPIPE_LIQUID_CONNECTOR						= 0;
 	public static IIcon LOGISTICSACTIONTRIGGERS_DISABLED ;
@@ -249,6 +253,10 @@ public class Textures {
 			for(int i = 0;i < 5;i++) {
 				LOGISTICS_REQUEST_TABLE[i] = par1IIconRegister.registerIcon("logisticspipes:requesttable/"+i);
 			}
+			LOGISTICS_REQUEST_TABLE_NEW = par1IIconRegister.registerIcon("logisticspipes:requesttable/requestTexture");
+			LOGISTICS_REQUEST_TABLE_NEW_ROUTED = par1IIconRegister.registerIcon("logisticspipes:requesttable/routed");
+			LOGISTICS_REQUEST_TABLE_NEW_UNROUTED = par1IIconRegister.registerIcon("logisticspipes:requesttable/unrouted");
+			LOGISTICS_REQUEST_TABLE_NEW_EMPTY = par1IIconRegister.registerIcon("logisticspipes:empty");
 		}
 		
 		if(LPConstants.DEBUG) {

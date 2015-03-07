@@ -12,6 +12,7 @@ import buildcraft.transport.gates.GatePluggable;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
+import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.proxy.MainProxy;
@@ -20,6 +21,7 @@ import logisticspipes.proxy.buildcraft.subproxies.IBCClickResult;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePluggable;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
+import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer;
 import logisticspipes.textures.Textures;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.MatrixTranformations;
@@ -693,6 +695,26 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 		if (isValid(pipe)) {
 			pipe.onBlockPlacedBy(placer);
+			if(pipe instanceof IRotationProvider) {
+				double xPos = pipe.getX() + 0.5 - placer.posX;
+				double zPos = pipe.getZ() + 0.5 - placer.posZ;
+				double w = Math.atan2(xPos, zPos);
+				double halfPI = Math.PI / 2;
+				double halfhalfPI = halfPI / 2;
+				w -= halfhalfPI;
+				if(w < 0) {
+					w += 2 * Math.PI;
+				}
+				if(0 < w && w <= halfPI) {
+					((IRotationProvider)pipe).setRotation(1);
+				} else if(halfPI < w && w <= 2*halfPI) {
+					((IRotationProvider)pipe).setRotation(2);
+				} else if(2*halfPI < w && w <= 3*halfPI) {
+					((IRotationProvider)pipe).setRotation(0);
+				} else if(3*halfPI < w && w <= 4*halfPI) {
+					((IRotationProvider)pipe).setRotation(3);
+				}
+			}
 		}
 	}
 

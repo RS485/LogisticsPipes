@@ -5,6 +5,7 @@ import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -108,7 +109,7 @@ public class LPPosition extends Triplet<Double, Double, Double> {
 		return new LPPosition(value1, value2, value3);
 	}
 
-	public Block getBlock(World world) {
+	public Block getBlock(IBlockAccess world) {
 		return world.getBlock(getX(), getY(), getZ());
 	}
 }

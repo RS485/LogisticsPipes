@@ -20,7 +20,7 @@ public class RequestRotationPacket extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		IRotationProvider tile = this.getTile(player.worldObj, IRotationProvider.class);
+		IRotationProvider tile = this.getTileOrPipe(player.worldObj, IRotationProvider.class);
 		if(tile != null) {
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(Rotation.class).setInteger(tile.getRotation()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
 		}

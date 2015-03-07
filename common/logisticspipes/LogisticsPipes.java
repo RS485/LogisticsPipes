@@ -411,11 +411,9 @@ public class LogisticsPipes {
 		LogisticsParts.setUnlocalizedName("logisticsParts");
 		GameRegistry.registerItem(LogisticsParts, LogisticsParts.getUnlocalizedName());
 		
-		if(Configs.ENABLE_BETA_RECIPES) {
-			LogisticsPipeComponents = new ItemPipeComponents();
-			LogisticsPipeComponents.setUnlocalizedName("pipeComponents");
-			GameRegistry.registerItem(LogisticsPipeComponents, LogisticsPipeComponents.getUnlocalizedName());
-		}
+		LogisticsPipeComponents = new ItemPipeComponents();
+		LogisticsPipeComponents.setUnlocalizedName("pipeComponents");
+		GameRegistry.registerItem(LogisticsPipeComponents, LogisticsPipeComponents.getUnlocalizedName());
 		
 		SimpleServiceLocator.buildCraftProxy.registerTrigger();
 		

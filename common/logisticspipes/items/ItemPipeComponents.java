@@ -2,6 +2,7 @@ package logisticspipes.items;
 
 import java.util.List;
 
+import logisticspipes.config.Configs;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -66,11 +67,13 @@ public class ItemPipeComponents extends LogisticsItem{
 	@Override
 	public void getSubItems(Item par1, CreativeTabs par2, @SuppressWarnings("rawtypes") List par3)
 	{
-		par3.add(new ItemStack(this, 1, 0));
-		par3.add(new ItemStack(this, 1, 1));
-		par3.add(new ItemStack(this, 1, 2));
-		par3.add(new ItemStack(this, 1, 3));
-		par3.add(new ItemStack(this, 1 ,4));
-		par3.add(new ItemStack(this, 1, 5));
+		if(Configs.ENABLE_BETA_RECIPES) {
+			par3.add(new ItemStack(this, 1, 0));
+			par3.add(new ItemStack(this, 1, 1));
+			par3.add(new ItemStack(this, 1, 2));
+			par3.add(new ItemStack(this, 1, 3));
+			par3.add(new ItemStack(this, 1 ,4));
+			par3.add(new ItemStack(this, 1, 5));
+		}
 	}
 }

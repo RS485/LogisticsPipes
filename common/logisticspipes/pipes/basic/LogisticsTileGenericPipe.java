@@ -417,7 +417,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	@Override
 	public ItemStack insertItem(ForgeDirection dir, ItemStack stack) {
 		int used = injectItem(stack, true, dir);
-		if (used == 0) {
+		if (used == stack.stackSize) {
 			return null;
 		} else {
 			stack = stack.copy();
@@ -565,7 +565,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 					LPTravelingItem.LPTravelingItemServer travelingItem = SimpleServiceLocator.routedItemHelper.createNewTravelItem(leftStack);
 					leftStack.stackSize = pipe.transport.injectItem(travelingItem, from.getOpposite());
 				} while(leftStack.stackSize != lastIterLeft && leftStack.stackSize != 0);
-				return leftStack.stackSize;
+				return payload.stackSize - leftStack.stackSize;
 			}
 		}
 		return 0;

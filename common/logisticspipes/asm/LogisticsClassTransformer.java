@@ -112,10 +112,10 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			if(name.equals("dan200.computercraft.core.lua.LuaJLuaMachine")) {
 				return handleCCLuaJLuaMachine(bytes);
 			}
-			if(name.equals("cofh.thermaldynamics.block.TileMultiBlock")) {
+			if(name.equals("cofh.thermaldynamics.block.TileTDBase")) {
 				return ClassTileMultiBlockHandler.handleTileMultiBlockClass(bytes);
 			}
-			if(name.equals("cofh.thermaldynamics.ducts.item.TravelingItem")) {
+			if(name.equals("cofh.thermaldynamics.duct.item.TravelingItem")) {
 				return ClassTravelingItemHandler.handleTravelingItemClass(bytes);
 			}
 			if(name.equals("cofh.thermaldynamics.render.RenderDuctItems")) {

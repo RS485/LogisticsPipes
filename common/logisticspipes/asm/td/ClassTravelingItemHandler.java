@@ -23,9 +23,9 @@ public class ClassTravelingItemHandler {
 		String sumHandleEvent1 = ASMHelper.getCheckSumForMethod(reader, "toNBT", "(Lnet/minecraft/nbt/NBTTagCompound;)V");
 		String sumHandleEvent2 = ASMHelper.getCheckSumForMethod(reader, "<init>", "(Lnet/minecraft/nbt/NBTTagCompound;)V");
 		String sumHandleEvent3 = ASMHelper.getCheckSumForMethod(reader, "writePacket", "(Lcofh/core/network/PacketCoFHBase;)V");
-		if(!"32EE544498CBD0F3FF0B9ACB92D2B3A08BDAB8D7".equals(sumHandleEvent1) && !"0D19759D08F6CDE773BDF4B6B6A99AADD8DE765F".equals(sumHandleEvent1)) noChecksumMatch = true;
-		if(!"1B8743B2E8AB2804A8605B8165E30F75AF531B3B".equals(sumHandleEvent2) && !"8FD4C845CA8BCA11DB79968D61C47BC3789F1410".equals(sumHandleEvent2)) noChecksumMatch = true;
-		if(!"C7204D0FD96CE512F34AAA64466CE67CAD477514".equals(sumHandleEvent3)) noChecksumMatch = true;
+		if(!"512A30E22A9C24032AAE7CE51271339A4F68D344".equals(sumHandleEvent1) && !"2166AB8FF647A90701787CCCFB4CD1C065BE640D".equals(sumHandleEvent1)) noChecksumMatch = true;
+		if(!"77E58B3B01AF559869F2FCDBD478567E649906B5".equals(sumHandleEvent2) && !"29BF9FE63C7627E88BD6025F2FCED59B8156046C".equals(sumHandleEvent2)) noChecksumMatch = true;
+		if(!"65D7F6A4716118725E3D23F71667B18A8C2ED13D".equals(sumHandleEvent3)) noChecksumMatch = true;
 		if(noChecksumMatch) {
 			System.out.println("toNBT: " + sumHandleEvent1);
 			System.out.println("<init>: " + sumHandleEvent2);
@@ -49,7 +49,7 @@ public class ClassTravelingItemHandler {
 						this.visitLabel(l);
 						this.visitVarInsn(Opcodes.ALOAD, 0);
 						this.visitVarInsn(Opcodes.ALOAD, 1);
-						this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/td/ThermalDynamicsHooks", "travelingItemToNBT", "(Lcofh/thermaldynamics/ducts/item/TravelingItem;Lnet/minecraft/nbt/NBTTagCompound;)V", false);
+						this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/td/ThermalDynamicsHooks", "travelingItemToNBT", "(Lcofh/thermaldynamics/duct/item/TravelingItem;Lnet/minecraft/nbt/NBTTagCompound;)V", false);
 					}
 				};
 				m.accept(mv);
@@ -62,7 +62,7 @@ public class ClassTravelingItemHandler {
 						if(opcode == Opcodes.RETURN) {
 							this.visitVarInsn(Opcodes.ALOAD, 0);
 							this.visitVarInsn(Opcodes.ALOAD, 1);
-							this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/td/ThermalDynamicsHooks", "travelingItemNBTContructor", "(Lcofh/thermaldynamics/ducts/item/TravelingItem;Lnet/minecraft/nbt/NBTTagCompound;)V", false);
+							this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/td/ThermalDynamicsHooks", "travelingItemNBTContructor", "(Lcofh/thermaldynamics/duct/item/TravelingItem;Lnet/minecraft/nbt/NBTTagCompound;)V", false);
 							Label l = new Label();
 							this.visitLabel(l);
 						}
@@ -78,7 +78,7 @@ public class ClassTravelingItemHandler {
 					public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
 						if(opcode == Opcodes.INVOKEVIRTUAL && "cofh/core/network/PacketCoFHBase".equals(owner) && "addItemStack".equals(name) && "(Lnet/minecraft/item/ItemStack;)Lcofh/core/network/PacketCoFHBase;".equals(desc)) {
 							this.visitVarInsn(Opcodes.ALOAD, 0);
-							this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/td/ThermalDynamicsHooks", "handleItemSendPacket", "(Lnet/minecraft/item/ItemStack;Lcofh/thermaldynamics/ducts/item/TravelingItem;)Lnet/minecraft/item/ItemStack;", false);
+							this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/td/ThermalDynamicsHooks", "handleItemSendPacket", "(Lnet/minecraft/item/ItemStack;Lcofh/thermaldynamics/duct/item/TravelingItem;)Lnet/minecraft/item/ItemStack;", false);
 						}
 						super.visitMethodInsn(opcode, owner, name, desc, itf);
 					}

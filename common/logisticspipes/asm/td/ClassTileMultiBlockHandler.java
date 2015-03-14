@@ -21,8 +21,8 @@ public class ClassTileMultiBlockHandler {
 		boolean noChecksumMatch = false;
 		String sumHandleEvent1 = ASMHelper.getCheckSumForMethod(reader, "getAdjTileEntitySafe", "(I)Lnet/minecraft/tileentity/TileEntity;");
 		String sumHandleEvent2 = ASMHelper.getCheckSumForMethod(reader, "getConnectedSide", "(B)Lcofh/thermaldynamics/multiblock/IMultiBlock;");
-		if(!"BB668C42E20853AB00C7028E3513E1EE1AC3993F".equals(sumHandleEvent1) && !"3DE0E5DD8E9440EB02475A8CB32C1B3409AA02E9".equals(sumHandleEvent1)) noChecksumMatch = true;
-		if(!"4EE8022AB118A7B07590CC98C4AAF340382A57C9".equals(sumHandleEvent2)) noChecksumMatch = true; // Make sure it is the corrected method
+		if(!"A77B2F423A03F5546E6B9C8CE5090F830BAE6295".equals(sumHandleEvent1) && !"8CCBC71E3BA6E6392E4579531996A627D3B018E9".equals(sumHandleEvent1)) noChecksumMatch = true;
+		if(!"D33508DD271ECD3ABD6A144DA28A1012F2A45CA4".equals(sumHandleEvent2)) noChecksumMatch = true; // Make sure it is the corrected method
 		if(noChecksumMatch) {
 			System.out.println("getAdjTileEntitySafe: " + sumHandleEvent1);
 			System.out.println("getConnectedSide: " + sumHandleEvent2);
@@ -44,7 +44,7 @@ public class ClassTileMultiBlockHandler {
 						if(opcode == Opcodes.ARETURN) {
 							this.visitVarInsn(Opcodes.ILOAD, 1);
 							this.visitVarInsn(Opcodes.ALOAD, 0);
-							this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/td/ThermalDynamicsHooks", "checkGetTileEntity", "(Lnet/minecraft/tileentity/TileEntity;ILcofh/thermaldynamics/block/TileMultiBlock;)Lnet/minecraft/tileentity/TileEntity;", false);
+							this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/td/ThermalDynamicsHooks", "checkGetTileEntity", "(Lnet/minecraft/tileentity/TileEntity;ILcofh/thermaldynamics/block/TileTDBase;)Lnet/minecraft/tileentity/TileEntity;", false);
 						}
 						super.visitInsn(opcode);
 					}

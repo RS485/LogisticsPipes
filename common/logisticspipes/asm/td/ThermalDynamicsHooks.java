@@ -7,13 +7,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
-import cofh.thermaldynamics.block.TileMultiBlock;
-import cofh.thermaldynamics.ducts.item.TileItemDuct;
-import cofh.thermaldynamics.ducts.item.TravelingItem;
+import cofh.thermaldynamics.block.TileTDBase;
+import cofh.thermaldynamics.duct.item.TileItemDuct;
+import cofh.thermaldynamics.duct.item.TravelingItem;
 
 public class ThermalDynamicsHooks {
 	
-	public static TileEntity checkGetTileEntity(TileEntity tile, int side, TileMultiBlock source) {
+	public static TileEntity checkGetTileEntity(TileEntity tile, int side, TileTDBase source) {
 		if(source instanceof TileItemDuct) {
 			if(tile instanceof LogisticsTileGenericPipe) {
 				LogisticsTileGenericPipe pipe = (LogisticsTileGenericPipe) tile;

@@ -1,4 +1,4 @@
-package cofh.thermaldynamics.ducts.item;
+package cofh.thermaldynamics.duct.item;
 
 import net.minecraft.item.ItemStack;
 import cofh.thermaldynamics.multiblock.IMultiBlock;

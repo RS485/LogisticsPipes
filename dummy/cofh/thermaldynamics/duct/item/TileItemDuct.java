@@ -1,12 +1,12 @@
-package cofh.thermaldynamics.ducts.item;
+package cofh.thermaldynamics.duct.item;
 
 import net.minecraft.item.ItemStack;
-import cofh.thermaldynamics.block.TileMultiBlock;
+import cofh.thermaldynamics.block.TileTDBase;
 import cofh.thermaldynamics.multiblock.IMultiBlock;
 import cofh.thermaldynamics.multiblock.IMultiBlockRoute;
 import cofh.thermaldynamics.multiblock.RouteCache;
 
-public class TileItemDuct extends TileMultiBlock implements IMultiBlockRoute {
+public class TileItemDuct extends TileTDBase implements IMultiBlockRoute {
 	  public static final RouteInfo noRoute = new RouteInfo();
 	  public static class RouteInfo
 	  {
@@ -40,11 +40,11 @@ public class TileItemDuct extends TileMultiBlock implements IMultiBlockRoute {
 		throw new UnsupportedOperationException();
 	}
 	
-	public TileMultiBlock.NeighborTypes getCachedSideType(byte paramByte) {
+	public TileTDBase.NeighborTypes getCachedSideType(byte paramByte) {
 		throw new UnsupportedOperationException();
 	}
 	
-	public TileMultiBlock.ConnectionTypes getConnectionType(byte paramByte) {
+	public TileTDBase.ConnectionTypes getConnectionType(byte paramByte) {
 		throw new UnsupportedOperationException();
 	}
 	

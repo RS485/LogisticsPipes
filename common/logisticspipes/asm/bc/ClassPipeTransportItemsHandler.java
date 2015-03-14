@@ -48,7 +48,7 @@ public class ClassPipeTransportItemsHandler {
 		
 		String sumInjectItem = ASMHelper.getCheckSumForMethod(reader, "injectItem");
 		
-		if(!"956E67FF1103A53C970F22669CF70624DE3D4CF8".equals(sumInjectItem) && !"E7C1D1F202E00935B89B35E7F2A46B97E1FDC6F7".equals(sumInjectItem)) noChecksumMatch = true;
+		if(!"656CFA07E9337AC56FB6C1BA22EBBFAD604D83C0".equals(sumInjectItem) && !"E7C1D1F202E00935B89B35E7F2A46B97E1FDC6F7".equals(sumInjectItem) && !"956E67FF1103A53C970F22669CF70624DE3D4CF8".equals(sumInjectItem)) noChecksumMatch = true;
 
 		if(noChecksumMatch) {
 			System.out.println("injectItem: " + sumInjectItem);

@@ -1,4 +1,4 @@
-package cofh.thermaldynamics.ducts;
+package cofh.thermaldynamics.duct;
 
 public class Duct {
 	  public final int pathWeight;

@@ -14,10 +14,10 @@ import logisticspipes.utils.tuples.Pair;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
-import cofh.thermaldynamics.ducts.Duct;
-import cofh.thermaldynamics.ducts.TDDucts;
-import cofh.thermaldynamics.ducts.item.TileItemDuct;
-import cofh.thermaldynamics.ducts.item.TravelingItem;
+import cofh.thermaldynamics.duct.Duct;
+import cofh.thermaldynamics.duct.TDDucts;
+import cofh.thermaldynamics.duct.item.TileItemDuct;
+import cofh.thermaldynamics.duct.item.TravelingItem;
 import cofh.thermaldynamics.multiblock.IMultiBlock;
 
 public class LPItemDuct extends TileItemDuct {

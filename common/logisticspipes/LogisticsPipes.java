@@ -508,14 +508,14 @@ public class LogisticsPipes {
 		forName("buildcraft.transport.render.FacadeRenderHelper");
 		forName("net.minecraft.crash.CrashReport");
 		forName("dan200.computercraft.core.lua.LuaJLuaMachine");
-		forName("cofh.thermaldynamics.block.TileMultiBlock");
-		forName("cofh.thermaldynamics.ducts.item.TravelingItem");
+		forName("cofh.thermaldynamics.block.TileTDBase");
+		forName("cofh.thermaldynamics.duct.item.TravelingItem");
 		forName("cofh.thermaldynamics.render.RenderDuctItems");
 	}
 
 	private void forName(String string) {
 		try {
-			Class.forName(string);
+ 			Class.forName(string);
 		} catch(Exception e) {}
 	}
 

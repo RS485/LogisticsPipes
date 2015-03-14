@@ -19,8 +19,8 @@ public class ClassRenderDuctItemsHandler {
 		reader.accept(node, 0);
 		
 		boolean noChecksumMatch = false;
-		final String sumHandleEvent = ASMHelper.getCheckSumForMethod(reader, "renderTravelingItems", "(Ljava/util/Iterator;Lcofh/thermaldynamics/ducts/item/TileItemDuct;Lnet/minecraft/world/World;DDDF)V");
-		if(!"51BAD3A9CFD72EE0DC503D1F05CFE22A81D474AE".equals(sumHandleEvent) && !"383BB4F6F5BC5EB226BCA37CD07541EB11FF0755".equals(sumHandleEvent)) noChecksumMatch = true;
+		final String sumHandleEvent = ASMHelper.getCheckSumForMethod(reader, "renderTravelingItems", "(Ljava/util/Iterator;Lcofh/thermaldynamics/duct/item/TileItemDuct;Lnet/minecraft/world/World;DDDF)V");
+		if(!"200CEA4577399EED0689ED20BE6B4D065E1B2E29".equals(sumHandleEvent) && !"2AA29BD8490065CAEB36AE72C3BFD99054DED33E".equals(sumHandleEvent)) noChecksumMatch = true;
 		if(noChecksumMatch) {
 			System.out.println("renderTravelingItems: " + sumHandleEvent);
 			new UnsupportedOperationException("This LP version isn't compatible with the installed TD version.").printStackTrace();
@@ -28,7 +28,7 @@ public class ClassRenderDuctItemsHandler {
 		}
 		
 		for(MethodNode m:node.methods) {
-			if(m.name.equals("renderTravelingItems") && m.desc.equals("(Ljava/util/Iterator;Lcofh/thermaldynamics/ducts/item/TileItemDuct;Lnet/minecraft/world/World;DDDF)V")) {
+			if(m.name.equals("renderTravelingItems") && m.desc.equals("(Ljava/util/Iterator;Lcofh/thermaldynamics/duct/item/TileItemDuct;Lnet/minecraft/world/World;DDDF)V")) {
 				MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
 					
 					@Override
@@ -37,14 +37,14 @@ public class ClassRenderDuctItemsHandler {
 						if(owner.equals("org/lwjgl/opengl/GL11") && name.equals("glScalef") && desc.equals("(FFF)V")) {
 							Label l = new Label();
 							this.visitLabel(l);
-							if("51BAD3A9CFD72EE0DC503D1F05CFE22A81D474AE".equals(sumHandleEvent)) {
+							if("200CEA4577399EED0689ED20BE6B4D065E1B2E29".equals(sumHandleEvent)) {
 								this.visitVarInsn(Opcodes.ALOAD, 12);
-							} else if("383BB4F6F5BC5EB226BCA37CD07541EB11FF0755".equals(sumHandleEvent)) {
+							} else if("2AA29BD8490065CAEB36AE72C3BFD99054DED33E".equals(sumHandleEvent)) {
 								this.visitVarInsn(Opcodes.ALOAD, 11);
 							} else {
 								throw new UnsupportedOperationException();
 							}
-							this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/td/ThermalDynamicsHooks", "renderItemTransportBox", "(Lcofh/thermaldynamics/ducts/item/TravelingItem;)V", false);
+							this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/td/ThermalDynamicsHooks", "renderItemTransportBox", "(Lcofh/thermaldynamics/duct/item/TravelingItem;)V", false);
 						}
 					}
 				};

@@ -18,9 +18,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import cofh.lib.util.helpers.BlockHelper;
-import cofh.thermaldynamics.block.TileMultiBlock;
-import cofh.thermaldynamics.ducts.item.TileItemDuct;
-import cofh.thermaldynamics.ducts.item.TravelingItem;
+import cofh.thermaldynamics.block.TileTDBase;
+import cofh.thermaldynamics.duct.item.TileItemDuct;
+import cofh.thermaldynamics.duct.item.TravelingItem;
 import cofh.thermaldynamics.multiblock.Route;
 
 public class TDDuctInformationProvider implements IPipeInformationProvider {
@@ -113,12 +113,12 @@ public class TDDuctInformationProvider implements IPipeInformationProvider {
 	@Override
 	public boolean canConnect(TileEntity to, ForgeDirection direction, boolean ignoreSystemDisconnect) {
 		TileEntity connection = duct.getAdjTileEntitySafe(direction.ordinal());
-		if(!(connection instanceof TileMultiBlock)) return false;
+		if(!(connection instanceof TileTDBase)) return false;
 		if(duct.isBlockedSide(direction.ordinal())) return false;
 		if(connection instanceof LPItemDuct) {
 			return !((LPItemDuct)connection).isLPBlockedSide(direction.ordinal(), ignoreSystemDisconnect);
 		} else {
-			return !((TileMultiBlock)connection).isBlockedSide(direction.ordinal());
+			return !((TileTDBase)connection).isBlockedSide(direction.ordinal());
 		}
 	}
 	

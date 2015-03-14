@@ -1,11 +1,12 @@
 package cofh.thermaldynamics.block;
 
 import net.minecraft.tileentity.TileEntity;
-import cofh.thermaldynamics.ducts.Duct;
+import net.minecraft.world.World;
+import cofh.thermaldynamics.duct.Duct;
 import cofh.thermaldynamics.multiblock.IMultiBlock;
 import cofh.thermaldynamics.multiblock.MultiBlockGrid;
 
-public class TileMultiBlock extends TileEntity implements IMultiBlock {
+public class TileTDBase extends TileEntity implements IMultiBlock {
 	
 	public static enum NeighborTypes {}
 	

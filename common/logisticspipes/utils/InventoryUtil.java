@@ -95,7 +95,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 		for (int i = _cropStart; i < _inventory.getSizeInventory() - _cropEnd && count>0; i++) {
 			ItemStack stack = _inventory.getStackInSlot(i);
 			if (stack == null || (stack.stackSize == 1 && _hideOnePerStack) || !ItemIdentifier.get(stack).equals(item)) continue;
-			int itemsToSplit = Math.min(count,stack.stackSize-((first && _hideOne || _hideOnePerStack)?1:0));
+			int itemsToSplit = Math.min(count,stack.stackSize-(((first && _hideOne) || _hideOnePerStack)?1:0));
 			first = false;
 			if(itemsToSplit ==0 ) continue;
 			ItemStack removed = null;

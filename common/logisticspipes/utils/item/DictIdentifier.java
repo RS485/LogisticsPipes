@@ -11,7 +11,7 @@ public class DictIdentifier {
 	private static List<DictIdentifier> identifiers = new ArrayList<DictIdentifier>();
 	
 	static DictIdentifier getForId(int id) {
-		if(identifiers.size() < id) {
+		if(identifiers.size() <= id) {
 			ArrayList<DictIdentifier> newidentifiers = new ArrayList<DictIdentifier>(id + 1);
 			while(newidentifiers.size() <= id) {
 				newidentifiers.add(null);

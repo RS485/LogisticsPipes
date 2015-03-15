@@ -104,7 +104,7 @@ public abstract class LPTravelingItem {
 	public abstract ItemIdentifierStack getItemIdentifierStack();
 
 	public boolean isCorrupted() {
-		return false;
+		return getItemIdentifierStack() == null || getItemIdentifierStack().getStackSize() <= 0;
 	}
 	
 	public int getAge() {
@@ -262,10 +262,6 @@ public abstract class LPTravelingItem {
 			} else {
 				return null;
 			}
-		}
-
-		public boolean isCorrupted() {
-			return getItemIdentifierStack() == null || getItemIdentifierStack().getStackSize() <= 0;
 		}
 
 		@Override

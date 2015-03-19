@@ -20,6 +20,7 @@ import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IFilter;
+import logisticspipes.interfaces.routing.IItemSpaceControl;
 import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.items.ItemUpgrade;
@@ -167,7 +168,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
-		return new SinkReply(_sinkReply, spaceFor(item, includeInTransit));
+		return new SinkReply(_sinkReply, spaceFor(item, includeInTransit), areAllOrderesToBuffer() ? BufferMode.DESTINATION_BUFFERED : BufferMode.NONE);
 	}
 
 	protected int spaceFor(ItemIdentifier item, boolean includeInTransit) {
@@ -1042,7 +1043,9 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	public void enabledUpdateEntity() {
 		if(_service.getOrderManager().hasOrders(RequestType.CRAFTING)) {
-			cacheAreAllOrderesToBuffer();
+			if(_service.isNthTick(6)) {
+				cacheAreAllOrderesToBuffer();
+			}
 			if(_service.getOrderManager().isFirstOrderWatched()) {
 				TileEntity tile = lastAccessedCrafter.get();
 				if(tile != null) {
@@ -1189,9 +1192,15 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	public void cacheAreAllOrderesToBuffer() {
 		boolean result = true;
 		for(LogisticsOrder order:_service.getOrderManager()) {
-			SinkReply reply = LogisticsManager.canSink(order.getDestination().getRouter(), null, true, order.getItem().getItem(), null, true, false);
-			if(reply != null && reply.bufferMode != BufferMode.BUFFERED && reply.maxNumberOfItems >= 1) {
+			if(order.getDestination() instanceof IItemSpaceControl) {
+				SinkReply reply = LogisticsManager.canSink(order.getDestination().getRouter(), null, true, order.getItem().getItem(), null, true, false);
+				if(reply != null && reply.bufferMode == BufferMode.NONE && reply.maxNumberOfItems >= 1) {
+					result = false;
+					break;
+				}
+			} else { // No Space control
 				result = false;
+				break;
 			}
 		}
 		cachedAreAllOrderesToBuffer = result;

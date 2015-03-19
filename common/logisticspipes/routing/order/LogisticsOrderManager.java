@@ -92,13 +92,24 @@ public class LogisticsOrderManager implements Iterable<LogisticsOrder> {
 			item.setDistanceTracker(tracker);
 			_orders.getFirst().addDistanceTracker(tracker);
 		}
+		int destination = _orders.getFirst().getRouterId();
 		if(_orders.getFirst().getItem().getStackSize() <= 0) {
 			LogisticsOrder order = _orders.removeFirst();
 			order.setFinished(true);
 			order.setInProgress(false);
-		} else if(defersend) {
-			_orders.add(_orders.removeFirst().setInProgress(false));
-			_orders.getFirst().setInProgress(true);
+		}
+		if(!_orders.isEmpty()) {
+			LogisticsOrder start = _orders.getFirst();
+			if(defersend && destination == start.getRouterId()) {
+				_orders.add(_orders.removeFirst().setInProgress(false));
+				while(start != _orders.getFirst() && destination == _orders.getFirst().getRouterId()) {
+					_orders.add(_orders.removeFirst());
+				}
+				if(start == _orders.getFirst()) {
+					_orders.add(_orders.removeFirst());
+				}
+				_orders.getFirst().setInProgress(true);
+			}
 		}
 		listen();
 	}
@@ -117,7 +128,15 @@ public class LogisticsOrderManager implements Iterable<LogisticsOrder> {
 	}
 	
 	public void deferSend() {
+		int destination = _orders.getFirst().getRouterId();
+		LogisticsOrder start = _orders.getFirst();
 		_orders.add(_orders.removeFirst().setInProgress(false));
+		while(start != _orders.getFirst() && destination == _orders.getFirst().getRouterId()) {
+			_orders.add(_orders.removeFirst());
+		}
+		if(start == _orders.getFirst()) {
+			_orders.add(_orders.removeFirst());
+		}
 		_orders.getFirst().setInProgress(true);
 		listen();
 	}

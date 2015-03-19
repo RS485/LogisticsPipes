@@ -33,12 +33,12 @@ public class ChassiTransportLayer extends TransportLayer{
 			return false;
 		}
 		SinkReply reply = module.sinksItem(item.getItemIdentifierStack().getItem(), -1, 0, true,false);
-		if (reply == null) {
+		if (reply == null || reply.maxNumberOfItems <= 0) {
 			_chassiPipe.notifyOfItemArival(item.getInfo());
 			return false;
 		}
 		
-		if (reply.maxNumberOfItems != 0 && item.getItemIdentifierStack().getStackSize() > reply.maxNumberOfItems){
+		if (reply.maxNumberOfItems > 0 && item.getItemIdentifierStack().getStackSize() > reply.maxNumberOfItems){
 			ForgeDirection o = _chassiPipe.getPointedOrientation();
 			if (o == null || o == ForgeDirection.UNKNOWN) o = ForgeDirection.UP;
 			

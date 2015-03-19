@@ -15,7 +15,7 @@ import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
-public interface ICraftItems extends IProvideItems, IRequestItems, IRequireReliableTransport{
+public interface ICraftItems extends IProvideItems, IItemSpaceControl, IRequireReliableTransport{
 	void registerExtras(LogisticsPromise promise);
 	CraftingTemplate addCrafting(ItemIdentifier toCraft);
 	//void canCraft(LogisticsTransaction transaction);

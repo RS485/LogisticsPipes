@@ -355,6 +355,9 @@ public abstract class LPTravelingItem {
 			LPTravelingItemServer newItem = new LPTravelingItemServer(stackToSend);
 			newItem.setSpeed(getSpeed());
 			newItem.setTransportMode(getTransportMode());
+
+			newItem.setDestination(this.getDestination());
+			newItem.clearDestination();
 			
 			if (this.container instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe)this.container).pipe.transport instanceof PipeTransportLogistics) {
 				((PipeTransportLogistics)((LogisticsTileGenericPipe)this.container).pipe.transport).injectItem((LPTravelingItem)newItem, orientation);

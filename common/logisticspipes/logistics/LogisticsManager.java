@@ -163,11 +163,12 @@ outer:
 		if (excludeSource && sourceRouter !=null) {
 			if(destination.getPipe().sharesInventoryWith(sourceRouter.getPipe())) return null;
 		}
-		if (result== null) {
+		if (result == null) {
 			reply = module.sinksItem(stack, -1, 0, allowDefault,true);
 		} else {
 			reply = module.sinksItem(stack, result.fixedPriority.ordinal(), result.customPriority, allowDefault,true);
 		}
+		if(result != null && result.maxNumberOfItems <= 0) return null;
 		return reply;
 	}
 	

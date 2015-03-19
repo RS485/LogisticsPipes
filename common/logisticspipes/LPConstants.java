@@ -16,4 +16,10 @@ public class LPConstants {
 	public static int	pipeModel = -1;
 	
 	public static final String computerCraftModID = "ComputerCraft@1.7";
+	
+	public static boolean COREMOD_LOADED = false;
+	
+	public static void loadedCoremod() {
+		LPConstants.COREMOD_LOADED = true;
+	}
 }

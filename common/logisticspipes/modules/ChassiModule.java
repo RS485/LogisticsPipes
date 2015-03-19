@@ -55,7 +55,7 @@ public class ChassiModule extends LogisticsGuiModule {
 		for (LogisticsModule module : _modules){
 			if (module != null){
 				SinkReply result = module.sinksItem(item, bestPriority, bestCustomPriority, allowDefault, includeInTransit);
-				if (result != null && result.maxNumberOfItems > 0) {
+				if (result != null && result.maxNumberOfItems >= 0) {
 					bestresult = result;
 					bestPriority = result.fixedPriority.ordinal();
 					bestCustomPriority = result.customPriority;

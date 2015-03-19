@@ -33,7 +33,7 @@ public class ChassiTransportLayer extends TransportLayer{
 			return false;
 		}
 		SinkReply reply = module.sinksItem(item.getItemIdentifierStack().getItem(), -1, 0, true,false);
-		if (reply == null || reply.maxNumberOfItems <= 0) {
+		if (reply == null || reply.maxNumberOfItems < 0) {
 			_chassiPipe.notifyOfItemArival(item.getInfo());
 			return false;
 		}

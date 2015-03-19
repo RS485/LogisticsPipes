@@ -168,7 +168,7 @@ outer:
 		} else {
 			reply = module.sinksItem(stack, result.fixedPriority.ordinal(), result.customPriority, allowDefault,true);
 		}
-		if(result != null && result.maxNumberOfItems <= 0) return null;
+		if(result != null && result.maxNumberOfItems < 0) return null;
 		return reply;
 	}
 	

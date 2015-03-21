@@ -116,9 +116,9 @@ public class TDDuctInformationProvider implements IPipeInformationProvider {
 		if(!(connection instanceof TileTDBase)) return false;
 		if(duct.isBlockedSide(direction.ordinal())) return false;
 		if(connection instanceof LPItemDuct) {
-			return !((LPItemDuct)connection).isLPBlockedSide(direction.ordinal(), ignoreSystemDisconnect);
+			return !((LPItemDuct)connection).isLPBlockedSide(direction.getOpposite().ordinal(), ignoreSystemDisconnect);
 		} else {
-			return !((TileTDBase)connection).isBlockedSide(direction.ordinal());
+			return !((TileTDBase)connection).isBlockedSide(direction.getOpposite().ordinal());
 		}
 	}
 	

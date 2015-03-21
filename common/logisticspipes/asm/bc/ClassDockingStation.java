@@ -22,14 +22,15 @@ public class ClassDockingStation {
 						super.visitCode();
 						Label l0 = new Label();
 						this.visitLabel(l0);
-						this.visitLineNumber(53, l0);
+						this.visitLineNumber(54, l0);
 						this.visitVarInsn(Opcodes.ALOAD, 0);
 						this.visitFieldInsn(Opcodes.GETFIELD, "buildcraft/robots/DockingStation", "pipe", "Lbuildcraft/transport/TileGenericPipe;");
 						Label l1 = new Label();
 						this.visitJumpInsn(Opcodes.IFNONNULL, l1);
 						Label l2 = new Label();
 						this.visitLabel(l2);
-						this.visitLineNumber(54, l2);
+						this.visitLineNumber(55, l2);
+						this.visitVarInsn(Opcodes.ALOAD, 0);
 						this.visitVarInsn(Opcodes.ALOAD, 0);
 						this.visitFieldInsn(Opcodes.GETFIELD, "buildcraft/robots/DockingStation", "world", "Lnet/minecraft/world/World;");
 						this.visitVarInsn(Opcodes.ALOAD, 0);
@@ -41,26 +42,11 @@ public class ClassDockingStation {
 						this.visitVarInsn(Opcodes.ALOAD, 0);
 						this.visitFieldInsn(Opcodes.GETFIELD, "buildcraft/robots/DockingStation", "index", "Lbuildcraft/api/core/BlockIndex;");
 						this.visitFieldInsn(Opcodes.GETFIELD, "buildcraft/api/core/BlockIndex", "z", "I");
-						this.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "net/minecraft/world/World", "getTileEntity", "(III)Lnet/minecraft/tileentity/TileEntity;", false);
-						this.visitVarInsn(Opcodes.ASTORE, 1);
-						Label l3 = new Label();
-						this.visitLabel(l3);
-						this.visitLineNumber(55, l3);
-						this.visitVarInsn(Opcodes.ALOAD, 1);
-						this.visitTypeInsn(Opcodes.INSTANCEOF, "logisticspipes/pipes/basic/LogisticsTileGenericPipe");
-						this.visitJumpInsn(Opcodes.IFEQ, l1);
-						Label l4 = new Label();
-						this.visitLabel(l4);
-						this.visitLineNumber(56, l4);
-						this.visitVarInsn(Opcodes.ALOAD, 0);
-						this.visitVarInsn(Opcodes.ALOAD, 1);
-						this.visitTypeInsn(Opcodes.CHECKCAST, "logisticspipes/pipes/basic/LogisticsTileGenericPipe");
-						this.visitFieldInsn(Opcodes.GETFIELD, "logisticspipes/pipes/basic/LogisticsTileGenericPipe", "tilePart", "Llogisticspipes/proxy/buildcraft/subproxies/IBCTilePart;");
-						this.visitMethodInsn(Opcodes.INVOKEINTERFACE, "logisticspipes/proxy/buildcraft/subproxies/IBCTilePart", "getOriginal", "()Ljava/lang/Object;", true);
+						this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/bc/DockingStationHook", "getPipeForDockingStation", "(Lnet/minecraft/world/World;III)Lnet/minecraft/tileentity/TileEntity;", false);
 						this.visitTypeInsn(Opcodes.CHECKCAST, "buildcraft/transport/TileGenericPipe");
 						this.visitFieldInsn(Opcodes.PUTFIELD, "buildcraft/robots/DockingStation", "pipe", "Lbuildcraft/transport/TileGenericPipe;");
 						this.visitLabel(l1);
-					}					
+					}
 				};
 				m.accept(mv);
 				node.methods.set(node.methods.indexOf(m), mv);

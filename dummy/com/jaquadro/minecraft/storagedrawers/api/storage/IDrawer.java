@@ -45,6 +45,13 @@ public interface IDrawer
     int getMaxCapacity ();
 
     /**
+     * Gets the maximum number of items that could be stored in this drawer if it held the given item.
+     *
+     * @param itemPrototype The item type to query.
+     */
+    int getMaxCapacity (ItemStack itemPrototype);
+
+    /**
      * Gets the number of items that could still be added to this drawer before it is full.
      */
     int getRemainingCapacity ();
@@ -80,6 +87,21 @@ public interface IDrawer
      * A drawer set with an item type and 0 count is not considered empty.
      */
     boolean isEmpty ();
+
+    /**
+     * Gets auxiliary data that has been associated with this drawer.
+     *
+     * @param key The key used to identify the data.
+     * @return An opaque object that was previously stored.
+     */
+    Object getExtendedData (String key);
+
+    /**
+     * Stores auxiliary data with this drawer, mainly for use in integration.
+     * @param key The key to identify the data with.
+     * @param data The data to store.
+     */
+    void setExtendedData (String key, Object data);
 
     void writeToNBT (NBTTagCompound tag);
 

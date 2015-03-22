@@ -128,7 +128,7 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 				continue;
 
 			IDrawer drawer = _drawer.getDrawer(i);
-			if(drawer != null && !drawer.isEmpty()) {
+			if(drawer != null && !drawer.isEmpty() && drawer.getStoredItemCount() > 0) {
 				result.add(ItemIdentifier.get(drawer.getStoredItemPrototype()));
 			}
 		}
@@ -145,11 +145,13 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 			IDrawer drawer = _drawer.getDrawer(i);
 			if(drawer != null && !drawer.isEmpty()) {
 				int count = drawer.getStoredItemCount();
-				ItemIdentifier ident = ItemIdentifier.get(drawer.getStoredItemCopy());
-				if(result.containsKey(ident)) {
-					result.put(ident, result.get(ident) + count);
-				} else {
-					result.put(ident, count);
+				if (count > 0) {
+					ItemIdentifier ident = ItemIdentifier.get(drawer.getStoredItemPrototype());
+					if (result.containsKey(ident)) {
+						result.put(ident, result.get(ident) + count);
+					} else {
+						result.put(ident, count);
+					}
 				}
 			}
 		}

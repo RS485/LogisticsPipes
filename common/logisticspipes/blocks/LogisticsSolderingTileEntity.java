@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.LPConstants;
+import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ICraftingResultHandler;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.IGuiTileEntity;
@@ -211,22 +212,32 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 		hasWork = hasWork();
 		if(hasWork && heat < 100) {
 			boolean usedEnergy = false;
-			for(ForgeDirection dir:ForgeDirection.VALID_DIRECTIONS) {
-				LPPosition pos = new LPPosition(this);
-				pos.moveForward(dir);
-				TileEntity tile = pos.getTileEntity(getWorldObj());
-				if(!(tile instanceof LogisticsTileGenericPipe)) continue;
-				LogisticsTileGenericPipe tPipe = (LogisticsTileGenericPipe) tile;
-				if(!(tPipe.pipe instanceof CoreRoutedPipe)) continue;
-				CoreRoutedPipe pipe = (CoreRoutedPipe) tPipe.pipe;
-				if(pipe.useEnergy(50)) {
+			if(Configs.LOGISTICS_POWER_USAGE_DISABLED) {
+				if(heat < 100) {
 					heat += 5;
-					if(heat > 100) {
-						heat = 100;
+				}
+				if(heat > 100) {
+					heat = 100;
+				}
+				usedEnergy = true;
+			} else {
+				for(ForgeDirection dir:ForgeDirection.VALID_DIRECTIONS) {
+					LPPosition pos = new LPPosition(this);
+					pos.moveForward(dir);
+					TileEntity tile = pos.getTileEntity(getWorldObj());
+					if(!(tile instanceof LogisticsTileGenericPipe)) continue;
+					LogisticsTileGenericPipe tPipe = (LogisticsTileGenericPipe) tile;
+					if(!(tPipe.pipe instanceof CoreRoutedPipe)) continue;
+					CoreRoutedPipe pipe = (CoreRoutedPipe) tPipe.pipe;
+					if(pipe.useEnergy(50)) {
+						heat += 5;
+						if(heat > 100) {
+							heat = 100;
+						}
+						updateHeat();
+						usedEnergy = true;
+						break;
 					}
-					updateHeat();
-					usedEnergy = true;
-					break;
 				}
 			}
 			if(!usedEnergy && getWorldObj().getTotalWorldTime() % 5 == 0) {

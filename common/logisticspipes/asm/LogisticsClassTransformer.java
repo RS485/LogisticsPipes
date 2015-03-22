@@ -8,11 +8,6 @@ import java.util.List;
 import java.util.Set;
 
 import logisticspipes.LPConstants;
-import logisticspipes.asm.bc.ClassDockingStation;
-import logisticspipes.asm.bc.ClassFacadeRenderHelperHandler;
-import logisticspipes.asm.bc.PipeEventBusHandler;
-import logisticspipes.asm.bc.ClassPipeRendererTESRHandler;
-import logisticspipes.asm.bc.ClassPipeTransportItemsHandler;
 import logisticspipes.asm.bc.PipeEventBusHandler;
 import logisticspipes.asm.td.ClassRenderDuctItemsHandler;
 import logisticspipes.asm.td.ClassTileMultiBlockHandler;
@@ -92,20 +87,8 @@ public class LogisticsClassTransformer implements IClassTransformer {
 	
 	private byte[] applyLPTransforms(String name, byte[] bytes) {
 		try {
-			if(name.equals("buildcraft.transport.PipeTransportItems")) {
-				return ClassPipeTransportItemsHandler.handlePipeTransportItems(bytes);
-			}
-			if(name.equals("buildcraft.transport.PipeEventBus")) {
-				return PipeEventBusHandler.handleBCPipeEventBusClass(bytes);
-			}
 			if(name.equals("buildcraft.transport.render.PipeRendererTESR")) {
 				return ClassPipeRendererTESRHandler.handlePipeRendererTESRClass(bytes);
-			}
-			if(name.equals("buildcraft.transport.render.FacadeRenderHelper")) {
-				return ClassFacadeRenderHelperHandler.handleFacadeRenderHelperClass(bytes);
-			}
-			if(name.equals("buildcraft.robots.DockingStation")) {
-				return ClassDockingStation.handleDockingStationClass(bytes);
 			}
 			if(name.equals("net.minecraft.tileentity.TileEntity")) {
 				return handleTileEntityClass(bytes);

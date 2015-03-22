@@ -1,10 +1,17 @@
 package logisticspipes.proxy.specialinventoryhandler;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import com.jaquadro.minecraft.storagedrawers.api.storage.IDrawerGroup;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.ModContainer;
+import cpw.mods.fml.common.versioning.ArtifactVersion;
+import cpw.mods.fml.common.versioning.DefaultArtifactVersion;
+import cpw.mods.fml.common.versioning.InvalidVersionSpecificationException;
+import cpw.mods.fml.common.versioning.VersionRange;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -32,7 +39,22 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public boolean init() {
-		return true;
+		List<ModContainer> modList = Loader.instance().getModList();
+		for (int i = 0, n = modList.size(); i < n; i++) {
+			ModContainer mod = modList.get(i);
+			if (mod.getModId().equals("StorageDrawers")) {
+				try {
+					VersionRange validVersions = VersionRange.createFromVersionSpec("[1.3.4,)");
+					ArtifactVersion version = new DefaultArtifactVersion(mod.getVersion());
+					return validVersions.containsVersion(version);
+				}
+				catch (InvalidVersionSpecificationException e) {
+					return false;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	@Override
@@ -196,6 +218,9 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 					room += drawer.getRemainingCapacity();
 				}
 			}
+
+			if (count != 0 && room >= count)
+				return count;
 		}
 
 		return room;
@@ -260,9 +285,15 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 			return null;
 
 		IDrawer drawer = _drawer.getDrawer(i);
-		if (drawer == null)
+		if (drawer == null || drawer.isEmpty())
 			return null;
 
-		return getMultipleItems(ItemIdentifier.get(drawer.getStoredItemPrototype()), j);
+		int avail = Math.min(j, drawer.getStoredItemCount());
+		drawer.setStoredItemCount(drawer.getStoredItemCount() - avail);
+
+		ItemStack stack = drawer.getStoredItemCopy();
+		stack.stackSize = avail;
+
+		return stack;
 	}
 }

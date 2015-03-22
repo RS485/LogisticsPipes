@@ -246,7 +246,7 @@ public abstract class LPTravelingItem {
 				LPPosition motion = new LPPosition(0, 0, 0);
 				motion.moveForward(exitdirection, getSpeed() * 2F);
 
-				EntityItem entityitem = new EntityItem(worldObj, position.getXD(), position.getYD(), position.getZD(), getItemIdentifierStack().makeNormalStack());
+				EntityItem entityitem = getItemIdentifierStack().makeEntityItem(worldObj, position.getXD(), position.getYD(), position.getZD());
 
 				//entityitem.lifespan = 1200;
 				//entityitem.delayBeforeCanPickup = 10;

@@ -26,6 +26,7 @@ import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.utils.FinalNBTTagCompound;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
@@ -40,6 +41,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.world.World;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
 
@@ -427,6 +429,10 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 			stack.setTagCompound((NBTTagCompound)this.tag.copy());
 		}
 		return stack;
+	}
+	
+	public EntityItem makeEntityItem(int stackSize, World world, double x, double y, double z) {
+		return new EntityItem(world, x, y, z, makeNormalStack(stackSize));
 	}
 	
 	public int getMaxStackSize() {

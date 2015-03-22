@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
 
@@ -17,10 +17,10 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.hud.HUDInvSysConnector;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IOrderManagerContentReceiver;
 import logisticspipes.interfaces.routing.IDirectRoutingConnection;
 import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
@@ -37,12 +37,14 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.TransportInvConnection;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryHelper;
+import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.transactor.ITransactor;
 import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -112,13 +114,14 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		if(!itemsOnRoute.isEmpty()) { // don't check the inventory if you don't want anything
 	
 			WorldUtil wUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
-			for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
+			for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)) {
 				if(tile.tile instanceof IInventory) {
 					IInventory inv = InventoryHelper.getInventory((IInventory) tile.tile);
 					if(inv instanceof net.minecraft.inventory.ISidedInventory) {
 						inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory)inv, tile.orientation.getOpposite(),false);
 					}
-					if(checkOneConnectedInv(inv,tile.orientation)) {
+					IInventoryUtil access = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv, tile.orientation.getOpposite());
+					if(checkOneConnectedInv(access, tile.orientation)) {
 						updateContentListener();
 						break;
 					}
@@ -127,43 +130,51 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		}
 	}
 	
-	private boolean checkOneConnectedInv(IInventory inv, ForgeDirection dir) {
+	private boolean checkOneConnectedInv(IInventoryUtil inv, ForgeDirection dir) {
 		boolean contentchanged = false;
 		if(!itemsOnRoute.isEmpty()) { // don't check the inventory if you don't want anything
-			for(int i=0; i<inv.getSizeInventory();i++) {
-				ItemStack stack = inv.getStackInSlot(i);
-				if(stack != null) {
-					ItemIdentifier ident = ItemIdentifier.get(stack);
-					List<ItemRoutingInformation> needs = itemsOnRoute.get(ident);
-					if(needs!=null) {
-						for (Iterator<ItemRoutingInformation> iterator = needs.iterator(); iterator.hasNext();) {
-							ItemRoutingInformation need = iterator.next();
-							int tosend = Math.min(need.getItem().getStackSize(), stack.stackSize);
-							if(!useEnergy(6)) break;
-							if(tosend < need.getItem().getStackSize()) {
-								// if the stack size is not yet equal to what we put in, wait a bit before sending it on, otherwise we have to split the info
-//								need.getItem().setStackSize(need.getItem().getStackSize() - tosend); // need partially satisfied from this stack
-//								break; // one stack per tick limit?
+			List<ItemIdentifier> items = new ArrayList<ItemIdentifier>(itemsOnRoute.keySet());
+			items.retainAll(inv.getItems());
+			Map<ItemIdentifier, Integer> amounts = null;
+			if(!items.isEmpty()) {
+				amounts = inv.getItemsAndCount();
+			}
+			for(ItemIdentifier ident:items) {
+				int itemAmount = amounts.get(ident);
+				List<ItemRoutingInformation> needs = itemsOnRoute.get(ident);
+				for (Iterator<ItemRoutingInformation> iterator = needs.iterator(); iterator.hasNext();) {
+					ItemRoutingInformation need = iterator.next();
+					if(need.getItem().getStackSize() <= itemAmount) {
+						if(!useEnergy(6)) return contentchanged;
+						ItemStack toSend = inv.getMultipleItems(ident, need.getItem().getStackSize());
+						if(toSend == null) return contentchanged;
+						if(toSend.stackSize != need.getItem().getStackSize()) {
+							if(inv instanceof ITransactor) {
+								((ITransactor)inv).add(toSend, dir.getOpposite(), true);
 							} else {
-								// assert sent == need.getItemStack()
-								ItemStack sent = inv.decrStackSize(i, tosend);
-								sendStack(need,dir); 
-								
-								iterator.remove(); // finished with this need, we sent part of a stack, lets see if anyone where needs the current item type.
-								if(needs.isEmpty()) {
-									itemsOnRoute.remove(ident);
-								}
-								stack = inv.getStackInSlot(i); // update the stack, as we just send some of it.
-								if(stack == null || !ItemIdentifier.get(stack).equals(ident)) { // we have an unstable inventory, get(i) can change after a decrStackSize() call
-									break;
-								}
-								
+								container.getWorldObj().spawnEntityInWorld(ItemIdentifierStack.getFromStack(toSend).makeEntityItem(getWorld(), container.xCoord, container.yCoord, container.zCoord));
 							}
-							contentchanged = true;
+							new UnsupportedOperationException("The extracted amount didn't match the requested one. (" + inv + ")").printStackTrace();
+							return contentchanged;
 						}
-						break;				
+						sendStack(need, dir);
+						
+						iterator.remove(); // finished with this need, we sent part of a stack, lets see if anyone where needs the current item type.
+						contentchanged = true;
+						if(needs.isEmpty()) {
+							itemsOnRoute.remove(ident);
+						}
+						
+						//Refresh Available Items
+						amounts = inv.getItemsAndCount();
+						if(amounts.containsKey(ident)) {
+							itemAmount = amounts.get(ident);
+						} else {
+							itemAmount = 0;
+							break;
+						}
 					}
-				}
+				}	
 			}
 		}
 		return contentchanged;
@@ -174,7 +185,8 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		super.queueRoutedItem(itemToSend, dir);
 		spawnParticle(Particles.OrangeParticle, 4);
 	}
-	
+
+	@SuppressWarnings("deprecation")
 	private UUID getConnectionUUID() {
 		if(inv != null) {
 			if(inv.getStackInSlot(0) != null) {
@@ -187,7 +199,8 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		}
 		return null;
 	}
-	
+
+	@SuppressWarnings("deprecation")
 	private boolean hasConnectionUUID() {
 		if(inv != null) {
 			if(inv.getStackInSlot(0) != null) {
@@ -201,6 +214,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		return false;
 	}
 
+	@SuppressWarnings("deprecation")
 	private void dropFreqCard() {
 		if(inv.getStackInSlot(0) == null) return;
 		EntityItem item = new EntityItem(getWorld(),this.getX(), this.getY(), this.getZ(), inv.getStackInSlot(0));

@@ -507,6 +507,8 @@ public class LogisticsPipes {
 		forName("buildcraft.transport.render.PipeRendererTESR");
 		forName("buildcraft.transport.render.FacadeRenderHelper");
 		forName("net.minecraft.crash.CrashReport");
+		forName("net.minecraft.tileentity.TileEntity");
+		forName("net.minecraft.world.World");
 		forName("dan200.computercraft.core.lua.LuaJLuaMachine");
 		forName("cofh.thermaldynamics.block.TileTDBase");
 		forName("cofh.thermaldynamics.duct.item.TravelingItem");

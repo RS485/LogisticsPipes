@@ -44,4 +44,13 @@ public class SpecialTileConnection {
 			}
 		}
 	}
+
+	public boolean isType(TileEntity tile) {
+		for(ISpecialTileConnection connectionHandler:handler) {
+			if(connectionHandler.isType(tile)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

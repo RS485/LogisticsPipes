@@ -218,5 +218,9 @@ public class TDDuctInformationProvider implements IPipeInformationProvider {
 		}
 		return false;
 	}
-	
+
+	@Override
+	public void refreshTileCacheOnSide(ForgeDirection side) {
+		// Nothing to do here
+	}
 }

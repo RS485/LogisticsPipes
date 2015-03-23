@@ -45,7 +45,6 @@ import logisticspipes.renderer.LogisticsTileRenderController;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.transport.LPTravelingItem;
-import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.TileBuffer;
@@ -1052,5 +1051,13 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void refreshTileCacheOnSide(ForgeDirection side) {
+		TileBuffer[] cache = getTileCache();
+		if (cache != null) {
+			cache[side.ordinal()].refresh();
+		}
 	}
 }

@@ -56,6 +56,10 @@ public class PipeInformaitonManager {
 	}
 
 	public boolean isPipe(TileEntity tile) {
+		return isPipe(tile, true);
+	}
+	
+	public boolean isPipe(TileEntity tile, boolean check) {
 		if(tile == null) return false;
 		if(tile instanceof IPipeInformationProvider) {
 			return true;
@@ -63,7 +67,7 @@ public class PipeInformaitonManager {
 			if(type.isAssignableFrom(tile.getClass())) {
 				try {
 					IPipeInformationProvider provider = infoProvider.get(type).getDeclaredConstructor(type).newInstance(type.cast(tile));
-					if(provider.isCorrect()) {
+					if(!check || provider.isCorrect()) {
 						return true;
 					}
 				} catch(InstantiationException e) {

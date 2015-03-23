@@ -24,6 +24,7 @@ import net.minecraft.launchwrapper.LaunchClassLoader;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
@@ -72,11 +73,11 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			clearNegativeInterfaceCache();
 		}
 		if(bytes == null) return null;
-		if(name.startsWith("logisticspipes.") || name.startsWith("net.minecraft") || LPConstants.DEBUG) {
-			return applyLPTransforms(name, bytes);
+		if(transformedName.startsWith("logisticspipes.") || transformedName.startsWith("net.minecraft") || LPConstants.DEBUG) {
+			return applyLPTransforms(transformedName, bytes);
 		}
 		byte[] tmp = bytes.clone();
-		bytes = applyLPTransforms(name, bytes);
+		bytes = applyLPTransforms(transformedName, bytes);
 		if(!Arrays.equals(bytes, tmp)) {
 			final ClassReader reader = new ClassReader(bytes);
 			final ClassNode node = new ClassNode();
@@ -106,8 +107,11 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			if(name.equals("buildcraft.robots.DockingStation")) {
 				return ClassDockingStation.handleDockingStationClass(bytes);
 			}
-			if(name.equals("net.minecraft.crash.CrashReport")) {
-				return handleCrashReportClass(bytes);
+			if(name.equals("net.minecraft.tileentity.TileEntity")) {
+				return handleTileEntityClass(bytes);
+			}
+			if(name.equals("net.minecraft.world.World")) {
+				return handleWorldClass(bytes);
 			}
 			if(name.equals("dan200.computercraft.core.lua.LuaJLuaMachine")) {
 				return handleCCLuaJLuaMachine(bytes);
@@ -309,48 +313,6 @@ public class LogisticsClassTransformer implements IClassTransformer {
 		node.accept(writer);
 		return writer.toByteArray();
 	}
-	
-	private enum STATE {SEARCHING, INSERTING, DONE};
-
-	private byte[] handleCrashReportClass(byte[] bytes) {
-		final ClassReader reader = new ClassReader(bytes);
-		final ClassNode node = new ClassNode();
-		reader.accept(node, 0);
-		for(MethodNode m:node.methods) {
-			if(m.name.equals("getCompleteReport") || m.name.equals("func_71502_e")) {
-				MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
-					private STATE state = STATE.SEARCHING;
-					
-					@Override
-					public void visitLdcInsn(Object cst) {
-						super.visitLdcInsn(cst);
-						if("\n\n".equals(cst) && state == STATE.SEARCHING) {
-							state = STATE.INSERTING;
-						}
-					}
-					
-					@Override
-					public void visitLabel(Label label) {
-						if(state == STATE.INSERTING) {
-							Label l0 = new Label();
-							super.visitLabel(l0);
-							super.visitVarInsn(Opcodes.ALOAD, 1);
-							super.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/LogisticsASMHookClass", "getCrashReportAddition", "()Ljava/lang/String;");
-							super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;");
-							super.visitInsn(Opcodes.POP);
-							state = STATE.DONE;
-						}
-						super.visitLabel(label);
-					}
-				};
-				m.accept(mv);
-				node.methods.set(node.methods.indexOf(m), mv);
-			}
-		}
-		ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-		node.accept(writer);
-		return writer.toByteArray();
-	}
 
 	private byte[] handleCCLuaJLuaMachine(byte[] bytes) {
 		final ClassReader reader = new ClassReader(bytes);
@@ -414,6 +376,142 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			}
 		}
 		ClassWriter writer = new ClassWriter(0);
+		node.accept(writer);
+		return writer.toByteArray();
+	}
+
+	private byte[] handleTileEntityClass(byte[] bytes) {
+		final ClassReader reader = new ClassReader(bytes);
+		final ClassNode node = new ClassNode();
+		reader.accept(node, 0);
+		node.interfaces.add("logisticspipes/asm/te/ILPTEInformation");
+		node.visitField(Opcodes.ACC_PRIVATE, "informationObjectLogisticsPipes", "Llogisticspipes/asm/te/LPTileEntityObject;", null, null);
+		for(MethodNode m:node.methods) {
+			if(m.name.equals("validate") || m.name.equals("func_145829_t") || (m.name.equals("t") && m.desc.equals("()V"))) {
+				MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+					@Override
+					public void visitCode() {
+						super.visitCode();
+						Label l0 = new Label();
+						this.visitLabel(l0);
+						this.visitVarInsn(Opcodes.ALOAD, 0);
+						this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/LogisticsASMHookClass", "validate", "(Lnet/minecraft/tileentity/TileEntity;)V");
+					}
+				};
+				m.accept(mv);
+				node.methods.set(node.methods.indexOf(m), mv);
+			}
+			if(m.name.equals("invalidate") || m.name.equals("func_145843_s") || (m.name.equals("s") && m.desc.equals("()V"))) {
+				MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+					@Override
+					public void visitCode() {
+						super.visitCode();
+						Label l0 = new Label();
+						this.visitLabel(l0);
+						this.visitVarInsn(Opcodes.ALOAD, 0);
+						this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/LogisticsASMHookClass", "invalidate", "(Lnet/minecraft/tileentity/TileEntity;)V");
+					}
+				};
+				m.accept(mv);
+				node.methods.set(node.methods.indexOf(m), mv);
+			}
+		}
+		MethodVisitor mv;
+		{
+			mv = node.visitMethod(Opcodes.ACC_PUBLIC, "getObject", "()Llogisticspipes/asm/te/LPTileEntityObject;", null, null);
+			mv.visitCode();
+			Label l0 = new Label();
+			mv.visitLabel(l0);
+			mv.visitVarInsn(Opcodes.ALOAD, 0);
+			mv.visitFieldInsn(Opcodes.GETFIELD, "net/minecraft/tileentity/TileEntity", "informationObjectLogisticsPipes", "Llogisticspipes/asm/te/LPTileEntityObject;");
+			mv.visitInsn(Opcodes.ARETURN);
+			Label l1 = new Label();
+			mv.visitLabel(l1);
+			mv.visitMaxs(1, 1);
+			mv.visitEnd();
+		}
+		{
+			mv = node.visitMethod(Opcodes.ACC_PUBLIC, "setObject", "(Llogisticspipes/asm/te/LPTileEntityObject;)V", null, null);
+			mv.visitCode();
+			Label l0 = new Label();
+			mv.visitLabel(l0);
+			mv.visitVarInsn(Opcodes.ALOAD, 0);
+			mv.visitVarInsn(Opcodes.ALOAD, 1);
+			mv.visitFieldInsn(Opcodes.PUTFIELD, "net/minecraft/tileentity/TileEntity", "informationObjectLogisticsPipes", "Llogisticspipes/asm/te/LPTileEntityObject;");
+			Label l1 = new Label();
+			mv.visitLabel(l1);
+			mv.visitInsn(Opcodes.RETURN);
+			Label l2 = new Label();
+			mv.visitLabel(l2);
+			mv.visitMaxs(2, 2);
+			mv.visitEnd();
+		}
+		ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+		node.accept(writer);
+		return writer.toByteArray();
+	}
+
+	private byte[] handleWorldClass(byte[] bytes) {
+		final ClassReader reader = new ClassReader(bytes);
+		final ClassNode node = new ClassNode();
+		reader.accept(node, 0);
+		for(MethodNode m:node.methods) {
+			if(m.name.equals("notifyBlocksOfNeighborChange") || m.name.equals("func_147459_d") || (m.name.equals("d") && m.desc.equals("(IIILaji;)V"))) {
+				MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+					@Override
+					public void visitCode() {
+						super.visitCode();
+						Label l0 = new Label();
+						this.visitLabel(l0);
+						this.visitVarInsn(Opcodes.ALOAD, 0);
+						this.visitVarInsn(Opcodes.ILOAD, 1);
+						this.visitVarInsn(Opcodes.ILOAD, 2);
+						this.visitVarInsn(Opcodes.ILOAD, 3);
+						this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/LogisticsASMHookClass", "notifyBlocksOfNeighborChange_Start", "(Lnet/minecraft/world/World;III)V");
+					}
+
+					@Override
+					public void visitInsn(int opcode) {
+						if(opcode == Opcodes.RETURN) {
+							this.visitVarInsn(Opcodes.ALOAD, 0);
+							this.visitVarInsn(Opcodes.ILOAD, 1);
+							this.visitVarInsn(Opcodes.ILOAD, 2);
+							this.visitVarInsn(Opcodes.ILOAD, 3);
+							this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/LogisticsASMHookClass", "notifyBlocksOfNeighborChange_Stop", "(Lnet/minecraft/world/World;III)V");
+							Label l0 = new Label();
+							this.visitLabel(l0);
+						}
+						super.visitInsn(opcode);
+					}
+					
+					
+				};
+				m.accept(mv);
+				node.methods.set(node.methods.indexOf(m), mv);
+			}
+			if(m.name.equals("notifyBlockOfNeighborChange") || m.name.equals("func_147460_e") || (m.name.equals("e") && m.desc.equals("(IIILaji;)V"))) {
+				MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+					boolean done = false;
+					@Override
+					public void visitLabel(Label label) {
+						if(!done) {
+							done = true;
+							Label l0 = new Label();
+							this.visitLabel(l0);
+							this.visitVarInsn(Opcodes.ALOAD, 0);
+							this.visitVarInsn(Opcodes.ILOAD, 1);
+							this.visitVarInsn(Opcodes.ILOAD, 2);
+							this.visitVarInsn(Opcodes.ILOAD, 3);
+							this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/LogisticsASMHookClass", "notifyBlockOfNeighborChange", "(Lnet/minecraft/world/World;III)V");
+						}
+						super.visitLabel(label);
+					}
+				};
+				m.accept(mv);
+				node.methods.set(node.methods.indexOf(m), mv);
+			}
+		}
+		ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 		node.accept(writer);
 		return writer.toByteArray();
 	}

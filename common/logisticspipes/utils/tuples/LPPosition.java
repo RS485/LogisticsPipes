@@ -112,4 +112,8 @@ public class LPPosition extends Triplet<Double, Double, Double> {
 	public Block getBlock(IBlockAccess world) {
 		return world.getBlock(getX(), getY(), getZ());
 	}
+
+	public boolean blockExists(World world) {
+		return world.blockExists(getX(), getY(), getZ());
+	}
 }

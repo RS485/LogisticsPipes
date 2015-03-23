@@ -17,7 +17,7 @@ public class Configs {
 	// Configrables
 	public static int LOGISTICS_DETECTION_LENGTH = 50;
 	public static int LOGISTICS_DETECTION_COUNT = 100;
-	public static int LOGISTICS_DETECTION_FREQUENCY = 20;
+	public static int LOGISTICS_DETECTION_FREQUENCY = 20 * 30;
 	public static boolean LOGISTICS_ORDERER_COUNT_INVERTWHEEL = false;
 	public static boolean LOGISTICS_ORDERER_PAGE_INVERTWHEEL = false;
 	public static final float LOGISTICS_ROUTED_SPEED_MULTIPLIER = 20F;
@@ -80,9 +80,9 @@ public class Configs {
 		LOGISTICS_DETECTION_FREQUENCY = Math
 				.max(CONFIGURATION
 						.get(Configuration.CATEGORY_GENERAL,
-								"detectionFrequency",
+								"reDetectionFrequency",
 								LOGISTICS_DETECTION_FREQUENCY,
-								"The amount of time that passes between checks to see if it is still connected to its neighbours. A low value will mean that it will detect changes faster but use more CPU. A high value means detection takes longer, but CPU consumption is reduced. A value of 20 will check about every second")
+								"The amount of time that passes between checks to see if it is still connected to its neighbours (Independently from block place detection). A low value will mean that it will correct wrong values faster but use more CPU. A high value means error correction takes longer, but CPU consumption is reduced. A value of 20 will check about every second (default 600 [30 seconds])")
 						.getInt(), 1);
 		LOGISTICS_ORDERER_COUNT_INVERTWHEEL = CONFIGURATION
 				.get(Configuration.CATEGORY_GENERAL, "ordererCountInvertWheel",

@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import logisticspipes.api.ILogisticsPowerProvider;
+import logisticspipes.asm.te.ILPTEInformation;
+import logisticspipes.asm.te.ITileEntityChangeListener;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.routing.IDirectRoutingConnection;
 import logisticspipes.interfaces.routing.IFilter;
@@ -70,17 +72,14 @@ public class PathFinder {
 		return newSearch.getConnectedRoutingPipes(provider, connectionType, startOrientation);
 	}
 	
-	public PathFinder(IPipeInformationProvider startPipe, int maxVisited, int maxLength) {
+	public PathFinder(IPipeInformationProvider startPipe, int maxVisited, int maxLength, ITileEntityChangeListener changeListener) {
 		this(maxVisited, maxLength, null);
 		if(startPipe == null) {
 			result = new HashMap<CoreRoutedPipe, ExitRoute>();
 			return;
 		}
+		this.changeListener = changeListener;
 		result = this.getConnectedRoutingPipes(startPipe, EnumSet.allOf(PipeRoutingConnectionType.class), ForgeDirection.UNKNOWN);
-	}
-	
-	public PathFinder(LogisticsTileGenericPipe startPipe, int maxVisited, int maxLength) {
-		this(SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(startPipe), maxVisited, maxLength);
 	}
 	
 	public PathFinder(IPipeInformationProvider startPipe, int maxVisited, int maxLength, ForgeDirection side) {
@@ -107,6 +106,9 @@ public class PathFinder {
 	public List<Pair<ILogisticsPowerProvider,List<IFilter>>> powerNodes;
 	public List<Pair<ISubSystemPowerProvider,List<IFilter>>> subPowerProvider;
 	public HashMap<CoreRoutedPipe, ExitRoute> result;
+	
+	public ITileEntityChangeListener changeListener;
+	public List<List<ITileEntityChangeListener>> listenedPipes = new ArrayList<List<ITileEntityChangeListener>>();
 	
 	private HashMap<CoreRoutedPipe, ExitRoute> getConnectedRoutingPipes(IPipeInformationProvider startPipe, EnumSet<PipeRoutingConnectionType> connectionFlags, ForgeDirection side) {
 		HashMap<CoreRoutedPipe, ExitRoute> foundPipes = new HashMap<CoreRoutedPipe, ExitRoute>();
@@ -225,6 +227,7 @@ public class PathFinder {
 					for(TileEntity pipe:list) {
 						connections.add(new Pair<TileEntity, ForgeDirection>(pipe, direction));
 					}
+					listTileEntity(tile);
 					continue;
 				}
 				if(!startPipe.getRoutingPipe().getUpgradeManager().hasPowerPassUpgrade()) {
@@ -248,7 +251,9 @@ public class PathFinder {
 			IPipeInformationProvider currentPipe = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(tile);
 			
 			if (currentPipe != null && currentPipe.isInitialised() && (isDirectConnection || SimpleServiceLocator.pipeInformaitonManager.canConnect(startPipe, currentPipe, direction, true))) {
-				//TileGenericPipe currentPipe = (TileGenericPipe) tile;
+				
+				listTileEntity(tile);
+				
 				if (setVisited.contains(new LPPosition(tile))) {
 					//Don't go where we have been before
 					continue;
@@ -323,6 +328,15 @@ public class PathFinder {
 			}
 		}
 		return foundPipes;
+	}
+
+	private void listTileEntity(TileEntity tile) {
+		if(changeListener != null && tile instanceof ILPTEInformation && ((ILPTEInformation)tile).getObject() != null) {
+			if(!((ILPTEInformation)tile).getObject().changeListeners.contains(changeListener)) {
+				((ILPTEInformation)tile).getObject().changeListeners.add(changeListener);
+			}
+			listenedPipes.add(((ILPTEInformation)tile).getObject().changeListeners);
+		}
 	}
 
 	public static int messureDistanceToNextRoutedPipe(LPPosition lpPosition, ForgeDirection exitOrientation, World world) {

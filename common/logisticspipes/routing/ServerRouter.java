@@ -28,6 +28,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import logisticspipes.api.ILogisticsPowerProvider;
+import logisticspipes.asm.te.ILPTEInformation;
+import logisticspipes.asm.te.ITileEntityChangeListener;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IRoutingDebugAdapter;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
@@ -313,7 +315,43 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		return this.id;
 	}
 	
+	private ITileEntityChangeListener localChangeListener = new ITileEntityChangeListener() {
+		@Override
+		public void pipeRemoved(LPPosition pos) {
+			boolean blockNeedsUpdate = checkAdjacentUpdate();
+			if (blockNeedsUpdate) {
+				updateAdjacentAndLsa();
+			}
+			if(Configs.MULTI_THREAD_NUMBER > 0) {
+				ensureRouteTableIsUpToDate(false);
+			}
+		}
+		
+		@Override
+		public void pipeAdded(LPPosition pos, ForgeDirection side) {
+			boolean blockNeedsUpdate = checkAdjacentUpdate();
+			if (blockNeedsUpdate) {
+				updateAdjacentAndLsa();
+			}
+			if(Configs.MULTI_THREAD_NUMBER > 0) {
+				ensureRouteTableIsUpToDate(false);
+			}
+		}
 
+		@Override
+		public void pipeModified(LPPosition pos) {
+			boolean blockNeedsUpdate = checkAdjacentUpdate();
+			if (blockNeedsUpdate) {
+				updateAdjacentAndLsa();
+			}
+			if(Configs.MULTI_THREAD_NUMBER > 0) {
+				ensureRouteTableIsUpToDate(false);
+			}
+		}
+	};
+	
+	private List<List<ITileEntityChangeListener>> listenedPipes = new ArrayList<List<ITileEntityChangeListener>>();
+	
 	/**
 	 * Rechecks the piped connection to all adjacent routers as well as discover new ones.
 	 */
@@ -324,10 +362,17 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		HashMap<CoreRoutedPipe, ExitRoute> adjacent;
 		List<Pair<ILogisticsPowerProvider,List<IFilter>>> power;
 		List<Pair<ISubSystemPowerProvider,List<IFilter>>> subSystemPower;
-		PathFinder finder = new PathFinder(thisPipe.container, Configs.LOGISTICS_DETECTION_COUNT, Configs.LOGISTICS_DETECTION_LENGTH);
+		PathFinder finder = new PathFinder(thisPipe.container, Configs.LOGISTICS_DETECTION_COUNT, Configs.LOGISTICS_DETECTION_LENGTH, localChangeListener);
 		power = finder.powerNodes;
 		subSystemPower = finder.subPowerProvider;
 		adjacent = finder.result;
+		
+		listenedPipes.removeAll(finder.listenedPipes);
+		for(List<ITileEntityChangeListener> list:listenedPipes) {
+			list.remove(localChangeListener);
+		}
+		listenedPipes.clear();
+		listenedPipes.addAll(finder.listenedPipes);
 		
 		for(CoreRoutedPipe pipe : adjacent.keySet()) {
 			if(pipe.stillNeedReplace()) {
@@ -791,7 +836,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		clearPipeCache();
 		setDestroied(true);
 		SimpleServiceLocator.routerManager.removeRouter(this.simpleID);
-		updateAdjacentAndLsa();
+		//updateAdjacentAndLsa(); // Handled by the ITileEntityChangeListener
 		releaseSimpleID(simpleID);
 	}
 
@@ -870,14 +915,17 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		handleQueuedTasks(pipe);
 		updateInterests();
 		if (doFullRefresh) {
+			if(pipe.container instanceof ILPTEInformation && ((ILPTEInformation)pipe.container).getObject() != null) {
+				if(!((ILPTEInformation)pipe.container).getObject().changeListeners.contains(localChangeListener)) {
+					((ILPTEInformation)pipe.container).getObject().changeListeners.add(localChangeListener);
+				}
+			}
+			
 			boolean blockNeedsUpdate = checkAdjacentUpdate();
 			if (blockNeedsUpdate) {
-				updateAdjacentAndLsa(); // also calls checkAdjacentUpdate() by default;
+				updateAdjacentAndLsa();
 			}
 			ensureRouteTableIsUpToDate(false);
-			if (pipe != null) {
-				pipe.refreshRender(false);
-			}
 			return;
 		}
 		if (Configs.MULTI_THREAD_NUMBER > 0) {

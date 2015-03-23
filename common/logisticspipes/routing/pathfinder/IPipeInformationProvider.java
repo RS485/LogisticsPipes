@@ -35,4 +35,5 @@ public interface IPipeInformationProvider {
 	public boolean isPowerPipe();
 	public int getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, int travled, int max, List<LPPosition> visited);
 	public boolean acceptItem(LPTravelingItem item, TileEntity from);
+	public void refreshTileCacheOnSide(ForgeDirection side);
 }

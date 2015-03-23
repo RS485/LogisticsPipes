@@ -1,7 +1,5 @@
 package com.jaquadro.minecraft.storagedrawers.api.storage;
 
-//import com.jaquadro.minecraft.storagedrawers.api.inventory.IDrawerInventory;
-
 public interface IDrawerGroup
 {
     /**

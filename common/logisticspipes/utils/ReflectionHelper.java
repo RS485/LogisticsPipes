@@ -4,10 +4,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import net.minecraft.tileentity.TileEntity;
-import buildcraft.api.transport.pluggable.PipePluggable;
-import buildcraft.transport.TileGenericPipe;
+import logisticspipes.utils.tuples.Triplet;
 
 public class ReflectionHelper {
 	public static void setFinalField(Class<?> clazz, String fieldName, Object target, Object object) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
@@ -19,24 +21,30 @@ public class ReflectionHelper {
 		modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
 		field.set(target, object);
 	}
-
+	
+	private static final Map<Triplet<Class<?>, String, List<Class<?>>>, Method>	methodCache	= new HashMap<Triplet<Class<?>, String, List<Class<?>>>, Method>();
+	
 	@SuppressWarnings("unchecked")
 	public static <T> T invokePrivateMethod(Class<T> type, Class<?> clazz, Object target, String name, Class<?>[] classes, Object[] objects) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Method method;
-		try {
-			method = clazz.getDeclaredMethod(name, classes);
-		} catch(NoSuchMethodException e1) {
+		Triplet<Class<?>, String, List<Class<?>>> key = new Triplet<Class<?>, String, List<Class<?>>>(clazz, name, Arrays.asList(classes));
+		Method method = methodCache.get(key);
+		if(method == null) {
 			try {
-				method = clazz.getMethod(name, classes);
-			} catch(NoSuchMethodException e2) {
 				method = clazz.getDeclaredMethod(name, classes);
+			} catch(NoSuchMethodException e1) {
+				try {
+					method = clazz.getMethod(name, classes);
+				} catch(NoSuchMethodException e2) {
+					method = clazz.getDeclaredMethod(name, classes);
+				}
 			}
+			method.setAccessible(true);
+			methodCache.put(key, method);
 		}
-		method.setAccessible(true);
 		Object result = method.invoke(target, objects);
-		return (T) result;
+		return (T)result;
 	}
-	
+
 	public static <T> T invokePrivateMethodCatched(Class<T> type, Class<?> clazz, Object target, String name, Class<?>[] classes, Object[] objects) {
 		try {
 			return invokePrivateMethod(type, clazz, target, name, classes, objects);

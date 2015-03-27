@@ -84,11 +84,13 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 				ticksWithContent = 0;
 			}
 		} else {
-			startDelegateAI(new AIRobotGotoStation(robot, this.robot.getLinkedStation()));
 			ticksWithContent = 0;
 			acceptsItems = true;
-			currentTarget = null;
-			refreshRoutingTable();
+			if(currentTarget != null) {
+				startDelegateAI(new AIRobotGotoStation(robot, this.robot.getLinkedStation()));
+				currentTarget = null;
+				refreshRoutingTable();
+			}
 		}
 		IEnergyStorage bat = this.robot.getBattery();
 		int need = bat.getMaxEnergyStored() - bat.getEnergyStored();

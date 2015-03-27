@@ -2,13 +2,19 @@ package logisticspipes.proxy.specialconnection;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.minecraftforge.common.util.ForgeDirection;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.ISpecialPipedConnection;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.specialconnection.SpecialPipeConnection.ConnectionInformation;
+import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
+import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Quartet;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
 
@@ -64,13 +70,13 @@ public class TeleportPipes implements ISpecialPipedConnection {
 	}
 	
 	@Override
-	public List<IPipeInformationProvider> getConnections(IPipeInformationProvider tile) {
-		List<IPipeInformationProvider> list = new ArrayList<IPipeInformationProvider>();
+	public List<ConnectionInformation> getConnections(IPipeInformationProvider tile, EnumSet<PipeRoutingConnectionType> connection, ForgeDirection side) {
+		List<ConnectionInformation> list = new ArrayList<ConnectionInformation>();
 		if(tile.getTile() instanceof TileGenericPipe && ((TileGenericPipe)tile.getTile()).pipe != null) {
 			try {
 				LinkedList<? extends Pipe> pipes = getConnectedTeleportPipes(((TileGenericPipe)tile.getTile()).pipe);
 				for(Pipe pipe : pipes) {
-					list.add(SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(pipe.container));
+					list.add(new ConnectionInformation(SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(pipe.container), connection, side, ForgeDirection.UNKNOWN, 0));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

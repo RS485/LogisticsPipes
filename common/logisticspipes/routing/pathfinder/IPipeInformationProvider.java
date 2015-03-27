@@ -29,11 +29,11 @@ public interface IPipeInformationProvider {
 	public boolean isOnewayPipe();
 	public boolean isOutputOpen(ForgeDirection direction);
 	public boolean canConnect(TileEntity to, ForgeDirection direction, boolean flag);
-	public int getDistance();
+	public double getDistance();
 	public boolean isItemPipe();
 	public boolean isFluidPipe();
 	public boolean isPowerPipe();
-	public int getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, int travled, int max, List<LPPosition> visited);
+	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double travled, double max, List<LPPosition> visited);
 	public boolean acceptItem(LPTravelingItem item, TileEntity from);
 	public void refreshTileCacheOnSide(ForgeDirection side);
 }

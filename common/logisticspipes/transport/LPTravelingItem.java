@@ -202,7 +202,9 @@ public abstract class LPTravelingItem {
 			data.setFloat("position", getPosition());
 			data.setFloat("speed", getSpeed());
 			data.setInteger("input", input.ordinal());
-			data.setInteger("output", output.ordinal());
+			if(output != null) {
+				data.setInteger("output", output.ordinal());
+			}
 			info.writeToNBT(data);
 		}
 
@@ -346,7 +348,7 @@ public abstract class LPTravelingItem {
 			stackToKeep.setStackSize(itemsToTake);
 			stackToSend.setStackSize(stackToSend.getStackSize() - itemsToTake);
 			
-			this.id = this.getNextId();
+			newId();
 			
 			LPTravelingItemServer newItem = new LPTravelingItemServer(stackToSend);
 			newItem.setSpeed(getSpeed());
@@ -433,6 +435,10 @@ public abstract class LPTravelingItem {
 		@Override
 		public IAdditionalTargetInformation getAdditionalTargetInformation() {
 			return info.targetInfo;
+		}
+
+		public void newId() {
+			this.id = this.getNextId();
 		}
 	}
 }

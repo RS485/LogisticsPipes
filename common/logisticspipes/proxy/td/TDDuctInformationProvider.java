@@ -123,7 +123,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider {
 	}
 	
 	@Override
-	public int getDistance() {
+	public double getDistance() {
 		return Math.max(duct.getDuctType().pathWeight, 0);
 	}
 	
@@ -143,12 +143,12 @@ public class TDDuctInformationProvider implements IPipeInformationProvider {
 	}
 
 	@Override
-	public int getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, int traveled, int max, List<LPPosition> visited) {
+	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double traveled, double max, List<LPPosition> visited) {
 		if(traveled >= max) return Integer.MAX_VALUE;
 		IRouter destination = SimpleServiceLocator.routerManager.getRouter(destinationint);
 		if(destination == null) return Integer.MAX_VALUE;
 		Iterable<Route> paramIterable = duct.getCache(true).outputRoutes;
-		int closesedConnection = Integer.MAX_VALUE;
+		double closesedConnection = Integer.MAX_VALUE;
 		for(Route localRoute1: paramIterable) {
 			if(localRoute1.endPoint instanceof LPItemDuct) {
 				LPItemDuct lpDuct = (LPItemDuct) localRoute1.endPoint;
@@ -159,7 +159,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider {
 				if(visited.contains(pos)) continue;
 				visited.add(pos);
 				
-				int distance = lpDuct.pipe.getDistanceTo(destinationint, ForgeDirection.getOrientation(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1)).getOpposite(), ident, isActive, traveled + localRoute1.pathWeight, Math.min(max, closesedConnection), visited);
+				double distance = lpDuct.pipe.getDistanceTo(destinationint, ForgeDirection.getOrientation(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1)).getOpposite(), ident, isActive, traveled + localRoute1.pathWeight, Math.min(max, closesedConnection), visited);
 				
 				visited.remove(pos);
 				
@@ -182,14 +182,14 @@ public class TDDuctInformationProvider implements IPipeInformationProvider {
 			IRouter destination = SimpleServiceLocator.routerManager.getRouter(id);
 			if(destination == null) return false;
 			Iterable<Route> paramIterable = duct.getCache(true).outputRoutes;
-			Pair<Integer, Route> closesedConnection = null;
+			Pair<Double, Route> closesedConnection = null;
 			List<LPPosition> visited = new ArrayList<LPPosition>();
 			visited.add(new LPPosition(from));
 			for(Route localRoute1: paramIterable) {
 				if(localRoute1.endPoint instanceof LPItemDuct) {
 					LPItemDuct lpDuct = (LPItemDuct) localRoute1.endPoint;
 					
-					int max = Integer.MAX_VALUE;
+					double max = Integer.MAX_VALUE;
 					if(closesedConnection != null) {
 						max = closesedConnection.getValue1();
 					}
@@ -198,12 +198,12 @@ public class TDDuctInformationProvider implements IPipeInformationProvider {
 					if(visited.contains(pos)) continue;
 					visited.add(pos);
 					
-					int distance = lpDuct.pipe.getDistanceTo(id, ForgeDirection.getOrientation(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1)).getOpposite(), item.getItemIdentifierStack().getItem(), serverItem.getInfo()._transportMode == TransportMode.Active, localRoute1.pathWeight, max, visited);
+					double distance = lpDuct.pipe.getDistanceTo(id, ForgeDirection.getOrientation(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1)).getOpposite(), item.getItemIdentifierStack().getItem(), serverItem.getInfo()._transportMode == TransportMode.Active, localRoute1.pathWeight, max, visited);
 					
 					visited.remove(pos);
 					
 					if(distance != Integer.MAX_VALUE && (closesedConnection == null || distance + localRoute1.pathDirections.size() < closesedConnection.getValue1())) {
-						closesedConnection = new Pair<Integer, Route>(distance + localRoute1.pathWeight, localRoute1);
+						closesedConnection = new Pair<Double, Route>(distance + localRoute1.pathWeight, localRoute1);
 					}
 				}
 			}

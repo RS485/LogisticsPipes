@@ -540,7 +540,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	}
 
 	@Override
-	public int getDistance() {
+	public double getDistance() {
 		return 1;
 	}
 
@@ -1035,13 +1035,13 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	}
 
 	@Override
-	public int getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, int traveled, int max, List<LPPosition> visited) {
+	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double traveled, double max, List<LPPosition> visited) {
 		if(pipe == null || traveled > max) return Integer.MAX_VALUE;
-		int result = pipe.getDistanceTo(destinationint, ignore, ident, isActive, traveled + this.getDistance(), max, visited);
+		double result = pipe.getDistanceTo(destinationint, ignore, ident, isActive, traveled + this.getDistance(), max, visited);
 		if(result == Integer.MAX_VALUE) {
 			return result;
 		}
-		return result + this.getDistance();
+		return result + (int) this.getDistance();
 	}
 
 	@Override

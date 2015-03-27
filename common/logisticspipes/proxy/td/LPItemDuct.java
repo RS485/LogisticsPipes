@@ -11,6 +11,7 @@ import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -54,7 +55,7 @@ public class LPItemDuct extends TileItemDuct {
 			int consumed = pipe.injectItem(item.stack, true, dir);
 			item.stack.stackSize -= consumed;
 			if(item.stack.stackSize > 0) {
-				pipe.pipe.transport._itemBuffer.add(new Pair<ItemIdentifierStack, Pair<Integer, Integer>>(ItemIdentifierStack.getFromStack(item.stack), new Pair<Integer, Integer>(20 * 2, 0)));				
+				pipe.pipe.transport._itemBuffer.add(new Triplet<ItemIdentifierStack, Pair<Integer, Integer>, LPTravelingItemServer>(ItemIdentifierStack.getFromStack(item.stack), new Pair<Integer, Integer>(20 * 2, 0), null));
 			}
 		}
 	}

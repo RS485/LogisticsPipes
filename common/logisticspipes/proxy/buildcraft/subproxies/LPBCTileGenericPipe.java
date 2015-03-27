@@ -3,7 +3,11 @@ package logisticspipes.proxy.buildcraft.subproxies;
 import java.lang.reflect.InvocationTargetException;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.buildcraft.robots.boards.LogisticsRoutingBoardRobot;
+import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.ReflectionHelper;
+import logisticspipes.utils.tuples.LPPosition;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -12,7 +16,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import buildcraft.api.robots.EntityRobotBase;
 import buildcraft.api.transport.pluggable.PipePluggable;
+import buildcraft.robots.DockingStation;
+import buildcraft.robots.RobotStationPluggable;
 import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.render.FakeBlock;
@@ -22,6 +29,7 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 	private final LPBCPipe bcPipe;
 	private final LPBCPluggableState bcPlugState;
 	private final LPBCPipeRenderState bcRenderState;
+	@Getter
 	private final LogisticsTileGenericPipe lpPipe;
 	
 	private boolean blockPluggableAccess = false;
@@ -220,6 +228,26 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 			public void renderPluggable(RenderBlocks renderblocks, ForgeDirection dir, int renderPass, int x, int y, int z) {
 				if(plug.getRenderer() == null) return;
 				plug.getRenderer().renderPluggable(renderblocks, bcPipe, dir, plug, FakeBlock.INSTANCE, renderPass, x, y, z);
+			}
+
+			@Override
+			public boolean isAcceptingItems(LPTravelingItemServer arrivingItem) {
+				if(plug instanceof RobotStationPluggable) {
+					return true;
+				}
+				return false;
+			}
+
+			@Override
+			public LPTravelingItemServer handleItem(LPTravelingItemServer arrivingItem) {
+				DockingStation station = ((RobotStationPluggable)plug).getStation();
+				if(!station.isTaken()) return arrivingItem;
+				EntityRobotBase robot = station.robotTaking();
+				if(!(robot.getBoard() instanceof LogisticsRoutingBoardRobot)) return arrivingItem;
+				if(!((LogisticsRoutingBoardRobot)robot.getBoard()).isAcceptsItems()) return arrivingItem;
+				LPPosition robotPos = new LPPosition(robot);
+				if(new LPPosition(LPBCTileGenericPipe.this).center().moveForward(sideHit, 0.5).distanceTo(robotPos) > 0.05) return arrivingItem; // Not at station
+				return ((LogisticsRoutingBoardRobot)robot.getBoard()).handleItem(arrivingItem);
 			}
 		};
 	}

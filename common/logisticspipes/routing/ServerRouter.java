@@ -75,7 +75,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	}
 	
 	protected class LSA {
-		public HashMap<IRouter, Quartet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>> neighboursWithMetric;
+		public HashMap<IRouter, Quartet<Double, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>> neighboursWithMetric;
 		public List<Pair<ILogisticsPowerProvider,List<IFilter>>> power;
 		public ArrayList<Pair<ISubSystemPowerProvider, List<IFilter>>>	subSystemPower;
 	}
@@ -127,6 +127,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	// these are maps, not hashMaps because they are unmodifiable Collections to avoid concurrentModification exceptions.
 	public Map<CoreRoutedPipe, ExitRoute> _adjacent = new HashMap<CoreRoutedPipe, ExitRoute>();
 	public Map<IRouter, ExitRoute> _adjacentRouter = new HashMap<IRouter, ExitRoute>();
+	public Map<IRouter, ExitRoute> _adjacentRouter_Old = new HashMap<IRouter, ExitRoute>();
 	public List<Pair<ILogisticsPowerProvider,List<IFilter>>> _powerAdjacent = new ArrayList<Pair<ILogisticsPowerProvider,List<IFilter>>>();
 	public List<Pair<ISubSystemPowerProvider,List<IFilter>>> _subSystemPowerAdjacent = new ArrayList<Pair<ISubSystemPowerProvider,List<IFilter>>>();
 	
@@ -219,7 +220,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		this._zCoord = zCoord;
 		clearPipeCache();
 		_myLsa = new LSA();
-		_myLsa.neighboursWithMetric = new HashMap<IRouter, Quartet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>>();
+		_myLsa.neighboursWithMetric = new HashMap<IRouter, Quartet<Double, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>>();
 		_myLsa.power = new ArrayList<Pair<ILogisticsPowerProvider,List<IFilter>>>();
 		SharedLSADatabasewriteLock.lock(); // any time after we claim the SimpleID, the database could be accessed at that index
 		simpleID = claimSimpleID();
@@ -474,6 +475,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 				}
 			}
 			_adjacent = Collections.unmodifiableMap(adjacent);
+			_adjacentRouter_Old = _adjacentRouter;
 			_adjacentRouter = Collections.unmodifiableMap(adjacentRouter);
 			if(power != null){
 				_powerAdjacent = Collections.unmodifiableList(power);
@@ -527,9 +529,9 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	}
 
 	private void SendNewLSA() {
-		HashMap<IRouter, Quartet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>> neighboursWithMetric = new HashMap<IRouter, Quartet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>>();
+		HashMap<IRouter, Quartet<Double, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>> neighboursWithMetric = new HashMap<IRouter, Quartet<Double, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>>();
 		for (Entry<IRouter, ExitRoute> adjacent : _adjacentRouter.entrySet()){
-			neighboursWithMetric.put(adjacent.getKey(), new Quartet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>(adjacent.getValue().distanceToDestination, adjacent.getValue().connectionDetails, adjacent.getValue().filters, adjacent.getValue().blockDistance));
+			neighboursWithMetric.put(adjacent.getKey(), new Quartet<Double, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>(adjacent.getValue().distanceToDestination, adjacent.getValue().connectionDetails, adjacent.getValue().filters, adjacent.getValue().blockDistance));
 		}
 		ArrayList<Pair<ILogisticsPowerProvider,List<IFilter>>> power = null;
 		if(_powerAdjacent != null){
@@ -712,10 +714,10 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 					}
 				}
 			}
-		    Iterator<Entry<IRouter, Quartet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>>> it = lsa.neighboursWithMetric.entrySet().iterator();
+		    Iterator<Entry<IRouter, Quartet<Double, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>>> it = lsa.neighboursWithMetric.entrySet().iterator();
 		    while (it.hasNext()) {
-		    	Entry<IRouter, Quartet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>> newCandidate = it.next();
-				int candidateCost = lowestCostNode.distanceToDestination + newCandidate.getValue().getValue1();
+		    	Entry<IRouter, Quartet<Double, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>> newCandidate = it.next();
+				double candidateCost = lowestCostNode.distanceToDestination + newCandidate.getValue().getValue1();
 				int blockDistance = lowestCostNode.blockDistance + newCandidate.getValue().getValue4();
 				EnumSet<PipeRoutingConnectionType> newCT = lowestCostNode.getFlags();
 				newCT.retainAll(newCandidate.getValue().getValue2());
@@ -902,11 +904,18 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		IRAction flood = new floodCheckAdjacent();
 		visited.set(simpleID);
 		// for all connected updatecurrent and previous
+		for(IRouter r : _adjacentRouter_Old.keySet()) {
+			r.act(visited, flood);
+		}
 		for(IRouter r : _adjacentRouter.keySet()) {
 			r.act(visited, flood);
 		}
 		//now increment LSA version in the network
 		visited.clear();
+		for(IRouter r : _adjacentRouter_Old.keySet()) {
+			r.act(visited, new flagForLSAUpdate());
+		}
+		_adjacentRouter_Old = new HashMap<IRouter, ExitRoute>();
 		this.act(visited, new flagForLSAUpdate());
 	}
 	

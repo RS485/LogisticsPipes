@@ -13,11 +13,12 @@ public class LPActionTriggerIconProvider implements IIconProvider {
 	public static int	triggerPowerNeededIconIndex			= 3;
 	public static int	triggerSupplierFailedIconIndex		= 4;
 	public static int	triggerHasDestinationIconIndex		= 5;
+	public static int	actionRobotRoutingIconIndex			= 6;
 	
 	private IIcon		icons[];
 	
 	public LPActionTriggerIconProvider() {
-		icons = new IIcon[6];
+		icons = new IIcon[7];
 	}
 	
 	@Override
@@ -36,5 +37,6 @@ public class LPActionTriggerIconProvider implements IIconProvider {
 		icons[triggerPowerNeededIconIndex] = iconRegister.registerIcon("logisticspipes:actionTriggers/PowerNeeded");
 		icons[triggerSupplierFailedIconIndex] = iconRegister.registerIcon("logisticspipes:actionTriggers/ActionTrigger1");
 		icons[triggerHasDestinationIconIndex] = iconRegister.registerIcon("logisticspipes:actionTriggers/ActionTrigger17");
+		icons[actionRobotRoutingIconIndex] = iconRegister.registerIcon("logisticspipes:actionTriggers/RobotRouting");
 	}
 }

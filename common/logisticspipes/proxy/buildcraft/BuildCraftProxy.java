@@ -3,9 +3,10 @@ package logisticspipes.proxy.buildcraft;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
@@ -14,12 +15,17 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.VersionNotSupportedException;
 import logisticspipes.proxy.buildcraft.gates.ActionDisableLogistics;
+import logisticspipes.proxy.buildcraft.gates.ActionRobotRoutingLogistics;
+import logisticspipes.proxy.buildcraft.gates.LogisticsActionProvider;
 import logisticspipes.proxy.buildcraft.gates.LogisticsTriggerProvider;
 import logisticspipes.proxy.buildcraft.gates.TriggerCrafting;
 import logisticspipes.proxy.buildcraft.gates.TriggerHasDestination;
 import logisticspipes.proxy.buildcraft.gates.TriggerNeedsPower;
 import logisticspipes.proxy.buildcraft.gates.TriggerSupplierFailed;
 import logisticspipes.proxy.buildcraft.recipeprovider.AssemblyTable;
+import logisticspipes.proxy.buildcraft.robots.LPRobotConnectionControl;
+import logisticspipes.proxy.buildcraft.robots.boards.LogisticsRoutingBoardRobot;
+import logisticspipes.proxy.buildcraft.robots.boards.LogisticsRoutingBoardRobotNBT;
 import logisticspipes.proxy.buildcraft.subproxies.IBCClickResult;
 import logisticspipes.proxy.buildcraft.subproxies.IBCRenderTESR;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
@@ -30,11 +36,10 @@ import logisticspipes.proxy.buildcraft.subproxies.LPBCTileGenericPipe;
 import logisticspipes.proxy.interfaces.IBCProxy;
 import logisticspipes.proxy.interfaces.ICraftingParts;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
-import logisticspipes.transport.LPTravelingItem;
-import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.ReflectionHelper;
 import logisticspipes.utils.tuples.LPPosition;
+import logisticspipes.utils.tuples.Pair;
 import lombok.SneakyThrows;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -47,10 +52,11 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.BuildCraftEnergy;
-import buildcraft.BuildCraftFactory;
 import buildcraft.BuildCraftSilicon;
 import buildcraft.BuildCraftTransport;
+import buildcraft.api.boards.RedstoneBoardRegistry;
 import buildcraft.api.core.BCLog;
+import buildcraft.api.robots.RobotManager;
 import buildcraft.api.statements.IActionInternal;
 import buildcraft.api.statements.ITriggerExternal;
 import buildcraft.api.statements.ITriggerInternal;
@@ -58,7 +64,6 @@ import buildcraft.api.statements.StatementManager;
 import buildcraft.api.transport.IPipeConnection;
 import buildcraft.api.transport.IPipeTile;
 import buildcraft.api.transport.IPipeTile.PipeType;
-import buildcraft.core.CoreConstants;
 import buildcraft.core.ITileBufferHolder;
 import buildcraft.core.ItemMapLocation;
 import buildcraft.transport.BlockGenericPipe;
@@ -67,11 +72,12 @@ import buildcraft.transport.ItemPipe;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.TravelingItem;
 import buildcraft.transport.render.FacadeRenderHelper;
 import buildcraft.transport.render.FakeBlock;
 import buildcraft.transport.render.PipeRendererTESR;
 import buildcraft.transport.render.PipeRendererWorld;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BuildCraftProxy implements IBCProxy {
 
@@ -80,6 +86,9 @@ public class BuildCraftProxy implements IBCProxy {
 	public static ITriggerExternal LogisticsNeedPowerTrigger;
 	public static ITriggerInternal LogisticsHasDestinationTrigger;
 	public static IActionInternal LogisticsDisableAction;
+	public static IActionInternal LogisticsRobotRoutingAction;
+	
+	public static final Map<World, Set<Pair<LPPosition, ForgeDirection>>> availableRobots = new WeakHashMap<World, Set<Pair<LPPosition, ForgeDirection>>>();
 	
 	private Method canPipeConnect;
 
@@ -133,6 +142,11 @@ public class BuildCraftProxy implements IBCProxy {
 
 	@Override
 	public void initProxy() {
+		
+		RedstoneBoardRegistry.instance.registerBoardClass(LogisticsRoutingBoardRobotNBT.instance, 10);
+		RobotManager.registerAIRobot(LogisticsRoutingBoardRobot.class, "boardLogisticsRoutingRobot", "logisticspipes.proxy.buildcraft.robots.boards.LogisticsRoutingBoardRobot");
+		SimpleServiceLocator.specialpipeconnection.registerHandler(new LPRobotConnectionControl());
+		
 		try {
 			canPipeConnect = TileGenericPipe.class.getDeclaredMethod("canPipeConnect", new Class[]{TileEntity.class, ForgeDirection.class});
 			canPipeConnect.setAccessible(true);
@@ -232,6 +246,7 @@ public class BuildCraftProxy implements IBCProxy {
 	@Override
 	public void registerTrigger() {
 		StatementManager.registerTriggerProvider(new LogisticsTriggerProvider());
+		StatementManager.registerActionProvider(new LogisticsActionProvider());
 		/* Triggers */
 		LogisticsFailedTrigger = new TriggerSupplierFailed();
 		LogisticsNeedPowerTrigger = new TriggerNeedsPower();
@@ -239,6 +254,7 @@ public class BuildCraftProxy implements IBCProxy {
 		LogisticsHasDestinationTrigger = new TriggerHasDestination();
 		/* Actions */
 		LogisticsDisableAction = new ActionDisableLogistics();
+		LogisticsRobotRoutingAction = new ActionRobotRoutingLogistics();
 	}
 
 	@Override
@@ -439,5 +455,10 @@ public class BuildCraftProxy implements IBCProxy {
 	@Override
 	public int getFacadeRenderColor() {
 		return BlockGenericPipe.facadeRenderColor;
+	}
+
+	@Override
+	public void cleanup() {
+		availableRobots.clear();
 	}
 }

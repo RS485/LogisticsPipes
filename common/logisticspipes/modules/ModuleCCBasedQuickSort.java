@@ -183,14 +183,14 @@ outer:
 		ItemStack stack = invUtil.getStackInSlot(slot);
 		if(stack == null || !ItemIdentifier.get(stack).equals(ident)) return false;
 		final IRouter source = this._service.getRouter();
-		List<Triplet<Integer, Integer, CCSinkResponder>> posibilities = new ArrayList<Triplet<Integer, Integer, CCSinkResponder>>();
+		List<Triplet<Integer, Double, CCSinkResponder>> posibilities = new ArrayList<Triplet<Integer, Double, CCSinkResponder>>();
 		for(CCSinkResponder sink:list) {
 			if(!sink.isDone()) continue;
 			if(sink.getCanSink() < 1) continue;
 			IRouter r = SimpleServiceLocator.routerManager.getRouter(sink.getRouterId());
 			if(r == null) continue;
 			List<ExitRoute> ways = source.getDistanceTo(r);
-			int minDistance = Integer.MAX_VALUE;
+			double minDistance = Double.MAX_VALUE;
 			outer:
 			for(ExitRoute route: ways) {
 				for(IFilter filter: route.filters) {
@@ -199,19 +199,20 @@ outer:
 				minDistance = Math.min(route.distanceToDestination, minDistance);
 			}
 			if(minDistance != Integer.MAX_VALUE) {
-				posibilities.add(new Triplet<Integer, Integer, CCSinkResponder>(sink.getPriority(), minDistance, sink));
+				posibilities.add(new Triplet<Integer, Double, CCSinkResponder>(sink.getPriority(), minDistance, sink));
 			}
 		}
 		if(posibilities.isEmpty()) return false;
-		Collections.sort(posibilities, new Comparator<Triplet<Integer, Integer, CCSinkResponder>>() {
+		Collections.sort(posibilities, new Comparator<Triplet<Integer, Double, CCSinkResponder>>() {
 			@Override
-			public int compare(Triplet<Integer, Integer, CCSinkResponder> o1, Triplet<Integer, Integer, CCSinkResponder> o2) {
+			public int compare(Triplet<Integer, Double, CCSinkResponder> o1, Triplet<Integer, Double, CCSinkResponder> o2) {
 				int c = o2.getValue1() - o1.getValue1();
-				if(c == 0) c = o1.getValue2() - o2.getValue2();
-				return c;
+				if(c != 0) return c;
+				double e = o1.getValue2() - o2.getValue2();
+				return e < 0 ? -1 : 1;
 			}});
 		boolean sended = false;
-		for(Triplet<Integer, Integer, CCSinkResponder> triple:posibilities) {
+		for(Triplet<Integer, Double, CCSinkResponder> triple:posibilities) {
 			CCSinkResponder sink = triple.getValue3();
 			if(sink.getCanSink() < 0) continue;
 			stack = invUtil.getStackInSlot(slot);

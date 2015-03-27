@@ -50,9 +50,9 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 	// true if it needs more power, turns off at full, turns on at 50%.
 	public boolean needMorePowerTriggerCheck = true;
 	
-	public final int IC2Multiplier = 2;
-	public final int RFDivisor = 2;
-	public final int MAX_STORAGE = 2000000;
+	public final static int IC2Multiplier = 2;
+	public final static int RFDivisor = 2;
+	public final static int MAX_STORAGE = 2000000;
 	
 	private int internalStorage = 0;
   	private int lastUpdateStorage = 0;

@@ -533,6 +533,7 @@ public class LogisticsPipes {
 			LogisticsHUDRenderer.instance().clear();
 		}
 		LogisticsEventListener.serverShutdown();
+		SimpleServiceLocator.buildCraftProxy.cleanup();
 	}
 	
 	@EventHandler

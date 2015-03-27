@@ -6,11 +6,13 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ListSyncPacket;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.entity.player.EntityPlayer;
 
-public class ItemBufferSyncPacket extends ListSyncPacket<Pair<ItemIdentifierStack, Pair<Integer, Integer>>> {
+public class ItemBufferSyncPacket extends ListSyncPacket<Triplet<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>, LPTravelingItemServer>> {
 
 	public ItemBufferSyncPacket(int id, int x, int y, int z) {
 		super(id, x, y, z);
@@ -21,13 +23,13 @@ public class ItemBufferSyncPacket extends ListSyncPacket<Pair<ItemIdentifierStac
 	}
 
 	@Override
-	public void writeObject(LPDataOutputStream data, Pair<ItemIdentifierStack, Pair<Integer, Integer>> object) throws IOException {
+	public void writeObject(LPDataOutputStream data, Triplet<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>, LPTravelingItemServer> object) throws IOException {
 		data.writeItemIdentifierStack(object.getValue1());
 	}
 
 	@Override
-	public Pair<ItemIdentifierStack, Pair<Integer, Integer>> readObject(LPDataInputStream data) throws IOException {
-		return new Pair<ItemIdentifierStack, Pair<Integer, Integer>>(data.readItemIdentifierStack(), null);
+	public Triplet<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>, LPTravelingItemServer> readObject(LPDataInputStream data) throws IOException {
+		return new Triplet<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>, LPTravelingItemServer>(data.readItemIdentifierStack(), null, null);
 	}
 
 	@Override

@@ -61,6 +61,7 @@ import logisticspipes.proxy.td.subproxies.ITDPart;
 import logisticspipes.proxy.te.ThermalExpansionProxy;
 import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 import logisticspipes.proxy.toolWrench.ToolWrenchProxy;
+import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
@@ -162,6 +163,8 @@ public class ProxyManager {
 							@Override public boolean isBlocking() {return false;}
 							@Override public Object getOriginal() {return null;}
 							@Override public void renderPluggable(RenderBlocks renderblocks, ForgeDirection dir, int renderPass, int x, int y, int z) {}
+							@Override public boolean isAcceptingItems(LPTravelingItemServer arrivingItem) {return false;}
+							@Override public LPTravelingItemServer handleItem(LPTravelingItemServer arrivingItem) {return arrivingItem;}
 						};
 					}
 					@Override public void readOldRedStone(NBTTagCompound nbt) {}
@@ -191,6 +194,7 @@ public class ProxyManager {
 			@Override public boolean isTileGenericPipe(TileEntity tile) {return false;}
 			@Override @SideOnly(Side.CLIENT) public void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, LogisticsTileGenericPipe pipe, int x, int y, int z, int renderPass) {}
 			@Override public int getFacadeRenderColor() {return -1;}
+			@Override public void cleanup() {}
 		}, IBCTilePart.class, IBCPipePart.class, IBCPipePluggable.class, IBCPluggableState.class, IBCRenderState.class, IBCRenderTESR.class));
 		
 		SimpleServiceLocator.setForestryProxy(getWrappedProxy("Forestry", IForestryProxy.class, ForestryProxy.class, new IForestryProxy() {

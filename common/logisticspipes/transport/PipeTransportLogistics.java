@@ -58,6 +58,7 @@ import logisticspipes.utils.SyncList;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
@@ -73,11 +74,12 @@ import buildcraft.transport.TravelingItem;
 public class PipeTransportLogistics {
 	
 	private final int																						_bufferTimeOut	= 20 * 2;																// 2 Seconds
-	public final SyncList<Pair<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>>>	_itemBuffer		= new SyncList<Pair<ItemIdentifierStack, Pair<Integer, Integer>>>();
+	public final SyncList<Triplet<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>, LPTravelingItemServer>>	_itemBuffer		= new SyncList<Triplet<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>, LPTravelingItemServer>>();
 	private Chunk																							chunk;
 	public LPItemList																						items			= new LPItemList(this);
 	public LogisticsTileGenericPipe																			container;
 	public final boolean isRouted;
+	public final int MAX_DESTINATION_UNREACHABLE_BUFFER																		= 30;
 
 	public PipeTransportLogistics(boolean isRouted) {
 		this.isRouted = isRouted;
@@ -121,12 +123,21 @@ public class PipeTransportLogistics {
 		if(MainProxy.isServer(getWorld())) {
 			if(!_itemBuffer.isEmpty()) {
 				List<LPTravelingItem> toAdd = new LinkedList<LPTravelingItem>();
-				Iterator<Pair<ItemIdentifierStack, Pair<Integer, Integer>>> iterator = _itemBuffer.iterator();
+				Iterator<Triplet<ItemIdentifierStack, Pair<Integer, Integer>, LPTravelingItemServer>> iterator = _itemBuffer.iterator();
 				while(iterator.hasNext()) {
-					Pair<ItemIdentifierStack, Pair<Integer, Integer>> next = iterator.next();
+					Triplet<ItemIdentifierStack, Pair<Integer, Integer>, LPTravelingItemServer> next = iterator.next();
 					int currentTimeOut = next.getValue2().getValue1();
 					if(currentTimeOut > 0) {
 						next.getValue2().setValue1(currentTimeOut - 1);
+					} else if(next.getValue3() != null) {
+						if(this.getRoutedPipe().getRouter().hasRoute(next.getValue3().getDestination(), next.getValue3().getTransportMode() == TransportMode.Active, next.getValue3().getItemIdentifierStack().getItem()) || next.getValue2().getValue2() > MAX_DESTINATION_UNREACHABLE_BUFFER) {
+							next.getValue3().setBufferCounter(next.getValue2().getValue2() + 1);
+							toAdd.add(next.getValue3());
+							iterator.remove();
+						} else {
+							next.getValue2().setValue2(next.getValue2().getValue2() + 1);
+							next.getValue2().setValue1(_bufferTimeOut);
+						}
 					} else {
 						LPTravelingItemServer item = SimpleServiceLocator.routedItemHelper.createNewTravelItem(next.getValue1());
 						item.setDoNotBuffer(true);
@@ -144,7 +155,7 @@ public class PipeTransportLogistics {
 	}
 	
 	public void dropBuffer() {
-		Iterator<Pair<ItemIdentifierStack, Pair<Integer, Integer>>> iterator = _itemBuffer.iterator();
+		Iterator<Triplet<ItemIdentifierStack, Pair<Integer, Integer>, LPTravelingItemServer>> iterator = _itemBuffer.iterator();
 		while(iterator.hasNext()) {
 			ItemIdentifierStack next = iterator.next().getValue1();
 			MainProxy.dropItems(getWorld(), next.makeNormalStack(), this.getPipe().getX(), this.getPipe().getY(), this.getPipe().getZ());
@@ -281,6 +292,11 @@ public class PipeTransportLogistics {
 			getRoutedPipe().relayedItem(data.getItemIdentifierStack().getStackSize());
 		}
 
+		if(data.getDestination() >= 0 && !this.getRoutedPipe().getRouter().hasRoute(data.getDestination(), data.getTransportMode() == TransportMode.Active, data.getItemIdentifierStack().getItem()) && data.getBufferCounter() < MAX_DESTINATION_UNREACHABLE_BUFFER) {
+			_itemBuffer.add(new Triplet<ItemIdentifierStack, Pair<Integer, Integer>, LPTravelingItemServer>(data.getItemIdentifierStack(), new Pair<Integer, Integer>(_bufferTimeOut, data.getBufferCounter()), data));
+			return null;
+		}
+		
 		ForgeDirection value;
 		if(this.getRoutedPipe().stillNeedReplace() || this.getRoutedPipe().initialInit()) {
 			data.setDoNotBuffer(false);
@@ -294,7 +310,7 @@ public class PipeTransportLogistics {
 			return ForgeDirection.UNKNOWN;
 		}
 		if(value == ForgeDirection.UNKNOWN && !data.getDoNotBuffer() && data.getBufferCounter() < 5) {
-			_itemBuffer.add(new Pair<ItemIdentifierStack, Pair<Integer, Integer>>(data.getItemIdentifierStack(), new Pair<Integer, Integer>(20 * 2, data.getBufferCounter())));
+			_itemBuffer.add(new Triplet<ItemIdentifierStack, Pair<Integer, Integer>, LPTravelingItemServer>(data.getItemIdentifierStack(), new Pair<Integer, Integer>(_bufferTimeOut, data.getBufferCounter()), null));
 			return null;
 		}
 		
@@ -333,7 +349,7 @@ public class PipeTransportLogistics {
 		NBTTagList nbttaglist2 = nbt.getTagList("buffercontents", 10);
 		for(int i = 0; i < nbttaglist2.tagCount(); i++) {
 			NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttaglist2.getCompoundTagAt(i);
-			_itemBuffer.add(new Pair<ItemIdentifierStack, Pair<Integer, Integer>>(ItemIdentifierStack.getFromStack(ItemStack.loadItemStackFromNBT(nbttagcompound1)), new Pair<Integer, Integer>(_bufferTimeOut, 0)));
+			_itemBuffer.add(new Triplet<ItemIdentifierStack, Pair<Integer, Integer>, LPTravelingItemServer>(ItemIdentifierStack.getFromStack(ItemStack.loadItemStackFromNBT(nbttagcompound1)), new Pair<Integer, Integer>(_bufferTimeOut, 0), null));
 		}
 		
 	}
@@ -399,6 +415,16 @@ public class PipeTransportLogistics {
 	}
 	
 	protected void handleTileReachedServer(LPTravelingItemServer arrivingItem, TileEntity tile, ForgeDirection dir) {
+		if(isRouted && this.getPipe().container.tilePart.getBCPipePluggable(dir) != null && this.getPipe().container.tilePart.getBCPipePluggable(dir).isAcceptingItems(arrivingItem)) {
+			LPTravelingItemServer remainingItem = this.getPipe().container.tilePart.getBCPipePluggable(dir).handleItem(arrivingItem);
+			if(remainingItem != null) {
+				this.getRoutedPipe().getRouter().update(true, this.getRoutedPipe());
+				this.injectItem(remainingItem, dir);
+			}
+			return;
+		}
+		
+		
 		if(getPipe() instanceof PipeItemsFluidSupplier) {
 			((PipeItemsFluidSupplier)getPipe()).endReached(arrivingItem, tile);
 			if(arrivingItem.getItemIdentifierStack().getStackSize() <= 0) { return; }
@@ -580,22 +606,6 @@ public class PipeTransportLogistics {
 					|| (this.getPipe().getUpgradeManager().hasRFPowerSupplierUpgrade() && SimpleServiceLocator.cofhPowerProxy.isEnergyReceiver(tile))
 					|| (this.getPipe().getUpgradeManager().getIC2PowerLevel() > 0 && SimpleServiceLocator.IC2Proxy.isEnergySink(tile)))
 				return true;
-		/*
-		if(tile instanceof TileGenericPipe) {
-			Pipe<?> pipe2 = ((TileGenericPipe)tile).pipe;
-			if(BlockGenericPipe.isValid(pipe2)) {
-				if(!(pipe2.transport instanceof PipeTransportItems) && !(pipe2.transport instanceof PipeTransportLogistics)) return false;
-				return true;
-			/*
-			if(tile instanceof TileGenericPipe) {
-				Pipe<?> pipe2 = ((TileGenericPipe)tile).pipe;
-				if(BlockGenericPipe.isValid(pipe2)) {
-					if(!(pipe2.transport instanceof PipeTransportItems) && !(pipe2.transport instanceof PipeTransportLogistics)) return false;
-					return true;
-				}
-			}
-			*/
-			//if(!SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) return false;
 			if(tile instanceof ISidedInventory) {
 				int[] slots = ((ISidedInventory)tile).getAccessibleSlotsFromSide(side.getOpposite().ordinal());
 				return slots != null && slots.length > 0;
@@ -605,36 +615,6 @@ public class PipeTransportLogistics {
 			return SimpleServiceLocator.pipeInformaitonManager.isPipe(tile);
 		}
 	}
-	
-	/*
-	public void defaultReajustSpeed(TravelingItem item) {
-		float speed = item.getSpeed();
-		
-		if(speed > LPConstants.PIPE_NORMAL_SPEED) {
-			speed -= LPConstants.PIPE_NORMAL_SPEED;
-		}
-		
-		if(speed < LPConstants.PIPE_NORMAL_SPEED) {
-			speed = LPConstants.PIPE_NORMAL_SPEED;
-		}
-		
-		item.setSpeed(speed);
-	}
-	
-	public boolean canReceivePipeObjects(ForgeDirection o, TravelingItem item) {
-		TileEntity entity = container.getTile(o);
-		
-		if(!container.isPipeConnected(o)) return false;
-		
-		if(entity instanceof TileGenericPipe) {
-			TileGenericPipe pipe = (TileGenericPipe)entity;
-			
-			return pipe.pipe.transport instanceof PipeTransportItems;
-		} else if(entity instanceof IInventory && item.getInsertionHandler().canInsertItem(item, (IInventory)entity)) if(Transactor.getTransactorFor(entity).add(item.getItemStack(), o.getOpposite(), false).stackSize > 0) return true;
-		
-		return false;
-	}
-	*/
 	
 	private void moveSolids() {
 		items.flush();
@@ -662,8 +642,8 @@ public class PipeTransportLogistics {
 				}
 			}
 		}
-		items.addScheduledItems();
 		items.removeScheduledItems();
+		items.addScheduledItems();
 	}
 	
 	private boolean passToNextPipe(LPTravelingItem item, TileEntity tile) {

@@ -54,8 +54,8 @@ public class LPDataInputStream extends DataInputStream {
 		ForgeDirection exitOri = this.readForgeDirection();
 		ForgeDirection insertOri = this.readForgeDirection();
 		EnumSet<PipeRoutingConnectionType> connectionDetails = this.readEnumSet(PipeRoutingConnectionType.class);
-		int distanceToDestination = this.readInt();
-		int destinationDistanceToRoot = this.readInt();
+		double distanceToDestination = this.readDouble();
+		double destinationDistanceToRoot = this.readDouble();
 		int blockDistance = this.readInt();
 		List<LPPosition> positions = this.readList(new IReadListObject<LPPosition>() {
 			@Override

@@ -27,6 +27,7 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.specialconnection.SpecialPipeConnection.ConnectionInformation;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IPaintPath;
 import logisticspipes.routing.LaserData;
@@ -35,6 +36,8 @@ import logisticspipes.utils.OneList;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Quartet;
+import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -92,14 +95,14 @@ public class PathFinder {
 		this.maxVisited = maxVisited;
 		this.maxLength = maxLength;
 		this.setVisited = new HashSet<LPPosition>();
-		this.distances = new HashMap<LPPosition, Integer>();
+		this.distances = new HashMap<LPPosition, Double>();
 		this.pathPainter = pathPainter;
 	}
 
 	private final int maxVisited;
 	private final int maxLength;
 	private final HashSet<LPPosition> setVisited;
-	private final HashMap<LPPosition, Integer> distances;
+	private final HashMap<LPPosition, Double> distances;
 	private final IPaintPath pathPainter;
 	private int pipesVisited;
 
@@ -140,8 +143,8 @@ public class PathFinder {
 			if(rp.stillNeedReplace()) {
 				return foundPipes;
 			}
-			int size = 0;
-			for(Integer dis:distances.values()) {
+			double size = 0;
+			for(Double dis:distances.values()) {
 				size += dis;
 			}
 			
@@ -159,15 +162,17 @@ public class PathFinder {
 		distances.put(new LPPosition(startPipe), startPipe.getDistance());
 		
 		// first check specialPipeConnections (tesseracts, teleports, other connectors)
-		List<IPipeInformationProvider> pipez = SimpleServiceLocator.specialpipeconnection.getConnectedPipes(startPipe);
-		for (IPipeInformationProvider specialpipe : pipez){
-			if (setVisited.contains(new LPPosition(specialpipe))) {
+		List<ConnectionInformation> pipez = SimpleServiceLocator.specialpipeconnection.getConnectedPipes(startPipe, connectionFlags, side);
+		for (ConnectionInformation specialConnection : pipez){
+			if (setVisited.contains(new LPPosition(specialConnection.getConnectedPipe()))) {
 				//Don't go where we have been before
 				continue;
 			}
-			HashMap<CoreRoutedPipe, ExitRoute> result = getConnectedRoutingPipes(specialpipe, connectionFlags, side);
+			distances.put(new LPPosition(startPipe).center(), specialConnection.getDistance());
+			HashMap<CoreRoutedPipe, ExitRoute> result = getConnectedRoutingPipes(specialConnection.getConnectedPipe(), specialConnection.getConnectionFlags(), specialConnection.getInsertOrientation());
+			distances.remove(new LPPosition(startPipe).center());
 			for (Entry<CoreRoutedPipe, ExitRoute> pipe : result.entrySet()) {
-				pipe.getValue().exitOrientation = ForgeDirection.UNKNOWN;
+				pipe.getValue().exitOrientation = specialConnection.getExitOrientation();
 				ExitRoute foundPipe=foundPipes.get(pipe.getKey());
 				if (foundPipe == null || (pipe.getValue().distanceToDestination < foundPipe.distanceToDestination)) {
 					// New path OR 	If new path is better, replace old path

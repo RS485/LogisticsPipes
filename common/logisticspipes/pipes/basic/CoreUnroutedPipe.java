@@ -334,8 +334,8 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		};
 	}
 
-	public int getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, int travled, int max, List<LPPosition> visited) {
-		int lowest = Integer.MAX_VALUE;
+	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double travled, double max, List<LPPosition> visited) {
+		double lowest = Integer.MAX_VALUE;
 		for(ForgeDirection dir: ForgeDirection.VALID_DIRECTIONS) {
 			if(ignore == dir) continue;
 			IPipeInformationProvider information = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(this.container.getTile(dir));

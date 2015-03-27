@@ -131,7 +131,7 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 	}
 
 	@Override
-	public int getDistance() {
+	public double getDistance() {
 		return 1;
 	}
 
@@ -151,7 +151,7 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 	}
 
 	@Override
-	public int getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, int traveled, int max, List<LPPosition> visited) {
+	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double traveled, double max, List<LPPosition> visited) {
 		if(traveled >= max) return Integer.MAX_VALUE;
 		for(ForgeDirection dir: ForgeDirection.VALID_DIRECTIONS) {
 			if(ignore == dir) continue;
@@ -160,12 +160,12 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 				LPPosition pos = new LPPosition(information);
 				if(visited.contains(pos)) continue;
 				visited.add(pos);
-				int result = information.getDistanceTo(destinationint, dir.getOpposite(), ident, isActive, traveled + this.getDistance(), max, visited);
+				double result = information.getDistanceTo(destinationint, dir.getOpposite(), ident, isActive, traveled + this.getDistance(), max, visited);
 				visited.remove(pos);
 				if(result == Integer.MAX_VALUE) {
 					return result;
 				}
-				return result + this.getDistance();
+				return result + (int) this.getDistance();
 			}
 		}
 		return Integer.MAX_VALUE;

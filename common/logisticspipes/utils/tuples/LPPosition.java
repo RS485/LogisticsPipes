@@ -4,6 +4,7 @@ import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -35,6 +36,10 @@ public class LPPosition extends Triplet<Double, Double, Double> {
 		super((double)packet.getPosX(), (double)packet.getPosY(), (double)packet.getPosZ());
 	}
 
+	public LPPosition(Entity entity) {
+		super(entity.posX, entity.posY, entity.posZ);
+	}
+
 	public int getX() {
 		return (int)(double)this.getValue1();
 	}
@@ -63,7 +68,7 @@ public class LPPosition extends Triplet<Double, Double, Double> {
 		return world.getTileEntity(getX(), getY(), getZ());
 	}
 	
-	public void moveForward(ForgeDirection dir, double steps) {
+	public LPPosition moveForward(ForgeDirection dir, double steps) {
 		switch(dir) {
 			case UP:
 				this.value2 += steps;
@@ -85,18 +90,19 @@ public class LPPosition extends Triplet<Double, Double, Double> {
 				break;
 			default:
 		}
+		return this;
 	}
 
-	public void moveForward(ForgeDirection dir) {
-		moveForward(dir, 1);
+	public LPPosition moveForward(ForgeDirection dir) {
+		return moveForward(dir, 1);
 	}
 	
-	public void moveBackward(ForgeDirection dir, double steps) {
-		moveForward(dir, -1 * steps);
+	public LPPosition moveBackward(ForgeDirection dir, double steps) {
+		return moveForward(dir, -1 * steps);
 	}
 
-	public void moveBackward(ForgeDirection dir) {
-		moveBackward(dir, 1);
+	public LPPosition moveBackward(ForgeDirection dir) {
+		return moveBackward(dir, 1);
 	}
 
 	@Override
@@ -115,5 +121,16 @@ public class LPPosition extends Triplet<Double, Double, Double> {
 
 	public boolean blockExists(World world) {
 		return world.blockExists(getX(), getY(), getZ());
+	}
+
+	public double distanceTo(LPPosition targetPos) {
+		return Math.sqrt(Math.pow(targetPos.getXD() - this.getXD(), 2) + Math.pow(targetPos.getYD() - this.getYD(), 2) + Math.pow(targetPos.getZD() - this.getZD(), 2));
+	}
+
+	public LPPosition center() {
+		this.value1 += 0.5D;
+		this.value2 += 0.5D;
+		this.value3 += 0.5D;
+		return this;
 	}
 }

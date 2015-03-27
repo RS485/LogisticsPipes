@@ -1732,7 +1732,7 @@ outer:
 	}
 
 	@Override
-	public int getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, int traveled, int max, List<LPPosition> visited) {
+	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double traveled, double max, List<LPPosition> visited) {
 		if(!stillNeedReplace) {
 			if(this.getRouterId() == destinationint) {
 				return 0;

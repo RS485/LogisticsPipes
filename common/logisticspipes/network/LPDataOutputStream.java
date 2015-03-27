@@ -61,8 +61,8 @@ public class LPDataOutputStream extends DataOutputStream {
 		this.writeForgeDirection(route.exitOrientation);
 		this.writeForgeDirection(route.insertOrientation);
 		this.writeEnumSet(route.connectionDetails, PipeRoutingConnectionType.class);
-		this.writeInt(route.distanceToDestination);
-		this.writeInt(route.destinationDistanceToRoot);
+		this.writeDouble(route.distanceToDestination);
+		this.writeDouble(route.destinationDistanceToRoot);
 		this.writeInt(route.blockDistance);
 		this.writeList(route.filters, new IWriteListObject<IFilter>() {
 			@Override

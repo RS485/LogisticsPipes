@@ -23,8 +23,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 public class ExitRoute implements Comparable<ExitRoute>{
 	public ForgeDirection exitOrientation;
 	public ForgeDirection insertOrientation;
-	public int distanceToDestination;
-	public final int destinationDistanceToRoot;
+	public double distanceToDestination;
+	public final double destinationDistanceToRoot;
 	public final int blockDistance;
 	public final EnumSet<PipeRoutingConnectionType> connectionDetails;
 	public final IRouter destination;
@@ -35,7 +35,7 @@ public class ExitRoute implements Comparable<ExitRoute>{
 	 */
 	public ExitRouteDebug debug = new ExitRouteDebug();
 
-	public ExitRoute(IRouter source, IRouter destination, ForgeDirection exitOrientation, ForgeDirection insertOrientation, int metric, EnumSet<PipeRoutingConnectionType> connectionDetails, int blockDistance) {
+	public ExitRoute(IRouter source, IRouter destination, ForgeDirection exitOrientation, ForgeDirection insertOrientation, double metric, EnumSet<PipeRoutingConnectionType> connectionDetails, int blockDistance) {
 		this.destination = destination;
 		this.root = source;
 		this.exitOrientation = exitOrientation;
@@ -101,12 +101,12 @@ public class ExitRoute implements Comparable<ExitRoute>{
 
 	@Override
 	public int compareTo(ExitRoute o) {
-		int c = this.distanceToDestination - o.distanceToDestination;
+		int c = (int) Math.floor(this.distanceToDestination - o.distanceToDestination);
 		if (c==0) return this.destination.getSimpleID() - o.destination.getSimpleID();
 		return c;
 	}
 
-	public ExitRoute(IRouter source, IRouter destination, int distance, EnumSet<PipeRoutingConnectionType> enumSet, List<IFilter> filterA, List<IFilter> filterB, int blockDistance) {
+	public ExitRoute(IRouter source, IRouter destination, double distance, EnumSet<PipeRoutingConnectionType> enumSet, List<IFilter> filterA, List<IFilter> filterB, int blockDistance) {
 		this(source, destination, ForgeDirection.UNKNOWN, ForgeDirection.UNKNOWN, distance, enumSet, blockDistance);
 		List<IFilter> filter = new ArrayList<IFilter>(filterA.size() + filterB.size());
 		filter.addAll(filterA);

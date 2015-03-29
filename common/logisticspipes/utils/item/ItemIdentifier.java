@@ -119,7 +119,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 
 		public ArrayDamagedItentifierHolder(int damage) {
 			//round to nearest superior power of 2
-			int newlen = 1 << (32 - Integer.numberOfLeadingZeros(damage + 1));
+			int newlen = 1 << (32 - Integer.numberOfLeadingZeros(damage));
 			holder = new AtomicReferenceArray<ItemIdentifier>(newlen);
 		}
 
@@ -136,10 +136,9 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		@Override
 		public void ensureCapacity(int damage) {
 			if(holder.length() <= damage) {
-			
-				int newlen = 1 << (32 - Integer.numberOfLeadingZeros(damage + 1));
+				int newlen = 1 << (32 - Integer.numberOfLeadingZeros(damage));
 				AtomicReferenceArray<ItemIdentifier> newdamages = new AtomicReferenceArray<ItemIdentifier>(newlen);
-				for(int i = 0; i < holder.length()-1; i++) {
+				for(int i = 0; i < holder.length(); i++) {
 					newdamages.set(i, holder.get(i));
 				}
 				holder = newdamages;

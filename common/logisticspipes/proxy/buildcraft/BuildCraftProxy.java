@@ -88,8 +88,6 @@ public class BuildCraftProxy implements IBCProxy {
 	public static IActionInternal LogisticsDisableAction;
 	public static IActionInternal LogisticsRobotRoutingAction;
 	
-	public static final Map<World, Set<Pair<LPPosition, ForgeDirection>>> availableRobots = new WeakHashMap<World, Set<Pair<LPPosition, ForgeDirection>>>();
-	
 	private Method canPipeConnect;
 
 	public PipeType logisticsPipeType;
@@ -145,7 +143,7 @@ public class BuildCraftProxy implements IBCProxy {
 		
 		RedstoneBoardRegistry.instance.registerBoardClass(LogisticsRoutingBoardRobotNBT.instance, 10);
 		RobotManager.registerAIRobot(LogisticsRoutingBoardRobot.class, "boardLogisticsRoutingRobot", "logisticspipes.proxy.buildcraft.robots.boards.LogisticsRoutingBoardRobot");
-		SimpleServiceLocator.specialpipeconnection.registerHandler(new LPRobotConnectionControl());
+		SimpleServiceLocator.specialpipeconnection.registerHandler(LPRobotConnectionControl.instance);
 		
 		try {
 			canPipeConnect = TileGenericPipe.class.getDeclaredMethod("canPipeConnect", new Class[]{TileEntity.class, ForgeDirection.class});
@@ -459,6 +457,6 @@ public class BuildCraftProxy implements IBCProxy {
 
 	@Override
 	public void cleanup() {
-		availableRobots.clear();
+		LPRobotConnectionControl.instance.cleanup();
 	}
 }

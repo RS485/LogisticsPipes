@@ -11,6 +11,8 @@ import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
+import logisticspipes.proxy.buildcraft.robots.LPRobotConnectionControl;
+import logisticspipes.proxy.buildcraft.robots.LPRobotConnectionControl.RobotConnection;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
@@ -46,6 +48,9 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 	private IDockingStation targetStation;
 	private int ticksWithContent = 0;
 	@Getter
+	private RobotConnection connectionDetails = new RobotConnection();
+	
+	@Getter
 	private Pair<Double, LogisticsRoutingBoardRobot> currentTarget = null;
 	
 	public LogisticsRoutingBoardRobot(EntityRobotBase iRobot) {
@@ -67,11 +72,9 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 		if(init) return;
 		init = true;
 		IDockingStation dock = robot.getDockingStation();
+		if(dock == null) return;
 		LPPosition pos = new LPPosition(dock.x(), dock.y(), dock.z());
-		if(BuildCraftProxy.availableRobots.get(this.robot.worldObj) == null) {
-			BuildCraftProxy.availableRobots.put(this.robot.worldObj, new HashSet<Pair<LPPosition,ForgeDirection>>());
-		}
-		BuildCraftProxy.availableRobots.get(this.robot.worldObj).add(new Pair<LPPosition, ForgeDirection>(pos, dock.side()));
+		LPRobotConnectionControl.instance.addRobot(this.robot.worldObj, pos, dock.side());
 	}
 	
 	@Override
@@ -141,14 +144,13 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 	}
 
 	private Pair<Double, LogisticsRoutingBoardRobot> findTarget() {
-		if(BuildCraftProxy.availableRobots.get(robot.worldObj) == null) return null;
 		Pair<Double, LogisticsRoutingBoardRobot> result = null;
 		LPPosition robotPos = new LPPosition(robot);
-		for(Pair<LPPosition, ForgeDirection> canidatePos: BuildCraftProxy.availableRobots.get(robot.worldObj)) {
+		for(Pair<LPPosition, ForgeDirection> canidatePos: connectionDetails.localConnectedRobots) {
 			if(this.robot.getLinkedStation() == null) continue;
 			if(canidatePos.getValue1().equals(new LPPosition(this.robot.getLinkedStation().x(), this.robot.getLinkedStation().y(), this.robot.getLinkedStation().z()))) continue;
 			double distance = canidatePos.getValue1().copy().center().moveForward(canidatePos.getValue2(), 0.5).distanceTo(robotPos);
-			if(distance < 64 && (result == null || result.getValue1() > distance)) {
+			if(result == null || result.getValue1() > distance) {
 				TileEntity connectedPipeTile = canidatePos.getValue1().getTileEntity(robot.worldObj);
 				if(!(connectedPipeTile instanceof LogisticsTileGenericPipe)) continue;
 				LogisticsTileGenericPipe connectedPipe = (LogisticsTileGenericPipe) connectedPipeTile;
@@ -161,6 +163,7 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 				if(connectedRobot == null) continue;
 				if(!(connectedRobot.getBoard() instanceof LogisticsRoutingBoardRobot)) continue;
 				if(connectedRobot.isDead) continue;
+				if(connectedRobot.getZoneToWork() != null && !connectedRobot.getZoneToWork().contains(robotPos.getXD(), robotPos.getYD(), robotPos.getZD())) continue;
 				if(!((LogisticsRoutingBoardRobot)connectedRobot.getBoard()).isAcceptsItems()) continue;
 				if(((LogisticsRoutingBoardRobot)connectedRobot.getBoard()).getCurrentTarget() != null && ((LogisticsRoutingBoardRobot)connectedRobot.getBoard()).getCurrentTarget().getValue2() != robot.getBoard()) continue;
 				LPPosition connectedRobotPos = new LPPosition(connectedRobot);
@@ -248,7 +251,6 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 		ITransactor trans = InventoryHelper.getTransactorFor(robot, ForgeDirection.UNKNOWN);
 		ItemStack inserted = trans.add(arrivingItem.getItemIdentifierStack().makeNormalStack(), ForgeDirection.UNKNOWN, false);
 		if(inserted.stackSize != arrivingItem.getItemIdentifierStack().getStackSize()) {
-			//TODO: Split item up
 			this.acceptsItems = false;
 			startTransport();
 			return arrivingItem;

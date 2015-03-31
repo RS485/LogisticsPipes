@@ -51,6 +51,8 @@ public class Configs {
 	
 	public static boolean OPAQUE = false;
 	
+	public static int MAX_ROBOT_DISTANCE = 64;
+	
 	private static boolean loaded = false;
 	public static void load() {
 		if(loaded) return;
@@ -84,6 +86,12 @@ public class Configs {
 								LOGISTICS_DETECTION_FREQUENCY,
 								"The amount of time that passes between checks to see if it is still connected to its neighbours (Independently from block place detection). A low value will mean that it will correct wrong values faster but use more CPU. A high value means error correction takes longer, but CPU consumption is reduced. A value of 20 will check about every second (default 600 [30 seconds])")
 						.getInt(), 1);
+
+		MAX_ROBOT_DISTANCE = CONFIGURATION
+				.get(Configuration.CATEGORY_GENERAL, "maxRobotDistance",
+						MAX_ROBOT_DISTANCE,
+						"The max. distance between two robots when there is no zone defined.")
+				.getInt();
 		LOGISTICS_ORDERER_COUNT_INVERTWHEEL = CONFIGURATION
 				.get(Configuration.CATEGORY_GENERAL, "ordererCountInvertWheel",
 						LOGISTICS_ORDERER_COUNT_INVERTWHEEL,

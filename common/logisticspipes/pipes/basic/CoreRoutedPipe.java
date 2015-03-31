@@ -139,6 +139,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	}
 
 	protected boolean stillNeedReplace = true;
+	private boolean recheckConnections = false;
 	
 	protected IRouter router;
 	protected String routerId;
@@ -391,7 +392,8 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 			debug.log("Timed Out: "+p.getItem().getFriendlyName() + " (" + p.hashCode() + ")");
 		}
 		//update router before ticking logic/transport
-		getRouter().update(getWorld().getTotalWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit, this);
+		getRouter().update(getWorld().getTotalWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit || recheckConnections, this);
+		recheckConnections = false;
 		getOriginalUpgradeManager().securityTick();
 		super.updateEntity();
 		
@@ -1744,5 +1746,9 @@ outer:
 			}
 		}
 		return Integer.MAX_VALUE;
+	}
+
+	public void triggerConnectionCheck() {
+		recheckConnections = true;
 	}
 }

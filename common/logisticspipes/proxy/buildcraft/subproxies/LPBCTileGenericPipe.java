@@ -1,8 +1,14 @@
 package logisticspipes.proxy.buildcraft.subproxies;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.buildcraft.robots.LPRobotConnectionControl;
 import logisticspipes.proxy.buildcraft.robots.boards.LogisticsRoutingBoardRobot;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.ReflectionHelper;
@@ -17,11 +23,14 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.robots.EntityRobotBase;
+import buildcraft.api.statements.IStatementParameter;
 import buildcraft.api.transport.pluggable.PipePluggable;
 import buildcraft.robots.DockingStation;
 import buildcraft.robots.RobotStationPluggable;
 import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.gates.GatePluggable;
+import buildcraft.transport.gates.StatementSlot;
 import buildcraft.transport.render.FakeBlock;
 
 public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart {
@@ -31,6 +40,7 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 	private final LPBCPipeRenderState bcRenderState;
 	@Getter
 	private final LogisticsTileGenericPipe lpPipe;
+	public Map<ForgeDirection, List<StatementSlot>> activeActions = new HashMap<ForgeDirection, List<StatementSlot>>();
 	
 	private boolean blockPluggableAccess = false;
 	
@@ -145,11 +155,31 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 
 		pipe.updateEntity();
 
+		boolean recheckThisPipe = false;
 		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
 			PipePluggable p = getPipePluggable(direction);
 			if (p != null) {
 				p.update(this, direction);
+				
+				
+				//Check Gate for ActionChanges
+				if(p instanceof GatePluggable && lpPipe.isRoutingPipe()) {
+					if(!activeActions.containsKey(direction)) {
+						activeActions.put(direction, new ArrayList<StatementSlot>());
+					}
+					if(!listEquals(activeActions.get(direction), pipe.gates[direction.ordinal()].activeActions)) {
+						activeActions.get(direction).clear();
+						activeActions.get(direction).addAll(pipe.gates[direction.ordinal()].activeActions);
+						lpPipe.getRoutingPipe().triggerConnectionCheck();
+						recheckThisPipe = true;
+					}
+				} else if(activeActions.containsKey(direction)) {
+					activeActions.remove(direction);
+				}
 			}
+		}
+		if(recheckThisPipe) {
+			LPRobotConnectionControl.instance.checkAll(worldObj);
 		}
 
 		if (worldObj.isRemote) {
@@ -171,6 +201,31 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 			refreshRenderState();
 			refreshRenderState = false;
 		}
+	}
+
+	private boolean listEquals(List<StatementSlot> list1, List<StatementSlot> list2) {
+		ListIterator<StatementSlot> e1 = list1.listIterator();
+		ListIterator<StatementSlot> e2 = list2.listIterator();
+		while(e1.hasNext() && e2.hasNext()) {
+			StatementSlot o1 = e1.next();
+			StatementSlot o2 = e2.next();
+			if(!(o1 == null ? o2 == null : statementEquals(o1, o2))) return false;
+		}
+		return !(e1.hasNext() || e2.hasNext());
+	}
+	
+	private boolean statementEquals(StatementSlot slot1, StatementSlot slot2) {
+		if (slot1.statement != slot2.statement || slot1.parameters.length != slot2.parameters.length) {
+			return false;
+		}
+		for (int i = 0; i < slot1.parameters.length; i++) {
+			IStatementParameter p1 = slot1.parameters[i];
+			IStatementParameter p2 = slot2.parameters[i];
+			if ((p1 != null && !(p1.equals(p2))) || (p1 == null && p2 != null)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override

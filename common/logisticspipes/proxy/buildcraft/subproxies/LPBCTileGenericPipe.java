@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import buildcraft.api.statements.StatementSlot;
+import buildcraft.transport.pluggable.LensPluggable;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.buildcraft.robots.LPRobotConnectionControl;
 import logisticspipes.proxy.buildcraft.robots.boards.LogisticsRoutingBoardRobot;
@@ -17,6 +19,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -25,13 +28,12 @@ import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.robots.EntityRobotBase;
 import buildcraft.api.statements.IStatementParameter;
 import buildcraft.api.transport.pluggable.PipePluggable;
-import buildcraft.robots.DockingStation;
-import buildcraft.robots.RobotStationPluggable;
+import buildcraft.core.lib.render.FakeBlock;
+import buildcraft.robotics.DockingStation;
+import buildcraft.robotics.RobotStationPluggable;
 import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.gates.GatePluggable;
-import buildcraft.transport.gates.StatementSlot;
-import buildcraft.transport.render.FakeBlock;
 
 public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart {
 	
@@ -213,7 +215,7 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 		}
 		return !(e1.hasNext() || e2.hasNext());
 	}
-	
+
 	private boolean statementEquals(StatementSlot slot1, StatementSlot slot2) {
 		if (slot1.statement != slot2.statement || slot1.parameters.length != slot2.parameters.length) {
 			return false;
@@ -368,15 +370,21 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 
 	@Override
 	public PipeType getPipeType() {
-		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-		if(trace.length > 2 && trace[2].getClassName().equals("buildcraft.transport.pluggable.ItemLens") && trace[2].getMethodName().equals("createPipePluggable")) {
-			return PipeType.ITEM;
-		}
-		return PipeType.STRUCTURE;
+		return PipeType.ITEM;
 	}
 
 	@Override
 	public boolean isPipeConnected(ForgeDirection with) {
 		return lpPipe.isPipeConnected(with);
+	}
+
+	@Override
+	public boolean setPluggable(ForgeDirection direction, PipePluggable pluggable, EntityPlayer player) {
+		if (pluggable instanceof LensPluggable) {
+			// Coloring fundamentally doesn't work on Logistics Pipes
+			return false;
+		}
+
+		return super.setPluggable(direction, pluggable, player);
 	}
 }

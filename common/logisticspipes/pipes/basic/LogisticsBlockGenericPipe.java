@@ -1007,15 +1007,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		}
 		return true;
 	}
-
-	@Override
-	public int colorMultiplier(IBlockAccess world, int x, int y, int z) {
-		int facadeRenderColor = SimpleServiceLocator.buildCraftProxy.getFacadeRenderColor();
-		if (facadeRenderColor != -1) {
-			return facadeRenderColor;
-		}
-		return super.colorMultiplier(world, x, y, z);
-	}
 	
 	private static void cacheTileToPreventRemoval(CoreUnroutedPipe pipe) {
 		final World worldCache = pipe.getWorld();

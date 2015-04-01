@@ -18,8 +18,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.core.IIconProvider;
 import buildcraft.api.statements.IActionInternal;
+import buildcraft.api.statements.StatementSlot;
 import buildcraft.transport.Pipe;
-import buildcraft.transport.gates.StatementSlot;
 import buildcraft.transport.gui.ContainerGateInterface;
 import buildcraft.transport.gui.GuiGateInterface;
 

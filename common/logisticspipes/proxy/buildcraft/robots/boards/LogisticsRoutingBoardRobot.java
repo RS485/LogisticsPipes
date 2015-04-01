@@ -32,11 +32,11 @@ import buildcraft.api.robots.AIRobot;
 import buildcraft.api.robots.EntityRobotBase;
 import buildcraft.api.robots.IDockingStation;
 import buildcraft.api.transport.pluggable.PipePluggable;
-import buildcraft.robots.DockingStation;
-import buildcraft.robots.RobotStationPluggable;
-import buildcraft.robots.ai.AIRobotGotoBlock;
-import buildcraft.robots.ai.AIRobotGotoStation;
-import buildcraft.robots.ai.AIRobotStraightMoveTo;
+import buildcraft.robotics.DockingStation;
+import buildcraft.robotics.RobotStationPluggable;
+import buildcraft.robotics.ai.AIRobotGotoBlock;
+import buildcraft.robotics.ai.AIRobotGotoStation;
+import buildcraft.robotics.ai.AIRobotStraightMoveTo;
 import buildcraft.transport.TileGenericPipe;
 
 public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {

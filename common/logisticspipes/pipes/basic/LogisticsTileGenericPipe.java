@@ -880,6 +880,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		return null;
 	}
 
+	@Override
 	public void scheduleRenderUpdate() {
 		refreshRenderState = true;
 	}

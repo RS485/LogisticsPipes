@@ -7,6 +7,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import buildcraft.BuildCraftCore;
+import buildcraft.transport.PipeEventBus;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
@@ -64,8 +68,10 @@ import buildcraft.api.statements.StatementManager;
 import buildcraft.api.transport.IPipeConnection;
 import buildcraft.api.transport.IPipeTile;
 import buildcraft.api.transport.IPipeTile.PipeType;
-import buildcraft.core.ITileBufferHolder;
+import buildcraft.core.CoreConstants;
 import buildcraft.core.ItemMapLocation;
+import buildcraft.core.lib.ITileBufferHolder;
+import buildcraft.core.lib.render.FakeBlock;
 import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.ItemGateCopier;
 import buildcraft.transport.ItemPipe;
@@ -73,7 +79,6 @@ import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.render.FacadeRenderHelper;
-import buildcraft.transport.render.FakeBlock;
 import buildcraft.transport.render.PipeRendererTESR;
 import buildcraft.transport.render.PipeRendererWorld;
 import cpw.mods.fml.relauncher.Side;
@@ -101,8 +106,8 @@ public class BuildCraftProxy implements IBCProxy {
 			e.printStackTrace();
 		}
 		if(BCVersion != null && !BCVersion.equals("@VERSION@")) {
-			if(!BCVersion.startsWith("6.") || BCVersion.startsWith("6.0") || BCVersion.startsWith("6.1") || BCVersion.startsWith("6.2") || BCVersion.startsWith("6.3")) {
-				throw new VersionNotSupportedException("BC", BCVersion, "6.4.0", "");
+			if(!BCVersion.startsWith("7.")) {
+				throw new VersionNotSupportedException("BC", BCVersion, "7.0.0", "");
 			}
 		} else {
 			LogisticsPipes.log.info("Couldn't check the BC Version.");
@@ -151,6 +156,8 @@ public class BuildCraftProxy implements IBCProxy {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+
+		PipeEventBus.registerGlobalHandler(new BCEventHandler());
 	}
 
 	@Override
@@ -315,7 +322,7 @@ public class BuildCraftProxy implements IBCProxy {
 
 			@Override
 			public Object getBlockDynamo() {
-				return new ItemStack(BuildCraftEnergy.engineBlock, 1, 2);
+				return new ItemStack(BuildCraftCore.engineBlock, 1, 2);
 			}
 
 			@Override
@@ -448,11 +455,6 @@ public class BuildCraftProxy implements IBCProxy {
 		TileGenericPipe tile = (TileGenericPipe) pipe.tilePart.getOriginal();
 		PipeRendererWorld.renderPass = renderPass;
 		FacadeRenderHelper.pipeFacadeRenderer(renderblocks, FakeBlock.INSTANCE, tile, tile.renderState, x, y, z);
-	}
-
-	@Override
-	public int getFacadeRenderColor() {
-		return BlockGenericPipe.facadeRenderColor;
 	}
 
 	@Override

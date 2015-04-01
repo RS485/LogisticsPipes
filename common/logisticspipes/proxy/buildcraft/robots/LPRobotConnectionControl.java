@@ -26,8 +26,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.core.IZone;
 import buildcraft.api.robots.EntityRobotBase;
 import buildcraft.api.transport.pluggable.PipePluggable;
-import buildcraft.robots.DockingStation;
-import buildcraft.robots.RobotStationPluggable;
+import buildcraft.robotics.DockingStation;
+import buildcraft.robotics.RobotStationPluggable;
 import buildcraft.transport.TileGenericPipe;
 
 public class LPRobotConnectionControl implements ISpecialPipedConnection {

@@ -3,18 +3,14 @@ package logisticspipes.proxy.buildcraft.robots.boards;
 import java.util.HashSet;
 import java.util.Set;
 
-import cofh.api.energy.IEnergyStorage;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
-import logisticspipes.blocks.powertile.LogisticsPowerProviderTileEntity;
-import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.buildcraft.robots.LPRobotConnectionControl;
 import logisticspipes.proxy.buildcraft.robots.LPRobotConnectionControl.RobotConnection;
+import logisticspipes.proxy.buildcraft.robots.ai.ItemInsertionAIRobot;
 import logisticspipes.routing.ExitRoute;
-import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.transactor.ITransactor;
@@ -34,18 +30,23 @@ import buildcraft.api.robots.IDockingStation;
 import buildcraft.api.transport.pluggable.PipePluggable;
 import buildcraft.robots.DockingStation;
 import buildcraft.robots.RobotStationPluggable;
+import buildcraft.robots.StationIndex;
 import buildcraft.robots.ai.AIRobotGotoBlock;
 import buildcraft.robots.ai.AIRobotGotoStation;
 import buildcraft.robots.ai.AIRobotStraightMoveTo;
 import buildcraft.transport.TileGenericPipe;
+import cofh.api.energy.IEnergyStorage;
 
 public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 	
 	@Getter
 	private boolean acceptsItems = true;
 	private boolean init = false;
+	@Getter
 	private Set<LPTravelingItemServer> items = new HashSet<LPTravelingItemServer>();
-	private IDockingStation targetStation;
+	private LPPosition targetStationPos;
+	private ForgeDirection targetStationSide = ForgeDirection.UNKNOWN;
+	
 	private int ticksWithContent = 0;
 	@Getter
 	private RobotConnection connectionDetails = new RobotConnection();
@@ -71,7 +72,7 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 	private void index() {
 		if(init) return;
 		init = true;
-		IDockingStation dock = robot.getDockingStation();
+		IDockingStation dock = robot.getLinkedStation();
 		if(dock == null) return;
 		LPPosition pos = new LPPosition(dock.x(), dock.y(), dock.z());
 		LPRobotConnectionControl.instance.addRobot(this.robot.worldObj, pos, dock.side());
@@ -93,6 +94,8 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 				startDelegateAI(new AIRobotGotoStation(robot, this.robot.getLinkedStation()));
 				currentTarget = null;
 				refreshRoutingTable();
+			} else if(robot.getDockingStation() == null) {
+				startDelegateAI(new AIRobotGotoStation(robot, this.robot.getLinkedStation()));
 			}
 		}
 		IEnergyStorage bat = this.robot.getBattery();
@@ -126,12 +129,10 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 				dropAndClear();
 				startDelegateAI(new AIRobotGotoStation(robot, this.robot.getLinkedStation()));
 			} else {
-				BlockIndex stationIndex = targetStation.index();
-				ForgeDirection stationSide = targetStation.side();
 				startDelegateAI(new AIRobotStraightMoveTo(robot,
-						stationIndex.x + 0.5F + stationSide.offsetX * 0.5F,
-						stationIndex.y + 0.5F + stationSide.offsetY * 0.5F,
-						stationIndex.z + 0.5F + stationSide.offsetZ * 0.5F));
+						(float)targetStationPos.getXD() + 0.5F + targetStationSide.offsetX * 0.5F,
+						(float)targetStationPos.getYD() + 0.5F + targetStationSide.offsetY * 0.5F,
+						(float)targetStationPos.getZD() + 0.5F + targetStationSide.offsetZ * 0.5F));
 			}
 		} else if(ai instanceof AIRobotStraightMoveTo) {
 			if(!ai.success()) {
@@ -140,6 +141,28 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 			} else {
 				insertIntoPipe();
 			}
+		} else if(ai instanceof ItemInsertionAIRobot) {
+			for(int i=0;i<this.robot.getSizeInventory();i++) {
+				this.robot.setInventorySlotContents(i, null);
+			}
+			if(!ai.success()) {
+				dropAndClear();
+			} else {
+				items.clear();
+			}
+			startDelegateAI(new AIRobotGotoStation(robot, this.robot.getLinkedStation()));
+			targetStationPos = null;
+		}
+	}
+
+	private void insertIntoPipe() {
+		TileEntity tile = targetStationPos.getTileEntity(this.robot.worldObj);
+		if(tile instanceof LogisticsTileGenericPipe) {
+			startDelegateAI(new ItemInsertionAIRobot(robot, (LogisticsTileGenericPipe) tile, this, this.targetStationSide.getOpposite()));
+		} else {
+			dropAndClear();
+			startDelegateAI(new AIRobotGotoStation(robot, this.robot.getLinkedStation()));
+			targetStationPos = null;
 		}
 	}
 
@@ -218,30 +241,12 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 
 	private void startTransport(LogisticsRoutingBoardRobot target, IDockingStation station) {
 		acceptsItems = false;
-		targetStation = station;
+		targetStationPos = new LPPosition(station.x(), station.y(), station.z());
+		targetStationSide = station.side();
 		startDelegateAI(new AIRobotGotoBlock(robot,
 				station.x() + station.side().offsetX,
 				station.y() + station.side().offsetY,
 				station.z() + station.side().offsetZ));
-	}
-
-	private void insertIntoPipe() {
-		LPPosition pos = new LPPosition(targetStation.x(), targetStation.y(), targetStation.z());
-		TileEntity tile = pos.getTileEntity(this.robot.worldObj);
-		if(tile instanceof LogisticsTileGenericPipe) {
-			for(LPTravelingItemServer item: items) {
-				LPTravelingItem.clientSideKnownIDs.set(item.getId(), false);
-				((LogisticsTileGenericPipe)tile).pipe.transport.injectItem(item, targetStation.side().getOpposite());
-			}
-			items.clear();
-			for(int i=0;i<this.robot.getSizeInventory();i++) {
-				this.robot.setInventorySlotContents(i, null);
-			}
-		} else {
-			dropAndClear();
-		}
-		startDelegateAI(new AIRobotGotoStation(robot, this.robot.getLinkedStation()));
-		targetStation = null;
 	}
 	
 	public LPTravelingItemServer handleItem(LPTravelingItemServer arrivingItem) {
@@ -262,6 +267,7 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 			currentTarget = findTarget();
 			refreshRoutingTable();
 		}
+		ticksWithContent = 0;
 		return null;
 	}
 
@@ -283,6 +289,10 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 			stack.writeToNBT(nbt_Sub);
 			nbt.setTag("LP_Item_" + count++, nbt_Sub);
 		}
+		if(targetStationPos != null) {
+			targetStationPos.writeToNBT("targetStationPos_", nbt);
+		}
+		nbt.setByte("targetStationSide", (byte) targetStationSide.ordinal());
 	}
 
 	@Override
@@ -294,6 +304,8 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 				items.add(new LPTravelingItemServer(nbt.getCompoundTag("LP_Item_" + i)));
 			}
 		}
+		targetStationPos = LPPosition.readFromNBT("targetStationPos_", nbt);
+		targetStationSide = ForgeDirection.getOrientation(nbt.getByte("targetStationSide"));
 	}
 	
 	public LPPosition getLinkedStationPosition() {

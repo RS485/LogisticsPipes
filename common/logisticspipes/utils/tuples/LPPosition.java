@@ -5,6 +5,7 @@ import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -132,5 +133,18 @@ public class LPPosition extends Triplet<Double, Double, Double> {
 		this.value2 += 0.5D;
 		this.value3 += 0.5D;
 		return this;
+	}
+
+	public void writeToNBT(String prefix, NBTTagCompound nbt) {
+		nbt.setDouble(prefix + "xPos", value1);
+		nbt.setDouble(prefix + "yPos", value2);
+		nbt.setDouble(prefix + "zPos", value3);
+	}
+	
+	public static LPPosition readFromNBT(String prefix, NBTTagCompound nbt) {
+		if(nbt.hasKey(prefix + "xPos") && nbt.hasKey(prefix + "yPos") && nbt.hasKey(prefix + "zPos")) {
+			return new LPPosition(nbt.getDouble(prefix + "xPos"), nbt.getDouble(prefix + "yPos"), nbt.getDouble(prefix + "zPos"));
+		}
+		return null;
 	}
 }

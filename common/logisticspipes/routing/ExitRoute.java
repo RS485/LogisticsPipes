@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.routing.debug.ExitRouteDebug;
@@ -97,6 +98,11 @@ public class ExitRoute implements Comparable<ExitRoute>{
 	//copies
 	public EnumSet<PipeRoutingConnectionType> getFlags() {
 		return EnumSet.copyOf(connectionDetails);
+	}
+  
+	// Doesn't copy
+	public Set<PipeRoutingConnectionType> getFlagsNoCopy() {
+		return Collections.unmodifiableSet(connectionDetails);
 	}
 
 	@Override

@@ -72,8 +72,20 @@ public class DevEnvHelper {
 	private static final Attributes.Name	COREMODCONTAINSFMLMOD	= new Attributes.Name("FMLCorePluginContainsFMLMod");
 	
 	@SuppressWarnings("unchecked")
-	public static void detectCoreModInEclipseSettings() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException, IOException {
-		if(!LPConstants.DEBUG || !new File(".classpath").exists()) return;
+	public static void detectCoreModInDevEnv() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, NoSuchFieldException, IOException {
+
+		// check for development environment
+		if (!LPConstants.DEBUG) {
+			return;
+		} else {
+			boolean eclipseCheck = (new File(".classpath")).exists();
+			boolean ideaCheck = System.getProperty("java.class.path").contains("idea_rt.jar");
+
+			if (!eclipseCheck && !ideaCheck) {
+				return;
+			}
+		}
+
 		Method handleCascadingTweak = CoreModManager.class.getDeclaredMethod("handleCascadingTweak", File.class, JarFile.class, String.class, LaunchClassLoader.class, Integer.class);
 		handleCascadingTweak.setAccessible(true);
 		Method loadCoreMod = CoreModManager.class.getDeclaredMethod("loadCoreMod", LaunchClassLoader.class, String.class, File.class);

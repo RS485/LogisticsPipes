@@ -21,9 +21,16 @@ public class ClassTileMultiBlockHandler {
 		boolean noChecksumMatch = false;
 		String sumHandleEvent1 = ASMHelper.getCheckSumForMethod(reader, "getAdjTileEntitySafe", "(I)Lnet/minecraft/tileentity/TileEntity;");
 		String sumHandleEvent2 = ASMHelper.getCheckSumForMethod(reader, "getConnectedSide", "(B)Lcofh/thermaldynamics/multiblock/IMultiBlock;");
-		if(!"A77B2F423A03F5546E6B9C8CE5090F830BAE6295".equals(sumHandleEvent1) && !"8CCBC71E3BA6E6392E4579531996A627D3B018E9".equals(sumHandleEvent1)) noChecksumMatch = true;
-		if(!"D33508DD271ECD3ABD6A144DA28A1012F2A45CA4".equals(sumHandleEvent2)) noChecksumMatch = true; // Make sure it is the corrected method
-		if(noChecksumMatch) {
+		if (!"A77B2F423A03F5546E6B9C8CE5090F830BAE6295".equals(sumHandleEvent1)
+				&& !"8CCBC71E3BA6E6392E4579531996A627D3B018E9".equals(sumHandleEvent1)
+				&& !"35A53BFC01EED7CC33BBD5F8DB1F715A515C62CE".equals(sumHandleEvent1)) {
+			noChecksumMatch = true;
+		}
+		if (!"D33508DD271ECD3ABD6A144DA28A1012F2A45CA4".equals(sumHandleEvent2)
+				&& !"35A53BFC01EED7CC33BBD5F8DB1F715A515C62CE".equals(sumHandleEvent2)) {
+			noChecksumMatch = true;
+		}
+		if (noChecksumMatch) {
 			System.out.println("getAdjTileEntitySafe: " + sumHandleEvent1);
 			System.out.println("getConnectedSide: " + sumHandleEvent2);
 			new UnsupportedOperationException("This LP version isn't compatible with the installed TD version.").printStackTrace();

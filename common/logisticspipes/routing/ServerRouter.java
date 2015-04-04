@@ -590,12 +590,14 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			EnumSet<PipeRoutingConnectionType> lowestCostClosedFlags = closedSet.get(lowestCostNode.destination.getSimpleID());
 			if(lowestCostClosedFlags == null)
 				lowestCostClosedFlags = EnumSet.noneOf(PipeRoutingConnectionType.class);
-			if(lowestCostClosedFlags.containsAll(lowestCostNode.getFlags())) continue;
+			if(lowestCostClosedFlags.containsAll(lowestCostNode.getFlagsNoCopy())) continue;
 			
-			EnumSet<PipeRoutingConnectionType> newFlags = lowestCostNode.getFlags();
-			newFlags.removeAll(lowestCostClosedFlags);
+			if (debug.isDebug()) {
+				EnumSet<PipeRoutingConnectionType> newFlags = lowestCostNode.getFlags();
+				newFlags.removeAll(lowestCostClosedFlags);
 			
-			debug.newFlagsForPipe(newFlags);
+				debug.newFlagsForPipe(newFlags);
+			}
 			
 			EnumMap<PipeRoutingConnectionType, List<List<IFilter>>> filters = filterList.get(lowestCostNode.destination.getSimpleID());
 			
@@ -603,7 +605,9 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			
 			if(filters != null) {
 				boolean containsNewInfo = false;
-				for(PipeRoutingConnectionType type: newFlags) {
+				for(PipeRoutingConnectionType type: lowestCostNode.getFlagsNoCopy()) {
+					if (lowestCostClosedFlags.contains(type))
+						continue;
 					if(!filters.containsKey(type)) {
 						containsNewInfo = true;
 						break;
@@ -633,7 +637,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			}
 			if(lsa == null) {
 				lowestCostNode.removeFlags(lowestCostClosedFlags);
-				lowestCostClosedFlags.addAll(lowestCostNode.getFlags());
+				lowestCostClosedFlags.addAll(lowestCostNode.getFlagsNoCopy());
 				if(lowestCostNode.containsFlag(PipeRoutingConnectionType.canRouteTo) || lowestCostNode.containsFlag(PipeRoutingConnectionType.canRequestFrom))
 					routeCosts.add(lowestCostNode);
 				closedSet.set(lowestCostNode.destination.getSimpleID(),lowestCostClosedFlags);
@@ -685,7 +689,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		    lowestCostClosedFlags = lowestCostClosedFlags.clone();
 		    
 			lowestCostNode.removeFlags(lowestCostClosedFlags);
-			lowestCostClosedFlags.addAll(lowestCostNode.getFlags());
+			lowestCostClosedFlags.addAll(lowestCostNode.getFlagsNoCopy());
 			if(lowestCostNode.containsFlag(PipeRoutingConnectionType.canRouteTo) || lowestCostNode.containsFlag(PipeRoutingConnectionType.canRequestFrom) || lowestCostNode.containsFlag(PipeRoutingConnectionType.canPowerSubSystemFrom))
 				routeCosts.add(lowestCostNode);
 			EnumMap<PipeRoutingConnectionType, List<List<IFilter>>> map = filterList.get(lowestCostNode.destination.getSimpleID());
@@ -693,7 +697,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 				map = new EnumMap<PipeRoutingConnectionType, List<List<IFilter>>>(PipeRoutingConnectionType.class);
 				filterList.set(lowestCostNode.destination.getSimpleID(), map);
 			}
-			for(PipeRoutingConnectionType type :lowestCostNode.getFlags()) {
+			for(PipeRoutingConnectionType type : lowestCostNode.getFlagsNoCopy()) {
 				if(!map.containsKey(type)) {
 					map.put(type, new ArrayList<List<IFilter>>());
 				}

@@ -387,7 +387,8 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 				securityDelay = 0;
 			}
 			if(securityDelay > 20) {
-				inv.clearInventorySlotContents(8);
+				secInv.clearInventorySlotContents(0);
+				InventoryChanged(secInv);
 			}
 		}
 	}

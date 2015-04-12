@@ -842,7 +842,10 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		clearPipeCache();
 		setDestroied(true);
 		SimpleServiceLocator.routerManager.removeRouter(this.simpleID);
-		//updateAdjacentAndLsa(); // Handled by the ITileEntityChangeListener
+		for(List<ITileEntityChangeListener> list:listenedPipes) {
+			list.remove(localChangeListener);
+		}
+		updateAdjacentAndLsa();
 		releaseSimpleID(simpleID);
 	}
 

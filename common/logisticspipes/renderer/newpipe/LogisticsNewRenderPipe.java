@@ -19,6 +19,8 @@ import logisticspipes.textures.Textures;
 import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Quartet;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
@@ -34,11 +36,11 @@ import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.CCRenderState.IVertexOperation;
 import codechicken.lib.render.uv.IconTransformation;
-import codechicken.lib.render.uv.UVScale;
 import codechicken.lib.render.uv.UVTransformationList;
 import codechicken.lib.render.uv.UVTranslation;
 import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Translation;
+import codechicken.lib.vec.Vector3;
 
 public class LogisticsNewRenderPipe {
 	
@@ -252,6 +254,15 @@ public class LogisticsNewRenderPipe {
 	static Map<Edge, Quartet<CCModel, CCModel, CCModel, CCModel>> centerEdgeLEDs = new HashMap<Edge, Quartet<CCModel,CCModel,CCModel,CCModel>>();
 	static Map<ForgeDirection, List<CCModel>> sidedInnerLEDs = new HashMap<ForgeDirection, List<CCModel>>();
 	static Map<ForgeDirection, List<CCModel>> sidedOuterLEDs = new HashMap<ForgeDirection, List<CCModel>>();
+	
+	static Map<ScaleObject, CCModel> scaleMap = new HashMap<ScaleObject, CCModel>();
+	
+	@Data
+	@AllArgsConstructor
+	private static class ScaleObject {
+		private final CCModel original;
+		private final double scale;
+	}
 	
 	static CCModel innerTransportBox;
 
@@ -668,8 +679,30 @@ public class LogisticsNewRenderPipe {
 							}
 						}
 					}
-					for(CCModel model:sideNormal.get(dir)) {
-						objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(model, texture));
+					for(CCModel model: sideNormal.get(dir)) {
+						Block block = new LPPosition((TileEntity)pipeTile).moveForward(dir).getBlock(pipeTile.getWorld());
+						double[] bounds = { block.getBlockBoundsMinY(), block.getBlockBoundsMinZ(), block.getBlockBoundsMinX(), block.getBlockBoundsMaxY(), block.getBlockBoundsMaxZ(), block.getBlockBoundsMaxX() };
+						double bound = bounds[dir.ordinal() / 2 + (dir.ordinal() % 2 == 0 ? 3 : 0)];
+						ScaleObject key = new ScaleObject(model, bound);
+						CCModel model2 = scaleMap.get(key);
+						if(model2 == null) {
+							model2 = model.copy();
+							Vector3 min = model2.bounds().min;
+							model2.apply(new Translation(min).inverse());
+							double toAdd = 1;
+							if(dir.ordinal() % 2 == 1) {
+								toAdd = 1 + (bound / LPConstants.PIPE_MIN_POS);
+								model2.apply(new Scale(dir.offsetX != 0 ? toAdd : 1, dir.offsetY != 0 ? toAdd : 1, dir.offsetZ != 0 ? toAdd : 1));
+							} else {
+								bound = 1 - bound;
+								toAdd = 1 + (bound / LPConstants.PIPE_MIN_POS);
+								model2.apply(new Scale(dir.offsetX != 0 ? toAdd : 1, dir.offsetY != 0 ? toAdd : 1, dir.offsetZ != 0 ? toAdd : 1));
+								model2.apply(new Translation(dir.offsetX * bound, dir.offsetY * bound, dir.offsetZ * bound));
+							}
+							model2.apply(new Translation(min));
+							scaleMap.put(key, model2);
+						}
+						objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(model2, texture));
 					}
 					/*
 					for(CCModel model: sidedInnerLEDs.get(dir)) {

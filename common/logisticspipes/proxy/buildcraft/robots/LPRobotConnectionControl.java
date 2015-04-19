@@ -116,6 +116,7 @@ public class LPRobotConnectionControl implements ISpecialPipedConnection {
 	public List<ConnectionInformation> getConnections(IPipeInformationProvider startPipe, EnumSet<PipeRoutingConnectionType> connection, ForgeDirection side) {
 		List<ConnectionInformation> list = new ArrayList<ConnectionInformation>();
 		LogisticsTileGenericPipe pipe = (LogisticsTileGenericPipe) startPipe;
+		if(pipe == null || pipe.tilePart.getOriginal() == null) return list; // Proxy got disabled
 		LPPosition pos = new LPPosition(startPipe);
 		pos.center();
 		for(ForgeDirection dir:ForgeDirection.VALID_DIRECTIONS) {

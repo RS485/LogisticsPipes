@@ -11,15 +11,14 @@ package logisticspipes.interfaces.routing;
 import java.util.List;
 import java.util.Map;
 
+import logisticspipes.request.RequestTree;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.routing.order.LogisticsOrder;
 import logisticspipes.utils.item.ItemIdentifier;
 
-public interface IProvideItems {
-	public void canProvide(RequestTreeNode tree, int donePromisses, List<IFilter> filter);
+public interface IProvideItems extends IProvide {
 	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination, IAdditionalTargetInformation info);
 	public void getAllItems(Map<ItemIdentifier, Integer> list, List<IFilter> filter);
-	public IRouter getRouter();
 }

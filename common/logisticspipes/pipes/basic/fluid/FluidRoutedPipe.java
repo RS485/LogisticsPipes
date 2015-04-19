@@ -14,6 +14,8 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ItemRoutingInformation;
+import logisticspipes.routing.order.LogisticsFluidOrderManager;
+import logisticspipes.routing.order.LogisticsItemOrderManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
@@ -32,6 +34,7 @@ import net.minecraftforge.fluids.IFluidHandler;
 public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 
 	private WorldUtil worldUtil;
+	private LogisticsFluidOrderManager _orderFluidManager;
 	
 	public FluidRoutedPipe(Item item) {
 		super(new PipeFluidTransportLogistics(), item);
@@ -234,8 +237,10 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 		return true;
 	}
 	
-	public boolean sharesTankWith(FluidRoutedPipe other){
-		List<TileEntity> theirs = other.getAllTankTiles();
+	@Override
+	public boolean sharesInterestWith(CoreRoutedPipe other) {
+		if(!(other instanceof FluidRoutedPipe)) return false;
+		List<TileEntity> theirs = ((FluidRoutedPipe)other).getAllTankTiles();
 		for(TileEntity tile:this.getAllTankTiles()) {
 			if(theirs.contains(tile)) {
 				return true;
@@ -250,5 +255,10 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 			list.addAll(SimpleServiceLocator.specialTankHandler.getBaseTileFor(pair.getValue1()));
 		}
 		return list;
+	}
+
+	public LogisticsFluidOrderManager getFluidOrderManager() {
+		_orderFluidManager = _orderFluidManager != null ? _orderFluidManager : new LogisticsFluidOrderManager();
+		return this._orderFluidManager;
 	}
 }

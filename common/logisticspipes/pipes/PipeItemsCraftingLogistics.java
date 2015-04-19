@@ -37,10 +37,15 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCQueued;
 import logisticspipes.proxy.computers.interfaces.CCType;
-import logisticspipes.request.CraftingTemplate;
+import logisticspipes.request.ICraftingTemplate;
+import logisticspipes.request.IPromise;
+import logisticspipes.request.ItemCraftingTemplate;
+import logisticspipes.request.RequestTree;
 import logisticspipes.request.RequestTreeNode;
+import logisticspipes.request.resources.IResource;
 import logisticspipes.routing.LogisticsPromise;
-import logisticspipes.routing.order.IOrderInfoProvider.RequestType;
+import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
+import logisticspipes.routing.order.LogisticsItemOrderManager;
 import logisticspipes.routing.order.LogisticsOrder;
 import logisticspipes.routing.order.LogisticsOrderManager;
 import logisticspipes.textures.Textures;
@@ -74,7 +79,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		craftingModule = new ModuleCrafter(this);
 		craftingModule.registerPosition(ModulePositionType.IN_PIPE, 0);
 		throttleTime = 40;
-		_orderManager = new LogisticsOrderManager(this); // null by default when not needed
+		_orderItemManager = new LogisticsItemOrderManager(this); // null by default when not needed
 	}
 
 	@Override
@@ -85,8 +90,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	
 	@Override
 	public void onAllowedRemoval() {
-		while(_orderManager.hasOrders(RequestType.CRAFTING)) {
-			_orderManager.sendFailed();
+		while(_orderItemManager.hasOrders(ResourceType.CRAFTING)) {
+			_orderItemManager.sendFailed();
 		}
 	}
 
@@ -122,17 +127,16 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 	
 	@Override
-	public void canProvide(RequestTreeNode tree, int donePromisses, List<IFilter> filters) {
-		
+	public void canProvide(RequestTreeNode tree, RequestTree root, List<IFilter> filters) {
 		if (!isEnabled()){
 			return;
 		}
-		craftingModule.canProvide(tree, donePromisses, filters);
+		craftingModule.canProvide(tree, root, filters);
 
 	}
 
 	@Override
-	public CraftingTemplate addCrafting(ItemIdentifier toCraft) {
+	public ICraftingTemplate addCrafting(IResource toCraft) {
 		
 		if (!isEnabled()){
 			return null;
@@ -147,7 +151,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 
 	@Override
-	public void registerExtras(LogisticsPromise promise) {		
+	public void registerExtras(IPromise promise) {		
 		craftingModule.registerExtras(promise);
 	}
 
@@ -159,7 +163,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 
 	@Override
-	public boolean canCraft(ItemIdentifier toCraft) {
+	public boolean canCraft(IResource toCraft) {
 		return craftingModule.canCraft(toCraft);
 	}
 	@Override
@@ -178,7 +182,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	
 	@Override
 	public int getTodo() {
-		return _orderManager.totalItemsCountInAllOrders();
+		return _orderItemManager.totalAmountCountInAllOrders();
 	}
 
 	@Override
@@ -216,7 +220,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 	private void checkContentUpdate() {
 		doContentUpdate = false;
-		LinkedList<ItemIdentifierStack> all = _orderManager.getContentList(this.getWorld());
+		LinkedList<ItemIdentifierStack> all = _orderItemManager.getContentList(this.getWorld());
 		if(!oldList.equals(all)) {
 			oldList.clear();
 			oldList.addAll(all);
@@ -237,7 +241,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	
 	@Override
 	public double getLoadFactor() {
-		return (_orderManager.totalItemsCountInAllOrders()+63.0)/64.0;
+		return (_orderItemManager.totalAmountCountInAllOrders()+63.0)/64.0;
 	}
 	
 	/* ComputerCraftCommands */

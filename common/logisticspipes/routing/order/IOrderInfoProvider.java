@@ -5,13 +5,13 @@ import java.util.List;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
 public interface IOrderInfoProvider {
-	public enum RequestType {PROVIDER, CRAFTING, EXTRA};
+	public enum ResourceType {PROVIDER, CRAFTING, EXTRA};
 	
 	boolean isFinished();
 
-	ItemIdentifierStack getItem();
+	ItemIdentifierStack getAsDisplayItem();
 
-	RequestType getType();
+	ResourceType getType();
 
 	int getRouterId();
 

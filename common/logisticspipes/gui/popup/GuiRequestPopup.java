@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import logisticspipes.request.resources.IResource;
+import logisticspipes.request.resources.IResource.ColorCode;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -27,6 +29,9 @@ public class GuiRequestPopup extends SubGuiScreen {
 				for(Object oTwo:(Collection<?>)o) {
 					if(oTwo instanceof ItemIdentifierStack) {
 						textArray.add(((ItemIdentifierStack)oTwo).getFriendlyName());
+					}
+					if(oTwo instanceof IResource) {
+						textArray.add(((IResource)oTwo).getDisplayText(ColorCode.NONE));
 					}
 				}
 			} else {

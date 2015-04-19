@@ -16,7 +16,6 @@ import logisticspipes.gui.popup.RequestMonitorPopup;
 import logisticspipes.interfaces.IDiskProvider;
 import logisticspipes.interfaces.ISlotClick;
 import logisticspipes.interfaces.ISpecialItemRenderer;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.block.CraftingCycleRecipe;
 import logisticspipes.network.packets.orderer.DiskRequestConectPacket;
@@ -26,6 +25,7 @@ import logisticspipes.network.packets.orderer.RequestSubmitListPacket;
 import logisticspipes.network.packets.orderer.RequestSubmitPacket;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.request.resources.IResource;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.gui.BasicGuiHelper;
@@ -233,7 +233,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			drawRect(guiLeft + 164 + a, guiTop + 65 - a, guiLeft + 166 + a, guiTop + 67 - a, Colors.DarkGrey);
 		}
 		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 20, guiTop + 150);
-		for(final Entry<Integer, Pair<ItemIdentifierStack, LinkedLogisticsOrderList>> entry:_table.watchedRequests.entrySet()) {
+		for(final Entry<Integer, Pair<IResource, LinkedLogisticsOrderList>> entry:_table.watchedRequests.entrySet()) {
 			if(!handledExtention.get(entry.getKey())) {
 				handledExtention.set(entry.getKey());
 				extentionControllerLeft.addExtention(new GuiExtention() {
@@ -261,7 +261,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 						GL11.glEnable(GL11.GL_LIGHTING);
 						GL11.glEnable(GL11.GL_DEPTH_TEST);
 						RenderHelper.enableGUIStandardItemLighting();
-						ItemStack stack = entry.getValue().getValue1().makeNormalStack();
+						ItemStack stack = entry.getValue().getValue1().getDisplayItem().makeNormalStack();
 						itemRender.renderItemAndEffectIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5);
 						itemRender.renderItemOverlayIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5, "");
 						String s = StringUtil.getFormatedStackSize(stack.stackSize);
@@ -287,7 +287,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 							int x = left + 6;
 							int y = top + 25;
 							for(IOrderInfoProvider order: list) {
-								stack = order.getItem().makeNormalStack();
+								stack = order.getAsDisplayItem().makeNormalStack();
 								if(stack.stackSize <= 0) continue;
 								GL11.glEnable(GL11.GL_LIGHTING);
 								GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -326,14 +326,14 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 						int line = 1;
 						width = 4;
 						for(IOrderInfoProvider order: list) {
-							ItemStack stack = order.getItem().makeNormalStack();
+							ItemStack stack = order.getAsDisplayItem().makeNormalStack();
 							if(stack.stackSize <= 0) continue;
 							if(line++ % (4 * 4) == 0) {
 								width++;
 							}
 						}
 						for(IOrderInfoProvider order: list) {
-							ItemStack stack = order.getItem().makeNormalStack();
+							ItemStack stack = order.getAsDisplayItem().makeNormalStack();
 							if(stack.stackSize <= 0) continue;
 							x += 18;
 							if(x > left + getFinalWidth() - 18) {
@@ -366,13 +366,13 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 									List<String> list = new ArrayList<String>();
 									list.add(ChatColor.BLUE + "Request Type: " + ChatColor.YELLOW + order.getType().name());
 									list.add(ChatColor.BLUE + "Send to Router ID: " + ChatColor.YELLOW + order.getRouterId());
-									BasicGuiHelper.displayItemToolTip(new Object[]{xPos - 10, yPos, order.getItem().makeNormalStack(), true, list}, zLevel, guiLeft, guiTop, false, false);
+									BasicGuiHelper.displayItemToolTip(new Object[]{xPos - 10, yPos, order.getAsDisplayItem().makeNormalStack(), true, list}, zLevel, guiLeft, guiTop, false, false);
 								}
 							}
 						} else {
 							List<String> list = new ArrayList<String>();
 							list.add(ChatColor.BLUE + "Request ID: " + ChatColor.YELLOW + entry.getKey());
-							BasicGuiHelper.displayItemToolTip(new Object[]{xPos - 10, yPos, entry.getValue().getValue1().makeNormalStack(), true, list}, zLevel, guiLeft, guiTop, false, false);
+							BasicGuiHelper.displayItemToolTip(new Object[]{xPos - 10, yPos, entry.getValue().getValue1().getDisplayItem().makeNormalStack(), true, list}, zLevel, guiLeft, guiTop, false, false);
 						}
 					}
 				});
@@ -563,7 +563,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		super.handleMouseInputSub();
 	}
 
-	public void handleRequestAnswer(Collection<ItemIdentifierStack> items, boolean error, ISubGuiControler control, EntityPlayer player) {
+	public void handleRequestAnswer(Collection<IResource> items, boolean error, ISubGuiControler control, EntityPlayer player) {
 		while(control.hasSubGui()) {
 			control = control.getSubGui();
 		}
@@ -574,7 +574,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		}
 	}
 
-	public void handleSimulateAnswer(Collection<ItemIdentifierStack> used, Collection<ItemIdentifierStack> missing, ISubGuiControler control, EntityPlayer player) {
+	public void handleSimulateAnswer(Collection<IResource> used, Collection<IResource> missing, ISubGuiControler control, EntityPlayer player) {
 		while(control.hasSubGui()) {
 			control = control.getSubGui();
 		}

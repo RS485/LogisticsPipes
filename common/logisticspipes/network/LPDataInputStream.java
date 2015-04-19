@@ -14,12 +14,14 @@ import java.util.List;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.request.resources.IResource;
+import logisticspipes.request.resources.ResourceNetwork;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.order.ClientSideOrderInfo;
 import logisticspipes.routing.order.IOrderInfoProvider;
-import logisticspipes.routing.order.IOrderInfoProvider.RequestType;
+import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -178,7 +180,7 @@ public class LPDataInputStream extends DataInputStream {
 		int routerId = this.readInt();
 		boolean isFinished = this.readBoolean();
 		boolean inProgress = this.readBoolean();
-		RequestType type = this.readEnum(RequestType.class);
+		ResourceType type = this.readEnum(ResourceType.class);
 		List<Float> list = this.readList(new IReadListObject<Float>() {
 			@Override
 			public Float readObject(LPDataInputStream data) throws IOException {
@@ -226,5 +228,9 @@ public class LPDataInputStream extends DataInputStream {
 			array[i] = this.readLong();
 		}
 		return array;
+	}
+
+	public IResource readIResource() throws IOException {
+		return ResourceNetwork.readResource(this);
 	}
 }

@@ -12,6 +12,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.item.ItemStack;
@@ -24,7 +25,7 @@ import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 import net.minecraftforge.fluids.IFluidTank;
 
-public class FluidIdentifier {
+public class FluidIdentifier implements ILPCCTypeHolder {
 	private final static ReadWriteLock dblock = new ReentrantReadWriteLock();
 	private final static Lock rlock = dblock.readLock();
 	private final static Lock wlock = dblock.writeLock();
@@ -282,5 +283,16 @@ public class FluidIdentifier {
 
 	public ItemIdentifier getItemIdentifier() {
 		return SimpleServiceLocator.logisticsFluidManager.getFluidContainer(makeFluidStack(0)).getItem();
+	}
+
+	private Object ccObject;
+	@Override
+	public void setCCType(Object type) {
+		ccObject = type;
+	}
+
+	@Override
+	public Object getCCType() {
+		return ccObject;
 	}
 }

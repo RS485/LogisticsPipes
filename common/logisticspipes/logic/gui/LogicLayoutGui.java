@@ -267,7 +267,7 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 			this.mc.getTextureManager().bindTexture(achievementTextures);
 			this.drawTexturedModalRect(startLeft - 5, yPos - 5, 0, 202, 26, 26);
 			GL11.glColor4f(0.7F, 0.7F, 0.7F, 1.0F);
-			renderItemAt(list.get(i).getItem(), startLeft, yPos);
+			renderItemAt(list.get(i).getAsDisplayItem(), startLeft, yPos);
 			if(list.get(i).isInProgress() && list.get(i).getMachineProgress() != 0) {
 				drawRect(startLeft - 4, yPos + 20, startLeft + 20, yPos + 24, 0xff000000);
 				drawRect(startLeft - 3, yPos + 21, startLeft + 19, yPos + 23, 0xffffffff);
@@ -279,7 +279,7 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 					List<String> tooltipList = new ArrayList<String>();
 					tooltipList.add(ChatColor.BLUE + "Request Type: " + ChatColor.YELLOW + order.getType().name());
 					tooltipList.add(ChatColor.BLUE + "Send to Router ID: " + ChatColor.YELLOW + order.getRouterId());
-					tooltip = new Object[] { (int)(par1 * zoom.zoom - 10), (int)(par2 * zoom.zoom), order.getItem().makeNormalStack(), true, tooltipList };
+					tooltip = new Object[] { (int)(par1 * zoom.zoom - 10), (int)(par2 * zoom.zoom), order.getAsDisplayItem().makeNormalStack(), true, tooltipList };
 				}
 			}
 			startLeft += 30;

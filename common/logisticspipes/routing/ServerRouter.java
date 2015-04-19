@@ -40,6 +40,10 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.request.resources.DictResource;
+import logisticspipes.request.resources.FluidResource;
+import logisticspipes.request.resources.IResource;
+import logisticspipes.request.resources.ItemResource;
 import logisticspipes.routing.pathfinder.PathFinder;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.utils.OneList;
@@ -1159,6 +1163,31 @@ outer:
 			}
 		}
 		return s;
+	}
+	
+	public static BitSet getRoutersInterestedIn(IResource item) {
+		if(item instanceof ItemResource) {
+			return getRoutersInterestedIn(((ItemResource)item).getItem());
+		} else if(item instanceof FluidResource) {
+			return getRoutersInterestedIn(((FluidResource)item).getFluid().getItemIdentifier());
+		} else if(item instanceof DictResource) {
+			DictResource dict = (DictResource) item;
+			BitSet s = new BitSet(getBiggestSimpleID()+1);
+			if(_genericInterests != null){
+				for(IRouter r:_genericInterests){
+					s.set(r.getSimpleID());
+				}
+			}
+			for(Entry<ItemIdentifier, Set<IRouter>> entry:_globalSpecificInterests.entrySet()) {
+				if(dict.matches(entry.getKey())) {
+					for(IRouter r:entry.getValue()) {
+						s.set(r.getSimpleID());
+					}
+				}
+			}
+			return s;
+		}
+		return new BitSet(getBiggestSimpleID()+1);
 	}
 
 	@Override

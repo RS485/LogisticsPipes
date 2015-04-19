@@ -8,8 +8,8 @@ import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.request.resources.IResource;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
-import logisticspipes.utils.item.ItemIdentifierStack;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -20,7 +20,7 @@ public class OrdererWatchPacket extends IntegerCoordinatesPacket {
 	
 	@Getter
 	@Setter
-	private ItemIdentifierStack stack;
+	private IResource stack;
 	
 	@Getter
 	@Setter
@@ -33,14 +33,14 @@ public class OrdererWatchPacket extends IntegerCoordinatesPacket {
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
 		super.writeData(data);
-		data.writeItemIdentifierStack(stack);
+		data.writeIResource(stack);
 		data.writeLinkedLogisticsOrderList(orders);
 	}
 
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);
-		stack = data.readItemIdentifierStack();
+		stack = data.readIResource();
 		orders = data.readLinkedLogisticsOrderList();
 	}
 

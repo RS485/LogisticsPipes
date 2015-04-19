@@ -8,10 +8,13 @@ import logisticspipes.asm.ClientSideOnlyMethodContent;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.orderer.GuiOrderer;
 import logisticspipes.gui.orderer.GuiRequestTable;
+import logisticspipes.network.IReadListObject;
+import logisticspipes.network.IWriteListObject;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.request.resources.IResource;
+import logisticspipes.request.resources.IResource.ColorCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -24,11 +27,11 @@ public class ComponentList extends ModernPacket {
 
 	@Getter
 	@Setter
-	private Collection<ItemIdentifierStack> used = new ArrayList<ItemIdentifierStack>();
+	private Collection<IResource> used = new ArrayList<IResource>();
 	
 	@Getter
 	@Setter
-	private Collection<ItemIdentifierStack> missing = new ArrayList<ItemIdentifierStack>();
+	private Collection<IResource> missing = new ArrayList<IResource>();
 	
 	public ComponentList(int id) {
 		super(id);
@@ -47,37 +50,46 @@ public class ComponentList extends ModernPacket {
 		} else if (Configs.DISPLAY_POPUP && FMLClientHandler.instance().getClient().currentScreen instanceof GuiRequestTable) {
 			((GuiRequestTable)FMLClientHandler.instance().getClient().currentScreen).handleSimulateAnswer(used, missing, (GuiRequestTable)FMLClientHandler.instance().getClient().currentScreen, player);
 		} else {
-			for(ItemIdentifierStack item:used) {
-				player.addChatComponentMessage(new ChatComponentText("Component: " + item.getFriendlyName()));
+			for(IResource item:used) {
+				player.addChatComponentMessage(new ChatComponentText("Component: " + item.getDisplayText(ColorCode.SUCCESS)));
 			}
-			for(ItemIdentifierStack item:missing) {
-				player.addChatComponentMessage(new ChatComponentText("Missing: " + item.getFriendlyName()));
+			for(IResource item:missing) {
+				player.addChatComponentMessage(new ChatComponentText("Missing: " + item.getDisplayText(ColorCode.MISSING)));
 			}
 		}
 	}
 	
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
-		for(ItemIdentifierStack item:used) {
-			data.write(1);
-			data.writeItemIdentifierStack(item);
-		}
-		data.write(0);
-		for(ItemIdentifierStack item:missing) {
-			data.write(1);
-			data.writeItemIdentifierStack(item);
-		}
+		data.writeCollection(used, new IWriteListObject<IResource>() {
+			@Override
+			public void writeObject(LPDataOutputStream data, IResource object) throws IOException {
+				data.writeIResource(object);
+			}
+		});
+		data.writeCollection(missing, new IWriteListObject<IResource>() {
+			@Override
+			public void writeObject(LPDataOutputStream data, IResource object) throws IOException {
+				data.writeIResource(object);
+			}
+		});
 		data.write(0);
 	}
 
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
-		while(data.read() != 0) {
-			used.add(data.readItemIdentifierStack());
-		}
-		while(data.read() != 0) {
-			missing.add(data.readItemIdentifierStack());
-		}
+		used = data.readList(new IReadListObject<IResource>() {
+			@Override
+			public IResource readObject(LPDataInputStream data) throws IOException {
+				return data.readIResource();
+			}
+		});
+		missing = data.readList(new IReadListObject<IResource>() {
+			@Override
+			public IResource readObject(LPDataInputStream data) throws IOException {
+				return data.readIResource();
+			}
+		});
 	}
 }
 

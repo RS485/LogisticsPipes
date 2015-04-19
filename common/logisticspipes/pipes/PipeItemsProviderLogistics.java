@@ -48,13 +48,16 @@ import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.request.RequestTree;
 import logisticspipes.request.RequestTreeNode;
+import logisticspipes.request.resources.DictResource;
+import logisticspipes.request.resources.ItemResource;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsPromise;
-import logisticspipes.routing.LogisticsPromise.PromiseType;
-import logisticspipes.routing.order.IOrderInfoProvider.RequestType;
+import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
+import logisticspipes.routing.order.LogisticsItemOrder;
+import logisticspipes.routing.order.LogisticsItemOrderManager;
 import logisticspipes.routing.order.LogisticsOrder;
-import logisticspipes.routing.order.LogisticsOrderManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.AdjacentTile;
@@ -83,7 +86,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	public final LinkedList<ItemIdentifierStack> itemListOrderer = new LinkedList<ItemIdentifierStack>();
 	private final HUDProvider HUD = new HUDProvider(this);
 	
-	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager(this);
+	protected LogisticsItemOrderManager _orderManager = new LogisticsItemOrderManager(this);
 	private boolean doContentUpdate = true;
 	
 	protected ModuleProvider myModule;
@@ -91,7 +94,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		super(item);
 	}
 	
-	public PipeItemsProviderLogistics(Item item, LogisticsOrderManager logisticsOrderManager) {
+	public PipeItemsProviderLogistics(Item item, LogisticsItemOrderManager logisticsOrderManager) {
 		this(item);
 		_orderManager = logisticsOrderManager;
 		myModule = new ModuleProvider();
@@ -100,7 +103,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	
 	@Override
 	public void onAllowedRemoval() {
-		while(_orderManager.hasOrders(RequestType.PROVIDER)) {
+		while(_orderManager.hasOrders(ResourceType.PROVIDER)) {
 			_orderManager.sendFailed();
 		}
 	}
@@ -240,17 +243,17 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 			checkContentUpdate(null);
 		}
 		
-		if (!_orderManager.hasOrders(RequestType.PROVIDER) || getWorld().getTotalWorldTime() % 6 != 0) return;
+		if (!_orderManager.hasOrders(ResourceType.PROVIDER) || getWorld().getTotalWorldTime() % 6 != 0) return;
 
 		int itemsleft = itemsToExtract();
 		int stacksleft = stacksToExtract();
-		LogisticsOrder firstOrder = null;
-		LogisticsOrder order = null;
-		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders(RequestType.PROVIDER) && (firstOrder == null || firstOrder != order)) {
+		LogisticsItemOrder firstOrder = null;
+		LogisticsItemOrder order = null;
+		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders(ResourceType.PROVIDER) && (firstOrder == null || firstOrder != order)) {
 			if(firstOrder == null)
 				firstOrder = order;
-			order = _orderManager.peekAtTopRequest(RequestType.PROVIDER);
-			int sent = sendStack(order.getItem(), itemsleft, order.getDestination().getRouter().getSimpleID(), order.getInformation());
+			order = _orderManager.peekAtTopRequest(ResourceType.PROVIDER);
+			int sent = sendStack(order.getItemStack(), itemsleft, order.getRouter().getSimpleID(), order.getInformation());
 			if(sent < 0) break;
 			spawnParticle(Particles.VioletParticle, 3);
 			stacksleft -= 1;
@@ -259,28 +262,42 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	}
 
 	@Override
-	public void canProvide(RequestTreeNode tree, int donePromisses, List<IFilter> filters) {
-		
+	public void canProvide(RequestTreeNode tree, RequestTree root, List<IFilter> filters) {
 		if (!isEnabled()){
 			return;
 		}
-		
-		for(IFilter filter:filters) {
-			if(filter.isBlocked() == filter.isFilteredItem(tree.getStackItem().getUndamaged()) || filter.blockProvider()) return;
+		if(tree.getRequestType() instanceof ItemResource) {
+			ItemIdentifier item = ((ItemResource) tree.getRequestType()).getItem();
+			for(IFilter filter:filters) {
+				if(filter.isBlocked() == filter.isFilteredItem(item.getUndamaged()) || filter.blockProvider()) return;
+			}
+			
+			// Check the transaction and see if we have helped already
+			int canProvide = getAvailableItemCount(item);
+			canProvide -= root.getAllPromissesFor(this, item);
+			if (canProvide < 1) return;
+			LogisticsPromise promise = new LogisticsPromise(item, Math.min(canProvide, tree.getMissingAmount()), this, ResourceType.PROVIDER);
+			tree.addPromise(promise);
+		} else if(tree.getRequestType() instanceof DictResource) {
+			DictResource dict = (DictResource) tree.getRequestType();
+			HashMap<ItemIdentifier, Integer> available = new HashMap<ItemIdentifier, Integer>();
+			getAllItems(available, filters);
+			for(Entry<ItemIdentifier, Integer> item: available.entrySet()) {
+				if(!dict.matches(item.getKey())) continue;
+				int canProvide = getAvailableItemCount(item.getKey());
+				canProvide -= root.getAllPromissesFor(this, item.getKey());
+				if (canProvide < 1) continue;
+				LogisticsPromise promise = new LogisticsPromise(item.getKey(), Math.min(canProvide, tree.getMissingAmount()), this, ResourceType.PROVIDER);
+				tree.addPromise(promise);
+				if(tree.getMissingAmount() <= 0) break;
+			}
 		}
-		
-		// Check the transaction and see if we have helped already
-		int canProvide = getAvailableItemCount(tree.getStackItem());
-		canProvide -= donePromisses;
-		if (canProvide < 1) return;
-		LogisticsPromise promise = new LogisticsPromise(tree.getStackItem(), Math.min(canProvide, tree.getMissingItemCount()), this, PromiseType.PROVIDER);
-		tree.addPromise(promise);
 	}
 	
 	@Override
 	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination, IAdditionalTargetInformation info) {
 		spawnParticle(Particles.WhiteParticle, 2);
-		return _orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, RequestType.PROVIDER, info);
+		return _orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, ResourceType.PROVIDER, info);
 	}
 
 	@Override
@@ -437,7 +454,7 @@ outer:
 
 	@Override
 	public double getLoadFactor() {
-		return (_orderManager.totalItemsCountInAllOrders()+63)/64.0;
+		return (_orderManager.totalAmountCountInAllOrders()+63)/64.0;
 	}
 
 	// import from logic

@@ -10,14 +10,13 @@ package logisticspipes.interfaces.routing;
 
 import java.util.List;
 
-import logisticspipes.request.CraftingTemplate;
+import logisticspipes.request.ItemCraftingTemplate;
+import logisticspipes.request.resources.IResource;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
-public interface ICraftItems extends IProvideItems, IItemSpaceControl, IRequireReliableTransport{
-	void registerExtras(LogisticsPromise promise);
-	CraftingTemplate addCrafting(ItemIdentifier toCraft);
+public interface ICraftItems extends ICraft, IProvideItems, IItemSpaceControl, IRequireReliableTransport{
 	//void canCraft(LogisticsTransaction transaction);
 	/**
 	 * some items do not have a specific list of things they can craft (ie, AE crafting system, fuzzy crafting)
@@ -27,6 +26,4 @@ public interface ICraftItems extends IProvideItems, IItemSpaceControl, IRequireR
 	 */
 	@Deprecated 
 	List<ItemIdentifierStack> getCraftedItems(); // list of all items that can be crafted.
-	boolean canCraft(ItemIdentifier toCraft); // list of all items that can be crafted.
-	int getTodo();
 }

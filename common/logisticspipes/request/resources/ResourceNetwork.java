@@ -1,0 +1,47 @@
+package logisticspipes.request.resources;
+
+import java.io.IOException;
+
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
+
+public enum ResourceNetwork {
+	DictResource(DictResource.class) {
+		protected IResource readData(LPDataInputStream data) throws IOException {
+			return new DictResource(data);
+		}
+	},
+	ItemResource(ItemResource.class) {
+		protected IResource readData(LPDataInputStream data) throws IOException {
+			return new ItemResource(data);
+		}
+	},
+	FluidResource(FluidResource.class) {
+		protected IResource readData(LPDataInputStream data) throws IOException {
+			return new FluidResource(data);
+		}
+	};
+	private final Class<? extends IResource> clazz;
+	private ResourceNetwork(Class<?extends IResource> clazz) {
+		this.clazz = clazz;
+	}
+
+	public static void writeResource(LPDataOutputStream data, IResource resource) throws IOException {
+		ResourceNetwork[] values = ResourceNetwork.values();
+		for(int i = 0; i < values.length; i++) {
+			if(values[i].clazz.isAssignableFrom(resource.getClass())) {
+				data.writeInt(values[i].ordinal());
+				resource.writeData(data);
+				return;
+			}
+		}
+		throw new UnsupportedOperationException(resource.getClass().toString());
+	}
+
+	public static IResource readResource(LPDataInputStream data) throws IOException {
+		int id = data.readInt();
+		return ResourceNetwork.values()[id].readData(data);
+	}
+	
+	protected abstract IResource readData(LPDataInputStream data) throws IOException;
+}

@@ -15,11 +15,15 @@ import java.nio.ByteOrder;
 import java.nio.channels.GatheringByteChannel;
 import java.nio.channels.ScatteringByteChannel;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 
 import logisticspipes.interfaces.routing.IFilter;
+import logisticspipes.request.resources.IResource;
+import logisticspipes.request.resources.ResourceNetwork;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
@@ -159,16 +163,19 @@ public class LPDataOutputStream extends DataOutputStream {
 		this.writeItemIdentifier(stack.getItem());
 		this.writeInt(stack.getStackSize());
 	}
-	
+
 	public <T> void writeList(List<T> list, IWriteListObject<T> handler) throws IOException {
 		this.writeInt(list.size());
 		for(int i=0;i<list.size();i++) {
 			handler.writeObject(this, list.get(i));
 		}
 	}
+	public <T> void writeCollection(Collection<T> collection, IWriteListObject<T> handler) throws IOException {
+		this.writeList(new ArrayList<T>(collection), handler);
+	}
 
 	public void writeOrder(IOrderInfoProvider order) throws IOException {
-		this.writeItemIdentifierStack(order.getItem());
+		this.writeItemIdentifierStack(order.getAsDisplayItem());
 		this.writeInt(order.getRouterId());
 		this.writeBoolean(order.isFinished());
 		this.writeBoolean(order.isInProgress());
@@ -225,5 +232,9 @@ public class LPDataOutputStream extends DataOutputStream {
 		for(int i=0;i<array.length;i++) {
 			this.writeLong(array[i]);
 		}
+	}
+
+	public void writeIResource(IResource stack) throws IOException {
+		ResourceNetwork.writeResource(this, stack);
 	}
 }

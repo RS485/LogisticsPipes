@@ -2,7 +2,6 @@ package logisticspipes.modules;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -23,7 +22,6 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
 import logisticspipes.network.NewGuiHandler;
@@ -42,18 +40,20 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCType;
+import logisticspipes.request.RequestTree;
 import logisticspipes.request.RequestTreeNode;
+import logisticspipes.request.resources.DictResource;
+import logisticspipes.request.resources.ItemResource;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsPromise;
-import logisticspipes.routing.LogisticsPromise.PromiseType;
-import logisticspipes.routing.order.IOrderInfoProvider.RequestType;
+import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
+import logisticspipes.routing.order.LogisticsItemOrder;
 import logisticspipes.routing.order.LogisticsOrder;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.Pair;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -69,8 +69,6 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements
 ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive 
 {
 	
-	private List<ILegacyActiveModule> _previousLegacyModules = new LinkedList<ILegacyActiveModule>();
-
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Items to provide (or empty for all)", 1);
 	private ForgeDirection _sneakyDirection = ForgeDirection.UNKNOWN;
 
@@ -191,87 +189,24 @@ ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatch
 
 	@Override
 	public void tick() {
-		//if(true) return;
-		//if (++currentTick < ticksToAction) return;
 		currentTick = 0;
 		checkUpdate(null);
 		int itemsleft = itemsToExtract();
 		int stacksleft = stacksToExtract();
-		LogisticsOrder firstOrder = null;
-		LogisticsOrder order = null;
-		while (itemsleft > 0 && stacksleft > 0 && _service.getOrderManager().hasOrders(RequestType.PROVIDER) && (firstOrder == null || firstOrder != order)) {
+		LogisticsItemOrder firstOrder = null;
+		LogisticsItemOrder order = null;
+		while (itemsleft > 0 && stacksleft > 0 && _service.getItemOrderManager().hasOrders(ResourceType.PROVIDER) && (firstOrder == null || firstOrder != order)) {
 			if(firstOrder == null)
 				firstOrder = order;
-			order = _service.getOrderManager().peekAtTopRequest(RequestType.PROVIDER);
-			int sent = sendStack(order.getItem(), itemsleft, order.getDestination().getRouter().getSimpleID(), order.getInformation());
+			order = _service.getItemOrderManager().peekAtTopRequest(ResourceType.PROVIDER);
+			int sent = sendStack(order.getItemStack(), itemsleft, order.getDestination().getRouter().getSimpleID(), order.getInformation());
 			if(sent < 0) break;
 			_service.spawnParticle(Particles.VioletParticle, 3);
 			stacksleft -= 1;
 			itemsleft -= sent;
 		}
-		
-		/*
-		//Extract Item
-		IInventory realInventory = _service.getRealInventory();
-		if (realInventory == null) return;
-		ForgeDirection extractOrientation = _sneakyDirection;
-		if(extractOrientation == ForgeDirection.UNKNOWN) {
-			extractOrientation = _service.inventoryOrientation().getOpposite();
-		}
-
-		IInventoryUtil targetUtil = _service.getSneakyInventory(extractOrientation,true);
-
-		if(stacksleft<=0 || itemsleft <=0 || isActive == true)
-			return;
-		
-		for (int i = 0; i < targetUtil.getSizeInventory(); i++){
-			
-			ItemStack slot = targetUtil.getStackInSlot(i);
-			if (slot == null) continue;
-			ItemIdentifier slotitem = ItemIdentifier.get(slot);
-			List<Integer> jamList = new LinkedList<Integer>();
-			Pair<Integer, SinkReply> reply = _service.hasDestination(slotitem, true, jamList);
-			if (reply == null) continue;
-
-			while(reply != null && itemsleft>0) {
-				int count = Math.min(itemsleft, slot.stackSize);
-				count = Math.min(count, slotitem.getMaxStackSize());
-				if(reply.getValue2().maxNumberOfItems > 0) {
-					count = Math.min(count, reply.getValue2().maxNumberOfItems);
-				}
-
-				while(!_service.useEnergy(neededEnergy() * count) && count > 0) {
-					_service.spawnParticle(Particles.OrangeParticle, 2);
-					count--;
-				}
-
-				if(count <= 0) {
-					break;
-				}
-
-				ItemStack stackToSend = targetUtil.decrStackSize(i, count);
-				if(stackToSend == null || stackToSend.stackSize == 0) break;
-				count = stackToSend.stackSize;
-				_service.sendStack(stackToSend, reply, itemSendMode());
-				itemsleft -= count;
-				if(itemsleft <= 0) break;
-				slot = targetUtil.getStackInSlot(i);
-				if (slot == null) break;
-				jamList.add(reply.getValue1());
-				reply = _service.hasDestination(ItemIdentifier.get(slot), true, jamList);
-			}
-			break;
-		}
-		*/
-		
 	}
 
-	@Override
-	public void registerPreviousLegacyModules(List<ILegacyActiveModule> previousModules) {
-		_previousLegacyModules = previousModules;
-	}
-
-	@Override
 	public boolean filterAllowsItem(ItemIdentifier item) {
 		if(!hasFilter()) return true;
 		boolean isFiltered = itemIsFiltered(item);
@@ -280,27 +215,43 @@ ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatch
 
 	@Override
 	public void onBlockRemoval() {
-		while(_service.getOrderManager().hasOrders(RequestType.PROVIDER)) {
-			_service.getOrderManager().sendFailed();
+		while(_service.getItemOrderManager().hasOrders(ResourceType.PROVIDER)) {
+			_service.getItemOrderManager().sendFailed();
 		}
 	}
 
 	@Override
-	public void canProvide(RequestTreeNode tree, int donePromisses, List<IFilter> filters) {
-		int canProvide = getAvailableItemCount(tree.getStackItem());
-		canProvide -= donePromisses;
-		if (canProvide < 1) return;
-		LogisticsPromise promise = new LogisticsPromise(tree.getStackItem(), Math.min(canProvide, tree.getMissingItemCount()), (IProvideItems) _service, PromiseType.PROVIDER);
-		tree.addPromise(promise);
+	public void canProvide(RequestTreeNode tree, RequestTree root, List<IFilter> filters) {
+		List<ItemIdentifier> possible = new ArrayList<ItemIdentifier>();
+		if(tree.getRequestType() instanceof ItemResource) {
+			possible.add(((ItemResource)tree.getRequestType()).getItem());
+		} else if(tree.getRequestType() instanceof DictResource) {
+			IInventoryUtil inv = _service.getPointedInventory(_extractionMode,true);
+			if (inv != null) {
+				Map<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
+				for(ItemIdentifier item:currentInv.keySet()) {
+					if(((DictResource)tree.getRequestType()).matches(item)) {
+						possible.add(item);
+					}
+				}
+			}
+		}
+		for(ItemIdentifier item: possible) {
+			int canProvide = getAvailableItemCount(item);
+			canProvide -= root.getAllPromissesFor((IProvideItems) _service, item);
+			if (canProvide < 1) return;
+			LogisticsPromise promise = new LogisticsPromise(item, Math.min(canProvide, tree.getMissingAmount()), (IProvideItems) _service, ResourceType.PROVIDER);
+			tree.addPromise(promise);
+		}
 	}
 
 	@Override
 	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination, IAdditionalTargetInformation info) {
-		return _service.getOrderManager().addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination,RequestType.PROVIDER, info);
+		return _service.getItemOrderManager().addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination,ResourceType.PROVIDER, info);
 	}
 
 	private int getAvailableItemCount(ItemIdentifier item) {
-		return getTotalItemCount(item) - _service.getOrderManager().totalItemsCountInOrders(item);
+		return getTotalItemCount(item) - _service.getItemOrderManager().totalItemsCountInOrders(item);
 	}
 
 	@Override
@@ -313,19 +264,15 @@ ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatch
 		//Skip already added items from this provider, skip filtered items, Reduce what has been reserved, add.
 outer:
 		for (Entry<ItemIdentifier, Integer> currItem : currentInv.entrySet()) {
-			if(items.containsKey(currItem.getKey())) continue;
+			if(items.containsKey(currItem.getKey())) continue; // Already provided by the previous module
 			
 			if(!filterAllowsItem(currItem.getKey())) continue;
-
-			for(ILegacyActiveModule m:_previousLegacyModules) {
-				if(m.filterAllowsItem(currItem.getKey())) continue outer;
-			}
 			
 			for(IFilter filter:filters) {
 				if(filter.isBlocked() == filter.isFilteredItem(currItem.getKey().getUndamaged()) || filter.blockProvider()) continue outer;
 			}
 
-			int remaining = currItem.getValue() - _service.getOrderManager().totalItemsCountInOrders(currItem.getKey());
+			int remaining = currItem.getValue() - _service.getItemOrderManager().totalItemsCountInOrders(currItem.getKey());
 			if (remaining < 1) continue;
 
 			items.put(currItem.getKey(), remaining);
@@ -339,13 +286,13 @@ outer:
 		ItemIdentifier item = stack.getItem();
 		IInventoryUtil inv = _service.getPointedInventory(_extractionMode,true);
 		if (inv == null) {
-			_service.getOrderManager().sendFailed();
+			_service.getItemOrderManager().sendFailed();
 			return 0;
 		}
 		
 		int available = inv.itemCount(item);
 		if (available == 0) {
-			_service.getOrderManager().sendFailed();
+			_service.getItemOrderManager().sendFailed();
 			return 0;
 		}
 		int wanted = Math.min(available, stack.getStackSize());
@@ -353,7 +300,7 @@ outer:
 		wanted = Math.min(wanted, item.getMaxStackSize());
 		IRouter dRtr = SimpleServiceLocator.routerManager.getRouterUnsafe(destination,false);
 		if(dRtr == null) {
-			_service.getOrderManager().sendFailed();
+			_service.getItemOrderManager().sendFailed();
 			return 0;
 		}
 		SinkReply reply = LogisticsManager.canSink(dRtr, null, true, stack.getItem(), null, true, false);
@@ -362,7 +309,7 @@ outer:
 			if(reply.maxNumberOfItems < wanted) {
 				wanted = reply.maxNumberOfItems;
 				if(wanted <= 0) {
-					_service.getOrderManager().deferSend();
+					_service.getItemOrderManager().deferSend();
 					return 0;
 				}
 				defersend = true;
@@ -372,14 +319,14 @@ outer:
 
 		ItemStack removed = inv.getMultipleItems(item, wanted);
 		if(removed == null || removed.stackSize == 0) {
-			_service.getOrderManager().sendFailed();
+			_service.getItemOrderManager().sendFailed();
 			return 0;
 		}
 		int sent = removed.stackSize;
 		_service.useEnergy(sent * neededEnergy());
 
 		IRoutedItem sendedItem = _service.sendStack(removed, destination, itemSendMode(), info);
-		_service.getOrderManager().sendSuccessfull(sent, defersend, sendedItem);
+		_service.getItemOrderManager().sendSuccessfull(sent, defersend, sendedItem);
 		return sent;
 	}
 	

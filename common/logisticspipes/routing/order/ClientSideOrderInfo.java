@@ -8,11 +8,11 @@ import lombok.Getter;
 public class ClientSideOrderInfo implements IOrderInfoProvider {
 
 	@Getter
-	private final ItemIdentifierStack item;
+	private final ItemIdentifierStack asDisplayItem;
 	@Getter
 	private final boolean isFinished;
 	@Getter
-	private final RequestType type;
+	private final ResourceType type;
 	@Getter
 	private final boolean inProgress;
 	@Getter
@@ -24,8 +24,8 @@ public class ClientSideOrderInfo implements IOrderInfoProvider {
 	@Getter
 	private final byte machineProgress;
 	
-	public ClientSideOrderInfo(ItemIdentifierStack item, boolean isFinished, RequestType type, boolean inProgress, int routerId, List<Float> progresses, byte machineProgress) {
-		this.item = item;
+	public ClientSideOrderInfo(ItemIdentifierStack item, boolean isFinished, ResourceType type, boolean inProgress, int routerId, List<Float> progresses, byte machineProgress) {
+		this.asDisplayItem = item;
 		this.isFinished = isFinished;
 		this.type = type;
 		this.inProgress = inProgress;

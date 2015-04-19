@@ -15,11 +15,11 @@ import java.util.Map.Entry;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.popup.GuiRequestPopup;
 import logisticspipes.interfaces.ISpecialItemRenderer;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.orderer.RequestComponentPacket;
 import logisticspipes.network.packets.orderer.RequestSubmitPacket;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.request.resources.IResource;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
@@ -175,7 +175,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		super.handleMouseInputSub();
 	}
 
-	public void handleRequestAnswer(Collection<ItemIdentifierStack> items, boolean error, ISubGuiControler control, EntityPlayer player) {
+	public void handleRequestAnswer(Collection<IResource> items, boolean error, ISubGuiControler control, EntityPlayer player) {
 		while(control.hasSubGui()) {
 			control = control.getSubGui();
 		}
@@ -186,7 +186,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		}
 	}
 
-	public void handleSimulateAnswer(Collection<ItemIdentifierStack> used, Collection<ItemIdentifierStack> missing, ISubGuiControler control, EntityPlayer player) {
+	public void handleSimulateAnswer(Collection<IResource> used, Collection<IResource> missing, ISubGuiControler control, EntityPlayer player) {
 		while(control.hasSubGui()) {
 			control = control.getSubGui();
 		}

@@ -92,6 +92,7 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.routing.IRouterQueuedTask;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.ServerRouter;
+import logisticspipes.routing.order.LogisticsItemOrderManager;
 import logisticspipes.routing.order.LogisticsOrderManager;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.security.PermissionException;
@@ -164,7 +165,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	protected final PriorityBlockingQueue<ItemRoutingInformation> _inTransitToMe = new PriorityBlockingQueue<ItemRoutingInformation>(10, new ItemRoutingInformation.DelayComparator());
 	
 	protected UpgradeManager upgradeManager = new UpgradeManager(this);
-	protected LogisticsOrderManager _orderManager = null;
+	protected LogisticsItemOrderManager _orderItemManager = null;
 	
 	public int stat_session_sent;
 	public int stat_session_recieved;
@@ -304,7 +305,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	 * @param other
 	 * @return boolean indicating if both pull from the same inventory.
 	 */
-	public boolean sharesInventoryWith(CoreRoutedPipe other){
+	public boolean sharesInterestWith(CoreRoutedPipe other){
 		List<IInventory> others = other.getConnectedRawInventories();
 		if(others==null || others.size()==0)
 			return false;
@@ -1567,9 +1568,9 @@ outer:
 	}
 
 	@Override
-	public LogisticsOrderManager getOrderManager() {
-		_orderManager=_orderManager!=null?_orderManager:new LogisticsOrderManager();
-		return this._orderManager;
+	public LogisticsItemOrderManager getItemOrderManager() {
+		_orderItemManager = _orderItemManager != null ? _orderItemManager : new LogisticsItemOrderManager();
+		return this._orderItemManager;
 	}
 
 	public void addPipeSign(ForgeDirection dir, IPipeSign type, EntityPlayer player) {

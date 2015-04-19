@@ -55,6 +55,7 @@ import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SyncList;
+import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
@@ -447,6 +448,7 @@ public class PipeTransportLogistics {
 		if(SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) {
 			if(passToNextPipe(arrivingItem, tile)) return;
 		} else if(tile instanceof IInventory && isRouted) {
+			getRoutedPipe().getCacheHolder().trigger(CacheTypes.Inventory);
 
 
 			// items.scheduleRemoval(arrivingItem);

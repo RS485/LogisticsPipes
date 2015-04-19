@@ -90,6 +90,7 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SinkReply;
+import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.SinkReply.BufferMode;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.WorldUtil;
@@ -97,6 +98,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Triplet;
 import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -183,6 +185,15 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	protected int spaceFor(ItemIdentifier item, boolean includeInTransit) {
+		Pair<String, ItemIdentifier> key = new Pair<String, ItemIdentifier>("spaceFor", item);
+		Object cache = _service.getCacheHolder().getCacheFor(CacheTypes.Inventory, key);
+		if(cache != null) {
+			int count = (Integer) cache;
+			if(includeInTransit) {
+				count -= _service.countOnRoute(item);
+			}
+			return count;
+		}
 		int count = 0;
 		WorldUtil wUtil = new WorldUtil(getWorld(), _service.getX(), _service.getY(), _service.getZ());
 		for(AdjacentTile tile: wUtil.getAdjacentTileEntities(true)) {
@@ -198,6 +209,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			IInventoryUtil inv = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(base, dir);
 			count += inv.roomForItem(item, 9999);
 		}
+		_service.getCacheHolder().setCache(CacheTypes.Inventory, key, count);
 		if(includeInTransit) {
 			count -= _service.countOnRoute(item);
 		}
@@ -1094,6 +1106,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				}
 				if(extracted != null && extracted.stackSize > 0) {
 					this._service.queueRoutedItem(SimpleServiceLocator.routedItemHelper.createNewTravelItem(extracted), ForgeDirection.UP);
+					_service.getCacheHolder().trigger(CacheTypes.Inventory);
 				}
 			}
 			return;
@@ -1144,6 +1157,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 					_service.getItemOrderManager().deferSend();
 				break;
 			}
+			_service.getCacheHolder().trigger(CacheTypes.Inventory);
 			lastAccessedCrafter = new WeakReference<TileEntity>(tile.tile);
 			// send the new crafted items to the destination
 			ItemIdentifier extractedID = ItemIdentifier.get(extracted);

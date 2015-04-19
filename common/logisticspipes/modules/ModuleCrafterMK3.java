@@ -18,10 +18,13 @@ import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.SinkReply;
+import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.SinkReply.BufferMode;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.tuples.Quartet;
+import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -59,22 +62,29 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISi
 	}
 	
 	protected int spaceFor(ItemIdentifier item, boolean includeInTransit, boolean addBufferSpace) {
+		Triplet<String, ItemIdentifier, Boolean> key = new Triplet<String, ItemIdentifier, Boolean>("spaceForMK3", item, addBufferSpace);
 		int invSpace = super.spaceFor(item, includeInTransit);
+		Object cache = _service.getCacheHolder().getCacheFor(CacheTypes.Inventory, key);
+		if(cache != null) {
+			return invSpace + (Integer) cache;
+		}
+		int modify = 0;
 		if(addBufferSpace) {
 			for(int i=0;i<inv.getSizeInventory();i++) {
 				if(inv.getIDStackInSlot(i) == null) {
-					invSpace += inv.getInventoryStackLimit();
+					modify += inv.getInventoryStackLimit();
 				} else if(inv.getIDStackInSlot(i).getItem().equals(item)) {
-					invSpace += (inv.getInventoryStackLimit() - inv.getIDStackInSlot(i).getStackSize());
+					modify += (inv.getInventoryStackLimit() - inv.getIDStackInSlot(i).getStackSize());
 				}
 			}
 		} else {
 			Map<ItemIdentifier, Integer> items = inv.getItemsAndCount();
 			if(items.containsKey(item)) {
-				invSpace -= items.get(item);
+				modify -= items.get(item);
 			}
 		}
-		return invSpace;
+		_service.getCacheHolder().setCache(CacheTypes.Inventory, key, modify);
+		return invSpace + modify;
 	}
 	
 	private boolean isForBuffer(ItemIdentifier item, boolean includeInTransit) {
@@ -142,6 +152,7 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISi
 		}
 		if(change) {
 			inv.markDirty();
+			_service.getCacheHolder().trigger(CacheTypes.Inventory);
 		}
 
 	}

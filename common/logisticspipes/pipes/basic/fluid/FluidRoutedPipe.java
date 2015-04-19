@@ -22,6 +22,7 @@ import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.WorldUtil;
+import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.item.Item;
@@ -189,6 +190,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	
 	public boolean endReached(LPTravelingItemServer arrivingItem, TileEntity tile) {
 		if(canInsertToTanks() && MainProxy.isServer(getWorld())) {
+			getCacheHolder().trigger(CacheTypes.Inventory);
 			if(arrivingItem.getItemIdentifierStack() == null || !(arrivingItem.getItemIdentifierStack().getItem().isFluidContainer())) return false;
 			if(this.getRouter().getSimpleID() != arrivingItem.getDestination()) return false;
 			int filled = 0;

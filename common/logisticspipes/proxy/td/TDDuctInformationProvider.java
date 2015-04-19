@@ -3,6 +3,7 @@ package logisticspipes.proxy.td;
 import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.asm.te.ILPTEInformation;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -11,9 +12,11 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
+import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -22,6 +25,7 @@ import cofh.thermaldynamics.block.TileTDBase;
 import cofh.thermaldynamics.duct.item.TileItemDuct;
 import cofh.thermaldynamics.duct.item.TravelingItem;
 import cofh.thermaldynamics.multiblock.Route;
+import cofh.thermaldynamics.multiblock.RouteCache;
 
 public class TDDuctInformationProvider implements IPipeInformationProvider {
 
@@ -181,34 +185,55 @@ public class TDDuctInformationProvider implements IPipeInformationProvider {
 			}
 			IRouter destination = SimpleServiceLocator.routerManager.getRouter(id);
 			if(destination == null) return false;
-			Iterable<Route> paramIterable = duct.getCache(true).outputRoutes;
-			Pair<Double, Route> closesedConnection = null;
-			List<LPPosition> visited = new ArrayList<LPPosition>();
-			visited.add(new LPPosition(from));
-			for(Route localRoute1: paramIterable) {
-				if(localRoute1.endPoint instanceof LPItemDuct) {
-					LPItemDuct lpDuct = (LPItemDuct) localRoute1.endPoint;
-					
-					double max = Integer.MAX_VALUE;
-					if(closesedConnection != null) {
-						max = closesedConnection.getValue1();
-					}
-					
-					LPPosition pos = new LPPosition((TileEntity) lpDuct.pipe);
-					if(visited.contains(pos)) continue;
-					visited.add(pos);
-					
-					double distance = lpDuct.pipe.getDistanceTo(id, ForgeDirection.getOrientation(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1)).getOpposite(), item.getItemIdentifierStack().getItem(), serverItem.getInfo()._transportMode == TransportMode.Active, localRoute1.pathWeight, max, visited);
-					
-					visited.remove(pos);
-					
-					if(distance != Integer.MAX_VALUE && (closesedConnection == null || distance + localRoute1.pathDirections.size() < closesedConnection.getValue1())) {
-						closesedConnection = new Pair<Double, Route>(distance + localRoute1.pathWeight, localRoute1);
-					}
+			RouteCache routes = duct.getCache(true);
+			Iterable<Route> paramIterable = routes.outputRoutes;
+			Route route = null;
+			Object cache = null;
+			Triplet<Integer, ItemIdentifier, Boolean> key = new Triplet<Integer, ItemIdentifier, Boolean>(id, item.getItemIdentifierStack().getItem(), serverItem.getInfo()._transportMode == TransportMode.Active);
+			if(this.duct instanceof ILPTEInformation && ((ILPTEInformation)this.duct).getObject() != null) {
+				cache = ((ILPTEInformation)this.duct).getObject().getCacheHolder().getCacheFor(CacheTypes.Routing, key);
+			}
+			if(cache instanceof Route) {
+				route = (Route) cache;
+				if(!routes.outputRoutes.contains(route)) {
+					route = null;
 				}
 			}
-			if(closesedConnection != null) {
-				TravelingItem travelItem = new TravelingItem(item.getItemIdentifierStack().makeNormalStack(), duct, closesedConnection.getValue2().copy(), (byte)serverItem.output.ordinal(), (byte)1 /* Speed */);
+			if(route == null) {
+				Pair<Double, Route> closesedConnection = null;
+				List<LPPosition> visited = new ArrayList<LPPosition>();
+				visited.add(new LPPosition(from));
+				for(Route localRoute1: paramIterable) {
+					if(localRoute1.endPoint instanceof LPItemDuct) {
+						LPItemDuct lpDuct = (LPItemDuct) localRoute1.endPoint;
+						
+						double max = Integer.MAX_VALUE;
+						if(closesedConnection != null) {
+							max = closesedConnection.getValue1();
+						}
+						
+						LPPosition pos = new LPPosition((TileEntity) lpDuct.pipe);
+						if(visited.contains(pos)) continue;
+						visited.add(pos);
+						
+						double distance = lpDuct.pipe.getDistanceTo(id, ForgeDirection.getOrientation(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1)).getOpposite(), item.getItemIdentifierStack().getItem(), serverItem.getInfo()._transportMode == TransportMode.Active, localRoute1.pathWeight, max, visited);
+						
+						visited.remove(pos);
+						
+						if(distance != Integer.MAX_VALUE && (closesedConnection == null || distance + localRoute1.pathDirections.size() < closesedConnection.getValue1())) {
+							closesedConnection = new Pair<Double, Route>(distance + localRoute1.pathWeight, localRoute1);
+						}
+					}
+				}
+				if(closesedConnection != null) {
+					route = closesedConnection.getValue2();
+				}
+			}
+			if(route != null) {
+				if(this.duct instanceof ILPTEInformation && ((ILPTEInformation)this.duct).getObject() != null) {
+					((ILPTEInformation)this.duct).getObject().getCacheHolder().setCache(CacheTypes.Routing, key, route);
+				}
+				TravelingItem travelItem = new TravelingItem(item.getItemIdentifierStack().makeNormalStack(), duct, route.copy(), (byte)serverItem.output.ordinal(), (byte)1 /* Speed */);
 				travelItem.lpRoutingInformation = serverItem.getInfo();
 				duct.insertNewItem(travelItem);
 				return true;

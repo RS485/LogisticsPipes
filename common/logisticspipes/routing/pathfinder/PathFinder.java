@@ -21,6 +21,7 @@ import java.util.Map.Entry;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.asm.te.ILPTEInformation;
 import logisticspipes.asm.te.ITileEntityChangeListener;
+import logisticspipes.asm.te.LPTileEntityObject;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.routing.IDirectRoutingConnection;
 import logisticspipes.interfaces.routing.IFilter;
@@ -36,8 +37,6 @@ import logisticspipes.utils.OneList;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
-import logisticspipes.utils.tuples.Quartet;
-import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -112,6 +111,7 @@ public class PathFinder {
 	
 	public ITileEntityChangeListener changeListener;
 	public List<List<ITileEntityChangeListener>> listenedPipes = new ArrayList<List<ITileEntityChangeListener>>();
+	public List<LPTileEntityObject> touchedPipes = new ArrayList<LPTileEntityObject>();
 	
 	private HashMap<CoreRoutedPipe, ExitRoute> getConnectedRoutingPipes(IPipeInformationProvider startPipe, EnumSet<PipeRoutingConnectionType> connectionFlags, ForgeDirection side) {
 		HashMap<CoreRoutedPipe, ExitRoute> foundPipes = new HashMap<CoreRoutedPipe, ExitRoute>();
@@ -341,6 +341,7 @@ public class PathFinder {
 				((ILPTEInformation)tile).getObject().changeListeners.add(changeListener);
 			}
 			listenedPipes.add(((ILPTEInformation)tile).getObject().changeListeners);
+			touchedPipes.add(((ILPTEInformation)tile).getObject());
 		}
 	}
 

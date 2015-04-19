@@ -9,21 +9,19 @@
 package logisticspipes.pipes.basic;
 
 import java.io.IOException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
-import java.util.TreeMap;
 import java.util.Queue;
+import java.util.Random;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.PriorityBlockingQueue;
 
@@ -31,6 +29,7 @@ import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.asm.ModDependentMethod;
+import logisticspipes.asm.te.ILPTEInformation;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IClientState;
@@ -85,7 +84,6 @@ import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCDirectCall;
 import logisticspipes.proxy.computers.interfaces.CCSecurtiyCheck;
 import logisticspipes.proxy.computers.interfaces.CCType;
-import logisticspipes.renderer.IIconProvider;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
@@ -93,8 +91,6 @@ import logisticspipes.routing.IRouterQueuedTask;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.routing.order.LogisticsItemOrderManager;
-import logisticspipes.routing.order.LogisticsOrderManager;
-import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.security.PermissionException;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
@@ -102,6 +98,8 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.CacheHolder;
+import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.OrientationsUtil;
@@ -114,6 +112,7 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
@@ -127,9 +126,6 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import sun.java2d.opengl.OGLRenderQueue;
 
 @CCType(name = "LogisticsPipes:Normal")
 public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClientState, IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IPipeServiceProvider, IQueueCCEvent {
@@ -196,6 +192,9 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 
 	protected IPipeSign[] signItem = new IPipeSign[6];
 	private boolean isOpaqueClientSide = false;
+
+	private CacheHolder cacheHolder;
+	
 	public CoreRoutedPipe(Item item) {
 		this(new PipeTransportLogistics(true), item);
 	}
@@ -397,6 +396,10 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		recheckConnections = false;
 		getOriginalUpgradeManager().securityTick();
 		super.updateEntity();
+		
+		if(isNthTick(200)) {
+			getCacheHolder().trigger(null);
+		}
 		
 		// from BaseRoutingLogic
 		if (--throttleTimeLeft <= 0) {
@@ -1751,5 +1754,16 @@ outer:
 
 	public void triggerConnectionCheck() {
 		recheckConnections = true;
+	}
+	
+	public CacheHolder getCacheHolder() {
+		if(cacheHolder == null) {
+			if(this.container instanceof ILPTEInformation && ((ILPTEInformation)this.container).getObject() != null) {
+				cacheHolder = ((ILPTEInformation)this.container).getObject().getCacheHolder();
+			} else {
+				cacheHolder = new CacheHolder();
+			}
+		}
+		return cacheHolder;
 	}
 }

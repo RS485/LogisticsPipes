@@ -30,6 +30,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.asm.te.ILPTEInformation;
 import logisticspipes.asm.te.ITileEntityChangeListener;
+import logisticspipes.asm.te.LPTileEntityObject;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IRoutingDebugAdapter;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
@@ -46,6 +47,7 @@ import logisticspipes.request.resources.IResource;
 import logisticspipes.request.resources.ItemResource;
 import logisticspipes.routing.pathfinder.PathFinder;
 import logisticspipes.ticks.RoutingTableUpdateThread;
+import logisticspipes.utils.CacheHolder;
 import logisticspipes.utils.OneList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.LPPosition;
@@ -356,6 +358,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	};
 	
 	private List<List<ITileEntityChangeListener>> listenedPipes = new ArrayList<List<ITileEntityChangeListener>>();
+	private List<LPTileEntityObject> oldTouchedPipes = new ArrayList<LPTileEntityObject>();
 	
 	/**
 	 * Rechecks the piped connection to all adjacent routers as well as discover new ones.
@@ -464,8 +467,22 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 				adjacentChanged = true;
 				break;
 			}
-		}		
+		}
+		
+		if(oldTouchedPipes.size() != finder.touchedPipes.size() || !oldTouchedPipes.containsAll(finder.touchedPipes) || !finder.touchedPipes.containsAll(oldTouchedPipes)) {
+			List<LPTileEntityObject> toTrigger = new ArrayList<LPTileEntityObject>();
+			toTrigger.addAll(oldTouchedPipes);
+			toTrigger.addAll(finder.touchedPipes);
+			oldTouchedPipes = finder.touchedPipes;
+			CacheHolder.clearCache(toTrigger);
+			BitSet visited = new BitSet(ServerRouter.getBiggestSimpleID());
+			visited.set(this.getSimpleID());
+			this.act(visited, new floodClearCache());
+		}
+		
 		if (adjacentChanged) {
+			
+			
 			HashMap<IRouter, ExitRoute> adjacentRouter = new HashMap<IRouter, ExitRoute>();
 			EnumSet<ForgeDirection> routedexits = EnumSet.noneOf(ForgeDirection.class);
 			EnumMap<ForgeDirection, Integer> subpowerexits = new EnumMap<ForgeDirection, Integer>(ForgeDirection.class);
@@ -899,6 +916,17 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		@Override
 		public void doTo(IRouter that) {
 			that.flagForRoutingUpdate();
+		}
+	}
+	
+	class floodClearCache implements IRAction {
+		@Override
+		public boolean isInteresting(IRouter that) {
+			return true;
+		}
+		@Override
+		public void doTo(IRouter that) {
+			CacheHolder.clearCache(((ServerRouter)that).oldTouchedPipes);
 		}
 	}
 

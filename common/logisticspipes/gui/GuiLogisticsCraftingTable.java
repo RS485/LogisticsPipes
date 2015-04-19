@@ -6,7 +6,7 @@ import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.block.CraftingCycleRecipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.CraftingRequirement;
+import logisticspipes.request.resources.DictResource;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
@@ -150,7 +150,7 @@ public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
 			int posX = -60;
 			int posY = 0;
 			BasicGuiHelper.drawGuiBackGround(mc, posX, posY, posX + 60, posY + 52, zLevel, true, true, true, true, true);
-			CraftingRequirement flag = _crafter.fuzzyFlags[fuzzyPanelSelection];
+			DictResource flag = _crafter.fuzzyFlags[fuzzyPanelSelection];
 			final String PREFIX = "gui.crafting.";
 			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "OreDict"), posX + 4, posY + 4, (!flag.use_od ? 0x404040 : 0xFF4040));
 			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "IgnDamage"), posX + 4, posY + 14, (!flag.ignore_dmg ? 0x404040 : 0x40FF40));

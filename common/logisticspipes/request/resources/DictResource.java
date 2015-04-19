@@ -15,7 +15,7 @@ import net.minecraft.item.ItemStack;
 
 public class DictResource implements IResource {
 	
-	private final ItemIdentifierStack stack;
+	public ItemIdentifierStack stack;
 	private final IRequestItems requester;
 	
 	//match all items with same oredict name
@@ -61,7 +61,9 @@ public class DictResource implements IResource {
 	public boolean matches(ItemIdentifier other) {
 		if(use_od || use_category) {
 			if(stack.getItem().getDictIdentifiers() != null && other.getDictIdentifiers() != null) {
-				if(stack.getItem().getDictIdentifiers().canMatch(other.getDictIdentifiers(), true, use_category)) { return true; }
+				if(stack.getItem().getDictIdentifiers().canMatch(other.getDictIdentifiers(), true, use_category)) { 
+					return true;
+				}
 			}
 		}
 		ItemStack stack_n = stack.makeNormalStack();
@@ -70,9 +72,9 @@ public class DictResource implements IResource {
 		if(stack_n.getItemDamage() != other_n.getItemDamage()) {
 			if(stack_n.getHasSubtypes()) {
 				return false;
+			} else if(!ignore_dmg) {
+				return false;
 			}
-		} else if(!ignore_dmg) {
-			return false;
 		}
 		if(ignore_nbt) return true;
 		if(stack_n.hasTagCompound() ^ other_n.hasTagCompound()) return false;

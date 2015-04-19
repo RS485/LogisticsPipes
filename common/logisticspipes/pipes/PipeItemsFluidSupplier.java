@@ -21,6 +21,7 @@ import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.WorldUtil;
+import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -82,6 +83,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 	}
 
 	public void endReached(LPTravelingItemServer data, TileEntity tile) {
+		getCacheHolder().trigger(CacheTypes.Inventory);
 		this.transport.markChunkModified(tile);
 		notifyOfItemArival(data.getInfo());
 		if (!(tile instanceof IFluidHandler)) return;

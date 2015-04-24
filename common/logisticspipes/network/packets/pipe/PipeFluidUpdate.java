@@ -88,7 +88,7 @@ public class PipeFluidUpdate extends CoordinatesPacket {
 		try {
 			for (ForgeDirection dir : ForgeDirection.values()) {
 				if (renderCache[dir.ordinal()] == null) {
-					renderCache[dir.ordinal()] = new FluidStack(0, 0);
+					continue;
 				}
 				
 				if (delta.get(dir.ordinal() * 3 + 0)) {

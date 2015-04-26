@@ -20,6 +20,7 @@ import logisticspipes.modules.ModuleCCBasedQuickSort;
 import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.modules.ModuleCrafterMK2;
 import logisticspipes.modules.ModuleCrafterMK3;
+import logisticspipes.modules.ModuleCreativeTabBasedItemSink;
 import logisticspipes.modules.ModuleElectricBuffer;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleEnchantmentSink;
@@ -83,6 +84,7 @@ public class ItemModule extends LogisticsItem {
 	public static final int OREDICTITEMSINK = 13;
 	public static final int CC_BASED_QUICKSORT = 14;
 	public static final int CC_BASED_ITEMSINK = 15;
+	public static final int CREATIVETABBASEDITEMSINK = 16;
 	
 	public static final int THAUMICASPECTSINK = 30;
 	public static final int ENCHANTMENTSINK = 31;
@@ -207,6 +209,7 @@ public class ItemModule extends LogisticsItem {
 		registerModule(CRAFTER_MK2				, ModuleCrafterMK2.class);
 		registerModule(CRAFTER_MK3				, ModuleCrafterMK3.class);
 		registerModule(ACTIVE_SUPPLIER			, ModuleActiveSupplier.class);
+		registerModule(CREATIVETABBASEDITEMSINK	, ModuleCreativeTabBasedItemSink.class);
 	}
 
 	public void registerModule(int id, Class<? extends LogisticsModule> moduleClass) {

@@ -1,7 +1,7 @@
 package logisticspipes.network.guis.module.inpipe;
 
-import logisticspipes.gui.modules.GuiModBasedItemSink;
-import logisticspipes.modules.ModuleModBasedItemSink;
+import logisticspipes.gui.modules.GuiStringBasedItemSink;
+import logisticspipes.interfaces.IStringBasedModule;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.NBTModuleCoordinatesGuiProvider;
 import logisticspipes.utils.gui.DummyContainer;
@@ -10,23 +10,23 @@ import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
 @Accessors(chain=true)
-public class ModBasedItemSinkModuleGuiSlot extends NBTModuleCoordinatesGuiProvider {
+public class StringBasedItemSinkModuleGuiSlot extends NBTModuleCoordinatesGuiProvider {
 	
-	public ModBasedItemSinkModuleGuiSlot(int id) {
+	public StringBasedItemSinkModuleGuiSlot(int id) {
 		super(id);
 	}
 
 	@Override
 	public Object getClientGui(EntityPlayer player) {
-		ModuleModBasedItemSink module = this.getLogisticsModule(player.getEntityWorld(), ModuleModBasedItemSink.class);
+		IStringBasedModule module = this.getLogisticsModule(player.getEntityWorld(), IStringBasedModule.class);
 		if(module == null) return null;
 		module.readFromNBT(getNbt());
-		return new GuiModBasedItemSink(player.inventory, module);
+		return new GuiStringBasedItemSink(player.inventory, module);
 	}
 
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
-		ModuleModBasedItemSink module = this.getLogisticsModule(player.getEntityWorld(), ModuleModBasedItemSink.class);
+		IStringBasedModule module = this.getLogisticsModule(player.getEntityWorld(), IStringBasedModule.class);
 		if(module == null) return null;
 		DummyContainer dummy = new DummyContainer(player.inventory, new ItemIdentifierInventory(1, "TMP", 1));
 		dummy.addDummySlot(0, 0, 0);
@@ -36,6 +36,6 @@ public class ModBasedItemSinkModuleGuiSlot extends NBTModuleCoordinatesGuiProvid
 
 	@Override
 	public GuiProvider template() {
-		return new ModBasedItemSinkModuleGuiSlot(getId());
+		return new StringBasedItemSinkModuleGuiSlot(getId());
 	}
 }

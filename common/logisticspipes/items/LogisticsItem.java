@@ -27,6 +27,7 @@ public class LogisticsItem extends Item {
 
 	public LogisticsItem(IIcon icon) {
 		this.itemIcon = icon;
+		this.setCreativeTab(LogisticsPipes.LPCreativeTab);
 	}
 
 	@Override

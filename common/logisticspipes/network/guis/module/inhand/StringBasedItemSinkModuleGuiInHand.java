@@ -1,7 +1,7 @@
 package logisticspipes.network.guis.module.inhand;
 
-import logisticspipes.gui.modules.GuiModBasedItemSink;
-import logisticspipes.modules.ModuleModBasedItemSink;
+import logisticspipes.gui.modules.GuiStringBasedItemSink;
+import logisticspipes.interfaces.IStringBasedModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
@@ -11,23 +11,23 @@ import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.entity.player.EntityPlayer;
 
 
-public class ModBasedItemSinkModuleGuiInHand extends ModuleInHandGuiProvider {
+public class StringBasedItemSinkModuleGuiInHand extends ModuleInHandGuiProvider {
 	
-	public ModBasedItemSinkModuleGuiInHand(int id) {
+	public StringBasedItemSinkModuleGuiInHand(int id) {
 		super(id);
 	}
 	
 	@Override
 	public Object getClientGui(EntityPlayer player) {
 		LogisticsModule module = this.getLogisticsModule(player);
-		if(!(module instanceof ModuleModBasedItemSink)) return null;
-		return new GuiModBasedItemSink(player.inventory, (ModuleModBasedItemSink) module);
+		if(!(module instanceof IStringBasedModule)) return null;
+		return new GuiStringBasedItemSink(player.inventory, (IStringBasedModule) module);
 	}
 
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
 		DummyModuleContainer dummy = new DummyModuleContainer(player, getInvSlot());
-		if(!(dummy.getModule() instanceof ModuleModBasedItemSink)) return null;
+		if(!(dummy.getModule() instanceof IStringBasedModule)) return null;
 		dummy.setInventory(new ItemIdentifierInventory(1, "TMP", 1));
 		dummy.addDummySlot(0, 0, 0);
 		dummy.addNormalSlotsForPlayerInventory(0, 0);
@@ -36,6 +36,6 @@ public class ModBasedItemSinkModuleGuiInHand extends ModuleInHandGuiProvider {
 
 	@Override
 	public GuiProvider template() {
-		return new ModBasedItemSinkModuleGuiInHand(getId());
+		return new StringBasedItemSinkModuleGuiInHand(getId());
 	}
 }

@@ -527,7 +527,7 @@ public class RecipeManager {
 				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ITEMSINK),
 				Character.valueOf('U'), parts.getGearTear2()
 			});
-
+			
 			craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.MODBASEDITEMSINK), CraftingDependency.Sink_Modules, new Object[] {
 				"U",
 				"B",
@@ -540,6 +540,20 @@ public class RecipeManager {
 				"B",
 				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.MODBASEDITEMSINK),
 				Character.valueOf('U'), Items.book
+			});
+
+			craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.CREATIVETABBASEDITEMSINK), CraftingDependency.Sink_Modules, new Object[] {
+				"U",
+				"B",
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.OREDICTITEMSINK),
+				Character.valueOf('U'), parts.getGearTear2()
+			});
+
+			craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.CREATIVETABBASEDITEMSINK), CraftingDependency.Sink_Modules, new Object[] {
+				"U",
+				"B",
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.OREDICTITEMSINK),
+				Character.valueOf('U'), parts.getChipTear2()
 			});
 
 			craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ENCHANTMENTSINK), CraftingDependency.Sink_Modules, new Object[] {
@@ -1417,6 +1431,13 @@ public class RecipeManager {
 				"B",
 				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.MODBASEDITEMSINK),
 				Character.valueOf('U'), Items.book
+			});
+
+			craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.CREATIVETABBASEDITEMSINK), CraftingDependency.Sink_Modules, new Object[] {
+				"U",
+				"B",
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.OREDICTITEMSINK),
+				Character.valueOf('U'), expand
 			});
 
 			craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ENCHANTMENTSINK), CraftingDependency.Sink_Modules, new Object[] {

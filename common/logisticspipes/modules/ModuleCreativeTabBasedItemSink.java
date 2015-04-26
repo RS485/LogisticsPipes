@@ -37,10 +37,10 @@ import net.minecraft.util.IIcon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStringBasedModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
+public class ModuleCreativeTabBasedItemSink extends LogisticsGuiModule implements IStringBasedModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 	
-	public final List<String> modList = new LinkedList<String>();
-	private final Set<String> modIdSet = new HashSet<String>();
+	public final List<String> tabList = new LinkedList<String>();
+	private final Set<String> tabSet = new HashSet<String>();
 
 	private IHUDModuleRenderer HUD = new HUDStringBasedItemSink(this);
 	
@@ -57,10 +57,10 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStrin
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
-		if(modIdSet == null) {
+		if(tabSet == null) {
 			buildModIdSet();
 		}
-		if(modIdSet.contains(item.getModName())) {
+		if(tabSet.contains(item.getCreativeTabName())) {
 			if(_service.canUseEnergy(5)) {
 				return _sinkReply;
 			}
@@ -84,25 +84,25 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStrin
 	public LogisticsModule getSubModule(int slot) {return null;}
 
 	private void buildModIdSet() {
-		modIdSet.clear();
-		modIdSet.addAll(modList);
+		tabSet.clear();
+		tabSet.addAll(tabList);
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		modList.clear();
+		tabList.clear();
 		int limit = nbttagcompound.getInteger("listSize");
 		for(int i = 0; i < limit; i++) {
-			modList.add(nbttagcompound.getString("Mod" + i));
+			tabList.add(nbttagcompound.getString("Mod" + i));
 		}
 		buildModIdSet();
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
-		nbttagcompound.setInteger("listSize", modList.size());
-		for(int i = 0; i < modList.size(); i++) {
-			nbttagcompound.setString("Mod" + i, modList.get(i));
+		nbttagcompound.setInteger("listSize", tabList.size());
+		for(int i = 0; i < tabList.size(); i++) {
+			nbttagcompound.setString("Mod" + i, tabList.get(i));
 		}
 	}
 
@@ -113,7 +113,7 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStrin
 	public List<String> getClientInformation() {
 		List<String> list = new ArrayList<String>();
 		list.add("Mods: ");
-		list.addAll(modList);
+		list.addAll(tabList);
 		return list;
 	}
 
@@ -184,16 +184,16 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStrin
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleModBasedItemSink");
+		return register.registerIcon("logisticspipes:itemModule/ModuleCreativeTabBasedItemSink");
 	}
 
 	@Override
 	public List<String> getStringList() {
-		return modList;
+		return tabList;
 	}
 
 	@Override
 	public String getStringForItem(ItemIdentifier ident) {
-		return ident.getModName();
+		return ident.getCreativeTabName();
 	}
 }

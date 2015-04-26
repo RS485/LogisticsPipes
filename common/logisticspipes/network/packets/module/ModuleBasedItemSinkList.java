@@ -2,6 +2,7 @@ package logisticspipes.network.packets.module;
 
 import java.io.IOException;
 
+import logisticspipes.interfaces.IStringBasedModule;
 import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
@@ -32,11 +33,11 @@ public class ModuleBasedItemSinkList extends ModuleCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		ModuleModBasedItemSink module = this.getLogisticsModule(player, ModuleModBasedItemSink.class);
+		IStringBasedModule module = this.getLogisticsModule(player, IStringBasedModule.class);
 		if(module == null) return;
 		module.readFromNBT(nbt);
 		if(MainProxy.isServer(player.getEntityWorld()) && this.getType().isInWorld()) {
-			module.ModListChanged();
+			module.listChanged();
 		}
 	}
 

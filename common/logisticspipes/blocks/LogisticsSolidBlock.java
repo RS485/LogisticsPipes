@@ -2,6 +2,7 @@ package logisticspipes.blocks;
 
 
 import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.blocks.powertile.LogisticsIC2PowerProviderTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
@@ -54,7 +55,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 
 	public LogisticsSolidBlock() {
 		super(Material.iron);
-		this.setCreativeTab(CreativeTabs.tabBlock);
+		this.setCreativeTab(LogisticsPipes.LPCreativeTab);
 		this.setHardness(6.0F);
 	}
 

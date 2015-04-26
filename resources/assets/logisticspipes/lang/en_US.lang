@@ -191,6 +191,7 @@ item.ModuleCrafter=Crafting module
 item.ModuleCrafterMK2=Crafting module MK2
 item.ModuleCrafterMK3=Crafting module MK3
 item.ModuleActiveSupplier=Active Supplier Module
+item.ModuleCreativeTabBasedItemSink=Creative Tab Based ItemSink module
 
 # Items
 

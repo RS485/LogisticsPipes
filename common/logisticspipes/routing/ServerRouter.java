@@ -481,8 +481,6 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		}
 		
 		if (adjacentChanged) {
-			
-			
 			HashMap<IRouter, ExitRoute> adjacentRouter = new HashMap<IRouter, ExitRoute>();
 			EnumSet<ForgeDirection> routedexits = EnumSet.noneOf(ForgeDirection.class);
 			EnumMap<ForgeDirection, Integer> subpowerexits = new EnumMap<ForgeDirection, Integer>(ForgeDirection.class);

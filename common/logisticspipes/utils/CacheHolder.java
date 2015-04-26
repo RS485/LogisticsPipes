@@ -1,6 +1,5 @@
 package logisticspipes.utils;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.asm.te.LPTileEntityObject;
@@ -46,34 +45,9 @@ public class CacheHolder {
 		}
 	}
 
-	private static CacheThread thread;
-	
 	public static void clearCache(List<LPTileEntityObject> toClear) {
-		if(thread == null || !thread.isAlive()) {
-			thread = new CacheThread(toClear);
-		} else {
-			thread.cachesToClear.addAll(toClear);
-		}
-	}
-	
-	private static class CacheThread extends Thread {
-		private List<LPTileEntityObject> cachesToClear;
-		private CacheThread(List<LPTileEntityObject> list) {
-			cachesToClear = new LinkedList<LPTileEntityObject>(list);
-			this.setDaemon(true);
-			this.start();
-		}
-		
-		public void run() {
-			while(thread == this) {
-				if(!cachesToClear.isEmpty()) {
-					cachesToClear.remove(0).trigger(CacheTypes.Routing);
-				} else {
-					try {
-						Thread.sleep(100);
-					} catch(InterruptedException e) {}
-				}
-			}
+		for(LPTileEntityObject obj:toClear) {
+			obj.trigger(CacheTypes.Routing);
 		}
 	}
 }

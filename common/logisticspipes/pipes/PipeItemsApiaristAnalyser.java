@@ -84,7 +84,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 			pos.moveForward(ori);
 			TileEntity tile = pos.getTileEntity(this.getWorld());
 			if(tile != null) {
-				if(SimpleServiceLocator.forestryProxy.isTileAnalyser(tile)) {
+				if(SimpleServiceLocator.forestryProxy.isTileAnalyser(tile) || SimpleServiceLocator.binnieProxy.isTileAnalyser(tile)) {
 					return ori;
 				}
 			}
@@ -96,7 +96,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 		WorldUtil wUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if(tile.tile != null) {
-				if(SimpleServiceLocator.forestryProxy.isTileAnalyser(tile.tile)) {
+				if(SimpleServiceLocator.forestryProxy.isTileAnalyser(tile.tile) || SimpleServiceLocator.binnieProxy.isTileAnalyser(tile.tile)) {
 					return tile.tile;
 				}
 			}

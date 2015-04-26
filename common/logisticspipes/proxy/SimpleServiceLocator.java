@@ -16,6 +16,7 @@ import logisticspipes.logistics.ILogisticsFluidManager;
 import logisticspipes.logistics.ILogisticsManager;
 import logisticspipes.proxy.interfaces.IBCProxy;
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
+import logisticspipes.proxy.interfaces.IBinnieProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.ICoFHPowerProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
@@ -217,5 +218,10 @@ public final class SimpleServiceLocator {
 	public static ITDProxy thermalDynamicsProxy;
 	public static void setThermalDynamicsProxy(ITDProxy proxy) {
 		thermalDynamicsProxy = proxy;
+	}
+	
+	public static IBinnieProxy binnieProxy;
+	public static void setBinnieProxy(IBinnieProxy proxy) {
+		binnieProxy = proxy;
 	}
 }

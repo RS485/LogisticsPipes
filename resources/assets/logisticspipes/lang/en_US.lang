@@ -154,12 +154,7 @@ item.PipeBlockRequestTable=Logistics Request Table
 # Modules
 
 #TODO: Add shift tooltip information
-item.structframe=Structural Pipe Frame
-item.microservo=Micro Servo
-item.routeprocess=Routing Logic Processor
-item.micropackager=Micro Packager
-item.microcapsulator=Micro Capsulator
-item.logicexpander=Logic Expansion Circuit
+
 item.ModuleBlank=Blank Module
 item.ModuleItemSink=ItemSink module
 item.ModulePassiveSupplier=Passive Supplier module
@@ -195,6 +190,14 @@ item.ModuleCreativeTabBasedItemSink=Creative Tab Based ItemSink module
 
 # Items
 
+item.structframe=Structural Pipe Frame
+item.microservo=Micro Servo
+item.routeprocess=Routing Logic Processor
+item.micropackager=Micro Packager
+item.microcapsulator=Micro Capsulator
+item.logicexpander=Logic Expansion Circuit
+item.lense=Focus Lense
+item.acceptor=Laser Acceptor Interface
 item.pipeController=Logistics Pipe Controller
 item.brokenItem=Logistics Broken Item
 item.logisticsFluidContainer=Logistics Fluid Container

@@ -375,6 +375,27 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		subSystemPower = finder.subPowerProvider;
 		adjacent = finder.result;
 		
+
+		Map<ForgeDirection, List<CoreRoutedPipe>> pipeDirections = new HashMap<ForgeDirection, List<CoreRoutedPipe>>();
+		
+		for(Entry<CoreRoutedPipe, ExitRoute> entry : adjacent.entrySet()) {
+			List<CoreRoutedPipe> list = pipeDirections.get(entry.getValue().exitOrientation);
+			if(list == null) {
+				list = new ArrayList<CoreRoutedPipe>();
+				pipeDirections.put(entry.getValue().exitOrientation, list);
+			}
+			list.add(entry.getKey());
+		}
+
+		for(Entry<ForgeDirection, List<CoreRoutedPipe>> entry:pipeDirections.entrySet()) {
+			if(entry.getValue().size() > Configs.MAX_UNROUTED_CONNECTIONS) {
+				for(CoreRoutedPipe pipe:entry.getValue()) {
+					adjacent.remove(pipe);
+				}
+			}
+		}
+		
+		
 		listenedPipes.removeAll(finder.listenedPipes);
 		for(List<ITileEntityChangeListener> list:listenedPipes) {
 			list.remove(localChangeListener);

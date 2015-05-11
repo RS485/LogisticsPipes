@@ -1074,6 +1074,8 @@ public class RecipeManager {
 			ItemStack packager = new ItemStack(LogisticsPipes.LogisticsPipeComponents, 1, ItemPipeComponents.ITEM_MICROPACKAGER);
 			ItemStack capsler = new ItemStack(LogisticsPipes.LogisticsPipeComponents, 1, ItemPipeComponents.ITEM_MICROCAPSULATOR);
 			ItemStack expand = new ItemStack(LogisticsPipes.LogisticsPipeComponents, 1, ItemPipeComponents.ITEM_LOGICEXPANDER);
+			ItemStack lense = new ItemStack(LogisticsPipes.LogisticsPipeComponents, 1, ItemPipeComponents.ITEM_FOCUSLENSE);
+			ItemStack accept = new ItemStack(LogisticsPipes.LogisticsPipeComponents, 1, ItemPipeComponents.ITEM_POWERACCEPT);
 			ItemStack basic = new ItemStack(LogisticsPipes.BasicTransportPipe, 1);
 			ItemStack pipe = new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1);
 			
@@ -1135,6 +1137,22 @@ public class RecipeManager {
 				Character.valueOf('n'), Items.gold_nugget,
 				Character.valueOf('I'), Items.iron_ingot,
 				Character.valueOf('r'), Items.redstone
+			});
+			
+			craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsPipeComponents, 2, ItemPipeComponents.ITEM_FOCUSLENSE),  CraftingDependency.Basic, new Object[] {
+				" g ",
+				"ggg",
+				" g ",
+				Character.valueOf('g'), Blocks.glass
+			});
+			
+			craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsPipeComponents, 1, ItemPipeComponents.ITEM_POWERACCEPT),  CraftingDependency.Basic, new Object[] {
+				"R  ",
+				"LRI",
+				"RII",
+				Character.valueOf('L'), lense,
+				Character.valueOf('I'), "nuggetIron",
+				Character.valueOf('R'), Items.redstone
 			});
 			
 			craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsBasicPipe, 8), CraftingDependency.Basic, new Object[] {
@@ -1780,13 +1798,12 @@ public class RecipeManager {
 			
 			craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 4, ItemUpgrade.POWER_TRANSPORTATION), CraftingDependency.Power_Distribution, new Object[] { 
 				false, 
-				"PRP", 
-				"CGC", 
-				"PLP", 
+				"PGP",
+				"RCR",
+				"PRP",
 				Character.valueOf('C'), expand,
-				Character.valueOf('R'), Blocks.redstone_block, 
-				Character.valueOf('G'), Blocks.glowstone, 
-				Character.valueOf('L'), Blocks.lapis_block, 
+				Character.valueOf('R'), lense, 
+				Character.valueOf('G'), Blocks.glowstone,  
 				Character.valueOf('P'), Items.paper
 			});
 			

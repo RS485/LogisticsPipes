@@ -259,6 +259,9 @@ public class IC2Proxy implements IIC2Proxy {
 		}
 		if(Configs.ENABLE_BETA_RECIPES) {
 			ItemStack packager = new ItemStack(LogisticsPipes.LogisticsPipeComponents, 1, ItemPipeComponents.ITEM_MICROPACKAGER);
+			ItemStack expand = new ItemStack(LogisticsPipes.LogisticsPipeComponents, 1, ItemPipeComponents.ITEM_LOGICEXPANDER);
+			ItemStack lense = new ItemStack(LogisticsPipes.LogisticsPipeComponents, 1, ItemPipeComponents.ITEM_FOCUSLENSE);
+			ItemStack accept = new ItemStack(LogisticsPipes.LogisticsPipeComponents, 1, ItemPipeComponents.ITEM_POWERACCEPT);
 			
 			Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICBUFFER), new Object[] { 
 				"CGC", 
@@ -285,10 +288,10 @@ public class IC2Proxy implements IIC2Proxy {
 				"PSP", 
 				"OBO", 
 				"PTP", 
-				Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_TRANSPORTATION),
-				Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), 
-				Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), 
-				Character.valueOf('T'), IC2Items.getItem("transformerUpgrade"), 
+				Character.valueOf('B'), expand,
+				Character.valueOf('S'), accept, 
+				Character.valueOf('O'), IC2Items.getItem("coil"), 
+				Character.valueOf('T'), IC2Items.getItem("reBattery"), 
 				Character.valueOf('P'), Items.paper
 			});
 			
@@ -296,10 +299,10 @@ public class IC2Proxy implements IIC2Proxy {
 				"PSP", 
 				"OBO", 
 				"PTP", 
-				Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_LV_SUPPLIER),
-				Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), 
-				Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), 
-				Character.valueOf('T'), IC2Items.getItem("transformerUpgrade"), 
+				Character.valueOf('B'), expand,
+				Character.valueOf('S'), accept, 
+				Character.valueOf('O'), IC2Items.getItem("coil"), 
+				Character.valueOf('T'), IC2Items.getItem("advBattery"), 
 				Character.valueOf('P'), Items.paper
 			});
 			
@@ -307,10 +310,10 @@ public class IC2Proxy implements IIC2Proxy {
 				"PSP", 
 				"OBO", 
 				"PTP", 
-				Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_MV_SUPPLIER),
-				Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), 
-				Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), 
-				Character.valueOf('T'), IC2Items.getItem("transformerUpgrade"), 
+				Character.valueOf('B'), expand,
+				Character.valueOf('S'), accept, 
+				Character.valueOf('O'), IC2Items.getItem("coil"), 
+				Character.valueOf('T'), IC2Items.getItem("energyCrystal"),
 				Character.valueOf('P'), Items.paper
 			});
 			
@@ -318,10 +321,10 @@ public class IC2Proxy implements IIC2Proxy {
 				"PSP", 
 				"OBO", 
 				"PTP", 
-				Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_HV_SUPPLIER),
-				Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), 
-				Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), 
-				Character.valueOf('T'), IC2Items.getItem("transformerUpgrade"), 
+				Character.valueOf('B'), expand,
+				Character.valueOf('S'), accept, 
+				Character.valueOf('O'), IC2Items.getItem("coil"), 
+				Character.valueOf('T'), IC2Items.getItem("lapotronCrystal"),
 				Character.valueOf('P'), Items.paper
 			});
 			
@@ -329,11 +332,11 @@ public class IC2Proxy implements IIC2Proxy {
 				"PSP", 
 				"OBO", 
 				"PTP", 
-				Character.valueOf('B'), Blocks.redstone_block,
-				Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), 
-				Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), 
+				Character.valueOf('B'), Blocks.glowstone,
+				Character.valueOf('S'), lense, 
+				Character.valueOf('O'), IC2Items.getItem("coil"), 
 				Character.valueOf('T'), IC2Items.getItem("transformerUpgrade"), 
-				Character.valueOf('P'), Items.paper
+				Character.valueOf('P'), Items.iron_ingot
 			});
 		}
 	}

@@ -1412,8 +1412,7 @@ outer:
 		IRouter router = SimpleServiceLocator.routerManager.getRouter(id);
 		if(router == null) return null;
 		CoreRoutedPipe pipe = router.getPipe();
-		if(!(pipe.container instanceof LogisticsTileGenericPipe)) return null;
-		return pipe.container;
+		return pipe;
 	}
 	
 	@CCCommand(description="Returns the global LP object which is used to access general LP methods.", needPermission=false)

@@ -1,16 +1,16 @@
 package logisticspipes.asm.bc;
 
-import logisticspipes.asm.util.ASMHelper;
+import java.util.Arrays;
+import java.util.HashSet;
 
+import cpw.mods.fml.common.FMLCommonHandler;
+import logisticspipes.asm.util.ASMHelper;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.MethodNode;
-
-import cpw.mods.fml.common.FMLCommonHandler;
 
 public class PipeEventBusHandler {
 
@@ -18,14 +18,16 @@ public class PipeEventBusHandler {
 		final ClassReader reader = new ClassReader(bytes);
 		final ClassNode node = new ClassNode();
 		reader.accept(node, 0);
-		
-		boolean noChecksumMatch = false;
 
 		String sumHandleEvent = ASMHelper.getCheckSumForMethod(reader, "handleEvent");
+
+		// is being executed only once, so there is no need for a static variable
+		HashSet<String> checkSums = new HashSet<String>(Arrays.asList(new String[] {
+				"3A490EE1D1DE3A386D528D5CADBFA7F536DBC708",
+				"33411F8DE31E738A237712C1E0AD2013C8CAB253", // BC 6.4.1 in dev env
+		}));
 		
-		if(!"3A490EE1D1DE3A386D528D5CADBFA7F536DBC708".equals(sumHandleEvent) && !"33411F8DE31E738A237712C1E0AD2013C8CAB253".equals(sumHandleEvent)) noChecksumMatch = true;
-		
-		if(noChecksumMatch) {
+		if (!checkSums.contains(sumHandleEvent)) {
 			System.out.println("handleEvent: " + sumHandleEvent);
 			new UnsupportedOperationException("This LP version isn't compatible with the installed BC version.").printStackTrace();
 			FMLCommonHandler.instance().exitJava(1, true);

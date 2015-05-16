@@ -1,9 +1,11 @@
 package logisticspipes.asm.bc;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import logisticspipes.asm.util.ASMHelper;
-
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
@@ -12,10 +14,8 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-
 public class ClassPipeTransportItemsHandler {
-	
+
 	private static void insertNewInjectItemMethod(ClassNode node) {
 		MethodVisitor mv = node.visitMethod(Opcodes.ACC_PUBLIC, "injectItem", "(Lbuildcraft/transport/TravelingItem;Lnet/minecraftforge/common/util/ForgeDirection;)V", null, null);
 		mv.visitCode();
@@ -44,13 +44,16 @@ public class ClassPipeTransportItemsHandler {
 		ClassReader reader = new ClassReader(bytes);
 		reader.accept(node, 0);
 		
-		boolean noChecksumMatch = false;
-		
 		String sumInjectItem = ASMHelper.getCheckSumForMethod(reader, "injectItem");
-		
-		if(!"656CFA07E9337AC56FB6C1BA22EBBFAD604D83C0".equals(sumInjectItem) && !"E7C1D1F202E00935B89B35E7F2A46B97E1FDC6F7".equals(sumInjectItem) && !"956E67FF1103A53C970F22669CF70624DE3D4CF8".equals(sumInjectItem)) noChecksumMatch = true;
 
-		if(noChecksumMatch) {
+		// is being executed only once, so there is no need for a static variable
+		HashSet<String> checkSums = new HashSet<String>(Arrays.asList(new String[] {
+				"656CFA07E9337AC56FB6C1BA22EBBFAD604D83C0", // BC 6.4.1 in dev env
+				"956E67FF1103A53C970F22669CF70624DE3D4CF8",
+				"E7C1D1F202E00935B89B35E7F2A46B97E1FDC6F7",
+		}));
+
+		if (!checkSums.contains(sumInjectItem)) {
 			System.out.println("injectItem: " + sumInjectItem);
 			new UnsupportedOperationException("This LP version isn't compatible with the installed BC version.").printStackTrace();
 			FMLCommonHandler.instance().exitJava(1, true);

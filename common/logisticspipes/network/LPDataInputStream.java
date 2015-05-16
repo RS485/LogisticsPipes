@@ -175,7 +175,7 @@ public class LPDataInputStream extends DataInputStream {
 		return list;
 	}
 
-	public IOrderInfoProvider readOrder() throws IOException {
+	public IOrderInfoProvider readOrderInfo() throws IOException {
 		ItemIdentifierStack stack = this.readItemIdentifierStack();
 		int routerId = this.readInt();
 		boolean isFinished = this.readBoolean();
@@ -187,7 +187,9 @@ public class LPDataInputStream extends DataInputStream {
 				return data.readFloat();
 			}});
 		byte machineProgress = this.readByte();
-		return new ClientSideOrderInfo(stack, isFinished, type, inProgress, routerId, list, machineProgress);
+		LPPosition pos = this.readLPPosition();
+		ItemIdentifier ident = this.readItemIdentifier();
+		return new ClientSideOrderInfo(stack, isFinished, type, inProgress, routerId, list, machineProgress, pos, ident);
 	}
 	
 	public <T extends Enum<T>> T readEnum(Class<T> clazz) throws IOException {
@@ -199,7 +201,7 @@ public class LPDataInputStream extends DataInputStream {
 		list.addAll(this.readList(new IReadListObject<IOrderInfoProvider>() {
 			@Override
 			public IOrderInfoProvider readObject(LPDataInputStream data) throws IOException {
-				return data.readOrder();
+				return data.readOrderInfo();
 			}}));
 		list.getSubOrders().addAll(this.readList(new IReadListObject<LinkedLogisticsOrderList>() {
 			@Override

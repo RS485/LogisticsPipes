@@ -13,27 +13,40 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import logisticspipes.interfaces.IChangeListener;
-import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.interfaces.ILPPositionProvider;
 import logisticspipes.logisticspipes.IRoutedItem;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.pipe.PipeManagerContentPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
-import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.tuples.LPPosition;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
 public abstract class LogisticsOrderManager<T extends LogisticsOrder> implements Iterable<T> {
 	
-	public LogisticsOrderManager() {}
+	public LogisticsOrderManager(ILPPositionProvider pos) {
+		this.pos = pos;
+	}
 	
-	public LogisticsOrderManager(IChangeListener listener) {
+	public LogisticsOrderManager(IChangeListener listener, ILPPositionProvider pos) {
+		this(pos);
 		this.listener = listener;
 	}
+	
+	private LinkedList<T> oldOrders 	= new LinkedList<T>();
 	
 	protected LinkedList<T>	_orders		= new LinkedList<T>();
 	protected IChangeListener				listener	= null;
 	
+	protected PlayerCollectionList		watchingPlayers = new PlayerCollectionList();
+	
+	private ILPPositionProvider pos = null;
+	
 	protected void listen() {
+		changed();
 		if(listener != null) {
 			listener.listenedChanged();
 		}
@@ -149,11 +162,30 @@ public abstract class LogisticsOrderManager<T extends LogisticsOrder> implements
 	public void setMachineProgress(byte progress) {
 		if(_orders.isEmpty()) return;
 		_orders.getFirst().setMachineProgress(progress);
+		changed();
 	}
 
 	public boolean isFirstOrderWatched() {
 		if(_orders.isEmpty()) return false;
 		return _orders.getFirst().isWatched();
+	}
+
+	public void startWatching(EntityPlayer player) {
+		watchingPlayers.add(player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PipeManagerContentPacket.class).setManager(this).setLPPos(pos.getLPPosition()), player);
+	}
+
+	public void stopWatching(EntityPlayer player) {
+		watchingPlayers.remove(player);
+	}
+	
+	private void changed() {
+		if(watchingPlayers.isEmpty()) return;
+		//if(!oldOrders.equals(_orders)) {
+		//	oldOrders.clear();
+		//	oldOrders.addAll(_orders);
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(PipeManagerContentPacket.class).setManager(this).setLPPos(pos.getLPPosition()), watchingPlayers);
+		//}
 	}
 
 	/**

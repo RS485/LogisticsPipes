@@ -15,6 +15,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtil;
 import logisticspipes.utils.tuples.Pair;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
@@ -45,6 +46,7 @@ public class ItemDisplay {
 	public final LinkedList<ItemIdentifierStack> _allItems = new LinkedList<ItemIdentifierStack>();
 	private final Map<Pair<Integer,Integer>, ItemIdentifierStack> map = new HashMap<Pair<Integer,Integer>, ItemIdentifierStack>();
 	
+	@Getter
 	private int page = 0;
 	private int maxPage = 0;
 	private int requestCount = 1;

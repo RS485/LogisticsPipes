@@ -34,6 +34,7 @@ import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IClientState;
 import logisticspipes.interfaces.IInventoryUtil;
+import logisticspipes.interfaces.ILPPositionProvider;
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IPipeUpgradeManager;
 import logisticspipes.interfaces.IQueueCCEvent;
@@ -90,7 +91,9 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.routing.IRouterQueuedTask;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.ServerRouter;
+import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LogisticsItemOrderManager;
+import logisticspipes.routing.order.LogisticsOrderManager;
 import logisticspipes.security.PermissionException;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
@@ -99,7 +102,6 @@ import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.CacheHolder;
-import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.OrientationsUtil;
@@ -128,7 +130,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
 @CCType(name = "LogisticsPipes:Normal")
-public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClientState, IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IPipeServiceProvider, IQueueCCEvent {
+public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClientState, IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IPipeServiceProvider, IQueueCCEvent, ILPPositionProvider {
 
 	public enum ItemSendMode {
 		Normal,
@@ -162,6 +164,9 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	
 	protected UpgradeManager upgradeManager = new UpgradeManager(this);
 	protected LogisticsItemOrderManager _orderItemManager = null;
+	
+	@Getter
+	private List<IOrderInfoProvider> clientSideOrderManager = new ArrayList<IOrderInfoProvider>();
 	
 	public int stat_session_sent;
 	public int stat_session_recieved;
@@ -1571,8 +1576,12 @@ outer:
 
 	@Override
 	public LogisticsItemOrderManager getItemOrderManager() {
-		_orderItemManager = _orderItemManager != null ? _orderItemManager : new LogisticsItemOrderManager();
+		_orderItemManager = _orderItemManager != null ? _orderItemManager : new LogisticsItemOrderManager(this);
 		return this._orderItemManager;
+	}
+
+	public LogisticsOrderManager<?> getOrderManager() {
+		return getItemOrderManager();
 	}
 
 	public void addPipeSign(ForgeDirection dir, IPipeSign type, EntityPlayer player) {

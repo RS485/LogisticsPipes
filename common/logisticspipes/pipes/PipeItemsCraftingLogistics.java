@@ -79,7 +79,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		craftingModule = new ModuleCrafter(this);
 		craftingModule.registerPosition(ModulePositionType.IN_PIPE, 0);
 		throttleTime = 40;
-		_orderItemManager = new LogisticsItemOrderManager(this); // null by default when not needed
+		_orderItemManager = new LogisticsItemOrderManager(this, this); // null by default when not needed
 	}
 
 	@Override

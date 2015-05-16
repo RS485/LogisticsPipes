@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.IRequest;
 import logisticspipes.routing.IRouter;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.tuples.LPPosition;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -85,4 +86,14 @@ public abstract class LogisticsOrder implements IOrderInfoProvider {
 	public abstract int getAmount();
 	
 	public abstract void reduceAmountBy(int amount);
+
+	@Override
+	public ItemIdentifier getTargetType() {
+		return ItemIdentifier.get(getRouter().getPipe().item, 0, null);
+	}
+
+	@Override
+	public LPPosition getTargetPosition() {
+		return getRouter().getLPPosition();
+	}
 }

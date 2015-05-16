@@ -1,6 +1,7 @@
 package logisticspipes.gui;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,16 +11,20 @@ import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.block.LogicControllerPacket;
+import logisticspipes.network.packets.pipe.PipeManagerWatchingPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
 import logisticspipes.pipes.upgrades.SneakyUpgrade;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
-import logisticspipes.utils.gui.LogisticsBaseGuiScreen.Colors;
+import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.gui.GuiButton;
@@ -44,9 +49,15 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 	private final List<Slot>		TAB_SLOTS_1_2		= new ArrayList<Slot>();
 	private final List<Slot>		TAB_SLOTS_2			= new ArrayList<Slot>();
 	private final List<Slot>		TAB_SLOTS_4			= new ArrayList<Slot>();
-	
+
 	private final List<GuiButton>	TAB_BUTTON_4		= new ArrayList<GuiButton>();
+	private final List<GuiButton>	TAB_BUTTON_5		= new ArrayList<GuiButton>();
+	
+	private ItemDisplay _itemDisplay_5;
+	
 	private final CoreRoutedPipe	pipe;
+	
+	private boolean managerWatching;
 	
 	public GuiPipeController(final EntityPlayer player, final CoreRoutedPipe pipe) {
 		super(180, 220, 0, 0);
@@ -109,12 +120,20 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 		super.initGui();
 		buttonList.clear();
 		TAB_BUTTON_4.add(addButton(new GuiButton(0, guiLeft + 10, guiTop + 70, 160, 20, "Edit Logic Controller")));
+		TAB_BUTTON_5.add(addButton(new SmallGuiButton(1, guiLeft + 95, guiTop + 26, 10, 10, "<")));
+		TAB_BUTTON_5.add(addButton(new SmallGuiButton(2, guiLeft + 165, guiTop + 26, 10, 10, ">")));
+		if(_itemDisplay_5 == null) _itemDisplay_5 = new ItemDisplay(null, mc.fontRenderer, this, null, 10, 40, 20, 60, new int []{1, 1, 1, 1}, true);
+		_itemDisplay_5.reposition(10, 40, 20, 60);
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton p_146284_1_) {
 		if(p_146284_1_.id == 0) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(LogicControllerPacket.class).setTilePos(pipe.container));
+		} else if(p_146284_1_.id == 1) {
+			_itemDisplay_5.prevPage();
+		} else if(p_146284_1_.id == 2) {
+			_itemDisplay_5.nextPage();
 		}
 	}
 
@@ -198,8 +217,23 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 			if(select != 3 || pipe.getOriginalUpgradeManager().hasLogicControll()) {
 				this.current_Tab = select;
 			}
+			if(current_Tab == 4) {
+				if(!managerWatching) {
+					managerWatching = true;
+					MainProxy.sendPacketToServer(PacketHandler.getPacket(PipeManagerWatchingPacket.class).setStart(true).setTilePos(pipe.container));
+				}
+			} else if(managerWatching) {
+				managerWatching = false;
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(PipeManagerWatchingPacket.class).setStart(false).setTilePos(pipe.container));				
+			}
 		} else {
-			super.mouseClicked(par1, par2, par3);
+			if(current_Tab == 4) {
+				//if(!_itemDisplay_5.handleClick(par1 - guiLeft, par2 - guiTop, par3)) {
+					super.mouseClicked(par1, par2, par3);
+				//}
+			} else {
+				super.mouseClicked(par1, par2, par3);
+			}
 		}
 	}
 	
@@ -261,9 +295,31 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 			
 			s = BasicGuiHelper.getStringWithSpacesFromLong(pipe.server_routing_table_size);
 			fontRendererObj.drawString(s, 130 - fontRendererObj.getStringWidth(s) / 2, 110, 0x303030);
+		} else if(current_Tab == 4) {
+			List<ItemIdentifierStack> _allItems = new LinkedList<ItemIdentifierStack>();
+			for(IOrderInfoProvider entry: pipe.getClientSideOrderManager()) {
+				_allItems.add(entry.getAsDisplayItem());
+			}
+			_itemDisplay_5.setItemList(_allItems);
+			_itemDisplay_5.renderItemArea(zLevel);
+			_itemDisplay_5.renderPageNumber(right - guiLeft - 45, 28);
+			int start = _itemDisplay_5.getPage() * 3;
+			int stringPos = 40;
+			for(int i = start; i < start + 3 && i < pipe.getClientSideOrderManager().size(); i++) {
+				IOrderInfoProvider order = pipe.getClientSideOrderManager().get(i);
+				String s = order.getTargetType().getFriendlyName();
+				fontRendererObj.drawString(s, 35, stringPos, 0x303030);
+				s = Integer.toString(i + 1);
+				stringPos += 6;
+				fontRendererObj.drawString(s, 3, stringPos, 0x303030);
+				stringPos += 4;
+				s = order.getTargetPosition().toIntBasedString();
+				fontRendererObj.drawString(s, 40, stringPos, 0x303030);
+				stringPos += 10;
+			}
 		}
 	}
-	
+
 	@Override
 	protected void func_146977_a(Slot slot) {
 		if(TAB_SLOTS_1_1.contains(slot) && current_Tab != 0) return;
@@ -290,6 +346,9 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 			if(TAB_BUTTON_4.contains(button)) {
 				button.visible = current_Tab == 3;
 				button.enabled = pipe.container.logicController.diskInv.getStackInSlot(0) != null;
+			}
+			if(TAB_BUTTON_5.contains(button)) {
+				button.visible = current_Tab == 4;
 			}
 		}
 	}

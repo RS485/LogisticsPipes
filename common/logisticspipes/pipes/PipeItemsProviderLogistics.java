@@ -86,7 +86,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	public final LinkedList<ItemIdentifierStack> itemListOrderer = new LinkedList<ItemIdentifierStack>();
 	private final HUDProvider HUD = new HUDProvider(this);
 	
-	protected LogisticsItemOrderManager _orderManager = new LogisticsItemOrderManager(this);
+	protected LogisticsItemOrderManager _orderManager = new LogisticsItemOrderManager(this, this);
 	private boolean doContentUpdate = true;
 	
 	protected ModuleProvider myModule;

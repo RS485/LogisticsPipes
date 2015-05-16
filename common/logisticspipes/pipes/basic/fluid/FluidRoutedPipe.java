@@ -16,6 +16,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.order.LogisticsFluidOrderManager;
 import logisticspipes.routing.order.LogisticsItemOrderManager;
+import logisticspipes.routing.order.LogisticsOrderManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
@@ -260,7 +261,12 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	}
 
 	public LogisticsFluidOrderManager getFluidOrderManager() {
-		_orderFluidManager = _orderFluidManager != null ? _orderFluidManager : new LogisticsFluidOrderManager();
+		_orderFluidManager = _orderFluidManager != null ? _orderFluidManager : new LogisticsFluidOrderManager(this);
 		return this._orderFluidManager;
+	}
+
+	@Override
+	public LogisticsOrderManager<?> getOrderManager() {
+		return getFluidOrderManager();
 	}
 }

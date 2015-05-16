@@ -1,6 +1,7 @@
 package logisticspipes.routing.order;
 
 import logisticspipes.interfaces.IChangeListener;
+import logisticspipes.interfaces.ILPPositionProvider;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
@@ -9,12 +10,12 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 
 public class LogisticsItemOrderManager extends LogisticsOrderManager<LogisticsItemOrder> {
 
-	public LogisticsItemOrderManager() {
-		super();
+	public LogisticsItemOrderManager(ILPPositionProvider pos) {
+		super(pos);
 	}
 	
-	public LogisticsItemOrderManager(IChangeListener listener) {
-		super(listener);
+	public LogisticsItemOrderManager(IChangeListener listener, ILPPositionProvider pos) {
+		super(listener, pos);
 	}
 	
 	@Override

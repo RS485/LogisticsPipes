@@ -2,7 +2,9 @@ package logisticspipes.routing.order;
 
 import java.util.List;
 
+import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.tuples.LPPosition;
 import lombok.Getter;
 
 public class ClientSideOrderInfo implements IOrderInfoProvider {
@@ -23,8 +25,12 @@ public class ClientSideOrderInfo implements IOrderInfoProvider {
 	private final List<Float> progresses;
 	@Getter
 	private final byte machineProgress;
+	@Getter
+	private final LPPosition targetPosition;
+	@Getter
+	private final ItemIdentifier targetType;
 	
-	public ClientSideOrderInfo(ItemIdentifierStack item, boolean isFinished, ResourceType type, boolean inProgress, int routerId, List<Float> progresses, byte machineProgress) {
+	public ClientSideOrderInfo(ItemIdentifierStack item, boolean isFinished, ResourceType type, boolean inProgress, int routerId, List<Float> progresses, byte machineProgress, LPPosition pos, ItemIdentifier targetType) {
 		this.asDisplayItem = item;
 		this.isFinished = isFinished;
 		this.type = type;
@@ -32,6 +38,8 @@ public class ClientSideOrderInfo implements IOrderInfoProvider {
 		this.routerId = routerId;
 		this.progresses = progresses;
 		this.machineProgress = machineProgress;
+		this.targetPosition = pos;
+		this.targetType = targetType;
 	}
 	
 	//Ignore this call

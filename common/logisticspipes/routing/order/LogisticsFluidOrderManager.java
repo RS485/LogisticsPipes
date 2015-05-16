@@ -1,6 +1,7 @@
 package logisticspipes.routing.order;
 
 import logisticspipes.interfaces.IChangeListener;
+import logisticspipes.interfaces.ILPPositionProvider;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.routing.FluidLogisticsPromise;
@@ -9,12 +10,12 @@ import logisticspipes.utils.FluidIdentifier;
 
 public class LogisticsFluidOrderManager extends LogisticsOrderManager<LogisticsFluidOrder> {
 
-	public LogisticsFluidOrderManager() {
-		super();
+	public LogisticsFluidOrderManager(ILPPositionProvider pos) {
+		super(pos);
 	}
 	
-	public LogisticsFluidOrderManager(IChangeListener listener) {
-		super(listener);
+	public LogisticsFluidOrderManager(IChangeListener listener, ILPPositionProvider pos) {
+		super(listener, pos);
 	}
 	
 	public void sendFailed() {

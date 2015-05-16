@@ -110,6 +110,10 @@ public class LPPosition extends Triplet<Double, Double, Double> {
 	public String toString() {
 		return "(" + this.getXD() + ", " + this.getYD() + ", " + this.getZD() + ")";
 	}
+	
+	public String toIntBasedString() {
+		return "(" + this.getXD() + ", " + this.getYD() + ", " + this.getZD() + ")";
+	}
 
 	@Override
 	public LPPosition copy() {

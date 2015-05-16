@@ -1,20 +1,11 @@
 package logisticspipes.network;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufOutputStream;
-import io.netty.buffer.ByteBufProcessor;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.channels.GatheringByteChannel;
-import java.nio.channels.ScatteringByteChannel;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
@@ -174,7 +165,7 @@ public class LPDataOutputStream extends DataOutputStream {
 		this.writeList(new ArrayList<T>(collection), handler);
 	}
 
-	public void writeOrder(IOrderInfoProvider order) throws IOException {
+	public void writeOrderInfo(IOrderInfoProvider order) throws IOException {
 		this.writeItemIdentifierStack(order.getAsDisplayItem());
 		this.writeInt(order.getRouterId());
 		this.writeBoolean(order.isFinished());
@@ -186,6 +177,8 @@ public class LPDataOutputStream extends DataOutputStream {
 				data.writeFloat(object);
 			}});
 		this.writeByte(order.getMachineProgress());
+		this.writeLPPosition(order.getTargetPosition());
+		this.writeItemIdentifier(order.getTargetType());
 	}
 	
 	public <T extends Enum<T>> void writeEnum(T object) throws IOException {
@@ -196,7 +189,7 @@ public class LPDataOutputStream extends DataOutputStream {
 		this.writeList(orders, new IWriteListObject<IOrderInfoProvider>() {
 			@Override
 			public void writeObject(LPDataOutputStream data, IOrderInfoProvider order) throws IOException {
-				data.writeOrder(order);
+				data.writeOrderInfo(order);
 			}});
 		this.writeList(orders.getSubOrders(), new IWriteListObject<LinkedLogisticsOrderList>() {
 			@Override

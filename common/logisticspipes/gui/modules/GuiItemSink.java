@@ -11,13 +11,14 @@ package logisticspipes.gui.modules;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.ItemSinkDefaultPacket;
+import logisticspipes.network.packets.module.ItemSinkImportPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
+import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
 
@@ -60,6 +61,7 @@ public class GuiItemSink extends ModuleBaseGui {
 				return StringUtil.translate(PREFIX + (_itemSink.isDefaultRoute() ? "Yes" : "No"));
 			}
 		}));
+		buttonList.add(new SmallGuiButton(1, guiLeft + 10, guiTop + 37, 40, 10, StringUtil.translate(PREFIX + "import")));
 	}
 	
 	@Override
@@ -68,6 +70,9 @@ public class GuiItemSink extends ModuleBaseGui {
 			case 0:
 				_itemSink.setDefaultRoute(!_itemSink.isDefaultRoute());
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(ItemSinkDefaultPacket.class).setDefault(_itemSink.isDefaultRoute()).setModulePos(_itemSink));
+				break;
+			case 1:
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(ItemSinkImportPacket.class).setModulePos(_itemSink));
 				break;
 		}
 		

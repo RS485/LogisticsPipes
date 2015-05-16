@@ -315,6 +315,7 @@ gui.itemsink.Inventory=Inventory
 gui.itemsink.Defaultroute=Default route
 gui.itemsink.IgnoreData=Ignore Data
 gui.itemsink.IgnoreNBT=Ignore NBT
+gui.itemsink.import=Import
 
 gui.crafting.Inputs=Inputs
 gui.crafting.Inventory=Inventory

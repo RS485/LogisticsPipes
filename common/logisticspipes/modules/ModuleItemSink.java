@@ -11,6 +11,7 @@ import logisticspipes.gui.hud.modules.HUDItemSink;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
@@ -311,6 +312,20 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 			ModernPacket pak = PacketHandler.getPacket(ItemSinkFuzzy.class).setIgnoreData(ignoreData).setIgnoreNBT(ignoreNBT).setModulePos(this);
 			if(player != null) MainProxy.sendPacketToPlayer(pak, player);
 			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(_world.getWorld()), pak);
+		}
+	}
+
+	public void importFromInventory() {
+		if(_service == null) return;
+		IInventoryUtil inv = _service.getPointedInventory(false);
+		if(inv == null) return;
+		int count = 0;
+		for(ItemIdentifier item:inv.getItems()) {
+			_filterInventory.setInventorySlotContents(count, item.makeStack(1));
+			count++;
+			if(count >= _filterInventory.getSizeInventory()) {
+				break;
+			}
 		}
 	}
 }

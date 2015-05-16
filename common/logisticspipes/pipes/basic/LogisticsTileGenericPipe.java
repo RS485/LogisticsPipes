@@ -47,6 +47,8 @@ import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.OrientationsUtil;
+import logisticspipes.utils.StackTraceUtil;
+import logisticspipes.utils.StackTraceUtil.Info;
 import logisticspipes.utils.TileBuffer;
 import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -165,6 +167,8 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 
 	@Override
 	public void updateEntity() {
+		Info superDebug = StackTraceUtil.addSuperTraceInformation("Time: " + this.getWorld().getWorldTime());
+		Info debug = StackTraceUtil.addTraceInformation("(" + getX() + ", " + getY() + ", " + getZ() + ")", superDebug);
 		if(sendInitPacket && MainProxy.isServer(getWorldObj())) {
 			sendInitPacket = false;
 			getRenderController().sendInit();
@@ -175,6 +179,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 			}
 
 			if (pipe == null) {
+				debug.end();
 				return;
 			}
 
@@ -184,12 +189,14 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		}
 
 		if (!LogisticsBlockGenericPipe.isValid(pipe)) {
+			debug.end();
 			return;
 		}
 
 		pipe.updateEntity();
 		
 		if (worldObj.isRemote) {
+			debug.end();
 			return;
 		}
 		
@@ -241,6 +248,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 			addedToNetwork = true;
 			SimpleServiceLocator.openComputersProxy.addToNetwork(this);
 		}
+		debug.end();
 	}
 
 	@Override

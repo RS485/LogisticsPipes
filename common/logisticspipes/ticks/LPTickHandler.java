@@ -24,6 +24,8 @@ import cpw.mods.fml.relauncher.Side;
 
 public class LPTickHandler {
 	
+	public static int adjChecksDone = 0;
+	
 	@SubscribeEvent
 	public void clientTick(ClientTickEvent event) {
 		FluidIdentifier.initFromForge(true);
@@ -37,6 +39,7 @@ public class LPTickHandler {
 		SimpleServiceLocator.craftingPermissionManager.tick();
 		SimpleServiceLocator.serverBufferHandler.serverTick(event);
 		MainProxy.proxy.tickServer();
+		adjChecksDone = 0;
 	}
 
 	private static Map<World, LPWorldInfo> worldInfo = new ConcurrentHashMap<World, LPWorldInfo>();

@@ -1,6 +1,6 @@
 package logisticspipes.utils;
 
-import java.util.List;
+import java.util.Set;
 
 import logisticspipes.asm.te.LPTileEntityObject;
 
@@ -45,7 +45,7 @@ public class CacheHolder {
 		}
 	}
 
-	public static void clearCache(List<LPTileEntityObject> toClear) {
+	public static void clearCache(Set<LPTileEntityObject> toClear) {
 		for(LPTileEntityObject obj:toClear) {
 			obj.trigger(CacheTypes.Routing);
 		}

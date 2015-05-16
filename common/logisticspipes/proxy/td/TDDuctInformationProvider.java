@@ -10,6 +10,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
+import logisticspipes.routing.pathfinder.IRouteProvider;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.CacheHolder.CacheTypes;
@@ -27,7 +28,7 @@ import cofh.thermaldynamics.duct.item.TravelingItem;
 import cofh.thermaldynamics.multiblock.Route;
 import cofh.thermaldynamics.multiblock.RouteCache;
 
-public class TDDuctInformationProvider implements IPipeInformationProvider {
+public class TDDuctInformationProvider implements IPipeInformationProvider, IRouteProvider {
 
 	private final TileItemDuct duct;
 	public TDDuctInformationProvider(TileItemDuct duct) {
@@ -247,5 +248,19 @@ public class TDDuctInformationProvider implements IPipeInformationProvider {
 	@Override
 	public void refreshTileCacheOnSide(ForgeDirection side) {
 		// Nothing to do here
+	}
+
+	@Override
+	public List<RouteInfo> getConnectedPipes(ForgeDirection from) {
+		List<RouteInfo> list = new ArrayList<RouteInfo>();
+		if(duct.internalGrid == null) return null;
+		Iterable<Route> paramIterable = duct.getCache(true).outputRoutes;
+		for(Route localRoute1: paramIterable) {
+			if(localRoute1.endPoint instanceof LPItemDuct) {
+				LPItemDuct lpDuct = (LPItemDuct) localRoute1.endPoint;
+				list.add(new RouteInfo(lpDuct.pipe, localRoute1.pathWeight, ForgeDirection.getOrientation(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1))));
+			}
+		}
+		return list;
 	}
 }

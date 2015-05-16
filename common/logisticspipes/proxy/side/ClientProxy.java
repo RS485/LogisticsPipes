@@ -24,6 +24,8 @@ import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
 import logisticspipes.pipefxhandlers.providers.EntityBlueSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityGoldSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityGreenSparkleFXProvider;
+import logisticspipes.pipefxhandlers.providers.EntityLightGreenSparkleFXProvider;
+import logisticspipes.pipefxhandlers.providers.EntityLightRedSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityOrangeSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityRedSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityVioletSparkleFXProvider;
@@ -117,6 +119,8 @@ public class ClientProxy implements IProxy {
 		PipeFXRenderHandler.registerParticleHandler(Particles.GoldParticle, new EntityGoldSparkleFXProvider());
 		PipeFXRenderHandler.registerParticleHandler(Particles.VioletParticle, new EntityVioletSparkleFXProvider());
 		PipeFXRenderHandler.registerParticleHandler(Particles.OrangeParticle, new EntityOrangeSparkleFXProvider());
+		PipeFXRenderHandler.registerParticleHandler(Particles.LightGreenParticle, new EntityLightGreenSparkleFXProvider());
+		PipeFXRenderHandler.registerParticleHandler(Particles.LightRedParticle, new EntityLightRedSparkleFXProvider());
 	}
 	
 	@Override

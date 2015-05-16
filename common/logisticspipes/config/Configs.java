@@ -22,7 +22,7 @@ public class Configs {
 	public static boolean LOGISTICS_ORDERER_PAGE_INVERTWHEEL = false;
 	public static final float LOGISTICS_ROUTED_SPEED_MULTIPLIER = 20F;
 	public static final float LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER = 10F;
-	public static final int	MAX_UNROUTED_CONNECTIONS = 16;
+	public static int MAX_UNROUTED_CONNECTIONS = 32;
 
 	public static int LOGISTICS_HUD_RENDER_DISTANCE = 15;
 	

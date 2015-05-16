@@ -6,6 +6,7 @@ import java.util.concurrent.Callable;
 import logisticspipes.asm.te.ILPTEInformation;
 import logisticspipes.asm.te.ITileEntityChangeListener;
 import logisticspipes.asm.te.LPTileEntityObject;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.ticks.LPTickHandler;
@@ -65,7 +66,7 @@ public class TEControl {
 		final World world = tile.getWorldObj();
 		if(world == null) return;
 		if(!MainProxy.isServer(world)) return;
-		
+		if(tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe)tile).isRoutingPipe()) return;
 		if(((ILPTEInformation)tile).getObject() != null) {
 			QueuedTasks.queueTask(new Callable<Object>() {
 				@Override
@@ -127,7 +128,7 @@ public class TEControl {
 						TileEntity nextTile = newPos.getTileEntity(world);
 						if(nextTile != null && ((ILPTEInformation)nextTile).getObject() != null) {
 							for(ITileEntityChangeListener listener:new ArrayList<ITileEntityChangeListener>(((ILPTEInformation)nextTile).getObject().changeListeners)) {
-								listener.pipeAdded(pos, dir.getOpposite());
+								listener.pipeModified(pos);
 							}
 						}
 					}

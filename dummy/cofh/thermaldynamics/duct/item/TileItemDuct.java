@@ -7,6 +7,7 @@ import cofh.thermaldynamics.multiblock.IMultiBlockRoute;
 import cofh.thermaldynamics.multiblock.RouteCache;
 
 public class TileItemDuct extends TileTDBase implements IMultiBlockRoute {
+	  public ItemGrid internalGrid;
 	  public static final RouteInfo noRoute = new RouteInfo();
 	  public static class RouteInfo
 	  {

@@ -1,7 +1,7 @@
 package logisticspipes.items;
 
 import logisticspipes.network.NewGuiHandler;
-import logisticspipes.network.guis.LogisticsControllGui;
+import logisticspipes.network.guis.LogisticsPlayerSettingsGuiProvider;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -27,6 +27,6 @@ public class ItemPipeController extends LogisticsItem {
 	}
 	
 	private void useItem(EntityPlayer player, World world) {
-		NewGuiHandler.getGui(LogisticsControllGui.class).open(player);
+		NewGuiHandler.getGui(LogisticsPlayerSettingsGuiProvider.class).open(player);
 	}
 }

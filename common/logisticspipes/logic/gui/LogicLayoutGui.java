@@ -9,6 +9,7 @@ import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
+import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtil;
@@ -303,26 +304,26 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 		yPos += 13;
 		int left = startLeft;
 		for(int i = 0; i < list.size(); i++) {
-			this.drawVerticalLine(startLeft + 8, yPos - 13, yPos - 3, 0xff00ff00);
+			SimpleGraphics.drawVerticalLine(startLeft + 8, yPos - 13, yPos - 3, 0xff00ff00, zoom.line);
 			if(!list.getSubOrders().isEmpty()) {
-				this.drawVerticalLine(startLeft + 8, yPos + 18, yPos + 28, 0xff00ff00);
+				SimpleGraphics.drawVerticalLine(startLeft + 8, yPos + 18, yPos + 28, 0xff00ff00, zoom.line);
 			}
 			startLeft += 30;
 		}
 		if(!list.isEmpty()) {
-			this.drawHorizontalLine(left + 8, startLeft - 22, yPos - 13, 0xff00ff00);
+			SimpleGraphics.drawHorizontalLine(left + 8, startLeft - 22, yPos - 13, 0xff00ff00, zoom.line);
 		}
 		if(!list.getSubOrders().isEmpty()) {
 			if(!list.isEmpty()) {
-				this.drawHorizontalLine(left + 8, startLeft - 22, yPos + 28, 0xff00ff00);
+				SimpleGraphics.drawHorizontalLine(left + 8, startLeft - 22, yPos + 28, 0xff00ff00, zoom.line);
 				startLeft -= 30;
 			}
-			this.drawVerticalLine(left + ((startLeft - left) / 2) + 8, yPos + 28, yPos + 38, 0xff00ff00);
+			SimpleGraphics.drawVerticalLine(left + ((startLeft - left) / 2) + 8, yPos + 28, yPos + 38, 0xff00ff00, zoom.line);
 			startLeft = xPos + 20 - list.getSubTreeRootSize() * (40 / 2);
 			left = startLeft;
 			for(int i = 0; i < list.getSubOrders().size(); i++) {
 				startLeft += list.getSubOrders().get(i).getTreeRootSize() * (40 / 2);
-				this.drawVerticalLine(startLeft - 12, yPos + 38, yPos + 48, 0xff00ff00);
+				SimpleGraphics.drawVerticalLine(startLeft - 12, yPos + 38, yPos + 48, 0xff00ff00, zoom.line);
 				drawPointFor(list, xPos, yPos, i, startLeft);
 				renderLinkedOrderListLines(list.getSubOrders().get(i), startLeft - 20, yPos + 48);
 				startLeft += list.getSubOrders().get(i).getTreeRootSize() * (40 / 2);
@@ -331,7 +332,7 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 				left += list.getSubOrders().get(0).getTreeRootSize() * (40 / 2);
 				startLeft -= list.getSubOrders().get(list.getSubOrders().size() - 1).getTreeRootSize() * (40 / 2);
 			}
-			this.drawHorizontalLine(left - 12, startLeft - 12, yPos + 38, 0xff00ff00);
+			SimpleGraphics.drawHorizontalLine(left - 12, startLeft - 12, yPos + 38, 0xff00ff00, zoom.line);
 		}
 	}
 	
@@ -383,26 +384,6 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 			GL11.glEnable(GL11.GL_LIGHTING);
 		}
-	}
-	
-	protected void drawHorizontalLine(int par1, int par2, int par3, int par4) {
-		if(par2 < par1) {
-			int i1 = par1;
-			par1 = par2;
-			par2 = i1;
-		}
-		int line = zoom.line;
-		drawRect(par1, par3, par2 + 1, par3 + line, par4);
-	}
-	
-	protected void drawVerticalLine(int par1, int par2, int par3, int par4) {
-		if(par3 < par2) {
-			int i1 = par2;
-			par2 = par3;
-			par3 = i1;
-		}
-		int line = zoom.line;
-		drawRect(par1, par2 + 1, par1 + line, par3, par4);
 	}
 	
 	protected void drawProgressPoint(int x, int y, int color) {

@@ -624,43 +624,6 @@ public class BasicGuiHelper {
         var9.addVertexWithUV(guiLeft + 15	, guiTop + 15		, zLevel, 0.33	, 0.33);
         var9.draw();
 	}
-	
-    /**
-     * Draws a solid color rectangle with the specified coordinates and color.
-     */
-	public static void drawRect(int par0, int par1, int par2, int par3, int par4) {
-		int var5;
-		
-		if(par0 < par2) {
-			var5 = par0;
-			par0 = par2;
-			par2 = var5;
-		}
-		
-		if(par1 < par3) {
-			var5 = par1;
-			par1 = par3;
-			par3 = var5;
-		}
-		
-		float var10 = (par4 >> 24 & 255) / 255.0F;
-		float var6 = (par4 >> 16 & 255) / 255.0F;
-		float var7 = (par4 >> 8 & 255) / 255.0F;
-		float var8 = (par4 & 255) / 255.0F;
-		Tessellator var9 = Tessellator.instance;
-		// GL11.glEnable(GL11.GL_BLEND);
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GL11.glColor4f(var6, var7, var8, var10);
-		var9.startDrawingQuads();
-		var9.addVertex(par0, par3, 0.0D);
-		var9.addVertex(par2, par3, 0.0D);
-		var9.addVertex(par2, par1, 0.0D);
-		var9.addVertex(par0, par1, 0.0D);
-		var9.draw();
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		// GL11.glDisable(GL11.GL_BLEND);
-	}
 
 	public static String getStringWithSpacesFromInteger(int source) {
 		String data = Integer.toString(source);

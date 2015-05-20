@@ -4,6 +4,7 @@ import logisticspipes.interfaces.IStringBasedModule;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.client.gui.GuiButton;
@@ -82,7 +83,7 @@ public class GuiStringBasedItemSink extends ModuleBaseGui {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 7, guiTop + 126);
 		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 6, guiTop + 7);
-		BasicGuiHelper.drawRect(guiLeft + 26, guiTop + 5, guiLeft + 169, guiTop + 17, 0xff808080);
+		SimpleGraphics.drawRectNoBlend(guiLeft + 26, guiTop + 5, guiLeft + 169, guiTop + 17, 0xff808080);
 		if(tmpInv.getIDStackInSlot(0) != null) {
 			name = "";
 			mc.fontRenderer.drawString(_itemSink.getStringForItem(tmpInv.getIDStackInSlot(0).getItem()), guiLeft + 28, guiTop + 7, 0x404040);
@@ -110,12 +111,12 @@ public class GuiStringBasedItemSink extends ModuleBaseGui {
 				((GuiButton)buttonList.get(1)).enabled = false;
 			}
 		}
-		BasicGuiHelper.drawRect(guiLeft + 5, guiTop + 30, guiLeft + 169, guiTop + 122, 0xff808080);
+		SimpleGraphics.drawRectNoBlend(guiLeft + 5, guiTop + 30, guiLeft + 169, guiTop + 122, 0xff808080);
 		for(int i=0; i < _itemSink.getStringList().size() && i < 9;i++) {
 			int pointerX = var2 - guiLeft;
 			int pointerY = var3 - guiTop;
 			if(6 <= pointerX && pointerX < 168 && 31 + (10 * i) <= pointerY && pointerY < 31 + (10 * (i + 1))) {
-				BasicGuiHelper.drawRect(guiLeft + 6, guiTop + 31 + (10 * i), guiLeft + 168, guiTop + 31 + (10 * (i + 1)), 0xffc0c0c0);
+				SimpleGraphics.drawRectNoBlend(guiLeft + 6, guiTop + 31 + (10 * i), guiLeft + 168, guiTop + 31 + (10 * (i + 1)), 0xffc0c0c0);
 			}
 			mc.fontRenderer.drawString(_itemSink.getStringList().get(i), guiLeft + 7, guiTop + 32 + (10 * i), 0x404040);
 			if(6 <= mouseX && mouseX < 168 && 31 + (10 * i) <= mouseY && mouseY < 31 + (10 * (i + 1))) {

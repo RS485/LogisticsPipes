@@ -7,6 +7,7 @@ import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.inventory.IInventory;
 
@@ -112,13 +113,13 @@ public class GuiThaumicAspectSink extends ModuleBaseGui {
 		if(6 <= pointerX && pointerX < 6 + 9 * 18 && 24 <= pointerY && pointerY < 24 + 18) {
 			int i = (pointerX - 6) / 18;
 			if(stackTags != null && i < stackTags.size()) {
-				BasicGuiHelper.drawRect(7 + i * 18, 25, 7 + i * 18 + 16, 25 + 16, 0x80ffffff);
+				SimpleGraphics.drawRectNoBlend(7 + i * 18, 25, 7 + i * 18 + 16, 25 + 16, 0x80ffffff);
 			}
 		}
 		if(6 <= pointerX && pointerX < 6 + 9 * 18 && 57 <= pointerY && pointerY < 57 + 18) {
 			int i = (pointerX - 6) / 18;
 			if(_module.aspectList != null && i < _module.aspectList.size()) {
-				BasicGuiHelper.drawRect(7 + i * 18, 58, 7 + i * 18 + 16, 58 + 16, 0x80ffffff);
+				SimpleGraphics.drawRectNoBlend(7 + i * 18, 58, 7 + i * 18 + 16, 58 + 16, 0x80ffffff);
 			}
 		}
 		GL11.glEnable(GL11.GL_DEPTH_TEST);

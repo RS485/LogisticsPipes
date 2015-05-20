@@ -26,6 +26,7 @@ public final class SimpleGraphics {
 	 * @param y the y-coordinate the line is on
 	 * @param color the color, which the line will have
 	 * @param thickness the thickness, which the line will have
+	 * @see net.minecraft.client.gui.Gui method drawHorizontalLine(int, int, int, int)
 	 */
 	public static void drawHorizontalLine(int x1, int x2, int y, int color, int thickness) {
 		if (x2 < x1) {
@@ -45,6 +46,7 @@ public final class SimpleGraphics {
 	 * @param y2 the end coordinate
 	 * @param color the color, which the line will have
 	 * @param thickness the thickness, which the line will have
+	 * @see net.minecraft.client.gui.Gui method drawVerticalLine(int, int, int, int)
 	 */
 	public static void drawVerticalLine(int x, int y1, int y2, int color, int thickness) {
 		if (y2 < y1) {

@@ -252,21 +252,20 @@ public class BasicGuiHelper {
         			GL11.glDisable(2929 /*GL_DEPTH_TEST*/);	
         			zLevel = 300.0F;
 	                int var15 = -267386864;
-	                
-	                drawGradientRect(var11 - 3, var12 - 4, var11 + var10 + 3, var12 - 3, var15, var15);
-	                drawGradientRect(var11 - 3, var12 + var14 + 3, var11 + var10 + 3, var12 + var14 + 4, var15, var15);
-	                drawGradientRect(var11 - 3, var12 - 3, var11 + var10 + 3, var12 + var14 + 3, var15, var15);
-	                drawGradientRect(var11 - 4, var12 - 3, var11 - 3, var12 + var14 + 3, var15, var15);
-	                drawGradientRect(var11 + var10 + 3, var12 - 3, var11 + var10 + 4, var12 + var14 + 3, var15, var15);
-	                int var16 = 1347420415;
-	                int var17 = (var16 & 16711422) >> 1 | var16 & -16777216;
-	                drawGradientRect(var11 - 3, var12 - 3 + 1, var11 - 3 + 1, var12 + var14 + 3 - 1, var16, var17);
-	                drawGradientRect(var11 + var10 + 2, var12 - 3 + 1, var11 + var10 + 3, var12 + var14 + 3 - 1, var16, var17);
-	                drawGradientRect(var11 - 3, var12 - 3, var11 + var10 + 3, var12 - 3 + 1, var16, var16);
-	                drawGradientRect(var11 - 3, var12 + var14 + 2, var11 + var10 + 3, var12 + var14 + 3, var17, var17);
 
-	                
-	                for (int var18 = 0; var18 < var24.size(); ++var18)
+					SimpleGraphics.drawGradientRect(var11 - 3, var12 - 4, var11 + var10 + 3, var12 - 3, var15, var15, 0.0);
+					SimpleGraphics.drawGradientRect(var11 - 3, var12 + var14 + 3, var11 + var10 + 3, var12 + var14 + 4, var15, var15, 0.0);
+					SimpleGraphics.drawGradientRect(var11 - 3, var12 - 3, var11 + var10 + 3, var12 + var14 + 3, var15, var15, 0.0);
+					SimpleGraphics.drawGradientRect(var11 - 4, var12 - 3, var11 - 3, var12 + var14 + 3, var15, var15, 0.0);
+					SimpleGraphics.drawGradientRect(var11 + var10 + 3, var12 - 3, var11 + var10 + 4, var12 + var14 + 3, var15, var15, 0.0);
+					int var16 = 1347420415;
+	                int var17 = (var16 & 16711422) >> 1 | var16 & -16777216;
+					SimpleGraphics.drawGradientRect(var11 - 3, var12 - 3 + 1, var11 - 3 + 1, var12 + var14 + 3 - 1, var16, var17, 0.0);
+					SimpleGraphics.drawGradientRect(var11 + var10 + 2, var12 - 3 + 1, var11 + var10 + 3, var12 + var14 + 3 - 1, var16, var17, 0.0);
+					SimpleGraphics.drawGradientRect(var11 - 3, var12 - 3, var11 + var10 + 3, var12 - 3 + 1, var16, var16, 0.0);
+					SimpleGraphics.drawGradientRect(var11 - 3, var12 + var14 + 2, var11 + var10 + 3, var12 + var14 + 3, var17, var17, 0.0);
+
+					for (int var18 = 0; var18 < var24.size(); ++var18)
 	                {
 	                    String var19 = var24.get(var18);
 
@@ -298,37 +297,6 @@ public class BasicGuiHelper {
             catch(Exception e1) {}
 		}
 	}
-	
-    private static void drawGradientRect(int par1, int par2, int par3, int par4, int par5, int par6)
-    {
-    	zLevel = 0;
-        float var7 = (par5 >> 24 & 255) / 255.0F;
-        float var8 = (par5 >> 16 & 255) / 255.0F;
-        float var9 = (par5 >> 8 & 255) / 255.0F;
-        float var10 = (par5 & 255) / 255.0F;
-        float var11 = (par6 >> 24 & 255) / 255.0F;
-        float var12 = (par6 >> 16 & 255) / 255.0F;
-        float var13 = (par6 >> 8 & 255) / 255.0F;
-        float var14 = (par6 & 255) / 255.0F;
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glDisable(GL11.GL_ALPHA_TEST);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glShadeModel(GL11.GL_SMOOTH);
-        Tessellator var15 = Tessellator.instance;
-        var15.startDrawingQuads();
-        var15.setColorRGBA_F(var8, var9, var10, var7);
-        var15.addVertex(par3, par2, zLevel);
-        var15.addVertex(par1, par2, zLevel);
-        var15.setColorRGBA_F(var12, var13, var14, var11);
-        var15.addVertex(par1, par4, zLevel);
-        var15.addVertex(par3, par4, zLevel);
-        var15.draw();
-        GL11.glShadeModel(GL11.GL_FLAT);
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glEnable(GL11.GL_ALPHA_TEST);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-    }
 
     /**
      * Draws a textured rectangle at the stored z-value. Args: x, y, u, v, width, height

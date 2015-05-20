@@ -9,6 +9,9 @@
 package logisticspipes.utils.gui;
 
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.Tessellator;
+import org.lwjgl.opengl.GL11;
 
 /**
  * Utils class for simple drawing methods.
@@ -56,5 +59,51 @@ public final class SimpleGraphics {
 		}
 
 		Gui.drawRect(x, y1 + 1, x + thickness, y2, color);
+	}
+
+	/**
+	 * Draws a rectangle with a vertical gradient between the specified colors.
+	 *
+	 * @param x1 the first x-coordinate of the rectangle
+	 * @param y1 the first y-coordinate of the rectangle
+	 * @param x2 the second x-coordinate of the rectangle
+	 * @param y2 the second y-coordinate of the rectangle
+	 * @param colorA the first color, starting from y1
+	 * @param colorB the second color, ending in y2
+	 * @see net.minecraft.client.gui.Gui method drawGradientRect(int, int, int, int, int, int)
+	 */
+	public static void drawGradientRect(int x1, int y1, int x2, int y2, int colorA, int colorB, double zLevel) {
+		float alphaA = (float) (colorA >> 24 & 255) / 255.0F;
+		float redA = (float) (colorA >> 16 & 255) / 255.0F;
+		float greenA = (float) (colorA >> 8 & 255) / 255.0F;
+		float blueA = (float) (colorA & 255) / 255.0F;
+		float alphaB = (float) (colorB >> 24 & 255) / 255.0F;
+		float redB = (float) (colorB >> 16 & 255) / 255.0F;
+		float greenB = (float) (colorB >> 8 & 255) / 255.0F;
+		float blueB = (float) (colorB & 255) / 255.0F;
+
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glDisable(GL11.GL_ALPHA_TEST);
+
+		OpenGlHelper.glBlendFunc(770, 771, 1, 0);
+		// before: GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+		GL11.glShadeModel(GL11.GL_SMOOTH);
+
+		Tessellator tessellator = Tessellator.instance;
+		tessellator.startDrawingQuads();
+		tessellator.setColorRGBA_F(redA, greenA, blueA, alphaA);
+		tessellator.addVertex((double) x2, (double) y1, zLevel);
+		tessellator.addVertex((double) x1, (double) y1, zLevel);
+		tessellator.setColorRGBA_F(redB, greenB, blueB, alphaB);
+		tessellator.addVertex((double) x1, (double) y2, zLevel);
+		tessellator.addVertex((double) x2, (double) y2, zLevel);
+		tessellator.draw();
+
+		GL11.glShadeModel(GL11.GL_FLAT);
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glEnable(GL11.GL_ALPHA_TEST);
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
 }

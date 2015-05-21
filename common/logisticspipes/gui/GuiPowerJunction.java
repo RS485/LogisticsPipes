@@ -5,14 +5,12 @@ import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.block.PowerJunctionCheatPacket;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
-
 import org.lwjgl.opengl.GL11;
 
 public class GuiPowerJunction extends LogisticsBaseGuiScreen {
@@ -47,8 +45,8 @@ public class GuiPowerJunction extends LogisticsBaseGuiScreen {
 		drawTexturedModalRect(j + 10, k + 11 + (level * 59 / 100), 176, level * 59 / 100, 5, 59 - (level * 59 / 100));
 		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "LogisticsPowerJunction"), guiLeft + 30, guiTop + 8, 0x404040);
 		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "StoredEnergy") + ":", guiLeft + 40, guiTop + 23, 0x404040);
-		mc.fontRenderer.drawString(BasicGuiHelper.getStringWithSpacesFromInteger(junction.getPowerLevel()) + " LP", guiLeft + 40, guiTop + 33, 0x404040);
-		mc.fontRenderer.drawString("/ " + BasicGuiHelper.getStringWithSpacesFromInteger(junction.MAX_STORAGE) + " LP", guiLeft + 40, guiTop + 43, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.getStringWithSpacesFromInteger(junction.getPowerLevel()) + " LP", guiLeft + 40, guiTop + 33, 0x404040);
+		mc.fontRenderer.drawString("/ " + StringUtil.getStringWithSpacesFromInteger(LogisticsPowerJunctionTileEntity.MAX_STORAGE) + " LP", guiLeft + 40, guiTop + 43, 0x404040);
 		mc.fontRenderer.drawString("10 RF = 5 LP", guiLeft + 24, guiTop + 58, 0x404040);
 		mc.fontRenderer.drawString("1 EU = 2 LP", guiLeft + 100, guiTop + 58, 0x404040);
 	}

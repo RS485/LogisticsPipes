@@ -4,10 +4,10 @@ import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IPowerLevelDisplay;
 import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.string.StringUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.ResourceLocation;
-
 import org.lwjgl.opengl.GL11;
 
 public class HUDPowerLevel extends BasicHUDGui implements IHeadUpDisplayRenderer {
@@ -40,8 +40,8 @@ public class HUDPowerLevel extends BasicHUDGui implements IHeadUpDisplayRenderer
 		int level = 100 - junction.getChargeState();
 		drawTexturedModalRect(-49, -29 + (level * 59 / 100), 176, level * 59 / 100, 5, 59 - (level * 59 / 100));
 		mc.fontRenderer.drawString("Stored Energy:", -30, -15, 0x404040);
-		mc.fontRenderer.drawString(BasicGuiHelper.getStringWithSpacesFromInteger(junction.getDisplayPowerLevel()) + " " + junction.getBrand(), -30, -5, 0x404040);
-		mc.fontRenderer.drawString("/ "+BasicGuiHelper.getStringWithSpacesFromInteger(junction.getMaxStorage()) + " " + junction.getBrand(), -30, 5, 0x404040);
+		mc.fontRenderer.drawString(StringUtil.getStringWithSpacesFromInteger(junction.getDisplayPowerLevel()) + " " + junction.getBrand(), -30, -5, 0x404040);
+		mc.fontRenderer.drawString("/ " + StringUtil.getStringWithSpacesFromInteger(junction.getMaxStorage()) + " " + junction.getBrand(), -30, 5, 0x404040);
 		GL11.glTranslatef(0.0F, 0.0F, 0.0015F);
 	}
 

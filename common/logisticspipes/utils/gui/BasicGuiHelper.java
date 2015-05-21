@@ -1,10 +1,10 @@
 package logisticspipes.utils.gui;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import cpw.mods.fml.client.FMLClientHandler;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen.Colors;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -20,25 +20,11 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ForgeHooksClient;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import cpw.mods.fml.client.FMLClientHandler;
-
 public class BasicGuiHelper {
-	
-	public static String getCuttedString(String input, int maxLength, FontRenderer renderer) {
-		if(renderer.getStringWidth(input) < maxLength) {
-			return input;
-		}
-		input += "...";
-		while(renderer.getStringWidth(input) > maxLength && input.length() > 0) {
-			input = input.substring(0, input.length() - 4) + "...";
-		}
-		return input;
-	}
-	
+
 	public static int ConvertEnumToColor(Colors color){
 		switch(color){
 			case Black:
@@ -577,18 +563,4 @@ public class BasicGuiHelper {
         var9.draw();
 	}
 
-	public static String getStringWithSpacesFromInteger(int source) {
-		String data = Integer.toString(source);
-		return insert3rdSpace(data);
-	}
-	
-	public static String getStringWithSpacesFromLong(long source) {
-		String data = Long.toString(source);
-		return insert3rdSpace(data);
-	}
-	
-	private static String insert3rdSpace(String source) {
-		if(source.length() < 4) return source;
-		return insert3rdSpace(source.substring(0, source.length() - 3)) + " " + source.substring(source.length() - 3);
-	}
 }

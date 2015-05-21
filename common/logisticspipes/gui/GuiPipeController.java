@@ -34,7 +34,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -272,28 +271,28 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 			fontRendererObj.drawString(StringUtil.translate(PREFIX + "Sent") + ":", 55 - fontRendererObj.getStringWidth(StringUtil.translate(PREFIX + "Sent") + ":"), 55, 0x303030);
 			fontRendererObj.drawString(StringUtil.translate(PREFIX + "Recieved") + ":", 55 - fontRendererObj.getStringWidth(StringUtil.translate(PREFIX + "Recieved") + ":"), 70, 0x303030);
 			fontRendererObj.drawString(StringUtil.translate(PREFIX + "Relayed") + ":", 55 - fontRendererObj.getStringWidth(StringUtil.translate(PREFIX + "Relayed") + ":"), 85, 0x303030);
-			
-			s = BasicGuiHelper.getStringWithSpacesFromLong(pipe.stat_session_sent);
+
+			s = StringUtil.getStringWithSpacesFromLong(pipe.stat_session_sent);
 			fontRendererObj.drawString(s, sessionxCenter - fontRendererObj.getStringWidth(s) / 2, 55, 0x303030);
-			
-			s = BasicGuiHelper.getStringWithSpacesFromLong(pipe.stat_session_recieved);
+
+			s = StringUtil.getStringWithSpacesFromLong(pipe.stat_session_recieved);
 			fontRendererObj.drawString(s, sessionxCenter - fontRendererObj.getStringWidth(s) / 2, 70, 0x303030);
-			
-			s = BasicGuiHelper.getStringWithSpacesFromLong(pipe.stat_session_relayed);
+
+			s = StringUtil.getStringWithSpacesFromLong(pipe.stat_session_relayed);
 			fontRendererObj.drawString(s, sessionxCenter - fontRendererObj.getStringWidth(s) / 2, 85, 0x303030);
-			
-			s = BasicGuiHelper.getStringWithSpacesFromLong(pipe.stat_lifetime_sent);
+
+			s = StringUtil.getStringWithSpacesFromLong(pipe.stat_lifetime_sent);
 			fontRendererObj.drawString(s, lifetimexCenter - fontRendererObj.getStringWidth(s) / 2, 55, 0x303030);
-			
-			s = BasicGuiHelper.getStringWithSpacesFromLong(pipe.stat_lifetime_recieved);
+
+			s = StringUtil.getStringWithSpacesFromLong(pipe.stat_lifetime_recieved);
 			fontRendererObj.drawString(s, lifetimexCenter - fontRendererObj.getStringWidth(s) / 2, 70, 0x303030);
-			
-			s = BasicGuiHelper.getStringWithSpacesFromLong(pipe.stat_lifetime_relayed);
+
+			s = StringUtil.getStringWithSpacesFromLong(pipe.stat_lifetime_relayed);
 			fontRendererObj.drawString(s, lifetimexCenter - fontRendererObj.getStringWidth(s) / 2, 85, 0x303030);
 			
 			fontRendererObj.drawString(StringUtil.translate(PREFIX + "RoutingTableSize") + ":", 110 - fontRendererObj.getStringWidth(StringUtil.translate(PREFIX + "RoutingTableSize") + ":"), 110, 0x303030);
-			
-			s = BasicGuiHelper.getStringWithSpacesFromLong(pipe.server_routing_table_size);
+
+			s = StringUtil.getStringWithSpacesFromLong(pipe.server_routing_table_size);
 			fontRendererObj.drawString(s, 130 - fontRendererObj.getStringWidth(s) / 2, 110, 0x303030);
 		} else if(current_Tab == 4) {
 			List<ItemIdentifierStack> _allItems = new LinkedList<ItemIdentifierStack>();

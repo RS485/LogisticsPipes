@@ -6,15 +6,13 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
-
-import org.lwjgl.input.Keyboard;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.UnmodifiableListIterator;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.StatCollector;
+import org.lwjgl.input.Keyboard;
 
 public class StringUtil {
 	public static String KEY_HOLDSHIFT = "misc.holdshift";
@@ -130,5 +128,31 @@ public class StringUtil {
 		}
 		if(changed) name += "...";
 		return name;
+	}
+
+	public static String getCuttedString(String input, int maxLength, FontRenderer renderer) {
+		if (renderer.getStringWidth(input) < maxLength) {
+			return input;
+		}
+		input += "...";
+		while (renderer.getStringWidth(input) > maxLength && input.length() > 0) {
+			input = input.substring(0, input.length() - 4) + "...";
+		}
+		return input;
+	}
+
+	public static String getStringWithSpacesFromInteger(int source) {
+		String data = Integer.toString(source);
+		return insert3rdSpace(data);
+	}
+
+	public static String getStringWithSpacesFromLong(long source) {
+		String data = Long.toString(source);
+		return insert3rdSpace(data);
+	}
+
+	private static String insert3rdSpace(String source) {
+		if (source.length() < 4) return source;
+		return insert3rdSpace(source.substring(0, source.length() - 3)) + " " + source.substring(source.length() - 3);
 	}
 }

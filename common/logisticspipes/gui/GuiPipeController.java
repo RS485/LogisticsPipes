@@ -26,7 +26,7 @@ import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -239,14 +239,14 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "inventory"), 10, 122, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "inventory"), 10, 122, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
 		if(current_Tab == 0) {
-			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "upgrade"), 10, 28, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
+			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "upgrade"), 10, 28, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
 			if(pipe.getOriginalUpgradeManager().hasCombinedSneakyUpgrade()) {
-				mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "sneakyUpgrades"), 10, 64, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
+				mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "sneakyUpgrades"), 10, 64, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
 			}
 		} else if(current_Tab == 1) {
-			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "security"), 10, 28, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
+			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "security"), 10, 28, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
 			ItemStack itemStack = pipe.getOriginalUpgradeManager().getSecInv().getStackInSlot(0);
 			if(itemStack != null) {
 				UUID id = UUID.fromString(itemStack.getTagCompound().getString("UUID"));
@@ -266,33 +266,33 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 			int lifetimexCenter = 140;
 			String s = null;
 			
-			fontRendererObj.drawString(StringUtil.translate(PREFIX + "Session"), sessionxCenter - fontRendererObj.getStringWidth(StringUtil.translate(PREFIX + "Session")) / 2, 40, 0x303030);
-			fontRendererObj.drawString(StringUtil.translate(PREFIX + "Lifetime"), lifetimexCenter - fontRendererObj.getStringWidth(StringUtil.translate(PREFIX + "Lifetime")) / 2, 40, 0x303030);
-			fontRendererObj.drawString(StringUtil.translate(PREFIX + "Sent") + ":", 55 - fontRendererObj.getStringWidth(StringUtil.translate(PREFIX + "Sent") + ":"), 55, 0x303030);
-			fontRendererObj.drawString(StringUtil.translate(PREFIX + "Recieved") + ":", 55 - fontRendererObj.getStringWidth(StringUtil.translate(PREFIX + "Recieved") + ":"), 70, 0x303030);
-			fontRendererObj.drawString(StringUtil.translate(PREFIX + "Relayed") + ":", 55 - fontRendererObj.getStringWidth(StringUtil.translate(PREFIX + "Relayed") + ":"), 85, 0x303030);
+			fontRendererObj.drawString(StringUtils.translate(PREFIX + "Session"), sessionxCenter - fontRendererObj.getStringWidth(StringUtils.translate(PREFIX + "Session")) / 2, 40, 0x303030);
+			fontRendererObj.drawString(StringUtils.translate(PREFIX + "Lifetime"), lifetimexCenter - fontRendererObj.getStringWidth(StringUtils.translate(PREFIX + "Lifetime")) / 2, 40, 0x303030);
+			fontRendererObj.drawString(StringUtils.translate(PREFIX + "Sent") + ":", 55 - fontRendererObj.getStringWidth(StringUtils.translate(PREFIX + "Sent") + ":"), 55, 0x303030);
+			fontRendererObj.drawString(StringUtils.translate(PREFIX + "Recieved") + ":", 55 - fontRendererObj.getStringWidth(StringUtils.translate(PREFIX + "Recieved") + ":"), 70, 0x303030);
+			fontRendererObj.drawString(StringUtils.translate(PREFIX + "Relayed") + ":", 55 - fontRendererObj.getStringWidth(StringUtils.translate(PREFIX + "Relayed") + ":"), 85, 0x303030);
 
-			s = StringUtil.getStringWithSpacesFromLong(pipe.stat_session_sent);
+			s = StringUtils.getStringWithSpacesFromLong(pipe.stat_session_sent);
 			fontRendererObj.drawString(s, sessionxCenter - fontRendererObj.getStringWidth(s) / 2, 55, 0x303030);
 
-			s = StringUtil.getStringWithSpacesFromLong(pipe.stat_session_recieved);
+			s = StringUtils.getStringWithSpacesFromLong(pipe.stat_session_recieved);
 			fontRendererObj.drawString(s, sessionxCenter - fontRendererObj.getStringWidth(s) / 2, 70, 0x303030);
 
-			s = StringUtil.getStringWithSpacesFromLong(pipe.stat_session_relayed);
+			s = StringUtils.getStringWithSpacesFromLong(pipe.stat_session_relayed);
 			fontRendererObj.drawString(s, sessionxCenter - fontRendererObj.getStringWidth(s) / 2, 85, 0x303030);
 
-			s = StringUtil.getStringWithSpacesFromLong(pipe.stat_lifetime_sent);
+			s = StringUtils.getStringWithSpacesFromLong(pipe.stat_lifetime_sent);
 			fontRendererObj.drawString(s, lifetimexCenter - fontRendererObj.getStringWidth(s) / 2, 55, 0x303030);
 
-			s = StringUtil.getStringWithSpacesFromLong(pipe.stat_lifetime_recieved);
+			s = StringUtils.getStringWithSpacesFromLong(pipe.stat_lifetime_recieved);
 			fontRendererObj.drawString(s, lifetimexCenter - fontRendererObj.getStringWidth(s) / 2, 70, 0x303030);
 
-			s = StringUtil.getStringWithSpacesFromLong(pipe.stat_lifetime_relayed);
+			s = StringUtils.getStringWithSpacesFromLong(pipe.stat_lifetime_relayed);
 			fontRendererObj.drawString(s, lifetimexCenter - fontRendererObj.getStringWidth(s) / 2, 85, 0x303030);
 			
-			fontRendererObj.drawString(StringUtil.translate(PREFIX + "RoutingTableSize") + ":", 110 - fontRendererObj.getStringWidth(StringUtil.translate(PREFIX + "RoutingTableSize") + ":"), 110, 0x303030);
+			fontRendererObj.drawString(StringUtils.translate(PREFIX + "RoutingTableSize") + ":", 110 - fontRendererObj.getStringWidth(StringUtils.translate(PREFIX + "RoutingTableSize") + ":"), 110, 0x303030);
 
-			s = StringUtil.getStringWithSpacesFromLong(pipe.server_routing_table_size);
+			s = StringUtils.getStringWithSpacesFromLong(pipe.server_routing_table_size);
 			fontRendererObj.drawString(s, 130 - fontRendererObj.getStringWidth(s) / 2, 110, 0x303030);
 		} else if(current_Tab == 4) {
 			List<ItemIdentifierStack> _allItems = new LinkedList<ItemIdentifierStack>();

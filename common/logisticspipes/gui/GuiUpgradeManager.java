@@ -5,7 +5,7 @@ import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
@@ -30,10 +30,10 @@ public class GuiUpgradeManager extends LogisticsBaseGuiScreen {
 	
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Upgrades"), 8, 6, 0x404040);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Inventory"), 8, ySize - 92, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "Upgrades"), 8, 6, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "Inventory"), 8, ySize - 92, 0x404040);
 		if(upgrade.hasCombinedSneakyUpgrade()) {
-			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "SneakyUpgrades"), 8, 47, 0x404040);
+			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "SneakyUpgrades"), 8, 47, 0x404040);
 		}
 	}
 	

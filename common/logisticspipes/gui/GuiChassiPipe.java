@@ -22,7 +22,7 @@ import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -169,7 +169,7 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 		if (!(this._moduleInventory.getStackInSlot(slot).getItem() instanceof ItemModule)) return "";
 		String name = ((ItemModule)this._moduleInventory.getStackInSlot(slot).getItem()).getItemStackDisplayName(this._moduleInventory.getStackInSlot(slot));
 		if(!hasUpgradeModuleUpgarde) return name;
-		return StringUtil.getWithMaxWidth(name, 100, this.fontRendererObj);
+		return StringUtils.getWithMaxWidth(name, 100, this.fontRendererObj);
 	}
 	
 	@Override

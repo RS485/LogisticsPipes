@@ -1,6 +1,6 @@
 package logisticspipes.logisticspipes;
 
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 
 public enum ExtractionMode {
 	Normal,
@@ -29,6 +29,6 @@ public enum ExtractionMode {
 	private static final String PREFIX = "misc.extractionmode.";
 
 	public String getExtractionModeString() {
-		return StringUtil.translate(PREFIX + this.name());
+		return StringUtils.translate(PREFIX + this.name());
 	}
 }

@@ -20,7 +20,7 @@ import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
@@ -65,13 +65,13 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		String name = "";
 		if(hasPatternUpgrade) {
-			name = StringUtil.translate(PREFIX + "TargetInvPattern");
+			name = StringUtils.translate(PREFIX + "TargetInvPattern");
 		} else {
-			name = StringUtil.translate(PREFIX + "TargetInv");
+			name = StringUtils.translate(PREFIX + "TargetInv");
 		}
 		mc.fontRenderer.drawString(name, xSize / 2 - mc.fontRenderer.getStringWidth(name)/2, 6, 0x404040);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Inventory"), 18, ySize - 102, 0x404040);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "RequestMode"), xSize - 140, ySize - 112, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "Inventory"), 18, ySize - 102, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "RequestMode"), xSize - 140, ySize - 112, 0x404040);
 		if(hasPatternUpgrade) {
 			for(int i = 0; i < 9;i++) {
 				mc.fontRenderer.drawString(Integer.toString(module.slotArray[i]), 22 + i * 18, 55, 0x404040);

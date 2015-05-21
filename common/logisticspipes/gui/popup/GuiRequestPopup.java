@@ -9,7 +9,7 @@ import logisticspipes.request.resources.IResource.ColorCode;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
@@ -69,7 +69,7 @@ public class GuiRequestPopup extends SubGuiScreen {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		for(int i=0;i < this.text.length;i++) {
 			if(this.text[i] == null) continue;
-			String msg = StringUtil.getCuttedString(this.text[i], mWidth - 10, this.mc.fontRenderer);
+			String msg = StringUtils.getCuttedString(this.text[i], mWidth - 10, this.mc.fontRenderer);
 			int stringWidth = this.mc.fontRenderer.getStringWidth(msg);
 			this.mc.fontRenderer.drawString(msg, xCenter - (stringWidth / 2), guiTop + 10 + (i * 10), 0x404040);
 		}

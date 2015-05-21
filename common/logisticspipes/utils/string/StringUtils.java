@@ -14,9 +14,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import org.lwjgl.input.Keyboard;
 
-public class StringUtil {
-	public static String KEY_HOLDSHIFT = "misc.holdshift";
-	public static List<String> untranslatedStrings = new ArrayList<String>();
+public final class StringUtils {
+
+	public static final String KEY_HOLDSHIFT = "misc.holdshift";
+	public static final List<String> UNTRANSLATED_STRINGS = new ArrayList<String>();
+
+	private StringUtils() {
+	}
 	
 	public static String handleColor(String input) {
 		if(input == null) return "null";
@@ -68,8 +72,8 @@ public class StringUtil {
 	
 	public static String translate(String key) {
 		String result = handleColor(StatCollector.translateToLocal(key));
-		if(result.equals(key) && !untranslatedStrings.contains(key) && !key.contains(".tip")) {
-			untranslatedStrings.add(key);
+		if(result.equals(key) && !UNTRANSLATED_STRINGS.contains(key) && !key.contains(".tip")) {
+			UNTRANSLATED_STRINGS.add(key);
 		}
 		return result;
 	}
@@ -78,18 +82,18 @@ public class StringUtil {
 		if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
 			String baseKey = MessageFormat.format("{0}.tip", stack.getItem().getUnlocalizedName(stack));
 			String key = baseKey + 1;
-			String translation = StringUtil.translate(key);
+			String translation = StringUtils.translate(key);
 			int i = 1;
 
 			while(!translation.equals(key)) {
 				list.add(translation);
 				key = baseKey + ++i;
-				translation = StringUtil.translate(key);
+				translation = StringUtils.translate(key);
 			}
 		} else {
 			String baseKey = MessageFormat.format("{0}.tip", stack.getItem().getUnlocalizedName(stack));
 			String key = baseKey + 1;
-			String translation = StringUtil.translate(key);
+			String translation = StringUtils.translate(key);
 			if(!translation.equals(key)) {
 				list.add(translate(KEY_HOLDSHIFT));
 			}

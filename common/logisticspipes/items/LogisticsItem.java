@@ -11,7 +11,7 @@ package logisticspipes.items;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -47,7 +47,7 @@ public class LogisticsItem extends Item {
 	public void addInformation(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, List par3List, boolean par4) {
 		super.addInformation(par1ItemStack, par2EntityPlayer, par3List, par4);
 		if(addShiftInfo()) {
-			StringUtil.addShiftAddition(par1ItemStack, par3List);
+			StringUtils.addShiftAddition(par1ItemStack, par3List);
 		}
 	}
 	
@@ -57,6 +57,6 @@ public class LogisticsItem extends Item {
 
 	@Override
 	public String getItemStackDisplayName(ItemStack itemstack) {
-		return StringUtil.translate(getUnlocalizedName(itemstack));
+		return StringUtils.translate(getUnlocalizedName(itemstack));
 	}
 }

@@ -25,7 +25,7 @@ import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -78,15 +78,15 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 		this.buttonList.add(new GuiButton(2, guiLeft + 45, guiTop + 139, 30, 20, "+"));
 			this.buttonList.add(new GuiButton(3, guiLeft + 140, guiTop + 179, 30, 20, "++"));
 			((GuiButton)this.buttonList.get(3)).visible = false;
-		this.buttonList.add(new SmallGuiButton(4, guiLeft + 241, guiTop + 217, 30, 10, StringUtil.translate(PREFIX + "Open")));
+		this.buttonList.add(new SmallGuiButton(4, guiLeft + 241, guiTop + 217, 30, 10, StringUtils.translate(PREFIX + "Open")));
 		this.buttonList.add(new GuiCheckBox(5, guiLeft + 160, guiTop + 42, 16, 16, _tile.allowCC));
-		this.buttonList.add(new SmallGuiButton(6, guiLeft + 162, guiTop + 60, 60, 10, StringUtil.translate(PREFIX + "EditTable")));
+		this.buttonList.add(new SmallGuiButton(6, guiLeft + 162, guiTop + 60, 60, 10, StringUtils.translate(PREFIX + "EditTable")));
 		if(!SimpleServiceLocator.ccProxy.isCC() && !LPConstants.DEBUG) {
 			((GuiButton)this.buttonList.get(5)).visible = false;
 			((GuiButton)this.buttonList.get(6)).visible = false;
 		}
-		this.buttonList.add(new GuiButton(7, guiLeft + 55, guiTop + 95, 70, 20, StringUtil.translate(PREFIX + "Authorize")));
-		this.buttonList.add(new GuiButton(8, guiLeft + 175, guiTop + 95, 70, 20, StringUtil.translate(PREFIX + "Deauthorize")));
+		this.buttonList.add(new GuiButton(7, guiLeft + 55, guiTop + 95, 70, 20, StringUtils.translate(PREFIX + "Authorize")));
+		this.buttonList.add(new GuiButton(8, guiLeft + 175, guiTop + 95, 70, 20, StringUtils.translate(PREFIX + "Deauthorize")));
 		this.buttonList.add(new GuiCheckBox(9, guiLeft + 160, guiTop + 74, 16, 16, _tile.allowAutoDestroy));
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(PlayerListRequest.class));
 	}
@@ -126,17 +126,17 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 175);
 		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 81, guiTop + 140);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "SecurityStation"), guiLeft + 105, guiTop + 10, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "SecurityStation"), guiLeft + 105, guiTop + 10, 0x404040);
 		mc.fontRenderer.drawString(_tile.getSecId() == null ? "null" : _tile.getSecId().toString(), guiLeft + 32, guiTop + 25, 0x404040);
 		if(SimpleServiceLocator.ccProxy.isCC() || LPConstants.DEBUG) {
-			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "allowCCAccess") + ":", guiLeft + 10, guiTop + 46, 0x404040);
-			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "excludeIDs") + ":", guiLeft + 10, guiTop + 61, 0x404040);
+			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "allowCCAccess") + ":", guiLeft + 10, guiTop + 46, 0x404040);
+			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "excludeIDs") + ":", guiLeft + 10, guiTop + 61, 0x404040);
 		}
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "pipeRemove") + ":", guiLeft + 10, guiTop + 78, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "pipeRemove") + ":", guiLeft + 10, guiTop + 78, 0x404040);
 		//mc.fontRenderer.drawString("---------------------------------------------", guiLeft + 5, guiTop + 90, 0x404040);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Player") + ":", guiLeft + 180, guiTop + 127, 0x404040);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "SecurityCards") + ":", guiLeft + 10, guiTop + 127, 0x404040);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Inventory") + ":", guiLeft + 10, guiTop + 163, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "Player") + ":", guiLeft + 180, guiTop + 127, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "SecurityCards") + ":", guiLeft + 10, guiTop + 127, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "Inventory") + ":", guiLeft + 10, guiTop + 163, 0x404040);
 		
 		addition = (mc.fontRenderer.getStringWidth(searchinput1 + searchinput2) - 82);
 		

@@ -43,7 +43,7 @@ import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeNORTH;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeSOUTH;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeUP;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeWEST;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -254,7 +254,7 @@ public class ItemUpgrade extends LogisticsItem {
 
 	@Override
 	public String getItemStackDisplayName(ItemStack itemstack) {
-		return StringUtil.translate(getUnlocalizedName(itemstack));
+		return StringUtils.translate(getUnlocalizedName(itemstack));
 	}
 
 	@Override
@@ -326,25 +326,25 @@ public class ItemUpgrade extends LogisticsItem {
 			if(!pipe.isEmpty() && !module.isEmpty()) {
 				//Can be applied to {0} pipes
 				//and {0} modules
-				String base1 = StringUtil.translate(SHIFT_INFO_PREFIX + "both1");
-				String base2 = StringUtil.translate(SHIFT_INFO_PREFIX + "both2");
+				String base1 = StringUtils.translate(SHIFT_INFO_PREFIX + "both1");
+				String base2 = StringUtils.translate(SHIFT_INFO_PREFIX + "both2");
 				list.add(MessageFormat.format(base1, join(pipe)));
 				list.add(MessageFormat.format(base2, join(module)));
 			} else if(!pipe.isEmpty()) {
 				//Can be applied to {0} pipes
-				String base = StringUtil.translate(SHIFT_INFO_PREFIX + "pipe");
+				String base = StringUtils.translate(SHIFT_INFO_PREFIX + "pipe");
 				list.add(MessageFormat.format(base, join(pipe)));
 			} else if(!module.isEmpty()) {
 				//Can be applied to {0} modules
-				String base = StringUtil.translate(SHIFT_INFO_PREFIX + "module");
+				String base = StringUtils.translate(SHIFT_INFO_PREFIX + "module");
 				list.add(MessageFormat.format(base, join(module)));
 			}
 		} else {
 			String baseKey = MessageFormat.format("{0}.tip", stack.getItem().getUnlocalizedName(stack));
 			String key = baseKey + 1;
-			String translation = StringUtil.translate(key);
+			String translation = StringUtils.translate(key);
 			if(translation.equals(key)) {
-				list.add(StringUtil.translate(StringUtil.KEY_HOLDSHIFT));
+				list.add(StringUtils.translate(StringUtils.KEY_HOLDSHIFT));
 			}
 		}
 	}
@@ -352,14 +352,14 @@ public class ItemUpgrade extends LogisticsItem {
 	private String join(List<String> join) {
 		StringBuilder builder = new StringBuilder();
 		for(int i=0; i < join.size() - 2; i++) {
-			builder.append(StringUtil.translate(SHIFT_INFO_PREFIX + join.get(i)));
+			builder.append(StringUtils.translate(SHIFT_INFO_PREFIX + join.get(i)));
 			builder.append(", ");
 		}
 		if(join.size() > 1) {
-			builder.append(StringUtil.translate(SHIFT_INFO_PREFIX + join.get(join.size() - 2)));
+			builder.append(StringUtils.translate(SHIFT_INFO_PREFIX + join.get(join.size() - 2)));
 			builder.append(" and ");
 		}
-		builder.append(StringUtil.translate(SHIFT_INFO_PREFIX + join.get(join.size() - 1)));
+		builder.append(StringUtils.translate(SHIFT_INFO_PREFIX + join.get(join.size() - 1)));
 		return builder.toString();
 	}
 }

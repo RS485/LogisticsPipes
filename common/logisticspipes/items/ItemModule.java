@@ -47,7 +47,7 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -390,13 +390,13 @@ public class ItemModule extends LogisticsItem {
 						}
 					}
 				} else {
-					list.add(StringUtil.translate(StringUtil.KEY_HOLDSHIFT));
+					list.add(StringUtils.translate(StringUtils.KEY_HOLDSHIFT));
 				}
 			} else {
-				StringUtil.addShiftAddition(itemStack, list);
+				StringUtils.addShiftAddition(itemStack, list);
 			}
 		} else {
-			StringUtil.addShiftAddition(itemStack, list);
+			StringUtils.addShiftAddition(itemStack, list);
 		}
 	}
 }

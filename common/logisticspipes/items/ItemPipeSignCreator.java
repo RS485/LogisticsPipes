@@ -9,7 +9,7 @@ import logisticspipes.pipes.signs.CraftingPipeSign;
 import logisticspipes.pipes.signs.IPipeSign;
 import logisticspipes.pipes.signs.ItemAmountPipeSign;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -129,7 +129,7 @@ public class ItemPipeSignCreator extends LogisticsItem {
 			itemstack.setTagCompound(new NBTTagCompound());
 		}
 		int mode = itemstack.getTagCompound().getInteger("CreatorMode");
-		return StringUtil.translate(getUnlocalizedName(itemstack) + "." + mode);
+		return StringUtils.translate(getUnlocalizedName(itemstack) + "." + mode);
 	}
 
 	@Override

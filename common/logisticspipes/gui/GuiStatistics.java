@@ -17,7 +17,7 @@ import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -59,7 +59,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 		TAB_BUTTON_1.add(addButton(new GuiButton(3, guiLeft + 83, guiTop + 70, 60, 20, "Remove")));
 		TAB_BUTTON_1_2.add(addButton(new SmallGuiButton(4, guiLeft + 84, guiTop + 205, 10, 10, "<")));
 		TAB_BUTTON_1_2.add(addButton(new SmallGuiButton(5, guiLeft + 96, guiTop + 205, 10, 10, ">")));
-		TAB_BUTTON_2.add(addButton(new GuiButton(6, guiLeft + 10, guiTop + 40, 160, 20, StringUtil.translate(PREFIX + "gettasks"))));
+		TAB_BUTTON_2.add(addButton(new GuiButton(6, guiLeft + 10, guiTop + 40, 160, 20, StringUtils.translate(PREFIX + "gettasks"))));
 		TAB_BUTTON_2.add(addButton(new SmallGuiButton(7, guiLeft + 90, guiTop + 65, 10, 10, "<")));
 		TAB_BUTTON_2.add(addButton(new SmallGuiButton(8, guiLeft + 160, guiTop + 65, 10, 10, ">")));
 
@@ -169,7 +169,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 					GL11.glDisable(GL11.GL_LIGHTING);
 					GL11.glDisable(GL11.GL_DEPTH_TEST);
 					itemRender.zLevel = 0.0F;
-					mc.fontRenderer.drawString(StringUtil.getWithMaxWidth(task.item.getFriendlyName(), 136, this.fontRendererObj), guiLeft + 32, guiTop + 104, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
+					mc.fontRenderer.drawString(StringUtils.getWithMaxWidth(task.item.getFriendlyName(), 136, this.fontRendererObj), guiLeft + 32, guiTop + 104, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
 					
 					
 					int xOrigo = xCenter - 68;
@@ -234,9 +234,9 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 					
 					double averagey = ((double)highest + lowest) / 2;
 					
-					fontRendererObj.drawString(StringUtil.getFormatedStackSize(highest), xOrigo - 1 - fontRendererObj.getStringWidth(StringUtil.getFormatedStackSize(highest)), guiTop + 117, 0x404040);
-					fontRendererObj.drawString(StringUtil.getFormatedStackSize((long)averagey), xOrigo - 1 - fontRendererObj.getStringWidth(StringUtil.getFormatedStackSize((long)averagey)), yCenter + 46, 0x404040);
-					fontRendererObj.drawString(StringUtil.getFormatedStackSize(lowest), xOrigo - 1 - fontRendererObj.getStringWidth(StringUtil.getFormatedStackSize(lowest)), bottom - 23, 0x404040);
+					fontRendererObj.drawString(StringUtils.getFormatedStackSize(highest), xOrigo - 1 - fontRendererObj.getStringWidth(StringUtils.getFormatedStackSize(highest)), guiTop + 117, 0x404040);
+					fontRendererObj.drawString(StringUtils.getFormatedStackSize((long) averagey), xOrigo - 1 - fontRendererObj.getStringWidth(StringUtils.getFormatedStackSize((long) averagey)), yCenter + 46, 0x404040);
+					fontRendererObj.drawString(StringUtils.getFormatedStackSize(lowest), xOrigo - 1 - fontRendererObj.getStringWidth(StringUtils.getFormatedStackSize(lowest)), bottom - 23, 0x404040);
 					
 					float yScale = 80F / Math.max(highest - lowest, 0.5F);
 					int x = xOrigo + 150;
@@ -309,9 +309,9 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		if(current_Tab == 0) {
-			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "amount"), 10, 28, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
+			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "amount"), 10, 28, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
 		} else if(current_Tab == 1) {
-			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "crafting"), 10, 28, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
+			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "crafting"), 10, 28, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
 			BasicGuiHelper.displayItemToolTip(itemDisplay_2.getToolTip(), this, zLevel, guiLeft, guiTop);
 		}
 	}

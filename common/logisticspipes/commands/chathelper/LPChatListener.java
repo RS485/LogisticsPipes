@@ -13,7 +13,7 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.OpenChatGui;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.string.ChatColor;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
@@ -96,7 +96,7 @@ public class LPChatListener {
 				}
 				if(realMessage.contains("LPDISPLAYMISSING") && LPConstants.DEBUG) {
 					System.out.println("LIST:");
-					for(String key:StringUtil.untranslatedStrings) {
+					for(String key: StringUtils.UNTRANSLATED_STRINGS) {
 						System.out.println(key);
 					}
 				}

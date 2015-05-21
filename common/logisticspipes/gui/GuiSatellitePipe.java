@@ -11,7 +11,7 @@ package logisticspipes.gui;
 import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -87,7 +87,7 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		mc.fontRenderer.drawString(StringUtil.translate("gui.satellite.SatelliteID"), 33, 10, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate("gui.satellite.SatelliteID"), 33, 10, 0x404040);
 		if(_satellite != null) {
 			mc.fontRenderer.drawString(_satellite.satelliteId+"", 59 - mc.fontRenderer.getStringWidth(_satellite.satelliteId+"")/2, 31, 0x404040);
 		}

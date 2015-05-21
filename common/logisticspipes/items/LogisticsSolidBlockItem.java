@@ -5,7 +5,7 @@ import java.util.List;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -46,7 +46,7 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 
 	@Override
 	public String getItemStackDisplayName(ItemStack itemstack) {
-		return StringUtil.translate(getUnlocalizedName(itemstack));
+		return StringUtils.translate(getUnlocalizedName(itemstack));
 	}
 
 	@Override

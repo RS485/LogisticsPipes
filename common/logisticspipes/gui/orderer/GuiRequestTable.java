@@ -41,7 +41,7 @@ import logisticspipes.utils.gui.extention.GuiExtention;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -264,7 +264,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 						ItemStack stack = entry.getValue().getValue1().getDisplayItem().makeNormalStack();
 						itemRender.renderItemAndEffectIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5);
 						itemRender.renderItemOverlayIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5, "");
-						String s = StringUtil.getFormatedStackSize(stack.stackSize);
+						String s = StringUtils.getFormatedStackSize(stack.stackSize);
 						GL11.glDisable(GL11.GL_LIGHTING);
 						GL11.glDisable(GL11.GL_DEPTH_TEST);
 						itemRender.zLevel = 0.0F;
@@ -294,7 +294,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 								RenderHelper.enableGUIStandardItemLighting();
 								itemRender.renderItemAndEffectIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, x, y);
 								itemRender.renderItemOverlayIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, x, y, "");
-								s = StringUtil.getFormatedStackSize(stack.stackSize);
+								s = StringUtils.getFormatedStackSize(stack.stackSize);
 								GL11.glDisable(GL11.GL_LIGHTING);
 								GL11.glDisable(GL11.GL_DEPTH_TEST);
 								itemRender.zLevel = 0.0F;

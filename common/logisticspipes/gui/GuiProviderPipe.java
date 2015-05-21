@@ -15,7 +15,7 @@ import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
@@ -54,15 +54,15 @@ public class GuiProviderPipe extends LogisticsBaseGuiScreen {
 	public void initGui() {
 		super.initGui();
 		buttonList.clear();
-		buttonList.add(new GuiButton(0, width / 2 + 40, height / 2 - 59, 45, 20, logic.isExcludeFilter() ? StringUtil.translate(PREFIX + "Exclude") : StringUtil.translate(PREFIX + "Include")));
-		buttonList.add(new GuiButton(1, width / 2 - 90, height / 2 - 41, 38, 20, StringUtil.translate(PREFIX + "Switch")));
+		buttonList.add(new GuiButton(0, width / 2 + 40, height / 2 - 59, 45, 20, logic.isExcludeFilter() ? StringUtils.translate(PREFIX + "Exclude") : StringUtils.translate(PREFIX + "Include")));
+		buttonList.add(new GuiButton(1, width / 2 - 90, height / 2 - 41, 38, 20, StringUtils.translate(PREFIX + "Switch")));
 	}
 	
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
 		if (guibutton.id == 0){
 			logic.setFilterExcluded(!logic.isExcludeFilter());
-			((GuiButton)buttonList.get(0)).displayString = logic.isExcludeFilter() ? StringUtil.translate(PREFIX + "Exclude") : StringUtil.translate(PREFIX + "Include");
+			((GuiButton)buttonList.get(0)).displayString = logic.isExcludeFilter() ? StringUtils.translate(PREFIX + "Exclude") : StringUtils.translate(PREFIX + "Include");
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderPipeIncludePacket.class).setPosX(logic.getX()).setPosY(logic.getY()).setPosZ(logic.getZ()));
 		} else if (guibutton.id  == 1){
 			logic.nextExtractionMode();
@@ -72,14 +72,14 @@ public class GuiProviderPipe extends LogisticsBaseGuiScreen {
 	}
 	
 	public void refreshInclude() {
-		((GuiButton)buttonList.get(0)).displayString = logic.isExcludeFilter() ? StringUtil.translate(PREFIX + "Exclude") : StringUtil.translate(PREFIX + "Include");
+		((GuiButton)buttonList.get(0)).displayString = logic.isExcludeFilter() ? StringUtils.translate(PREFIX + "Exclude") : StringUtils.translate(PREFIX + "Include");
 	}
 	
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "TargetInv"), xSize / 2 - mc.fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "TargetInv"))/2, 6, 0x404040);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Inventory"), 18, ySize - 102, 0x404040);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Mode") + ": " + logic.getExtractionMode().getExtractionModeString(), 9, ySize - 112, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "TargetInv"), xSize / 2 - mc.fontRenderer.getStringWidth(StringUtils.translate(PREFIX + "TargetInv"))/2, 6, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "Inventory"), 18, ySize - 102, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "Mode") + ": " + logic.getExtractionMode().getExtractionModeString(), 9, ySize - 112, 0x404040);
 	}
 	
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/supplier.png");

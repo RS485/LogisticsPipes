@@ -6,7 +6,7 @@ import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.RenderHelper;
@@ -47,7 +47,7 @@ public class SelectItemOutOfList extends SubGuiScreen {
 	public void drawScreen(int mouseX, int mouseY, float par3) {
 		GL11.glEnable(GL11.GL_BLEND);
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		fontRendererObj.renderString(StringUtil.translate("misc.selectType"), guiLeft + 10, guiTop + 6, 0x404040, false); //TODO
+		fontRendererObj.renderString(StringUtils.translate("misc.selectType"), guiLeft + 10, guiTop + 6, 0x404040, false); //TODO
 		String pageString = Integer.toString(page + 1) + "/" + Integer.toString(maxPage);
 		fontRendererObj.renderString(pageString, guiLeft + 128 - (fontRendererObj.getStringWidth(pageString) / 2), guiTop + 6, 0x404040, false);
 		GL11.glTranslated(0, 0, 100);

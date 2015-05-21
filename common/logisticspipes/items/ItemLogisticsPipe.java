@@ -14,7 +14,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.renderer.IIconProvider;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -45,7 +45,7 @@ public class ItemLogisticsPipe extends LogisticsItem {
 
 	@Override
 	public String getItemStackDisplayName(ItemStack itemstack) {
-		return StringUtil.translate(getUnlocalizedName(itemstack));
+		return StringUtils.translate(getUnlocalizedName(itemstack));
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class ItemLogisticsPipe extends LogisticsItem {
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean flags) {
-		StringUtil.addShiftAddition(stack, list);
+		StringUtils.addShiftAddition(stack, list);
 	}
 	
 	@Override

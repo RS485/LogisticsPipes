@@ -1,6 +1,5 @@
 package logisticspipes.gui.popup;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,7 +20,7 @@ import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.enchantment.Enchantment;
@@ -64,7 +63,7 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 	public void drawScreen(int par1, int par2, float par3) {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 
-		//mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "title"), guiLeft + 5, guiTop + 6, 0x404040);
+		//mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "title"), guiLeft + 5, guiTop + 6, 0x404040);
 		itemDisplay.renderPageNumber(right - 47, guiTop + 6);
 
 		search.renderSearchBar();
@@ -90,7 +89,7 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 				}
 			}
 			if(found) {
-				this.setSubGui(new GuiMessagePopup(StringUtil.translate(PREFIX + "alreadytracked")));
+				this.setSubGui(new GuiMessagePopup(StringUtils.translate(PREFIX + "alreadytracked")));
 			} else {
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(AddItemToTrackPacket.class).setItem(itemDisplay.getSelectedItem().getItem()).setTilePos(tile));
 				TrackingTask task = new TrackingTask();

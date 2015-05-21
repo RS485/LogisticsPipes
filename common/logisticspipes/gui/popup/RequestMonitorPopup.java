@@ -20,7 +20,7 @@ import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.RenderHelper;
@@ -572,7 +572,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		renderitem.renderItemAndEffectIntoGUI(this.mc.fontRenderer, this.mc.getTextureManager(), item.makeNormalStack(), x, y);
 		if(guiLeft < x && x < guiLeft + xSize - 16 && guiTop < y && y < guiTop + ySize - 16) {
 			renderitem.renderItemOverlayIntoGUI(mc.fontRenderer, this.mc.renderEngine, item.makeNormalStack(), x, y, "");
-			String s = StringUtil.getFormatedStackSize(item.getStackSize());
+			String s = StringUtils.getFormatedStackSize(item.getStackSize());
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 			renderitem.zLevel = 0.0F;

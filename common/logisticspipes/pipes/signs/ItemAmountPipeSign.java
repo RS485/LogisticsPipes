@@ -11,7 +11,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -116,7 +116,7 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 				}
 				
 				var17.drawString("ID: " + String.valueOf(Item.getIdFromItem(item)), -var17.getStringWidth("ID: " + String.valueOf(Item.getIdFromItem(item))) / 2, 0 * 10 - 4 * 5, 0);
-				String displayAmount = StringUtil.getFormatedStackSize(amount);
+				String displayAmount = StringUtils.getFormatedStackSize(amount);
 				var17.drawString("Amount:", -var17.getStringWidth("Amount:") / 2, 1 * 10 - 4 * 5, 0);
 				var17.drawString(String.valueOf(displayAmount), -var17.getStringWidth(String.valueOf(displayAmount)) / 2, 2 * 10 - 4 * 5, 0);
 			} else {

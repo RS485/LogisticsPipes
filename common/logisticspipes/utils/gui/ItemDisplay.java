@@ -13,7 +13,7 @@ import logisticspipes.interfaces.ISpecialItemRenderer;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen.Colors;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import logisticspipes.utils.tuples.Pair;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
@@ -278,7 +278,7 @@ public class ItemDisplay {
 					if(renderer != null) renderer.specialItemRendering(itemIdentifierStack.getItem(), x, y);
 				}
 
-				String s = StringUtil.getFormatedStackSize(itemstack.stackSize);
+				String s = StringUtils.getFormatedStackSize(itemstack.stackSize);
 				
 				FontRenderer font = itemstack.getItem().getFontRenderer(itemstack);
 				if (font == null)

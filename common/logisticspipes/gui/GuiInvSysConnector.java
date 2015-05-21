@@ -7,7 +7,6 @@ import java.util.List;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.items.LogisticsItemCard;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.pipe.InvSysConContentRequest;
 import logisticspipes.network.packets.pipe.InvSysConResistance;
@@ -18,7 +17,7 @@ import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -63,10 +62,10 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 		buttonList.clear();
 		buttonList.add(new SmallGuiButton(0, guiLeft + 120, guiTop + 47, 10, 10, "<"));
 		buttonList.add(new SmallGuiButton(1, guiLeft + 160, guiTop + 47, 10, 10, ">"));
-		buttonList.add(new SmallGuiButton(2, guiLeft + 68, guiTop + 47, 46, 10, StringUtil.translate(PREFIX + "Refresh")));
+		buttonList.add(new SmallGuiButton(2, guiLeft + 68, guiTop + 47, 46, 10, StringUtils.translate(PREFIX + "Refresh")));
 		buttonList.add(new SmallGuiButton(3, guiLeft + 80, guiTop + 35, 10, 10, "<"));
 		buttonList.add(new SmallGuiButton(4, guiLeft + 120, guiTop + 35, 10, 10, ">"));
-		buttonList.add(new SmallGuiButton(5, guiLeft + 140, guiTop + 35, 30, 10, StringUtil.translate(PREFIX + "Save")));
+		buttonList.add(new SmallGuiButton(5, guiLeft + 140, guiTop + 35, 30, 10, StringUtils.translate(PREFIX + "Save")));
 		refreshPacket();
 	}
 
@@ -74,13 +73,13 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 115);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "InventorySystemConnector"), guiLeft + 5, guiTop + 6, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "InventorySystemConnector"), guiLeft + 5, guiTop + 6, 0x404040);
 		drawRect(guiLeft + 9, guiTop + 58, guiLeft + 170, guiTop + 112, Colors.MiddleGrey);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "ConnectionCard") + ":", guiLeft + 10, guiTop + 21, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "ConnectionCard") + ":", guiLeft + 10, guiTop + 21, 0x404040);
 		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 97, guiTop + 16);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Waitingfor") + ":", guiLeft + 10, guiTop + 48, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "Waitingfor") + ":", guiLeft + 10, guiTop + 48, 0x404040);
 		mc.fontRenderer.drawString((page + 1) + "/" + maxPage(), guiLeft + 136, guiTop + 49, 0x404040);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Resistance") + ":", guiLeft + 10, guiTop + 35, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "Resistance") + ":", guiLeft + 10, guiTop + 35, 0x404040);
 		mc.fontRenderer.drawString(Integer.toString(localresistance), guiLeft + 105 - (mc.fontRenderer.getStringWidth(Integer.toString(localresistance))/2), guiTop + 37, 0x404040);
 	}
 

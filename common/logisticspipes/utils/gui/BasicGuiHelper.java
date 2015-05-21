@@ -274,14 +274,6 @@ public class BasicGuiHelper {
 		}
 	}
     
-    /**
-     * Renders the specified text to the screen, center-aligned.
-     */
-    public static void drawCenteredString(FontRenderer par1FontRenderer, String par2Str, int par3, int par4, int par5)
-    {
-        par1FontRenderer.drawStringWithShadow(par2Str, par3 - par1FontRenderer.getStringWidth(par2Str) / 2, par4, par5);
-    }
-    
 	public static void drawPlayerInventoryBackground(Minecraft mc, int xOffset, int yOffset) {
 		//Player "backpack"
         for(int row = 0; row < 3; row++) {

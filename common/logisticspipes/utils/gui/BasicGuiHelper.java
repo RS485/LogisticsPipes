@@ -130,7 +130,7 @@ public class BasicGuiHelper {
 				
 				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glTranslated(0.0D, 0.0D, 100.0D);
-				drawStringWithShadow(fontRenderer, s, x + 16 - fontRenderer.getStringWidth(s), y + 8, 0xFFFFFF);
+				SimpleGraphics.drawStringWithTranslatedShadow(fontRenderer, s, x + 16 - fontRenderer.getStringWidth(s), y + 8, 0xFFFFFF);
 				GL11.glTranslated(0.0D, 0.0D, -100.0D);
 				GL11.glEnable(GL11.GL_LIGHTING);
 			}
@@ -143,30 +143,6 @@ public class BasicGuiHelper {
 		}
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glPopMatrix();
-	}
-	
-
-    /**
-     * Draws the specified string with a shadow.
-     * @throws SecurityException 
-     * @throws NoSuchMethodException 
-     * @throws InvocationTargetException 
-     * @throws IllegalArgumentException 
-     * @throws IllegalAccessException 
-     * @throws NoSuchFieldException 
-     */
-	private static int drawStringWithShadow(FontRenderer fontRenderer, String par1Str, int par2, int par3, int par4) {
-		fontRenderer.resetStyles();
-		if(fontRenderer.bidiFlag) {
-			par1Str = fontRenderer.bidiReorder(par1Str);
-		}
-		int var5 = fontRenderer.renderString(par1Str, par2 + 1, par3 + 1, par4, true);
-		
-		GL11.glTranslated(0.0D, 0.0D, 1.0D);
-		var5 = Math.max(var5, fontRenderer.renderString(par1Str, par2, par3, par4, false));
-		GL11.glTranslated(0.0D, 0.0D, -1.0D);
-		
-		return var5;
 	}
     
 	private static float zLevel;

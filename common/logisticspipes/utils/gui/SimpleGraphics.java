@@ -8,6 +8,7 @@
 
 package logisticspipes.utils.gui;
 
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
@@ -180,5 +181,31 @@ public final class SimpleGraphics {
 		tessellator.addVertexWithUV((double) (x + width), (double) y, zLevel, (double) ((u + width) * f), (double) (v * f1));
 		tessellator.addVertexWithUV((double) x, (double) y, zLevel, (double) (u * f), (double) (v * f1));
 		tessellator.draw();
+	}
+
+	/**
+	 * Draws the specified string with a z-translated drop shadow.
+	 *
+	 * @param fontRenderer the font renderer to render the string with
+	 * @param s the string to render
+	 * @param x the x-coordinate of the string
+	 * @param y the y-coordinate of the string
+	 * @param color the color of the string
+	 * @return the stop x-coordinate of the drawn string
+	 * @see net.minecraft.client.gui.FontRenderer method drawString(String, int, int, int, boolean)
+	 */
+	public static int drawStringWithTranslatedShadow(FontRenderer fontRenderer, String s, int x, int y, int color) {
+		int endX;
+
+		// make color gray-ish and draw shadow
+		int grayColor = (color & 16579836) >> 2 | color & -16777216;
+		endX = fontRenderer.drawString(s, x + 1, y + 1, grayColor);
+
+		// move to foreground and draw actual string
+		GL11.glTranslated(0.0, 0.0, 1.0);
+		endX = Math.max(endX, fontRenderer.drawString(s, x, y, color));
+		GL11.glTranslated(0.0, 0.0, -1.0);
+
+		return endX;
 	}
 }

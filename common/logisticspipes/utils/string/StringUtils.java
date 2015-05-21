@@ -147,16 +147,22 @@ public final class StringUtils {
 
 	public static String getStringWithSpacesFromInteger(int source) {
 		String data = Integer.toString(source);
-		return insert3rdSpace(data);
+		return insertThousandsSeparators(data);
 	}
 
 	public static String getStringWithSpacesFromLong(long source) {
 		String data = Long.toString(source);
-		return insert3rdSpace(data);
+		return insertThousandsSeparators(data);
 	}
 
-	private static String insert3rdSpace(String source) {
-		if (source.length() < 4) return source;
-		return insert3rdSpace(source.substring(0, source.length() - 3)) + " " + source.substring(source.length() - 3);
+	public static String insertThousandsSeparators(String source) {
+		StringBuilder sb = new StringBuilder();
+		int i;
+		for (i = source.length(); i > 3; i -= 3) {
+			sb.insert(0, source.substring(i - 3, i));
+			sb.insert(0, ' ');
+		}
+		sb.insert(0, source.substring(0, i));
+		return sb.toString();
 	}
 }

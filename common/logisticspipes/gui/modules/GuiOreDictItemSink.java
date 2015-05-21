@@ -98,10 +98,10 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 			currentOffset = 0;
 
 		//draw unsunk list and highlight bar, handle clicks
-		SimpleGraphics.drawRectNoBlend(guiLeft + 26, guiTop + 5, guiLeft + 159, guiTop + 27, 0xff808080);
+		SimpleGraphics.drawRectNoBlend(guiLeft + 26, guiTop + 5, guiLeft + 159, guiTop + 27, 0xff808080, 0.0);
 		for(int i=0; i + currentOffset < unsunkNames.size() && i < 2; i++) {
 			if(27 <= pointerX && pointerX < 158 && 6 + (10 * i) <= pointerY && pointerY < 6 + (10 * (i + 1))) {
-				SimpleGraphics.drawRectNoBlend(guiLeft + 27, guiTop + 6 + (10 * i), guiLeft + 158, guiTop + 6 + (10 * (i + 1)), 0xffc0c0c0);
+				SimpleGraphics.drawRectNoBlend(guiLeft + 27, guiTop + 6 + (10 * i), guiLeft + 158, guiTop + 6 + (10 * (i + 1)), 0xffc0c0c0, 0.0);
 			}
 			mc.fontRenderer.drawString(unsunkNames.get(currentOffset + i), guiLeft + 28, guiTop + 7 + (10 * i), 0x404040);
 			if(27 <= mouseX && mouseX < 158 && 6 + (10 * i) <= mouseY && mouseY < 6 + (10 * (i + 1))) {
@@ -119,10 +119,10 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 		}
 
 		//draw main list and highlight bar, handle clicks
-		SimpleGraphics.drawRectNoBlend(guiLeft + 5, guiTop + 30, guiLeft + 169, guiTop + 122, 0xff808080);
+		SimpleGraphics.drawRectNoBlend(guiLeft + 5, guiTop + 30, guiLeft + 169, guiTop + 122, 0xff808080, 0.0);
 		for(int i=0; i < _itemSink.oreList.size() && i < 9; i++) {
 			if(6 <= pointerX && pointerX < 168 && 31 + (10 * i) <= pointerY && pointerY < 31 + (10 * (i + 1))) {
-				SimpleGraphics.drawRectNoBlend(guiLeft + 6, guiTop + 31 + (10 * i), guiLeft + 168, guiTop + 31 + (10 * (i + 1)), 0xffc0c0c0);
+				SimpleGraphics.drawRectNoBlend(guiLeft + 6, guiTop + 31 + (10 * i), guiLeft + 168, guiTop + 31 + (10 * (i + 1)), 0xffc0c0c0, 0.0);
 			}
 			mc.fontRenderer.drawString(_itemSink.oreList.get(i), guiLeft + 7, guiTop + 32 + (10 * i), 0x404040);
 			if(6 <= mouseX && mouseX < 168 && 31 + (10 * i) <= mouseY && mouseY < 31 + (10 * (i + 1))) {

@@ -70,9 +70,10 @@ public final class SimpleGraphics {
 	 * @param x2 the second x-coordinate of the rectangle
 	 * @param y2 the second y-coordinate of the rectangle
 	 * @param color the color of the rectangle
+	 * @param zLevel the z-level of the graphic
 	 * @see net.minecraft.client.gui.Gui method drawRect(int, int, int, int, int)
 	 */
-	public static void drawRectNoBlend(int x1, int y1, int x2, int y2, int color) {
+	public static void drawRectNoBlend(int x1, int y1, int x2, int y2, int color, double zLevel) {
 		int temp;
 
 		if (x1 < x2) {
@@ -99,10 +100,10 @@ public final class SimpleGraphics {
 
 		Tessellator tessellator = Tessellator.instance;
 		tessellator.startDrawingQuads();
-		tessellator.addVertex((double) x1, (double) y2, 0.0D);
-		tessellator.addVertex((double) x2, (double) y2, 0.0D);
-		tessellator.addVertex((double) x2, (double) y1, 0.0D);
-		tessellator.addVertex((double) x1, (double) y1, 0.0D);
+		tessellator.addVertex((double) x1, (double) y2, zLevel);
+		tessellator.addVertex((double) x2, (double) y2, zLevel);
+		tessellator.addVertex((double) x2, (double) y1, zLevel);
+		tessellator.addVertex((double) x1, (double) y1, zLevel);
 		tessellator.draw();
 
 		GL11.glEnable(GL11.GL_TEXTURE_2D);

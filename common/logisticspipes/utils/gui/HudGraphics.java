@@ -11,8 +11,8 @@ package logisticspipes.utils.gui;
 /**
  * Utils class for HUD-related drawing methods.
  */
-public final class HUDGraphics {
+public final class HudGraphics {
 
-	private HUDGraphics() {
+	private HudGraphics() {
 	}
 }

@@ -3,15 +3,13 @@ package logisticspipes.nei;
 import java.util.List;
 
 import logisticspipes.utils.QuickSortChestMarkerStorage;
+import logisticspipes.utils.gui.GuiGraphics;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
-import net.minecraft.util.ResourceLocation;
 import codechicken.nei.guihook.IContainerDrawHandler;
 
 public class DrawHandler implements IContainerDrawHandler {
-
-    private static final ResourceLocation WIDGITS      = new ResourceLocation("textures/gui/widgets.png");
     
 	@Override
 	public void onPreDraw(GuiContainer gui) {}
@@ -30,7 +28,7 @@ public class DrawHandler implements IContainerDrawHandler {
 			if(QuickSortChestMarkerStorage.getInstance().isActivated()) {
 				for(Slot slot: ((List<Slot>) gui.inventorySlots.inventorySlots)) {
 					if(QuickSortChestMarkerStorage.getInstance().getMarker().contains(slot.slotNumber)) {
-						Minecraft.getMinecraft().renderEngine.bindTexture(WIDGITS);
+						Minecraft.getMinecraft().renderEngine.bindTexture(GuiGraphics.WIDGETS_TEXTURE);
 						gui.drawTexturedModalRect(slot.xDisplayPosition - 3, slot.yDisplayPosition - 3, 1, 23, 22, 22);
 					}
 				}

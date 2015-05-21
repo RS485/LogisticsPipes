@@ -292,8 +292,6 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 	}
 	
 	private static final ResourceLocation	SIGN	= new ResourceLocation("textures/entity/sign.png");
-	private static final ResourceLocation	BLOCKS	= new ResourceLocation("textures/atlas/blocks.png");
-	private static final ResourceLocation	ITEMS	= new ResourceLocation("textures/atlas/items.png");
 	
 	private void renderSign(CoreRoutedPipe pipe, IPipeSign type) {
 		float var10 = 0.6666667F;
@@ -324,8 +322,8 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		Item item = itemstack.getItem();
 		
 		IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, ItemRenderType.INVENTORY);
-		
-		Minecraft.getMinecraft().renderEngine.bindTexture(itemstack.getItemSpriteNumber() == 0 ? BLOCKS : ITEMS);
+
+		Minecraft.getMinecraft().renderEngine.bindTexture(itemstack.getItemSpriteNumber() == 0 ? TextureMap.locationBlocksTexture : TextureMap.locationItemsTexture);
 		
 		GL11.glPushMatrix();
 		

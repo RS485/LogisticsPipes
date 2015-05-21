@@ -15,10 +15,10 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ForgeHooksClient;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -280,9 +280,6 @@ public class BasicGuiHelper {
         	drawSlotBackground(mc, xOffset + i1 * 18 - 1, yOffset - 1);
         }
 	}
-	
-	private static final ResourceLocation SLOT = new ResourceLocation("logisticspipes", "textures/gui/slot.png");
-	
 
 	public static void drawPlayerArmorBackground(Minecraft mc, int xOffset, int yOffset) {
 		//Player "armor"
@@ -294,7 +291,7 @@ public class BasicGuiHelper {
     public static void drawSlotBackground(Minecraft mc, int x, int y) {
     	zLevel = 0;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(SLOT);
+		mc.renderEngine.bindTexture(GuiGraphics.SLOT_TEXTURE);
 		
 		Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
@@ -312,7 +309,7 @@ public class BasicGuiHelper {
 		float colorG = (color >> 8 & 0xFF) / 255.0F;
 		float colorB = (color & 0xFF) / 255.0F;
 		GL11.glColor4f(colorR, colorG, colorB, colorA);
-		mc.renderEngine.bindTexture(SLOT);
+		mc.renderEngine.bindTexture(GuiGraphics.SLOT_TEXTURE);
 
 		Tessellator var9 = Tessellator.instance;
 		var9.startDrawingQuads();
@@ -325,13 +322,10 @@ public class BasicGuiHelper {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
-	private static final ResourceLocation BIGSLOT = new ResourceLocation("logisticspipes", "textures/gui/slot-big.png");
-	
-
-    public static void drawBigSlotBackground(Minecraft mc, int x, int y) {
+	public static void drawBigSlotBackground(Minecraft mc, int x, int y) {
     	zLevel = 0;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(BIGSLOT);
+		mc.renderEngine.bindTexture(GuiGraphics.BIG_SLOT_TEXTURE);
 		
 		Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
@@ -341,13 +335,11 @@ public class BasicGuiHelper {
         var9.addVertexWithUV(x		, y			, zLevel, 0	, 0);
         var9.draw();
     }
-    
-	private static final ResourceLocation SMALLSLOT = new ResourceLocation("logisticspipes", "textures/gui/slot-small.png");
-	
-    public static void drawSmallSlotBackground(Minecraft mc, int x, int y) {
+
+	public static void drawSmallSlotBackground(Minecraft mc, int x, int y) {
     	zLevel = 0;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(SMALLSLOT);
+		mc.renderEngine.bindTexture(GuiGraphics.SMALL_SLOT_TEXTURE);
 		
 		Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
@@ -357,14 +349,11 @@ public class BasicGuiHelper {
         var9.addVertexWithUV(x		, y			, zLevel, 0	, 0);
         var9.draw();
     }
-	
-	private static final ResourceLocation ITEMS = new ResourceLocation("textures/atlas/items.png");
-	
 
-    public static void renderIconAt(Minecraft mc, int x, int y, float zLevel, IIcon icon) {
+	public static void renderIconAt(Minecraft mc, int x, int y, float zLevel, IIcon icon) {
     	if(icon == null) return;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-    	mc.renderEngine.bindTexture(ITEMS);
+    	mc.renderEngine.bindTexture(TextureMap.locationItemsTexture);
 		
 		Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
@@ -375,12 +364,10 @@ public class BasicGuiHelper {
         var9.draw();
 	}
 
-	private static final ResourceLocation LOCK_ICON = new ResourceLocation("logisticspipes", "textures/gui/lock.png");
-	
-    public static void drawLockBackground(Minecraft mc, int x, int y) {
+	public static void drawLockBackground(Minecraft mc, int x, int y) {
     	zLevel = 0;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(LOCK_ICON);
+		mc.renderEngine.bindTexture(GuiGraphics.LOCK_ICON);
 		GL11.glEnable(GL11.GL_BLEND);
 		
 		Tessellator var9 = Tessellator.instance;
@@ -392,12 +379,10 @@ public class BasicGuiHelper {
         var9.draw();
     }
 
-	private static final ResourceLocation LINES_ICON = new ResourceLocation("logisticspipes", "textures/gui/lines.png");
-	
-    public static void drawLinesBackground(Minecraft mc, int x, int y) {
+	public static void drawLinesBackground(Minecraft mc, int x, int y) {
     	zLevel = 0;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(LINES_ICON);
+		mc.renderEngine.bindTexture(GuiGraphics.LINES_ICON);
 		GL11.glEnable(GL11.GL_BLEND);
 		
 		Tessellator var9 = Tessellator.instance;
@@ -409,12 +394,10 @@ public class BasicGuiHelper {
         var9.draw();
     }
 
-	private static final ResourceLocation STATS_ICON = new ResourceLocation("logisticspipes", "textures/gui/stats.png");
-	
-    public static void drawStatsBackground(Minecraft mc, int x, int y) {
+	public static void drawStatsBackground(Minecraft mc, int x, int y) {
     	zLevel = 0;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(STATS_ICON);
+		mc.renderEngine.bindTexture(GuiGraphics.STATS_ICON);
 		GL11.glEnable(GL11.GL_BLEND);
 		
 		Tessellator var9 = Tessellator.instance;
@@ -425,11 +408,11 @@ public class BasicGuiHelper {
         var9.addVertexWithUV(x		, y			, zLevel, 0	, 0);
         var9.draw();
     }
-    
+
     public static void renderForestryBeeAt(Minecraft mc, int x, int y, float zLevel, String id) {
     	GL11.glDisable(GL11.GL_LIGHTING);
-    	mc.renderEngine.bindTexture(ITEMS);
-    	
+    	mc.renderEngine.bindTexture(TextureMap.locationItemsTexture);
+
 		for (int i = 0; i < SimpleServiceLocator.forestryProxy.getRenderPassesForAlleleId(id); i++) {
 			IIcon icon = SimpleServiceLocator.forestryProxy.getIconIndexForAlleleId(id, i);
 			if(icon == null) continue;
@@ -439,7 +422,7 @@ public class BasicGuiHelper {
 	        float colorB = (color & 0xFF) / 255.0F;
 
 	        GL11.glColor4f(colorR, colorG, colorB, 1.0F);
-			
+
 	        //Render Icon
 			Tessellator var9 = Tessellator.instance;
 	        var9.startDrawingQuads();
@@ -451,19 +434,16 @@ public class BasicGuiHelper {
 		}
 		GL11.glEnable(GL11.GL_LIGHTING);
 	}
-    
+
     public static void drawGuiBackGround(Minecraft mc, int guiLeft, int guiTop, int right, int bottom, float zLevel, boolean resetColor) {
     	drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, resetColor, true, true, true, true);
     }
-	
-	private static final ResourceLocation BACKGROUND = new ResourceLocation("logisticspipes", "textures/gui/GuiBackground.png");
-	
 
-    public static void drawGuiBackGround(Minecraft mc, int guiLeft, int guiTop, int right, int bottom, float zLevel, boolean resetColor, boolean displayTop, boolean displayLeft, boolean displayBottom, boolean displayRight){
+	public static void drawGuiBackGround(Minecraft mc, int guiLeft, int guiTop, int right, int bottom, float zLevel, boolean resetColor, boolean displayTop, boolean displayLeft, boolean displayBottom, boolean displayRight){
 		if(resetColor) {
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		}
-		mc.renderEngine.bindTexture(BACKGROUND);
+		mc.renderEngine.bindTexture(GuiGraphics.BACKGROUND_TEXTURE);
 		
 		if(displayTop) {
 			//Top Side

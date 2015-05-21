@@ -1,10 +1,10 @@
 package logisticspipes.utils.gui.hud;
 
 import logisticspipes.interfaces.IHUDButton;
-import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SimpleGraphics;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.renderer.texture.TextureMap;
 
 import org.lwjgl.opengl.GL11;
 
@@ -76,21 +76,13 @@ public abstract class BasicHUDButton implements IHUDButton {
 	public int focusedTime() {
 		return (int) (System.currentTimeMillis() - focusedTimeStart);
 	}
-	
-	
-	private static final ResourceLocation ITEMS = new ResourceLocation("textures/atlas/items.png");
-	
-			
-	private static final ResourceLocation GUI = new ResourceLocation("textures/gui/widgets.png");
-			
-	
-	
+
 	@Override
 	public void renderButton(boolean hover, boolean clicked) {
 		Minecraft minecraft = FMLClientHandler.instance().getClient();
         //GL11.glBindTexture(3553 /*GL_TEXTURE_2D*/, 
-        minecraft.renderEngine.bindTexture(GUI); //TODO: check this change
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		minecraft.renderEngine.bindTexture(GuiGraphics.WIDGETS_TEXTURE);
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         int k = !buttonEnabled() ? 0 : hover ? 2 : 1;
 
 		SimpleGraphics.drawTexturedModalRect(posX, posY, 0, 46 + k * 20, sizeX / 2, sizeY / 2, 0.0);
@@ -114,7 +106,7 @@ public abstract class BasicHUDButton implements IHUDButton {
 			GL11.glTranslatef(0.0F, 0.0F, 0.02F);
 		}
 		GL11.glTranslatef(0.0F, 0.0F, 0.001F);
-		minecraft.renderEngine.bindTexture(ITEMS);
+		minecraft.renderEngine.bindTexture(TextureMap.locationItemsTexture);
 	}
 
 	@Override

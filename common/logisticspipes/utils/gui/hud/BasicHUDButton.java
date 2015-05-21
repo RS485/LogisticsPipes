@@ -2,6 +2,7 @@ package logisticspipes.utils.gui.hud;
 
 import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.SimpleGraphics;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
@@ -91,12 +92,12 @@ public abstract class BasicHUDButton implements IHUDButton {
         minecraft.renderEngine.bindTexture(GUI); //TODO: check this change
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         int k = !buttonEnabled() ? 0 : hover ? 2 : 1;
-        
-        BasicGuiHelper.drawTexturedModalRect(posX  			, posY				, 0			    , 46 + k * 20, sizeX / 2 ,sizeY / 2, 0);
-        BasicGuiHelper.drawTexturedModalRect(posX + sizeX / 2	, posY				, 200 - sizeX / 2, 46 + k * 20, sizeX / 2, sizeY / 2, 0);
-        
-        BasicGuiHelper.drawTexturedModalRect(posX  			, posY + sizeY / 2, 0			    , 46 + 24 - sizeY  +  k * 20, sizeX / 2 ,sizeY / 2, 0);
-        BasicGuiHelper.drawTexturedModalRect(posX + sizeX / 2	, posY + sizeY / 2, 200 - sizeX / 2, 46 + 24 - sizeY +  k * 20, sizeX / 2, sizeY / 2, 0);
+
+		SimpleGraphics.drawTexturedModalRect(posX, posY, 0, 46 + k * 20, sizeX / 2, sizeY / 2, 0.0);
+		SimpleGraphics.drawTexturedModalRect(posX + sizeX / 2, posY, 200 - sizeX / 2, 46 + k * 20, sizeX / 2, sizeY / 2, 0.0);
+
+		SimpleGraphics.drawTexturedModalRect(posX, posY + sizeY / 2, 0, 46 + 24 - sizeY + k * 20, sizeX / 2, sizeY / 2, 0.0);
+		SimpleGraphics.drawTexturedModalRect(posX + sizeX / 2, posY + sizeY / 2, 200 - sizeX / 2, 46 + 24 - sizeY + k * 20, sizeX / 2, sizeY / 2, 0.0);
 
 		GL11.glTranslatef(0.0F, 0.0F, -0.001F);
 		int color = 0;

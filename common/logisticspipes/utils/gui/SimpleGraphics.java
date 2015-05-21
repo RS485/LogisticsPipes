@@ -118,6 +118,7 @@ public final class SimpleGraphics {
 	 * @param y2 the second y-coordinate of the rectangle
 	 * @param colorA the first color, starting from y1
 	 * @param colorB the second color, ending in y2
+	 * @param zLevel the z-level of the graphic
 	 * @see net.minecraft.client.gui.Gui method drawGradientRect(int, int, int, int, int, int)
 	 */
 	public static void drawGradientRect(int x1, int y1, int x2, int y2, int colorA, int colorB, double zLevel) {
@@ -153,5 +154,30 @@ public final class SimpleGraphics {
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glEnable(GL11.GL_ALPHA_TEST);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
+	}
+
+	/**
+	 * Draws a textured rectangle.
+	 *
+	 * @param x the x-coordinate of the rectangle
+	 * @param y the y-coordinate of the rectangle
+	 * @param u the u-coordinate of the texture
+	 * @param v the v-coordinate of the texture
+	 * @param width the width of the rectangle
+	 * @param height the height of the rectangle
+	 * @param zLevel the z-level of the graphic
+	 * @see net.minecraft.client.gui.Gui method drawTexturedModalRect(int, int, int, int, int, int)
+	 */
+	public static void drawTexturedModalRect(int x, int y, int u, int v, int width, int height, double zLevel) {
+		float f = 0.00390625F;
+		float f1 = 0.00390625F;
+
+		Tessellator tessellator = Tessellator.instance;
+		tessellator.startDrawingQuads();
+		tessellator.addVertexWithUV((double) x, (double) (y + height), zLevel, (double) (u * f), (double) ((v + height) * f1));
+		tessellator.addVertexWithUV((double) (x + width), (double) (y + height), zLevel, (double) ((u + width) * f), (double) ((v + height) * f1));
+		tessellator.addVertexWithUV((double) (x + width), (double) y, zLevel, (double) ((u + width) * f), (double) (v * f1));
+		tessellator.addVertexWithUV((double) x, (double) y, zLevel, (double) (u * f), (double) (v * f1));
+		tessellator.draw();
 	}
 }

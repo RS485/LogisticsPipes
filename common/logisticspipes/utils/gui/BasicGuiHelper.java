@@ -297,22 +297,6 @@ public class BasicGuiHelper {
             catch(Exception e1) {}
 		}
 	}
-
-    /**
-     * Draws a textured rectangle at the stored z-value. Args: x, y, u, v, width, height
-     */
-    public static void drawTexturedModalRect(double par1, double par2, double par3, double par4, double par5, double par6, float zLevel)
-    {
-        float var7 = 0.00390625F;
-        float var8 = 0.00390625F;
-        Tessellator var9 = Tessellator.instance;
-        var9.startDrawingQuads();
-        var9.addVertexWithUV(par1 + 0, par2 + par6, zLevel, (float)(par3 + 0) * var7, (float)(par4 + par6) * var8);
-        var9.addVertexWithUV(par1 + par5, par2 + par6, zLevel, (float)(par3 + par5) * var7, (float)(par4 + par6) * var8);
-        var9.addVertexWithUV(par1 + par5, par2 + 0, zLevel, (float)(par3 + par5) * var7, (float)(par4 + 0) * var8);
-        var9.addVertexWithUV(par1 + 0, par2 + 0, zLevel, (float)(par3 + 0) * var7, (float)(par4 + 0) * var8);
-        var9.draw();
-    }
     
     /**
      * Renders the specified text to the screen, center-aligned.

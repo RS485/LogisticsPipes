@@ -409,33 +409,7 @@ public class BasicGuiHelper {
         var9.draw();
     }
 
-    public static void renderForestryBeeAt(Minecraft mc, int x, int y, float zLevel, String id) {
-    	GL11.glDisable(GL11.GL_LIGHTING);
-    	mc.renderEngine.bindTexture(TextureMap.locationItemsTexture);
-
-		for (int i = 0; i < SimpleServiceLocator.forestryProxy.getRenderPassesForAlleleId(id); i++) {
-			IIcon icon = SimpleServiceLocator.forestryProxy.getIconIndexForAlleleId(id, i);
-			if(icon == null) continue;
-	        int color = SimpleServiceLocator.forestryProxy.getColorForAlleleId(id, i);
-	        float colorR = (color >> 16 & 0xFF) / 255.0F;
-	        float colorG = (color >> 8 & 0xFF) / 255.0F;
-	        float colorB = (color & 0xFF) / 255.0F;
-
-	        GL11.glColor4f(colorR, colorG, colorB, 1.0F);
-
-	        //Render Icon
-			Tessellator var9 = Tessellator.instance;
-	        var9.startDrawingQuads();
-	        var9.addVertexWithUV(x		, y + 16	, zLevel, icon.getMinU()	, icon.getMaxV());
-	        var9.addVertexWithUV(x + 16	, y + 16	, zLevel, icon.getMaxU()	, icon.getMaxV());
-	        var9.addVertexWithUV(x + 16	, y			, zLevel, icon.getMaxU()	, icon.getMinV());
-	        var9.addVertexWithUV(x		, y			, zLevel, icon.getMinU()	, icon.getMinV());
-	        var9.draw();
-		}
-		GL11.glEnable(GL11.GL_LIGHTING);
-	}
-
-    public static void drawGuiBackGround(Minecraft mc, int guiLeft, int guiTop, int right, int bottom, float zLevel, boolean resetColor) {
+	public static void drawGuiBackGround(Minecraft mc, int guiLeft, int guiTop, int right, int bottom, float zLevel, boolean resetColor) {
     	drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, resetColor, true, true, true, true);
     }
 

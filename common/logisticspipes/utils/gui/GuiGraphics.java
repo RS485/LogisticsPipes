@@ -89,10 +89,8 @@ public final class GuiGraphics {
 
 			if (st != null) {
 				if (disableEffect) {
-					if (st != null) {
-						if (!ForgeHooksClient.renderInventoryItem(renderBlocks, mc.renderEngine, st, renderItem.renderWithColor, renderItem.zLevel, x, y)) {
-							renderItem.renderItemIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
-						}
+					if (!ForgeHooksClient.renderInventoryItem(renderBlocks, mc.renderEngine, st, renderItem.renderWithColor, renderItem.zLevel, x, y)) {
+						renderItem.renderItemIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
 					}
 				} else {
 					GL11.glTranslated(0, 0, 3.0);
@@ -103,7 +101,7 @@ public final class GuiGraphics {
 
 			GL11.glEnable(GL11.GL_LIGHTING);
 
-			if (displayAmount) {
+			if (st != null && displayAmount) {
 				String s;
 				if (st.stackSize == 1 && !forcenumber) {
 					s = "";
@@ -152,12 +150,12 @@ public final class GuiGraphics {
 					var24.addAll(1, (List<String>) tooltip[4]);
 				}
 
-				if ((Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) && (tooltip.length < 4 || Boolean.valueOf((Boolean) tooltip[3]))) {
+				if ((Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) && (tooltip.length < 4 || (Boolean) tooltip[3])) {
 					var24.add(1, "\u00a77" + ((ItemStack) tooltip[2]).stackSize);
 				}
 
-				int var11 = ((Integer) tooltip[0]).intValue() - (forceAdd ? 0 : guiLeft) + 12;
-				int var12 = ((Integer) tooltip[1]).intValue() - (forceAdd ? 0 : guiTop) - 12;
+				int var11 = (Integer) tooltip[0] - (forceAdd ? 0 : guiLeft) + 12;
+				int var12 = (Integer) tooltip[1] - (forceAdd ? 0 : guiTop) - 12;
 				drawToolTip(var11, var12, var24, var22.getRarity().rarityColor, forceminecraft);
 			} catch (Exception e1) {}
 		}
@@ -171,14 +169,14 @@ public final class GuiGraphics {
 			}
 
 			//Look for NEI
-			Class<?> LayoutManager = Class.forName("codechicken.nei.LayoutManager");
+			Class< ? > LayoutManager = Class.forName("codechicken.nei.LayoutManager");
 			Field GuiManagerField = LayoutManager.getDeclaredField("gui");
 			GuiManagerField.setAccessible(true);
 			Object GuiManagerObject = GuiManagerField.get(null);
-			Class<?> GuiManager = Class.forName("codechicken.nei.GuiManager");
-			Method drawMultilineTip = GuiManager.getDeclaredMethod("drawMultilineTip", new Class[] { int.class, int.class, List.class, int.class });
+			Class< ? > GuiManager = Class.forName("codechicken.nei.GuiManager");
+			Method drawMultilineTip = GuiManager.getDeclaredMethod("drawMultilineTip", int.class, int.class, List.class, int.class);
 
-			drawMultilineTip.invoke(GuiManagerObject, new Object[] { posX, posY, msg, rarityColor });
+			drawMultilineTip.invoke(GuiManagerObject, posX, posY, msg, rarityColor);
 		} catch (Exception e) {
 			try {
 				//Use minecraft vanilla code

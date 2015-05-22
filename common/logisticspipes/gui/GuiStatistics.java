@@ -13,7 +13,6 @@ import logisticspipes.network.packets.block.RequestAmountTaskSubGui;
 import logisticspipes.network.packets.block.RequestRunningCraftingTasks;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.Color;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;

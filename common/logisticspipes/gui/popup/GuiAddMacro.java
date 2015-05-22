@@ -8,7 +8,6 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.orderer.DiscContent;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.Color;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.SmallGuiButton;

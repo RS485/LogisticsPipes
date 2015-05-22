@@ -7,6 +7,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.MinecraftColor;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -102,12 +103,12 @@ public class FluidContainerRenderer implements IItemRenderer {
 				int x = i / 3;
 				int y = i % 3;
 				if(type == ItemRenderType.INVENTORY) {
-					drawRect(x * 5 + 4, y * 3 + 3, x * 5 + 7, y * 3 + 5, color.getColorCode());
+					Gui.drawRect(x * 5 + 4, y * 3 + 3, x * 5 + 7, y * 3 + 5, color.getColorCode());
 				}
 				if(type == ItemRenderType.ENTITY) {
-					drawRect(-x * 5 + 4, -y * 3 + 3, -x * 5 + 7, -y * 3 + 5, color.getColorCode());
+					Gui.drawRect(-x * 5 + 4, -y * 3 + 3, -x * 5 + 7, -y * 3 + 5, color.getColorCode());
 					GL11.glRotatef(180, 1, 0, 0);
-					drawRect(-x * 5 + 4, -y * 3 + 3, -x * 5 + 7, -y * 3 + 5, color.getColorCode());
+					Gui.drawRect(-x * 5 + 4, -y * 3 + 3, -x * 5 + 7, -y * 3 + 5, color.getColorCode());
 					GL11.glRotatef(180, 1, 0, 0);
 				}
 			}
@@ -190,40 +191,4 @@ public class FluidContainerRenderer implements IItemRenderer {
 		}
 		useThis = true;
 	}
-	
-	private void drawRect(int par0, int par1, int par2, int par3, int par4) {
-        int j1;
-
-        if (par0 < par2)
-        {
-            j1 = par0;
-            par0 = par2;
-            par2 = j1;
-        }
-
-        if (par1 < par3)
-        {
-            j1 = par1;
-            par1 = par3;
-            par3 = j1;
-        }
-
-        float f = (par4 >> 24 & 255) / 255.0F;
-        float f1 = (par4 >> 16 & 255) / 255.0F;
-        float f2 = (par4 >> 8 & 255) / 255.0F;
-        float f3 = (par4 & 255) / 255.0F;
-        Tessellator tessellator = Tessellator.instance;
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glColor4f(f1, f2, f3, f);
-        tessellator.startDrawingQuads();
-        tessellator.addVertex(par0, par3, 0.0D);
-        tessellator.addVertex(par2, par3, 0.0D);
-        tessellator.addVertex(par2, par1, 0.0D);
-        tessellator.addVertex(par0, par1, 0.0D);
-        tessellator.draw();
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glDisable(GL11.GL_BLEND);
-    }
 }

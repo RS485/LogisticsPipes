@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import cpw.mods.fml.client.FMLClientHandler;
+import logisticspipes.utils.Color;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.Minecraft;
@@ -290,11 +291,7 @@ public final class GuiGraphics {
 
 	public static void drawSlotBackground(Minecraft mc, int x, int y, int color) {
 		zLevel = 0;
-		float colorA = (color >> 24 & 0xFF) / 255.0F;
-		float colorR = (color >> 16 & 0xFF) / 255.0F;
-		float colorG = (color >> 8 & 0xFF) / 255.0F;
-		float colorB = (color & 0xFF) / 255.0F;
-		GL11.glColor4f(colorR, colorG, colorB, colorA);
+		GL11.glColor4f(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color));
 		mc.renderEngine.bindTexture(SLOT_TEXTURE);
 
 		Tessellator var9 = Tessellator.instance;

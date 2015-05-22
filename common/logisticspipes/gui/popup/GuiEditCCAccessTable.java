@@ -7,9 +7,9 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.block.SecurityAddCCIdPacket;
 import logisticspipes.network.packets.block.SecurityRemoveCCIdPacket;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.GuiGraphics;
-import logisticspipes.utils.gui.LogisticsBaseGuiScreen.Colors;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.string.StringUtils;
@@ -61,7 +61,7 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 		
 		boolean dark = true;
 		for(int i=0;i < 9;i++) {
-			drawRect(guiLeft + 10, guiTop + 15 + (i*10), right - 10, guiTop + 25 + (i*10), dark ? Colors.DarkGrey : Colors.LightGrey);
+			drawRect(guiLeft + 10, guiTop + 15 + (i*10), right - 10, guiTop + 25 + (i*10), dark ? Color.DARK_GREY : Color.LIGHT_GREY);
 			dark = !dark;
 		}
 		dark = true;
@@ -80,12 +80,12 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 		
 		//SearchInput
 		if(editsearch) {
-			drawRect(guiLeft + 40, bottom - 30, right - 40, bottom - 13, Colors.Black);
-			drawRect(guiLeft + 41, bottom - 29, right - 41, bottom - 14, Colors.White);
+			drawRect(guiLeft + 40, bottom - 30, right - 40, bottom - 13, Color.BLACK);
+			drawRect(guiLeft + 41, bottom - 29, right - 41, bottom - 14, Color.WHITE);
 		} else {
-			drawRect(guiLeft + 41, bottom - 29, right - 41, bottom - 14, Colors.Black);
+			drawRect(guiLeft + 41, bottom - 29, right - 41, bottom - 14, Color.BLACK);
 		}
-		drawRect(guiLeft + 42, bottom - 28, right - 42, bottom - 15, Colors.DarkGrey);
+		drawRect(guiLeft + 42, bottom - 28, right - 42, bottom - 15, Color.DARK_GREY);
 		
 		mc.fontRenderer.drawString(searchinput1 + searchinput2, guiLeft + 75 - (mc.fontRenderer.getStringWidth(searchinput1 + searchinput2) / 2), bottom - 25, 0xFFFFFF);
 		if(editsearch) {
@@ -95,7 +95,7 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 				oldSystemTime = System.currentTimeMillis();
 			}
 			if(displaycursor) {
-				drawRect(linex, bottom - 27, linex + 1, bottom - 16, Colors.White);
+				drawRect(linex, bottom - 27, linex + 1, bottom - 16, Color.WHITE);
 			}
 		}
 		
@@ -260,7 +260,7 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 		}
 	}
 
-	public void drawRect(int x1, int y1, int x2, int y2, Colors color) {
-		drawRect(x1, y1, x2, y2, BasicGuiHelper.ConvertEnumToColor(color));
+	public void drawRect(int x1, int y1, int x2, int y2, Color color) {
+		drawRect(x1, y1, x2, y2, Color.getValue(color));
 	}
 }

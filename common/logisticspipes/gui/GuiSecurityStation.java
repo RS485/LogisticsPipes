@@ -1,6 +1,5 @@
 package logisticspipes.gui;
 
-import java.awt.Color;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,6 +19,7 @@ import logisticspipes.network.packets.block.SecurityStationOpenPlayerRequest;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.security.SecuritySettings;
+import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
 import logisticspipes.utils.gui.GuiGraphics;
@@ -29,7 +29,6 @@ import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-
 import org.lwjgl.input.Keyboard;
 
 
@@ -146,12 +145,12 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 		
 		//SearchInput
 		if(editsearch) {
-			drawRect(guiLeft + 180, bottom - 120, right - 8 + addition, bottom - 103, Colors.Black);
-			drawRect(guiLeft + 181, bottom - 119, right - 9 + addition, bottom - 104, Colors.White);
+			drawRect(guiLeft + 180, bottom - 120, right - 8 + addition, bottom - 103, Color.BLACK);
+			drawRect(guiLeft + 181, bottom - 119, right - 9 + addition, bottom - 104, Color.WHITE);
 		} else {
-			drawRect(guiLeft + 181, bottom - 119, right - 9 + addition, bottom - 104, Colors.Black);
+			drawRect(guiLeft + 181, bottom - 119, right - 9 + addition, bottom - 104, Color.BLACK);
 		}
-		drawRect(guiLeft + 182, bottom - 118, right - 10 + addition, bottom - 105, Colors.DarkGrey);
+		drawRect(guiLeft + 182, bottom - 118, right - 10 + addition, bottom - 105, Color.DARK_GREY);
 		
 		mc.fontRenderer.drawString(searchinput1 + searchinput2, guiLeft + 185, bottom - 115, 0xFFFFFF);
 		if(editsearch) {
@@ -161,7 +160,7 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 				oldSystemTime = System.currentTimeMillis();
 			}
 			if(displaycursor) {
-				drawRect(linex, bottom - 117, linex + 1, bottom - 106, Colors.White);
+				drawRect(linex, bottom - 117, linex + 1, bottom - 106, Color.WHITE);
 			}
 		}
 		
@@ -200,9 +199,9 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 			}
 		}
 		if (authorized) {
-			drawRect(guiLeft+127, guiTop+101, guiLeft+147, guiTop+108, Color.green.getRGB());
+			drawRect(guiLeft + 127, guiTop + 101, guiLeft + 147, guiTop + 108, Color.getValue(Color.GREEN));
 		} else {
-			drawRect(guiLeft+153, guiTop+101, guiLeft+173, guiTop+108, Color.red.getRGB());
+			drawRect(guiLeft + 153, guiTop + 101, guiLeft + 173, guiTop + 108, Color.getValue(Color.RED));
 		}
 	}
 

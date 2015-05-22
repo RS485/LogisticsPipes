@@ -189,7 +189,7 @@ public class GuiApiaristSink extends ModuleBaseGui {
 		public String getToolTipText() {
 			switch(setting.filterGroup) {
 			case 1:
-				return "GroupColor: Red";
+				return "GroupColor: RED";
 			case 2:
 				return "GroupColor: Green";
 			case 3:

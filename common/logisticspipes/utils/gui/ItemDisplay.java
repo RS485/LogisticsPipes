@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ISpecialItemRenderer;
-import logisticspipes.utils.gui.LogisticsBaseGuiScreen.Colors;
+import logisticspipes.utils.Color;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtils;
@@ -199,7 +199,7 @@ public class ItemDisplay {
 		GL11.glPushMatrix();
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-		screen.drawRect(left, top, left + width, top + height, Colors.MiddleGrey);
+		screen.drawRect(left, top, left + width, top + height, Color.MIDDLE_GREY);
 
 		tooltip = null;
 		int ppi = 0;
@@ -258,23 +258,23 @@ public class ItemDisplay {
 				}
 				
 				if (mouseX >= realX && mouseX < realX + panelxSize && mouseY >= realY && mouseY < realY + panelySize) {
-					screen.drawRect(x - 2, y - 2, x + panelxSize - 2, y + panelySize - 2, Colors.Black);
-					screen.drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.DarkGrey);
+					screen.drawRect(x - 2, y - 2, x + panelxSize - 2, y + panelySize - 2, Color.BLACK);
+					screen.drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Color.DARK_GREY);
 
 					tooltip = new Object[] { mouseX + left, mouseY + top, itemstack };
 				}
 
 				/*if (lastClickedx >= realX && lastClickedx < realX + panelxSize && lastClickedy >= realY && lastClickedy < realY + panelySize) {
 					selectedItem = itemIdentifierStack;
-					screen.drawRect(x - 2, y - 2, x + panelxSize - 2, y + panelySize - 2, Colors.Black);
-					screen.drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.LightGrey);
-					screen.drawRect(x, y, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
+					screen.drawRect(x - 2, y - 2, x + panelxSize - 2, y + panelySize - 2, Color.BLACK);
+					screen.drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Color.LIGHT_GREY);
+					screen.drawRect(x, y, x + panelxSize - 4, y + panelySize - 4, Color.DARK_GREY);
 				}
 				*/
 				if (selectedItem == itemIdentifierStack) {
-					screen.drawRect(x - 2, y - 2, x + panelxSize - 2, y + panelySize - 2, Colors.Black);
-					screen.drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.LightGrey);
-					screen.drawRect(x, y, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
+					screen.drawRect(x - 2, y - 2, x + panelxSize - 2, y + panelySize - 2, Color.BLACK);
+					screen.drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Color.LIGHT_GREY);
+					screen.drawRect(x, y, x + panelxSize - 4, y + panelySize - 4, Color.DARK_GREY);
 					if(renderer != null) renderer.specialItemRendering(itemIdentifierStack.getItem(), x, y);
 				}
 

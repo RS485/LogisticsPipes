@@ -4,6 +4,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.utils.CardManagmentInventory;
+import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
@@ -46,8 +47,8 @@ public class GuiCardManager extends LogisticsBaseGuiScreen {
 		GuiGraphics.drawSlotBackground(mc, guiLeft + 60, guiTop + 20);
 		GuiGraphics.drawSlotBackground(mc, guiLeft + 40, guiTop + 57);
 		GuiGraphics.drawSlotBackground(mc, guiLeft + 120, guiTop + 38);
-		drawRect(guiLeft + 38, guiTop + 27, guiLeft + 60, guiTop + 31, Colors.DarkGrey);
-		drawRect(guiLeft + 47, guiTop + 31, guiLeft + 51, guiTop + 57, Colors.DarkGrey);
+		drawRect(guiLeft + 38, guiTop + 27, guiLeft + 60, guiTop + 31, Color.DARK_GREY);
+		drawRect(guiLeft + 47, guiTop + 31, guiLeft + 51, guiTop + 57, Color.DARK_GREY);
 		for(int i=0;i<3;i++) {
 			GuiGraphics.drawSlotBackground(mc, guiLeft + 100, guiTop + 20 + i * 18);
 		}

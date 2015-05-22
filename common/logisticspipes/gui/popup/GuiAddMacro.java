@@ -7,10 +7,10 @@ import logisticspipes.interfaces.IDiskProvider;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.orderer.DiscContent;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.IItemSearch;
-import logisticspipes.utils.gui.LogisticsBaseGuiScreen.Colors;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -168,12 +168,12 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		mc.fontRenderer.drawString("Search:", guiLeft + 8, guiTop + 122, 0x404040);
 		
 		if(editsearch) {
-			drawRect(guiLeft + 50, bottom - 66, right - 10, bottom - 83, BasicGuiHelper.ConvertEnumToColor(Colors.Black));
-			drawRect(guiLeft + 51, bottom - 67, right - 11, bottom - 82, BasicGuiHelper.ConvertEnumToColor(Colors.White));
+			drawRect(guiLeft + 50, bottom - 66, right - 10, bottom - 83, Color.getValue(Color.BLACK));
+			drawRect(guiLeft + 51, bottom - 67, right - 11, bottom - 82, Color.getValue(Color.WHITE));
 		} else {
-			drawRect(guiLeft + 51, bottom - 67, right - 11, bottom - 82, BasicGuiHelper.ConvertEnumToColor(Colors.Black));
+			drawRect(guiLeft + 51, bottom - 67, right - 11, bottom - 82, Color.getValue(Color.BLACK));
 		}
-		drawRect(guiLeft + 52, bottom - 68, right - 12, bottom - 81, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey));
+		drawRect(guiLeft + 52, bottom - 68, right - 12, bottom - 81, Color.getValue(Color.DARK_GREY));
 		
 		mc.fontRenderer.drawString(Search1 + Search2, guiLeft + 55, guiTop + 122, 0xFFFFFF);
 		
@@ -184,7 +184,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 				oldSystemTime = System.currentTimeMillis();
 			}
 			if(displaycursor) {
-				drawRect(linex, guiTop + 120, linex + 1, guiTop + 131, BasicGuiHelper.ConvertEnumToColor(Colors.White));
+				drawRect(linex, guiTop + 120, linex + 1, guiTop + 131, Color.getValue(Color.WHITE));
 			}
 		}
 		
@@ -193,12 +193,12 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		mc.fontRenderer.drawString("Name:", guiLeft + 8, bottom - 20, 0x404040);
 		
 		if(editname) {
-			drawRect(guiLeft + 36, bottom - 8, right - 40, bottom - 25, BasicGuiHelper.ConvertEnumToColor(Colors.Black));
-			drawRect(guiLeft + 37, bottom - 9, right - 41, bottom - 24, BasicGuiHelper.ConvertEnumToColor(Colors.White));
+			drawRect(guiLeft + 36, bottom - 8, right - 40, bottom - 25, Color.getValue(Color.BLACK));
+			drawRect(guiLeft + 37, bottom - 9, right - 41, bottom - 24, Color.getValue(Color.WHITE));
 		} else {
-			drawRect(guiLeft + 37, bottom - 9, right - 41, bottom - 24, BasicGuiHelper.ConvertEnumToColor(Colors.Black));
+			drawRect(guiLeft + 37, bottom - 9, right - 41, bottom - 24, Color.getValue(Color.BLACK));
 		}
-		drawRect(guiLeft + 38, bottom - 10, right - 42, bottom - 23, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey));
+		drawRect(guiLeft + 38, bottom - 10, right - 42, bottom - 23, Color.getValue(Color.DARK_GREY));
 		
 		mc.fontRenderer.drawString(name1 + name2, guiLeft + 41, bottom - 20, 0xFFFFFF);
 
@@ -209,7 +209,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 				oldSystemTime = System.currentTimeMillis();
 			}
 			if(displaycursor) {
-				drawRect(linex, bottom - 11, linex + 1, bottom - 22, BasicGuiHelper.ConvertEnumToColor(Colors.White));
+				drawRect(linex, bottom - 11, linex + 1, bottom - 22, Color.getValue(Color.WHITE));
 			}
 		}
 		
@@ -238,8 +238,8 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		
 		tooltip = null;
 		
-		drawRect(guiLeft + 6, guiTop + 16, right - 12, bottom - 84, BasicGuiHelper.ConvertEnumToColor(Colors.MiddleGrey));
-		drawRect(guiLeft + 6, bottom - 52, right - 12, bottom - 32, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey));
+		drawRect(guiLeft + 6, guiTop + 16, right - 12, bottom - 84, Color.getValue(Color.MIDDLE_GREY));
+		drawRect(guiLeft + 6, bottom - 52, right - 12, bottom - 32, Color.getValue(Color.DARK_GREY));
 		
 		for(ItemIdentifierStack itemStack : diskProvider.getItemDisplay()._allItems) {
 			ItemIdentifier item = itemStack.getItem();
@@ -256,8 +256,8 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 			
             if(!super.hasSubGui()) {
 				if (mouseX >= x && mouseX < x + panelxSize && mouseY >= y && mouseY < y + panelySize) {
-					drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, BasicGuiHelper.ConvertEnumToColor(Colors.Black));
-					drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey));
+					drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Color.getValue(Color.BLACK));
+					drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Color.getValue(Color.DARK_GREY));
 					
 					tooltip = new Object[]{mouseX + guiLeft,mouseY + guiTop,st, false};
 				}
@@ -344,8 +344,8 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 			
             if(!super.hasSubGui()) {
 				if (mouseX >= x && mouseX < x + panelxSize && mouseY >= y && mouseY < y + panelySize) {
-					//drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, BasicGuiHelper.ConvertEnumToColor(Colors.Black));
-					//drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey));
+					//drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Color.getValue(Color.BLACK));
+					//drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Color.getValue(Color.DARK_GREY));
 					
 					tooltip = new Object[]{mouseX + guiLeft,mouseY + guiTop,st};
 				}	

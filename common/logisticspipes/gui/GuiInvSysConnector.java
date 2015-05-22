@@ -12,6 +12,7 @@ import logisticspipes.network.packets.pipe.InvSysConContentRequest;
 import logisticspipes.network.packets.pipe.InvSysConResistance;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
@@ -74,7 +75,7 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 115);
 		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "InventorySystemConnector"), guiLeft + 5, guiTop + 6, 0x404040);
-		drawRect(guiLeft + 9, guiTop + 58, guiLeft + 170, guiTop + 112, Colors.MiddleGrey);
+		drawRect(guiLeft + 9, guiTop + 58, guiLeft + 170, guiTop + 112, Color.MIDDLE_GREY);
 		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "ConnectionCard") + ":", guiLeft + 10, guiTop + 21, 0x404040);
 		GuiGraphics.drawSlotBackground(mc, guiLeft + 97, guiTop + 16);
 		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "Waitingfor") + ":", guiLeft + 10, guiTop + 48, 0x404040);

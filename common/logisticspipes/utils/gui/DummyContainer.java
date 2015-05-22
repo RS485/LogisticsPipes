@@ -19,7 +19,7 @@ import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.interfaces.ISlotClick;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.Colors;
+import logisticspipes.utils.MinecraftColor;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.entity.player.EntityPlayer;
@@ -562,20 +562,20 @@ public class DummyContainer extends Container {
 		}
 		
 		if(slot instanceof ColorSlot) {
-			Colors equipped = Colors.getColor(currentlyEquippedStack);
-			Colors color = Colors.getColor(slot.getStack());
-			if(Colors.BLANK.equals(equipped)) {
+			MinecraftColor equipped = MinecraftColor.getColor(currentlyEquippedStack);
+			MinecraftColor color = MinecraftColor.getColor(slot.getStack());
+			if (MinecraftColor.BLANK.equals(equipped)) {
 				if(mouseButton == 0) {
 					color = color.getNext();
 				} else if(mouseButton == 1) {
 					color = color.getPrev();
 				} else {
-					color = Colors.BLANK;
+					color = MinecraftColor.BLANK;
 				}
 				slot.putStack(color.getItemStack());
 			} else {
 				if(mouseButton == 1) {
-					slot.putStack(Colors.BLANK.getItemStack());
+					slot.putStack(MinecraftColor.BLANK.getItemStack());
 				} else {
 					slot.putStack(equipped.getItemStack());
 				}

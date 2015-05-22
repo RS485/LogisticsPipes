@@ -1,0 +1,57 @@
+package logisticspipes.utils;
+
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+
+public enum MinecraftColor {
+	BLACK(0xff000000),
+	RED(0xffff0000),
+	GREEN(0xff00ff00),
+	BROWN(0xff895836),
+	BLUE(0xff0000ff),
+	PURPLE(0xffB064D8),
+	CYAN(0xff3C8EB0),
+	LIGHT_GRAY(0xffBABAC1),
+	GRAY(0xff848484),
+	PINK(0xffF7B4D6),
+	LIME(0xff83D41C),
+	YELLOW(0xffE7E72A),
+	LIGHT_BLUE(0xff82ACE7),
+	MAGENTA(0xffDB7AD5),
+	ORANGE(0xffE69E34),
+	WHITE(0xffffffff),
+	BLANK(0x00000000);
+	private final int colorCode;
+
+	MinecraftColor(int colorCode) {
+		this.colorCode = colorCode;
+	}
+
+	public static MinecraftColor getColor(ItemStack item) {
+		if (item != null) {
+			if (item.getItem() == Items.dye && item.getItemDamage() < 16) {
+				return MinecraftColor.values()[item.getItemDamage()];
+			}
+		}
+		return BLANK;
+	}
+
+	public int getColorCode() {
+		return colorCode;
+	}
+
+	public ItemStack getItemStack() {
+		if (this == BLANK) return null;
+		return new ItemStack(Items.dye, 1, ordinal());
+	}
+
+	public MinecraftColor getNext() {
+		if (this == BLANK) return BLACK;
+		return MinecraftColor.values()[ordinal() + 1];
+	}
+
+	public MinecraftColor getPrev() {
+		if (this == BLACK) return BLANK;
+		return MinecraftColor.values()[ordinal() - 1];
+	}
+}

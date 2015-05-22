@@ -40,7 +40,7 @@ public class CardManagmentInventory implements IInventory {
 				colorCode = 16;
 			}
 			
-			Colors color = Colors.values()[colorCode];
+			MinecraftColor color = MinecraftColor.values()[colorCode];
 			
 			nbt.setTag("colors", colors);
 			card.setTagCompound(nbt);
@@ -91,7 +91,7 @@ public class CardManagmentInventory implements IInventory {
 				colors = new NBTTagCompound();
 			}
 			int slot = i - 4;
-			colors.setInteger("color:" + slot, Colors.getColor(itemstack).ordinal());
+			colors.setInteger("color:" + slot, MinecraftColor.getColor(itemstack).ordinal());
 			nbt.setTag("colors", colors);
 			card.setTagCompound(nbt);
 			inv.setInventorySlotContents(3, card);

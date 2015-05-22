@@ -4,7 +4,7 @@ package logisticspipes.renderer;
 import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.Colors;
+import logisticspipes.utils.MinecraftColor;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
@@ -98,7 +98,7 @@ public class FluidContainerRenderer implements IItemRenderer {
 			}
 			for(int i=0;i<6;i++) {
 				int colorCode = colors.getInteger("color:" + i);
-				Colors color = Colors.values()[colorCode];
+				MinecraftColor color = MinecraftColor.values()[colorCode];
 				int x = i / 3;
 				int y = i % 3;
 				if(type == ItemRenderType.INVENTORY) {

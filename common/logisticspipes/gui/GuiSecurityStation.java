@@ -20,9 +20,9 @@ import logisticspipes.network.packets.block.SecurityStationOpenPlayerRequest;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.security.SecuritySettings;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.string.StringUtils;
@@ -123,9 +123,9 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 175);
-		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 81, guiTop + 140);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 175);
+		GuiGraphics.drawSlotBackground(mc, guiLeft + 81, guiTop + 140);
 		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "SecurityStation"), guiLeft + 105, guiTop + 10, 0x404040);
 		mc.fontRenderer.drawString(_tile.getSecId() == null ? "null" : _tile.getSecId().toString(), guiLeft + 32, guiTop + 25, 0x404040);
 		if(SimpleServiceLocator.ccProxy.isCC() || LPConstants.DEBUG) {

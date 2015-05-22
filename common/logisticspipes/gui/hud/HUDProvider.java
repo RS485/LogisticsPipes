@@ -2,7 +2,7 @@ package logisticspipes.gui.hud;
 
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
-import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
 import net.minecraft.client.Minecraft;
 
@@ -97,7 +97,7 @@ public class HUDProvider extends BasicHUDGui {
         } else {
         	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)64);	
         }
-		BasicGuiHelper.drawGuiBackGround(mc, -50, -55, 50, 55, 0, false);
+		GuiGraphics.drawGuiBackGround(mc, -50, -55, 50, 55, 0, false);
 		if(day) {
         	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)127);
         } else {
@@ -110,8 +110,8 @@ public class HUDProvider extends BasicHUDGui {
 		GL11.glTranslatef(0.0F, 0.0F, -0.005F);
 		GL11.glScalef(1.5F, 1.5F, 0.0001F);
 		GL11.glScalef(0.8F, 0.8F, -1F);
-		BasicGuiHelper.renderItemIdentifierStackListIntoGui(pipe.displayList, null, page, -35, -35, 4, 12, 18, 18, mc, true, true, true, true);
-		BasicGuiHelper.renderItemIdentifierStackListIntoGui(pipe.itemListOrderer, null, pageB, -35, 25, 4, 4, 18, 18, mc, true, true, true, true);
+		GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.displayList, null, page, -35, -35, 4, 12, 18, 18, mc, true, true, true, true);
+		GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.itemListOrderer, null, pageB, -35, 25, 4, 4, 18, 18, mc, true, true, true, true);
 		GL11.glScalef(0.8F, 0.8F, -1F);
 		String message = "(" + Integer.toString(page + 1) + "/" + Integer.toString(getMaxPage()) + ")";
 		mc.fontRenderer.drawString(message , 9, -50, 0);

@@ -6,7 +6,7 @@ import java.util.List;
 import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.modules.ModuleProvider;
-import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
 import net.minecraft.client.Minecraft;
 
@@ -70,7 +70,7 @@ public class HUDProviderModule implements IHUDModuleRenderer {
 	public void renderContent() {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		GL11.glScalef(1.0F, 1.0F, -0.00001F);
-		BasicGuiHelper.renderItemIdentifierStackListIntoGui(module.displayList, null, page, -25, -24, 3, 9, 18, 18, mc, true, true, true, true);
+		GuiGraphics.renderItemIdentifierStackListIntoGui(module.displayList, null, page, -25, -24, 3, 9, 18, 18, mc, true, true, true, true);
 		GL11.glScalef(1.0F, 1.0F, 1 / -0.00001F);
 	}
 

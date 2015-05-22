@@ -5,8 +5,8 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.block.SaveSecurityPlayerPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.security.SecuritySettings;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.GuiCheckBox;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.string.StringUtils;
@@ -41,7 +41,7 @@ public class GuiSecurityStationPopup extends SubGuiScreen {
 
 	@Override
 	public void drawScreen(int par1, int par2, float par3) {
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "Player") + ": " + activeSetting.name, guiLeft + 10, guiTop + 10, 0x404040);
 		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "ConfigureSettings") + ": ", guiLeft + 10, guiTop + 30, 0x404040);
 		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "ActiveRequesting") + ": ", guiLeft + 10, guiTop + 45, 0x404040);

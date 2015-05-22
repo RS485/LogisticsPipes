@@ -13,8 +13,8 @@ import logisticspipes.network.packets.pipe.FluidSupplierMode;
 import logisticspipes.pipes.PipeFluidSupplierMk2;
 import logisticspipes.pipes.PipeFluidSupplierMk2.MinMode;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.string.StringUtils;
@@ -58,9 +58,9 @@ public class GuiFluidSupplierMk2Pipe extends LogisticsBaseGuiScreen {
 	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {	
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, guiLeft + xSize, guiTop + ySize, zLevel, true);
-		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 13, guiTop + 92);
-		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 59, guiTop + 17);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, guiLeft + xSize, guiTop + ySize, zLevel, true);
+		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 13, guiTop + 92);
+		GuiGraphics.drawSlotBackground(mc, guiLeft + 59, guiTop + 17);
 		//GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		//mc.renderEngine.func_110577_a("/logisticspipes/gui/supplier.png");
 		//int j = guiLeft;

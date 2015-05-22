@@ -6,7 +6,7 @@ import java.util.List;
 
 import logisticspipes.request.resources.IResource;
 import logisticspipes.request.resources.IResource.ColorCode;
-import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtils;
@@ -66,7 +66,7 @@ public class GuiRequestPopup extends SubGuiScreen {
 			xSize = mWidth = Math.max(Math.min(lWidth + 20,400),120);
 			super.initGui();
 		}
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		for(int i=0;i < this.text.length;i++) {
 			if(this.text[i] == null) continue;
 			String msg = StringUtils.getCuttedString(this.text[i], mWidth - 10, this.mc.fontRenderer);

@@ -18,8 +18,8 @@ import logisticspipes.network.packets.chassis.ChassisGUI;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.upgrades.ModuleUpgradeManager;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.string.StringUtils;
@@ -179,8 +179,8 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 		drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
 		if(hasUpgradeModuleUpgarde) {
 			for(int i=0; i < _chassiPipe.getChassiSize(); i++) {
-				BasicGuiHelper.drawSlotBackground(mc, guiLeft + 144, guiTop + 8 + i * 20);
-				BasicGuiHelper.drawSlotBackground(mc, guiLeft + 164, guiTop + 8 + i * 20);
+				GuiGraphics.drawSlotBackground(mc, guiLeft + 144, guiTop + 8 + i * 20);
+				GuiGraphics.drawSlotBackground(mc, guiLeft + 164, guiTop + 8 + i * 20);
 			}
 		}
 	}

@@ -5,7 +5,7 @@ import java.util.List;
 
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.pipes.PipeItemsCraftingLogisticsMk3;
-import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.Minecraft;
 
@@ -31,11 +31,11 @@ public class HUDCraftingMK3 extends BasicHUDGui {
         	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)64);	
         }
 		if(pipe.displayList.size() > 0 && pipe.getMk3Module().bufferList.size() == 0) {
-			BasicGuiHelper.drawGuiBackGround(mc, -50, -28, 50, 30, 0, false);
+			GuiGraphics.drawGuiBackGround(mc, -50, -28, 50, 30, 0, false);
 		} else if(pipe.getMk3Module().bufferList.size() > 0) {
-			BasicGuiHelper.drawGuiBackGround(mc, -50, -50, 50, bufferSize * 20 + 10, 0, false);
+			GuiGraphics.drawGuiBackGround(mc, -50, -50, 50, bufferSize * 20 + 10, 0, false);
 		} else {
-			BasicGuiHelper.drawGuiBackGround(mc, -30, -22, 30, 25, 0, false);
+			GuiGraphics.drawGuiBackGround(mc, -30, -22, 30, 25, 0, false);
 		}
 		if(day) {
         	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)127);
@@ -68,15 +68,15 @@ public class HUDCraftingMK3 extends BasicHUDGui {
 			list.add(craftables.get(0));
 		}
 		if(pipe.displayList.size() > 0 && pipe.getMk3Module().bufferList.size() == 0) {
-			BasicGuiHelper.renderItemIdentifierStackListIntoGui(list, null, 0, 13, -17, 1, 1, 18, 18, mc, true, true, true, true);
-			BasicGuiHelper.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, 13, 3, 1, 1, 18, 18, mc, true, true, true, true);
+			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, 13, -17, 1, 1, 18, 18, mc, true, true, true, true);
+			GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, 13, 3, 1, 1, 18, 18, mc, true, true, true, true);
 		} else if(pipe.getMk3Module().bufferList.size() > 0) {
-			BasicGuiHelper.renderItemIdentifierStackListIntoGui(list, null, 0, 13, -37, 1, 1, 18, 18, mc, true, true, true, true);
-			BasicGuiHelper.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, 13, -17, 1, 1, 18, 18, mc, true, true, true, true);
+			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, 13, -37, 1, 1, 18, 18, mc, true, true, true, true);
+			GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, 13, -17, 1, 1, 18, 18, mc, true, true, true, true);
 			
-			BasicGuiHelper.renderItemIdentifierStackListIntoGui(pipe.getMk3Module().bufferList, null, 0, -35, 0, 4, 16, 18, 18, mc, true, true, true, true);
+			GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.getMk3Module().bufferList, null, 0, -35, 0, 4, 16, 18, 18, mc, true, true, true, true);
 		} else {
-			BasicGuiHelper.renderItemIdentifierStackListIntoGui(list, null, 0, -9, 0, 1, 1, 18, 18, mc, true, true, true, true);
+			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, -9, 0, 1, 1, 18, 18, mc, true, true, true, true);
 		}
 	}
 

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.GuiGraphics;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -47,7 +47,7 @@ public class GuiExtentionController {
 				}
 				int bottom = yPos + extention.getCurrentHeight();
 				extention.update(left, yPos);
-				BasicGuiHelper.drawGuiBackGround(Minecraft.getMinecraft(), left, yPos, right, bottom, 0, true, true, side != GuiSide.RIGHT, true, side != GuiSide.LEFT);
+				GuiGraphics.drawGuiBackGround(Minecraft.getMinecraft(), left, yPos, right, bottom, 0, true, true, side != GuiSide.RIGHT, true, side != GuiSide.LEFT);
 				extention.renderForground(left + (side == GuiSide.RIGHT ? 20 : 0), yPos);
 				yPos = bottom;
 			}
@@ -64,7 +64,7 @@ public class GuiExtentionController {
 				}
 				int bottom = currentlyExtended.getCurrentYPos() + currentlyExtended.getCurrentHeight();
 				currentlyExtended.update(left, yPos);
-				BasicGuiHelper.drawGuiBackGround(Minecraft.getMinecraft(), left, currentlyExtended.getCurrentYPos(), right, bottom, 0, true, true, side != GuiSide.RIGHT, true, side != GuiSide.LEFT);
+				GuiGraphics.drawGuiBackGround(Minecraft.getMinecraft(), left, currentlyExtended.getCurrentYPos(), right, bottom, 0, true, true, side != GuiSide.RIGHT, true, side != GuiSide.LEFT);
 				currentlyExtended.renderForground(left + (side == GuiSide.RIGHT ? 20 : 0), currentlyExtended.getCurrentYPos());
 			} else {
 				for(GuiExtention extention:extentions) {
@@ -84,7 +84,7 @@ public class GuiExtentionController {
 				}
 				int bottom = currentlyExtended.getCurrentYPos() + currentlyExtended.getCurrentHeight();
 				currentlyExtended.update(left, yPos);
-				BasicGuiHelper.drawGuiBackGround(Minecraft.getMinecraft(), left, currentlyExtended.getCurrentYPos(), right, bottom, 0, true, true, side != GuiSide.RIGHT, true, side != GuiSide.LEFT);
+				GuiGraphics.drawGuiBackGround(Minecraft.getMinecraft(), left, currentlyExtended.getCurrentYPos(), right, bottom, 0, true, true, side != GuiSide.RIGHT, true, side != GuiSide.LEFT);
 				currentlyExtended.renderForground(left + (side == GuiSide.RIGHT ? 20 : 0), currentlyExtended.getCurrentYPos());
 				if(currentlyExtended.isFullyRetracted()) {
 					currentlyExtended = null;

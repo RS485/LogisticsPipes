@@ -20,6 +20,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
@@ -146,14 +147,14 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 			if(i == 3 && !pipe.getOriginalUpgradeManager().hasLogicControll()) {
 				GL11.glColor4d(0.4D, 0.4D, 0.4D, 1.0D);
 			}
-			BasicGuiHelper.drawGuiBackGround(mc, guiLeft + (25 * i) + 2, guiTop - 2, guiLeft + 27 + (25 * i), guiTop + 35, zLevel, false, true, true, false, true);
+			GuiGraphics.drawGuiBackGround(mc, guiLeft + (25 * i) + 2, guiTop - 2, guiLeft + 27 + (25 * i), guiTop + 35, zLevel, false, true, true, false, true);
 			if(i == 3 && !pipe.getOriginalUpgradeManager().hasLogicControll()) {
 				GL11.glColor4d(1.0D, 1.0D, 1.0D, 1.0D);
 			}
 		}
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop + 20, right, bottom, zLevel, true);
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft + (25 * current_Tab) + 2, guiTop - 2, guiLeft + 27 + (25 * current_Tab), guiTop + 38, zLevel, true, true, true, false, true);
-		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 135);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop + 20, right, bottom, zLevel, true);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft + (25 * current_Tab) + 2, guiTop - 2, guiLeft + 27 + (25 * current_Tab), guiTop + 38, zLevel, true, true, true, false, true);
+		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 135);
 		
 		// First Tab
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
@@ -168,10 +169,10 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 		itemRender.zLevel = 0.0F;
 		
 		// Second Tab
-		BasicGuiHelper.drawLockBackground(mc, guiLeft + 32, guiTop + 3);
+		GuiGraphics.drawLockBackground(mc, guiLeft + 32, guiTop + 3);
 		
 		// Third Tab
-		BasicGuiHelper.drawStatsBackground(mc, guiLeft + 56, guiTop + 3);
+		GuiGraphics.drawStatsBackground(mc, guiLeft + 56, guiTop + 3);
 		
 		// Forth Tab
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
@@ -186,20 +187,20 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 		itemRender.zLevel = 0.0F;
 		
 		// Fifth Tab
-		BasicGuiHelper.drawLinesBackground(mc, guiLeft + 106, guiTop + 3);
+		GuiGraphics.drawLinesBackground(mc, guiLeft + 106, guiTop + 3);
 		
 		if(current_Tab == 0) {
 			// TAB_1 SLOTS
 			for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
-				BasicGuiHelper.drawSlotBackground(mc, guiLeft + 9 + pipeSlot * 18, guiTop + 41);
+				GuiGraphics.drawSlotBackground(mc, guiLeft + 9 + pipeSlot * 18, guiTop + 41);
 			}
 			if(pipe.getOriginalUpgradeManager().hasCombinedSneakyUpgrade()) {
 				for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
-					BasicGuiHelper.drawSlotBackground(mc, guiLeft + 9 + pipeSlot * 18, guiTop + 77);
+					GuiGraphics.drawSlotBackground(mc, guiLeft + 9 + pipeSlot * 18, guiTop + 77);
 				}
 			}
 		} else if(current_Tab == 1) {
-			BasicGuiHelper.drawSlotBackground(mc, guiLeft + 9, guiTop + 41);
+			GuiGraphics.drawSlotBackground(mc, guiLeft + 9, guiTop + 41);
 		} else if(current_Tab == 3) {
 			drawRect(guiLeft + 12, guiTop + 34, guiLeft + 32, guiTop + 54, Colors.Black);
 			drawRect(guiLeft + 14, guiTop + 36, guiLeft + 30, guiTop + 52, Colors.DarkGrey);

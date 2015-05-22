@@ -16,8 +16,8 @@ import logisticspipes.network.packets.module.SupplierPipeLimitedPacket;
 import logisticspipes.network.packets.module.SupplierPipeModePacket;
 import logisticspipes.network.packets.pipe.SlotFinderOpenGuiPacket;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.string.StringUtils;
@@ -91,16 +91,16 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 			int k = guiTop;
 			drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 		} else {
-			BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+			GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 			GL11.glTranslated(guiLeft, guiTop, 0);
 			for(int i = 0; i< 9;i++) {
-				BasicGuiHelper.drawSlotBackground(mc, 17 + i*18, 19);
+				GuiGraphics.drawSlotBackground(mc, 17 + i * 18, 19);
 				Slot slot = this.inventorySlots.getSlot(36 + i);
 				if(slot != null && slot.getHasStack() && slot.getStack().stackSize > 64) {
 					drawRect(18 + i*18, 20, 34 + i*18, 36, Colors.Red);
 				}
 			}
-			BasicGuiHelper.drawPlayerInventoryBackground(mc, 18, 97);
+			GuiGraphics.drawPlayerInventoryBackground(mc, 18, 97);
 			GL11.glTranslated(-guiLeft, -guiTop, 0);
 		}
 	}

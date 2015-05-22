@@ -12,8 +12,8 @@ import logisticspipes.network.packets.pipe.InvSysConContentRequest;
 import logisticspipes.network.packets.pipe.InvSysConResistance;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -71,12 +71,12 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 115);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 115);
 		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "InventorySystemConnector"), guiLeft + 5, guiTop + 6, 0x404040);
 		drawRect(guiLeft + 9, guiTop + 58, guiLeft + 170, guiTop + 112, Colors.MiddleGrey);
 		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "ConnectionCard") + ":", guiLeft + 10, guiTop + 21, 0x404040);
-		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 97, guiTop + 16);
+		GuiGraphics.drawSlotBackground(mc, guiLeft + 97, guiTop + 16);
 		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "Waitingfor") + ":", guiLeft + 10, guiTop + 48, 0x404040);
 		mc.fontRenderer.drawString((page + 1) + "/" + maxPage(), guiLeft + 136, guiTop + 49, 0x404040);
 		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "Resistance") + ":", guiLeft + 10, guiTop + 35, 0x404040);
@@ -86,7 +86,7 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		BasicGuiHelper.renderItemIdentifierStackListIntoGui(_allItems, null, page, 9, 59, 9, 27, 18, 18, mc, true, true);
+		GuiGraphics.renderItemIdentifierStackListIntoGui(_allItems, null, page, 9, 59, 9, 27, 18, 18, mc, true, true);
 		
 		int ppi = 0;
 		int column = 0;
@@ -106,7 +106,7 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 	        int mouseY = this.height - Mouse.getY() * this.height / mc.displayHeight - 1;
 			
 			if(x < mouseX && mouseX < x + 18 && y < mouseY && mouseY < y + 18) {
-				BasicGuiHelper.displayItemToolTip(new Object[]{mouseX,mouseY,st,true}, zLevel, guiLeft, guiTop, false, false);
+				GuiGraphics.displayItemToolTip(new Object[] { mouseX, mouseY, st, true }, zLevel, guiLeft, guiTop, false, false);
 			}
 			
 			column++;

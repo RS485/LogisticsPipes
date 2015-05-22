@@ -1,8 +1,8 @@
 package logisticspipes.gui;
 
 import logisticspipes.pipes.PipeItemsFirewall;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
 import logisticspipes.utils.gui.GuiStringHandlerButton.StringHandler;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
@@ -67,13 +67,13 @@ public class GuiFirewall extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 33, guiTop + 175);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 33, guiTop + 175);
 		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "Firewall"), guiLeft + 45, guiTop + 8, 0x404040);
 		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "Filter") + ":", guiLeft + 14, guiTop + 28, 0x404040);
 		for(int x = 0;x < 6;x++) {
 			for(int y = 0;y < 6;y++) {
-				BasicGuiHelper.drawSlotBackground(mc, guiLeft + x*18 + 16, guiTop + y*18 + 40);
+				GuiGraphics.drawSlotBackground(mc, guiLeft + x * 18 + 16, guiTop + y * 18 + 40);
 			}
 		}
 		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "Filtereditemsare") + ":", guiLeft + 125, guiTop + 8, 0x404040);

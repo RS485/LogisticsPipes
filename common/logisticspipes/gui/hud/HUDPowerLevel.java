@@ -3,7 +3,7 @@ package logisticspipes.gui.hud;
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IPowerLevelDisplay;
-import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
@@ -25,7 +25,7 @@ public class HUDPowerLevel extends BasicHUDGui implements IHeadUpDisplayRenderer
         } else {
         	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)32);	
         }
-		BasicGuiHelper.drawGuiBackGround(mc, -60, -40, 60, 40, 0, false);
+		GuiGraphics.drawGuiBackGround(mc, -60, -40, 60, 40, 0, false);
 		if(day) {
         	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)127);
         } else {

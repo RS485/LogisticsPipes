@@ -8,6 +8,7 @@ import logisticspipes.network.packets.block.SecurityAddCCIdPacket;
 import logisticspipes.network.packets.block.SecurityRemoveCCIdPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen.Colors;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
@@ -54,7 +55,7 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 
 	@Override
 	public void drawScreen(int par1, int par2, float par3) {
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		
 		mc.fontRenderer.drawString("(" + (page + 1) + "/" + ((int)((_tile.excludedCC.size() / 9D) + 1 - (_tile.excludedCC.size() % 9 == 0 && _tile.excludedCC.size() != 0 ? 1:0))) + ")", guiLeft + 100, guiTop + 5, 0x4F4F4F);
 		

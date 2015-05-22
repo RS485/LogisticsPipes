@@ -5,7 +5,7 @@ import java.util.List;
 import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.modules.ModuleOreDictItemSink;
-import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.GuiGraphics;
 import net.minecraft.client.Minecraft;
 
 import org.lwjgl.opengl.GL11;
@@ -24,7 +24,7 @@ public class HUDOreDictItemSink implements IHUDModuleRenderer {
 	public void renderContent() {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		GL11.glScalef(1.0F, 1.0F, -0.00001F);
-		BasicGuiHelper.renderItemIdentifierStackListIntoGui(itemSink.getHudItemList(), null, 0, -25, -32, 3, 9, 18, 18, mc, false, false, true, true);
+		GuiGraphics.renderItemIdentifierStackListIntoGui(itemSink.getHudItemList(), null, 0, -25, -32, 3, 9, 18, 18, mc, false, false, true, true);
 		GL11.glScalef(1.0F, 1.0F, 1 / -0.00001F);
 	}
 

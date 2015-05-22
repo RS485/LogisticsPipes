@@ -13,6 +13,7 @@ import logisticspipes.network.packets.block.RequestAmountTaskSubGui;
 import logisticspipes.network.packets.block.RequestRunningCraftingTasks;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
@@ -127,13 +128,13 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 	protected void drawGuiContainerBackgroundLayer(float f, int mouse_x, int mouse_y) {
 		GL11.glColor4d(1.0D, 1.0D, 1.0D, 1.0D);
 		for(int i = 0; i < TAB_COUNT; i++) {
-			BasicGuiHelper.drawGuiBackGround(mc, guiLeft + (25 * i) + 2, guiTop - 2, guiLeft + 27 + (25 * i), guiTop + 35, zLevel, false, true, true, false, true);
+			GuiGraphics.drawGuiBackGround(mc, guiLeft + (25 * i) + 2, guiTop - 2, guiLeft + 27 + (25 * i), guiTop + 35, zLevel, false, true, true, false, true);
 		}
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop + 20, right, bottom, zLevel, true);
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft + (25 * current_Tab) + 2, guiTop - 2, guiLeft + 27 + (25 * current_Tab), guiTop + 38, zLevel, true, true, true, false, true);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop + 20, right, bottom, zLevel, true);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft + (25 * current_Tab) + 2, guiTop - 2, guiLeft + 27 + (25 * current_Tab), guiTop + 38, zLevel, true, true, true, false, true);
 
 		// First Tab
-		BasicGuiHelper.drawStatsBackground(mc, guiLeft + 6, guiTop + 3);
+		GuiGraphics.drawStatsBackground(mc, guiLeft + 6, guiTop + 3);
 		
 		// Second Tab
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
@@ -159,7 +160,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 					}
 				}
 				if(task != null) {
-					BasicGuiHelper.drawSlotBackground(mc, guiLeft + 10, guiTop + 99);
+					GuiGraphics.drawSlotBackground(mc, guiLeft + 10, guiTop + 99);
 					GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 					OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);
 					GL11.glEnable(GL11.GL_LIGHTING);
@@ -312,7 +313,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "amount"), 10, 28, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
 		} else if(current_Tab == 1) {
 			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "crafting"), 10, 28, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
-			BasicGuiHelper.displayItemToolTip(itemDisplay_2.getToolTip(), this, zLevel, guiLeft, guiTop);
+			GuiGraphics.displayItemToolTip(itemDisplay_2.getToolTip(), this, zLevel, guiLeft, guiTop);
 		}
 	}
 	

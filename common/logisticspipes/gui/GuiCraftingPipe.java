@@ -15,8 +15,8 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.cpipe.CPipeCleanupImport;
 import logisticspipes.network.packets.cpipe.CPipeCleanupToggle;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.extention.GuiExtention;
@@ -344,7 +344,7 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 		if(fuzzyPanelSelection != -1) {
 			int posX = 8 + fuzzyPanelSelection * 18;
 			int posY = 18 + 16;
-			BasicGuiHelper.drawGuiBackGround(mc, posX, posY, posX + 60, posY + 52, zLevel, true, true, true, true, true);
+			GuiGraphics.drawGuiBackGround(mc, posX, posY, posX + 60, posY + 52, zLevel, true, true, true, true, true);
 			int flag = this._pipe.fuzzyCraftingFlagArray[fuzzyPanelSelection];
 			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OreDict"), posX + 4, posY + 4, ((flag & 0x1) == 0 ? 0x404040 : 0xFF4040));
 			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnDamage"), posX + 4, posY + 14, ((flag & 0x2) == 0 ? 0x404040 : 0x40FF40));
@@ -379,21 +379,21 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, guiLeft + xSize - (hasByproductExtractor ? 40 : 0), guiTop + ySize, zLevel, true, true, true, true, true);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, guiLeft + xSize - (hasByproductExtractor ? 40 : 0), guiTop + ySize, zLevel, true, true, true, true, true);
 		
 		if(!isAdvancedSat) {
 			drawRect(guiLeft + 115, guiTop + 4, guiLeft + 170, guiTop + 70, 0xff8B8B8B);
 		}
 		
 		for(int i = 0; i < 9; i++) {
-			BasicGuiHelper.drawSlotBackground(mc, guiLeft + 7 + (18 * i), guiTop + 17);
+			GuiGraphics.drawSlotBackground(mc, guiLeft + 7 + (18 * i), guiTop + 17);
 		}
 		if(!isAdvancedSat) {
-			BasicGuiHelper.drawBigSlotBackground(mc, guiLeft + 80, guiTop + 50);
+			GuiGraphics.drawBigSlotBackground(mc, guiLeft + 80, guiTop + 50);
 		} else {
-			BasicGuiHelper.drawBigSlotBackground(mc, guiLeft + 80, guiTop + 100);
+			GuiGraphics.drawBigSlotBackground(mc, guiLeft + 80, guiTop + 100);
 		}
-		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 8, guiTop + ySize - 82);
+		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 8, guiTop + ySize - 82);
 
 		super.renderExtentions();
 	}
@@ -508,7 +508,7 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 		}
 		
 		private void renderFluidText(int left, int top, int i) {
-			BasicGuiHelper.drawSlotBackground(mc, left + 12, top + 19);
+			GuiGraphics.drawSlotBackground(mc, left + 12, top + 19);
 			mc.fontRenderer.drawString(Integer.toString(_pipe.getFluidAmount()[i]), left + 22 - (fontRendererObj.getStringWidth(Integer.toString(_pipe.getFluidAmount()[i])) / 2), top + 40, 0x404040);
 			mc.fontRenderer.drawString("1", left + 19, top + 53, 0x404040);
 			mc.fontRenderer.drawString("10", left + 16, top + 73, 0x404040);
@@ -571,7 +571,7 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
 				itemRender.zLevel = 0.0F;
 			} else {
-				BasicGuiHelper.drawBigSlotBackground(mc, left + 9, top + 20);
+				GuiGraphics.drawBigSlotBackground(mc, left + 9, top + 20);
 				fontRendererObj.drawString(StringUtils.translate(PREFIX + "Extra"), left + 9, top + 8, 0x404040);
 			}
 		}
@@ -606,7 +606,7 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 			} else {
 				for(int y = 0;y < cleanupSize;y++) {
 					for(int x=0;x < 3;x++) {
-						BasicGuiHelper.drawSlotBackground(mc, left + 8 + x * 18, top + 8 + y * 18);
+						GuiGraphics.drawSlotBackground(mc, left + 8 + x * 18, top + 8 + y * 18);
 					}
 				}
 			}

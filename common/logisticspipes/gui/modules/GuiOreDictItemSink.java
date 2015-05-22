@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.modules.ModuleOreDictItemSink;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierInventory;
@@ -79,9 +79,9 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		int pointerX = var2 - guiLeft;
 		int pointerY = var3 - guiTop;
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 7, guiTop + 126);
-		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 6, guiTop + 7);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 7, guiTop + 126);
+		GuiGraphics.drawSlotBackground(mc, guiLeft + 6, guiTop + 7);
 
 		if(tmpInv.getStackInSlot(0) != null) {
 			List<String> oreNames = getOreNames(tmpInv.getStackInSlot(0));

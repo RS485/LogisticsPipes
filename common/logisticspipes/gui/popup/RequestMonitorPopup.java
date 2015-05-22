@@ -15,7 +15,7 @@ import javax.imageio.ImageIO;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
-import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -177,7 +177,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		GL11.glTranslatef(0.0F, 0.0F, 100.0F);
 		super.drawScreen(par1, par2, par3);
 		if(tooltip != null) {
-			BasicGuiHelper.displayItemToolTip(tooltip, this.zLevel, guiLeft, guiTop, false, true);
+			GuiGraphics.displayItemToolTip(tooltip, this.zLevel, guiLeft, guiTop, false, true);
 		}
 	}
 	

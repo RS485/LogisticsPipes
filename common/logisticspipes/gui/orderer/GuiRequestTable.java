@@ -28,9 +28,9 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.resources.IResource;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.ISubGuiControler;
 import logisticspipes.utils.gui.ItemDisplay;
@@ -186,7 +186,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		for(int c=0;c<sycleButtons.length;c++) {
 			sycleButtons[c].visible = this._table.targetType != null;
 		}
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right - (showRequest ? 0 : 105), bottom, zLevel, true);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right - (showRequest ? 0 : 105), bottom, zLevel, true);
 
 		drawRect(guiLeft + 162, guiTop + 23, guiLeft + 182, guiTop + 43, Colors.Black);
 		drawRect(guiLeft + 164, guiTop + 25, guiLeft + 180, guiTop + 41, Colors.DarkGrey);
@@ -213,17 +213,17 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		
 		for(int x = 0;x < 9;x++) {
 			for(int y = 0;y < 3;y++) {
-				BasicGuiHelper.drawSlotBackground(mc, guiLeft + (x * 18) + 19, guiTop + (y * 18) + 79);
+				GuiGraphics.drawSlotBackground(mc, guiLeft + (x * 18) + 19, guiTop + (y * 18) + 79);
 			}
 		}
 		for(int x = 0;x < 3;x++) {
 			for(int y = 0;y < 3;y++) {
-				BasicGuiHelper.drawSlotBackground(mc, guiLeft + (x * 18) + 19, guiTop + (y * 18) + 14);
+				GuiGraphics.drawSlotBackground(mc, guiLeft + (x * 18) + 19, guiTop + (y * 18) + 14);
 			}
 		}
 		mc.fontRenderer.drawString("Sort:", guiLeft + 136, guiTop + 55, 0xffffff);
-		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 100, guiTop + 32);
-		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 163, guiTop + 50);
+		GuiGraphics.drawSlotBackground(mc, guiLeft + 100, guiTop + 32);
+		GuiGraphics.drawSlotBackground(mc, guiLeft + 163, guiTop + 50);
 		drawRect(guiLeft + 75, guiTop + 38, guiLeft + 95, guiTop + 43, Colors.DarkGrey);
 		for(int a = 0; a < 10;a++) {
 			drawRect(guiLeft + 97 - a, guiTop + 40 - a, guiLeft + 98 - a, guiTop + 41 + a, Colors.DarkGrey);
@@ -232,7 +232,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			drawRect(guiLeft + 164 + a, guiTop + 51 + a, guiLeft + 166 + a, guiTop + 53 + a, Colors.DarkGrey);
 			drawRect(guiLeft + 164 + a, guiTop + 65 - a, guiLeft + 166 + a, guiTop + 67 - a, Colors.DarkGrey);
 		}
-		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 20, guiTop + 150);
+		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 20, guiTop + 150);
 		for(final Entry<Integer, Pair<IResource, LinkedLogisticsOrderList>> entry:_table.watchedRequests.entrySet()) {
 			if(!handledExtention.get(entry.getKey())) {
 				handledExtention.set(entry.getKey());
@@ -366,13 +366,13 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 									List<String> list = new ArrayList<String>();
 									list.add(ChatColor.BLUE + "Request Type: " + ChatColor.YELLOW + order.getType().name());
 									list.add(ChatColor.BLUE + "Send to Router ID: " + ChatColor.YELLOW + order.getRouterId());
-									BasicGuiHelper.displayItemToolTip(new Object[]{xPos - 10, yPos, order.getAsDisplayItem().makeNormalStack(), true, list}, zLevel, guiLeft, guiTop, false, false);
+									GuiGraphics.displayItemToolTip(new Object[] { xPos - 10, yPos, order.getAsDisplayItem().makeNormalStack(), true, list }, zLevel, guiLeft, guiTop, false, false);
 								}
 							}
 						} else {
 							List<String> list = new ArrayList<String>();
 							list.add(ChatColor.BLUE + "Request ID: " + ChatColor.YELLOW + entry.getKey());
-							BasicGuiHelper.displayItemToolTip(new Object[]{xPos - 10, yPos, entry.getValue().getValue1().getDisplayItem().makeNormalStack(), true, list}, zLevel, guiLeft, guiTop, false, false);
+							GuiGraphics.displayItemToolTip(new Object[] { xPos - 10, yPos, entry.getValue().getValue1().getDisplayItem().makeNormalStack(), true, list }, zLevel, guiLeft, guiTop, false, false);
 						}
 					}
 				});
@@ -515,7 +515,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 	public void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		if(super.hasSubGui()) return;
-		BasicGuiHelper.displayItemToolTip(itemDisplay.getToolTip(), this, this.zLevel, guiLeft, guiTop);
+		GuiGraphics.displayItemToolTip(itemDisplay.getToolTip(), this, this.zLevel, guiLeft, guiTop);
 		Macrobutton.enabled = _table.diskInv.getStackInSlot(0) != null && _table.diskInv.getStackInSlot(0).getItem().equals(LogisticsPipes.LogisticsItemDisk);
 	}
 

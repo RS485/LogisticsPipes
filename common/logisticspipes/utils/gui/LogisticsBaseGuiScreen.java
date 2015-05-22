@@ -195,7 +195,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 						if(slot.getToolTipText() != null && !slot.getToolTipText().equals("")) {
 							ArrayList<String> list = new ArrayList<String>();
 							list.add(slot.getToolTipText());
-							BasicGuiHelper.drawToolTip(par1, par2, list, EnumChatFormatting.WHITE, false);
+							GuiGraphics.drawToolTip(par1, par2, list, EnumChatFormatting.WHITE, false);
 						}
 					}
 				}
@@ -283,12 +283,12 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 		for(IRenderSlot slot:slots) {
 			if(slot instanceof IItemTextureRenderSlot) {
 				if(slot.drawSlotBackground()) 
-					BasicGuiHelper.drawSlotBackground(mc, slot.getXPos(), slot.getYPos());
+					GuiGraphics.drawSlotBackground(mc, slot.getXPos(), slot.getYPos());
 				if(((IItemTextureRenderSlot)slot).drawSlotIcon() && !((IItemTextureRenderSlot)slot).customRender(mc, zLevel)) 
-					BasicGuiHelper.renderIconAt(mc, slot.getXPos() + 1, slot.getYPos() + 1, zLevel,  ((IItemTextureRenderSlot)slot).getTextureIcon());
+					GuiGraphics.renderIconAt(mc, slot.getXPos() + 1, slot.getYPos() + 1, zLevel, ((IItemTextureRenderSlot) slot).getTextureIcon());
 			} else if(slot instanceof ISmallColorRenderSlot) {
 				if(slot.drawSlotBackground())
-					BasicGuiHelper.drawSmallSlotBackground(mc, slot.getXPos(), slot.getYPos());
+					GuiGraphics.drawSmallSlotBackground(mc, slot.getXPos(), slot.getYPos());
 				if(((ISmallColorRenderSlot)slot).drawColor()) 
 					drawRect(slot.getXPos() + 1, slot.getYPos() + 1, slot.getXPos() + 7, slot.getYPos() + 7, ((ISmallColorRenderSlot)slot).getColor());
 			}

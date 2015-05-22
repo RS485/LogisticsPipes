@@ -13,8 +13,8 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.ItemSinkDefaultPacket;
 import logisticspipes.network.packets.module.ItemSinkImportPacket;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.string.StringUtils;
@@ -98,7 +98,7 @@ public class GuiItemSink extends ModuleBaseGui {
 		if(fuzzyPanelSelection != -1) {
 			int posX = 8 + fuzzyPanelSelection * 18;
 			int posY = 18 + 16;
-			BasicGuiHelper.drawGuiBackGround(mc, posX, posY, posX + 70, posY + 27, zLevel, true, true, true, true, true);
+			GuiGraphics.drawGuiBackGround(mc, posX, posY, posX + 70, posY + 27, zLevel, true, true, true, true, true);
 			
 			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnoreData"), posX + 4, posY + 4, !_itemSink.isIgnoreData(fuzzyPanelSelection) ? 0x404040 : 0xFF4040);
 			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnoreNBT"), posX + 4, posY + 14, !_itemSink.isIgnoreNBT(fuzzyPanelSelection) ? 0x404040 : 0x40FF40);

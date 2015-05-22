@@ -6,8 +6,8 @@ import java.util.List;
 import logisticspipes.logic.LogicController;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -136,7 +136,7 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 		}
 		GL11.glTranslatef(0.0F, 0.0F, 100.0F);
 		if(tooltip != null) {
-			BasicGuiHelper.displayItemToolTip(tooltip, this.zLevel, guiLeft, guiTop, false, true);
+			GuiGraphics.displayItemToolTip(tooltip, this.zLevel, guiLeft, guiTop, false, true);
 		}
 	}
 	
@@ -145,8 +145,8 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 		super.drawGuiContainerBackgroundLayer(f, i, j);
 		this.drawTransparentBack();
 		this.drawMap(i, j);
-		BasicGuiHelper.drawGuiBackGround(getMC(), guiLeft, guiTop + 180, right, bottom, zLevel, true, false, true, true, true);
-		BasicGuiHelper.drawPlayerInventoryBackground(getMC(), guiLeft + 50, guiTop + 205);
+		GuiGraphics.drawGuiBackGround(getMC(), guiLeft, guiTop + 180, right, bottom, zLevel, true, false, true, true, true);
+		GuiGraphics.drawPlayerInventoryBackground(getMC(), guiLeft + 50, guiTop + 205);
 	}
 
 	private void drawTransparentBack() {

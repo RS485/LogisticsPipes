@@ -5,8 +5,8 @@ import java.util.List;
 
 import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.inventory.IInventory;
@@ -129,18 +129,18 @@ public class GuiThaumicAspectSink extends ModuleBaseGui {
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		super.drawGuiContainerBackgroundLayer(var1, var2, var3);
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, false);
-		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 7, guiTop + 90);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, false);
+		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 7, guiTop + 90);
 
-		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 6, guiTop + 6);
+		GuiGraphics.drawSlotBackground(mc, guiLeft + 6, guiTop + 6);
 
 		//I can has purple aspect slots
 		for(int i = 0; i < 9; i++) {
-			BasicGuiHelper.drawSlotBackground(mc, guiLeft + 6 + i * 18, guiTop + 24, 0xffffe4ff);
+			GuiGraphics.drawSlotBackground(mc, guiLeft + 6 + i * 18, guiTop + 24, 0xffffe4ff);
 		}
 
 		for(int i = 0; i < 9; i++) {
-			BasicGuiHelper.drawSlotBackground(mc, guiLeft + 6 + i * 18, guiTop + 57, 0xffffe4ff);
+			GuiGraphics.drawSlotBackground(mc, guiLeft + 6 + i * 18, guiTop + 57, 0xffffe4ff);
 		}
 	}
 }

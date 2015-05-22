@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import logisticspipes.utils.gui.GuiGraphics;
 import org.lwjgl.opengl.GL11;
 
 import logisticspipes.gui.popup.SelectItemOutOfList.IHandleItemChoise;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.NEISetCraftingRecipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -92,14 +92,14 @@ public class GuiRecipeImport extends SubGuiScreen {
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float par3) {
 		GL11.glEnable(GL11.GL_BLEND);
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		fontRendererObj.renderString(StringUtils.translate("misc.selectOreDict"), guiLeft + 10, guiTop + 6, 0x404040, false);
 		GL11.glTranslated(0, 0, 100);
 		Object[] tooltip = null;
 		for(int x=0; x<3;x++) {
 			for(int y=0;y<3;y++) {
 				RenderHelper.enableGUIStandardItemLighting();
-				BasicGuiHelper.drawSlotBackground(mc, guiLeft + 44 + x * 18, guiTop + 19 + y * 18);
+				GuiGraphics.drawSlotBackground(mc, guiLeft + 44 + x * 18, guiTop + 19 + y * 18);
 				
 				if(grid[x + y*3] == null) continue;
 				ItemIdentifierStack stack = grid[x + y*3].order.get(grid[x + y*3].pos);
@@ -138,7 +138,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 			}
 			
 			RenderHelper.enableGUIStandardItemLighting();
-			BasicGuiHelper.drawSlotBackground(mc, guiLeft + 19 + x * 40, guiTop + 89 + y * 40);
+			GuiGraphics.drawSlotBackground(mc, guiLeft + 19 + x * 40, guiTop + 89 + y * 40);
 			itemRenderer.renderItemAndEffectIntoGUI(font, this.mc.renderEngine, itemStack, guiLeft + 20 + x * 40, guiTop + 90 + y * 40);
 			// With empty string, because damage value indicator struggles with the depth
 			itemRenderer.renderItemOverlayIntoGUI(font, this.mc.renderEngine, itemStack, guiLeft + 20 + x * 40, guiTop + 90 + y * 40, "");
@@ -163,7 +163,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 		}
 		GL11.glTranslated(0, 0, -100);
 		super.drawScreen(mouseX, mouseY, par3);
-		BasicGuiHelper.displayItemToolTip(tooltip, this, this.zLevel, guiLeft, guiTop);
+		GuiGraphics.displayItemToolTip(tooltip, this, this.zLevel, guiLeft, guiTop);
 	}
 	
 	@Override

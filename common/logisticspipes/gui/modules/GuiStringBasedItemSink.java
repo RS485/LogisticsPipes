@@ -2,8 +2,8 @@ package logisticspipes.gui.modules;
 
 import logisticspipes.interfaces.IStringBasedModule;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierInventory;
@@ -80,9 +80,9 @@ public class GuiStringBasedItemSink extends ModuleBaseGui {
 	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 7, guiTop + 126);
-		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 6, guiTop + 7);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 7, guiTop + 126);
+		GuiGraphics.drawSlotBackground(mc, guiLeft + 6, guiTop + 7);
 		SimpleGraphics.drawRectNoBlend(guiLeft + 26, guiTop + 5, guiLeft + 169, guiTop + 17, 0xff808080, 0.0);
 		if(tmpInv.getIDStackInSlot(0) != null) {
 			name = "";

@@ -6,7 +6,7 @@ import java.util.List;
 import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.modules.ModuleAdvancedExtractor;
-import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.Minecraft;
@@ -40,7 +40,7 @@ public class HUDAdvancedExtractor implements IHUDModuleRenderer {
 		} else {
 			Minecraft mc = FMLClientHandler.instance().getClient();
 			GL11.glScalef(1.0F, 1.0F, -0.00001F);
-			BasicGuiHelper.renderItemIdentifierStackListIntoGui(ItemIdentifierStack.getListFromInventory(module.getFilterInventory()), null, 0, -25, -32, 3, 9, 18, 18, mc, false, false, true, true);
+			GuiGraphics.renderItemIdentifierStackListIntoGui(ItemIdentifierStack.getListFromInventory(module.getFilterInventory()), null, 0, -25, -32, 3, 9, 18, 18, mc, false, false, true, true);
 			GL11.glScalef(1.0F, 1.0F, 1 / -0.00001F);
 			if(module.areItemsIncluded()) {
 				mc.fontRenderer.drawString("Included" , -22, 25, 0);
@@ -82,7 +82,7 @@ public class HUDAdvancedExtractor implements IHUDModuleRenderer {
 				GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)64);
 			}
 			GL11.glScaled(0.5D, 0.5D, 1.0D);
-			BasicGuiHelper.drawGuiBackGround(mc, posX * 2, posY * 2, (posX + sizeX) * 2, (posY + sizeY) * 2 + 15, 0, false, true, true, false, true);
+			GuiGraphics.drawGuiBackGround(mc, posX * 2, posY * 2, (posX + sizeX) * 2, (posY + sizeY) * 2 + 15, 0, false, true, true, false, true);
 			GL11.glScaled(2.0D, 2.0D, 1.0D);
 
 			if(clicked) {

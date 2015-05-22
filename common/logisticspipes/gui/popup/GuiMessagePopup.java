@@ -1,6 +1,6 @@
 package logisticspipes.gui.popup;
 
-import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.GuiButton;
@@ -46,7 +46,7 @@ public class GuiMessagePopup extends SubGuiScreen {
 			xSize = mWidth = Math.max(Math.min(lWidth + 20,400),120);
 			super.initGui();
 		}
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		for(int i=0;i < 9 && i < this.text.length;i++) {
 			if(this.text[i] == null) continue;
 			String msg = StringUtils.getCuttedString(this.text[i], mWidth - 10, this.mc.fontRenderer);

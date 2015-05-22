@@ -9,7 +9,7 @@ import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.modules.ChassiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.PipeLogisticsChassi;
-import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -99,7 +99,7 @@ public class HUDChassiePipe extends BasicHUDGui {
         } else {
         	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)64);	
         }
-		BasicGuiHelper.drawGuiBackGround(mc, -50, -50, 50, 50, 0, false);
+		GuiGraphics.drawGuiBackGround(mc, -50, -50, 50, 50, 0, false);
 		if(day) {
         	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)127);
         } else {
@@ -112,7 +112,7 @@ public class HUDChassiePipe extends BasicHUDGui {
 			if(selectedmodule == null) return;
 			
         	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)64);
-			BasicGuiHelper.drawGuiBackGround(mc, -23, -35, 45, 45, 0, false);
+			GuiGraphics.drawGuiBackGround(mc, -23, -35, 45, 45, 0, false);
         	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)127);	
 
 			if(selectedmodule instanceof IHUDModuleHandler && ((IHUDModuleHandler)selectedmodule).getHUDRenderer() != null) {
@@ -149,7 +149,7 @@ public class HUDChassiePipe extends BasicHUDGui {
 			GL11.glTranslatef(0.0F, 0.0F, (float) (-0.005F * distance));
 			GL11.glScalef(1.5F, 1.5F, 0.0001F);
 			GL11.glScalef(0.8F, 0.8F, -1F);
-			BasicGuiHelper.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, -15, -35, 3, 12, 18, 18, mc, true, true, true, true);
+			GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, -15, -35, 3, 12, 18, 18, mc, true, true, true, true);
 		}
 		GL11.glTranslatef(0.0F, 0.0F, (float) (0.00005F * distance));
 	}
@@ -248,9 +248,9 @@ public class HUDChassiePipe extends BasicHUDGui {
 			}
 			GL11.glScaled(0.5D, 0.5D, 1.0D);
 			if(isSlotSelected(position)) {
-				BasicGuiHelper.drawGuiBackGround(mc, posX * 2, posY * 2, (posX + sizeX) * 2 + 19, (posY + sizeY) * 2, 0, false, true, true, true, false);
+				GuiGraphics.drawGuiBackGround(mc, posX * 2, posY * 2, (posX + sizeX) * 2 + 19, (posY + sizeY) * 2, 0, false, true, true, true, false);
 			} else {
-				BasicGuiHelper.drawGuiBackGround(mc, posX * 2, posY * 2, (posX + sizeX) * 2, (posY + sizeY) * 2, 0, false);
+				GuiGraphics.drawGuiBackGround(mc, posX * 2, posY * 2, (posX + sizeX) * 2, (posY + sizeY) * 2, 0, false);
 			}
 			GL11.glScaled(2.0D, 2.0D, 1.0D);
 
@@ -267,7 +267,7 @@ public class HUDChassiePipe extends BasicHUDGui {
 			} else {
 				GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)127);
 			}
-			BasicGuiHelper.renderItemIdentifierStackListIntoGui(list, null, 0, posX + ((sizeX - 16) / 2), posY + ((sizeY - 16) / 2), 1, 1, 18, 18, mc, false, false, this.buttonEnabled() || isSlotSelected(position), true);
+			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, posX + ((sizeX - 16) / 2), posY + ((sizeY - 16) / 2), 1, 1, 18, 18, mc, false, false, this.buttonEnabled() || isSlotSelected(position), true);
 			if(hover) {
 				GL11.glTranslatef(0.0F, 0.0F, 0.01F);
 			}
@@ -282,7 +282,7 @@ public class HUDChassiePipe extends BasicHUDGui {
 				GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)64);
 				GL11.glScaled(0.5D, 0.5D, 1.0D);
 				Minecraft mc = FMLClientHandler.instance().getClient();
-				BasicGuiHelper.drawGuiBackGround(mc, posX * 2, posY * 2, (posX + sizeX) * 2, (posY + sizeY) * 2, 0, false);
+				GuiGraphics.drawGuiBackGround(mc, posX * 2, posY * 2, (posX + sizeX) * 2, (posY + sizeY) * 2, 0, false);
 				GL11.glPopMatrix();
 			}
 		}

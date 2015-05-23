@@ -6,6 +6,7 @@ import java.util.List;
 import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.modules.ModuleAdvancedExtractor;
+import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -92,9 +93,9 @@ public class HUDAdvancedExtractor implements IHUDModuleRenderer {
 			GL11.glTranslatef(0.0F, 0.0F, -0.000005F);
 			int color = 0;
 	        if(hover && !clicked) {
-	        	color = 0xffffa0;
+	        	color = Color.getValue(Color.LIGHT_YELLOW);
 	        } else if(!clicked) {
-	        	color = 0x000000;
+	        	color = Color.getValue(Color.BLACK);
 	        } else  {
 	        	color = 0x808080;
 	        }

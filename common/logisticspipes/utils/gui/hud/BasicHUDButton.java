@@ -1,6 +1,7 @@
 package logisticspipes.utils.gui.hud;
 
 import logisticspipes.interfaces.IHUDButton;
+import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SimpleGraphics;
 import net.minecraft.client.Minecraft;
@@ -92,17 +93,15 @@ public abstract class BasicHUDButton implements IHUDButton {
 		SimpleGraphics.drawTexturedModalRect(posX + sizeX / 2, posY + sizeY / 2, 200 - sizeX / 2, 46 + 24 - sizeY + k * 20, sizeX / 2, sizeY / 2, 0.0);
 
 		GL11.glTranslatef(0.0F, 0.0F, -0.001F);
-		int color = 0;
-        if(hover && !clicked) {
-        	color = 0xffffa0;
-    		GL11.glTranslatef(0.0F, 0.0F, -0.02F);
-        } else if(!clicked) {
-        	color = 0xffffa0;
-        } else  {
-        	color = 0xe0e0e0;
-        }
+		int color = Color.getValue(Color.LIGHT_GREY);
+		if (!clicked) {
+			color = Color.getValue(Color.LIGHT_YELLOW);
+			if (hover) {
+				GL11.glTranslatef(0.0F, 0.0F, -0.02F);
+			}
+		}
         minecraft.fontRenderer.drawString(label , -(minecraft.fontRenderer.getStringWidth(label) / 2) + posX + sizeX / 2, posY + (sizeY - 8) / 2, color);
-		if(hover && !clicked) {
+		if (!clicked && hover) {
 			GL11.glTranslatef(0.0F, 0.0F, 0.02F);
 		}
 		GL11.glTranslatef(0.0F, 0.0F, 0.001F);

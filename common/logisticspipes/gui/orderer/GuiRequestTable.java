@@ -200,7 +200,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			if(buttonList.get(9) instanceof GuiCheckBox && ((GuiCheckBox)buttonList.get(9)).getState()) {
 				mc.fontRenderer.drawString("Popup", guiLeft + 225 , bottom - 56, 0x404040);
 			} else {
-				mc.fontRenderer.drawString("Popup", guiLeft + 225 , bottom - 56, 0xA0A0A0);
+				mc.fontRenderer.drawString("Popup", guiLeft + 225 , bottom - 56, Color.getValue(Color.MIDDLE_GREY));
 			}
 			
 			itemDisplay.renderAmount(right - 103, bottom - 24, getStackAmount());

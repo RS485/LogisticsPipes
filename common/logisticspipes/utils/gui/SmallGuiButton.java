@@ -9,6 +9,7 @@
 
 package logisticspipes.utils.gui;
 
+import logisticspipes.utils.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -44,17 +45,14 @@ public class SmallGuiButton extends GuiButton {
         drawTexturedModalRect(xPosition + width / 2	, yPosition + height / 2, 200 - width / 2, 46 + 25 - height +  k * 20, width / 2, height / 2);
 
         mouseDragged(minecraft, i, j);
-        if(!enabled)
-        {
-            drawCenteredString(fontrenderer, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 0xffa0a0a0);
-        } else
-        if(flag)
-        {
-            drawCenteredString(fontrenderer, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 0xffffa0);
-        } else
-        {
-            drawCenteredString(fontrenderer, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 0xe0e0e0);
+
+        int color = Color.getValue(Color.LIGHT_GREY);
+        if (!enabled) {
+            color = Color.getValue(Color.MIDDLE_GREY);
+        } else if (flag) {
+            color = Color.getValue(Color.LIGHT_YELLOW);
         }
+        drawCenteredString(fontrenderer, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, color);
     }
 
 }

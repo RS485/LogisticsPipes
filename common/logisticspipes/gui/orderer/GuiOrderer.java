@@ -20,6 +20,7 @@ import logisticspipes.network.packets.orderer.RequestComponentPacket;
 import logisticspipes.network.packets.orderer.RequestSubmitPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.resources.IResource;
+import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
 import logisticspipes.utils.gui.GuiGraphics;
@@ -116,7 +117,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		if(buttonList.get(9) instanceof GuiCheckBox && ((GuiCheckBox)buttonList.get(9)).getState()) {
 			mc.fontRenderer.drawString("Popup", guiLeft + 25 , bottom - 56, 0x404040);
 		} else {
-			mc.fontRenderer.drawString("Popup", guiLeft + 25 , bottom - 56, 0xA0A0A0);
+			mc.fontRenderer.drawString("Popup", guiLeft + 25 , bottom - 56, Color.getValue(Color.MIDDLE_GREY));
 		}
 		
 		itemDisplay.renderAmount(xCenter, bottom - 24, getStackAmount());

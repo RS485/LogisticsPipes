@@ -42,7 +42,7 @@ public class HUDAdvancedExtractor implements IHUDModuleRenderer {
 		} else {
 			Minecraft mc = FMLClientHandler.instance().getClient();
 			GL11.glScalef(1.0F, 1.0F, -0.00001F);
-			GuiGraphics.renderItemIdentifierStackListIntoGui(ItemIdentifierStack.getListFromInventory(module.getFilterInventory()), null, 0, -25, -32, 3, 9, 18, 18, mc, DisplayAmount.NEVER, true, true);
+			GuiGraphics.renderItemIdentifierStackListIntoGui(ItemIdentifierStack.getListFromInventory(module.getFilterInventory()), null, 0, -25, -32, 3, 9, 18, 18, 100.0F, mc, DisplayAmount.NEVER, true, true);
 			GL11.glScalef(1.0F, 1.0F, 1 / -0.00001F);
 			if(module.areItemsIncluded()) {
 				mc.fontRenderer.drawString("Included" , -22, 25, 0);

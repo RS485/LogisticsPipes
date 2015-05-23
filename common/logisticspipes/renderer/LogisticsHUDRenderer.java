@@ -335,7 +335,7 @@ public class LogisticsHUDRenderer {
 							GL11.glScalef(0.8F, 0.8F, -1F);
 							List<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>(1);
 							list.add(ItemIdentifierStack.getFromStack(item));
-							GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, 5, 5, 1, 1, 18, 18, mc, DisplayAmount.NEVER, true, true);
+							GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, 5, 5, 1, 1, 18, 18, 100.0F, mc, DisplayAmount.NEVER, true, true);
 						}
 					}
 				}

@@ -98,15 +98,15 @@ public final class GuiGraphics {
 		}
 	}
 
-	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, Minecraft mc, DisplayAmount displayAmount) {
-		renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, mc, displayAmount, true);
+	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, float zLevel, Minecraft mc, DisplayAmount displayAmount) {
+		renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, zLevel, mc, displayAmount, true);
 	}
 
-	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, Minecraft mc, DisplayAmount displayAmount, boolean color) {
-		renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, mc, displayAmount, color, false);
+	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, float zLevel, Minecraft mc, DisplayAmount displayAmount, boolean color) {
+		renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, zLevel, mc, displayAmount, color, false);
 	}
 
-	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, Minecraft mc, DisplayAmount displayAmount, boolean color, boolean disableEffect) {
+	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, float zLevel, Minecraft mc, DisplayAmount displayAmount, boolean color, boolean disableEffect) {
 		RenderHelper.enableGUIStandardItemLighting();
 		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);
 
@@ -140,7 +140,7 @@ public final class GuiGraphics {
 			int y = top + ySize * row + 1;
 
 			if (itemstack != null) {
-				renderItemStack(itemstack, x, y, 100.0F, mc.renderEngine, itemRenderer, fontRenderer, displayAmount, disableEffect);
+				renderItemStack(itemstack, x, y, zLevel, mc.renderEngine, itemRenderer, fontRenderer, displayAmount, disableEffect);
 			}
 
 			column++;

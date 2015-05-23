@@ -95,7 +95,7 @@ public class HUDSatellite extends BasicHUDGui {
 			}
 			mc.fontRenderer.drawString(message , -28, -28, 0);
 			GL11.glScalef(0.8F, 0.8F, -1F);
-			GuiGraphics.renderItemIdentifierStackListIntoGui((pipe1 != null ? pipe1.itemList : pipe2.itemList), null, page, -35, -20, 4, 12, 18, 18, mc, DisplayAmount.ALWAYS, true, true);
+			GuiGraphics.renderItemIdentifierStackListIntoGui((pipe1 != null ? pipe1.itemList : pipe2.itemList), null, page, -35, -20, 4, 12, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true);
 			GL11.glScalef(0.8F, 0.8F, -1F);
 			message = "(" + Integer.toString(page + 1) + "/" + Integer.toString(getMaxPage()) + ")";
 			mc.fontRenderer.drawString(message , 9, -41, 0);

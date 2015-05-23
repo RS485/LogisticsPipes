@@ -323,7 +323,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 			}
 		}
 
-		GuiGraphics.renderItemIdentifierStackListIntoGui(diskProvider.getItemDisplay()._allItems, this, pageAll, guiLeft + 10, guiTop + 18, 9, 45, panelxSize, panelySize, mc, DisplayAmount.NEVER);
+		GuiGraphics.renderItemIdentifierStackListIntoGui(diskProvider.getItemDisplay()._allItems, this, pageAll, guiLeft + 10, guiTop + 18, 9, 45, panelxSize, panelySize, 100.0F, mc, DisplayAmount.NEVER);
 
 		ppi = 0;
 		column = 0;
@@ -356,7 +356,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 				column = 0;
 			}
 		}
-		GuiGraphics.renderItemIdentifierStackListIntoGui(macroItems, this, pageMacro, guiLeft + 10, guiTop + 150, 9, 9, panelxSize, panelySize, mc, DisplayAmount.ALWAYS);
+		GuiGraphics.renderItemIdentifierStackListIntoGui(macroItems, this, pageMacro, guiLeft + 10, guiTop + 150, 9, 9, panelxSize, panelySize, 100.0F, mc, DisplayAmount.ALWAYS);
 
 		GL11.glDisable(2929 /*GL_DEPTH_TEST*/);
 		super.drawScreen(par1, par2, par3);

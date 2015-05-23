@@ -111,8 +111,8 @@ public class HUDProvider extends BasicHUDGui {
 		GL11.glTranslatef(0.0F, 0.0F, -0.005F);
 		GL11.glScalef(1.5F, 1.5F, 0.0001F);
 		GL11.glScalef(0.8F, 0.8F, -1F);
-		GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.displayList, null, page, -35, -35, 4, 12, 18, 18, mc, DisplayAmount.ALWAYS, true, true);
-		GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.itemListOrderer, null, pageB, -35, 25, 4, 4, 18, 18, mc, DisplayAmount.ALWAYS, true, true);
+		GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.displayList, null, page, -35, -35, 4, 12, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true);
+		GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.itemListOrderer, null, pageB, -35, 25, 4, 4, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true);
 		GL11.glScalef(0.8F, 0.8F, -1F);
 		String message = "(" + Integer.toString(page + 1) + "/" + Integer.toString(getMaxPage()) + ")";
 		mc.fontRenderer.drawString(message , 9, -50, 0);

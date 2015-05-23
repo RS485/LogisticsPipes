@@ -148,7 +148,7 @@ public class HudChassisPipe extends BasicHUDGui {
 			GL11.glTranslatef(0.0F, 0.0F, (float) (-0.005F * distance));
 			GL11.glScalef(1.5F, 1.5F, 0.0001F);
 			GL11.glScalef(0.8F, 0.8F, -1F);
-			GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, -15, -35, 3, 12, 18, 18, mc, DisplayAmount.ALWAYS, true, true);
+			GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, -15, -35, 3, 12, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true);
 		}
 		GL11.glTranslatef(0.0F, 0.0F, (float) (0.00005F * distance));
 	}
@@ -268,7 +268,7 @@ public class HudChassisPipe extends BasicHUDGui {
 			}
 
 			boolean showColor = this.buttonEnabled() || isSlotSelected(position);
-			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, posX + ((sizeX - 16) / 2), posY + ((sizeY - 16) / 2), 1, 1, 18, 18, mc, DisplayAmount.NEVER, showColor, true);
+			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, posX + ((sizeX - 16) / 2), posY + ((sizeY - 16) / 2), 1, 1, 18, 18, 100.0F, mc, DisplayAmount.NEVER, showColor, true);
 
 			if(hover) {
 				GL11.glTranslatef(0.0F, 0.0F, 0.01F);

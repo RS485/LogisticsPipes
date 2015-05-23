@@ -58,10 +58,10 @@ public class HUDCrafting extends BasicHUDGui {
 			list.add(craftables.get(0));
 		}
 		if(pipe.displayList.size() > 0) {
-			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, 13, -17, 1, 1, 18, 18, mc, DisplayAmount.ALWAYS, true, true);
-			GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, 13, 3, 1, 1, 18, 18, mc, DisplayAmount.ALWAYS, true, true);
+			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, 13, -17, 1, 1, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true);
+			GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, 13, 3, 1, 1, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true);
 		} else {
-			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, -9, 0, 1, 1, 18, 18, mc, DisplayAmount.ALWAYS, true, true);
+			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, -9, 0, 1, 1, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true);
 		}
 	}
 

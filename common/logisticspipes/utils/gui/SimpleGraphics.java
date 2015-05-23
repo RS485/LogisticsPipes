@@ -82,6 +82,15 @@ public final class SimpleGraphics {
 	}
 
 	/**
+	 * Takes colors as enum values from {@link logisticspipes.utils.Color}.
+	 *
+	 * @see #drawRectNoBlend(int, int, int, int, int, double)
+	 */
+	public static void drawRectNoBlend(int x1, int y1, int x2, int y2, Color color, double zLevel) {
+		drawRectNoBlend(x1, y1, x2, y2, Color.getValue(color), zLevel);
+	}
+
+	/**
 	 * Draws a solid color rectangle with the specified coordinates and color.
 	 * This variation does not use GL_BLEND.
 	 *

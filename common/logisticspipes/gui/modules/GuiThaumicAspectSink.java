@@ -114,13 +114,13 @@ public class GuiThaumicAspectSink extends ModuleBaseGui {
 		if(6 <= pointerX && pointerX < 6 + 9 * 18 && 24 <= pointerY && pointerY < 24 + 18) {
 			int i = (pointerX - 6) / 18;
 			if(stackTags != null && i < stackTags.size()) {
-				SimpleGraphics.drawRectNoBlend(7 + i * 18, 25, 7 + i * 18 + 16, 25 + 16, Color.getValue(Color.WHITE_50), 0.0);
+				SimpleGraphics.drawRectNoBlend(7 + i * 18, 25, 7 + i * 18 + 16, 25 + 16, Color.WHITE_50, 0.0);
 			}
 		}
 		if(6 <= pointerX && pointerX < 6 + 9 * 18 && 57 <= pointerY && pointerY < 57 + 18) {
 			int i = (pointerX - 6) / 18;
 			if(_module.aspectList != null && i < _module.aspectList.size()) {
-				SimpleGraphics.drawRectNoBlend(7 + i * 18, 58, 7 + i * 18 + 16, 58 + 16, Color.getValue(Color.WHITE_50), 0.0);
+				SimpleGraphics.drawRectNoBlend(7 + i * 18, 58, 7 + i * 18 + 16, 58 + 16, Color.WHITE_50, 0.0);
 			}
 		}
 		GL11.glEnable(GL11.GL_DEPTH_TEST);

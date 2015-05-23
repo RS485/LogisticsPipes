@@ -24,6 +24,15 @@ public final class SimpleGraphics {
 	}
 
 	/**
+	 * Takes colors as enum values from {@link logisticspipes.utils.Color}.
+	 *
+	 * @see #drawHorizontalLine(int, int, int, int, int)
+	 */
+	public static void drawHorizontalLine(int x1, int x2, int y, Color color, int thickness) {
+		drawHorizontalLine(x1, x2, y, Color.getValue(color), thickness);
+	}
+
+	/**
 	 * Draws a horizontal line from x1 to x2.
 	 *
 	 * @param x1 the start coordinate
@@ -41,6 +50,15 @@ public final class SimpleGraphics {
 		}
 
 		Gui.drawRect(x1, y, x2 + 1, y + thickness, color);
+	}
+
+	/**
+	 * Takes colors as enum values from {@link logisticspipes.utils.Color}.
+	 *
+	 * @see #drawVerticalLine(int, int, int, int, int)
+	 */
+	public static void drawVerticalLine(int x, int y1, int y2, Color color, int thickness) {
+		drawVerticalLine(x, y1, y2, Color.getValue(color), thickness);
 	}
 
 	/**

@@ -60,7 +60,7 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 		
 		boolean dark = true;
 		for(int i=0;i < 9;i++) {
-			drawRect(guiLeft + 10, guiTop + 15 + (i*10), right - 10, guiTop + 25 + (i*10), dark ? Color.DARK_GREY : Color.LIGHT_GREY);
+			drawRect(guiLeft + 10, guiTop + 15 + (i*10), right - 10, guiTop + 25 + (i*10), dark ? Color.DARKER_GREY : Color.LIGHTER_GREY);
 			dark = !dark;
 		}
 		dark = true;
@@ -84,7 +84,7 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 		} else {
 			drawRect(guiLeft + 41, bottom - 29, right - 41, bottom - 14, Color.BLACK);
 		}
-		drawRect(guiLeft + 42, bottom - 28, right - 42, bottom - 15, Color.DARK_GREY);
+		drawRect(guiLeft + 42, bottom - 28, right - 42, bottom - 15, Color.DARKER_GREY);
 		
 		mc.fontRenderer.drawString(searchinput1 + searchinput2, guiLeft + 75 - (mc.fontRenderer.getStringWidth(searchinput1 + searchinput2) / 2), bottom - 25, 0xFFFFFF);
 		if(editsearch) {

@@ -44,7 +44,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer implements IDiskProvid
 		super.drawGuiContainerBackgroundLayer(f, i, j);
 
 		drawRect(right - 39, bottom - 47, right - 19, bottom - 27, Color.BLACK);
-		drawRect(right - 37, bottom - 45, right - 21, bottom - 29, Color.DARK_GREY);
+		drawRect(right - 37, bottom - 45, right - 21, bottom - 29, Color.DARKER_GREY);
 		
 		if(pipe.getDisk() != null) {
 			renderItem.renderItemIntoGUI(mc.fontRenderer, mc.renderEngine, pipe.getDisk(), right - 37, bottom - 45);

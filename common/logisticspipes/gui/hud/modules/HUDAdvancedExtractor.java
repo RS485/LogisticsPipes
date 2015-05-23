@@ -97,7 +97,7 @@ public class HUDAdvancedExtractor implements IHUDModuleRenderer {
 	        } else if(!clicked) {
 	        	color = Color.getValue(Color.BLACK);
 	        } else  {
-	        	color = 0x808080;
+	        	color = Color.getValue(Color.DARK_GREY);
 	        }
 	        GL11.glScaled(0.8D, 0.8D, 1.0D);
 	        mc.fontRenderer.drawString(label ,(int) ((-(mc.fontRenderer.getStringWidth(label) / (2* (1/0.8D))) + posX + sizeX / 2) * (1/0.8D)),(int) ((posY + (sizeY - 8) / 2) * (1/0.8D)) + 2, color);

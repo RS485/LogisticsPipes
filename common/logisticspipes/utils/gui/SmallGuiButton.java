@@ -46,9 +46,9 @@ public class SmallGuiButton extends GuiButton {
 
         mouseDragged(minecraft, i, j);
 
-        int color = Color.getValue(Color.LIGHT_GREY);
+        int color = Color.getValue(Color.LIGHTER_GREY);
         if (!enabled) {
-            color = Color.getValue(Color.MIDDLE_GREY);
+            color = Color.getValue(Color.GREY);
         } else if (flag) {
             color = Color.getValue(Color.LIGHT_YELLOW);
         }

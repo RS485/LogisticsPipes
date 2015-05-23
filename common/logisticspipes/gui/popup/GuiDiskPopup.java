@@ -102,11 +102,11 @@ public class GuiDiskPopup extends SubGuiScreen {
 		} else {
 			drawRect(guiLeft + 11, guiTop + 29, right - 11, guiTop + 44, Color.getValue(Color.BLACK));
 		}
-		drawRect(guiLeft + 12, guiTop + 30, right - 12, guiTop + 43, Color.getValue(Color.DARK_GREY));
+		drawRect(guiLeft + 12, guiTop + 30, right - 12, guiTop + 43, Color.getValue(Color.DARKER_GREY));
 		
 		mc.fontRenderer.drawString(name1 + name2, guiLeft + 15, guiTop + 33, 0xFFFFFF);
 		
-		drawRect(guiLeft + 6, guiTop + 46, right - 6, bottom - 30, Color.getValue(Color.MIDDLE_GREY));
+		drawRect(guiLeft + 6, guiTop + 46, right - 6, bottom - 30, Color.getValue(Color.GREY));
 		
 		NBTTagCompound nbt = diskProvider.getDisk().getTagCompound();
 		if(nbt == null) {
@@ -136,7 +136,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 
 		for(int i = scroll;i < list.tagCount() && (i - scroll) < 12;i++) {
 			if(i == selected) {
-				drawRect(guiLeft + 8, guiTop + 48 + ((i - scroll) * 10), right - 8, guiTop + 59 + ((i - scroll) * 10), Color.getValue(Color.DARK_GREY));
+				drawRect(guiLeft + 8, guiTop + 48 + ((i - scroll) * 10), right - 8, guiTop + 59 + ((i - scroll) * 10), Color.getValue(Color.DARKER_GREY));
 				flag = true;
 			}
 			NBTTagCompound entry = (NBTTagCompound) list.getCompoundTagAt(i);

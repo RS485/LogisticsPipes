@@ -199,7 +199,7 @@ public class ItemDisplay {
 		GL11.glPushMatrix();
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-		screen.drawRect(left, top, left + width, top + height, Color.MIDDLE_GREY);
+		screen.drawRect(left, top, left + width, top + height, Color.GREY);
 
 		tooltip = null;
 		int ppi = 0;
@@ -259,7 +259,7 @@ public class ItemDisplay {
 				
 				if (mouseX >= realX && mouseX < realX + panelxSize && mouseY >= realY && mouseY < realY + panelySize) {
 					screen.drawRect(x - 2, y - 2, x + panelxSize - 2, y + panelySize - 2, Color.BLACK);
-					screen.drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Color.DARK_GREY);
+					screen.drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Color.DARKER_GREY);
 
 					tooltip = new Object[] { mouseX + left, mouseY + top, itemstack };
 				}
@@ -267,14 +267,14 @@ public class ItemDisplay {
 				/*if (lastClickedx >= realX && lastClickedx < realX + panelxSize && lastClickedy >= realY && lastClickedy < realY + panelySize) {
 					selectedItem = itemIdentifierStack;
 					screen.drawRect(x - 2, y - 2, x + panelxSize - 2, y + panelySize - 2, Color.BLACK);
-					screen.drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Color.LIGHT_GREY);
-					screen.drawRect(x, y, x + panelxSize - 4, y + panelySize - 4, Color.DARK_GREY);
+					screen.drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Color.LIGHTER_GREY);
+					screen.drawRect(x, y, x + panelxSize - 4, y + panelySize - 4, Color.DARKER_GREY);
 				}
 				*/
 				if (selectedItem == itemIdentifierStack) {
 					screen.drawRect(x - 2, y - 2, x + panelxSize - 2, y + panelySize - 2, Color.BLACK);
-					screen.drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Color.LIGHT_GREY);
-					screen.drawRect(x, y, x + panelxSize - 4, y + panelySize - 4, Color.DARK_GREY);
+					screen.drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Color.LIGHTER_GREY);
+					screen.drawRect(x, y, x + panelxSize - 4, y + panelySize - 4, Color.DARKER_GREY);
 					if(renderer != null) renderer.specialItemRendering(itemIdentifierStack.getItem(), x, y);
 				}
 

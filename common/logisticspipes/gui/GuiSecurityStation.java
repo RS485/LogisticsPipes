@@ -150,7 +150,7 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 		} else {
 			drawRect(guiLeft + 181, bottom - 119, right - 9 + addition, bottom - 104, Color.BLACK);
 		}
-		drawRect(guiLeft + 182, bottom - 118, right - 10 + addition, bottom - 105, Color.DARK_GREY);
+		drawRect(guiLeft + 182, bottom - 118, right - 10 + addition, bottom - 105, Color.DARKER_GREY);
 		
 		mc.fontRenderer.drawString(searchinput1 + searchinput2, guiLeft + 185, bottom - 115, 0xFFFFFF);
 		if(editsearch) {

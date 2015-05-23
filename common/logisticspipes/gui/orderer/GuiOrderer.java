@@ -117,7 +117,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		if(buttonList.get(9) instanceof GuiCheckBox && ((GuiCheckBox)buttonList.get(9)).getState()) {
 			mc.fontRenderer.drawString("Popup", guiLeft + 25 , bottom - 56, 0x404040);
 		} else {
-			mc.fontRenderer.drawString("Popup", guiLeft + 25 , bottom - 56, Color.getValue(Color.MIDDLE_GREY));
+			mc.fontRenderer.drawString("Popup", guiLeft + 25 , bottom - 56, Color.getValue(Color.GREY));
 		}
 		
 		itemDisplay.renderAmount(xCenter, bottom - 24, getStackAmount());

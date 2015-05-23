@@ -63,7 +63,7 @@ public class SearchBar {
 		} else {
 			screen.drawRect(left + 1, top - 1, left + width - 1, top + heigth - 1, Color.BLACK);
 		}
-		screen.drawRect(left + 2, top - 0, left + width - 2, top + heigth - 2, Color.DARK_GREY);
+		screen.drawRect(left + 2, top - 0, left + width - 2, top + heigth - 2, Color.DARKER_GREY);
 		if(alignRight) {
 			fontRenderer.drawString(searchinput1 + searchinput2, left + 5 + searchWidth - fontRenderer.getStringWidth(searchinput1 + searchinput2), top + 3, 0xFFFFFF);
 		} else {

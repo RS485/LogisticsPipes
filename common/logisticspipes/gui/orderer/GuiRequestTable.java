@@ -190,7 +190,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right - (showRequest ? 0 : 105), bottom, zLevel, true);
 
 		drawRect(guiLeft + 162, guiTop + 23, guiLeft + 182, guiTop + 43, Color.BLACK);
-		drawRect(guiLeft + 164, guiTop + 25, guiLeft + 180, guiTop + 41, Color.DARK_GREY);
+		drawRect(guiLeft + 164, guiTop + 25, guiLeft + 180, guiTop + 41, Color.DARKER_GREY);
 		
 		if(showRequest) {
 			mc.fontRenderer.drawString(_title, guiLeft + 180 + mc.fontRenderer.getStringWidth(_title) / 2, guiTop + 6, 0x404040);
@@ -200,7 +200,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			if(buttonList.get(9) instanceof GuiCheckBox && ((GuiCheckBox)buttonList.get(9)).getState()) {
 				mc.fontRenderer.drawString("Popup", guiLeft + 225 , bottom - 56, 0x404040);
 			} else {
-				mc.fontRenderer.drawString("Popup", guiLeft + 225 , bottom - 56, Color.getValue(Color.MIDDLE_GREY));
+				mc.fontRenderer.drawString("Popup", guiLeft + 225 , bottom - 56, Color.getValue(Color.GREY));
 			}
 			
 			itemDisplay.renderAmount(right - 103, bottom - 24, getStackAmount());
@@ -225,13 +225,13 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		mc.fontRenderer.drawString("Sort:", guiLeft + 136, guiTop + 55, 0xffffff);
 		GuiGraphics.drawSlotBackground(mc, guiLeft + 100, guiTop + 32);
 		GuiGraphics.drawSlotBackground(mc, guiLeft + 163, guiTop + 50);
-		drawRect(guiLeft + 75, guiTop + 38, guiLeft + 95, guiTop + 43, Color.DARK_GREY);
+		drawRect(guiLeft + 75, guiTop + 38, guiLeft + 95, guiTop + 43, Color.DARKER_GREY);
 		for(int a = 0; a < 10;a++) {
-			drawRect(guiLeft + 97 - a, guiTop + 40 - a, guiLeft + 98 - a, guiTop + 41 + a, Color.DARK_GREY);
+			drawRect(guiLeft + 97 - a, guiTop + 40 - a, guiLeft + 98 - a, guiTop + 41 + a, Color.DARKER_GREY);
 		}
 		for(int a = 0; a < 15;a++) {
-			drawRect(guiLeft + 164 + a, guiTop + 51 + a, guiLeft + 166 + a, guiTop + 53 + a, Color.DARK_GREY);
-			drawRect(guiLeft + 164 + a, guiTop + 65 - a, guiLeft + 166 + a, guiTop + 67 - a, Color.DARK_GREY);
+			drawRect(guiLeft + 164 + a, guiTop + 51 + a, guiLeft + 166 + a, guiTop + 53 + a, Color.DARKER_GREY);
+			drawRect(guiLeft + 164 + a, guiTop + 65 - a, guiLeft + 166 + a, guiTop + 67 - a, Color.DARKER_GREY);
 		}
 		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 20, guiTop + 150);
 		for(final Entry<Integer, Pair<IResource, LinkedLogisticsOrderList>> entry:_table.watchedRequests.entrySet()) {

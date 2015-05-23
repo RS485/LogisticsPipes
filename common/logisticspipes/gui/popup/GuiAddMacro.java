@@ -172,7 +172,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		} else {
 			drawRect(guiLeft + 51, bottom - 67, right - 11, bottom - 82, Color.getValue(Color.BLACK));
 		}
-		drawRect(guiLeft + 52, bottom - 68, right - 12, bottom - 81, Color.getValue(Color.DARK_GREY));
+		drawRect(guiLeft + 52, bottom - 68, right - 12, bottom - 81, Color.getValue(Color.DARKER_GREY));
 		
 		mc.fontRenderer.drawString(Search1 + Search2, guiLeft + 55, guiTop + 122, 0xFFFFFF);
 		
@@ -197,7 +197,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		} else {
 			drawRect(guiLeft + 37, bottom - 9, right - 41, bottom - 24, Color.getValue(Color.BLACK));
 		}
-		drawRect(guiLeft + 38, bottom - 10, right - 42, bottom - 23, Color.getValue(Color.DARK_GREY));
+		drawRect(guiLeft + 38, bottom - 10, right - 42, bottom - 23, Color.getValue(Color.DARKER_GREY));
 		
 		mc.fontRenderer.drawString(name1 + name2, guiLeft + 41, bottom - 20, 0xFFFFFF);
 
@@ -237,8 +237,8 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		
 		tooltip = null;
 		
-		drawRect(guiLeft + 6, guiTop + 16, right - 12, bottom - 84, Color.getValue(Color.MIDDLE_GREY));
-		drawRect(guiLeft + 6, bottom - 52, right - 12, bottom - 32, Color.getValue(Color.DARK_GREY));
+		drawRect(guiLeft + 6, guiTop + 16, right - 12, bottom - 84, Color.getValue(Color.GREY));
+		drawRect(guiLeft + 6, bottom - 52, right - 12, bottom - 32, Color.getValue(Color.DARKER_GREY));
 		
 		for(ItemIdentifierStack itemStack : diskProvider.getItemDisplay()._allItems) {
 			ItemIdentifier item = itemStack.getItem();
@@ -256,7 +256,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
             if(!super.hasSubGui()) {
 				if (mouseX >= x && mouseX < x + panelxSize && mouseY >= y && mouseY < y + panelySize) {
 					drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Color.getValue(Color.BLACK));
-					drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Color.getValue(Color.DARK_GREY));
+					drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Color.getValue(Color.DARKER_GREY));
 					
 					tooltip = new Object[]{mouseX + guiLeft,mouseY + guiTop,st, false};
 				}
@@ -344,7 +344,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
             if(!super.hasSubGui()) {
 				if (mouseX >= x && mouseX < x + panelxSize && mouseY >= y && mouseY < y + panelySize) {
 					//drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Color.getValue(Color.BLACK));
-					//drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Color.getValue(Color.DARK_GREY));
+					//drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Color.getValue(Color.DARKER_GREY));
 					
 					tooltip = new Object[]{mouseX + guiLeft,mouseY + guiTop,st};
 				}	

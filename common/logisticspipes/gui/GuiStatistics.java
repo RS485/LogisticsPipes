@@ -170,22 +170,22 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 					GL11.glDisable(GL11.GL_LIGHTING);
 					GL11.glDisable(GL11.GL_DEPTH_TEST);
 					itemRender.zLevel = 0.0F;
-					mc.fontRenderer.drawString(StringUtils.getWithMaxWidth(task.item.getFriendlyName(), 136, this.fontRendererObj), guiLeft + 32, guiTop + 104, Color.getValue(Color.DARK_GREY), false);
+					mc.fontRenderer.drawString(StringUtils.getWithMaxWidth(task.item.getFriendlyName(), 136, this.fontRendererObj), guiLeft + 32, guiTop + 104, Color.getValue(Color.DARKER_GREY), false);
 					
 					
 					int xOrigo = xCenter - 68;
 					int yOrigo = yCenter + 90;
-					drawLine(xOrigo, yOrigo, xOrigo + 150, yOrigo, Color.DARK_GREY);
-					drawLine(xOrigo, yOrigo, xOrigo, yOrigo - 80, Color.DARK_GREY);
+					drawLine(xOrigo, yOrigo, xOrigo + 150, yOrigo, Color.DARKER_GREY);
+					drawLine(xOrigo, yOrigo, xOrigo, yOrigo - 80, Color.DARKER_GREY);
 					for(int k = -4; k < 5; k++){
 						int begin = -4;
 						if(k == -4) begin = -1;
 						if(k == 0) begin = -1;
 						if(k == 4) begin = -1;
-						drawLine(xOrigo + begin, yCenter + 50 + k * 10, xOrigo + 5, yCenter + 50 + k * 10, Color.DARK_GREY);
+						drawLine(xOrigo + begin, yCenter + 50 + k * 10, xOrigo + 5, yCenter + 50 + k * 10, Color.DARKER_GREY);
 					}
 					for(int k = 0; k < 16; k++){
-						drawLine(xOrigo + k * 10, yOrigo - 4, xOrigo + k * 10, yOrigo + 4, Color.DARK_GREY);
+						drawLine(xOrigo + k * 10, yOrigo - 4, xOrigo + k * 10, yOrigo + 4, Color.DARKER_GREY);
 					}
 					
 					int time_left = 15 + move_left*15;
@@ -310,9 +310,9 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		if(current_Tab == 0) {
-			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "amount"), 10, 28, Color.getValue(Color.DARK_GREY), false);
+			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "amount"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
 		} else if(current_Tab == 1) {
-			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "crafting"), 10, 28, Color.getValue(Color.DARK_GREY), false);
+			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "crafting"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
 			GuiGraphics.displayItemToolTip(itemDisplay_2.getToolTip(), this, zLevel, guiLeft, guiTop);
 		}
 	}

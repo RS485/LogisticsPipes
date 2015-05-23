@@ -93,7 +93,7 @@ public abstract class BasicHUDButton implements IHUDButton {
 		SimpleGraphics.drawTexturedModalRect(posX + sizeX / 2, posY + sizeY / 2, 200 - sizeX / 2, 46 + 24 - sizeY + k * 20, sizeX / 2, sizeY / 2, 0.0);
 
 		GL11.glTranslatef(0.0F, 0.0F, -0.001F);
-		int color = Color.getValue(Color.LIGHT_GREY);
+		int color = Color.getValue(Color.LIGHTER_GREY);
 		if (!clicked) {
 			color = Color.getValue(Color.LIGHT_YELLOW);
 			if (hover) {

@@ -92,7 +92,7 @@ public class HUDProvider extends BasicHUDGui {
 	}
 
 	@Override
-	public void renderHeadUpDisplay(double distance, boolean day, Minecraft mc, IHUDConfig config) {
+	public void renderHeadUpDisplay(double distance, boolean day, boolean shifted, Minecraft mc, IHUDConfig config) {
 		if(day) {
         	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)64);
         } else {
@@ -106,14 +106,13 @@ public class HUDProvider extends BasicHUDGui {
         }
 		
 		GL11.glTranslatef(0.0F, 0.0F, -0.01F);
-		super.renderHeadUpDisplay(distance, day, mc, config);
+		super.renderHeadUpDisplay(distance, day, shifted, mc, config);
 		
 		GL11.glTranslatef(0.0F, 0.0F, -0.005F);
-		GL11.glScalef(1.5F, 1.5F, 0.0001F);
-		GL11.glScalef(0.8F, 0.8F, -1F);
-		GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.displayList, null, page, -35, -35, 4, 12, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true);
-		GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.itemListOrderer, null, pageB, -35, 25, 4, 4, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true);
-		GL11.glScalef(0.8F, 0.8F, -1F);
+		GL11.glScalef(1.125F, 1.125F, -0.0001F);
+		GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.displayList, null, page, -36, -37, 4, 12, 18, 18, 0.0F, mc, DisplayAmount.ALWAYS, true, true, !shifted);
+		GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.itemListOrderer, null, pageB, -36, 23, 4, 4, 18, 18, 0.0F, mc, DisplayAmount.ALWAYS, true, true, !shifted);
+		GL11.glScalef(0.875F, 0.875F, -1F);
 		String message = "(" + Integer.toString(page + 1) + "/" + Integer.toString(getMaxPage()) + ")";
 		mc.fontRenderer.drawString(message , 9, -50, 0);
 		message = "(" + Integer.toString(pageB + 1) + "/" + Integer.toString(getMaxPageOrderer()) + ")";

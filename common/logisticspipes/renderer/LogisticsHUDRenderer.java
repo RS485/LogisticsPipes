@@ -231,25 +231,28 @@ public class LogisticsHUDRenderer {
 		}
 		IHeadUpDisplayRendererProvider thisIsLast = null;
 		List<IHeadUpDisplayRendererProvider> toUse = list;
-		if(debugHUD != null) toUse = debugHUD.getHUDs();
-		for(IHeadUpDisplayRendererProvider renderer:toUse) {
-			if(renderer.getRenderer() == null) continue;
-			if(renderer.getRenderer().display(config)) {
+		if (debugHUD != null) {
+			toUse = debugHUD.getHUDs();
+		}
+
+		for (IHeadUpDisplayRendererProvider renderer : toUse) {
+			if (renderer.getRenderer() == null) continue;
+			if (renderer.getRenderer().display(config)) {
 				GL11.glPushMatrix();
-				if(!cursorHandled) {
+				if (!cursorHandled) {
 					double x = renderer.getX() + 0.5 - player.posX;
 					double y = renderer.getY() + 0.5 - player.posY;
 					double z = renderer.getZ() + 0.5 - player.posZ;
-					if(Math.hypot(x,Math.hypot(y, z)) < 0.75 || (renderer instanceof IHeadUpDisplayBlockRendererProvider && (((IHeadUpDisplayBlockRendererProvider)renderer).isHUDInvalid() || !((IHeadUpDisplayBlockRendererProvider)renderer).isHUDExistent()))) {
-						refreshList(player.posX,player.posY,player.posZ);
-				        GL11.glPopMatrix();
+					if (Math.hypot(x, Math.hypot(y, z)) < 0.75 || (renderer instanceof IHeadUpDisplayBlockRendererProvider && (((IHeadUpDisplayBlockRendererProvider) renderer).isHUDInvalid() || !((IHeadUpDisplayBlockRendererProvider) renderer).isHUDExistent()))) {
+						refreshList(player.posX, player.posY, player.posZ);
+						GL11.glPopMatrix();
 						break;
 					}
 					int[] pos = getCursor(renderer);
-					if(pos.length == 2) {
-						if(renderer.getRenderer().cursorOnWindow(pos[0], pos[1])) {
+					if (pos.length == 2) {
+						if (renderer.getRenderer().cursorOnWindow(pos[0], pos[1])) {
 							renderer.getRenderer().handleCursor(pos[0], pos[1]);
-							if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) { //if(FMLClientHandler.instance().getClient().thePlayer.isSneaking()) {
+							if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) { //if(FMLClientHandler.instance().getClient().thePlayer.isSneaking()) {
 								thisIsLast = renderer;
 								displayCross = true;
 							}
@@ -257,24 +260,24 @@ public class LogisticsHUDRenderer {
 						}
 					}
 				}
-		        GL11.glEnable(GL11.GL_BLEND);
-		        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-				if(thisIsLast != renderer) {
-					displayOneView(renderer, config, partialTick);
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+				if (thisIsLast != renderer) {
+					displayOneView(renderer, config, partialTick, false);
 				}
 				GL11.glPopMatrix();
 			}
 		}
-		if(thisIsLast != null) {
+		if (thisIsLast != null) {
 			GL11.glPushMatrix();
-	        GL11.glDisable(GL11.GL_BLEND);
-	        GL11.glDisable(GL11.GL_DEPTH_TEST);
-	        displayOneView(thisIsLast, config, partialTick);
-	        GL11.glEnable(GL11.GL_BLEND);
-	        GL11.glEnable(GL11.GL_DEPTH_TEST);
-	        GL11.glPopMatrix();
+			GL11.glDisable(GL11.GL_BLEND);
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
+			displayOneView(thisIsLast, config, partialTick, true);
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glEnable(GL11.GL_DEPTH_TEST);
+			GL11.glPopMatrix();
 		}
-		
+
 		GL11.glPushMatrix();
 		MovingObjectPosition box = mc.objectMouseOver;
 		if(box != null && box.typeOfHit == MovingObjectType.BLOCK) {
@@ -481,7 +484,7 @@ public class LogisticsHUDRenderer {
 		}
 	}
 	
-	private void displayOneView(IHeadUpDisplayRendererProvider renderer, IHUDConfig config, float partialTick) {
+	private void displayOneView(IHeadUpDisplayRendererProvider renderer, IHUDConfig config, float partialTick, boolean shifted) {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		EntityPlayer player = mc.thePlayer;
 		double x = renderer.getX() + 0.5 - player.prevPosX - ((player.posX - player.prevPosX) * partialTick);
@@ -495,8 +498,8 @@ public class LogisticsHUDRenderer {
 		GL11.glTranslatef(0.0F, 0.0F, -0.4F);
 		
 		GL11.glScalef(0.01F, 0.01F, 1F);
-		
-		renderer.getRenderer().renderHeadUpDisplay(Math.hypot(x,Math.hypot(y, z)), false, mc, config);
+
+		renderer.getRenderer().renderHeadUpDisplay(Math.hypot(x,Math.hypot(y, z)), false, shifted, mc, config);
 	}
 	
 	private float getAngle(double x, double y) {

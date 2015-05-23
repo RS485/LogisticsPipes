@@ -84,7 +84,7 @@ public class HUDRoutingTableGeneralInfo extends BasicHUDGui implements IHeadUpDi
 	}
 	
 	@Override
-	public void renderHeadUpDisplay(double distance, boolean day, Minecraft mc, IHUDConfig config) {
+	public void renderHeadUpDisplay(double distance, boolean day, boolean shifted, Minecraft mc, IHUDConfig config) {
 		if(route.isNew) {
 			line = -65;
 		} else {
@@ -93,7 +93,7 @@ public class HUDRoutingTableGeneralInfo extends BasicHUDGui implements IHeadUpDi
 		GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)64);
 		GuiGraphics.drawGuiBackGround(mc, -70, -80, 70, 80, 0, false);
 		GL11.glTranslatef(0.0F, 0.0F, -0.0005F);
-		super.renderHeadUpDisplay(distance, day, mc, config);
+		super.renderHeadUpDisplay(distance, day, shifted, mc, config);
 		GL11.glTranslatef(0.0F, 0.0F, -0.0005F);
 		write("Routing Update in: ", mc);
 		write(route.positions.toString(), mc);

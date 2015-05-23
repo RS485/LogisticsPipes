@@ -10,7 +10,6 @@ import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.modules.ChassiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.PipeLogisticsChassi;
-import logisticspipes.utils.OpenGLDebugger;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.GuiGraphics.DisplayAmount;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
@@ -19,7 +18,6 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
 
 public class HudChassisPipe extends BasicHUDGui {
 	
@@ -95,7 +93,7 @@ public class HudChassisPipe extends BasicHUDGui {
 	}
 
 	@Override
-	public void renderHeadUpDisplay(double distance, boolean day, Minecraft mc, IHUDConfig config) {
+	public void renderHeadUpDisplay(double distance, boolean day, boolean shifted, Minecraft mc, IHUDConfig config) {
 		if(day) {
         	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)64);
         } else {
@@ -108,7 +106,7 @@ public class HudChassisPipe extends BasicHUDGui {
         	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)127);	
         }
 		GL11.glTranslatef(0.0F, 0.0F,(float) (-0.00005F * distance));
-		super.renderHeadUpDisplay(distance, day, mc, config);
+		super.renderHeadUpDisplay(distance, day, shifted, mc, config);
 		if(selected != -1) {
 			LogisticsModule selectedmodule = module.getSubModule(selected);
 			if(selectedmodule == null) return;
@@ -122,9 +120,9 @@ public class HudChassisPipe extends BasicHUDGui {
 				((IHUDModuleHandler)selectedmodule).getHUDRenderer().renderContent();
 				if(((IHUDModuleHandler)selectedmodule).getHUDRenderer().getButtons() != null) {
 					for(IHUDButton button:((IHUDModuleHandler)selectedmodule).getHUDRenderer().getButtons()) {
-					button.renderAlways();
-						if(button.shouldRenderButton()) {
-							button.renderButton(button.isFocused(), button.isblockFocused());
+						button.renderAlways(shifted);
+						if (button.shouldRenderButton()) {
+							button.renderButton(button.isFocused(), button.isblockFocused(), shifted);
 						}
 						if(!button.buttonEnabled() || !button.shouldRenderButton()) continue;
 						if((button.getX() - 1 < (xCursor - 11) && (xCursor - 11) < (button.getX() + button.sizeX() + 1)) && (button.getY() - 1 < (yCursor - 5) && (yCursor - 5) < (button.getY() + button.sizeY() + 1))) {
@@ -151,7 +149,7 @@ public class HudChassisPipe extends BasicHUDGui {
 			GL11.glTranslatef(0.0F, 0.0F, (float) (-0.005F * distance));
 			GL11.glScalef(1.5F, 1.5F, 0.0001F);
 			GL11.glScalef(0.8F, 0.8F, -1F);
-			GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, -15, -35, 3, 12, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true);
+			GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, -15, -35, 3, 12, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true, !shifted);
 		}
 		GL11.glTranslatef(0.0F, 0.0F, (float) (0.00005F * distance));
 	}
@@ -232,11 +230,11 @@ public class HudChassisPipe extends BasicHUDGui {
 			moduleClicked(position);
 		}
 
-		@Override public void renderButton(boolean hover, boolean clicked) {
+		@Override public void renderButton(boolean hover, boolean clicked, boolean shifted) {
 			Minecraft mc = FMLClientHandler.instance().getClient();
 			GL11.glEnable(GL11.GL_BLEND);
 
-			if (hover || isSlotSelected(position)) {
+			if (shifted || hover || isSlotSelected(position)) {
 				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1F);
 			} else {
 				GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.5F);
@@ -257,13 +255,17 @@ public class HudChassisPipe extends BasicHUDGui {
 			list.add(ItemIdentifierStack.getFromStack(module));
 
 			boolean showColor = this.buttonEnabled() || isSlotSelected(position);
-			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, posX + ((sizeX - 16) / 2), posY + ((sizeY - 16) / 2), 1, 1, 18, 18, -0.002F, mc, DisplayAmount.NEVER, showColor, true);
+			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, posX + ((sizeX - 16) / 2), posY + ((sizeY - 16) / 2), 1, 1, 18, 18, -0.002F, mc, DisplayAmount.NEVER, showColor, true, !shifted);
 		}
 
-		@Override public void renderAlways() {
+		@Override public void renderAlways(boolean shifted) {
 			if (inv.getStackInSlot(position) == null && shouldDisplayButton(position)) {
 				GL11.glEnable(GL11.GL_BLEND);
-				GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.3F);
+				if (shifted) {
+					GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+				} else {
+					GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.3F);
+				}
 				GL11.glScaled(0.5D, 0.5D, 1.0D);
 				Minecraft mc = FMLClientHandler.instance().getClient();
 				GuiGraphics.drawGuiBackGround(mc, posX * 2, posY * 2, (posX + sizeX) * 2, (posY + sizeY) * 2, 0, false);

@@ -21,7 +21,7 @@ public class HUDCrafting extends BasicHUDGui {
 	}
 	
 	@Override
-	public void renderHeadUpDisplay(double d, boolean day, Minecraft mc, IHUDConfig config) {
+	public void renderHeadUpDisplay(double d, boolean day, boolean shifted, Minecraft mc, IHUDConfig config) {
 		if(day) {
         	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)64);
         } else {
@@ -58,10 +58,10 @@ public class HUDCrafting extends BasicHUDGui {
 			list.add(craftables.get(0));
 		}
 		if(pipe.displayList.size() > 0) {
-			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, 13, -17, 1, 1, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true);
-			GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, 13, 3, 1, 1, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true);
+			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, 11, -18, 1, 1, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true, !shifted);
+			GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, 13, 3, 1, 1, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true, !shifted);
 		} else {
-			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, -9, 0, 1, 1, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true);
+			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, -9, -1, 1, 1, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true, !shifted);
 		}
 	}
 

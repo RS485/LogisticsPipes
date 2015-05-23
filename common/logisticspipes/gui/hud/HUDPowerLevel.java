@@ -19,7 +19,7 @@ public class HUDPowerLevel extends BasicHUDGui implements IHeadUpDisplayRenderer
 	}
 	
 	@Override
-	public void renderHeadUpDisplay(double distance, boolean day, Minecraft mc, IHUDConfig config) {
+	public void renderHeadUpDisplay(double distance, boolean day, boolean shifted, Minecraft mc, IHUDConfig config) {
 		if(day) {
         	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)32);
         } else {
@@ -32,7 +32,7 @@ public class HUDPowerLevel extends BasicHUDGui implements IHeadUpDisplayRenderer
         	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)127);	
         }
 		GL11.glTranslatef(0.0F, 0.0F, -0.0005F);
-		super.renderHeadUpDisplay(distance, day, mc, config);
+		super.renderHeadUpDisplay(distance, day, shifted, mc, config);
 		GL11.glTranslatef(0.0F, 0.0F, -0.0005F);
 		mc.renderEngine.bindTexture(TEXTURE);
 		drawTexturedModalRect(-50, -30, 9, 10, 7, 61);

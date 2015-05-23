@@ -277,7 +277,7 @@ public class ItemDisplay {
 				}
 
 				// Use BasicGuiHelper to render an ItemStack
-				GuiGraphics.renderItemStack(itemstack, x, y, 100.0F, screen.getMC().renderEngine, itemRenderer, fontRenderer, DisplayAmount.HIDE_ONE, false);
+				GuiGraphics.renderItemStack(itemstack, x, y, 100.0F, screen.getMC().renderEngine, itemRenderer, fontRenderer, DisplayAmount.HIDE_ONE, false, true);
 
 				x += panelxSize;
 				if (x > this.width) {

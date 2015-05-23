@@ -60,20 +60,26 @@ public final class GuiGraphics {
 		NEVER,
 	}
 
-	public static void renderItemStack(ItemStack itemstack, int posX, int posY, float zLevel, TextureManager texManager, RenderItem itemRenderer, FontRenderer fontRenderer, DisplayAmount displayAmount, boolean disableEffects) {
-		GL11.glEnable(GL11.GL_LIGHTING);
+	public static void renderItemStack(ItemStack itemstack, int posX, int posY, float zLevel, TextureManager texManager, RenderItem itemRenderer, FontRenderer fontRenderer, DisplayAmount displayAmount, boolean disableEffects, boolean depthTest) {
 
-		// Rendering the block/item with depth and lightning, but without text
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		// Rendering the block/item with lightning and maybe depth, but without text
+		GL11.glEnable(GL11.GL_LIGHTING);
+		if (depthTest) {
+			GL11.glEnable(GL11.GL_DEPTH_TEST);
+		} else {
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
+		}
+
 		// RenderBlocks is a heavy object, so instantiating it everytime is a bad idea
 		if (!ForgeHooksClient.renderInventoryItem(mcRenderBlocks, texManager, itemstack, true, zLevel, posX, posY)) {
 			itemRenderer.zLevel += zLevel;
 			itemRenderer.renderItemIntoGUI(fontRenderer, texManager, itemstack, posX, posY, false);
 
 			if (!disableEffects && itemstack.hasEffect(0)) {
-				GL11.glTranslatef(0F, 0F, 1F);
+				// 20 should be about the size of a block, when rendered this way
+				GL11.glTranslatef(0.0F, 0.0F, 20.0F);
 				itemRenderer.renderEffect(texManager, posX, posY);
-				GL11.glTranslatef(0F, 0F, -1F);
+				GL11.glTranslatef(0.0F, 0.0F, -20.0F);
 			}
 
 			itemRenderer.zLevel -= zLevel;
@@ -81,7 +87,11 @@ public final class GuiGraphics {
 
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		itemRenderer.renderItemOverlayIntoGUI(fontRenderer, texManager, itemstack, posX, posY, "");
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		if (depthTest) {
+			GL11.glEnable(GL11.GL_DEPTH_TEST);
+		} else {
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
+		}
 
 		// if we want to render the amount, do that
 		if (displayAmount != DisplayAmount.NEVER) {
@@ -93,8 +103,12 @@ public final class GuiGraphics {
 
 			GL11.glDisable(GL11.GL_LIGHTING);
 			String amountString = StringUtils.getFormatedStackSize(itemstack.stackSize, displayAmount == DisplayAmount.ALWAYS);
+
+			// 20 should be about the size of a block + 20 for the overlay
+			GL11.glTranslatef(0.0F, 0.0F, zLevel + 40.0F);
 			// using a translated shadow does not hurt and works with the HUD
 			SimpleGraphics.drawStringWithTranslatedShadow(fontRenderer, amountString, posX + 17 - fontRenderer.getStringWidth(amountString), posY + 9, Color.getValue(Color.WHITE));
+			GL11.glTranslatef(0.0F, 0.0F, -zLevel - 40.0F);
 		}
 	}
 
@@ -107,6 +121,10 @@ public final class GuiGraphics {
 	}
 
 	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, float zLevel, Minecraft mc, DisplayAmount displayAmount, boolean color, boolean disableEffect) {
+		renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, zLevel, mc, displayAmount, color, disableEffect, true);
+	}
+
+	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, float zLevel, Minecraft mc, DisplayAmount displayAmount, boolean color, boolean disableEffect, boolean depthTest) {
 		RenderHelper.enableGUIStandardItemLighting();
 		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);
 
@@ -140,7 +158,7 @@ public final class GuiGraphics {
 			int y = top + ySize * row + 1;
 
 			if (itemstack != null) {
-				renderItemStack(itemstack, x, y, zLevel, mc.renderEngine, itemRenderer, fontRenderer, displayAmount, disableEffect);
+				renderItemStack(itemstack, x, y, zLevel, mc.renderEngine, itemRenderer, fontRenderer, displayAmount, disableEffect, depthTest);
 			}
 
 			column++;
@@ -150,7 +168,7 @@ public final class GuiGraphics {
 			}
 		}
 
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		//GL11.glEnable(GL11.GL_DEPTH_TEST);
 		RenderHelper.disableStandardItemLighting();
 	}
 

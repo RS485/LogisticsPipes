@@ -12,8 +12,8 @@ public interface IHUDButton {
 	public boolean isblockFocused();
 	public int focusedTime();
 	public void clicked();
-	public void renderButton(boolean hover, boolean clicked);
-	public void renderAlways();
+	public void renderButton(boolean hover, boolean clicked, boolean shifted);
+	public void renderAlways(boolean shifted);
 	public boolean shouldRenderButton();
 	public boolean buttonEnabled();
 }

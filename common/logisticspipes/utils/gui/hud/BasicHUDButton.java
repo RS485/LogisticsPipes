@@ -79,7 +79,7 @@ public abstract class BasicHUDButton implements IHUDButton {
 	}
 
 	@Override
-	public void renderButton(boolean hover, boolean clicked) {
+	public void renderButton(boolean hover, boolean clicked, boolean shifted) {
 		Minecraft minecraft = FMLClientHandler.instance().getClient();
         //GL11.glBindTexture(3553 /*GL_TEXTURE_2D*/, 
 		minecraft.renderEngine.bindTexture(GuiGraphics.WIDGETS_TEXTURE);
@@ -109,7 +109,7 @@ public abstract class BasicHUDButton implements IHUDButton {
 	}
 
 	@Override
-	public void renderAlways() {
+	public void renderAlways(boolean shifted) {
 		
 	}
 }

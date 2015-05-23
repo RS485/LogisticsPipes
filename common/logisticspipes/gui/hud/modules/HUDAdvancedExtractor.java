@@ -72,7 +72,7 @@ public class HUDAdvancedExtractor implements IHUDModuleRenderer {
 		}
 
 		@Override
-		public void renderButton(boolean hover, boolean clicked) {
+		public void renderButton(boolean hover, boolean clicked, boolean shifted) {
 			GL11.glTranslatef(0.0F, 0.0F, -0.000005F);
 			Minecraft mc = FMLClientHandler.instance().getClient();
 			if(hover) {

@@ -152,7 +152,7 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 
 	private void drawTransparentBack() {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		SimpleGraphics.drawGradientRect(0, 0, this.width, this.height, Color.getValue(Color.BLANK), Color.getValue(Color.BLANK), 0.0);
+		SimpleGraphics.drawGradientRect(0, 0, this.width, this.height, Color.BLANK, Color.BLANK, 0.0);
 	}
 	
 	private void drawMap(int par1, int par2) {

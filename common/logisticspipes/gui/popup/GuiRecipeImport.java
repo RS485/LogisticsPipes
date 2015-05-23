@@ -121,7 +121,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 					GL11.glDisable(GL11.GL_LIGHTING);
 					GL11.glDisable(GL11.GL_DEPTH_TEST);
 					GL11.glColorMask(true, true, true, false);
-					SimpleGraphics.drawGradientRect(guiLeft + 45 + x * 18, guiTop + 20 + y * 18, guiLeft + 45 + x * 18 + 16, guiTop + 20 + y * 18 + 16, Color.getValue(Color.WHITE_50), Color.getValue(Color.WHITE_50), 0.0);
+					SimpleGraphics.drawGradientRect(guiLeft + 45 + x * 18, guiTop + 20 + y * 18, guiLeft + 45 + x * 18 + 16, guiTop + 20 + y * 18 + 16, Color.WHITE_50, Color.WHITE_50, 0.0);
 					GL11.glColorMask(true, true, true, true);
 					GL11.glEnable(GL11.GL_LIGHTING);
 					GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -150,7 +150,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
 				GL11.glColorMask(true, true, true, false);
-				SimpleGraphics.drawGradientRect(guiLeft + 20 + x * 40, guiTop + 90 + y * 40, guiLeft + 20 + x * 40 + 16, guiTop + 90 + y * 40 + 16, Color.getValue(Color.WHITE_50), Color.getValue(Color.WHITE_50), 0.0);
+				SimpleGraphics.drawGradientRect(guiLeft + 20 + x * 40, guiTop + 90 + y * 40, guiLeft + 20 + x * 40 + 16, guiTop + 90 + y * 40 + 16, Color.WHITE_50, Color.WHITE_50, 0.0);
 				GL11.glColorMask(true, true, true, true);
 				GL11.glEnable(GL11.GL_LIGHTING);
 				GL11.glEnable(GL11.GL_DEPTH_TEST);

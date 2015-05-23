@@ -108,6 +108,15 @@ public final class SimpleGraphics {
 	}
 
 	/**
+	 * Takes colors as enum values from {@link logisticspipes.utils.Color}.
+	 *
+	 * @see #drawGradientRect(int, int, int, int, int, int, double)
+	 */
+	public static void drawGradientRect(int x1, int y1, int x2, int y2, Color colorA, Color colorB, double zLevel) {
+		drawGradientRect(x1, y1, x2, y2, Color.getValue(colorA), Color.getValue(colorB), zLevel);
+	}
+
+	/**
 	 * Draws a rectangle with a vertical gradient between the specified colors.
 	 *
 	 * @param x1 the first x-coordinate of the rectangle

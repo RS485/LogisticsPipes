@@ -137,114 +137,116 @@ public final class GuiGraphics {
 		displayItemToolTip(tooltip, pzLevel, guiLeft, guiTop, false, false);
 	}
 
-	@SuppressWarnings("unchecked") public static void displayItemToolTip(Object[] tooltip, float pzLevel, int guiLeft, int guiTop, boolean forceminecraft, boolean forceAdd) {
-		zLevel = pzLevel;
-		if (tooltip != null) {
-			try {
-				//Use minecraft vanilla code
-				Minecraft mc = FMLClientHandler.instance().getClient();
-				ItemStack var22 = (ItemStack) tooltip[2];
-
-				List<String> var24 = var22.getTooltip(mc.thePlayer, mc.gameSettings.advancedItemTooltips);
-
-				if (tooltip.length > 4) {
-					var24.addAll(1, (List<String>) tooltip[4]);
-				}
-
-				if ((Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) && (tooltip.length < 4 || (Boolean) tooltip[3])) {
-					var24.add(1, "\u00a77" + ((ItemStack) tooltip[2]).stackSize);
-				}
-
-				int var11 = (Integer) tooltip[0] - (forceAdd ? 0 : guiLeft) + 12;
-				int var12 = (Integer) tooltip[1] - (forceAdd ? 0 : guiTop) - 12;
-				drawToolTip(var11, var12, var24, var22.getRarity().rarityColor, forceminecraft);
-			} catch (Exception e1) {}
+	@SuppressWarnings("unchecked")
+	public static void displayItemToolTip(Object[] tooltip, float pzLevel, int guiLeft, int guiTop, boolean forceMinecraft, boolean forceAdd) {
+		if (tooltip == null) {
+			return;
 		}
+
+		zLevel = pzLevel;
+
+		Minecraft mc = FMLClientHandler.instance().getClient();
+		ItemStack var22 = (ItemStack) tooltip[2];
+
+		List<String> var24 = var22.getTooltip(mc.thePlayer, mc.gameSettings.advancedItemTooltips);
+
+		if (tooltip.length > 4) {
+			var24.addAll(1, (List<String>) tooltip[4]);
+		}
+
+		if ((Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) && (tooltip.length < 4 || (Boolean) tooltip[3])) {
+			var24.add(1, "\u00a77" + ((ItemStack) tooltip[2]).stackSize);
+		}
+
+		int var11 = (Integer) tooltip[0] - (forceAdd ? 0 : guiLeft) + 12;
+		int var12 = (Integer) tooltip[1] - (forceAdd ? 0 : guiTop) - 12;
+		drawToolTip(var11, var12, var24, var22.getRarity().rarityColor, forceMinecraft);
+
 		zLevel = 0;
 	}
 
-	public static void drawToolTip(int posX, int posY, List<String> msg, EnumChatFormatting rarityColor, boolean forceminecraft) {
-		try {
-			if (forceminecraft) {
-				throw new Exception();
+	public static void drawToolTip(int posX, int posY, List<String> msg, EnumChatFormatting rarityColor, boolean forceMinecraft) {
+		if (!forceMinecraft) {
+			// try NEI methods
+			try {
+				Class<?> LayoutManager = Class.forName("codechicken.nei.LayoutManager");
+				Field GuiManagerField = LayoutManager.getDeclaredField("gui");
+				GuiManagerField.setAccessible(true);
+				Object GuiManagerObject = GuiManagerField.get(null);
+				Class<?> GuiManager = Class.forName("codechicken.nei.GuiManager");
+				Method drawMultilineTip = GuiManager.getDeclaredMethod("drawMultilineTip", int.class, int.class, List.class, int.class);
+
+				drawMultilineTip.invoke(GuiManagerObject, posX, posY, msg, rarityColor);
+			} catch (ReflectiveOperationException e) {
+				forceMinecraft = true;
+			}
+		}
+
+		if (forceMinecraft) {
+			if (msg.isEmpty()) {
+				return;
 			}
 
-			//Look for NEI
-			Class< ? > LayoutManager = Class.forName("codechicken.nei.LayoutManager");
-			Field GuiManagerField = LayoutManager.getDeclaredField("gui");
-			GuiManagerField.setAccessible(true);
-			Object GuiManagerObject = GuiManagerField.get(null);
-			Class< ? > GuiManager = Class.forName("codechicken.nei.GuiManager");
-			Method drawMultilineTip = GuiManager.getDeclaredMethod("drawMultilineTip", int.class, int.class, List.class, int.class);
+			// use vanilla Minecraft code
+			int var10 = 0;
+			int var11;
+			int var12;
 
-			drawMultilineTip.invoke(GuiManagerObject, posX, posY, msg, rarityColor);
-		} catch (Exception e) {
-			try {
-				//Use minecraft vanilla code
-				List<String> var24 = msg;
+			for (var11 = 0; var11 < msg.size(); ++var11) {
+				var12 = FMLClientHandler.instance().getClient().fontRenderer.getStringWidth(msg.get(var11));
 
-				if (var24.size() > 0) {
-					int var10 = 0;
-					int var11;
-					int var12;
-
-					for (var11 = 0; var11 < var24.size(); ++var11) {
-						var12 = FMLClientHandler.instance().getClient().fontRenderer.getStringWidth(var24.get(var11));
-
-						if (var12 > var10) {
-							var10 = var12;
-						}
-					}
-
-					var11 = posX + 12;
-					var12 = posY - 12;
-					int var14 = 8;
-
-					if (var24.size() > 1) {
-						var14 += 2 + (var24.size() - 1) * 10;
-					}
-
-					GL11.glDisable(2896 /*GL_LIGHTING*/);
-					GL11.glDisable(2929 /*GL_DEPTH_TEST*/);
-					zLevel = 300.0F;
-					int var15 = -267386864;
-
-					SimpleGraphics.drawGradientRect(var11 - 3, var12 - 4, var11 + var10 + 3, var12 - 3, var15, var15, 0.0);
-					SimpleGraphics.drawGradientRect(var11 - 3, var12 + var14 + 3, var11 + var10 + 3, var12 + var14 + 4, var15, var15, 0.0);
-					SimpleGraphics.drawGradientRect(var11 - 3, var12 - 3, var11 + var10 + 3, var12 + var14 + 3, var15, var15, 0.0);
-					SimpleGraphics.drawGradientRect(var11 - 4, var12 - 3, var11 - 3, var12 + var14 + 3, var15, var15, 0.0);
-					SimpleGraphics.drawGradientRect(var11 + var10 + 3, var12 - 3, var11 + var10 + 4, var12 + var14 + 3, var15, var15, 0.0);
-					int var16 = 1347420415;
-					int var17 = (var16 & 16711422) >> 1 | var16 & -16777216;
-					SimpleGraphics.drawGradientRect(var11 - 3, var12 - 3 + 1, var11 - 3 + 1, var12 + var14 + 3 - 1, var16, var17, 0.0);
-					SimpleGraphics.drawGradientRect(var11 + var10 + 2, var12 - 3 + 1, var11 + var10 + 3, var12 + var14 + 3 - 1, var16, var17, 0.0);
-					SimpleGraphics.drawGradientRect(var11 - 3, var12 - 3, var11 + var10 + 3, var12 - 3 + 1, var16, var16, 0.0);
-					SimpleGraphics.drawGradientRect(var11 - 3, var12 + var14 + 2, var11 + var10 + 3, var12 + var14 + 3, var17, var17, 0.0);
-
-					for (int var18 = 0; var18 < var24.size(); ++var18) {
-						String var19 = var24.get(var18);
-
-						if (var18 == 0) {
-							var19 = "\u00a7" + rarityColor.getFormattingCode() + var19;
-						} else {
-							var19 = "\u00a77" + var19;
-						}
-
-						FMLClientHandler.instance().getClient().fontRenderer.drawStringWithShadow(var19, var11, var12, -1);
-
-						if (var18 == 0) {
-							var12 += 2;
-						}
-
-						var12 += 10;
-					}
-
-					zLevel = 0.0F;
-
-					GL11.glEnable(2929 /*GL_DEPTH_TEST*/);
-					GL11.glEnable(2896 /*GL_LIGHTING*/);
+				if (var12 > var10) {
+					var10 = var12;
 				}
-			} catch (Exception e1) {}
+			}
+
+			var11 = posX + 12;
+			var12 = posY - 12;
+			int var14 = 8;
+
+			if (msg.size() > 1) {
+				var14 += 2 + (msg.size() - 1) * 10;
+			}
+
+			GL11.glDisable(2896 /*GL_LIGHTING*/);
+			GL11.glDisable(2929 /*GL_DEPTH_TEST*/);
+			zLevel = 300.0F;
+			int var15 = -267386864;
+
+			SimpleGraphics.drawGradientRect(var11 - 3, var12 - 4, var11 + var10 + 3, var12 - 3, var15, var15, 0.0);
+			SimpleGraphics.drawGradientRect(var11 - 3, var12 + var14 + 3, var11 + var10 + 3, var12 + var14 + 4, var15, var15, 0.0);
+			SimpleGraphics.drawGradientRect(var11 - 3, var12 - 3, var11 + var10 + 3, var12 + var14 + 3, var15, var15, 0.0);
+			SimpleGraphics.drawGradientRect(var11 - 4, var12 - 3, var11 - 3, var12 + var14 + 3, var15, var15, 0.0);
+			SimpleGraphics.drawGradientRect(var11 + var10 + 3, var12 - 3, var11 + var10 + 4, var12 + var14 + 3, var15, var15, 0.0);
+			int var16 = 1347420415;
+			int var17 = (var16 & 16711422) >> 1 | var16 & -16777216;
+			SimpleGraphics.drawGradientRect(var11 - 3, var12 - 3 + 1, var11 - 3 + 1, var12 + var14 + 3 - 1, var16, var17, 0.0);
+			SimpleGraphics.drawGradientRect(var11 + var10 + 2, var12 - 3 + 1, var11 + var10 + 3, var12 + var14 + 3 - 1, var16, var17, 0.0);
+			SimpleGraphics.drawGradientRect(var11 - 3, var12 - 3, var11 + var10 + 3, var12 - 3 + 1, var16, var16, 0.0);
+			SimpleGraphics.drawGradientRect(var11 - 3, var12 + var14 + 2, var11 + var10 + 3, var12 + var14 + 3, var17, var17, 0.0);
+
+			for (int var18 = 0; var18 < msg.size(); ++var18) {
+				String var19 = msg.get(var18);
+
+				if (var18 == 0) {
+					var19 = "\u00a7" + rarityColor.getFormattingCode() + var19;
+				} else {
+					var19 = "\u00a77" + var19;
+				}
+
+				FMLClientHandler.instance().getClient().fontRenderer.drawStringWithShadow(var19, var11, var12, -1);
+
+				if (var18 == 0) {
+					var12 += 2;
+				}
+
+				var12 += 10;
+			}
+
+			zLevel = 0.0F;
+
+			GL11.glEnable(2929 /*GL_DEPTH_TEST*/);
+			GL11.glEnable(2896 /*GL_LIGHTING*/);
 		}
 	}
 

@@ -10,6 +10,7 @@ import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.modules.ChassiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.utils.OpenGLDebugger;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.GuiGraphics.DisplayAmount;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
@@ -18,6 +19,7 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
 
 public class HudChassisPipe extends BasicHUDGui {
 	
@@ -38,6 +40,7 @@ public class HudChassisPipe extends BasicHUDGui {
 		for(int i=0;i<pipe.getChassiSize();i++) {
 			this.addButton(new ItemButton(moduleInventory, i, -45, -35 + ((i % 3) * 27), 20, 25));
 		}
+
 		this.addButton(new BasicHUDButton("<",-45,-45,8,8) {
 			
 			@Override
@@ -229,63 +232,41 @@ public class HudChassisPipe extends BasicHUDGui {
 			moduleClicked(position);
 		}
 
-		@Override
-		public void renderButton(boolean hover, boolean clicked) {
-			GL11.glTranslatef(0.0F, 0.0F, -0.00005F);
+		@Override public void renderButton(boolean hover, boolean clicked) {
 			Minecraft mc = FMLClientHandler.instance().getClient();
-			if(hover && !isSlotSelected(position)) {
-				GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)127);
-				if(!clicked) {
-					GL11.glTranslatef(0.0F, 0.0F, -0.01F);
-				}
+			GL11.glEnable(GL11.GL_BLEND);
+
+			if (hover || isSlotSelected(position)) {
+				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1F);
 			} else {
-				if(!this.buttonEnabled() && !isSlotSelected(position)) {
-					GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)32);
-				} else {
-					GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)64);
-				}
+				GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.5F);
 			}
+
+			GL11.glTranslatef(0.0F, 0.0F, -0.001F);
 			GL11.glScaled(0.5D, 0.5D, 1.0D);
-			if(isSlotSelected(position)) {
+			if (isSlotSelected(position)) {
 				GuiGraphics.drawGuiBackGround(mc, posX * 2, posY * 2, (posX + sizeX) * 2 + 19, (posY + sizeY) * 2, 0, false, true, true, true, false);
 			} else {
 				GuiGraphics.drawGuiBackGround(mc, posX * 2, posY * 2, (posX + sizeX) * 2, (posY + sizeY) * 2, 0, false);
 			}
 			GL11.glScaled(2.0D, 2.0D, 1.0D);
+			GL11.glTranslatef(0.0F, 0.0F, 0.001F);
 
-			if(clicked) {
-				GL11.glTranslatef(0.0F, 0.0F, -0.01F);
-			}
-			
 			ItemStack module = inv.getStackInSlot(position);
 			List<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>();
 			list.add(ItemIdentifierStack.getFromStack(module));
-			GL11.glTranslatef(0.0F, 0.0F, -0.00005F);
-			if(!this.buttonEnabled() && !isSlotSelected(position)) {
-				GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)32);
-			} else {
-				GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)127);
-			}
 
 			boolean showColor = this.buttonEnabled() || isSlotSelected(position);
-			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, posX + ((sizeX - 16) / 2), posY + ((sizeY - 16) / 2), 1, 1, 18, 18, 100.0F, mc, DisplayAmount.NEVER, showColor, true);
-
-			if(hover) {
-				GL11.glTranslatef(0.0F, 0.0F, 0.01F);
-			}
-			GL11.glTranslatef(0.0F, 0.0F, 0.0001F);
+			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, posX + ((sizeX - 16) / 2), posY + ((sizeY - 16) / 2), 1, 1, 18, 18, -0.002F, mc, DisplayAmount.NEVER, showColor, true);
 		}
 
-
-		@Override
-		public void renderAlways() {
-			if(inv.getStackInSlot(position) == null && shouldDisplayButton(position)) {
-				GL11.glPushMatrix();
-				GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)64);
+		@Override public void renderAlways() {
+			if (inv.getStackInSlot(position) == null && shouldDisplayButton(position)) {
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.3F);
 				GL11.glScaled(0.5D, 0.5D, 1.0D);
 				Minecraft mc = FMLClientHandler.instance().getClient();
 				GuiGraphics.drawGuiBackGround(mc, posX * 2, posY * 2, (posX + sizeX) * 2, (posY + sizeY) * 2, 0, false);
-				GL11.glPopMatrix();
 			}
 		}
 		

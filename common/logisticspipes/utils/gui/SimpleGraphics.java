@@ -124,8 +124,7 @@ public final class SimpleGraphics {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 
-		OpenGlHelper.glBlendFunc(770, 771, 1, 0);
-		// before: GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
 
 		GL11.glShadeModel(GL11.GL_SMOOTH);
 

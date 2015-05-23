@@ -15,6 +15,7 @@ import javax.imageio.ImageIO;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
+import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.gui.SubGuiScreen;
@@ -191,7 +192,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 	
 	private void drawTransparentBack() {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		this.drawGradientRect(0, 0, this.width, this.height, 0, 0);
+		SimpleGraphics.drawGradientRect(0, 0, this.width, this.height, Color.getValue(Color.BLANK), Color.getValue(Color.BLANK), 0.0);
 	}
 	
 	private void findLowest(LinkedLogisticsOrderList list, int lowerLimit) {

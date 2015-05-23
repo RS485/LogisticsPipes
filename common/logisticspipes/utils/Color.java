@@ -12,14 +12,17 @@ package logisticspipes.utils;
  * Enumeration for colors and their int values. Also contains some static functions.
  */
 public enum Color {
+	BLANK(0x00000000),
 	WHITE(0xFFFFFFFF),
+	WHITE_50(0x80FFFFFF),
 	BLACK(0xFF000000),
 	LIGHT_GREY(0xFFC6C6C6),
 	MIDDLE_GREY(0xFF8B8B8B),
 	DARK_GREY(0xFF555555),
 	RED(0xFFFF0000),
 	GREEN(0xFF00FF00),
-	BLUE(0xFF0000FF);
+	BLUE(0xFF0000FF),
+	;
 
 	private int colorValue;
 

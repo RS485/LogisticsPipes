@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.GuiGraphics;
+import logisticspipes.utils.gui.SimpleGraphics;
 import org.lwjgl.opengl.GL11;
 
 import logisticspipes.gui.popup.SelectItemOutOfList.IHandleItemChoise;
@@ -119,7 +121,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 					GL11.glDisable(GL11.GL_LIGHTING);
 					GL11.glDisable(GL11.GL_DEPTH_TEST);
 					GL11.glColorMask(true, true, true, false);
-					this.drawGradientRect(guiLeft + 45 + x * 18, guiTop + 20 + y * 18, guiLeft + 45 + x * 18 + 16, guiTop + 20 + y * 18 + 16, -2130706433, -2130706433);
+					SimpleGraphics.drawGradientRect(guiLeft + 45 + x * 18, guiTop + 20 + y * 18, guiLeft + 45 + x * 18 + 16, guiTop + 20 + y * 18 + 16, Color.getValue(Color.WHITE_50), Color.getValue(Color.WHITE_50), 0.0);
 					GL11.glColorMask(true, true, true, true);
 					GL11.glEnable(GL11.GL_LIGHTING);
 					GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -148,7 +150,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
 				GL11.glColorMask(true, true, true, false);
-				this.drawGradientRect(guiLeft + 20 + x * 40, guiTop + 90 + y * 40, guiLeft + 20 + x * 40 + 16, guiTop + 90 + y * 40 + 16, -2130706433, -2130706433);
+				SimpleGraphics.drawGradientRect(guiLeft + 20 + x * 40, guiTop + 90 + y * 40, guiLeft + 20 + x * 40 + 16, guiTop + 90 + y * 40 + 16, Color.getValue(Color.WHITE_50), Color.getValue(Color.WHITE_50), 0.0);
 				GL11.glColorMask(true, true, true, true);
 				GL11.glEnable(GL11.GL_LIGHTING);
 				GL11.glEnable(GL11.GL_DEPTH_TEST);

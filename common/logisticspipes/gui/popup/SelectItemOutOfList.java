@@ -2,7 +2,9 @@ package logisticspipes.gui.popup;
 
 import java.util.List;
 
+import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.GuiGraphics;
+import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -73,7 +75,7 @@ public class SelectItemOutOfList extends SubGuiScreen {
 					GL11.glDisable(GL11.GL_LIGHTING);
 					GL11.glDisable(GL11.GL_DEPTH_TEST);
 					GL11.glColorMask(true, true, true, false);
-					this.drawGradientRect(guiLeft + 5 + x * 18, guiTop + 17 + y * 18, guiLeft + 5 + x * 18 + 16, guiTop + 17 + y * 18 + 16, -2130706433, -2130706433);
+					SimpleGraphics.drawGradientRect(guiLeft + 5 + x * 18, guiTop + 17 + y * 18, guiLeft + 5 + x * 18 + 16, guiTop + 17 + y * 18 + 16, Color.getValue(Color.WHITE_50), Color.getValue(Color.WHITE_50), 0.0);
 					GL11.glColorMask(true, true, true, true);
 					GL11.glEnable(GL11.GL_LIGHTING);
 					GL11.glEnable(GL11.GL_DEPTH_TEST);

@@ -13,10 +13,12 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -24,9 +26,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -43,7 +45,7 @@ import org.lwjgl.opengl.GL11;
 	private Thread probeGUIThread;
 	private int cycleCount;
 	private boolean started;
-	private ConcurrentHashMap<Integer, Object> glVariables;
+	private ExtendedHashMap glStuff;
 	private ConcurrentHashMap<Integer, GLTypes> glVariablesToCheck;
 	private final Lock debuggerLock;
 	private final Condition glVariablesCondition;
@@ -51,18 +53,167 @@ import org.lwjgl.opengl.GL11;
 	@Getter @Setter private int printOnCycle;
 
 	private enum GLTypes {
-		BOOLEAN("boolean", "GL11.glGetBoolean"),
-		DOUBLE("double", "GL11.glGetDouble"),
-		FLOAT("float", "GL11.glGetFloat"),
-		INTEGER("int", "GL11.glGetInteger"),
-		INTEGER64("long", "GL32.glGetInteger64");
+		BOOLEAN(Boolean.class, "boolean", "GL11.glGetBoolean"),
+		DOUBLE(Double.class, "double", "GL11.glGetDouble"),
+		FLOAT(Float.class, "float", "GL11.glGetFloat"),
+		INTEGER(Integer.class, "int", "GL11.glGetInteger"),
+		INTEGER64(Long.class, "long", "GL32.glGetInteger64");
 
+		private Class javaClass;
 		private String getterFunction;
 		private String niceName;
 
-		GLTypes(String niceName, String getterFunction) {
+		GLTypes(Class javaClass, String niceName, String getterFunction) {
+			this.javaClass = javaClass;
 			this.niceName = niceName;
 			this.getterFunction = getterFunction;
+		}
+
+		public Class getJavaClass() {
+			return javaClass;
+		}
+
+		public String getGetterFunction() {
+			return getterFunction;
+		}
+
+		public String getNiceName() {
+			return niceName;
+		}
+	}
+
+	public class ExtendedHashMap extends HashMap<Integer, Object> {
+
+		private ArrayList<Integer> orderedKeys;
+		private ArrayList<Integer> newKeys;
+		private ArrayList<Integer> updatedKeys;
+		private boolean sessionStarted;
+
+		public int getStopUpdatedIndex() {
+			return stopUpdatedIndex;
+		}
+
+		public int getStopNewIndex() {
+			return stopNewIndex;
+		}
+
+		private int stopUpdatedIndex;
+		private int stopNewIndex;
+
+		public ExtendedHashMap() {
+			sessionStarted = false;
+			orderedKeys = new ArrayList<Integer>();
+		}
+
+		@Override public Object putIfAbsent(Integer key, Object value) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override public void putAll(Map<? extends Integer, ?> m) {
+			throw new UnsupportedOperationException();
+		}
+
+		public void startSession() {
+			newKeys = new ArrayList<Integer>();
+			updatedKeys = new ArrayList<Integer>();
+			sessionStarted = true;
+		}
+
+		@Override public Object put(Integer key, Object value) {
+			if (!sessionStarted) {
+				throw new UnsupportedOperationException("Session not started");
+			}
+			if (containsKey(key)) {
+				if (get(key).equals(value)) {
+					return value;
+				} else {
+					orderedKeys.remove(key);
+					updatedKeys.add(key);
+				}
+			} else {
+				newKeys.add(key);
+			}
+			return super.put(key, value);
+		}
+
+		public void stopSession() {
+			stopNewIndex = newKeys.size();
+			orderedKeys.addAll(0, newKeys);
+			newKeys = null;
+			stopUpdatedIndex = updatedKeys.size();
+			stopNewIndex += stopUpdatedIndex;
+			orderedKeys.addAll(0, updatedKeys);
+			updatedKeys = null;
+			sessionStarted = false;
+		}
+
+		public String getName(Integer key) {
+			return niceToHave.get(key);
+		}
+
+		public int getKey(int index) {
+			return orderedKeys.get(index);
+		}
+	}
+
+	public class SpecialTableModel extends DefaultTableModel {
+
+		@Override public boolean isCellEditable(int row, int column) {
+			return false;
+		}
+
+		@Override public String getColumnName(int column) {
+			switch (column) {
+				case 0:
+					return "Key";
+				case 1:
+					return "Value";
+				default:
+					return "<NOVALUE>";
+			}
+		}
+
+		@Override public int getRowCount() {
+			return glStuff.size();
+		}
+
+		@Override public int getColumnCount() {
+			return 2;
+		}
+
+		@Override public Object getValueAt(int rowIndex, int columnIndex) {
+			try {
+				int index = glStuff.getKey(rowIndex);
+				switch (columnIndex) {
+					case 0:
+						return glStuff.getName(index);
+					case 1:
+						return glStuff.get(index);
+					default:
+						return "<NOVALUE>";
+				}
+			} catch (IndexOutOfBoundsException e) {
+				return "<EXCEPTION>";
+			}
+		}
+	}
+
+	public class SpecialTableCellRenderer extends DefaultTableCellRenderer {
+
+		@Override public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+			if (table == null) {
+				return this;
+			}
+			setBackground(null);
+			super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+			if (row < glStuff.getStopUpdatedIndex()) {
+				setBackground(Color.YELLOW);
+			} else if (row < glStuff.getStopNewIndex()) {
+				setBackground(Color.GREEN);
+			}
+
+			return this;
 		}
 	}
 
@@ -74,8 +225,6 @@ import org.lwjgl.opengl.GL11;
 		private JButton addButton;
 		private JTextField addTextField;
 		private JScrollPane monitorTableScrollPane;
-
-		private ArrayList<Integer> tableList;
 
 		public ProbeGUI() {
 			for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -97,34 +246,10 @@ import org.lwjgl.opengl.GL11;
 			setContentPane(mainPanel);
 			getRootPane().setDefaultButton(closeButton);
 
-			tableList = new ArrayList<Integer>();
+			variableMonitorTable.setModel(new SpecialTableModel());
 
-			TableModel glVariableDataModel = new AbstractTableModel() {
-
-				@Override public int getRowCount() {
-					return tableList.size();
-				}
-
-				@Override public int getColumnCount() {
-					return 2;
-				}
-
-				@Override public Object getValueAt(int rowIndex, int columnIndex) {
-					try {
-						switch (columnIndex) {
-							case 0:
-								return niceToHave.get(tableList.get(rowIndex));
-							case 1:
-								return glVariables.get(tableList.get(rowIndex));
-							default:
-								return "<NOVALUE>";
-						}
-					} catch (IndexOutOfBoundsException e) {
-						return "<EXCEPTION>";
-					}
-				}
-			};
-			variableMonitorTable.setModel(glVariableDataModel);
+			TableCellRenderer cellRenderer = new SpecialTableCellRenderer();
+			variableMonitorTable.getColumnModel().getColumn(0).setCellRenderer(cellRenderer);
 
 			setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 			addWindowListener(new WindowAdapter() {
@@ -166,10 +291,8 @@ import org.lwjgl.opengl.GL11;
 		}
 
 		private void updateVariables() {
-			tableList = new ArrayList<Integer>(glVariables.keySet());
-			Collections.sort(tableList);
-
-			variableMonitorTable.updateUI();
+			DefaultTableModel dtm = (DefaultTableModel) variableMonitorTable.getModel();
+			dtm.fireTableDataChanged();
 		}
 
 		private void setupUI() {
@@ -232,7 +355,7 @@ import org.lwjgl.opengl.GL11;
 		glVariablesCondition = debuggerLock.newCondition();
 
 		this.printOnCycle = printOnCycle;
-		this.glVariables = new ConcurrentHashMap<Integer, Object>();
+		this.glStuff = new ExtendedHashMap();
 		this.glVariablesToCheck = new ConcurrentHashMap<Integer, GLTypes>();
 
 		this.probeGUIThread = new Thread(new ProbeGUI(), "LogisticsPipes GLDebug Probe #" + probeID);
@@ -240,19 +363,23 @@ import org.lwjgl.opengl.GL11;
 	}
 
 	public void start() {
-		started = true;
-		cycleCount = 0;
-		probeGUIThread.start();
+		if (!started) {
+			started = true;
+			cycleCount = 0;
+			probeGUIThread.start();
+		}
 	}
 
 	public void stop() {
-		debuggerLock.lock();
-		try {
-			started = false;
-			glVariablesUpdated = true;
-			glVariablesCondition.signal();
-		} finally {
-			debuggerLock.unlock();
+		if (started) {
+			debuggerLock.lock();
+			try {
+				started = false;
+				glVariablesUpdated = true;
+				glVariablesCondition.signal();
+			} finally {
+				debuggerLock.unlock();
+			}
 		}
 	}
 
@@ -270,15 +397,17 @@ import org.lwjgl.opengl.GL11;
 		debuggerLock.lock();
 		try {
 			Iterator<Integer> i = glVariablesToCheck.keySet().iterator();
+			glStuff.startSession();
 			while (i.hasNext()) {
 				Integer key = i.next();
 				Object value = GL11.glGetBoolean(key);
 				if (GL11.glGetError() == GL11.GL_INVALID_ENUM) {
 					i.remove();
 				} else {
-					glVariables.put(key, value);
+					glStuff.put(key, value);
 				}
 			}
+			glStuff.stopSession();
 			glVariablesUpdated = true;
 			glVariablesCondition.signal();
 		} finally {
@@ -302,22 +431,28 @@ import org.lwjgl.opengl.GL11;
 
 				for (Field f : glClass.getDeclaredFields()) {
 					try {
+						if (!f.getType().equals(int.class)) {
+							continue;
+						}
+
 						int id = f.getInt(null);
 						String nice = f.getName();
 						if (nice.endsWith("BIT")) {
 							continue;
 						}
-						/*
+
 						// All the things that are being replaced are not that bad
 						if (niceToHave.containsKey(id) && !niceToHave.get(id).equals(nice)) {
 							System.out.printf("NiceToHave: ID %d exists. Replacing %s with %s!!%n", id, niceToHave.remove(id), nice);
 						}
-						*/
+
 						niceToHave.put(id, String.format("%s.%s", packageGL, nice));
 					} catch (IllegalArgumentException e) {
 						System.out.printf("NiceToHave: Illegal Argument!%nNiceToHave: %s%n", e);
+						e.printStackTrace();
 					} catch (IllegalAccessException e) {
 						System.out.printf("NiceToHave: Illegal Access!%nNiceToHave: %s%n", e);
+						e.printStackTrace();
 					}
 				}
 			} catch (ClassNotFoundException e) {

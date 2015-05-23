@@ -31,7 +31,7 @@ public final class SimpleGraphics {
 	 * @param y the y-coordinate the line is on
 	 * @param color the color, which the line will have
 	 * @param thickness the thickness, which the line will have
-	 * @see net.minecraft.client.gui.Gui method drawHorizontalLine(int, int, int, int)
+	 * @see net.minecraft.client.gui.Gui#drawHorizontalLine(int, int, int, int)
 	 */
 	public static void drawHorizontalLine(int x1, int x2, int y, int color, int thickness) {
 		if (x2 < x1) {
@@ -51,7 +51,7 @@ public final class SimpleGraphics {
 	 * @param y2 the end coordinate
 	 * @param color the color, which the line will have
 	 * @param thickness the thickness, which the line will have
-	 * @see net.minecraft.client.gui.Gui method drawVerticalLine(int, int, int, int)
+	 * @see net.minecraft.client.gui.Gui#drawVerticalLine(int, int, int, int)
 	 */
 	public static void drawVerticalLine(int x, int y1, int y2, int color, int thickness) {
 		if (y2 < y1) {
@@ -73,7 +73,7 @@ public final class SimpleGraphics {
 	 * @param y2 the second y-coordinate of the rectangle
 	 * @param color the color of the rectangle
 	 * @param zLevel the z-level of the graphic
-	 * @see net.minecraft.client.gui.Gui method drawRect(int, int, int, int, int)
+	 * @see net.minecraft.client.gui.Gui#drawRect(int, int, int, int, int)
 	 */
 	public static void drawRectNoBlend(int x1, int y1, int x2, int y2, int color, double zLevel) {
 		int temp;
@@ -126,7 +126,7 @@ public final class SimpleGraphics {
 	 * @param colorA the first color, starting from y1
 	 * @param colorB the second color, ending in y2
 	 * @param zLevel the z-level of the graphic
-	 * @see net.minecraft.client.gui.Gui method drawGradientRect(int, int, int, int, int, int)
+	 * @see net.minecraft.client.gui.Gui#drawGradientRect(int, int, int, int, int, int)
 	 */
 	public static void drawGradientRect(int x1, int y1, int x2, int y2, int colorA, int colorB, double zLevel) {
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -163,7 +163,7 @@ public final class SimpleGraphics {
 	 * @param width the width of the rectangle
 	 * @param height the height of the rectangle
 	 * @param zLevel the z-level of the graphic
-	 * @see net.minecraft.client.gui.Gui method drawTexturedModalRect(int, int, int, int, int, int)
+	 * @see net.minecraft.client.gui.Gui#drawTexturedModalRect(int, int, int, int, int, int)
 	 */
 	public static void drawTexturedModalRect(int x, int y, int u, int v, int width, int height, double zLevel) {
 		float f = 0.00390625F;
@@ -187,7 +187,7 @@ public final class SimpleGraphics {
 	 * @param y the y-coordinate of the string
 	 * @param color the color of the string
 	 * @return the stop x-coordinate of the drawn string
-	 * @see net.minecraft.client.gui.FontRenderer method drawString(String, int, int, int, boolean)
+	 * @see net.minecraft.client.gui.FontRenderer#drawString(String, int, int, int, boolean)
 	 */
 	public static int drawStringWithTranslatedShadow(FontRenderer fontRenderer, String s, int x, int y, int color) {
 		int endX;

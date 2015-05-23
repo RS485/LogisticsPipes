@@ -5,6 +5,7 @@ import java.util.List;
 
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.utils.gui.GuiGraphics;
+import logisticspipes.utils.gui.GuiGraphics.DisplayAmount;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -38,7 +39,7 @@ public class GuiSolderingStation extends LogisticsBaseGuiScreen {
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
-		GuiGraphics.renderItemIdentifierStackListIntoGui(tile.getRecipeForTagetAsItemIdentifierStackList(), null, 0, guiLeft + 44, guiTop + 17, 3, 9, 18, 18, mc, false, false);
+		GuiGraphics.renderItemIdentifierStackListIntoGui(tile.getRecipeForTagetAsItemIdentifierStackList(), null, 0, guiLeft + 44, guiTop + 17, 3, 9, 18, 18, mc, DisplayAmount.NEVER);
 		ItemStack resultstack = tile.getTargetForTaget();
 		if(resultstack == null) {
 			resultstack = tile.getTagetForRecipe(false);
@@ -47,7 +48,7 @@ public class GuiSolderingStation extends LogisticsBaseGuiScreen {
 			ItemIdentifierStack iis = ItemIdentifier.get(resultstack).makeStack(0);
 			List<ItemIdentifierStack> iisl = new LinkedList<ItemIdentifierStack>();
 			iisl.add(iis);
-			GuiGraphics.renderItemIdentifierStackListIntoGui(iisl, null, 0, guiLeft + 141, guiTop + 47, 1, 1, 18, 18, mc, false, false);
+			GuiGraphics.renderItemIdentifierStackListIntoGui(iisl, null, 0, guiLeft + 141, guiTop + 47, 1, 1, 18, 18, mc, DisplayAmount.NEVER);
 		}
 		mc.renderEngine.bindTexture(TEXTURE);
 		GL11.glDisable(2929 /*GL_DEPTH_TEST*/);

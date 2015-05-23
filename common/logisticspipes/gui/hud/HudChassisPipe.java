@@ -3,6 +3,7 @@ package logisticspipes.gui.hud;
 import java.util.ArrayList;
 import java.util.List;
 
+import cpw.mods.fml.client.FMLClientHandler;
 import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.interfaces.IHUDModuleHandler;
@@ -10,15 +11,13 @@ import logisticspipes.modules.ChassiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.utils.gui.GuiGraphics;
+import logisticspipes.utils.gui.GuiGraphics.DisplayAmount;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
-
 import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.client.FMLClientHandler;
 
 public class HudChassisPipe extends BasicHUDGui {
 	
@@ -149,7 +148,7 @@ public class HudChassisPipe extends BasicHUDGui {
 			GL11.glTranslatef(0.0F, 0.0F, (float) (-0.005F * distance));
 			GL11.glScalef(1.5F, 1.5F, 0.0001F);
 			GL11.glScalef(0.8F, 0.8F, -1F);
-			GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, -15, -35, 3, 12, 18, 18, mc, true, true, true, true);
+			GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, -15, -35, 3, 12, 18, 18, mc, DisplayAmount.ALWAYS, true, true);
 		}
 		GL11.glTranslatef(0.0F, 0.0F, (float) (0.00005F * distance));
 	}
@@ -267,7 +266,10 @@ public class HudChassisPipe extends BasicHUDGui {
 			} else {
 				GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)127);
 			}
-			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, posX + ((sizeX - 16) / 2), posY + ((sizeY - 16) / 2), 1, 1, 18, 18, mc, false, false, this.buttonEnabled() || isSlotSelected(position), true);
+
+			boolean showColor = this.buttonEnabled() || isSlotSelected(position);
+			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, posX + ((sizeX - 16) / 2), posY + ((sizeY - 16) / 2), 1, 1, 18, 18, mc, DisplayAmount.NEVER, showColor, true);
+
 			if(hover) {
 				GL11.glTranslatef(0.0F, 0.0F, 0.01F);
 			}

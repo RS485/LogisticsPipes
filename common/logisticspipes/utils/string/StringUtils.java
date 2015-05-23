@@ -100,9 +100,9 @@ public final class StringUtils {
 		}
 	}
 
-	public static String getFormatedStackSize(long stackSize) {
+	public static String getFormatedStackSize(long stackSize, boolean forceDisplayNumber) {
 		String s;
-		if (stackSize == 1) {
+		if (stackSize == 1 && !forceDisplayNumber) {
 			s = "";
 		} else if (stackSize < 1000) {
 			s = stackSize + "";

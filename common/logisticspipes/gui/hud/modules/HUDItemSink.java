@@ -6,6 +6,7 @@ import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.utils.gui.GuiGraphics;
+import logisticspipes.utils.gui.GuiGraphics.DisplayAmount;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.Minecraft;
 
@@ -25,7 +26,7 @@ public class HUDItemSink implements IHUDModuleRenderer {
 	public void renderContent() {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		GL11.glScalef(1.0F, 1.0F, -0.00001F);
-		GuiGraphics.renderItemIdentifierStackListIntoGui(ItemIdentifierStack.getListFromInventory(module.getFilterInventory()), null, 0, -25, -32, 3, 9, 18, 18, mc, false, false, true, true);
+		GuiGraphics.renderItemIdentifierStackListIntoGui(ItemIdentifierStack.getListFromInventory(module.getFilterInventory()), null, 0, -25, -32, 3, 9, 18, 18, mc, DisplayAmount.NEVER, true, true);
 		GL11.glScalef(1.0F, 1.0F, 1 / -0.00001F);
 		mc.fontRenderer.drawString("Default:" , -29, 25, 0);
 		if(module.isDefaultRoute()) {

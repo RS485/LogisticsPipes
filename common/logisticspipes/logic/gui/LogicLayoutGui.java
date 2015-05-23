@@ -376,7 +376,7 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 		renderitem.renderItemAndEffectIntoGUI(this.mc.fontRenderer, this.mc.getTextureManager(), item.makeNormalStack(), x, y);
 		if(guiLeft < x && x < guiLeft + xSize - 16 && guiTop < y && y < guiTop + ySize - 16) {
 			renderitem.renderItemOverlayIntoGUI(mc.fontRenderer, this.mc.renderEngine, item.makeNormalStack(), x, y, "");
-			String s = StringUtils.getFormatedStackSize(item.getStackSize());
+			String s = StringUtils.getFormatedStackSize(item.getStackSize(), false);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 			renderitem.zLevel = 0.0F;

@@ -3,6 +3,7 @@ package logisticspipes.gui.hud;
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.utils.gui.GuiGraphics;
+import logisticspipes.utils.gui.GuiGraphics.DisplayAmount;
 import net.minecraft.client.Minecraft;
 
 import org.lwjgl.opengl.GL11;
@@ -36,7 +37,7 @@ public class HUDInvSysConnector extends BasicHUDGui {
 		mc.fontRenderer.drawString(message , -28, -25, 0);
 		GL11.glScalef(0.8F, 0.8F, -1F);
 		
-		GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, -37, -18, 3, 9, 18, 18, mc, true, true, true, true);
+		GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, -37, -18, 3, 9, 18, 18, mc, DisplayAmount.ALWAYS, true, true);
 	}
 
 	@Override

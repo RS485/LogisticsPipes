@@ -9,6 +9,7 @@ import logisticspipes.network.packets.orderer.DiscContent;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.GuiGraphics;
+import logisticspipes.utils.gui.GuiGraphics.DisplayAmount;
 import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
@@ -322,7 +323,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 			}
 		}
 
-		GuiGraphics.renderItemIdentifierStackListIntoGui(diskProvider.getItemDisplay()._allItems, this, pageAll, guiLeft + 10, guiTop + 18, 9, 45, panelxSize, panelySize, mc, false, false);
+		GuiGraphics.renderItemIdentifierStackListIntoGui(diskProvider.getItemDisplay()._allItems, this, pageAll, guiLeft + 10, guiTop + 18, 9, 45, panelxSize, panelySize, mc, DisplayAmount.NEVER);
 
 		ppi = 0;
 		column = 0;
@@ -355,7 +356,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 				column = 0;
 			}
 		}
-		GuiGraphics.renderItemIdentifierStackListIntoGui(macroItems, this, pageMacro, guiLeft + 10, guiTop + 150, 9, 9, panelxSize, panelySize, mc, true, true);
+		GuiGraphics.renderItemIdentifierStackListIntoGui(macroItems, this, pageMacro, guiLeft + 10, guiTop + 150, 9, 9, panelxSize, panelySize, mc, DisplayAmount.ALWAYS);
 
 		GL11.glDisable(2929 /*GL_DEPTH_TEST*/);
 		super.drawScreen(par1, par2, par3);

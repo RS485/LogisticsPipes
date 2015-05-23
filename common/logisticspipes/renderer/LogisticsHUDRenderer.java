@@ -22,6 +22,7 @@ import logisticspipes.routing.LaserData;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.utils.MathVector;
 import logisticspipes.utils.gui.GuiGraphics;
+import logisticspipes.utils.gui.GuiGraphics.DisplayAmount;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.client.Minecraft;
@@ -334,7 +335,7 @@ public class LogisticsHUDRenderer {
 							GL11.glScalef(0.8F, 0.8F, -1F);
 							List<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>(1);
 							list.add(ItemIdentifierStack.getFromStack(item));
-							GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, 5, 5, 1, 1, 18, 18, mc, false, false, true, true);
+							GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, 5, 5, 1, 1, 18, 18, mc, DisplayAmount.NEVER, true, true);
 						}
 					}
 				}

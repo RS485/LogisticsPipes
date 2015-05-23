@@ -265,7 +265,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 						ItemStack stack = entry.getValue().getValue1().getDisplayItem().makeNormalStack();
 						itemRender.renderItemAndEffectIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5);
 						itemRender.renderItemOverlayIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5, "");
-						String s = StringUtils.getFormatedStackSize(stack.stackSize);
+						String s = StringUtils.getFormatedStackSize(stack.stackSize, false);
 						GL11.glDisable(GL11.GL_LIGHTING);
 						GL11.glDisable(GL11.GL_DEPTH_TEST);
 						itemRender.zLevel = 0.0F;
@@ -295,7 +295,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 								RenderHelper.enableGUIStandardItemLighting();
 								itemRender.renderItemAndEffectIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, x, y);
 								itemRender.renderItemOverlayIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, x, y, "");
-								s = StringUtils.getFormatedStackSize(stack.stackSize);
+								s = StringUtils.getFormatedStackSize(stack.stackSize, false);
 								GL11.glDisable(GL11.GL_LIGHTING);
 								GL11.glDisable(GL11.GL_DEPTH_TEST);
 								itemRender.zLevel = 0.0F;

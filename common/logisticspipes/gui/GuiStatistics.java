@@ -234,10 +234,10 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 					}
 					
 					double averagey = ((double)highest + lowest) / 2;
-					
-					fontRendererObj.drawString(StringUtils.getFormatedStackSize(highest), xOrigo - 1 - fontRendererObj.getStringWidth(StringUtils.getFormatedStackSize(highest)), guiTop + 117, 0x404040);
-					fontRendererObj.drawString(StringUtils.getFormatedStackSize((long) averagey), xOrigo - 1 - fontRendererObj.getStringWidth(StringUtils.getFormatedStackSize((long) averagey)), yCenter + 46, 0x404040);
-					fontRendererObj.drawString(StringUtils.getFormatedStackSize(lowest), xOrigo - 1 - fontRendererObj.getStringWidth(StringUtils.getFormatedStackSize(lowest)), bottom - 23, 0x404040);
+
+					fontRendererObj.drawString(StringUtils.getFormatedStackSize(highest, false), xOrigo - 1 - fontRendererObj.getStringWidth(StringUtils.getFormatedStackSize(highest, false)), guiTop + 117, 0x404040);
+					fontRendererObj.drawString(StringUtils.getFormatedStackSize((long) averagey, false), xOrigo - 1 - fontRendererObj.getStringWidth(StringUtils.getFormatedStackSize((long) averagey, false)), yCenter + 46, 0x404040);
+					fontRendererObj.drawString(StringUtils.getFormatedStackSize(lowest, false), xOrigo - 1 - fontRendererObj.getStringWidth(StringUtils.getFormatedStackSize(lowest, false)), bottom - 23, 0x404040);
 					
 					float yScale = 80F / Math.max(highest - lowest, 0.5F);
 					int x = xOrigo + 150;

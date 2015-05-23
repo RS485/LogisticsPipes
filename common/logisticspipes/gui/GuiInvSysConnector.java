@@ -27,6 +27,8 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import static logisticspipes.utils.gui.GuiGraphics.*;
+
 public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 	private static final String PREFIX = "gui.invsyscon.";
 	
@@ -72,12 +74,12 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 115);
+		drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 115);
 		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "InventorySystemConnector"), guiLeft + 5, guiTop + 6, 0x404040);
 		drawRect(guiLeft + 9, guiTop + 58, guiLeft + 170, guiTop + 112, Color.GREY);
 		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "ConnectionCard") + ":", guiLeft + 10, guiTop + 21, 0x404040);
-		GuiGraphics.drawSlotBackground(mc, guiLeft + 97, guiTop + 16);
+		drawSlotBackground(mc, guiLeft + 97, guiTop + 16);
 		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "Waitingfor") + ":", guiLeft + 10, guiTop + 48, 0x404040);
 		mc.fontRenderer.drawString((page + 1) + "/" + maxPage(), guiLeft + 136, guiTop + 49, 0x404040);
 		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "Resistance") + ":", guiLeft + 10, guiTop + 35, 0x404040);
@@ -87,7 +89,7 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		GuiGraphics.renderItemIdentifierStackListIntoGui(_allItems, null, page, 9, 59, 9, 27, 18, 18, mc, true, true);
+		renderItemIdentifierStackListIntoGui(_allItems, null, page, 9, 59, 9, 27, 18, 18, mc, DisplayAmount.ALWAYS);
 		
 		int ppi = 0;
 		int column = 0;
@@ -107,7 +109,7 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 	        int mouseY = this.height - Mouse.getY() * this.height / mc.displayHeight - 1;
 			
 			if(x < mouseX && mouseX < x + 18 && y < mouseY && mouseY < y + 18) {
-				GuiGraphics.displayItemToolTip(new Object[] { mouseX, mouseY, st, true }, zLevel, guiLeft, guiTop, false, false);
+				displayItemToolTip(new Object[] { mouseX, mouseY, st, true }, zLevel, guiLeft, guiTop, false, false);
 			}
 			
 			column++;

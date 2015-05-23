@@ -8,12 +8,13 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import cpw.mods.fml.client.FMLClientHandler;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ISpecialItemRenderer;
 import logisticspipes.utils.Color;
+import logisticspipes.utils.gui.GuiGraphics.DisplayAmount;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.string.StringUtils;
 import logisticspipes.utils.tuples.Pair;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
@@ -25,13 +26,10 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
-
-import cpw.mods.fml.client.FMLClientHandler;
 
 public class ItemDisplay {
 	public enum DisplayOption {
@@ -278,24 +276,8 @@ public class ItemDisplay {
 					if(renderer != null) renderer.specialItemRendering(itemIdentifierStack.getItem(), x, y);
 				}
 
-				String s = StringUtils.getFormatedStackSize(itemstack.stackSize);
-				
-				FontRenderer font = itemstack.getItem().getFontRenderer(itemstack);
-				if (font == null)
-					font = fontRenderer;
-
-				itemRenderer.zLevel = 100.0F;
-				GL11.glEnable(GL11.GL_DEPTH_TEST);
-				GL11.glEnable(GL11.GL_LIGHTING);
-				itemRenderer.renderItemAndEffectIntoGUI(font, screen.getMC().renderEngine, itemstack, x, y);
-				// With empty string, because damage value indicator struggles with the depth
-				itemRenderer.renderItemOverlayIntoGUI(font, screen.getMC().renderEngine, itemstack, x, y, "");
-				GL11.glDisable(GL11.GL_LIGHTING);
-				GL11.glDisable(GL11.GL_DEPTH_TEST);
-				itemRenderer.zLevel = 0.0F;
-
-				// Draw number
-				font.drawStringWithShadow(s, x + 19 - 2 - font.getStringWidth(s), y + 6 + 3, 16777215);
+				// Use BasicGuiHelper to render an ItemStack
+				GuiGraphics.renderItemStack(itemstack, x, y, 100.0F, screen.getMC().renderEngine, itemRenderer, fontRenderer, DisplayAmount.HIDE_ONE, false);
 
 				x += panelxSize;
 				if (x > this.width) {

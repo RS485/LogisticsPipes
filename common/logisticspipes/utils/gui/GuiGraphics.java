@@ -16,12 +16,16 @@ import cpw.mods.fml.client.FMLClientHandler;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
@@ -44,30 +48,79 @@ public final class GuiGraphics {
 	public static final ResourceLocation LOCK_ICON = new ResourceLocation("logisticspipes", "textures/gui/lock.png");
 	public static final ResourceLocation LINES_ICON = new ResourceLocation("logisticspipes", "textures/gui/lines.png");
 	public static final ResourceLocation STATS_ICON = new ResourceLocation("logisticspipes", "textures/gui/stats.png");
-	public static float zLevel;
+	public static final RenderBlocks mcRenderBlocks = new RenderBlocks();
+	public static float zLevel = 0.0F;
 
 	private GuiGraphics() {
 	}
 
-	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, Minecraft mc, boolean displayAmount, boolean forcenumber) {
-		renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, mc, displayAmount, forcenumber, true);
+	public enum DisplayAmount {
+		HIDE_ONE,
+		ALWAYS,
+		NEVER,
 	}
 
-	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, Minecraft mc, boolean displayAmount, boolean forcenumber, boolean color) {
-		renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, mc, displayAmount, forcenumber, color, false);
+	public static void renderItemStack(ItemStack itemstack, int posX, int posY, float zLevel, TextureManager texManager, RenderItem itemRenderer, FontRenderer fontRenderer, DisplayAmount displayAmount, boolean disableEffects) {
+		GL11.glEnable(GL11.GL_LIGHTING);
+
+		// Rendering the block/item with depth and lightning, but without text
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		// RenderBlocks is a heavy object, so instantiating it everytime is a bad idea
+		if (!ForgeHooksClient.renderInventoryItem(mcRenderBlocks, texManager, itemstack, true, zLevel, posX, posY)) {
+			itemRenderer.zLevel += zLevel;
+			itemRenderer.renderItemIntoGUI(fontRenderer, texManager, itemstack, posX, posY, false);
+
+			if (!disableEffects && itemstack.hasEffect(0)) {
+				GL11.glTranslatef(0F, 0F, 1F);
+				itemRenderer.renderEffect(texManager, posX, posY);
+				GL11.glTranslatef(0F, 0F, -1F);
+			}
+
+			itemRenderer.zLevel -= zLevel;
+		}
+
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		itemRenderer.renderItemOverlayIntoGUI(fontRenderer, texManager, itemstack, posX, posY, "");
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+
+		// if we want to render the amount, do that
+		if (displayAmount != DisplayAmount.NEVER) {
+			FontRenderer specialFontRenderer = itemstack.getItem().getFontRenderer(itemstack);
+
+			if (specialFontRenderer != null) {
+				fontRenderer = specialFontRenderer;
+			}
+
+			GL11.glDisable(GL11.GL_LIGHTING);
+			String amountString = StringUtils.getFormatedStackSize(itemstack.stackSize, displayAmount == DisplayAmount.ALWAYS);
+			// using a translated shadow does not hurt and works with the HUD
+			SimpleGraphics.drawStringWithTranslatedShadow(fontRenderer, amountString, posX + 17 - fontRenderer.getStringWidth(amountString), posY + 9, Color.getValue(Color.WHITE));
+		}
 	}
 
-	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, Minecraft mc, boolean displayAmount, boolean forcenumber, boolean color, boolean disableEffect) {
-		GL11.glPushMatrix();
+	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, Minecraft mc, DisplayAmount displayAmount) {
+		renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, mc, displayAmount, true);
+	}
+
+	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, Minecraft mc, DisplayAmount displayAmount, boolean color) {
+		renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, mc, displayAmount, color, false);
+	}
+
+	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, Minecraft mc, DisplayAmount displayAmount, boolean color, boolean disableEffect) {
+		RenderHelper.enableGUIStandardItemLighting();
+		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);
+
+		// The only thing that ever sets NORMALIZE are slimes. It never gets disabled and it interferes with our lightning in the HUD.
+		GL11.glDisable(GL11.GL_NORMALIZE);
+
 		int ppi = 0;
 		int column = 0;
 		int row = 0;
 		FontRenderer fontRenderer = mc.fontRenderer;
-		RenderItem renderItem = new RenderItem();
-		RenderBlocks renderBlocks = new RenderBlocks();
-		renderItem.renderWithColor = color;
-		for (ItemIdentifierStack itemStack : _allItems) {
-			if (itemStack == null) {
+		RenderItem itemRenderer = new RenderItem();
+		itemRenderer.renderWithColor = color;
+		for (ItemIdentifierStack identifierStack : _allItems) {
+			if (identifierStack == null) {
 				column++;
 				if (column >= columns) {
 					row++;
@@ -76,51 +129,18 @@ public final class GuiGraphics {
 				ppi++;
 				continue;
 			}
-			ItemIdentifier item = itemStack.getItem();
+			ItemIdentifier item = identifierStack.getItem();
 			if (IItemSearch != null && !IItemSearch.itemSearched(item)) continue;
 			ppi++;
 
 			if (ppi <= items * page) continue;
 			if (ppi > items * (page + 1)) continue;
-			ItemStack st = itemStack.unsafeMakeNormalStack();
+			ItemStack itemstack = identifierStack.unsafeMakeNormalStack();
 			int x = left + xSize * column;
-			int y = top + ySize * row;
+			int y = top + ySize * row + 1;
 
-			GL11.glDisable(GL11.GL_LIGHTING);
-
-			if (st != null) {
-				if (disableEffect) {
-					if (!ForgeHooksClient.renderInventoryItem(renderBlocks, mc.renderEngine, st, renderItem.renderWithColor, renderItem.zLevel, x, y)) {
-						renderItem.renderItemIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
-					}
-				} else {
-					GL11.glTranslated(0, 0, 3.0);
-					renderItem.renderItemAndEffectIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
-					GL11.glTranslated(0, 0, -3.0);
-				}
-			}
-
-			GL11.glEnable(GL11.GL_LIGHTING);
-
-			if (st != null && displayAmount) {
-				String s;
-				if (st.stackSize == 1 && !forcenumber) {
-					s = "";
-				} else if (st.stackSize < 1000) {
-					s = st.stackSize + "";
-				} else if (st.stackSize < 100000) {
-					s = st.stackSize / 1000 + "K";
-				} else if (st.stackSize < 1000000) {
-					s = "0M" + st.stackSize / 100000;
-				} else {
-					s = st.stackSize / 1000000 + "M";
-				}
-
-				GL11.glDisable(GL11.GL_LIGHTING);
-				GL11.glTranslated(0.0D, 0.0D, 100.0D);
-				SimpleGraphics.drawStringWithTranslatedShadow(fontRenderer, s, x + 16 - fontRenderer.getStringWidth(s), y + 8, 0xFFFFFF);
-				GL11.glTranslated(0.0D, 0.0D, -100.0D);
-				GL11.glEnable(GL11.GL_LIGHTING);
+			if (itemstack != null) {
+				renderItemStack(itemstack, x, y, 100.0F, mc.renderEngine, itemRenderer, fontRenderer, displayAmount, disableEffect);
 			}
 
 			column++;
@@ -129,8 +149,9 @@ public final class GuiGraphics {
 				column = 0;
 			}
 		}
-		GL11.glDisable(GL11.GL_LIGHTING);
-		GL11.glPopMatrix();
+
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		RenderHelper.disableStandardItemLighting();
 	}
 
 	public static void displayItemToolTip(Object[] tooltip, Gui gui, float pzLevel, int guiLeft, int guiTop) {

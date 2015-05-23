@@ -9,6 +9,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.resources.DictResource;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
+import logisticspipes.utils.gui.GuiGraphics.DisplayAmount;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -85,7 +86,7 @@ public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
 
 		// Draw this part without depth
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
-		GuiGraphics.renderItemIdentifierStackListIntoGui(Arrays.asList(items), null, 0, guiLeft + 8, guiTop + 80, 9, 9, 18, 18, mc, false, false);
+		GuiGraphics.renderItemIdentifierStackListIntoGui(Arrays.asList(items), null, 0, guiLeft + 8, guiTop + 80, 9, 9, 18, 18, mc, DisplayAmount.NEVER);
 
 		for (int a = 0; a < 9; a++) {
 			drawRect(guiLeft + 8 + (a * 18), guiTop + 80, guiLeft + 24 + (a * 18), guiTop + 96, 0xc08b8b8b);

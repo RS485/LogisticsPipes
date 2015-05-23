@@ -20,7 +20,7 @@ import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.client.FMLClientHandler;
 
-public class HUDChassiePipe extends BasicHUDGui {
+public class HudChassisPipe extends BasicHUDGui {
 	
 	private final PipeLogisticsChassi pipe;
 	private final ChassiModule module;
@@ -32,7 +32,7 @@ public class HUDChassiePipe extends BasicHUDGui {
 	private int xCursor;
 	private int yCursor;
 	
-	public HUDChassiePipe(PipeLogisticsChassi pipeLogisticsChassi, ChassiModule _module, ItemIdentifierInventory _moduleInventory) {
+	public HudChassisPipe(PipeLogisticsChassi pipeLogisticsChassi, ChassiModule _module, ItemIdentifierInventory _moduleInventory) {
 		this.pipe = pipeLogisticsChassi;
 		this.module = _module;
 		this.moduleInventory = _moduleInventory;

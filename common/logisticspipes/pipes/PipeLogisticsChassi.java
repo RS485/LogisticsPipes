@@ -21,7 +21,7 @@ import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.GuiChassiPipe;
-import logisticspipes.gui.hud.HUDChassiePipe;
+import logisticspipes.gui.hud.HudChassisPipe;
 import logisticspipes.interfaces.IBufferItems;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
@@ -99,10 +99,10 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	
 	private boolean convertFromMeta = false;
 
-	//HUD
+	// HUD
 	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<ItemIdentifierStack>();
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
-	private HUDChassiePipe HUD;
+	private HudChassisPipe hud;
 
 	public PipeLogisticsChassi(Item item) {
 		super(item);
@@ -113,7 +113,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 			_upgradeManagers[i] = new ModuleUpgradeManager(this, this.upgradeManager);
 		}
 		_module = new ChassiModule(getChassiSize(), this);
-		HUD = new HUDChassiePipe(this, _module, _moduleInventory);
+		hud = new HudChassisPipe(this, _module, _moduleInventory);
 		pointedDirection=ForgeDirection.UNKNOWN;
 	}
 
@@ -503,7 +503,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public IHeadUpDisplayRenderer getRenderer() {
-		return HUD;
+		return hud;
 	}
 
 	@Override
@@ -514,7 +514,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	@Override
 	public void stopWatching() {
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
-		HUD.stopWatching();
+		hud.stopWatching();
 	}
 
 	@Override

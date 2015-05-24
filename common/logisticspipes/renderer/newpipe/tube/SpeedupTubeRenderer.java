@@ -6,12 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javafx.geometry.Orientation;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.util.ForgeDirection;
 import codechicken.lib.render.CCModel;
-import codechicken.lib.render.ColourMultiplier;
 import codechicken.lib.render.CCRenderState.IVertexOperation;
+import codechicken.lib.render.ColourMultiplier;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Translation;
@@ -24,6 +21,7 @@ import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
 import logisticspipes.renderer.newpipe.ISpecialPipeRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.renderer.newpipe.RenderEntry;
+import net.minecraft.util.ResourceLocation;
 
 public class SpeedupTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacementRenderer {
 	

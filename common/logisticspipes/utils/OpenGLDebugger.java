@@ -105,10 +105,6 @@ import org.lwjgl.opengl.GL11;
 			orderedKeys = new ArrayList<Integer>();
 		}
 
-		@Override public Object putIfAbsent(Integer key, Object value) {
-			throw new UnsupportedOperationException();
-		}
-
 		@Override public void putAll(Map<? extends Integer, ?> m) {
 			throw new UnsupportedOperationException();
 		}

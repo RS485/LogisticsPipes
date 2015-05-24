@@ -230,4 +230,35 @@ public final class SimpleGraphics {
 
 		return endX;
 	}
+
+	/**
+	 * Takes colors as enum values from {@link logisticspipes.utils.Color}.
+	 *
+	 * @see #drawQuad(Tessellator, int, int, int, int, int, double)
+	 */
+	public static void drawQuad(Tessellator tessellator, int x, int y, int width, int height, Color color, double zLevel) {
+		drawQuad(tessellator, x, y, width, height, Color.getValue(color), zLevel);
+	}
+
+	/**
+	 * Adds a quad to the tesselator at the specified position with the set width and height and color.
+	 *
+	 * @param tessellator the tesselator
+	 * @param x the x-coordinate of the quad
+	 * @param y the y-coordinate of the quad
+	 * @param width the width of the quad
+	 * @param height the height of the quad
+	 * @param color the color of the quad
+	 * @param zLevel the z-level of the quad
+	 * @see net.minecraft.client.renderer.entity.RenderItem#renderQuad(Tessellator, int, int, int, int, int)
+	 */
+	public static void drawQuad(Tessellator tessellator, int x, int y, int width, int height, int color, double zLevel) {
+		tessellator.startDrawingQuads();
+		tessellator.setColorOpaque_I(color);
+		tessellator.addVertex((double) x, (double) y, zLevel);
+		tessellator.addVertex((double) x, (double) (y + height), zLevel);
+		tessellator.addVertex((double) (x + width), (double) (y + height), zLevel);
+		tessellator.addVertex((double) (x + width), (double) y, zLevel);
+		tessellator.draw();
+	}
 }

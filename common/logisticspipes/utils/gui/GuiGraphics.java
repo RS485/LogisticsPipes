@@ -15,8 +15,10 @@ import java.util.List;
 import cpw.mods.fml.client.FMLClientHandler;
 import logisticspipes.utils.Color;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
@@ -41,6 +43,34 @@ public final class GuiGraphics {
 	public static float zLevel = 0.0F;
 
 	private GuiGraphics() {
+	}
+
+	/**
+	 * Draws the durability bar for GUI items.
+	 *
+	 * @param itemstack the itemstack, from which the durability bar should be drawn
+	 * @param x the x-coordinate for the bar
+	 * @param y the y-coordinate for the bar
+	 * @param zLevel the z-level for the bar
+	 * @see net.minecraft.client.renderer.entity.RenderItem#renderItemOverlayIntoGUI(FontRenderer, TextureManager, ItemStack, int, int, String)
+	 */
+	public static void drawDurabilityBar(ItemStack itemstack, int x, int y, double zLevel) {
+		if (itemstack.getItem().showDurabilityBar(itemstack)) {
+			double health = itemstack.getItem().getDurabilityForDisplay(itemstack);
+			int j1 = (int) Math.round(13.0D - health * 13.0D);
+			int k = (int) Math.round(255.0D - health * 255.0D);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			Tessellator tessellator = Tessellator.instance;
+			int l = 255 - k << 16 | k << 8;
+			int i1 = (255 - k) / 4 << 16 | 16128;
+			SimpleGraphics.drawQuad(tessellator, x + 2, y + 13, 13, 2, Color.BLACK, zLevel);
+			SimpleGraphics.drawQuad(tessellator, x + 2, y + 13, 12, 1, i1, zLevel + 1.0F);
+			SimpleGraphics.drawQuad(tessellator, x + 2, y + 13, j1, 1, l, zLevel + 2.0F);
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+			GL11.glEnable(GL11.GL_LIGHTING);
+			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		}
 	}
 
 	public static void displayItemToolTip(Object[] tooltip, Gui gui, float pzLevel, int guiLeft, int guiTop) {

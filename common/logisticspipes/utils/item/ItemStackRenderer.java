@@ -11,6 +11,7 @@ package logisticspipes.utils.item;
 import java.util.List;
 
 import logisticspipes.utils.Color;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.string.StringUtils;
@@ -132,16 +133,22 @@ public class ItemStackRenderer {
 			renderItem.zLevel -= zLevel;
 		}
 
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
-		renderItem.renderItemOverlayIntoGUI(fontRenderer, texManager, itemstack, posX, posY, "");
 		if (ignoreDepth) {
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 		} else {
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 		}
+		// 20 should be about the size of a block
+		GuiGraphics.drawDurabilityBar(itemstack, posX, posY, zLevel + 20.0F);
 
 		// if we want to render the amount, do that
 		if (displayAmount != DisplayAmount.NEVER) {
+			if (ignoreDepth) {
+				GL11.glDisable(GL11.GL_DEPTH_TEST);
+			} else {
+				GL11.glEnable(GL11.GL_DEPTH_TEST);
+			}
+
 			FontRenderer specialFontRenderer = itemstack.getItem().getFontRenderer(itemstack);
 
 			if (specialFontRenderer != null) {
@@ -151,11 +158,13 @@ public class ItemStackRenderer {
 			GL11.glDisable(GL11.GL_LIGHTING);
 			String amountString = StringUtils.getFormatedStackSize(itemstack.stackSize, displayAmount == DisplayAmount.ALWAYS);
 
-			// 20 should be about the size of a block + 20 for the effect
+			// 20 should be about the size of a block + 20 for the effect and overlay
 			GL11.glTranslatef(0.0F, 0.0F, zLevel + 40.0F);
+
 			// using a translated shadow does not hurt and works with the HUD
 			SimpleGraphics.drawStringWithTranslatedShadow(fontRenderer, amountString, posX + 17 - fontRenderer.getStringWidth(amountString), posY + 9, Color.getValue(Color.WHITE));
-			GL11.glTranslatef(0.0F, 0.0F, -zLevel - 40.0F);
+
+			GL11.glTranslatef(0.0F, 0.0F, -(zLevel + 40.0F));
 		}
 	}
 

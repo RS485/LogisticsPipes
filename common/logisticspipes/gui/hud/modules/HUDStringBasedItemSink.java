@@ -6,7 +6,6 @@ import java.util.List;
 import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IStringBasedModule;
-import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
 import net.minecraft.client.Minecraft;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -57,7 +56,7 @@ public class HUDStringBasedItemSink implements IHUDModuleRenderer {
 	}
 	
 	@Override
-	public void renderContent() {
+	public void renderContent(boolean shifted) {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		for(int i = page * 6; i < itemSink.getStringList().size() && i < 6 + (page * 6); i++) {
 			String mod = itemSink.getStringList().get(i);

@@ -117,7 +117,7 @@ public class HudChassisPipe extends BasicHUDGui {
 
 			if(selectedmodule instanceof IHUDModuleHandler && ((IHUDModuleHandler)selectedmodule).getHUDRenderer() != null) {
 				GL11.glTranslatef(11.0F, 5.0F, (float) (-0.00005F * distance));
-				((IHUDModuleHandler)selectedmodule).getHUDRenderer().renderContent();
+				((IHUDModuleHandler)selectedmodule).getHUDRenderer().renderContent(shifted);
 				if(((IHUDModuleHandler)selectedmodule).getHUDRenderer().getButtons() != null) {
 					for(IHUDButton button:((IHUDModuleHandler)selectedmodule).getHUDRenderer().getButtons()) {
 						button.renderAlways(shifted);

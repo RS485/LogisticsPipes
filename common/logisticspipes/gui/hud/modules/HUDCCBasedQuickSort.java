@@ -17,7 +17,7 @@ public class HUDCCBasedQuickSort implements IHUDModuleRenderer {
 	}
 	
 	@Override
-	public void renderContent() {
+	public void renderContent(boolean shifted) {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		mc.fontRenderer.drawString("Timeout: ", -29, -30, 0);
 		mc.fontRenderer.drawString(module.getTimeout() + " ticks", 0 - (mc.fontRenderer.getStringWidth(module.getTimeout() + "ticks") / 2), -20, 0);

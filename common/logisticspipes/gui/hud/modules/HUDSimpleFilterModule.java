@@ -23,10 +23,10 @@ public class HUDSimpleFilterModule implements IHUDModuleRenderer {
 	}
 	
 	@Override
-	public void renderContent() {
+	public void renderContent(boolean shifted) {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		GL11.glScalef(1.0F, 1.0F, -0.00001F);
-		GuiGraphics.renderItemIdentifierStackListIntoGui(ItemIdentifierStack.getListFromInventory(module.getFilterInventory()), null, 0, -25, -32, 3, 9, 18, 18, 100.0F, mc, DisplayAmount.NEVER, true, true);
+		GuiGraphics.renderItemIdentifierStackListIntoGui(ItemIdentifierStack.getListFromInventory(module.getFilterInventory()), null, 0, -25, -32, 3, 9, 18, 18, 100.0F, mc, DisplayAmount.NEVER, true, true, !shifted);
 		GL11.glScalef(1.0F, 1.0F, 1 / -0.00001F);
 	}
 

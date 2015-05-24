@@ -68,10 +68,10 @@ public class HUDProviderModule implements IHUDModuleRenderer {
 	}
 	
 	@Override
-	public void renderContent() {
+	public void renderContent(boolean shifted) {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		GL11.glScalef(1.0F, 1.0F, -0.00001F);
-		GuiGraphics.renderItemIdentifierStackListIntoGui(module.displayList, null, page, -25, -24, 3, 9, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true);
+		GuiGraphics.renderItemIdentifierStackListIntoGui(module.displayList, null, page, -25, -24, 3, 9, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true, !shifted);
 		GL11.glScalef(1.0F, 1.0F, 1 / -0.00001F);
 	}
 

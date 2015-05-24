@@ -321,6 +321,8 @@ public class LogisticsHUDRenderer {
 					double x = xCoord - player.prevPosX - ((player.posX - player.prevPosX) * partialTick);
 					double y = yCoord - player.prevPosY - ((player.posY - player.prevPosY) * partialTick);
 					double z = zCoord - player.prevPosZ - ((player.posZ - player.prevPosZ) * partialTick);
+
+					GL11.glDisable(GL11.GL_DEPTH_TEST);
 					
 					GL11.glTranslatef((float) x, (float) y, (float) z);
 					GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
@@ -356,9 +358,11 @@ public class LogisticsHUDRenderer {
 							GL11.glScalef(0.8F, 0.8F, -1F);
 							List<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>(1);
 							list.add(ItemIdentifierStack.getFromStack(item));
-							GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, 5, 5, 1, 1, 18, 18, 100.0F, mc, DisplayAmount.NEVER, true, true);
+							GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, 5, 5, 1, 1, 18, 18, 100.0F, mc, DisplayAmount.NEVER, true, true, false);
 						}
 					}
+
+					GL11.glEnable(GL11.GL_DEPTH_TEST);
 				}
 			}
 		} else if(!Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {

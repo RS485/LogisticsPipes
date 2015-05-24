@@ -84,7 +84,7 @@ public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
 			}
 		}
 
-		GuiGraphics.renderItemIdentifierStackListIntoGui(Arrays.asList(items), null, 0, guiLeft + 8, guiTop + 79, 9, 9, 18, 18, 0.0F, mc, DisplayAmount.NEVER, true);
+		GuiGraphics.renderItemIdentifierStackListIntoGui(Arrays.asList(items), null, 0, guiLeft + 8, guiTop + 79, 9, 9, 18, 18, 0.0F, mc, DisplayAmount.NEVER);
 
 		GL11.glTranslatef(0F, 0F, 20F);
 		for (int a = 0; a < 9; a++) {

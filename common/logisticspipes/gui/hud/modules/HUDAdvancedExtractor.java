@@ -3,20 +3,19 @@ package logisticspipes.gui.hud.modules;
 import java.util.ArrayList;
 import java.util.List;
 
+import cpw.mods.fml.client.FMLClientHandler;
 import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.GuiGraphics;
-import logisticspipes.utils.gui.GuiGraphics.DisplayAmount;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStackRenderer;
+import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.util.ForgeDirection;
-
 import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.client.FMLClientHandler;
 
 public class HUDAdvancedExtractor implements IHUDModuleRenderer {
 	
@@ -42,7 +41,7 @@ public class HUDAdvancedExtractor implements IHUDModuleRenderer {
 		} else {
 			Minecraft mc = FMLClientHandler.instance().getClient();
 			GL11.glScalef(1.0F, 1.0F, -0.00001F);
-			GuiGraphics.renderItemIdentifierStackListIntoGui(ItemIdentifierStack.getListFromInventory(module.getFilterInventory()), null, 0, -25, -32, 3, 9, 18, 18, 100.0F, mc, DisplayAmount.NEVER, true, true, !shifted);
+			ItemStackRenderer.renderItemIdentifierStackListIntoGui(ItemIdentifierStack.getListFromInventory(module.getFilterInventory()), null, 0, -25, -32, 3, 9, 18, 18, 100.0F, DisplayAmount.NEVER, true, false, shifted);
 			GL11.glScalef(1.0F, 1.0F, 1 / -0.00001F);
 			if(module.areItemsIncluded()) {
 				mc.fontRenderer.drawString("Included" , -22, 25, 0);

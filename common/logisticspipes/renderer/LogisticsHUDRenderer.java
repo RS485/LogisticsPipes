@@ -7,7 +7,7 @@ import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import logisticspipes.LogisticsPipes;
+import cpw.mods.fml.client.FMLClientHandler;
 import logisticspipes.api.IHUDArmor;
 import logisticspipes.config.Configs;
 import logisticspipes.hud.HUDConfig;
@@ -15,48 +15,29 @@ import logisticspipes.interfaces.IDebugHUDProvider;
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
-import logisticspipes.interfaces.ITubeOrientation;
-import logisticspipes.items.ItemLogisticsPipe;
-import logisticspipes.pipes.basic.CoreMultiBlockPipe;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.renderer.newpipe.LogisticsNewPipeItemRenderer;
-import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LaserData;
 import logisticspipes.routing.PipeRoutingConnectionType;
-import logisticspipes.utils.LPPositionSet;
 import logisticspipes.utils.MathVector;
 import logisticspipes.utils.gui.GuiGraphics;
-import logisticspipes.utils.gui.GuiGraphics.DisplayAmount;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.LPPosition;
+import logisticspipes.utils.item.ItemStackRenderer;
+import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 import logisticspipes.utils.tuples.Pair;
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
 import net.minecraftforge.client.GuiIngameForge;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.Renderable;
-
-import codechicken.lib.render.CCModel;
-import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.CCRenderState.IVertexOperation;
-import cpw.mods.fml.client.FMLClientHandler;
 
 public class LogisticsHUDRenderer {
 
@@ -358,7 +339,7 @@ public class LogisticsHUDRenderer {
 							GL11.glScalef(0.8F, 0.8F, -1F);
 							List<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>(1);
 							list.add(ItemIdentifierStack.getFromStack(item));
-							GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, 5, 5, 1, 1, 18, 18, 100.0F, mc, DisplayAmount.NEVER, true, true, false);
+							ItemStackRenderer.renderItemIdentifierStackListIntoGui(list, null, 0, 5, 5, 1, 1, 18, 18, 100.0F, DisplayAmount.NEVER, true, false, true);
 						}
 					}
 

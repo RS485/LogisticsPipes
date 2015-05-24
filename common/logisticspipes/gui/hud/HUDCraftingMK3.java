@@ -6,10 +6,10 @@ import java.util.List;
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.pipes.PipeItemsCraftingLogisticsMk3;
 import logisticspipes.utils.gui.GuiGraphics;
-import logisticspipes.utils.gui.GuiGraphics.DisplayAmount;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStackRenderer;
+import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 import net.minecraft.client.Minecraft;
-
 import org.lwjgl.opengl.GL11;
 
 public class HUDCraftingMK3 extends BasicHUDGui {
@@ -69,15 +69,15 @@ public class HUDCraftingMK3 extends BasicHUDGui {
 			list.add(craftables.get(0));
 		}
 		if(pipe.displayList.size() > 0 && pipe.getMk3Module().bufferList.size() == 0) {
-			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, 13, -17, 1, 1, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true, !shifted);
-			GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, 13, 3, 1, 1, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true, !shifted);
+			ItemStackRenderer.renderItemIdentifierStackListIntoGui(list, null, 0, 13, -17, 1, 1, 18, 18, 100.0F, DisplayAmount.ALWAYS, true, false, shifted);
+			ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, 13, 3, 1, 1, 18, 18, 100.0F, DisplayAmount.ALWAYS, true, false, shifted);
 		} else if(pipe.getMk3Module().bufferList.size() > 0) {
-			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, 13, -37, 1, 1, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true, !shifted);
-			GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, 13, -17, 1, 1, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true, !shifted);
+			ItemStackRenderer.renderItemIdentifierStackListIntoGui(list, null, 0, 13, -37, 1, 1, 18, 18, 100.0F, DisplayAmount.ALWAYS, true, false, shifted);
+			ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, 13, -17, 1, 1, 18, 18, 100.0F, DisplayAmount.ALWAYS, true, false, shifted);
 			
-			GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.getMk3Module().bufferList, null, 0, -35, 0, 4, 16, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true, !shifted);
+			ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.getMk3Module().bufferList, null, 0, -35, 0, 4, 16, 18, 18, 100.0F, DisplayAmount.ALWAYS, true, false, shifted);
 		} else {
-			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, -9, 0, 1, 1, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true, !shifted);
+			ItemStackRenderer.renderItemIdentifierStackListIntoGui(list, null, 0, -9, 0, 1, 1, 18, 18, 100.0F, DisplayAmount.ALWAYS, true, false, shifted);
 		}
 	}
 

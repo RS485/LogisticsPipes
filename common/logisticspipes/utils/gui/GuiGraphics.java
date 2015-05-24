@@ -14,24 +14,14 @@ import java.util.List;
 
 import cpw.mods.fml.client.FMLClientHandler;
 import logisticspipes.utils.Color;
-import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.ForgeHooksClient;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
@@ -48,112 +38,9 @@ public final class GuiGraphics {
 	public static final ResourceLocation LOCK_ICON = new ResourceLocation("logisticspipes", "textures/gui/lock.png");
 	public static final ResourceLocation LINES_ICON = new ResourceLocation("logisticspipes", "textures/gui/lines.png");
 	public static final ResourceLocation STATS_ICON = new ResourceLocation("logisticspipes", "textures/gui/stats.png");
-	public static final RenderBlocks mcRenderBlocks = new RenderBlocks();
 	public static float zLevel = 0.0F;
 
 	private GuiGraphics() {
-	}
-
-	public enum DisplayAmount {
-		HIDE_ONE,
-		ALWAYS,
-		NEVER,
-	}
-
-	public static void renderItemStack(ItemStack itemstack, int posX, int posY, float zLevel, TextureManager texManager, RenderItem itemRenderer, FontRenderer fontRenderer, DisplayAmount displayAmount, boolean disableEffects, boolean depthTest) {
-
-		// Rendering the block/item with lightning and maybe depth, but without text
-		GL11.glEnable(GL11.GL_LIGHTING);
-		if (depthTest) {
-			GL11.glEnable(GL11.GL_DEPTH_TEST);
-		} else {
-			GL11.glDisable(GL11.GL_DEPTH_TEST);
-		}
-
-		// RenderBlocks is a heavy object, so instantiating it everytime is a bad idea
-		if (!ForgeHooksClient.renderInventoryItem(mcRenderBlocks, texManager, itemstack, true, zLevel, posX, posY)) {
-			itemRenderer.zLevel += zLevel;
-			itemRenderer.renderItemIntoGUI(fontRenderer, texManager, itemstack, posX, posY, !disableEffects);
-			itemRenderer.zLevel -= zLevel;
-		}
-
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
-		itemRenderer.renderItemOverlayIntoGUI(fontRenderer, texManager, itemstack, posX, posY, "");
-		if (depthTest) {
-			GL11.glEnable(GL11.GL_DEPTH_TEST);
-		} else {
-			GL11.glDisable(GL11.GL_DEPTH_TEST);
-		}
-
-		// if we want to render the amount, do that
-		if (displayAmount != DisplayAmount.NEVER) {
-			FontRenderer specialFontRenderer = itemstack.getItem().getFontRenderer(itemstack);
-
-			if (specialFontRenderer != null) {
-				fontRenderer = specialFontRenderer;
-			}
-
-			GL11.glDisable(GL11.GL_LIGHTING);
-			String amountString = StringUtils.getFormatedStackSize(itemstack.stackSize, displayAmount == DisplayAmount.ALWAYS);
-
-			// 20 should be about the size of a block + 20 for the effect
-			GL11.glTranslatef(0.0F, 0.0F, zLevel + 40.0F);
-			// using a translated shadow does not hurt and works with the HUD
-			SimpleGraphics.drawStringWithTranslatedShadow(fontRenderer, amountString, posX + 17 - fontRenderer.getStringWidth(amountString), posY + 9, Color.getValue(Color.WHITE));
-			GL11.glTranslatef(0.0F, 0.0F, -zLevel - 40.0F);
-		}
-	}
-
-	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, float zLevel, Minecraft mc, DisplayAmount displayAmount) {
-		renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, zLevel, mc, displayAmount, true, false, true);
-	}
-
-	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, float zLevel, Minecraft mc, DisplayAmount displayAmount, boolean color, boolean disableEffect, boolean depthTest) {
-		RenderHelper.enableGUIStandardItemLighting();
-		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);
-
-		// The only thing that ever sets NORMALIZE are slimes. It never gets disabled and it interferes with our lightning in the HUD.
-		GL11.glDisable(GL11.GL_NORMALIZE);
-
-		int ppi = 0;
-		int column = 0;
-		int row = 0;
-		FontRenderer fontRenderer = mc.fontRenderer;
-		RenderItem itemRenderer = new RenderItem();
-		itemRenderer.renderWithColor = color;
-		for (ItemIdentifierStack identifierStack : _allItems) {
-			if (identifierStack == null) {
-				column++;
-				if (column >= columns) {
-					row++;
-					column = 0;
-				}
-				ppi++;
-				continue;
-			}
-			ItemIdentifier item = identifierStack.getItem();
-			if (IItemSearch != null && !IItemSearch.itemSearched(item)) continue;
-			ppi++;
-
-			if (ppi <= items * page) continue;
-			if (ppi > items * (page + 1)) continue;
-			ItemStack itemstack = identifierStack.unsafeMakeNormalStack();
-			int x = left + xSize * column;
-			int y = top + ySize * row + 1;
-
-			if (itemstack != null) {
-				renderItemStack(itemstack, x, y, zLevel, mc.renderEngine, itemRenderer, fontRenderer, displayAmount, disableEffect, depthTest);
-			}
-
-			column++;
-			if (column >= columns) {
-				row++;
-				column = 0;
-			}
-		}
-
-		//GL11.glEnable(GL11.GL_DEPTH_TEST);
-		RenderHelper.disableStandardItemLighting();
 	}
 
 	public static void displayItemToolTip(Object[] tooltip, Gui gui, float pzLevel, int guiLeft, int guiTop) {

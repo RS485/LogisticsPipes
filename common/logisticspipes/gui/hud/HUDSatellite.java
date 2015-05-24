@@ -4,10 +4,10 @@ import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.utils.gui.GuiGraphics;
-import logisticspipes.utils.gui.GuiGraphics.DisplayAmount;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
+import logisticspipes.utils.item.ItemStackRenderer;
+import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 import net.minecraft.client.Minecraft;
-
 import org.lwjgl.opengl.GL11;
 
 public class HUDSatellite extends BasicHUDGui {
@@ -95,7 +95,7 @@ public class HUDSatellite extends BasicHUDGui {
 			}
 			mc.fontRenderer.drawString(message , -28, -28, 0);
 			GL11.glScalef(0.8F, 0.8F, -1F);
-			GuiGraphics.renderItemIdentifierStackListIntoGui((pipe1 != null ? pipe1.itemList : pipe2.itemList), null, page, -35, -20, 4, 12, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true, !shifted);
+			ItemStackRenderer.renderItemIdentifierStackListIntoGui((pipe1 != null ? pipe1.itemList : pipe2.itemList), null, page, -35, -20, 4, 12, 18, 18, 100.0F, DisplayAmount.ALWAYS, true, false, shifted);
 			GL11.glScalef(0.8F, 0.8F, -1F);
 			message = "(" + Integer.toString(page + 1) + "/" + Integer.toString(getMaxPage()) + ")";
 			mc.fontRenderer.drawString(message , 9, -41, 0);

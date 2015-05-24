@@ -17,16 +17,20 @@ import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStackRenderer;
+import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import static logisticspipes.utils.gui.GuiGraphics.*;
+import static logisticspipes.utils.gui.GuiGraphics.displayItemToolTip;
+import static logisticspipes.utils.gui.GuiGraphics.drawGuiBackGround;
+import static logisticspipes.utils.gui.GuiGraphics.drawPlayerInventoryBackground;
+import static logisticspipes.utils.gui.GuiGraphics.drawSlotBackground;
 
 public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 	private static final String PREFIX = "gui.invsyscon.";
@@ -88,7 +92,7 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		renderItemIdentifierStackListIntoGui(_allItems, null, page, 9, 59, 9, 27, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS);
+		ItemStackRenderer.renderItemIdentifierStackListIntoGui(_allItems, null, page, 9, 59, 9, 27, 18, 18, 100.0F, DisplayAmount.ALWAYS);
 		
 		int ppi = 0;
 		int column = 0;

@@ -6,10 +6,10 @@ import java.util.List;
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.utils.gui.GuiGraphics;
-import logisticspipes.utils.gui.GuiGraphics.DisplayAmount;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStackRenderer;
+import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 import net.minecraft.client.Minecraft;
-
 import org.lwjgl.opengl.GL11;
 
 public class HUDCrafting extends BasicHUDGui {
@@ -58,10 +58,10 @@ public class HUDCrafting extends BasicHUDGui {
 			list.add(craftables.get(0));
 		}
 		if(pipe.displayList.size() > 0) {
-			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, 11, -18, 1, 1, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true, !shifted);
-			GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, 13, 3, 1, 1, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true, !shifted);
+			ItemStackRenderer.renderItemIdentifierStackListIntoGui(list, null, 0, 11, -18, 1, 1, 18, 18, 100.0F, DisplayAmount.ALWAYS, true, false, shifted);
+			ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, 13, 3, 1, 1, 18, 18, 100.0F, DisplayAmount.ALWAYS, true, false, shifted);
 		} else {
-			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, -9, -1, 1, 1, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true, !shifted);
+			ItemStackRenderer.renderItemIdentifierStackListIntoGui(list, null, 0, -9, -1, 1, 1, 18, 18, 100.0F, DisplayAmount.ALWAYS, true, false, shifted);
 		}
 	}
 

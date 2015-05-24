@@ -12,9 +12,10 @@ import cpw.mods.fml.client.FMLClientHandler;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ISpecialItemRenderer;
 import logisticspipes.utils.Color;
-import logisticspipes.utils.gui.GuiGraphics.DisplayAmount;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStackRenderer;
+import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 import logisticspipes.utils.tuples.Pair;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
@@ -23,7 +24,6 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
@@ -55,7 +55,6 @@ public class ItemDisplay {
 	private final FontRenderer fontRenderer;
 	private final LogisticsBaseGuiScreen screen;
 	private final ISpecialItemRenderer renderer;
-	private final RenderItem itemRenderer = new RenderItem();
 	private int left, top, height, width;
 	private int itemsPerPage;
 	private final int[] amountChangeMode;
@@ -277,7 +276,8 @@ public class ItemDisplay {
 				}
 
 				// use GuiGraphics to render the ItemStacks
-				GuiGraphics.renderItemStack(itemstack, x, y, 100.0F, screen.getMC().renderEngine, itemRenderer, fontRenderer, DisplayAmount.HIDE_ONE, false, true);
+				ItemStackRenderer itemstackRenderer = new ItemStackRenderer(itemstack, DisplayAmount.HIDE_ONE, x, y, 100.0F, true, false, true);
+				itemstackRenderer.render();
 
 				x += panelxSize;
 				if (x > this.width) {

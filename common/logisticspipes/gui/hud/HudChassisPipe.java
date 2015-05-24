@@ -11,10 +11,11 @@ import logisticspipes.modules.ChassiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.utils.gui.GuiGraphics;
-import logisticspipes.utils.gui.GuiGraphics.DisplayAmount;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStackRenderer;
+import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
@@ -149,7 +150,7 @@ public class HudChassisPipe extends BasicHUDGui {
 			GL11.glTranslatef(0.0F, 0.0F, (float) (-0.005F * distance));
 			GL11.glScalef(1.5F, 1.5F, 0.0001F);
 			GL11.glScalef(0.8F, 0.8F, -1F);
-			GuiGraphics.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, -15, -35, 3, 12, 18, 18, 100.0F, mc, DisplayAmount.ALWAYS, true, true, !shifted);
+			ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, -15, -35, 3, 12, 18, 18, 100.0F, DisplayAmount.ALWAYS, true, false, shifted);
 		}
 		GL11.glTranslatef(0.0F, 0.0F, (float) (0.00005F * distance));
 	}
@@ -255,7 +256,7 @@ public class HudChassisPipe extends BasicHUDGui {
 			list.add(ItemIdentifierStack.getFromStack(module));
 
 			boolean showColor = this.buttonEnabled() || isSlotSelected(position);
-			GuiGraphics.renderItemIdentifierStackListIntoGui(list, null, 0, posX + ((sizeX - 16) / 2), posY + ((sizeY - 16) / 2), 1, 1, 18, 18, -0.002F, mc, DisplayAmount.NEVER, showColor, true, !shifted);
+			ItemStackRenderer.renderItemIdentifierStackListIntoGui(list, null, 0, posX + ((sizeX - 16) / 2), posY + ((sizeY - 16) / 2), 1, 1, 18, 18, -0.002F, DisplayAmount.NEVER, showColor, false, shifted);
 		}
 
 		@Override public void renderAlways(boolean shifted) {

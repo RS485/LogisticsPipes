@@ -38,7 +38,7 @@ public class PipeTransportLayer extends TransportLayer{
 		// 1st prio, deliver to adjacent IInventories
 		
 		for (AdjacentTile tile : adjacentEntities) {
-			if (SimpleServiceLocator.pipeInformaitonManager.isPipe(tile.tile)) continue;
+			if (SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile.tile)) continue;
 			if (_router.isRoutedExit(tile.orientation)) continue;
 			if(denyed != null && denyed.equals(tile.orientation)) continue;
 			

@@ -78,12 +78,12 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 		
 		for(Corner corner: Corner.values()) {
 			for(CCModel model:LogisticsNewRenderPipe.corners_M.get(corner)) {
-				objectsToRender.add(new Pair<CCModel, IconTransformation>(model, LogisticsNewRenderPipe.basicTexture));
+				objectsToRender.add(new Pair<CCModel, IconTransformation>(model, LogisticsNewRenderPipe.basicPipeTexture));
 			}
 		}
 		
 		for(Edge edge: Edge.values()) {
-			objectsToRender.add(new Pair<CCModel, IconTransformation>(LogisticsNewRenderPipe.edges.get(edge), LogisticsNewRenderPipe.basicTexture));
+			objectsToRender.add(new Pair<CCModel, IconTransformation>(LogisticsNewRenderPipe.edges.get(edge), LogisticsNewRenderPipe.basicPipeTexture));
 		}
 		
 		//ArrayList<Pair<CCModel, IconTransformation>> objectsToRender2 = new ArrayList<Pair<CCModel, IconTransformation>>();

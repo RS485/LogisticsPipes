@@ -165,7 +165,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		TileEntity tile = pos.getTileEntity(getWorld());
 
 		if (tile == null) return false;
-		if (SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) return false;
+		if (SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile)) return false;
 		return MainProxy.checkPipesConnections(this.container, tile, connection);
 	}
 

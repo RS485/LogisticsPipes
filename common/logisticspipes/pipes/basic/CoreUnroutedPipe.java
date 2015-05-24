@@ -16,6 +16,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePart;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.renderer.IIconProvider;
+import logisticspipes.renderer.newpipe.ISpecialPipeRenderer;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.textures.Textures;
 import logisticspipes.transport.PipeTransportLogistics;
@@ -352,5 +353,22 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 			}
 		}
 		return lowest;
+	}
+
+	public boolean isMultiBlock() {
+		return false;
+	}
+
+	public boolean renderNormalPipe() {
+		return true;
+	}
+
+	@SideOnly(Side.CLIENT)
+	public ISpecialPipeRenderer getSpecialRenderer() {
+		return null;
+	}
+
+	public boolean hasSpecialPipeEndAt(ForgeDirection dir) {
+		return false;
 	}
 }

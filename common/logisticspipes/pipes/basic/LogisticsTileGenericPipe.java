@@ -3,8 +3,10 @@ package logisticspipes.pipes.basic;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Context;
@@ -46,6 +48,7 @@ import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.LPPositionSet;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.StackTraceUtil;
 import logisticspipes.utils.StackTraceUtil.Info;
@@ -84,6 +87,8 @@ import dan200.computercraft.api.peripheral.IComputerAccess;
 @ModDependentInterface(modId={"CoFHCore", "OpenComputers@1.3", "OpenComputers@1.3", "OpenComputers@1.3", "BuildCraft|Transport"}, interfacePath={"cofh.api.transport.IItemDuct", "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment", "buildcraft.api.transport.IPipeTile"})
 public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILPPipeTile, IPipeInformationProvider, IItemDuct, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IPipeTile, ILogicControllerTile {	
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
+	
+	public Set<LPPosition> subMultiBlock = new HashSet<LPPosition>();
 	
 	public boolean turtleConnect[] = new boolean[7];
 	
@@ -451,7 +456,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	/* IPipeInformationProvider */
 	
 	@Override
-	public boolean isCorrect() {
+	public boolean isCorrect(ConnectionPipeType type) {
 		return true;
 	}
 
@@ -533,7 +538,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 
 	@Override
 	public boolean isFluidPipe() {
-		return false;
+		return pipe != null && pipe.isFluidPipe();
 	}
 
 	@Override
@@ -1037,9 +1042,25 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	}
 	
 	@SideOnly(Side.CLIENT)
+	private AxisAlignedBB renderBox;
+	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public AxisAlignedBB getRenderBoundingBox() {
-		return AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 1, zCoord + 1);
+		if(renderBox != null) return renderBox;
+		if(pipe == null) return AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 1, zCoord + 1);
+		if(!pipe.isMultiBlock()) {
+			renderBox = AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 1, zCoord + 1);
+		} else {
+			LPPositionSet set = ((CoreMultiBlockPipe)pipe).getRotatedSubBlocks();
+			set.addToAll(pipe.getLPPosition());
+			if(pipe.renderNormalPipe()) {
+				set.add(new LPPosition(xCoord, yCoord, zCoord));
+				set.add(new LPPosition(xCoord + 1, yCoord + 1, zCoord + 1));
+			}
+			renderBox = AxisAlignedBB.getBoundingBox(set.getMinXD(), set.getMinYD(), set.getMinZD(), set.getMaxXD() + 1, set.getMaxYD() + 1, set.getMaxZD() + 1);
+		}
+		return renderBox;
 	}
 
 	@Override

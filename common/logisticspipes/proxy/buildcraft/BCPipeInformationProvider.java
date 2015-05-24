@@ -6,6 +6,7 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
+import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -34,8 +35,16 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 	}
 
 	@Override
-	public boolean isCorrect() {
-		return pipe != null && pipe.pipe != null && pipe.pipe.transport instanceof PipeTransportItems && SimpleServiceLocator.buildCraftProxy.isActive();
+	public boolean isCorrect(ConnectionPipeType type) {
+		boolean precheck = false;
+		if(type == ConnectionPipeType.BOTH) {
+			precheck = pipe.pipe.transport instanceof PipeTransportItems || pipe.pipe.transport instanceof PipeTransportFluids;
+		} else if(type == ConnectionPipeType.ITEM) {
+			precheck = pipe.pipe.transport instanceof PipeTransportItems;
+		} else if(type == ConnectionPipeType.FLUID) {
+			precheck = pipe.pipe.transport instanceof PipeTransportFluids;
+		}
+		return pipe != null && pipe.pipe != null && SimpleServiceLocator.buildCraftProxy.isActive() && precheck;
 	}
 	
 	@Override

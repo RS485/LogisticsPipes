@@ -7,6 +7,7 @@ import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IHUDArmor;
 import logisticspipes.config.Configs;
 import logisticspipes.hud.HUDConfig;
@@ -14,30 +15,47 @@ import logisticspipes.interfaces.IDebugHUDProvider;
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
+import logisticspipes.interfaces.ITubeOrientation;
+import logisticspipes.items.ItemLogisticsPipe;
+import logisticspipes.pipes.basic.CoreMultiBlockPipe;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.renderer.newpipe.LogisticsNewPipeItemRenderer;
+import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LaserData;
 import logisticspipes.routing.PipeRoutingConnectionType;
+import logisticspipes.utils.LPPositionSet;
 import logisticspipes.utils.MathVector;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.GuiGraphics.DisplayAmount;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.client.GuiIngameForge;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.Renderable;
 
+import codechicken.lib.render.CCModel;
+import codechicken.lib.render.CCRenderState;
+import codechicken.lib.render.CCRenderState.IVertexOperation;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class LogisticsHUDRenderer {
@@ -171,8 +189,8 @@ public class LogisticsHUDRenderer {
 	}
 	
 	private boolean checkItemStackForHUD(ItemStack stack) {
-		if(FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].getItem() instanceof IHUDArmor) {
-			return ((IHUDArmor)FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].getItem()).isEnabled(FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3]);
+		if(stack.getItem() instanceof IHUDArmor) {
+			return ((IHUDArmor)stack.getItem()).isEnabled(stack);
 		}
 		return false;
 	}
@@ -185,7 +203,7 @@ public class LogisticsHUDRenderer {
 	public void renderPlayerDisplay(long renderTicks) {
 		if(!displayRenderer()) return;
 		Minecraft mc = FMLClientHandler.instance().getClient();
-		if(displayCross) {
+		if(displayHUD() && displayCross) {
 			ScaledResolution res = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
 	        int width = res.getScaledWidth();
 	        int height = res.getScaledHeight();
@@ -451,7 +469,7 @@ public class LogisticsHUDRenderer {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		last = System.currentTimeMillis();
 	}
-	
+
 	private void setColor(float i, EnumSet<PipeRoutingConnectionType> flags) {
 		GL11.glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
 		if(!flags.isEmpty()) {

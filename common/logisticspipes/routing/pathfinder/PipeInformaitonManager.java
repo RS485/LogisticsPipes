@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
+import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -19,7 +20,7 @@ public class PipeInformaitonManager {
 			if(type.isAssignableFrom(tile.getClass())) {
 				try {
 					IPipeInformationProvider provider = infoProvider.get(type).getDeclaredConstructor(type).newInstance(type.cast(tile));
-					if(provider.isCorrect()) {
+					if(provider.isCorrect(ConnectionPipeType.BOTH)) {
 						return provider;
 					}
 				} catch(InstantiationException e) {
@@ -55,11 +56,15 @@ public class PipeInformaitonManager {
 		return startPipe.canConnect(provider.getTile(), direction, flag) && provider.canConnect(startPipe.getTile(), direction.getOpposite(), flag);
 	}
 
-	public boolean isPipe(TileEntity tile) {
-		return isPipe(tile, true);
+	public boolean isItemPipe(TileEntity tile) {
+		return isPipe(tile, true, ConnectionPipeType.ITEM);
 	}
 	
-	public boolean isPipe(TileEntity tile, boolean check) {
+	public boolean isPipe(TileEntity tile) {
+		return isPipe(tile, true, ConnectionPipeType.BOTH);
+	}
+	
+	public boolean isPipe(TileEntity tile, boolean check, ConnectionPipeType pipeType) {
 		if(tile == null) return false;
 		if(tile instanceof IPipeInformationProvider) {
 			return true;
@@ -67,7 +72,7 @@ public class PipeInformaitonManager {
 			if(type.isAssignableFrom(tile.getClass())) {
 				try {
 					IPipeInformationProvider provider = infoProvider.get(type).getDeclaredConstructor(type).newInstance(type.cast(tile));
-					if(!check || provider.isCorrect()) {
+					if(!check || provider.isCorrect(pipeType)) {
 						return true;
 					}
 				} catch(InstantiationException e) {

@@ -3,6 +3,7 @@ package logisticspipes.utils.tuples;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
+import logisticspipes.utils.IPositionRotateble;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -11,7 +12,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class LPPosition extends Triplet<Double, Double, Double> {
+public class LPPosition extends Triplet<Double, Double, Double> implements IPositionRotateble {
 
 	public LPPosition(double xPos, double yPos, double zPos) {
 		super(xPos, yPos, zPos);
@@ -65,7 +66,7 @@ public class LPPosition extends Triplet<Double, Double, Double> {
 		return this.getValue3();
 	}
 	
-	public TileEntity getTileEntity(World world) {
+	public TileEntity getTileEntity(IBlockAccess world) {
 		return world.getTileEntity(getX(), getY(), getZ());
 	}
 	
@@ -150,5 +151,28 @@ public class LPPosition extends Triplet<Double, Double, Double> {
 			return new LPPosition(nbt.getDouble(prefix + "xPos"), nbt.getDouble(prefix + "yPos"), nbt.getDouble(prefix + "zPos"));
 		}
 		return null;
+	}
+
+	public LPPosition add(LPPosition toAdd) {
+		this.value1 += toAdd.value1;
+		this.value2 += toAdd.value2;
+		this.value3 += toAdd.value3;
+		return this;
+	}
+
+	public void setBlockToAir(World world) {
+		world.setBlockToAir(getX(), getY(), getZ());
+	}
+
+	public void rotateLeft() {
+		double tmp = this.value3;
+		this.value3 = -this.value1;
+		this.value1 = tmp;
+	}
+	
+	public void rotateRight() {
+		double tmp = this.value1;
+		this.value1 = -this.value3;
+		this.value3 = tmp;
 	}
 }

@@ -135,7 +135,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 	public IInventory getRealInventory() {
 		TileEntity tile = getPointedTileEntity();
 		if (tile == null ) return null;
-		if (SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) return null;
+		if (SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile)) return null;
 		if (!(tile instanceof IInventory)) return null;
 		return InventoryHelper.getInventory((IInventory) tile);
 	}

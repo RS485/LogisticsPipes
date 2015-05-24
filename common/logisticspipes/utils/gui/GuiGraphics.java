@@ -73,15 +73,7 @@ public final class GuiGraphics {
 		// RenderBlocks is a heavy object, so instantiating it everytime is a bad idea
 		if (!ForgeHooksClient.renderInventoryItem(mcRenderBlocks, texManager, itemstack, true, zLevel, posX, posY)) {
 			itemRenderer.zLevel += zLevel;
-			itemRenderer.renderItemIntoGUI(fontRenderer, texManager, itemstack, posX, posY, false);
-
-			if (!disableEffects && itemstack.hasEffect(0)) {
-				// 20 should be about the size of a block, when rendered this way
-				GL11.glTranslatef(0.0F, 0.0F, 20.0F);
-				itemRenderer.renderEffect(texManager, posX, posY);
-				GL11.glTranslatef(0.0F, 0.0F, -20.0F);
-			}
-
+			itemRenderer.renderItemIntoGUI(fontRenderer, texManager, itemstack, posX, posY, !disableEffects);
 			itemRenderer.zLevel -= zLevel;
 		}
 
@@ -104,7 +96,7 @@ public final class GuiGraphics {
 			GL11.glDisable(GL11.GL_LIGHTING);
 			String amountString = StringUtils.getFormatedStackSize(itemstack.stackSize, displayAmount == DisplayAmount.ALWAYS);
 
-			// 20 should be about the size of a block + 20 for the overlay
+			// 20 should be about the size of a block + 20 for the effect
 			GL11.glTranslatef(0.0F, 0.0F, zLevel + 40.0F);
 			// using a translated shadow does not hurt and works with the HUD
 			SimpleGraphics.drawStringWithTranslatedShadow(fontRenderer, amountString, posX + 17 - fontRenderer.getStringWidth(amountString), posY + 9, Color.getValue(Color.WHITE));

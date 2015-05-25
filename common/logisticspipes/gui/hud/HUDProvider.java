@@ -109,9 +109,14 @@ public class HUDProvider extends BasicHUDGui {
 		super.renderHeadUpDisplay(distance, day, shifted, mc, config);
 		
 		GL11.glTranslatef(0.0F, 0.0F, -0.005F);
-		GL11.glScalef(1.125F, 1.125F, -0.0001F);
-		ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.displayList, null, page, -36, -37, 4, 12, 18, 18, 0.0F, DisplayAmount.ALWAYS, true, false, shifted);
-		ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.itemListOrderer, null, pageB, -36, 23, 4, 4, 18, 18, 0.0F, DisplayAmount.ALWAYS, true, false, shifted);
+		float scaleX = 1.125F;
+		float scaleY = 1.125F;
+		float scaleZ = -0.0001F;
+		GL11.glScalef(scaleX, scaleY, scaleZ);
+		ItemStackRenderer itemStackRenderer = new ItemStackRenderer(null, DisplayAmount.ALWAYS, 0, 0, 0.0F, false, shifted, true);
+		itemStackRenderer.setScaleX(scaleX).setScaleY(scaleY).setScaleZ(scaleZ);
+		ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.displayList, null, page, -36, -37, 4, 12, 18, 18, itemStackRenderer);
+		ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.itemListOrderer, null, pageB, -36, 23, 4, 4, 18, 18, itemStackRenderer);
 		GL11.glScalef(0.875F, 0.875F, -1F);
 		String message = "(" + Integer.toString(page + 1) + "/" + Integer.toString(getMaxPage()) + ")";
 		mc.fontRenderer.drawString(message , 9, -50, 0);

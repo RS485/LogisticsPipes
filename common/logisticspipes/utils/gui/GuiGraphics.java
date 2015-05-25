@@ -59,7 +59,6 @@ public final class GuiGraphics {
 			double health = itemstack.getItem().getDurabilityForDisplay(itemstack);
 			int j1 = (int) Math.round(13.0D - health * 13.0D);
 			int k = (int) Math.round(255.0D - health * 255.0D);
-			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			Tessellator tessellator = Tessellator.instance;
 			int l = 255 - k << 16 | k << 8;
@@ -68,8 +67,6 @@ public final class GuiGraphics {
 			SimpleGraphics.drawQuad(tessellator, x + 2, y + 13, 12, 1, i1, zLevel + 1.0F);
 			SimpleGraphics.drawQuad(tessellator, x + 2, y + 13, j1, 1, l, zLevel + 2.0F);
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
-			GL11.glEnable(GL11.GL_LIGHTING);
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 	}
 

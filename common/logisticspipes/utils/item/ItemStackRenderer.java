@@ -46,6 +46,9 @@ public class ItemStackRenderer {
 	private int posX;
 	private int posY;
 	private float zLevel;
+	private float scaleX;
+	private float scaleY;
+	private float scaleZ;
 	private DisplayAmount displayAmount;
 	private boolean renderEffects;
 	private boolean ignoreDepth;
@@ -64,6 +67,9 @@ public class ItemStackRenderer {
 		this.renderItem = mcRenderItem;
 		this.texManager = mcTextureManager;
 		this.fontRenderer = mcFontRenderer;
+		this.scaleX = 1.0F;
+		this.scaleY = 1.0F;
+		this.scaleZ = 1.0F;
 	}
 
 	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, float zLevel, DisplayAmount displayAmount) {
@@ -71,16 +77,14 @@ public class ItemStackRenderer {
 	}
 
 	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, float zLevel, DisplayAmount displayAmount, boolean renderInColor, boolean renderEffect, boolean ignoreDepth) {
-		RenderHelper.enableGUIStandardItemLighting();
-		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);
+		ItemStackRenderer itemStackRenderer = new ItemStackRenderer(null, displayAmount, 0, 0, zLevel, renderEffect, ignoreDepth, renderInColor);
+		renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, itemStackRenderer);
+	}
 
-		// The only thing that ever sets NORMALIZE are slimes. It never gets disabled and it interferes with our lightning in the HUD.
-		GL11.glDisable(GL11.GL_NORMALIZE);
-
+	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, ItemStackRenderer itemStackRenderer) {
 		int ppi = 0;
 		int column = 0;
 		int row = 0;
-		ItemStackRenderer itemStackRenderer = new ItemStackRenderer(null, displayAmount, 0, 0, zLevel, renderEffect, ignoreDepth, renderInColor);
 
 		for (ItemIdentifierStack identifierStack : _allItems) {
 			if (identifierStack == null) {
@@ -113,25 +117,34 @@ public class ItemStackRenderer {
 				column = 0;
 			}
 		}
-
-		RenderHelper.disableStandardItemLighting();
 	}
 
 	public void render() {
-		// Rendering the block/item with lightning and maybe depth, but without text
-		GL11.glEnable(GL11.GL_LIGHTING);
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+
+		// The only thing that ever sets NORMALIZE are slimes. It never gets disabled and it interferes with our lightning in the HUD.
+		GL11.glDisable(GL11.GL_NORMALIZE);
+
+		// set up lightning
+		GL11.glScalef(1.0F / scaleX, 1.0F / scaleY, 1.0F / scaleZ);
+		RenderHelper.enableGUIStandardItemLighting();
+		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+		GL11.glScalef(scaleX, scaleY, scaleZ);
+
 		if (ignoreDepth) {
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 		} else {
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 		}
 
-		// RenderBlocks is a heavy object, so instantiating it everytime is a bad idea
-		if (!ForgeHooksClient.renderInventoryItem(mcRenderBlocks, texManager, itemstack, renderInColor, zLevel, posX, posY)) {
+		if (!ForgeHooksClient.renderInventoryItem(renderBlocks, texManager, itemstack, renderInColor, zLevel, posX, posY)) {
 			renderItem.zLevel += zLevel;
 			renderItem.renderItemIntoGUI(fontRenderer, texManager, itemstack, posX, posY, renderEffects);
 			renderItem.zLevel -= zLevel;
 		}
+
+		// disable lightning
+		RenderHelper.disableStandardItemLighting();
 
 		if (ignoreDepth) {
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -166,6 +179,8 @@ public class ItemStackRenderer {
 
 			GL11.glTranslatef(0.0F, 0.0F, -(zLevel + 40.0F));
 		}
+
+		GL11.glPopAttrib();
 	}
 
 	public enum DisplayAmount {

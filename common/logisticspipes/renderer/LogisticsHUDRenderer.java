@@ -334,12 +334,18 @@ public class LogisticsHUDRenderer {
 						}
 						
 						ItemStack item = SimpleServiceLocator.neiProxy.getItemForPosition(player.worldObj, player, box);
-						if(item != null) {
-							GL11.glScalef(1.5F, 1.5F, 0.0001F);
-							GL11.glScalef(0.8F, 0.8F, -1F);
-							List<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>(1);
-							list.add(ItemIdentifierStack.getFromStack(item));
-							ItemStackRenderer.renderItemIdentifierStackListIntoGui(list, null, 0, 5, 5, 1, 1, 18, 18, 100.0F, DisplayAmount.NEVER, true, false, true);
+
+						if (item != null) {
+							float scaleX = 1.5F * 0.8F;
+							float scaleY = 1.5F * 0.8F;
+							float scaleZ = -0.0001F;
+
+							GL11.glScalef(scaleX, scaleY, scaleZ);
+
+							ItemStackRenderer itemStackRenderer = new ItemStackRenderer(item, DisplayAmount.NEVER, 5, 6, 0.0F, false, true, true);
+							itemStackRenderer.setScaleX(scaleX).setScaleY(scaleY).setScaleZ(scaleZ);
+
+							itemStackRenderer.render();
 						}
 					}
 
@@ -610,7 +616,8 @@ public class LogisticsHUDRenderer {
 	}
 	
 	private boolean displayHUD() {
-		return (playerWearsHUD() || debugHUD != null) && FMLClientHandler.instance().getClient().currentScreen == null && FMLClientHandler.instance().getClient().gameSettings.thirdPersonView == 0 && !FMLClientHandler.instance().getClient().gameSettings.hideGUI;
+		//return (playerWearsHUD() || debugHUD != null) && FMLClientHandler.instance().getClient().currentScreen == null && FMLClientHandler.instance().getClient().gameSettings.thirdPersonView == 0 && !FMLClientHandler.instance().getClient().gameSettings.hideGUI;
+		return (playerWearsHUD() || debugHUD != null);
 	}
 	
 	public void resetLasers() {

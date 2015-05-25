@@ -252,11 +252,13 @@ public class HudChassisPipe extends BasicHUDGui {
 			GL11.glTranslatef(0.0F, 0.0F, 0.001F);
 
 			ItemStack module = inv.getStackInSlot(position);
-			List<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>();
-			list.add(ItemIdentifierStack.getFromStack(module));
 
-			boolean showColor = this.buttonEnabled() || isSlotSelected(position);
-			ItemStackRenderer.renderItemIdentifierStackListIntoGui(list, null, 0, posX + ((sizeX - 16) / 2), posY + ((sizeY - 16) / 2), 1, 1, 18, 18, -0.002F, DisplayAmount.NEVER, showColor, false, shifted);
+			if (module != null) {
+				boolean renderInColor = this.buttonEnabled() || isSlotSelected(position);
+				ItemStackRenderer itemStackRenderer = new ItemStackRenderer(module, DisplayAmount.NEVER, posX + ((sizeX - 16) / 2), posY + ((sizeY - 16) / 2), -0.002F, false, shifted, renderInColor);
+
+				itemStackRenderer.render();
+			}
 		}
 
 		@Override public void renderAlways(boolean shifted) {

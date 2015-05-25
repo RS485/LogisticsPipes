@@ -120,6 +120,16 @@ public class ItemStackRenderer {
 	}
 
 	public void render() {
+		assert itemstack != null;
+		assert displayAmount != null;
+		assert renderBlocks != null;
+		assert renderItem != null;
+		assert texManager != null;
+		assert fontRenderer != null;
+		assert scaleX != 0.0F;
+		assert scaleY != 0.0F;
+		assert scaleZ != 0.0F;
+
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 
 		// The only thing that ever sets NORMALIZE are slimes. It never gets disabled and it interferes with our lightning in the HUD.

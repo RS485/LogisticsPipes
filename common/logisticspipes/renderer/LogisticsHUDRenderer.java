@@ -616,8 +616,7 @@ public class LogisticsHUDRenderer {
 	}
 	
 	private boolean displayHUD() {
-		//return (playerWearsHUD() || debugHUD != null) && FMLClientHandler.instance().getClient().currentScreen == null && FMLClientHandler.instance().getClient().gameSettings.thirdPersonView == 0 && !FMLClientHandler.instance().getClient().gameSettings.hideGUI;
-		return (playerWearsHUD() || debugHUD != null);
+		return (playerWearsHUD() || debugHUD != null) && FMLClientHandler.instance().getClient().currentScreen == null && FMLClientHandler.instance().getClient().gameSettings.thirdPersonView == 0 && !FMLClientHandler.instance().getClient().gameSettings.hideGUI;
 	}
 	
 	public void resetLasers() {

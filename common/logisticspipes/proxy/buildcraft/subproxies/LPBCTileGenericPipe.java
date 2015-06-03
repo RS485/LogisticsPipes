@@ -313,7 +313,8 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 	public PipePluggable getPipePluggable(ForgeDirection side) {
 		if(blockPluggableAccess) {
 			StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-			if(trace.length > 2 && (trace[2].getMethodName().equals("onBlockActivated") || trace[2].getMethodName().equals("func_149727_a")) && trace[2].getClassName().equals("buildcraft.transport.BlockGenericPipe") && trace[2].getLineNumber() > 680) {
+			// bad hack
+			if(trace.length > 2 && (trace[2].getMethodName().equals("onBlockActivated") || trace[2].getMethodName().equals("func_149727_a")) && trace[2].getClassName().equals("buildcraft.transport.BlockGenericPipe") && trace[2].getLineNumber() > 630) {
 				return null;
 			}
 		}

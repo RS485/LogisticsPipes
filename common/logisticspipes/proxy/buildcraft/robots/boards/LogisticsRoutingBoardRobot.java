@@ -3,6 +3,18 @@ package logisticspipes.proxy.buildcraft.robots.boards;
 import java.util.HashSet;
 import java.util.Set;
 
+import buildcraft.api.boards.RedstoneBoardRobot;
+import buildcraft.api.boards.RedstoneBoardRobotNBT;
+import buildcraft.api.robots.AIRobot;
+import buildcraft.api.robots.DockingStation;
+import buildcraft.api.robots.EntityRobotBase;
+import buildcraft.api.transport.pluggable.PipePluggable;
+import buildcraft.robotics.RobotStationPluggable;
+import buildcraft.robotics.ai.AIRobotGotoBlock;
+import buildcraft.robotics.ai.AIRobotGotoStation;
+import buildcraft.robotics.ai.AIRobotStraightMoveTo;
+import buildcraft.transport.TileGenericPipe;
+import cofh.api.energy.IEnergyStorage;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -21,21 +33,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.api.boards.RedstoneBoardRobot;
-import buildcraft.api.boards.RedstoneBoardRobotNBT;
-import buildcraft.api.core.BlockIndex;
-import buildcraft.api.robots.AIRobot;
-import buildcraft.api.robots.EntityRobotBase;
-import buildcraft.api.robots.IDockingStation;
-import buildcraft.api.transport.pluggable.PipePluggable;
-import buildcraft.robots.DockingStation;
-import buildcraft.robots.RobotStationPluggable;
-import buildcraft.robots.StationIndex;
-import buildcraft.robots.ai.AIRobotGotoBlock;
-import buildcraft.robots.ai.AIRobotGotoStation;
-import buildcraft.robots.ai.AIRobotStraightMoveTo;
-import buildcraft.transport.TileGenericPipe;
-import cofh.api.energy.IEnergyStorage;
 
 public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 	
@@ -72,7 +69,7 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 	private void index() {
 		if(init) return;
 		init = true;
-		IDockingStation dock = robot.getLinkedStation();
+		DockingStation dock = robot.getLinkedStation();
 		if(dock == null) return;
 		LPPosition pos = new LPPosition(dock.x(), dock.y(), dock.z());
 		LPRobotConnectionControl.instance.addRobot(this.robot.worldObj, pos, dock.side());
@@ -217,8 +214,8 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 			currentTarget = findTarget();
 		}
 		if(currentTarget != null) {
-			IDockingStation station1 = this.robot.getDockingStation();
-			IDockingStation station2 = currentTarget.getValue2().robot.getDockingStation();
+			DockingStation station1 = this.robot.getDockingStation();
+			DockingStation station2 = currentTarget.getValue2().robot.getDockingStation();
 			if(station1 == null) station1 = this.robot.getLinkedStation();
 			if(station2 == null) station2 = currentTarget.getValue2().robot.getLinkedStation();
 			startTransport(currentTarget.getValue2(), station2);
@@ -239,7 +236,7 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 		}
 	}
 
-	private void startTransport(LogisticsRoutingBoardRobot target, IDockingStation station) {
+	private void startTransport(LogisticsRoutingBoardRobot target, DockingStation station) {
 		acceptsItems = false;
 		targetStationPos = new LPPosition(station.x(), station.y(), station.z());
 		targetStationSide = station.side();

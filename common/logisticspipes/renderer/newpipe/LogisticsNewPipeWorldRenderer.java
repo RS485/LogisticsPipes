@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import buildcraft.api.transport.pluggable.IPipePluggableRenderer;
 import logisticspipes.LPConstants;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;

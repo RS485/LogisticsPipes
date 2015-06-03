@@ -8,27 +8,25 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import buildcraft.api.core.IZone;
+import buildcraft.api.robots.DockingStation;
+import buildcraft.api.robots.EntityRobotBase;
+import buildcraft.api.transport.pluggable.PipePluggable;
+import buildcraft.robotics.RobotStationPluggable;
+import buildcraft.transport.TileGenericPipe;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.routing.ISpecialPipedConnection;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.buildcraft.robots.boards.LogisticsRoutingBoardRobot;
 import logisticspipes.proxy.specialconnection.SpecialPipeConnection.ConnectionInformation;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
-import logisticspipes.utils.tuples.Quartet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.api.core.IZone;
-import buildcraft.api.robots.EntityRobotBase;
-import buildcraft.api.transport.pluggable.PipePluggable;
-import buildcraft.robots.DockingStation;
-import buildcraft.robots.RobotStationPluggable;
-import buildcraft.transport.TileGenericPipe;
 
 public class LPRobotConnectionControl implements ISpecialPipedConnection {
 	

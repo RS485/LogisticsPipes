@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import logisticspipes.LPConstants;
-import logisticspipes.asm.bc.PipeEventBusHandler;
+import logisticspipes.asm.bc.ClassPipeRendererTESRHandler;
 import logisticspipes.asm.td.ClassRenderDuctItemsHandler;
 import logisticspipes.asm.td.ClassTileMultiBlockHandler;
 import logisticspipes.asm.td.ClassTravelingItemHandler;

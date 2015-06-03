@@ -7,6 +7,16 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import buildcraft.api.robots.DockingStation;
+import buildcraft.api.robots.EntityRobotBase;
+import buildcraft.api.statements.IStatementParameter;
+import buildcraft.api.statements.StatementSlot;
+import buildcraft.api.transport.pluggable.PipePluggable;
+import buildcraft.core.lib.render.FakeBlock;
+import buildcraft.robotics.RobotStationPluggable;
+import buildcraft.transport.BlockGenericPipe;
+import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.gates.GatePluggable;
 import buildcraft.transport.pluggable.LensPluggable;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.buildcraft.robots.LPRobotConnectionControl;
@@ -24,12 +34,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.api.robots.EntityRobotBase;
-import buildcraft.api.statements.IStatementParameter;
-import buildcraft.api.transport.pluggable.PipePluggable;
-import buildcraft.core.lib.render.FakeBlock;
-import buildcraft.transport.BlockGenericPipe;
-import buildcraft.transport.TileGenericPipe;
 
 public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart {
 	

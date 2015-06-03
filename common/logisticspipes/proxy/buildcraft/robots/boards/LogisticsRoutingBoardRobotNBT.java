@@ -22,7 +22,7 @@ public class LogisticsRoutingBoardRobotNBT extends RedstoneBoardRobotNBT {
 	private IIcon icon;
 
 	@Override
-	public RedstoneBoardRobot create(NBTTagCompound nbt, EntityRobotBase robot) {
+	public RedstoneBoardRobot create(EntityRobotBase robot) {
 		return new LogisticsRoutingBoardRobot(robot);
 	}
 

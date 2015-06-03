@@ -36,7 +36,7 @@ public interface IBCProxy {
 	void registerTrigger();
 	ICraftingParts getRecipeParts();
 	void addCraftingRecipes(ICraftingParts parts);
-	
+
 	Class<? extends ICraftingRecipeProvider> getAssemblyTableProviderClass();
 	void notifyOfChange(LogisticsTileGenericPipe logisticsTileGenericPipe, TileEntity tile, ForgeDirection o);
 	IBCTilePart getBCTilePart(LogisticsTileGenericPipe logisticsTileGenericPipe);
@@ -45,7 +45,6 @@ public interface IBCProxy {
 	void callBCRemovePipe(World world, int x, int y, int z);
 	void logWarning(String format);
 	IBCRenderTESR getBCRenderTESR();
-	@SideOnly(Side.CLIENT) void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, LogisticsTileGenericPipe pipe, int x, int y, int z, int renderPass);
 	boolean isTileGenericPipe(TileEntity tile);
 	void cleanup();
 }

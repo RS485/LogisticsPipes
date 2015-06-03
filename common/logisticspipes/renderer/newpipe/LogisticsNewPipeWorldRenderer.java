@@ -91,7 +91,6 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 		
 		tess.addTranslation(0.00002F, 0.00002F, 0.00002F);
 		renderer.setRenderBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-		SimpleServiceLocator.buildCraftProxy.pipeFacadeRenderer(renderer, (LogisticsBlockGenericPipe) block, pipeTile, x, y, z, LogisticsPipeWorldRenderer.renderPass);
 		
 		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
 			if (pipeTile.tilePart.hasPipePluggable(dir)) {

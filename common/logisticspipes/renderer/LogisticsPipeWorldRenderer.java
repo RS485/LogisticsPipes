@@ -135,8 +135,6 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 		
 		renderblocks.setRenderBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 		
-		SimpleServiceLocator.buildCraftProxy.pipeFacadeRenderer(renderblocks, block, pipe, x, y, z, renderPass);
-		
 		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
 			if (pipe.tilePart.hasPipePluggable(dir)) {
 				IBCPipePluggable p = pipe.tilePart.getBCPipePluggable(dir);

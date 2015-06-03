@@ -3,18 +3,33 @@ package logisticspipes.proxy.buildcraft;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.Set;
-import java.util.WeakHashMap;
 
 import buildcraft.BuildCraftCore;
+import buildcraft.BuildCraftSilicon;
+import buildcraft.BuildCraftTransport;
+import buildcraft.api.boards.RedstoneBoardRegistry;
+import buildcraft.api.core.BCLog;
+import buildcraft.api.robots.RobotManager;
+import buildcraft.api.statements.IActionInternal;
+import buildcraft.api.statements.ITriggerExternal;
+import buildcraft.api.statements.ITriggerInternal;
+import buildcraft.api.statements.StatementManager;
+import buildcraft.api.transport.IPipeConnection;
+import buildcraft.api.transport.IPipeTile;
+import buildcraft.api.transport.IPipeTile.PipeType;
+import buildcraft.core.ItemMapLocation;
+import buildcraft.core.lib.ITileBufferHolder;
+import buildcraft.transport.BlockGenericPipe;
+import buildcraft.transport.ItemGateCopier;
+import buildcraft.transport.ItemPipe;
+import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeEventBus;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import buildcraft.transport.PipeTransportItems;
+import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.render.PipeRendererTESR;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
-import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.VersionNotSupportedException;
@@ -42,11 +57,8 @@ import logisticspipes.proxy.interfaces.ICraftingParts;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.ReflectionHelper;
-import logisticspipes.utils.tuples.LPPosition;
-import logisticspipes.utils.tuples.Pair;
 import lombok.SneakyThrows;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -55,32 +67,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.BuildCraftSilicon;
-import buildcraft.BuildCraftTransport;
-import buildcraft.api.boards.RedstoneBoardRegistry;
-import buildcraft.api.core.BCLog;
-import buildcraft.api.robots.RobotManager;
-import buildcraft.api.statements.IActionInternal;
-import buildcraft.api.statements.ITriggerExternal;
-import buildcraft.api.statements.ITriggerInternal;
-import buildcraft.api.statements.StatementManager;
-import buildcraft.api.transport.IPipeConnection;
-import buildcraft.api.transport.IPipeTile;
-import buildcraft.api.transport.IPipeTile.PipeType;
-import buildcraft.core.ItemMapLocation;
-import buildcraft.core.lib.ITileBufferHolder;
-import buildcraft.core.lib.render.FakeBlock;
-import buildcraft.transport.BlockGenericPipe;
-import buildcraft.transport.ItemGateCopier;
-import buildcraft.transport.ItemPipe;
-import buildcraft.transport.Pipe;
-import buildcraft.transport.PipeTransportItems;
-import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.render.FacadeRenderHelper;
-import buildcraft.transport.render.PipeRendererTESR;
-import buildcraft.transport.render.PipeRendererWorld;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class BuildCraftProxy implements IBCProxy {
 
@@ -445,14 +431,6 @@ public class BuildCraftProxy implements IBCProxy {
 	@Override
 	public boolean isTileGenericPipe(TileEntity tile) {
 		return tile instanceof TileGenericPipe;
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, LogisticsTileGenericPipe pipe, int x, int y, int z, int renderPass) {
-		TileGenericPipe tile = (TileGenericPipe) pipe.tilePart.getOriginal();
-		PipeRendererWorld.renderPass = renderPass;
-		FacadeRenderHelper.pipeFacadeRenderer(renderblocks, FakeBlock.INSTANCE, tile, tile.renderState, x, y, z);
 	}
 
 	@Override

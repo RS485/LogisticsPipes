@@ -7,7 +7,6 @@ import java.util.List;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
-import logisticspipes.config.Configs;
 import logisticspipes.config.PlayerConfig;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
@@ -18,7 +17,6 @@ import logisticspipes.proxy.buildcraft.subproxies.IBCRenderTESR;
 import logisticspipes.renderer.CustomBlockRenderer.RenderInfo;
 import logisticspipes.renderer.newpipe.LogisticsNewPipeItemBoxRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
-import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.transport.PipeTransportLogistics;
@@ -52,7 +50,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
-
 import org.lwjgl.opengl.GL11;
 
 
@@ -111,8 +108,13 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		LogisticsTileGenericPipe pipe = ((LogisticsTileGenericPipe)tileentity);
 		if(pipe.pipe == null) return;
 		if(config.getRenderPipeContentDistance() * config.getRenderPipeContentDistance() < distance) return;
+
+
 		bcRenderer.renderWires(pipe, x, y, z);
-		bcRenderer.renderGates(pipe, x, y, z);
+
+		// render pluggables (like gates)
+		bcRenderer.renderPluggables(pipe, x, y, z);
+
 		if(!pipe.isOpaque()) {
 			if(pipe.pipe.transport instanceof PipeFluidTransportLogistics) {
 				renderFluids(pipe.pipe, x, y, z);

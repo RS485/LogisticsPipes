@@ -187,7 +187,7 @@ public class ProxyManager {
 			@Override public IBCRenderTESR getBCRenderTESR() {
 				return new IBCRenderTESR() {
 					@Override public void renderWires(LogisticsTileGenericPipe pipe, double x, double y, double z) {}
-					@Override public void renderGates(LogisticsTileGenericPipe pipe, double x, double y, double z) {}
+					@Override public void renderPluggables(LogisticsTileGenericPipe pipe, double x, double y, double z) {}
 				};
 			}
 			@Override public boolean isTileGenericPipe(TileEntity tile) {return false;}

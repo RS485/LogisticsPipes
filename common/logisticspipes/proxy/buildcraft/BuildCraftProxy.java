@@ -421,9 +421,9 @@ public class BuildCraftProxy implements IBCProxy {
 
 			@Override
 			@SneakyThrows(Exception.class)
-			public void renderGates(LogisticsTileGenericPipe pipe, double x, double y, double z) {
+			public void renderPluggables(LogisticsTileGenericPipe pipe, double x, double y, double z) {
 				TileGenericPipe tgPipe = (TileGenericPipe) pipe.tilePart.getOriginal();
-				ReflectionHelper.invokePrivateMethod(Object.class, PipeRendererTESR.class, renderer, "renderGates", new Class[]{TileGenericPipe.class, double.class, double.class, double.class}, new Object[]{tgPipe, x, y, z});
+				ReflectionHelper.invokePrivateMethod(Object.class, PipeRendererTESR.class, renderer, "renderPluggables", new Class[]{TileGenericPipe.class, double.class, double.class, double.class}, new Object[]{tgPipe, x, y, z});
 			}
 		};
 	}

@@ -22,7 +22,7 @@
 	<property name="thaumcraft.filename"   value="Thaumcraft-1.7.2-4.1.1.14-api.zip"/>
 	<property name="ocapi.filename"        value="OpenComputers-MC1.7.10-1.4.2.16-api.zip"/>
 	<property name="appeng.filename"       value="appliedenergistics2-rv2-beta-14-api.zip"/>
-	<property name="bc.filename"           value="buildcraft-7.0.5-dev.jar"/>
+	<property name="bc.filename"           value="buildcraft-7.0.5-dev-2b5ed14.jar"/>
 
 	<target name="download">
 		<mkdir dir="${download.dir}"/>

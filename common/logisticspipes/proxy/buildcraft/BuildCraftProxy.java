@@ -358,23 +358,9 @@ public class BuildCraftProxy implements IBCProxy {
 	}
 
 	@Override
-	@SneakyThrows({SecurityException.class, IllegalAccessException.class, IllegalArgumentException.class, NoSuchFieldException.class})
 	public IBCClickResult handleBCClickOnPipe(World world, int x, int y, int z, EntityPlayer player, int side, float xOffset, float yOffset, float zOffset, CoreUnroutedPipe pipe) {
-		Object trace = BuildCraftTransport.genericPipeBlock.doRayTrace(world, x, y, z, player);
-		String type = "null";
-		if(trace != null) {
-			Enum<?> hitPart = ReflectionHelper.getPrivateField(Enum.class, trace.getClass(), "hitPart", trace);
-			if(hitPart != null) {
-				type = hitPart.name();
-			}
-		}
-		if("Pluggable".equals(type)) {
-			pipe.container.tilePart.disablePluggableAccess();
-		}
 		boolean result = BuildCraftTransport.genericPipeBlock.onBlockActivated(world, x, y, z, player, side, xOffset, yOffset, zOffset);
-		if("Pluggable".equals(type)) {
-			pipe.container.tilePart.reenablePluggableAccess();
-		}
+
 		world.notifyBlocksOfNeighborChange(x, y, z, LogisticsPipes.LogisticsPipeBlock); //Again because not all changes have been applied before the call inside the BC method is made.
 		boolean block = false;
 		if(!result) {
@@ -479,21 +465,19 @@ public class BuildCraftProxy implements IBCProxy {
 
 	@Override
 	public IBCRenderTESR getBCRenderTESR() {
-		final PipeRendererTESR renderer = new PipeRendererTESR();
-		renderer.func_147497_a(TileEntityRendererDispatcher.instance);
 		return new IBCRenderTESR() {
 			@Override
 			@SneakyThrows(Exception.class)
 			public void renderWires(LogisticsTileGenericPipe pipe, double x, double y, double z) {
 				TileGenericPipe tgPipe = (TileGenericPipe) pipe.tilePart.getOriginal();
-				ReflectionHelper.invokePrivateMethod(Object.class, PipeRendererTESR.class, renderer, "renderGatesWires", new Class[]{TileGenericPipe.class, double.class, double.class, double.class}, new Object[]{tgPipe, x, y, z});
+				ReflectionHelper.invokePrivateMethod(Object.class, PipeRendererTESR.class, PipeRendererTESR.INSTANCE, "renderGatesWires", new Class[]{TileGenericPipe.class, double.class, double.class, double.class}, new Object[]{tgPipe, x, y, z});
 			}
 
 			@Override
 			@SneakyThrows(Exception.class)
 			public void dynamicRenderPluggables(LogisticsTileGenericPipe pipe, double x, double y, double z) {
 				TileGenericPipe tgPipe = (TileGenericPipe) pipe.tilePart.getOriginal();
-				ReflectionHelper.invokePrivateMethod(Object.class, PipeRendererTESR.class, renderer, "renderPluggables", new Class[]{TileGenericPipe.class, double.class, double.class, double.class}, new Object[]{tgPipe, x, y, z});
+				ReflectionHelper.invokePrivateMethod(Object.class, PipeRendererTESR.class, PipeRendererTESR.INSTANCE, "renderPluggables", new Class[]{TileGenericPipe.class, double.class, double.class, double.class}, new Object[]{tgPipe, x, y, z});
 			}
 		};
 	}

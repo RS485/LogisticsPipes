@@ -139,8 +139,6 @@ public class ProxyManager {
 					}
 					@Override public IBCPipePart getBCPipePart() {
 						return new IBCPipePart() {
-							@Override public void openGateGui(EntityPlayer player, int ordinal) {}
-							@Override public boolean hasGate() {return false;}
 							@Override public boolean canConnectRedstone() {return false;}
 							@Override public int isPoweringTo(int l) {return 0;}
 							@Override public int isIndirectlyPoweringTo(int l) {return 0;}
@@ -169,8 +167,6 @@ public class ProxyManager {
 						};
 					}
 					@Override public void readOldRedStone(NBTTagCompound nbt) {}
-					@Override public void disablePluggableAccess() {}
-					@Override public void reenablePluggableAccess() {}
 					@Override public void afterStateUpdated() {}
 					@Override public Object getOriginal() {return null;}
 					@Override public boolean hasPipePluggable(ForgeDirection dir) {return false;}

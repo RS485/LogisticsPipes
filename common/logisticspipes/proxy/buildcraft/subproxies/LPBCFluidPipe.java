@@ -9,7 +9,6 @@ import buildcraft.api.statements.IActionInternal;
 import buildcraft.api.statements.StatementSlot;
 import buildcraft.transport.Pipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
@@ -45,11 +44,6 @@ public class LPBCFluidPipe extends Pipe<LPBCPipeTransportsFluids> implements IBC
 	@Override
 	public Object getClientGui(InventoryPlayer inventory, int side) {
 		return bcPipe.getClientGui(inventory, side);
-	}
-
-	@Override
-	public void openGateGui(EntityPlayer player, int side) {
-		bcPipe.openGateGui(player, side);
 	}
 
 	@Override

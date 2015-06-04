@@ -45,8 +45,6 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 	private final LogisticsTileGenericPipe lpPipe;
 	public Map<ForgeDirection, List<StatementSlot>> activeActions = new HashMap<ForgeDirection, List<StatementSlot>>();
 	
-	private boolean blockPluggableAccess = false;
-	
 	public LPBCTileGenericPipe(LPBCPipe pipe, LogisticsTileGenericPipe lpPipe) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		this.pipe = this.bcPipe = pipe;
 		bcFluidPipe = new LPBCFluidPipe(new LPBCPipeTransportsFluids(lpPipe), lpPipe, bcPipe);
@@ -316,28 +314,6 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 				return ((LogisticsRoutingBoardRobot)robot.getBoard()).handleItem(arrivingItem);
 			}
 		};
-	}
-
-	@Override
-	public PipePluggable getPipePluggable(ForgeDirection side) {
-		if(blockPluggableAccess) {
-			StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-			// bad hack
-			if(trace.length > 2 && (trace[2].getMethodName().equals("onBlockActivated") || trace[2].getMethodName().equals("func_149727_a")) && trace[2].getClassName().equals("buildcraft.transport.BlockGenericPipe") && trace[2].getLineNumber() > 630) {
-				return null;
-			}
-		}
-		return super.getPipePluggable(side);
-	}
-
-	@Override
-	public void disablePluggableAccess() {
-		blockPluggableAccess = true;
-	}
-
-	@Override
-	public void reenablePluggableAccess() {
-		blockPluggableAccess = false;
 	}
 
 	@Override

@@ -23,8 +23,6 @@ public interface IBCTilePart {
 	boolean hasEnabledFacade(ForgeDirection dir);
 	IBCPipePluggable getBCPipePluggable(ForgeDirection sideHit);
 	void readOldRedStone(NBTTagCompound nbt);
-	void disablePluggableAccess();
-	void reenablePluggableAccess();
 	void afterStateUpdated();
 	Object getOriginal();
 	boolean hasPipePluggable(ForgeDirection dir);

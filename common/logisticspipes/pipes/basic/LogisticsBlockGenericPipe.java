@@ -852,22 +852,10 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				// interface callbacks for the individual pipe/logic calls
 				return pipe.blockActivated(player);
 			}
-			IBCClickResult result = SimpleServiceLocator.buildCraftProxy.handleBCClickOnPipe(world, x, y, z, player, side, xOffset, yOffset, zOffset, pipe);
-			if(result.handled()) {
-				return true;
-			}
-			if(result.blocked()) {
-				return false;
-			}
-			if (pipe.bcPipePart.hasGate()) {
-				RaytraceResult rayTraceResult = doRayTrace(world, x, y, z, player);
 
-				if (rayTraceResult != null && rayTraceResult.hitPart == Part.Pluggable && pipe.container.getPipePluggable(rayTraceResult.sideHit) instanceof GatePluggable) {
-					pipe.bcPipePart.openGateGui(player, rayTraceResult.sideHit.ordinal());
-					return true;
-				}
-			}
-			return pipe.blockActivated(player);
+			IBCClickResult result = SimpleServiceLocator.buildCraftProxy.handleBCClickOnPipe(world, x, y, z, player, side, xOffset, yOffset, zOffset, pipe);
+
+			return result.handled() || !result.blocked() && pipe.blockActivated(player);
 		}
 
 		return false;

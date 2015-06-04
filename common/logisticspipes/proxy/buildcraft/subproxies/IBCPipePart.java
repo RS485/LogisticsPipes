@@ -9,8 +9,6 @@ import net.minecraft.item.ItemStack;
 
 public interface IBCPipePart {
 
-	void openGateGui(EntityPlayer player, int ordinal);
-	boolean hasGate();
 	boolean canConnectRedstone();
 	int isPoweringTo(int l);
 	int isIndirectlyPoweringTo(int l);

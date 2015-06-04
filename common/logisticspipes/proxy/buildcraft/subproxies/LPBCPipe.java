@@ -4,14 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import logisticspipes.network.NewGuiHandler;
-import logisticspipes.network.guis.proxy.bc.GateGui;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.buildcraft.gates.ActionDisableLogistics;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
@@ -58,13 +55,6 @@ public class LPBCPipe extends Pipe<LPBCPipeTransportsItems> implements IBCPipePa
 		((ContainerGateInterface)gui.inventorySlots).setGate(side);
 		gui.slots.clear();
 		return gui;
-	}
-
-	@Override
-	public void openGateGui(EntityPlayer player, int side) {
-		if (!player.worldObj.isRemote) {
-			NewGuiHandler.getGui(GateGui.class).setSide(side).setTilePos(this.pipe).open(player);
-		}
 	}
 
 	@Override

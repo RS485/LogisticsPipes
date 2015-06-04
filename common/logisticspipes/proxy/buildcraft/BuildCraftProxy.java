@@ -8,7 +8,10 @@ import buildcraft.BuildCraftCore;
 import buildcraft.BuildCraftSilicon;
 import buildcraft.BuildCraftTransport;
 import buildcraft.api.boards.RedstoneBoardRegistry;
+import buildcraft.api.boards.RedstoneBoardRobotNBT;
 import buildcraft.api.core.BCLog;
+import buildcraft.api.events.RobotPlacementEvent;
+import buildcraft.api.robots.DockingStation;
 import buildcraft.api.robots.RobotManager;
 import buildcraft.api.statements.IActionInternal;
 import buildcraft.api.statements.ITriggerExternal;
@@ -19,6 +22,9 @@ import buildcraft.api.transport.IPipeTile;
 import buildcraft.api.transport.IPipeTile.PipeType;
 import buildcraft.core.ItemMapLocation;
 import buildcraft.core.lib.ITileBufferHolder;
+import buildcraft.robotics.EntityRobot;
+import buildcraft.robotics.ItemRobot;
+import buildcraft.robotics.RobotStationPluggable;
 import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.ItemGateCopier;
 import buildcraft.transport.ItemPipe;
@@ -27,6 +33,7 @@ import buildcraft.transport.PipeEventBus;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.render.PipeRendererTESR;
+import cpw.mods.fml.common.FMLCommonHandler;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
@@ -359,7 +366,7 @@ public class BuildCraftProxy implements IBCProxy {
 		if("Pluggable".equals(type)) {
 			pipe.container.tilePart.disablePluggableAccess();
 		}
-		final boolean result = BuildCraftTransport.genericPipeBlock.onBlockActivated(world, x, y, z, player, side, xOffset, yOffset, zOffset);
+		boolean result = BuildCraftTransport.genericPipeBlock.onBlockActivated(world, x, y, z, player, side, xOffset, yOffset, zOffset);
 		if("Pluggable".equals(type)) {
 			pipe.container.tilePart.reenablePluggableAccess();
 		}
@@ -376,20 +383,78 @@ public class BuildCraftProxy implements IBCProxy {
 					block = true;
 				} else if (currentItem.getItem() instanceof ItemMapLocation) {
 					block = true;
+				} else if (currentItem.getItem() instanceof ItemRobot) {
+					result = checkRobot(world, x, y, z, player, currentItem);
 				}
 			}
 		}
+		final boolean fResult = result;
 		final boolean fBlock = block;
 		return new IBCClickResult() {
 			@Override
 			public boolean handled() {
-				return result;
+				return fResult;
 			}
 
 			@Override
 			public boolean blocked() {
 				return fBlock;
 			}};
+	}
+
+	/**
+	 * @see buildcraft.robotics.ItemRobot#onItemUse(ItemStack, EntityPlayer, World, int, int, int, int, float, float, float)
+	 */
+	private boolean checkRobot(World world, int x, int y, int z, EntityPlayer player, ItemStack currentItem) {
+		if (!world.isRemote) {
+			Pipe<?> bcPipe = BlockGenericPipe.getPipe(world, x, y, z);
+			if (bcPipe == null) {
+				return false;
+			}
+
+			BlockGenericPipe pipeBlock = BuildCraftTransport.genericPipeBlock;
+			BlockGenericPipe.RaytraceResult rayTraceResult = pipeBlock.doRayTrace(world, x, y, z, player);
+
+			if (rayTraceResult != null && rayTraceResult.hitPart == BlockGenericPipe.Part.Pluggable
+					&& bcPipe.container.getPipePluggable(rayTraceResult.sideHit) instanceof RobotStationPluggable) {
+				RobotStationPluggable pluggable = (RobotStationPluggable) bcPipe.container.getPipePluggable(rayTraceResult.sideHit);
+				DockingStation station = pluggable.getStation();
+
+				if (!station.isTaken()) {
+					RedstoneBoardRobotNBT robotNBT = ItemRobot.getRobotNBT(currentItem);
+					if (robotNBT == RedstoneBoardRegistry.instance.getEmptyRobotBoard()) {
+						return true;
+					}
+					RobotPlacementEvent robotEvent = new RobotPlacementEvent(player, robotNBT.getID());
+					FMLCommonHandler.instance().bus().post(robotEvent);
+					if (robotEvent.isCanceled()) {
+						return true;
+					}
+					EntityRobot robot = ((ItemRobot) currentItem.getItem())
+							.createRobot(currentItem, world);
+
+					if (robot != null && robot.getRegistry() != null) {
+						robot.setUniqueRobotId(robot.getRegistry().getNextRobotId());
+
+						float px = x + 0.5F + rayTraceResult.sideHit.offsetX * 0.5F;
+						float py = y + 0.5F + rayTraceResult.sideHit.offsetY * 0.5F;
+						float pz = z + 0.5F + rayTraceResult.sideHit.offsetZ * 0.5F;
+
+						robot.setPosition(px, py, pz);
+						station.takeAsMain(robot);
+						robot.dock(robot.getLinkedStation());
+						world.spawnEntityInWorld(robot);
+
+						if (!player.capabilities.isCreativeMode) {
+							player.getCurrentEquippedItem().stackSize--;
+						}
+					}
+				}
+
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

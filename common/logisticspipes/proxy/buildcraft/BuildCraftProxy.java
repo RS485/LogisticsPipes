@@ -30,6 +30,7 @@ import buildcraft.transport.ItemGateCopier;
 import buildcraft.transport.ItemPipe;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeEventBus;
+import buildcraft.transport.PipeTransportFluids;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.render.PipeRendererTESR;
@@ -74,7 +75,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-
 public class BuildCraftProxy implements IBCProxy {
 
 	public static ITriggerInternal LogisticsFailedTrigger;
@@ -161,8 +161,13 @@ public class BuildCraftProxy implements IBCProxy {
 			if (!BlockGenericPipe.isValid(otherPipe))
 				return false;
 			
-			if(!(otherPipe.transport instanceof PipeTransportItems))
-				return false;
+			if(pipe.pipe != null && pipe.pipe.isFluidPipe()) {
+				if(!(otherPipe.transport instanceof PipeTransportItems) && !(otherPipe.transport instanceof PipeTransportFluids))
+					return false;
+			} else {
+				if(!(otherPipe.transport instanceof PipeTransportItems))
+					return false;
+			}
 		}
 		return true;
 	}

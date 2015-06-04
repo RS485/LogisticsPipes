@@ -17,10 +17,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.asm.te.ILPTEInformation;
 import logisticspipes.asm.te.ITileEntityChangeListener;
+import logisticspipes.asm.te.LPTileEntityObject;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.routing.IDirectRoutingConnection;
 import logisticspipes.interfaces.routing.IFilter;
@@ -32,12 +34,11 @@ import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IPaintPath;
 import logisticspipes.routing.LaserData;
 import logisticspipes.routing.PipeRoutingConnectionType;
+import logisticspipes.routing.pathfinder.IRouteProvider.RouteInfo;
 import logisticspipes.utils.OneList;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
-import logisticspipes.utils.tuples.Quartet;
-import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -111,7 +112,8 @@ public class PathFinder {
 	public HashMap<CoreRoutedPipe, ExitRoute> result;
 	
 	public ITileEntityChangeListener changeListener;
-	public List<List<ITileEntityChangeListener>> listenedPipes = new ArrayList<List<ITileEntityChangeListener>>();
+	public Set<List<ITileEntityChangeListener>> listenedPipes = new HashSet<List<ITileEntityChangeListener>>();
+	public Set<LPTileEntityObject> touchedPipes = new HashSet<LPTileEntityObject>();
 	
 	private HashMap<CoreRoutedPipe, ExitRoute> getConnectedRoutingPipes(IPipeInformationProvider startPipe, EnumSet<PipeRoutingConnectionType> connectionFlags, ForgeDirection side) {
 		HashMap<CoreRoutedPipe, ExitRoute> foundPipes = new HashMap<CoreRoutedPipe, ExitRoute>();
@@ -296,7 +298,22 @@ public class PathFinder {
 				}
 
 				int beforeRecurseCount = foundPipes.size();
-				HashMap<CoreRoutedPipe, ExitRoute> result = getConnectedRoutingPipes(currentPipe, nextConnectionFlags, direction);
+				HashMap<CoreRoutedPipe, ExitRoute> result = null;
+				if(currentPipe instanceof IRouteProvider) {
+					List<RouteInfo> list = ((IRouteProvider)currentPipe).getConnectedPipes(direction.getOpposite());
+					if(list != null) {
+						result = new HashMap<CoreRoutedPipe, ExitRoute>();
+						LPPosition pos = new LPPosition(currentPipe);
+						for(RouteInfo info:list) {
+							distances.put(pos, currentPipe.getDistance() + info.getLength());
+							result.putAll(getConnectedRoutingPipes(info.getPipe(), nextConnectionFlags, direction));
+							distances.remove(pos);
+						}
+					}
+				} 
+				if(result == null) {
+					result = getConnectedRoutingPipes(currentPipe, nextConnectionFlags, direction);
+				}
 				for(Entry<CoreRoutedPipe, ExitRoute> pipeEntry : result.entrySet()) {
 					//Update Result with the direction we took
 					pipeEntry.getValue().exitOrientation = direction;
@@ -341,6 +358,7 @@ public class PathFinder {
 				((ILPTEInformation)tile).getObject().changeListeners.add(changeListener);
 			}
 			listenedPipes.add(((ILPTEInformation)tile).getObject().changeListeners);
+			touchedPipes.add(((ILPTEInformation)tile).getObject());
 		}
 	}
 

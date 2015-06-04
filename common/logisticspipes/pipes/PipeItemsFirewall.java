@@ -11,11 +11,14 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.pipe.FireWallFlag;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.request.resources.IResource;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
+import logisticspipes.utils.tuples.Pair;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
@@ -125,6 +128,14 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 				@Override
 				public LPPosition getLPPosition() {
 					return PipeItemsFirewall.this.getLPPosition();
+				}
+
+				@Override
+				public boolean isFilteredItem(IResource resultItem) {
+					for(Pair<ItemIdentifierStack, Integer> pair:inv) {
+						if(resultItem.matches(pair.getValue1().getItem())) return true;
+					}
+					return false;
 				}
 			};
 		}

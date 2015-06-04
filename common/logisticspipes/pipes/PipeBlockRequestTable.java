@@ -24,6 +24,7 @@ import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.request.resources.IResource;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.security.SecuritySettings;
@@ -63,7 +64,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	private boolean init = false;
 	
 	private PlayerCollectionList localGuiWatcher = new PlayerCollectionList();
-	public Map<Integer, Pair<ItemIdentifierStack, LinkedLogisticsOrderList>> watchedRequests = new HashMap<Integer, Pair<ItemIdentifierStack, LinkedLogisticsOrderList>>();
+	public Map<Integer, Pair<IResource, LinkedLogisticsOrderList>> watchedRequests = new HashMap<Integer, Pair<IResource, LinkedLogisticsOrderList>>();
 	private int localLastUsedWatcherId = 0;
 
 	public ItemIdentifier targetType = null;
@@ -106,7 +107,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		if(tick % 2 == 0 && !localGuiWatcher.isEmpty()) {
 			checkForExpired();
 			if(getUpgradeManager().hasCraftingMonitoringUpgrade()) {
-				for(Entry<Integer, Pair<ItemIdentifierStack, LinkedLogisticsOrderList>> entry:watchedRequests.entrySet()) {
+				for(Entry<Integer, Pair<IResource, LinkedLogisticsOrderList>> entry:watchedRequests.entrySet()) {
 					MainProxy.sendToPlayerList(PacketHandler.getPacket(OrdererWatchPacket.class).setOrders(entry.getValue().getValue2()).setStack(entry.getValue().getValue1()).setInteger(entry.getKey()).setTilePos(this.container), localGuiWatcher);
 				}
 			}
@@ -116,9 +117,9 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	}
 
 	private void checkForExpired() {
-		Iterator<Entry<Integer, Pair<ItemIdentifierStack, LinkedLogisticsOrderList>>> iter = watchedRequests.entrySet().iterator();
+		Iterator<Entry<Integer, Pair<IResource, LinkedLogisticsOrderList>>> iter = watchedRequests.entrySet().iterator();
 		while(iter.hasNext()) {
-			Entry<Integer, Pair<ItemIdentifierStack, LinkedLogisticsOrderList>> entry = iter.next();
+			Entry<Integer, Pair<IResource, LinkedLogisticsOrderList>> entry = iter.next();
 			if(isDone(entry.getValue().getValue2())) {
 				MainProxy.sendToPlayerList(PacketHandler.getPacket(OrderWatchRemovePacket.class).setInteger(entry.getKey()).setTilePos(this.container), localGuiWatcher);
 				iter.remove();
@@ -475,7 +476,7 @@ outer:
 	}
 
 	@Override
-	public boolean sharesInventoryWith(CoreRoutedPipe other){
+	public boolean sharesInterestWith(CoreRoutedPipe other){
 		return false;
 	}
 
@@ -505,10 +506,10 @@ outer:
 	}
 
 	@Override
-	public void handleOrderList(ItemIdentifierStack stack, LinkedLogisticsOrderList orders) {
+	public void handleOrderList(IResource stack, LinkedLogisticsOrderList orders) {
 		if(!getUpgradeManager().hasCraftingMonitoringUpgrade()) return;
 		orders.setWatched();
-		watchedRequests.put(++localLastUsedWatcherId, new Pair<ItemIdentifierStack, LinkedLogisticsOrderList>(stack, orders));
+		watchedRequests.put(++localLastUsedWatcherId, new Pair<IResource, LinkedLogisticsOrderList>(stack, orders));
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(OrdererWatchPacket.class).setOrders(orders).setStack(stack).setInteger(localLastUsedWatcherId).setTilePos(this.container), localGuiWatcher);
 	}
 
@@ -517,7 +518,7 @@ outer:
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrderWatchRemovePacket.class).setInteger(-1).setTilePos(this.container), player);
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(this.container), player);
 		localGuiWatcher.add(player);
-		for(Entry<Integer, Pair<ItemIdentifierStack, LinkedLogisticsOrderList>> entry:watchedRequests.entrySet()) {
+		for(Entry<Integer, Pair<IResource, LinkedLogisticsOrderList>> entry:watchedRequests.entrySet()) {
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererWatchPacket.class).setOrders(entry.getValue().getValue2()).setStack(entry.getValue().getValue1()).setInteger(entry.getKey()).setTilePos(this.container), player);
 		}
 	}
@@ -528,9 +529,9 @@ outer:
 	}
 
 	@Override
-	public void handleClientSideListInfo(int id, ItemIdentifierStack stack, LinkedLogisticsOrderList orders) {
+	public void handleClientSideListInfo(int id, IResource stack, LinkedLogisticsOrderList orders) {
 		if(MainProxy.isClient(getWorld())) {
-			watchedRequests.put(id, new Pair<ItemIdentifierStack, LinkedLogisticsOrderList>(stack, orders));
+			watchedRequests.put(id, new Pair<IResource, LinkedLogisticsOrderList>(stack, orders));
 		}
 	}
 

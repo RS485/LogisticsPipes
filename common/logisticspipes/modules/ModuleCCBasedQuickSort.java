@@ -69,7 +69,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 		List<CCSinkResponder> respones = new ArrayList<CCSinkResponder>();
 		IRouter sourceRouter = this._service.getRouter();
 		if (sourceRouter == null) return;
-		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(null); // get only pipes with generic interest
+		BitSet routersIndex = ServerRouter.getRoutersInterestedIn((ItemIdentifier)null); // get only pipes with generic interest
 		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(); // get the routing table 
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i+1)) {
 			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i, false);

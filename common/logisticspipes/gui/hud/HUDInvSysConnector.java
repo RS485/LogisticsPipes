@@ -2,9 +2,10 @@ package logisticspipes.gui.hud;
 
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
-import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.GuiGraphics;
+import logisticspipes.utils.item.ItemStackRenderer;
+import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 import net.minecraft.client.Minecraft;
-
 import org.lwjgl.opengl.GL11;
 
 public class HUDInvSysConnector extends BasicHUDGui {
@@ -17,13 +18,13 @@ public class HUDInvSysConnector extends BasicHUDGui {
 	}
 	
 	@Override
-	public void renderHeadUpDisplay(double distance, boolean day, Minecraft mc, IHUDConfig config) {
+	public void renderHeadUpDisplay(double distance, boolean day, boolean shifted, Minecraft mc, IHUDConfig config) {
 		if(day) {
         	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)64);
         } else {
         	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)64);	
         }
-		BasicGuiHelper.drawGuiBackGround(mc, -50, -50, 50, 50, 0, false);
+		GuiGraphics.drawGuiBackGround(mc, -50, -50, 50, 50, 0, false);
 		if(day) {
         	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)127);
         } else {
@@ -36,7 +37,7 @@ public class HUDInvSysConnector extends BasicHUDGui {
 		mc.fontRenderer.drawString(message , -28, -25, 0);
 		GL11.glScalef(0.8F, 0.8F, -1F);
 		
-		BasicGuiHelper.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, -37, -18, 3, 9, 18, 18, mc, true, true, true, true);
+		ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, -37, -18, 3, 9, 18, 18, 100.0F, DisplayAmount.ALWAYS, true, false, shifted);
 	}
 
 	@Override

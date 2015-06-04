@@ -13,6 +13,7 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.binnie.BinnieProxy;
 import logisticspipes.proxy.bs.BetterStorageProxy;
 import logisticspipes.proxy.bs.ICrateStorageProxy;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
@@ -37,6 +38,7 @@ import logisticspipes.proxy.ic.IronChestProxy;
 import logisticspipes.proxy.ic2.IC2Proxy;
 import logisticspipes.proxy.interfaces.IBCProxy;
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
+import logisticspipes.proxy.interfaces.IBinnieProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.ICoFHPowerProxy;
 import logisticspipes.proxy.interfaces.ICraftingParts;
@@ -374,5 +376,9 @@ public class ProxyManager {
 			@Override public void registerTextures(IIconRegister iconRegister) {}
 			@Override public boolean isBlockedSide(TileEntity with, ForgeDirection opposite) {return false;}
 		}, ITDPart.class));
+		
+		SimpleServiceLocator.setBinnieProxy(getWrappedProxy("Genetics", IBinnieProxy.class, BinnieProxy.class, new IBinnieProxy() {
+			@Override public boolean isTileAnalyser(TileEntity tile) {return false;}
+		}));
 	}
 }

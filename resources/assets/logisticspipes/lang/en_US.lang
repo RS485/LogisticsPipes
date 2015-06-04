@@ -154,12 +154,7 @@ item.PipeBlockRequestTable=Logistics Request Table
 # Modules
 
 #TODO: Add shift tooltip information
-item.structframe=Structural Pipe Frame
-item.microservo=Micro Servo
-item.routeprocess=Routing Logic Processor
-item.micropackager=Micro Packager
-item.microcapsulator=Micro Capsulator
-item.logicexpander=Logic Expansion Circuit
+
 item.ModuleBlank=Blank Module
 item.ModuleItemSink=ItemSink module
 item.ModulePassiveSupplier=Passive Supplier module
@@ -191,9 +186,18 @@ item.ModuleCrafter=Crafting module
 item.ModuleCrafterMK2=Crafting module MK2
 item.ModuleCrafterMK3=Crafting module MK3
 item.ModuleActiveSupplier=Active Supplier Module
+item.ModuleCreativeTabBasedItemSink=Creative Tab Based ItemSink module
 
 # Items
 
+item.structframe=Structural Pipe Frame
+item.microservo=Micro Servo
+item.routeprocess=Routing Logic Processor
+item.micropackager=Micro Packager
+item.microcapsulator=Micro Capsulator
+item.logicexpander=Logic Expansion Circuit
+item.lense=Focus Lense
+item.acceptor=Laser Acceptor Interface
 item.pipeController=Logistics Pipe Controller
 item.brokenItem=Logistics Broken Item
 item.logisticsFluidContainer=Logistics Fluid Container
@@ -311,6 +315,7 @@ gui.itemsink.Inventory=Inventory
 gui.itemsink.Defaultroute=Default route
 gui.itemsink.IgnoreData=Ignore Data
 gui.itemsink.IgnoreNBT=Ignore NBT
+gui.itemsink.import=Import
 
 gui.crafting.Inputs=Inputs
 gui.crafting.Inventory=Inventory

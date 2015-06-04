@@ -2,16 +2,18 @@ package logisticspipes.routing.order;
 
 import java.util.List;
 
+import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.tuples.LPPosition;
 
 public interface IOrderInfoProvider {
-	public enum RequestType {PROVIDER, CRAFTING, EXTRA};
+	public enum ResourceType {PROVIDER, CRAFTING, EXTRA};
 	
 	boolean isFinished();
 
-	ItemIdentifierStack getItem();
+	ItemIdentifierStack getAsDisplayItem();
 
-	RequestType getType();
+	ResourceType getType();
 
 	int getRouterId();
 
@@ -22,4 +24,8 @@ public interface IOrderInfoProvider {
 	
 	List<Float> getProgresses();
 	byte getMachineProgress();
+	
+	ItemIdentifier getTargetType();
+	LPPosition getTargetPosition();
+	
 }

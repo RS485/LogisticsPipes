@@ -5,11 +5,11 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.block.SaveSecurityPlayerPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.security.SecuritySettings;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.GuiCheckBox;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -35,19 +35,19 @@ public class GuiSecurityStationPopup extends SubGuiScreen {
 		this.buttonList.add(new GuiCheckBox(2, guiLeft + 110, guiTop + 56, 16, 16, false));
 		this.buttonList.add(new GuiCheckBox(3, guiLeft + 110, guiTop + 71, 16, 16, false));
 		this.buttonList.add(new GuiCheckBox(4, guiLeft + 110, guiTop + 86, 16, 16, false));
-		this.buttonList.add(new SmallGuiButton(5, guiLeft + 94, guiTop + 103, 30, 10, StringUtil.translate(PREFIX + "Close")));
+		this.buttonList.add(new SmallGuiButton(5, guiLeft + 94, guiTop + 103, 30, 10, StringUtils.translate(PREFIX + "Close")));
 		refreshCheckBoxes();
 	}
 
 	@Override
 	public void drawScreen(int par1, int par2, float par3) {
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Player") + ": " + activeSetting.name, guiLeft + 10, guiTop + 10, 0x404040);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "ConfigureSettings") + ": ", guiLeft + 10, guiTop + 30, 0x404040);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "ActiveRequesting") + ": ", guiLeft + 10, guiTop + 45, 0x404040);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "UpgradePipes") + ": ", guiLeft + 10, guiTop + 60, 0x404040);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "CheckNetwork") + ": ", guiLeft + 10, guiTop + 75, 0x404040);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "RemovePipes") + ": ", guiLeft + 10, guiTop + 90, 0x404040);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "Player") + ": " + activeSetting.name, guiLeft + 10, guiTop + 10, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "ConfigureSettings") + ": ", guiLeft + 10, guiTop + 30, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "ActiveRequesting") + ": ", guiLeft + 10, guiTop + 45, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "UpgradePipes") + ": ", guiLeft + 10, guiTop + 60, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "CheckNetwork") + ": ", guiLeft + 10, guiTop + 75, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "RemovePipes") + ": ", guiLeft + 10, guiTop + 90, 0x404040);
 		super.drawScreen(par1, par2, par3);
 	}
 

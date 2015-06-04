@@ -3,11 +3,11 @@ package logisticspipes.gui.hud;
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IPowerLevelDisplay;
-import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.GuiGraphics;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.ResourceLocation;
-
 import org.lwjgl.opengl.GL11;
 
 public class HUDPowerLevel extends BasicHUDGui implements IHeadUpDisplayRenderer {
@@ -19,20 +19,20 @@ public class HUDPowerLevel extends BasicHUDGui implements IHeadUpDisplayRenderer
 	}
 	
 	@Override
-	public void renderHeadUpDisplay(double distance, boolean day, Minecraft mc, IHUDConfig config) {
+	public void renderHeadUpDisplay(double distance, boolean day, boolean shifted, Minecraft mc, IHUDConfig config) {
 		if(day) {
         	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)32);
         } else {
         	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)32);	
         }
-		BasicGuiHelper.drawGuiBackGround(mc, -60, -40, 60, 40, 0, false);
+		GuiGraphics.drawGuiBackGround(mc, -60, -40, 60, 40, 0, false);
 		if(day) {
         	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)127);
         } else {
         	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)127);	
         }
 		GL11.glTranslatef(0.0F, 0.0F, -0.0005F);
-		super.renderHeadUpDisplay(distance, day, mc, config);
+		super.renderHeadUpDisplay(distance, day, shifted, mc, config);
 		GL11.glTranslatef(0.0F, 0.0F, -0.0005F);
 		mc.renderEngine.bindTexture(TEXTURE);
 		drawTexturedModalRect(-50, -30, 9, 10, 7, 61);
@@ -40,8 +40,8 @@ public class HUDPowerLevel extends BasicHUDGui implements IHeadUpDisplayRenderer
 		int level = 100 - junction.getChargeState();
 		drawTexturedModalRect(-49, -29 + (level * 59 / 100), 176, level * 59 / 100, 5, 59 - (level * 59 / 100));
 		mc.fontRenderer.drawString("Stored Energy:", -30, -15, 0x404040);
-		mc.fontRenderer.drawString(BasicGuiHelper.getStringWithSpacesFromInteger(junction.getDisplayPowerLevel()) + " " + junction.getBrand(), -30, -5, 0x404040);
-		mc.fontRenderer.drawString("/ "+BasicGuiHelper.getStringWithSpacesFromInteger(junction.getMaxStorage()) + " " + junction.getBrand(), -30, 5, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.getStringWithSpacesFromInteger(junction.getDisplayPowerLevel()) + " " + junction.getBrand(), -30, -5, 0x404040);
+		mc.fontRenderer.drawString("/ " + StringUtils.getStringWithSpacesFromInteger(junction.getMaxStorage()) + " " + junction.getBrand(), -30, 5, 0x404040);
 		GL11.glTranslatef(0.0F, 0.0F, 0.0015F);
 	}
 

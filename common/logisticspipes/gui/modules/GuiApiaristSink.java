@@ -8,15 +8,18 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.BeeModuleSetBeePacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.IItemTextureRenderSlot;
 import logisticspipes.utils.gui.ISmallColorRenderSlot;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IIcon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.GL11;
 
 public class GuiApiaristSink extends ModuleBaseGui {
 
@@ -36,9 +39,35 @@ public class GuiApiaristSink extends ModuleBaseGui {
 		ySize = 150;
 	}
 
+	public void renderForestryBeeAt(Minecraft mc, int x, int y, float zLevel, String id) {
+		GL11.glDisable(GL11.GL_LIGHTING);
+		mc.renderEngine.bindTexture(TextureMap.locationItemsTexture);
+
+		for (int i = 0; i < SimpleServiceLocator.forestryProxy.getRenderPassesForAlleleId(id); i++) {
+			IIcon icon = SimpleServiceLocator.forestryProxy.getIconIndexForAlleleId(id, i);
+			if (icon == null) continue;
+			int color = SimpleServiceLocator.forestryProxy.getColorForAlleleId(id, i);
+			float colorR = (color >> 16 & 0xFF) / 255.0F;
+			float colorG = (color >> 8 & 0xFF) / 255.0F;
+			float colorB = (color & 0xFF) / 255.0F;
+
+			GL11.glColor4f(colorR, colorG, colorB, 1.0F);
+
+			// Render icon
+			Tessellator var9 = Tessellator.instance;
+			var9.startDrawingQuads();
+			var9.addVertexWithUV(x, y + 16, zLevel, icon.getMinU(), icon.getMaxV());
+			var9.addVertexWithUV(x + 16, y + 16, zLevel, icon.getMaxU(), icon.getMaxV());
+			var9.addVertexWithUV(x + 16, y, zLevel, icon.getMaxU(), icon.getMinV());
+			var9.addVertexWithUV(x, y, zLevel, icon.getMinU(), icon.getMinV());
+			var9.draw();
+		}
+		GL11.glEnable(GL11.GL_LIGHTING);
+	}
+
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 	}
 	
 	private class TypeSlot extends IItemTextureRenderSlot {
@@ -160,7 +189,7 @@ public class GuiApiaristSink extends ModuleBaseGui {
 		public String getToolTipText() {
 			switch(setting.filterGroup) {
 			case 1:
-				return "GroupColor: Red";
+				return "GroupColor: RED";
 			case 2:
 				return "GroupColor: Green";
 			case 3:
@@ -286,9 +315,9 @@ public class GuiApiaristSink extends ModuleBaseGui {
 		@Override
 		public boolean customRender(Minecraft mc, float zLevel) {
 			if(slotNumber == 0) {
-				BasicGuiHelper.renderForestryBeeAt(mc, xPos + 1, yPos + 1, zLevel, setting.firstBee);
+				renderForestryBeeAt(mc, xPos + 1, yPos + 1, zLevel, setting.firstBee);
 			} else {
-				BasicGuiHelper.renderForestryBeeAt(mc, xPos + 1, yPos + 1, zLevel, setting.secondBee);
+				renderForestryBeeAt(mc, xPos + 1, yPos + 1, zLevel, setting.secondBee);
 			}
 			return true;
 		}

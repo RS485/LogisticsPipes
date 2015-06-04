@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.modules.ModuleOreDictItemSink;
-import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiGraphics;
+import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.client.gui.GuiButton;
@@ -78,9 +80,9 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		int pointerX = var2 - guiLeft;
 		int pointerY = var3 - guiTop;
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 7, guiTop + 126);
-		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 6, guiTop + 7);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 7, guiTop + 126);
+		GuiGraphics.drawSlotBackground(mc, guiLeft + 6, guiTop + 7);
 
 		if(tmpInv.getStackInSlot(0) != null) {
 			List<String> oreNames = getOreNames(tmpInv.getStackInSlot(0));
@@ -97,10 +99,10 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 			currentOffset = 0;
 
 		//draw unsunk list and highlight bar, handle clicks
-		BasicGuiHelper.drawRect(guiLeft + 26, guiTop + 5, guiLeft + 159, guiTop + 27, 0xff808080);
+		SimpleGraphics.drawRectNoBlend(guiLeft + 26, guiTop + 5, guiLeft + 159, guiTop + 27, Color.DARK_GREY, 0.0);
 		for(int i=0; i + currentOffset < unsunkNames.size() && i < 2; i++) {
 			if(27 <= pointerX && pointerX < 158 && 6 + (10 * i) <= pointerY && pointerY < 6 + (10 * (i + 1))) {
-				BasicGuiHelper.drawRect(guiLeft + 27, guiTop + 6 + (10 * i), guiLeft + 158, guiTop + 6 + (10 * (i + 1)), 0xffc0c0c0);
+				SimpleGraphics.drawRectNoBlend(guiLeft + 27, guiTop + 6 + (10 * i), guiLeft + 158, guiTop + 6 + (10 * (i + 1)), Color.LIGHT_GREY, 0.0);
 			}
 			mc.fontRenderer.drawString(unsunkNames.get(currentOffset + i), guiLeft + 28, guiTop + 7 + (10 * i), 0x404040);
 			if(27 <= mouseX && mouseX < 158 && 6 + (10 * i) <= mouseY && mouseY < 6 + (10 * (i + 1))) {
@@ -118,10 +120,10 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 		}
 
 		//draw main list and highlight bar, handle clicks
-		BasicGuiHelper.drawRect(guiLeft + 5, guiTop + 30, guiLeft + 169, guiTop + 122, 0xff808080);
+		SimpleGraphics.drawRectNoBlend(guiLeft + 5, guiTop + 30, guiLeft + 169, guiTop + 122, Color.DARK_GREY, 0.0);
 		for(int i=0; i < _itemSink.oreList.size() && i < 9; i++) {
 			if(6 <= pointerX && pointerX < 168 && 31 + (10 * i) <= pointerY && pointerY < 31 + (10 * (i + 1))) {
-				BasicGuiHelper.drawRect(guiLeft + 6, guiTop + 31 + (10 * i), guiLeft + 168, guiTop + 31 + (10 * (i + 1)), 0xffc0c0c0);
+				SimpleGraphics.drawRectNoBlend(guiLeft + 6, guiTop + 31 + (10 * i), guiLeft + 168, guiTop + 31 + (10 * (i + 1)), Color.LIGHT_GREY, 0.0);
 			}
 			mc.fontRenderer.drawString(_itemSink.oreList.get(i), guiLeft + 7, guiTop + 32 + (10 * i), 0x404040);
 			if(6 <= mouseX && mouseX < 168 && 31 + (10 * i) <= mouseY && mouseY < 31 + (10 * (i + 1))) {

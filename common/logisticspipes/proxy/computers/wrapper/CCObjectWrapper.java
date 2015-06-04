@@ -13,12 +13,16 @@ import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeDefinition;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.proxy.computers.objects.CCFilterInventory;
+import logisticspipes.proxy.computers.objects.CCFluidIdentifier;
 import logisticspipes.proxy.computers.objects.CCItemIdentifier;
 import logisticspipes.proxy.computers.objects.CCItemIdentifierInventory;
 import logisticspipes.proxy.computers.objects.CCItemIdentifierStack;
 import logisticspipes.proxy.computers.objects.CCPair;
 import logisticspipes.proxy.computers.objects.CCQuartet;
+import logisticspipes.proxy.computers.objects.CCResource;
 import logisticspipes.proxy.computers.objects.CCTriplet;
+import logisticspipes.request.resources.IResource;
+import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -38,6 +42,8 @@ public class CCObjectWrapper {
 		specialMappings.put(Pair.class, new CCPair());
 		specialMappings.put(Triplet.class, new CCTriplet());
 		specialMappings.put(Quartet.class, new CCQuartet());
+		specialMappings.put(IResource.class, new CCResource());
+		specialMappings.put(FluidIdentifier.class, new CCFluidIdentifier());
 	}
 	
 	private static String checkForTypeAnotation(Class<?> clazz) {

@@ -4,7 +4,7 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 
-import logisticspipes.utils.gui.LogisticsBaseGuiScreen.Colors;
+import logisticspipes.utils.Color;
 import net.minecraft.client.gui.FontRenderer;
 
 import org.lwjgl.input.Keyboard;
@@ -58,12 +58,12 @@ public class SearchBar {
     
 	public void renderSearchBar() {
 		if(isFocused()) {
-			screen.drawRect(left + 0, top - 2, left + width - 0, top + heigth - 0, Colors.Black);
-			screen.drawRect(left + 1, top - 1, left + width - 1, top + heigth - 1, Colors.White);
+			screen.drawRect(left + 0, top - 2, left + width - 0, top + heigth - 0, Color.BLACK);
+			screen.drawRect(left + 1, top - 1, left + width - 1, top + heigth - 1, Color.WHITE);
 		} else {
-			screen.drawRect(left + 1, top - 1, left + width - 1, top + heigth - 1, Colors.Black);
+			screen.drawRect(left + 1, top - 1, left + width - 1, top + heigth - 1, Color.BLACK);
 		}
-		screen.drawRect(left + 2, top - 0, left + width - 2, top + heigth - 2, Colors.DarkGrey);
+		screen.drawRect(left + 2, top - 0, left + width - 2, top + heigth - 2, Color.DARKER_GREY);
 		if(alignRight) {
 			fontRenderer.drawString(searchinput1 + searchinput2, left + 5 + searchWidth - fontRenderer.getStringWidth(searchinput1 + searchinput2), top + 3, 0xFFFFFF);
 		} else {
@@ -81,7 +81,7 @@ public class SearchBar {
 				oldSystemTime = System.currentTimeMillis();
 			}
 			if(displaycursor) {
-				screen.drawRect(linex, top + 1, linex + 1, top + heigth - 3, Colors.White);
+				screen.drawRect(linex, top + 1, linex + 1, top + heigth - 3, Color.WHITE);
 			}
 		}
 	}

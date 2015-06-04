@@ -1,8 +1,8 @@
 package logisticspipes.gui.modules;
 
 import logisticspipes.modules.ModuleApiaristAnalyser;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
@@ -44,6 +44,6 @@ public class GuiApiaristAnalyser extends ModuleBaseGui {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 	}
 }

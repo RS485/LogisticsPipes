@@ -21,6 +21,7 @@ import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.WorldUtil;
+import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -44,7 +45,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 			@Override
 			public boolean canPipeConnect(TileEntity tile, ForgeDirection dir) {
 				if(super.canPipeConnect(tile, dir)) return true;
-				if(SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) return false;
+				if(SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile)) return false;
 				if (tile instanceof IFluidHandler) {
 					IFluidHandler liq = (IFluidHandler) tile;
 					if (liq.getTankInfo(dir.getOpposite()) != null && liq.getTankInfo(dir.getOpposite()).length > 0)
@@ -82,10 +83,11 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 	}
 
 	public void endReached(LPTravelingItemServer data, TileEntity tile) {
+		getCacheHolder().trigger(CacheTypes.Inventory);
 		this.transport.markChunkModified(tile);
 		notifyOfItemArival(data.getInfo());
 		if (!(tile instanceof IFluidHandler)) return;
-		if (SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) return;
+		if (SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile)) return;
 		IFluidHandler container = (IFluidHandler) tile;
 		if (data.getItemIdentifierStack() == null) return;
 		FluidStack liquidId = FluidContainerRegistry.getFluidForFilledItem(data.getItemIdentifierStack().makeNormalStack());
@@ -126,7 +128,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 		super.throttledUpdateEntity();
 		WorldUtil worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
 		for (AdjacentTile tile :  worldUtil.getAdjacentTileEntities(true)){
-			if (!(tile.tile instanceof IFluidHandler) || SimpleServiceLocator.pipeInformaitonManager.isPipe(tile.tile)) continue;
+			if (!(tile.tile instanceof IFluidHandler) || SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile.tile)) continue;
 			IFluidHandler container = (IFluidHandler) tile.tile;
 			if (container.getTankInfo(ForgeDirection.UNKNOWN) == null || container.getTankInfo(ForgeDirection.UNKNOWN).length == 0) continue;
 			

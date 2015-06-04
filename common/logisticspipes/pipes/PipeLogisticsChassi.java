@@ -21,7 +21,7 @@ import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.GuiChassiPipe;
-import logisticspipes.gui.hud.HUDChassiePipe;
+import logisticspipes.gui.hud.HudChassisPipe;
 import logisticspipes.interfaces.IBufferItems;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
@@ -57,10 +57,14 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCType;
-import logisticspipes.request.CraftingTemplate;
+import logisticspipes.request.ICraftingTemplate;
+import logisticspipes.request.IPromise;
+import logisticspipes.request.RequestTree;
 import logisticspipes.request.RequestTreeNode;
+import logisticspipes.request.resources.IResource;
 import logisticspipes.routing.LogisticsPromise;
-import logisticspipes.routing.order.IOrderInfoProvider.RequestType;
+import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
+import logisticspipes.routing.order.LogisticsItemOrder;
 import logisticspipes.routing.order.LogisticsOrder;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
@@ -68,7 +72,6 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.ticks.HudUpdateTick;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -96,10 +99,10 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	
 	private boolean convertFromMeta = false;
 
-	//HUD
+	// HUD
 	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<ItemIdentifierStack>();
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
-	private HUDChassiePipe HUD;
+	private HudChassisPipe hud;
 
 	public PipeLogisticsChassi(Item item) {
 		super(item);
@@ -110,7 +113,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 			_upgradeManagers[i] = new ModuleUpgradeManager(this, this.upgradeManager);
 		}
 		_module = new ChassiModule(getChassiSize(), this);
-		HUD = new HUDChassiePipe(this, _module, _moduleInventory);
+		hud = new HudChassisPipe(this, _module, _moduleInventory);
 		pointedDirection=ForgeDirection.UNKNOWN;
 	}
 
@@ -162,7 +165,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		TileEntity tile = pos.getTileEntity(getWorld());
 
 		if (tile == null) return false;
-		if (SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) return false;
+		if (SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile)) return false;
 		return MainProxy.checkPipesConnections(this.container, tile, connection);
 	}
 
@@ -363,16 +366,6 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 			if(!localModeWatchers.isEmpty()) {
 				MainProxy.sendToPlayerList(PacketHandler.getPacket(ChassiePipeModuleContent.class).setIdentList(ItemIdentifierStack.getListFromInventory(_moduleInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 			}
-			//register earlier provider modules with later ones, needed for the "who is the first whose filter allows that item" check
-			List<ILegacyActiveModule> prevModules = new LinkedList<ILegacyActiveModule>();
-			for (int i = 0; i < this.getChassiSize(); i++){
-				LogisticsModule x = _module.getSubModule(i);
-				if (x instanceof ILegacyActiveModule) {
-					ILegacyActiveModule y = (ILegacyActiveModule)x;
-					y.registerPreviousLegacyModules(new ArrayList<ILegacyActiveModule>(prevModules));
-					prevModules.add(y);
-				}
-			}
 		}
 	}
 
@@ -456,38 +449,33 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	/*** IProvideItems ***/
 	@Override
-	public void canProvide(RequestTreeNode tree, int donePromisses, List<IFilter> filters) {
+	public void canProvide(RequestTreeNode tree, RequestTree root, List<IFilter> filters) {
 		if (!isEnabled()){
 			return;
 		}
 		for(IFilter filter:filters) {
-			if(filter.isBlocked() == filter.isFilteredItem(tree.getStackItem().getUndamaged()) || filter.blockProvider()) return;
+			if(filter.isBlocked() == filter.isFilteredItem(tree.getRequestType()) || filter.blockProvider()) return;
 		}
-		for (int i = 0; i < this.getChassiSize(); i++){
+		for (int i = 0; i < this.getChassiSize(); i++) {
 			LogisticsModule x = _module.getSubModule(i);
 			if (x instanceof ILegacyActiveModule){
 				ILegacyActiveModule y = (ILegacyActiveModule)x;
-				if(y.filterAllowsItem(tree.getStackItem())) {
-					y.canProvide(tree, donePromisses, filters);
-					return;
-				}
+				y.canProvide(tree, root, filters);
 			}
 		}
 	}
 
 	@Override
 	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination, IAdditionalTargetInformation info) {
-		//TODO extract information from info to determine the module
-		if (!isEnabled()) {
-			return null;
-		}
-		for (int i = 0; i < this.getChassiSize(); i++) {
+		if(!isEnabled()) { return null; }
+		for(int i = 0; i < this.getChassiSize(); i++) {
 			LogisticsModule x = _module.getSubModule(i);
-			if (x instanceof ILegacyActiveModule){
-				ILegacyActiveModule y = (ILegacyActiveModule) x;
-				if(y.filterAllowsItem(promise.item)) {
+			if(x instanceof ILegacyActiveModule) {
+				ILegacyActiveModule y = (ILegacyActiveModule)x;
+				LogisticsOrder result = y.fullFill(promise, destination, info);
+				if(result != null) {
 					spawnParticle(Particles.WhiteParticle, 2);
-					return y.fullFill(promise, destination, info);
+					return result;
 				}
 			}
 		}
@@ -515,7 +503,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public IHeadUpDisplayRenderer getRenderer() {
-		return HUD;
+		return hud;
 	}
 
 	@Override
@@ -526,7 +514,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	@Override
 	public void stopWatching() {
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
-		HUD.stopWatching();
+		hud.stopWatching();
 	}
 
 	@Override
@@ -669,13 +657,14 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	
 	@Override
-	public void registerExtras(LogisticsPromise promise) {
-		ItemIdentifierStack stack = new ItemIdentifierStack(promise.item,promise.numberOfItems);
-		_extras.add(new LogisticsOrder(stack, null, RequestType.EXTRA, null));
+	public void registerExtras(IPromise promise) {
+		if(!(promise instanceof LogisticsPromise)) throw new UnsupportedOperationException("Extra has to be an item for a chassis pipe");
+		ItemIdentifierStack stack = new ItemIdentifierStack(((LogisticsPromise)promise).item, ((LogisticsPromise)promise).numberOfItems);
+		_extras.add(new LogisticsItemOrder(stack, null, ResourceType.EXTRA, null));
 	}
 
 	@Override
-	public CraftingTemplate addCrafting(ItemIdentifier toCraft) {
+	public ICraftingTemplate addCrafting(IResource toCraft) {
 		for (int i = 0; i < this.getChassiSize(); i++){
 			LogisticsModule x = _module.getSubModule(i);
 			
@@ -707,7 +696,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	}
 	
 	@Override
-	public boolean canCraft(ItemIdentifier toCraft) {
+	public boolean canCraft(IResource toCraft) {
 		for (int i = 0; i < this.getChassiSize(); i++) {
 			LogisticsModule x = _module.getSubModule(i);
 			

@@ -14,10 +14,10 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.guis.block.AutoCraftingGui;
-import logisticspipes.network.packets.block.CraftingTableFuzzyFlagsModifyPacket;
 import logisticspipes.network.packets.block.CraftingSetType;
+import logisticspipes.network.packets.block.CraftingTableFuzzyFlagsModifyPacket;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.CraftingRequirement;
+import logisticspipes.request.resources.DictResource;
 import logisticspipes.utils.CraftingUtil;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
@@ -33,7 +33,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.Constants;
 
 public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ISimpleInventoryEventHandler, IInventory, IGuiOpenControler {
@@ -44,7 +43,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	
 	public ItemIdentifier targetType = null;
 	//just use CraftingRequirement to store flags; field "stack" is ignored
-	public CraftingRequirement[] fuzzyFlags = new CraftingRequirement[9];
+	public DictResource[] fuzzyFlags = new DictResource[9];
 	private IRecipe cache;
 	private EntityPlayer fake;
 	private PlayerIdentifier placedBy = null;
@@ -54,7 +53,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	public LogisticsCraftingTableTileEntity() {
 		matrix.addListener(this);
 		for(int i = 0; i < 9; i++)
-			fuzzyFlags[i] = new CraftingRequirement();
+			fuzzyFlags[i] = new DictResource(null, null);
 	}
 	
 	public void cacheRecipe() {
@@ -161,7 +160,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	
 	private boolean testFuzzy(ItemIdentifier item, ItemIdentifierStack item2, int slot) {
 		fuzzyFlags[slot].stack = item.makeStack(1);
-		return fuzzyFlags[slot].testItem(item2);
+		return fuzzyFlags[slot].matches(item2.getItem());
 	}
 
 	public ItemStack getOutput(ItemIdentifier wanted, IRoutedPowerProvider power) {

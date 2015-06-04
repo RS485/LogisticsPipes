@@ -11,16 +11,21 @@ import java.util.TreeSet;
 
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
+import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -102,25 +107,28 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	public ItemSendMode getItemSendMode() {
 		return ItemSendMode.Normal;
 	}
-/*
-	@Override
-	public boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer) {
-		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == Configs.ItemHUDId + 256 && MainProxy.isServer()) {
-			if(getRoutedPowerProviders() != null && getRoutedPowerProviders().size() > 0) {
-//TODO Must be handled manualy
-				MainProxy.sendToAllPlayers(new Packet3Chat("Connected Power: " + getRoutedPowerProviders().get(0).getPowerLevel() + " LP"));
-			}
-			return true;
-		} else {
-			return super.blockActivated(world, i, j, k, entityplayer);
-		}
-	}
-*/
 
 	@Override
 	public void setTile(TileEntity tile) {
 		super.setTile(tile);
 		itemSinkModule.registerPosition(ModulePositionType.IN_PIPE, 0);
+	}
+	
+	@Override
+	public IInventoryUtil getPointedInventory(boolean forExtraction) {
+		IInventoryUtil inv = super.getPointedInventory(forExtraction);
+		if(inv == null) {
+			for(AdjacentTile connected:this.getConnectedEntities()) {
+				if(connected.tile instanceof IInventory) {
+					IInventory iinv = InventoryHelper.getInventory((IInventory) connected.tile);
+					if(iinv != null) {
+						inv = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(iinv, connected.orientation.getOpposite());
+						break;
+					}
+				}
+			}
+		}
+		return inv;
 	}
 	
 	@Override

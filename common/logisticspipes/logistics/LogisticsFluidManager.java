@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 import java.util.TreeSet;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.interfaces.routing.IFluidProvider;
+import logisticspipes.interfaces.routing.IProvideFluids;
 import logisticspipes.interfaces.routing.IFluidSink;
 import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -68,9 +68,9 @@ public class LogisticsFluidManager implements ILogisticsFluidManager {
 		for(ExitRoute r: validDestinations){
 			if(r == null) continue;
 			if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
-			if (!(r.destination.getPipe() instanceof IFluidProvider)) continue;
+			if (!(r.destination.getPipe() instanceof IProvideFluids)) continue;
 
-			IFluidProvider provider = (IFluidProvider) r.destination.getPipe();
+			IProvideFluids provider = (IProvideFluids) r.destination.getPipe();
 			Map<FluidIdentifier, Integer> allItems = provider.getAvailableFluids();
 			
 			for (Entry<FluidIdentifier, Integer> liquid : allItems.entrySet()){

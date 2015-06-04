@@ -14,12 +14,14 @@ import java.util.List;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.request.resources.IResource;
+import logisticspipes.request.resources.ResourceNetwork;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.order.ClientSideOrderInfo;
 import logisticspipes.routing.order.IOrderInfoProvider;
-import logisticspipes.routing.order.IOrderInfoProvider.RequestType;
+import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -173,19 +175,21 @@ public class LPDataInputStream extends DataInputStream {
 		return list;
 	}
 
-	public IOrderInfoProvider readOrder() throws IOException {
+	public IOrderInfoProvider readOrderInfo() throws IOException {
 		ItemIdentifierStack stack = this.readItemIdentifierStack();
 		int routerId = this.readInt();
 		boolean isFinished = this.readBoolean();
 		boolean inProgress = this.readBoolean();
-		RequestType type = this.readEnum(RequestType.class);
+		ResourceType type = this.readEnum(ResourceType.class);
 		List<Float> list = this.readList(new IReadListObject<Float>() {
 			@Override
 			public Float readObject(LPDataInputStream data) throws IOException {
 				return data.readFloat();
 			}});
 		byte machineProgress = this.readByte();
-		return new ClientSideOrderInfo(stack, isFinished, type, inProgress, routerId, list, machineProgress);
+		LPPosition pos = this.readLPPosition();
+		ItemIdentifier ident = this.readItemIdentifier();
+		return new ClientSideOrderInfo(stack, isFinished, type, inProgress, routerId, list, machineProgress, pos, ident);
 	}
 	
 	public <T extends Enum<T>> T readEnum(Class<T> clazz) throws IOException {
@@ -197,7 +201,7 @@ public class LPDataInputStream extends DataInputStream {
 		list.addAll(this.readList(new IReadListObject<IOrderInfoProvider>() {
 			@Override
 			public IOrderInfoProvider readObject(LPDataInputStream data) throws IOException {
-				return data.readOrder();
+				return data.readOrderInfo();
 			}}));
 		list.getSubOrders().addAll(this.readList(new IReadListObject<LinkedLogisticsOrderList>() {
 			@Override
@@ -226,5 +230,9 @@ public class LPDataInputStream extends DataInputStream {
 			array[i] = this.readLong();
 		}
 		return array;
+	}
+
+	public IResource readIResource() throws IOException {
+		return ResourceNetwork.readResource(this);
 	}
 }

@@ -8,29 +8,28 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import cpw.mods.fml.client.FMLClientHandler;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ISpecialItemRenderer;
-import logisticspipes.utils.gui.LogisticsBaseGuiScreen.Colors;
+import logisticspipes.utils.Color;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.item.ItemStackRenderer;
+import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 import logisticspipes.utils.tuples.Pair;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
-
-import cpw.mods.fml.client.FMLClientHandler;
 
 public class ItemDisplay {
 	public enum DisplayOption {
@@ -45,6 +44,7 @@ public class ItemDisplay {
 	public final LinkedList<ItemIdentifierStack> _allItems = new LinkedList<ItemIdentifierStack>();
 	private final Map<Pair<Integer,Integer>, ItemIdentifierStack> map = new HashMap<Pair<Integer,Integer>, ItemIdentifierStack>();
 	
+	@Getter
 	private int page = 0;
 	private int maxPage = 0;
 	private int requestCount = 1;
@@ -55,7 +55,6 @@ public class ItemDisplay {
 	private final FontRenderer fontRenderer;
 	private final LogisticsBaseGuiScreen screen;
 	private final ISpecialItemRenderer renderer;
-	private final RenderItem itemRenderer = new RenderItem();
 	private int left, top, height, width;
 	private int itemsPerPage;
 	private final int[] amountChangeMode;
@@ -197,7 +196,7 @@ public class ItemDisplay {
 		GL11.glPushMatrix();
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-		screen.drawRect(left, top, left + width, top + height, Colors.MiddleGrey);
+		screen.drawRect(left, top, left + width, top + height, Color.GREY);
 
 		tooltip = null;
 		int ppi = 0;
@@ -256,44 +255,29 @@ public class ItemDisplay {
 				}
 				
 				if (mouseX >= realX && mouseX < realX + panelxSize && mouseY >= realY && mouseY < realY + panelySize) {
-					screen.drawRect(x - 2, y - 2, x + panelxSize - 2, y + panelySize - 2, Colors.Black);
-					screen.drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.DarkGrey);
+					screen.drawRect(x - 2, y - 2, x + panelxSize - 2, y + panelySize - 2, Color.BLACK);
+					screen.drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Color.DARKER_GREY);
 
 					tooltip = new Object[] { mouseX + left, mouseY + top, itemstack };
 				}
 
 				/*if (lastClickedx >= realX && lastClickedx < realX + panelxSize && lastClickedy >= realY && lastClickedy < realY + panelySize) {
 					selectedItem = itemIdentifierStack;
-					screen.drawRect(x - 2, y - 2, x + panelxSize - 2, y + panelySize - 2, Colors.Black);
-					screen.drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.LightGrey);
-					screen.drawRect(x, y, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
+					screen.drawRect(x - 2, y - 2, x + panelxSize - 2, y + panelySize - 2, Color.BLACK);
+					screen.drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Color.LIGHTER_GREY);
+					screen.drawRect(x, y, x + panelxSize - 4, y + panelySize - 4, Color.DARKER_GREY);
 				}
 				*/
 				if (selectedItem == itemIdentifierStack) {
-					screen.drawRect(x - 2, y - 2, x + panelxSize - 2, y + panelySize - 2, Colors.Black);
-					screen.drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.LightGrey);
-					screen.drawRect(x, y, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
+					screen.drawRect(x - 2, y - 2, x + panelxSize - 2, y + panelySize - 2, Color.BLACK);
+					screen.drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Color.LIGHTER_GREY);
+					screen.drawRect(x, y, x + panelxSize - 4, y + panelySize - 4, Color.DARKER_GREY);
 					if(renderer != null) renderer.specialItemRendering(itemIdentifierStack.getItem(), x, y);
 				}
 
-				String s = StringUtil.getFormatedStackSize(itemstack.stackSize);
-				
-				FontRenderer font = itemstack.getItem().getFontRenderer(itemstack);
-				if (font == null)
-					font = fontRenderer;
-
-				itemRenderer.zLevel = 100.0F;
-				GL11.glEnable(GL11.GL_DEPTH_TEST);
-				GL11.glEnable(GL11.GL_LIGHTING);
-				itemRenderer.renderItemAndEffectIntoGUI(font, screen.getMC().renderEngine, itemstack, x, y);
-				// With empty string, because damage value indicator struggles with the depth
-				itemRenderer.renderItemOverlayIntoGUI(font, screen.getMC().renderEngine, itemstack, x, y, "");
-				GL11.glDisable(GL11.GL_LIGHTING);
-				GL11.glDisable(GL11.GL_DEPTH_TEST);
-				itemRenderer.zLevel = 0.0F;
-
-				// Draw number
-				font.drawStringWithShadow(s, x + 19 - 2 - font.getStringWidth(s), y + 6 + 3, 16777215);
+				// use GuiGraphics to render the ItemStacks
+				ItemStackRenderer itemstackRenderer = new ItemStackRenderer(itemstack, DisplayAmount.HIDE_ONE, x, y, 100.0F, true, false, true);
+				itemstackRenderer.render();
 
 				x += panelxSize;
 				if (x > this.width) {

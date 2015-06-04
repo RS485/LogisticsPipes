@@ -12,12 +12,13 @@ import logisticspipes.network.packets.block.RemoveAmoundTask;
 import logisticspipes.network.packets.block.RequestAmountTaskSubGui;
 import logisticspipes.network.packets.block.RequestRunningCraftingTasks;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.Color;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -59,7 +60,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 		TAB_BUTTON_1.add(addButton(new GuiButton(3, guiLeft + 83, guiTop + 70, 60, 20, "Remove")));
 		TAB_BUTTON_1_2.add(addButton(new SmallGuiButton(4, guiLeft + 84, guiTop + 205, 10, 10, "<")));
 		TAB_BUTTON_1_2.add(addButton(new SmallGuiButton(5, guiLeft + 96, guiTop + 205, 10, 10, ">")));
-		TAB_BUTTON_2.add(addButton(new GuiButton(6, guiLeft + 10, guiTop + 40, 160, 20, StringUtil.translate(PREFIX + "gettasks"))));
+		TAB_BUTTON_2.add(addButton(new GuiButton(6, guiLeft + 10, guiTop + 40, 160, 20, StringUtils.translate(PREFIX + "gettasks"))));
 		TAB_BUTTON_2.add(addButton(new SmallGuiButton(7, guiLeft + 90, guiTop + 65, 10, 10, "<")));
 		TAB_BUTTON_2.add(addButton(new SmallGuiButton(8, guiLeft + 160, guiTop + 65, 10, 10, ">")));
 
@@ -127,13 +128,13 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 	protected void drawGuiContainerBackgroundLayer(float f, int mouse_x, int mouse_y) {
 		GL11.glColor4d(1.0D, 1.0D, 1.0D, 1.0D);
 		for(int i = 0; i < TAB_COUNT; i++) {
-			BasicGuiHelper.drawGuiBackGround(mc, guiLeft + (25 * i) + 2, guiTop - 2, guiLeft + 27 + (25 * i), guiTop + 35, zLevel, false, true, true, false, true);
+			GuiGraphics.drawGuiBackGround(mc, guiLeft + (25 * i) + 2, guiTop - 2, guiLeft + 27 + (25 * i), guiTop + 35, zLevel, false, true, true, false, true);
 		}
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop + 20, right, bottom, zLevel, true);
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft + (25 * current_Tab) + 2, guiTop - 2, guiLeft + 27 + (25 * current_Tab), guiTop + 38, zLevel, true, true, true, false, true);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop + 20, right, bottom, zLevel, true);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft + (25 * current_Tab) + 2, guiTop - 2, guiLeft + 27 + (25 * current_Tab), guiTop + 38, zLevel, true, true, true, false, true);
 
 		// First Tab
-		BasicGuiHelper.drawStatsBackground(mc, guiLeft + 6, guiTop + 3);
+		GuiGraphics.drawStatsBackground(mc, guiLeft + 6, guiTop + 3);
 		
 		// Second Tab
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
@@ -159,7 +160,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 					}
 				}
 				if(task != null) {
-					BasicGuiHelper.drawSlotBackground(mc, guiLeft + 10, guiTop + 99);
+					GuiGraphics.drawSlotBackground(mc, guiLeft + 10, guiTop + 99);
 					GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 					OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);
 					GL11.glEnable(GL11.GL_LIGHTING);
@@ -169,22 +170,22 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 					GL11.glDisable(GL11.GL_LIGHTING);
 					GL11.glDisable(GL11.GL_DEPTH_TEST);
 					itemRender.zLevel = 0.0F;
-					mc.fontRenderer.drawString(StringUtil.getWithMaxWidth(task.item.getFriendlyName(), 136, this.fontRendererObj), guiLeft + 32, guiTop + 104, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
+					mc.fontRenderer.drawString(StringUtils.getWithMaxWidth(task.item.getFriendlyName(), 136, this.fontRendererObj), guiLeft + 32, guiTop + 104, Color.getValue(Color.DARKER_GREY), false);
 					
 					
 					int xOrigo = xCenter - 68;
 					int yOrigo = yCenter + 90;
-					drawLine(xOrigo, yOrigo, xOrigo + 150, yOrigo, Colors.DarkGrey);
-					drawLine(xOrigo, yOrigo, xOrigo, yOrigo - 80, Colors.DarkGrey);
+					drawLine(xOrigo, yOrigo, xOrigo + 150, yOrigo, Color.DARKER_GREY);
+					drawLine(xOrigo, yOrigo, xOrigo, yOrigo - 80, Color.DARKER_GREY);
 					for(int k = -4; k < 5; k++){
 						int begin = -4;
 						if(k == -4) begin = -1;
 						if(k == 0) begin = -1;
 						if(k == 4) begin = -1;
-						drawLine(xOrigo + begin, yCenter + 50 + k * 10, xOrigo + 5, yCenter + 50 + k * 10, Colors.DarkGrey);
+						drawLine(xOrigo + begin, yCenter + 50 + k * 10, xOrigo + 5, yCenter + 50 + k * 10, Color.DARKER_GREY);
 					}
 					for(int k = 0; k < 16; k++){
-						drawLine(xOrigo + k * 10, yOrigo - 4, xOrigo + k * 10, yOrigo + 4, Colors.DarkGrey);
+						drawLine(xOrigo + k * 10, yOrigo - 4, xOrigo + k * 10, yOrigo + 4, Color.DARKER_GREY);
 					}
 					
 					int time_left = 15 + move_left*15;
@@ -233,10 +234,10 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 					}
 					
 					double averagey = ((double)highest + lowest) / 2;
-					
-					fontRendererObj.drawString(StringUtil.getFormatedStackSize(highest), xOrigo - 1 - fontRendererObj.getStringWidth(StringUtil.getFormatedStackSize(highest)), guiTop + 117, 0x404040);
-					fontRendererObj.drawString(StringUtil.getFormatedStackSize((long)averagey), xOrigo - 1 - fontRendererObj.getStringWidth(StringUtil.getFormatedStackSize((long)averagey)), yCenter + 46, 0x404040);
-					fontRendererObj.drawString(StringUtil.getFormatedStackSize(lowest), xOrigo - 1 - fontRendererObj.getStringWidth(StringUtil.getFormatedStackSize(lowest)), bottom - 23, 0x404040);
+
+					fontRendererObj.drawString(StringUtils.getFormatedStackSize(highest, false), xOrigo - 1 - fontRendererObj.getStringWidth(StringUtils.getFormatedStackSize(highest, false)), guiTop + 117, 0x404040);
+					fontRendererObj.drawString(StringUtils.getFormatedStackSize((long) averagey, false), xOrigo - 1 - fontRendererObj.getStringWidth(StringUtils.getFormatedStackSize((long) averagey, false)), yCenter + 46, 0x404040);
+					fontRendererObj.drawString(StringUtils.getFormatedStackSize(lowest, false), xOrigo - 1 - fontRendererObj.getStringWidth(StringUtils.getFormatedStackSize(lowest, false)), bottom - 23, 0x404040);
 					
 					float yScale = 80F / Math.max(highest - lowest, 0.5F);
 					int x = xOrigo + 150;
@@ -250,13 +251,13 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 						yOff =  point - averagey;
 						int y1 = (yOrigo - 80/2) - (int)(yOff * yScale);
 						
-						drawLine(x1, y1, x, y, Colors.Red);
-						drawRect(x-1, y-1, x+2, y+2, Colors.Black);
+						drawLine(x1, y1, x, y, Color.RED);
+						drawRect(x-1, y-1, x+2, y+2, Color.BLACK);
 						
 						x = x1;
 						y = y1;
 					}
-					drawRect(x-1, y-1, x+2, y+2, Colors.Black);
+					drawRect(x-1, y-1, x+2, y+2, Color.BLACK);
 				}
 			}
 		} else if(current_Tab == 1) {
@@ -309,10 +310,10 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		if(current_Tab == 0) {
-			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "amount"), 10, 28, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
+			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "amount"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
 		} else if(current_Tab == 1) {
-			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "crafting"), 10, 28, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
-			BasicGuiHelper.displayItemToolTip(itemDisplay_2.getToolTip(), this, zLevel, guiLeft, guiTop);
+			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "crafting"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
+			GuiGraphics.displayItemToolTip(itemDisplay_2.getToolTip(), this, zLevel, guiLeft, guiTop);
 		}
 	}
 	

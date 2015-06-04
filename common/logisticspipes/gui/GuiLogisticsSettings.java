@@ -6,7 +6,7 @@ import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
 import logisticspipes.utils.gui.LogisticsBaseTabGuiScreen;
 import logisticspipes.utils.gui.SearchBar;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -87,10 +87,10 @@ public class GuiLogisticsSettings extends LogisticsBaseTabGuiScreen {
 		public void renderForgroundContent() {
 			renderDistance.renderSearchBar();
 			contentRenderDistance.renderSearchBar();
-			fontRendererObj.drawString(StringUtil.translate(PREFIX + "pipenewrenderer"), 38, 34, 0x404040);
-			fontRendererObj.drawString(StringUtil.translate(PREFIX + "pipefallbackrenderer"), 38, 54, 0x404040);
-			fontRendererObj.drawString(StringUtil.translate(PREFIX + "piperenderdistance"), 10, 70, 0x404040);
-			fontRendererObj.drawString(StringUtil.translate(PREFIX + "pipecontentrenderdistance"), 10, 100, 0x404040);
+			fontRendererObj.drawString(StringUtils.translate(PREFIX + "pipenewrenderer"), 38, 34, 0x404040);
+			fontRendererObj.drawString(StringUtils.translate(PREFIX + "pipefallbackrenderer"), 38, 54, 0x404040);
+			fontRendererObj.drawString(StringUtils.translate(PREFIX + "piperenderdistance"), 10, 70, 0x404040);
+			fontRendererObj.drawString(StringUtils.translate(PREFIX + "pipecontentrenderdistance"), 10, 100, 0x404040);
 		}
 		
 		@Override

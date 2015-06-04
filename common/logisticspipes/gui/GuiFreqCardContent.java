@@ -3,9 +3,8 @@ package logisticspipes.gui;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.items.LogisticsItemCard;
-import logisticspipes.network.GuiIDs;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -31,9 +30,9 @@ public class GuiFreqCardContent extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 10,  guiTop + 45);
-		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 81, guiTop + 14);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 45);
+		GuiGraphics.drawSlotBackground(mc, guiLeft + 81, guiTop + 14);
 	}
 
 }

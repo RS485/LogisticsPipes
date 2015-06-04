@@ -1,11 +1,10 @@
 package logisticspipes.gui;
 
-import logisticspipes.network.GuiIDs;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 
@@ -26,16 +25,16 @@ public class GuiFluidBasic extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 45);
-		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 27, guiTop + 12);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 45);
+		GuiGraphics.drawSlotBackground(mc, guiLeft + 27, guiTop + 12);
 	}
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		if(inventorySlots.getSlot(0).getStack() == null) {
-			mc.fontRenderer.drawString(StringUtil.translate("gui.fluidbasic.Empty"), 50, 18, 0x404040);
+			mc.fontRenderer.drawString(StringUtils.translate("gui.fluidbasic.Empty"), 50, 18, 0x404040);
 		} else {
 			mc.fontRenderer.drawString(ItemIdentifier.get(inventorySlots.getSlot(0).getStack()).getFriendlyName(), 50, 18, 0x404040);
 		}

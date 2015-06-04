@@ -7,7 +7,9 @@ public enum Particles {
 	GreenParticle,
 	GoldParticle,
 	VioletParticle,
-	OrangeParticle
+	OrangeParticle,
+	LightGreenParticle,
+	LightRedParticle
 	
 	/**
 	 * General color arangement:

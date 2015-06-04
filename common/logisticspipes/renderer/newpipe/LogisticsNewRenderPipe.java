@@ -11,20 +11,26 @@ import java.util.Map.Entry;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.PlayerConfig;
+import logisticspipes.pipefxhandlers.EntityModelFX;
 import logisticspipes.pipes.PipeBlockRequestTable;
+import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.textures.Textures;
 import logisticspipes.utils.tuples.LPPosition;
-import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Quartet;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EffectRenderer;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
@@ -34,11 +40,12 @@ import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.CCRenderState.IVertexOperation;
 import codechicken.lib.render.uv.IconTransformation;
-import codechicken.lib.render.uv.UVScale;
 import codechicken.lib.render.uv.UVTransformationList;
 import codechicken.lib.render.uv.UVTranslation;
+import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Translation;
+import codechicken.lib.vec.Vector3;
 
 public class LogisticsNewRenderPipe {
 	
@@ -124,7 +131,7 @@ public class LogisticsNewRenderPipe {
 		}
 	}
 	
-	enum Turn_Corner {
+	enum PipeTurnCorner {
 		UP_NORTH_WEST_TURN_NORTH_SOUTH	(Corner.UP_NORTH_WEST, Turn.NORTH_SOUTH, 1),
 		UP_NORTH_WEST_TURN_EAST_WEST	(Corner.UP_NORTH_WEST, Turn.EAST_WEST, 14),
 		UP_NORTH_WEST_TURN_UP_DOWN		(Corner.UP_NORTH_WEST, Turn.UP_DOWN, 23),
@@ -152,7 +159,7 @@ public class LogisticsNewRenderPipe {
 		final Corner corner;
 		final Turn turn;
 		final int number;
-		Turn_Corner(Corner corner, Turn turn, int number) {
+		PipeTurnCorner(Corner corner, Turn turn, int number) {
 			this.corner = corner;
 			this.turn = turn;
 			this.number = number;
@@ -173,36 +180,36 @@ public class LogisticsNewRenderPipe {
 		}
 	}
 	
-	enum SupportOri {
+	enum PipeSupportOri {
 		UP_DOWN("U"), SIDE("S");
 		final String s;
-		SupportOri(String s) {
+		PipeSupportOri(String s) {
 			this.s = s;
 		}
 	}
 	
-	enum Support {
-		UP_UP(ForgeDirection.UP, SupportOri.UP_DOWN),
-		UP_SIDE(ForgeDirection.UP, SupportOri.SIDE),
-		DOWN_UP(ForgeDirection.DOWN, SupportOri.UP_DOWN),
-		DOWN_SIDE(ForgeDirection.DOWN, SupportOri.SIDE),
-		NORTH_UP(ForgeDirection.NORTH, SupportOri.UP_DOWN),
-		NORTH_SIDE(ForgeDirection.NORTH, SupportOri.SIDE),
-		SOUTH_UP(ForgeDirection.SOUTH, SupportOri.UP_DOWN),
-		SOUTH_SIDE(ForgeDirection.SOUTH, SupportOri.SIDE),
-		EAST_UP(ForgeDirection.EAST, SupportOri.UP_DOWN),
-		EAST_SIDE(ForgeDirection.EAST, SupportOri.SIDE),
-		WEST_UP(ForgeDirection.WEST, SupportOri.UP_DOWN),
-		WEST_SIDE(ForgeDirection.WEST, SupportOri.SIDE);
-		Support(ForgeDirection dir, SupportOri ori) {
+	enum PipeSupport {
+		UP_UP(ForgeDirection.UP, PipeSupportOri.UP_DOWN),
+		UP_SIDE(ForgeDirection.UP, PipeSupportOri.SIDE),
+		DOWN_UP(ForgeDirection.DOWN, PipeSupportOri.UP_DOWN),
+		DOWN_SIDE(ForgeDirection.DOWN, PipeSupportOri.SIDE),
+		NORTH_UP(ForgeDirection.NORTH, PipeSupportOri.UP_DOWN),
+		NORTH_SIDE(ForgeDirection.NORTH, PipeSupportOri.SIDE),
+		SOUTH_UP(ForgeDirection.SOUTH, PipeSupportOri.UP_DOWN),
+		SOUTH_SIDE(ForgeDirection.SOUTH, PipeSupportOri.SIDE),
+		EAST_UP(ForgeDirection.EAST, PipeSupportOri.UP_DOWN),
+		EAST_SIDE(ForgeDirection.EAST, PipeSupportOri.SIDE),
+		WEST_UP(ForgeDirection.WEST, PipeSupportOri.UP_DOWN),
+		WEST_SIDE(ForgeDirection.WEST, PipeSupportOri.SIDE);
+		PipeSupport(ForgeDirection dir, PipeSupportOri ori) {
 			this.dir = dir;
 			this.ori = ori;
 		}
 		final ForgeDirection dir;
-		final SupportOri ori;
+		final PipeSupportOri ori;
 	}
 	
-	enum Mount {
+	enum PipeMount {
 		UP_NORTH(ForgeDirection.UP, ForgeDirection.NORTH),
 		UP_SOUTH(ForgeDirection.UP, ForgeDirection.SOUTH),
 		UP_EAST(ForgeDirection.UP, ForgeDirection.EAST),
@@ -229,40 +236,49 @@ public class LogisticsNewRenderPipe {
 		WEST_SOUTH(ForgeDirection.WEST, ForgeDirection.SOUTH);
 		ForgeDirection dir;
 		ForgeDirection side;
-		Mount(ForgeDirection dir, ForgeDirection side) {
+		PipeMount(ForgeDirection dir, ForgeDirection side) {
 			this.dir = dir;
 			this.side = side;
 		}
 	}
 	
+	//Pipe Models
 	static Map<ForgeDirection, List<CCModel>> sideNormal = new HashMap<ForgeDirection, List<CCModel>>();
 	static Map<ForgeDirection, List<CCModel>> sideBC = new HashMap<ForgeDirection, List<CCModel>>();
 	static Map<Edge, CCModel> edges = new HashMap<Edge, CCModel>();
 	static Map<Corner, List<CCModel>> corners_M = new HashMap<Corner, List<CCModel>>();
 	static Map<Corner, List<CCModel>> corners_I3 = new HashMap<Corner, List<CCModel>>();
-	static Map<Turn_Corner, CCModel> corners_I = new HashMap<Turn_Corner, CCModel>();
-	static Map<Support, CCModel> supports = new HashMap<Support, CCModel>();
-	static Map<Turn_Corner, CCModel> spacers = new HashMap<Turn_Corner, CCModel>();
-	static Map<Mount, CCModel> mounts = new HashMap<Mount, CCModel>();
+	static Map<PipeTurnCorner, CCModel> corners_I = new HashMap<PipeTurnCorner, CCModel>();
+	static Map<PipeSupport, CCModel> supports = new HashMap<PipeSupport, CCModel>();
+	static Map<PipeTurnCorner, CCModel> spacers = new HashMap<PipeTurnCorner, CCModel>();
+	static Map<PipeMount, CCModel> mounts = new HashMap<PipeMount, CCModel>();
 
 	static Map<ForgeDirection, List<CCModel>> texturePlate_Inner = new HashMap<ForgeDirection, List<CCModel>>();
 	static Map<ForgeDirection, List<CCModel>> texturePlate_Outer = new HashMap<ForgeDirection, List<CCModel>>();
 	static Map<ForgeDirection, Quartet<List<CCModel>, List<CCModel>, List<CCModel>, List<CCModel>>> sideTexturePlate = new HashMap<ForgeDirection, Quartet<List<CCModel>, List<CCModel>, List<CCModel>, List<CCModel>>>();
-	static Map<Mount, List<CCModel>> textureConnectorPlate = new HashMap<Mount, List<CCModel>>();
+	static Map<PipeMount, List<CCModel>> textureConnectorPlate = new HashMap<PipeMount, List<CCModel>>();
 	static Map<Edge, Quartet<CCModel, CCModel, CCModel, CCModel>> centerEdgeLEDs = new HashMap<Edge, Quartet<CCModel,CCModel,CCModel,CCModel>>();
 	static Map<ForgeDirection, List<CCModel>> sidedInnerLEDs = new HashMap<ForgeDirection, List<CCModel>>();
 	static Map<ForgeDirection, List<CCModel>> sidedOuterLEDs = new HashMap<ForgeDirection, List<CCModel>>();
 	
+	static Map<ScaleObject, CCModel> scaleMap = new HashMap<ScaleObject, CCModel>();
+	
+	@Data
+	@AllArgsConstructor
+	private static class ScaleObject {
+		private final CCModel original;
+		private final double scale;
+	}
+	
 	static CCModel innerTransportBox;
-
-	public static IconTransformation basicTexture;
+	
+	//Pipe Textures
+	public static IconTransformation basicPipeTexture;
 	public static IconTransformation inactiveTexture;
 	public static IconTransformation glassCenterTexture;
 	public static IconTransformation innerBoxTexture;
 	public static IconTransformation statusTexture;
 	public static IconTransformation statusBCTexture;
-
-	private static final ResourceLocation	BLOCKS	= new ResourceLocation("textures/atlas/blocks.png");
 
 	static {
 		loadModels();
@@ -332,7 +348,7 @@ public class LogisticsNewRenderPipe {
 				if(corners_I3.get(corner).size() != 2) throw new RuntimeException("Couldn't load " + corner.name() + " (" + grp + "). Only loaded " + corners_I3.get(corner).size());
 			}
 			
-			for(Support support:Support.values()) {
+			for(PipeSupport support:PipeSupport.values()) {
 				String grp = "Support_" + getDirAsString_Type1(support.dir) + "_" + support.ori.s;
 				for(Entry<String, CCModel> entry:pipePartModels.entrySet()) {
 					if(entry.getKey().contains(" " + grp + " ") || entry.getKey().endsWith(" " + grp)) {
@@ -343,7 +359,7 @@ public class LogisticsNewRenderPipe {
 				if(supports.get(support) == null) throw new RuntimeException("Couldn't load " + support.name() + " (" + grp + ")");
 			}
 			
-			for(Turn_Corner corner:Turn_Corner.values()) {
+			for(PipeTurnCorner corner:PipeTurnCorner.values()) {
 				String grp = "Corner_I_" + corner.corner.ud.s + "_" + corner.corner.ns.s + corner.corner.ew.s;
 				for(Entry<String, CCModel> entry:pipePartModels.entrySet()) {
 					if(entry.getKey().contains(" " + grp)) {
@@ -369,7 +385,7 @@ public class LogisticsNewRenderPipe {
 				if(corners_I.get(corner) == null) throw new RuntimeException("Couldn't load " + corner.name() + " (" + grp + ")");
 			}
 			
-			for(Turn_Corner corner:Turn_Corner.values()) {
+			for(PipeTurnCorner corner:PipeTurnCorner.values()) {
 				String grp = "Spacer" + corner.number;
 				for(Entry<String, CCModel> entry:pipePartModels.entrySet()) {
 					if(entry.getKey().contains(" " + grp + " ") || entry.getKey().endsWith(" " + grp)) {
@@ -380,7 +396,7 @@ public class LogisticsNewRenderPipe {
 				if(spacers.get(corner) == null) throw new RuntimeException("Couldn't load " + corner.name() + " (" + grp + ")");
 			}
 			
-			for(Mount mount:Mount.values()) {
+			for(PipeMount mount:PipeMount.values()) {
 				String grp = "Mount_" + getDirAsString_Type1(mount.dir) + "_" + getDirAsString_Type1(mount.side);
 				for(Entry<String, CCModel> entry:pipePartModels.entrySet()) {
 					if(entry.getKey().contains(" " + grp + " ") || entry.getKey().endsWith(" " + grp)) {
@@ -446,7 +462,7 @@ public class LogisticsNewRenderPipe {
 				if(sideTexturePlate.get(dir).getValue4().size() != 8) throw new RuntimeException("Couldn't load " + dir.name() + " (" + grp + "). Only loaded " + sideTexturePlate.get(dir).getValue4().size());
 				}
 
-			for(Mount mount:Mount.values()) {
+			for(PipeMount mount:PipeMount.values()) {
 				textureConnectorPlate.put(mount, new ArrayList<CCModel>());
 				String grp = "Texture_Connector_" + getDirAsString_Type1(mount.dir) + "_" + getDirAsString_Type1(mount.side);
 				for(Entry<String, CCModel> entry:pipePartModels.entrySet()) {
@@ -525,22 +541,22 @@ public class LogisticsNewRenderPipe {
 		}
 	}
 
-	private static CCModel compute(CCModel m) {
+	public static CCModel compute(CCModel m) {
 		m.computeNormals();
 		m.computeLighting(LightModel.standardLightModel);
 		return m;
 	}
 	
 	public static void registerTextures(IIconRegister iconRegister) {
-		if(basicTexture == null) {
-			basicTexture = new IconTransformation(iconRegister.registerIcon("logisticspipes:" + "pipes/PipeModel"));
+		if(basicPipeTexture == null) {
+			basicPipeTexture = new IconTransformation(iconRegister.registerIcon("logisticspipes:" + "pipes/PipeModel"));
 			inactiveTexture = new IconTransformation(iconRegister.registerIcon("logisticspipes:" + "pipes/PipeModel-inactive"));
 			innerBoxTexture = new IconTransformation(iconRegister.registerIcon("logisticspipes:" + "pipes/InnerBox"));
 			glassCenterTexture = new IconTransformation(iconRegister.registerIcon("logisticspipes:" + "pipes/Glass_Texture_Center"));
 			statusTexture = new IconTransformation(iconRegister.registerIcon("logisticspipes:" + "pipes/PipeModel-status"));
 			statusBCTexture = new IconTransformation(iconRegister.registerIcon("logisticspipes:" + "pipes/PipeModel-status-BC"));
 		} else {
-			basicTexture.icon = iconRegister.registerIcon("logisticspipes:" + "pipes/PipeModel");
+			basicPipeTexture.icon = iconRegister.registerIcon("logisticspipes:" + "pipes/PipeModel");
 			inactiveTexture.icon = iconRegister.registerIcon("logisticspipes:" + "pipes/PipeModel-inactive");
 			innerBoxTexture.icon = iconRegister.registerIcon("logisticspipes:" + "pipes/InnerBox");
 			glassCenterTexture.icon = iconRegister.registerIcon("logisticspipes:" + "pipes/Glass_Texture_Center");
@@ -554,7 +570,7 @@ public class LogisticsNewRenderPipe {
 	public void renderTileEntityAt(LogisticsTileGenericPipe pipeTile, double x, double y, double z, float f, double distance) {
 		
 		if(pipeTile.pipe instanceof PipeBlockRequestTable) return;
-		Minecraft.getMinecraft().getTextureManager().bindTexture(BLOCKS);
+		if(pipeTile.pipe == null) return;
 		PipeRenderState renderState = pipeTile.renderState;
 		
 		if(renderState.renderList != null && renderState.renderList.isInvalid()) {
@@ -573,34 +589,53 @@ public class LogisticsNewRenderPipe {
 			renderState.forceRenderOldPipe = false;
 			boolean recalculateList = false;
 			if(renderState.cachedRenderer == null) {
-				List<Pair<CCModel, IVertexOperation[]>> objectsToRender = new ArrayList<Pair<CCModel, IVertexOperation[]>>();
-				fillObjectsToRenderList(objectsToRender, pipeTile, renderState);
+				List<RenderEntry> objectsToRender = new ArrayList<RenderEntry>();
+
+
+				if(pipeTile.pipe != null && pipeTile.pipe.getSpecialRenderer() != null) {
+					pipeTile.pipe.getSpecialRenderer().renderToList(pipeTile.pipe, objectsToRender);
+				}
+
+				if(pipeTile.pipe != null && pipeTile.pipe.renderNormalPipe()) {
+					fillObjectsToRenderList(objectsToRender, pipeTile, renderState);
+				}
+				
 				renderState.cachedRenderer = objectsToRender;
 				recalculateList = true;
 			}
 			if(!renderState.renderList.isFilled() || recalculateList) {
+				ResourceLocation oldTexture = null;
 				renderState.renderList.startListCompile();
-	
-				Tessellator tess = Tessellator.instance;
+				
 				CCRenderState.reset();
+				
+				GL11.glNormal3f(0.0F, 0.0F, 1.0F);
 				CCRenderState.useNormals = true;
 				CCRenderState.alphaOverride = 0xff;
-	
+				
 				int brightness = new LPPosition((TileEntity)pipeTile).getBlock(pipeTile.getWorldObj()).getMixedBrightnessForBlock(pipeTile.getWorldObj(), pipeTile.xCoord, pipeTile.yCoord, pipeTile.zCoord);
-				
-				tess.setColorOpaque_F(1F, 1F, 1F);
-				tess.setBrightness(brightness);
-				
-				tess.startDrawingQuads();
-				for(Pair<CCModel, IVertexOperation[]> model:renderState.cachedRenderer) {
-					if(model == null) {
-						CCRenderState.alphaOverride = 0xa0;
-					} else {
-						model.getValue1().render(model.getValue2());
+				CCRenderState.setBrightness(brightness);
+				boolean tesselating = false;
+
+				for(RenderEntry model:renderState.cachedRenderer) {
+					ResourceLocation texture = model.getTexture();
+					if(texture == null) throw new NullPointerException();
+					if(texture != oldTexture || oldTexture == null) {
+						if(tesselating) {
+							CCRenderState.draw();
+							tesselating = false;
+						}
+						oldTexture = texture;
+						Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
+						
+						CCRenderState.startDrawing();
+						tesselating = true;
 					}
+					model.getModel().render(model.getOperations());
 				}
-				CCRenderState.alphaOverride = 0xff;
-				tess.draw();
+				if(tesselating) {
+					CCRenderState.draw();
+				}
 				
 				renderState.renderList.stopCompile();
 			}
@@ -617,18 +652,19 @@ public class LogisticsNewRenderPipe {
 		}
 	}
 
-	private void fillObjectsToRenderList(List<Pair<CCModel, IVertexOperation[]>> objectsToRender, LogisticsTileGenericPipe pipeTile, PipeRenderState renderState) {
+	private void fillObjectsToRenderList(List<RenderEntry> objectsToRender, LogisticsTileGenericPipe pipeTile, PipeRenderState renderState) {
+		
 		List<Edge> edgesToRender = new ArrayList<Edge>(Arrays.asList(Edge.values()));
 		Map<Corner, Integer> connectionAtCorner = new HashMap<Corner, Integer>();
-		List<Mount> mountCanidates = new ArrayList<Mount>(Arrays.asList(Mount.values()));
+		List<PipeMount> mountCanidates = new ArrayList<PipeMount>(Arrays.asList(PipeMount.values()));
 		
 		int connectionCount = 0;
 		
 		for(ForgeDirection dir:ForgeDirection.VALID_DIRECTIONS) {
-			if(renderState.pipeConnectionMatrix.isConnected(dir)) {
+			if(renderState.pipeConnectionMatrix.isConnected(dir) || pipeTile.pipe.hasSpecialPipeEndAt(dir)) {
 				connectionCount++;
 				if(renderState.pipeConnectionMatrix.isBCConnected(dir) || renderState.pipeConnectionMatrix.isTDConnected(dir)) {
-					IVertexOperation[] texture = new IVertexOperation[]{basicTexture};
+					IVertexOperation[] texture = new IVertexOperation[]{basicPipeTexture};
 					if(renderState.textureMatrix.isRouted()) {
 						if(renderState.textureMatrix.isRoutedInDir(dir)) {
 							if(renderState.textureMatrix.isSubPowerInDir(dir)) {
@@ -641,10 +677,10 @@ public class LogisticsNewRenderPipe {
 						}
 					}
 					for(CCModel model:sideBC.get(dir)) {
-						objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(model, texture));
+						objectsToRender.add(new RenderEntry(model, texture));
 					}
-				} else {
-					IVertexOperation[] texture = new IVertexOperation[]{basicTexture};
+				} else if(!pipeTile.pipe.hasSpecialPipeEndAt(dir)) {
+					IVertexOperation[] texture = new IVertexOperation[]{basicPipeTexture};
 					if(renderState.textureMatrix.isRouted()) {
 						if(renderState.textureMatrix.isRoutedInDir(dir)) {
 							if(renderState.textureMatrix.isSubPowerInDir(dir)) {
@@ -668,35 +704,36 @@ public class LogisticsNewRenderPipe {
 							}
 						}
 					}
-					for(CCModel model:sideNormal.get(dir)) {
-						objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(model, texture));
-					}
-					/*
-					for(CCModel model: sidedInnerLEDs.get(dir)) {
-						if(renderState.textureMatrix.getPointedOrientation() == dir) {
-							if(!renderState.textureMatrix.isRoutedInDir(dir) && renderState.textureMatrix.isHasPowerUpgrade()) {
-								objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(model, new IVertexOperation[]{new UVTransformationList(new UVScale(1, 6F/8), orangeTexture)}));
-								objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(model, new IVertexOperation[]{new UVTransformationList(new UVScale(1, 8F/8), blueTexture)}));
+					for(CCModel model: sideNormal.get(dir)) {
+						Block block = new LPPosition((TileEntity)pipeTile).moveForward(dir).getBlock(pipeTile.getWorld());
+						double[] bounds = { block.getBlockBoundsMinY(), block.getBlockBoundsMinZ(), block.getBlockBoundsMinX(), block.getBlockBoundsMaxY(), block.getBlockBoundsMaxZ(), block.getBlockBoundsMaxX() };
+						double bound = bounds[dir.ordinal() / 2 + (dir.ordinal() % 2 == 0 ? 3 : 0)];
+						ScaleObject key = new ScaleObject(model, bound);
+						CCModel model2 = scaleMap.get(key);
+						if(model2 == null) {
+							model2 = model.copy();
+							Vector3 min = model2.bounds().min;
+							model2.apply(new Translation(min).inverse());
+							double toAdd = 1;
+							if(dir.ordinal() % 2 == 1) {
+								toAdd = 1 + (bound / LPConstants.PIPE_MIN_POS);
+								model2.apply(new Scale(dir.offsetX != 0 ? toAdd : 1, dir.offsetY != 0 ? toAdd : 1, dir.offsetZ != 0 ? toAdd : 1));
 							} else {
-								objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(model, new IVertexOperation[]{new UVTransformationList(new UVScale(1, 6F/8), orangeTexture)}));
+								bound = 1 - bound;
+								toAdd = 1 + (bound / LPConstants.PIPE_MIN_POS);
+								model2.apply(new Scale(dir.offsetX != 0 ? toAdd : 1, dir.offsetY != 0 ? toAdd : 1, dir.offsetZ != 0 ? toAdd : 1));
+								model2.apply(new Translation(dir.offsetX * bound, dir.offsetY * bound, dir.offsetZ * bound));
 							}
-						} else if(renderState.textureMatrix.isSubPowerInDir(dir) || (!renderState.textureMatrix.isRoutedInDir(dir) && renderState.textureMatrix.isHasPowerUpgrade())) {
-							objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(model, new IVertexOperation[]{new UVTransformationList(new UVScale(1, 6F/8), blueTexture)}));
+							model2.apply(new Translation(min));
+							scaleMap.put(key, model2);
 						}
+						objectsToRender.add(new RenderEntry(model2, texture));
 					}
-					for(CCModel model: sidedOuterLEDs.get(dir)) {
-						if(renderState.textureMatrix.isRoutedInDir(dir)) {
-							objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(model, new IVertexOperation[]{new UVTransformationList(new UVScale(1, 6F/8), greenTexture)}));
-						} else {
-							objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(model, new IVertexOperation[]{new UVTransformationList(new UVScale(1, 6F/8), redTexture)}));
-						}
-					}
-					//*/
 				}
 				for(Edge edge:Edge.values()) {
 					if(edge.part1 == dir || edge.part2 == dir) {
 						edgesToRender.remove(edge);
-						for(Mount mount:Mount.values()) {
+						for(PipeMount mount:PipeMount.values()) {
 							if((mount.dir == edge.part1 && mount.side == edge.part2) || (mount.dir == edge.part2 && mount.side == edge.part1)) {
 								mountCanidates.remove(mount);
 							}
@@ -716,7 +753,7 @@ public class LogisticsNewRenderPipe {
 		}
 		
 		for(Corner corner: Corner.values()) {
-			IconTransformation cornerTexture = basicTexture;
+			IconTransformation cornerTexture = basicPipeTexture;
 			if(!renderState.textureMatrix.isHasPower() && renderState.textureMatrix.isRouted()) {
 				cornerTexture = inactiveTexture;
 			} else if(!renderState.textureMatrix.isRouted() && connectionCount > 2) {
@@ -725,33 +762,33 @@ public class LogisticsNewRenderPipe {
 			int count = connectionAtCorner.containsKey(corner) ? connectionAtCorner.get(corner) : 0;
 			if(count == 0) {
 				for(CCModel model:corners_M.get(corner)) {
-					objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(model, new IVertexOperation[]{cornerTexture}));
+					objectsToRender.add(new RenderEntry(model, new IVertexOperation[]{cornerTexture}));
 				}
 			} else if(count == 1) {
-				for(Turn_Corner turn:Turn_Corner.values()) {
+				for(PipeTurnCorner turn:PipeTurnCorner.values()) {
 					if(turn.corner != corner) continue;
-					if(renderState.pipeConnectionMatrix.isConnected(turn.getPointer())) {
-						objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(spacers.get(turn), new IVertexOperation[]{cornerTexture}));
+					if(renderState.pipeConnectionMatrix.isConnected(turn.getPointer()) || pipeTile.pipe.hasSpecialPipeEndAt(turn.getPointer())) {
+						objectsToRender.add(new RenderEntry(spacers.get(turn), new IVertexOperation[]{cornerTexture}));
 						break;
 					}
 				}
 			} else if(count == 2) {
-				for(Turn_Corner turn:Turn_Corner.values()) {
+				for(PipeTurnCorner turn:PipeTurnCorner.values()) {
 					if(turn.corner != corner) continue;
-					if(!renderState.pipeConnectionMatrix.isConnected(turn.getPointer())) {
-						objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(corners_I.get(turn), new IVertexOperation[]{cornerTexture}));
+					if(!renderState.pipeConnectionMatrix.isConnected(turn.getPointer()) || pipeTile.pipe.hasSpecialPipeEndAt(turn.getPointer())) {
+						objectsToRender.add(new RenderEntry(corners_I.get(turn), new IVertexOperation[]{cornerTexture}));
 						break;
 					}
 				}
 			} else if(count == 3) {
 				for(CCModel model:corners_I3.get(corner)) {
-					objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(model, new IVertexOperation[]{cornerTexture}));
+					objectsToRender.add(new RenderEntry(model, new IVertexOperation[]{cornerTexture}));
 				}
 			}
 		}
 		
 		for(Edge edge: edgesToRender) {
-			objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(edges.get(edge), new IVertexOperation[]{basicTexture}));
+			objectsToRender.add(new RenderEntry(edges.get(edge), new IVertexOperation[]{basicPipeTexture}));
 
 			/*
 			objectsToRender.add(new Pair<CCModel, IconTransformation>(centerEdgeLEDs.get(edge).getValue1(), activeTexture));
@@ -778,22 +815,22 @@ public class LogisticsNewRenderPipe {
 				if(!found) {
 					switch(dir) {
 						case DOWN:
-							objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(supports.get(Support.EAST_SIDE), new IVertexOperation[]{basicTexture}));
-							objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(supports.get(Support.WEST_SIDE), new IVertexOperation[]{basicTexture}));
-							objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(supports.get(Support.NORTH_SIDE), new IVertexOperation[]{basicTexture}));
-							objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(supports.get(Support.SOUTH_SIDE), new IVertexOperation[]{basicTexture}));
+							objectsToRender.add(new RenderEntry(supports.get(PipeSupport.EAST_SIDE), new IVertexOperation[]{basicPipeTexture}));
+							objectsToRender.add(new RenderEntry(supports.get(PipeSupport.WEST_SIDE), new IVertexOperation[]{basicPipeTexture}));
+							objectsToRender.add(new RenderEntry(supports.get(PipeSupport.NORTH_SIDE), new IVertexOperation[]{basicPipeTexture}));
+							objectsToRender.add(new RenderEntry(supports.get(PipeSupport.SOUTH_SIDE), new IVertexOperation[]{basicPipeTexture}));
 							break;
 						case NORTH:
-							objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(supports.get(Support.EAST_UP), new IVertexOperation[]{basicTexture}));
-							objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(supports.get(Support.WEST_UP), new IVertexOperation[]{basicTexture}));
-							objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(supports.get(Support.UP_SIDE), new IVertexOperation[]{basicTexture}));
-							objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(supports.get(Support.DOWN_SIDE), new IVertexOperation[]{basicTexture}));
+							objectsToRender.add(new RenderEntry(supports.get(PipeSupport.EAST_UP), new IVertexOperation[]{basicPipeTexture}));
+							objectsToRender.add(new RenderEntry(supports.get(PipeSupport.WEST_UP), new IVertexOperation[]{basicPipeTexture}));
+							objectsToRender.add(new RenderEntry(supports.get(PipeSupport.UP_SIDE), new IVertexOperation[]{basicPipeTexture}));
+							objectsToRender.add(new RenderEntry(supports.get(PipeSupport.DOWN_SIDE), new IVertexOperation[]{basicPipeTexture}));
 							break;
 						case WEST:
-							objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(supports.get(Support.UP_UP), new IVertexOperation[]{basicTexture}));
-							objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(supports.get(Support.DOWN_UP), new IVertexOperation[]{basicTexture}));
-							objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(supports.get(Support.NORTH_UP), new IVertexOperation[]{basicTexture}));
-							objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(supports.get(Support.SOUTH_UP), new IVertexOperation[]{basicTexture}));
+							objectsToRender.add(new RenderEntry(supports.get(PipeSupport.UP_UP), new IVertexOperation[]{basicPipeTexture}));
+							objectsToRender.add(new RenderEntry(supports.get(PipeSupport.DOWN_UP), new IVertexOperation[]{basicPipeTexture}));
+							objectsToRender.add(new RenderEntry(supports.get(PipeSupport.NORTH_UP), new IVertexOperation[]{basicPipeTexture}));
+							objectsToRender.add(new RenderEntry(supports.get(PipeSupport.SOUTH_UP), new IVertexOperation[]{basicPipeTexture}));
 							break;
 						default:break;
 					}
@@ -807,9 +844,9 @@ public class LogisticsNewRenderPipe {
 			pos.moveForward(dir);
 			Block blockSide = pos.getBlock(pipeTile.getWorldObj());
 			if(blockSide == null || !blockSide.isSideSolid(pipeTile.getWorldObj(), pos.getX(), pos.getY(), pos.getZ(), dir.getOpposite()) || renderState.pipeConnectionMatrix.isConnected(dir)) {
-				Iterator<Mount> iter = mountCanidates.iterator();
+				Iterator<PipeMount> iter = mountCanidates.iterator();
 				while(iter.hasNext()) {
-					Mount mount = iter.next();
+					PipeMount mount = iter.next();
 					if(mount.dir == dir) {
 						iter.remove();
 					}
@@ -835,8 +872,8 @@ public class LogisticsNewRenderPipe {
 			
 			if(LPConstants.DEBUG && mountCanidates.size() > 2) new RuntimeException("Trying to render " + mountCanidates.size() + " Mounts").printStackTrace();
 			
-			for(Mount mount:mountCanidates) {
-				objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(mounts.get(mount), new IVertexOperation[]{basicTexture}));
+			for(PipeMount mount:mountCanidates) {
+				objectsToRender.add(new RenderEntry(mounts.get(mount), new IVertexOperation[]{basicPipeTexture}));
 			}
 		}
 		
@@ -845,7 +882,7 @@ public class LogisticsNewRenderPipe {
 				for(CCModel model:texturePlate_Outer.get(dir)) {
 					IconTransformation icon = Textures.LPnewPipeIconProvider.getIcon(renderState.textureMatrix.getTextureIndex());
 					if(icon != null) {
-						objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(model, new IVertexOperation[]{icon}));
+						objectsToRender.add(new RenderEntry(model, new IVertexOperation[]{icon}));
 					}
 				}
 			}
@@ -854,12 +891,12 @@ public class LogisticsNewRenderPipe {
 			for(ForgeDirection dir:ForgeDirection.VALID_DIRECTIONS) {
 				if(!renderState.pipeConnectionMatrix.isConnected(dir)) {
 					for(CCModel model:texturePlate_Inner.get(dir)) {
-						objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(model, new IVertexOperation[]{glassCenterTexture}));
+						objectsToRender.add(new RenderEntry(model, new IVertexOperation[]{glassCenterTexture}));
 					}
 				} else {
 					if(!renderState.textureMatrix.isRoutedInDir(dir)) {
 						for(CCModel model:sideTexturePlate.get(dir).getValue1()) {
-							objectsToRender.add(new Pair<CCModel, IVertexOperation[]>(model, new IVertexOperation[]{basicTexture}));
+							objectsToRender.add(new RenderEntry(model, new IVertexOperation[]{basicPipeTexture}));
 						}
 					}
 				}
@@ -867,11 +904,11 @@ public class LogisticsNewRenderPipe {
 		}
 	}
 
-	private void findOponentOnSameSide(List<Mount> mountCanidates, ForgeDirection dir) {
+	private void findOponentOnSameSide(List<PipeMount> mountCanidates, ForgeDirection dir) {
 		boolean sides[] = new boolean[6];
-		Iterator<Mount> iter = mountCanidates.iterator();
+		Iterator<PipeMount> iter = mountCanidates.iterator();
 		while(iter.hasNext()) {
-			Mount mount = iter.next();
+			PipeMount mount = iter.next();
 			if(mount.dir != dir) {
 				iter.remove();
 			} else {
@@ -892,28 +929,28 @@ public class LogisticsNewRenderPipe {
 		}
 		iter = mountCanidates.iterator();
 		while(iter.hasNext()) {
-			Mount mount = iter.next();
+			PipeMount mount = iter.next();
 			if(!keep.contains(mount.side)) {
 				iter.remove();
 			}
 		}
 	}
 
-	private void removeFromSide(List<Mount> mountCanidates, ForgeDirection dir) {
-		Iterator<Mount> iter = mountCanidates.iterator();
+	private void removeFromSide(List<PipeMount> mountCanidates, ForgeDirection dir) {
+		Iterator<PipeMount> iter = mountCanidates.iterator();
 		while(iter.hasNext()) {
-			Mount mount = iter.next();
+			PipeMount mount = iter.next();
 			if(mount.dir == dir) {
 				iter.remove();
 			}
 		}
 	}
 
-	private void reduceToOnePerSide(List<Mount> mountCanidates, ForgeDirection dir, ForgeDirection pref) {
+	private void reduceToOnePerSide(List<PipeMount> mountCanidates, ForgeDirection dir, ForgeDirection pref) {
 		boolean found = false;
-		Iterator<Mount> iter = mountCanidates.iterator();
+		Iterator<PipeMount> iter = mountCanidates.iterator();
 		while(iter.hasNext()) {
-			Mount mount = iter.next();
+			PipeMount mount = iter.next();
 			if(mount.dir != dir) continue;
 			if(mount.side == pref) {
 				found = true;
@@ -924,7 +961,7 @@ public class LogisticsNewRenderPipe {
 		} else {
 			iter = mountCanidates.iterator();
 			while(iter.hasNext()) {
-				Mount mount = iter.next();
+				PipeMount mount = iter.next();
 				if(mount.dir != dir) continue;
 				if(mount.side != pref) {
 					iter.remove();
@@ -933,11 +970,11 @@ public class LogisticsNewRenderPipe {
 		}
 	}
 	
-	private void reduceToOnePerSide(List<Mount> mountCanidates, ForgeDirection dir) {
+	private void reduceToOnePerSide(List<PipeMount> mountCanidates, ForgeDirection dir) {
 		boolean found = false;
-		Iterator<Mount> iter = mountCanidates.iterator();
+		Iterator<PipeMount> iter = mountCanidates.iterator();
 		while(iter.hasNext()) {
-			Mount mount = iter.next();
+			PipeMount mount = iter.next();
 			if(mount.dir != dir) continue;
 			if(found) {
 				iter.remove();
@@ -947,11 +984,11 @@ public class LogisticsNewRenderPipe {
 		}
 	}
 
-	private void removeIfHasOponentSide(List<Mount> mountCanidates) {
+	private void removeIfHasOponentSide(List<PipeMount> mountCanidates) {
 		boolean sides[] = new boolean[6];
-		Iterator<Mount> iter = mountCanidates.iterator();
+		Iterator<PipeMount> iter = mountCanidates.iterator();
 		while(iter.hasNext()) {
-			Mount mount = iter.next();
+			PipeMount mount = iter.next();
 			sides[mount.dir.ordinal()] = true;
 		}
 		if(sides[2] && sides[3]) {
@@ -967,11 +1004,11 @@ public class LogisticsNewRenderPipe {
 		}
 	}
 
-	private void removeIfHasConnectedSide(List<Mount> mountCanidates) {
+	private void removeIfHasConnectedSide(List<PipeMount> mountCanidates) {
 		boolean sides[] = new boolean[6];
-		Iterator<Mount> iter = mountCanidates.iterator();
+		Iterator<PipeMount> iter = mountCanidates.iterator();
 		while(iter.hasNext()) {
-			Mount mount = iter.next();
+			PipeMount mount = iter.next();
 			sides[mount.dir.ordinal()] = true;
 		}
 		for(int i=2;i<6;i++) {
@@ -980,6 +1017,20 @@ public class LogisticsNewRenderPipe {
 			if(sides[dir.ordinal()] && sides[rot.ordinal()]) {
 				reduceToOnePerSide(mountCanidates, dir, dir.getRotation(ForgeDirection.DOWN));
 				reduceToOnePerSide(mountCanidates, rot, rot.getRotation(ForgeDirection.UP));
+			}
+		}
+	}
+
+	public static void renderDestruction(CoreUnroutedPipe pipe, World worldObj, int x, int y, int z, EffectRenderer effectRenderer) {
+		if(pipe.container != null && pipe.container.renderState != null && pipe.container.renderState.cachedRenderer != null) {
+			for(RenderEntry entry:pipe.container.renderState.cachedRenderer) {
+				CCModel model = entry.getModel().twoFacedCopy();
+				Cuboid6 bounds = model.bounds();
+				double xMid = (bounds.min.x + bounds.max.x) / 2;
+				double yMid = (bounds.min.y + bounds.max.y) / 2;
+				double zMid = (bounds.min.z + bounds.max.z) / 2;
+				model.apply(new Translation(-xMid, -yMid, -zMid));
+				effectRenderer.addEffect(new EntityModelFX(worldObj, x + xMid, y + yMid, z + zMid, model, entry.getOperations(), entry.getTexture()));
 			}
 		}
 	}

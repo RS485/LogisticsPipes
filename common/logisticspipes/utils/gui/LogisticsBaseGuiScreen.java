@@ -18,6 +18,7 @@ import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.DummyContainerSlotClick;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.extention.GuiExtentionController;
 import logisticspipes.utils.gui.extention.GuiExtentionController.GuiSide;
 import net.minecraft.client.Minecraft;
@@ -39,17 +40,7 @@ import codechicken.nei.api.TaggedInventoryArea;
 
 @ModDependentInterface(modId={"NotEnoughItems"}, interfacePath={"codechicken.nei.INEIGuiHandler"})
 public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISubGuiControler, INEIGuiHandler {
-	
-	public enum Colors
-	{
-		White,
-		Black,
-		LightGrey,
-		MiddleGrey,
-		DarkGrey,
-		Red
-	}
-	
+
 	protected static final ResourceLocation ITEMSINK = new ResourceLocation("logisticspipes", "textures/gui/itemsink.png");
 	protected static final ResourceLocation SUPPLIER = new ResourceLocation("logisticspipes", "textures/gui/supplier.png");
 	protected static final ResourceLocation CHASSI1 = new ResourceLocation("logisticspipes", "textures/gui/itemsink.png");
@@ -195,7 +186,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 						if(slot.getToolTipText() != null && !slot.getToolTipText().equals("")) {
 							ArrayList<String> list = new ArrayList<String>();
 							list.add(slot.getToolTipText());
-							BasicGuiHelper.drawToolTip(par1, par2, list, EnumChatFormatting.WHITE, false);
+							GuiGraphics.drawToolTip(par1, par2, list, EnumChatFormatting.WHITE, false);
 						}
 					}
 				}
@@ -283,12 +274,12 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 		for(IRenderSlot slot:slots) {
 			if(slot instanceof IItemTextureRenderSlot) {
 				if(slot.drawSlotBackground()) 
-					BasicGuiHelper.drawSlotBackground(mc, slot.getXPos(), slot.getYPos());
+					GuiGraphics.drawSlotBackground(mc, slot.getXPos(), slot.getYPos());
 				if(((IItemTextureRenderSlot)slot).drawSlotIcon() && !((IItemTextureRenderSlot)slot).customRender(mc, zLevel)) 
-					BasicGuiHelper.renderIconAt(mc, slot.getXPos() + 1, slot.getYPos() + 1, zLevel,  ((IItemTextureRenderSlot)slot).getTextureIcon());
+					GuiGraphics.renderIconAt(mc, slot.getXPos() + 1, slot.getYPos() + 1, zLevel, ((IItemTextureRenderSlot) slot).getTextureIcon());
 			} else if(slot instanceof ISmallColorRenderSlot) {
 				if(slot.drawSlotBackground())
-					BasicGuiHelper.drawSmallSlotBackground(mc, slot.getXPos(), slot.getYPos());
+					GuiGraphics.drawSmallSlotBackground(mc, slot.getXPos(), slot.getYPos());
 				if(((ISmallColorRenderSlot)slot).drawColor()) 
 					drawRect(slot.getXPos() + 1, slot.getYPos() + 1, slot.getXPos() + 7, slot.getYPos() + 7, ((ISmallColorRenderSlot)slot).getColor());
 			}
@@ -364,15 +355,15 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 		drawRect(x, y, x+1, y+1, color);
 	}
 	
-	public void drawPoint(int x, int y, Colors color){
-		drawRect(x, y, x+1, y+1, BasicGuiHelper.ConvertEnumToColor(color));
+	public void drawPoint(int x, int y, Color color){
+		drawRect(x, y, x + 1, y + 1, Color.getValue(color));
 	}
 	
-	public void drawRect(int x1, int y1, int x2, int y2, Colors color){
-		drawRect(x1, y1, x2, y2, BasicGuiHelper.ConvertEnumToColor(color));
+	public void drawRect(int x1, int y1, int x2, int y2, Color color){
+		drawRect(x1, y1, x2, y2, Color.getValue(color));
 	}
 	
-	public void drawLine(int x1, int y1, int x2, int y2, Colors color){
+	public void drawLine(int x1, int y1, int x2, int y2, Color color){
 		int lasty = y1;
 		for (int dx = 0; x1 + dx < x2; dx++){
 			int plotx = x1 + dx;

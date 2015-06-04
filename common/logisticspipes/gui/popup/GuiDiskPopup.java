@@ -6,8 +6,8 @@ import logisticspipes.network.packets.orderer.DiscContent;
 import logisticspipes.network.packets.orderer.DiskMacroRequestPacket;
 import logisticspipes.network.packets.orderer.DiskSetNamePacket;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.gui.BasicGuiHelper;
-import logisticspipes.utils.gui.LogisticsBaseGuiScreen.Colors;
+import logisticspipes.utils.Color;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import net.minecraft.client.gui.GuiButton;
@@ -91,22 +91,22 @@ public class GuiDiskPopup extends SubGuiScreen {
 	@Override
 	public void drawScreen(int par1, int par2, float par3){
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		
 		mc.fontRenderer.drawStringWithShadow("Disk", xCenter - (mc.fontRenderer.getStringWidth("Disk") / 2), guiTop + 10, 0xFFFFFF);
 		
 		//NameInput
 		if(editname) {
-			drawRect(guiLeft + 10, guiTop + 28, right - 10, guiTop + 45, BasicGuiHelper.ConvertEnumToColor(Colors.Black));
-			drawRect(guiLeft + 11, guiTop + 29, right - 11, guiTop + 44, BasicGuiHelper.ConvertEnumToColor(Colors.White));
+			drawRect(guiLeft + 10, guiTop + 28, right - 10, guiTop + 45, Color.getValue(Color.BLACK));
+			drawRect(guiLeft + 11, guiTop + 29, right - 11, guiTop + 44, Color.getValue(Color.WHITE));
 		} else {
-			drawRect(guiLeft + 11, guiTop + 29, right - 11, guiTop + 44, BasicGuiHelper.ConvertEnumToColor(Colors.Black));
+			drawRect(guiLeft + 11, guiTop + 29, right - 11, guiTop + 44, Color.getValue(Color.BLACK));
 		}
-		drawRect(guiLeft + 12, guiTop + 30, right - 12, guiTop + 43, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey));
+		drawRect(guiLeft + 12, guiTop + 30, right - 12, guiTop + 43, Color.getValue(Color.DARKER_GREY));
 		
 		mc.fontRenderer.drawString(name1 + name2, guiLeft + 15, guiTop + 33, 0xFFFFFF);
 		
-		drawRect(guiLeft + 6, guiTop + 46, right - 6, bottom - 30, BasicGuiHelper.ConvertEnumToColor(Colors.MiddleGrey));
+		drawRect(guiLeft + 6, guiTop + 46, right - 6, bottom - 30, Color.getValue(Color.GREY));
 		
 		NBTTagCompound nbt = diskProvider.getDisk().getTagCompound();
 		if(nbt == null) {
@@ -136,7 +136,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 
 		for(int i = scroll;i < list.tagCount() && (i - scroll) < 12;i++) {
 			if(i == selected) {
-				drawRect(guiLeft + 8, guiTop + 48 + ((i - scroll) * 10), right - 8, guiTop + 59 + ((i - scroll) * 10), BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey));
+				drawRect(guiLeft + 8, guiTop + 48 + ((i - scroll) * 10), right - 8, guiTop + 59 + ((i - scroll) * 10), Color.getValue(Color.DARKER_GREY));
 				flag = true;
 			}
 			NBTTagCompound entry = (NBTTagCompound) list.getCompoundTagAt(i);
@@ -155,7 +155,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 				oldSystemTime = System.currentTimeMillis();
 			}
 			if(displaycursor) {
-				drawRect(linex, guiTop + 31, linex + 1, guiTop + 42, BasicGuiHelper.ConvertEnumToColor(Colors.White));
+				drawRect(linex, guiTop + 31, linex + 1, guiTop + 42, Color.getValue(Color.WHITE));
 			}
 		}
 		super.drawScreen(par1, par2, par3);

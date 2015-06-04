@@ -19,12 +19,12 @@ public abstract class BasicHUDGui implements IHeadUpDisplayRenderer {
 	}
 	
 	@Override
-	public void renderHeadUpDisplay(double d, boolean day, Minecraft mc, IHUDConfig config) {
+	public void renderHeadUpDisplay(double d, boolean day, boolean shifted, Minecraft mc, IHUDConfig config) {
 		for(IHUDButton button:buttons) {
 			GL11.glPushMatrix();
-			button.renderAlways();
+			button.renderAlways(shifted);
 			if(button.shouldRenderButton()) {
-				button.renderButton(button.isFocused(), button.isblockFocused());
+				button.renderButton(button.isFocused(), button.isblockFocused(), shifted);
 			}
 			GL11.glPopMatrix();
 		}

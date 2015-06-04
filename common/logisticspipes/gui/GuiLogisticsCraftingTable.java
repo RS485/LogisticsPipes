@@ -6,16 +6,17 @@ import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.block.CraftingCycleRecipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.CraftingRequirement;
-import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.request.resources.DictResource;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.item.ItemStackRenderer;
+import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
-
 import org.lwjgl.opengl.GL11;
 
 public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
@@ -61,20 +62,20 @@ public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
 		for(int i=0;i<sycleButtons.length;i++) {
 			sycleButtons[i].visible = this._crafter.targetType != null;
 		}
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		for(int x=0;x<3;x++) {
 			for(int y=0;y<3;y++) {
-				BasicGuiHelper.drawSlotBackground(mc, guiLeft + 34 + x*18, guiTop + 9 + y*18);
+				GuiGraphics.drawSlotBackground(mc, guiLeft + 34 + x * 18, guiTop + 9 + y * 18);
 			}
 		}
-		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 124, guiTop + 27);
+		GuiGraphics.drawSlotBackground(mc, guiLeft + 124, guiTop + 27);
 		for(int x=0;x<9;x++) {
 			for(int y=0;y<2;y++) {
-				BasicGuiHelper.drawSlotBackground(mc, guiLeft + 7 + x*18, guiTop + 79 + y*18);
+				GuiGraphics.drawSlotBackground(mc, guiLeft + 7 + x * 18, guiTop + 79 + y * 18);
 			}
 		}
-		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 8, guiTop + 135);
+		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 8, guiTop + 135);
 		
 		ItemIdentifierStack[] items = new ItemIdentifierStack[9];
 		for(int i=0;i<9;i++) {
@@ -83,14 +84,13 @@ public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
 			}
 		}
 
-		// Draw this part without depth
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
-		BasicGuiHelper.renderItemIdentifierStackListIntoGui(Arrays.asList(items), null, 0, guiLeft + 8, guiTop + 80, 9, 9, 18, 18, mc, false, false);
+		ItemStackRenderer.renderItemIdentifierStackListIntoGui(Arrays.asList(items), null, 0, guiLeft + 8, guiTop + 79, 9, 9, 18, 18, 0.0F, DisplayAmount.NEVER);
 
+		GL11.glTranslatef(0F, 0F, 20F);
 		for (int a = 0; a < 9; a++) {
 			drawRect(guiLeft + 8 + (a * 18), guiTop + 80, guiLeft + 24 + (a * 18), guiTop + 96, 0xc08b8b8b);
 		}
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glTranslatef(0F, 0F, -20F);
 	}
 	
 	@Override
@@ -149,13 +149,13 @@ public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
 		if(fuzzyPanelSelection != -1) {
 			int posX = -60;
 			int posY = 0;
-			BasicGuiHelper.drawGuiBackGround(mc, posX, posY, posX + 60, posY + 52, zLevel, true, true, true, true, true);
-			CraftingRequirement flag = _crafter.fuzzyFlags[fuzzyPanelSelection];
+			GuiGraphics.drawGuiBackGround(mc, posX, posY, posX + 60, posY + 52, zLevel, true, true, true, true, true);
+			DictResource flag = _crafter.fuzzyFlags[fuzzyPanelSelection];
 			final String PREFIX = "gui.crafting.";
-			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "OreDict"), posX + 4, posY + 4, (!flag.use_od ? 0x404040 : 0xFF4040));
-			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "IgnDamage"), posX + 4, posY + 14, (!flag.ignore_dmg ? 0x404040 : 0x40FF40));
-			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "IgnNBT"), posX + 4, posY + 26, (!flag.ignore_nbt ? 0x404040 : 0x4040FF));
-			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "OrePrefix"), posX + 4, posY + 38, (!flag.use_category ? 0x404040 : 0x7F7F40));
+			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OreDict"), posX + 4, posY + 4, (!flag.use_od ? 0x404040 : 0xFF4040));
+			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnDamage"), posX + 4, posY + 14, (!flag.ignore_dmg ? 0x404040 : 0x40FF40));
+			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnNBT"), posX + 4, posY + 26, (!flag.ignore_nbt ? 0x404040 : 0x4040FF));
+			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OrePrefix"), posX + 4, posY + 38, (!flag.use_category ? 0x404040 : 0x7F7F40));
 		}
 	}
 

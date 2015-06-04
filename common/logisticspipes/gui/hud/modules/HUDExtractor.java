@@ -18,7 +18,7 @@ public class HUDExtractor implements IHUDModuleRenderer {
 	}
 
 	@Override
-	public void renderContent() {
+	public void renderContent(boolean shifted) {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 
 		ForgeDirection d = module.getSneakyDirection();

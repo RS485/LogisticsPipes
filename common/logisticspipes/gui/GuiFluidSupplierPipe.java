@@ -12,7 +12,7 @@ import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
@@ -48,9 +48,9 @@ public class GuiFluidSupplierPipe extends LogisticsBaseGuiScreen {
 	
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "TargetInv"), xSize / 2 - mc.fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "TargetInv"))/2, 6, 0x404040);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Inventory"), 18, ySize - 102, 0x404040);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Partialrequests") + ":", xSize - 140, ySize - 112, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "TargetInv"), xSize / 2 - mc.fontRenderer.getStringWidth(StringUtils.translate(PREFIX + "TargetInv"))/2, 6, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "Inventory"), 18, ySize - 102, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "Partialrequests") + ":", xSize - 140, ySize - 112, 0x404040);
 	}
 	
 	protected static final ResourceLocation SUPPLIER = new ResourceLocation("logisticspipes", "textures/gui/supplier.png");
@@ -69,7 +69,7 @@ public class GuiFluidSupplierPipe extends LogisticsBaseGuiScreen {
 	public void initGui() {
 		super.initGui();
        buttonList.clear();
-       buttonList.add(new GuiButton(0, width / 2 + 45, height / 2 - 25, 30, 20, logic.isRequestingPartials() ? StringUtil.translate(PREFIX + "Yes") : StringUtil.translate(PREFIX + "No")));
+       buttonList.add(new GuiButton(0, width / 2 + 45, height / 2 - 25, 30, 20, logic.isRequestingPartials() ? StringUtils.translate(PREFIX + "Yes") : StringUtils.translate(PREFIX + "No")));
 
 	}
 
@@ -77,7 +77,7 @@ public class GuiFluidSupplierPipe extends LogisticsBaseGuiScreen {
 	protected void actionPerformed(GuiButton guibutton) {
 		if (guibutton.id == 0){
 			logic.setRequestingPartials(!logic.isRequestingPartials());
-			((GuiButton)buttonList.get(0)).displayString = logic.isRequestingPartials() ? StringUtil.translate(PREFIX + "Yes") : StringUtil.translate(PREFIX + "No");
+			((GuiButton)buttonList.get(0)).displayString = logic.isRequestingPartials() ? StringUtils.translate(PREFIX + "Yes") : StringUtils.translate(PREFIX + "No");
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidSupplierMode.class).setInteger((logic.isRequestingPartials() ? 1 : 0)).setPosX(logic.getX()).setPosY(logic.getY()).setPosZ(logic.getZ()));
 		}
 		super.actionPerformed(guibutton);

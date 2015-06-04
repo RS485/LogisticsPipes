@@ -22,6 +22,10 @@ public class ItemPipeComponents extends LogisticsItem{
 	public static final int ITEM_MICROCAPSULATOR = 4;
 	//Logic Expander Circuit for upgrades and such
 	public static final int ITEM_LOGICEXPANDER = 5;
+	//Laser Focus Lense to Transfer Powerlasers over a Straigth line
+	public static final int ITEM_FOCUSLENSE = 6;
+	//Laser Acceptor Interface
+	public static final int ITEM_POWERACCEPT = 7;
 	
 	private IIcon[] _icons;
 	
@@ -33,15 +37,15 @@ public class ItemPipeComponents extends LogisticsItem{
 	@Override
 	public void registerIcons(IIconRegister iconreg)
 	{
-		_icons = new IIcon[6];
-		for(int i = 0; i<6; i++)
+		_icons = new IIcon[8];
+		for(int i = 0; i<8; i++)
 		{
 			_icons[i]=iconreg.registerIcon("logisticspipes:"+getUnlocalizedName().replace("item.", "")+"/"+i);
 		}
 	}
 	
 	@Override
-	public IIcon getIconFromDamage(int i) {return _icons[i%6];}
+	public IIcon getIconFromDamage(int i) {return _icons[i%8];}
 	
 	@Override
 	public String getUnlocalizedName(ItemStack par1ItemStack)
@@ -54,6 +58,8 @@ public class ItemPipeComponents extends LogisticsItem{
 		case 3: return "item.micropackager";
 		case 4: return "item.microcapsulator";
 		case 5: return "item.logicexpander";
+		case 6: return "item.lense";
+		case 7: return "item.acceptor";
 		}
 		return super.getUnlocalizedName(par1ItemStack);
 	}
@@ -74,6 +80,8 @@ public class ItemPipeComponents extends LogisticsItem{
 			par3.add(new ItemStack(this, 1, 3));
 			par3.add(new ItemStack(this, 1 ,4));
 			par3.add(new ItemStack(this, 1, 5));
+			par3.add(new ItemStack(this, 1, 6));
+			par3.add(new ItemStack(this, 1, 7));
 		}
 	}
 }

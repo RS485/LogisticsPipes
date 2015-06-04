@@ -161,7 +161,7 @@ outer:
 			return null;
 		if (crp == null || !crp.isEnabled()) return null;
 		if (excludeSource && sourceRouter !=null) {
-			if(destination.getPipe().sharesInventoryWith(sourceRouter.getPipe())) return null;
+			if(destination.getPipe().sharesInterestWith(sourceRouter.getPipe())) return null;
 		}
 		if (result == null) {
 			reply = module.sinksItem(stack, -1, 0, allowDefault,true);

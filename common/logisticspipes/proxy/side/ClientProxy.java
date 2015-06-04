@@ -24,12 +24,15 @@ import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
 import logisticspipes.pipefxhandlers.providers.EntityBlueSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityGoldSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityGreenSparkleFXProvider;
+import logisticspipes.pipefxhandlers.providers.EntityLightGreenSparkleFXProvider;
+import logisticspipes.pipefxhandlers.providers.EntityLightRedSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityOrangeSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityRedSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityVioletSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityWhiteSparkleFXProvider;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.IProxy;
@@ -87,6 +90,7 @@ public class ClientProxy implements IProxy {
 		GameRegistry.registerTileEntity(LogisticsCraftingTableTileEntity.class, "logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity");
 		GameRegistry.registerTileEntity(LogisticsTileGenericPipe.class, LogisticsPipes.logisticsTileGenericPipeMapping);
 		GameRegistry.registerTileEntity(LogisticsStatisticsTileEntity.class, "logisticspipes.blocks.stats.LogisticsStatisticsTileEntity");
+		GameRegistry.registerTileEntity(LogisticsTileGenericSubMultiBlock.class, "logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock");
 		
 		LPConstants.pipeModel = RenderingRegistry.getNextAvailableRenderId();
 		LPConstants.solidBlockModel = RenderingRegistry.getNextAvailableRenderId();
@@ -117,6 +121,8 @@ public class ClientProxy implements IProxy {
 		PipeFXRenderHandler.registerParticleHandler(Particles.GoldParticle, new EntityGoldSparkleFXProvider());
 		PipeFXRenderHandler.registerParticleHandler(Particles.VioletParticle, new EntityVioletSparkleFXProvider());
 		PipeFXRenderHandler.registerParticleHandler(Particles.OrangeParticle, new EntityOrangeSparkleFXProvider());
+		PipeFXRenderHandler.registerParticleHandler(Particles.LightGreenParticle, new EntityLightGreenSparkleFXProvider());
+		PipeFXRenderHandler.registerParticleHandler(Particles.LightRedParticle, new EntityLightRedSparkleFXProvider());
 	}
 	
 	@Override

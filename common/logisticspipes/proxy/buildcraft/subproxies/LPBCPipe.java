@@ -15,6 +15,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.core.IIconProvider;
 import buildcraft.api.statements.IActionInternal;
@@ -97,5 +98,10 @@ public class LPBCPipe extends Pipe<LPBCPipeTransportsItems> implements IBCPipePa
 				((CoreRoutedPipe)pipe.pipe).setEnabled(false);
 			}
 		}
+	}
+
+	@Override
+	public boolean canPipeConnect(TileEntity tile, ForgeDirection side) {
+		return pipe.canPipeConnect(tile, side);
 	}
 }

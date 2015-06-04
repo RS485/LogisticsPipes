@@ -11,10 +11,15 @@ package logisticspipes.items;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.ITubeOrientation;
+import logisticspipes.pipes.basic.CoreMultiBlockPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.renderer.IIconProvider;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.LPPositionSet;
+import logisticspipes.utils.string.StringUtils;
+import logisticspipes.utils.tuples.LPPosition;
+import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -38,6 +43,8 @@ public class ItemLogisticsPipe extends LogisticsItem {
 	private int pipeIconIndex;
 	private int newPipeIconIndex;
 	private int newPipeRenderList = -1;
+	@Getter
+	private CoreUnroutedPipe dummyPipe;
 	
 	public ItemLogisticsPipe() {
 		super();
@@ -45,7 +52,7 @@ public class ItemLogisticsPipe extends LogisticsItem {
 
 	@Override
 	public String getItemStackDisplayName(ItemStack itemstack) {
-		return StringUtil.translate(getUnlocalizedName(itemstack));
+		return StringUtils.translate(getUnlocalizedName(itemstack));
 	}
 
 	/**
@@ -59,13 +66,12 @@ public class ItemLogisticsPipe extends LogisticsItem {
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean flags) {
-		StringUtil.addShiftAddition(stack, list);
+		StringUtils.addShiftAddition(stack, list);
 	}
 	
 	@Override
 	//TODO use own pipe handling
-	public boolean onItemUse(ItemStack itemstack, EntityPlayer entityplayer, World world, int x, int y, int z,
-			int sideI, float par8, float par9, float par10) {
+	public boolean onItemUse(ItemStack itemstack, EntityPlayer entityplayer, World world, int x, int y, int z, int sideI, float par8, float par9, float par10) {
 		int side = sideI;
 		Block block = LogisticsPipes.LogisticsPipeBlock;
 
@@ -102,24 +108,65 @@ public class ItemLogisticsPipe extends LogisticsItem {
 		if (itemstack.stackSize == 0) {
 			return false;
 		}
-
-		if (world.canPlaceEntityOnSide(block, i, j, k, false, side, entityplayer, itemstack)) {
-			CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.createPipe(this);
-
-			if (pipe == null) {
-				LogisticsPipes.log.log(Level.WARN, "Pipe failed to create during placement at {0},{1},{2}", new Object[]{i, j, k});
+		
+		if(!dummyPipe.isMultiBlock()) {
+			if (world.canPlaceEntityOnSide(block, i, j, k, false, side, entityplayer, itemstack)) {
+				CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.createPipe(this);
+	
+				if (pipe == null) {
+					LogisticsPipes.log.log(Level.WARN, "Pipe failed to create during placement at {0},{1},{2}", new Object[]{i, j, k});
+					return true;
+				}
+	
+				if (LogisticsBlockGenericPipe.placePipe(pipe, world, i, j, k, block, 0)) {
+					block.onBlockPlacedBy(world, i, j, k, entityplayer, itemstack);
+	
+					itemstack.stackSize--;
+				}
+	
 				return true;
+			} else {
+				return false;
 			}
-
-			if (LogisticsBlockGenericPipe.placePipe(pipe, world, i, j, k, block, 0)) {
-				block.onBlockPlacedBy(world, i, j, k, entityplayer, itemstack);
-
-				itemstack.stackSize--;
-			}
-
-			return true;
 		} else {
-			return false;
+			CoreMultiBlockPipe multiPipe = (CoreMultiBlockPipe)dummyPipe;
+			boolean isFreeSpace = true;
+			LPPosition placeAt = new LPPosition(i, j, k);
+			LPPositionSet globalPos = new LPPositionSet();
+			globalPos.add(placeAt.copy());
+			LPPositionSet positions = multiPipe.getSubBlocks();
+			ITubeOrientation orientation = multiPipe.getTubeOrientation(entityplayer, i, k);
+			if(orientation == null) return false;
+			orientation.rotatePositions(positions);
+			for(LPPosition pos:positions) {
+				globalPos.add(pos.copy().add(placeAt));
+			}
+			globalPos.addToAll(orientation.getOffset());
+			placeAt.add(orientation.getOffset());
+			
+			for(LPPosition pos:globalPos) {
+				if (!world.canPlaceEntityOnSide(block, pos.getX(), pos.getY(), pos.getZ(), false, side, entityplayer, itemstack)) {
+					isFreeSpace = false;
+					break;
+				}
+			}
+			if (isFreeSpace) {
+				CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.createPipe(this);
+	
+				if (pipe == null) {
+					LogisticsPipes.log.log(Level.WARN, "Pipe failed to create during placement at {0},{1},{2}", new Object[]{i, j, k});
+					return true;
+				}
+	
+				if (LogisticsBlockGenericPipe.placePipe(pipe, world, placeAt.getX(), placeAt.getY(), placeAt.getZ(), block, 0, orientation)) { //TODO
+					block.onBlockPlacedBy(world, i, j, k, entityplayer, itemstack);
+					itemstack.stackSize--;
+				}
+				
+				return true;
+			} else {
+				return false;
+			}
 		}
 	}
 
@@ -166,5 +213,9 @@ public class ItemLogisticsPipe extends LogisticsItem {
 	@SideOnly(Side.CLIENT)
 	public int getSpriteNumber() {
 		return 0;
+	}
+
+	public void setDummyPipe(CoreUnroutedPipe pipe) {
+		this.dummyPipe = pipe;
 	}
 }

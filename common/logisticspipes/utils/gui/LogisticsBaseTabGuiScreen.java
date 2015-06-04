@@ -40,11 +40,11 @@ public class LogisticsBaseTabGuiScreen extends LogisticsBaseGuiScreen {
 	protected void drawGuiContainerBackgroundLayer(float f, int mouse_x, int mouse_y) {
 		GL11.glColor4d(1.0D, 1.0D, 1.0D, 1.0D);
 		for(int i = 0; i < tabList.size(); i++) {
-			BasicGuiHelper.drawGuiBackGround(mc, guiLeft + (25 * i) + 2, guiTop - 2, guiLeft + 27 + (25 * i), guiTop + 35, zLevel, false, true, true, false, true);
+			GuiGraphics.drawGuiBackGround(mc, guiLeft + (25 * i) + 2, guiTop - 2, guiLeft + 27 + (25 * i), guiTop + 35, zLevel, false, true, true, false, true);
 		}
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop + 20, right, bottom, zLevel, true);
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft + (25 * current_Tab) + 2, guiTop - 2, guiLeft + 27 + (25 * current_Tab), guiTop + 38, zLevel, true, true, true, false, true);
-		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 135);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop + 20, right, bottom, zLevel, true);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft + (25 * current_Tab) + 2, guiTop - 2, guiLeft + 27 + (25 * current_Tab), guiTop + 38, zLevel, true, true, true, false, true);
+		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 135);
 		
 		int x = 6;
 		for(int i=0;i<tabList.size();i++) {

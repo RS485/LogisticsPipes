@@ -43,7 +43,7 @@ public class RequestRunningCraftingTasks extends CoordinatesPacket {
 			if(r == null) continue;
 			if (r.destination.getPipe() instanceof PipeItemsCraftingLogistics) {
 				PipeItemsCraftingLogistics crafting = (PipeItemsCraftingLogistics) r.destination.getPipe();
-				List<ItemIdentifierStack> content = crafting.getOrderManager().getContentList(player.getEntityWorld());
+				List<ItemIdentifierStack> content = crafting.getItemOrderManager().getContentList(player.getEntityWorld());
 				items.addAll(content);
 			}
 		}

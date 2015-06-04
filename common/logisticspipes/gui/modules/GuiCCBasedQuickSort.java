@@ -4,8 +4,8 @@ import logisticspipes.modules.ModuleCCBasedQuickSort;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.modules.CCBasedQuickSortMode;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
@@ -84,6 +84,6 @@ public class GuiCCBasedQuickSort extends ModuleBaseGui {
 	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 	}
 }

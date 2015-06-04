@@ -22,12 +22,17 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import li.cil.oc.api.CreativeTab;
 import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.utils.FinalNBTTagCompound;
+import logisticspipes.utils.ReflectionHelper;
+import net.minecraft.block.Block;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagByte;
@@ -218,6 +223,8 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 	private ItemIdentifier _IDIgnoringData=null;
 	private DictItemIdentifier _dict;
 	private boolean canHaveDict = true;
+	private String modName;
+	private String creativeTabName;
 
 	public static boolean allowNullsForTesting;
 	
@@ -407,9 +414,65 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 	}
 	
 	public String getModName() {
-		UniqueIdentifier ui = GameRegistry.findUniqueIdentifierFor(this.item);
-		if(ui == null) return "UNKNOWN";
-		return ui.modId;
+		if(modName == null) {
+			UniqueIdentifier ui = GameRegistry.findUniqueIdentifierFor(this.item);
+			if(ui == null) {
+				modName = "UNKNOWN";
+			} else {
+				modName = ui.modId;
+			}
+		}
+		return modName;
+	}
+	
+	public String getCreativeTabName() {
+		if(creativeTabName == null) {
+			try {
+				CreativeTabs tab = null;
+				try {
+					tab = ReflectionHelper.getPrivateField(CreativeTabs.class, Item.class, "tabToDisplayOn", this.item);
+				} catch(NoSuchFieldException e1) {
+					try {
+						tab = ReflectionHelper.getPrivateField(CreativeTabs.class, Item.class, "field_77701_a", this.item);
+					} catch(NoSuchFieldException e2) {
+						tab = ReflectionHelper.getPrivateField(CreativeTabs.class, Item.class, "a", this.item);
+					}
+				}
+				if(tab == null && this.item instanceof ItemBlock) {
+					Block block = Block.getBlockFromItem(item);
+					if(block != null) {
+						try {
+							tab = ReflectionHelper.getPrivateField(CreativeTabs.class, Block.class, "displayOnCreativeTab", block);
+						} catch(NoSuchFieldException e1) {
+							try {
+								tab = ReflectionHelper.getPrivateField(CreativeTabs.class, Block.class, "field_149772_a", block);
+							} catch(NoSuchFieldException e2) {
+								tab = ReflectionHelper.getPrivateField(CreativeTabs.class, Block.class, "a", block);
+							}
+						}
+					}
+				}
+				if(tab != null) {
+					try {
+						creativeTabName = ReflectionHelper.getPrivateField(String.class, CreativeTabs.class, "tabLabel", tab);
+					} catch(NoSuchFieldException e1) {
+						try {
+							creativeTabName = ReflectionHelper.getPrivateField(String.class, CreativeTabs.class, "field_78034_o", tab);
+						} catch(NoSuchFieldException e2) {
+							creativeTabName = ReflectionHelper.getPrivateField(String.class, CreativeTabs.class, "o", tab);
+						}
+					}
+				}
+			} catch(NoSuchFieldException e) {
+			} catch(SecurityException e) {
+			} catch(IllegalArgumentException e) {
+			} catch(IllegalAccessException e) {
+			}
+			if(creativeTabName == null) {
+				creativeTabName = "UNKNOWN";
+			}
+		}
+		return creativeTabName;
 	}
 	
 	public ItemIdentifierStack makeStack(int stackSize){
@@ -634,6 +697,8 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 			System.out.println("Undamaged:");
 			this.getUndamaged().debugDumpData(isClient);
 		}
+		System.out.println("Mod: " + getModName());
+		System.out.println("CreativeTab: " + getCreativeTabName());
 		if(this.getDictIdentifiers() != null) {
 			this.getDictIdentifiers().debugDumpData(isClient);
 		}

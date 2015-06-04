@@ -119,6 +119,7 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 		renderer.setRenderBoundsFromBlock(block);
 		renderer.renderStandardBlock(block, x, y, z);
 		
+		block.setBlockBounds(0, 0, 0, 1, 1, 1);
 		return true;
 	}
 

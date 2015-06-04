@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.request.resources.IResource;
+import logisticspipes.request.resources.IResource.ColorCode;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
@@ -27,6 +30,9 @@ public class GuiRequestPopup extends SubGuiScreen {
 				for(Object oTwo:(Collection<?>)o) {
 					if(oTwo instanceof ItemIdentifierStack) {
 						textArray.add(((ItemIdentifierStack)oTwo).getFriendlyName());
+					}
+					if(oTwo instanceof IResource) {
+						textArray.add(((IResource)oTwo).getDisplayText(ColorCode.NONE));
 					}
 				}
 			} else {
@@ -60,10 +66,10 @@ public class GuiRequestPopup extends SubGuiScreen {
 			xSize = mWidth = Math.max(Math.min(lWidth + 20,400),120);
 			super.initGui();
 		}
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		for(int i=0;i < this.text.length;i++) {
 			if(this.text[i] == null) continue;
-			String msg = BasicGuiHelper.getCuttedString(this.text[i], mWidth - 10, this.mc.fontRenderer);
+			String msg = StringUtils.getCuttedString(this.text[i], mWidth - 10, this.mc.fontRenderer);
 			int stringWidth = this.mc.fontRenderer.getStringWidth(msg);
 			this.mc.fontRenderer.drawString(msg, xCenter - (stringWidth / 2), guiTop + 10 + (i * 10), 0x404040);
 		}

@@ -4,20 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.routing.IRouter;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.tuples.LPPosition;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Accessors(chain=true)
-public class LogisticsOrder implements IOrderInfoProvider {
+public abstract class LogisticsOrder implements IOrderInfoProvider {
 	private static final int MIN_DISTANCE_TO_DISPLAY = 4;
 	
-	@Getter
-	private final ItemIdentifierStack item;
-	@Getter
-	private final IRequestItems destination;
 	@Getter
 	private final IAdditionalTargetInformation information;
 	@Getter
@@ -28,7 +25,7 @@ public class LogisticsOrder implements IOrderInfoProvider {
 	 * Display Information
 	 */
 	@Getter
-	private final RequestType type;
+	private final ResourceType type;
 	@Getter
 	@Setter
 	private boolean inProgress;
@@ -39,21 +36,21 @@ public class LogisticsOrder implements IOrderInfoProvider {
 	private byte machineProgress = 0;
 	private List<IDistanceTracker> trackers = new ArrayList<IDistanceTracker>();
 	
-	public LogisticsOrder(ItemIdentifierStack item, IRequestItems destination, RequestType type, IAdditionalTargetInformation info) {
-		if(destination == null && type != RequestType.EXTRA) {
+	public LogisticsOrder(ResourceType type, IAdditionalTargetInformation info) {
+		if(type == null) {
 			throw new NullPointerException();
 		}
-		this.item = item;
-		this.destination = destination;
 		this.type = type;
 		this.information = info;
 	}
 
 	@Override
 	public int getRouterId() {
-		return destination.getRouter().getSimpleID();
+		return getRouter().getSimpleID();
 	}
-
+	
+	public abstract IRouter getRouter();
+	
 	@Override
 	public void setWatched() {
 		isWatched = true;
@@ -82,5 +79,21 @@ public class LogisticsOrder implements IOrderInfoProvider {
 			}
 		}
 		return progresses;
+	}
+
+	public abstract void sendFailed();
+
+	public abstract int getAmount();
+	
+	public abstract void reduceAmountBy(int amount);
+
+	@Override
+	public ItemIdentifier getTargetType() {
+		return ItemIdentifier.get(getRouter().getPipe().item, 0, null);
+	}
+
+	@Override
+	public LPPosition getTargetPosition() {
+		return getRouter().getLPPosition();
 	}
 }

@@ -11,13 +11,14 @@ package logisticspipes.gui.modules;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.ItemSinkDefaultPacket;
+import logisticspipes.network.packets.module.ItemSinkImportPacket;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.gui.SmallGuiButton;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
 
@@ -57,9 +58,10 @@ public class GuiItemSink extends ModuleBaseGui {
 		buttonList.add(new GuiStringHandlerButton(0, width / 2 + 50, height / 2 - 34, 30, 20, new GuiStringHandlerButton.StringHandler() {
 			@Override
 			public String getContent() {
-				return StringUtil.translate(PREFIX + (_itemSink.isDefaultRoute() ? "Yes" : "No"));
+				return StringUtils.translate(PREFIX + (_itemSink.isDefaultRoute() ? "Yes" : "No"));
 			}
 		}));
+		buttonList.add(new SmallGuiButton(1, guiLeft + 10, guiTop + 37, 40, 10, StringUtils.translate(PREFIX + "import")));
 	}
 	
 	@Override
@@ -69,6 +71,9 @@ public class GuiItemSink extends ModuleBaseGui {
 				_itemSink.setDefaultRoute(!_itemSink.isDefaultRoute());
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(ItemSinkDefaultPacket.class).setDefault(_itemSink.isDefaultRoute()).setModulePos(_itemSink));
 				break;
+			case 1:
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(ItemSinkImportPacket.class).setModulePos(_itemSink));
+				break;
 		}
 		
 	}
@@ -76,8 +81,8 @@ public class GuiItemSink extends ModuleBaseGui {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		mc.fontRenderer.drawString(_itemSink.getFilterInventory().getInventoryName(), 8, 6, 0x404040);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Inventory"), 8, ySize - 92, 0x404040);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Defaultroute") + ":", 65, 45, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "Inventory"), 8, ySize - 92, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "Defaultroute") + ":", 65, 45, 0x404040);
 
 		
 		if(isFuzzy) {
@@ -93,10 +98,10 @@ public class GuiItemSink extends ModuleBaseGui {
 		if(fuzzyPanelSelection != -1) {
 			int posX = 8 + fuzzyPanelSelection * 18;
 			int posY = 18 + 16;
-			BasicGuiHelper.drawGuiBackGround(mc, posX, posY, posX + 70, posY + 27, zLevel, true, true, true, true, true);
+			GuiGraphics.drawGuiBackGround(mc, posX, posY, posX + 70, posY + 27, zLevel, true, true, true, true, true);
 			
-			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "IgnoreData"), posX + 4, posY + 4, !_itemSink.isIgnoreData(fuzzyPanelSelection) ? 0x404040 : 0xFF4040);
-			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "IgnoreNBT"), posX + 4, posY + 14, !_itemSink.isIgnoreNBT(fuzzyPanelSelection) ? 0x404040 : 0x40FF40);
+			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnoreData"), posX + 4, posY + 4, !_itemSink.isIgnoreData(fuzzyPanelSelection) ? 0x404040 : 0xFF4040);
+			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnoreNBT"), posX + 4, posY + 14, !_itemSink.isIgnoreNBT(fuzzyPanelSelection) ? 0x404040 : 0x40FF40);
 		}
 		
 	}

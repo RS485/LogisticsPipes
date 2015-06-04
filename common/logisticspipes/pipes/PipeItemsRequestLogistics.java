@@ -29,6 +29,9 @@ import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.request.RequestHandler;
 import logisticspipes.request.RequestLog;
 import logisticspipes.request.RequestTree;
+import logisticspipes.request.resources.DictResource;
+import logisticspipes.request.resources.IResource;
+import logisticspipes.request.resources.ItemResource;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
@@ -131,41 +134,37 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 
 	@Override
 	public SimulationResult simulateRequest(ItemStack wanted) {
-		final Map<ItemIdentifier,Integer> used = new HashMap<ItemIdentifier,Integer>();
-		final Map<ItemIdentifier,Integer> missing = new HashMap<ItemIdentifier,Integer>();
+		final List<IResource> used = new ArrayList<IResource>();
+		final List<IResource> missing = new ArrayList<IResource>();
 		RequestTree.simulate(ItemIdentifier.get(wanted).makeStack(wanted.stackSize), this, new RequestLog() {
 			@Override
-			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
-				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
-					Integer count = missing.get(e.getKey());
-					if(count == null)
-						count = 0;
-					count += e.getValue();
-					missing.put(e.getKey(), count);
-				}
+			public void handleMissingItems(List<IResource> items) {
+				missing.addAll(items);
 			}
 
 			@Override
-			public void handleSucessfullRequestOf(ItemIdentifier item, int count, LinkedLogisticsOrderList parts) {}
+			public void handleSucessfullRequestOf(IResource item, LinkedLogisticsOrderList parts) {}
 
 			@Override
-			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items, LinkedLogisticsOrderList parts) {
-				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
-					Integer count = used.get(e.getKey());
-					if(count == null)
-						count = 0;
-					count += e.getValue();
-					used.put(e.getKey(), count);
-				}
+			public void handleSucessfullRequestOfList(List<IResource> items, LinkedLogisticsOrderList parts) {
+				used.addAll(items);
 			}
 		});
 		List<ItemStack> usedList = new ArrayList<ItemStack>(used.size());
 		List<ItemStack> missingList = new ArrayList<ItemStack>(missing.size());
-		for(Entry<ItemIdentifier,Integer>e:used.entrySet()) {
-			usedList.add(e.getKey().unsafeMakeNormalStack(e.getValue()));
+		for(IResource e:used) {
+			if(e instanceof ItemResource) {
+				usedList.add(((ItemResource)e).getItem().unsafeMakeNormalStack(e.getRequestedAmount()));
+			} else if(e instanceof DictResource) {
+				usedList.add(((DictResource)e).getItem().unsafeMakeNormalStack(e.getRequestedAmount()));
+			}
 		}
-		for(Entry<ItemIdentifier,Integer>e:missing.entrySet()) {
-			missingList.add(e.getKey().unsafeMakeNormalStack(e.getValue()));
+		for(IResource e:missing) {
+			if(e instanceof ItemResource) {
+				missingList.add(((ItemResource)e).getItem().unsafeMakeNormalStack(e.getRequestedAmount()));
+			} else if(e instanceof DictResource) {
+				missingList.add(((DictResource)e).getItem().unsafeMakeNormalStack(e.getRequestedAmount()));
+			}
 		}
 		
 		SimulationResult r = new SimulationResult();
@@ -176,28 +175,26 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 
 	@Override
 	public List<ItemStack> performRequest(ItemStack wanted) {
-		final Map<ItemIdentifier,Integer> missing = new HashMap<ItemIdentifier,Integer>();
+		final List<IResource> missing = new ArrayList<IResource>();
 		RequestTree.request(ItemIdentifier.get(wanted).makeStack(wanted.stackSize), this, new RequestLog() {
 			@Override
-			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
-				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
-					Integer count = missing.get(e.getKey());
-					if(count == null)
-						count = 0;
-					count += e.getValue();
-					missing.put(e.getKey(), count);
-				}
+			public void handleMissingItems(List<IResource> items) {
+				missing.addAll(items);
 			}
 
 			@Override
-			public void handleSucessfullRequestOf(ItemIdentifier item, int count, LinkedLogisticsOrderList parts) {}
+			public void handleSucessfullRequestOf(IResource item, LinkedLogisticsOrderList parts) {}
 
 			@Override
-			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items, LinkedLogisticsOrderList parts) {}
+			public void handleSucessfullRequestOfList(List<IResource> items, LinkedLogisticsOrderList parts) {}
 		}, null);
 		List<ItemStack> missingList = new ArrayList<ItemStack>(missing.size());
-		for(Entry<ItemIdentifier,Integer>e:missing.entrySet()) {
-			missingList.add(e.getKey().unsafeMakeNormalStack(e.getValue()));
+		for(IResource e:missing) {
+			if(e instanceof ItemResource) {
+				missingList.add(((ItemResource)e).getItem().unsafeMakeNormalStack(e.getRequestedAmount()));
+			} else if(e instanceof DictResource) {
+				missingList.add(((DictResource)e).getItem().unsafeMakeNormalStack(e.getRequestedAmount()));
+			}
 		}
 
 		return missingList;

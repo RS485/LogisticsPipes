@@ -1,6 +1,7 @@
 package logisticspipes.gui;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,18 +11,23 @@ import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.block.LogicControllerPacket;
+import logisticspipes.network.packets.pipe.PipeManagerWatchingPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
 import logisticspipes.pipes.upgrades.SneakyUpgrade;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.routing.order.IOrderInfoProvider;
+import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiGraphics;
+import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
-import logisticspipes.utils.gui.LogisticsBaseGuiScreen.Colors;
+import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -29,7 +35,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -44,9 +49,15 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 	private final List<Slot>		TAB_SLOTS_1_2		= new ArrayList<Slot>();
 	private final List<Slot>		TAB_SLOTS_2			= new ArrayList<Slot>();
 	private final List<Slot>		TAB_SLOTS_4			= new ArrayList<Slot>();
-	
+
 	private final List<GuiButton>	TAB_BUTTON_4		= new ArrayList<GuiButton>();
+	private final List<GuiButton>	TAB_BUTTON_5		= new ArrayList<GuiButton>();
+	
+	private ItemDisplay _itemDisplay_5;
+	
 	private final CoreRoutedPipe	pipe;
+	
+	private boolean managerWatching;
 	
 	public GuiPipeController(final EntityPlayer player, final CoreRoutedPipe pipe) {
 		super(180, 220, 0, 0);
@@ -109,12 +120,20 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 		super.initGui();
 		buttonList.clear();
 		TAB_BUTTON_4.add(addButton(new GuiButton(0, guiLeft + 10, guiTop + 70, 160, 20, "Edit Logic Controller")));
+		TAB_BUTTON_5.add(addButton(new SmallGuiButton(1, guiLeft + 95, guiTop + 26, 10, 10, "<")));
+		TAB_BUTTON_5.add(addButton(new SmallGuiButton(2, guiLeft + 165, guiTop + 26, 10, 10, ">")));
+		if(_itemDisplay_5 == null) _itemDisplay_5 = new ItemDisplay(null, mc.fontRenderer, this, null, 10, 40, 20, 60, new int []{1, 1, 1, 1}, true);
+		_itemDisplay_5.reposition(10, 40, 20, 60);
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton p_146284_1_) {
 		if(p_146284_1_.id == 0) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(LogicControllerPacket.class).setTilePos(pipe.container));
+		} else if(p_146284_1_.id == 1) {
+			_itemDisplay_5.prevPage();
+		} else if(p_146284_1_.id == 2) {
+			_itemDisplay_5.nextPage();
 		}
 	}
 
@@ -128,14 +147,14 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 			if(i == 3 && !pipe.getOriginalUpgradeManager().hasLogicControll()) {
 				GL11.glColor4d(0.4D, 0.4D, 0.4D, 1.0D);
 			}
-			BasicGuiHelper.drawGuiBackGround(mc, guiLeft + (25 * i) + 2, guiTop - 2, guiLeft + 27 + (25 * i), guiTop + 35, zLevel, false, true, true, false, true);
+			GuiGraphics.drawGuiBackGround(mc, guiLeft + (25 * i) + 2, guiTop - 2, guiLeft + 27 + (25 * i), guiTop + 35, zLevel, false, true, true, false, true);
 			if(i == 3 && !pipe.getOriginalUpgradeManager().hasLogicControll()) {
 				GL11.glColor4d(1.0D, 1.0D, 1.0D, 1.0D);
 			}
 		}
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop + 20, right, bottom, zLevel, true);
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft + (25 * current_Tab) + 2, guiTop - 2, guiLeft + 27 + (25 * current_Tab), guiTop + 38, zLevel, true, true, true, false, true);
-		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 135);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop + 20, right, bottom, zLevel, true);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft + (25 * current_Tab) + 2, guiTop - 2, guiLeft + 27 + (25 * current_Tab), guiTop + 38, zLevel, true, true, true, false, true);
+		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 135);
 		
 		// First Tab
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
@@ -150,10 +169,10 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 		itemRender.zLevel = 0.0F;
 		
 		// Second Tab
-		BasicGuiHelper.drawLockBackground(mc, guiLeft + 32, guiTop + 3);
+		GuiGraphics.drawLockBackground(mc, guiLeft + 32, guiTop + 3);
 		
 		// Third Tab
-		BasicGuiHelper.drawStatsBackground(mc, guiLeft + 56, guiTop + 3);
+		GuiGraphics.drawStatsBackground(mc, guiLeft + 56, guiTop + 3);
 		
 		// Forth Tab
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
@@ -168,23 +187,23 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 		itemRender.zLevel = 0.0F;
 		
 		// Fifth Tab
-		BasicGuiHelper.drawLinesBackground(mc, guiLeft + 106, guiTop + 3);
+		GuiGraphics.drawLinesBackground(mc, guiLeft + 106, guiTop + 3);
 		
 		if(current_Tab == 0) {
 			// TAB_1 SLOTS
 			for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
-				BasicGuiHelper.drawSlotBackground(mc, guiLeft + 9 + pipeSlot * 18, guiTop + 41);
+				GuiGraphics.drawSlotBackground(mc, guiLeft + 9 + pipeSlot * 18, guiTop + 41);
 			}
 			if(pipe.getOriginalUpgradeManager().hasCombinedSneakyUpgrade()) {
 				for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
-					BasicGuiHelper.drawSlotBackground(mc, guiLeft + 9 + pipeSlot * 18, guiTop + 77);
+					GuiGraphics.drawSlotBackground(mc, guiLeft + 9 + pipeSlot * 18, guiTop + 77);
 				}
 			}
 		} else if(current_Tab == 1) {
-			BasicGuiHelper.drawSlotBackground(mc, guiLeft + 9, guiTop + 41);
+			GuiGraphics.drawSlotBackground(mc, guiLeft + 9, guiTop + 41);
 		} else if(current_Tab == 3) {
-			drawRect(guiLeft + 12, guiTop + 34, guiLeft + 32, guiTop + 54, Colors.Black);
-			drawRect(guiLeft + 14, guiTop + 36, guiLeft + 30, guiTop + 52, Colors.DarkGrey);
+			drawRect(guiLeft + 12, guiTop + 34, guiLeft + 32, guiTop + 54, Color.BLACK);
+			drawRect(guiLeft + 14, guiTop + 36, guiLeft + 30, guiTop + 52, Color.DARKER_GREY);
 		}
 		
 		super.drawGuiContainerBackgroundLayer(f, mouse_x, mouse_y);
@@ -198,32 +217,47 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 			if(select != 3 || pipe.getOriginalUpgradeManager().hasLogicControll()) {
 				this.current_Tab = select;
 			}
+			if(current_Tab == 4) {
+				if(!managerWatching) {
+					managerWatching = true;
+					MainProxy.sendPacketToServer(PacketHandler.getPacket(PipeManagerWatchingPacket.class).setStart(true).setTilePos(pipe.container));
+				}
+			} else if(managerWatching) {
+				managerWatching = false;
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(PipeManagerWatchingPacket.class).setStart(false).setTilePos(pipe.container));				
+			}
 		} else {
-			super.mouseClicked(par1, par2, par3);
+			if(current_Tab == 4) {
+				//if(!_itemDisplay_5.handleClick(par1 - guiLeft, par2 - guiTop, par3)) {
+					super.mouseClicked(par1, par2, par3);
+				//}
+			} else {
+				super.mouseClicked(par1, par2, par3);
+			}
 		}
 	}
 	
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "inventory"), 10, 122, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "inventory"), 10, 122, Color.getValue(Color.DARKER_GREY), false);
 		if(current_Tab == 0) {
-			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "upgrade"), 10, 28, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
+			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "upgrade"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
 			if(pipe.getOriginalUpgradeManager().hasCombinedSneakyUpgrade()) {
-				mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "sneakyUpgrades"), 10, 64, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
+				mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "sneakyUpgrades"), 10, 64, Color.getValue(Color.DARKER_GREY), false);
 			}
 		} else if(current_Tab == 1) {
-			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "security"), 10, 28, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
+			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "security"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
 			ItemStack itemStack = pipe.getOriginalUpgradeManager().getSecInv().getStackInSlot(0);
 			if(itemStack != null) {
 				UUID id = UUID.fromString(itemStack.getTagCompound().getString("UUID"));
-				mc.fontRenderer.drawString("Id: ", 10, 68, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
+				mc.fontRenderer.drawString("Id: ", 10, 68, Color.getValue(Color.DARKER_GREY), false);
 				GL11.glTranslated(10, 80, 0);
 				GL11.glScaled(0.75D, 0.75D, 1.0D);
-				mc.fontRenderer.drawString(ChatColor.BLUE.toString() + id.toString(), 0, 0, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
+				mc.fontRenderer.drawString(ChatColor.BLUE.toString() + id.toString(), 0, 0, Color.getValue(Color.DARKER_GREY), false);
 				GL11.glScaled(1 / 0.75D, 1 / 0.75D, 1.0D);
 				GL11.glTranslated(-10, -80, 0);
-				mc.fontRenderer.drawString("Authorization: " + (SimpleServiceLocator.securityStationManager.isAuthorized(id) ? ChatColor.GREEN + "Authorized" : ChatColor.RED + "Deauthorized"), 10, 94, BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey), false);
+				mc.fontRenderer.drawString("Authorization: " + (SimpleServiceLocator.securityStationManager.isAuthorized(id) ? ChatColor.GREEN + "Authorized" : ChatColor.RED + "Deauthorized"), 10, 94, Color.getValue(Color.DARKER_GREY), false);
 			}
 		} else if(current_Tab == 2) {
 			String pipeName = ItemIdentifier.get(pipe.item, 0, null).getFriendlyName();
@@ -233,37 +267,59 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 			int lifetimexCenter = 140;
 			String s = null;
 			
-			fontRendererObj.drawString(StringUtil.translate(PREFIX + "Session"), sessionxCenter - fontRendererObj.getStringWidth(StringUtil.translate(PREFIX + "Session")) / 2, 40, 0x303030);
-			fontRendererObj.drawString(StringUtil.translate(PREFIX + "Lifetime"), lifetimexCenter - fontRendererObj.getStringWidth(StringUtil.translate(PREFIX + "Lifetime")) / 2, 40, 0x303030);
-			fontRendererObj.drawString(StringUtil.translate(PREFIX + "Sent") + ":", 55 - fontRendererObj.getStringWidth(StringUtil.translate(PREFIX + "Sent") + ":"), 55, 0x303030);
-			fontRendererObj.drawString(StringUtil.translate(PREFIX + "Recieved") + ":", 55 - fontRendererObj.getStringWidth(StringUtil.translate(PREFIX + "Recieved") + ":"), 70, 0x303030);
-			fontRendererObj.drawString(StringUtil.translate(PREFIX + "Relayed") + ":", 55 - fontRendererObj.getStringWidth(StringUtil.translate(PREFIX + "Relayed") + ":"), 85, 0x303030);
-			
-			s = BasicGuiHelper.getStringWithSpacesFromLong(pipe.stat_session_sent);
+			fontRendererObj.drawString(StringUtils.translate(PREFIX + "Session"), sessionxCenter - fontRendererObj.getStringWidth(StringUtils.translate(PREFIX + "Session")) / 2, 40, 0x303030);
+			fontRendererObj.drawString(StringUtils.translate(PREFIX + "Lifetime"), lifetimexCenter - fontRendererObj.getStringWidth(StringUtils.translate(PREFIX + "Lifetime")) / 2, 40, 0x303030);
+			fontRendererObj.drawString(StringUtils.translate(PREFIX + "Sent") + ":", 55 - fontRendererObj.getStringWidth(StringUtils.translate(PREFIX + "Sent") + ":"), 55, 0x303030);
+			fontRendererObj.drawString(StringUtils.translate(PREFIX + "Recieved") + ":", 55 - fontRendererObj.getStringWidth(StringUtils.translate(PREFIX + "Recieved") + ":"), 70, 0x303030);
+			fontRendererObj.drawString(StringUtils.translate(PREFIX + "Relayed") + ":", 55 - fontRendererObj.getStringWidth(StringUtils.translate(PREFIX + "Relayed") + ":"), 85, 0x303030);
+
+			s = StringUtils.getStringWithSpacesFromLong(pipe.stat_session_sent);
 			fontRendererObj.drawString(s, sessionxCenter - fontRendererObj.getStringWidth(s) / 2, 55, 0x303030);
-			
-			s = BasicGuiHelper.getStringWithSpacesFromLong(pipe.stat_session_recieved);
+
+			s = StringUtils.getStringWithSpacesFromLong(pipe.stat_session_recieved);
 			fontRendererObj.drawString(s, sessionxCenter - fontRendererObj.getStringWidth(s) / 2, 70, 0x303030);
-			
-			s = BasicGuiHelper.getStringWithSpacesFromLong(pipe.stat_session_relayed);
+
+			s = StringUtils.getStringWithSpacesFromLong(pipe.stat_session_relayed);
 			fontRendererObj.drawString(s, sessionxCenter - fontRendererObj.getStringWidth(s) / 2, 85, 0x303030);
-			
-			s = BasicGuiHelper.getStringWithSpacesFromLong(pipe.stat_lifetime_sent);
+
+			s = StringUtils.getStringWithSpacesFromLong(pipe.stat_lifetime_sent);
 			fontRendererObj.drawString(s, lifetimexCenter - fontRendererObj.getStringWidth(s) / 2, 55, 0x303030);
-			
-			s = BasicGuiHelper.getStringWithSpacesFromLong(pipe.stat_lifetime_recieved);
+
+			s = StringUtils.getStringWithSpacesFromLong(pipe.stat_lifetime_recieved);
 			fontRendererObj.drawString(s, lifetimexCenter - fontRendererObj.getStringWidth(s) / 2, 70, 0x303030);
-			
-			s = BasicGuiHelper.getStringWithSpacesFromLong(pipe.stat_lifetime_relayed);
+
+			s = StringUtils.getStringWithSpacesFromLong(pipe.stat_lifetime_relayed);
 			fontRendererObj.drawString(s, lifetimexCenter - fontRendererObj.getStringWidth(s) / 2, 85, 0x303030);
 			
-			fontRendererObj.drawString(StringUtil.translate(PREFIX + "RoutingTableSize") + ":", 110 - fontRendererObj.getStringWidth(StringUtil.translate(PREFIX + "RoutingTableSize") + ":"), 110, 0x303030);
-			
-			s = BasicGuiHelper.getStringWithSpacesFromLong(pipe.server_routing_table_size);
+			fontRendererObj.drawString(StringUtils.translate(PREFIX + "RoutingTableSize") + ":", 110 - fontRendererObj.getStringWidth(StringUtils.translate(PREFIX + "RoutingTableSize") + ":"), 110, 0x303030);
+
+			s = StringUtils.getStringWithSpacesFromLong(pipe.server_routing_table_size);
 			fontRendererObj.drawString(s, 130 - fontRendererObj.getStringWidth(s) / 2, 110, 0x303030);
+		} else if(current_Tab == 4) {
+			List<ItemIdentifierStack> _allItems = new LinkedList<ItemIdentifierStack>();
+			for(IOrderInfoProvider entry: pipe.getClientSideOrderManager()) {
+				_allItems.add(entry.getAsDisplayItem());
+			}
+			_itemDisplay_5.setItemList(_allItems);
+			_itemDisplay_5.renderItemArea(zLevel);
+			_itemDisplay_5.renderPageNumber(right - guiLeft - 45, 28);
+			int start = _itemDisplay_5.getPage() * 3;
+			int stringPos = 40;
+			for(int i = start; i < start + 3 && i < pipe.getClientSideOrderManager().size(); i++) {
+				IOrderInfoProvider order = pipe.getClientSideOrderManager().get(i);
+				String s = order.getTargetType().getFriendlyName();
+				fontRendererObj.drawString(s, 35, stringPos, 0x303030);
+				s = Integer.toString(i + 1);
+				stringPos += 6;
+				fontRendererObj.drawString(s, 3, stringPos, 0x303030);
+				stringPos += 4;
+				s = order.getTargetPosition().toIntBasedString();
+				fontRendererObj.drawString(s, 40, stringPos, 0x303030);
+				stringPos += 10;
+			}
 		}
 	}
-	
+
 	@Override
 	protected void func_146977_a(Slot slot) {
 		if(TAB_SLOTS_1_1.contains(slot) && current_Tab != 0) return;
@@ -290,6 +346,9 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 			if(TAB_BUTTON_4.contains(button)) {
 				button.visible = current_Tab == 3;
 				button.enabled = pipe.container.logicController.diskInv.getStackInSlot(0) != null;
+			}
+			if(TAB_BUTTON_5.contains(button)) {
+				button.visible = current_Tab == 4;
 			}
 		}
 	}

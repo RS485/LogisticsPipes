@@ -14,12 +14,16 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ItemRoutingInformation;
+import logisticspipes.routing.order.LogisticsFluidOrderManager;
+import logisticspipes.routing.order.LogisticsItemOrderManager;
+import logisticspipes.routing.order.LogisticsOrderManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.WorldUtil;
+import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.item.Item;
@@ -32,6 +36,7 @@ import net.minecraftforge.fluids.IFluidHandler;
 public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 
 	private WorldUtil worldUtil;
+	private LogisticsFluidOrderManager _orderFluidManager;
 	
 	public FluidRoutedPipe(Item item) {
 		super(new PipeFluidTransportLogistics(), item);
@@ -186,6 +191,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	
 	public boolean endReached(LPTravelingItemServer arrivingItem, TileEntity tile) {
 		if(canInsertToTanks() && MainProxy.isServer(getWorld())) {
+			getCacheHolder().trigger(CacheTypes.Inventory);
 			if(arrivingItem.getItemIdentifierStack() == null || !(arrivingItem.getItemIdentifierStack().getItem().isFluidContainer())) return false;
 			if(this.getRouter().getSimpleID() != arrivingItem.getDestination()) return false;
 			int filled = 0;
@@ -234,8 +240,10 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 		return true;
 	}
 	
-	public boolean sharesTankWith(FluidRoutedPipe other){
-		List<TileEntity> theirs = other.getAllTankTiles();
+	@Override
+	public boolean sharesInterestWith(CoreRoutedPipe other) {
+		if(!(other instanceof FluidRoutedPipe)) return false;
+		List<TileEntity> theirs = ((FluidRoutedPipe)other).getAllTankTiles();
 		for(TileEntity tile:this.getAllTankTiles()) {
 			if(theirs.contains(tile)) {
 				return true;
@@ -250,5 +258,15 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 			list.addAll(SimpleServiceLocator.specialTankHandler.getBaseTileFor(pair.getValue1()));
 		}
 		return list;
+	}
+
+	public LogisticsFluidOrderManager getFluidOrderManager() {
+		_orderFluidManager = _orderFluidManager != null ? _orderFluidManager : new LogisticsFluidOrderManager(this);
+		return this._orderFluidManager;
+	}
+
+	@Override
+	public LogisticsOrderManager<?> getOrderManager() {
+		return getFluidOrderManager();
 	}
 }

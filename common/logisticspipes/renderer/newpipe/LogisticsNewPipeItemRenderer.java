@@ -3,6 +3,9 @@ package logisticspipes.renderer.newpipe;
 import java.util.ArrayList;
 import java.util.List;
 
+import codechicken.lib.render.CCModel;
+import codechicken.lib.render.CCRenderState.IVertexOperation;
+import codechicken.lib.render.uv.IconTransformation;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe.Corner;
@@ -12,17 +15,14 @@ import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer.Cover
 import logisticspipes.textures.Textures;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.common.util.ForgeDirection;
-
 import org.lwjgl.opengl.GL11;
-
-import codechicken.lib.render.CCModel;
-import codechicken.lib.render.CCRenderState.IVertexOperation;
-import codechicken.lib.render.uv.IconTransformation;
 
 public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 	
@@ -33,11 +33,18 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 	}
 
 	private void renderPipeItem(RenderBlocks render, ItemStack item, float translateX, float translateY, float translateZ) {
+		GL11.glPushMatrix();
+		// fix changing lightning when having an item in hand
+		GL11.glNormal3f(0.0F, 0.0F, 1.0F);
+
 		GL11.glPushAttrib(GL11.GL_COLOR_BUFFER_BIT); //don't break other mods' guis when holding a pipe
 		//force transparency
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glEnable(GL11.GL_BLEND);
-		//GL11.glDisable(GL11.GL_LIGHTING);
+
+		// fix lightning for rendering
+		RenderHelper.enableStandardItemLighting();
+		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);
 
 		// GL11.glBindTexture(GL11.GL_TEXTURE_2D, 10);
 		Tessellator tessellator = Tessellator.instance;
@@ -63,6 +70,7 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 		block.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 
 		GL11.glPopAttrib(); // nicely leave the rendering how it was
+		GL11.glPopMatrix();
 	}
 	
 	private void generatePipeRenderList(int texture) {
@@ -70,12 +78,12 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 		
 		for(Corner corner: Corner.values()) {
 			for(CCModel model:LogisticsNewRenderPipe.corners_M.get(corner)) {
-				objectsToRender.add(new Pair<CCModel, IconTransformation>(model, LogisticsNewRenderPipe.basicTexture));
+				objectsToRender.add(new Pair<CCModel, IconTransformation>(model, LogisticsNewRenderPipe.basicPipeTexture));
 			}
 		}
 		
 		for(Edge edge: Edge.values()) {
-			objectsToRender.add(new Pair<CCModel, IconTransformation>(LogisticsNewRenderPipe.edges.get(edge), LogisticsNewRenderPipe.basicTexture));
+			objectsToRender.add(new Pair<CCModel, IconTransformation>(LogisticsNewRenderPipe.edges.get(edge), LogisticsNewRenderPipe.basicPipeTexture));
 		}
 		
 		//ArrayList<Pair<CCModel, IconTransformation>> objectsToRender2 = new ArrayList<Pair<CCModel, IconTransformation>>();

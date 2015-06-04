@@ -15,14 +15,15 @@ import java.util.Map.Entry;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.popup.GuiRequestPopup;
 import logisticspipes.interfaces.ISpecialItemRenderer;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.orderer.RequestComponentPacket;
 import logisticspipes.network.packets.orderer.RequestSubmitPacket;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.request.resources.IResource;
+import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.ISubGuiControler;
 import logisticspipes.utils.gui.ItemDisplay;
@@ -107,7 +108,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 	
 	@Override
 	public void drawGuiContainerBackgroundLayer(float f, int i, int j) {
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 
 		mc.fontRenderer.drawString(_title, guiLeft + mc.fontRenderer.getStringWidth(_title) / 2, guiTop + 6, 0x404040);
 		itemDisplay.renderPageNumber(right - 47, guiTop + 6);
@@ -116,7 +117,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		if(buttonList.get(9) instanceof GuiCheckBox && ((GuiCheckBox)buttonList.get(9)).getState()) {
 			mc.fontRenderer.drawString("Popup", guiLeft + 25 , bottom - 56, 0x404040);
 		} else {
-			mc.fontRenderer.drawString("Popup", guiLeft + 25 , bottom - 56, 0xA0A0A0);
+			mc.fontRenderer.drawString("Popup", guiLeft + 25 , bottom - 56, Color.getValue(Color.GREY));
 		}
 		
 		itemDisplay.renderAmount(xCenter, bottom - 24, getStackAmount());
@@ -130,7 +131,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 	@Override
 	public void drawGuiContainerForegroundLayer(int par1, int par2) {
 		if(super.hasSubGui()) return;
-		BasicGuiHelper.displayItemToolTip(itemDisplay.getToolTip(), this, this.zLevel, guiLeft, guiTop);
+		GuiGraphics.displayItemToolTip(itemDisplay.getToolTip(), this, this.zLevel, guiLeft, guiTop);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -175,7 +176,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		super.handleMouseInputSub();
 	}
 
-	public void handleRequestAnswer(Collection<ItemIdentifierStack> items, boolean error, ISubGuiControler control, EntityPlayer player) {
+	public void handleRequestAnswer(Collection<IResource> items, boolean error, ISubGuiControler control, EntityPlayer player) {
 		while(control.hasSubGui()) {
 			control = control.getSubGui();
 		}
@@ -186,7 +187,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		}
 	}
 
-	public void handleSimulateAnswer(Collection<ItemIdentifierStack> used, Collection<ItemIdentifierStack> missing, ISubGuiControler control, EntityPlayer player) {
+	public void handleSimulateAnswer(Collection<IResource> used, Collection<IResource> missing, ISubGuiControler control, EntityPlayer player) {
 		while(control.hasSubGui()) {
 			control = control.getSubGui();
 		}

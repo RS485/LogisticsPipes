@@ -1,9 +1,7 @@
 package logisticspipes.interfaces.routing;
 
-import logisticspipes.routing.IRouter;
 import logisticspipes.utils.FluidIdentifier;
 
-public interface IRequestFluid {
-	IRouter getRouter();
+public interface IRequestFluid extends IRequest {
 	void sendFailed(FluidIdentifier value1, Integer value2);
 }

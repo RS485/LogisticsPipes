@@ -80,7 +80,7 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 	public Set<ItemIdentifier> getItems() {
 		Set<ItemIdentifier> result = new TreeSet<ItemIdentifier>();
 		ItemStack items = _storage.getStoredItemType();
-		if(items != null && items.stackSize > 0) {
+		if(items != null) {
 			result.add(ItemIdentifier.get(items));
 		}
 		return result;

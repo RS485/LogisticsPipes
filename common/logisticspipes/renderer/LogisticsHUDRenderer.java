@@ -7,6 +7,7 @@ import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import cpw.mods.fml.client.FMLClientHandler;
 import logisticspipes.api.IHUDArmor;
 import logisticspipes.config.Configs;
 import logisticspipes.hud.HUDConfig;
@@ -21,8 +22,10 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LaserData;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.utils.MathVector;
-import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStackRenderer;
+import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -33,11 +36,8 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.GuiIngameForge;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.client.FMLClientHandler;
 
 public class LogisticsHUDRenderer {
 
@@ -170,8 +170,8 @@ public class LogisticsHUDRenderer {
 	}
 	
 	private boolean checkItemStackForHUD(ItemStack stack) {
-		if(FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].getItem() instanceof IHUDArmor) {
-			return ((IHUDArmor)FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].getItem()).isEnabled(FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3]);
+		if(stack.getItem() instanceof IHUDArmor) {
+			return ((IHUDArmor)stack.getItem()).isEnabled(stack);
 		}
 		return false;
 	}
@@ -184,7 +184,7 @@ public class LogisticsHUDRenderer {
 	public void renderPlayerDisplay(long renderTicks) {
 		if(!displayRenderer()) return;
 		Minecraft mc = FMLClientHandler.instance().getClient();
-		if(displayCross) {
+		if(displayHUD() && displayCross) {
 			ScaledResolution res = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
 	        int width = res.getScaledWidth();
 	        int height = res.getScaledHeight();
@@ -230,25 +230,28 @@ public class LogisticsHUDRenderer {
 		}
 		IHeadUpDisplayRendererProvider thisIsLast = null;
 		List<IHeadUpDisplayRendererProvider> toUse = list;
-		if(debugHUD != null) toUse = debugHUD.getHUDs();
-		for(IHeadUpDisplayRendererProvider renderer:toUse) {
-			if(renderer.getRenderer() == null) continue;
-			if(renderer.getRenderer().display(config)) {
+		if (debugHUD != null) {
+			toUse = debugHUD.getHUDs();
+		}
+
+		for (IHeadUpDisplayRendererProvider renderer : toUse) {
+			if (renderer.getRenderer() == null) continue;
+			if (renderer.getRenderer().display(config)) {
 				GL11.glPushMatrix();
-				if(!cursorHandled) {
+				if (!cursorHandled) {
 					double x = renderer.getX() + 0.5 - player.posX;
 					double y = renderer.getY() + 0.5 - player.posY;
 					double z = renderer.getZ() + 0.5 - player.posZ;
-					if(Math.hypot(x,Math.hypot(y, z)) < 0.75 || (renderer instanceof IHeadUpDisplayBlockRendererProvider && (((IHeadUpDisplayBlockRendererProvider)renderer).isHUDInvalid() || !((IHeadUpDisplayBlockRendererProvider)renderer).isHUDExistent()))) {
-						refreshList(player.posX,player.posY,player.posZ);
-				        GL11.glPopMatrix();
+					if (Math.hypot(x, Math.hypot(y, z)) < 0.75 || (renderer instanceof IHeadUpDisplayBlockRendererProvider && (((IHeadUpDisplayBlockRendererProvider) renderer).isHUDInvalid() || !((IHeadUpDisplayBlockRendererProvider) renderer).isHUDExistent()))) {
+						refreshList(player.posX, player.posY, player.posZ);
+						GL11.glPopMatrix();
 						break;
 					}
 					int[] pos = getCursor(renderer);
-					if(pos.length == 2) {
-						if(renderer.getRenderer().cursorOnWindow(pos[0], pos[1])) {
+					if (pos.length == 2) {
+						if (renderer.getRenderer().cursorOnWindow(pos[0], pos[1])) {
 							renderer.getRenderer().handleCursor(pos[0], pos[1]);
-							if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) { //if(FMLClientHandler.instance().getClient().thePlayer.isSneaking()) {
+							if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) { //if(FMLClientHandler.instance().getClient().thePlayer.isSneaking()) {
 								thisIsLast = renderer;
 								displayCross = true;
 							}
@@ -256,24 +259,24 @@ public class LogisticsHUDRenderer {
 						}
 					}
 				}
-		        GL11.glEnable(GL11.GL_BLEND);
-		        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-				if(thisIsLast != renderer) {
-					displayOneView(renderer, config, partialTick);
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+				if (thisIsLast != renderer) {
+					displayOneView(renderer, config, partialTick, false);
 				}
 				GL11.glPopMatrix();
 			}
 		}
-		if(thisIsLast != null) {
+		if (thisIsLast != null) {
 			GL11.glPushMatrix();
-	        GL11.glDisable(GL11.GL_BLEND);
-	        GL11.glDisable(GL11.GL_DEPTH_TEST);
-	        displayOneView(thisIsLast, config, partialTick);
-	        GL11.glEnable(GL11.GL_BLEND);
-	        GL11.glEnable(GL11.GL_DEPTH_TEST);
-	        GL11.glPopMatrix();
+			GL11.glDisable(GL11.GL_BLEND);
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
+			displayOneView(thisIsLast, config, partialTick, true);
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glEnable(GL11.GL_DEPTH_TEST);
+			GL11.glPopMatrix();
 		}
-		
+
 		GL11.glPushMatrix();
 		MovingObjectPosition box = mc.objectMouseOver;
 		if(box != null && box.typeOfHit == MovingObjectType.BLOCK) {
@@ -299,6 +302,8 @@ public class LogisticsHUDRenderer {
 					double x = xCoord - player.prevPosX - ((player.posX - player.prevPosX) * partialTick);
 					double y = yCoord - player.prevPosY - ((player.posY - player.prevPosY) * partialTick);
 					double z = zCoord - player.prevPosZ - ((player.posZ - player.prevPosZ) * partialTick);
+
+					GL11.glDisable(GL11.GL_DEPTH_TEST);
 					
 					GL11.glTranslatef((float) x, (float) y, (float) z);
 					GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
@@ -319,7 +324,7 @@ public class LogisticsHUDRenderer {
 					width = Math.max(32, width + 15);
 					
 					GL11.glColor4b((byte) 127, (byte) 127, (byte) 127, (byte) 96);
-					BasicGuiHelper.drawGuiBackGround(mc, (int) (( -0.5 * (width - 32)) * dProgress) - 16, (int) (( -0.5 * (heigth - 32)) * dProgress) - 16, (int) ((0.5 * (width - 32)) * dProgress) + 16, (int) ((0.5 * (heigth - 32)) * dProgress) + 16, 0, false);
+					GuiGraphics.drawGuiBackGround(mc, (int) ((-0.5 * (width - 32)) * dProgress) - 16, (int) ((-0.5 * (heigth - 32)) * dProgress) - 16, (int) ((0.5 * (width - 32)) * dProgress) + 16, (int) ((0.5 * (heigth - 32)) * dProgress) + 16, 0, false);
 					GL11.glColor4b((byte) 127, (byte) 127, (byte) 127, (byte) 127);
 					
 					if(progress == 100) {
@@ -329,14 +334,22 @@ public class LogisticsHUDRenderer {
 						}
 						
 						ItemStack item = SimpleServiceLocator.neiProxy.getItemForPosition(player.worldObj, player, box);
-						if(item != null) {
-							GL11.glScalef(1.5F, 1.5F, 0.0001F);
-							GL11.glScalef(0.8F, 0.8F, -1F);
-							List<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>(1);
-							list.add(ItemIdentifierStack.getFromStack(item));
-							BasicGuiHelper.renderItemIdentifierStackListIntoGui(list, null, 0, 5, 5, 1, 1, 18, 18, mc, false, false, true, true);
+
+						if (item != null) {
+							float scaleX = 1.5F * 0.8F;
+							float scaleY = 1.5F * 0.8F;
+							float scaleZ = -0.0001F;
+
+							GL11.glScalef(scaleX, scaleY, scaleZ);
+
+							ItemStackRenderer itemStackRenderer = new ItemStackRenderer(item, DisplayAmount.NEVER, 5, 6, 0.0F, false, true, true);
+							itemStackRenderer.setScaleX(scaleX).setScaleY(scaleY).setScaleZ(scaleZ);
+
+							itemStackRenderer.render();
 						}
 					}
+
+					GL11.glEnable(GL11.GL_DEPTH_TEST);
 				}
 			}
 		} else if(!Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
@@ -447,7 +460,7 @@ public class LogisticsHUDRenderer {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		last = System.currentTimeMillis();
 	}
-	
+
 	private void setColor(float i, EnumSet<PipeRoutingConnectionType> flags) {
 		GL11.glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
 		if(!flags.isEmpty()) {
@@ -480,7 +493,7 @@ public class LogisticsHUDRenderer {
 		}
 	}
 	
-	private void displayOneView(IHeadUpDisplayRendererProvider renderer, IHUDConfig config, float partialTick) {
+	private void displayOneView(IHeadUpDisplayRendererProvider renderer, IHUDConfig config, float partialTick, boolean shifted) {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		EntityPlayer player = mc.thePlayer;
 		double x = renderer.getX() + 0.5 - player.prevPosX - ((player.posX - player.prevPosX) * partialTick);
@@ -494,8 +507,8 @@ public class LogisticsHUDRenderer {
 		GL11.glTranslatef(0.0F, 0.0F, -0.4F);
 		
 		GL11.glScalef(0.01F, 0.01F, 1F);
-		
-		renderer.getRenderer().renderHeadUpDisplay(Math.hypot(x,Math.hypot(y, z)), false, mc, config);
+
+		renderer.getRenderer().renderHeadUpDisplay(Math.hypot(x,Math.hypot(y, z)), false, shifted, mc, config);
 	}
 	
 	private float getAngle(double x, double y) {

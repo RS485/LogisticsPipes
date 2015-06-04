@@ -7,20 +7,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import logisticspipes.gui.hud.modules.HUDModBasedItemSink;
+import logisticspipes.gui.hud.modules.HUDStringBasedItemSink;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.IStringBasedModule;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
-import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
-import logisticspipes.network.guis.module.inhand.ModBasedItemSinkModuleGuiInHand;
-import logisticspipes.network.guis.module.inpipe.ModBasedItemSinkModuleGuiSlot;
+import logisticspipes.network.guis.module.inhand.StringBasedItemSinkModuleGuiInHand;
+import logisticspipes.network.guis.module.inpipe.StringBasedItemSinkModuleGuiSlot;
 import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
 import logisticspipes.network.packets.module.ModuleBasedItemSinkList;
@@ -37,12 +37,12 @@ import net.minecraft.util.IIcon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ModuleModBasedItemSink extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
+public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStringBasedModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 	
 	public final List<String> modList = new LinkedList<String>();
 	private final Set<String> modIdSet = new HashSet<String>();
 
-	private IHUDModuleRenderer HUD = new HUDModBasedItemSink(this);
+	private IHUDModuleRenderer HUD = new HUDStringBasedItemSink(this);
 	
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	
@@ -72,12 +72,12 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IClien
 	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
 		NBTTagCompound nbt = new NBTTagCompound();
 		this.writeToNBT(nbt);
-		return NewGuiHandler.getGui(ModBasedItemSinkModuleGuiSlot.class).setNbt(nbt);
+		return NewGuiHandler.getGui(StringBasedItemSinkModuleGuiSlot.class).setNbt(nbt);
 	}
 
 	@Override
 	protected ModuleInHandGuiProvider getInHandGuiProvider() {
-		return NewGuiHandler.getGui(ModBasedItemSinkModuleGuiInHand.class);
+		return NewGuiHandler.getGui(StringBasedItemSinkModuleGuiInHand.class);
 	}
 	
 	@Override
@@ -140,7 +140,7 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IClien
 		localModeWatchers.remove(player);
 	}
 	
-	public void ModListChanged() {
+	public void listChanged() {
 		if(MainProxy.isServer(_world.getWorld())) {
 			NBTTagCompound nbt = new NBTTagCompound();
 			writeToNBT(nbt);
@@ -185,5 +185,15 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IClien
 	@SideOnly(Side.CLIENT)
 	public IIcon getIconTexture(IIconRegister register) {
 		return register.registerIcon("logisticspipes:itemModule/ModuleModBasedItemSink");
+	}
+
+	@Override
+	public List<String> getStringList() {
+		return modList;
+	}
+
+	@Override
+	public String getStringForItem(ItemIdentifier ident) {
+		return ident.getModName();
 	}
 }

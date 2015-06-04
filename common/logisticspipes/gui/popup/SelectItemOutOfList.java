@@ -2,11 +2,13 @@ package logisticspipes.gui.popup;
 
 import java.util.List;
 
-import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.Color;
+import logisticspipes.utils.gui.GuiGraphics;
+import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.RenderHelper;
@@ -46,8 +48,8 @@ public class SelectItemOutOfList extends SubGuiScreen {
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float par3) {
 		GL11.glEnable(GL11.GL_BLEND);
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		fontRendererObj.renderString(StringUtil.translate("misc.selectType"), guiLeft + 10, guiTop + 6, 0x404040, false); //TODO
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		fontRendererObj.renderString(StringUtils.translate("misc.selectType"), guiLeft + 10, guiTop + 6, 0x404040, false); //TODO
 		String pageString = Integer.toString(page + 1) + "/" + Integer.toString(maxPage);
 		fontRendererObj.renderString(pageString, guiLeft + 128 - (fontRendererObj.getStringWidth(pageString) / 2), guiTop + 6, 0x404040, false);
 		GL11.glTranslated(0, 0, 100);
@@ -63,7 +65,7 @@ public class SelectItemOutOfList extends SubGuiScreen {
 				}
 				
 				RenderHelper.enableGUIStandardItemLighting();
-				BasicGuiHelper.drawSlotBackground(mc, guiLeft + 4 + x * 18, guiTop + 16 + y * 18);
+				GuiGraphics.drawSlotBackground(mc, guiLeft + 4 + x * 18, guiTop + 16 + y * 18);
 				itemRenderer.renderItemAndEffectIntoGUI(font, this.mc.renderEngine, itemStack, guiLeft + 5 + x * 18, guiTop + 17 + y * 18);
 				// With empty string, because damage value indicator struggles with the depth
 				itemRenderer.renderItemOverlayIntoGUI(font, this.mc.renderEngine, itemStack, guiLeft + 5 + x * 18, guiTop + 17 + y * 18, "");
@@ -73,7 +75,7 @@ public class SelectItemOutOfList extends SubGuiScreen {
 					GL11.glDisable(GL11.GL_LIGHTING);
 					GL11.glDisable(GL11.GL_DEPTH_TEST);
 					GL11.glColorMask(true, true, true, false);
-					this.drawGradientRect(guiLeft + 5 + x * 18, guiTop + 17 + y * 18, guiLeft + 5 + x * 18 + 16, guiTop + 17 + y * 18 + 16, -2130706433, -2130706433);
+					SimpleGraphics.drawGradientRect(guiLeft + 5 + x * 18, guiTop + 17 + y * 18, guiLeft + 5 + x * 18 + 16, guiTop + 17 + y * 18 + 16, Color.WHITE_50, Color.WHITE_50, 0.0);
 					GL11.glColorMask(true, true, true, true);
 					GL11.glEnable(GL11.GL_LIGHTING);
 					GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -90,7 +92,7 @@ public class SelectItemOutOfList extends SubGuiScreen {
 		}
 		super.drawScreen(mouseX, mouseY, par3);
 		GL11.glTranslated(0, 0, -100);
-		if(!this.hasSubGui()) BasicGuiHelper.displayItemToolTip(tooltip, this, this.zLevel, guiLeft, guiTop);
+		if(!this.hasSubGui()) GuiGraphics.displayItemToolTip(tooltip, this, this.zLevel, guiLeft, guiTop);
 	}
 	
 	@Override

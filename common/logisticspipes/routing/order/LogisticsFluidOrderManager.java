@@ -1,48 +1,42 @@
 package logisticspipes.routing.order;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
+import logisticspipes.interfaces.IChangeListener;
+import logisticspipes.interfaces.ILPPositionProvider;
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.routing.FluidLogisticsPromise;
+import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.utils.FluidIdentifier;
-import logisticspipes.utils.tuples.Triplet;
 
-public class LogisticsFluidOrderManager {
+public class LogisticsFluidOrderManager extends LogisticsOrderManager<LogisticsFluidOrder> {
+
+	public LogisticsFluidOrderManager(ILPPositionProvider pos) {
+		super(pos);
+	}
 	
-	private LinkedList<Triplet<FluidIdentifier, Integer, IRequestFluid>> queue = new LinkedList<Triplet<FluidIdentifier, Integer, IRequestFluid>>();
-	
-	public void add(FluidLogisticsPromise promise, IRequestFluid destination) {
-		if(promise.amount < 0) throw new RuntimeException("The amount can't be less than zero");
-		queue.addLast(new Triplet<FluidIdentifier, Integer, IRequestFluid>(promise.liquid, promise.amount, destination));
-	}
-
-	public boolean hasOrders() {
-		return !queue.isEmpty();
-	}
-
-	public Triplet<FluidIdentifier, Integer, IRequestFluid> getFirst() {
-		return queue.getFirst();
-	}
-
-	public void sendAmount(int amount) {
-		if(!hasOrders()) return;
-		int result = queue.getFirst().getValue2() - amount;
-		if(result <= 0) {
-			queue.removeFirst();
-		} else {
-			queue.getFirst().setValue2(queue.getFirst().getValue2() - amount);
-		}
+	public LogisticsFluidOrderManager(IChangeListener listener, ILPPositionProvider pos) {
+		super(listener, pos);
 	}
 	
 	public void sendFailed() {
-		if(!hasOrders()) return;
-		queue.getFirst().getValue3().sendFailed(queue.getFirst().getValue1(), queue.getFirst().getValue2());
-		queue.removeFirst();
+		_orders.getFirst().sendFailed();
+		super.sendFailed();
 	}
 
-	public List<Triplet<FluidIdentifier, Integer, IRequestFluid>> getAll() {
-		return Collections.unmodifiableList(queue);
+	public LogisticsFluidOrder addOrder(FluidLogisticsPromise promise, IRequestFluid destination, ResourceType type, IAdditionalTargetInformation info) {
+		if(promise.amount < 0) throw new RuntimeException("The amount can't be less than zero");
+		LogisticsFluidOrder order = new LogisticsFluidOrder(promise.liquid, promise.amount, destination, type, info);
+		_orders.addLast(order);
+		listen();
+		return order;
+	}
+
+	public Integer totalFluidsCountInOrders(FluidIdentifier fluid) {
+		int itemCount = 0;
+		for(LogisticsFluidOrder request: _orders) {
+			if(!request.getFluid().equals(fluid)) continue;
+			itemCount += request.getAmount();
+		}
+		return itemCount;
 	}
 }

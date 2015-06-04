@@ -6,6 +6,7 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.exception.TargetNotFoundException;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.utils.tuples.LPPosition;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -56,6 +57,13 @@ public abstract class CoordinatesPacket extends ModernPacket {
 		this.setPosX(tile.xCoord);
 		this.setPosY(tile.yCoord);
 		this.setPosZ(tile.zCoord);
+		return this;
+	}
+
+	public CoordinatesPacket setLPPos(LPPosition pos) {
+		this.setPosX(pos.getX());
+		this.setPosY(pos.getY());
+		this.setPosZ(pos.getZ());
 		return this;
 	}
 	

@@ -5,7 +5,7 @@ import java.util.List;
 import buildcraft.api.boards.RedstoneBoardRobot;
 import buildcraft.api.boards.RedstoneBoardRobotNBT;
 import buildcraft.api.robots.EntityRobotBase;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -39,7 +39,7 @@ public class LogisticsRoutingBoardRobotNBT extends RedstoneBoardRobotNBT {
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean advanced) {
-		list.add(StringUtil.translate("robot.logisticsRouting"));
+		list.add(StringUtils.translate("robot.logisticsRouting"));
 	}
 
 	@Override

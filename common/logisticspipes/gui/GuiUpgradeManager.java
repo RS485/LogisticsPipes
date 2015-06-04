@@ -2,10 +2,10 @@ package logisticspipes.gui;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.upgrades.UpgradeManager;
-import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
-import logisticspipes.utils.string.StringUtil;
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
@@ -30,10 +30,10 @@ public class GuiUpgradeManager extends LogisticsBaseGuiScreen {
 	
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Upgrades"), 8, 6, 0x404040);
-		mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "Inventory"), 8, ySize - 92, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "Upgrades"), 8, 6, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "Inventory"), 8, ySize - 92, 0x404040);
 		if(upgrade.hasCombinedSneakyUpgrade()) {
-			mc.fontRenderer.drawString(StringUtil.translate(PREFIX + "SneakyUpgrades"), 8, 47, 0x404040);
+			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "SneakyUpgrades"), 8, 47, 0x404040);
 		}
 	}
 	
@@ -64,9 +64,9 @@ public class GuiUpgradeManager extends LogisticsBaseGuiScreen {
 		} else {
 			drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, 55);
 			drawTexturedModalRect(guiLeft, guiTop + 85, 0, 55, xSize, ySize);
-			BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop + 40, right + 2, guiTop + 100, zLevel, true, false, true, false, true);
+			GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop + 40, right + 2, guiTop + 100, zLevel, true, false, true, false, true);
 			for(int i=0;i<9;i++) {
-				BasicGuiHelper.drawSlotBackground(mc, guiLeft + i * 18 + 7, guiTop + 57);
+				GuiGraphics.drawSlotBackground(mc, guiLeft + i * 18 + 7, guiTop + 57);
 			}
 		}
 	}

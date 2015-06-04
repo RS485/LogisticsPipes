@@ -1,25 +1,20 @@
 package logisticspipes.network;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufOutputStream;
-import io.netty.buffer.ByteBufProcessor;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.channels.GatheringByteChannel;
-import java.nio.channels.ScatteringByteChannel;
-import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 
 import logisticspipes.interfaces.routing.IFilter;
+import logisticspipes.request.resources.IResource;
+import logisticspipes.request.resources.ResourceNetwork;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
@@ -159,16 +154,19 @@ public class LPDataOutputStream extends DataOutputStream {
 		this.writeItemIdentifier(stack.getItem());
 		this.writeInt(stack.getStackSize());
 	}
-	
+
 	public <T> void writeList(List<T> list, IWriteListObject<T> handler) throws IOException {
 		this.writeInt(list.size());
 		for(int i=0;i<list.size();i++) {
 			handler.writeObject(this, list.get(i));
 		}
 	}
+	public <T> void writeCollection(Collection<T> collection, IWriteListObject<T> handler) throws IOException {
+		this.writeList(new ArrayList<T>(collection), handler);
+	}
 
-	public void writeOrder(IOrderInfoProvider order) throws IOException {
-		this.writeItemIdentifierStack(order.getItem());
+	public void writeOrderInfo(IOrderInfoProvider order) throws IOException {
+		this.writeItemIdentifierStack(order.getAsDisplayItem());
 		this.writeInt(order.getRouterId());
 		this.writeBoolean(order.isFinished());
 		this.writeBoolean(order.isInProgress());
@@ -179,6 +177,8 @@ public class LPDataOutputStream extends DataOutputStream {
 				data.writeFloat(object);
 			}});
 		this.writeByte(order.getMachineProgress());
+		this.writeLPPosition(order.getTargetPosition());
+		this.writeItemIdentifier(order.getTargetType());
 	}
 	
 	public <T extends Enum<T>> void writeEnum(T object) throws IOException {
@@ -189,7 +189,7 @@ public class LPDataOutputStream extends DataOutputStream {
 		this.writeList(orders, new IWriteListObject<IOrderInfoProvider>() {
 			@Override
 			public void writeObject(LPDataOutputStream data, IOrderInfoProvider order) throws IOException {
-				data.writeOrder(order);
+				data.writeOrderInfo(order);
 			}});
 		this.writeList(orders.getSubOrders(), new IWriteListObject<LinkedLogisticsOrderList>() {
 			@Override
@@ -225,5 +225,9 @@ public class LPDataOutputStream extends DataOutputStream {
 		for(int i=0;i<array.length;i++) {
 			this.writeLong(array[i]);
 		}
+	}
+
+	public void writeIResource(IResource stack) throws IOException {
+		ResourceNetwork.writeResource(this, stack);
 	}
 }

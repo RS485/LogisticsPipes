@@ -9,6 +9,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -27,8 +28,8 @@ public class PipeItemsRemoteOrdererLogistics extends CoreRoutedPipe implements I
 
 	@Override
 	public boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
-		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
-			if(MainProxy.isServer(getWorld())) {
+		if (entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
+			if (MainProxy.isServer(getWorld())) {
 				if (settings == null || settings.openRequest) {
 					ItemStack orderer = entityplayer.getCurrentEquippedItem();
 					RemoteOrderer.connectToPipe(orderer, this);
@@ -51,6 +52,5 @@ public class PipeItemsRemoteOrdererLogistics extends CoreRoutedPipe implements I
 	public ItemSendMode getItemSendMode() {
 		return ItemSendMode.Normal;
 	}
-
 
 }

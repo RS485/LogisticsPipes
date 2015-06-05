@@ -8,38 +8,40 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
+
+import net.minecraft.entity.player.EntityPlayer;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class CraftingPipeUpdatePacket extends ModuleCoordinatesPacket {
-	
+
 	@Getter
 	@Setter
 	private int[] amount = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
-	
+
 	@Getter
 	@Setter
 	private int[] liquidSatelliteIdArray = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
-	
+
 	@Getter
 	@Setter
 	private int liquidSatelliteId = 0;
-	
+
 	@Getter
 	@Setter
 	private int satelliteId = 0;
-	
+
 	@Getter
 	@Setter
 	private int[] advancedSatelliteIdArray = new int[9];
-	
+
 	@Getter
 	@Setter
 	private int[] fuzzyCraftingFlagArray = new int[9];
-	
+
 	@Getter
 	@Setter
 	private int priority = 0;
@@ -51,7 +53,9 @@ public class CraftingPipeUpdatePacket extends ModuleCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		ModuleCrafter module = this.getLogisticsModule(player, ModuleCrafter.class);
-		if(module == null) return;
+		if (module == null) {
+			return;
+		}
 		module.handleCraftingUpdatePacket(this);
 	}
 
@@ -78,7 +82,7 @@ public class CraftingPipeUpdatePacket extends ModuleCoordinatesPacket {
 		fuzzyCraftingFlagArray = data.readIntegerArray();
 		priority = data.readInt();
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new CraftingPipeUpdatePacket(getId());

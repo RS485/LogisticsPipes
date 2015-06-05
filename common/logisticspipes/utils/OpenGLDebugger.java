@@ -12,13 +12,16 @@ import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.table.AbstractTableModel;
+import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableModel;
-import java.awt.*;
+
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -38,7 +41,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.lwjgl.opengl.GL11;
 
-@SuppressWarnings("unused") public class OpenGLDebugger {
+@SuppressWarnings("unused")
+public class OpenGLDebugger {
 
 	private static HashMap<Integer, String> niceToHave = null;
 	private static int probeID = 0;
@@ -50,7 +54,9 @@ import org.lwjgl.opengl.GL11;
 	private final Lock debuggerLock;
 	private final Condition glVariablesCondition;
 	private boolean glVariablesUpdated;
-	@Getter @Setter private int printOnCycle;
+	@Getter
+	@Setter
+	private int printOnCycle;
 
 	private enum GLTypes {
 		BOOLEAN(Boolean.class, "boolean", "GL11.glGetBoolean"),
@@ -105,7 +111,8 @@ import org.lwjgl.opengl.GL11;
 			orderedKeys = new ArrayList<Integer>();
 		}
 
-		@Override public void putAll(Map<? extends Integer, ?> m) {
+		@Override
+		public void putAll(Map<? extends Integer, ?> m) {
 			throw new UnsupportedOperationException();
 		}
 
@@ -115,7 +122,8 @@ import org.lwjgl.opengl.GL11;
 			sessionStarted = true;
 		}
 
-		@Override public Object put(Integer key, Object value) {
+		@Override
+		public Object put(Integer key, Object value) {
 			if (!sessionStarted) {
 				throw new UnsupportedOperationException("Session not started");
 			}
@@ -144,7 +152,7 @@ import org.lwjgl.opengl.GL11;
 		}
 
 		public String getName(Integer key) {
-			return niceToHave.get(key);
+			return OpenGLDebugger.niceToHave.get(key);
 		}
 
 		public int getKey(int index) {
@@ -154,11 +162,13 @@ import org.lwjgl.opengl.GL11;
 
 	public class SpecialTableModel extends DefaultTableModel {
 
-		@Override public boolean isCellEditable(int row, int column) {
+		@Override
+		public boolean isCellEditable(int row, int column) {
 			return false;
 		}
 
-		@Override public String getColumnName(int column) {
+		@Override
+		public String getColumnName(int column) {
 			switch (column) {
 				case 0:
 					return "Key";
@@ -169,15 +179,18 @@ import org.lwjgl.opengl.GL11;
 			}
 		}
 
-		@Override public int getRowCount() {
+		@Override
+		public int getRowCount() {
 			return glStuff.size();
 		}
 
-		@Override public int getColumnCount() {
+		@Override
+		public int getColumnCount() {
 			return 2;
 		}
 
-		@Override public Object getValueAt(int rowIndex, int columnIndex) {
+		@Override
+		public Object getValueAt(int rowIndex, int columnIndex) {
 			try {
 				int index = glStuff.getKey(rowIndex);
 				switch (columnIndex) {
@@ -196,7 +209,8 @@ import org.lwjgl.opengl.GL11;
 
 	public class SpecialTableCellRenderer extends DefaultTableCellRenderer {
 
-		@Override public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+		@Override
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 			if (table == null) {
 				return this;
 			}
@@ -247,9 +261,10 @@ import org.lwjgl.opengl.GL11;
 			TableCellRenderer cellRenderer = new SpecialTableCellRenderer();
 			variableMonitorTable.getColumnModel().getColumn(0).setCellRenderer(cellRenderer);
 
-			setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+			setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 			addWindowListener(new WindowAdapter() {
 
+				@Override
 				public void windowClosing(WindowEvent e) {
 					stop();
 				}
@@ -257,14 +272,16 @@ import org.lwjgl.opengl.GL11;
 
 			mainPanel.registerKeyboardAction(new ActionListener() {
 
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					stop();
 				}
 			}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 		}
 
-		@Override public void run() {
-			for (Integer key : niceToHave.keySet()) {
+		@Override
+		public void run() {
+			for (Integer key : OpenGLDebugger.niceToHave.keySet()) {
 				glVariablesToCheck.put(key, GLTypes.BOOLEAN);
 			}
 			pack();
@@ -343,19 +360,19 @@ import org.lwjgl.opengl.GL11;
 			throw new IllegalArgumentException("Print per cycle must be at least 1");
 		}
 
-		if (niceToHave == null) {
-			updateNiceToHave();
+		if (OpenGLDebugger.niceToHave == null) {
+			OpenGLDebugger.updateNiceToHave();
 		}
 
 		debuggerLock = new ReentrantLock();
 		glVariablesCondition = debuggerLock.newCondition();
 
 		this.printOnCycle = printOnCycle;
-		this.glStuff = new ExtendedHashMap();
-		this.glVariablesToCheck = new ConcurrentHashMap<Integer, GLTypes>();
+		glStuff = new ExtendedHashMap();
+		glVariablesToCheck = new ConcurrentHashMap<Integer, GLTypes>();
 
-		this.probeGUIThread = new Thread(new ProbeGUI(), "LogisticsPipes GLDebug Probe #" + probeID);
-		probeID++;
+		probeGUIThread = new Thread(new ProbeGUI(), "LogisticsPipes GLDebug Probe #" + OpenGLDebugger.probeID);
+		OpenGLDebugger.probeID++;
 	}
 
 	public void start() {
@@ -412,7 +429,7 @@ import org.lwjgl.opengl.GL11;
 	}
 
 	private static void updateNiceToHave() {
-		niceToHave = new HashMap<Integer, String>();
+		OpenGLDebugger.niceToHave = new HashMap<Integer, String>();
 		int crawlerVersion = 11;
 		boolean almostEnd = false;
 		boolean end = false;
@@ -438,11 +455,11 @@ import org.lwjgl.opengl.GL11;
 						}
 
 						// All the things that are being replaced are not that bad
-						if (niceToHave.containsKey(id) && !niceToHave.get(id).equals(nice)) {
-							System.out.printf("NiceToHave: ID %d exists. Replacing %s with %s!!%n", id, niceToHave.remove(id), nice);
+						if (OpenGLDebugger.niceToHave.containsKey(id) && !OpenGLDebugger.niceToHave.get(id).equals(nice)) {
+							System.out.printf("NiceToHave: ID %d exists. Replacing %s with %s!!%n", id, OpenGLDebugger.niceToHave.remove(id), nice);
 						}
 
-						niceToHave.put(id, String.format("%s.%s", packageGL, nice));
+						OpenGLDebugger.niceToHave.put(id, String.format("%s.%s", packageGL, nice));
 					} catch (IllegalArgumentException e) {
 						System.out.printf("NiceToHave: Illegal Argument!%nNiceToHave: %s%n", e);
 						e.printStackTrace();

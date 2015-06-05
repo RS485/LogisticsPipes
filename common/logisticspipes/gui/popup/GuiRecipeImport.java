@@ -5,19 +5,18 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import logisticspipes.utils.Color;
-import logisticspipes.utils.gui.GuiGraphics;
-import logisticspipes.utils.gui.SimpleGraphics;
-import org.lwjgl.opengl.GL11;
-
 import logisticspipes.gui.popup.SelectItemOutOfList.IHandleItemChoise;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.NEISetCraftingRecipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.Color;
+import logisticspipes.utils.gui.GuiGraphics;
+import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtils;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.RenderHelper;
@@ -25,11 +24,16 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
+import org.lwjgl.opengl.GL11;
+
 public class GuiRecipeImport extends SubGuiScreen {
+
 	public static class Canidates {
+
 		Canidates(Set<ItemIdentifierStack> set) {
 			this.set = set;
 		}
+
 		Set<ItemIdentifierStack> set;
 		List<ItemIdentifierStack> order;
 		int pos = 0;
@@ -39,32 +43,34 @@ public class GuiRecipeImport extends SubGuiScreen {
 	private final TileEntity tile;
 	private final Canidates[] grid = new Canidates[9];
 	private final List<Canidates> list;
-	
+
 	public GuiRecipeImport(TileEntity tile, ItemStack[][] stacks) {
 		super(150, 200, 0, 0);
 		this.tile = tile;
 		list = new ArrayList<Canidates>();
-		for(int i=0; i < 9; i++) {
-			if(stacks[i] == null) continue;
+		for (int i = 0; i < 9; i++) {
+			if (stacks[i] == null) {
+				continue;
+			}
 			Set<ItemIdentifierStack> part = new TreeSet<ItemIdentifierStack>();
 			List<ItemIdentifierStack> order = new ArrayList<ItemIdentifierStack>();
-			for(ItemStack stack:stacks[i]) {
+			for (ItemStack stack : stacks[i]) {
 				ItemIdentifierStack iStack = ItemIdentifierStack.getFromStack(stack);
 				part.add(iStack);
 				order.add(iStack);
 			}
 			Canidates canidate = new Canidates(part);
 			boolean found = false;
-			for(Canidates test:list) {
-				if(test.set.equals(part)) {
+			for (Canidates test : list) {
+				if (test.set.equals(part)) {
 					canidate = test;
 					found = true;
 					break;
 				}
 			}
-			if(!found) {
+			if (!found) {
 				canidate.order = order;
-				if(order.size() > 1) {
+				if (order.size() > 1) {
 					list.add(canidate);
 				}
 			}
@@ -78,14 +84,14 @@ public class GuiRecipeImport extends SubGuiScreen {
 		super.initGui();
 		buttonList.clear();
 		buttonList.add(new SmallGuiButton(0, guiLeft + 100, guiTop + 180, 40, 10, "Done"));
-		int x=0;
-		int y=0;
-		for(Canidates canidate: list) {
-			buttonList.add(new SmallGuiButton(10 + x + y*3, guiLeft + 38 + x * 40, guiTop + 88 + y * 40, 15, 10, "/\\"));
-			buttonList.add(new SmallGuiButton(20 + x + y*3, guiLeft + 38 + x * 40, guiTop + 98 + y * 40, 15, 10, "\\/"));
+		int x = 0;
+		int y = 0;
+		for (Canidates canidate : list) {
+			buttonList.add(new SmallGuiButton(10 + x + y * 3, guiLeft + 38 + x * 40, guiTop + 88 + y * 40, 15, 10, "/\\"));
+			buttonList.add(new SmallGuiButton(20 + x + y * 3, guiLeft + 38 + x * 40, guiTop + 98 + y * 40, 15, 10, "\\/"));
 			x++;
-			if(x>2) {
-				x=0;
+			if (x > 2) {
+				x = 0;
 				y++;
 			}
 		}
@@ -98,26 +104,27 @@ public class GuiRecipeImport extends SubGuiScreen {
 		fontRendererObj.renderString(StringUtils.translate("misc.selectOreDict"), guiLeft + 10, guiTop + 6, 0x404040, false);
 		GL11.glTranslated(0, 0, 100);
 		Object[] tooltip = null;
-		for(int x=0; x<3;x++) {
-			for(int y=0;y<3;y++) {
+		for (int x = 0; x < 3; x++) {
+			for (int y = 0; y < 3; y++) {
 				RenderHelper.enableGUIStandardItemLighting();
 				GuiGraphics.drawSlotBackground(mc, guiLeft + 44 + x * 18, guiTop + 19 + y * 18);
-				
-				if(grid[x + y*3] == null) continue;
-				ItemIdentifierStack stack = grid[x + y*3].order.get(grid[x + y*3].pos);
+
+				if (grid[x + y * 3] == null) {
+					continue;
+				}
+				ItemIdentifierStack stack = grid[x + y * 3].order.get(grid[x + y * 3].pos);
 				ItemStack itemStack = stack.makeNormalStack();
-				
+
 				FontRenderer font = itemStack.getItem().getFontRenderer(itemStack);
 				if (font == null) {
 					font = fontRendererObj;
 				}
-				
-				itemRenderer.renderItemAndEffectIntoGUI(font, this.mc.renderEngine, itemStack, guiLeft + 45 + x * 18, guiTop + 20 + y * 18);
+
+				itemRenderer.renderItemAndEffectIntoGUI(font, mc.renderEngine, itemStack, guiLeft + 45 + x * 18, guiTop + 20 + y * 18);
 				// With empty string, because damage value indicator struggles with the depth
-				itemRenderer.renderItemOverlayIntoGUI(font, this.mc.renderEngine, itemStack, guiLeft + 45 + x * 18, guiTop + 20 + y * 18, null);
-				
-				if(guiLeft + 45 + x * 18 < mouseX && mouseX < guiLeft + 45 + x * 18 + 16
-				 && guiTop + 20 + y * 18 < mouseY && mouseY < guiTop + 20 + y * 18 + 16 && !this.hasSubGui()) {
+				itemRenderer.renderItemOverlayIntoGUI(font, mc.renderEngine, itemStack, guiLeft + 45 + x * 18, guiTop + 20 + y * 18, null);
+
+				if (guiLeft + 45 + x * 18 < mouseX && mouseX < guiLeft + 45 + x * 18 + 16 && guiTop + 20 + y * 18 < mouseY && mouseY < guiTop + 20 + y * 18 + 16 && !hasSubGui()) {
 					GL11.glDisable(GL11.GL_LIGHTING);
 					GL11.glDisable(GL11.GL_DEPTH_TEST);
 					GL11.glColorMask(true, true, true, false);
@@ -131,22 +138,21 @@ public class GuiRecipeImport extends SubGuiScreen {
 		}
 		int x = 0;
 		int y = 0;
-		for(Canidates canidate: list) {
+		for (Canidates canidate : list) {
 			ItemIdentifierStack stack = canidate.order.get(canidate.pos);
 			ItemStack itemStack = stack.makeNormalStack();
 			FontRenderer font = itemStack.getItem().getFontRenderer(itemStack);
 			if (font == null) {
 				font = fontRendererObj;
 			}
-			
+
 			RenderHelper.enableGUIStandardItemLighting();
 			GuiGraphics.drawSlotBackground(mc, guiLeft + 19 + x * 40, guiTop + 89 + y * 40);
-			itemRenderer.renderItemAndEffectIntoGUI(font, this.mc.renderEngine, itemStack, guiLeft + 20 + x * 40, guiTop + 90 + y * 40);
+			itemRenderer.renderItemAndEffectIntoGUI(font, mc.renderEngine, itemStack, guiLeft + 20 + x * 40, guiTop + 90 + y * 40);
 			// With empty string, because damage value indicator struggles with the depth
-			itemRenderer.renderItemOverlayIntoGUI(font, this.mc.renderEngine, itemStack, guiLeft + 20 + x * 40, guiTop + 90 + y * 40, "");
-			
-			if(guiLeft + 20 + x * 40 < mouseX && mouseX < guiLeft + 20 + x * 40 + 16
-			 && guiTop + 90 + y * 40 < mouseY && mouseY < guiTop + 90 + y * 40 + 16 && !this.hasSubGui()) {
+			itemRenderer.renderItemOverlayIntoGUI(font, mc.renderEngine, itemStack, guiLeft + 20 + x * 40, guiTop + 90 + y * 40, "");
+
+			if (guiLeft + 20 + x * 40 < mouseX && mouseX < guiLeft + 20 + x * 40 + 16 && guiTop + 90 + y * 40 < mouseY && mouseY < guiTop + 90 + y * 40 + 16 && !hasSubGui()) {
 				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
 				GL11.glColorMask(true, true, true, false);
@@ -156,26 +162,26 @@ public class GuiRecipeImport extends SubGuiScreen {
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
 				tooltip = new Object[] { guiLeft + mouseX, guiTop + mouseY, itemStack };
 			}
-			
+
 			x++;
-			if(x>2) {
-				x=0;
+			if (x > 2) {
+				x = 0;
 				y++;
 			}
 		}
 		GL11.glTranslated(0, 0, -100);
 		super.drawScreen(mouseX, mouseY, par3);
-		GuiGraphics.displayItemToolTip(tooltip, this, this.zLevel, guiLeft, guiTop);
+		GuiGraphics.displayItemToolTip(tooltip, this, zLevel, guiLeft, guiTop);
 	}
-	
+
 	@Override
 	protected void actionPerformed(GuiButton button) {
 		int id = button.id;
-		if(id == 0) {
+		if (id == 0) {
 			ItemStack[] stack = new ItemStack[9];
-			int i=0;
-			for(Canidates canidate:grid) {
-				if(canidate == null) {
+			int i = 0;
+			for (Canidates canidate : grid) {
+				if (canidate == null) {
 					i++;
 					continue;
 				}
@@ -183,19 +189,19 @@ public class GuiRecipeImport extends SubGuiScreen {
 			}
 			NEISetCraftingRecipe packet = PacketHandler.getPacket(NEISetCraftingRecipe.class);
 			MainProxy.sendPacketToServer(packet.setContent(stack).setPosX(tile.xCoord).setPosY(tile.yCoord).setPosZ(tile.zCoord));
-			this.exitGui();
-		} else if(id >= 10 && id < 30) {
+			exitGui();
+		} else if (id >= 10 && id < 30) {
 			int slot = id % 10;
 			boolean up = id < 20;
 			Canidates canidate = list.get(slot);
-			if(up) {
+			if (up) {
 				canidate.pos++;
-				if(canidate.pos >= canidate.order.size()) {
+				if (canidate.pos >= canidate.order.size()) {
 					canidate.pos = 0;
 				}
 			} else {
 				canidate.pos--;
-				if(canidate.pos < 0) {
+				if (canidate.pos < 0) {
 					canidate.pos = canidate.order.size() - 1;
 				}
 			}
@@ -204,23 +210,23 @@ public class GuiRecipeImport extends SubGuiScreen {
 
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int button) {
-		int x=0;
-		int y=0;
-		for(final Canidates canidate: list) {
-			
-			if(guiLeft + 20 + x * 40 < mouseX && mouseX < guiLeft + 20 + x * 40 + 16
-			 && guiTop + 90 + y * 40 < mouseY && mouseY < guiTop + 90 + y * 40 + 16) {
-				this.setSubGui(new SelectItemOutOfList(canidate.order, new IHandleItemChoise() {
+		int x = 0;
+		int y = 0;
+		for (final Canidates canidate : list) {
+
+			if (guiLeft + 20 + x * 40 < mouseX && mouseX < guiLeft + 20 + x * 40 + 16 && guiTop + 90 + y * 40 < mouseY && mouseY < guiTop + 90 + y * 40 + 16) {
+				setSubGui(new SelectItemOutOfList(canidate.order, new IHandleItemChoise() {
+
 					@Override
 					public void handleItemChoise(int slot) {
 						canidate.pos = slot;
 					}
 				}));
 			}
-			
+
 			x++;
-			if(x>2) {
-				x=0;
+			if (x > 2) {
+				x = 0;
 				y++;
 			}
 		}

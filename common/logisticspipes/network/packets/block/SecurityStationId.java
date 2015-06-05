@@ -8,18 +8,20 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+
+import net.minecraft.entity.player.EntityPlayer;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class SecurityStationId extends CoordinatesPacket {
 
 	@Getter
 	@Setter
 	private UUID uuid;
-	
+
 	public SecurityStationId(int id) {
 		super(id);
 	}
@@ -32,7 +34,7 @@ public class SecurityStationId extends CoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsSecurityTileEntity tile = this.getTile(player.worldObj, LogisticsSecurityTileEntity.class);
-		if(tile != null) {
+		if (tile != null) {
 			tile.setClientUUID(getUuid());
 		}
 	}
@@ -50,4 +52,3 @@ public class SecurityStationId extends CoordinatesPacket {
 		uuid = new UUID(data.readLong(), data.readLong());
 	}
 }
-

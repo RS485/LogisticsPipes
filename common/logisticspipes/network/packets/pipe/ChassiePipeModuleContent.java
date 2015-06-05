@@ -4,6 +4,7 @@ import logisticspipes.network.abstractpackets.InventoryModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+
 import net.minecraft.entity.player.EntityPlayer;
 
 public class ChassiePipeModuleContent extends InventoryModuleCoordinatesPacket {
@@ -20,13 +21,12 @@ public class ChassiePipeModuleContent extends InventoryModuleCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) {
+		if (pipe == null) {
 			return;
 		}
-		if(pipe.pipe instanceof PipeLogisticsChassi) {
+		if (pipe.pipe instanceof PipeLogisticsChassi) {
 			PipeLogisticsChassi chassie = (PipeLogisticsChassi) pipe.pipe;
 			chassie.handleModuleItemIdentifierList(getIdentList());
 		}
 	}
 }
-

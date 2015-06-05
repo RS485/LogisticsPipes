@@ -6,6 +6,8 @@ import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 
 public interface IFilteringPipe {
+
 	public List<ExitRoute> getRouters(IRouter router);
+
 	public IFilter getFilter();
 }

@@ -7,8 +7,13 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
 
 public interface IOrderInfoProvider {
-	public enum ResourceType {PROVIDER, CRAFTING, EXTRA};
-	
+
+	public enum ResourceType {
+		PROVIDER,
+		CRAFTING,
+		EXTRA
+	};
+
 	boolean isFinished();
 
 	ItemIdentifierStack getAsDisplayItem();
@@ -20,12 +25,15 @@ public interface IOrderInfoProvider {
 	boolean isInProgress();
 
 	boolean isWatched();
+
 	void setWatched();
-	
+
 	List<Float> getProgresses();
+
 	byte getMachineProgress();
-	
+
 	ItemIdentifier getTargetType();
+
 	LPPosition getTargetPosition();
-	
+
 }

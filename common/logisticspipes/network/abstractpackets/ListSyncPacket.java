@@ -7,25 +7,26 @@ import logisticspipes.network.IReadListObject;
 import logisticspipes.network.IWriteListObject;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public abstract class ListSyncPacket<E> extends CoordinatesPacket implements IWriteListObject<E>, IReadListObject<E> {
-	
+
 	@Setter
-	@Getter(value=AccessLevel.PROTECTED)
+	@Getter(value = AccessLevel.PROTECTED)
 	private List<E> list;
 
 	public ListSyncPacket(int id, int x, int y, int z) {
 		super(id);
-		this.setPosX(x);
-		this.setPosY(y);
-		this.setPosZ(z);
+		setPosX(x);
+		setPosY(y);
+		setPosZ(z);
 	}
-	
+
 	public ListSyncPacket(int id) {
 		super(id);
 	}

@@ -1,9 +1,11 @@
 package logisticspipes.utils;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+
 import net.minecraftforge.common.util.ForgeDirection;
 
 public final class TileBuffer {
@@ -27,8 +29,8 @@ public final class TileBuffer {
 	}
 
 	public void refresh() {
-		if(tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe)tile).pipe != null && ((LogisticsTileGenericPipe)tile).pipe.preventRemove()) {
-			if(world.getBlock(this.x, this.y, this.z) == null) {
+		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe != null && ((LogisticsTileGenericPipe) tile).pipe.preventRemove()) {
+			if (world.getBlock(x, y, z) == null) {
 				return;
 			}
 		}
@@ -39,10 +41,10 @@ public final class TileBuffer {
 			return;
 		}
 
-		block = world.getBlock(this.x, this.y, this.z);
+		block = world.getBlock(x, y, z);
 
-		if (block != null && block.hasTileEntity(world.getBlockMetadata(this.x, this.y, this.z))) {
-			tile = world.getTileEntity(this.x, this.y, this.z);
+		if (block != null && block.hasTileEntity(world.getBlockMetadata(x, y, z))) {
+			tile = world.getTileEntity(x, y, z);
 		}
 	}
 
@@ -51,7 +53,6 @@ public final class TileBuffer {
 		this.tile = tile;
 		tracker.markTime(world);
 	}
-
 
 	public Block getBlock() {
 		if (tile != null && !tile.isInvalid()) {

@@ -7,12 +7,14 @@ import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.transport.PipeTransportLogistics;
+
+import net.minecraft.entity.player.EntityPlayer;
+
+import net.minecraftforge.common.util.ForgeDirection;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.common.util.ForgeDirection;
 
 @Accessors(chain = true)
 public class PipePositionPacket extends CoordinatesPacket {
@@ -36,14 +38,16 @@ public class PipePositionPacket extends CoordinatesPacket {
 	public PipePositionPacket(int id) {
 		super(id);
 	}
-	
+
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe tile = this.getPipe(player.getEntityWorld(), LTGPCompletionCheck.TRANSPORT);
-		if(tile == null || tile.pipe == null || tile.pipe.transport == null) return;
-		((PipeTransportLogistics)tile.pipe.transport).handleItemPositionPacket(travelId, input, output, speed, position);
+		if (tile == null || tile.pipe == null || tile.pipe.transport == null) {
+			return;
+		}
+		tile.pipe.transport.handleItemPositionPacket(travelId, input, output, speed, position);
 	}
-	
+
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
 		super.writeData(data);

@@ -2,16 +2,18 @@ package logisticspipes.proxy.buildcraft.robots.boards;
 
 import java.util.List;
 
-import buildcraft.api.boards.RedstoneBoardRobot;
-import buildcraft.api.boards.RedstoneBoardRobotNBT;
-import buildcraft.api.robots.EntityRobotBase;
 import logisticspipes.utils.string.StringUtils;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
+
+import buildcraft.api.boards.RedstoneBoardRobot;
+import buildcraft.api.boards.RedstoneBoardRobotNBT;
+import buildcraft.api.robots.EntityRobotBase;
 
 public class LogisticsRoutingBoardRobotNBT extends RedstoneBoardRobotNBT {
 
@@ -28,7 +30,7 @@ public class LogisticsRoutingBoardRobotNBT extends RedstoneBoardRobotNBT {
 
 	@Override
 	public ResourceLocation getRobotTexture() {
-		return TEXTURE;
+		return LogisticsRoutingBoardRobotNBT.TEXTURE;
 	}
 
 	@Override

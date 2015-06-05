@@ -7,12 +7,14 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 
 @Accessors(chain = true)
 @ToString
@@ -50,12 +52,12 @@ public abstract class CoordinatesGuiProvider extends GuiProvider {
 	}
 
 	public CoordinatesGuiProvider setTilePos(TileEntity tile) {
-		this.setPosX(tile.xCoord);
-		this.setPosY(tile.yCoord);
-		this.setPosZ(tile.zCoord);
+		setPosX(tile.xCoord);
+		setPosY(tile.yCoord);
+		setPosZ(tile.zCoord);
 		return this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	/**
 	 * Retrieves tileEntity at packet coordinates if any.
@@ -69,25 +71,25 @@ public abstract class CoordinatesGuiProvider extends GuiProvider {
 			return null;
 		}
 		if (!world.blockExists(getPosX(), getPosY(), getPosZ())) {
-			if(LPConstants.DEBUG) {
-				LogisticsPipes.log.fatal(this.toString());
+			if (LPConstants.DEBUG) {
+				LogisticsPipes.log.fatal(toString());
 				new RuntimeException("Couldn't find " + clazz.getName()).printStackTrace();
 			}
 			return null;
 		}
 
 		final TileEntity tile = world.getTileEntity(getPosX(), getPosY(), getPosZ());
-		if(tile != null) {
-			if(!(clazz.isAssignableFrom(tile.getClass()))) {
-				if(LPConstants.DEBUG) {
-					LogisticsPipes.log.fatal(this.toString());
+		if (tile != null) {
+			if (!(clazz.isAssignableFrom(tile.getClass()))) {
+				if (LPConstants.DEBUG) {
+					LogisticsPipes.log.fatal(toString());
 					new RuntimeException("Couldn't find " + clazz.getName() + ", found " + tile.getClass()).printStackTrace();
 				}
 				return null;
 			}
 		} else {
-			if(LPConstants.DEBUG) {
-				LogisticsPipes.log.fatal(this.toString());
+			if (LPConstants.DEBUG) {
+				LogisticsPipes.log.fatal(toString());
 				new RuntimeException("Couldn't find " + clazz.getName()).printStackTrace();
 			}
 		}

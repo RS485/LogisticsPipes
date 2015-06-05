@@ -7,6 +7,7 @@ import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.DummyModuleContainer;
+
 import net.minecraft.entity.player.EntityPlayer;
 
 public class ApiaristAnalyserModuleInHand extends ModuleInHandGuiProvider {
@@ -17,15 +18,19 @@ public class ApiaristAnalyserModuleInHand extends ModuleInHandGuiProvider {
 
 	@Override
 	public Object getClientGui(EntityPlayer player) {
-		LogisticsModule module = this.getLogisticsModule(player);
-		if(!(module instanceof ModuleApiaristAnalyser)) return null;
+		LogisticsModule module = getLogisticsModule(player);
+		if (!(module instanceof ModuleApiaristAnalyser)) {
+			return null;
+		}
 		return new GuiApiaristAnalyser((ModuleApiaristAnalyser) module, player.inventory);
 	}
 
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
 		DummyModuleContainer dummy = new DummyModuleContainer(player, getInvSlot());
-		if(!(dummy.getModule() instanceof ModuleApiaristAnalyser)) return null;
+		if (!(dummy.getModule() instanceof ModuleApiaristAnalyser)) {
+			return null;
+		}
 		return dummy;
 	}
 

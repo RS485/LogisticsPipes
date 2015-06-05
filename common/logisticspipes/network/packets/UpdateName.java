@@ -8,12 +8,14 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.item.ItemIdentifier;
+
+import net.minecraft.entity.player.EntityPlayer;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class UpdateName extends ModernPacket {
 
 	@Getter
@@ -23,7 +25,7 @@ public class UpdateName extends ModernPacket {
 	@Getter
 	@Setter
 	private String name;
-	
+
 	public UpdateName(int id) {
 		super(id);
 	}
@@ -35,7 +37,7 @@ public class UpdateName extends ModernPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if(MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.worldObj)) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(UpdateName.class).setIdent(getIdent()).setName(getIdent().getFriendlyName()));
 		} else {
 			MainProxy.proxy.updateNames(getIdent(), getName());
@@ -59,4 +61,3 @@ public class UpdateName extends ModernPacket {
 		return true;
 	}
 }
-

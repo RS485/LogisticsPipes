@@ -3,10 +3,12 @@ package logisticspipes.network.packets.module;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.network.abstractpackets.BooleanModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import lombok.experimental.Accessors;
+
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+import lombok.experimental.Accessors;
+
+@Accessors(chain = true)
 public class ElectricManagetMode extends BooleanModuleCoordinatesPacket {
 
 	public ElectricManagetMode(int id) {
@@ -21,8 +23,9 @@ public class ElectricManagetMode extends BooleanModuleCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		ModuleElectricManager module = this.getLogisticsModule(player, ModuleElectricManager.class);
-		if(module == null) return;
+		if (module == null) {
+			return;
+		}
 		module.setDischargeMode(isFlag());
 	}
 }
-

@@ -5,7 +5,6 @@ import java.util.List;
 
 import net.minecraft.item.ItemStack;
 
-
 public enum CraftingDependency {
 	Basic,
 	DistanceRequest(Basic),
@@ -25,18 +24,18 @@ public enum CraftingDependency {
 	Basic_Liquid(DistanceRequest),
 	Active_Liquid(Upgrades, Basic_Liquid),
 	Power_Distribution(Upgrades);
-	
+
 	private CraftingDependency[] dependencies;
 	private List<ItemStack> results = new ArrayList<ItemStack>();
-	
+
 	private CraftingDependency(CraftingDependency... dependencies) {
 		this.dependencies = dependencies;
 	}
-	
+
 	public CraftingDependency[] getDependencies() {
 		return dependencies;
 	}
-	
+
 	public void addStack(ItemStack stack) {
 		results.add(stack.copy());
 	}

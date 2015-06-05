@@ -1,7 +1,7 @@
-/** 
+/**
  * Copyright (c) Krapht, 2011
  * 
- * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public 
+ * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
@@ -9,7 +9,6 @@
 package logisticspipes.routing;
 
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IProvide;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
@@ -20,11 +19,10 @@ import logisticspipes.request.resources.IResource;
 import logisticspipes.request.resources.ItemResource;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
-import logisticspipes.routing.order.LogisticsOrder;
 import logisticspipes.utils.item.ItemIdentifier;
 
 public class LogisticsPromise implements IPromise {
-	
+
 	public ItemIdentifier item;
 	public int numberOfItems;
 	public IProvideItems sender;
@@ -36,7 +34,8 @@ public class LogisticsPromise implements IPromise {
 		this.sender = sender;
 		this.type = type;
 	}
-	
+
+	@Override
 	public LogisticsPromise copy() {
 		return new LogisticsPromise(item, numberOfItems, sender, type);
 	}
@@ -75,10 +74,10 @@ public class LogisticsPromise implements IPromise {
 	@Override
 	public IOrderInfoProvider fullFill(IResource requestType, IAdditionalTargetInformation info) {
 		IRequestItems destination = null;
-		if(requestType instanceof ItemResource) {
-			destination = ((ItemResource)requestType).getTarget();
-		} else if(requestType instanceof DictResource) {
-			destination = ((DictResource)requestType).getTarget();
+		if (requestType instanceof ItemResource) {
+			destination = ((ItemResource) requestType).getTarget();
+		} else if (requestType instanceof DictResource) {
+			destination = ((DictResource) requestType).getTarget();
 		} else {
 			throw new UnsupportedOperationException();
 		}

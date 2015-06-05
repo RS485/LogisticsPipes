@@ -7,30 +7,38 @@ import logisticspipes.network.LPDataOutputStream;
 
 public enum ResourceNetwork {
 	DictResource(DictResource.class) {
+
+		@Override
 		protected IResource readData(LPDataInputStream data) throws IOException {
 			return new DictResource(data);
 		}
 	},
 	ItemResource(ItemResource.class) {
+
+		@Override
 		protected IResource readData(LPDataInputStream data) throws IOException {
 			return new ItemResource(data);
 		}
 	},
 	FluidResource(FluidResource.class) {
+
+		@Override
 		protected IResource readData(LPDataInputStream data) throws IOException {
 			return new FluidResource(data);
 		}
 	};
+
 	private final Class<? extends IResource> clazz;
-	private ResourceNetwork(Class<?extends IResource> clazz) {
+
+	private ResourceNetwork(Class<? extends IResource> clazz) {
 		this.clazz = clazz;
 	}
 
 	public static void writeResource(LPDataOutputStream data, IResource resource) throws IOException {
 		ResourceNetwork[] values = ResourceNetwork.values();
-		for(int i = 0; i < values.length; i++) {
-			if(values[i].clazz.isAssignableFrom(resource.getClass())) {
-				data.writeInt(values[i].ordinal());
+		for (ResourceNetwork value : values) {
+			if (value.clazz.isAssignableFrom(resource.getClass())) {
+				data.writeInt(value.ordinal());
 				resource.writeData(data);
 				return;
 			}
@@ -42,6 +50,6 @@ public enum ResourceNetwork {
 		int id = data.readInt();
 		return ResourceNetwork.values()[id].readData(data);
 	}
-	
+
 	protected abstract IResource readData(LPDataInputStream data) throws IOException;
 }

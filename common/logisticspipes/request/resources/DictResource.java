@@ -6,18 +6,18 @@ import java.util.BitSet;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.request.resources.IResource.ColorCode;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
+
 import net.minecraft.item.ItemStack;
 
 public class DictResource implements IResource {
-	
+
 	public ItemIdentifierStack stack;
 	private final IRequestItems requester;
-	
+
 	//match all items with same oredict name
 	public boolean use_od = false;
 	//match all items with same id
@@ -26,15 +26,15 @@ public class DictResource implements IResource {
 	public boolean ignore_nbt = false;
 	//match all items with same oredict prefix
 	public boolean use_category = false;
-	
+
 	public DictResource(ItemIdentifierStack stack, IRequestItems requester) {
 		this.stack = stack;
 		this.requester = requester;
 	}
-		
+
 	public DictResource(LPDataInputStream data) throws IOException {
-		this.stack = data.readItemIdentifierStack();
-		this.requester = null;
+		stack = data.readItemIdentifierStack();
+		requester = null;
 		BitSet bits = data.readBitSet();
 		use_od = bits.get(0);
 		ignore_dmg = bits.get(1);
@@ -42,6 +42,7 @@ public class DictResource implements IResource {
 		use_category = bits.get(3);
 	}
 
+	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
 		data.writeItemIdentifierStack(stack);
 		BitSet bits = new BitSet();
@@ -56,30 +57,40 @@ public class DictResource implements IResource {
 	public int getRequestedAmount() {
 		return stack.getStackSize();
 	}
-	
+
 	@Override
 	public boolean matches(ItemIdentifier other) {
-		if(use_od || use_category) {
-			if(stack.getItem().getDictIdentifiers() != null && other.getDictIdentifiers() != null) {
-				if(stack.getItem().getDictIdentifiers().canMatch(other.getDictIdentifiers(), true, use_category)) { 
+		if (use_od || use_category) {
+			if (stack.getItem().getDictIdentifiers() != null && other.getDictIdentifiers() != null) {
+				if (stack.getItem().getDictIdentifiers().canMatch(other.getDictIdentifiers(), true, use_category)) {
 					return true;
 				}
 			}
 		}
 		ItemStack stack_n = stack.makeNormalStack();
 		ItemStack other_n = other.makeNormalStack(1);
-		if(stack_n.getItem() != other_n.getItem()) return false;
-		if(stack_n.getItemDamage() != other_n.getItemDamage()) {
-			if(stack_n.getHasSubtypes()) {
+		if (stack_n.getItem() != other_n.getItem()) {
+			return false;
+		}
+		if (stack_n.getItemDamage() != other_n.getItemDamage()) {
+			if (stack_n.getHasSubtypes()) {
 				return false;
-			} else if(!ignore_dmg) {
+			} else if (!ignore_dmg) {
 				return false;
 			}
 		}
-		if(ignore_nbt) return true;
-		if(stack_n.hasTagCompound() ^ other_n.hasTagCompound()) return false;
-		if(!stack_n.hasTagCompound() && !other_n.hasTagCompound()) return true;
-		if(ItemStack.areItemStackTagsEqual(stack_n, other_n)) return true;
+		if (ignore_nbt) {
+			return true;
+		}
+		if (stack_n.hasTagCompound() ^ other_n.hasTagCompound()) {
+			return false;
+		}
+		if (!stack_n.hasTagCompound() && !other_n.hasTagCompound()) {
+			return true;
+		}
+		if (ItemStack.areItemStackTagsEqual(stack_n, other_n)) {
+			return true;
+		}
 		return false;
 	}
 
@@ -114,12 +125,9 @@ public class DictResource implements IResource {
 
 	@Override
 	public boolean mergeForDisplay(IResource resource, int withAmount) {
-		if(resource instanceof DictResource) {
-			if(((DictResource)resource).use_od == use_od &&
-				((DictResource)resource).ignore_dmg == ignore_dmg &&
-				((DictResource)resource).ignore_nbt == ignore_nbt &&
-				((DictResource)resource).use_category == use_category && ((DictResource)resource).getItem().equals(getItem())) {
-				this.stack.setStackSize(this.stack.getStackSize() + withAmount);
+		if (resource instanceof DictResource) {
+			if (((DictResource) resource).use_od == use_od && ((DictResource) resource).ignore_dmg == ignore_dmg && ((DictResource) resource).ignore_nbt == ignore_nbt && ((DictResource) resource).use_category == use_category && ((DictResource) resource).getItem().equals(getItem())) {
+				stack.setStackSize(stack.getStackSize() + withAmount);
 				return true;
 			}
 		}
@@ -139,6 +147,7 @@ public class DictResource implements IResource {
 	}
 
 	private Object ccObject;
+
 	@Override
 	public void setCCType(Object type) {
 		ccObject = type;
@@ -154,9 +163,13 @@ public class DictResource implements IResource {
 		StringBuilder builder = new StringBuilder();
 		builder.append(ChatColor.GRAY);
 		builder.append("{");
-		if(code != ColorCode.NONE) builder.append(code == ColorCode.MISSING ? ChatColor.RED : ChatColor.GREEN);
+		if (code != ColorCode.NONE) {
+			builder.append(code == ColorCode.MISSING ? ChatColor.RED : ChatColor.GREEN);
+		}
 		builder.append(stack.getFriendlyName());
-		if(code != ColorCode.NONE) builder.append(ChatColor.GRAY);
+		if (code != ColorCode.NONE) {
+			builder.append(ChatColor.GRAY);
+		}
 		builder.append(" [");
 		builder.append(use_od ? ChatColor.GREEN : ChatColor.RED);
 		builder.append("OreDict");

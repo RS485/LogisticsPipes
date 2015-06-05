@@ -9,6 +9,7 @@ import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
+
 import net.minecraft.entity.player.EntityPlayer;
 
 public class ChestGuiClosed extends ModernPacket {
@@ -23,10 +24,14 @@ public class ChestGuiClosed extends ModernPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		List<WeakReference<ModuleQuickSort>> list = LogisticsEventListener.chestQuickSortConnection.get(player);
-		if(list == null || list.isEmpty()) return;
-		for(WeakReference<ModuleQuickSort> sorter:list) {
+		if (list == null || list.isEmpty()) {
+			return;
+		}
+		for (WeakReference<ModuleQuickSort> sorter : list) {
 			ModuleQuickSort module = sorter.get();
-			if(module == null) continue;
+			if (module == null) {
+				continue;
+			}
 			module.removeWatchingPlayer(player);
 		}
 		LogisticsEventListener.chestQuickSortConnection.remove(player);

@@ -8,6 +8,7 @@ import logisticspipes.modules.abstractmodules.LogisticsSimpleFilterModule;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
+
 import org.lwjgl.opengl.GL11;
 
 public class HUDSimpleFilterModule implements IHUDModuleRenderer {

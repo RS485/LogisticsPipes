@@ -9,17 +9,19 @@
 
 package logisticspipes.proxy.buildcraft.gates;
 
-
 import logisticspipes.textures.Textures;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.IIcon;
-import buildcraft.api.statements.IActionInternal;
-import buildcraft.api.statements.IStatementParameter;
-import buildcraft.api.statements.StatementManager;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract  class LPAction implements IActionInternal {
+import buildcraft.api.statements.IActionInternal;
+import buildcraft.api.statements.IStatementParameter;
+import buildcraft.api.statements.StatementManager;
+
+public abstract class LPAction implements IActionInternal {
 
 	protected final String uniqueTag;
 
@@ -47,7 +49,7 @@ public abstract  class LPAction implements IActionInternal {
 	public String getDescription() {
 		return "";
 	}
-	
+
 	@Override
 	public void registerIcons(IIconRegister iconRegister) {
 		Textures.LPactionIconProvider.registerIcons(iconRegister);
@@ -55,7 +57,7 @@ public abstract  class LPAction implements IActionInternal {
 
 	@Override
 	public String getUniqueTag() {
-		return this.uniqueTag;
+		return uniqueTag;
 	}
 
 	public int getIconIndex() {

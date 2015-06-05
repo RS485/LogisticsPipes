@@ -8,14 +8,16 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
+
+import net.minecraft.entity.player.EntityPlayer;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class BeeModuleSetBeePacket extends ModuleCoordinatesPacket {
-	
+
 	@Getter
 	@Setter
 	private int integer2 = 0;
@@ -41,9 +43,13 @@ public class BeeModuleSetBeePacket extends ModuleCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		ModuleApiaristSink sink = this.getLogisticsModule(player, ModuleApiaristSink.class);
-		if(sink == null) return;
-		if(integer2 >= sink.filter.length) return;
-		switch(integer3) {
+		if (sink == null) {
+			return;
+		}
+		if (integer2 >= sink.filter.length) {
+			return;
+		}
+		switch (integer3) {
 			case 0:
 				sink.filter[integer2].firstBee = string1;
 				break;
@@ -54,7 +60,9 @@ public class BeeModuleSetBeePacket extends ModuleCoordinatesPacket {
 				sink.filter[integer2].filterGroup = integer4;
 				break;
 			case 3:
-				if(integer4 >= FilterType.values().length) return;
+				if (integer4 >= FilterType.values().length) {
+					return;
+				}
 				sink.filter[integer2].filterType = FilterType.values()[integer4];
 				break;
 		}
@@ -66,7 +74,9 @@ public class BeeModuleSetBeePacket extends ModuleCoordinatesPacket {
 		data.writeInt(integer2);
 		data.writeInt(integer3);
 		data.writeInt(integer4);
-		if(string1 == null) string1 = "";
+		if (string1 == null) {
+			string1 = "";
+		}
 		data.writeUTF(string1);
 	}
 
@@ -79,4 +89,3 @@ public class BeeModuleSetBeePacket extends ModuleCoordinatesPacket {
 		string1 = data.readUTF();
 	}
 }
-

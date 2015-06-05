@@ -7,6 +7,7 @@ import java.util.List;
 
 import logisticspipes.proxy.computers.wrapper.CCWrapperInformation;
 import logisticspipes.utils.tuples.Pair;
+
 import net.minecraft.launchwrapper.Launch;
 
 import org.objectweb.asm.AnnotationVisitor;
@@ -16,17 +17,19 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 public class ClassCreator {
+
 	private static List<String> createdClasses = new ArrayList<String>();
+
 	public static byte[] getWrappedClassAsBytes(CCWrapperInformation info, String className) {
 
 		String newClassName_DOT = "logisticspipes.proxy.opencomputers.asm.BaseWrapperClass$" + className + "$OpenComputersWrapper";
 		String newClassName_SLASH = newClassName_DOT.replace('.', '/');
 		String newClassName_TYPE = "L" + newClassName_SLASH + ";";
-		
+
 		ClassWriter cw = new ClassWriter(0);
-		
+
 		cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, newClassName_SLASH, null, "logisticspipes/proxy/opencomputers/asm/BaseWrapperClass", null);
-		
+
 		{
 			MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, new String[] { "java/lang/ClassNotFoundException" });
 			mv.visitCode();
@@ -68,36 +71,35 @@ public class ClassCreator {
 			mv.visitMaxs(3, 3);
 			mv.visitEnd();
 		}
-		
-		for(String method:info.commandTypes.keySet()) {
+
+		for (String method : info.commandTypes.keySet()) {
 			Pair<Boolean, String> desc = info.commandTypes.get(method);
-			addMethod(cw, method, !desc.getValue1(), desc.getValue2(), newClassName_TYPE);
+			ClassCreator.addMethod(cw, method, !desc.getValue1(), desc.getValue2(), newClassName_TYPE);
 		}
-		
+
 		cw.visitEnd();
-		
-		createdClasses.add(className);
-		
+
+		ClassCreator.createdClasses.add(className);
+
 		return cw.toByteArray();
 	}
-	
+
 	public static Class<? extends BaseWrapperClass> getWrapperClass(CCWrapperInformation info, String className) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		String newClassName_DOT = "logisticspipes.proxy.opencomputers.asm.BaseWrapperClass$" + className + "$OpenComputersWrapper";
-		if(createdClasses.contains(className)) {
+		if (ClassCreator.createdClasses.contains(className)) {
 			try {
 				return (Class<? extends BaseWrapperClass>) Class.forName(newClassName_DOT);
-			} catch(ClassNotFoundException e) {
-			}
+			} catch (ClassNotFoundException e) {}
 		}
-		byte[] bytes = getWrappedClassAsBytes(info, className);
-		return (Class<? extends BaseWrapperClass>) loadClass(bytes, newClassName_DOT);
+		byte[] bytes = ClassCreator.getWrappedClassAsBytes(info, className);
+		return (Class<? extends BaseWrapperClass>) ClassCreator.loadClass(bytes, newClassName_DOT);
 	}
-	
+
 	private static void addMethod(ClassWriter cw, String name, boolean direct, String doc, String newClassName_TYPE) {
 		MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, name, "(Lli/cil/oc/api/network/Context;Lli/cil/oc/api/network/Arguments;)[Ljava/lang/Object;", null, new String[] { "java/lang/Exception" });
 		{
 			AnnotationVisitor av0 = mv.visitAnnotation("Lli/cil/oc/api/network/Callback;", true);
-			if(direct) {
+			if (direct) {
 				av0.visit("direct", Boolean.TRUE);
 			} else {
 				av0.visit("direct", Boolean.FALSE);
@@ -123,14 +125,14 @@ public class ClassCreator {
 		mv.visitMaxs(4, 3);
 		mv.visitEnd();
 	}
-	
+
 	private static Method m_defineClass = null;
-	
+
 	private static Class<?> loadClass(byte[] data, String lookfor) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		if(m_defineClass == null) {
-			m_defineClass = ClassLoader.class.getDeclaredMethod("defineClass", byte[].class, int.class, int.class);
-			m_defineClass.setAccessible(true);
+		if (ClassCreator.m_defineClass == null) {
+			ClassCreator.m_defineClass = ClassLoader.class.getDeclaredMethod("defineClass", byte[].class, int.class, int.class);
+			ClassCreator.m_defineClass.setAccessible(true);
 		}
-		return (Class<?>) m_defineClass.invoke(Launch.classLoader, data, 0, data.length);
+		return (Class<?>) ClassCreator.m_defineClass.invoke(Launch.classLoader, data, 0, data.length);
 	}
 }

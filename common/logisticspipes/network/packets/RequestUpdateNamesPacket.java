@@ -12,10 +12,12 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.item.ItemIdentifier;
+
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class RequestUpdateNamesPacket extends ModernPacket {
@@ -33,13 +35,13 @@ public class RequestUpdateNamesPacket extends ModernPacket {
 		//Item[] itemList = Item.itemsList;
 		Item[] itemList = new Item[0];
 		List<ItemIdentifier> identList = new LinkedList<ItemIdentifier>();
-		for(Item item:itemList) {
-			if(item != null) {
-				for(CreativeTabs tab:item.getCreativeTabs()) {
+		for (Item item : itemList) {
+			if (item != null) {
+				for (CreativeTabs tab : item.getCreativeTabs()) {
 					List<ItemStack> list = new ArrayList<ItemStack>();
 					item.getSubItems(item, tab, list);
-					if(list.size() > 0) {
-						for(ItemStack stack:list) {
+					if (list.size() > 0) {
+						for (ItemStack stack : list) {
 							identList.add(ItemIdentifier.get(stack));
 						}
 					} else {
@@ -49,7 +51,7 @@ public class RequestUpdateNamesPacket extends ModernPacket {
 			}
 		}
 		SimpleServiceLocator.clientBufferHandler.setPause(true);
-		for(ItemIdentifier item:identList) {
+		for (ItemIdentifier item : identList) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(UpdateName.class).setIdent(item).setName(item.getFriendlyName()));
 		}
 		SimpleServiceLocator.clientBufferHandler.setPause(false);

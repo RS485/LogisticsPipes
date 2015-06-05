@@ -6,6 +6,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestHandler;
+
 import net.minecraft.entity.player.EntityPlayer;
 
 public class RequestFluidOrdererRefreshPacket extends IntegerCoordinatesPacket {
@@ -32,4 +33,3 @@ public class RequestFluidOrdererRefreshPacket extends IntegerCoordinatesPacket {
 		RequestHandler.refreshFluid(player, (CoreRoutedPipe) pipe.pipe);
 	}
 }
-

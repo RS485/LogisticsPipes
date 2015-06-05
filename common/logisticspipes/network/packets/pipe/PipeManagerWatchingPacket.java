@@ -8,18 +8,20 @@ import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+
+import net.minecraft.entity.player.EntityPlayer;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class PipeManagerWatchingPacket extends CoordinatesPacket {
 
 	@Getter
 	@Setter
 	private boolean start;
-	
+
 	public PipeManagerWatchingPacket(int id) {
 		super(id);
 	}
@@ -27,9 +29,11 @@ public class PipeManagerWatchingPacket extends CoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld());
-		if(pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) return;
+		if (pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) {
+			return;
+		}
 		CoreRoutedPipe cPipe = (CoreRoutedPipe) pipe.pipe;
-		if(start) {
+		if (start) {
 			cPipe.getOrderManager().startWatching(player);
 		} else {
 			cPipe.getOrderManager().stopWatching(player);

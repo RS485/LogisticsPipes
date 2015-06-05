@@ -12,8 +12,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import cpw.mods.fml.client.FMLClientHandler;
 import logisticspipes.utils.Color;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -24,6 +24,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
+
+import cpw.mods.fml.client.FMLClientHandler;
+
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
@@ -42,17 +45,21 @@ public final class GuiGraphics {
 	public static final ResourceLocation STATS_ICON = new ResourceLocation("logisticspipes", "textures/gui/stats.png");
 	public static float zLevel = 0.0F;
 
-	private GuiGraphics() {
-	}
+	private GuiGraphics() {}
 
 	/**
 	 * Draws the durability bar for GUI items.
 	 *
-	 * @param itemstack the itemstack, from which the durability bar should be drawn
-	 * @param x the x-coordinate for the bar
-	 * @param y the y-coordinate for the bar
-	 * @param zLevel the z-level for the bar
-	 * @see net.minecraft.client.renderer.entity.RenderItem#renderItemOverlayIntoGUI(FontRenderer, TextureManager, ItemStack, int, int, String)
+	 * @param itemstack
+	 *            the itemstack, from which the durability bar should be drawn
+	 * @param x
+	 *            the x-coordinate for the bar
+	 * @param y
+	 *            the y-coordinate for the bar
+	 * @param zLevel
+	 *            the z-level for the bar
+	 * @see net.minecraft.client.renderer.entity.RenderItem#renderItemOverlayIntoGUI(FontRenderer,
+	 *      TextureManager, ItemStack, int, int, String)
 	 */
 	public static void drawDurabilityBar(ItemStack itemstack, int x, int y, double zLevel) {
 		if (itemstack.getItem().showDurabilityBar(itemstack)) {
@@ -71,7 +78,7 @@ public final class GuiGraphics {
 	}
 
 	public static void displayItemToolTip(Object[] tooltip, Gui gui, float pzLevel, int guiLeft, int guiTop) {
-		displayItemToolTip(tooltip, pzLevel, guiLeft, guiTop, false, false);
+		GuiGraphics.displayItemToolTip(tooltip, pzLevel, guiLeft, guiTop, false, false);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -80,7 +87,7 @@ public final class GuiGraphics {
 			return;
 		}
 
-		zLevel = pzLevel;
+		GuiGraphics.zLevel = pzLevel;
 
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		ItemStack var22 = (ItemStack) tooltip[2];
@@ -97,9 +104,9 @@ public final class GuiGraphics {
 
 		int var11 = (Integer) tooltip[0] - (forceAdd ? 0 : guiLeft) + 12;
 		int var12 = (Integer) tooltip[1] - (forceAdd ? 0 : guiTop) - 12;
-		drawToolTip(var11, var12, var24, var22.getRarity().rarityColor, forceMinecraft);
+		GuiGraphics.drawToolTip(var11, var12, var24, var22.getRarity().rarityColor, forceMinecraft);
 
-		zLevel = 0;
+		GuiGraphics.zLevel = 0;
 	}
 
 	public static void drawToolTip(int posX, int posY, List<String> msg, EnumChatFormatting rarityColor, boolean forceMinecraft) {
@@ -147,7 +154,7 @@ public final class GuiGraphics {
 
 			GL11.glDisable(2896 /*GL_LIGHTING*/);
 			GL11.glDisable(2929 /*GL_DEPTH_TEST*/);
-			zLevel = 300.0F;
+			GuiGraphics.zLevel = 300.0F;
 			int var15 = -267386864;
 
 			SimpleGraphics.drawGradientRect(var11 - 3, var12 - 4, var11 + var10 + 3, var12 - 3, var15, var15, 0.0);
@@ -180,7 +187,7 @@ public final class GuiGraphics {
 				var12 += 10;
 			}
 
-			zLevel = 0.0F;
+			GuiGraphics.zLevel = 0.0F;
 
 			GL11.glEnable(2929 /*GL_DEPTH_TEST*/);
 			GL11.glEnable(2896 /*GL_LIGHTING*/);
@@ -191,89 +198,91 @@ public final class GuiGraphics {
 		//Player "backpack"
 		for (int row = 0; row < 3; row++) {
 			for (int column = 0; column < 9; column++) {
-				drawSlotBackground(mc, xOffset + column * 18 - 1, yOffset + row * 18 - 1);
+				GuiGraphics.drawSlotBackground(mc, xOffset + column * 18 - 1, yOffset + row * 18 - 1);
 			}
 		}
 		//Player "hotbar"
 		for (int i1 = 0; i1 < 9; i1++) {
-			drawSlotBackground(mc, xOffset + i1 * 18 - 1, yOffset + 58 - 1);
+			GuiGraphics.drawSlotBackground(mc, xOffset + i1 * 18 - 1, yOffset + 58 - 1);
 		}
 	}
 
 	public static void drawPlayerHotbarBackground(Minecraft mc, int xOffset, int yOffset) {
 		//Player "hotbar"
 		for (int i1 = 0; i1 < 9; i1++) {
-			drawSlotBackground(mc, xOffset + i1 * 18 - 1, yOffset - 1);
+			GuiGraphics.drawSlotBackground(mc, xOffset + i1 * 18 - 1, yOffset - 1);
 		}
 	}
 
 	public static void drawPlayerArmorBackground(Minecraft mc, int xOffset, int yOffset) {
 		//Player "armor"
 		for (int i1 = 0; i1 < 4; i1++) {
-			drawSlotBackground(mc, xOffset - 1, yOffset - 1 - i1 * 18);
+			GuiGraphics.drawSlotBackground(mc, xOffset - 1, yOffset - 1 - i1 * 18);
 		}
 	}
 
 	public static void drawSlotBackground(Minecraft mc, int x, int y) {
-		zLevel = 0;
+		GuiGraphics.zLevel = 0;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(SLOT_TEXTURE);
+		mc.renderEngine.bindTexture(GuiGraphics.SLOT_TEXTURE);
 
 		Tessellator var9 = Tessellator.instance;
 		var9.startDrawingQuads();
-		var9.addVertexWithUV(x, y + 18, zLevel, 0, 1);
-		var9.addVertexWithUV(x + 18, y + 18, zLevel, 1, 1);
-		var9.addVertexWithUV(x + 18, y, zLevel, 1, 0);
-		var9.addVertexWithUV(x, y, zLevel, 0, 0);
+		var9.addVertexWithUV(x, y + 18, GuiGraphics.zLevel, 0, 1);
+		var9.addVertexWithUV(x + 18, y + 18, GuiGraphics.zLevel, 1, 1);
+		var9.addVertexWithUV(x + 18, y, GuiGraphics.zLevel, 1, 0);
+		var9.addVertexWithUV(x, y, GuiGraphics.zLevel, 0, 0);
 		var9.draw();
 	}
 
 	public static void drawSlotBackground(Minecraft mc, int x, int y, int color) {
-		zLevel = 0;
+		GuiGraphics.zLevel = 0;
 		GL11.glColor4f(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color));
-		mc.renderEngine.bindTexture(SLOT_TEXTURE);
+		mc.renderEngine.bindTexture(GuiGraphics.SLOT_TEXTURE);
 
 		Tessellator var9 = Tessellator.instance;
 		var9.startDrawingQuads();
-		var9.addVertexWithUV(x, y + 18, zLevel, 0, 1);
-		var9.addVertexWithUV(x + 18, y + 18, zLevel, 1, 1);
-		var9.addVertexWithUV(x + 18, y, zLevel, 1, 0);
-		var9.addVertexWithUV(x, y, zLevel, 0, 0);
+		var9.addVertexWithUV(x, y + 18, GuiGraphics.zLevel, 0, 1);
+		var9.addVertexWithUV(x + 18, y + 18, GuiGraphics.zLevel, 1, 1);
+		var9.addVertexWithUV(x + 18, y, GuiGraphics.zLevel, 1, 0);
+		var9.addVertexWithUV(x, y, GuiGraphics.zLevel, 0, 0);
 		var9.draw();
 
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	public static void drawBigSlotBackground(Minecraft mc, int x, int y) {
-		zLevel = 0;
+		GuiGraphics.zLevel = 0;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(BIG_SLOT_TEXTURE);
+		mc.renderEngine.bindTexture(GuiGraphics.BIG_SLOT_TEXTURE);
 
 		Tessellator var9 = Tessellator.instance;
 		var9.startDrawingQuads();
-		var9.addVertexWithUV(x, y + 26, zLevel, 0, 1);
-		var9.addVertexWithUV(x + 26, y + 26, zLevel, 1, 1);
-		var9.addVertexWithUV(x + 26, y, zLevel, 1, 0);
-		var9.addVertexWithUV(x, y, zLevel, 0, 0);
+		var9.addVertexWithUV(x, y + 26, GuiGraphics.zLevel, 0, 1);
+		var9.addVertexWithUV(x + 26, y + 26, GuiGraphics.zLevel, 1, 1);
+		var9.addVertexWithUV(x + 26, y, GuiGraphics.zLevel, 1, 0);
+		var9.addVertexWithUV(x, y, GuiGraphics.zLevel, 0, 0);
 		var9.draw();
 	}
 
 	public static void drawSmallSlotBackground(Minecraft mc, int x, int y) {
-		zLevel = 0;
+		GuiGraphics.zLevel = 0;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(SMALL_SLOT_TEXTURE);
+		mc.renderEngine.bindTexture(GuiGraphics.SMALL_SLOT_TEXTURE);
 
 		Tessellator var9 = Tessellator.instance;
 		var9.startDrawingQuads();
-		var9.addVertexWithUV(x, y + 8, zLevel, 0, 1);
-		var9.addVertexWithUV(x + 8, y + 8, zLevel, 1, 1);
-		var9.addVertexWithUV(x + 8, y, zLevel, 1, 0);
-		var9.addVertexWithUV(x, y, zLevel, 0, 0);
+		var9.addVertexWithUV(x, y + 8, GuiGraphics.zLevel, 0, 1);
+		var9.addVertexWithUV(x + 8, y + 8, GuiGraphics.zLevel, 1, 1);
+		var9.addVertexWithUV(x + 8, y, GuiGraphics.zLevel, 1, 0);
+		var9.addVertexWithUV(x, y, GuiGraphics.zLevel, 0, 0);
 		var9.draw();
 	}
 
 	public static void renderIconAt(Minecraft mc, int x, int y, float zLevel, IIcon icon) {
-		if (icon == null) return;
+		if (icon == null) {
+			return;
+		}
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(TextureMap.locationItemsTexture);
 
@@ -287,59 +296,59 @@ public final class GuiGraphics {
 	}
 
 	public static void drawLockBackground(Minecraft mc, int x, int y) {
-		zLevel = 0;
+		GuiGraphics.zLevel = 0;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(LOCK_ICON);
+		mc.renderEngine.bindTexture(GuiGraphics.LOCK_ICON);
 		GL11.glEnable(GL11.GL_BLEND);
 
 		Tessellator var9 = Tessellator.instance;
 		var9.startDrawingQuads();
-		var9.addVertexWithUV(x, y + 15, zLevel, 0, 1);
-		var9.addVertexWithUV(x + 14, y + 15, zLevel, 1, 1);
-		var9.addVertexWithUV(x + 14, y, zLevel, 1, 0);
-		var9.addVertexWithUV(x, y, zLevel, 0, 0);
+		var9.addVertexWithUV(x, y + 15, GuiGraphics.zLevel, 0, 1);
+		var9.addVertexWithUV(x + 14, y + 15, GuiGraphics.zLevel, 1, 1);
+		var9.addVertexWithUV(x + 14, y, GuiGraphics.zLevel, 1, 0);
+		var9.addVertexWithUV(x, y, GuiGraphics.zLevel, 0, 0);
 		var9.draw();
 	}
 
 	public static void drawLinesBackground(Minecraft mc, int x, int y) {
-		zLevel = 0;
+		GuiGraphics.zLevel = 0;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(LINES_ICON);
+		mc.renderEngine.bindTexture(GuiGraphics.LINES_ICON);
 		GL11.glEnable(GL11.GL_BLEND);
 
 		Tessellator var9 = Tessellator.instance;
 		var9.startDrawingQuads();
-		var9.addVertexWithUV(x, y + 16, zLevel, 0, 1);
-		var9.addVertexWithUV(x + 16, y + 16, zLevel, 1, 1);
-		var9.addVertexWithUV(x + 16, y, zLevel, 1, 0);
-		var9.addVertexWithUV(x, y, zLevel, 0, 0);
+		var9.addVertexWithUV(x, y + 16, GuiGraphics.zLevel, 0, 1);
+		var9.addVertexWithUV(x + 16, y + 16, GuiGraphics.zLevel, 1, 1);
+		var9.addVertexWithUV(x + 16, y, GuiGraphics.zLevel, 1, 0);
+		var9.addVertexWithUV(x, y, GuiGraphics.zLevel, 0, 0);
 		var9.draw();
 	}
 
 	public static void drawStatsBackground(Minecraft mc, int x, int y) {
-		zLevel = 0;
+		GuiGraphics.zLevel = 0;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(STATS_ICON);
+		mc.renderEngine.bindTexture(GuiGraphics.STATS_ICON);
 		GL11.glEnable(GL11.GL_BLEND);
 
 		Tessellator var9 = Tessellator.instance;
 		var9.startDrawingQuads();
-		var9.addVertexWithUV(x, y + 16, zLevel, 0, 1);
-		var9.addVertexWithUV(x + 16, y + 16, zLevel, 1, 1);
-		var9.addVertexWithUV(x + 16, y, zLevel, 1, 0);
-		var9.addVertexWithUV(x, y, zLevel, 0, 0);
+		var9.addVertexWithUV(x, y + 16, GuiGraphics.zLevel, 0, 1);
+		var9.addVertexWithUV(x + 16, y + 16, GuiGraphics.zLevel, 1, 1);
+		var9.addVertexWithUV(x + 16, y, GuiGraphics.zLevel, 1, 0);
+		var9.addVertexWithUV(x, y, GuiGraphics.zLevel, 0, 0);
 		var9.draw();
 	}
 
 	public static void drawGuiBackGround(Minecraft mc, int guiLeft, int guiTop, int right, int bottom, float zLevel, boolean resetColor) {
-		drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, resetColor, true, true, true, true);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, resetColor, true, true, true, true);
 	}
 
 	public static void drawGuiBackGround(Minecraft mc, int guiLeft, int guiTop, int right, int bottom, float zLevel, boolean resetColor, boolean displayTop, boolean displayLeft, boolean displayBottom, boolean displayRight) {
 		if (resetColor) {
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		}
-		mc.renderEngine.bindTexture(BACKGROUND_TEXTURE);
+		mc.renderEngine.bindTexture(GuiGraphics.BACKGROUND_TEXTURE);
 
 		if (displayTop) {
 			//Top Side

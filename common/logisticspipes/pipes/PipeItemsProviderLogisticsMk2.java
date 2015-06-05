@@ -2,6 +2,7 @@ package logisticspipes.pipes;
 
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+
 import net.minecraft.item.Item;
 
 public class PipeItemsProviderLogisticsMk2 extends PipeItemsProviderLogistics {
@@ -19,7 +20,7 @@ public class PipeItemsProviderLogisticsMk2 extends PipeItemsProviderLogistics {
 	protected int neededEnergy() {
 		return 2;
 	}
-	
+
 	@Override
 	protected int itemsToExtract() {
 		return 128;
@@ -29,7 +30,7 @@ public class PipeItemsProviderLogisticsMk2 extends PipeItemsProviderLogistics {
 	protected int stacksToExtract() {
 		return 8;
 	}
-	
+
 	@Override
 	public ItemSendMode getItemSendMode() {
 		return ItemSendMode.Fast;

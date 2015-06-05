@@ -1,6 +1,5 @@
 package logisticspipes.network.packets;
 
-
 import java.io.IOException;
 
 import logisticspipes.network.LPDataInputStream;
@@ -8,18 +7,20 @@ import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+
+import net.minecraft.entity.player.EntityPlayer;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class BufferTransfer extends ModernPacket {
-	
+
 	@Getter
 	@Setter
 	private byte[] content;
-	
+
 	public BufferTransfer(int id) {
 		super(id);
 	}
@@ -31,7 +32,7 @@ public class BufferTransfer extends ModernPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if(MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.worldObj)) {
 			SimpleServiceLocator.clientBufferHandler.handlePacket(content);
 		} else {
 			SimpleServiceLocator.serverBufferHandler.handlePacket(content, player);
@@ -50,5 +51,3 @@ public class BufferTransfer extends ModernPacket {
 		data.write(content);
 	}
 }
-
-

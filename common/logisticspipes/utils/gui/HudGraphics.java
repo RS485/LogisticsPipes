@@ -13,6 +13,5 @@ package logisticspipes.utils.gui;
  */
 public final class HudGraphics {
 
-	private HudGraphics() {
-	}
+	private HudGraphics() {}
 }

@@ -10,34 +10,35 @@ import logisticspipes.commands.commands.debug.MeCommand;
 import logisticspipes.commands.commands.debug.PipeCommand;
 import logisticspipes.commands.commands.debug.RoutingTableCommand;
 import logisticspipes.commands.commands.debug.TargetCommand;
+
 import net.minecraft.command.ICommandSender;
 
 public class DebugCommand extends SubCommandHandler {
 
-	private static final String[] allowedPlayers = new String[]{"davboecki", "theZorro266"};
-	
+	private static final String[] allowedPlayers = new String[] { "davboecki", "theZorro266" };
+
 	@Override
 	public String[] getNames() {
-		return new String[]{"debug"};
+		return new String[] { "debug" };
 	}
 
 	@Override
 	public boolean isCommandUsableBy(ICommandSender sender) {
-		return LPConstants.DEBUG || Arrays.asList(allowedPlayers).contains(sender.getCommandSenderName());
+		return LPConstants.DEBUG || Arrays.asList(DebugCommand.allowedPlayers).contains(sender.getCommandSenderName());
 	}
 
 	@Override
 	public String[] getDescription() {
-		return new String[]{"Debug helper commands"};
+		return new String[] { "Debug helper commands" };
 	}
 
 	@Override
 	public void registerSubCommands() {
-		this.registerSubCommand(new MeCommand());
-		this.registerSubCommand(new TargetCommand());
-		this.registerSubCommand(new CloseCommand());
-		this.registerSubCommand(new RoutingTableCommand());
-		this.registerSubCommand(new PipeCommand());
-		this.registerSubCommand(new HandCommand());
+		registerSubCommand(new MeCommand());
+		registerSubCommand(new TargetCommand());
+		registerSubCommand(new CloseCommand());
+		registerSubCommand(new RoutingTableCommand());
+		registerSubCommand(new PipeCommand());
+		registerSubCommand(new HandCommand());
 	}
 }

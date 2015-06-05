@@ -10,19 +10,22 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.IntegerModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+
+import net.minecraft.entity.player.EntityPlayer;
+
+import cpw.mods.fml.client.FMLClientHandler;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.client.FMLClientHandler;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class SupplierPipeMode extends IntegerModuleCoordinatesPacket {
 
 	@Getter
 	@Setter
 	private boolean hasPatternUpgrade;
-	
+
 	public SupplierPipeMode(int id) {
 		super(id);
 	}
@@ -35,8 +38,10 @@ public class SupplierPipeMode extends IntegerModuleCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		ModuleActiveSupplier module = this.getLogisticsModule(player, ModuleActiveSupplier.class);
-		if(module == null) return;
-		if(hasPatternUpgrade) {
+		if (module == null) {
+			return;
+		}
+		if (hasPatternUpgrade) {
 			module.setPatternMode(PatternMode.values()[getInteger()]);
 		} else {
 			module.setSupplyMode(SupplyMode.values()[getInteger()]);
@@ -57,5 +62,5 @@ public class SupplierPipeMode extends IntegerModuleCoordinatesPacket {
 		super.writeData(data);
 		data.writeBoolean(hasPatternUpgrade);
 	}
-	
+
 }

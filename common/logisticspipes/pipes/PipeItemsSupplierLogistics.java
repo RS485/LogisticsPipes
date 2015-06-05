@@ -1,7 +1,7 @@
-/** 
+/**
  * Copyright (c) Krapht, 2011
  * 
- * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public 
+ * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
@@ -21,20 +21,21 @@ import logisticspipes.pipes.basic.debug.StatusEntry;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.item.ItemIdentifierStack;
+
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport{
+public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport {
 
 	private ModuleActiveSupplier module;
-		
+
 	public PipeItemsSupplierLogistics(Item item) {
 		super(item);
 		module = new ModuleActiveSupplier();
 		module.registerHandler(this, this);
 		module.registerPosition(ModulePositionType.IN_PIPE, 0);
 	}
-	
+
 	@Override
 	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_SUPPLIER_TEXTURE;
@@ -44,7 +45,7 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 	public boolean isRequestFailed() {
 		return module.isRequestFailed();
 	}
-	
+
 	@Override
 	public LogisticsModule getLogisticsModule() {
 		return module;
@@ -57,14 +58,14 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		super.readFromNBT(nbttagcompound);	
+		super.readFromNBT(nbttagcompound);
 		module.readFromNBT(nbttagcompound);
-    }
+	}
 
 	@Override
-    public void writeToNBT(NBTTagCompound nbttagcompound) {
-    	super.writeToNBT(nbttagcompound);
-    	module.writeToNBT(nbttagcompound);
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
+		super.writeToNBT(nbttagcompound);
+		module.writeToNBT(nbttagcompound);
 	}
 
 	@Override

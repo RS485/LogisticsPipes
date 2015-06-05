@@ -5,23 +5,30 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.EnumSet;
 
+import net.minecraftforge.common.util.ForgeDirection;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
-import net.minecraftforge.common.util.ForgeDirection;
 
 @Data
 @RequiredArgsConstructor
 @NoArgsConstructor
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class LaserData {
-	@NonNull private int posX;
-	@NonNull private int posY;
-	@NonNull private int posZ;
-	@NonNull private ForgeDirection dir;
-	@NonNull private EnumSet<PipeRoutingConnectionType> connectionType;
+
+	@NonNull
+	private int posX;
+	@NonNull
+	private int posY;
+	@NonNull
+	private int posZ;
+	@NonNull
+	private ForgeDirection dir;
+	@NonNull
+	private EnumSet<PipeRoutingConnectionType> connectionType;
 	private boolean finalPipe = true;
 	private boolean startPipe = false;
 	private int length = 1;
@@ -34,7 +41,7 @@ public class LaserData {
 		data.writeBoolean(finalPipe);
 		data.writeBoolean(startPipe);
 		data.writeInt(length);
-		for(PipeRoutingConnectionType type: PipeRoutingConnectionType.values()) {
+		for (PipeRoutingConnectionType type : PipeRoutingConnectionType.values()) {
 			data.writeBoolean(connectionType.contains(type));
 		}
 	}
@@ -48,8 +55,8 @@ public class LaserData {
 		startPipe = data.readBoolean();
 		length = data.readInt();
 		connectionType = EnumSet.noneOf(PipeRoutingConnectionType.class);
-		for(PipeRoutingConnectionType type: PipeRoutingConnectionType.values()) {
-			if(data.readBoolean()) {
+		for (PipeRoutingConnectionType type : PipeRoutingConnectionType.values()) {
+			if (data.readBoolean()) {
 				connectionType.add(type);
 			}
 		}

@@ -4,57 +4,61 @@ import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.string.ChatColor;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 
 public abstract class AbstractWrapper {
+
 	@Getter
 	@Setter(value = AccessLevel.PACKAGE)
-	protected WrapperState	state	= WrapperState.Enabled;
+	protected WrapperState state = WrapperState.Enabled;
 	@Getter
 	@Setter(value = AccessLevel.PACKAGE)
-	private Throwable		reason;
+	private Throwable reason;
 	@Getter
 	@Setter(value = AccessLevel.PACKAGE)
-	private String			modId;
-	
+	private String modId;
+
 	@SneakyThrows(Throwable.class)
 	public void handleException(Throwable e) {
-		if(!isEnabled()) {
-			if(LPConstants.DEBUG) {
+		if (!isEnabled()) {
+			if (LPConstants.DEBUG) {
 				e.printStackTrace();
 			}
 			return;
 		}
-		if(LPConstants.DEBUG) {
+		if (LPConstants.DEBUG) {
 			throw e;
 		}
 		e.printStackTrace();
-		this.state = WrapperState.Exception;
-		this.reason = e;
+		state = WrapperState.Exception;
+		reason = e;
 		String message = "Disabled " + getName() + getTypeName() + (modId != null ? (" for Mod: " + modId) : "") + ". Cause was an Exception";
 		LogisticsPipes.log.fatal(message);
 		MainProxy.proxy.sendBroadCast(ChatColor.RED + message);
 	}
 
 	public void reEnable() {
-		if(this.state != WrapperState.Exception) return;
-		this.state = WrapperState.Enabled;
-		this.reason = null;
+		if (state != WrapperState.Exception) {
+			return;
+		}
+		state = WrapperState.Enabled;
+		reason = null;
 	}
-	
+
 	protected final boolean isEnabled() {
 		return state == WrapperState.Enabled;
 	}
-	
+
 	protected final boolean canTryAnyway() {
 		return state != WrapperState.ModMissing;
 	}
-	
+
 	public abstract String getName();
-	
+
 	public abstract String getTypeName();
 
 }

@@ -13,11 +13,11 @@ public class LogisticsItemOrderManager extends LogisticsOrderManager<LogisticsIt
 	public LogisticsItemOrderManager(ILPPositionProvider pos) {
 		super(pos);
 	}
-	
+
 	public LogisticsItemOrderManager(IChangeListener listener, ILPPositionProvider pos) {
 		super(listener, pos);
 	}
-	
+
 	@Override
 	public void sendFailed() {
 		_orders.getFirst().sendFailed();
@@ -30,15 +30,18 @@ public class LogisticsItemOrderManager extends LogisticsOrderManager<LogisticsIt
 		listen();
 		return order;
 	}
-	
+
+	@Override
 	public LogisticsItemOrder peekAtTopRequest(ResourceType type) {
-		return (LogisticsItemOrder) super.peekAtTopRequest(type);
+		return super.peekAtTopRequest(type);
 	}
-	
+
 	public int totalItemsCountInOrders(ItemIdentifier item) {
 		int itemCount = 0;
-		for(LogisticsItemOrder request: _orders) {
-			if(!request.getItemStack().getItem().equals(item)) continue;
+		for (LogisticsItemOrder request : _orders) {
+			if (!request.getItemStack().getItem().equals(item)) {
+				continue;
+			}
 			itemCount += request.getItemStack().getStackSize();
 		}
 		return itemCount;

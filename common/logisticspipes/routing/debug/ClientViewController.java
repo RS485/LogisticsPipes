@@ -25,18 +25,21 @@ import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.utils.tuples.LPPosition;
 
 public class ClientViewController implements IDebugHUDProvider {
+
 	private static ClientViewController instance;
+
 	private ClientViewController() {}
-	
+
 	private LPPosition mainPipe = null;
 	private int tick = 0;
 	private final List<LPPosition> canidates = new ArrayList<LPPosition>();
 	private DebugWindow debugWindow;
-	
+
 	private List<IHeadUpDisplayRendererProvider> listHUD = new ArrayList<IHeadUpDisplayRendererProvider>();
 	private HashMap<LPPosition, DebugInformation> HUDPositions = new HashMap<LPPosition, DebugInformation>();
-	
+
 	public static class DebugInformation {
+
 		public boolean isNew = false;
 		public int newIndex = -1;
 		public List<Integer> positions = new ArrayList<Integer>();
@@ -45,33 +48,35 @@ public class ClientViewController implements IDebugHUDProvider {
 		public EnumMap<PipeRoutingConnectionType, List<List<LPPosition>>> filters;
 		public EnumSet<PipeRoutingConnectionType> nextFlags;
 	}
-	
+
 	public static ClientViewController instance() {
-		if(instance == null) {
-			instance = new ClientViewController();
+		if (ClientViewController.instance == null) {
+			ClientViewController.instance = new ClientViewController();
 		}
-		return instance;
+		return ClientViewController.instance;
 	}
-	
+
 	private DebugInformation getDebugInformation(LPPosition pos) {
 		DebugInformation info = HUDPositions.get(pos);
-		if(info == null) {
+		if (info == null) {
 			info = new DebugInformation();
 			HUDPositions.put(pos, info);
 		}
 		return info;
 	}
-	
+
 	public void tick() {
-		if(tick++ % 5 != 0) return;
-		if(mainPipe != null) {
+		if (tick++ % 5 != 0) {
+			return;
+		}
+		if (mainPipe != null) {
 			PipeFXRenderHandler.spawnGenericParticle(Particles.WhiteParticle, mainPipe.getX(), mainPipe.getY(), mainPipe.getZ(), 1);
 		}
-		for(LPPosition pos:canidates) {
+		for (LPPosition pos : canidates) {
 			PipeFXRenderHandler.spawnGenericParticle(Particles.OrangeParticle, pos.getX(), pos.getY(), pos.getZ(), 1);
 		}
 	}
-	
+
 	public void clear() {
 		mainPipe = null;
 		canidates.clear();
@@ -93,12 +98,12 @@ public class ClientViewController implements IDebugHUDProvider {
 	}
 
 	public void init(RoutingUpdateInitDebug routingUpdateInitDebug) {
-		debugWindow = new DebugWindow("Debug Code",500,250);
+		debugWindow = new DebugWindow("Debug Code", 500, 250);
 		LogisticsHUDRenderer.instance().debugHUD = this;
 	}
-	
+
 	public void done(RoutingUpdateDoneDebug routingUpdateDoneDebug) {
-		if(debugWindow != null) {
+		if (debugWindow != null) {
 			debugWindow.setVisible(false);
 			debugWindow = null;
 		}
@@ -114,27 +119,29 @@ public class ClientViewController implements IDebugHUDProvider {
 	public void handlePacket(RoutingUpdateDebugFilters routingUpdateDebugFilters) {
 		getDebugInformation(routingUpdateDebugFilters.getPos()).filters = routingUpdateDebugFilters.getFilterPositions();
 	}
-	
+
 	public void updateList(RoutingUpdateDebugCanidateList routingUpdateDebugCanidateList) {
 		debugWindow.clear();
 		ExitRoute[] e = routingUpdateDebugCanidateList.getMsg();
-		int i=0;
-		for(ExitRoute exit: e) {
+		int i = 0;
+		for (ExitRoute exit : e) {
 			i++;
 			Color color = Color.BLACK;
-			if(exit.debug.isNewlyAddedCanidate) {
+			if (exit.debug.isNewlyAddedCanidate) {
 				color = Color.BLUE;
 			}
 			debugWindow.showInfo(exit.destination.toString(), color);
 			debugWindow.showInfo("\n", color);
-			for(int j=0;j<2;j++) debugWindow.showInfo("\t", color);
+			for (int j = 0; j < 2; j++) {
+				debugWindow.showInfo("\t", color);
+			}
 			debugWindow.showInfo(exit.debug.toStringNetwork, color);
 			debugWindow.showInfo("\n", color);
 			LPPosition pos = exit.destination.getLPPosition();
 			getDebugInformation(pos).routes.add(exit);
 			getDebugInformation(pos).positions.add(i);
 		}
-		for(Entry<LPPosition, DebugInformation> entry:HUDPositions.entrySet()) {
+		for (Entry<LPPosition, DebugInformation> entry : HUDPositions.entrySet()) {
 			listHUD.add(new HUDRoutingTableDebugProvider(new HUDRoutingTableGeneralInfo(entry.getValue()), entry.getKey()));
 		}
 	}

@@ -1,7 +1,7 @@
-/** 
+/**
  * Copyright (c) Krapht, 2011
  * 
- * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public 
+ * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
@@ -12,6 +12,7 @@ import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.string.StringUtils;
+
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -25,8 +26,9 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 	private PipeFluidSatellite _liquidSatellite;
 	private EntityPlayer _player;
 
-	public GuiSatellitePipe(PipeItemsSatelliteLogistics satellite, EntityPlayer player){
-		super(new Container(){
+	public GuiSatellitePipe(PipeItemsSatelliteLogistics satellite, EntityPlayer player) {
+		super(new Container() {
+
 			@Override
 			public boolean canInteractWith(EntityPlayer entityplayer) {
 				return true;
@@ -34,12 +36,13 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 		});
 		_satellite = satellite;
 		_player = player;
-		this.xSize = 116;
-		this.ySize = 70;
+		xSize = 116;
+		ySize = 70;
 	}
-	
-	public GuiSatellitePipe(PipeFluidSatellite satellite, EntityPlayer player){
-		super(new Container(){
+
+	public GuiSatellitePipe(PipeFluidSatellite satellite, EntityPlayer player) {
+		super(new Container() {
+
 			@Override
 			public boolean canInteractWith(EntityPlayer entityplayer) {
 				return true;
@@ -47,62 +50,60 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 		});
 		_liquidSatellite = satellite;
 		_player = player;
-		this.xSize = 116;
-		this.ySize = 70;
+		xSize = 116;
+		ySize = 70;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
-		
-	
-		buttonList.add(new GuiButton(0, (width / 2) - (30 /2) + 35, (height / 2) - (20 / 2), 30, 20, "+"));
-		buttonList.add(new GuiButton(1, (width / 2) - (30 /2) - 35, (height / 2) - (20 / 2), 30, 20, "-"));
+
+		buttonList.add(new GuiButton(0, (width / 2) - (30 / 2) + 35, (height / 2) - (20 / 2), 30, 20, "+"));
+		buttonList.add(new GuiButton(1, (width / 2) - (30 / 2) - 35, (height / 2) - (20 / 2), 30, 20, "-"));
 	}
-	
+
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
-		if(_satellite != null) {
-			if (guibutton.id == 0){
+		if (_satellite != null) {
+			if (guibutton.id == 0) {
 				_satellite.setNextId(_player);
 			}
-			
-			if (guibutton.id == 1){
+
+			if (guibutton.id == 1) {
 				_satellite.setPrevId(_player);
 			}
 			super.actionPerformed(guibutton);
-		} else if(_liquidSatellite != null) {
-			if (guibutton.id == 0){
+		} else if (_liquidSatellite != null) {
+			if (guibutton.id == 0) {
 				_liquidSatellite.setNextId(_player);
 			}
-			
-			if (guibutton.id == 1){
+
+			if (guibutton.id == 1) {
 				_liquidSatellite.setPrevId(_player);
 			}
 			super.actionPerformed(guibutton);
 		}
 	}
-	
+
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		mc.fontRenderer.drawString(StringUtils.translate("gui.satellite.SatelliteID"), 33, 10, 0x404040);
-		if(_satellite != null) {
-			mc.fontRenderer.drawString(_satellite.satelliteId+"", 59 - mc.fontRenderer.getStringWidth(_satellite.satelliteId+"")/2, 31, 0x404040);
+		if (_satellite != null) {
+			mc.fontRenderer.drawString(_satellite.satelliteId + "", 59 - mc.fontRenderer.getStringWidth(_satellite.satelliteId + "") / 2, 31, 0x404040);
 		}
-		if(_liquidSatellite != null) {
-			mc.fontRenderer.drawString(_liquidSatellite.satelliteId+"", 59 - mc.fontRenderer.getStringWidth(_liquidSatellite.satelliteId+"")/2, 31, 0x404040);
+		if (_liquidSatellite != null) {
+			mc.fontRenderer.drawString(_liquidSatellite.satelliteId + "", 59 - mc.fontRenderer.getStringWidth(_liquidSatellite.satelliteId + "") / 2, 31, 0x404040);
 		}
 	}
-	
+
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/satellite.png");
-	
-	
+
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(TEXTURE);
+		mc.renderEngine.bindTexture(GuiSatellitePipe.TEXTURE);
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);

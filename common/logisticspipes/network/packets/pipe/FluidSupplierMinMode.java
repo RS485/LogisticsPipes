@@ -5,10 +5,12 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeFluidSupplierMk2;
 import logisticspipes.pipes.PipeFluidSupplierMk2.MinMode;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import lombok.experimental.Accessors;
+
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+import lombok.experimental.Accessors;
+
+@Accessors(chain = true)
 public class FluidSupplierMinMode extends IntegerCoordinatesPacket {
 
 	public FluidSupplierMinMode(int id) {
@@ -23,10 +25,11 @@ public class FluidSupplierMinMode extends IntegerCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) return;
-		if(pipe.pipe instanceof PipeFluidSupplierMk2) {
-			((PipeFluidSupplierMk2)pipe.pipe).setMinMode(MinMode.values()[getInteger()]);
+		if (pipe == null) {
+			return;
+		}
+		if (pipe.pipe instanceof PipeFluidSupplierMk2) {
+			((PipeFluidSupplierMk2) pipe.pipe).setMinMode(MinMode.values()[getInteger()]);
 		}
 	}
 }
-

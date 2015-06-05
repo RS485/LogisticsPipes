@@ -5,19 +5,22 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.jaquadro.minecraft.storagedrawers.api.storage.IDrawerGroup;
+import logisticspipes.utils.item.ItemIdentifier;
+
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+
+import net.minecraftforge.common.util.ForgeDirection;
+
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.versioning.ArtifactVersion;
 import cpw.mods.fml.common.versioning.DefaultArtifactVersion;
 import cpw.mods.fml.common.versioning.InvalidVersionSpecificationException;
 import cpw.mods.fml.common.versioning.VersionRange;
-import logisticspipes.utils.item.ItemIdentifier;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import com.jaquadro.minecraft.storagedrawers.api.storage.IDrawer;
+import com.jaquadro.minecraft.storagedrawers.api.storage.IDrawerGroup;
 
 public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 
@@ -47,8 +50,7 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 					VersionRange validVersions = VersionRange.createFromVersionSpec("[1.3.4,)");
 					ArtifactVersion version = new DefaultArtifactVersion(mod.getVersion());
 					return validVersions.containsVersion(version);
-				}
-				catch (InvalidVersionSpecificationException e) {
+				} catch (InvalidVersionSpecificationException e) {
 					return false;
 				}
 			}
@@ -67,18 +69,19 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 		return new StorageDrawersInventoryHandler(tile, hideOnePerStack, hideOne, cropStart, cropEnd);
 	}
 
-
 	@Override
 	public int itemCount(ItemIdentifier itemIdent) {
 		int count = 0;
 		boolean first = true;
 		for (int i = 0; i < _drawer.getDrawerCount(); i++) {
-			if (!_drawer.isDrawerEnabled(i))
+			if (!_drawer.isDrawerEnabled(i)) {
 				continue;
+			}
 
 			IDrawer drawer = _drawer.getDrawer(i);
-			if (drawer == null)
+			if (drawer == null) {
 				continue;
+			}
 
 			if (!drawer.isEmpty() && ItemIdentifier.get(drawer.getStoredItemPrototype()).equals(itemIdent)) {
 				count += drawer.getStoredItemCount() - ((_hideOnePerStack || (_hideOnePerType && first)) ? 1 : 0);
@@ -93,12 +96,14 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 	public ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
 		ItemStack stack = null;
 		for (int i = 0; i < _drawer.getDrawerCount(); i++) {
-			if (!_drawer.isDrawerEnabled(i))
+			if (!_drawer.isDrawerEnabled(i)) {
 				continue;
+			}
 
 			IDrawer drawer = _drawer.getDrawer(i);
-			if (drawer == null || drawer.isEmpty())
+			if (drawer == null || drawer.isEmpty()) {
 				continue;
+			}
 
 			if (ItemIdentifier.get(drawer.getStoredItemPrototype()).equals(itemIdent)) {
 				if (stack == null) {
@@ -112,8 +117,9 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 				stack.stackSize += avail;
 				count -= avail;
 
-				if (count <= 0)
+				if (count <= 0) {
 					break;
+				}
 			}
 		}
 
@@ -123,27 +129,29 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public Set<ItemIdentifier> getItems() {
 		Set<ItemIdentifier> result = new TreeSet<ItemIdentifier>();
-		for(int i=0; i < _drawer.getDrawerCount(); i++) {
-			if (!_drawer.isDrawerEnabled(i))
+		for (int i = 0; i < _drawer.getDrawerCount(); i++) {
+			if (!_drawer.isDrawerEnabled(i)) {
 				continue;
+			}
 
 			IDrawer drawer = _drawer.getDrawer(i);
-			if(drawer != null && !drawer.isEmpty() && drawer.getStoredItemCount() > 0) {
+			if (drawer != null && !drawer.isEmpty() && drawer.getStoredItemCount() > 0) {
 				result.add(ItemIdentifier.get(drawer.getStoredItemPrototype()));
 			}
 		}
 		return result;
 	}
-	
+
 	@Override
 	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
 		HashMap<ItemIdentifier, Integer> result = new HashMap<ItemIdentifier, Integer>();
-		for(int i=0; i < _drawer.getDrawerCount(); i++) {
-			if (!_drawer.isDrawerEnabled(i))
+		for (int i = 0; i < _drawer.getDrawerCount(); i++) {
+			if (!_drawer.isDrawerEnabled(i)) {
 				continue;
+			}
 
 			IDrawer drawer = _drawer.getDrawer(i);
-			if(drawer != null && !drawer.isEmpty()) {
+			if (drawer != null && !drawer.isEmpty()) {
 				int count = drawer.getStoredItemCount();
 				if (count > 0) {
 					ItemIdentifier ident = ItemIdentifier.get(drawer.getStoredItemPrototype());
@@ -165,13 +173,14 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public boolean containsItem(ItemIdentifier itemIdent) {
-		for(int i=0; i < _drawer.getDrawerCount(); i++) {
-			if (!_drawer.isDrawerEnabled(i))
+		for (int i = 0; i < _drawer.getDrawerCount(); i++) {
+			if (!_drawer.isDrawerEnabled(i)) {
 				continue;
+			}
 
 			IDrawer drawer = _drawer.getDrawer(i);
-			if(drawer != null && !drawer.isEmpty()) {
-				if(drawer.canItemBeStored(itemIdent.makeNormalStack(1))) {
+			if (drawer != null && !drawer.isEmpty()) {
+				if (drawer.canItemBeStored(itemIdent.makeNormalStack(1))) {
 					return true;
 				}
 			}
@@ -181,13 +190,14 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
-		for(int i=0; i < _drawer.getDrawerCount(); i++) {
-			if (!_drawer.isDrawerEnabled(i))
+		for (int i = 0; i < _drawer.getDrawerCount(); i++) {
+			if (!_drawer.isDrawerEnabled(i)) {
 				continue;
+			}
 
 			IDrawer drawer = _drawer.getDrawer(i);
-			if(drawer != null && !drawer.isEmpty()) {
-				if(ItemIdentifier.get(drawer.getStoredItemPrototype()).getUndamaged().equals(itemIdent)) {
+			if (drawer != null && !drawer.isEmpty()) {
+				if (ItemIdentifier.get(drawer.getStoredItemPrototype()).getUndamaged().equals(itemIdent)) {
 					return true;
 				}
 			}
@@ -204,25 +214,27 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 	public int roomForItem(ItemIdentifier itemIdent, int count) {
 		int room = 0;
 		for (int i = 0; i < _drawer.getDrawerCount(); i++) {
-			if (!_drawer.isDrawerEnabled(i))
+			if (!_drawer.isDrawerEnabled(i)) {
 				continue;
+			}
 
 			IDrawer drawer = _drawer.getDrawer(i);
-			if (drawer == null)
+			if (drawer == null) {
 				continue;
+			}
 
 			ItemStack protoStack = itemIdent.makeNormalStack(1);
 			if (drawer.canItemBeStored(protoStack)) {
 				if (drawer.isEmpty()) {
 					room += drawer.getMaxCapacity(protoStack);
-				}
-				else {
+				} else {
 					room += drawer.getRemainingCapacity();
 				}
 			}
 
-			if (count != 0 && room >= count)
+			if (count != 0 && room >= count) {
 				return count;
+			}
 		}
 
 		return room;
@@ -234,20 +246,21 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 		st.stackSize = 0;
 
 		for (int i = 0; i < _drawer.getDrawerCount(); i++) {
-			if (!_drawer.isDrawerEnabled(i))
+			if (!_drawer.isDrawerEnabled(i)) {
 				continue;
+			}
 
 			IDrawer drawer = _drawer.getDrawer(i);
-			if (drawer == null)
+			if (drawer == null) {
 				continue;
+			}
 
 			if (drawer.canItemBeStored(stack)) {
 				int avail = 0;
 				if (drawer.isEmpty()) {
 					avail = Math.min(stack.stackSize, drawer.getMaxCapacity(stack));
 					drawer.setStoredItem(stack.copy(), avail);
-				}
-				else {
+				} else {
 					avail = Math.min(stack.stackSize, drawer.getRemainingCapacity());
 					drawer.setStoredItemCount(drawer.getStoredItemCount() + avail);
 				}
@@ -255,8 +268,9 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 				stack.stackSize -= avail;
 				st.stackSize += avail;
 
-				if (stack.stackSize <= 0)
+				if (stack.stackSize <= 0) {
 					break;
+				}
 			}
 		}
 
@@ -275,20 +289,23 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public ItemStack getStackInSlot(int i) {
-		if (!_drawer.isDrawerEnabled(i))
+		if (!_drawer.isDrawerEnabled(i)) {
 			return null;
+		}
 
 		return _drawer.getDrawer(i) != null ? _drawer.getDrawer(i).getStoredItemCopy() : null;
 	}
 
 	@Override
 	public ItemStack decrStackSize(int i, int j) {
-		if (!_drawer.isDrawerEnabled(i))
+		if (!_drawer.isDrawerEnabled(i)) {
 			return null;
+		}
 
 		IDrawer drawer = _drawer.getDrawer(i);
-		if (drawer == null || drawer.isEmpty())
+		if (drawer == null || drawer.isEmpty()) {
 			return null;
+		}
 
 		int avail = Math.min(j, drawer.getStoredItemCount());
 		drawer.setStoredItemCount(drawer.getStoredItemCount() - avail);

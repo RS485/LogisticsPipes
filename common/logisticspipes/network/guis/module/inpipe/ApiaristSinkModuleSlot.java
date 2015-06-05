@@ -5,8 +5,8 @@ import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.NBTModuleCoordinatesGuiProvider;
 import logisticspipes.utils.gui.DummyContainer;
-import net.minecraft.entity.player.EntityPlayer;
 
+import net.minecraft.entity.player.EntityPlayer;
 
 public class ApiaristSinkModuleSlot extends NBTModuleCoordinatesGuiProvider {
 
@@ -17,7 +17,9 @@ public class ApiaristSinkModuleSlot extends NBTModuleCoordinatesGuiProvider {
 	@Override
 	public Object getClientGui(EntityPlayer player) {
 		ModuleApiaristSink module = this.getLogisticsModule(player.getEntityWorld(), ModuleApiaristSink.class);
-		if(module == null) return null;
+		if (module == null) {
+			return null;
+		}
 		module.readFromNBT(getNbt());
 		return new GuiApiaristSink(module, player);
 	}
@@ -25,7 +27,9 @@ public class ApiaristSinkModuleSlot extends NBTModuleCoordinatesGuiProvider {
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
 		ModuleApiaristSink module = this.getLogisticsModule(player.getEntityWorld(), ModuleApiaristSink.class);
-		if(module == null) return null;
+		if (module == null) {
+			return null;
+		}
 		return new DummyContainer(player.inventory, null);
 	}
 

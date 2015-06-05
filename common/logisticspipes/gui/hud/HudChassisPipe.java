@@ -1,9 +1,5 @@
 package logisticspipes.gui.hud;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import cpw.mods.fml.client.FMLClientHandler;
 import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.interfaces.IHUDModuleHandler;
@@ -13,79 +9,82 @@ import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
+
+import cpw.mods.fml.client.FMLClientHandler;
+
 import org.lwjgl.opengl.GL11;
 
 public class HudChassisPipe extends BasicHUDGui {
-	
+
 	private final PipeLogisticsChassi pipe;
 	private final ChassiModule module;
 	private final ItemIdentifierInventory moduleInventory;
-	
+
 	private int selected = -1;
 	private int modulePage = 0;
 
 	private int xCursor;
 	private int yCursor;
-	
+
 	public HudChassisPipe(PipeLogisticsChassi pipeLogisticsChassi, ChassiModule _module, ItemIdentifierInventory _moduleInventory) {
-		this.pipe = pipeLogisticsChassi;
-		this.module = _module;
-		this.moduleInventory = _moduleInventory;
-		for(int i=0;i<pipe.getChassiSize();i++) {
-			this.addButton(new ItemButton(moduleInventory, i, -45, -35 + ((i % 3) * 27), 20, 25));
+		pipe = pipeLogisticsChassi;
+		module = _module;
+		moduleInventory = _moduleInventory;
+		for (int i = 0; i < pipe.getChassiSize(); i++) {
+			addButton(new ItemButton(moduleInventory, i, -45, -35 + ((i % 3) * 27), 20, 25));
 		}
 
-		this.addButton(new BasicHUDButton("<",-45,-45,8,8) {
-			
+		addButton(new BasicHUDButton("<", -45, -45, 8, 8) {
+
 			@Override
 			public boolean shouldRenderButton() {
 				return !isSlotSelected();
 			}
-			
+
 			@Override
 			public void clicked() {
 				modulePage--;
 			}
-			
+
 			@Override
 			public boolean buttonEnabled() {
 				return modulePage > 0;
 			}
 		});
-		this.addButton(new BasicHUDButton(">",-33,-45,8,8) {
-			
+		addButton(new BasicHUDButton(">", -33, -45, 8, 8) {
+
 			@Override
 			public boolean shouldRenderButton() {
 				return !isSlotSelected();
 			}
-			
+
 			@Override
 			public void clicked() {
 				modulePage++;
 			}
-			
+
 			@Override
 			public boolean buttonEnabled() {
 				return modulePage < ((pipe.getChassiSize() - 1) / 3);
 			}
 		});
-		this.addButton(new BasicHUDButton("x",37,-45,8,8) {
-			
+		addButton(new BasicHUDButton("x", 37, -45, 8, 8) {
+
 			@Override
 			public boolean shouldRenderButton() {
 				return isSlotSelected();
 			}
-			
+
 			@Override
 			public void clicked() {
 				resetSelection();
 			}
-			
+
 			@Override
 			public boolean buttonEnabled() {
 				return true;
@@ -95,45 +94,49 @@ public class HudChassisPipe extends BasicHUDGui {
 
 	@Override
 	public void renderHeadUpDisplay(double distance, boolean day, boolean shifted, Minecraft mc, IHUDConfig config) {
-		if(day) {
-        	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)64);
-        } else {
-        	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)64);	
-        }
+		if (day) {
+			GL11.glColor4b((byte) 64, (byte) 64, (byte) 64, (byte) 64);
+		} else {
+			GL11.glColor4b((byte) 127, (byte) 127, (byte) 127, (byte) 64);
+		}
 		GuiGraphics.drawGuiBackGround(mc, -50, -50, 50, 50, 0, false);
-		if(day) {
-        	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)127);
-        } else {
-        	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)127);	
-        }
-		GL11.glTranslatef(0.0F, 0.0F,(float) (-0.00005F * distance));
+		if (day) {
+			GL11.glColor4b((byte) 64, (byte) 64, (byte) 64, (byte) 127);
+		} else {
+			GL11.glColor4b((byte) 127, (byte) 127, (byte) 127, (byte) 127);
+		}
+		GL11.glTranslatef(0.0F, 0.0F, (float) (-0.00005F * distance));
 		super.renderHeadUpDisplay(distance, day, shifted, mc, config);
-		if(selected != -1) {
+		if (selected != -1) {
 			LogisticsModule selectedmodule = module.getSubModule(selected);
-			if(selectedmodule == null) return;
-			
-        	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)64);
-			GuiGraphics.drawGuiBackGround(mc, -23, -35, 45, 45, 0, false);
-        	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)127);	
+			if (selectedmodule == null) {
+				return;
+			}
 
-			if(selectedmodule instanceof IHUDModuleHandler && ((IHUDModuleHandler)selectedmodule).getHUDRenderer() != null) {
+			GL11.glColor4b((byte) 127, (byte) 127, (byte) 127, (byte) 64);
+			GuiGraphics.drawGuiBackGround(mc, -23, -35, 45, 45, 0, false);
+			GL11.glColor4b((byte) 127, (byte) 127, (byte) 127, (byte) 127);
+
+			if (selectedmodule instanceof IHUDModuleHandler && ((IHUDModuleHandler) selectedmodule).getHUDRenderer() != null) {
 				GL11.glTranslatef(11.0F, 5.0F, (float) (-0.00005F * distance));
-				((IHUDModuleHandler)selectedmodule).getHUDRenderer().renderContent(shifted);
-				if(((IHUDModuleHandler)selectedmodule).getHUDRenderer().getButtons() != null) {
-					for(IHUDButton button:((IHUDModuleHandler)selectedmodule).getHUDRenderer().getButtons()) {
+				((IHUDModuleHandler) selectedmodule).getHUDRenderer().renderContent(shifted);
+				if (((IHUDModuleHandler) selectedmodule).getHUDRenderer().getButtons() != null) {
+					for (IHUDButton button : ((IHUDModuleHandler) selectedmodule).getHUDRenderer().getButtons()) {
 						button.renderAlways(shifted);
 						if (button.shouldRenderButton()) {
 							button.renderButton(button.isFocused(), button.isblockFocused(), shifted);
 						}
-						if(!button.buttonEnabled() || !button.shouldRenderButton()) continue;
-						if((button.getX() - 1 < (xCursor - 11) && (xCursor - 11) < (button.getX() + button.sizeX() + 1)) && (button.getY() - 1 < (yCursor - 5) && (yCursor - 5) < (button.getY() + button.sizeY() + 1))) {
-							if(!button.isFocused() && !button.isblockFocused()) {
+						if (!button.buttonEnabled() || !button.shouldRenderButton()) {
+							continue;
+						}
+						if ((button.getX() - 1 < (xCursor - 11) && (xCursor - 11) < (button.getX() + button.sizeX() + 1)) && (button.getY() - 1 < (yCursor - 5) && (yCursor - 5) < (button.getY() + button.sizeY() + 1))) {
+							if (!button.isFocused() && !button.isblockFocused()) {
 								button.setFocused();
-							} else if(button.focusedTime() > 400 && !button.isblockFocused()) {
+							} else if (button.focusedTime() > 400 && !button.isblockFocused()) {
 								button.clicked();
 								button.blockFocused();
 							}
-						} else if(button.isFocused() || button.isblockFocused()) {
+						} else if (button.isFocused() || button.isblockFocused()) {
 							button.clearFocused();
 						}
 					}
@@ -141,9 +144,9 @@ public class HudChassisPipe extends BasicHUDGui {
 				GL11.glTranslatef(-11.0F, -5.0F, (float) (0.00005F * distance));
 			} else {
 				GL11.glTranslatef(0.0F, 0.0F, (float) (-0.00005F * distance));
-				mc.fontRenderer.drawString("Nothing" , -5, -15, 0);
-				mc.fontRenderer.drawString("to" , 9, -5, 0);
-				mc.fontRenderer.drawString("display" , -5, 5, 0);
+				mc.fontRenderer.drawString("Nothing", -5, -15, 0);
+				mc.fontRenderer.drawString("to", 9, -5, 0);
+				mc.fontRenderer.drawString("display", -5, 5, 0);
 				GL11.glTranslatef(0.0F, 0.0F, (float) (0.00005F * distance));
 			}
 		} else {
@@ -157,10 +160,12 @@ public class HudChassisPipe extends BasicHUDGui {
 
 	@Override
 	public boolean display(IHUDConfig config) {
-		if(!config.isHUDChassie()) return false;
-		for(int i=0;i<moduleInventory.getSizeInventory();i++) {
+		if (!config.isHUDChassie()) {
+			return false;
+		}
+		for (int i = 0; i < moduleInventory.getSizeInventory(); i++) {
 			ItemStack stack = moduleInventory.getStackInSlot(i);
-			if(stack != null) {
+			if (stack != null) {
 				return true;
 			}
 		}
@@ -174,39 +179,39 @@ public class HudChassisPipe extends BasicHUDGui {
 
 	@Override
 	public void handleCursor(int x, int y) {
-		super.handleCursor(x,y);
+		super.handleCursor(x, y);
 		xCursor = x;
 		yCursor = y;
 	}
-	
+
 	private void moduleClicked(int number) {
 		selected = number;
-		if(selected != -1) {
+		if (selected != -1) {
 			LogisticsModule selectedmodule = module.getSubModule(selected);
-			if(selectedmodule instanceof IHUDModuleHandler) {
-				((IHUDModuleHandler)selectedmodule).startHUDWatching();
+			if (selectedmodule instanceof IHUDModuleHandler) {
+				((IHUDModuleHandler) selectedmodule).startHUDWatching();
 			}
 		}
 	}
-	
+
 	private void resetSelection() {
-		if(selected != -1) {
+		if (selected != -1) {
 			LogisticsModule selectedmodule = module.getSubModule(selected);
-			if(selectedmodule instanceof IHUDModuleHandler) {
-				((IHUDModuleHandler)selectedmodule).stopHUDWatching();
+			if (selectedmodule instanceof IHUDModuleHandler) {
+				((IHUDModuleHandler) selectedmodule).stopHUDWatching();
 			}
 		}
 		selected = -1;
 	}
-	
+
 	private boolean isSlotSelected() {
 		return selected != -1;
 	}
-	
+
 	private boolean isSlotSelected(int number) {
 		return selected == number;
 	}
-	
+
 	private boolean shouldDisplayButton(int number) {
 		return modulePage * 3 <= number && number < (modulePage + 1) * 3;
 	}
@@ -214,13 +219,13 @@ public class HudChassisPipe extends BasicHUDGui {
 	public void stopWatching() {
 		resetSelection();
 	}
-	
+
 	private class ItemButton extends BasicHUDButton {
-		
+
 		private ItemIdentifierInventory inv;
 		private int position;
-		
-		public ItemButton(ItemIdentifierInventory inv, int position,int x, int y, int width, int heigth) {
+
+		public ItemButton(ItemIdentifierInventory inv, int position, int x, int y, int width, int heigth) {
 			super("item." + position, x, y, width, heigth);
 			this.inv = inv;
 			this.position = position;
@@ -231,7 +236,8 @@ public class HudChassisPipe extends BasicHUDGui {
 			moduleClicked(position);
 		}
 
-		@Override public void renderButton(boolean hover, boolean clicked, boolean shifted) {
+		@Override
+		public void renderButton(boolean hover, boolean clicked, boolean shifted) {
 			Minecraft mc = FMLClientHandler.instance().getClient();
 			GL11.glEnable(GL11.GL_BLEND);
 
@@ -254,14 +260,15 @@ public class HudChassisPipe extends BasicHUDGui {
 			ItemStack module = inv.getStackInSlot(position);
 
 			if (module != null) {
-				boolean renderInColor = this.buttonEnabled() || isSlotSelected(position);
+				boolean renderInColor = buttonEnabled() || isSlotSelected(position);
 				ItemStackRenderer itemStackRenderer = new ItemStackRenderer(module, DisplayAmount.NEVER, posX + ((sizeX - 16) / 2), posY + ((sizeY - 16) / 2), -0.002F, false, shifted, renderInColor);
 
 				itemStackRenderer.render();
 			}
 		}
 
-		@Override public void renderAlways(boolean shifted) {
+		@Override
+		public void renderAlways(boolean shifted) {
 			if (inv.getStackInSlot(position) == null && shouldDisplayButton(position)) {
 				GL11.glEnable(GL11.GL_BLEND);
 				if (shifted) {
@@ -274,7 +281,7 @@ public class HudChassisPipe extends BasicHUDGui {
 				GuiGraphics.drawGuiBackGround(mc, posX * 2, posY * 2, (posX + sizeX) * 2, (posY + sizeY) * 2, 0, false);
 			}
 		}
-		
+
 		@Override
 		public boolean shouldRenderButton() {
 			boolean result = inv.getStackInSlot(position) != null && shouldDisplayButton(position);

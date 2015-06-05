@@ -7,12 +7,13 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
 
 public class ShapelessResetRecipe implements IRecipe {
+
 	private final Item item;
 	private final int meta;
 	private final ItemStack output;
 
 	public ShapelessResetRecipe(Item item, int meta) {
-		this.output = new ItemStack(item, 1, meta);
+		output = new ItemStack(item, 1, meta);
 		this.item = item;
 		this.meta = meta;
 	}
@@ -22,9 +23,10 @@ public class ShapelessResetRecipe implements IRecipe {
 		int nmatches = 0;
 		for (int i = 0; i < var1.getSizeInventory(); i++) {
 			ItemStack slot = var1.getStackInSlot(i);
-			if(slot == null)
+			if (slot == null) {
 				continue;
-			if(slot.getItem() != item || slot.getItemDamage() != meta) {
+			}
+			if (slot.getItem() != item || slot.getItemDamage() != meta) {
 				return false;
 			}
 			nmatches++;
@@ -36,8 +38,9 @@ public class ShapelessResetRecipe implements IRecipe {
 	public ItemStack getCraftingResult(InventoryCrafting var1) {
 		int nmatches = 0;
 		for (int i = 0; i < var1.getSizeInventory(); i++) {
-			if(var1.getStackInSlot(i) == null)
+			if (var1.getStackInSlot(i) == null) {
 				continue;
+			}
 			nmatches++;
 		}
 		return new ItemStack(item, nmatches, meta);
@@ -50,6 +53,6 @@ public class ShapelessResetRecipe implements IRecipe {
 
 	@Override
 	public ItemStack getRecipeOutput() {
-		return this.output;
+		return output;
 	}
 }

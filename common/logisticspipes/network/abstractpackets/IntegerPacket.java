@@ -4,13 +4,14 @@ import java.io.IOException;
 
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public abstract class IntegerPacket extends ModernPacket {
-	
+
 	@Getter
 	@Setter
 	private int integer;
@@ -18,7 +19,7 @@ public abstract class IntegerPacket extends ModernPacket {
 	public IntegerPacket(int id) {
 		super(id);
 	}
-	
+
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		setInteger(data.readInt());

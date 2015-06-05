@@ -12,38 +12,40 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.ticks.DebugGuiTickHandler;
+
+import net.minecraft.entity.player.EntityPlayer;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayer;
 
 @Accessors(chain = true)
 public class DebugTargetResponse extends ModernPacket {
-	
+
 	public DebugTargetResponse(int id) {
 		super(id);
 	}
-	
+
 	public enum TargetMode {
 		Block,
 		Entity,
 		None;
 	}
-	
+
 	@Getter
 	@Setter
 	private TargetMode mode;
-	
+
 	@Getter
 	@Setter
 	private Object[] additions = new Object[0];
-	
+
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		mode = TargetMode.values()[data.readByte()];
 		int size = data.readInt();
 		additions = new Object[size];
-		for(int i = 0; i < size; i++) {
+		for (int i = 0; i < size; i++) {
 			int arraySize = data.readInt();
 			byte[] bytes = new byte[arraySize];
 			data.read(bytes);
@@ -53,32 +55,32 @@ public class DebugTargetResponse extends ModernPacket {
 			try {
 				Object o = in.readObject();
 				additions[i] = o;
-			} catch(ClassNotFoundException e) {
+			} catch (ClassNotFoundException e) {
 				throw new UnsupportedOperationException(e);
 			}
 		}
 	}
-	
+
 	@Override
 	public void processPacket(EntityPlayer player) {
 		DebugGuiTickHandler.instance().targetResponse(mode, player, additions);
 	}
-	
+
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
 		data.writeByte(mode.ordinal());
 		data.writeInt(additions.length);
-		for(int i = 0; i < additions.length; i++) {
+		for (Object addition : additions) {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			ObjectOutput out = null;
 			out = new ObjectOutputStream(bos);
-			out.writeObject(additions[i]);
+			out.writeObject(addition);
 			byte[] bytes = bos.toByteArray();
 			data.writeInt(bytes.length);
 			data.write(bytes);
 		}
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new DebugTargetResponse(getId());
@@ -89,4 +91,3 @@ public class DebugTargetResponse extends ModernPacket {
 		return true;
 	}
 }
-

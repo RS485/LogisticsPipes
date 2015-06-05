@@ -38,6 +38,7 @@ import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.item.SimpleStackInventory;
 import logisticspipes.utils.tuples.Pair;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.SlotCrafting;
@@ -47,6 +48,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.IIcon;
+
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements ISimpleInventoryEventHandler, IRequestWatcher, IGuiOpenControler, IRotationProvider {
@@ -62,7 +64,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	private int tick = 0;
 	private int rotation;
 	private boolean init = false;
-	
+
 	private PlayerCollectionList localGuiWatcher = new PlayerCollectionList();
 	public Map<Integer, Pair<IResource, LinkedLogisticsOrderList>> watchedRequests = new HashMap<Integer, Pair<IResource, LinkedLogisticsOrderList>>();
 	private int localLastUsedWatcherId = 0;
@@ -77,11 +79,11 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	@Override
 	public boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
 		//allow using upgrade manager
-		if(MainProxy.isPipeControllerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
+		if (MainProxy.isPipeControllerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
 			return false;
 		}
-		if(MainProxy.isServer(getWorld())) {
-			if(settings == null || settings.openGui) {
+		if (MainProxy.isServer(getWorld())) {
+			if (settings == null || settings.openGui) {
 				openGui(entityplayer);
 			} else {
 				entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
@@ -93,35 +95,37 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	@Override
 	public void ignoreDisableUpdateEntity() {
 		super.ignoreDisableUpdateEntity();
-		if(tick++ == 5) {
-			this.getWorld().func_147479_m(this.getX(), this.getY(), this.getZ());
+		if (tick++ == 5) {
+			getWorld().func_147479_m(getX(), getY(), getZ());
 		}
-		if(MainProxy.isClient(this.getWorld())) {
-			if(!init) {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestRotationPacket.class).setPosX(this.getX()).setPosY(this.getY()).setPosZ(this.getZ()));
+		if (MainProxy.isClient(getWorld())) {
+			if (!init) {
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestRotationPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 				init = true;
 			}
 			return;
 		}
-		if(MainProxy.isClient(getWorld())) return;
-		if(tick % 2 == 0 && !localGuiWatcher.isEmpty()) {
+		if (MainProxy.isClient(getWorld())) {
+			return;
+		}
+		if (tick % 2 == 0 && !localGuiWatcher.isEmpty()) {
 			checkForExpired();
-			if(getUpgradeManager().hasCraftingMonitoringUpgrade()) {
-				for(Entry<Integer, Pair<IResource, LinkedLogisticsOrderList>> entry:watchedRequests.entrySet()) {
-					MainProxy.sendToPlayerList(PacketHandler.getPacket(OrdererWatchPacket.class).setOrders(entry.getValue().getValue2()).setStack(entry.getValue().getValue1()).setInteger(entry.getKey()).setTilePos(this.container), localGuiWatcher);
+			if (getUpgradeManager().hasCraftingMonitoringUpgrade()) {
+				for (Entry<Integer, Pair<IResource, LinkedLogisticsOrderList>> entry : watchedRequests.entrySet()) {
+					MainProxy.sendToPlayerList(PacketHandler.getPacket(OrdererWatchPacket.class).setOrders(entry.getValue().getValue2()).setStack(entry.getValue().getValue1()).setInteger(entry.getKey()).setTilePos(container), localGuiWatcher);
 				}
 			}
-		} else if(tick % 20 == 0) {
+		} else if (tick % 20 == 0) {
 			checkForExpired();
 		}
 	}
 
 	private void checkForExpired() {
 		Iterator<Entry<Integer, Pair<IResource, LinkedLogisticsOrderList>>> iter = watchedRequests.entrySet().iterator();
-		while(iter.hasNext()) {
+		while (iter.hasNext()) {
 			Entry<Integer, Pair<IResource, LinkedLogisticsOrderList>> entry = iter.next();
-			if(isDone(entry.getValue().getValue2())) {
-				MainProxy.sendToPlayerList(PacketHandler.getPacket(OrderWatchRemovePacket.class).setInteger(entry.getKey()).setTilePos(this.container), localGuiWatcher);
+			if (isDone(entry.getValue().getValue2())) {
+				MainProxy.sendToPlayerList(PacketHandler.getPacket(OrderWatchRemovePacket.class).setInteger(entry.getKey()).setTilePos(container), localGuiWatcher);
 				iter.remove();
 			}
 		}
@@ -129,12 +133,18 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 
 	private boolean isDone(LinkedLogisticsOrderList orders) {
 		boolean isDone = true;
-		for(IOrderInfoProvider order:orders) {
-			if(!order.isFinished()) isDone = false;
-			if(!order.getProgresses().isEmpty()) isDone = false;
+		for (IOrderInfoProvider order : orders) {
+			if (!order.isFinished()) {
+				isDone = false;
+			}
+			if (!order.getProgresses().isEmpty()) {
+				isDone = false;
+			}
 		}
-		for(LinkedLogisticsOrderList orderList:orders.getSubOrders()) {
-			if(!isDone(orderList)) isDone = false;
+		for (LinkedLogisticsOrderList orderList : orders.getSubOrders()) {
+			if (!isDone(orderList)) {
+				isDone = false;
+			}
 		}
 		return isDone;
 	}
@@ -143,15 +153,15 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	public void enabledUpdateEntity() {
 		super.enabledUpdateEntity();
 		ItemStack stack = toSortInv.getStackInSlot(0);
-		if(stack != null) {
-			if(delay > 0) {
+		if (stack != null) {
+			if (delay > 0) {
 				delay--;
 				return;
 			}
 			IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
-			SimpleServiceLocator.logisticsManager.assignDestinationFor(itemToSend, this.getRouter().getSimpleID(), false);
-			if(itemToSend.getDestinationUUID() != null) {
-				ForgeDirection dir = this.getRouteLayer().getOrientationForItem(itemToSend, null);
+			SimpleServiceLocator.logisticsManager.assignDestinationFor(itemToSend, getRouter().getSimpleID(), false);
+			if (itemToSend.getDestinationUUID() != null) {
+				ForgeDirection dir = getRouteLayer().getOrientationForItem(itemToSend, null);
 				super.queueRoutedItem(itemToSend, dir.getOpposite());
 				spawnParticle(Particles.OrangeParticle, 4);
 				toSortInv.clearInventorySlotContents(0);
@@ -166,23 +176,23 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	@Override
 	public void openGui(EntityPlayer entityplayer) {
 		boolean flag = true;
-		if(diskInv.getStackInSlot(0) == null) {
-			if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem().equals(LogisticsPipes.LogisticsItemDisk)) {
+		if (diskInv.getStackInSlot(0) == null) {
+			if (entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem().equals(LogisticsPipes.LogisticsItemDisk)) {
 				diskInv.setInventorySlotContents(0, entityplayer.getCurrentEquippedItem());
 				entityplayer.inventory.setInventorySlotContents(entityplayer.inventory.currentItem, null);
-		        flag = false;
+				flag = false;
 			}
 		}
-		if(flag) {
-			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Request_Table_ID, this.getWorld(), this.getX() , this.getY(), this.getZ());
+		if (flag) {
+			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Request_Table_ID, getWorld(), getX(), getY(), getZ());
 		}
 	}
-	
+
 	@Override
 	public TextureType getCenterTexture() {
 		return Textures.empty;
 	}
-	
+
 	@Override
 	public TextureType getRoutedTexture(ForgeDirection connection) {
 		return Textures.empty_1;
@@ -195,14 +205,14 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 
 	public IIcon getTextureFor(int l) {
 		ForgeDirection dir = ForgeDirection.getOrientation(l);
-		if(LogisticsPipes.getClientPlayerConfig().isUseNewRenderer()) {
-			switch(dir) {
+		if (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer()) {
+			switch (dir) {
 				case UP:
 				case DOWN:
 					return Textures.LOGISTICS_REQUEST_TABLE_NEW_EMPTY;
 				default:
-					if(this.container.renderState.pipeConnectionMatrix.isConnected(dir)) {
-						if (this.container.renderState.textureMatrix.getTextureIndex(dir) == 1) {
+					if (container.renderState.pipeConnectionMatrix.isConnected(dir)) {
+						if (container.renderState.textureMatrix.getTextureIndex(dir) == 1) {
 							return Textures.LOGISTICS_REQUEST_TABLE_NEW_ROUTED;
 						} else {
 							return Textures.LOGISTICS_REQUEST_TABLE_NEW_UNROUTED;
@@ -212,14 +222,14 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 					}
 			}
 		} else {
-			switch(dir) {
+			switch (dir) {
 				case UP:
 					return Textures.LOGISTICS_REQUEST_TABLE[0];
 				case DOWN:
 					return Textures.LOGISTICS_REQUEST_TABLE[1];
 				default:
-					if(this.container.renderState.pipeConnectionMatrix.isConnected(dir)) {
-						if (this.container.renderState.textureMatrix.getTextureIndex(dir) == 1) {
+					if (container.renderState.pipeConnectionMatrix.isConnected(dir)) {
+						if (container.renderState.textureMatrix.getTextureIndex(dir) == 1) {
 							return Textures.LOGISTICS_REQUEST_TABLE[2];
 						} else {
 							return Textures.LOGISTICS_REQUEST_TABLE[3];
@@ -233,47 +243,47 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 
 	@Override
 	public void onAllowedRemoval() {
-		if(MainProxy.isServer(this.getWorld())) {
+		if (MainProxy.isServer(getWorld())) {
 			inv.dropContents(getWorld(), getX(), getY(), getZ());
 			toSortInv.dropContents(getWorld(), getX(), getY(), getZ());
 			diskInv.dropContents(getWorld(), getX(), getY(), getZ());
 		}
 	}
-	
+
 	public void cacheRecipe() {
 		ItemIdentifier oldTargetType = targetType;
 		cache = null;
 		resultInv.clearInventorySlotContents(0);
 		AutoCraftingInventory craftInv = new AutoCraftingInventory(null);
-		for(int i=0; i<9;i++) {
+		for (int i = 0; i < 9; i++) {
 			craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
 		}
 		List<IRecipe> list = new ArrayList<IRecipe>();
-		for(IRecipe r : CraftingUtil.getRecipeList()) {
-			if(r.matches(craftInv, getWorld())) {
+		for (IRecipe r : CraftingUtil.getRecipeList()) {
+			if (r.matches(craftInv, getWorld())) {
 				list.add(r);
 			}
 		}
-		if(list.size() == 1) {
+		if (list.size() == 1) {
 			cache = list.get(0);
 			resultInv.setInventorySlotContents(0, cache.getCraftingResult(craftInv));
 			targetType = null;
-		} else if(list.size() > 1) {
-			if(targetType != null) {
-				for(IRecipe recipe:list) {
+		} else if (list.size() > 1) {
+			if (targetType != null) {
+				for (IRecipe recipe : list) {
 					craftInv = new AutoCraftingInventory(null);
-					for(int i=0; i<9;i++) {
+					for (int i = 0; i < 9; i++) {
 						craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
 					}
 					ItemStack result = recipe.getCraftingResult(craftInv);
-					if(targetType == ItemIdentifier.get(result)) {
+					if (targetType == ItemIdentifier.get(result)) {
 						resultInv.setInventorySlotContents(0, result);
 						cache = recipe;
 						break;
 					}
 				}
 			}
-			if(cache == null) {
+			if (cache == null) {
 				cache = list.get(0);
 				ItemStack result = cache.getCraftingResult(craftInv);
 				resultInv.setInventorySlotContents(0, result);
@@ -282,42 +292,44 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		} else {
 			targetType = null;
 		}
-		if(targetType != oldTargetType && !localGuiWatcher.isEmpty() && this.getWorld() != null && MainProxy.isServer(this.getWorld())) {
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(this.container), localGuiWatcher);
+		if (targetType != oldTargetType && !localGuiWatcher.isEmpty() && getWorld() != null && MainProxy.isServer(getWorld())) {
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(container), localGuiWatcher);
 		}
 	}
 
 	public void cycleRecipe(boolean down) {
 		cacheRecipe();
-		if(targetType == null) return;
+		if (targetType == null) {
+			return;
+		}
 		cache = null;
 		AutoCraftingInventory craftInv = new AutoCraftingInventory(null);
-		for(int i=0; i<9;i++) {
+		for (int i = 0; i < 9; i++) {
 			craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
 		}
 		List<IRecipe> list = new ArrayList<IRecipe>();
-		for(IRecipe r : CraftingUtil.getRecipeList()) {
-			if(r.matches(craftInv, getWorld())) {
+		for (IRecipe r : CraftingUtil.getRecipeList()) {
+			if (r.matches(craftInv, getWorld())) {
 				list.add(r);
 			}
 		}
-		if(list.size() > 1) {
+		if (list.size() > 1) {
 			boolean found = false;
 			IRecipe prev = null;
-			for(IRecipe recipe:list) {
-				if(found) {
+			for (IRecipe recipe : list) {
+				if (found) {
 					cache = recipe;
 					break;
 				}
 				craftInv = new AutoCraftingInventory(null);
-				for(int i=0; i<9;i++) {
+				for (int i = 0; i < 9; i++) {
 					craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
 				}
-				if(targetType == ItemIdentifier.get(recipe.getCraftingResult(craftInv))) {
-					if(down) {
+				if (targetType == ItemIdentifier.get(recipe.getCraftingResult(craftInv))) {
+					if (down) {
 						found = true;
 					} else {
-						if(prev == null) {
+						if (prev == null) {
 							cache = list.get(list.size() - 1);
 						} else {
 							cache = prev;
@@ -327,99 +339,115 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 				}
 				prev = recipe;
 			}
-			if(cache == null) {
+			if (cache == null) {
 				cache = list.get(0);
 			}
 			craftInv = new AutoCraftingInventory(null);
-			for(int i=0; i<9;i++) {
+			for (int i = 0; i < 9; i++) {
 				craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
 			}
 			targetType = ItemIdentifier.get(cache.getCraftingResult(craftInv));
 		}
-		if(!localGuiWatcher.isEmpty() && this.getWorld() != null && MainProxy.isServer(this.getWorld())) {
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(this.container), localGuiWatcher);
+		if (!localGuiWatcher.isEmpty() && getWorld() != null && MainProxy.isServer(getWorld())) {
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(container), localGuiWatcher);
 		}
 		cacheRecipe();
 	}
 
 	public ItemStack getOutput(boolean oreDict) {
-		if(cache == null) {
+		if (cache == null) {
 			cacheRecipe();
-			if(cache == null) return null;
+			if (cache == null) {
+				return null;
+			}
 		}
-		if(resultInv.getIDStackInSlot(0) == null) return null;
-		
+		if (resultInv.getIDStackInSlot(0) == null) {
+			return null;
+		}
+
 		int[] toUse = new int[9];
 		int[] used = new int[inv.getSizeInventory()];
-outer:
-		for(int i=0;i<9;i++) {
-			ItemStack item = matrix.getStackInSlot(i);
-			if(item == null) {
-				toUse[i] = -1;
-				continue;
-			}
-			ItemIdentifier ident = ItemIdentifier.get(item);
-			for(int j=0;j<inv.getSizeInventory();j++) {
-				item = inv.getStackInSlot(j);
-				if(item == null) continue;
-				ItemIdentifier withIdent = ItemIdentifier.get(item);
-				if(ident.equalsForCrafting(withIdent)) {
-					if(item.stackSize > used[j]) {
-						used[j]++;
-						toUse[i] = j;
-						continue outer;
-					}
+		outer:
+			for (int i = 0; i < 9; i++) {
+				ItemStack item = matrix.getStackInSlot(i);
+				if (item == null) {
+					toUse[i] = -1;
+					continue;
 				}
-				if(oreDict) {
-					if(ident.getDictIdentifiers() != null && withIdent.getDictIdentifiers() != null && ident.getDictIdentifiers().canMatch(withIdent.getDictIdentifiers(), true, false)) {
-						if(item.stackSize > used[j]) {
+				ItemIdentifier ident = ItemIdentifier.get(item);
+				for (int j = 0; j < inv.getSizeInventory(); j++) {
+					item = inv.getStackInSlot(j);
+					if (item == null) {
+						continue;
+					}
+					ItemIdentifier withIdent = ItemIdentifier.get(item);
+					if (ident.equalsForCrafting(withIdent)) {
+						if (item.stackSize > used[j]) {
 							used[j]++;
 							toUse[i] = j;
 							continue outer;
 						}
 					}
+					if (oreDict) {
+						if (ident.getDictIdentifiers() != null && withIdent.getDictIdentifiers() != null && ident.getDictIdentifiers().canMatch(withIdent.getDictIdentifiers(), true, false)) {
+							if (item.stackSize > used[j]) {
+								used[j]++;
+								toUse[i] = j;
+								continue outer;
+							}
+						}
+					}
 				}
+				//Not enough material
+				return null;
 			}
-			//Not enough material
+		AutoCraftingInventory crafter = new AutoCraftingInventory(null);//TODO
+		for (int i = 0; i < 9; i++) {
+			int j = toUse[i];
+			if (j != -1) {
+				crafter.setInventorySlotContents(i, inv.getStackInSlot(j));
+			}
+		}
+		if (!cache.matches(crafter, getWorld())) {
+			return null; //Fix MystCraft
+		}
+		ItemStack result = cache.getCraftingResult(crafter);
+		if (result == null) {
 			return null;
 		}
-		AutoCraftingInventory crafter = new AutoCraftingInventory(null);//TODO
-		for(int i=0;i<9;i++) {
-			int j = toUse[i];
-			if(j != -1) crafter.setInventorySlotContents(i, inv.getStackInSlot(j));
+		if (!resultInv.getIDStackInSlot(0).getItem().equalsWithoutNBT(ItemIdentifier.get(result))) {
+			return null;
 		}
-		if(!cache.matches(crafter, getWorld())) return null; //Fix MystCraft
-		ItemStack result = cache.getCraftingResult(crafter);
-		if(result == null) return null;
-		if(!resultInv.getIDStackInSlot(0).getItem().equalsWithoutNBT(ItemIdentifier.get(result))) return null;
 		crafter = new AutoCraftingInventory(null);//TODO
-		for(int i=0;i<9;i++) {
+		for (int i = 0; i < 9; i++) {
 			int j = toUse[i];
-			if(j != -1) crafter.setInventorySlotContents(i, inv.decrStackSize(j, 1));
+			if (j != -1) {
+				crafter.setInventorySlotContents(i, inv.decrStackSize(j, 1));
+			}
 		}
 		result = cache.getCraftingResult(crafter);
-		if(fake == null) {
-			fake = MainProxy.getFakePlayer(this.container);
+		if (fake == null) {
+			fake = MainProxy.getFakePlayer(container);
 		}
 		result = result.copy();
 		SlotCrafting craftingSlot = new SlotCrafting(fake, crafter, resultInv, 0, 0, 0);
 		craftingSlot.onPickupFromSlot(fake, result);
-		for(int i=0;i<9;i++) {
+		for (int i = 0; i < 9; i++) {
 			ItemStack left = crafter.getStackInSlot(i);
 			crafter.setInventorySlotContents(i, null);
-			if(left != null) {
+			if (left != null) {
 				left.stackSize = inv.addCompressed(left, false);
-				if(left.stackSize > 0) {
+				if (left.stackSize > 0) {
 					ItemIdentifierInventory.dropItems(getWorld(), left, getX(), getY(), getZ());
 				}
 			}
 		}
-		for(int i=0;i<fake.inventory.getSizeInventory();i++) {
+		for (int i = 0; i < fake.inventory.getSizeInventory(); i++) {
 			ItemStack left = fake.inventory.getStackInSlot(i);
 			fake.inventory.setInventorySlotContents(i, null);
-			if(left != null) {
+			if (left != null) {
 				left.stackSize = inv.addCompressed(left, false);
-				if(left.stackSize > 0) {
+				if (left.stackSize > 0) {
 					ItemIdentifierInventory.dropItems(getWorld(), left, getX(), getY(), getZ());
 				}
 			}
@@ -429,25 +457,28 @@ outer:
 
 	public ItemStack getResultForClick() {
 		ItemStack result = getOutput(true);
-		if(result == null)
+		if (result == null) {
 			result = getOutput(false);
-		if(result == null)
+		}
+		if (result == null) {
 			return null;
+		}
 		result.stackSize = inv.addCompressed(result, false);
-		if(result.stackSize > 0)
+		if (result.stackSize > 0) {
 			return result;
+		}
 		return null;
 	}
 
 	@Override
 	public void InventoryChanged(IInventory inventory) {
-		if(inventory == matrix) {
+		if (inventory == matrix) {
 			cacheRecipe();
 		}
 	}
 
 	public void handleNEIRecipePacket(ItemStack[] content) {
-		for(int i=0;i<9;i++) {
+		for (int i = 0; i < 9; i++) {
 			matrix.setInventorySlotContents(i, content[i]);
 		}
 		cacheRecipe();
@@ -476,7 +507,7 @@ outer:
 	}
 
 	@Override
-	public boolean sharesInterestWith(CoreRoutedPipe other){
+	public boolean sharesInterestWith(CoreRoutedPipe other) {
 		return false;
 	}
 
@@ -484,18 +515,21 @@ outer:
 	public TransportLayer getTransportLayer() {
 		if (_transportLayer == null) {
 			_transportLayer = new TransportLayer() {
+
 				@Override
 				public void handleItem(IRoutedItem item) {
 					PipeBlockRequestTable.this.notifyOfItemArival(item.getInfo());
-					if(item.getItemIdentifierStack() != null) {
+					if (item.getItemIdentifierStack() != null) {
 						ItemIdentifierStack stack = item.getItemIdentifierStack();
 						stack.setStackSize(inv.addCompressed(stack.makeNormalStack(), false));
 					}
 				}
+
 				@Override
 				public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection denyed) {
 					return null;
 				}
+
 				@Override
 				public boolean stillWantItem(IRoutedItem item) {
 					return false;
@@ -507,19 +541,21 @@ outer:
 
 	@Override
 	public void handleOrderList(IResource stack, LinkedLogisticsOrderList orders) {
-		if(!getUpgradeManager().hasCraftingMonitoringUpgrade()) return;
+		if (!getUpgradeManager().hasCraftingMonitoringUpgrade()) {
+			return;
+		}
 		orders.setWatched();
 		watchedRequests.put(++localLastUsedWatcherId, new Pair<IResource, LinkedLogisticsOrderList>(stack, orders));
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(OrdererWatchPacket.class).setOrders(orders).setStack(stack).setInteger(localLastUsedWatcherId).setTilePos(this.container), localGuiWatcher);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(OrdererWatchPacket.class).setOrders(orders).setStack(stack).setInteger(localLastUsedWatcherId).setTilePos(container), localGuiWatcher);
 	}
 
 	@Override
 	public void guiOpenedByPlayer(EntityPlayer player) {
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrderWatchRemovePacket.class).setInteger(-1).setTilePos(this.container), player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(this.container), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrderWatchRemovePacket.class).setInteger(-1).setTilePos(container), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(container), player);
 		localGuiWatcher.add(player);
-		for(Entry<Integer, Pair<IResource, LinkedLogisticsOrderList>> entry:watchedRequests.entrySet()) {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererWatchPacket.class).setOrders(entry.getValue().getValue2()).setStack(entry.getValue().getValue1()).setInteger(entry.getKey()).setTilePos(this.container), player);
+		for (Entry<Integer, Pair<IResource, LinkedLogisticsOrderList>> entry : watchedRequests.entrySet()) {
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererWatchPacket.class).setOrders(entry.getValue().getValue2()).setStack(entry.getValue().getValue1()).setInteger(entry.getKey()).setTilePos(container), player);
 		}
 	}
 
@@ -530,15 +566,15 @@ outer:
 
 	@Override
 	public void handleClientSideListInfo(int id, IResource stack, LinkedLogisticsOrderList orders) {
-		if(MainProxy.isClient(getWorld())) {
+		if (MainProxy.isClient(getWorld())) {
 			watchedRequests.put(id, new Pair<IResource, LinkedLogisticsOrderList>(stack, orders));
 		}
 	}
 
 	@Override
 	public void handleClientSideRemove(int id) {
-		if(MainProxy.isClient(getWorld())) {
-			if(id == -1) {
+		if (MainProxy.isClient(getWorld())) {
+			if (id == -1) {
 				watchedRequests.clear();
 			} else {
 				watchedRequests.remove(id);

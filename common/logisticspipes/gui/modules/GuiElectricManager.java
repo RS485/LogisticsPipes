@@ -1,7 +1,7 @@
-/** 
+/**
  * Copyright (c) Krapht, 2011
  * 
- * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public 
+ * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
@@ -14,6 +14,7 @@ import logisticspipes.network.packets.module.ElectricManagerPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
+
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
@@ -28,9 +29,10 @@ public class GuiElectricManager extends ModuleBaseGui {
 	@Override
 	public void initGui() {
 		super.initGui();
-	    //Default item toggle:
+		//Default item toggle:
 		buttonList.clear();
 		buttonList.add(new GuiStringHandlerButton(0, width / 2 - 6, height / 2 - 34, 88, 20, new GuiStringHandlerButton.StringHandler() {
+
 			@Override
 			public String getContent() {
 				return _module.isDischargeMode() ? "Discharge Items" : "Charge Items";
@@ -40,8 +42,7 @@ public class GuiElectricManager extends ModuleBaseGui {
 
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
-		switch(guibutton.id)
-		{
+		switch (guibutton.id) {
 			case 0:
 				_module.setDischargeMode(!_module.isDischargeMode());
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(ElectricManagerPacket.class).setFlag(_module.isDischargeMode()).setModulePos(_module));
@@ -56,10 +57,10 @@ public class GuiElectricManager extends ModuleBaseGui {
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 
 		//Pipe slots
-		for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
+		for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
 			dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
 		}
-		this.inventorySlots = dummy;
+		inventorySlots = dummy;
 		xSize = 175;
 		ySize = 142;
 	}
@@ -69,11 +70,13 @@ public class GuiElectricManager extends ModuleBaseGui {
 		mc.fontRenderer.drawString(_module.getFilterInventory().getInventoryName(), 8, 6, 0x404040);
 		mc.fontRenderer.drawString("Inventory", 8, ySize - 92, 0x404040);
 	}
+
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/itemsink.png");
+
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(TEXTURE);
+		mc.renderEngine.bindTexture(GuiElectricManager.TEXTURE);
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);

@@ -11,7 +11,7 @@ public class DistanceTracker implements IDistanceTracker {
 
 	@Override
 	public void setCurrentDistanceToTarget(int value) {
-		if(initialDistance == 0) {
+		if (initialDistance == 0) {
 			initialDistance = value;
 		}
 		currentDistance = value;

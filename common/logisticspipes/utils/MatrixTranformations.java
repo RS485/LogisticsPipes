@@ -7,8 +7,7 @@ public final class MatrixTranformations {
 	/**
 	 * Deactivate constructor
 	 */
-	private MatrixTranformations() {
-	}
+	private MatrixTranformations() {}
 
 	/**
 	 * Mirrors the array on the Y axis by calculating offsets from 0.5F
@@ -23,10 +22,11 @@ public final class MatrixTranformations {
 
 	/**
 	 * Shifts the coordinates around effectively rotating something. Zero state
-	 * is DOWN then -> NORTH -> WEST Note - To obtain Position, do a mirrorY() before
-	 * rotating
+	 * is DOWN then -> NORTH -> WEST Note - To obtain Position, do a mirrorY()
+	 * before rotating
 	 *
-	 * @param targetArray the array that should be rotated
+	 * @param targetArray
+	 *            the array that should be rotated
 	 */
 	public static void rotate(float[][] targetArray) {
 		for (int i = 0; i < 2; i++) {
@@ -38,23 +38,25 @@ public final class MatrixTranformations {
 	}
 
 	/**
-	 * @param targetArray the array that should be transformed
+	 * @param targetArray
+	 *            the array that should be transformed
 	 * @param direction
 	 */
 	public static void transform(float[][] targetArray, ForgeDirection direction) {
 		if ((direction.ordinal() & 0x1) == 1) {
-			mirrorY(targetArray);
+			MatrixTranformations.mirrorY(targetArray);
 		}
 
 		for (int i = 0; i < (direction.ordinal() >> 1); i++) {
-			rotate(targetArray);
+			MatrixTranformations.rotate(targetArray);
 		}
 	}
 
 	/**
 	 * Clones both dimensions of a float[][]
 	 *
-	 * @param source the float[][] to deepClone
+	 * @param source
+	 *            the float[][] to deepClone
 	 */
 	public static float[][] deepClone(float[][] source) {
 		float[][] target = source.clone();

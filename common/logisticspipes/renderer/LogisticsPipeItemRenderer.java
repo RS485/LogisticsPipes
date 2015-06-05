@@ -4,6 +4,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.config.PlayerConfig;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.renderer.newpipe.LogisticsNewPipeItemRenderer;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -11,6 +12,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+
 import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
@@ -19,12 +21,12 @@ public class LogisticsPipeItemRenderer implements IItemRenderer {
 
 	private PlayerConfig config = LogisticsPipes.getClientPlayerConfig();
 	private LogisticsNewPipeItemRenderer newRenderer;
-	
+
 	private final boolean renderAsBlock;
 
 	private static final float PIPE_MIN_POS = 0.25F;
 	private static final float PIPE_MAX_POS = 0.75F;
-	
+
 	public LogisticsPipeItemRenderer(boolean flag) {
 		newRenderer = new LogisticsNewPipeItemRenderer(flag);
 		renderAsBlock = flag;
@@ -46,7 +48,7 @@ public class LogisticsPipeItemRenderer implements IItemRenderer {
 			icon = ((TextureMap) Minecraft.getMinecraft().getTextureManager().getTexture(TextureMap.locationBlocksTexture)).getAtlasSprite("missingno");
 		}
 
-		block.setBlockBounds(PIPE_MIN_POS, 0.0F, PIPE_MIN_POS, PIPE_MAX_POS, 1.0F, PIPE_MAX_POS);
+		block.setBlockBounds(LogisticsPipeItemRenderer.PIPE_MIN_POS, 0.0F, LogisticsPipeItemRenderer.PIPE_MIN_POS, LogisticsPipeItemRenderer.PIPE_MAX_POS, 1.0F, LogisticsPipeItemRenderer.PIPE_MAX_POS);
 		//block.setBlockBounds(PIPE_MIN_POS, PIPE_MIN_POS, PIPE_MIN_POS, PIPE_MAX_POS, PIPE_MAX_POS, PIPE_MAX_POS);
 		block.setBlockBoundsForItemRender();
 		render.setRenderBoundsFromBlock(block);
@@ -81,12 +83,12 @@ public class LogisticsPipeItemRenderer implements IItemRenderer {
 
 		GL11.glPopAttrib(); // nicely leave the rendering how it was
 	}
-	
+
 	private void renderBlockItem(RenderBlocks render, ItemStack item, float translateX, float translateY, float translateZ) {
 		Tessellator tessellator = Tessellator.instance;
 
 		Block block = LogisticsPipes.LogisticsPipeBlock;
-		
+
 		block.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 		block.setBlockBoundsForItemRender();
 		render.setRenderBoundsFromBlock(block);
@@ -119,33 +121,33 @@ public class LogisticsPipeItemRenderer implements IItemRenderer {
 		GL11.glTranslatef(0.5F, 0.5F, 0.5F);
 		block.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 	}
-	
+
 	private void renderItem(RenderBlocks render, ItemStack item, float translateX, float translateY, float translateZ) {
-		if(renderAsBlock) {
+		if (renderAsBlock) {
 			renderBlockItem(render, item, translateX, translateY, translateZ);
 		} else {
 			renderPipeItem(render, item, translateX, translateY, translateZ);
 		}
 	}
-		
+
 	/** IItemRenderer implementation **/
 
 	@Override
 	public boolean handleRenderType(ItemStack item, ItemRenderType type) {
-		if(config.isUseNewRenderer()) {
+		if (config.isUseNewRenderer()) {
 			return newRenderer.handleRenderType(item, type);
 		}
 		switch (type) {
-		case ENTITY:
-			return true;
-		case EQUIPPED:
-			return true;
-		case EQUIPPED_FIRST_PERSON:
-			return true;
-		case INVENTORY:
-			return true;
-		default:
-			return false;
+			case ENTITY:
+				return true;
+			case EQUIPPED:
+				return true;
+			case EQUIPPED_FIRST_PERSON:
+				return true;
+			case INVENTORY:
+				return true;
+			default:
+				return false;
 		}
 	}
 
@@ -156,7 +158,7 @@ public class LogisticsPipeItemRenderer implements IItemRenderer {
 
 	@Override
 	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
-		if(config.isUseNewRenderer()) {
+		if (config.isUseNewRenderer()) {
 			newRenderer.renderItem(type, item, data);
 			return;
 		}

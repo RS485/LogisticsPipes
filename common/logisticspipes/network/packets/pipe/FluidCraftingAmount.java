@@ -4,10 +4,12 @@ import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.network.abstractpackets.Integer2ModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.MainProxy;
-import lombok.experimental.Accessors;
+
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+import lombok.experimental.Accessors;
+
+@Accessors(chain = true)
 public class FluidCraftingAmount extends Integer2ModuleCoordinatesPacket {
 
 	public FluidCraftingAmount(int id) {
@@ -22,12 +24,13 @@ public class FluidCraftingAmount extends Integer2ModuleCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		ModuleCrafter module = this.getLogisticsModule(player, ModuleCrafter.class);
-		if(module == null) return;
-		if(MainProxy.isClient(player.worldObj)) {
+		if (module == null) {
+			return;
+		}
+		if (MainProxy.isClient(player.worldObj)) {
 			module.defineFluidAmount(getInteger(), getInteger2());
 		} else {
 			module.changeFluidAmount(getInteger(), getInteger2(), player);
 		}
 	}
 }
-

@@ -6,6 +6,7 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+
 import net.minecraft.entity.player.EntityPlayer;
 
 public class CrafterDefault extends Integer2CoordinatesPacket {
@@ -25,25 +26,26 @@ public class CrafterDefault extends Integer2CoordinatesPacket {
 		if (pipe == null) {
 			return;
 		}
-		if(getInteger2() == -1) {
+		if (getInteger2() == -1) {
 			if (!(pipe.pipe instanceof CoreRoutedPipe)) {
 				return;
 			}
-			if(!(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleCrafter)) {
+			if (!(((CoreRoutedPipe) pipe.pipe).getLogisticsModule() instanceof ModuleCrafter)) {
 				return;
 			}
-			ModuleCrafter module = (ModuleCrafter) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule();
+			ModuleCrafter module = (ModuleCrafter) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule();
 			//module.setDefaultRoute(getInteger() == 1);
 			return;
 		}
 		if (!(pipe.pipe instanceof PipeLogisticsChassi)) {
 			return;
 		}
-		if(((PipeLogisticsChassi)pipe.pipe).getModules() == null) return;
-		if(((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2()) instanceof ModuleCrafter) {
-			ModuleCrafter module = (ModuleCrafter) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2());
+		if (((PipeLogisticsChassi) pipe.pipe).getModules() == null) {
+			return;
+		}
+		if (((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getInteger2()) instanceof ModuleCrafter) {
+			ModuleCrafter module = (ModuleCrafter) ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getInteger2());
 			//module.setDefaultRoute(getInteger() == 1);
 		}
 	}
 }
-

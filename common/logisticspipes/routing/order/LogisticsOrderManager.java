@@ -21,71 +21,73 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.LPPosition;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
 public abstract class LogisticsOrderManager<T extends LogisticsOrder> implements Iterable<T> {
-	
+
 	public LogisticsOrderManager(ILPPositionProvider pos) {
 		this.pos = pos;
 	}
-	
+
 	public LogisticsOrderManager(IChangeListener listener, ILPPositionProvider pos) {
 		this(pos);
 		this.listener = listener;
 	}
-	
-	private LinkedList<T> oldOrders 	= new LinkedList<T>();
-	
-	protected LinkedList<T>	_orders		= new LinkedList<T>();
-	protected IChangeListener				listener	= null;
-	
-	protected PlayerCollectionList		watchingPlayers = new PlayerCollectionList();
-	
+
+	private LinkedList<T> oldOrders = new LinkedList<T>();
+
+	protected LinkedList<T> _orders = new LinkedList<T>();
+	protected IChangeListener listener = null;
+
+	protected PlayerCollectionList watchingPlayers = new PlayerCollectionList();
+
 	private ILPPositionProvider pos = null;
-	
+
 	protected void listen() {
 		changed();
-		if(listener != null) {
+		if (listener != null) {
 			listener.listenedChanged();
 		}
 	}
-	
+
 	public LinkedList<ItemIdentifierStack> getContentList(World world) {
-		if(MainProxy.isClient(world) || _orders.size() == 0) return new LinkedList<ItemIdentifierStack>();
+		if (MainProxy.isClient(world) || _orders.size() == 0) {
+			return new LinkedList<ItemIdentifierStack>();
+		}
 		LinkedList<ItemIdentifierStack> list = new LinkedList<ItemIdentifierStack>();
-		for(LogisticsOrder request: _orders) {
-			addToList(request.getAsDisplayItem(), list);
+		for (LogisticsOrder request : _orders) {
+			LogisticsOrderManager.addToList(request.getAsDisplayItem(), list);
 		}
 		return list;
 	}
-	
+
 	private static void addToList(ItemIdentifierStack stack, LinkedList<ItemIdentifierStack> list) {
-		for(ItemIdentifierStack ident: list) {
-			if(ident.getItem().equals(stack.getItem())) {
+		for (ItemIdentifierStack ident : list) {
+			if (ident.getItem().equals(stack.getItem())) {
 				ident.setStackSize(ident.getStackSize() + stack.getStackSize());
 				return;
 			}
 		}
 		list.addLast(stack.clone());
 	}
-	
+
 	public boolean hasOrders(ResourceType type) {
-		return  peekAtTopRequest(type) != null;
+		return peekAtTopRequest(type) != null;
 	}
-	
+
 	/* only multi-access SAFE when type is null; all other access patterns may change the state of the stack so the returned element is on top*/
 	@SuppressWarnings("unchecked")
 	public T peekAtTopRequest(ResourceType type) {
-		if(_orders.size() == 0) {
+		if (_orders.size() == 0) {
 			return null;
 		}
 		T top = (T) _orders.getFirst().setInProgress(true);
-		int loopCount=0;
-		while(type != null & top.getType() != type){
+		int loopCount = 0;
+		while (type != null & top.getType() != type) {
 			loopCount++;
-			if(loopCount > _orders.size()) {
+			if (loopCount > _orders.size()) {
 				return null;
 			}
 			deferSend(); // sets the new top to InProgress
@@ -97,25 +99,25 @@ public abstract class LogisticsOrderManager<T extends LogisticsOrder> implements
 	@SuppressWarnings("unchecked")
 	public void sendSuccessfull(int number, boolean defersend, IRoutedItem item) {
 		_orders.getFirst().reduceAmountBy(number);
-		if(_orders.getFirst().isWatched()) {
+		if (_orders.getFirst().isWatched()) {
 			IDistanceTracker tracker = new DistanceTracker();
 			item.setDistanceTracker(tracker);
 			_orders.getFirst().addDistanceTracker(tracker);
 		}
 		int destination = _orders.getFirst().getRouterId();
-		if(_orders.getFirst().getAmount() <= 0) {
+		if (_orders.getFirst().getAmount() <= 0) {
 			LogisticsOrder order = _orders.removeFirst();
 			order.setFinished(true);
 			order.setInProgress(false);
 		}
-		if(!_orders.isEmpty()) {
+		if (!_orders.isEmpty()) {
 			LogisticsOrder start = _orders.getFirst();
-			if(defersend && destination == start.getRouterId()) {
+			if (defersend && destination == start.getRouterId()) {
 				_orders.add((T) _orders.removeFirst().setInProgress(false));
-				while(start != _orders.getFirst() && destination == _orders.getFirst().getRouterId()) {
+				while (start != _orders.getFirst() && destination == _orders.getFirst().getRouterId()) {
 					_orders.add(_orders.removeFirst());
 				}
-				if(start == _orders.getFirst()) {
+				if (start == _orders.getFirst()) {
 					_orders.add(_orders.removeFirst());
 				}
 				_orders.getFirst().setInProgress(true);
@@ -123,50 +125,54 @@ public abstract class LogisticsOrderManager<T extends LogisticsOrder> implements
 		}
 		listen();
 	}
-	
+
 	public void sendFailed() {
-		if(!_orders.isEmpty()) {
+		if (!_orders.isEmpty()) {
 			LogisticsOrder order = _orders.removeFirst();
 			order.setFinished(true);
 			order.setInProgress(false);
 		}
-		if(!_orders.isEmpty()) {
+		if (!_orders.isEmpty()) {
 			_orders.getFirst().setInProgress(true);
 		}
 		listen();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public void deferSend() {
 		int destination = _orders.getFirst().getRouterId();
 		LogisticsOrder start = _orders.getFirst();
 		_orders.add((T) _orders.removeFirst().setInProgress(false));
-		while(start != _orders.getFirst() && destination == _orders.getFirst().getRouterId()) {
+		while (start != _orders.getFirst() && destination == _orders.getFirst().getRouterId()) {
 			_orders.add(_orders.removeFirst());
 		}
-		if(start == _orders.getFirst()) {
+		if (start == _orders.getFirst()) {
 			_orders.add(_orders.removeFirst());
 		}
 		_orders.getFirst().setInProgress(true);
 		listen();
 	}
-	
+
 	public int totalAmountCountInAllOrders() {
 		int amount = 0;
-		for(LogisticsOrder request: _orders) {
+		for (LogisticsOrder request : _orders) {
 			amount += request.getAmount();
 		}
 		return amount;
 	}
 
 	public void setMachineProgress(byte progress) {
-		if(_orders.isEmpty()) return;
+		if (_orders.isEmpty()) {
+			return;
+		}
 		_orders.getFirst().setMachineProgress(progress);
 		changed();
 	}
 
 	public boolean isFirstOrderWatched() {
-		if(_orders.isEmpty()) return false;
+		if (_orders.isEmpty()) {
+			return false;
+		}
 		return _orders.getFirst().isWatched();
 	}
 
@@ -178,13 +184,15 @@ public abstract class LogisticsOrderManager<T extends LogisticsOrder> implements
 	public void stopWatching(EntityPlayer player) {
 		watchingPlayers.remove(player);
 	}
-	
+
 	private void changed() {
-		if(watchingPlayers.isEmpty()) return;
+		if (watchingPlayers.isEmpty()) {
+			return;
+		}
 		//if(!oldOrders.equals(_orders)) {
 		//	oldOrders.clear();
 		//	oldOrders.addAll(_orders);
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(PipeManagerContentPacket.class).setManager(this).setLPPos(pos.getLPPosition()), watchingPlayers);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(PipeManagerContentPacket.class).setManager(this).setLPPos(pos.getLPPosition()), watchingPlayers);
 		//}
 	}
 

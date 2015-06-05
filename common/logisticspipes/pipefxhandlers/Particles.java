@@ -10,15 +10,10 @@ public enum Particles {
 	OrangeParticle,
 	LightGreenParticle,
 	LightRedParticle
-	
+
 	/**
-	 * General color arangement:
-	 * SinkReply: blue
-	 * Extract: orange
-	 * Provide/request: violet
-	 * Use power: gold
-	 * Render update: green
-	 * Power status change: red
-	 * Special cases: white
+	 * General color arangement: SinkReply: blue Extract: orange
+	 * Provide/request: violet Use power: gold Render update: green Power status
+	 * change: red Special cases: white
 	 */
 }

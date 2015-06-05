@@ -6,28 +6,29 @@ import java.util.List;
 import logisticspipes.interfaces.IClientState;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCRenderState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
 import logisticspipes.renderer.newpipe.GLRenderList;
 import logisticspipes.utils.tuples.Pair;
+
 import net.minecraft.util.IIcon;
-import codechicken.lib.render.CCModel;
-import codechicken.lib.render.CCRenderState.IVertexOperation;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+
+import codechicken.lib.render.CCModel;
+import codechicken.lib.render.CCRenderState.IVertexOperation;
 
 public class PipeRenderState implements IClientState {
 
 	public final ConnectionMatrix pipeConnectionMatrix = new ConnectionMatrix();
 	public final TextureMatrix textureMatrix = new TextureMatrix();
 	public final IBCRenderState bcRenderState;
-	
+
 	public List<Pair<CCModel, IVertexOperation[]>> cachedRenderer = null;
 	public boolean forceRenderOldPipe = false;
 	public boolean solidSidesCache[] = new boolean[6];
-	
+
 	public int[] buffer = null;
 	public GLRenderList renderList;
 	/*
@@ -39,11 +40,11 @@ public class PipeRenderState implements IClientState {
 	public IIcon[] textureArray;
 
 	private boolean dirty = true;
-	
+
 	public PipeRenderState(IBCTilePart tilePart) {
 		bcRenderState = tilePart.getBCRenderState();
 	}
-	
+
 	public void clean() {
 		dirty = false;
 		pipeConnectionMatrix.clean();

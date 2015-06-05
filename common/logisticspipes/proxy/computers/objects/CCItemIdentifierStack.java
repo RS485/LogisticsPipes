@@ -14,30 +14,31 @@ public class CCItemIdentifierStack implements ILPCCTypeDefinition {
 		return new CCItemIdentifierStackImplementation((ItemIdentifierStack) stack);
 	}
 
-	@CCType(name="ItemIdentifierStack")
+	@CCType(name = "ItemIdentifierStack")
 	public static class CCItemIdentifierStackImplementation implements ICCTypeWrapped {
+
 		final ItemIdentifierStack stack;
-		
+
 		public CCItemIdentifierStackImplementation(ItemIdentifierStack stack2) {
 			stack = stack2;
 		}
 
-		@CCCommand(description="Returns the ItemIdentifier from this ItemIdentifierStack")
+		@CCCommand(description = "Returns the ItemIdentifier from this ItemIdentifierStack")
 		public ItemIdentifier getItem() {
 			return stack.getItem();
 		}
 
-		@CCCommand(description="Returns the size of this ItemIdentifierStack")
+		@CCCommand(description = "Returns the size of this ItemIdentifierStack")
 		public int getStackSize() {
 			return stack.getStackSize();
 		}
-		
-		@CCCommand(description="Returns the name of this ItemIdentifierStack")
+
+		@CCCommand(description = "Returns the name of this ItemIdentifierStack")
 		public String getName() {
 			return stack.getFriendlyName();
 		}
 
-		@CCCommand(description="Compares this ItemIdentifierStack to another one")
+		@CCCommand(description = "Compares this ItemIdentifierStack to another one")
 		public boolean equals(ItemIdentifierStack stack) {
 			return stack.equals(stack);
 		}

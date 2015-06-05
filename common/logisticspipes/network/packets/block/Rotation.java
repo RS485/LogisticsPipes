@@ -3,7 +3,9 @@ package logisticspipes.network.packets.block;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+
 import net.minecraft.entity.player.EntityPlayer;
+
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class Rotation extends IntegerCoordinatesPacket {
@@ -20,10 +22,9 @@ public class Rotation extends IntegerCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		IRotationProvider tile = this.getTileOrPipe(player.worldObj, IRotationProvider.class);
-		if(tile instanceof IRotationProvider) {
+		if (tile instanceof IRotationProvider) {
 			tile.setRotation(getInteger());
 			FMLClientHandler.instance().getClient().theWorld.markBlockForUpdate(getPosX(), getPosY(), getPosZ());
 		}
 	}
 }
-

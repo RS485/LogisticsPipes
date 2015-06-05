@@ -6,13 +6,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Context;
-import li.cil.oc.api.network.Environment;
-import li.cil.oc.api.network.ManagedPeripheral;
-import li.cil.oc.api.network.Message;
-import li.cil.oc.api.network.Node;
-import li.cil.oc.api.network.SidedEnvironment;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILPPipe;
@@ -53,6 +46,7 @@ import logisticspipes.utils.TileBuffer;
 import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.LPPosition;
+
 import net.minecraft.block.Block;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
@@ -63,13 +57,15 @@ import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
+
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
-import org.apache.logging.log4j.Level;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import buildcraft.api.core.EnumColor;
 import buildcraft.api.transport.IPipe;
@@ -77,40 +73,48 @@ import buildcraft.api.transport.IPipeTile;
 import buildcraft.api.transport.pluggable.PipePluggable;
 import buildcraft.transport.TileGenericPipe;
 import cofh.api.transport.IItemDuct;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import dan200.computercraft.api.peripheral.IComputerAccess;
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Context;
+import li.cil.oc.api.network.Environment;
+import li.cil.oc.api.network.ManagedPeripheral;
+import li.cil.oc.api.network.Message;
+import li.cil.oc.api.network.Node;
+import li.cil.oc.api.network.SidedEnvironment;
+import org.apache.logging.log4j.Level;
 
-@ModDependentInterface(modId={"CoFHCore", "OpenComputers@1.3", "OpenComputers@1.3", "OpenComputers@1.3", "BuildCraft|Transport"}, interfacePath={"cofh.api.transport.IItemDuct", "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment", "buildcraft.api.transport.IPipeTile"})
-public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILPPipeTile, IPipeInformationProvider, IItemDuct, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IPipeTile, ILogicControllerTile {	
+@ModDependentInterface(modId = { "CoFHCore", "OpenComputers@1.3", "OpenComputers@1.3", "OpenComputers@1.3", "BuildCraft|Transport" }, interfacePath = { "cofh.api.transport.IItemDuct", "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment",
+		"buildcraft.api.transport.IPipeTile" })
+public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILPPipeTile, IPipeInformationProvider, IItemDuct, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IPipeTile, ILogicControllerTile {
+
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
-	
+
 	public boolean turtleConnect[] = new boolean[7];
-	
+
 	private LogisticsTileRenderController renderController;
 
-	@ModDependentField(modId=LPConstants.computerCraftModID)
+	@ModDependentField(modId = LPConstants.computerCraftModID)
 	public HashMap<IComputerAccess, ForgeDirection> connections;
 
-	@ModDependentField(modId=LPConstants.computerCraftModID)
+	@ModDependentField(modId = LPConstants.computerCraftModID)
 	public IComputerAccess currentPC;
-	
-	@ModDependentField(modId="OpenComputers@1.3")
+
+	@ModDependentField(modId = "OpenComputers@1.3")
 	public Node node;
 	private boolean addedToNetwork = false;
-	
+
 	private boolean sendInitPacket = true;
-	
+
 	public LogicController logicController = new LogicController();
-	
+
 	public final PipeRenderState renderState;
 	public final CoreState coreState = new CoreState();
 	public final IBCTilePart tilePart;
 	public final IBCPluggableState bcPlugableState;
 	public final ITDPart tdPart;
-	
+
 	public LogisticsTileGenericPipe() {
-		if(SimpleServiceLocator.ccProxy.isCC()) {
+		if (SimpleServiceLocator.ccProxy.isCC()) {
 			connections = new HashMap<IComputerAccess, ForgeDirection>();
 		}
 		SimpleServiceLocator.openComputersProxy.initLogisticsTileGenericPipe(this);
@@ -120,30 +124,30 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		bcPlugableState = tilePart.getBCPlugableState();
 	}
 
-    @Override
-    public void invalidate() {
-        if (pipe == null) {
-            this.tileEntityInvalid = true;
-    		initialized = false;
-    		tileBuffer = null;
-    		if (pipe != null) {
-    			pipe.invalidate();
-    		}
-    		super.invalidate();
-        } else if (!pipe.preventRemove()) {
-            this.tileEntityInvalid = true;
-    		initialized = false;
-    		tileBuffer = null;
-    		if (pipe != null) {
-    			pipe.invalidate();
-    		}
-    		super.invalidate();
+	@Override
+	public void invalidate() {
+		if (pipe == null) {
+			tileEntityInvalid = true;
+			initialized = false;
+			tileBuffer = null;
+			if (pipe != null) {
+				pipe.invalidate();
+			}
+			super.invalidate();
+		} else if (!pipe.preventRemove()) {
+			tileEntityInvalid = true;
+			initialized = false;
+			tileBuffer = null;
+			if (pipe != null) {
+				pipe.invalidate();
+			}
+			super.invalidate();
 			SimpleServiceLocator.openComputersProxy.handleInvalidate(this);
 			tilePart.invalidate_LP();
 			tdPart.invalidate();
-        }
-    }
-	
+		}
+	}
+
 	@Override
 	public void validate() {
 		super.validate();
@@ -167,9 +171,9 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 
 	@Override
 	public void updateEntity() {
-		Info superDebug = StackTraceUtil.addSuperTraceInformation("Time: " + this.getWorld().getWorldTime());
+		Info superDebug = StackTraceUtil.addSuperTraceInformation("Time: " + getWorld().getWorldTime());
 		Info debug = StackTraceUtil.addTraceInformation("(" + getX() + ", " + getY() + ", " + getZ() + ")", superDebug);
-		if(sendInitPacket && MainProxy.isServer(getWorldObj())) {
+		if (sendInitPacket && MainProxy.isServer(getWorldObj())) {
 			sendInitPacket = false;
 			getRenderController().sendInit();
 		}
@@ -194,23 +198,23 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		}
 
 		pipe.updateEntity();
-		
+
 		if (worldObj.isRemote) {
 			debug.end();
 			return;
 		}
-		
+
 		if (blockNeighborChange) {
 			computeConnections();
 			pipe.onNeighborBlockChange(0);
 			blockNeighborChange = false;
 			refreshRenderState = true;
 		}
-		
+
 		//Sideblocks need to be checked before this
 		tilePart.updateEntity_LP();
 		//Network needs to be after this
-		
+
 		if (refreshRenderState) {
 			// Pipe connections;
 			for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {
@@ -225,26 +229,26 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 			}
 			//New Pipe Texture States
 			renderState.textureMatrix.refreshStates(pipe);
-			
+
 			if (renderState.isDirty()) {
 				renderState.clean();
 				sendUpdateToClient();
 			}
-			
+
 			refreshRenderState = false;
 		}
 
 		if (bcPlugableState.isDirty(true)) {
 			sendUpdateToClient();
 		}
-		
+
 		if (sendClientUpdate) {
 			sendClientUpdate = false;
-			
+
 			MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(worldObj), getLPDescriptionPacket());
 		}
 		getRenderController().onUpdate();
-		if(!addedToNetwork) {
+		if (!addedToNetwork) {
 			addedToNetwork = true;
 			SimpleServiceLocator.openComputersProxy.addToNetwork(this);
 		}
@@ -256,7 +260,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		sendInitPacket = true;
 		try {
 			return PacketHandler.toFMLPacket(getLPDescriptionPacket());
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -266,44 +270,45 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	public void func_145828_a(CrashReportCategory par1CrashReportCategory) {
 		try {
 			super.func_145828_a(par1CrashReportCategory);
-		} catch(Exception e) {
-			if(LPConstants.DEBUG) {
+		} catch (Exception e) {
+			if (LPConstants.DEBUG) {
 				e.printStackTrace();
 			}
 		}
 		par1CrashReportCategory.addCrashSection("LP-Version", LPConstants.VERSION);
-		if(this.pipe != null) {
-			par1CrashReportCategory.addCrashSection("Pipe", this.pipe.getClass().getCanonicalName());
-			if(this.pipe.transport != null) {
-				par1CrashReportCategory.addCrashSection("Transport", this.pipe.transport.getClass().getCanonicalName());
+		if (pipe != null) {
+			par1CrashReportCategory.addCrashSection("Pipe", pipe.getClass().getCanonicalName());
+			if (pipe.transport != null) {
+				par1CrashReportCategory.addCrashSection("Transport", pipe.transport.getClass().getCanonicalName());
 			} else {
 				par1CrashReportCategory.addCrashSection("Transport", "null");
 			}
 
-			if(this.pipe instanceof CoreRoutedPipe) {
+			if (pipe instanceof CoreRoutedPipe) {
 				try {
-					((CoreRoutedPipe)this.pipe).addCrashReport(par1CrashReportCategory);
-				} catch(Exception e) {
+					((CoreRoutedPipe) pipe).addCrashReport(par1CrashReportCategory);
+				} catch (Exception e) {
 					par1CrashReportCategory.addCrashSectionThrowable("Internal LogisticsPipes Error", e);
 				}
 			}
 		}
 	}
 
+	@Override
 	public void scheduleNeighborChange() {
 		tilePart.scheduleNeighborChange();
 		tdPart.scheduleNeighborChange();
 		blockNeighborChange = true;
 		boolean connected[] = new boolean[6];
-		WorldUtil world = new WorldUtil(this.getWorld(), this.xCoord, this.yCoord, this.zCoord);
+		WorldUtil world = new WorldUtil(getWorld(), xCoord, yCoord, zCoord);
 		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(false);
-		for(AdjacentTile aTile: adjacent) {
-			if(SimpleServiceLocator.ccProxy.isTurtle(aTile.tile)) {
+		for (AdjacentTile aTile : adjacent) {
+			if (SimpleServiceLocator.ccProxy.isTurtle(aTile.tile)) {
 				connected[aTile.orientation.ordinal()] = true;
 			}
 		}
-		for(int i=0; i<6;i++) {
-			if(!connected[i]) {
+		for (int i = 0; i < 6; i++) {
+			if (!connected[i]) {
 				turtleConnect[i] = false;
 			}
 		}
@@ -318,7 +323,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 			final String key = "redstoneInputSide[" + i + "]";
 			nbt.setByte(key, (byte) redstoneInputSide[i]);
 		}
-		*/
+		 */
 
 		if (pipe != null) {
 			nbt.setInteger("pipeId", Item.itemRegistry.getIDForObject(pipe.item));
@@ -328,11 +333,11 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		}
 
 		tilePart.writeToNBT_LP(nbt);
-		for(int i=0;i<turtleConnect.length;i++) {
+		for (int i = 0; i < turtleConnect.length; i++) {
 			nbt.setBoolean("turtleConnect_" + i, turtleConnect[i]);
 		}
 		SimpleServiceLocator.openComputersProxy.handleWriteToNBT(this, nbt);
-		
+
 		NBTTagCompound logicNBT = new NBTTagCompound();
 		logicController.writeToNBT(logicNBT);
 		nbt.setTag("logicController", logicNBT);
@@ -342,65 +347,82 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
 
-		if(nbt.hasKey("redstoneInputSide[0]")) {
+		if (nbt.hasKey("redstoneInputSide[0]")) {
 			tilePart.readOldRedStone(nbt);
 		}
 
 		coreState.pipeId = nbt.getInteger("pipeId");
-		pipe = LogisticsBlockGenericPipe.createPipe((Item) Item.getItemById(coreState.pipeId));
+		pipe = LogisticsBlockGenericPipe.createPipe(Item.getItemById(coreState.pipeId));
 		bindPipe();
 
 		if (pipe != null) {
 			pipe.readFromNBT(nbt);
 		} else {
-			LogisticsPipes.log.log(Level.WARN, "Pipe failed to load from NBT at {0},{1},{2}", new Object[]{xCoord, yCoord, zCoord});
+			LogisticsPipes.log.log(Level.WARN, "Pipe failed to load from NBT at {0},{1},{2}", new Object[] { xCoord, yCoord, zCoord });
 			deletePipe = true;
 		}
 
 		tilePart.readFromNBT_LP(nbt);
-		for(int i=0;i<turtleConnect.length;i++) {
+		for (int i = 0; i < turtleConnect.length; i++) {
 			turtleConnect[i] = nbt.getBoolean("turtleConnect_" + i);
 		}
 		SimpleServiceLocator.openComputersProxy.handleReadFromNBT(this, nbt);
-		
+
 		logicController.readFromNBT(nbt.getCompoundTag("logicController"));
 	}
-	
+
 	public boolean canPipeConnect(TileEntity with, ForgeDirection side) {
-		if(MainProxy.isClient(worldObj)) {
+		if (MainProxy.isClient(worldObj)) {
 			//XXX why is this ever called client side, its not *used* for anything.
 			return false;
 		}
-		if (with == null)
+		if (with == null) {
 			return false;
+		}
 
-		if (tilePart.hasBlockingPluggable(side))
+		if (tilePart.hasBlockingPluggable(side)) {
 			return false;
+		}
 
-		if (!LogisticsBlockGenericPipe.isValid(pipe))
+		if (!LogisticsBlockGenericPipe.isValid(pipe)) {
 			return false;
+		}
 
-		if(SimpleServiceLocator.ccProxy.isTurtle(with) && !turtleConnect[OrientationsUtil.getOrientationOfTilewithTile(this, with).ordinal()]) return false;
+		if (SimpleServiceLocator.ccProxy.isTurtle(with) && !turtleConnect[OrientationsUtil.getOrientationOfTilewithTile(this, with).ordinal()]) {
+			return false;
+		}
 
 		IConnectionOverrideResult result = SimpleServiceLocator.buildCraftProxy.checkConnectionOverride(with, side, this);
-		if(result.forceDisconnect()) return false;
-		if(result.forceConnect()) return true;
+		if (result.forceDisconnect()) {
+			return false;
+		}
+		if (result.forceConnect()) {
+			return true;
+		}
 
-		if(!SimpleServiceLocator.buildCraftProxy.checkForPipeConnection(with, side, this)) return false;
-		if(SimpleServiceLocator.thermalDynamicsProxy.isBlockedSide(with, side.getOpposite())) return false;
-		if(with instanceof LogisticsTileGenericPipe) {
-			if(((LogisticsTileGenericPipe)with).tilePart.hasBlockingPluggable(side.getOpposite())) {
+		if (!SimpleServiceLocator.buildCraftProxy.checkForPipeConnection(with, side, this)) {
+			return false;
+		}
+		if (SimpleServiceLocator.thermalDynamicsProxy.isBlockedSide(with, side.getOpposite())) {
+			return false;
+		}
+		if (with instanceof LogisticsTileGenericPipe) {
+			if (((LogisticsTileGenericPipe) with).tilePart.hasBlockingPluggable(side.getOpposite())) {
 				return false;
 			}
-			CoreUnroutedPipe otherPipe = ((LogisticsTileGenericPipe)with).pipe;
-			
-			if(!(LogisticsBlockGenericPipe.isValid(otherPipe))) { return false; }
-			
-			if(!(otherPipe.canPipeConnect(this, side.getOpposite()))) { return false; }
+			CoreUnroutedPipe otherPipe = ((LogisticsTileGenericPipe) with).pipe;
+
+			if (!(LogisticsBlockGenericPipe.isValid(otherPipe))) {
+				return false;
+			}
+
+			if (!(otherPipe.canPipeConnect(this, side.getOpposite()))) {
+				return false;
+			}
 		}
 		return pipe.canPipeConnect(with, side);
 	}
-	
+
 	public void queueEvent(String event, Object[] arguments) {
 		SimpleServiceLocator.ccProxy.queueEvent(event, arguments, this);
 	}
@@ -408,7 +430,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	public void handleMesssage(int computerId, Object message, int sourceId) {
 		SimpleServiceLocator.ccProxy.handleMesssage(computerId, message, this, sourceId);
 	}
-	
+
 	public void setTurtleConnect(boolean flag) {
 		SimpleServiceLocator.ccProxy.setTurtleConnect(flag, this);
 	}
@@ -442,14 +464,14 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	}
 
 	public LogisticsTileRenderController getRenderController() {
-		if(renderController == null) {
+		if (renderController == null) {
 			renderController = new LogisticsTileRenderController(this);
 		}
 		return renderController;
 	}
 
 	/* IPipeInformationProvider */
-	
+
 	@Override
 	public boolean isCorrect() {
 		return true;
@@ -472,7 +494,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 
 	@Override
 	public boolean isInitialised() {
-		return initialized && (!isRoutingPipe() || !this.getRoutingPipe().stillNeedReplace());
+		return initialized && (!isRoutingPipe() || !getRoutingPipe().stillNeedReplace());
 	}
 
 	@Override
@@ -482,7 +504,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 
 	@Override
 	public CoreRoutedPipe getRoutingPipe() {
-		if(pipe instanceof CoreRoutedPipe) {
+		if (pipe instanceof CoreRoutedPipe) {
 			return (CoreRoutedPipe) pipe;
 		}
 		throw new RuntimeException("This is no routing pipe");
@@ -495,7 +517,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 
 	@Override
 	public IFilter getFirewallFilter() {
-		if(pipe instanceof PipeItemsFirewall) {
+		if (pipe instanceof PipeItemsFirewall) {
 			return ((PipeItemsFirewall) pipe).getFilter();
 		}
 		throw new RuntimeException("This is no firewall pipe");
@@ -543,7 +565,9 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 
 	@Override
 	public boolean canConnect(TileEntity to, ForgeDirection direction, boolean flag) {
-		if(pipe == null) return false;
+		if (pipe == null) {
+			return false;
+		}
 		return pipe.canPipeConnect(to, direction, flag);
 	}
 
@@ -555,23 +579,24 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	/**
 	 * Used to determine where BC items can go.
 	 */
-	@ModDependentMethod(modId="BuildCraft|Transport")
+	@ModDependentMethod(modId = "BuildCraft|Transport")
 	public boolean isBCPipeConnected(TileGenericPipe container, ForgeDirection o) {
 		return container.isPipeConnected(o);
 	}
-	
+
 	//@Override
 	//@ModDependentMethod(modId="BuildCraft|Transport")
+	@Override
 	public int injectItem(ItemStack payload, boolean doAdd, ForgeDirection from) {
 		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport != null && isPipeConnected(from)) {
-			if (doAdd && MainProxy.isServer(this.getWorldObj())) {
+			if (doAdd && MainProxy.isServer(getWorldObj())) {
 				ItemStack leftStack = payload.copy();
 				int lastIterLeft;
 				do {
 					lastIterLeft = leftStack.stackSize;
 					LPTravelingItem.LPTravelingItemServer travelingItem = SimpleServiceLocator.routedItemHelper.createNewTravelItem(leftStack);
 					leftStack.stackSize = pipe.transport.injectItem(travelingItem, from.getOpposite());
-				} while(leftStack.stackSize != lastIterLeft && leftStack.stackSize != 0);
+				} while (leftStack.stackSize != lastIterLeft && leftStack.stackSize != 0);
 				return payload.stackSize - leftStack.stackSize;
 			}
 		}
@@ -579,35 +604,35 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	}
 
 	@Override
-	@ModDependentMethod(modId="BuildCraft|Transport")
+	@ModDependentMethod(modId = "BuildCraft|Transport")
 	public int injectItem(ItemStack payload, boolean doAdd, ForgeDirection from, EnumColor color) {
 		return injectItem(payload, doAdd, from);
 	}
-	
+
 	public boolean isOpaque() {
 		return pipe.isOpaque();
 	}
 
 	@Override
-	@ModDependentMethod(modId="OpenComputers@1.3")
+	@ModDependentMethod(modId = "OpenComputers@1.3")
 	public Node node() {
 		return node;
 	}
 
 	@Override
-	@ModDependentMethod(modId="OpenComputers@1.3")
+	@ModDependentMethod(modId = "OpenComputers@1.3")
 	public void onConnect(Node node1) {}
 
 	@Override
-	@ModDependentMethod(modId="OpenComputers@1.3")
+	@ModDependentMethod(modId = "OpenComputers@1.3")
 	public void onDisconnect(Node node1) {}
 
 	@Override
-	@ModDependentMethod(modId="OpenComputers@1.3")
+	@ModDependentMethod(modId = "OpenComputers@1.3")
 	public void onMessage(Message message) {}
 
 	@Override
-	@ModDependentMethod(modId="OpenComputers@1.3")
+	@ModDependentMethod(modId = "OpenComputers@1.3")
 	public Object[] invoke(String s, Context context, Arguments arguments) throws Exception {
 		BaseWrapperClass object = (BaseWrapperClass) CCObjectWrapper.getWrappedObject(pipe, BaseWrapperClass.WRAPPER);
 		object.isDirectCall = true;
@@ -615,22 +640,22 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	}
 
 	@Override
-	@ModDependentMethod(modId="OpenComputers@1.3")
+	@ModDependentMethod(modId = "OpenComputers@1.3")
 	public String[] methods() {
-		return new String[]{"getPipe"};
+		return new String[] { "getPipe" };
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	@ModDependentMethod(modId="OpenComputers@1.3")
+	@ModDependentMethod(modId = "OpenComputers@1.3")
 	public boolean canConnect(ForgeDirection dir) {
 		return !(this.getTile(dir) instanceof LogisticsTileGenericPipe) && !(this.getTile(dir) instanceof LogisticsSolidTileEntity);
 	}
 
 	@Override
-	@ModDependentMethod(modId="OpenComputers@1.3")
+	@ModDependentMethod(modId = "OpenComputers@1.3")
 	public Node sidedNode(ForgeDirection dir) {
-		if(this.getTile(dir) instanceof LogisticsTileGenericPipe || this.getTile(dir) instanceof LogisticsSolidTileEntity) {
+		if (this.getTile(dir) instanceof LogisticsTileGenericPipe || this.getTile(dir) instanceof LogisticsSolidTileEntity) {
 			return null;
 		} else {
 			return node();
@@ -643,7 +668,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	}
 
 	public boolean initialized = false;
-	
+
 	public boolean[] pipeConnectionsBuffer = new boolean[6];
 	public boolean[] pipeBCConnectionsBuffer = new boolean[6];
 	public boolean[] pipeTDConnectionsBuffer = new boolean[6];
@@ -659,28 +684,28 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	private boolean refreshRenderState = false;
 	private boolean pipeBound = false;
 
-
 	public class CoreState implements IClientState {
+
 		public int pipeId = -1;
-		
+
 		@Override
 		public void writeData(LPDataOutputStream data) throws IOException {
 			data.writeInt(pipeId);
-			
+
 		}
 
 		@Override
 		public void readData(LPDataInputStream data) throws IOException {
 			pipeId = data.readInt();
-			
+
 		}
 	}
 
 	public void initialize(CoreUnroutedPipe pipe) {
-		this.blockType = getBlockType();
+		blockType = getBlockType();
 
 		if (pipe == null) {
-			LogisticsPipes.log.log(Level.WARN, "Pipe failed to initialize at {0},{1},{2}, deleting", new Object[]{xCoord, yCoord, zCoord});
+			LogisticsPipes.log.log(Level.WARN, "Pipe failed to initialize at {0},{1},{2}, deleting", new Object[] { xCoord, yCoord, zCoord });
 			worldObj.setBlockToAir(xCoord, yCoord, zCoord);
 			return;
 		}
@@ -689,11 +714,11 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 
 		for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {
 			TileEntity tile = getTile(o);
-			
-			if(tile instanceof LogisticsTileGenericPipe) {
-				((LogisticsTileGenericPipe)tile).scheduleNeighborChange();
+
+			if (tile instanceof LogisticsTileGenericPipe) {
+				((LogisticsTileGenericPipe) tile).scheduleNeighborChange();
 			}
-			
+
 			SimpleServiceLocator.buildCraftProxy.notifyOfChange(this, tile, o);
 		}
 
@@ -727,9 +752,9 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		bindPipe();
 
 		PipeTileStatePacket packet = PacketHandler.getPacket(PipeTileStatePacket.class);
-		
+
 		packet.setTilePos(this);
-		
+
 		packet.setCoreState(coreState);
 		packet.setRenderState(renderState);
 		packet.setBcPluggableState(bcPlugableState);
@@ -778,11 +803,11 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	public TileEntity getTile(ForgeDirection to) {
 		return getTile(to, false);
 	}
-	
+
 	public TileEntity getTile(ForgeDirection to, boolean force) {
 		TileBuffer[] cache = getTileCache();
 		if (cache != null) {
-			if(force) {
+			if (force) {
 				cache[to.ordinal()].refresh();
 			}
 			return cache[to.ordinal()].getTile();
@@ -805,15 +830,15 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		if (cache == null) {
 			return;
 		}
-		
+
 		boolean[] pipeTDConnectionsBufferOld = pipeTDConnectionsBuffer.clone();
-		
+
 		for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
 			TileBuffer t = cache[side.ordinal()];
 			t.refresh();
 
 			pipeConnectionsBuffer[side.ordinal()] = canPipeConnect(t.getTile(), side);
-			if(pipeConnectionsBuffer[side.ordinal()]) {
+			if (pipeConnectionsBuffer[side.ordinal()]) {
 				pipeBCConnectionsBuffer[side.ordinal()] = SimpleServiceLocator.buildCraftProxy.isTileGenericPipe(t.getTile());
 				pipeTDConnectionsBuffer[side.ordinal()] = SimpleServiceLocator.thermalDynamicsProxy.isItemDuct(t.getTile());
 			} else {
@@ -821,13 +846,13 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 				pipeTDConnectionsBuffer[side.ordinal()] = false;
 			}
 		}
-		if(!Arrays.equals(pipeTDConnectionsBufferOld, pipeTDConnectionsBuffer)) {
+		if (!Arrays.equals(pipeTDConnectionsBufferOld, pipeTDConnectionsBuffer)) {
 			tdPart.connectionsChanged();
 		}
 	}
 
 	@Override
-	@ModDependentMethod(modId="BuildCraft|Transport")
+	@ModDependentMethod(modId = "BuildCraft|Transport")
 	public boolean isPipeConnected(ForgeDirection with) {
 		if (worldObj.isRemote) {
 			return renderState.pipeConnectionMatrix.isConnected(with);
@@ -904,7 +929,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	@Override
 	@SideOnly(Side.CLIENT)
 	public double getMaxRenderDistanceSquared() {
-		return 64*4 * 64*4;
+		return 64 * 4 * 64 * 4;
 	}
 
 	@Override
@@ -913,7 +938,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	}
 
 	public boolean isSolidOnSide(ForgeDirection side) {
-		 return tilePart.isSolidOnSide(side);
+		return tilePart.isSolidOnSide(side);
 	}
 
 	public Block getBlock() {
@@ -930,14 +955,14 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	}
 
 	@Override
-	@ModDependentMethod(modId="BuildCraft|Transport")
+	@ModDependentMethod(modId = "BuildCraft|Transport")
 	public PipeType getPipeType() {
 		return (PipeType) SimpleServiceLocator.buildCraftProxy.getLPPipeType();
 	}
 
 	@Override
 	public boolean isInvalid() {
-		if(pipe != null && pipe.preventRemove()) {
+		if (pipe != null && pipe.preventRemove()) {
 			return false;
 		}
 		return super.isInvalid();
@@ -954,79 +979,83 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	}
 
 	@Override
-	@ModDependentMethod(modId="BuildCraft|Transport")
+	@ModDependentMethod(modId = "BuildCraft|Transport")
 	public IPipe getPipe() {
 		return (IPipe) tilePart.getBCPipePart().getOriginal();
 	}
 
 	@Override
-	@ModDependentMethod(modId="BuildCraft|Transport")
+	@ModDependentMethod(modId = "BuildCraft|Transport")
 	public boolean canInjectItems(ForgeDirection from) {
 		return isPipeConnected(from);
 	}
 
 	@Override
-	@ModDependentMethod(modId="BuildCraft|Transport")
+	@ModDependentMethod(modId = "BuildCraft|Transport")
 	public int x() {
 		return xCoord;
 	}
 
 	@Override
-	@ModDependentMethod(modId="BuildCraft|Transport")
+	@ModDependentMethod(modId = "BuildCraft|Transport")
 	public int y() {
 		return yCoord;
 	}
 
 	@Override
-	@ModDependentMethod(modId="BuildCraft|Transport")
+	@ModDependentMethod(modId = "BuildCraft|Transport")
 	public int z() {
 		return zCoord;
 	}
 
 	@Override
-	@ModDependentMethod(modId="BuildCraft|Transport")
+	@ModDependentMethod(modId = "BuildCraft|Transport")
 	public Block getNeighborBlock(ForgeDirection dir) {
 		return getBlock(dir);
 	}
 
 	@Override
-	@ModDependentMethod(modId="BuildCraft|Transport")
+	@ModDependentMethod(modId = "BuildCraft|Transport")
 	public TileEntity getNeighborTile(ForgeDirection dir) {
 		return getTile(dir);
 	}
 
 	@Override
-	@ModDependentMethod(modId="BuildCraft|Transport")
+	@ModDependentMethod(modId = "BuildCraft|Transport")
 	public IPipe getNeighborPipe(ForgeDirection dir) {
-		if(getTile(dir) instanceof IPipeTile) {
-			return ((IPipeTile)getTile(dir)).getPipe();
+		if (getTile(dir) instanceof IPipeTile) {
+			return ((IPipeTile) getTile(dir)).getPipe();
 		}
 		return null;
 	}
 
 	@Override
-	@ModDependentMethod(modId="BuildCraft|Transport")
+	@ModDependentMethod(modId = "BuildCraft|Transport")
 	public int getPipeColor() {
 		return 0;
 	}
 
 	@Override
-	@ModDependentMethod(modId="BuildCraft|Transport")
+	@ModDependentMethod(modId = "BuildCraft|Transport")
 	public PipePluggable getPipePluggable(ForgeDirection direction) {
-		if(tilePart.getBCPipePluggable(direction) == null) return null;
+		if (tilePart.getBCPipePluggable(direction) == null) {
+			return null;
+		}
 		return (PipePluggable) tilePart.getBCPipePluggable(direction).getOriginal();
 	}
 
 	@Override
-	@ModDependentMethod(modId="BuildCraft|Transport")
+	@ModDependentMethod(modId = "BuildCraft|Transport")
 	public boolean hasPipePluggable(ForgeDirection direction) {
 		return tilePart.getBCPipePluggable(direction) != null;
 	}
 
 	@Override
-	@ModDependentMethod(modId="BuildCraft|Transport")
+	@ModDependentMethod(modId = "BuildCraft|Transport")
 	public boolean hasBlockingPluggable(ForgeDirection direction) {
-		if(tilePart.getBCPipePluggable(direction) == null) return false;
+		if (tilePart.getBCPipePluggable(direction) == null) {
+			return false;
+		}
 		return tilePart.getBCPipePluggable(direction).isBlocking();
 	}
 
@@ -1036,7 +1065,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		tilePart.setWorldObj_LP(world);
 		tdPart.setWorldObj_LP(world);
 	}
-	
+
 	@SideOnly(Side.CLIENT)
 	@Override
 	public AxisAlignedBB getRenderBoundingBox() {
@@ -1045,17 +1074,19 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 
 	@Override
 	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double traveled, double max, List<LPPosition> visited) {
-		if(pipe == null || traveled > max) return Integer.MAX_VALUE;
-		double result = pipe.getDistanceTo(destinationint, ignore, ident, isActive, traveled + this.getDistance(), max, visited);
-		if(result == Integer.MAX_VALUE) {
+		if (pipe == null || traveled > max) {
+			return Integer.MAX_VALUE;
+		}
+		double result = pipe.getDistanceTo(destinationint, ignore, ident, isActive, traveled + getDistance(), max, visited);
+		if (result == Integer.MAX_VALUE) {
 			return result;
 		}
-		return result + (int) this.getDistance();
+		return result + (int) getDistance();
 	}
 
 	@Override
 	public boolean acceptItem(LPTravelingItem item, TileEntity from) {
-		if(LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport != null) {
+		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport != null) {
 			pipe.transport.injectItem(item, item.output);
 			return true;
 		}

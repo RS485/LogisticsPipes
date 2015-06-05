@@ -35,8 +35,8 @@ public final class CustomBlockRenderer {
 
 		public RenderInfo(Block template, IIcon[] texture) {
 			this();
-			this.baseBlock = template;
-			this.textureArray = texture;
+			baseBlock = template;
+			textureArray = texture;
 		}
 
 		public RenderInfo(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
@@ -128,7 +128,7 @@ public final class CustomBlockRenderer {
 		// TODO: needs to cancel the test because the variable is now private... May need to
 		// duplicate the tessellator code.
 		//if (doTessellating && !tessellator.isDrawing)
-			tessellator.startDrawingQuads();
+		tessellator.startDrawingQuads();
 
 		float light = 0;
 		if (realDoLight) {
@@ -147,7 +147,7 @@ public final class CustomBlockRenderer {
 			tessellator.setBrightness(brightness);
 			tessellator.setColorOpaque_F(lightBottom * light, lightBottom * light, lightBottom * light);
 		} else {
-//			tessellator.setColorOpaque_F(1.0F, 1.0F, 1.0F);
+			//			tessellator.setColorOpaque_F(1.0F, 1.0F, 1.0F);
 			if (info.brightness >= 0) {
 				tessellator.setBrightness(info.brightness);
 			}

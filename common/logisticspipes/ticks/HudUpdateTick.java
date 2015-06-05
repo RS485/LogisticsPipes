@@ -13,37 +13,41 @@ public class HudUpdateTick {
 	private static int firstRouter = -1;
 	private static int inventorySlotsToUpdatePerTick = 90;
 
-	public HudUpdateTick() {
-	}
-	public static void clearUpdateFlags(){
-		routersNeedingUpdate.clear();
+	public HudUpdateTick() {}
+
+	public static void clearUpdateFlags() {
+		HudUpdateTick.routersNeedingUpdate.clear();
 	}
 
 	public static void add(IRouter run) {
 		int index = run.getSimpleID();
-		if(index <0)
+		if (index < 0) {
 			return;
-		routersNeedingUpdate.set(index); //expands the bit-set when out of bounds.
-		if(firstRouter == -1) {
-			firstRouter = index;
+		}
+		HudUpdateTick.routersNeedingUpdate.set(index); //expands the bit-set when out of bounds.
+		if (HudUpdateTick.firstRouter == -1) {
+			HudUpdateTick.firstRouter = index;
 		}
 	}
 
 	public static void tick() {
-		if(firstRouter == -1) return;
+		if (HudUpdateTick.firstRouter == -1) {
+			return;
+		}
 		IRouterManager rm = SimpleServiceLocator.routerManager;
 		int slotSentCount = 0;
 		//cork the compressor
 		SimpleServiceLocator.serverBufferHandler.setPause(true);
-		while(firstRouter != -1 && slotSentCount < inventorySlotsToUpdatePerTick){
-			routersNeedingUpdate.clear(firstRouter);
-			IRouter currentRouter = rm.getRouterUnsafe(firstRouter, false);
-			if(currentRouter != null) {
+		while (HudUpdateTick.firstRouter != -1 && slotSentCount < HudUpdateTick.inventorySlotsToUpdatePerTick) {
+			HudUpdateTick.routersNeedingUpdate.clear(HudUpdateTick.firstRouter);
+			IRouter currentRouter = rm.getRouterUnsafe(HudUpdateTick.firstRouter, false);
+			if (currentRouter != null) {
 				CoreRoutedPipe pipe = currentRouter.getCachedPipe();
-				if(pipe!=null)
+				if (pipe != null) {
 					slotSentCount += pipe.sendQueueChanged(true);
+				}
 			}
-			firstRouter = routersNeedingUpdate.nextSetBit(firstRouter);
+			HudUpdateTick.firstRouter = HudUpdateTick.routersNeedingUpdate.nextSetBit(HudUpdateTick.firstRouter);
 		}
 		//and let it compress and send
 		SimpleServiceLocator.serverBufferHandler.setPause(false);

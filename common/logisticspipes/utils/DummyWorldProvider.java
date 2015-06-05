@@ -1,6 +1,7 @@
 package logisticspipes.utils;
 
 import logisticspipes.interfaces.IWorldProvider;
+
 import net.minecraft.world.World;
 
 public class DummyWorldProvider implements IWorldProvider {
@@ -13,6 +14,6 @@ public class DummyWorldProvider implements IWorldProvider {
 
 	@Override
 	public World getWorld() {
-		return this.world;
+		return world;
 	}
 }

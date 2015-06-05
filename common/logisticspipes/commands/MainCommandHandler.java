@@ -13,38 +13,39 @@ import logisticspipes.commands.commands.RoutingThreadCommand;
 import logisticspipes.commands.commands.TransferNamesCommand;
 import logisticspipes.commands.commands.VersionCommand;
 import logisticspipes.commands.commands.WrapperCommand;
+
 import net.minecraft.command.ICommandSender;
 
 public class MainCommandHandler extends SubCommandHandler {
-	
+
 	@Override
 	public String[] getNames() {
-		return new String[]{"logisticspipes", "lp", "logipipes"};
+		return new String[] { "logisticspipes", "lp", "logipipes" };
 	}
-	
+
 	@Override
 	public boolean isCommandUsableBy(ICommandSender sender) {
 		return true;
 	}
-	
+
 	@Override
 	public String[] getDescription() {
-		return new String[]{"The main LP command"};
+		return new String[] { "The main LP command" };
 	}
-	
+
 	@Override
 	public void registerSubCommands() {
-		this.registerSubCommand(new DummyCommand());
-		this.registerSubCommand(new VersionCommand());
-		this.registerSubCommand(new ChangelogCommand());
-		this.registerSubCommand(new NBTDebugCommand());
-		this.registerSubCommand(new RoutingThreadCommand());
-		this.registerSubCommand(new TransferNamesCommand());
-		this.registerSubCommand(new NameLookupCommand());
-		this.registerSubCommand(new DumpCommand());
-		this.registerSubCommand(new BypassCommand());
-		this.registerSubCommand(new DebugCommand());
-		this.registerSubCommand(new WrapperCommand());
-		this.registerSubCommand(new ClearCommand());
+		registerSubCommand(new DummyCommand());
+		registerSubCommand(new VersionCommand());
+		registerSubCommand(new ChangelogCommand());
+		registerSubCommand(new NBTDebugCommand());
+		registerSubCommand(new RoutingThreadCommand());
+		registerSubCommand(new TransferNamesCommand());
+		registerSubCommand(new NameLookupCommand());
+		registerSubCommand(new DumpCommand());
+		registerSubCommand(new BypassCommand());
+		registerSubCommand(new DebugCommand());
+		registerSubCommand(new WrapperCommand());
+		registerSubCommand(new ClearCommand());
 	}
 }

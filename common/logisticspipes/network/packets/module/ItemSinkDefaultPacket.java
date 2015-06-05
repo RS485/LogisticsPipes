@@ -7,18 +7,20 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
+
+import net.minecraft.entity.player.EntityPlayer;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class ItemSinkDefaultPacket extends ModuleCoordinatesPacket {
 
 	@Getter
 	@Setter
 	private boolean isDefault;
-	
+
 	public ItemSinkDefaultPacket(int id) {
 		super(id);
 	}
@@ -43,8 +45,9 @@ public class ItemSinkDefaultPacket extends ModuleCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		ModuleItemSink module = this.getLogisticsModule(player, ModuleItemSink.class);
-		if(module == null) return;
+		if (module == null) {
+			return;
+		}
 		module.setDefaultRoute(isDefault);
 	}
 }
-

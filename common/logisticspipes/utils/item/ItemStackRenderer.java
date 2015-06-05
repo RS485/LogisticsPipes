@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2015  RS485
  *
- * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public 
+ * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * https://github.com/RS485/LogisticsPipes/blob/mc16/LICENSE.md
  */
@@ -15,8 +15,7 @@ import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.string.StringUtils;
-import lombok.Data;
-import lombok.experimental.Accessors;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -25,7 +24,11 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.item.ItemStack;
+
 import net.minecraftforge.client.ForgeHooksClient;
+
+import lombok.Data;
+import lombok.experimental.Accessors;
 import org.lwjgl.opengl.GL11;
 
 @Data
@@ -63,22 +66,22 @@ public class ItemStackRenderer {
 		this.renderEffects = renderEffects;
 		this.ignoreDepth = ignoreDepth;
 		this.renderInColor = renderInColor;
-		this.renderBlocks = mcRenderBlocks;
-		this.renderItem = mcRenderItem;
-		this.texManager = mcTextureManager;
-		this.fontRenderer = mcFontRenderer;
-		this.scaleX = 1.0F;
-		this.scaleY = 1.0F;
-		this.scaleZ = 1.0F;
+		renderBlocks = ItemStackRenderer.mcRenderBlocks;
+		renderItem = ItemStackRenderer.mcRenderItem;
+		texManager = ItemStackRenderer.mcTextureManager;
+		fontRenderer = ItemStackRenderer.mcFontRenderer;
+		scaleX = 1.0F;
+		scaleY = 1.0F;
+		scaleZ = 1.0F;
 	}
 
 	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, float zLevel, DisplayAmount displayAmount) {
-		renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, zLevel, displayAmount, true, true, false);
+		ItemStackRenderer.renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, zLevel, displayAmount, true, true, false);
 	}
 
 	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, float zLevel, DisplayAmount displayAmount, boolean renderInColor, boolean renderEffect, boolean ignoreDepth) {
 		ItemStackRenderer itemStackRenderer = new ItemStackRenderer(null, displayAmount, 0, 0, zLevel, renderEffect, ignoreDepth, renderInColor);
-		renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, itemStackRenderer);
+		ItemStackRenderer.renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, itemStackRenderer);
 	}
 
 	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, ItemStackRenderer itemStackRenderer) {
@@ -97,11 +100,17 @@ public class ItemStackRenderer {
 				continue;
 			}
 			ItemIdentifier item = identifierStack.getItem();
-			if (IItemSearch != null && !IItemSearch.itemSearched(item)) continue;
+			if (IItemSearch != null && !IItemSearch.itemSearched(item)) {
+				continue;
+			}
 			ppi++;
 
-			if (ppi <= items * page) continue;
-			if (ppi > items * (page + 1)) continue;
+			if (ppi <= items * page) {
+				continue;
+			}
+			if (ppi > items * (page + 1)) {
+				continue;
+			}
 			ItemStack itemstack = identifierStack.unsafeMakeNormalStack();
 			int x = left + xSize * column;
 			int y = top + ySize * row + 1;

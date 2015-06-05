@@ -6,17 +6,20 @@ import java.util.List;
 import java.util.Map;
 
 import logisticspipes.utils.gui.GuiGraphics;
-import lombok.Setter;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.Slot;
 
+import lombok.Setter;
+
 public class GuiExtentionController {
 
 	public enum GuiSide {
-		LEFT, RIGHT;
+		LEFT,
+		RIGHT;
 	}
-	
+
 	private final List<GuiExtention> extentions = new ArrayList<GuiExtention>();
 	private final List<GuiExtention> extentionsToRemove = new ArrayList<GuiExtention>();
 	@Setter
@@ -24,21 +27,21 @@ public class GuiExtentionController {
 	private GuiExtention currentlyExtended = null;
 	private Map<Slot, Integer> slotMap = new HashMap<Slot, Integer>();
 	private Map<GuiButton, Integer> buttonMap = new HashMap<GuiButton, Integer>();
-	
+
 	private final GuiSide side;
-	
+
 	public GuiExtentionController(GuiSide side) {
 		this.side = side;
 	}
-	
+
 	public void render(int xPos, int yPos) {
 		yPos += 4;
-		if(currentlyExtended == null) {
-			for(GuiExtention extention:extentions) {
+		if (currentlyExtended == null) {
+			for (GuiExtention extention : extentions) {
 				extention.setExtending(false);
 				int left;
 				int right;
-				if(side == GuiSide.LEFT) {
+				if (side == GuiSide.LEFT) {
 					left = xPos - extention.getCurrentWidth();
 					right = xPos + 15;
 				} else {
@@ -52,10 +55,10 @@ public class GuiExtentionController {
 				yPos = bottom;
 			}
 		} else {
-			if(currentlyExtended.isExtending()) {
+			if (currentlyExtended.isExtending()) {
 				int left;
 				int right;
-				if(side == GuiSide.LEFT) {
+				if (side == GuiSide.LEFT) {
 					left = xPos - currentlyExtended.getCurrentWidth();
 					right = xPos + 15;
 				} else {
@@ -67,15 +70,17 @@ public class GuiExtentionController {
 				GuiGraphics.drawGuiBackGround(Minecraft.getMinecraft(), left, currentlyExtended.getCurrentYPos(), right, bottom, 0, true, true, side != GuiSide.RIGHT, true, side != GuiSide.LEFT);
 				currentlyExtended.renderForground(left + (side == GuiSide.RIGHT ? 20 : 0), currentlyExtended.getCurrentYPos());
 			} else {
-				for(GuiExtention extention:extentions) {
-					if(extention == currentlyExtended) break;
+				for (GuiExtention extention : extentions) {
+					if (extention == currentlyExtended) {
+						break;
+					}
 					extention.setExtending(false);
 					int bottom = yPos + extention.getCurrentHeight();
 					yPos = bottom;
 				}
 				int left;
 				int right;
-				if(side == GuiSide.LEFT) {
+				if (side == GuiSide.LEFT) {
 					left = xPos - currentlyExtended.getCurrentWidth();
 					right = xPos + 15;
 				} else {
@@ -86,18 +91,18 @@ public class GuiExtentionController {
 				currentlyExtended.update(left, yPos);
 				GuiGraphics.drawGuiBackGround(Minecraft.getMinecraft(), left, currentlyExtended.getCurrentYPos(), right, bottom, 0, true, true, side != GuiSide.RIGHT, true, side != GuiSide.LEFT);
 				currentlyExtended.renderForground(left + (side == GuiSide.RIGHT ? 20 : 0), currentlyExtended.getCurrentYPos());
-				if(currentlyExtended.isFullyRetracted()) {
+				if (currentlyExtended.isFullyRetracted()) {
 					currentlyExtended = null;
 				}
 			}
 		}
-		if(currentlyExtended != null && extentionsToRemove.contains(currentlyExtended)) {
+		if (currentlyExtended != null && extentionsToRemove.contains(currentlyExtended)) {
 			currentlyExtended = null;
 		}
 		extentions.removeAll(extentionsToRemove);
 		extentionsToRemove.clear();
 	}
-	
+
 	public void addExtention(GuiExtention extention) {
 		extentions.add(extention);
 	}
@@ -107,15 +112,15 @@ public class GuiExtentionController {
 	}
 
 	public void mouseClicked(int x, int y, int k) {
-		if(currentlyExtended == null) {
-			for(GuiExtention extention:extentions) {
-				if(x > extention.getCurrentXPos() && x < extention.getCurrentXPos() + extention.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0) && y > extention.getCurrentYPos() && y < extention.getCurrentYPos() + extention.getCurrentHeight()) {
+		if (currentlyExtended == null) {
+			for (GuiExtention extention : extentions) {
+				if (x > extention.getCurrentXPos() && x < extention.getCurrentXPos() + extention.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0) && y > extention.getCurrentYPos() && y < extention.getCurrentYPos() + extention.getCurrentHeight()) {
 					currentlyExtended = extention;
 					currentlyExtended.setExtending(true);
 				}
 			}
 		} else {
-			if(x > currentlyExtended.getCurrentXPos() && x < currentlyExtended.getCurrentXPos() + currentlyExtended.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0) && y > currentlyExtended.getCurrentYPos() && y < currentlyExtended.getCurrentYPos() + currentlyExtended.getCurrentHeight()) {
+			if (x > currentlyExtended.getCurrentXPos() && x < currentlyExtended.getCurrentXPos() + currentlyExtended.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0) && y > currentlyExtended.getCurrentYPos() && y < currentlyExtended.getCurrentYPos() + currentlyExtended.getCurrentHeight()) {
 				currentlyExtended.setExtending(false);
 			}
 		}
@@ -124,39 +129,51 @@ public class GuiExtentionController {
 	public void mouseOver(int i, int j) {
 		int x = i;
 		int y = j;
-		if(currentlyExtended == null) {
-			for(GuiExtention extention:extentions) {
-				if(x > extention.getCurrentXPos() && x < extention.getCurrentXPos() + extention.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0) && y > extention.getCurrentYPos() && y < extention.getCurrentYPos() + extention.getCurrentHeight()) {
+		if (currentlyExtended == null) {
+			for (GuiExtention extention : extentions) {
+				if (x > extention.getCurrentXPos() && x < extention.getCurrentXPos() + extention.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0) && y > extention.getCurrentYPos() && y < extention.getCurrentYPos() + extention.getCurrentHeight()) {
 					extention.handleMouseOverAt(x, y);
 					return;
 				}
 			}
 		} else {
-			if(x > currentlyExtended.getCurrentXPos() && x < currentlyExtended.getCurrentXPos() + currentlyExtended.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0) && y > currentlyExtended.getCurrentYPos() && y < currentlyExtended.getCurrentYPos() + currentlyExtended.getCurrentHeight()) {
+			if (x > currentlyExtended.getCurrentXPos() && x < currentlyExtended.getCurrentXPos() + currentlyExtended.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0) && y > currentlyExtended.getCurrentYPos() && y < currentlyExtended.getCurrentYPos() + currentlyExtended.getCurrentHeight()) {
 				currentlyExtended.handleMouseOverAt(x, y);
 				return;
 			}
 		}
 	}
-	
+
 	public int registerControlledSlot(Slot slot) {
 		int size = slotMap.size();
 		slotMap.put(slot, size);
 		return size;
 	}
-	
+
 	public boolean renderSlot(Slot slot) {
-		if(!slotMap.containsKey(slot)) return true;
-		if(currentlyExtended == null) return false;
-		if(!currentlyExtended.isFullyExtended()) return false;
+		if (!slotMap.containsKey(slot)) {
+			return true;
+		}
+		if (currentlyExtended == null) {
+			return false;
+		}
+		if (!currentlyExtended.isFullyExtended()) {
+			return false;
+		}
 		int id = slotMap.get(slot);
 		return currentlyExtended.renderSlot(id);
 	}
 
 	public boolean renderSelectSlot(Slot slot) {
-		if(!slotMap.containsKey(slot)) return true;
-		if(currentlyExtended == null) return false;
-		if(!currentlyExtended.isFullyExtended()) return false;
+		if (!slotMap.containsKey(slot)) {
+			return true;
+		}
+		if (currentlyExtended == null) {
+			return false;
+		}
+		if (!currentlyExtended.isFullyExtended()) {
+			return false;
+		}
 		int id = slotMap.get(slot);
 		return currentlyExtended.renderSelectSlot(id);
 	}
@@ -172,9 +189,15 @@ public class GuiExtentionController {
 	}
 
 	public boolean renderButton(GuiButton button) {
-		if(!buttonMap.containsKey(button)) return true;
-		if(currentlyExtended == null) return false;
-		if(!currentlyExtended.isFullyExtended()) return false;
+		if (!buttonMap.containsKey(button)) {
+			return true;
+		}
+		if (currentlyExtended == null) {
+			return false;
+		}
+		if (!currentlyExtended.isFullyExtended()) {
+			return false;
+		}
 		int id = buttonMap.get(button);
 		return currentlyExtended.renderButton(id);
 	}
@@ -186,20 +209,20 @@ public class GuiExtentionController {
 	}
 
 	public void retract() {
-		if(currentlyExtended != null) {
+		if (currentlyExtended != null) {
 			currentlyExtended.setExtending(false);
 		}
 	}
 
 	public boolean isOverPanel(int x, int y, int w, int h) {
-		if(currentlyExtended == null) {
-			for(GuiExtention extention:extentions) {
-				if(x + w > extention.getCurrentXPos() && x < extention.getCurrentXPos() + extention.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0) && y + h > extention.getCurrentYPos() && y < extention.getCurrentYPos() + extention.getCurrentHeight()) {
+		if (currentlyExtended == null) {
+			for (GuiExtention extention : extentions) {
+				if (x + w > extention.getCurrentXPos() && x < extention.getCurrentXPos() + extention.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0) && y + h > extention.getCurrentYPos() && y < extention.getCurrentYPos() + extention.getCurrentHeight()) {
 					return true;
 				}
 			}
 		} else {
-			if(x + w > currentlyExtended.getCurrentXPos() && x < currentlyExtended.getCurrentXPos() + currentlyExtended.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0) && y + h > currentlyExtended.getCurrentYPos() && y < currentlyExtended.getCurrentYPos() + currentlyExtended.getCurrentHeight()) {
+			if (x + w > currentlyExtended.getCurrentXPos() && x < currentlyExtended.getCurrentXPos() + currentlyExtended.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0) && y + h > currentlyExtended.getCurrentYPos() && y < currentlyExtended.getCurrentYPos() + currentlyExtended.getCurrentHeight()) {
 				return true;
 			}
 		}

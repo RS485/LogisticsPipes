@@ -13,26 +13,28 @@ import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.ticks.DebugGuiTickHandler;
 import logisticspipes.ticks.DebugGuiTickHandler.VarType;
+
+import net.minecraft.entity.player.EntityPlayer;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayer;
 
 @Accessors(chain = true)
 public class DebugTypePacket extends ModernPacket {
-	
+
 	@Getter
 	@Setter
 	public VarType toTransmit;
-	
+
 	@Getter
 	@Setter
 	public Integer[] pos = new Integer[0];
-	
+
 	public DebugTypePacket(int id) {
 		super(id);
 	}
-	
+
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		int arraySize = data.readInt();
@@ -43,25 +45,25 @@ public class DebugTypePacket extends ModernPacket {
 		in = new ObjectInputStream(bis);
 		try {
 			toTransmit = (VarType) in.readObject();
-		} catch(ClassNotFoundException e) {
+		} catch (ClassNotFoundException e) {
 			throw new UnsupportedOperationException(e);
 		}
 		int size = data.readInt();
 		pos = new Integer[size];
-		for(int i = 0; i < size; i++) {
+		for (int i = 0; i < size; i++) {
 			pos[i] = data.readInt();
 		}
 	}
-	
+
 	@Override
 	public void processPacket(EntityPlayer player) {
 		try {
 			DebugGuiTickHandler.instance().handleServerGuiSetting(toTransmit, pos);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -71,11 +73,11 @@ public class DebugTypePacket extends ModernPacket {
 		data.writeInt(bytes.length);
 		data.write(bytes);
 		data.writeInt(pos.length);
-		for(int i = 0; i < pos.length; i++) {
-			data.writeInt(pos[i]);
+		for (Integer po : pos) {
+			data.writeInt(po);
 		}
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new DebugTypePacket(getId());
@@ -86,4 +88,3 @@ public class DebugTypePacket extends ModernPacket {
 		return true;
 	}
 }
-

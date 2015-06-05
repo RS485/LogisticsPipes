@@ -2,7 +2,9 @@ package logisticspipes.proxy.cc.wrapper;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
+
 import net.minecraftforge.common.util.ForgeDirection;
+
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
@@ -40,11 +42,10 @@ public class LPPeripheralTilePipeWrapper implements IPeripheral {
 		pipe.connections.remove(computer);
 	}
 
-
 	@Override
 	public boolean equals(IPeripheral other) {
-		if(other instanceof LPPeripheralTilePipeWrapper) {
-			return ((LPPeripheralTilePipeWrapper)other).pipe.equals(pipe);
+		if (other instanceof LPPeripheralTilePipeWrapper) {
+			return ((LPPeripheralTilePipeWrapper) other).pipe.equals(pipe);
 		}
 		return false;
 	}

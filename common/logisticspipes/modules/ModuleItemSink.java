@@ -1,6 +1,5 @@
 package logisticspipes.modules;
 
-
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
@@ -23,7 +22,6 @@ import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.guis.module.inhand.ItemSinkInHand;
 import logisticspipes.network.guis.module.inpipe.ItemSinkSlot;
-import logisticspipes.network.packets.cpipe.CraftingFuzzyFlag;
 import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
 import logisticspipes.network.packets.module.ModuleInventory;
@@ -41,93 +39,106 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-@CCType(name="ItemSink Module")
+@CCType(name = "ItemSink Module")
 public class ModuleItemSink extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive {
-	
+
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested items", 1);
 	private boolean _isDefaultRoute;
 
 	private BitSet ignoreData = new BitSet(_filterInventory.getSizeInventory());
 	private BitSet ignoreNBT = new BitSet(_filterInventory.getSizeInventory());
-	
+
 	private IHUDModuleRenderer HUD = new HUDItemSink(this);
-	
+
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
-	
+
 	public ModuleItemSink() {
 		_filterInventory.addListener(this);
 	}
-	
-	@CCCommand(description="Returns the FilterInventory of this Module")
-	public ItemIdentifierInventory getFilterInventory(){
+
+	@CCCommand(description = "Returns the FilterInventory of this Module")
+	public ItemIdentifierInventory getFilterInventory() {
 		return _filterInventory;
 	}
 
-	@CCCommand(description="Returns true if the module is a default route")
-	public boolean isDefaultRoute(){
+	@CCCommand(description = "Returns true if the module is a default route")
+	public boolean isDefaultRoute() {
 		return _isDefaultRoute;
 	}
-	
-	@CCCommand(description="Sets the default route status of this module")
-	public void setDefaultRoute(Boolean isDefaultRoute){
+
+	@CCCommand(description = "Sets the default route status of this module")
+	public void setDefaultRoute(Boolean isDefaultRoute) {
 		_isDefaultRoute = isDefaultRoute;
-		if(!localModeWatchers.isEmpty()) MainProxy.sendToPlayerList(PacketHandler.getPacket(ItemSinkDefault.class).setFlag(_isDefaultRoute).setModulePos(this), localModeWatchers);
+		if (!localModeWatchers.isEmpty()) {
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(ItemSinkDefault.class).setFlag(_isDefaultRoute).setModulePos(this), localModeWatchers);
+		}
 	}
 
-	
 	private SinkReply _sinkReply;
 	private SinkReply _sinkReplyDefault;
 
 	@Override
 	public void registerPosition(ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);
-		_sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0, new ChassiTargetInformation(this.getPositionInt()));
-		_sinkReplyDefault = new SinkReply(FixedPriority.DefaultRoute, 0, true, true, 1, 0, new ChassiTargetInformation(this.getPositionInt()));
+		_sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0, new ChassiTargetInformation(getPositionInt()));
+		_sinkReplyDefault = new SinkReply(FixedPriority.DefaultRoute, 0, true, true, 1, 0, new ChassiTargetInformation(getPositionInt()));
 	}
-	
+
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
-		if(_isDefaultRoute && !allowDefault) return null;
-		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
-		if (_filterInventory.containsUndamagedItem(item.getUndamaged())){
-			if(_service.canUseEnergy(1)) {
+		if (_isDefaultRoute && !allowDefault) {
+			return null;
+		}
+		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
+			return null;
+		}
+		if (_filterInventory.containsUndamagedItem(item.getUndamaged())) {
+			if (_service.canUseEnergy(1)) {
 				return _sinkReply;
 			}
 			return null;
 		}
-		if(this._service.getUpgradeManager(slot, positionInt).isFuzzyUpgrade()) {
-			for(Pair<ItemIdentifierStack, Integer> stack:_filterInventory) {
-				if(stack == null) continue;
-				if(stack.getValue1() == null) continue;
+		if (_service.getUpgradeManager(slot, positionInt).isFuzzyUpgrade()) {
+			for (Pair<ItemIdentifierStack, Integer> stack : _filterInventory) {
+				if (stack == null) {
+					continue;
+				}
+				if (stack.getValue1() == null) {
+					continue;
+				}
 				ItemIdentifier ident1 = item;
 				ItemIdentifier ident2 = stack.getValue1().getItem();
-				if(ignoreData.get(stack.getValue2())) {
+				if (ignoreData.get(stack.getValue2())) {
 					ident1 = ident1.getIgnoringData();
 					ident2 = ident2.getIgnoringData();
 				}
-				if(ignoreNBT.get(stack.getValue2())) {
+				if (ignoreNBT.get(stack.getValue2())) {
 					ident1 = ident1.getIgnoringNBT();
 					ident2 = ident2.getIgnoringNBT();
 				}
-				if(ident1.equals(ident2)) {
-					if(_service.canUseEnergy(5)) {
+				if (ident1.equals(ident2)) {
+					if (_service.canUseEnergy(5)) {
 						return _sinkReply;
 					}
 					return null;
 				}
 			}
 		}
-		if (_isDefaultRoute){
-			if(bestPriority > _sinkReplyDefault.fixedPriority.ordinal() || (bestPriority == _sinkReplyDefault.fixedPriority.ordinal() && bestCustomPriority >= _sinkReplyDefault.customPriority)) return null;
-			if(_service.canUseEnergy(1)) {
+		if (_isDefaultRoute) {
+			if (bestPriority > _sinkReplyDefault.fixedPriority.ordinal() || (bestPriority == _sinkReplyDefault.fixedPriority.ordinal() && bestCustomPriority >= _sinkReplyDefault.customPriority)) {
+				return null;
+			}
+			if (_service.canUseEnergy(1)) {
 				return _sinkReplyDefault;
 			}
 			return null;
@@ -137,7 +148,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 
 	@Override
 	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
-		return NewGuiHandler.getGui(ItemSinkSlot.class).setDefaultRoute(_isDefaultRoute).setIgnoreData(ignoreData).setIgnoreNBT(ignoreNBT).setHasFuzzyUpgrade(this._service.getUpgradeManager(slot, positionInt).isFuzzyUpgrade());
+		return NewGuiHandler.getGui(ItemSinkSlot.class).setDefaultRoute(_isDefaultRoute).setIgnoreData(ignoreData).setIgnoreNBT(ignoreNBT).setHasFuzzyUpgrade(_service.getUpgradeManager(slot, positionInt).isFuzzyUpgrade());
 	}
 
 	@Override
@@ -146,13 +157,15 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 	}
 
 	@Override
-	public LogisticsModule getSubModule(int slot) {return null;}
+	public LogisticsModule getSubModule(int slot) {
+		return null;
+	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound, "");
 		_isDefaultRoute = nbttagcompound.getBoolean("defaultdestination");
-		if(nbttagcompound.hasKey("ignoreData")) {
+		if (nbttagcompound.hasKey("ignoreData")) {
 			ignoreData = BitSet.valueOf(nbttagcompound.getByteArray("ignoreData"));
 			ignoreNBT = BitSet.valueOf(nbttagcompound.getByteArray("ignoreNBT"));
 		}
@@ -160,10 +173,10 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
-    	_filterInventory.writeToNBT(nbttagcompound, "");
-    	nbttagcompound.setBoolean("defaultdestination", isDefaultRoute());
-    	nbttagcompound.setByteArray("ignoreData", ignoreData.toByteArray());
-    	nbttagcompound.setByteArray("ignoreNBT", ignoreNBT.toByteArray());
+		_filterInventory.writeToNBT(nbttagcompound, "");
+		nbttagcompound.setBoolean("defaultdestination", isDefaultRoute());
+		nbttagcompound.setByteArray("ignoreData", ignoreData.toByteArray());
+		nbttagcompound.setByteArray("ignoreNBT", ignoreNBT.toByteArray());
 	}
 
 	@Override
@@ -203,7 +216,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 
 	@Override
 	public void InventoryChanged(IInventory inventory) {
-		if(MainProxy.isServer(_world.getWorld())) {
+		if (MainProxy.isServer(_world.getWorld())) {
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(inventory)).setModulePos(this), localModeWatchers);
 		}
 	}
@@ -220,29 +233,30 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 
 	@Override
 	public boolean hasGenericInterests() {
-		return this._isDefaultRoute;
+		return _isDefaultRoute;
 	}
 
 	@Override
 	public List<ItemIdentifier> getSpecificInterests() {
-		if(this._isDefaultRoute)
+		if (_isDefaultRoute) {
 			return null;
+		}
 		Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
-		List<ItemIdentifier> li= new ArrayList<ItemIdentifier>(mapIC.size());
+		List<ItemIdentifier> li = new ArrayList<ItemIdentifier>(mapIC.size());
 		li.addAll(mapIC.keySet());
-		for(ItemIdentifier id:mapIC.keySet()){
+		for (ItemIdentifier id : mapIC.keySet()) {
 			li.add(id.getUndamaged());
 		}
-		if(this._service.getUpgradeManager(slot, positionInt).isFuzzyUpgrade()) {
-			for(Pair<ItemIdentifierStack, Integer> stack:_filterInventory) {
+		if (_service.getUpgradeManager(slot, positionInt).isFuzzyUpgrade()) {
+			for (Pair<ItemIdentifierStack, Integer> stack : _filterInventory) {
 				ItemIdentifier ident = stack.getValue1().getItem();
-				if(ignoreData.get(stack.getValue2())) {
+				if (ignoreData.get(stack.getValue2())) {
 					li.add(ident.getIgnoringData());
 				}
-				if(ignoreNBT.get(stack.getValue2())) {
+				if (ignoreNBT.get(stack.getValue2())) {
 					li.add(ident.getIgnoringNBT());
 				}
-				if(ignoreData.get(stack.getValue2()) && ignoreNBT.get(stack.getValue2())) {
+				if (ignoreData.get(stack.getValue2()) && ignoreNBT.get(stack.getValue2())) {
 					li.add(ident.getIgnoringData().getIgnoringNBT());
 				}
 			}
@@ -251,7 +265,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 	}
 
 	@Override
-	public boolean interestedInAttachedInventory() {		
+	public boolean interestedInAttachedInventory() {
 		return false;
 		// when we are default we are interested in everything anyway, otherwise we're only interested in our filter.
 	}
@@ -260,7 +274,6 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 	public boolean interestedInUndamagedID() {
 		return false;
 	}
-
 
 	@Override
 	public boolean recievePassive() {
@@ -282,48 +295,62 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 	}
 
 	public boolean isIgnoreData(int pos) {
-		return this.ignoreData.get(pos);
+		return ignoreData.get(pos);
 	}
 
 	public boolean isIgnoreNBT(int pos) {
-		return this.ignoreNBT.get(pos);
+		return ignoreNBT.get(pos);
 	}
 
 	public void setIgnoreData(int slot, EntityPlayer player) {
-		if(slot < 0 || slot >= 9) return;
-		if(MainProxy.isClient(_world.getWorld())) {
-			if(player == null)
+		if (slot < 0 || slot >= 9) {
+			return;
+		}
+		if (MainProxy.isClient(_world.getWorld())) {
+			if (player == null) {
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(ItemSinkFuzzy.class).setPos(slot).setNBT(false).setModulePos(this));
+			}
 		} else {
 			ignoreData.set(slot, !ignoreData.get(slot));
 			ModernPacket pak = PacketHandler.getPacket(ItemSinkFuzzy.class).setIgnoreData(ignoreData).setIgnoreNBT(ignoreNBT).setModulePos(this);
-			if(player != null) MainProxy.sendPacketToPlayer(pak, player);
+			if (player != null) {
+				MainProxy.sendPacketToPlayer(pak, player);
+			}
 			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(_world.getWorld()), pak);
 		}
 	}
 
 	public void setIgnoreNBT(int slot, EntityPlayer player) {
-		if(slot < 0 || slot >= 9) return;
-		if(MainProxy.isClient(_world.getWorld())) {
-			if(player == null)
+		if (slot < 0 || slot >= 9) {
+			return;
+		}
+		if (MainProxy.isClient(_world.getWorld())) {
+			if (player == null) {
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(ItemSinkFuzzy.class).setPos(slot).setNBT(true).setModulePos(this));
+			}
 		} else {
 			ignoreNBT.set(slot, !ignoreNBT.get(slot));
 			ModernPacket pak = PacketHandler.getPacket(ItemSinkFuzzy.class).setIgnoreData(ignoreData).setIgnoreNBT(ignoreNBT).setModulePos(this);
-			if(player != null) MainProxy.sendPacketToPlayer(pak, player);
+			if (player != null) {
+				MainProxy.sendPacketToPlayer(pak, player);
+			}
 			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(_world.getWorld()), pak);
 		}
 	}
 
 	public void importFromInventory() {
-		if(_service == null) return;
+		if (_service == null) {
+			return;
+		}
 		IInventoryUtil inv = _service.getPointedInventory(false);
-		if(inv == null) return;
+		if (inv == null) {
+			return;
+		}
 		int count = 0;
-		for(ItemIdentifier item:inv.getItems()) {
+		for (ItemIdentifier item : inv.getItems()) {
 			_filterInventory.setInventorySlotContents(count, item.makeStack(1));
 			count++;
-			if(count >= _filterInventory.getSizeInventory()) {
+			if (count >= _filterInventory.getSizeInventory()) {
 				break;
 			}
 		}

@@ -28,13 +28,16 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.Pair;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
+
 import net.minecraftforge.common.util.ForgeDirection;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -53,11 +56,11 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 
 	}
 
-	protected int ticksToAction(){
+	protected int ticksToAction() {
 		return 100;
 	}
 
-	protected int itemsToExtract(){
+	protected int itemsToExtract() {
 		return 1;
 	}
 
@@ -70,12 +73,12 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 	}
 
 	@Override
-	public ForgeDirection getSneakyDirection(){
+	public ForgeDirection getSneakyDirection() {
 		return _sneakyDirection;
 	}
 
 	@Override
-	public void setSneakyDirection(ForgeDirection sneakyDirection){
+	public void setSneakyDirection(ForgeDirection sneakyDirection) {
 		_sneakyDirection = sneakyDirection;
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(ExtractorModuleMode.class).setDirection(_sneakyDirection).setModulePos(this), localModeWatchers);
 	}
@@ -87,7 +90,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 
 	@Override
 	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
-		return NewGuiHandler.getGui(ExtractorModuleSlot.class).setSneakyOrientation(this.getSneakyDirection());
+		return NewGuiHandler.getGui(ExtractorModuleSlot.class).setSneakyOrientation(getSneakyDirection());
 	}
 
 	@Override
@@ -96,29 +99,31 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 	}
 
 	@Override
-	public LogisticsModule getSubModule(int slot) {return null;}
+	public LogisticsModule getSubModule(int slot) {
+		return null;
+	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		if(nbttagcompound.hasKey("sneakydirection")) {
+		if (nbttagcompound.hasKey("sneakydirection")) {
 			_sneakyDirection = ForgeDirection.values()[nbttagcompound.getInteger("sneakydirection")];
-		} else if(nbttagcompound.hasKey("sneakyorientation")) {
+		} else if (nbttagcompound.hasKey("sneakyorientation")) {
 			//convert sneakyorientation to sneakydirection
 			int t = nbttagcompound.getInteger("sneakyorientation");
-			switch(t) {
-			default:
-			case 0:
-				_sneakyDirection = ForgeDirection.UNKNOWN;
-				break;
-			case 1:
-				_sneakyDirection = ForgeDirection.UP;
-				break;
-			case 2:
-				_sneakyDirection = ForgeDirection.SOUTH;
-				break;
-			case 3:
-				_sneakyDirection = ForgeDirection.DOWN;
-				break;
+			switch (t) {
+				default:
+				case 0:
+					_sneakyDirection = ForgeDirection.UNKNOWN;
+					break;
+				case 1:
+					_sneakyDirection = ForgeDirection.UP;
+					break;
+				case 2:
+					_sneakyDirection = ForgeDirection.SOUTH;
+					break;
+				case 3:
+					_sneakyDirection = ForgeDirection.DOWN;
+					break;
 			}
 		}
 	}
@@ -130,54 +135,67 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 
 	@Override
 	public void tick() {
-		if (++currentTick < ticksToAction()) return;
+		if (++currentTick < ticksToAction()) {
+			return;
+		}
 		currentTick = 0;
 
 		//Extract Item
 		IInventory realInventory = _service.getRealInventory();
-		if (realInventory == null) return;
+		if (realInventory == null) {
+			return;
+		}
 		ForgeDirection extractOrientation = _sneakyDirection;
-		if(extractOrientation == ForgeDirection.UNKNOWN) {
+		if (extractOrientation == ForgeDirection.UNKNOWN) {
 			extractOrientation = _service.inventoryOrientation().getOpposite();
 		}
 
-		IInventoryUtil targetUtil = _service.getSneakyInventory(extractOrientation,true);
+		IInventoryUtil targetUtil = _service.getSneakyInventory(extractOrientation, true);
 
-		
-		for (int i = 0; i < targetUtil.getSizeInventory(); i++){
-			
+		for (int i = 0; i < targetUtil.getSizeInventory(); i++) {
+
 			ItemStack slot = targetUtil.getStackInSlot(i);
-			if (slot == null) continue;
+			if (slot == null) {
+				continue;
+			}
 			ItemIdentifier slotitem = ItemIdentifier.get(slot);
 			List<Integer> jamList = new LinkedList<Integer>();
 			Pair<Integer, SinkReply> reply = _service.hasDestination(slotitem, true, jamList);
-			if (reply == null) continue;
+			if (reply == null) {
+				continue;
+			}
 
 			int itemsleft = itemsToExtract();
-			while(reply != null) {
+			while (reply != null) {
 				int count = Math.min(itemsleft, slot.stackSize);
 				count = Math.min(count, slotitem.getMaxStackSize());
-				if(reply.getValue2().maxNumberOfItems > 0) {
+				if (reply.getValue2().maxNumberOfItems > 0) {
 					count = Math.min(count, reply.getValue2().maxNumberOfItems);
 				}
 
-				while(!_service.useEnergy(neededEnergy() * count) && count > 0) {
+				while (!_service.useEnergy(neededEnergy() * count) && count > 0) {
 					_service.spawnParticle(Particles.OrangeParticle, 2);
 					count--;
 				}
 
-				if(count <= 0) {
+				if (count <= 0) {
 					break;
 				}
 
 				ItemStack stackToSend = targetUtil.decrStackSize(i, count);
-				if(stackToSend == null || stackToSend.stackSize == 0) break;
+				if (stackToSend == null || stackToSend.stackSize == 0) {
+					break;
+				}
 				count = stackToSend.stackSize;
 				_service.sendStack(stackToSend, reply, itemSendMode());
 				itemsleft -= count;
-				if(itemsleft <= 0) break;
+				if (itemsleft <= 0) {
+					break;
+				}
 				slot = targetUtil.getStackInSlot(i);
-				if (slot == null) break;
+				if (slot == null) {
+					break;
+				}
 				jamList.add(reply.getValue1());
 				reply = _service.hasDestination(ItemIdentifier.get(slot), true, jamList);
 			}
@@ -191,7 +209,6 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 		list.add("Extraction: " + ((_sneakyDirection == ForgeDirection.UNKNOWN) ? "DEFAULT" : _sneakyDirection.name()));
 		return list;
 	}
-
 
 	@Override
 	public void startHUDWatching() {
@@ -230,7 +247,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 	}
 
 	@Override
-	public boolean interestedInAttachedInventory() {		
+	public boolean interestedInAttachedInventory() {
 		return false;
 	}
 

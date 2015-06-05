@@ -11,20 +11,21 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
 
 public class ItemResource implements IResource {
-	
+
 	private final ItemIdentifierStack stack;
 	private final IRequestItems requester;
-	
+
 	public ItemResource(ItemIdentifierStack stack, IRequestItems requester) {
 		this.stack = stack;
 		this.requester = requester;
 	}
-	
+
 	public ItemResource(LPDataInputStream data) throws IOException {
-		this.stack = data.readItemIdentifierStack();
-		this.requester = null;
+		stack = data.readItemIdentifierStack();
+		requester = null;
 	}
 
+	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
 		data.writeItemIdentifierStack(stack);
 	}
@@ -65,9 +66,9 @@ public class ItemResource implements IResource {
 
 	@Override
 	public boolean mergeForDisplay(IResource resource, int withAmount) {
-		if(resource instanceof ItemResource) {
-			if(((ItemResource)resource).stack.getItem().equals(stack.getItem())) {
-				this.stack.setStackSize(this.stack.getStackSize() + withAmount);
+		if (resource instanceof ItemResource) {
+			if (((ItemResource) resource).stack.getItem().equals(stack.getItem())) {
+				stack.setStackSize(stack.getStackSize() + withAmount);
 				return true;
 			}
 		}
@@ -82,6 +83,7 @@ public class ItemResource implements IResource {
 	}
 
 	private Object ccObject;
+
 	@Override
 	public void setCCType(Object type) {
 		ccObject = type;
@@ -95,9 +97,13 @@ public class ItemResource implements IResource {
 	@Override
 	public String getDisplayText(ColorCode code) {
 		StringBuilder builder = new StringBuilder();
-		if(code != ColorCode.NONE) builder.append(code == ColorCode.MISSING ? ChatColor.RED : ChatColor.GREEN);
+		if (code != ColorCode.NONE) {
+			builder.append(code == ColorCode.MISSING ? ChatColor.RED : ChatColor.GREEN);
+		}
 		builder.append(stack.getFriendlyName());
-		if(code != ColorCode.NONE) builder.append(ChatColor.WHITE);
+		if (code != ColorCode.NONE) {
+			builder.append(ChatColor.WHITE);
+		}
 		return builder.toString();
 	}
 

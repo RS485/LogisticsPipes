@@ -6,10 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Callback;
-import li.cil.oc.api.machine.Context;
-import li.cil.oc.api.prefab.AbstractValue;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
@@ -32,33 +28,42 @@ import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
+
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+
 import net.minecraftforge.common.DimensionManager;
 
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Callback;
+import li.cil.oc.api.machine.Context;
+import li.cil.oc.api.prefab.AbstractValue;
+
 public abstract class BaseWrapperClass extends AbstractValue {
-	
+
 	public static final ICommandWrapper WRAPPER = new ICommandWrapper() {
+
 		private Map<Class<?>, Class<? extends BaseWrapperClass>> map = new HashMap<Class<?>, Class<? extends BaseWrapperClass>>();
+
 		@Override
 		public Object getWrappedObject(CCWrapperInformation info, Object object) {
 			try {
 				Class<? extends BaseWrapperClass> clazz = map.get(object.getClass());
-				if(clazz == null) {
+				if (clazz == null) {
 					clazz = ClassCreator.getWrapperClass(info, object.getClass().getName());
 					map.put(object.getClass(), clazz);
 				}
 				return clazz.getConstructor(CCWrapperInformation.class, Object.class).newInstance(info, object);
-			} catch(Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				throw new RuntimeException(e);
 			}
 		}
 	};
-	
+
 	private final CCWrapperInformation info;
 	private Object object;
 	public boolean isDirectCall;
@@ -66,16 +71,18 @@ public abstract class BaseWrapperClass extends AbstractValue {
 	public BaseWrapperClass(String wrappedClass) throws ClassNotFoundException {
 		this(CCObjectWrapper.getWrapperInformation(Class.forName(wrappedClass)), null);
 	}
-	
+
 	public BaseWrapperClass(CCWrapperInformation info, Object object) {
 		super();
 		this.info = info;
 		this.object = object;
 	}
 
-	@Callback(direct=true)
+	@Callback(direct = true)
 	public Object[] help(Context context, Arguments args) throws Exception {
-		if(object == null) throw new Exception("This LP object is not persistable");
+		if (object == null) {
+			throw new Exception("This LP object is not persistable");
+		}
 		StringBuilder help = new StringBuilder();
 		StringBuilder head = new StringBuilder();
 		StringBuilder head2 = new StringBuilder();
@@ -83,24 +90,24 @@ public abstract class BaseWrapperClass extends AbstractValue {
 		head.append(info.type);
 		head.append("\n");
 		head2.append("Commands: \n");
-		for(Integer num:info.commands.keySet()) {
+		for (Integer num : info.commands.keySet()) {
 			Method method = info.commands.get(num);
 			StringBuilder command = new StringBuilder();
-			if(help.length() != 0) {
+			if (help.length() != 0) {
 				command.append("\n");
 			}
 			int number = num.intValue();
-			if(number < 10) {
+			if (number < 10) {
 				command.append(" ");
 			}
 			command.append(number);
 			command.append(" ");
-			if(method.isAnnotationPresent(CCDirectCall.class)) {
+			if (method.isAnnotationPresent(CCDirectCall.class)) {
 				command.append("D");
 			} else {
 				command.append(" ");
 			}
-			if(method.isAnnotationPresent(CCQueued.class)) {
+			if (method.isAnnotationPresent(CCQueued.class)) {
 				command.append("Q");
 			} else {
 				command.append(" ");
@@ -110,15 +117,15 @@ public abstract class BaseWrapperClass extends AbstractValue {
 			StringBuilder param = new StringBuilder();
 			param.append("(");
 			boolean a = false;
-			for(Class<?> clazz:method.getParameterTypes()) {
-				if(a) {
+			for (Class<?> clazz : method.getParameterTypes()) {
+				if (a) {
 					param.append(", ");
 				}
 				param.append(clazz.getSimpleName());
 				a = true;
 			}
 			param.append(")");
-			if(param.toString().length() + command.length() > 50) {
+			if (param.toString().length() + command.length() > 50) {
 				command.append("\n      ---");
 			}
 			command.append(param.toString());
@@ -126,12 +133,12 @@ public abstract class BaseWrapperClass extends AbstractValue {
 		}
 		String commands = help.toString();
 		String[] lines = commands.split("\n");
-		if(lines.length > 16) {
+		if (lines.length > 16) {
 			int pageNumber = 1;
-			if(args.count() > 0) {
-				if(args.isDouble(0) || args.isInteger(0)) {
+			if (args.count() > 0) {
+				if (args.isDouble(0) || args.isInteger(0)) {
 					pageNumber = args.checkInteger(0);
-					if(pageNumber < 1) {
+					if (pageNumber < 1) {
 						pageNumber = 1;
 					}
 				}
@@ -141,38 +148,46 @@ public abstract class BaseWrapperClass extends AbstractValue {
 			page.append("Page ");
 			page.append(pageNumber);
 			page.append(" of ");
-			page.append((int)(Math.floor(lines.length / 10) + (lines.length % 10 == 0 ? 0:1)));
+			page.append((int) (Math.floor(lines.length / 10) + (lines.length % 10 == 0 ? 0 : 1)));
 			page.append("\n");
 			page.append(head2.toString());
 			pageNumber--;
 			int from = pageNumber * 11;
 			int to = pageNumber * 11 + 11;
-			for(int i=from;i<to;i++) {
-				if(i < lines.length) {
+			for (int i = from; i < to; i++) {
+				if (i < lines.length) {
 					page.append(lines[i]);
 				}
-				if(i < to - 1) {
+				if (i < to - 1) {
 					page.append("\n");
 				}
 			}
-			return new Object[]{page.toString()};
+			return new Object[] { page.toString() };
 		} else {
-			for(int i=0;i<16-lines.length;i++) {
+			for (int i = 0; i < 16 - lines.length; i++) {
 				String buffer = head.toString();
 				head = new StringBuilder();
 				head.append("\n").append(buffer);
 			}
 		}
-		return new Object[]{new StringBuilder().append(head).append(head2).append(help).toString()};
+		return new Object[] { new StringBuilder().append(head).append(head2).append(help).toString() };
 	}
 
-	@Callback(direct=true)
+	@Callback(direct = true)
 	public Object[] helpCommand(Context context, Arguments args) throws Exception {
-		if(object == null) throw new Exception("This LP object is not persistable");
-		if(args.count() != 1) return new Object[]{"Wrong Argument Count"};
-		if(!args.isInteger(0)) return new Object[]{"Wrong Argument Type"};
+		if (object == null) {
+			throw new Exception("This LP object is not persistable");
+		}
+		if (args.count() != 1) {
+			return new Object[] { "Wrong Argument Count" };
+		}
+		if (!args.isInteger(0)) {
+			return new Object[] { "Wrong Argument Type" };
+		}
 		Integer number = args.checkInteger(0);
-		if(!info.commands.containsKey(number)) return new Object[]{"No command with that index"};
+		if (!info.commands.containsKey(number)) {
+			return new Object[] { "No command with that index" };
+		}
 		Method method = info.commands.get(number);
 		StringBuilder help = new StringBuilder();
 		help.append("---------------------------------\n");
@@ -180,11 +195,11 @@ public abstract class BaseWrapperClass extends AbstractValue {
 		help.append(method.getName());
 		help.append("\n");
 		help.append("Parameter: ");
-		if(method.getParameterTypes().length > 0) {
+		if (method.getParameterTypes().length > 0) {
 			help.append("\n");
 			boolean a = false;
-			for(Class<?> clazz:method.getParameterTypes()) {
-				if(a) {
+			for (Class<?> clazz : method.getParameterTypes()) {
+				if (a) {
 					help.append(", ");
 				}
 				help.append(clazz.getSimpleName());
@@ -199,26 +214,27 @@ public abstract class BaseWrapperClass extends AbstractValue {
 		help.append("\n");
 		help.append("Description: \n");
 		help.append(method.getAnnotation(CCCommand.class).description());
-		return new Object[]{help.toString()};
+		return new Object[] { help.toString() };
 	}
-	
+
+	@Override
 	public String toString() {
-		if(object != null) {
+		if (object != null) {
 			try {
-				if(object.getClass().getMethod("toString").getDeclaringClass() != Object.class) {
+				if (object.getClass().getMethod("toString").getDeclaringClass() != Object.class) {
 					return getType() + ": " + object.toString();
 				}
-				if(object instanceof ICCTypeWrapped) {
-					if(((ICCTypeWrapped)object).getObject().getClass().getMethod("toString").getDeclaringClass() != Object.class) {
-						return getType() + ": " + ((ICCTypeWrapped)object).getObject().toString();
+				if (object instanceof ICCTypeWrapped) {
+					if (((ICCTypeWrapped) object).getObject().getClass().getMethod("toString").getDeclaringClass() != Object.class) {
+						return getType() + ": " + ((ICCTypeWrapped) object).getObject().toString();
 					}
 				}
-			} catch(NoSuchMethodException e) {
-				if(LPConstants.DEBUG) {
+			} catch (NoSuchMethodException e) {
+				if (LPConstants.DEBUG) {
 					e.printStackTrace();
 				}
-			} catch(SecurityException e) {
-				if(LPConstants.DEBUG) {
+			} catch (SecurityException e) {
+				if (LPConstants.DEBUG) {
 					e.printStackTrace();
 				}
 			}
@@ -227,48 +243,56 @@ public abstract class BaseWrapperClass extends AbstractValue {
 	}
 
 	public Object[] invokeMethod(String methodName, Context context, Arguments args) throws Exception {
-		if(object == null) throw new Exception("This LP object is not persistable");
-		
+		if (object == null) {
+			throw new Exception("This LP object is not persistable");
+		}
+
 		int length = args.count();
 		Object[] arguments = new Object[length];
-		for(int i=0;i<length;i++) {
-			if(args.isString(i)) {
+		for (int i = 0; i < length; i++) {
+			if (args.isString(i)) {
 				arguments[i] = args.checkString(i);
 			} else {
 				Object tmp = args.checkAny(i);
-				if(tmp instanceof BaseWrapperClass) {
-					tmp = ((BaseWrapperClass)tmp).getObject();
+				if (tmp instanceof BaseWrapperClass) {
+					tmp = ((BaseWrapperClass) tmp).getObject();
 				}
-				if(tmp instanceof ICCTypeWrapped) {
-					tmp = ((ICCTypeWrapped)tmp).getObject();
+				if (tmp instanceof ICCTypeWrapped) {
+					tmp = ((ICCTypeWrapped) tmp).getObject();
 				}
 				arguments[i] = tmp;
 			}
 		}
-		
+
 		Method match = null;
-		for(Method method:info.commands.values()) {
-			if(!method.getName().equalsIgnoreCase(methodName)) continue;
-			if(!argumentsMatch(method, arguments)) continue;
+		for (Method method : info.commands.values()) {
+			if (!method.getName().equalsIgnoreCase(methodName)) {
+				continue;
+			}
+			if (!argumentsMatch(method, arguments)) {
+				continue;
+			}
 			match = method;
 			break;
 		}
-		
-		if(match == null) {
+
+		if (match == null) {
 			StringBuilder error = new StringBuilder();
 			error.append("No such method.");
 			boolean handled = false;
-			for(Method method:info.commands.values()) {
-				if(!method.getName().equalsIgnoreCase(methodName)) continue;
-				if(handled) {
+			for (Method method : info.commands.values()) {
+				if (!method.getName().equalsIgnoreCase(methodName)) {
+					continue;
+				}
+				if (handled) {
 					error.append("\n");
 				}
 				handled = true;
 				error.append(method.getName());
 				error.append("(");
 				boolean a = false;
-				for(Class<?> clazz:method.getParameterTypes()) {
-					if(a) {
+				for (Class<?> clazz : method.getParameterTypes()) {
+					if (a) {
 						error.append(", ");
 					}
 					error.append(clazz.getName());
@@ -276,7 +300,7 @@ public abstract class BaseWrapperClass extends AbstractValue {
 				}
 				error.append(")");
 			}
-			if(!handled) {
+			if (!handled) {
 				error = new StringBuilder();
 				error.append("Internal Excption (Code: 1, ");
 				error.append(methodName);
@@ -285,42 +309,46 @@ public abstract class BaseWrapperClass extends AbstractValue {
 			throw new UnsupportedOperationException(error.toString());
 		}
 
-		if(match.getAnnotation(CCDirectCall.class) != null) {
-			if(!isDirectCall) {
+		if (match.getAnnotation(CCDirectCall.class) != null) {
+			if (!isDirectCall) {
 				throw new PermissionException();
 			}
 		}
-		
-		if(match.getAnnotation(CCCommand.class).needPermission()) {
-			if(info.securityMethod != null) {
+
+		if (match.getAnnotation(CCCommand.class).needPermission()) {
+			if (info.securityMethod != null) {
 				try {
 					info.securityMethod.invoke(object);
-				} catch(InvocationTargetException e) {
-					if(e.getTargetException() instanceof Exception) {
+				} catch (InvocationTargetException e) {
+					if (e.getTargetException() instanceof Exception) {
 						throw (Exception) e.getTargetException();
 					}
 					throw e;
 				}
 			}
 		}
-		
+
 		Object result;
 		try {
-			result = match.invoke(this.object, arguments);
-		} catch(InvocationTargetException e) {
-			if(e.getTargetException() instanceof Exception) {
+			result = match.invoke(object, arguments);
+		} catch (InvocationTargetException e) {
+			if (e.getTargetException() instanceof Exception) {
 				throw (Exception) e.getTargetException();
 			}
 			throw e;
 		}
-		return CCObjectWrapper.createArray(CCObjectWrapper.getWrappedObject(result, WRAPPER));
+		return CCObjectWrapper.createArray(CCObjectWrapper.getWrappedObject(result, BaseWrapperClass.WRAPPER));
 	}
 
 	private boolean argumentsMatch(Method method, Object[] arguments) {
-		int i=0;
-		for(Class<?> args:method.getParameterTypes()) {
-			if(arguments.length <= i) return false;
-			if(!args.isAssignableFrom(arguments[i].getClass())) return false;
+		int i = 0;
+		for (Class<?> args : method.getParameterTypes()) {
+			if (arguments.length <= i) {
+				return false;
+			}
+			if (!args.isAssignableFrom(arguments[i].getClass())) {
+				return false;
+			}
 			i++;
 		}
 		return true;
@@ -336,71 +364,79 @@ public abstract class BaseWrapperClass extends AbstractValue {
 
 	@Override
 	public void load(NBTTagCompound nbt) {
-		if(object != null) return;
+		if (object != null) {
+			return;
+		}
 		String type = nbt.getString("Type");
-		if(type.equals("")) return;
-		if(type.equals("LPGlobalCCAccess")) {
+		if (type.equals("")) {
+			return;
+		}
+		if (type.equals("LPGlobalCCAccess")) {
 			object = LogisticsPipes.getComputerLP();
 			checkType();
-		} else if(type.equals("CoreRoutedPipe")) {
+		} else if (type.equals("CoreRoutedPipe")) {
 			int x = nbt.getInteger("X");
 			int y = nbt.getInteger("Y");
 			int z = nbt.getInteger("Z");
 			final LPPosition pos = new LPPosition(x, y, z);
 			final int dim = nbt.getInteger("Dim");
 			QueuedTasks.queueTask(new Callable<Object>() {
+
 				@Override
 				public Object call() throws Exception {
 					World world = DimensionManager.getWorld(dim);
-					if(world != null) {
+					if (world != null) {
 						TileEntity tile = pos.getTileEntity(world);
-						if(tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe)tile).pipe instanceof CoreRoutedPipe) {
-							object = ((LogisticsTileGenericPipe)tile).pipe;
+						if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe) {
+							object = ((LogisticsTileGenericPipe) tile).pipe;
 							checkType();
 						}
 					}
 					return null;
-				}});
-		} else if(type.equals("CCItemIdentifierImplementation")) {
+				}
+			});
+		} else if (type.equals("CCItemIdentifierImplementation")) {
 			ItemStack stack = ItemStack.loadItemStackFromNBT(nbt);
-			if(stack != null) {
+			if (stack != null) {
 				object = new CCItemIdentifierImplementation(ItemIdentifier.get(stack));
 				checkType();
 			}
-		} else if(type.equals("CCItemIdentifierStackImplementation")) {
+		} else if (type.equals("CCItemIdentifierStackImplementation")) {
 			ItemStack stack = ItemStack.loadItemStackFromNBT(nbt);
-			if(stack != null) {
+			if (stack != null) {
 				object = new CCItemIdentifierStackImplementation(ItemIdentifierStack.getFromStack(stack));
 				checkType();
 			}
-		} else if(type.equals("CCItemIdentifierBuilder")) {
+		} else if (type.equals("CCItemIdentifierBuilder")) {
 			ItemStack stack = ItemStack.loadItemStackFromNBT(nbt);
-			if(stack != null) {
+			if (stack != null) {
 				CCItemIdentifierBuilder builder = new CCItemIdentifierBuilder();
 				builder.setItemID(Double.valueOf(Item.getIdFromItem(stack.getItem())));
 				builder.setItemData(Double.valueOf(stack.getItemDamage()));
 				object = builder;
 				checkType();
 			}
-		} else if(type.equals("LogisticsSolidTileEntity")) {
+		} else if (type.equals("LogisticsSolidTileEntity")) {
 			int x = nbt.getInteger("X");
 			int y = nbt.getInteger("Y");
 			int z = nbt.getInteger("Z");
 			final LPPosition pos = new LPPosition(x, y, z);
 			final int dim = nbt.getInteger("Dim");
 			QueuedTasks.queueTask(new Callable<Object>() {
+
 				@Override
 				public Object call() throws Exception {
 					World world = DimensionManager.getWorld(dim);
-					if(world != null) {
+					if (world != null) {
 						TileEntity tile = pos.getTileEntity(world);
-						if(tile instanceof LogisticsSolidTileEntity) {
-							object = (LogisticsSolidTileEntity)tile;
+						if (tile instanceof LogisticsSolidTileEntity) {
+							object = tile;
 							checkType();
 						}
 					}
 					return null;
-				}});
+				}
+			});
 		} else {
 			System.out.println("Unknown type to load");
 		}
@@ -408,29 +444,31 @@ public abstract class BaseWrapperClass extends AbstractValue {
 
 	@Override
 	public void save(NBTTagCompound nbt) {
-		if(object == null) return;
-		if(object instanceof LPGlobalCCAccess) {
+		if (object == null) {
+			return;
+		}
+		if (object instanceof LPGlobalCCAccess) {
 			nbt.setString("Type", "LPGlobalCCAccess");
-		} else if(object instanceof CoreRoutedPipe) {
-			LPPosition pos = ((CoreRoutedPipe)object).getLPPosition();
+		} else if (object instanceof CoreRoutedPipe) {
+			LPPosition pos = ((CoreRoutedPipe) object).getLPPosition();
 			nbt.setString("Type", "CoreRoutedPipe");
-			nbt.setInteger("Dim", MainProxy.getDimensionForWorld(((CoreRoutedPipe)object).getWorld()));
+			nbt.setInteger("Dim", MainProxy.getDimensionForWorld(((CoreRoutedPipe) object).getWorld()));
 			nbt.setInteger("X", pos.getX());
 			nbt.setInteger("Y", pos.getY());
 			nbt.setInteger("Z", pos.getZ());
-		} else if(object instanceof CCItemIdentifierImplementation) {
+		} else if (object instanceof CCItemIdentifierImplementation) {
 			nbt.setString("Type", "CCItemIdentifierImplementation");
-			((CCItemIdentifierImplementation)object).getObject().makeNormalStack(1).writeToNBT(nbt);
-		} else if(object instanceof CCItemIdentifierStackImplementation) {
+			((CCItemIdentifierImplementation) object).getObject().makeNormalStack(1).writeToNBT(nbt);
+		} else if (object instanceof CCItemIdentifierStackImplementation) {
 			nbt.setString("Type", "CCItemIdentifierStackImplementation");
-			((CCItemIdentifierStackImplementation)object).getObject().makeNormalStack().writeToNBT(nbt);
-		} else if(object instanceof CCItemIdentifierBuilder) {
+			((CCItemIdentifierStackImplementation) object).getObject().makeNormalStack().writeToNBT(nbt);
+		} else if (object instanceof CCItemIdentifierBuilder) {
 			nbt.setString("Type", "CCItemIdentifierBuilder");
-			((CCItemIdentifierBuilder)object).build().makeNormalStack(1).writeToNBT(nbt);
-		} else if(object instanceof LogisticsSolidTileEntity) {
-			LPPosition pos = ((LogisticsSolidTileEntity)object).getLPPosition();
+			((CCItemIdentifierBuilder) object).build().makeNormalStack(1).writeToNBT(nbt);
+		} else if (object instanceof LogisticsSolidTileEntity) {
+			LPPosition pos = ((LogisticsSolidTileEntity) object).getLPPosition();
 			nbt.setString("Type", "LogisticsSolidTileEntity");
-			nbt.setInteger("Dim", MainProxy.getDimensionForWorld(((LogisticsSolidTileEntity)object).getWorldObj()));
+			nbt.setInteger("Dim", MainProxy.getDimensionForWorld(((LogisticsSolidTileEntity) object).getWorldObj()));
 			nbt.setInteger("X", pos.getX());
 			nbt.setInteger("Y", pos.getY());
 			nbt.setInteger("Z", pos.getZ());
@@ -440,8 +478,8 @@ public abstract class BaseWrapperClass extends AbstractValue {
 	}
 
 	private void checkType() {
-		if(object != null) {
-			if(CCObjectWrapper.getWrapperInformation(object.getClass()) != this.info) {
+		if (object != null) {
+			if (CCObjectWrapper.getWrapperInformation(object.getClass()) != info) {
 				System.out.println("WrapperInformationTypes didn't match");
 				object = null;
 			}
@@ -452,7 +490,7 @@ public abstract class BaseWrapperClass extends AbstractValue {
 	public Object[] call(Context context, Arguments arguments) {
 		try {
 			return help(context, arguments);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}

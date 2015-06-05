@@ -11,17 +11,17 @@ public enum ExtractionMode {
 	Leave1PerType;
 
 	public ExtractionMode next() {
-		int next = this.ordinal() + 1;
-		
-		if (next >= ExtractionMode.values().length){
+		int next = ordinal() + 1;
+
+		if (next >= ExtractionMode.values().length) {
 			next = 0;
 		}
 		return ExtractionMode.values()[next];
 	}
-	
+
 	public static ExtractionMode getMode(int id) {
-		if (id >= 0 && id < values().length) {
-			return values()[id];
+		if (id >= 0 && id < ExtractionMode.values().length) {
+			return ExtractionMode.values()[id];
 		}
 		return Normal;
 	}
@@ -29,6 +29,6 @@ public enum ExtractionMode {
 	private static final String PREFIX = "misc.extractionmode.";
 
 	public String getExtractionModeString() {
-		return StringUtils.translate(PREFIX + this.name());
+		return StringUtils.translate(ExtractionMode.PREFIX + name());
 	}
 }

@@ -5,11 +5,12 @@ import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 
 public class UpgradeModuleUpgrade implements IPipeUpgrade {
+
 	@Override
 	public boolean needsUpdate() {
 		return false;
 	}
-	
+
 	@Override
 	public boolean isAllowedForPipe(CoreRoutedPipe pipe) {
 		return pipe instanceof PipeLogisticsChassi;
@@ -22,11 +23,11 @@ public class UpgradeModuleUpgrade implements IPipeUpgrade {
 
 	@Override
 	public String[] getAllowedPipes() {
-		return new String[]{"chassi"};
+		return new String[] { "chassi" };
 	}
 
 	@Override
 	public String[] getAllowedModules() {
-		return new String[]{};
+		return new String[] {};
 	}
 }

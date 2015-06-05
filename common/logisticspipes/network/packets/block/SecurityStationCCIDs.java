@@ -3,6 +3,7 @@ package logisticspipes.network.packets.block;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.NBTCoordinatesPacket;
+
 import net.minecraft.entity.player.EntityPlayer;
 
 public class SecurityStationCCIDs extends NBTCoordinatesPacket {
@@ -19,9 +20,8 @@ public class SecurityStationCCIDs extends NBTCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsSecurityTileEntity tile = this.getTile(player.worldObj, LogisticsSecurityTileEntity.class);
-		if(tile != null) {
+		if (tile != null) {
 			tile.handleListPacket(getTag());
 		}
 	}
 }
-

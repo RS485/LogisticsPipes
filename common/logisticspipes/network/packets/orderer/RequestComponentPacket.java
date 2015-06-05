@@ -6,10 +6,12 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestHandler;
-import lombok.experimental.Accessors;
+
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+import lombok.experimental.Accessors;
+
+@Accessors(chain = true)
 public class RequestComponentPacket extends RequestPacket {
 
 	public RequestComponentPacket(int id) {
@@ -33,4 +35,3 @@ public class RequestComponentPacket extends RequestPacket {
 		RequestHandler.simulate(player, getStack(), (CoreRoutedPipe) pipe.pipe);
 	}
 }
-

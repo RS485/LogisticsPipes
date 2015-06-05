@@ -1,7 +1,7 @@
-/** 
+/**
  * Copyright (c) Krapht, 2011
  * 
- * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public 
+ * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
@@ -14,57 +14,59 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
+
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.google.common.primitives.Ints;
 
 /**
- * This class is responsible for abstracting an ISidedInventory as a normal IInventory
+ * This class is responsible for abstracting an ISidedInventory as a normal
+ * IInventory
+ * 
  * @author Krapht
- *
  */
 public final class SidedInventoryMinecraftAdapter implements IInventory {
 
 	public final ISidedInventory _sidedInventory;
 	private final int _side;
 	private final int _slotMap[];
-	
+
 	public SidedInventoryMinecraftAdapter(ISidedInventory sidedInventory, ForgeDirection side, boolean forExtraction) {
 		_sidedInventory = sidedInventory;
 		_side = side.ordinal();
-		if(side == ForgeDirection.UNKNOWN) {
-			_slotMap = buildAllSidedMap(sidedInventory,forExtraction);
+		if (side == ForgeDirection.UNKNOWN) {
+			_slotMap = buildAllSidedMap(sidedInventory, forExtraction);
 		} else {
 			ArrayList<Integer> list = new ArrayList<Integer>();
 
 			int allSlots[] = _sidedInventory.getAccessibleSlotsFromSide(_side);
-			for(int number:allSlots) {
-				ItemStack item=_sidedInventory.getStackInSlot(number);
-				if(!list.contains(number) && (!forExtraction || // check extract condition
-					(item!=null && _sidedInventory.canExtractItem(number,item,_side)))){
-						list.add(number);
+			for (int number : allSlots) {
+				ItemStack item = _sidedInventory.getStackInSlot(number);
+				if (!list.contains(number) && (!forExtraction || // check extract condition
+						(item != null && _sidedInventory.canExtractItem(number, item, _side)))) {
+					list.add(number);
 				}
 			}
-			_slotMap=Ints.toArray(list);
+			_slotMap = Ints.toArray(list);
 		}
 	}
 
 	private int[] buildAllSidedMap(ISidedInventory sidedInventory, boolean forExtraction) {
 		ArrayList<Integer> list = new ArrayList<Integer>();
-		
-		for(int i = 0; i < 6; i++) {
+
+		for (int i = 0; i < 6; i++) {
 			int slots[] = _sidedInventory.getAccessibleSlotsFromSide(i);
-			for(int number:slots) {
-				ItemStack item=_sidedInventory.getStackInSlot(number);
-				if(!list.contains(number) && (!forExtraction || // check extract condition
-					(item!=null && _sidedInventory.canExtractItem(number,item,i)))){
-						list.add(number);
+			for (int number : slots) {
+				ItemStack item = _sidedInventory.getStackInSlot(number);
+				if (!list.contains(number) && (!forExtraction || // check extract condition
+						(item != null && _sidedInventory.canExtractItem(number, item, i)))) {
+					list.add(number);
 				}
 			}
 		}
 		int slotmap[] = new int[list.size()];
 		int count = 0;
-		for(int i:list) {
+		for (int i : list) {
 			slotmap[count++] = i;
 		}
 		return slotmap;
@@ -119,7 +121,6 @@ public final class SidedInventoryMinecraftAdapter implements IInventory {
 	public void closeInventory() {
 		_sidedInventory.closeInventory();
 	}
-
 
 	@Override
 	public ItemStack getStackInSlotOnClosing(int slot) {

@@ -9,10 +9,12 @@
 package logisticspipes.utils.gui;
 
 import logisticspipes.utils.Color;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
+
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -20,8 +22,7 @@ import org.lwjgl.opengl.GL11;
  */
 public final class SimpleGraphics {
 
-	private SimpleGraphics() {
-	}
+	private SimpleGraphics() {}
 
 	/**
 	 * Takes colors as enum values from {@link logisticspipes.utils.Color}.
@@ -29,17 +30,22 @@ public final class SimpleGraphics {
 	 * @see #drawHorizontalLine(int, int, int, int, int)
 	 */
 	public static void drawHorizontalLine(int x1, int x2, int y, Color color, int thickness) {
-		drawHorizontalLine(x1, x2, y, Color.getValue(color), thickness);
+		SimpleGraphics.drawHorizontalLine(x1, x2, y, Color.getValue(color), thickness);
 	}
 
 	/**
 	 * Draws a horizontal line from x1 to x2.
 	 *
-	 * @param x1 the start coordinate
-	 * @param x2 the end coordinate
-	 * @param y the y-coordinate the line is on
-	 * @param color the color, which the line will have
-	 * @param thickness the thickness, which the line will have
+	 * @param x1
+	 *            the start coordinate
+	 * @param x2
+	 *            the end coordinate
+	 * @param y
+	 *            the y-coordinate the line is on
+	 * @param color
+	 *            the color, which the line will have
+	 * @param thickness
+	 *            the thickness, which the line will have
 	 * @see net.minecraft.client.gui.Gui#drawHorizontalLine(int, int, int, int)
 	 */
 	public static void drawHorizontalLine(int x1, int x2, int y, int color, int thickness) {
@@ -58,17 +64,22 @@ public final class SimpleGraphics {
 	 * @see #drawVerticalLine(int, int, int, int, int)
 	 */
 	public static void drawVerticalLine(int x, int y1, int y2, Color color, int thickness) {
-		drawVerticalLine(x, y1, y2, Color.getValue(color), thickness);
+		SimpleGraphics.drawVerticalLine(x, y1, y2, Color.getValue(color), thickness);
 	}
 
 	/**
 	 * Draws a vertical line from y1 to y2.
 	 *
-	 * @param x the x-coordinate the line is on
-	 * @param y1 the start coordinate
-	 * @param y2 the end coordinate
-	 * @param color the color, which the line will have
-	 * @param thickness the thickness, which the line will have
+	 * @param x
+	 *            the x-coordinate the line is on
+	 * @param y1
+	 *            the start coordinate
+	 * @param y2
+	 *            the end coordinate
+	 * @param color
+	 *            the color, which the line will have
+	 * @param thickness
+	 *            the thickness, which the line will have
 	 * @see net.minecraft.client.gui.Gui#drawVerticalLine(int, int, int, int)
 	 */
 	public static void drawVerticalLine(int x, int y1, int y2, int color, int thickness) {
@@ -87,19 +98,25 @@ public final class SimpleGraphics {
 	 * @see #drawRectNoBlend(int, int, int, int, int, double)
 	 */
 	public static void drawRectNoBlend(int x1, int y1, int x2, int y2, Color color, double zLevel) {
-		drawRectNoBlend(x1, y1, x2, y2, Color.getValue(color), zLevel);
+		SimpleGraphics.drawRectNoBlend(x1, y1, x2, y2, Color.getValue(color), zLevel);
 	}
 
 	/**
 	 * Draws a solid color rectangle with the specified coordinates and color.
 	 * This variation does not use GL_BLEND.
 	 *
-	 * @param x1 the first x-coordinate of the rectangle
-	 * @param y1 the first y-coordinate of the rectangle
-	 * @param x2 the second x-coordinate of the rectangle
-	 * @param y2 the second y-coordinate of the rectangle
-	 * @param color the color of the rectangle
-	 * @param zLevel the z-level of the graphic
+	 * @param x1
+	 *            the first x-coordinate of the rectangle
+	 * @param y1
+	 *            the first y-coordinate of the rectangle
+	 * @param x2
+	 *            the second x-coordinate of the rectangle
+	 * @param y2
+	 *            the second y-coordinate of the rectangle
+	 * @param color
+	 *            the color of the rectangle
+	 * @param zLevel
+	 *            the z-level of the graphic
 	 * @see net.minecraft.client.gui.Gui#drawRect(int, int, int, int, int)
 	 */
 	public static void drawRectNoBlend(int x1, int y1, int x2, int y2, int color, double zLevel) {
@@ -124,10 +141,10 @@ public final class SimpleGraphics {
 
 		Tessellator tessellator = Tessellator.instance;
 		tessellator.startDrawingQuads();
-		tessellator.addVertex((double) x1, (double) y2, zLevel);
-		tessellator.addVertex((double) x2, (double) y2, zLevel);
-		tessellator.addVertex((double) x2, (double) y1, zLevel);
-		tessellator.addVertex((double) x1, (double) y1, zLevel);
+		tessellator.addVertex(x1, y2, zLevel);
+		tessellator.addVertex(x2, y2, zLevel);
+		tessellator.addVertex(x2, y1, zLevel);
+		tessellator.addVertex(x1, y1, zLevel);
 		tessellator.draw();
 
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -140,20 +157,28 @@ public final class SimpleGraphics {
 	 * @see #drawGradientRect(int, int, int, int, int, int, double)
 	 */
 	public static void drawGradientRect(int x1, int y1, int x2, int y2, Color colorA, Color colorB, double zLevel) {
-		drawGradientRect(x1, y1, x2, y2, Color.getValue(colorA), Color.getValue(colorB), zLevel);
+		SimpleGraphics.drawGradientRect(x1, y1, x2, y2, Color.getValue(colorA), Color.getValue(colorB), zLevel);
 	}
 
 	/**
 	 * Draws a rectangle with a vertical gradient between the specified colors.
 	 *
-	 * @param x1 the first x-coordinate of the rectangle
-	 * @param y1 the first y-coordinate of the rectangle
-	 * @param x2 the second x-coordinate of the rectangle
-	 * @param y2 the second y-coordinate of the rectangle
-	 * @param colorA the first color, starting from y1
-	 * @param colorB the second color, ending in y2
-	 * @param zLevel the z-level of the graphic
-	 * @see net.minecraft.client.gui.Gui#drawGradientRect(int, int, int, int, int, int)
+	 * @param x1
+	 *            the first x-coordinate of the rectangle
+	 * @param y1
+	 *            the first y-coordinate of the rectangle
+	 * @param x2
+	 *            the second x-coordinate of the rectangle
+	 * @param y2
+	 *            the second y-coordinate of the rectangle
+	 * @param colorA
+	 *            the first color, starting from y1
+	 * @param colorB
+	 *            the second color, ending in y2
+	 * @param zLevel
+	 *            the z-level of the graphic
+	 * @see net.minecraft.client.gui.Gui#drawGradientRect(int, int, int, int,
+	 *      int, int)
 	 */
 	public static void drawGradientRect(int x1, int y1, int x2, int y2, int colorA, int colorB, double zLevel) {
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -167,11 +192,11 @@ public final class SimpleGraphics {
 		Tessellator tessellator = Tessellator.instance;
 		tessellator.startDrawingQuads();
 		tessellator.setColorRGBA_F(Color.getRed(colorA), Color.getGreen(colorA), Color.getBlue(colorA), Color.getAlpha(colorA));
-		tessellator.addVertex((double) x2, (double) y1, zLevel);
-		tessellator.addVertex((double) x1, (double) y1, zLevel);
+		tessellator.addVertex(x2, y1, zLevel);
+		tessellator.addVertex(x1, y1, zLevel);
 		tessellator.setColorRGBA_F(Color.getRed(colorB), Color.getGreen(colorB), Color.getBlue(colorB), Color.getAlpha(colorB));
-		tessellator.addVertex((double) x1, (double) y2, zLevel);
-		tessellator.addVertex((double) x2, (double) y2, zLevel);
+		tessellator.addVertex(x1, y2, zLevel);
+		tessellator.addVertex(x2, y2, zLevel);
 		tessellator.draw();
 
 		GL11.glShadeModel(GL11.GL_FLAT);
@@ -183,14 +208,22 @@ public final class SimpleGraphics {
 	/**
 	 * Draws a textured rectangle.
 	 *
-	 * @param x the x-coordinate of the rectangle
-	 * @param y the y-coordinate of the rectangle
-	 * @param u the u-coordinate of the texture
-	 * @param v the v-coordinate of the texture
-	 * @param width the width of the rectangle
-	 * @param height the height of the rectangle
-	 * @param zLevel the z-level of the graphic
-	 * @see net.minecraft.client.gui.Gui#drawTexturedModalRect(int, int, int, int, int, int)
+	 * @param x
+	 *            the x-coordinate of the rectangle
+	 * @param y
+	 *            the y-coordinate of the rectangle
+	 * @param u
+	 *            the u-coordinate of the texture
+	 * @param v
+	 *            the v-coordinate of the texture
+	 * @param width
+	 *            the width of the rectangle
+	 * @param height
+	 *            the height of the rectangle
+	 * @param zLevel
+	 *            the z-level of the graphic
+	 * @see net.minecraft.client.gui.Gui#drawTexturedModalRect(int, int, int,
+	 *      int, int, int)
 	 */
 	public static void drawTexturedModalRect(int x, int y, int u, int v, int width, int height, double zLevel) {
 		float f = 0.00390625F;
@@ -198,23 +231,29 @@ public final class SimpleGraphics {
 
 		Tessellator tessellator = Tessellator.instance;
 		tessellator.startDrawingQuads();
-		tessellator.addVertexWithUV((double) x, (double) (y + height), zLevel, (double) (u * f), (double) ((v + height) * f1));
-		tessellator.addVertexWithUV((double) (x + width), (double) (y + height), zLevel, (double) ((u + width) * f), (double) ((v + height) * f1));
-		tessellator.addVertexWithUV((double) (x + width), (double) y, zLevel, (double) ((u + width) * f), (double) (v * f1));
-		tessellator.addVertexWithUV((double) x, (double) y, zLevel, (double) (u * f), (double) (v * f1));
+		tessellator.addVertexWithUV(x, y + height, zLevel, u * f, (v + height) * f1);
+		tessellator.addVertexWithUV(x + width, y + height, zLevel, (u + width) * f, (v + height) * f1);
+		tessellator.addVertexWithUV(x + width, y, zLevel, (u + width) * f, v * f1);
+		tessellator.addVertexWithUV(x, y, zLevel, u * f, v * f1);
 		tessellator.draw();
 	}
 
 	/**
 	 * Draws the specified string with a z-translated drop shadow.
 	 *
-	 * @param fontRenderer the font renderer to render the string with
-	 * @param s the string to render
-	 * @param x the x-coordinate of the string
-	 * @param y the y-coordinate of the string
-	 * @param color the color of the string
+	 * @param fontRenderer
+	 *            the font renderer to render the string with
+	 * @param s
+	 *            the string to render
+	 * @param x
+	 *            the x-coordinate of the string
+	 * @param y
+	 *            the y-coordinate of the string
+	 * @param color
+	 *            the color of the string
 	 * @return the stop x-coordinate of the drawn string
-	 * @see net.minecraft.client.gui.FontRenderer#drawString(String, int, int, int, boolean)
+	 * @see net.minecraft.client.gui.FontRenderer#drawString(String, int, int,
+	 *      int, boolean)
 	 */
 	public static int drawStringWithTranslatedShadow(FontRenderer fontRenderer, String s, int x, int y, int color) {
 		int endX;
@@ -237,28 +276,37 @@ public final class SimpleGraphics {
 	 * @see #drawQuad(Tessellator, int, int, int, int, int, double)
 	 */
 	public static void drawQuad(Tessellator tessellator, int x, int y, int width, int height, Color color, double zLevel) {
-		drawQuad(tessellator, x, y, width, height, Color.getValue(color), zLevel);
+		SimpleGraphics.drawQuad(tessellator, x, y, width, height, Color.getValue(color), zLevel);
 	}
 
 	/**
-	 * Adds a quad to the tesselator at the specified position with the set width and height and color.
+	 * Adds a quad to the tesselator at the specified position with the set
+	 * width and height and color.
 	 *
-	 * @param tessellator the tesselator
-	 * @param x the x-coordinate of the quad
-	 * @param y the y-coordinate of the quad
-	 * @param width the width of the quad
-	 * @param height the height of the quad
-	 * @param color the color of the quad
-	 * @param zLevel the z-level of the quad
-	 * @see net.minecraft.client.renderer.entity.RenderItem#renderQuad(Tessellator, int, int, int, int, int)
+	 * @param tessellator
+	 *            the tesselator
+	 * @param x
+	 *            the x-coordinate of the quad
+	 * @param y
+	 *            the y-coordinate of the quad
+	 * @param width
+	 *            the width of the quad
+	 * @param height
+	 *            the height of the quad
+	 * @param color
+	 *            the color of the quad
+	 * @param zLevel
+	 *            the z-level of the quad
+	 * @see net.minecraft.client.renderer.entity.RenderItem#renderQuad(Tessellator,
+	 *      int, int, int, int, int)
 	 */
 	public static void drawQuad(Tessellator tessellator, int x, int y, int width, int height, int color, double zLevel) {
 		tessellator.startDrawingQuads();
 		tessellator.setColorOpaque_I(color);
-		tessellator.addVertex((double) x, (double) y, zLevel);
-		tessellator.addVertex((double) x, (double) (y + height), zLevel);
-		tessellator.addVertex((double) (x + width), (double) (y + height), zLevel);
-		tessellator.addVertex((double) (x + width), (double) y, zLevel);
+		tessellator.addVertex(x, y, zLevel);
+		tessellator.addVertex(x, y + height, zLevel);
+		tessellator.addVertex(x + width, y + height, zLevel);
+		tessellator.addVertex(x + width, y, zLevel);
 		tessellator.draw();
 	}
 }

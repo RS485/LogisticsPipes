@@ -3,14 +3,16 @@ package logisticspipes.proxy.buildcraft.gates;
 import java.util.Collection;
 
 import net.minecraft.tileentity.TileEntity;
+
 import net.minecraftforge.common.util.ForgeDirection;
+
 import buildcraft.api.statements.IActionExternal;
 import buildcraft.api.statements.IActionInternal;
 import buildcraft.api.statements.IActionProvider;
 import buildcraft.api.statements.IStatementContainer;
 
 public class LogisticsActionProvider implements IActionProvider {
-	
+
 	@Override
 	public Collection<IActionInternal> getInternalActions(IStatementContainer container) {
 		return null;
@@ -18,17 +20,17 @@ public class LogisticsActionProvider implements IActionProvider {
 		/*
 		LinkedList<IActionInternal> result = new LinkedList<IActionInternal>();
 		TileEntity tile = container.getTile();
-		
+
 		if (!(tile instanceof LPBCTileGenericPipe)) {
 			return result;
 		}
-		
+
 		LogisticsTileGenericPipe lpPipe = ((LPBCTileGenericPipe)tile).getLpPipe();
-		
+
 		if(lpPipe.pipe == null) {
 			return result;
 		}
-		
+
 		ArrayList<DockingStation> stations = new ArrayList<DockingStation>();
 
 		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
@@ -45,12 +47,12 @@ public class LogisticsActionProvider implements IActionProvider {
 		}
 
 		return result;
-		*/
+		 */
 	}
-	
+
 	@Override
 	public Collection<IActionExternal> getExternalActions(ForgeDirection side, TileEntity tile) {
 		return null;
 	}
-	
+
 }

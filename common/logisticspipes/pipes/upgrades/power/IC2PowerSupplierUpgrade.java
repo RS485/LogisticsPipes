@@ -5,6 +5,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
 
 public abstract class IC2PowerSupplierUpgrade implements IPipeUpgrade {
+
 	@Override
 	public boolean needsUpdate() {
 		return true;
@@ -22,13 +23,13 @@ public abstract class IC2PowerSupplierUpgrade implements IPipeUpgrade {
 
 	@Override
 	public String[] getAllowedPipes() {
-		return new String[]{"all"};
+		return new String[] { "all" };
 	}
 
 	@Override
 	public String[] getAllowedModules() {
-		return new String[]{};
+		return new String[] {};
 	}
-	
+
 	public abstract int getPowerLevel();
 }

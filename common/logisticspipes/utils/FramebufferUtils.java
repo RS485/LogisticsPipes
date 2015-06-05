@@ -18,13 +18,12 @@ public final class FramebufferUtils {
 	/** framebuffer targets */
 	public static final int GL_FRAMEBUFFER = 0x8D40, GL_READ_FRAMEBUFFER = 0x8CA8, GL_DRAW_FRAMEBUFFER = 0x8CA9;
 
-	private FramebufferUtils() {
-	}
+	private FramebufferUtils() {}
 
 	public static void bindRenderBuffer(int renderbuffer) {
 		assert OpenGlHelper.isFramebufferEnabled();
 
-		OpenGlHelper.func_153176_h(GL_RENDERBUFFER, renderbuffer);
+		OpenGlHelper.func_153176_h(FramebufferUtils.GL_RENDERBUFFER, renderbuffer);
 	}
 
 	public static void deleteRenderbuffer(int renderbuffer) {
@@ -42,7 +41,7 @@ public final class FramebufferUtils {
 	public static void renderbufferStorage(int format, int width, int height) {
 		assert OpenGlHelper.isFramebufferEnabled();
 
-		OpenGlHelper.func_153186_a(GL_RENDERBUFFER, format, width, height);
+		OpenGlHelper.func_153186_a(FramebufferUtils.GL_RENDERBUFFER, format, width, height);
 	}
 
 	public static int genFramebuffer() {
@@ -72,7 +71,7 @@ public final class FramebufferUtils {
 	public static void framebufferRenderbuffer(int target, int attachment, int renderbuffer) {
 		assert OpenGlHelper.isFramebufferEnabled();
 
-		OpenGlHelper.func_153190_b(target, attachment, GL_RENDERBUFFER, renderbuffer);
+		OpenGlHelper.func_153190_b(target, attachment, FramebufferUtils.GL_RENDERBUFFER, renderbuffer);
 	}
 
 	public static void framebufferTexture2D(int target, int attachment, int textarget, int texture, int level) {

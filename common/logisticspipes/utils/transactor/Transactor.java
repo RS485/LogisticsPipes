@@ -1,6 +1,7 @@
 package logisticspipes.utils.transactor;
 
 import net.minecraft.item.ItemStack;
+
 import net.minecraftforge.common.util.ForgeDirection;
 
 public abstract class Transactor implements ITransactor {

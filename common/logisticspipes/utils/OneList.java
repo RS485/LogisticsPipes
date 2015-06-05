@@ -6,16 +6,16 @@ import java.util.List;
 import java.util.ListIterator;
 
 public class OneList<E> implements List<E> {
-	
+
 	private final E content;
-	
+
 	public OneList(E object) {
-		if(object == null) {
+		if (object == null) {
 			throw new NullPointerException();
 		}
 		this.content = object;
 	}
-	
+
 	@Override
 	public boolean add(E e) {
 		throw new UnsupportedOperationException("Can't mofidy the OneList");
@@ -48,13 +48,15 @@ public class OneList<E> implements List<E> {
 
 	@Override
 	public boolean containsAll(Collection<?> c) {
-		if(c.size() != 1) return false;
+		if (c.size() != 1) {
+			return false;
+		}
 		return content.equals(c.iterator().next());
 	}
 
 	@Override
 	public E get(int index) {
-		if(index != 0) {
+		if (index != 0) {
 			throw new IndexOutOfBoundsException("OneList can't access an object at: " + index);
 		}
 		return content;
@@ -62,7 +64,9 @@ public class OneList<E> implements List<E> {
 
 	@Override
 	public int indexOf(Object o) {
-		if(content.equals(o)) return 0;
+		if (content.equals(o)) {
+			return 0;
+		}
 		return -1;
 	}
 
@@ -74,7 +78,9 @@ public class OneList<E> implements List<E> {
 	@Override
 	public Iterator<E> iterator() {
 		return new Iterator<E>() {
+
 			private boolean handled = false;
+
 			@Override
 			public boolean hasNext() {
 				return !handled;
@@ -82,7 +88,9 @@ public class OneList<E> implements List<E> {
 
 			@Override
 			public E next() {
-				if(handled) return null;
+				if (handled) {
+					return null;
+				}
 				handled = true;
 				return OneList.this.content;
 			}
@@ -90,7 +98,8 @@ public class OneList<E> implements List<E> {
 			@Override
 			public void remove() {
 				throw new UnsupportedOperationException("Can't mofidy the OneList");
-			}};
+			}
+		};
 	}
 
 	@Override
@@ -145,7 +154,7 @@ public class OneList<E> implements List<E> {
 
 	@Override
 	public Object[] toArray() {
-		return new Object[]{content};
+		return new Object[] { content };
 	}
 
 	@Override
@@ -155,8 +164,10 @@ public class OneList<E> implements List<E> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if(!(obj instanceof OneList))return false;
-		return content.equals(((OneList<?>)obj).content);
+		if (!(obj instanceof OneList)) {
+			return false;
+		}
+		return content.equals(((OneList<?>) obj).content);
 	}
 
 	@Override

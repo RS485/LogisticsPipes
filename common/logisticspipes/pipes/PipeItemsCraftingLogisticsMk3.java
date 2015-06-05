@@ -10,18 +10,19 @@ import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.item.ItemIdentifierStack;
+
 import net.minecraft.item.Item;
 
 public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2 implements IBufferItems {
-	
+
 	private HUDCraftingMK3 HUD = new HUDCraftingMK3(this);
-	
+
 	public PipeItemsCraftingLogisticsMk3(Item item) {
 		super(item);
 		craftingModule = new ModuleCrafterMK3(this);
 		craftingModule.registerPosition(ModulePositionType.IN_PIPE, 0);
 	}
-	
+
 	@Override
 	public void enabledUpdateEntity() {
 		super.enabledUpdateEntity();
@@ -42,14 +43,14 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	public IHeadUpDisplayRenderer getRenderer() {
 		return HUD;
 	}
-	
+
 	@Override
 	public ModuleCrafter getLogisticsModule() {
-		return this.craftingModule;
+		return craftingModule;
 	}
-	
+
 	public ModuleCrafterMK3 getMk3Module() {
-		return (ModuleCrafterMK3)craftingModule;
+		return (ModuleCrafterMK3) craftingModule;
 	}
 
 	/**

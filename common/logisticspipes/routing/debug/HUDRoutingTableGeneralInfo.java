@@ -11,96 +11,100 @@ import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.debug.ClientViewController.DebugInformation;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
+
 import net.minecraft.client.Minecraft;
 
 import org.lwjgl.opengl.GL11;
 
 public class HUDRoutingTableGeneralInfo extends BasicHUDGui implements IHeadUpDisplayRenderer {
-	
-	private final DebugInformation	route;
-	private boolean					isQuestion	= false;
-	private boolean					display		= true;
-	private int						line;
+
+	private final DebugInformation route;
+	private boolean isQuestion = false;
+	private boolean display = true;
+	private int line;
 
 	HUDRoutingTableGeneralInfo(DebugInformation route) {
 		this.route = route;
-		if(route.isNew) {
+		if (route.isNew) {
 			addUntraceButtons(route.newIndex);
 		}
-		
+
 	}
-	
+
 	private void addUntraceButtons(final int index) {
-		this.addButton(new BasicHUDButton("Untrack", -25, -75, 50, 10) {
+		addButton(new BasicHUDButton("Untrack", -25, -75, 50, 10) {
+
 			@Override
 			public boolean shouldRenderButton() {
 				return !isQuestion && display;
 			}
-			
+
 			@Override
 			public void clicked() {
 				isQuestion = true;
 			}
-			
+
 			@Override
 			public boolean buttonEnabled() {
 				return !isQuestion && display;
 			}
 		});
-		
-		this.addButton(new BasicHUDButton("Yes", -45, -75, 30, 10) {
+
+		addButton(new BasicHUDButton("Yes", -45, -75, 30, 10) {
+
 			@Override
 			public boolean shouldRenderButton() {
 				return isQuestion && display;
 			}
-			
+
 			@Override
 			public void clicked() {
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(RoutingUpdateUntrace.class).setInteger(index));
 				display = false;
 			}
-			
+
 			@Override
 			public boolean buttonEnabled() {
 				return isQuestion && display;
 			}
 		});
-		this.addButton(new BasicHUDButton("No", 15, -75, 30, 10) {
+		addButton(new BasicHUDButton("No", 15, -75, 30, 10) {
+
 			@Override
 			public boolean shouldRenderButton() {
 				return isQuestion && display;
 			}
-			
+
 			@Override
 			public void clicked() {
 				isQuestion = false;
 			}
-			
+
 			@Override
 			public boolean buttonEnabled() {
 				return isQuestion && display;
 			}
 		});
 	}
-	
+
 	@Override
 	public void renderHeadUpDisplay(double distance, boolean day, boolean shifted, Minecraft mc, IHUDConfig config) {
-		if(route.isNew) {
+		if (route.isNew) {
 			line = -65;
 		} else {
 			line = -75;
 		}
-		GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)64);
+		GL11.glColor4b((byte) 127, (byte) 127, (byte) 127, (byte) 64);
 		GuiGraphics.drawGuiBackGround(mc, -70, -80, 70, 80, 0, false);
 		GL11.glTranslatef(0.0F, 0.0F, -0.0005F);
 		super.renderHeadUpDisplay(distance, day, shifted, mc, config);
 		GL11.glTranslatef(0.0F, 0.0F, -0.0005F);
 		write("Routing Update in: ", mc);
 		write(route.positions.toString(), mc);
-		if(route.closedSet != null) {
+		if (route.closedSet != null) {
 			int left = -55;
-			for(PipeRoutingConnectionType flag : PipeRoutingConnectionType.values) {
-				if(route.closedSet.contains(flag)) {
+			for (PipeRoutingConnectionType flag : PipeRoutingConnectionType.values) {
+				if (route.closedSet.contains(flag)) {
 					mc.fontRenderer.drawString("+", left, line, getColorForFlag(flag));
 					left += mc.fontRenderer.getStringWidth("+");
 				} else {
@@ -110,12 +114,12 @@ public class HUDRoutingTableGeneralInfo extends BasicHUDGui implements IHeadUpDi
 			}
 			line += 10;
 		}
-		if(route.routes != null) {
-			for(ExitRoute exit : route.routes) {
+		if (route.routes != null) {
+			for (ExitRoute exit : route.routes) {
 				mc.fontRenderer.drawString("Possible: ", -55, line, 0xffffff);
 				int left = -55 + mc.fontRenderer.getStringWidth("Possible: ");
-				for(PipeRoutingConnectionType flag : PipeRoutingConnectionType.values) {
-					if(exit.containsFlag(flag)) {
+				for (PipeRoutingConnectionType flag : PipeRoutingConnectionType.values) {
+					if (exit.containsFlag(flag)) {
 						mc.fontRenderer.drawString("+", left, line, getColorForFlag(flag));
 						left += mc.fontRenderer.getStringWidth("+");
 					} else {
@@ -131,7 +135,7 @@ public class HUDRoutingTableGeneralInfo extends BasicHUDGui implements IHeadUpDi
 	}
 
 	private int getColorForFlag(PipeRoutingConnectionType type) {
-		switch(type) {
+		switch (type) {
 			case canRouteTo:
 				return 0xff0000;
 			case canRequestFrom:
@@ -148,12 +152,12 @@ public class HUDRoutingTableGeneralInfo extends BasicHUDGui implements IHeadUpDi
 		mc.fontRenderer.drawString(data, -55, line, 0xffffff);
 		line += 10;
 	}
-	
+
 	@Override
 	public boolean display(IHUDConfig config) {
 		return true;
 	}
-	
+
 	@Override
 	public boolean cursorOnWindow(int x, int y) {
 		return -70 < x && x < 70 && -80 < y && y < 80;

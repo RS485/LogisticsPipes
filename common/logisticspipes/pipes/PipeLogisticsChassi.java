@@ -1,13 +1,12 @@
-/** 
+/**
  * Copyright (c) Krapht, 2011
  * 
- * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public 
+ * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
 package logisticspipes.pipes;
-
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -76,7 +75,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
-import lombok.Getter;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
@@ -85,10 +84,14 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ResourceLocation;
+
 import net.minecraftforge.common.util.ForgeDirection;
+
 import cpw.mods.fml.client.FMLClientHandler;
 
-@CCType(name="LogisticsChassiePipe")
+import lombok.Getter;
+
+@CCType(name = "LogisticsChassiePipe")
 public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICraftItems, IBufferItems, ISimpleInventoryEventHandler, ISendRoutedItem, IProvideItems, IHeadUpDisplayRendererProvider, ISendQueueContentRecieiver {
 
 	private final ChassiModule _module;
@@ -96,7 +99,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	private final ModuleUpgradeManager[] _upgradeManagers;
 	private boolean switchOrientationOnTick = true;
 	private boolean init = false;
-	
+
 	private boolean convertFromMeta = false;
 
 	// HUD
@@ -109,34 +112,34 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		_moduleInventory = new ItemIdentifierInventory(getChassiSize(), "Chassi pipe", 1);
 		_moduleInventory.addListener(this);
 		_upgradeManagers = new ModuleUpgradeManager[getChassiSize()];
-		for(int i=0;i<getChassiSize();i++) {
-			_upgradeManagers[i] = new ModuleUpgradeManager(this, this.upgradeManager);
+		for (int i = 0; i < getChassiSize(); i++) {
+			_upgradeManagers[i] = new ModuleUpgradeManager(this, upgradeManager);
 		}
 		_module = new ChassiModule(getChassiSize(), this);
 		hud = new HudChassisPipe(this, _module, _moduleInventory);
-		pointedDirection=ForgeDirection.UNKNOWN;
+		pointedDirection = ForgeDirection.UNKNOWN;
 	}
 
 	@Override
-	protected List<IInventory> getConnectedRawInventories()	{
-		if(_cachedAdjacentInventories != null) {
+	protected List<IInventory> getConnectedRawInventories() {
+		if (_cachedAdjacentInventories != null) {
 			return _cachedAdjacentInventories;
 		}
 		List<IInventory> adjacent = new ArrayList<IInventory>(1);
 		IInventory adjinv = getRealInventory();
-		if(adjinv != null) {
+		if (adjinv != null) {
 			adjacent.add(adjinv);
 		}
 		_cachedAdjacentInventories = adjacent;
 		return _cachedAdjacentInventories;
-	}	
+	}
 
 	public void nextOrientation() {
 		boolean found = false;
 		ForgeDirection oldOrientation = pointedDirection;
 		for (int l = 0; l < 6; ++l) {
 			pointedDirection = ForgeDirection.values()[(pointedDirection.ordinal() + 1) % 6];
-			if(isValidOrientation(pointedDirection)) {
+			if (isValidOrientation(pointedDirection)) {
 				found = true;
 				break;
 			}
@@ -144,7 +147,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		if (!found) {
 			pointedDirection = ForgeDirection.UNKNOWN;
 		}
-		if(pointedDirection != oldOrientation) {
+		if (pointedDirection != oldOrientation) {
 			clearCache();
 			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), PacketHandler.getPacket(ChassiOrientationPacket.class).setDir(pointedDirection).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 			refreshRender(true);
@@ -152,25 +155,33 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	}
 
 	public void setClientOrientation(ForgeDirection dir) {
-		if(MainProxy.isClient(getWorld())) {
+		if (MainProxy.isClient(getWorld())) {
 			pointedDirection = dir;
 		}
 	}
 
-	private boolean isValidOrientation(ForgeDirection connection){
-		if (connection == ForgeDirection.UNKNOWN) return false;
-		if (getRouter().isRoutedExit(connection)) return false;
+	private boolean isValidOrientation(ForgeDirection connection) {
+		if (connection == ForgeDirection.UNKNOWN) {
+			return false;
+		}
+		if (getRouter().isRoutedExit(connection)) {
+			return false;
+		}
 		LPPosition pos = new LPPosition(getX(), getY(), getZ());
 		pos.moveForward(connection);
 		TileEntity tile = pos.getTileEntity(getWorld());
 
-		if (tile == null) return false;
-		if (SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) return false;
-		return MainProxy.checkPipesConnections(this.container, tile, connection);
+		if (tile == null) {
+			return false;
+		}
+		if (SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) {
+			return false;
+		}
+		return MainProxy.checkPipesConnections(container, tile, connection);
 	}
 
-	public IInventory getModuleInventory(){
-		return this._moduleInventory;
+	public IInventory getModuleInventory() {
+		return _moduleInventory;
 	}
 
 	public ModuleUpgradeManager getModuleUpgradeManager(int slot) {
@@ -184,7 +195,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public TextureType getRoutedTexture(ForgeDirection connection) {
-		if(getRouter().isSubPoweredExit(connection)) {
+		if (getRouter().isSubPoweredExit(connection)) {
 			return Textures.LOGISTICSPIPE_SUBPOWER_TEXTURE;
 		}
 		return Textures.LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE;
@@ -192,10 +203,10 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public TextureType getNonRoutedTexture(ForgeDirection connection) {
-		if (connection.equals(pointedDirection)){
+		if (connection.equals(pointedDirection)) {
 			return Textures.LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE;
 		}
-		if(isPowerProvider(connection)) {
+		if (isPowerProvider(connection)) {
 			return Textures.LOGISTICSPIPE_POWERED_TEXTURE;
 		}
 		return Textures.LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE;
@@ -203,8 +214,8 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public void onNeighborBlockChange_Logistics() {
-		if (!isValidOrientation(pointedDirection)){
-			if(MainProxy.isServer(this.getWorld())) {
+		if (!isValidOrientation(pointedDirection)) {
+			if (MainProxy.isServer(getWorld())) {
 				nextOrientation();
 			}
 		}
@@ -224,14 +235,14 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 			InventoryChanged(_moduleInventory);
 			_module.readFromNBT(nbttagcompound);
 			pointedDirection = ForgeDirection.values()[nbttagcompound.getInteger("Orientation") % 7];
-			if(nbttagcompound.getInteger("Orientation") == 0) {
+			if (nbttagcompound.getInteger("Orientation") == 0) {
 				convertFromMeta = true;
 			}
 			switchOrientationOnTick = (pointedDirection == ForgeDirection.UNKNOWN);
-			for(int i=0; i<getChassiSize(); i++) {
+			for (int i = 0; i < getChassiSize(); i++) {
 				_upgradeManagers[i].readFromNBT(nbttagcompound, Integer.toString(i));
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -241,9 +252,11 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		super.writeToNBT(nbttagcompound);
 		_moduleInventory.writeToNBT(nbttagcompound, "chassi");
 		_module.writeToNBT(nbttagcompound);
-		if(pointedDirection == null) pointedDirection = ForgeDirection.UNKNOWN;
+		if (pointedDirection == null) {
+			pointedDirection = ForgeDirection.UNKNOWN;
+		}
 		nbttagcompound.setInteger("Orientation", pointedDirection.ordinal());
-		for(int i=0; i<getChassiSize(); i++) {
+		for (int i = 0; i < getChassiSize(); i++) {
 			_upgradeManagers[i].writeToNBT(nbttagcompound, Integer.toString(i));
 		}
 	}
@@ -251,38 +264,37 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	@Override
 	public void onAllowedRemoval() {
 		_moduleInventory.removeListener(this);
-		if(MainProxy.isServer(this.getWorld())) {
-			for (int i = 0; i < this.getChassiSize(); i++){
+		if (MainProxy.isServer(getWorld())) {
+			for (int i = 0; i < getChassiSize(); i++) {
 				LogisticsModule x = _module.getSubModule(i);
 				if (x instanceof ILegacyActiveModule) {
-					ILegacyActiveModule y = (ILegacyActiveModule)x;
+					ILegacyActiveModule y = (ILegacyActiveModule) x;
 					y.onBlockRemoval();
 				}
 			}
-			for(int i=0;i<_moduleInventory.getSizeInventory();i++) {
+			for (int i = 0; i < _moduleInventory.getSizeInventory(); i++) {
 				ItemIdentifierStack ms = _moduleInventory.getIDStackInSlot(i);
-				if(ms != null) {
+				if (ms != null) {
 					ItemStack s = ms.makeNormalStack();
-					ItemModuleInformationManager.saveInfotmation(s, this.getLogisticsModule().getSubModule(i));
+					ItemModuleInformationManager.saveInfotmation(s, getLogisticsModule().getSubModule(i));
 					_moduleInventory.setInventorySlotContents(i, s);
 				}
 			}
-			_moduleInventory.dropContents(this.getWorld(), getX(), getY(), getZ());
+			_moduleInventory.dropContents(getWorld(), getX(), getY(), getZ());
 		}
 	}
 
-	
 	@Override
 	public void itemArrived(ItemIdentifierStack item, IAdditionalTargetInformation info) {
-		if(MainProxy.isServer(this.getWorld())) {
-			if(info instanceof ChassiTargetInformation) {
+		if (MainProxy.isServer(getWorld())) {
+			if (info instanceof ChassiTargetInformation) {
 				ChassiTargetInformation target = (ChassiTargetInformation) info;
 				LogisticsModule module = _module.getSubModule(target.moduleSlot);
-				if(module instanceof IRequireReliableTransport) {
+				if (module instanceof IRequireReliableTransport) {
 					((IRequireReliableTransport) module).itemArrived(item, info);
 				}
 			} else {
-				if(LPConstants.DEBUG && info != null) {
+				if (LPConstants.DEBUG && info != null) {
 					System.out.println(item);
 					new RuntimeException("[ItemArrived] Information weren't ment for a chassi pipe").printStackTrace();
 				}
@@ -292,33 +304,33 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public void itemLost(ItemIdentifierStack item, IAdditionalTargetInformation info) {
-		if(MainProxy.isServer(this.getWorld())) {
-			if(info instanceof ChassiTargetInformation) {
+		if (MainProxy.isServer(getWorld())) {
+			if (info instanceof ChassiTargetInformation) {
 				ChassiTargetInformation target = (ChassiTargetInformation) info;
 				LogisticsModule module = _module.getSubModule(target.moduleSlot);
-				if(module instanceof IRequireReliableTransport) {
+				if (module instanceof IRequireReliableTransport) {
 					((IRequireReliableTransport) module).itemLost(item, info);
 				}
 			} else {
-				if(LPConstants.DEBUG) {
+				if (LPConstants.DEBUG) {
 					System.out.println(item);
 					new RuntimeException("[ItemLost] Information weren't ment for a chassi pipe").printStackTrace();
 				}
 			}
 		}
 	}
-	
+
 	@Override
 	public int addToBuffer(ItemIdentifierStack item, IAdditionalTargetInformation info) {
-		if(MainProxy.isServer(this.getWorld())) {
-			if(info instanceof ChassiTargetInformation) {
+		if (MainProxy.isServer(getWorld())) {
+			if (info instanceof ChassiTargetInformation) {
 				ChassiTargetInformation target = (ChassiTargetInformation) info;
 				LogisticsModule module = _module.getSubModule(target.moduleSlot);
-				if(module instanceof IBufferItems) {
-					return ((IBufferItems)module).addToBuffer(item, info);
+				if (module instanceof IBufferItems) {
+					return ((IBufferItems) module).addToBuffer(item, info);
 				}
 			} else {
-				if(LPConstants.DEBUG) {
+				if (LPConstants.DEBUG) {
 					System.out.println(item);
 					new RuntimeException("[AddToBuffer] Information weren't ment for a chassi pipe").printStackTrace();
 				}
@@ -326,44 +338,44 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		}
 		return item.getStackSize();
 	}
-	
+
 	@Override
 	public void InventoryChanged(IInventory inventory) {
 		boolean reInitGui = false;
-		for (int i = 0; i < inventory.getSizeInventory(); i++){
+		for (int i = 0; i < inventory.getSizeInventory(); i++) {
 			ItemStack stack = inventory.getStackInSlot(i);
-			if (stack == null){
-				if (_module.hasModule(i)){
+			if (stack == null) {
+				if (_module.hasModule(i)) {
 					_module.removeModule(i);
 					reInitGui = true;
 				}
 				continue;
 			}
 
-			if (stack.getItem() instanceof ItemModule){
+			if (stack.getItem() instanceof ItemModule) {
 				LogisticsModule current = _module.getModule(i);
-				LogisticsModule next = ((ItemModule)stack.getItem()).getModuleForItem(stack, _module.getModule(i), this, this);
+				LogisticsModule next = ((ItemModule) stack.getItem()).getModuleForItem(stack, _module.getModule(i), this, this);
 				next.registerPosition(ModulePositionType.SLOT, i);
 				next.registerCCEventQueuer(this);
-				if (current != next){
+				if (current != next) {
 					_module.installModule(i, next);
-					if(!MainProxy.isClient()) {
+					if (!MainProxy.isClient()) {
 						ItemModuleInformationManager.readInformation(stack, next);
 					}
 					ItemModuleInformationManager.removeInformation(stack);
 				}
-				inventory.setInventorySlotContents(i,stack);
+				inventory.setInventorySlotContents(i, stack);
 			}
 		}
 		if (reInitGui) {
-			if(MainProxy.isClient(this.getWorld())) {
-				if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiChassiPipe){
+			if (MainProxy.isClient(getWorld())) {
+				if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiChassiPipe) {
 					FMLClientHandler.instance().getClient().currentScreen.initGui();
 				}
 			}
 		}
-		if(MainProxy.isServer()) {
-			if(!localModeWatchers.isEmpty()) {
+		if (MainProxy.isServer()) {
+			if (!localModeWatchers.isEmpty()) {
 				MainProxy.sendToPlayerList(PacketHandler.getPacket(ChassiePipeModuleContent.class).setIdentList(ItemIdentifierStack.getListFromInventory(_moduleInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 			}
 		}
@@ -371,20 +383,20 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public void ignoreDisableUpdateEntity() {
-		if (switchOrientationOnTick){
+		if (switchOrientationOnTick) {
 			switchOrientationOnTick = false;
-			if(MainProxy.isServer(this.getWorld())) {
+			if (MainProxy.isServer(getWorld())) {
 				nextOrientation();
 			}
 		}
-		if(convertFromMeta && getWorld().getBlockMetadata(getX(), getY(), getZ()) != 0) {
+		if (convertFromMeta && getWorld().getBlockMetadata(getX(), getY(), getZ()) != 0) {
 			pointedDirection = ForgeDirection.values()[getWorld().getBlockMetadata(getX(), getY(), getZ()) % 6];
-			getWorld().setBlockMetadataWithNotify(getX(), getY(), getZ(), 0,0);
-			convertFromMeta=false;
+			getWorld().setBlockMetadataWithNotify(getX(), getY(), getZ(), 0, 0);
+			convertFromMeta = false;
 		}
-		if(!init) {
+		if (!init) {
 			init = true;
-			if(MainProxy.isClient(this.getWorld())) {
+			if (MainProxy.isClient(getWorld())) {
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestChassiOrientationPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 			}
 		}
@@ -399,16 +411,16 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public TransportLayer getTransportLayer() {
-		if (this._transportLayer == null){
+		if (_transportLayer == null) {
 			_transportLayer = new ChassiTransportLayer(this);
 		}
 		return _transportLayer;
 	}
 
 	private boolean tryInsertingModule(EntityPlayer entityplayer) {
-		for(int i=0;i<_moduleInventory.getSizeInventory();i++) {
+		for (int i = 0; i < _moduleInventory.getSizeInventory(); i++) {
 			ItemStack item = _moduleInventory.getStackInSlot(i);
-			if(item == null) {
+			if (item == null) {
 				_moduleInventory.setInventorySlotContents(i, entityplayer.getCurrentEquippedItem().splitStack(1));
 				InventoryChanged(_moduleInventory);
 				return true;
@@ -419,22 +431,24 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
-		if (entityplayer.getCurrentEquippedItem() == null) return false;
+		if (entityplayer.getCurrentEquippedItem() == null) {
+			return false;
+		}
 
-		if (SimpleServiceLocator.toolWrenchHandler.isWrenchEquipped(entityplayer) && entityplayer.isSneaking() && SimpleServiceLocator.toolWrenchHandler.canWrench(entityplayer, this.getX(), this.getY(), this.getZ())) {
-			if(MainProxy.isServer(getWorld())) {
+		if (SimpleServiceLocator.toolWrenchHandler.isWrenchEquipped(entityplayer) && entityplayer.isSneaking() && SimpleServiceLocator.toolWrenchHandler.canWrench(entityplayer, getX(), getY(), getZ())) {
+			if (MainProxy.isServer(getWorld())) {
 				if (settings == null || settings.openGui) {
-					((PipeLogisticsChassi)this.container.pipe).nextOrientation();
+					((PipeLogisticsChassi) container.pipe).nextOrientation();
 				} else {
 					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
 				}
 			}
-			SimpleServiceLocator.toolWrenchHandler.wrenchUsed(entityplayer, this.getX(), this.getY(), this.getZ());
+			SimpleServiceLocator.toolWrenchHandler.wrenchUsed(entityplayer, getX(), getY(), getZ());
 			return true;
 		}
-		
-		if(!entityplayer.isSneaking() && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.ModuleItem && entityplayer.getCurrentEquippedItem().getItemDamage() != ItemModule.BLANK) {
-			if(MainProxy.isServer(getWorld())) {
+
+		if (!entityplayer.isSneaking() && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.ModuleItem && entityplayer.getCurrentEquippedItem().getItemDamage() != ItemModule.BLANK) {
+			if (MainProxy.isServer(getWorld())) {
 				if (settings == null || settings.openGui) {
 					return tryInsertingModule(entityplayer);
 				} else {
@@ -450,16 +464,18 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	/*** IProvideItems ***/
 	@Override
 	public void canProvide(RequestTreeNode tree, RequestTree root, List<IFilter> filters) {
-		if (!isEnabled()){
+		if (!isEnabled()) {
 			return;
 		}
-		for(IFilter filter:filters) {
-			if(filter.isBlocked() == filter.isFilteredItem(tree.getRequestType()) || filter.blockProvider()) return;
+		for (IFilter filter : filters) {
+			if (filter.isBlocked() == filter.isFilteredItem(tree.getRequestType()) || filter.blockProvider()) {
+				return;
+			}
 		}
-		for (int i = 0; i < this.getChassiSize(); i++) {
+		for (int i = 0; i < getChassiSize(); i++) {
 			LogisticsModule x = _module.getSubModule(i);
-			if (x instanceof ILegacyActiveModule){
-				ILegacyActiveModule y = (ILegacyActiveModule)x;
+			if (x instanceof ILegacyActiveModule) {
+				ILegacyActiveModule y = (ILegacyActiveModule) x;
 				y.canProvide(tree, root, filters);
 			}
 		}
@@ -467,13 +483,15 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination, IAdditionalTargetInformation info) {
-		if(!isEnabled()) { return null; }
-		for(int i = 0; i < this.getChassiSize(); i++) {
+		if (!isEnabled()) {
+			return null;
+		}
+		for (int i = 0; i < getChassiSize(); i++) {
 			LogisticsModule x = _module.getSubModule(i);
-			if(x instanceof ILegacyActiveModule) {
-				ILegacyActiveModule y = (ILegacyActiveModule)x;
+			if (x instanceof ILegacyActiveModule) {
+				ILegacyActiveModule y = (ILegacyActiveModule) x;
 				LogisticsOrder result = y.fullFill(promise, destination, info);
-				if(result != null) {
+				if (result != null) {
 					spawnParticle(Particles.WhiteParticle, 2);
 					return result;
 				}
@@ -484,13 +502,13 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public void getAllItems(Map<ItemIdentifier, Integer> list, List<IFilter> filter) {
-		if (!isEnabled()){
+		if (!isEnabled()) {
 			return;
 		}
-		for (int i = 0; i < this.getChassiSize(); i++){
+		for (int i = 0; i < getChassiSize(); i++) {
 			LogisticsModule x = _module.getSubModule(i);
 			if (x instanceof ILegacyActiveModule) {
-				ILegacyActiveModule y = (ILegacyActiveModule)x;
+				ILegacyActiveModule y = (ILegacyActiveModule) x;
 				y.getAllItems(list, filter);
 			}
 		}
@@ -519,7 +537,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public void playerStartWatching(EntityPlayer player, int mode) {
-		if(mode == 1) {
+		if (mode == 1) {
 			localModeWatchers.add(player);
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ChassiePipeModuleContent.class).setIdentList(ItemIdentifierStack.getListFromInventory(_moduleInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), player);
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SendQueueContent.class).setIdentList(ItemIdentifierStack.getListSendQueue(_sendQueue)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), player);
@@ -544,12 +562,12 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public int sendQueueChanged(boolean force) {
-		if(MainProxy.isServer(this.getWorld())) {
-			if(Configs.MULTI_THREAD_NUMBER > 0 && !force) {
+		if (MainProxy.isServer(getWorld())) {
+			if (Configs.MULTI_THREAD_NUMBER > 0 && !force) {
 				HudUpdateTick.add(getRouter());
 			} else {
-				if(localModeWatchers != null && localModeWatchers.size()>0) {
-					LinkedList<ItemIdentifierStack> items = ItemIdentifierStack.getListSendQueue(_sendQueue);				
+				if (localModeWatchers != null && localModeWatchers.size() > 0) {
+					LinkedList<ItemIdentifierStack> items = ItemIdentifierStack.getListSendQueue(_sendQueue);
 					MainProxy.sendToPlayerList(PacketHandler.getPacket(SendQueueContent.class).setIdentList(items).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 					return items.size();
 				}
@@ -559,7 +577,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	}
 
 	@Override
-	public void handleSendQueueItemIdentifierList(Collection<ItemIdentifierStack> _allItems){
+	public void handleSendQueueItemIdentifierList(Collection<ItemIdentifierStack> _allItems) {
 		displayList.clear();
 		displayList.addAll(_allItems);
 	}
@@ -573,7 +591,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		super.setTile(tile);
 		for (int i = 0; i < _moduleInventory.getSizeInventory(); i++) {
 			LogisticsModule current = _module.getModule(i);
-			if(current != null) {
+			if (current != null) {
 				current.registerPosition(ModulePositionType.SLOT, i);
 			}
 		}
@@ -581,48 +599,53 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public int getSourceID() {
-		return this.getRouterId();
+		return getRouterId();
 	}
 
 	@Override
 	public Set<ItemIdentifier> getSpecificInterests() {
 		Set<ItemIdentifier> l1 = new TreeSet<ItemIdentifier>();
 		//if we don't have a pointed inventory we can't be interested in anything
-		if(getRealInventory() == null) return l1;
-		for (int moduleIndex = 0; moduleIndex < this.getChassiSize(); moduleIndex++){
+		if (getRealInventory() == null) {
+			return l1;
+		}
+		for (int moduleIndex = 0; moduleIndex < getChassiSize(); moduleIndex++) {
 			LogisticsModule module = _module.getSubModule(moduleIndex);
-			if(module!=null && module.interestedInAttachedInventory()) {
+			if (module != null && module.interestedInAttachedInventory()) {
 				IInventoryUtil inv = getSneakyInventory(false, module.getSlot(), module.getPositionInt());
-				if(inv == null) continue;
+				if (inv == null) {
+					continue;
+				}
 				Set<ItemIdentifier> items = inv.getItems();
 				l1.addAll(items);
 
 				//also add tag-less variants ... we should probably add a module.interestedIgnoringNBT at some point
-				for(ItemIdentifier id:items) {
+				for (ItemIdentifier id : items) {
 					l1.add(id.getIgnoringNBT());
 				}
 
-				boolean modulesInterestedInUndamged=false;
-				for (int i = 0; i < this.getChassiSize(); i++) {
-					if( _module.getSubModule(moduleIndex).interestedInUndamagedID()){
-						modulesInterestedInUndamged=true;
+				boolean modulesInterestedInUndamged = false;
+				for (int i = 0; i < getChassiSize(); i++) {
+					if (_module.getSubModule(moduleIndex).interestedInUndamagedID()) {
+						modulesInterestedInUndamged = true;
 						break;
 					}
 				}
-				if(modulesInterestedInUndamged) {
-					for(ItemIdentifier id:items){	
+				if (modulesInterestedInUndamged) {
+					for (ItemIdentifier id : items) {
 						l1.add(id.getUndamaged());
 					}
 				}
 				break; // no need to check other modules for interest in the inventory, when we know that 1 already is.
-			} 
+			}
 		}
-		for (int i = 0; i < this.getChassiSize(); i++){
+		for (int i = 0; i < getChassiSize(); i++) {
 			LogisticsModule module = _module.getSubModule(i);
-			if(module!=null) {
+			if (module != null) {
 				Collection<ItemIdentifier> current = module.getSpecificInterests();
-				if(current!=null)
+				if (current != null) {
 					l1.addAll(current);
+				}
 			}
 		}
 		return l1;
@@ -630,89 +653,93 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public boolean hasGenericInterests() {
-		if(getRealInventory() == null) return false;
-		for (int i = 0; i < this.getChassiSize(); i++){
+		if (getRealInventory() == null) {
+			return false;
+		}
+		for (int i = 0; i < getChassiSize(); i++) {
 			LogisticsModule x = _module.getSubModule(i);
-			
-			if(x!=null && x.hasGenericInterests())
-				return true;			
+
+			if (x != null && x.hasGenericInterests()) {
+				return true;
+			}
 		}
 		return false;
 	}
-	
-	@CCCommand(description="Returns the LogisticsModule for the given slot number starting by 1")
+
+	@CCCommand(description = "Returns the LogisticsModule for the given slot number starting by 1")
 	public LogisticsModule getModuleInSlot(Double i) {
 		return _module.getSubModule((int) (i - 1));
 	}
-	
-	@CCCommand(description="Returns the size of this Chassie pipe")
+
+	@CCCommand(description = "Returns the size of this Chassie pipe")
 	public Integer getChassieSize() {
-		return this.getChassiSize();
+		return getChassiSize();
 	}
 
-	public abstract ResourceLocation getChassiGUITexture() ;
-	
+	public abstract ResourceLocation getChassiGUITexture();
+
 	/** ICraftItems */
 	public final LinkedList<LogisticsOrder> _extras = new LinkedList<LogisticsOrder>();
 
-	
 	@Override
 	public void registerExtras(IPromise promise) {
-		if(!(promise instanceof LogisticsPromise)) throw new UnsupportedOperationException("Extra has to be an item for a chassis pipe");
-		ItemIdentifierStack stack = new ItemIdentifierStack(((LogisticsPromise)promise).item, ((LogisticsPromise)promise).numberOfItems);
+		if (!(promise instanceof LogisticsPromise)) {
+			throw new UnsupportedOperationException("Extra has to be an item for a chassis pipe");
+		}
+		ItemIdentifierStack stack = new ItemIdentifierStack(((LogisticsPromise) promise).item, ((LogisticsPromise) promise).numberOfItems);
 		_extras.add(new LogisticsItemOrder(stack, null, ResourceType.EXTRA, null));
 	}
 
 	@Override
 	public ICraftingTemplate addCrafting(IResource toCraft) {
-		for (int i = 0; i < this.getChassiSize(); i++){
+		for (int i = 0; i < getChassiSize(); i++) {
 			LogisticsModule x = _module.getSubModule(i);
-			
-			if(x!=null && x instanceof ICraftItems) {				
-				if(((ICraftItems)x).canCraft(toCraft)) {
-					return ((ICraftItems)x).addCrafting(toCraft);
+
+			if (x != null && x instanceof ICraftItems) {
+				if (((ICraftItems) x).canCraft(toCraft)) {
+					return ((ICraftItems) x).addCrafting(toCraft);
 				}
 			}
 		}
 		return null;
-		
-// trixy code goes here to ensure the right crafter answers the right request
+
+		// trixy code goes here to ensure the right crafter answers the right request
 	}
 
 	@Override
 	public List<ItemIdentifierStack> getCraftedItems() {
 		List<ItemIdentifierStack> craftables = null;
-		for (int i = 0; i < this.getChassiSize(); i++) {
+		for (int i = 0; i < getChassiSize(); i++) {
 			LogisticsModule x = _module.getSubModule(i);
-			
-			if(x!=null && x instanceof ICraftItems) {
-				if(craftables ==null) {
-					craftables = new LinkedList<ItemIdentifierStack> ();
+
+			if (x != null && x instanceof ICraftItems) {
+				if (craftables == null) {
+					craftables = new LinkedList<ItemIdentifierStack>();
 				}
-				craftables.addAll(((ICraftItems)x).getCraftedItems());
+				craftables.addAll(((ICraftItems) x).getCraftedItems());
 			}
 		}
 		return craftables;
 	}
-	
+
 	@Override
 	public boolean canCraft(IResource toCraft) {
-		for (int i = 0; i < this.getChassiSize(); i++) {
+		for (int i = 0; i < getChassiSize(); i++) {
 			LogisticsModule x = _module.getSubModule(i);
-			
-			if(x!=null && x instanceof ICraftItems) {
-				if(((ICraftItems)x).canCraft(toCraft)) {
+
+			if (x != null && x instanceof ICraftItems) {
+				if (((ICraftItems) x).canCraft(toCraft)) {
 					return true;
 				}
 			}
 		}
 		return false;
 	}
-	
+
 	@Override
 	public ISlotUpgradeManager getUpgradeManager(ModulePositionType slot, int positionInt) {
-		if(slot != ModulePositionType.SLOT || positionInt > _upgradeManagers.length) {
-			if(LPConstants.DEBUG) {
+		if (slot != ModulePositionType.SLOT || positionInt > _upgradeManagers.length) {
+			if (LPConstants.DEBUG) {
 				new UnsupportedOperationException("Position info arn't for a chassi pipe. (" + slot + "/" + positionInt + ")").printStackTrace();
 			}
 			return super.getUpgradeManager(slot, positionInt);
@@ -726,13 +753,14 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		// probably not needed, the chasi order manager handles the count, would need to store origin to specifically know this.
 		return 0;
 	}
-	
+
 	public static class ChassiTargetInformation implements IAdditionalTargetInformation {
+
 		@Getter
 		private final int moduleSlot;
-		
+
 		public ChassiTargetInformation(int slot) {
-			this.moduleSlot = slot;
+			moduleSlot = slot;
 		}
 	}
 }

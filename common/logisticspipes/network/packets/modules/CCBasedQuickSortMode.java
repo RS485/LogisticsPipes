@@ -7,18 +7,20 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
+
+import net.minecraft.entity.player.EntityPlayer;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class CCBasedQuickSortMode extends ModuleCoordinatesPacket {
-	
+
 	@Getter
 	@Setter
 	private int timeOut;
-	
+
 	public CCBasedQuickSortMode(int id) {
 		super(id);
 	}
@@ -26,10 +28,12 @@ public class CCBasedQuickSortMode extends ModuleCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		ModuleCCBasedQuickSort module = this.getLogisticsModule(player, ModuleCCBasedQuickSort.class);
-		if(module == null) return;
-		((ModuleCCBasedQuickSort)module).setTimeout(timeOut);
+		if (module == null) {
+			return;
+		}
+		module.setTimeout(timeOut);
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new CCBasedQuickSortMode(getId());

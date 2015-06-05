@@ -4,6 +4,7 @@ import logisticspipes.interfaces.IOrderManagerContentReceiver;
 import logisticspipes.network.abstractpackets.InventoryModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+
 import net.minecraft.entity.player.EntityPlayer;
 
 public class OrdererManagerContent extends InventoryModuleCoordinatesPacket {
@@ -20,12 +21,11 @@ public class OrdererManagerContent extends InventoryModuleCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe tile = this.getPipe(player.worldObj);
-		if(tile == null) {
+		if (tile == null) {
 			return;
 		}
-		if(tile.pipe instanceof IOrderManagerContentReceiver) {
-			((IOrderManagerContentReceiver)tile.pipe).setOrderManagerContent(getIdentList());
+		if (tile.pipe instanceof IOrderManagerContentReceiver) {
+			((IOrderManagerContentReceiver) tile.pipe).setOrderManagerContent(getIdentList());
 		}
 	}
 }
-

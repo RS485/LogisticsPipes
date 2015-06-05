@@ -6,21 +6,22 @@ import java.util.List;
 
 import logisticspipes.interfaces.routing.ISpecialTileConnection;
 import logisticspipes.logisticspipes.IRoutedItem;
+
 import net.minecraft.tileentity.TileEntity;
 
 public class SpecialTileConnection {
-	
+
 	private List<ISpecialTileConnection> handler = new ArrayList<ISpecialTileConnection>();
-	
+
 	public void registerHandler(ISpecialTileConnection connectionHandler) {
-		if(connectionHandler.init()) {
+		if (connectionHandler.init()) {
 			handler.add(connectionHandler);
 		}
 	}
-	
+
 	public Collection<TileEntity> getConnectedPipes(TileEntity tile) {
-		for(ISpecialTileConnection connectionHandler:handler) {
-			if(connectionHandler.isType(tile)) {
+		for (ISpecialTileConnection connectionHandler : handler) {
+			if (connectionHandler.isType(tile)) {
 				return connectionHandler.getConnections(tile);
 			}
 		}
@@ -28,8 +29,8 @@ public class SpecialTileConnection {
 	}
 
 	public boolean needsInformationTransition(TileEntity tile) {
-		for(ISpecialTileConnection connectionHandler:handler) {
-			if(connectionHandler.isType(tile)) {
+		for (ISpecialTileConnection connectionHandler : handler) {
+			if (connectionHandler.isType(tile)) {
 				return connectionHandler.needsInformationTransition();
 			}
 		}
@@ -37,8 +38,8 @@ public class SpecialTileConnection {
 	}
 
 	public void transmit(TileEntity tile, IRoutedItem arrivingItem) {
-		for(ISpecialTileConnection connectionHandler:handler) {
-			if(connectionHandler.isType(tile)) {
+		for (ISpecialTileConnection connectionHandler : handler) {
+			if (connectionHandler.isType(tile)) {
 				connectionHandler.transmit(tile, arrivingItem);
 				break;
 			}
@@ -46,8 +47,8 @@ public class SpecialTileConnection {
 	}
 
 	public boolean isType(TileEntity tile) {
-		for(ISpecialTileConnection connectionHandler:handler) {
-			if(connectionHandler.isType(tile)) {
+		for (ISpecialTileConnection connectionHandler : handler) {
+			if (connectionHandler.isType(tile)) {
 				return true;
 			}
 		}

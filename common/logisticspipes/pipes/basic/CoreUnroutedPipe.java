@@ -2,7 +2,6 @@ package logisticspipes.pipes.basic;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILPPipe;
@@ -19,11 +18,10 @@ import logisticspipes.renderer.IIconProvider;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.textures.Textures;
 import logisticspipes.transport.PipeTransportLogistics;
-import logisticspipes.utils.CacheHolder;
 import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.LPPosition;
-import lombok.Getter;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -33,7 +31,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSettings.GameType;
+
 import net.minecraftforge.common.util.ForgeDirection;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -45,11 +45,11 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public final PipeTransportLogistics transport;
 	public final Item item;
 	public DebugLogController debug = new DebugLogController(this);
-	
+
 	public IBCPipePart bcPipePart;
 
 	private boolean initialized = false;
-	
+
 	private boolean oldRendererState;
 
 	public CoreUnroutedPipe(PipeTransportLogistics transport, Item item) {
@@ -58,7 +58,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	}
 
 	public void setTile(TileEntity tile) {
-		this.container = (LogisticsTileGenericPipe) tile;
+		container = (LogisticsTileGenericPipe) tile;
 		transport.setTile((LogisticsTileGenericPipe) tile);
 		bcPipePart = ((LogisticsTileGenericPipe) tile).tilePart.getBCPipePart();
 	}
@@ -71,8 +71,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		transport.onBlockPlaced();
 	}
 
-	public void onBlockPlacedBy(EntityLivingBase placer) {
-	}
+	public void onBlockPlacedBy(EntityLivingBase placer) {}
 
 	public void onNeighborBlockChange(int blockId) {
 		transport.onNeighborBlockChange(blockId);
@@ -109,25 +108,25 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public IIconProvider getIconProvider() {
 		return Textures.LPpipeIconProvider;
 	}
-	
+
 	/**
 	 * Should return the index in the array returned by GetTextureIcons() for a
 	 * specified direction
 	 *
-	 * @param direction - The direction for which the indexed should be
-	 * rendered. Unknown for pipe center
-	 *
+	 * @param direction
+	 *            - The direction for which the indexed should be rendered.
+	 *            Unknown for pipe center
 	 * @return An index valid in the array returned by getTextureIcons()
 	 */
 	public abstract int getIconIndex(ForgeDirection direction);
 
 	public void updateEntity() {
 		transport.updateEntity();
-		
-		if(MainProxy.isClient(getWorld())) {
-			if(oldRendererState != (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer() && !container.renderState.forceRenderOldPipe)) {
+
+		if (MainProxy.isClient(getWorld())) {
+			if (oldRendererState != (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer() && !container.renderState.forceRenderOldPipe)) {
 				oldRendererState = (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer() && !container.renderState.forceRenderOldPipe);
-				getWorld().markBlockForUpdate(this.getX(), this.getY(), this.getZ());
+				getWorld().markBlockForUpdate(getX(), getY(), getZ());
 			}
 		}
 	}
@@ -217,27 +216,24 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	/**
 	 * Called when TileGenericPipe.invalidate() is called
 	 */
-	public void invalidate() {
-	}
+	public void invalidate() {}
 
 	/**
 	 * Called when TileGenericPipe.validate() is called
 	 */
-	public void validate() {
-	}
+	public void validate() {}
 
 	/**
 	 * Called when TileGenericPipe.onChunkUnload is called
 	 */
-	public void onChunkUnload() {
-	}
+	public void onChunkUnload() {}
 
 	public World getWorld() {
 		return container.getWorldObj();
 	}
 
 	public void onEntityCollidedWithBlock(Entity entity) {
-		
+
 	}
 
 	public boolean canPipeConnect(TileEntity tile, ForgeDirection direction, boolean flag) {
@@ -247,17 +243,17 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public boolean isSideBlocked(ForgeDirection side, boolean ignoreSystemDisconnection) {
 		return false;
 	}
-	
+
 	public final int getX() {
-		return this.container.xCoord;
+		return container.xCoord;
 	}
 
 	public final int getY() {
-		return this.container.yCoord;
+		return container.yCoord;
 	}
 
 	public final int getZ() {
-		return this.container.zCoord;
+		return container.zCoord;
 	}
 
 	public boolean canBeDestroyed() {
@@ -278,7 +274,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public boolean isRoutedPipe() {
 		return false;
 	}
-	
+
 	public boolean isFluidPipe() {
 		return false;
 	}
@@ -292,11 +288,11 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public Object getCCType() {
 		return ccType;
 	}
-	
+
 	public abstract int getTextureIndex();
 
 	public void triggerDebug() {
-		if(this.debug.debugThisPipe) {
+		if (debug.debugThisPipe) {
 			System.out.print("");
 		}
 	}
@@ -309,7 +305,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 
 	@Override
 	public String toString() {
-		return super.toString() + " (" + this.getX() + ", " + this.getY() + ", " + this.getZ() + ")";
+		return super.toString() + " (" + getX() + ", " + getY() + ", " + getZ() + ")";
 	}
 
 	public LPPosition getLPPosition() {
@@ -317,37 +313,85 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	}
 
 	public WorldUtil getWorldUtil() {
-		return new WorldUtil(this.getWorld(), this.getX(), this.getY(), this.getZ());
+		return new WorldUtil(getWorld(), getX(), getY(), getZ());
 	}
 
 	public IPipeUpgradeManager getUpgradeManager() {
 		return new IPipeUpgradeManager() {
-			@Override public boolean hasPowerPassUpgrade() {return false;}
-			@Override public boolean hasRFPowerSupplierUpgrade() {return false;}
-			@Override public int getIC2PowerLevel() {return 0;}
-			@Override public int getSpeedUpgradeCount() {return 0;}
-			@Override public boolean isSideDisconnected(ForgeDirection side) {return false;}
-			@Override public boolean hasCCRemoteControlUpgrade() {return false;}
-			@Override public boolean hasCraftingMonitoringUpgrade() {return false;}
-			@Override public boolean isOpaque() {return false;}
-			@Override public boolean hasUpgradeModuleUpgrade() {return false;}
-			@Override public boolean hasCombinedSneakyUpgrade() {return false;}
-			@Override public ForgeDirection[] getCombinedSneakyOrientation() {return null;}
+
+			@Override
+			public boolean hasPowerPassUpgrade() {
+				return false;
+			}
+
+			@Override
+			public boolean hasRFPowerSupplierUpgrade() {
+				return false;
+			}
+
+			@Override
+			public int getIC2PowerLevel() {
+				return 0;
+			}
+
+			@Override
+			public int getSpeedUpgradeCount() {
+				return 0;
+			}
+
+			@Override
+			public boolean isSideDisconnected(ForgeDirection side) {
+				return false;
+			}
+
+			@Override
+			public boolean hasCCRemoteControlUpgrade() {
+				return false;
+			}
+
+			@Override
+			public boolean hasCraftingMonitoringUpgrade() {
+				return false;
+			}
+
+			@Override
+			public boolean isOpaque() {
+				return false;
+			}
+
+			@Override
+			public boolean hasUpgradeModuleUpgrade() {
+				return false;
+			}
+
+			@Override
+			public boolean hasCombinedSneakyUpgrade() {
+				return false;
+			}
+
+			@Override
+			public ForgeDirection[] getCombinedSneakyOrientation() {
+				return null;
+			}
 		};
 	}
 
 	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double travled, double max, List<LPPosition> visited) {
 		double lowest = Integer.MAX_VALUE;
-		for(ForgeDirection dir: ForgeDirection.VALID_DIRECTIONS) {
-			if(ignore == dir) continue;
-			IPipeInformationProvider information = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(this.container.getTile(dir));
-			if(information != null) {
+		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+			if (ignore == dir) {
+				continue;
+			}
+			IPipeInformationProvider information = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(container.getTile(dir));
+			if (information != null) {
 				LPPosition pos = new LPPosition(information);
-				if(visited.contains(pos)) continue;
+				if (visited.contains(pos)) {
+					continue;
+				}
 				visited.add(pos);
-				
+
 				lowest = information.getDistanceTo(destinationint, dir.getOpposite(), ident, isActive, travled, Math.min(max, lowest), visited);
-				
+
 				visited.remove(pos);
 			}
 		}

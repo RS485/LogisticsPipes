@@ -2,7 +2,9 @@ package logisticspipes.proxy.cc.wrapper;
 
 import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
+
 import net.minecraftforge.common.util.ForgeDirection;
+
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
@@ -33,11 +35,10 @@ public class LPPeripheralTileSolidWrapper implements IPeripheral {
 	@Override
 	public void detach(IComputerAccess computer) {}
 
-
 	@Override
 	public boolean equals(IPeripheral other) {
-		if(other instanceof LPPeripheralTileSolidWrapper) {
-			return ((LPPeripheralTileSolidWrapper)other).tile.equals(tile);
+		if (other instanceof LPPeripheralTileSolidWrapper) {
+			return ((LPPeripheralTileSolidWrapper) other).tile.equals(tile);
 		}
 		return false;
 	}

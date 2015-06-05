@@ -11,12 +11,14 @@ import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
 
 @Accessors(chain = true)
 public class ParticleFX extends CoordinatesPacket {
@@ -40,7 +42,7 @@ public class ParticleFX extends CoordinatesPacket {
 		super.readData(data);
 		int nparticles = data.readInt();
 		particles = new ArrayList<ParticleCount>(nparticles);
-		for(int i = 0; i < nparticles; i++) {
+		for (int i = 0; i < nparticles; i++) {
 			int particle = data.readByte();
 			int amount = data.readInt();
 			particles.add(new ParticleCount(Particles.values()[particle], amount));
@@ -51,7 +53,7 @@ public class ParticleFX extends CoordinatesPacket {
 	public void writeData(LPDataOutputStream data) throws IOException {
 		super.writeData(data);
 		data.writeInt(particles.size());
-		for(ParticleCount pc : particles) {
+		for (ParticleCount pc : particles) {
 			data.writeByte(pc.getParticle().ordinal());
 			data.writeInt(pc.getAmount());
 		}
@@ -59,11 +61,11 @@ public class ParticleFX extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if(!Minecraft.isFancyGraphicsEnabled())
+		if (!Minecraft.isFancyGraphicsEnabled()) {
 			return;
-		for(ParticleCount pc : particles) {
+		}
+		for (ParticleCount pc : particles) {
 			PipeFXRenderHandler.spawnGenericParticle(pc.getParticle(), getPosX(), getPosY(), getPosZ(), pc.getAmount());
 		}
 	}
 }
-

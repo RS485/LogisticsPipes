@@ -9,10 +9,12 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+
+import net.minecraft.entity.player.EntityPlayer;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayer;
 
 @Accessors(chain = true)
 public class SatPipeSetID extends CoordinatesPacket {
@@ -53,10 +55,8 @@ public class SatPipeSetID extends CoordinatesPacket {
 			((PipeItemsSatelliteLogistics) pipe.pipe).setSatelliteId(getSatID());
 		}
 		if (pipe.pipe instanceof PipeFluidSatellite) {
-			((PipeFluidSatellite) pipe.pipe)
-					.setSatelliteId(getSatID());
+			((PipeFluidSatellite) pipe.pipe).setSatelliteId(getSatID());
 		}
 	}
 
 }
-

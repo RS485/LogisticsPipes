@@ -1,0 +1,447 @@
+# de_DE, Translated by theZorro266 and Vexatos
+
+# Insert %c and the name found in logisticspipes.utils.string.ChatColor to add colors
+# Example '%cYELLOW ' (The space behind will be removed)
+
+# Pipes
+item.PipeItemsBasicTransport=Gewöhnliches Transportrohr
+item.PipeItemsBasicTransport.tip1=Typ: Einfaches Transportrohr
+item.PipeItemsBasicTransport.tip2= - Dient dem Transport von Items
+item.PipeItemsBasicTransport.tip3= - Steuert Items nicht
+item.PipeItemsBasicTransport.tip4= - Kann nicht auf Inventare zugreifen
+
+item.PipeItemsBasicLogistics=Logistisches Basisrohr
+item.PipeItemsBasicLogistics.tip1=Typ: Passives Ziel
+item.PipeItemsBasicLogistics.tip2= - Steuert Items durch das Netzwerk.
+item.PipeItemsBasicLogistics.tip3= - Packt spezifische Arten von Items in Kisten.
+item.PipeItemsBasicLogistics.tip4= - Kann eine gewöhnliche Route sein.
+
+item.PipeItemsRequestLogistics=Logistisches Bestellrohr
+item.PipeItemsRequestLogistics.tip1=Typ: Aktiver Besteller
+item.PipeItemsRequestLogistics.tip2= - Lässt dich manuell Items bestellen
+item.PipeItemsRequestLogistics.tip3= - Items können von jedem Item-Quellrohr kommen
+item.PipeItemsRequestLogistics.tip4= - Stell eine Kiste auf das Rohr, um herauskommende Items abzufangen.
+
+item.PipeItemsRequestLogisticsMk2=Logistisches Bestellrohr Mk2
+item.PipeItemsRequestLogisticsMk2.tip1=Typ: Aktiver Besteller
+item.PipeItemsRequestLogisticsMk2.tip2= - Schneller als ein Mk1
+item.PipeItemsRequestLogisticsMk2.tip3= - Lässt dich manuell Items bestellen
+item.PipeItemsRequestLogisticsMk2.tip4= - Items können von jedem Quellrohr kommen
+item.PipeItemsRequestLogisticsMk2.tip5= - Stell eine Kiste an das Rohr, um herauskommende Items abzufangen.
+
+item.PipeItemsProviderLogistics=Logistisches Anbieterrohr
+item.PipeItemsProviderLogistics.tip1=Typ: Item-Quelle
+item.PipeItemsProviderLogistics.tip2= - Schließt an ein Inventar an
+item.PipeItemsProviderLogistics.tip3= - Sendet bei Bestellung 16 Items ins Netzwerk
+item.PipeItemsProviderLogistics.tip4= - Ignoriert Versorger am selben Block.
+
+item.PipeItemsProviderLogisticsMk2=Logistisches Anbieterrohr Mk2
+item.PipeItemsProviderLogisticsMk2.tip1=Typ: Item-Quelle
+item.PipeItemsProviderLogisticsMk2.tip2= - Schließt an ein Inventar an
+item.PipeItemsProviderLogisticsMk2.tip3= - Sendet bei Bestellung einen Stapel Items ins Netzwerk
+item.PipeItemsProviderLogisticsMk2.tip4= - Ignoriert Versorger im selben Block
+
+item.PipeItemsCraftingLogistics=Logistisches Fertigungsrohr
+item.PipeItemsCraftingLogistics.tip1=Type: Aktiver Besteller + Quelle
+item.PipeItemsCraftingLogistics.tip2= - Stellt ein Item zur Zeit her.
+item.PipeItemsCraftingLogistics.tip3= - Schließt an eine Logistische Werkbank an.
+item.PipeItemsCraftingLogistics.tip4= - Stellt auf Bestellung automatisch den Gegenstand im Inneren her.
+item.PipeItemsCraftingLogistics.tip5= - Kann Satellitenrohre nutzen, um das Eingangsmaterial anderswo hinzusenden.
+
+item.PipeItemsCraftingLogisticsMk2=Logistisches Fertigungsrohr Mk2
+item.PipeItemsCraftingLogisticsMk2.tip1=Typ: Aktiver Besteller + Quelle
+item.PipeItemsCraftingLogisticsMk2.tip2= - Stellt 16 Gegenstände auf Einmal her.
+item.PipeItemsCraftingLogisticsMk2.tip3= - Schließt an eine Logistische Werkbank an.
+item.PipeItemsCraftingLogisticsMk2.tip4= - Stellt auf Bestellung automatisch den Gegenstand im Inneren her.
+item.PipeItemsCraftingLogisticsMk2.tip5= - Kann Satellitenrohre nutzen, um das Eingangsmaterial anderswo hinzusenden.
+
+item.PipeItemsCraftingLogisticsMk3=Logistisches Fertigungsrohr Mk3
+item.PipeItemsCraftingLogisticsMk3.tip1=Typ: Aktiver Besteller + Quelle
+item.PipeItemsCraftingLogisticsMk3.tip2= - Stellt einen Stapel zur Zeit her.
+item.PipeItemsCraftingLogisticsMk3.tip3= - Schließt an eine Logistische Werkbank an.
+item.PipeItemsCraftingLogisticsMk3.tip4= - Stellt auf Bestellung automatisch den Gegenstand im Inneren her.
+item.PipeItemsCraftingLogisticsMk3.tip5= - Kann Satellitenrohre nutzen, um das Eingangsmaterial anderswo hinzusenden.
+
+item.PipeItemsSatelliteLogistics=Logistisches Satellitenrohr
+item.PipeItemsSatelliteLogistics.tip1=Typ: Aktives Bestellungsziel
+item.PipeItemsSatelliteLogistics.tip2= - Ein Fertigungsrohr kann zusätzliches Eingangsmaterial hierhin senden
+
+item.PipeItemsSupplierLogistics=Logistisches Versorgungsrohr
+item.PipeItemsSupplierLogistics.tip1=Typ: Aktiver Besteller
+item.PipeItemsSupplierLogistics.tip2= - Füllt automatisch eine Kiste oder Maschine
+item.PipeItemsSupplierLogistics.tip3= - Kann Gegenstände von jeder Gegenstandsquelle bekommen.
+item.PipeItemsSupplierLogistics.tip4= - Ignoriert Anbieter im selben Block.
+
+item.PipeItemsBuilderSupplierLogistics=Logistisches Konstrukteur-Versorgungsrohr
+item.PipeItemsBuilderSupplierLogistics.tip1=Typ: Aktiver Besteller
+item.PipeItemsBuilderSupplierLogistics.tip2= - Füllt automatisch einen Konstrukteur mit erforderlichen Materialien
+
+item.PipeLogisticsChassiMk1=Logistisches Modulgehäuse Mk1
+item.PipeLogisticsChassiMk1.tip1=Typ: Gemischt
+item.PipeLogisticsChassiMk1.tip2= - Kann 1 Modul halten.
+
+item.PipeLogisticsChassiMk2=Logistisches Modulgehäuse Mk2
+item.PipeLogisticsChassiMk2.tip1=Typ: Gemischt
+item.PipeLogisticsChassiMk2.tip2= - Kann 2 Module halten.
+
+item.PipeLogisticsChassiMk3=Logistisches Modulgehäuse Mk3
+item.PipeLogisticsChassiMk3.tip1=Typ: Gemischt
+item.PipeLogisticsChassiMk3.tip2= - Kann 3 Module halten.
+
+item.PipeLogisticsChassiMk4=Logistisches Modulgehäuse Mk4
+item.PipeLogisticsChassiMk4.tip1=Typ: Gemischt
+item.PipeLogisticsChassiMk4.tip2= - Kann 4 Module halten.
+
+item.PipeLogisticsChassiMk5=Logistisches Modulgehäuse Mk5
+item.PipeLogisticsChassiMk5.tip1=Typ: Gemischt
+item.PipeLogisticsChassiMk5.tip2= - Kann 8 Module halten.
+
+item.PipeItemsRemoteOrdererLogistics=Logistisches Funkbestellrohr
+item.PipeItemsRemoteOrdererLogistics.tip1=Typ: Aktiver Besteller
+item.PipeItemsRemoteOrdererLogistics.tip2= - Lässt dich manuell fern Gegenstände bestellen
+item.PipeItemsRemoteOrdererLogistics.tip3= - Kann Gegenstände von jeder Gegenstandsquelle bekommen.
+item.PipeItemsRemoteOrdererLogistics.tip4= - Du musst einen Funkbesteller auf dieses Rohr rechts-klicken.
+
+item.PipeItemsApiaristAnalyser=Logistisches Bienenanalyserohr
+item.PipeItemsApiaristAnalyser.tip1=Typ: Passives Ziel
+item.PipeItemsApiaristAnalyser.tip2= - Ein passives Ziel für nicht analysierte Bienen
+item.PipeItemsApiaristAnalyser.tip3= - Erlaubt automatisches Analysieren
+
+item.PipeItemsApiaristSink=Logistisches Bienenlagerrohr
+item.PipeItemsApiaristSink.tip1=Typ: Passives Ziel
+item.PipeItemsApiaristSink.tip2= - Ein passives Ziel für analysierte Bienen
+item.PipeItemsApiaristSink.tip3= - Kann basierend auf genetischen Eigenschaften und Genomen filtern.
+
+item.PipeItemsInvSysConnector=Logistischer Inventarsystemkonnektor
+item.PipeItemsInvSysConnector.tip1=Typ: Brücke
+item.PipeItemsInvSysConnector.tip2= - Verbindet zwei Logistische Netzwerke über ein
+item.PipeItemsInvSysConnector.tip3=   geteiltes Inventar miteinander
+item.PipeItemsInvSysConnector.tip4= - Gewöhnlich mit einer Endertruhe genutzt, aber du
+item.PipeItemsInvSysConnector.tip5=   kannst es auch mit Zügen versuchen...
+
+item.PipeItemsSystemEntranceLogistics=Logistisches Systemeingangsrohr
+item.PipeItemsSystemEntranceLogistics.tip1=Typ: Router
+item.PipeItemsSystemEntranceLogistics.tip2= - Sendet nicht routbare Items zu einem
+item.PipeItemsSystemEntranceLogistics.tip3=   passenden Zielrohr.
+item.PipeItemsSystemEntranceLogistics.tip4= - Sowohl Eingangs- als auch Zielrohr
+item.PipeItemsSystemEntranceLogistics.tip5=   müssen eine codierte Frequenzkarte teilen.
+
+item.PipeItemsSystemDestinationLogistics=Logistisches Systemzielrohr
+item.PipeItemsSystemDestinationLogistics.tip1=Typ: Spezielles Ziel
+item.PipeItemsSystemDestinationLogistics.tip2= - Empfängt nicht routbare Items von
+item.PipeItemsSystemDestinationLogistics.tip3=   einem passenden Eingangsrohr.
+item.PipeItemsSystemDestinationLogistics.tip4= - Sowohl Eingangs- als auch Zielrohr
+item.PipeItemsSystemDestinationLogistics.tip5=   müssen eine codierte Frequenzkarte teilen.
+
+item.PipeItemsFirewall=Logistisches Firewall-Rohr
+item.PipeItemsFirewall.tip1=Typ: Bestellungsfilter
+item.PipeItemsFirewall.tip2= - Erlaubt das Verbinden mit 'feindlichen' Netzwerken
+item.PipeItemsFirewall.tip3=   während es nur bestimmten Items erlaubt, zu passieren
+
+item.PipeItemsFluidSupplier=Logistisches Flüssigkeitscontainer-Versorgungsrohr
+item.PipeItemsFluidSupplier.tip1=Nutzt Eimer oder andere Flüssigkeitscontainer, um den verbundenen Tank zu füllen
+item.PipeFluidSupplierMk2=Logistisches Flüssigkeiten-Versorgungsrohr
+item.PipeFluidSupplierMk2.tip1=Zieht Flüssigkeiten von einem Logistischen Flüssigkeiten-Anbieterrohr heran.
+item.LogisticsFluidConnectorPipe=Logistisches Flüssigkeiten-Verbindungsrohr
+item.PipeFluidBasic=Logistisches Flüssigkeiten-Basisrohr
+item.PipeFluidInsertion=Logistisches Flüssigkeiten-Einführungsrohr
+item.PipeFluidProvider=Logistisches Flüssigkeiten-Anbieterrohr
+item.PipeFluidRequestLogistics=Logistisches Flüssigkeiten-Bestellrohr
+item.PipeFluidExtractor=Logistisches Flüssigkeiten-Extraktionsrohr
+item.PipeFluidSatellite=Logistisches Flüssigkeiten-Satellitenrohr
+item.PipeBlockRequestTable=Logistische Bestellwerkbank
+
+# Modules
+
+#TODO: Add shift tooltip information
+
+item.ModuleBlank=Leeres Modul
+item.ModuleItemSink=ItemSink-Modul
+item.ModulePassiveSupplier=Passiv-Versorgungsmodul
+item.ModuleExtractor=Extraktionsmodul
+item.ModulePolymorphicItemSink=Polymorphes ItemSink-Modul
+item.ModuleQuickSort=QuickSort-Modul
+item.ModuleTerminus=Endstationsmodul
+item.ModuleAdvancedExtractor=Fortgeschrittenes Extraktionsmodul
+item.ModuleExtractorMk2=Extraktionsmodul Mk2
+item.ModuleAdvancedExtractorMK2=Fortgeschrittenes Extraktionsmodul Mk2
+item.ModuleExtractorMk3=Extraktionsmodul Mk3
+item.ModuleAdvancedExtractorMK3=Fortgeschrittenes Extraktionsmodul Mk3
+item.ModuleProvider=Anbietermodul
+item.ModuleProviderMk2=Anbietermodul Mk2
+item.ModuleElectricManager=Elektrik-Manager-Modul
+item.ModuleElectricBuffer=Elektrik-Puffer-Modul
+item.ModuleApiaristAnalyser=Bienenanalysemodul
+item.ModuleApiaristSink=Bienenmodul
+item.ModuleApiaristRefiller=Bienenkorb-Auffüll-Modul
+item.ModuleApiaristTerminus=Drohnen-Endstationsmodul
+item.ModuleModBasedItemSink=Mod-basiertes ItemSink-Modul
+item.ModuleOreDictItemSink=OreDictionary-ItemSink-Modul
+item.ModuleThaumicAspectSink=Thaumisches Aspektmodul
+item.ModuleEnchantmentSink=Verzauberungsmodul
+item.ModuleEnchantmentSinkMK2=Verzauberungsmodul Mk2
+item.ModuleCCBasedItemSink=CC-basiertes ItemSink-Modul
+item.ModuleCCBasedQuickSort=CC-basiertes QuickSort-Modul
+item.ModuleCrafter=Fertigungsmodul
+item.ModuleCrafterMK2=Fertigungsmodul MK2
+item.ModuleCrafterMK3=Fertigungsmodul MK3
+item.ModuleActiveSupplier=Aktiv-Versorgermodul
+item.ModuleCreativeTabBasedItemSink=Creative-Tab-basiertes ItemSink-Modul
+
+# Items
+
+item.structframe=Struktur-Rohrrahmen
+item.microservo=Mikroservo
+item.routeprocess=Logischer Routing-Prozessor
+item.micropackager=Mikro-Verpacker
+item.microcapsulator=Mikro-Kapsellator
+item.logicexpander=Logischer Erweiterungsschaltkreis
+item.lense=Fokuslinse
+item.acceptor=Laser-Akzeptor-Schnittstelle
+item.pipeController=Logistischer Rohr-Controller
+item.brokenItem=Kaputtes Logistisches Item
+item.logisticsFluidContainer=Logistischer Flüssigkeitscontainer
+# %cRED (DEPRECATED) %cRESET
+item.upgradeManagerItem=Upgrade-Manager
+item.HUDbow=Logistischer HUD-Bügel
+item.HUDglass=Logistisches HUD-Glas
+item.HUDnosebridge=Logistische HUD-Nasensteg
+item.NanoHopper=Nanotrichter
+item.logisticsItemCard=Logistische Item-Karte
+item.itemDisk=Logistische Platte
+# %cRED (DEPRECATED) %cRESET
+item.networkMonitorItem=Netzwerkmonitor
+item.ItemPipeSignCreator.0=Fertigungsschildmacher
+item.ItemPipeSignCreator.1=Item-Mengen-Schildmacher
+item.logisticsHUDGlasses=Logistische HUD-Brille
+item.remoteOrdererItem=Funkbesteller
+
+# Upgrades
+
+item.SneakyUpgradeUP=Sneaky-Upgrade (OBEN)
+item.SneakyUpgradeDOWN=Sneaky-Upgrade (UNTEN)
+item.SneakyUpgradeNORTH=Sneaky-Upgrade (NORD)
+item.SneakyUpgradeSOUTH=Sneaky-Upgrade (SÜD)
+item.SneakyUpgradeEAST=Sneaky-Upgrade (OST)
+item.SneakyUpgradeWEST=Sneaky-Upgrade (WEST)
+item.CombinedSneakyUpgrade=Sneaky-Kombinations-Upgrade
+item.SpeedUpgrade=Item-Geschwindigkeitsupgrade
+item.ConnectionUpgradeUP=Trennungs-Upgrade (OBEN)
+item.ConnectionUpgradeDOWN=Trennungs-Upgrade (UNTEN)
+item.ConnectionUpgradeNORTH=Trennungs-Upgrade (NORD)
+item.ConnectionUpgradeSOUTH=Trennungs-Upgrade (SÜD)
+item.ConnectionUpgradeEAST=Trennungs-Upgrade (OST)
+item.ConnectionUpgradeWEST=Trennungs-Upgrade (WEST)
+item.AdvancedSatelliteUpgrade=Fortgeschrittenes Satelliten-Upgrade
+item.FluidCraftingUpgrade=Flüssigkeits-Fertigungs-Upgrade
+item.CraftingByproductUpgrade=Fertigungs-Nebenprodukt-Extraktions-Upgrade
+item.PatternUpgrade=Platzierregel-Upgrade
+item.FuzzyUpgrade=Ungenauigkeits-Upgrade
+item.PowerTransportationUpgrade=Energieübertragungs-Upgrade
+item.BCPowerSupplierUpgrade=BC-Energie-Versorger-Upgrade
+item.RFPowerSupplierUpgrade=TE-Energie-Versorger-Upgrade
+item.IC2LVPowerSupplierUpgrade=IC2-NS-Energie-Versorger-Upgrade
+item.IC2MVPowerSupplierUpgrade=IC2-MS-Energie-Versorger-Upgrade
+item.IC2HVPowerSupplierUpgrade=IC2-HS-Energie-Versorger-Upgrade
+item.IC2EVPowerSupplierUpgrade=IC2-ES-Energie-Versorger-Upgrade
+item.CCRemoteControlUpgrade=CC-Fernsteuer-Upgrade
+item.CraftingMonitoringUpgrade=Fertigunsanzeige-Upgrade
+item.OpaqueUpgrade=Undurchsichtigkeits-Upgrade
+item.CraftingCleanupUpgrade=Fertigungssäuberungs-Upgrade
+item.LogicControllerUpgrade=Logisches Controller-Upgrade
+item.UpgradeModuleUpgrade=Upgrade-Modul-Upgrade
+
+#Upgrade info
+
+item.upgrade.info.both1=Kann auf %cYELLOW {0}%cRESET %cGRAY Rohre
+item.upgrade.info.both2=und %cYELLOW {0}%cRESET %cGRAY Module angewandt werden
+item.upgrade.info.pipe=Kann auf %cYELLOW {0}%cRESET %cGRAY Rohre angewandt werden
+item.upgrade.info.module=Kann auf %cYELLOW {0}%cRESET %cGRAY Module angewandt werden
+item.upgrade.info.all=alle 
+item.upgrade.info.crafting=Fertigungs-
+item.upgrade.info.itemsink=ItemSink-
+item.upgrade.info.supplier=Versorger-
+item.upgrade.info.requestblock=Bestellblock-
+item.upgrade.info.chassi=Gehäuse-
+item.upgrade.info.basic=Basis-
+
+# Blocks
+tile.solderingstation=Lötstation
+tile.logisticspowerjunction=Logistisches Energierelais
+tile.logisticssecuritystation=Logistische Sicherheitsstation
+tile.logisticscraftingtable=Logistische Werkbank
+tile.logisticsfuzzycraftingtable=Logistische Ungenaue Werkbank
+tile.logisticsbcpowerprovider=Logistischer MJ-Energieanbieter
+tile.logisticsic2powerprovider=Logistischer EU-Energieanbieter
+tile.logisticstepowerprovider=Logistischer RF-Energieanbieter
+tile.logisticsstatisticstable=Logistischer Statistiktisch
+
+# Misc
+itemGroup.Logistics_Pipes=Logistics Pipes
+misc.holdshift=<Halte %cYELLOW %cITALIC Shift %cRESET %cGRAY für Details>
+misc.extractionmode.Normal=Normal
+misc.extractionmode.LeaveFirst=1 Stack behalten
+misc.extractionmode.LeaveLast=Letzen Stack behalten
+misc.extractionmode.LeaveFirstAndLast=Ersten&Letzen Stack behalten
+misc.extractionmode.Leave1PerStack=1 item je Stack behalten
+misc.extractionmode.Leave1PerType=1 item je Typ behalten
+misc.selectType=Wähle Typ
+misc.selectOreDict=Wähle OreDict-Typ
+
+#Misc Chat messages
+
+lp.chat.slotnotfound=Konnte diesen Slot intern nicht finden. Sorry. Bitte versuche es erneut.
+lp.chat.permissiondenied=Zugriff verweigert
+lp.chat.connectedtopipe=Mit Rohr verbunden
+lp.misc.noenergy=Keine Energie
+lp.hud.config.chassie.enabled=Gehäuse aktiviert.
+lp.hud.config.chassie.disabled=Gehäuse deaktiviert.
+lp.hud.config.crafting.enabled=Fertigung aktiviert.
+lp.hud.config.crafting.disabled=Fertigung deaktiviert.
+lp.hud.config.invsyscon.enabled=InvSysKon aktiviert.
+lp.hud.config.invsyscon.disabled=InvSysKon deaktiviert.
+lp.hud.config.powerjunction.enabled=Energierelais aktiviert.
+lp.hud.config.powerjunction.disabled=Energierelais deaktiviert.
+lp.hud.config.provider.enabled=Anbieter aktiviert.
+lp.hud.config.provider.disabled=Anbieter deaktiviert.
+lp.hud.config.satellite.enabled=Satellit aktiviert.
+lp.hud.config.satellite.disabled=Satellit deaktiviert.
+
+# GUI
+
+gui.itemsink.Yes=Ja
+gui.itemsink.No=Nein
+gui.itemsink.Inventory=Inventar
+gui.itemsink.Defaultroute=Standardroute
+gui.itemsink.IgnoreData=Ignoriere Daten
+gui.itemsink.IgnoreNBT=Ignoriere NBT
+gui.itemsink.import=Import
+
+gui.crafting.Inputs=Inputs
+gui.crafting.Inventory=Inventar
+gui.crafting.Import=Import
+gui.crafting.Open=Öffnen
+gui.crafting.Output=Output
+gui.crafting.Satellite=Satellit
+gui.crafting.Off=Aus
+gui.crafting.Priority=Priorität
+gui.crafting.Extra=Extra
+gui.crafting.OreDict=OreDict
+gui.crafting.IgnDamage=IgnDamage
+gui.crafting.IgnNBT=IgnNBT
+gui.crafting.OrePrefix=OrePrefix
+gui.crafting.Include=Einschließl.
+gui.crafting.Exclude=Ausschließl.
+
+gui.firewall.Blocked=Blockiert
+gui.firewall.Allowed=Erlaubt
+gui.firewall.Firewall=Firewall
+gui.firewall.Filter=Filter
+gui.firewall.Filtereditemsare=Gefiltere Items sind
+gui.firewall.Providing=Anbieten
+gui.firewall.Crafting=Fertigen
+gui.firewall.Sorting=Sortieren
+gui.firewall.Powerflow=Energiefluss
+
+gui.fluidbasic.Empty=Leer
+
+gui.fluidsuppliermk2.Inventory=Inventar
+gui.fluidsuppliermk2.Fluid=Flüssigk.
+gui.fluidsuppliermk2.Partial=Teilweise
+gui.fluidsuppliermk2.minMode=Min. Modus
+gui.fluidsuppliermk2.Yes=Ja
+gui.fluidsuppliermk2.No=Nein
+gui.fluidsuppliermk2.TargetInv=Flüssigk.
+gui.fluidsuppliermk2.NONE=Nichts
+gui.fluidsuppliermk2.ONEBUCKET=1 Bucket
+gui.fluidsuppliermk2.TWOBUCKET=2 Buckets
+gui.fluidsuppliermk2.FIVEBUCKET=5 Buckets
+
+gui.fluidsupplier.TargetInv=Flüssigk.
+gui.fluidsupplier.Inventory=Inventar
+gui.fluidsupplier.Partialrequests=Teilbestellung
+gui.fluidsupplier.Yes=Ja
+gui.fluidsupplier.No=Nein
+
+gui.invsyscon.Refresh=Neu laden
+gui.invsyscon.Save=Speichern
+gui.invsyscon.InventorySystemConnector=Inventarsystemkonnektor
+gui.invsyscon.ConnectionCard=Verbindungskarte
+gui.invsyscon.Waitingfor=Wartet auf
+gui.invsyscon.Resistance=Resistenz
+
+gui.powerjunction.LogisticsPowerJunction=Logistisches Energierelais
+gui.powerjunction.StoredEnergy=Gespeicherte Energie
+
+gui.powerprovider.LogisticsMJPowerProvider=Logistischer MJ-Energieanbieter
+gui.powerprovider.LogisticsEUPowerProvider=Logistischer EU-Energieanbieter
+gui.powerprovider.LogisticsRFPowerProvider=Logistischer RF-Energieanbieter
+gui.powerprovider.StoredEnergy=Gespeicherte Energie
+
+gui.providerpipe.TargetInv=Anzubietende Items (halte leer für Alles)
+gui.providerpipe.Inventory=Inventar
+gui.providerpipe.Mode=Modus
+gui.providerpipe.Exclude=Ausschließl.
+gui.providerpipe.Include=Einschließl.
+gui.providerpipe.Switch=Wechseln
+
+gui.routingstats.Session=Session
+gui.routingstats.Lifetime=Laufzeit
+gui.routingstats.Sent=Gesendet
+gui.routingstats.Recieved=Empfangen
+gui.routingstats.Relayed=Weitergeleitet
+gui.routingstats.RoutingTableSize=Routenplangröße
+gui.routingstats.exit=<ESC> zum Schließen
+
+gui.satellite.SatelliteID=Satelliten-ID
+
+gui.securitystation.Open=Öffnen
+gui.securitystation.EditTable=Tabelle bearbeiten
+gui.securitystation.Authorize=Autorisieren
+gui.securitystation.Deauthorize=Deautorisieren
+gui.securitystation.SecurityStation=Sicherheitsstation
+gui.securitystation.allowCCAccess=ComputerCraft-Zugriff erlauben
+gui.securitystation.excludeIDs=Ausgeschlossene ComputerCraft-IDs
+gui.securitystation.pipeRemove=Automatische Rohrentfernung erlauben
+gui.securitystation.Player=Spieler
+gui.securitystation.SecurityCards=Sicherheitskarten
+gui.securitystation.Inventory=Inventar
+gui.securitystation.popup.ccAccess.Remove=Entfernen
+gui.securitystation.popup.ccAccess.Add=Hinzufügen
+gui.securitystation.popup.player.Close=Schließen
+gui.securitystation.popup.player.Player=Spieler
+gui.securitystation.popup.player.ConfigureSettings=Einstellungen
+gui.securitystation.popup.player.ActiveRequesting=Aktives Bestellen
+gui.securitystation.popup.player.UpgradePipes=Rohr-Upgrades
+gui.securitystation.popup.player.CheckNetwork=Netzwerkprüfung
+gui.securitystation.popup.player.RemovePipes=Rohrentfernung
+
+gui.supplierpipe.TargetInv=Items
+gui.supplierpipe.TargetInvPattern=Items für bestimmte Slots
+gui.supplierpipe.Inventory=Inventar
+gui.supplierpipe.RequestMode=Bestellmodus
+
+gui.upgrademanager.Upgrades=Upgrades
+gui.upgrademanager.Inventory=Inventar
+gui.upgrademanager.SneakyUpgrades=Sneaky-Upgrades
+
+gui.pipecontroller.upgrade=Upgrades
+gui.pipecontroller.inventory=Inventar
+gui.pipecontroller.sneakyUpgrades=Sneaky-Upgrades
+gui.pipecontroller.security=Sicherheit
+gui.pipecontroller.Session=Session
+gui.pipecontroller.Lifetime=Laufzeit
+gui.pipecontroller.Sent=Gesendet
+gui.pipecontroller.Recieved=Empfangen
+gui.pipecontroller.Relayed=Weitergeleitet
+gui.pipecontroller.RoutingTableSize=Routenplangröße
+
+gui.networkstatistics.amount=Verfolge Menge
+gui.networkstatistics.crafting=Zeige aktive Fertigungen
+gui.networkstatistics.gettasks=Aufgaben einsehen
+gui.networkstatistics.add.alreadytracked=Dieses Item wird bereits verfolgt
+
+gui.settings.pipenewrenderer=Neuen Renderer nutzen
+gui.settings.pipefallbackrenderer=Ersatz-Renderer nutzen
+gui.settings.piperenderdistance=Max. Entfernung für neuen Renderer
+gui.settings.pipecontentrenderdistance=Max. Entfernung für Rohrinhalt

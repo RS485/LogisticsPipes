@@ -38,8 +38,16 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 	}
 
 	@Override
-	public boolean isCorrect() {
-		return pipe != null && pipe.pipe != null && pipe.pipe.transport instanceof PipeTransportItems && SimpleServiceLocator.buildCraftProxy.isActive();
+	public boolean isCorrect(ConnectionPipeType type) {
+		boolean precheck = false;
+		if (type == ConnectionPipeType.BOTH) {
+			precheck = pipe.pipe.transport instanceof PipeTransportItems || pipe.pipe.transport instanceof PipeTransportFluids;
+		} else if (type == ConnectionPipeType.ITEM) {
+			precheck = pipe.pipe.transport instanceof PipeTransportItems;
+		} else if (type == ConnectionPipeType.FLUID) {
+			precheck = pipe.pipe.transport instanceof PipeTransportFluids;
+		}
+		return pipe != null && pipe.pipe != null && SimpleServiceLocator.buildCraftProxy.isActive() && precheck;
 	}
 
 	@Override

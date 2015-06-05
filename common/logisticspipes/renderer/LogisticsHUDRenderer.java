@@ -172,8 +172,8 @@ public class LogisticsHUDRenderer {
 	}
 
 	private boolean checkItemStackForHUD(ItemStack stack) {
-		if (FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].getItem() instanceof IHUDArmor) {
-			return ((IHUDArmor) FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].getItem()).isEnabled(FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3]);
+		if (stack.getItem() instanceof IHUDArmor) {
+			return ((IHUDArmor) stack.getItem()).isEnabled(stack);
 		}
 		return false;
 	}
@@ -188,7 +188,7 @@ public class LogisticsHUDRenderer {
 			return;
 		}
 		Minecraft mc = FMLClientHandler.instance().getClient();
-		if (displayCross) {
+		if (displayHUD() && displayCross) {
 			ScaledResolution res = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
 			int width = res.getScaledWidth();
 			int height = res.getScaledHeight();

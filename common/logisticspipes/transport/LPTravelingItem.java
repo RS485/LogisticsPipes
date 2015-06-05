@@ -120,6 +120,8 @@ public abstract class LPTravelingItem {
 		return 0;
 	}
 
+	public abstract LPTravelingItem renderCopy();
+
 	public static final class LPTravelingItemClient extends LPTravelingItem {
 
 		@Setter
@@ -161,6 +163,17 @@ public abstract class LPTravelingItem {
 		@Override
 		public float getHoverStart() {
 			return 0;//hoverStart;
+		}
+
+		@Override
+		public LPTravelingItem renderCopy() {
+			LPTravelingItemClient copy = new LPTravelingItemClient(id, position, input, output);
+			copy.speed = speed;
+			copy.hoverStart = hoverStart;
+			copy.item = item.clone();
+			copy.age = age;
+			copy.container = container;
+			return copy;
 		}
 	}
 
@@ -448,6 +461,11 @@ public abstract class LPTravelingItem {
 
 		public void newId() {
 			id = getNextId();
+		}
+
+		@Override
+		public LPTravelingItem renderCopy() {
+			throw new UnsupportedOperationException();
 		}
 	}
 }

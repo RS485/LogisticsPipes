@@ -4,6 +4,7 @@ import logisticspipes.proxy.specialinventoryhandler.AEInterfaceInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.BarrelInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.CrateInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.DSUInventoryHandler;
+import logisticspipes.proxy.specialinventoryhandler.DigitalChestHandler;
 import logisticspipes.proxy.specialinventoryhandler.JABBAInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.StorageDrawersInventoryHandler;
 
@@ -14,6 +15,10 @@ public class SpecialInventoryHandlerManager {
 	public static void load() {
 		if (Loader.isModLoaded("factorization")) {
 			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new BarrelInventoryHandler());
+		}
+
+		if (Loader.isModLoaded("GregTech_Addon")) {
+			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new DigitalChestHandler());
 		}
 
 		if (Loader.isModLoaded("betterstorage")) {

@@ -15,8 +15,10 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePart;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.renderer.IIconProvider;
+import logisticspipes.renderer.newpipe.ISpecialPipeRenderer;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.textures.Textures;
+import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -396,5 +398,70 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 			}
 		}
 		return lowest;
+	}
+
+	public boolean isMultiBlock() {
+		return false;
+	}
+
+	public boolean actAsNormalPipe() {
+		return true;
+	}
+
+	public boolean isHSTube() {
+		return false;
+	}
+
+	@SideOnly(Side.CLIENT)
+	public ISpecialPipeRenderer getSpecialRenderer() {
+		return null;
+	}
+
+	public boolean hasSpecialPipeEndAt(ForgeDirection dir) {
+		return false;
+	}
+
+	public LPPosition getItemRenderPos(float fPos, LPTravelingItem travelItem) {
+		LPPosition pos = new LPPosition(0.5D, 0.5D, 0.5D);
+		if (fPos < 0.5) {
+			if (travelItem.input == ForgeDirection.UNKNOWN) {
+				return null;
+			}
+			if (!container.renderState.pipeConnectionMatrix.isConnected(travelItem.input.getOpposite())) {
+				return null;
+			}
+			pos.moveForward(travelItem.input.getOpposite(), 0.5F - fPos);
+		} else {
+			if (travelItem.output == ForgeDirection.UNKNOWN) {
+				return null;
+			}
+			if (!container.renderState.pipeConnectionMatrix.isConnected(travelItem.output)) {
+				return null;
+			}
+			pos.moveForward(travelItem.output, fPos - 0.5F);
+		}
+		return pos;
+	}
+
+	public double getBoxRenderScale(float fPos, LPTravelingItem travelItem) {
+		double boxScale = 1;
+		if (container.renderState.pipeConnectionMatrix.isTDConnected(travelItem.input.getOpposite())) {
+			boxScale = (fPos * (1 - 0.65)) + 0.65;
+		}
+		if (container.renderState.pipeConnectionMatrix.isTDConnected(travelItem.output)) {
+			boxScale = ((1 - fPos) * (1 - 0.65)) + 0.65;
+		}
+		if (container.renderState.pipeConnectionMatrix.isTDConnected(travelItem.input.getOpposite()) && container.renderState.pipeConnectionMatrix.isTDConnected(travelItem.output)) {
+			boxScale = 0.65;
+		}
+		return boxScale;
+	}
+
+	public double getItemRenderPitch(float fPos, LPTravelingItem travelItem) {
+		return 0;
+	}
+
+	public double getItemRenderYaw(float fPos, LPTravelingItem travelItem) {
+		return 0;
 	}
 }

@@ -10,7 +10,7 @@ public class RenderItemInPipeHook {
 		if (travellingItem != null && travellingItem.getItemStack() != null && travellingItem.getItemStack().hasTagCompound()) {
 			if (travellingItem.getItemStack().getTagCompound().getString("LogsitcsPipes_ITEM_ON_TRANSPORTATION").equals("YES")) {
 				if (LogisticsRenderPipe.boxRenderer != null) {
-					LogisticsRenderPipe.boxRenderer.doRenderItem(travellingItem.getItemStack(), light, x, y + 0.25, z, 1.0D);
+					LogisticsRenderPipe.boxRenderer.doRenderItem(travellingItem.getItemStack(), light, x, y + 0.25, z, 1.0D, 0, 0);
 				}
 			}
 		}

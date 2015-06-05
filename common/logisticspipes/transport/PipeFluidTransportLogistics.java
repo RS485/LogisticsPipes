@@ -7,10 +7,12 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.pipe.PipeFluidUpdate;
 import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SafeTimeTracker;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
@@ -275,5 +277,10 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 	@Override
 	protected boolean isItemExitable(ItemIdentifierStack stack) {
 		return true;
+	}
+
+	@Override
+	protected boolean isPipeCheck(TileEntity tile) {
+		return SimpleServiceLocator.pipeInformaitonManager.isPipe(tile);
 	}
 }

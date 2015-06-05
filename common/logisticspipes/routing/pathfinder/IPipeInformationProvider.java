@@ -15,7 +15,13 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 public interface IPipeInformationProvider {
 
-	public boolean isCorrect();
+	public enum ConnectionPipeType {
+		ITEM,
+		FLUID,
+		BOTH;
+	}
+
+	public boolean isCorrect(ConnectionPipeType type);
 
 	public int getX();
 

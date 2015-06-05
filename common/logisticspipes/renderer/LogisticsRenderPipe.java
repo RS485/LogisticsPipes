@@ -141,54 +141,52 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 
 		int count = 0;
 		for (LPTravelingItem item : pipe.transport.items) {
+			CoreUnroutedPipe lPipe = pipe;
+			double lX = x;
+			double lY = y;
+			double lZ = z;
 			if (count >= LogisticsRenderPipe.MAX_ITEMS_TO_RENDER) {
 				break;
-			}
-
-			LPPosition pos = new LPPosition(0.5D, 0.5D, 0.5D);
-
-			if (item.getPosition() > 1 || item.getPosition() < 0) {
-				continue;
-			}
-
-			float fPos = item.getPosition() + item.getSpeed() * f;
-			double boxScale = 1;
-
-			if (fPos < 0.5) {
-				if (item.input == ForgeDirection.UNKNOWN) {
-					continue;
-				}
-				if (!pipe.container.renderState.pipeConnectionMatrix.isConnected(item.input.getOpposite())) {
-					continue;
-				}
-				pos.moveForward(item.input.getOpposite(), 0.5F - fPos);
-			} else {
-				if (item.output == ForgeDirection.UNKNOWN) {
-					continue;
-				}
-				if (!pipe.container.renderState.pipeConnectionMatrix.isConnected(item.output)) {
-					continue;
-				}
-				pos.moveForward(item.output, fPos - 0.5F);
-			}
-			if (pipe.container.renderState.pipeConnectionMatrix.isTDConnected(item.input.getOpposite())) {
-				boxScale = (fPos * (1 - 0.65)) + 0.65;
-			}
-			if (pipe.container.renderState.pipeConnectionMatrix.isTDConnected(item.output)) {
-				boxScale = ((1 - fPos) * (1 - 0.65)) + 0.65;
-			}
-			if (pipe.container.renderState.pipeConnectionMatrix.isTDConnected(item.input.getOpposite()) && pipe.container.renderState.pipeConnectionMatrix.isTDConnected(item.output)) {
-				boxScale = 0.65;
 			}
 
 			if (item == null || item.getItemIdentifierStack() == null) {
 				continue;
 			}
-			if (item.getContainer().xCoord != pipe.container.xCoord || item.getContainer().yCoord != pipe.container.yCoord || item.getContainer().zCoord != pipe.container.zCoord) {
+			if (item.getContainer().xCoord != lPipe.container.xCoord || item.getContainer().yCoord != lPipe.container.yCoord || item.getContainer().zCoord != lPipe.container.zCoord) {
 				continue;
 			}
+
+			if (item.getPosition() > lPipe.transport.getPipeLength() || item.getPosition() < 0) {
+				continue;
+			}
+
+			float fPos = item.getPosition() + item.getSpeed() * f;
+			if (fPos > lPipe.transport.getPipeLength() && item.output != ForgeDirection.UNKNOWN) {
+				CoreUnroutedPipe nPipe = lPipe.transport.getNextPipe(item.output);
+				if (nPipe != null) {
+					fPos -= lPipe.transport.getPipeLength();
+					lX -= lPipe.getX() - nPipe.getX();
+					lY -= lPipe.getY() - nPipe.getY();
+					lZ -= lPipe.getZ() - nPipe.getZ();
+					lPipe = nPipe;
+					item = item.renderCopy();
+					item.input = item.output;
+					item.output = ForgeDirection.UNKNOWN;
+				} else {
+					continue;
+				}
+			}
+
+			LPPosition pos = lPipe.getItemRenderPos(fPos, item);
+			if (pos == null) {
+				continue;
+			}
+			double boxScale = lPipe.getBoxRenderScale(fPos, item);
+			double itemYaw = lPipe.getItemRenderYaw(fPos, item);
+			double itemPitch = lPipe.getItemRenderPitch(fPos, item);
+
 			ItemStack itemstack = item.getItemIdentifierStack().makeNormalStack();
-			doRenderItem(itemstack, x + pos.getXD(), y + pos.getYD(), z + pos.getZD(), light, item.getAge(), item.getHoverStart(), 0.7F, boxScale, 0);
+			doRenderItem(itemstack, lX + pos.getXD(), lY + pos.getYD(), lZ + pos.getZD(), light, item.getAge(), item.getHoverStart(), 0.7F, boxScale, itemYaw, itemPitch);
 			count++;
 		}
 		count = 0;
@@ -202,7 +200,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 				continue;
 			}
 			ItemStack itemstack = item.getValue1().makeNormalStack();
-			doRenderItem(itemstack, x + pos.getXD(), y + pos.getYD(), z + pos.getZD(), light, 0, 0, 0.25F, 0, 0);
+			doRenderItem(itemstack, x + pos.getXD(), y + pos.getYD(), z + pos.getZD(), light, 0, 0, 0.25F, 0, 0, 0);
 			count++;
 			if (count >= 27) {
 				break;
@@ -222,13 +220,15 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		GL11.glPopMatrix();
 	}
 
-	public void doRenderItem(ItemStack itemstack, double x, double y, double z, float light, int age, float hoverStart, float renderScale, double boxScale, int rotation) {
+	public void doRenderItem(ItemStack itemstack, double x, double y, double z, float light, int age, float hoverStart, float renderScale, double boxScale, double yaw, double pitch) {
 		if (LogisticsRenderPipe.config.isUseNewRenderer() && boxScale != 0) {
-			LogisticsRenderPipe.boxRenderer.doRenderItem(itemstack, light, x, y, z, boxScale);
+			LogisticsRenderPipe.boxRenderer.doRenderItem(itemstack, light, x, y, z, boxScale, yaw, pitch);
 		}
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float) x, (float) y, (float) z);
 		GL11.glScalef(renderScale, renderScale, renderScale);
+		GL11.glRotated(yaw, 0, 1, 0);
+		GL11.glRotated(pitch, 1, 0, 0);
 		dummyEntityItem.setEntityItemStack(itemstack);
 		dummyEntityItem.age = age;
 		dummyEntityItem.hoverStart = hoverStart;

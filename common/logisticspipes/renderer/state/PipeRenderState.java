@@ -9,15 +9,12 @@ import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.proxy.buildcraft.subproxies.IBCRenderState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
 import logisticspipes.renderer.newpipe.GLRenderList;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.renderer.newpipe.RenderEntry;
 
 import net.minecraft.util.IIcon;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-
-import codechicken.lib.render.CCModel;
-import codechicken.lib.render.CCRenderState.IVertexOperation;
 
 public class PipeRenderState implements IClientState {
 
@@ -25,7 +22,7 @@ public class PipeRenderState implements IClientState {
 	public final TextureMatrix textureMatrix = new TextureMatrix();
 	public final IBCRenderState bcRenderState;
 
-	public List<Pair<CCModel, IVertexOperation[]>> cachedRenderer = null;
+	public List<RenderEntry> cachedRenderer = null;
 	public boolean forceRenderOldPipe = false;
 	public boolean solidSidesCache[] = new boolean[6];
 

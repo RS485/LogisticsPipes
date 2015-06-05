@@ -6,6 +6,7 @@ import logisticspipes.config.PlayerConfig;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePluggable;
 import logisticspipes.renderer.newpipe.LogisticsNewPipeWorldRenderer;
@@ -202,12 +203,21 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 	@Override
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
 		TileEntity tile = world.getTileEntity(x, y, z);
-		LogisticsTileGenericPipe pipeTile = (LogisticsTileGenericPipe) tile;
-		SimpleServiceLocator.thermalDynamicsProxy.renderPipeConnections(pipeTile, renderer);
-		if (config.isUseNewRenderer() && !pipeTile.renderState.forceRenderOldPipe) {
-			return newRenderer.renderWorldBlock(world, x, y, z, block, modelId, renderer);
+		if (tile instanceof LogisticsTileGenericPipe) {
+			LogisticsTileGenericPipe pipeTile = (LogisticsTileGenericPipe) tile;
+			SimpleServiceLocator.thermalDynamicsProxy.renderPipeConnections(pipeTile, renderer);
+			if (config.isUseNewRenderer() && !pipeTile.renderState.forceRenderOldPipe) {
+				return newRenderer.renderWorldBlock(world, x, y, z, block, modelId, renderer);
+			}
+			return LogisticsPipeWorldRenderer.renderPipe(renderer, world, (LogisticsBlockGenericPipe) block, pipeTile, x, y, z);
+		} else if (tile instanceof LogisticsTileGenericSubMultiBlock) {
+			renderer.setRenderBounds(0, 0, 0, 0, 0, 0);
+			renderer.renderStandardBlock(Blocks.stone, x, y, z);
+			renderer.setRenderBoundsFromBlock(block);
+			return true;
+		} else {
+			return false;
 		}
-		return LogisticsPipeWorldRenderer.renderPipe(renderer, world, (LogisticsBlockGenericPipe) block, pipeTile, x, y, z);
 	}
 
 	@Override

@@ -98,7 +98,7 @@ public class LPItemList implements Iterable<LPTravelingItem> {
 		}
 	}
 
-	void flush() {
+	public void flush() {
 		loadScheduledItems();
 		removeScheduledItems();
 		purgeBadItems();
@@ -111,5 +111,9 @@ public class LPItemList implements Iterable<LPTravelingItem> {
 
 	void clear() {
 		items.clear();
+	}
+
+	public boolean isEmpty() {
+		return items.isEmpty();
 	}
 }

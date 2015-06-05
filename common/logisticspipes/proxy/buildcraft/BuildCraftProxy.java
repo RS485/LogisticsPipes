@@ -70,6 +70,7 @@ import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.ItemGateCopier;
 import buildcraft.transport.ItemPipe;
 import buildcraft.transport.Pipe;
+import buildcraft.transport.PipeTransportFluids;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.render.FacadeRenderHelper;
@@ -164,8 +165,14 @@ public class BuildCraftProxy implements IBCProxy {
 				return false;
 			}
 
-			if (!(otherPipe.transport instanceof PipeTransportItems)) {
-				return false;
+			if (pipe.pipe != null && pipe.pipe.isFluidPipe()) {
+				if (!(otherPipe.transport instanceof PipeTransportItems) && !(otherPipe.transport instanceof PipeTransportFluids)) {
+					return false;
+				}
+			} else {
+				if (!(otherPipe.transport instanceof PipeTransportItems)) {
+					return false;
+				}
 			}
 		}
 		return true;

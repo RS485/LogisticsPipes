@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import logisticspipes.renderer.CustomBlockRenderer.RenderInfo;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -11,6 +12,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -35,7 +37,7 @@ public final class FluidRenderer {
 		if (fluidStack == null) {
 			return null;
 		}
-		return getFluidTexture(fluidStack.getFluid(), flowing);
+		return FluidRenderer.getFluidTexture(fluidStack.getFluid(), flowing);
 	}
 
 	public static IIcon getFluidTexture(Fluid fluid, boolean flowing) {
@@ -51,13 +53,13 @@ public final class FluidRenderer {
 
 	public static ResourceLocation getFluidSheet(FluidStack liquid) {
 		if (liquid == null) {
-			return BLOCK_TEXTURE;
+			return FluidRenderer.BLOCK_TEXTURE;
 		}
-		return getFluidSheet(liquid.getFluid());
+		return FluidRenderer.getFluidSheet(liquid.getFluid());
 	}
 
 	public static ResourceLocation getFluidSheet(Fluid liquid) {
-		return BLOCK_TEXTURE;
+		return FluidRenderer.BLOCK_TEXTURE;
 	}
 
 	public static void setColorForFluidStack(FluidStack fluidstack) {
@@ -66,7 +68,7 @@ public final class FluidRenderer {
 		}
 
 		int color = fluidstack.getFluid().getColor(fluidstack);
-		setGLColorFromInt(color);
+		FluidRenderer.setGLColorFromInt(color);
 	}
 
 	private static void setGLColorFromInt(int color) {
@@ -75,7 +77,7 @@ public final class FluidRenderer {
 		float blue = (color & 255) / 255.0F;
 		GL11.glColor4f(red, green, blue, 1.0F);
 	}
-	
+
 	public static int[] getFluidDisplayLists(FluidStack fluidStack, World world, boolean flowing) {
 		if (fluidStack == null) {
 			return null;
@@ -84,20 +86,20 @@ public final class FluidRenderer {
 		if (fluid == null) {
 			return null;
 		}
-		Map<Fluid, int[]> cache = flowing ? flowingRenderCache : stillRenderCache;
+		Map<Fluid, int[]> cache = flowing ? FluidRenderer.flowingRenderCache : FluidRenderer.stillRenderCache;
 		int[] diplayLists = cache.get(fluid);
 		if (diplayLists != null) {
 			return diplayLists;
 		}
 
-		diplayLists = new int[DISPLAY_STAGES];
+		diplayLists = new int[FluidRenderer.DISPLAY_STAGES];
 
 		if (fluid.getBlock() != null) {
-			liquidBlock.baseBlock = fluid.getBlock();
-			liquidBlock.texture = getFluidTexture(fluidStack, flowing);
+			FluidRenderer.liquidBlock.baseBlock = fluid.getBlock();
+			FluidRenderer.liquidBlock.texture = FluidRenderer.getFluidTexture(fluidStack, flowing);
 		} else {
-			liquidBlock.baseBlock = Blocks.water;
-			liquidBlock.texture = getFluidTexture(fluidStack, flowing);
+			FluidRenderer.liquidBlock.baseBlock = Blocks.water;
+			FluidRenderer.liquidBlock.texture = FluidRenderer.getFluidTexture(fluidStack, flowing);
 		}
 
 		cache.put(fluid, diplayLists);
@@ -106,19 +108,19 @@ public final class FluidRenderer {
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glDisable(GL11.GL_CULL_FACE);
 
-		for (int s = 0; s < DISPLAY_STAGES; ++s) {
+		for (int s = 0; s < FluidRenderer.DISPLAY_STAGES; ++s) {
 			diplayLists[s] = GLAllocation.generateDisplayLists(1);
 			GL11.glNewList(diplayLists[s], 4864 /*GL_COMPILE*/);
 
-			liquidBlock.minX = 0.01f;
-			liquidBlock.minY = 0;
-			liquidBlock.minZ = 0.01f;
+			FluidRenderer.liquidBlock.minX = 0.01f;
+			FluidRenderer.liquidBlock.minY = 0;
+			FluidRenderer.liquidBlock.minZ = 0.01f;
 
-			liquidBlock.maxX = 0.99f;
-			liquidBlock.maxY = (float) s / (float) DISPLAY_STAGES;
-			liquidBlock.maxZ = 0.99f;
+			FluidRenderer.liquidBlock.maxX = 0.99f;
+			FluidRenderer.liquidBlock.maxY = (float) s / (float) FluidRenderer.DISPLAY_STAGES;
+			FluidRenderer.liquidBlock.maxZ = 0.99f;
 
-			CustomBlockRenderer.INSTANCE.renderBlock(liquidBlock, world, 0, 0, 0, false, true);
+			CustomBlockRenderer.INSTANCE.renderBlock(FluidRenderer.liquidBlock, world, 0, 0, 0, false, true);
 
 			GL11.glEndList();
 		}

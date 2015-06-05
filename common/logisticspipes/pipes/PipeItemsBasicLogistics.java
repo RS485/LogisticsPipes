@@ -1,5 +1,5 @@
-/** 
- * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public 
+/**
+ * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
@@ -25,13 +25,15 @@ import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
+
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class PipeItemsBasicLogistics extends CoreRoutedPipe {
-	
+
 	private ModuleItemSink itemSinkModule;
 
 	public PipeItemsBasicLogistics(Item item) {
@@ -39,10 +41,12 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 
 			@Override
 			public boolean canPipeConnect(TileEntity tile, ForgeDirection dir) {
-				if(super.canPipeConnect(tile, dir)) return true;
-				if(tile instanceof LogisticsSecurityTileEntity) {
-					ForgeDirection ori = OrientationsUtil.getOrientationOfTilewithTile(this.container, tile);
-					if(ori == null || ori == ForgeDirection.UNKNOWN || ori == ForgeDirection.DOWN || ori == ForgeDirection.UP) {
+				if (super.canPipeConnect(tile, dir)) {
+					return true;
+				}
+				if (tile instanceof LogisticsSecurityTileEntity) {
+					ForgeDirection ori = OrientationsUtil.getOrientationOfTilewithTile(container, tile);
+					if (ori == null || ori == ForgeDirection.UNKNOWN || ori == ForgeDirection.DOWN || ori == ForgeDirection.UP) {
 						return false;
 					}
 					return true;
@@ -56,7 +60,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 
 	@Override
 	public TextureType getNonRoutedTexture(ForgeDirection connection) {
-		if(isSecurityProvider(connection)) {
+		if (isSecurityProvider(connection)) {
 			return Textures.LOGISTICSPIPE_SECURITY_TEXTURE;
 		}
 		return super.getNonRoutedTexture(connection);
@@ -64,35 +68,35 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 
 	@Override
 	public boolean isLockedExit(ForgeDirection orientation) {
-		if(isPowerJunction(orientation) || isSecurityProvider(orientation)) {
+		if (isPowerJunction(orientation) || isSecurityProvider(orientation)) {
 			return true;
 		}
 		return super.isLockedExit(orientation);
 	}
-	
+
 	private boolean isPowerJunction(ForgeDirection ori) {
-		TileEntity tilePipe = this.container.getTile(ori);
-		if(tilePipe == null || !this.container.canPipeConnect(tilePipe, ori)) {
+		TileEntity tilePipe = container.getTile(ori);
+		if (tilePipe == null || !container.canPipeConnect(tilePipe, ori)) {
 			return false;
 		}
 
-		if(tilePipe instanceof LogisticsPowerJunctionTileEntity) {
+		if (tilePipe instanceof LogisticsPowerJunctionTileEntity) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	private boolean isSecurityProvider(ForgeDirection ori) {
-		TileEntity tilePipe = this.container.getTile(ori);
-		if(tilePipe == null || !this.container.canPipeConnect(tilePipe, ori)) {
+		TileEntity tilePipe = container.getTile(ori);
+		if (tilePipe == null || !container.canPipeConnect(tilePipe, ori)) {
 			return false;
 		}
-		if(tilePipe instanceof LogisticsSecurityTileEntity) {
+		if (tilePipe instanceof LogisticsSecurityTileEntity) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	@Override
 	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_TEXTURE;
@@ -113,15 +117,15 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 		super.setTile(tile);
 		itemSinkModule.registerPosition(ModulePositionType.IN_PIPE, 0);
 	}
-	
+
 	@Override
 	public IInventoryUtil getPointedInventory(boolean forExtraction) {
 		IInventoryUtil inv = super.getPointedInventory(forExtraction);
-		if(inv == null) {
-			for(AdjacentTile connected:this.getConnectedEntities()) {
-				if(connected.tile instanceof IInventory) {
+		if (inv == null) {
+			for (AdjacentTile connected : getConnectedEntities()) {
+				if (connected.tile instanceof IInventory) {
 					IInventory iinv = InventoryHelper.getInventory((IInventory) connected.tile);
-					if(iinv != null) {
+					if (iinv != null) {
 						inv = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(iinv, connected.orientation.getOpposite());
 						break;
 					}
@@ -130,22 +134,24 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 		}
 		return inv;
 	}
-	
+
 	@Override
 	public Set<ItemIdentifier> getSpecificInterests() {
-		if(this.itemSinkModule.isDefaultRoute())
+		if (itemSinkModule.isDefaultRoute()) {
 			return null;
+		}
 		Set<ItemIdentifier> l1 = new TreeSet<ItemIdentifier>();
-		for(int i=0; i<9;i++){
-			ItemIdentifierStack item = this.itemSinkModule.getFilterInventory().getIDStackInSlot(i);
-			if(item != null)
+		for (int i = 0; i < 9; i++) {
+			ItemIdentifierStack item = itemSinkModule.getFilterInventory().getIDStackInSlot(i);
+			if (item != null) {
 				l1.add(item.getItem());
+			}
 		}
 		return l1;
 	}
 
 	@Override
 	public boolean hasGenericInterests() {
-		return this.itemSinkModule.isDefaultRoute();
+		return itemSinkModule.isDefaultRoute();
 	}
 }

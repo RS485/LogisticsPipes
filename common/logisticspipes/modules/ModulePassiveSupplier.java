@@ -1,6 +1,5 @@
 package logisticspipes.modules;
 
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -28,11 +27,13 @@ import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -41,39 +42,48 @@ public class ModulePassiveSupplier extends LogisticsSimpleFilterModule implement
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested items", 64);
 
 	private IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
-	
+
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
-	
+
 	public ModulePassiveSupplier() {
 		_filterInventory.addListener(this);
 	}
 
-	public IInventory getFilterInventory(){
+	@Override
+	public IInventory getFilterInventory() {
 		return _filterInventory;
 	}
-	
+
 	private SinkReply _sinkReply;
 
 	@Override
 	public void registerPosition(ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);
-		_sinkReply = new SinkReply(FixedPriority.PassiveSupplier, 0, true, false, 2, 0, new ChassiTargetInformation(this.getPositionInt()));
+		_sinkReply = new SinkReply(FixedPriority.PassiveSupplier, 0, true, false, 2, 0, new ChassiTargetInformation(getPositionInt()));
 	}
-	
+
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
-		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
+		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
+			return null;
+		}
 
 		IInventoryUtil targetUtil = _service.getSneakyInventory(false, slot, positionInt);
-		if (targetUtil == null) return null;
-		
-		if (!_filterInventory.containsItem(item)) return null;
-		
+		if (targetUtil == null) {
+			return null;
+		}
+
+		if (!_filterInventory.containsItem(item)) {
+			return null;
+		}
+
 		int targetCount = _filterInventory.itemCount(item);
 		int haveCount = targetUtil.itemCount(item);
-		if (targetCount <= haveCount) return null;
-		
-		if(_service.canUseEnergy(2)) {
+		if (targetCount <= haveCount) {
+			return null;
+		}
+
+		if (_service.canUseEnergy(2)) {
 			return new SinkReply(_sinkReply, targetCount - haveCount);
 		}
 		return null;
@@ -90,7 +100,9 @@ public class ModulePassiveSupplier extends LogisticsSimpleFilterModule implement
 	}
 
 	@Override
-	public LogisticsModule getSubModule(int slot) {return null;}
+	public LogisticsModule getSubModule(int slot) {
+		return null;
+	}
 
 	@Override
 	public void tick() {}
@@ -103,7 +115,7 @@ public class ModulePassiveSupplier extends LogisticsSimpleFilterModule implement
 		list.add("<that>");
 		return list;
 	}
-	
+
 	@Override
 	public void startHUDWatching() {
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setModulePos(this));
@@ -137,7 +149,7 @@ public class ModulePassiveSupplier extends LogisticsSimpleFilterModule implement
 
 	@Override
 	public void InventoryChanged(IInventory inventory) {
-		if(MainProxy.isServer(_world.getWorld())) {
+		if (MainProxy.isServer(_world.getWorld())) {
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setModulePos(this), localModeWatchers);
 		}
 	}
@@ -150,14 +162,14 @@ public class ModulePassiveSupplier extends LogisticsSimpleFilterModule implement
 	@Override
 	public List<ItemIdentifier> getSpecificInterests() {
 		Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
-		List<ItemIdentifier> li= new ArrayList<ItemIdentifier>(mapIC.size());
+		List<ItemIdentifier> li = new ArrayList<ItemIdentifier>(mapIC.size());
 		li.addAll(mapIC.keySet());
 		return li;
 	}
 
 	@Override
-	public boolean interestedInAttachedInventory() {		
-		return false; 
+	public boolean interestedInAttachedInventory() {
+		return false;
 	}
 
 	@Override

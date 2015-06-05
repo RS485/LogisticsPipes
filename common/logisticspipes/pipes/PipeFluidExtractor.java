@@ -7,8 +7,10 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
+
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
+
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidHandler;
@@ -19,7 +21,7 @@ public class PipeFluidExtractor extends PipeFluidInsertion {
 
 	private static final int flowRate = 500;
 	private static final int energyPerFlow = 5;
-	
+
 	public PipeFluidExtractor(Item item) {
 		super(item);
 	}
@@ -27,25 +29,27 @@ public class PipeFluidExtractor extends PipeFluidInsertion {
 	@Override
 	public void enabledUpdateEntity() {
 		super.enabledUpdateEntity();
-		if(!isNthTick(10)) return;
-		LinkedList<AdjacentTile> connected = this.getConnectedEntities();
-		for(AdjacentTile tile:connected) {
-			if(tile.tile instanceof IFluidHandler && SimpleServiceLocator.pipeInformaitonManager.isNotAPipe(tile.tile)) {
+		if (!isNthTick(10)) {
+			return;
+		}
+		LinkedList<AdjacentTile> connected = getConnectedEntities();
+		for (AdjacentTile tile : connected) {
+			if (tile.tile instanceof IFluidHandler && SimpleServiceLocator.pipeInformaitonManager.isNotAPipe(tile.tile)) {
 				extractFrom((IFluidHandler) tile.tile, tile.orientation);
 			}
 		}
 	}
-	
+
 	private void extractFrom(IFluidHandler container, ForgeDirection side) {
 		int i = side.ordinal();
-		FluidStack contained = ((PipeFluidTransportLogistics)this.transport).getTankInfo(side)[0].fluid;
-		int amountMissing = ((PipeFluidTransportLogistics)this.transport).getSideCapacity() - (contained != null ? contained.amount : 0);
-		if(liquidToExtract[i] < Math.min(flowRate, amountMissing)) {
-			if(this.useEnergy(energyPerFlow)) {
-				liquidToExtract[i] += Math.min(flowRate, amountMissing);
+		FluidStack contained = ((PipeFluidTransportLogistics) transport).getTankInfo(side)[0].fluid;
+		int amountMissing = ((PipeFluidTransportLogistics) transport).getSideCapacity() - (contained != null ? contained.amount : 0);
+		if (liquidToExtract[i] < Math.min(PipeFluidExtractor.flowRate, amountMissing)) {
+			if (this.useEnergy(PipeFluidExtractor.energyPerFlow)) {
+				liquidToExtract[i] += Math.min(PipeFluidExtractor.flowRate, amountMissing);
 			}
 		}
-		FluidStack extracted = container.drain(side.getOpposite(), liquidToExtract[i] > flowRate ? flowRate : liquidToExtract[i], false);
+		FluidStack extracted = container.drain(side.getOpposite(), liquidToExtract[i] > PipeFluidExtractor.flowRate ? PipeFluidExtractor.flowRate : liquidToExtract[i], false);
 
 		int inserted = 0;
 		if (extracted != null) {
@@ -54,7 +58,7 @@ public class PipeFluidExtractor extends PipeFluidInsertion {
 		}
 		liquidToExtract[i] -= inserted;
 	}
-	
+
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
@@ -65,7 +69,7 @@ public class PipeFluidExtractor extends PipeFluidInsertion {
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 		liquidToExtract = nbttagcompound.getIntArray("liquidToExtract");
-		if(liquidToExtract.length < 6) {
+		if (liquidToExtract.length < 6) {
 			liquidToExtract = new int[6];
 		}
 	}

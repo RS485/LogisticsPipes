@@ -1,9 +1,11 @@
 package logisticspipes.proxy.bs;
 
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
-import net.mcft.copy.betterstorage.api.crate.ICrateStorage;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+
+import net.mcft.copy.betterstorage.api.crate.ICrateStorage;
 
 public class BetterStorageProxy implements IBetterStorageProxy {
 
@@ -16,6 +18,7 @@ public class BetterStorageProxy implements IBetterStorageProxy {
 	public ICrateStorageProxy getCrateStorageProxy(TileEntity tile) {
 		final ICrateStorage crate = (ICrateStorage) tile;
 		return new ICrateStorageProxy() {
+
 			@Override
 			public Iterable<ItemStack> getContents() {
 				return crate.getContents();

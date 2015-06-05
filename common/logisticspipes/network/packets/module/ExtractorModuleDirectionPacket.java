@@ -6,12 +6,14 @@ import logisticspipes.network.abstractpackets.DirectionModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.modules.ExtractorModuleMode;
 import logisticspipes.proxy.MainProxy;
-import lombok.experimental.Accessors;
+
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+import lombok.experimental.Accessors;
+
+@Accessors(chain = true)
 public class ExtractorModuleDirectionPacket extends DirectionModuleCoordinatesPacket {
-	
+
 	public ExtractorModuleDirectionPacket(int id) {
 		super(id);
 	}
@@ -24,9 +26,10 @@ public class ExtractorModuleDirectionPacket extends DirectionModuleCoordinatesPa
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsSneakyDirectionModule module = this.getLogisticsModule(player, LogisticsSneakyDirectionModule.class);
-		if(module == null) return;
+		if (module == null) {
+			return;
+		}
 		module.setSneakyDirection(getDirection());
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setDirection(module.getSneakyDirection()).setPacketPos(this), player);
 	}
 }
-

@@ -1,5 +1,11 @@
 package logisticspipes.proxy.specialconnection;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import logisticspipes.interfaces.routing.ISpecialTileConnection;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -7,17 +13,13 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.tuples.LPPosition;
+
 import net.minecraft.tileentity.TileEntity;
+
 import net.minecraftforge.common.util.ForgeDirection;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
 public class EnderIOTransceiverConnection implements ISpecialTileConnection {
-	
+
 	@Override
 	public boolean init() {
 		return SimpleServiceLocator.enderIOProxy.isEnderIO();
@@ -36,7 +38,7 @@ public class EnderIOTransceiverConnection implements ISpecialTileConnection {
 			p.moveForward(direction);
 			TileEntity candidate = p.getTileEntity(tile.getWorldObj());
 			if (candidate instanceof LogisticsTileGenericPipe && MainProxy.checkPipesConnections(tile, candidate, direction)) {
-				if(onlyOnePipe) {
+				if (onlyOnePipe) {
 					onlyOnePipe = false;
 					break;
 				} else {
@@ -44,20 +46,22 @@ public class EnderIOTransceiverConnection implements ISpecialTileConnection {
 				}
 			}
 		}
-		if(!onlyOnePipe || !SimpleServiceLocator.enderIOProxy.isSendAndReceive(tile)) {
+		if (!onlyOnePipe || !SimpleServiceLocator.enderIOProxy.isSendAndReceive(tile)) {
 			return new ArrayList<TileEntity>(0);
 		}
 		List<? extends TileEntity> connections = SimpleServiceLocator.enderIOProxy.getConnectedTransceivers(tile);
 		Set<TileEntity> set = new HashSet<TileEntity>();
-		for(TileEntity connected:connections) {
-			if(!SimpleServiceLocator.enderIOProxy.isSendAndReceive(connected)) continue;
+		for (TileEntity connected : connections) {
+			if (!SimpleServiceLocator.enderIOProxy.isSendAndReceive(connected)) {
+				continue;
+			}
 			LogisticsTileGenericPipe pipe = null;
 			for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
 				LPPosition p = new LPPosition(connected);
 				p.moveForward(direction);
 				TileEntity candidate = p.getTileEntity(tile.getWorldObj());
 				if (candidate instanceof LogisticsTileGenericPipe && MainProxy.checkPipesConnections(connected, candidate, direction)) {
-					if(pipe != null) {
+					if (pipe != null) {
 						pipe = null;
 						break;
 					} else {
@@ -65,11 +69,11 @@ public class EnderIOTransceiverConnection implements ISpecialTileConnection {
 					}
 				}
 			}
-			if(pipe != null && pipe.pipe instanceof CoreRoutedPipe) {
+			if (pipe != null && pipe.pipe instanceof CoreRoutedPipe) {
 				set.add(pipe);
 			}
 		}
-		if(set.size() == 1) {
+		if (set.size() == 1) {
 			return set;
 		} else {
 			return new ArrayList<TileEntity>(0);
@@ -84,10 +88,12 @@ public class EnderIOTransceiverConnection implements ISpecialTileConnection {
 	@Override
 	public void transmit(TileEntity tile, IRoutedItem data) {
 		Collection<TileEntity> list = getConnections(tile);
-		if(list.size() < 1) return;
+		if (list.size() < 1) {
+			return;
+		}
 		TileEntity pipe = list.iterator().next();
-		if(pipe instanceof LogisticsTileGenericPipe) {
-			((CoreRoutedPipe)((LogisticsTileGenericPipe)pipe).pipe).queueUnroutedItemInformation(data.getItemIdentifierStack().clone(), data.getInfo());
+		if (pipe instanceof LogisticsTileGenericPipe) {
+			((CoreRoutedPipe) ((LogisticsTileGenericPipe) pipe).pipe).queueUnroutedItemInformation(data.getItemIdentifierStack().clone(), data.getInfo());
 		} else {
 			new RuntimeException("Only LP pipes can be next to transceiver to queue item information").printStackTrace();
 		}

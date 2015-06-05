@@ -10,6 +10,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.item.ItemIdentifierInventory;
+
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -18,7 +19,7 @@ import net.minecraft.nbt.NBTTagCompound;
 public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 
 	public ItemIdentifierInventory inv = new ItemIdentifierInventory(1, "Freq Slot", 1);
-	
+
 	public PipeItemsSystemDestinationLogistics(Item item) {
 		super(item);
 	}
@@ -39,9 +40,15 @@ public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 	}
 
 	public Object getTargetUUID() {
-		if(inv.getStackInSlot(0) == null) return null;
-		if(!inv.getStackInSlot(0).hasTagCompound()) return null;
-		if(!inv.getStackInSlot(0).getTagCompound().hasKey("UUID")) return null;
+		if (inv.getStackInSlot(0) == null) {
+			return null;
+		}
+		if (!inv.getStackInSlot(0).hasTagCompound()) {
+			return null;
+		}
+		if (!inv.getStackInSlot(0).getTagCompound().hasKey("UUID")) {
+			return null;
+		}
 		spawnParticle(Particles.WhiteParticle, 2);
 		return UUID.fromString(inv.getStackInSlot(0).getTagCompound().getString("UUID"));
 	}
@@ -64,8 +71,10 @@ public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 	}
 
 	private void dropFreqCard() {
-		if(inv.getStackInSlot(0) == null) return;
-		EntityItem item = new EntityItem(getWorld(),this.getX(), this.getY(), this.getZ(), inv.getStackInSlot(0));
+		if (inv.getStackInSlot(0) == null) {
+			return;
+		}
+		EntityItem item = new EntityItem(getWorld(), getX(), getY(), getZ(), inv.getStackInSlot(0));
 		getWorld().spawnEntityInWorld(item);
 		inv.clearInventorySlotContents(0);
 	}

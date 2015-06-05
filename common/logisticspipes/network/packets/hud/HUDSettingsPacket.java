@@ -7,13 +7,15 @@ import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentTranslation;
 
-@Accessors(chain=true)
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+
+@Accessors(chain = true)
 public class HUDSettingsPacket extends ModernPacket {
 
 	@Getter
@@ -27,7 +29,7 @@ public class HUDSettingsPacket extends ModernPacket {
 	@Getter
 	@Setter
 	private int slot;
-	
+
 	public HUDSettingsPacket(int id) {
 		super(id);
 	}
@@ -39,12 +41,14 @@ public class HUDSettingsPacket extends ModernPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if(player.inventory.getStackInSlot(slot) == null) return;
+		if (player.inventory.getStackInSlot(slot) == null) {
+			return;
+		}
 		IHUDConfig config = new HUDConfig(player.inventory.getStackInSlot(slot));
-		switch(buttonId) {
+		switch (buttonId) {
 			case 0:
 				config.setHUDChassie(state);
-				if(config.isHUDChassie()) {
+				if (config.isHUDChassie()) {
 					player.addChatComponentMessage(new ChatComponentTranslation("lp.hud.config.chassie.enabled"));
 				} else {
 					player.addChatComponentMessage(new ChatComponentTranslation("lp.hud.config.chassie.disabled"));
@@ -52,7 +56,7 @@ public class HUDSettingsPacket extends ModernPacket {
 				break;
 			case 1:
 				config.setHUDCrafting(state);
-				if(config.isHUDCrafting()) {
+				if (config.isHUDCrafting()) {
 					player.addChatComponentMessage(new ChatComponentTranslation("lp.hud.config.crafting.enabled"));
 				} else {
 					player.addChatComponentMessage(new ChatComponentTranslation("lp.hud.config.crafting.disabled"));
@@ -60,7 +64,7 @@ public class HUDSettingsPacket extends ModernPacket {
 				break;
 			case 2:
 				config.setHUDInvSysCon(state);
-				if(config.isHUDInvSysCon()) {
+				if (config.isHUDInvSysCon()) {
 					player.addChatComponentMessage(new ChatComponentTranslation("lp.hud.config.invsyscon.enabled"));
 				} else {
 					player.addChatComponentMessage(new ChatComponentTranslation("lp.hud.config.invsyscon.disabled"));
@@ -68,7 +72,7 @@ public class HUDSettingsPacket extends ModernPacket {
 				break;
 			case 3:
 				config.setHUDPowerJunction(state);
-				if(config.isHUDPowerLevel()) {
+				if (config.isHUDPowerLevel()) {
 					player.addChatComponentMessage(new ChatComponentTranslation("lp.hud.config.powerjunction.enabled"));
 				} else {
 					player.addChatComponentMessage(new ChatComponentTranslation("lp.hud.config.powerjunction.disabled"));
@@ -76,7 +80,7 @@ public class HUDSettingsPacket extends ModernPacket {
 				break;
 			case 4:
 				config.setHUDProvider(state);
-				if(config.isHUDProvider()) {
+				if (config.isHUDProvider()) {
 					player.addChatComponentMessage(new ChatComponentTranslation("lp.hud.config.provider.enabled"));
 				} else {
 					player.addChatComponentMessage(new ChatComponentTranslation("lp.hud.config.provider.disabled"));
@@ -84,14 +88,14 @@ public class HUDSettingsPacket extends ModernPacket {
 				break;
 			case 5:
 				config.setHUDSatellite(state);
-				if(config.isHUDSatellite()) {
+				if (config.isHUDSatellite()) {
 					player.addChatComponentMessage(new ChatComponentTranslation("lp.hud.config.satellite.enabled"));
 				} else {
 					player.addChatComponentMessage(new ChatComponentTranslation("lp.hud.config.satellite.disabled"));
 				}
 				break;
 		}
-		if(player.inventoryContainer != null) {
+		if (player.inventoryContainer != null) {
 			player.inventoryContainer.detectAndSendChanges();
 		}
 	}
@@ -110,4 +114,3 @@ public class HUDSettingsPacket extends ModernPacket {
 		data.writeInt(slot);
 	}
 }
-

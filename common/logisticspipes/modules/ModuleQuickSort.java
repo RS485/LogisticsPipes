@@ -1,6 +1,5 @@
 package logisticspipes.modules;
 
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -21,11 +20,13 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.Pair;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -61,181 +62,202 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 
 	@Override
 	public void tick() {
-		if (--currentTick > 0) return;
-		if(stalled)
+		if (--currentTick > 0) {
+			return;
+		}
+		if (stalled) {
 			currentTick = stalledDelay;
-		else
+		} else {
 			currentTick = normalDelay;
-		
+		}
+
 		//Extract Item
 		IInventoryUtil invUtil = _service.getPointedInventory(true);
-		if (invUtil == null) return;
+		if (invUtil == null) {
+			return;
+		}
 
-		if(!_service.canUseEnergy(500)) {
+		if (!_service.canUseEnergy(500)) {
 			stalled = true;
 			return;
 		}
-		
-		if(invUtil instanceof SpecialInventoryHandler){
+
+		if (invUtil instanceof SpecialInventoryHandler) {
 			Map<ItemIdentifier, Integer> items = invUtil.getItemsAndCount();
-			if(lastSuceededStack >= items.size())
+			if (lastSuceededStack >= items.size()) {
 				lastSuceededStack = 0;
-			if (lastStackLookedAt >= items.size())
+			}
+			if (lastStackLookedAt >= items.size()) {
 				lastStackLookedAt = 0;
+			}
 			int lookedAt = 0;
-			for (Entry<ItemIdentifier, Integer> item :items.entrySet()) {
+			for (Entry<ItemIdentifier, Integer> item : items.entrySet()) {
 				// spool to current place
 				lookedAt++;
-				if(lookedAt <= lastStackLookedAt)
+				if (lookedAt <= lastStackLookedAt) {
 					continue;
-				
-				LinkedList<Integer> jamList =  new LinkedList<Integer>();
+				}
+
+				LinkedList<Integer> jamList = new LinkedList<Integer>();
 				Pair<Integer, SinkReply> reply = _service.hasDestination(item.getKey(), false, jamList);
 				if (reply == null) {
-					if(lastStackLookedAt == lastSuceededStack) {
+					if (lastStackLookedAt == lastSuceededStack) {
 						stalled = true;
 					}
 					lastStackLookedAt++;
 					return;
 				}
-				if(!_service.useEnergy(500)) {
+				if (!_service.useEnergy(500)) {
 					stalled = true;
 					lastStackLookedAt++;
 					return;
 				}
 				stalled = false;
-		
+
 				//send up to one stack
 				int maxItemsToSend = item.getKey().getMaxStackSize();
 				int availableItems = Math.min(maxItemsToSend, item.getValue());
-				while(reply != null) {
+				while (reply != null) {
 					int count = availableItems;
-					if(reply.getValue2().maxNumberOfItems != 0) {
+					if (reply.getValue2().maxNumberOfItems != 0) {
 						count = Math.min(count, reply.getValue2().maxNumberOfItems);
 					}
 					ItemStack stackToSend = invUtil.getMultipleItems(item.getKey(), count);
-					if(stackToSend == null || stackToSend.stackSize == 0) break;
-		
+					if (stackToSend == null || stackToSend.stackSize == 0) {
+						break;
+					}
+
 					availableItems -= stackToSend.stackSize;
 					_service.sendStack(stackToSend, reply, ItemSendMode.Fast);
-					
+
 					_service.spawnParticle(Particles.OrangeParticle, 8);
-		
-					if(availableItems <= 0) break;
-		
+
+					if (availableItems <= 0) {
+						break;
+					}
+
 					jamList.add(reply.getValue1());
 					reply = _service.hasDestination(item.getKey(), false, jamList);
 				}
-				if(availableItems > 0) { //if we didn't send maxItemsToSend, try next item next time
+				if (availableItems > 0) { //if we didn't send maxItemsToSend, try next item next time
 					lastSuceededStack = lastStackLookedAt;
 					lastStackLookedAt++;
 				} else {
 					lastSuceededStack = lastStackLookedAt - 1;
-					if(lastSuceededStack < 0)
+					if (lastSuceededStack < 0) {
 						lastSuceededStack = items.size() - 1;
+					}
 				}
 				return;
 			}
 		} else {
-			
-			if((!(invUtil instanceof SpecialInventoryHandler) && invUtil.getSizeInventory() == 0) || !_service.canUseEnergy(500)) {
+
+			if ((!(invUtil instanceof SpecialInventoryHandler) && invUtil.getSizeInventory() == 0) || !_service.canUseEnergy(500)) {
 				stalled = true;
 				return;
 			}
-			
-			if(lastSuceededStack >= invUtil.getSizeInventory())
+
+			if (lastSuceededStack >= invUtil.getSizeInventory()) {
 				lastSuceededStack = 0;
-			
+			}
+
 			//incremented at the end of the previous loop.
-			if (lastStackLookedAt >= invUtil.getSizeInventory())
+			if (lastStackLookedAt >= invUtil.getSizeInventory()) {
 				lastStackLookedAt = 0;
-			
+			}
+
 			ItemStack slot = invUtil.getStackInSlot(lastStackLookedAt);
-	
-			while(slot==null) {
+
+			while (slot == null) {
 				lastStackLookedAt++;
-				if (lastStackLookedAt >= invUtil.getSizeInventory())
+				if (lastStackLookedAt >= invUtil.getSizeInventory()) {
 					lastStackLookedAt = 0;
+				}
 				slot = invUtil.getStackInSlot(lastStackLookedAt);
-				if(lastStackLookedAt == lastSuceededStack) {
+				if (lastStackLookedAt == lastSuceededStack) {
 					stalled = true;
 					send();
 					return; // then we have been around the list without sending, halt for now
 				}
 			}
 			send();
-	
+
 			// begin duplicate code
 			List<Integer> jamList = new LinkedList<Integer>();
 			Pair<Integer, SinkReply> reply = _service.hasDestination(ItemIdentifier.get(slot), false, jamList);
 			if (reply == null) {
-				if(lastStackLookedAt == lastSuceededStack) {
+				if (lastStackLookedAt == lastSuceededStack) {
 					stalled = true;
 				}
 				lastStackLookedAt++;
 				return;
 			}
-			if(!_service.useEnergy(500)) {
+			if (!_service.useEnergy(500)) {
 				stalled = true;
 				lastStackLookedAt++;
 				return;
 			}
-			
+
 			stalled = false;
-	
+
 			//don't directly modify the stack in the inv
 			int sizePrev;
 			slot = slot.copy();
 			sizePrev = slot.stackSize;
-			boolean partialSend=false;
-			while(reply != null) {
+			boolean partialSend = false;
+			while (reply != null) {
 				int count = slot.stackSize;
-				if(reply.getValue2().maxNumberOfItems > 0) {
+				if (reply.getValue2().maxNumberOfItems > 0) {
 					count = Math.min(count, reply.getValue2().maxNumberOfItems);
 				}
 				ItemStack stackToSend = slot.splitStack(count);
-	
+
 				_service.sendStack(stackToSend, reply, ItemSendMode.Fast);
 				_service.spawnParticle(Particles.OrangeParticle, 8);
-	
-				if(slot.stackSize == 0) break;
-	
+
+				if (slot.stackSize == 0) {
+					break;
+				}
+
 				jamList.add(reply.getValue1());
 				reply = _service.hasDestination(ItemIdentifier.get(slot), false, jamList);
 			}
 			ItemStack returned = null;
 			int amountToExtract = sizePrev - slot.stackSize;
-			if(slot.stackSize > 0) {
+			if (slot.stackSize > 0) {
 				partialSend = true;
 			}
 			returned = invUtil.decrStackSize(lastStackLookedAt, amountToExtract);
-			if(returned.stackSize != amountToExtract) {
+			if (returned.stackSize != amountToExtract) {
 				throw new UnsupportedOperationException("Couldn't extract the already sended items from the inventory.");
 			}
-	
-			lastSuceededStack=lastStackLookedAt;
+
+			lastSuceededStack = lastStackLookedAt;
 			// end duplicate code
 			lastStackLookedAt++;
-			if(partialSend){
-				if (lastStackLookedAt >= invUtil.getSizeInventory())
+			if (partialSend) {
+				if (lastStackLookedAt >= invUtil.getSizeInventory()) {
 					lastStackLookedAt = 0;
-				while(lastStackLookedAt != lastSuceededStack) {
+				}
+				while (lastStackLookedAt != lastSuceededStack) {
 					ItemStack tstack = invUtil.getStackInSlot(lastStackLookedAt);
-					if(tstack != null && !slot.isItemEqual(tstack))
+					if (tstack != null && !slot.isItemEqual(tstack)) {
 						break;
+					}
 					lastStackLookedAt++;
-					if (lastStackLookedAt >= invUtil.getSizeInventory())
+					if (lastStackLookedAt >= invUtil.getSizeInventory()) {
 						lastStackLookedAt = 0;
-					
+					}
+
 				}
 			}
 		}
 	}
 
 	protected void send() {
-		if(lastPosSend != lastStackLookedAt) {
+		if (lastPosSend != lastStackLookedAt) {
 			lastPosSend = lastStackLookedAt;
-			for(EntityPlayer player: _watchingPlayer.players()) {
+			for (EntityPlayer player : _watchingPlayer.players()) {
 				sendPacketTo(player);
 			}
 		}
@@ -256,7 +278,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 	}
 
 	@Override
-	public boolean interestedInAttachedInventory() {		
+	public boolean interestedInAttachedInventory() {
 		return false;
 	}
 

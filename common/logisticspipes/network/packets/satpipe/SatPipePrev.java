@@ -5,6 +5,7 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+
 import net.minecraft.entity.player.EntityPlayer;
 
 public class SatPipePrev extends CoordinatesPacket {
@@ -34,4 +35,3 @@ public class SatPipePrev extends CoordinatesPacket {
 	}
 
 }
-

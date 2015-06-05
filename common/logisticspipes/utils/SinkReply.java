@@ -1,10 +1,9 @@
 package logisticspipes.utils;
 
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 
 public final class SinkReply {
-	
+
 	public enum FixedPriority {
 		DefaultRoute,
 		ModBasedItemSink,
@@ -18,7 +17,7 @@ public final class SinkReply {
 		ElectricBuffer,
 		ElectricManager,
 	}
-	
+
 	public enum BufferMode {
 		NONE,
 		BUFFERED,
@@ -33,7 +32,7 @@ public final class SinkReply {
 	public final int maxNumberOfItems;
 	public final BufferMode bufferMode;
 	public final IAdditionalTargetInformation addInfo;
-	
+
 	public SinkReply(FixedPriority fixedPriority, int customPriority, boolean isPassive, boolean isDefault, int energyUse, int maxNumberOfItems, IAdditionalTargetInformation addInfo) {
 		this.fixedPriority = fixedPriority;
 		this.customPriority = customPriority;
@@ -41,29 +40,29 @@ public final class SinkReply {
 		this.isDefault = isDefault;
 		this.energyUse = energyUse;
 		this.maxNumberOfItems = maxNumberOfItems;
-		this.bufferMode = BufferMode.NONE;
+		bufferMode = BufferMode.NONE;
 		this.addInfo = addInfo;
 	}
-	
+
 	public SinkReply(SinkReply base, int maxNumberOfItems) {
-		this.fixedPriority = base.fixedPriority;
-		this.customPriority = base.customPriority;
-		this.isPassive = base.isPassive;
-		this.isDefault = base.isDefault;
-		this.energyUse = base.energyUse;
+		fixedPriority = base.fixedPriority;
+		customPriority = base.customPriority;
+		isPassive = base.isPassive;
+		isDefault = base.isDefault;
+		energyUse = base.energyUse;
 		this.maxNumberOfItems = maxNumberOfItems;
-		this.bufferMode = BufferMode.NONE;
-		this.addInfo = base.addInfo;
+		bufferMode = BufferMode.NONE;
+		addInfo = base.addInfo;
 	}
-	
+
 	public SinkReply(SinkReply base, int maxNumberOfItems, BufferMode bufferMode) {
-		this.fixedPriority = base.fixedPriority;
-		this.customPriority = base.customPriority;
-		this.isPassive = base.isPassive;
-		this.isDefault = base.isDefault;
-		this.energyUse = base.energyUse;
+		fixedPriority = base.fixedPriority;
+		customPriority = base.customPriority;
+		isPassive = base.isPassive;
+		isDefault = base.isDefault;
+		energyUse = base.energyUse;
 		this.maxNumberOfItems = maxNumberOfItems;
 		this.bufferMode = bufferMode;
-		this.addInfo = base.addInfo;
+		addInfo = base.addInfo;
 	}
 }

@@ -9,36 +9,40 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+
+@Accessors(chain = true)
 public class CPipeCleanupStatus extends ModuleCoordinatesPacket {
-	
+
 	@Getter
 	@Setter
 	private boolean mode;
-	
+
 	public CPipeCleanupStatus(int id) {
 		super(id);
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new CPipeCleanupStatus(getId());
 	}
-	
+
 	@Override
 	@ClientSideOnlyMethodContent
 	public void processPacket(EntityPlayer player) {
 		final ModuleCrafter module = this.getLogisticsModule(player, ModuleCrafter.class);
-		if(module == null) return;
+		if (module == null) {
+			return;
+		}
 		module.cleanupModeIsExclude = mode;
-		if(Minecraft.getMinecraft().currentScreen instanceof GuiCraftingPipe) {
-			((GuiCraftingPipe)Minecraft.getMinecraft().currentScreen).onCleanupModeChange();
+		if (Minecraft.getMinecraft().currentScreen instanceof GuiCraftingPipe) {
+			((GuiCraftingPipe) Minecraft.getMinecraft().currentScreen).onCleanupModeChange();
 		}
 	}
 
@@ -54,4 +58,3 @@ public class CPipeCleanupStatus extends ModuleCoordinatesPacket {
 		mode = data.readBoolean();
 	}
 }
-

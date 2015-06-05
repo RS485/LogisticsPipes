@@ -7,18 +7,20 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
+
+import net.minecraft.entity.player.EntityPlayer;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class ProviderModuleMode extends ModuleCoordinatesPacket {
 
 	@Getter
 	@Setter
 	private int mode;
-	
+
 	public ProviderModuleMode(int id) {
 		super(id);
 	}
@@ -31,7 +33,9 @@ public class ProviderModuleMode extends ModuleCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final ModuleProvider module = this.getLogisticsModule(player, ModuleProvider.class);
-		if(module == null) return;
+		if (module == null) {
+			return;
+		}
 		module.setExtractionMode(mode);
 	}
 
@@ -47,4 +51,3 @@ public class ProviderModuleMode extends ModuleCoordinatesPacket {
 		mode = data.readInt();
 	}
 }
-

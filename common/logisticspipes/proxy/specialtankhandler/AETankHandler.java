@@ -5,9 +5,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import logisticspipes.interfaces.ISpecialTankAccessHandler;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.FluidIdentifier;
+
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.FluidStack;
+
 import appeng.api.AEApi;
-import appeng.api.implementations.tiles.ITileStorageMonitorable;
 import appeng.api.config.Actionable;
+import appeng.api.implementations.tiles.ITileStorageMonitorable;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridBlock;
 import appeng.api.networking.IGridHost;
@@ -16,19 +26,9 @@ import appeng.api.networking.security.IActionHost;
 import appeng.api.networking.security.MachineSource;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.IStorageMonitorable;
+import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.util.AECableType;
 import appeng.api.util.DimensionalCoord;
-import appeng.api.storage.data.IAEFluidStack;
-import logisticspipes.interfaces.ISpecialTankAccessHandler;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.FluidIdentifier;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTankInfo;
-import net.minecraftforge.fluids.IFluidHandler;
 
 public class AETankHandler implements ISpecialTankAccessHandler {
 
@@ -45,12 +45,12 @@ public class AETankHandler implements ISpecialTankAccessHandler {
 	@Override
 	public List<TileEntity> getBaseTilesFor(TileEntity tile) {
 		List<TileEntity> tiles = new ArrayList<TileEntity>(1);
-		if(tile instanceof IGridHost){
+		if (tile instanceof IGridHost) {
 			IGridHost host = (IGridHost) tile;
 			IGridNode node = host.getGridNode(ForgeDirection.UNKNOWN);
-			if(node != null){
+			if (node != null) {
 				TileEntity base = getBaseTileEntity(node);
-				if(base != null){
+				if (base != null) {
 					tiles.add(base);
 					return tiles;
 				}
@@ -64,19 +64,22 @@ public class AETankHandler implements ISpecialTankAccessHandler {
 	@Override
 	public Map<FluidIdentifier, Long> getAvailableLiquid(TileEntity tile) {
 		Map<FluidIdentifier, Long> map = new HashMap<FluidIdentifier, Long>();
-		if(tile instanceof ITileStorageMonitorable){
+		if (tile instanceof ITileStorageMonitorable) {
 			ITileStorageMonitorable mon = (ITileStorageMonitorable) tile;
-			if(mon == null)
+			if (mon == null) {
 				return map;
-			for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS){
+			}
+			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
 				MachineSource source = new MachineSource(new LPActionHost(((IGridHost) tile).getGridNode(dir)));
 				IStorageMonitorable monitor = mon.getMonitorable(dir, source);
-				if(monitor == null || monitor.getFluidInventory() == null)
+				if (monitor == null || monitor.getFluidInventory() == null) {
 					continue;
+				}
 				IMEMonitor<IAEFluidStack> fluids = monitor.getFluidInventory();
-				for(IAEFluidStack stack : fluids.getStorageList()){
-					if(SimpleServiceLocator.extraCellsProxy.canSeeFluidInNetwork(stack.getFluid()))
+				for (IAEFluidStack stack : fluids.getStorageList()) {
+					if (SimpleServiceLocator.extraCellsProxy.canSeeFluidInNetwork(stack.getFluid())) {
 						map.put(FluidIdentifier.get(stack.getFluid().getID(), stack.getTagCompound() != null ? stack.getTagCompound().getNBTTagCompoundCopy() : null), stack.getStackSize());
+					}
 				}
 				return map;
 			}
@@ -87,46 +90,55 @@ public class AETankHandler implements ISpecialTankAccessHandler {
 	@SuppressWarnings("unused")
 	@Override
 	public FluidStack drainFrom(TileEntity tile, FluidIdentifier ident, Integer amount, boolean drain) {
-		if(tile instanceof ITileStorageMonitorable){
+		if (tile instanceof ITileStorageMonitorable) {
 			ITileStorageMonitorable mon = (ITileStorageMonitorable) tile;
-			if(mon == null)
+			if (mon == null) {
 				return null;
-			for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS){
+			}
+			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
 				MachineSource source = new MachineSource(new LPActionHost(((IGridHost) tile).getGridNode(dir)));
 				IStorageMonitorable monitor = mon.getMonitorable(dir, source);
-				if(monitor == null || monitor.getFluidInventory() == null)
+				if (monitor == null || monitor.getFluidInventory() == null) {
 					continue;
+				}
 				IMEMonitor<IAEFluidStack> fluids = monitor.getFluidInventory();
 				IAEFluidStack s = AEApi.instance().storage().createFluidStack(ident.makeFluidStack(amount));
 				IAEFluidStack extracted = fluids.extractItems(s, drain ? Actionable.MODULATE : Actionable.SIMULATE, source);
-				if(extracted == null)
+				if (extracted == null) {
 					return null;
+				}
 				return extracted.getFluidStack();
 			}
 		}
 		return null;
 	}
-	
-	private TileEntity getBaseTileEntity(IGridNode node){
+
+	private TileEntity getBaseTileEntity(IGridNode node) {
 		IGrid grid = node.getGrid();
-		if(grid == null)
+		if (grid == null) {
 			return null;
+		}
 		IGridNode pivot = grid.getPivot();
-		if(pivot == null)
+		if (pivot == null) {
 			return null;
+		}
 		IGridBlock block = pivot.getGridBlock();
-		if(block == null)
+		if (block == null) {
 			return null;
+		}
 		DimensionalCoord coord = block.getLocation();
-		if(coord == null)
+		if (coord == null) {
 			return null;
+		}
 		World world = coord.getWorld();
-		if(world == null)
+		if (world == null) {
 			return null;
+		}
 		return world.getTileEntity(coord.x, coord.y, coord.z);
 	}
-	
+
 	private class LPActionHost implements IActionHost {
+
 		public IGridNode node;
 
 		public LPActionHost(IGridNode node) {
@@ -134,8 +146,7 @@ public class AETankHandler implements ISpecialTankAccessHandler {
 		}
 
 		@Override
-		public void securityBreak() {
-		}
+		public void securityBreak() {}
 
 		@Override
 		public IGridNode getGridNode(ForgeDirection paramForgeDirection) {

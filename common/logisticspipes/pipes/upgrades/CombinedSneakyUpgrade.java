@@ -22,11 +22,11 @@ public class CombinedSneakyUpgrade implements IPipeUpgrade {
 
 	@Override
 	public String[] getAllowedPipes() {
-		return new String[]{"all"};
+		return new String[] { "all" };
 	}
 
 	@Override
 	public String[] getAllowedModules() {
-		return new String[]{};
+		return new String[] {};
 	}
 }

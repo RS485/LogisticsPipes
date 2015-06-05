@@ -10,6 +10,7 @@ import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
+
 import net.minecraft.entity.player.EntityPlayer;
 
 public class ItemBufferSyncPacket extends ListSyncPacket<Triplet<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>, LPTravelingItemServer>> {
@@ -17,7 +18,7 @@ public class ItemBufferSyncPacket extends ListSyncPacket<Triplet<ItemIdentifierS
 	public ItemBufferSyncPacket(int id, int x, int y, int z) {
 		super(id, x, y, z);
 	}
-	
+
 	public ItemBufferSyncPacket(int id) {
 		super(id);
 	}
@@ -35,7 +36,9 @@ public class ItemBufferSyncPacket extends ListSyncPacket<Triplet<ItemIdentifierS
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld());
-		if(pipe == null || pipe.pipe == null || pipe.pipe.transport == null) return;
+		if (pipe == null || pipe.pipe == null || pipe.pipe.transport == null) {
+			return;
+		}
 		pipe.pipe.transport._itemBuffer.clear();
 		pipe.pipe.transport._itemBuffer.addAll(getList());
 	}

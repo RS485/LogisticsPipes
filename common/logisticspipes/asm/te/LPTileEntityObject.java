@@ -12,16 +12,16 @@ public class LPTileEntityObject {
 	public long initialised = 0;
 
 	private CacheHolder cacheHolder;
-	
+
 	public CacheHolder getCacheHolder() {
-		if(cacheHolder == null) {
+		if (cacheHolder == null) {
 			cacheHolder = new CacheHolder();
 		}
 		return cacheHolder;
 	}
-	
+
 	public void trigger(CacheTypes type) {
-		if(cacheHolder != null) {
+		if (cacheHolder != null) {
 			getCacheHolder().trigger(type);
 		}
 	}

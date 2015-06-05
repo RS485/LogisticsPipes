@@ -7,6 +7,7 @@ import logisticspipes.pipes.PipeFluidRequestLogistics;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.item.ItemIdentifier;
+
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -24,10 +25,12 @@ public class FluidGuiOrderer extends GuiOrderer {
 		boolean setItemDisplay = itemDisplay == null;
 		super.initGui();
 		buttonList.add(new GuiButton(3, guiLeft + 10, bottom - 25, 46, 20, "Refresh")); // Refresh
-		if(setItemDisplay) itemDisplay = new ItemDisplay(this, mc.fontRenderer, this, this, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[]{1,1000,16000,100}, false);
+		if (setItemDisplay) {
+			itemDisplay = new ItemDisplay(this, mc.fontRenderer, this, this, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[] { 1, 1000, 16000, 100 }, false);
+		}
 		itemDisplay.reposition(guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100);
 	}
-	
+
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
 		if (guibutton.id == 0 && itemDisplay.getSelectedItem() != null) {
@@ -37,12 +40,12 @@ public class FluidGuiOrderer extends GuiOrderer {
 			super.actionPerformed(guibutton);
 		}
 	}
-	
+
 	@Override
 	protected int getStackAmount() {
 		return 1000;
 	}
-	
+
 	@Override
 	public void refreshItems() {
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestFluidOrdererRefreshPacket.class).setInteger(dimension).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));

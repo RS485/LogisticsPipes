@@ -7,12 +7,14 @@ import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import logisticspipes.renderer.LogisticsGuiOverrenderer;
+
+import net.minecraft.entity.player.EntityPlayer;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class SlotFinderActivatePacket extends ModuleCoordinatesPacket {
 
 	@Getter
@@ -27,11 +29,11 @@ public class SlotFinderActivatePacket extends ModuleCoordinatesPacket {
 	@Getter
 	@Setter
 	private int slot;
-	
+
 	public SlotFinderActivatePacket(int id) {
 		super(id);
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new SlotFinderActivatePacket(getId());

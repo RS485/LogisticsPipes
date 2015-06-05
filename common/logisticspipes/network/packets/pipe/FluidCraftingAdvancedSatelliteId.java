@@ -3,6 +3,7 @@ package logisticspipes.network.packets.pipe;
 import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.network.abstractpackets.Integer2ModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+
 import net.minecraft.entity.player.EntityPlayer;
 
 public class FluidCraftingAdvancedSatelliteId extends Integer2ModuleCoordinatesPacket {
@@ -19,8 +20,9 @@ public class FluidCraftingAdvancedSatelliteId extends Integer2ModuleCoordinatesP
 	@Override
 	public void processPacket(EntityPlayer player) {
 		ModuleCrafter module = this.getLogisticsModule(player, ModuleCrafter.class);
-		if(module == null) return;
+		if (module == null) {
+			return;
+		}
 		module.setFluidSatelliteId(getInteger(), getInteger2());
 	}
 }
-

@@ -7,37 +7,40 @@ import java.util.concurrent.Callable;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.utils.tuples.Pair;
+
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
 
 public class QueuedTasks {
-	
+
 	@SuppressWarnings("rawtypes")
 	private static LinkedList<Callable> queue = new LinkedList<Callable>();
-	
+
 	// called on server shutdown only.
 	public static void clearAllTasks() {
-		queue.clear();
+		QueuedTasks.queue.clear();
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	public static void queueTask(Callable task) {
-		synchronized (queue) {
-			queue.add(task);
+		synchronized (QueuedTasks.queue) {
+			QueuedTasks.queue.add(task);
 		}
 	}
-	
-	@SuppressWarnings({"rawtypes" })
+
+	@SuppressWarnings({ "rawtypes" })
 	@SubscribeEvent
 	public void tickEnd(ServerTickEvent event) {
-		if(event.phase != Phase.END) return;
+		if (event.phase != Phase.END) {
+			return;
+		}
 		Callable call = null;
-		while(!queue.isEmpty()) {
-			synchronized (queue) {
-				call = queue.removeFirst();
+		while (!QueuedTasks.queue.isEmpty()) {
+			synchronized (QueuedTasks.queue) {
+				call = QueuedTasks.queue.removeFirst();
 			}
-			if(call != null) {
+			if (call != null) {
 				try {
 					call.call();
 				} catch (Exception e) {
@@ -46,12 +49,12 @@ public class QueuedTasks {
 			}
 		}
 		MainProxy.proxy.tick();
-		synchronized(LPTravelingItem.forceKeep) {
+		synchronized (LPTravelingItem.forceKeep) {
 			Iterator<Pair<Integer, Object>> iter = LPTravelingItem.forceKeep.iterator();
-			while(iter.hasNext()) {
+			while (iter.hasNext()) {
 				Pair<Integer, Object> pair = iter.next();
 				pair.setValue1(pair.getValue1() - 1);
-				if(pair.getValue1() < 0) {
+				if (pair.getValue1() < 0) {
 					iter.remove();
 				}
 			}

@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.utils.item.ItemIdentifierInventory;
+
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -26,17 +27,18 @@ public class RollingMachine implements ICraftingRecipeProvider {
 	}
 
 	private ItemStack getResult(InventoryCrafting inventorycrafting, World world) {
-		if (inventorycrafting == null)
+		if (inventorycrafting == null) {
 			return null;
+		}
 		try {
 			Class<?> c = Class.forName("mods.railcraft.common.util.crafting.RollingMachineCraftingManager");
 			Method inst = c.getMethod("getInstance");
 			Object instance = inst.invoke(null);
 			Method findMatchingRecipe = c.getMethod("findMatchingRecipe", InventoryCrafting.class, World.class);
-			return (ItemStack)findMatchingRecipe.invoke(instance, inventorycrafting, world);
+			return (ItemStack) findMatchingRecipe.invoke(instance, inventorycrafting, world);
 		} catch (Exception ex) {
 			LogisticsPipes.log.error("getResult fail");
-		}		
+		}
 		return null;
 	}
 
@@ -45,24 +47,26 @@ public class RollingMachine implements ICraftingRecipeProvider {
 			return (InventoryCrafting) getCraftMatrixMethod.invoke(tile);
 		} catch (Exception ex) {
 			LogisticsPipes.log.error("getCraftMatrix fail");
-		}		
+		}
 		return null;
 	}
 
-
 	@Override
 	public boolean importRecipe(TileEntity tile, ItemIdentifierInventory inventory) {
-		if (!tileRollingMachineClass.isInstance(tile))
+		if (!tileRollingMachineClass.isInstance(tile)) {
 			return false;
+		}
 
 		InventoryCrafting craftMatrix = getCraftMatrix(tile);
-		if (craftMatrix == null)
+		if (craftMatrix == null) {
 			return false;
+		}
 
 		ItemStack result = getResult(craftMatrix, tile.getWorldObj());
 
-		if (result == null)
+		if (result == null) {
 			return false;
+		}
 
 		inventory.setInventorySlotContents(9, result);
 
@@ -76,7 +80,7 @@ public class RollingMachine implements ICraftingRecipeProvider {
 		}
 
 		inventory.compact_first(9);
-		
+
 		return true;
 	}
 }

@@ -10,8 +10,10 @@ import java.util.TreeSet;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.bs.ICrateStorageProxy;
 import logisticspipes.utils.item.ItemIdentifier;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class CrateInventoryHandler extends SpecialInventoryHandler {
@@ -47,23 +49,24 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public Set<ItemIdentifier> getItems() {
 		Set<ItemIdentifier> result = new TreeSet<ItemIdentifier>();
-		for(ItemStack stack : _tile.getContents()) {
+		for (ItemStack stack : _tile.getContents()) {
 			result.add(ItemIdentifier.get(stack));
 		}
 		return result;
 	}
+
 	@Override
 	public Map<ItemIdentifier, Integer> getItemsAndCount() {
 		return getItemsAndCount(false);
 	}
-		
+
 	private Map<ItemIdentifier, Integer> getItemsAndCount(boolean linked) {
-		HashMap<ItemIdentifier, Integer> map = new HashMap<ItemIdentifier, Integer>((int)(_tile.getUniqueItems() * 1.5));
-		for(ItemStack stack : _tile.getContents()) {
+		HashMap<ItemIdentifier, Integer> map = new HashMap<ItemIdentifier, Integer>((int) (_tile.getUniqueItems() * 1.5));
+		for (ItemStack stack : _tile.getContents()) {
 			ItemIdentifier itemId = ItemIdentifier.get(stack);
-			int stackSize = stack.stackSize - (_hideOnePerStack?1:0);
+			int stackSize = stack.stackSize - (_hideOnePerStack ? 1 : 0);
 			Integer m = map.get(itemId);
-			if (m==null){
+			if (m == null) {
 				map.put(itemId, stackSize);
 			} else {
 				map.put(itemId, m + stackSize);
@@ -75,7 +78,9 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public ItemStack getSingleItem(ItemIdentifier itemIdent) {
 		int count = _tile.getItemCount(itemIdent.unsafeMakeNormalStack(1));
-		if (count <= (_hideOnePerStack?1:0)) return null;
+		if (count <= (_hideOnePerStack ? 1 : 0)) {
+			return null;
+		}
 		return _tile.extractItems(itemIdent.makeNormalStack(1), 1);
 	}
 
@@ -91,9 +96,9 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 			int count = _tile.getItemCount(itemIdent.unsafeMakeNormalStack(1));
 			return (count > 0);
 		}
-		for(ItemStack stack : _tile.getContents()) {
+		for (ItemStack stack : _tile.getContents()) {
 			ItemIdentifier itemId = ItemIdentifier.get(stack).getUndamaged();
-			if(itemId.equals(itemIdent)) {
+			if (itemId.equals(itemIdent)) {
 				return true;
 			}
 		}
@@ -115,11 +120,11 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	public ItemStack add(ItemStack stack, ForgeDirection from, boolean doAdd) {
 		ItemStack st = stack.copy();
 		st.stackSize = 0;
-		if(doAdd) {
+		if (doAdd) {
 			ItemStack tst = stack.copy();
 			ItemStack overflow = _tile.insertItems(tst);
 			st.stackSize = stack.stackSize;
-			if(overflow != null) {
+			if (overflow != null) {
 				st.stackSize -= overflow.stackSize;
 			}
 		} else {
@@ -138,34 +143,44 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public int getSizeInventory() {
-		if(cached == null) initCache();
+		if (cached == null) {
+			initCache();
+		}
 		return cached.size();
 	}
-	
+
 	public void initCache() {
 		Map<ItemIdentifier, Integer> map = getItemsAndCount(true);
-		cached = new LinkedList<Map.Entry<ItemIdentifier,Integer>>();
-		for(Entry<ItemIdentifier, Integer> e:map.entrySet()) {
+		cached = new LinkedList<Map.Entry<ItemIdentifier, Integer>>();
+		for (Entry<ItemIdentifier, Integer> e : map.entrySet()) {
 			cached.add(e);
 		}
 	}
 
 	@Override
 	public ItemStack getStackInSlot(int i) {
-		if(cached == null) initCache();
+		if (cached == null) {
+			initCache();
+		}
 		Entry<ItemIdentifier, Integer> entry = cached.get(i);
-		if(entry.getValue() == 0) return null;
+		if (entry.getValue() == 0) {
+			return null;
+		}
 		return entry.getKey().makeNormalStack(entry.getValue());
 	}
 
 	@Override
 	public ItemStack decrStackSize(int i, int j) {
-		if(cached == null) initCache();
+		if (cached == null) {
+			initCache();
+		}
 		Entry<ItemIdentifier, Integer> entry = cached.get(i);
 		ItemStack stack = entry.getKey().makeNormalStack(j);
 		ItemStack extracted = null;
 		int count = _tile.getItemCount(stack);
-		if (count <= (_hideOnePerStack?1:0)) return null;
+		if (count <= (_hideOnePerStack ? 1 : 0)) {
+			return null;
+		}
 		extracted = _tile.extractItems(stack, 1);
 		entry.setValue(entry.getValue() - j);
 		return extracted;

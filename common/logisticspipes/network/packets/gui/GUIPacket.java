@@ -7,12 +7,14 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
+
+import net.minecraft.entity.player.EntityPlayer;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class GUIPacket extends ModernPacket {
 
 	/**
@@ -35,11 +37,11 @@ public class GUIPacket extends ModernPacket {
 	@Getter
 	@Setter
 	private byte[] guiData;
-	
+
 	public GUIPacket(int id) {
 		super(id);
 	}
-	
+
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		guiID = data.readInt();

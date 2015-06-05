@@ -5,10 +5,12 @@ import logisticspipes.modules.ModuleFluidSupplier;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.utils.gui.DummyContainer;
-import lombok.experimental.Accessors;
+
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+import lombok.experimental.Accessors;
+
+@Accessors(chain = true)
 public class FluidSupplierSlot extends ModuleCoordinatesGuiProvider {
 
 	public FluidSupplierSlot(int id) {
@@ -27,10 +29,10 @@ public class FluidSupplierSlot extends ModuleCoordinatesGuiProvider {
 		DummyContainer dummy = new DummyContainer(player.inventory, module.getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 		//Pipe slots
-	    for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
-	    	dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
-	    }
-	    return dummy;
+		for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
+			dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
+		}
+		return dummy;
 	}
 
 	@Override

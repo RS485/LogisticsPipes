@@ -3,9 +3,6 @@ package logisticspipes.proxy.buildcraft;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.Set;
-import java.util.WeakHashMap;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
@@ -38,9 +35,7 @@ import logisticspipes.proxy.interfaces.ICraftingParts;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.ReflectionHelper;
-import logisticspipes.utils.tuples.LPPosition;
-import logisticspipes.utils.tuples.Pair;
-import lombok.SneakyThrows;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -50,7 +45,12 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+
 import net.minecraftforge.common.util.ForgeDirection;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 import buildcraft.BuildCraftEnergy;
 import buildcraft.BuildCraftSilicon;
 import buildcraft.BuildCraftTransport;
@@ -76,8 +76,7 @@ import buildcraft.transport.render.FacadeRenderHelper;
 import buildcraft.transport.render.FakeBlock;
 import buildcraft.transport.render.PipeRendererTESR;
 import buildcraft.transport.render.PipeRendererWorld;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import lombok.SneakyThrows;
 
 public class BuildCraftProxy implements IBCProxy {
 
@@ -87,28 +86,28 @@ public class BuildCraftProxy implements IBCProxy {
 	public static ITriggerInternal LogisticsHasDestinationTrigger;
 	public static IActionInternal LogisticsDisableAction;
 	public static IActionInternal LogisticsRobotRoutingAction;
-	
+
 	private Method canPipeConnect;
 
 	public PipeType logisticsPipeType;
-	
+
 	public BuildCraftProxy() {
 		String BCVersion = null;
 		try {
 			Field versionField = buildcraft.core.Version.class.getDeclaredField("VERSION");
 			BCVersion = (String) versionField.get(null);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if(BCVersion != null && !BCVersion.equals("@VERSION@")) {
-			if(!BCVersion.startsWith("6.") || BCVersion.startsWith("6.0") || BCVersion.startsWith("6.1") || BCVersion.startsWith("6.2") || BCVersion.startsWith("6.3")) {
+		if (BCVersion != null && !BCVersion.equals("@VERSION@")) {
+			if (!BCVersion.startsWith("6.") || BCVersion.startsWith("6.0") || BCVersion.startsWith("6.1") || BCVersion.startsWith("6.2") || BCVersion.startsWith("6.3")) {
 				throw new VersionNotSupportedException("BC", BCVersion, "6.4.0", "");
 			}
 		} else {
 			LogisticsPipes.log.info("Couldn't check the BC Version.");
 		}
 	}
-	
+
 	@Override
 	public void resetItemRotation() {
 		try {
@@ -117,13 +116,13 @@ public class BuildCraftProxy implements IBCProxy {
 			f.setAccessible(true);
 			EntityItem item = (EntityItem) f.get(renderer);
 			item.hoverStart = 0;
-		} catch(NoSuchFieldException e) {
+		} catch (NoSuchFieldException e) {
 			e.printStackTrace();
-		} catch(SecurityException e) {
+		} catch (SecurityException e) {
 			e.printStackTrace();
-		} catch(IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
-		} catch(IllegalAccessException e) {
+		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		}
 	}
@@ -140,15 +139,15 @@ public class BuildCraftProxy implements IBCProxy {
 
 	@Override
 	public void initProxy() {
-		
+
 		RedstoneBoardRegistry.instance.registerBoardClass(LogisticsRoutingBoardRobotNBT.instance, 10);
 		RobotManager.registerAIRobot(LogisticsRoutingBoardRobot.class, "boardLogisticsRoutingRobot", "logisticspipes.proxy.buildcraft.robots.boards.LogisticsRoutingBoardRobot");
 		SimpleServiceLocator.specialpipeconnection.registerHandler(LPRobotConnectionControl.instance);
-		
+
 		try {
-			canPipeConnect = TileGenericPipe.class.getDeclaredMethod("canPipeConnect", new Class[]{TileEntity.class, ForgeDirection.class});
+			canPipeConnect = TileGenericPipe.class.getDeclaredMethod("canPipeConnect", new Class[] { TileEntity.class, ForgeDirection.class });
 			canPipeConnect.setAccessible(true);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -156,15 +155,18 @@ public class BuildCraftProxy implements IBCProxy {
 	@Override
 	public boolean checkForPipeConnection(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe) {
 		if (with instanceof TileGenericPipe) {
-			if (ReflectionHelper.invokePrivateMethodCatched(Boolean.class, TileGenericPipe.class, with, "hasBlockingPluggable", new Class[]{ForgeDirection.class}, new Object[]{side.getOpposite()}).booleanValue()) //((TileGenericPipe) with).hasBlockingPluggable(side.getOpposite())
+			if (ReflectionHelper.invokePrivateMethodCatched(Boolean.class, TileGenericPipe.class, with, "hasBlockingPluggable", new Class[] { ForgeDirection.class }, new Object[] { side.getOpposite() }).booleanValue()) {
 				return false;
+			}
 			Pipe<?> otherPipe = ((TileGenericPipe) with).pipe;
 
-			if (!BlockGenericPipe.isValid(otherPipe))
+			if (!BlockGenericPipe.isValid(otherPipe)) {
 				return false;
-			
-			if(!(otherPipe.transport instanceof PipeTransportItems))
+			}
+
+			if (!(otherPipe.transport instanceof PipeTransportItems)) {
 				return false;
+			}
 		}
 		return true;
 	}
@@ -173,44 +175,70 @@ public class BuildCraftProxy implements IBCProxy {
 	public IConnectionOverrideResult checkConnectionOverride(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe) {
 		if (with instanceof IPipeConnection) {
 			IPipeConnection.ConnectOverride override = ((IPipeConnection) with).overridePipeConnection(PipeType.ITEM, side.getOpposite());
-			if(override == IPipeConnection.ConnectOverride.DISCONNECT) {
+			if (override == IPipeConnection.ConnectOverride.DISCONNECT) {
 				//if it doesn't want to connect to item pipes, how about fluids?
-				if(pipe.pipe.transport instanceof PipeFluidTransportLogistics || pipe.pipe instanceof PipeItemsFluidSupplier) {
+				if (pipe.pipe.transport instanceof PipeFluidTransportLogistics || pipe.pipe instanceof PipeItemsFluidSupplier) {
 					override = ((IPipeConnection) with).overridePipeConnection(PipeType.FLUID, side.getOpposite());
 				}
-				if(override == IPipeConnection.ConnectOverride.DISCONNECT) {
+				if (override == IPipeConnection.ConnectOverride.DISCONNECT) {
 					//nope, maybe you'd like some BC power?
-					if(pipe.pipe.getUpgradeManager().hasRFPowerSupplierUpgrade()) {
+					if (pipe.pipe.getUpgradeManager().hasRFPowerSupplierUpgrade()) {
 						override = ((IPipeConnection) with).overridePipeConnection(PipeType.POWER, side.getOpposite());
 					}
 				}
 			}
 			if (override == IPipeConnection.ConnectOverride.DISCONNECT) {
 				return new IConnectionOverrideResult() {
-					@Override public boolean forceConnect() {return false;}
-					@Override public boolean forceDisconnect() {return true;}
+
+					@Override
+					public boolean forceConnect() {
+						return false;
+					}
+
+					@Override
+					public boolean forceDisconnect() {
+						return true;
+					}
 				};
 			}
-			
-			if(override == IPipeConnection.ConnectOverride.CONNECT) {
+
+			if (override == IPipeConnection.ConnectOverride.CONNECT) {
 				return new IConnectionOverrideResult() {
-					@Override public boolean forceConnect() {return true;}
-					@Override public boolean forceDisconnect() {return false;}
+
+					@Override
+					public boolean forceConnect() {
+						return true;
+					}
+
+					@Override
+					public boolean forceDisconnect() {
+						return false;
+					}
 				};
 			}
 		}
 		return new IConnectionOverrideResult() {
-			@Override public boolean forceConnect() {return false;}
-			@Override public boolean forceDisconnect() {return false;}
+
+			@Override
+			public boolean forceConnect() {
+				return false;
+			}
+
+			@Override
+			public boolean forceDisconnect() {
+				return false;
+			}
 		};
 	}
 
 	@Override
 	public boolean canPipeConnect(TileEntity pipe, TileEntity with, ForgeDirection side) {
-		if(canPipeConnect == null) {
+		if (canPipeConnect == null) {
 			initProxy();
 		}
-		if(!(pipe instanceof TileGenericPipe)) throw new IllegalArgumentException();
+		if (!(pipe instanceof TileGenericPipe)) {
+			throw new IllegalArgumentException();
+		}
 		try {
 			return (Boolean) canPipeConnect.invoke(pipe, with, side);
 		} catch (IllegalAccessException e) {
@@ -235,8 +263,8 @@ public class BuildCraftProxy implements IBCProxy {
 
 	@Override
 	public Object getLPPipeType() {
-		if(logisticsPipeType == null) {
-			logisticsPipeType = net.minecraftforge.common.util.EnumHelper.addEnum(PipeType.class, "LOGISTICS", new Class<?>[]{}, new Object[]{});
+		if (logisticsPipeType == null) {
+			logisticsPipeType = net.minecraftforge.common.util.EnumHelper.addEnum(PipeType.class, "LOGISTICS", new Class<?>[] {}, new Object[] {});
 		}
 		return logisticsPipeType;
 	}
@@ -246,18 +274,19 @@ public class BuildCraftProxy implements IBCProxy {
 		StatementManager.registerTriggerProvider(new LogisticsTriggerProvider());
 		StatementManager.registerActionProvider(new LogisticsActionProvider());
 		/* Triggers */
-		LogisticsFailedTrigger = new TriggerSupplierFailed();
-		LogisticsNeedPowerTrigger = new TriggerNeedsPower();
-		LogisticsCraftingTrigger = new TriggerCrafting();
-		LogisticsHasDestinationTrigger = new TriggerHasDestination();
+		BuildCraftProxy.LogisticsFailedTrigger = new TriggerSupplierFailed();
+		BuildCraftProxy.LogisticsNeedPowerTrigger = new TriggerNeedsPower();
+		BuildCraftProxy.LogisticsCraftingTrigger = new TriggerCrafting();
+		BuildCraftProxy.LogisticsHasDestinationTrigger = new TriggerHasDestination();
 		/* Actions */
-		LogisticsDisableAction = new ActionDisableLogistics();
-		LogisticsRobotRoutingAction = new ActionRobotRoutingLogistics();
+		BuildCraftProxy.LogisticsDisableAction = new ActionDisableLogistics();
+		BuildCraftProxy.LogisticsRobotRoutingAction = new ActionRobotRoutingLogistics();
 	}
 
 	@Override
 	public ICraftingParts getRecipeParts() {
 		return new ICraftingParts() {
+
 			@Override
 			public ItemStack getChipTear1() {
 				return new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1);
@@ -349,32 +378,32 @@ public class BuildCraftProxy implements IBCProxy {
 	}
 
 	@Override
-	@SneakyThrows({NoSuchFieldException.class, SecurityException.class, IllegalArgumentException.class, IllegalAccessException.class})
+	@SneakyThrows({ NoSuchFieldException.class, SecurityException.class, IllegalArgumentException.class, IllegalAccessException.class })
 	public IBCTilePart getBCTilePart(LogisticsTileGenericPipe pipe) {
 		return new LPBCTileGenericPipe(new LPBCPipe(new LPBCPipeTransportsItems(pipe), pipe), pipe);
 	}
 
 	@Override
-	@SneakyThrows({SecurityException.class, IllegalAccessException.class, IllegalArgumentException.class, NoSuchFieldException.class})
+	@SneakyThrows({ SecurityException.class, IllegalAccessException.class, IllegalArgumentException.class, NoSuchFieldException.class })
 	public IBCClickResult handleBCClickOnPipe(World world, int x, int y, int z, EntityPlayer player, int side, float xOffset, float yOffset, float zOffset, CoreUnroutedPipe pipe) {
 		Object trace = BuildCraftTransport.genericPipeBlock.doRayTrace(world, x, y, z, player);
 		String type = "null";
-		if(trace != null) {
+		if (trace != null) {
 			Enum<?> hitPart = ReflectionHelper.getPrivateField(Enum.class, trace.getClass(), "hitPart", trace);
-			if(hitPart != null) {
+			if (hitPart != null) {
 				type = hitPart.name();
 			}
 		}
-		if("Pluggable".equals(type)) {
+		if ("Pluggable".equals(type)) {
 			pipe.container.tilePart.disablePluggableAccess();
 		}
 		final boolean result = BuildCraftTransport.genericPipeBlock.onBlockActivated(world, x, y, z, player, side, xOffset, yOffset, zOffset);
-		if("Pluggable".equals(type)) {
+		if ("Pluggable".equals(type)) {
 			pipe.container.tilePart.reenablePluggableAccess();
 		}
 		world.notifyBlocksOfNeighborChange(x, y, z, LogisticsPipes.LogisticsPipeBlock); //Again because not all changes have been applied before the call inside the BC method is made.
 		boolean block = false;
-		if(!result) {
+		if (!result) {
 			ItemStack currentItem = player.getCurrentEquippedItem();
 			if (currentItem != null) {
 				if (currentItem.getItem() == Items.sign) {
@@ -390,6 +419,7 @@ public class BuildCraftProxy implements IBCProxy {
 		}
 		final boolean fBlock = block;
 		return new IBCClickResult() {
+
 			@Override
 			public boolean handled() {
 				return result;
@@ -398,7 +428,8 @@ public class BuildCraftProxy implements IBCProxy {
 			@Override
 			public boolean blocked() {
 				return fBlock;
-			}};
+			}
+		};
 	}
 
 	@Override
@@ -421,18 +452,19 @@ public class BuildCraftProxy implements IBCProxy {
 		final PipeRendererTESR renderer = new PipeRendererTESR();
 		renderer.func_147497_a(TileEntityRendererDispatcher.instance);
 		return new IBCRenderTESR() {
+
 			@Override
 			@SneakyThrows(Exception.class)
 			public void renderWires(LogisticsTileGenericPipe pipe, double x, double y, double z) {
 				TileGenericPipe tgPipe = (TileGenericPipe) pipe.tilePart.getOriginal();
-				ReflectionHelper.invokePrivateMethod(Object.class, PipeRendererTESR.class, renderer, "renderGatesWires", new Class[]{TileGenericPipe.class, double.class, double.class, double.class}, new Object[]{tgPipe, x, y, z});
+				ReflectionHelper.invokePrivateMethod(Object.class, PipeRendererTESR.class, renderer, "renderGatesWires", new Class[] { TileGenericPipe.class, double.class, double.class, double.class }, new Object[] { tgPipe, x, y, z });
 			}
 
 			@Override
 			@SneakyThrows(Exception.class)
 			public void renderGates(LogisticsTileGenericPipe pipe, double x, double y, double z) {
 				TileGenericPipe tgPipe = (TileGenericPipe) pipe.tilePart.getOriginal();
-				ReflectionHelper.invokePrivateMethod(Object.class, PipeRendererTESR.class, renderer, "renderGates", new Class[]{TileGenericPipe.class, double.class, double.class, double.class}, new Object[]{tgPipe, x, y, z});
+				ReflectionHelper.invokePrivateMethod(Object.class, PipeRendererTESR.class, renderer, "renderGates", new Class[] { TileGenericPipe.class, double.class, double.class, double.class }, new Object[] { tgPipe, x, y, z });
 			}
 		};
 	}

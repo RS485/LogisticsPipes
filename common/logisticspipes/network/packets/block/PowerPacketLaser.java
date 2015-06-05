@@ -7,15 +7,18 @@ import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+
+import net.minecraft.entity.player.EntityPlayer;
+
+import net.minecraftforge.common.util.ForgeDirection;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.common.util.ForgeDirection;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class PowerPacketLaser extends CoordinatesPacket {
-	
+
 	public PowerPacketLaser(int id) {
 		super(id);
 	}
@@ -39,7 +42,7 @@ public class PowerPacketLaser extends CoordinatesPacket {
 	@Getter
 	@Setter
 	private float length;
-	
+
 	@Getter
 	@Setter
 	private boolean remove = false;
@@ -54,17 +57,17 @@ public class PowerPacketLaser extends CoordinatesPacket {
 		renderBall = data.readBoolean();
 		remove = data.readBoolean();
 	}
-	
+
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe tile = this.getPipe(player.getEntityWorld());
-		if(remove) {
+		if (remove) {
 			tile.removeLaser(dir, getColor(), isRenderBall());
 		} else {
 			tile.addLaser(dir, getLength(), getColor(), isReverse(), isRenderBall());
 		}
 	}
-	
+
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
 		super.writeData(data);
@@ -75,7 +78,7 @@ public class PowerPacketLaser extends CoordinatesPacket {
 		data.writeBoolean(renderBall);
 		data.writeBoolean(remove);
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new PowerPacketLaser(getId());

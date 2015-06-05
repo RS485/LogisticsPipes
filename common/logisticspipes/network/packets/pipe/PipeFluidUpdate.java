@@ -10,38 +10,41 @@ import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.transport.PipeFluidTransportLogistics;
+
+import net.minecraft.entity.player.EntityPlayer;
+
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.FluidStack;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.FluidStack;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class PipeFluidUpdate extends CoordinatesPacket {
 
 	public PipeFluidUpdate(int id) {
 		super(id);
 	}
 
-	@Getter(value=AccessLevel.PRIVATE)
+	@Getter(value = AccessLevel.PRIVATE)
 	@Setter
 	private FluidStack[] renderCache = new FluidStack[ForgeDirection.values().length];
 
-	@Getter(value=AccessLevel.PRIVATE)
+	@Getter(value = AccessLevel.PRIVATE)
 	@Setter
 	private BitSet delta;
 
-	@Getter(value=AccessLevel.PRIVATE)
-	@Setter(value=AccessLevel.PRIVATE)
+	@Getter(value = AccessLevel.PRIVATE)
+	@Setter(value = AccessLevel.PRIVATE)
 	private DataInputStream dataStream;
-	
+
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);
 		delta = data.readBitSet();
-		this.setDataStream(data);
+		setDataStream(data);
 	}
 
 	@Override
@@ -82,32 +85,36 @@ public class PipeFluidUpdate extends CoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if (pipe == null || pipe.pipe == null) return;
-		if (!(pipe.pipe.transport instanceof PipeFluidTransportLogistics)) return;
+		if (pipe == null || pipe.pipe == null) {
+			return;
+		}
+		if (!(pipe.pipe.transport instanceof PipeFluidTransportLogistics)) {
+			return;
+		}
 		renderCache = ((PipeFluidTransportLogistics) pipe.pipe.transport).renderCache;
 		try {
 			for (ForgeDirection dir : ForgeDirection.values()) {
 				if (renderCache[dir.ordinal()] == null) {
 					continue;
 				}
-				
+
 				if (delta.get(dir.ordinal() * 3 + 0)) {
 					//FIXME:handle NBT
-					renderCache[dir.ordinal()]=new FluidStack(getDataStream().readShort(),renderCache[dir.ordinal()].amount);
+					renderCache[dir.ordinal()] = new FluidStack(getDataStream().readShort(), renderCache[dir.ordinal()].amount);
 				}
 				if (delta.get(dir.ordinal() * 3 + 1)) {
 					//FIXME:handle NBT
-					renderCache[dir.ordinal()]= new FluidStack(renderCache[dir.ordinal()].fluidID, renderCache[dir.ordinal()].amount);
+					renderCache[dir.ordinal()] = new FluidStack(renderCache[dir.ordinal()].fluidID, renderCache[dir.ordinal()].amount);
 				}
 				if (delta.get(dir.ordinal() * 3 + 2)) {
-					if(dir != ForgeDirection.UNKNOWN) {
+					if (dir != ForgeDirection.UNKNOWN) {
 						renderCache[dir.ordinal()].amount = Math.min(((PipeFluidTransportLogistics) pipe.pipe.transport).getSideCapacity(), getDataStream().readShort());
 					} else {
 						renderCache[dir.ordinal()].amount = Math.min(((PipeFluidTransportLogistics) pipe.pipe.transport).getInnerCapacity(), getDataStream().readShort());
 					}
 				}
 			}
-		} catch(IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}

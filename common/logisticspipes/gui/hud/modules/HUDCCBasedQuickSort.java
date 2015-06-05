@@ -5,17 +5,19 @@ import java.util.List;
 import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.modules.ModuleCCBasedQuickSort;
+
 import net.minecraft.client.Minecraft;
+
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class HUDCCBasedQuickSort implements IHUDModuleRenderer {
-	
+
 	private final ModuleCCBasedQuickSort module;
-	
+
 	public HUDCCBasedQuickSort(ModuleCCBasedQuickSort module) {
 		this.module = module;
 	}
-	
+
 	@Override
 	public void renderContent(boolean shifted) {
 		Minecraft mc = FMLClientHandler.instance().getClient();

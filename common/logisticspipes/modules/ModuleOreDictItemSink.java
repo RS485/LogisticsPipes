@@ -1,6 +1,5 @@
 package logisticspipes.modules;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -16,7 +15,6 @@ import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
-import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
@@ -33,6 +31,7 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -40,11 +39,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
+
 import net.minecraftforge.oredict.OreDictionary;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
+
 	public final List<String> oreList = new LinkedList<String>();
 	//map of Item:<set of damagevalues>, empty set if wildcard damage
 	private Map<Item, Set<Integer>> oreItemIdMap;
@@ -59,27 +61,31 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 	@Override
 	public void registerPosition(ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);
-		_sinkReply = new SinkReply(FixedPriority.OreDictItemSink, 0, true, false, 5, 0, new ChassiTargetInformation(this.getPositionInt()));
+		_sinkReply = new SinkReply(FixedPriority.OreDictItemSink, 0, true, false, 5, 0, new ChassiTargetInformation(getPositionInt()));
 	}
-	
+
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
-		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
-		if(oreItemIdMap == null) {
+		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
+			return null;
+		}
+		if (oreItemIdMap == null) {
 			buildOreItemIdMap();
 		}
 		Set<Integer> damageSet = oreItemIdMap.get(item.item);
-		if(damageSet == null)
+		if (damageSet == null) {
 			return null;
-		if(damageSet.isEmpty() || damageSet.contains(item.itemDamage))
+		}
+		if (damageSet.isEmpty() || damageSet.contains(item.itemDamage)) {
 			return _sinkReply;
+		}
 		return null;
 	}
 
 	@Override
 	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
 		NBTTagCompound nbt = new NBTTagCompound();
-		this.writeToNBT(nbt);
+		writeToNBT(nbt);
 		return NewGuiHandler.getGui(OreDictItemSinkModuleSlot.class).setNbt(nbt);
 	}
 
@@ -89,30 +95,33 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 	}
 
 	public List<ItemIdentifierStack> getHudItemList() {
-		if(oreItemIdMap == null) {
+		if (oreItemIdMap == null) {
 			buildOreItemIdMap();
 		}
 		return oreHudList;
 	}
 
 	@Override
-	public LogisticsModule getSubModule(int slot) {return null;}
+	public LogisticsModule getSubModule(int slot) {
+		return null;
+	}
 
 	private void buildOreItemIdMap() {
 		oreItemIdMap = new HashMap<Item, Set<Integer>>();
 		oreHudList = new ArrayList<ItemIdentifierStack>(oreList.size());
-		for(String orename : oreList) {
+		for (String orename : oreList) {
 			List<ItemStack> items = OreDictionary.getOres(orename);
 			ItemStack stackForHud = null;
-			for(ItemStack stack:items) {
-				if(stack != null) {
-					if(stackForHud == null)
+			for (ItemStack stack : items) {
+				if (stack != null) {
+					if (stackForHud == null) {
 						stackForHud = stack;
-					if(stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+					}
+					if (stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
 						oreItemIdMap.put(stack.getItem(), new TreeSet<Integer>());
 					} else {
 						Set<Integer> damageSet = oreItemIdMap.get(stack.getItem());
-						if(damageSet == null) {
+						if (damageSet == null) {
 							damageSet = new TreeSet<Integer>();
 							damageSet.add(stack.getItemDamage());
 							oreItemIdMap.put(stack.getItem(), damageSet);
@@ -122,10 +131,11 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 					}
 				}
 			}
-			if(stackForHud != null) {
+			if (stackForHud != null) {
 				ItemStack t = stackForHud.copy();
-				if(t.getItemDamage() == OreDictionary.WILDCARD_VALUE)
+				if (t.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
 					t.setItemDamage(0);
+				}
 				oreHudList.add(new ItemIdentifierStack(ItemIdentifier.get(t), 1));
 			} else {
 				oreHudList.add(new ItemIdentifierStack(ItemIdentifier.get(Item.getItemFromBlock(Blocks.fire), 0, null), 1));
@@ -137,10 +147,11 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		oreList.clear();
 		int limit = nbttagcompound.getInteger("listSize");
-		for(int i = 0; i < limit; i++) {
+		for (int i = 0; i < limit; i++) {
 			String oreName = nbttagcompound.getString("Ore" + i);
-			if(!oreName.equals(""))
+			if (!oreName.equals("")) {
 				oreList.add(nbttagcompound.getString("Ore" + i));
+			}
 		}
 		oreItemIdMap = null;
 	}
@@ -148,7 +159,7 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		nbttagcompound.setInteger("listSize", oreList.size());
-		for(int i = 0; i < oreList.size(); i++) {
+		for (int i = 0; i < oreList.size(); i++) {
 			nbttagcompound.setString("Ore" + i, oreList.get(i));
 		}
 	}
@@ -188,7 +199,7 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 	}
 
 	public void OreListChanged() {
-		if(MainProxy.isServer(_world.getWorld())) {
+		if (MainProxy.isServer(_world.getWorld())) {
 			NBTTagCompound nbt = new NBTTagCompound();
 			writeToNBT(nbt);
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(OreDictItemSinkList.class).setTag(nbt).setModulePos(this), localModeWatchers);
@@ -203,6 +214,7 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 	public IHUDModuleRenderer getHUDRenderer() {
 		return HUD;
 	}
+
 	@Override
 	public boolean hasGenericInterests() {
 		return true;

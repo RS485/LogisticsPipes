@@ -1,7 +1,7 @@
-/** 
+/**
  * Copyright (c) Krapht, 2011
  * 
- * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public 
+ * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
@@ -39,7 +39,6 @@ import logisticspipes.proxy.computers.interfaces.CCQueued;
 import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.request.ICraftingTemplate;
 import logisticspipes.request.IPromise;
-import logisticspipes.request.ItemCraftingTemplate;
 import logisticspipes.request.RequestTree;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.request.resources.IResource;
@@ -47,32 +46,33 @@ import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.routing.order.LogisticsItemOrderManager;
 import logisticspipes.routing.order.LogisticsOrder;
-import logisticspipes.routing.order.LogisticsOrderManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.IHavePriority;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
+
 import cpw.mods.fml.client.FMLClientHandler;
 
 @CCType(name = "LogisticsPipes:Crafting")
 public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraftItems, IRequireReliableTransport, IHeadUpDisplayRendererProvider, IChangeListener, IOrderManagerContentReceiver, IHavePriority {
 
 	protected ModuleCrafter craftingModule;
-	
+
 	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
 	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<ItemIdentifierStack>();
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	private final HUDCrafting HUD = new HUDCrafting(this);
-	
+
 	private boolean init = false;
 	private boolean doContentUpdate = true;
-	
+
 	public PipeItemsCraftingLogistics(Item item) {
 		super(item);
 		// module still relies on this for some code
@@ -87,10 +87,10 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		craftingModule.clearCache();
 		super.onNeighborBlockChange(blockId);
 	}
-	
+
 	@Override
 	public void onAllowedRemoval() {
-		while(_orderItemManager.hasOrders(ResourceType.CRAFTING)) {
+		while (_orderItemManager.hasOrders(ResourceType.CRAFTING)) {
 			_orderItemManager.sendFailed();
 		}
 	}
@@ -98,12 +98,12 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public void enableUpdateRequest() {
 		init = false;
 	}
-	
+
 	@Override
 	public void ignoreDisableUpdateEntity() {
-		if(!init) {
-			if(MainProxy.isClient(getWorld())) {
-				if(FMLClientHandler.instance().getClient() != null && FMLClientHandler.instance().getClient().thePlayer != null && FMLClientHandler.instance().getClient().thePlayer.sendQueue != null){
+		if (!init) {
+			if (MainProxy.isClient(getWorld())) {
+				if (FMLClientHandler.instance().getClient() != null && FMLClientHandler.instance().getClient().thePlayer != null && FMLClientHandler.instance().getClient().thePlayer.sendQueue != null) {
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestCraftingPipeUpdatePacket.class).setModulePos(craftingModule));
 				}
 			}
@@ -125,10 +125,9 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		return Textures.LOGISTICSPIPE_CRAFTER_TEXTURE;
 	}
 
-	
 	@Override
 	public void canProvide(RequestTreeNode tree, RequestTree root, List<IFilter> filters) {
-		if (!isEnabled()){
+		if (!isEnabled()) {
 			return;
 		}
 		craftingModule.canProvide(tree, root, filters);
@@ -137,11 +136,11 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 	@Override
 	public ICraftingTemplate addCrafting(IResource toCraft) {
-		
-		if (!isEnabled()){
+
+		if (!isEnabled()) {
 			return null;
-		}		
-		
+		}
+
 		return craftingModule.addCrafting(toCraft);
 	}
 
@@ -151,14 +150,12 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 
 	@Override
-	public void registerExtras(IPromise promise) {		
+	public void registerExtras(IPromise promise) {
 		craftingModule.registerExtras(promise);
 	}
 
-	
-	
 	@Override
-	public void getAllItems(Map<ItemIdentifier, Integer> list,List<IFilter> filters) {
+	public void getAllItems(Map<ItemIdentifier, Integer> list, List<IFilter> filters) {
 		craftingModule.getAllItems(list, filters);
 	}
 
@@ -166,10 +163,12 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public boolean canCraft(IResource toCraft) {
 		return craftingModule.canCraft(toCraft);
 	}
+
 	@Override
 	public List<ItemIdentifierStack> getCraftedItems() {
 		return craftingModule.getCraftedItems();
 	}
+
 	@Override
 	public ModuleCrafter getLogisticsModule() {
 		return craftingModule;
@@ -179,7 +178,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public ItemSendMode getItemSendMode() {
 		return ItemSendMode.Normal;
 	}
-	
+
 	@Override
 	public int getTodo() {
 		return _orderItemManager.totalAmountCountInAllOrders();
@@ -197,10 +196,10 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 	@Override
 	public void playerStartWatching(EntityPlayer player, int mode) {
-		if(mode == 1) {
+		if (mode == 1) {
 			localModeWatchers.add(player);
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererManagerContent.class).setIdentList(oldList).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), player);
-			this.craftingModule.startWatching(player);
+			craftingModule.startWatching(player);
 		} else {
 			super.playerStartWatching(player, mode);
 		}
@@ -210,7 +209,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public void playerStopWatching(EntityPlayer player, int mode) {
 		super.playerStopWatching(player, mode);
 		localModeWatchers.remove(player);
-		this.craftingModule.stopWatching(player);
+		craftingModule.stopWatching(player);
 	}
 
 	@Override
@@ -220,8 +219,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 	private void checkContentUpdate() {
 		doContentUpdate = false;
-		LinkedList<ItemIdentifierStack> all = _orderItemManager.getContentList(this.getWorld());
-		if(!oldList.equals(all)) {
+		LinkedList<ItemIdentifierStack> all = _orderItemManager.getContentList(getWorld());
+		if (!oldList.equals(all)) {
 			oldList.clear();
 			oldList.addAll(all);
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(OrdererManagerContent.class).setIdentList(all).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
@@ -238,14 +237,14 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public IHeadUpDisplayRenderer getRenderer() {
 		return HUD;
 	}
-	
+
 	@Override
 	public double getLoadFactor() {
-		return (_orderItemManager.totalAmountCountInAllOrders()+63.0)/64.0;
+		return (_orderItemManager.totalAmountCountInAllOrders() + 63.0) / 64.0;
 	}
-	
+
 	/* ComputerCraftCommands */
-	@CCCommand(description="Imports the crafting recipe from the connected machine/crafter")
+	@CCCommand(description = "Imports the crafting recipe from the connected machine/crafter")
 	@CCQueued()
 	public void reimport() {
 		craftingModule.importFromCraftingTable(null);
@@ -260,7 +259,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public int getPriority() {
 		return craftingModule.getPriority();
 	}
-	
+
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
@@ -300,10 +299,10 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public IInventory getCleanupInventory() {
 		return craftingModule.getCleanupInventory();
 	}
-	
+
 	public boolean hasCraftingSign() {
-		for(int i=0;i<6;i++) {
-			if(signItem[i] instanceof CraftingPipeSign) {
+		for (int i = 0; i < 6; i++) {
+			if (signItem[i] instanceof CraftingPipeSign) {
 				return true;
 			}
 		}

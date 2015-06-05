@@ -15,8 +15,17 @@ public class FakePlayer extends EntityPlayer {
 		posY = from.yCoord + 1;
 		posZ = from.zCoord;
 	}
-	
-	@Override public void addChatMessage(IChatComponent c) {}
-	@Override public boolean canCommandSenderUseCommand(int i, String s) {return false;}
-	@Override public ChunkCoordinates getPlayerCoordinates() {return null;}	
+
+	@Override
+	public void addChatMessage(IChatComponent c) {}
+
+	@Override
+	public boolean canCommandSenderUseCommand(int i, String s) {
+		return false;
+	}
+
+	@Override
+	public ChunkCoordinates getPlayerCoordinates() {
+		return null;
+	}
 }

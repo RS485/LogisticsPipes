@@ -21,6 +21,7 @@ public enum MinecraftColor {
 	ORANGE(0xffE69E34),
 	WHITE(0xffffffff),
 	BLANK(0x00000000);
+
 	private final int colorCode;
 
 	MinecraftColor(int colorCode) {
@@ -41,17 +42,23 @@ public enum MinecraftColor {
 	}
 
 	public ItemStack getItemStack() {
-		if (this == BLANK) return null;
+		if (this == BLANK) {
+			return null;
+		}
 		return new ItemStack(Items.dye, 1, ordinal());
 	}
 
 	public MinecraftColor getNext() {
-		if (this == BLANK) return BLACK;
+		if (this == BLANK) {
+			return BLACK;
+		}
 		return MinecraftColor.values()[ordinal() + 1];
 	}
 
 	public MinecraftColor getPrev() {
-		if (this == BLACK) return BLANK;
+		if (this == BLACK) {
+			return BLANK;
+		}
 		return MinecraftColor.values()[ordinal() - 1];
 	}
 }

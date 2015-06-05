@@ -22,9 +22,11 @@ import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Triplet;
+
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
+
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRoutedItem {
@@ -44,15 +46,20 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 
 	@Override
 	public TransportLayer getTransportLayer() {
-		if (this._transportLayer == null){
+		if (_transportLayer == null) {
 			_transportLayer = new TransportLayer() {
-				@Override public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection blocked) {
+
+				@Override
+				public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection blocked) {
 					ForgeDirection pointed = getPointedOrientation();
-					if(blocked != null && blocked.equals(pointed))
+					if (blocked != null && blocked.equals(pointed)) {
 						return null;
+					}
 					return pointed;
 				}
-				@Override public boolean stillWantItem(IRoutedItem item) {
+
+				@Override
+				public boolean stillWantItem(IRoutedItem item) {
 					return true;
 				}
 			};
@@ -62,7 +69,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 
 	@Override
 	public TextureType getNonRoutedTexture(ForgeDirection connection) {
-		if (connection.equals(getPointedOrientation())){
+		if (connection.equals(getPointedOrientation())) {
 			return Textures.LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE;
 		}
 		return Textures.LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE;
@@ -78,13 +85,14 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 		return SimpleServiceLocator.logisticsManager.hasDestination(stack, allowDefault, getRouter().getSimpleID(), routerIDsToExclude);
 	}
 
+	@Override
 	public ForgeDirection getPointedOrientation() {
-		for(ForgeDirection ori:ForgeDirection.values()) {
-			LPPosition pos = new LPPosition((TileEntity) this.container);
+		for (ForgeDirection ori : ForgeDirection.values()) {
+			LPPosition pos = new LPPosition((TileEntity) container);
 			pos.moveForward(ori);
-			TileEntity tile = pos.getTileEntity(this.getWorld());
-			if(tile != null) {
-				if(SimpleServiceLocator.forestryProxy.isTileAnalyser(tile) || SimpleServiceLocator.binnieProxy.isTileAnalyser(tile)) {
+			TileEntity tile = pos.getTileEntity(getWorld());
+			if (tile != null) {
+				if (SimpleServiceLocator.forestryProxy.isTileAnalyser(tile) || SimpleServiceLocator.binnieProxy.isTileAnalyser(tile)) {
 					return ori;
 				}
 			}
@@ -94,9 +102,9 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 
 	public TileEntity getPointedTileEntity() {
 		WorldUtil wUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
-		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
-			if(tile.tile != null) {
-				if(SimpleServiceLocator.forestryProxy.isTileAnalyser(tile.tile) || SimpleServiceLocator.binnieProxy.isTileAnalyser(tile.tile)) {
+		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)) {
+			if (tile.tile != null) {
+				if (SimpleServiceLocator.forestryProxy.isTileAnalyser(tile.tile) || SimpleServiceLocator.binnieProxy.isTileAnalyser(tile.tile)) {
 					return tile.tile;
 				}
 			}
@@ -127,19 +135,27 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 	@Override
 	public IInventoryUtil getUnsidedInventory() {
 		IInventory inv = getRealInventory();
-		if(inv == null) return null;
+		if (inv == null) {
+			return null;
+		}
 		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
 	}
 
 	@Override
 	public IInventory getRealInventory() {
 		TileEntity tile = getPointedTileEntity();
-		if (tile == null ) return null;
-		if (SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) return null;
-		if (!(tile instanceof IInventory)) return null;
+		if (tile == null) {
+			return null;
+		}
+		if (SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) {
+			return null;
+		}
+		if (!(tile instanceof IInventory)) {
+			return null;
+		}
 		return InventoryHelper.getInventory((IInventory) tile);
 	}
-	
+
 	@Override
 	public ForgeDirection inventoryOrientation() {
 		return getPointedOrientation();
@@ -152,7 +168,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 
 	@Override
 	public int getSourceID() {
-		return this.getRouterId();
+		return getRouterId();
 	}
 
 	@Override
@@ -165,5 +181,5 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 	public boolean hasGenericInterests() {
 		return true;
 	}
-	
+
 }

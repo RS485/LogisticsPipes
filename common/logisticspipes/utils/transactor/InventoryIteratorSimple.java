@@ -3,6 +3,7 @@ package logisticspipes.utils.transactor;
 import java.util.Iterator;
 
 import logisticspipes.utils.InventoryHelper;
+
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
@@ -17,6 +18,7 @@ class InventoryIteratorSimple implements Iterable<IInvSlot> {
 	@Override
 	public Iterator<IInvSlot> iterator() {
 		return new Iterator<IInvSlot>() {
+
 			int slot = 0;
 
 			@Override
@@ -37,6 +39,7 @@ class InventoryIteratorSimple implements Iterable<IInvSlot> {
 	}
 
 	private class InvSlot implements IInvSlot {
+
 		private int slot;
 
 		public InvSlot(int slot) {

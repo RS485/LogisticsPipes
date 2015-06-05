@@ -4,6 +4,7 @@ import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+
 import net.minecraft.entity.player.EntityPlayer;
 
 public class ProviderPipeMode extends IntegerCoordinatesPacket {
@@ -29,4 +30,3 @@ public class ProviderPipeMode extends IntegerCoordinatesPacket {
 		((PipeItemsProviderLogistics) pipe.pipe).setExtractionMode(getInteger());
 	}
 }
-

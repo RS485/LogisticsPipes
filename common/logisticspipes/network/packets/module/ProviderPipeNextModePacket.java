@@ -7,6 +7,7 @@ import logisticspipes.network.packets.modules.ProviderPipeMode;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
+
 import net.minecraft.entity.player.EntityPlayer;
 
 public class ProviderPipeNextModePacket extends CoordinatesPacket {
@@ -23,10 +24,10 @@ public class ProviderPipeNextModePacket extends CoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) {
+		if (pipe == null) {
 			return;
 		}
-		if( !(pipe.pipe instanceof PipeItemsProviderLogistics)) {
+		if (!(pipe.pipe instanceof PipeItemsProviderLogistics)) {
 			return;
 		}
 		final PipeItemsProviderLogistics providerpipe = (PipeItemsProviderLogistics) pipe.pipe;
@@ -34,4 +35,3 @@ public class ProviderPipeNextModePacket extends CoordinatesPacket {
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeMode.class).setInteger(providerpipe.getExtractionMode().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), player);
 	}
 }
-

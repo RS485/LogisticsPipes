@@ -1,7 +1,7 @@
-/** 
+/**
  * Copyright (c) Krapht, 2011
  * 
- * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public 
+ * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
@@ -21,11 +21,13 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 
 public class FluidLogisticsPromise implements IPromise {
+
 	public FluidIdentifier liquid;
 	public int amount;
 	public IProvideFluids sender;
 	public ResourceType type;
-	
+
+	@Override
 	public FluidLogisticsPromise copy() {
 		FluidLogisticsPromise result = new FluidLogisticsPromise();
 		result.liquid = liquid;
@@ -37,7 +39,7 @@ public class FluidLogisticsPromise implements IPromise {
 
 	@Override
 	public boolean matches(IResource requestType) {
-		if(requestType instanceof FluidResource) {
+		if (requestType instanceof FluidResource) {
 			FluidResource fluid = (FluidResource) requestType;
 			return fluid.getFluid().equals(liquid);
 		}
@@ -72,6 +74,6 @@ public class FluidLogisticsPromise implements IPromise {
 
 	@Override
 	public IOrderInfoProvider fullFill(IResource requestType, IAdditionalTargetInformation info) {
-		return sender.fullFill(this, ((FluidResource)requestType).getTarget(), type, info);
+		return sender.fullFill(this, ((FluidResource) requestType).getTarget(), type, info);
 	}
 }

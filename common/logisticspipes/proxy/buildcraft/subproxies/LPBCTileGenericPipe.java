@@ -13,15 +13,16 @@ import logisticspipes.proxy.buildcraft.robots.boards.LogisticsRoutingBoardRobot;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.ReflectionHelper;
 import logisticspipes.utils.tuples.LPPosition;
-import lombok.Getter;
-import lombok.SneakyThrows;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+
 import net.minecraftforge.common.util.ForgeDirection;
+
 import buildcraft.api.robots.EntityRobotBase;
 import buildcraft.api.statements.IStatementParameter;
 import buildcraft.api.transport.pluggable.PipePluggable;
@@ -32,20 +33,22 @@ import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.gates.GatePluggable;
 import buildcraft.transport.gates.StatementSlot;
 import buildcraft.transport.render.FakeBlock;
+import lombok.Getter;
+import lombok.SneakyThrows;
 
 public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart {
-	
+
 	private final LPBCPipe bcPipe;
 	private final LPBCPluggableState bcPlugState;
 	private final LPBCPipeRenderState bcRenderState;
 	@Getter
 	private final LogisticsTileGenericPipe lpPipe;
 	public Map<ForgeDirection, List<StatementSlot>> activeActions = new HashMap<ForgeDirection, List<StatementSlot>>();
-	
+
 	private boolean blockPluggableAccess = false;
-	
+
 	public LPBCTileGenericPipe(LPBCPipe pipe, LogisticsTileGenericPipe lpPipe) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-		this.pipe = this.bcPipe = pipe;
+		this.pipe = bcPipe = pipe;
 		bcPipe.setTile(this);
 		this.lpPipe = lpPipe;
 		bcPlugState = new LPBCPluggableState();
@@ -71,7 +74,7 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 
 	@Override
 	public void readFromNBT_LP(NBTTagCompound nbt) {
-		if(!nbt.hasKey("BC_Pipe_NBT")) {
+		if (!nbt.hasKey("BC_Pipe_NBT")) {
 			redstoneInput = 0;
 			for (int i = 0; i < ForgeDirection.VALID_DIRECTIONS.length; i++) {
 				final String key = "redstoneInputSide[" + i + "]";
@@ -120,22 +123,22 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 
 	@Override
 	public void invalidate_LP() {
-		this.invalidate();
+		invalidate();
 	}
 
 	@Override
 	public void validate_LP() {
-		this.validate();
+		validate();
 	}
 
 	@Override
-	@SneakyThrows({NoSuchFieldException.class, SecurityException.class, IllegalArgumentException.class, IllegalAccessException.class, NoSuchMethodException.class, InvocationTargetException.class})
+	@SneakyThrows({ NoSuchFieldException.class, SecurityException.class, IllegalArgumentException.class, IllegalAccessException.class, NoSuchMethodException.class, InvocationTargetException.class })
 	public void updateEntity_LP() {
 		//Make sure we still have the same TE values
-		this.xCoord = lpPipe.xCoord;
-		this.yCoord = lpPipe.yCoord;
-		this.zCoord = lpPipe.zCoord;
-		
+		xCoord = lpPipe.xCoord;
+		yCoord = lpPipe.yCoord;
+		zCoord = lpPipe.zCoord;
+
 		if (attachPluggables) {
 			attachPluggables = false;
 			// Attach callback
@@ -160,38 +163,37 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 			PipePluggable p = getPipePluggable(direction);
 			if (p != null) {
 				p.update(this, direction);
-				
-				
+
 				//Check Gate for ActionChanges
-				if(p instanceof GatePluggable && lpPipe.isRoutingPipe()) {
-					if(!activeActions.containsKey(direction)) {
+				if (p instanceof GatePluggable && lpPipe.isRoutingPipe()) {
+					if (!activeActions.containsKey(direction)) {
 						activeActions.put(direction, new ArrayList<StatementSlot>());
 					}
-					if(!listEquals(activeActions.get(direction), pipe.gates[direction.ordinal()].activeActions)) {
+					if (!listEquals(activeActions.get(direction), pipe.gates[direction.ordinal()].activeActions)) {
 						activeActions.get(direction).clear();
 						activeActions.get(direction).addAll(pipe.gates[direction.ordinal()].activeActions);
 						lpPipe.getRoutingPipe().triggerConnectionCheck();
 						recheckThisPipe = true;
 					}
-				} else if(activeActions.containsKey(direction)) {
+				} else if (activeActions.containsKey(direction)) {
 					activeActions.remove(direction);
 				}
 			}
 		}
-		if(recheckThisPipe) {
+		if (recheckThisPipe) {
 			LPRobotConnectionControl.instance.checkAll(worldObj);
 		}
 
 		if (worldObj.isRemote) {
 			if (resyncGateExpansions) {
-				ReflectionHelper.invokePrivateMethod(Object.class, TileGenericPipe.class, this, "syncGateExpansions", new Class[]{}, new Object[]{});
+				ReflectionHelper.invokePrivateMethod(Object.class, TileGenericPipe.class, this, "syncGateExpansions", new Class[] {}, new Object[] {});
 			}
 
 			return;
 		}
 
 		if (blockNeighborChange) {
-			ReflectionHelper.invokePrivateMethod(Object.class, TileGenericPipe.class, this, "computeConnections", new Class[]{}, new Object[]{});
+			ReflectionHelper.invokePrivateMethod(Object.class, TileGenericPipe.class, this, "computeConnections", new Class[] {}, new Object[] {});
 			pipe.onNeighborBlockChange(0);
 			blockNeighborChange = false;
 			refreshRenderState = true;
@@ -206,14 +208,16 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 	private boolean listEquals(List<StatementSlot> list1, List<StatementSlot> list2) {
 		ListIterator<StatementSlot> e1 = list1.listIterator();
 		ListIterator<StatementSlot> e2 = list2.listIterator();
-		while(e1.hasNext() && e2.hasNext()) {
+		while (e1.hasNext() && e2.hasNext()) {
 			StatementSlot o1 = e1.next();
 			StatementSlot o2 = e2.next();
-			if(!(o1 == null ? o2 == null : statementEquals(o1, o2))) return false;
+			if (!(o1 == null ? o2 == null : statementEquals(o1, o2))) {
+				return false;
+			}
 		}
 		return !(e1.hasNext() || e2.hasNext());
 	}
-	
+
 	private boolean statementEquals(StatementSlot slot1, StatementSlot slot2) {
 		if (slot1.statement != slot2.statement || slot1.parameters.length != slot2.parameters.length) {
 			return false;
@@ -249,7 +253,7 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 			final String key = "redstoneInputSide[" + i + "]";
 			if (nbt.hasKey(key)) {
 				redstoneInputSide[i] = nbt.getByte(key);
-				
+
 				if (redstoneInputSide[i] > redstoneInput) {
 					redstoneInput = redstoneInputSide[i];
 				}
@@ -261,9 +265,12 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 
 	@Override
 	public IBCPipePluggable getBCPipePluggable(final ForgeDirection sideHit) {
-		final PipePluggable plug = this.getPipePluggable(sideHit);
-		if(plug == null) return null;
+		final PipePluggable plug = getPipePluggable(sideHit);
+		if (plug == null) {
+			return null;
+		}
 		return new IBCPipePluggable() {
+
 			@Override
 			public ItemStack[] getDropItems(LogisticsTileGenericPipe container) {
 				return plug.getDropItems(container);
@@ -281,13 +288,15 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 
 			@Override
 			public void renderPluggable(RenderBlocks renderblocks, ForgeDirection dir, int renderPass, int x, int y, int z) {
-				if(plug.getRenderer() == null) return;
+				if (plug.getRenderer() == null) {
+					return;
+				}
 				plug.getRenderer().renderPluggable(renderblocks, bcPipe, dir, plug, FakeBlock.INSTANCE, renderPass, x, y, z);
 			}
 
 			@Override
 			public boolean isAcceptingItems(LPTravelingItemServer arrivingItem) {
-				if(plug instanceof RobotStationPluggable) {
+				if (plug instanceof RobotStationPluggable) {
 					return true;
 				}
 				return false;
@@ -295,23 +304,31 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 
 			@Override
 			public LPTravelingItemServer handleItem(LPTravelingItemServer arrivingItem) {
-				DockingStation station = ((RobotStationPluggable)plug).getStation();
-				if(!station.isTaken()) return arrivingItem;
+				DockingStation station = ((RobotStationPluggable) plug).getStation();
+				if (!station.isTaken()) {
+					return arrivingItem;
+				}
 				EntityRobotBase robot = station.robotTaking();
-				if(!(robot.getBoard() instanceof LogisticsRoutingBoardRobot)) return arrivingItem;
-				if(!((LogisticsRoutingBoardRobot)robot.getBoard()).isAcceptsItems()) return arrivingItem;
+				if (!(robot.getBoard() instanceof LogisticsRoutingBoardRobot)) {
+					return arrivingItem;
+				}
+				if (!((LogisticsRoutingBoardRobot) robot.getBoard()).isAcceptsItems()) {
+					return arrivingItem;
+				}
 				LPPosition robotPos = new LPPosition(robot);
-				if(new LPPosition(LPBCTileGenericPipe.this).center().moveForward(sideHit, 0.5).distanceTo(robotPos) > 0.05) return arrivingItem; // Not at station
-				return ((LogisticsRoutingBoardRobot)robot.getBoard()).handleItem(arrivingItem);
+				if (new LPPosition(LPBCTileGenericPipe.this).center().moveForward(sideHit, 0.5).distanceTo(robotPos) > 0.05) {
+					return arrivingItem; // Not at station
+				}
+				return ((LogisticsRoutingBoardRobot) robot.getBoard()).handleItem(arrivingItem);
 			}
 		};
 	}
 
 	@Override
 	public PipePluggable getPipePluggable(ForgeDirection side) {
-		if(blockPluggableAccess) {
+		if (blockPluggableAccess) {
 			StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-			if(trace.length > 2 && (trace[2].getMethodName().equals("onBlockActivated") || trace[2].getMethodName().equals("func_149727_a")) && trace[2].getClassName().equals("buildcraft.transport.BlockGenericPipe") && trace[2].getLineNumber() > 680) {
+			if (trace.length > 2 && (trace[2].getMethodName().equals("onBlockActivated") || trace[2].getMethodName().equals("func_149727_a")) && trace[2].getClassName().equals("buildcraft.transport.BlockGenericPipe") && trace[2].getLineNumber() > 680) {
 				return null;
 			}
 		}
@@ -330,15 +347,17 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 
 	@Override
 	public void afterStateUpdated() {
-		if(this.worldObj == null) this.worldObj = this.lpPipe.getWorldObj();
-		this.afterStateUpdated((byte)2);
+		if (worldObj == null) {
+			worldObj = lpPipe.getWorldObj();
+		}
+		this.afterStateUpdated((byte) 2);
 	}
 
 	@Override
 	public Object getOriginal() {
-		this.xCoord = lpPipe.xCoord;
-		this.yCoord = lpPipe.yCoord;
-		this.zCoord = lpPipe.zCoord;
+		xCoord = lpPipe.xCoord;
+		yCoord = lpPipe.yCoord;
+		zCoord = lpPipe.zCoord;
 		return this;
 	}
 
@@ -360,16 +379,16 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 
 	@Override
 	public void setWorldObj_LP(World world) {
-		this.setWorldObj(world);
-		this.xCoord = lpPipe.xCoord;
-		this.yCoord = lpPipe.yCoord;
-		this.zCoord = lpPipe.zCoord;
+		setWorldObj(world);
+		xCoord = lpPipe.xCoord;
+		yCoord = lpPipe.yCoord;
+		zCoord = lpPipe.zCoord;
 	}
 
 	@Override
 	public PipeType getPipeType() {
 		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-		if(trace.length > 2 && trace[2].getClassName().equals("buildcraft.transport.pluggable.ItemLens") && trace[2].getMethodName().equals("createPipePluggable")) {
+		if (trace.length > 2 && trace[2].getClassName().equals("buildcraft.transport.pluggable.ItemLens") && trace[2].getMethodName().equals("createPipePluggable")) {
 			return PipeType.ITEM;
 		}
 		return PipeType.STRUCTURE;

@@ -6,47 +6,52 @@ import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.utils.item.ItemIdentifier;
+
 import net.minecraft.item.Item;
 
-@CCType(name="ItemIdentifierBuilder")
+@CCType(name = "ItemIdentifierBuilder")
 public class CCItemIdentifierBuilder implements ILPCCTypeHolder {
 
 	private Object ccType;
-	
+
 	private int itemID = 0;
 	private int itemData = 0;
-	
-	@CCCommand(description="Set the itemID for this ItemIdentifierBuilder")
+
+	@CCCommand(description = "Set the itemID for this ItemIdentifierBuilder")
 	public void setItemID(Double id) {
-		this.itemID = id.intValue();
+		itemID = id.intValue();
 	}
 
-	@CCCommand(description="Returns the itemID for this ItemIdentifierBuilder")
+	@CCCommand(description = "Returns the itemID for this ItemIdentifierBuilder")
 	public int getItemID() {
 		return itemID;
 	}
 
-	@CCCommand(description="Set the item data/damage for this ItemIdentifierBuilder")
+	@CCCommand(description = "Set the item data/damage for this ItemIdentifierBuilder")
 	public void setItemData(Double data) {
-		this.itemData = data.intValue();
+		itemData = data.intValue();
 	}
 
-	@CCCommand(description="Returns the item data/damage for this ItemIdentifierBuilder")
+	@CCCommand(description = "Returns the item data/damage for this ItemIdentifierBuilder")
 	public int getItemData() {
 		return itemData;
 	}
 
-	@CCCommand(description="Returns the ItemIdentifier for this ItemIdentifierBuilder")
+	@CCCommand(description = "Returns the ItemIdentifier for this ItemIdentifierBuilder")
 	public ItemIdentifier build() {
 		Item item = Item.getItemById(itemID);
-		if(item == null) throw new UnsupportedOperationException("Not a valid ItemIdentifier");
+		if (item == null) {
+			throw new UnsupportedOperationException("Not a valid ItemIdentifier");
+		}
 		return ItemIdentifier.get(item, itemData, null);
 	}
 
-	@CCCommand(description="Returns a list of all ItemIdentifier with an NBT tag matching the givven Item ID and data")
+	@CCCommand(description = "Returns a list of all ItemIdentifier with an NBT tag matching the givven Item ID and data")
 	public List<ItemIdentifier> matchingNBTIdentifier() {
 		Item item = Item.getItemById(itemID);
-		if(item == null) throw new UnsupportedOperationException("Not a valid ItemIdentifier");
+		if (item == null) {
+			throw new UnsupportedOperationException("Not a valid ItemIdentifier");
+		}
 		return ItemIdentifier.getMatchingNBTIdentifier(item, itemData);
 	}
 

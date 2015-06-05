@@ -23,12 +23,13 @@ public class LPItemList implements Iterable<LPTravelingItem> {
 	}
 
 	public void add(LPTravelingItem item) {
-		if(iterating) {
+		if (iterating) {
 			toAdd.add(item);
 			return;
 		}
-		if(items.containsValue(item))
+		if (items.containsValue(item)) {
 			return;
+		}
 		item.setContainer(pipe.container);
 		items.put(item.getId(), item);
 	}

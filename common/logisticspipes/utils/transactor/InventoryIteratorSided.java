@@ -4,61 +4,64 @@ import java.util.Iterator;
 
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
+
 import net.minecraftforge.common.util.ForgeDirection;
 
 class InventoryIteratorSided implements Iterable<IInvSlot> {
 
-    private final ISidedInventory inv;
-    private final int side;
+	private final ISidedInventory inv;
+	private final int side;
 
-    InventoryIteratorSided(ISidedInventory inv, ForgeDirection side) {
-        this.inv = inv;
+	InventoryIteratorSided(ISidedInventory inv, ForgeDirection side) {
+		this.inv = inv;
 		this.side = side.ordinal();
-    }
+	}
 
-    @Override
-    public Iterator<IInvSlot> iterator() {
-        return new Iterator<IInvSlot>() {
-            int[] slots = inv.getAccessibleSlotsFromSide(side);
-            int index = 0;
+	@Override
+	public Iterator<IInvSlot> iterator() {
+		return new Iterator<IInvSlot>() {
 
-            @Override
-            public boolean hasNext() {
-                return index < slots.length;
-            }
+			int[] slots = inv.getAccessibleSlotsFromSide(side);
+			int index = 0;
 
-            @Override
-            public IInvSlot next() {
-                return new InvSlot(slots[index++]);
-            }
+			@Override
+			public boolean hasNext() {
+				return index < slots.length;
+			}
 
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("Remove not supported.");
-            }
-        };
-    }
+			@Override
+			public IInvSlot next() {
+				return new InvSlot(slots[index++]);
+			}
 
-    private class InvSlot implements IInvSlot {
-        private int slot;
-        
-        public InvSlot(int slot) {
-            this.slot = slot;
-        }
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException("Remove not supported.");
+			}
+		};
+	}
 
-        @Override
-        public ItemStack getStackInSlot() {
-            return inv.getStackInSlot(slot);
-        }
+	private class InvSlot implements IInvSlot {
 
-        @Override
-        public void setStackInSlot(ItemStack stack) {
-            inv.setInventorySlotContents(slot, stack);
-        }
+		private int slot;
 
-        @Override
-        public boolean canPutStackInSlot(ItemStack stack) {
-            return inv.canInsertItem(slot, stack, side);
-        }
-    }
+		public InvSlot(int slot) {
+			this.slot = slot;
+		}
+
+		@Override
+		public ItemStack getStackInSlot() {
+			return inv.getStackInSlot(slot);
+		}
+
+		@Override
+		public void setStackInSlot(ItemStack stack) {
+			inv.setInventorySlotContents(slot, stack);
+		}
+
+		@Override
+		public boolean canPutStackInSlot(ItemStack stack) {
+			return inv.canInsertItem(slot, stack, side);
+		}
+	}
 }

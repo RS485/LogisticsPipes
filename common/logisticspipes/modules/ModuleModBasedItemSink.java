@@ -1,6 +1,5 @@
 package logisticspipes.modules;
 
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -30,38 +29,42 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStringBasedModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
-	
+
 	public final List<String> modList = new LinkedList<String>();
 	private final Set<String> modIdSet = new HashSet<String>();
 
 	private IHUDModuleRenderer HUD = new HUDStringBasedItemSink(this);
-	
+
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
-	
+
 	private SinkReply _sinkReply;
 
 	@Override
 	public void registerPosition(ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);
-		_sinkReply = new SinkReply(FixedPriority.ModBasedItemSink, 0, true, false, 5, 0, new ChassiTargetInformation(this.getPositionInt()));
+		_sinkReply = new SinkReply(FixedPriority.ModBasedItemSink, 0, true, false, 5, 0, new ChassiTargetInformation(getPositionInt()));
 	}
-	
+
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
-		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
-		if(modIdSet == null) {
+		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
+			return null;
+		}
+		if (modIdSet == null) {
 			buildModIdSet();
 		}
-		if(modIdSet.contains(item.getModName())) {
-			if(_service.canUseEnergy(5)) {
+		if (modIdSet.contains(item.getModName())) {
+			if (_service.canUseEnergy(5)) {
 				return _sinkReply;
 			}
 		}
@@ -71,7 +74,7 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStrin
 	@Override
 	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
 		NBTTagCompound nbt = new NBTTagCompound();
-		this.writeToNBT(nbt);
+		writeToNBT(nbt);
 		return NewGuiHandler.getGui(StringBasedItemSinkModuleGuiSlot.class).setNbt(nbt);
 	}
 
@@ -79,9 +82,11 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStrin
 	protected ModuleInHandGuiProvider getInHandGuiProvider() {
 		return NewGuiHandler.getGui(StringBasedItemSinkModuleGuiInHand.class);
 	}
-	
+
 	@Override
-	public LogisticsModule getSubModule(int slot) {return null;}
+	public LogisticsModule getSubModule(int slot) {
+		return null;
+	}
 
 	private void buildModIdSet() {
 		modIdSet.clear();
@@ -92,7 +97,7 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStrin
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		modList.clear();
 		int limit = nbttagcompound.getInteger("listSize");
-		for(int i = 0; i < limit; i++) {
+		for (int i = 0; i < limit; i++) {
 			modList.add(nbttagcompound.getString("Mod" + i));
 		}
 		buildModIdSet();
@@ -101,7 +106,7 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStrin
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		nbttagcompound.setInteger("listSize", modList.size());
-		for(int i = 0; i < modList.size(); i++) {
+		for (int i = 0; i < modList.size(); i++) {
 			nbttagcompound.setString("Mod" + i, modList.get(i));
 		}
 	}
@@ -139,9 +144,10 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStrin
 	public void stopWatching(EntityPlayer player) {
 		localModeWatchers.remove(player);
 	}
-	
+
+	@Override
 	public void listChanged() {
-		if(MainProxy.isServer(_world.getWorld())) {
+		if (MainProxy.isServer(_world.getWorld())) {
 			NBTTagCompound nbt = new NBTTagCompound();
 			writeToNBT(nbt);
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleBasedItemSinkList.class).setNbt(nbt).setModulePos(this), localModeWatchers);
@@ -156,6 +162,7 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStrin
 	public IHUDModuleRenderer getHUDRenderer() {
 		return HUD;
 	}
+
 	@Override
 	public boolean hasGenericInterests() {
 		return true;
@@ -167,7 +174,7 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStrin
 	}
 
 	@Override
-	public boolean interestedInAttachedInventory() {		
+	public boolean interestedInAttachedInventory() {
 		return false;
 	}
 

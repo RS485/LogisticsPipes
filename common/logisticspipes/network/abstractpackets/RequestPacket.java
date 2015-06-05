@@ -6,11 +6,12 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.packets.orderer.RequestSubmitPacket;
 import logisticspipes.utils.item.ItemIdentifierStack;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public abstract class RequestPacket extends CoordinatesPacket {
 
 	@Getter

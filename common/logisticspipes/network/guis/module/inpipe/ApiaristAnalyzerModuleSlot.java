@@ -9,12 +9,14 @@ import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.utils.gui.DummyContainer;
+
+import net.minecraft.entity.player.EntityPlayer;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class ApiaristAnalyzerModuleSlot extends ModuleCoordinatesGuiProvider {
 
 	@Getter
@@ -28,7 +30,9 @@ public class ApiaristAnalyzerModuleSlot extends ModuleCoordinatesGuiProvider {
 	@Override
 	public Object getClientGui(EntityPlayer player) {
 		ModuleApiaristAnalyser module = this.getLogisticsModule(player.getEntityWorld(), ModuleApiaristAnalyser.class);
-		if(module == null) return null;
+		if (module == null) {
+			return null;
+		}
 		module.setExtractMode(extractorMode);
 		return new GuiApiaristAnalyser(module, player.inventory);
 	}
@@ -36,7 +40,9 @@ public class ApiaristAnalyzerModuleSlot extends ModuleCoordinatesGuiProvider {
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
 		ModuleApiaristAnalyser module = this.getLogisticsModule(player.getEntityWorld(), ModuleApiaristAnalyser.class);
-		if(module == null) return null;
+		if (module == null) {
+			return null;
+		}
 		return new DummyContainer(player.inventory, null);
 	}
 

@@ -4,11 +4,14 @@ import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+
 import buildcraft.silicon.TileAdvancedCraftingTable;
 
 public class AssemblyAdvancedWorkbench implements ICraftingRecipeProvider {
+
 	@Override
 	public boolean canOpenGui(TileEntity tile) {
 		return (tile instanceof TileAdvancedCraftingTable);
@@ -16,14 +19,16 @@ public class AssemblyAdvancedWorkbench implements ICraftingRecipeProvider {
 
 	@Override
 	public boolean importRecipe(TileEntity tile, ItemIdentifierInventory inventory) {
-		if (!(tile instanceof TileAdvancedCraftingTable))
+		if (!(tile instanceof TileAdvancedCraftingTable)) {
 			return false;
+		}
 
 		TileAdvancedCraftingTable bench = (TileAdvancedCraftingTable) tile;
 		ItemStack result = bench.getOutputSlot().getStackInSlot(0);
 
-		if (result == null)
+		if (result == null) {
 			return false;
+		}
 
 		inventory.setInventorySlotContents(9, result);
 
@@ -50,7 +55,7 @@ public class AssemblyAdvancedWorkbench implements ICraftingRecipeProvider {
 				}
 				if (itemInSlot.equals(stackInOtherSlot.getItem())) {
 					stackInSlot.setStackSize(stackInSlot.getStackSize() + stackInOtherSlot.getStackSize());
-					inventory.setInventorySlotContents(i,stackInSlot);
+					inventory.setInventorySlotContents(i, stackInSlot);
 					inventory.clearInventorySlotContents(j);
 				}
 			}

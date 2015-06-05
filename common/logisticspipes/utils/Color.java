@@ -9,7 +9,8 @@
 package logisticspipes.utils;
 
 /**
- * Enumeration for colors and their int values. Also contains some static functions.
+ * Enumeration for colors and their int values. Also contains some static
+ * functions.
  */
 public enum Color {
 	BLANK(0x00000000),
@@ -24,8 +25,7 @@ public enum Color {
 	RED(0xFFFF0000),
 	GREEN(0xFF00FF00),
 	BLUE(0xFF0000FF),
-	LIGHT_YELLOW(0xFFFFFFA0),
-	;
+	LIGHT_YELLOW(0xFFFFFFA0), ;
 
 	private int colorValue;
 
@@ -42,18 +42,18 @@ public enum Color {
 	}
 
 	public static float getAlpha(int colorValue) {
-		return (float) (colorValue >> 24 & 255) / 255.0F;
+		return (colorValue >> 24 & 255) / 255.0F;
 	}
 
 	public static float getRed(int colorValue) {
-		return (float) (colorValue >> 16 & 255) / 255.0F;
+		return (colorValue >> 16 & 255) / 255.0F;
 	}
 
 	public static float getGreen(int colorValue) {
-		return (float) (colorValue >> 8 & 255) / 255.0F;
+		return (colorValue >> 8 & 255) / 255.0F;
 	}
 
 	public static float getBlue(int colorValue) {
-		return (float) (colorValue & 255) / 255.0F;
+		return (colorValue & 255) / 255.0F;
 	}
 }

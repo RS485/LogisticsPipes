@@ -3,16 +3,18 @@ package logisticspipes.proxy.enderio;
 import java.util.ArrayList;
 import java.util.List;
 
-import crazypants.enderio.machine.transceiver.Channel;
-import crazypants.enderio.machine.transceiver.ChannelType;
-import crazypants.enderio.machine.transceiver.ServerChannelRegister;
-import crazypants.enderio.machine.transceiver.TileTransceiver;
 import logisticspipes.proxy.interfaces.IEnderIOProxy;
+
 import net.minecraft.tileentity.TileEntity;
+
 import crazypants.enderio.machine.hypercube.HyperCubeRegister;
 import crazypants.enderio.machine.hypercube.TileHyperCube;
 import crazypants.enderio.machine.hypercube.TileHyperCube.IoMode;
 import crazypants.enderio.machine.hypercube.TileHyperCube.SubChannel;
+import crazypants.enderio.machine.transceiver.Channel;
+import crazypants.enderio.machine.transceiver.ChannelType;
+import crazypants.enderio.machine.transceiver.ServerChannelRegister;
+import crazypants.enderio.machine.transceiver.TileTransceiver;
 
 public class EnderIOProxy implements IEnderIOProxy {
 
@@ -28,10 +30,10 @@ public class EnderIOProxy implements IEnderIOProxy {
 
 	@Override
 	public List<TileEntity> getConnectedHyperCubes(TileEntity tile) {
-		List<TileHyperCube> cons = HyperCubeRegister.instance.getCubesForChannel(((TileHyperCube)tile).getChannel());
+		List<TileHyperCube> cons = HyperCubeRegister.instance.getCubesForChannel(((TileHyperCube) tile).getChannel());
 		List<TileEntity> tiles = new ArrayList<TileEntity>();
-		for(TileHyperCube cube: cons) {
-			if(cube != tile) {
+		for (TileHyperCube cube : cons) {
+			if (cube != tile) {
 				tiles.add(cube);
 			}
 		}
@@ -68,7 +70,7 @@ public class EnderIOProxy implements IEnderIOProxy {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public boolean isEnderIO() {
 		return true;

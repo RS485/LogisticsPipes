@@ -7,12 +7,14 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
+
+import net.minecraft.entity.player.EntityPlayer;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class ApiaristAnalyserMode extends ModuleCoordinatesPacket {
 
 	@Getter
@@ -31,7 +33,9 @@ public class ApiaristAnalyserMode extends ModuleCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		ModuleApiaristAnalyser module = this.getLogisticsModule(player, ModuleApiaristAnalyser.class);
-		if(module == null) return;
+		if (module == null) {
+			return;
+		}
 		module.setExtractMode(mode);
 	}
 
@@ -47,4 +51,3 @@ public class ApiaristAnalyserMode extends ModuleCoordinatesPacket {
 		mode = data.readInt();
 	}
 }
-

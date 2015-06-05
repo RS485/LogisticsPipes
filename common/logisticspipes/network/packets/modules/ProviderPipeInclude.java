@@ -5,7 +5,9 @@ import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+
 import net.minecraft.entity.player.EntityPlayer;
+
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class ProviderPipeInclude extends IntegerCoordinatesPacket {
@@ -34,4 +36,3 @@ public class ProviderPipeInclude extends IntegerCoordinatesPacket {
 		}
 	}
 }
-

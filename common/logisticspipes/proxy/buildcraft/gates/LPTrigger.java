@@ -1,20 +1,20 @@
 package logisticspipes.proxy.buildcraft.gates;
 
-
 import logisticspipes.textures.Textures;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.IIcon;
+
 import buildcraft.api.statements.IStatement;
 import buildcraft.api.statements.IStatementContainer;
 import buildcraft.api.statements.IStatementParameter;
-import buildcraft.api.statements.ITriggerInternal;
 import buildcraft.api.statements.StatementManager;
 import buildcraft.api.statements.StatementParameterItemStack;
-import buildcraft.api.transport.IPipe;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
 
 public abstract class LPTrigger implements IStatement {
+
 	protected final String uniqueTag;
 
 	public LPTrigger(String uniqueTag) {
@@ -26,8 +26,8 @@ public abstract class LPTrigger implements IStatement {
 	public String getUniqueTag() {
 		return uniqueTag;
 	}
-	
-    public abstract int getIconIndex();
+
+	public abstract int getIconIndex();
 
 	@Override
 	public IStatementParameter createParameter(int arg0) {
@@ -47,7 +47,7 @@ public abstract class LPTrigger implements IStatement {
 	public boolean requiresParameter() {
 		return false;
 	}
-	
+
 	@Override
 	public String getDescription() {
 		return "";
@@ -60,21 +60,21 @@ public abstract class LPTrigger implements IStatement {
 
 	@Override
 	public void registerIcons(IIconRegister iconRegister) {
-		Textures.LPactionIconProvider.registerIcons(iconRegister);	
+		Textures.LPactionIconProvider.registerIcons(iconRegister);
 	}
 
 	@Override
 	public IStatement rotateLeft() {
 		return this;
 	}
-	
+
 	public boolean isTriggerActive(IStatementContainer arg0, IStatementParameter[] arg1) {
-		if(arg0.getTile() instanceof TileGenericPipe) {
-			return isTriggerActive(((TileGenericPipe)arg0.getTile()).pipe, arg1.length == 0 ? null : arg1[0]);
+		if (arg0.getTile() instanceof TileGenericPipe) {
+			return isTriggerActive(((TileGenericPipe) arg0.getTile()).pipe, arg1.length == 0 ? null : arg1[0]);
 		}
 		return false;
 	}
-	
+
 	public boolean isTriggerActive(Pipe<?> pipe, IStatementParameter parameter) {
 		return false;
 	}

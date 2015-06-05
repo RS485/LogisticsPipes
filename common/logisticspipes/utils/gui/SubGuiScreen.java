@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.opengl.GL11;
 
 public class SubGuiScreen extends GuiScreen implements ISubGuiControler {
+
 	protected int guiLeft;
 	protected int guiTop;
 	protected int xCenter;
@@ -16,53 +17,53 @@ public class SubGuiScreen extends GuiScreen implements ISubGuiControler {
 	protected int ySize;
 	protected int xCenterOffset;
 	protected int yCenterOffset;
-	
+
 	private SubGuiScreen subGui;
 
 	protected ISubGuiControler controler;
-	
+
 	public SubGuiScreen(int xSize, int ySize, int xOffset, int yOffset) {
 		this.xSize = xSize;
 		this.ySize = ySize;
-		this.xCenterOffset = xOffset;
-		this.yCenterOffset = yOffset;
+		xCenterOffset = xOffset;
+		yCenterOffset = yOffset;
 	}
-	
+
 	@Override
 	public void initGui() {
 		super.initGui();
-		this.guiLeft =  width/2 - xSize/2 + xCenterOffset;
-		this.guiTop = height/2 - ySize/2  + yCenterOffset;
-		
-		this.right = width/2 + xSize/2 + xCenterOffset;
-		this.bottom = height/2 + ySize/2 + yCenterOffset;
-		
-		this.xCenter = (right + guiLeft) / 2;
-		this.yCenter = (bottom + guiTop) / 2;
+		guiLeft = width / 2 - xSize / 2 + xCenterOffset;
+		guiTop = height / 2 - ySize / 2 + yCenterOffset;
+
+		right = width / 2 + xSize / 2 + xCenterOffset;
+		bottom = height / 2 + ySize / 2 + yCenterOffset;
+
+		xCenter = (right + guiLeft) / 2;
+		yCenter = (bottom + guiTop) / 2;
 	}
 
 	public void register(ISubGuiControler gui) {
 		controler = gui;
 	}
-	
+
 	public void exitGui() {
 		controler.resetSubGui();
 	}
-	
+
 	@Override
 	protected void keyTyped(char par1, int par2) {
-        if (par2 == 1) {
-            exitGui();
-        }
-    }
-	
+		if (par2 == 1) {
+			exitGui();
+		}
+	}
+
 	@Override
-	public void drawScreen(int par1, int par2, float par3){
+	public void drawScreen(int par1, int par2, float par3) {
 		super.drawScreen(par1, par2, par3);
-		if(subGui != null) {
+		if (subGui != null) {
 			GL11.glTranslatef(0.0F, 0.0F, 1.0F);
-	        GL11.glDisable(GL11.GL_DEPTH_TEST);
-			if(!subGui.hasSubGui()) {
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
+			if (!subGui.hasSubGui()) {
 				super.drawDefaultBackground();
 			}
 			subGui.drawScreen(par1, par2, par3);
@@ -71,21 +72,21 @@ public class SubGuiScreen extends GuiScreen implements ISubGuiControler {
 	}
 
 	@Override
-    public final void handleMouseInput() {
-		if(subGui != null) {
+	public final void handleMouseInput() {
+		if (subGui != null) {
 			subGui.handleMouseInput();
 		} else {
-			this.handleMouseInputSub();
+			handleMouseInputSub();
 		}
-    }
-	
+	}
+
 	public void handleMouseInputSub() {
 		super.handleMouseInput();
 	}
-	
+
 	@Override
 	public final void handleKeyboardInput() {
-		if(subGui != null) {
+		if (subGui != null) {
 			subGui.handleKeyboardInput();
 		} else {
 			super.handleKeyboardInput();
@@ -94,21 +95,22 @@ public class SubGuiScreen extends GuiScreen implements ISubGuiControler {
 
 	@Override
 	public void setSubGui(SubGuiScreen gui) {
-		if(subGui == null) {
+		if (subGui == null) {
 			subGui = gui;
 			subGui.register(this);
-			subGui.setWorldAndResolution(this.mc, this.width, this.height);
+			subGui.setWorldAndResolution(mc, width, height);
 			subGui.initGui();
 		}
 	}
-	
+
 	@Override
 	public void setWorldAndResolution(Minecraft mc, int width, int height) {
 		super.setWorldAndResolution(mc, width, height);
-		if(subGui != null)
+		if (subGui != null) {
 			subGui.setWorldAndResolution(mc, width, height);
+		}
 	}
-	
+
 	@Override
 	public void resetSubGui() {
 		subGui = null;

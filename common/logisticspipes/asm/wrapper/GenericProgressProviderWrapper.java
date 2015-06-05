@@ -1,6 +1,7 @@
 package logisticspipes.asm.wrapper;
 
 import logisticspipes.proxy.interfaces.IGenericProgressProvider;
+
 import net.minecraft.tileentity.TileEntity;
 
 public class GenericProgressProviderWrapper extends AbstractWrapper implements IGenericProgressProvider {
@@ -12,15 +13,15 @@ public class GenericProgressProviderWrapper extends AbstractWrapper implements I
 		this.provider = provider;
 		this.name = name;
 	}
-	
+
 	@Override
 	public boolean isType(TileEntity tile) {
-		if(this.isEnabled()) {
+		if (isEnabled()) {
 			try {
 				return provider.isType(tile);
-			} catch(Exception e) {
+			} catch (Exception e) {
 				handleException(e);
-			} catch(NoClassDefFoundError e) {
+			} catch (NoClassDefFoundError e) {
 				handleException(e);
 			}
 		}
@@ -29,23 +30,23 @@ public class GenericProgressProviderWrapper extends AbstractWrapper implements I
 
 	@Override
 	public byte getProgress(TileEntity tile) {
-		if(this.isEnabled()) {
+		if (isEnabled()) {
 			try {
 				return provider.getProgress(tile);
-			} catch(Exception e) {
+			} catch (Exception e) {
 				handleException(e);
-			} catch(NoClassDefFoundError e) {
+			} catch (NoClassDefFoundError e) {
 				handleException(e);
 			}
 		}
 		return 0;
 	}
-	
+
 	@Override
 	public String getName() {
 		return name;
 	}
-	
+
 	@Override
 	public String getTypeName() {
 		return "ProgressProvider";

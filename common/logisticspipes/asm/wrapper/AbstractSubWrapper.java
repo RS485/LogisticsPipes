@@ -1,17 +1,17 @@
 package logisticspipes.asm.wrapper;
 
-
 public abstract class AbstractSubWrapper {
+
 	private final AbstractWrapper originalWrapper;
-	
+
 	public AbstractSubWrapper(AbstractWrapper wrapper) {
-		this.originalWrapper = wrapper;
+		originalWrapper = wrapper;
 	}
-	
+
 	protected final boolean isEnabled() {
 		return originalWrapper.isEnabled();
 	}
-	
+
 	protected final boolean canTryAnyway() {
 		return originalWrapper.canTryAnyway();
 	}

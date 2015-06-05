@@ -4,9 +4,11 @@ import java.io.IOException;
 
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
+
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class ConnectionMatrix {
+
 	private int mask = 0;
 	private int isBCPipeMask = 0;
 	private int isTDPipeMask = 0;
@@ -23,12 +25,12 @@ public class ConnectionMatrix {
 			mask ^= 1 << direction.ordinal();
 			dirty = true;
 		}
-		if(!value) {
+		if (!value) {
 			setBCConnected(direction, false);
 			setTDConnected(direction, false);
 		}
 	}
-	
+
 	public boolean isBCConnected(ForgeDirection direction) {
 		// test if the direction.ordinal()'th bit of mask is set
 		return (isBCPipeMask & (1 << direction.ordinal())) != 0;
@@ -41,7 +43,7 @@ public class ConnectionMatrix {
 			dirty = true;
 		}
 	}
-	
+
 	public boolean isTDConnected(ForgeDirection direction) {
 		// test if the direction.ordinal()'th bit of mask is set
 		return (isTDPipeMask & (1 << direction.ordinal())) != 0;
@@ -87,13 +89,13 @@ public class ConnectionMatrix {
 		}
 
 		newMask = data.readByte();
-		if(newMask != isBCPipeMask) {
+		if (newMask != isBCPipeMask) {
 			isBCPipeMask = newMask;
 			dirty = true;
 		}
-		
+
 		newMask = data.readByte();
-		if(newMask != isTDPipeMask) {
+		if (newMask != isTDPipeMask) {
 			isTDPipeMask = newMask;
 			dirty = true;
 		}

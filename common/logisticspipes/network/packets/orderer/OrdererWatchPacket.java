@@ -10,22 +10,24 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.request.resources.IResource;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
+
+import net.minecraft.entity.player.EntityPlayer;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class OrdererWatchPacket extends IntegerCoordinatesPacket {
-	
+
 	@Getter
 	@Setter
 	private IResource stack;
-	
+
 	@Getter
 	@Setter
 	private LinkedLogisticsOrderList orders;
-	
+
 	public OrdererWatchPacket(int id) {
 		super(id);
 	}
@@ -47,11 +49,11 @@ public class OrdererWatchPacket extends IntegerCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe tile = this.getPipe(player.worldObj);
-		if(tile.pipe instanceof IRequestWatcher) {
-			((IRequestWatcher)tile.pipe).handleClientSideListInfo(getInteger(), getStack(), getOrders());
+		if (tile.pipe instanceof IRequestWatcher) {
+			((IRequestWatcher) tile.pipe).handleClientSideListInfo(getInteger(), getStack(), getOrders());
 		}
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new OrdererWatchPacket(getId());

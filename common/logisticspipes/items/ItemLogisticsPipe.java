@@ -15,6 +15,7 @@ import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.renderer.IIconProvider;
 import logisticspipes.utils.string.StringUtils;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,22 +24,22 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
-import org.apache.logging.log4j.Level;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+
+import org.apache.logging.log4j.Level;
 
 /**
  * A logistics pipe Item
  */
 public class ItemLogisticsPipe extends LogisticsItem {
-	
+
 	@SideOnly(Side.CLIENT)
 	private IIconProvider iconProvider;
 	private int pipeIconIndex;
 	private int newPipeIconIndex;
 	private int newPipeRenderList = -1;
-	
+
 	public ItemLogisticsPipe() {
 		super();
 	}
@@ -50,22 +51,19 @@ public class ItemLogisticsPipe extends LogisticsItem {
 
 	/**
 	 * Adds all keys from the translation file in the format:
-	 *  item.className.tip([0-9]*)
-	 *
-	 * Tips start from 1 and increment. Sparse rows should be left empty (ie empty line must still have a key present)
-	 *
-	 * Shift shows full tooltip, without it you just get the first line.
+	 * item.className.tip([0-9]*) Tips start from 1 and increment. Sparse rows
+	 * should be left empty (ie empty line must still have a key present) Shift
+	 * shows full tooltip, without it you just get the first line.
 	 */
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean flags) {
 		StringUtils.addShiftAddition(stack, list);
 	}
-	
+
 	@Override
 	//TODO use own pipe handling
-	public boolean onItemUse(ItemStack itemstack, EntityPlayer entityplayer, World world, int x, int y, int z,
-			int sideI, float par8, float par9, float par10) {
+	public boolean onItemUse(ItemStack itemstack, EntityPlayer entityplayer, World world, int x, int y, int z, int sideI, float par8, float par9, float par10) {
 		int side = sideI;
 		Block block = LogisticsPipes.LogisticsPipeBlock;
 
@@ -77,8 +75,7 @@ public class ItemLogisticsPipe extends LogisticsItem {
 
 		if (worldBlock == Blocks.snow) {
 			side = 1;
-		} else if (worldBlock != Blocks.vine && worldBlock != Blocks.tallgrass && worldBlock != Blocks.deadbush
-				&& (worldBlock == null || !worldBlock.isReplaceable(world, i, j, k))) {
+		} else if (worldBlock != Blocks.vine && worldBlock != Blocks.tallgrass && worldBlock != Blocks.deadbush && (worldBlock == null || !worldBlock.isReplaceable(world, i, j, k))) {
 			if (side == 0) {
 				j--;
 			}
@@ -107,7 +104,7 @@ public class ItemLogisticsPipe extends LogisticsItem {
 			CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.createPipe(this);
 
 			if (pipe == null) {
-				LogisticsPipes.log.log(Level.WARN, "Pipe failed to create during placement at {0},{1},{2}", new Object[]{i, j, k});
+				LogisticsPipes.log.log(Level.WARN, "Pipe failed to create during placement at {0},{1},{2}", new Object[] { i, j, k });
 				return true;
 			}
 
@@ -129,8 +126,8 @@ public class ItemLogisticsPipe extends LogisticsItem {
 	}
 
 	public void setPipeIconIndex(int index, int newIndex) {
-		this.pipeIconIndex = index;
-		this.newPipeIconIndex = newIndex;
+		pipeIconIndex = index;
+		newPipeIconIndex = newIndex;
 	}
 
 	@Override
@@ -144,15 +141,17 @@ public class ItemLogisticsPipe extends LogisticsItem {
 	}
 
 	public int getNewPipeIconIndex() {
-		return this.newPipeIconIndex;
+		return newPipeIconIndex;
 	}
 
 	public int getNewPipeRenderList() {
-		return this.newPipeRenderList;
+		return newPipeRenderList;
 	}
-	
+
 	public void setNewPipeRenderList(int list) {
-		if(newPipeRenderList != -1) throw new UnsupportedOperationException("Can't reset this");
+		if (newPipeRenderList != -1) {
+			throw new UnsupportedOperationException("Can't reset this");
+		}
 		newPipeRenderList = list;
 	}
 

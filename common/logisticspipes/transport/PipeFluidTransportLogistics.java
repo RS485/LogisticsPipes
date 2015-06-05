@@ -9,7 +9,9 @@ import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.SafeTimeTracker;
 import logisticspipes.utils.item.ItemIdentifierStack;
+
 import net.minecraft.nbt.NBTTagCompound;
+
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
@@ -21,19 +23,19 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 
 	public FluidTank[] sideTanks = new FluidTank[ForgeDirection.VALID_DIRECTIONS.length];
 	public FluidTank internalTank = new FluidTank(getInnerCapacity());
-	
+
 	public FluidStack[] renderCache = new FluidStack[7];
-	
+
 	public PipeFluidTransportLogistics() {
 		super(true);
-		for(ForgeDirection dir:ForgeDirection.VALID_DIRECTIONS) {
+		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
 			sideTanks[dir.ordinal()] = new FluidTank(getSideCapacity());
 		}
 	}
-	
+
 	@Override
 	public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
-		if(from.ordinal() < ForgeDirection.VALID_DIRECTIONS.length && getFluidPipe().canReceiveFluid()) {
+		if (from.ordinal() < ForgeDirection.VALID_DIRECTIONS.length && getFluidPipe().canReceiveFluid()) {
 			return sideTanks[from.ordinal()].fill(resource, doFill);
 		} else {
 			return 0;
@@ -41,7 +43,7 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 	}
 
 	private FluidRoutedPipe getFluidPipe() {
-		return (FluidRoutedPipe) this.getPipe();
+		return (FluidRoutedPipe) getPipe();
 	}
 
 	@Override
@@ -56,7 +58,7 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 
 	@Override
 	public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
-		if(from.ordinal() < ForgeDirection.VALID_DIRECTIONS.length) {
+		if (from.ordinal() < ForgeDirection.VALID_DIRECTIONS.length) {
 			return sideTanks[from.ordinal()].drain(maxDrain, doDrain);
 		} else {
 			return null;
@@ -66,15 +68,15 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 	@Override
 	public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
 		if (sideTanks[from.ordinal()].getFluid() == null || !(sideTanks[from.ordinal()].getFluid().isFluidEqual(resource))) {
-			return new FluidStack(resource.fluidID,0);
+			return new FluidStack(resource.fluidID, 0);
 		}
-		return drain(from,resource.amount,doDrain);
+		return drain(from, resource.amount, doDrain);
 	}
 
 	@Override
 	public FluidTankInfo[] getTankInfo(ForgeDirection from) {
-		if(from.ordinal() < ForgeDirection.VALID_DIRECTIONS.length) {
-			return new FluidTankInfo[]{new FluidTankInfo(sideTanks[from.ordinal()])};
+		if (from.ordinal() < ForgeDirection.VALID_DIRECTIONS.length) {
+			return new FluidTankInfo[] { new FluidTankInfo(sideTanks[from.ordinal()]) };
 		} else {
 			return null;
 		}
@@ -121,15 +123,15 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 		super.onNeighborBlockChange(blockId);
 
 		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-			if (!MainProxy.checkPipesConnections(container, container.getTile(orientations[direction.ordinal()]), orientations[direction.ordinal()])) {
-				if(MainProxy.isServer(getWorld())) {
+			if (!MainProxy.checkPipesConnections(container, container.getTile(PipeFluidTransportLogistics.orientations[direction.ordinal()]), PipeFluidTransportLogistics.orientations[direction.ordinal()])) {
+				if (MainProxy.isServer(getWorld())) {
 					FluidStack stack = sideTanks[direction.ordinal()].getFluid();
-					if(stack != null) {
+					if (stack != null) {
 						sideTanks[direction.ordinal()].setFluid(null);
 						internalTank.fill(stack, true);
 					}
 				}
-				if(renderCache[direction.ordinal()] != null) {
+				if (renderCache[direction.ordinal()] != null) {
 					renderCache[direction.ordinal()].amount = 1;
 				}
 			}
@@ -141,18 +143,20 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 		super.updateEntity();
 		updateFluid();
 	}
-	
+
 	/*
 	 * BuildCraft Fluid Sync Code
 	 */
 	private final SafeTimeTracker tracker = new SafeTimeTracker(10);
 	private long clientSyncCounter = 30;
 	public byte initClient = 0;
-	
+
 	private static final ForgeDirection[] orientations = ForgeDirection.values();
 
 	private void updateFluid() {
-		if(MainProxy.isClient(getWorld())) return;
+		if (MainProxy.isClient(getWorld())) {
+			return;
+		}
 		if (tracker.markTimeIfDelay(getWorld())) {
 
 			boolean init = false;
@@ -160,7 +164,9 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 				clientSyncCounter = 0;
 				init = true;
 			}
-			if(clientSyncCounter < 0) clientSyncCounter = 0;
+			if (clientSyncCounter < 0) {
+				clientSyncCounter = 0;
+			}
 			ModernPacket packet = computeFluidUpdate(init, true);
 			if (packet != null) {
 				MainProxy.sendPacketToAllWatchingChunk(container.xCoord, container.zCoord, MainProxy.getDimensionForWorld(getWorld()), packet);
@@ -192,9 +198,9 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 
 		FluidStack[] renderCache = this.renderCache.clone();
 
-		for (ForgeDirection dir : orientations) {
+		for (ForgeDirection dir : PipeFluidTransportLogistics.orientations) {
 			FluidStack current;
-			if(dir != ForgeDirection.UNKNOWN) {
+			if (dir != ForgeDirection.UNKNOWN) {
 				current = sideTanks[dir.ordinal()].getFluid();
 			} else {
 				current = internalTank.getFluid();
@@ -225,23 +231,23 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 
 			if (prev.fluidID != current.fluidID || initPacket) {
 				changed = true;
-				renderCache[dir.ordinal()]=new FluidStack(current.fluidID,renderCache[dir.ordinal()].amount);
+				renderCache[dir.ordinal()] = new FluidStack(current.fluidID, renderCache[dir.ordinal()].amount);
 				//TODO check: @GUIpsp Possibly instanciating multiple times, might be slow
 				delta.set(dir.ordinal() * 3 + 0);
 			}
 
 			//FIXME:Handle NBTTAGS
-/*			if (prev.itemMeta != current.itemMeta || initPacket) {
-				changed = true;
-				renderCache[dir.ordinal()]=new FluidStack(current.fluidID,renderCache[dir.ordinal()].amount,current.itemMeta);
-				delta.set(dir.ordinal() * 3 + 1);
-			}*/
+			/*			if (prev.itemMeta != current.itemMeta || initPacket) {
+							changed = true;
+							renderCache[dir.ordinal()]=new FluidStack(current.fluidID,renderCache[dir.ordinal()].amount,current.itemMeta);
+							delta.set(dir.ordinal() * 3 + 1);
+						}*/
 
 			int displayQty = (prev.amount * 4 + current.amount) / 5;
 			if (displayQty == 0 && current.amount > 0 || initPacket) {
 				displayQty = current.amount;
 			}
-			if(dir != ForgeDirection.UNKNOWN) {
+			if (dir != ForgeDirection.UNKNOWN) {
 				displayQty = Math.min(getSideCapacity(), displayQty);
 			} else {
 				displayQty = Math.min(getInnerCapacity(), displayQty);

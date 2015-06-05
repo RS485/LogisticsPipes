@@ -10,13 +10,21 @@ import net.minecraft.item.ItemStack;
 public interface IBCPipePart {
 
 	void openGateGui(EntityPlayer player, int ordinal);
+
 	boolean hasGate();
+
 	boolean canConnectRedstone();
+
 	int isPoweringTo(int l);
+
 	int isIndirectlyPoweringTo(int l);
+
 	Object getClientGui(InventoryPlayer inventory, int side);
+
 	Container getGateContainer(InventoryPlayer inventory, int side);
+
 	void addItemDrops(ArrayList<ItemStack> result);
+
 	Object getOriginal();
-	
+
 }

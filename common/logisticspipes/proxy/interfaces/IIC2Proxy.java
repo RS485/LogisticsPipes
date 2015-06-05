@@ -2,6 +2,7 @@ package logisticspipes.proxy.interfaces;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+
 import net.minecraftforge.common.util.ForgeDirection;
 
 public interface IIC2Proxy {
@@ -11,9 +12,9 @@ public interface IIC2Proxy {
 	public abstract boolean isSimilarElectricItem(ItemStack stack, ItemStack template);
 
 	public abstract boolean isFullyCharged(ItemStack stack);
-	
+
 	public abstract boolean isFullyDischarged(ItemStack stack);
-	
+
 	public abstract boolean isPartiallyCharged(ItemStack stack);
 
 	public abstract void addCraftingRecipes(ICraftingParts parts);

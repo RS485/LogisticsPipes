@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
-import buildcraft.transport.gates.GatePluggable;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
@@ -21,11 +20,11 @@ import logisticspipes.proxy.buildcraft.subproxies.IBCClickResult;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePluggable;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
-import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer;
 import logisticspipes.textures.Textures;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.MatrixTranformations;
 import logisticspipes.utils.tuples.LPPosition;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -47,10 +46,14 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+
 import net.minecraftforge.common.util.ForgeDirection;
+
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+
+import buildcraft.transport.gates.GatePluggable;
 
 public class LogisticsBlockGenericPipe extends BlockContainer {
 
@@ -68,18 +71,18 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		ArrayList<ItemStack> list = new ArrayList<ItemStack>();
 		int count = quantityDropped(metadata, fortune, world.rand);
 		for (int i = 0; i < count; i++) {
-			CoreUnroutedPipe pipe = getPipe(world, x, y, z);
+			CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, x, y, z);
 
 			if (pipe == null) {
-				pipe = pipeRemoved.get(new LPPosition(x, y, z));
+				pipe = LogisticsBlockGenericPipe.pipeRemoved.get(new LPPosition(x, y, z));
 			}
 
 			if (pipe != null) {
 				if (pipe.item != null && (pipe.canBeDestroyed() || pipe.destroyByPlayer())) {
 					list.addAll(pipe.dropContents());
 					list.add(new ItemStack(pipe.item, 1, damageDropped(metadata)));
-				} else if(pipe.item != null) {
-					cacheTileToPreventRemoval(pipe);
+				} else if (pipe.item != null) {
+					LogisticsBlockGenericPipe.cacheTileToPreventRemoval(pipe);
 				}
 			}
 		}
@@ -88,14 +91,14 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	@SuppressWarnings({"all"})
+	@SuppressWarnings({ "all" })
 	public IIcon getIcon(IBlockAccess iblockaccess, int i, int j, int k, int l) {
 		TileEntity tile = iblockaccess.getTileEntity(i, j, k);
 		if (!(tile instanceof LogisticsTileGenericPipe)) {
 			return null;
 		}
-		if(((LogisticsTileGenericPipe)tile).pipe instanceof PipeBlockRequestTable) {
-			PipeBlockRequestTable table = (PipeBlockRequestTable) ((LogisticsTileGenericPipe)tile).pipe;
+		if (((LogisticsTileGenericPipe) tile).pipe instanceof PipeBlockRequestTable) {
+			PipeBlockRequestTable table = (PipeBlockRequestTable) ((LogisticsTileGenericPipe) tile).pipe;
 			return table.getTextureFor(l);
 		}
 		if (((LogisticsTileGenericPipe) tile).renderState.textureArray != null) {
@@ -103,12 +106,12 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		}
 		return ((LogisticsTileGenericPipe) tile).renderState.currentTexture;
 	}
-	
+
 	@Override
 	@SuppressWarnings("rawtypes")
 	public void addCollisionBoxesToList(World world, int i, int j, int k, AxisAlignedBB axisalignedbb, List arraylist, Entity par7Entity) {
 		TileEntity tile = world.getTileEntity(i, j, k);
-		if(tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe)tile).pipe instanceof PipeBlockRequestTable) {
+		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe instanceof PipeBlockRequestTable) {
 			setBlockBounds(0, 0, 0, 1, 1, 1);
 			super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			return;
@@ -182,12 +185,12 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		}
 		setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 	}
-	
+
 	@Override
 	@SideOnly(Side.CLIENT)
 	public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int x, int y, int z) {
 		TileEntity tile = world.getTileEntity(x, y, z);
-		if(tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe)tile).pipe instanceof PipeBlockRequestTable) {
+		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe instanceof PipeBlockRequestTable) {
 			return AxisAlignedBB.getBoundingBox((double) x + 0, (double) y + 0, (double) z + 0, (double) x + 1, (double) y + 1, (double) z + 1);
 		}
 		RaytraceResult rayTraceResult = doRayTrace(world, x, y, z, Minecraft.getMinecraft().thePlayer);
@@ -195,93 +198,93 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		if (rayTraceResult != null && rayTraceResult.boundingBox != null) {
 			AxisAlignedBB box = rayTraceResult.boundingBox;
 			switch (rayTraceResult.hitPart) {
-			case Pluggable: {
-				float scale = 0.001F;
-				box = box.expand(scale, scale, scale);
-				break;
-			}
-			case Pipe: {
-				float scale = 0.001F;
-				box = box.expand(scale, scale, scale);
-				break;
-			}
+				case Pluggable: {
+					float scale = 0.001F;
+					box = box.expand(scale, scale, scale);
+					break;
+				}
+				case Pipe: {
+					float scale = 0.001F;
+					box = box.expand(scale, scale, scale);
+					break;
+				}
 			}
 			return box.getOffsetBoundingBox(x, y, z);
 		}
 		return super.getSelectedBoundingBoxFromPool(world, x, y, z).expand(-0.85F, -0.85F, -0.85F);
 	}
-	
+
 	@Override
 	public MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3 origin, Vec3 direction) {
 		TileEntity tile = world.getTileEntity(x, y, z);
-		if(tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe)tile).pipe instanceof PipeBlockRequestTable) {
-			this.setBlockBoundsBasedOnState(world, x, y, z);
-			origin = origin.addVector(( -x), ( -y), ( -z));
-			direction = direction.addVector(( -x), ( -y), ( -z));
+		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe instanceof PipeBlockRequestTable) {
+			setBlockBoundsBasedOnState(world, x, y, z);
+			origin = origin.addVector((-x), (-y), (-z));
+			direction = direction.addVector((-x), (-y), (-z));
 			this.setBlockBounds(0, 0, 0, 1, 1, 1);
-			Vec3 vec32 = origin.getIntermediateWithXValue(direction, this.minX);
-			Vec3 vec33 = origin.getIntermediateWithXValue(direction, this.maxX);
-			Vec3 vec34 = origin.getIntermediateWithYValue(direction, this.minY);
-			Vec3 vec35 = origin.getIntermediateWithYValue(direction, this.maxY);
-			Vec3 vec36 = origin.getIntermediateWithZValue(direction, this.minZ);
-			Vec3 vec37 = origin.getIntermediateWithZValue(direction, this.maxZ);
-			if( !this.isVecInsideYZBounds(vec32)) {
+			Vec3 vec32 = origin.getIntermediateWithXValue(direction, minX);
+			Vec3 vec33 = origin.getIntermediateWithXValue(direction, maxX);
+			Vec3 vec34 = origin.getIntermediateWithYValue(direction, minY);
+			Vec3 vec35 = origin.getIntermediateWithYValue(direction, maxY);
+			Vec3 vec36 = origin.getIntermediateWithZValue(direction, minZ);
+			Vec3 vec37 = origin.getIntermediateWithZValue(direction, maxZ);
+			if (!isVecInsideYZBounds(vec32)) {
 				vec32 = null;
 			}
-			if( !this.isVecInsideYZBounds(vec33)) {
+			if (!isVecInsideYZBounds(vec33)) {
 				vec33 = null;
 			}
-			if( !this.isVecInsideXZBounds(vec34)) {
+			if (!isVecInsideXZBounds(vec34)) {
 				vec34 = null;
 			}
-			if( !this.isVecInsideXZBounds(vec35)) {
+			if (!isVecInsideXZBounds(vec35)) {
 				vec35 = null;
 			}
-			if( !this.isVecInsideXYBounds(vec36)) {
+			if (!isVecInsideXYBounds(vec36)) {
 				vec36 = null;
 			}
-			if( !this.isVecInsideXYBounds(vec37)) {
+			if (!isVecInsideXYBounds(vec37)) {
 				vec37 = null;
 			}
 			Vec3 vec38 = null;
-			if(vec32 != null && (vec38 == null || origin.squareDistanceTo(vec32) < origin.squareDistanceTo(vec38))) {
+			if (vec32 != null && (vec38 == null || origin.squareDistanceTo(vec32) < origin.squareDistanceTo(vec38))) {
 				vec38 = vec32;
 			}
-			if(vec33 != null && (vec38 == null || origin.squareDistanceTo(vec33) < origin.squareDistanceTo(vec38))) {
+			if (vec33 != null && (vec38 == null || origin.squareDistanceTo(vec33) < origin.squareDistanceTo(vec38))) {
 				vec38 = vec33;
 			}
-			if(vec34 != null && (vec38 == null || origin.squareDistanceTo(vec34) < origin.squareDistanceTo(vec38))) {
+			if (vec34 != null && (vec38 == null || origin.squareDistanceTo(vec34) < origin.squareDistanceTo(vec38))) {
 				vec38 = vec34;
 			}
-			if(vec35 != null && (vec38 == null || origin.squareDistanceTo(vec35) < origin.squareDistanceTo(vec38))) {
+			if (vec35 != null && (vec38 == null || origin.squareDistanceTo(vec35) < origin.squareDistanceTo(vec38))) {
 				vec38 = vec35;
 			}
-			if(vec36 != null && (vec38 == null || origin.squareDistanceTo(vec36) < origin.squareDistanceTo(vec38))) {
+			if (vec36 != null && (vec38 == null || origin.squareDistanceTo(vec36) < origin.squareDistanceTo(vec38))) {
 				vec38 = vec36;
 			}
-			if(vec37 != null && (vec38 == null || origin.squareDistanceTo(vec37) < origin.squareDistanceTo(vec38))) {
+			if (vec37 != null && (vec38 == null || origin.squareDistanceTo(vec37) < origin.squareDistanceTo(vec38))) {
 				vec38 = vec37;
 			}
-			if(vec38 == null) {
+			if (vec38 == null) {
 				return null;
 			} else {
 				byte b0 = -1;
-				if(vec38 == vec32) {
+				if (vec38 == vec32) {
 					b0 = 4;
 				}
-				if(vec38 == vec33) {
+				if (vec38 == vec33) {
 					b0 = 5;
 				}
-				if(vec38 == vec34) {
+				if (vec38 == vec34) {
 					b0 = 0;
 				}
-				if(vec38 == vec35) {
+				if (vec38 == vec35) {
 					b0 = 1;
 				}
-				if(vec38 == vec36) {
+				if (vec38 == vec36) {
 					b0 = 2;
 				}
-				if(vec38 == vec37) {
+				if (vec38 == vec37) {
 					b0 = 3;
 				}
 				return new MovingObjectPosition(x, y, z, b0, vec38.addVector(x, y, z));
@@ -325,7 +328,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 		CoreUnroutedPipe pipe = tileG.pipe;
 
-		if (!isValid(pipe)) {
+		if (!LogisticsBlockGenericPipe.isValid(pipe)) {
 			return null;
 		}
 
@@ -340,7 +343,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 		// pipe
 
-		for (ForgeDirection side : DIR_VALUES) {
+		for (ForgeDirection side : LogisticsBlockGenericPipe.DIR_VALUES) {
 			if (side == ForgeDirection.UNKNOWN || tileG.isPipeConnected(side)) {
 				AxisAlignedBB bb = getPipeBoundingBox(side);
 				setBlockBounds(bb);
@@ -428,22 +431,22 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		MatrixTranformations.transform(bounds, side);
 		return AxisAlignedBB.getBoundingBox(bounds[0][0], bounds[1][0], bounds[2][0], bounds[0][1], bounds[1][1], bounds[2][1]);
 	}
-	
+
 	private boolean isVecInsideYZBounds(Vec3 par1Vec3) {
-		return par1Vec3 == null ? false : par1Vec3.yCoord >= this.minY && par1Vec3.yCoord <= this.maxY && par1Vec3.zCoord >= this.minZ && par1Vec3.zCoord <= this.maxZ;
-	}
-	
-	private boolean isVecInsideXZBounds(Vec3 par1Vec3) {
-		return par1Vec3 == null ? false : par1Vec3.xCoord >= this.minX && par1Vec3.xCoord <= this.maxX && par1Vec3.zCoord >= this.minZ && par1Vec3.zCoord <= this.maxZ;
-	}
-	
-	private boolean isVecInsideXYBounds(Vec3 par1Vec3) {
-		return par1Vec3 == null ? false : par1Vec3.xCoord >= this.minX && par1Vec3.xCoord <= this.maxX && par1Vec3.yCoord >= this.minY && par1Vec3.yCoord <= this.maxY;
+		return par1Vec3 == null ? false : par1Vec3.yCoord >= minY && par1Vec3.yCoord <= maxY && par1Vec3.zCoord >= minZ && par1Vec3.zCoord <= maxZ;
 	}
 
-    public static IIcon getRequestTableTextureFromSide(int l) {
-    	ForgeDirection dir = ForgeDirection.getOrientation(l);
-		switch(dir) {
+	private boolean isVecInsideXZBounds(Vec3 par1Vec3) {
+		return par1Vec3 == null ? false : par1Vec3.xCoord >= minX && par1Vec3.xCoord <= maxX && par1Vec3.zCoord >= minZ && par1Vec3.zCoord <= maxZ;
+	}
+
+	private boolean isVecInsideXYBounds(Vec3 par1Vec3) {
+		return par1Vec3 == null ? false : par1Vec3.xCoord >= minX && par1Vec3.xCoord <= maxX && par1Vec3.yCoord >= minY && par1Vec3.yCoord <= maxY;
+	}
+
+	public static IIcon getRequestTableTextureFromSide(int l) {
+		ForgeDirection dir = ForgeDirection.getOrientation(l);
+		switch (dir) {
 			case UP:
 				return Textures.LOGISTICS_REQUEST_TABLE[0];
 			case DOWN:
@@ -451,13 +454,12 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			default:
 				return Textures.LOGISTICS_REQUEST_TABLE[4];
 		}
-    }
+	}
 
-    @Override
-    public TileEntity createNewTileEntity(World world, int metadata) {
-        return new LogisticsTileGenericPipe();
-    }
-    
+	@Override
+	public TileEntity createNewTileEntity(World world, int metadata) {
+		return new LogisticsTileGenericPipe();
+	}
 
 	public static Map<Item, Class<? extends CoreUnroutedPipe>> pipes = new HashMap<Item, Class<? extends CoreUnroutedPipe>>();
 	public static Map<LPPosition, CoreUnroutedPipe> pipeRemoved = new HashMap<LPPosition, CoreUnroutedPipe>();
@@ -480,7 +482,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			this.hitPart = hitPart;
 			this.movingObjectPosition = movingObjectPosition;
 			this.boundingBox = boundingBox;
-			this.sideHit = side;
+			sideHit = side;
 		}
 
 		@Override
@@ -488,6 +490,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			return String.format("RayTraceResult: %s, %s", hitPart == null ? "null" : hitPart.name(), boundingBox == null ? "null" : boundingBox.toString());
 		}
 	}
+
 	private static final ForgeDirection[] DIR_VALUES = ForgeDirection.values();
 	private boolean skippedFirstIconRegister;
 	private int renderMask = 0;
@@ -554,9 +557,11 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	@Override
 	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
 		TileEntity tile = world.getTileEntity(x, y, z);
-		
+
 		if (tile instanceof LogisticsTileGenericPipe) {
-			if(((LogisticsTileGenericPipe)tile).pipe instanceof PipeBlockRequestTable) return true;
+			if (((LogisticsTileGenericPipe) tile).pipe instanceof PipeBlockRequestTable) {
+				return true;
+			}
 			return ((LogisticsTileGenericPipe) tile).isSolidOnSide(side);
 		}
 
@@ -569,14 +574,14 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 
 	public static void removePipe(CoreUnroutedPipe pipe) {
-		if (!isValid(pipe)) {
+		if (!LogisticsBlockGenericPipe.isValid(pipe)) {
 			return;
 		}
-		
-		if(pipe.canBeDestroyed() || pipe.destroyByPlayer()) {
+
+		if (pipe.canBeDestroyed() || pipe.destroyByPlayer()) {
 			pipe.onBlockRemoval();
-		} else if(pipe.preventRemove()) {
-			cacheTileToPreventRemoval(pipe);
+		} else if (pipe.preventRemove()) {
+			LogisticsBlockGenericPipe.cacheTileToPreventRemoval(pipe);
 		}
 
 		World world = pipe.container.getWorldObj();
@@ -589,18 +594,18 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		int y = pipe.container.yCoord;
 		int z = pipe.container.zCoord;
 
-		if (lastRemovedDate != world.getTotalWorldTime()) {
-			lastRemovedDate = world.getTotalWorldTime();
-			pipeRemoved.clear();
+		if (LogisticsBlockGenericPipe.lastRemovedDate != world.getTotalWorldTime()) {
+			LogisticsBlockGenericPipe.lastRemovedDate = world.getTotalWorldTime();
+			LogisticsBlockGenericPipe.pipeRemoved.clear();
 		}
 
-		pipeRemoved.put(new LPPosition(x, y, z), pipe);
+		LogisticsBlockGenericPipe.pipeRemoved.put(new LPPosition(x, y, z), pipe);
 		world.removeTileEntity(x, y, z);
 	}
 
 	@Override
 	public void breakBlock(World world, int x, int y, int z, Block block, int par6) {
-		removePipe(getPipe(world, x, y, z));
+		LogisticsBlockGenericPipe.removePipe(LogisticsBlockGenericPipe.getPipe(world, x, y, z));
 		super.breakBlock(world, x, y, z, block, par6);
 		SimpleServiceLocator.buildCraftProxy.callBCRemovePipe(world, x, y, z);
 	}
@@ -618,19 +623,19 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				continue;
 			}
 
-			CoreUnroutedPipe pipe = getPipe(world, i, j, k);
+			CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, i, j, k);
 
 			if (pipe == null) {
-				pipe = pipeRemoved.get(new LPPosition(i, j, k));
+				pipe = LogisticsBlockGenericPipe.pipeRemoved.get(new LPPosition(i, j, k));
 			}
 
 			if (pipe.item != null && (pipe.canBeDestroyed() || pipe.destroyByPlayer())) {
-				for(ItemStack stack:pipe.dropContents()) {
+				for (ItemStack stack : pipe.dropContents()) {
 					dropBlockAsItem(world, i, j, k, stack);
 				}
 				dropBlockAsItem(world, i, j, k, new ItemStack(pipe.item, 1, damageDropped(l)));
-			} else if(pipe.item != null) {
-				cacheTileToPreventRemoval(pipe);
+			} else if (pipe.item != null) {
+				LogisticsBlockGenericPipe.cacheTileToPreventRemoval(pipe);
 			}
 		}
 	}
@@ -649,15 +654,15 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		if (rayTraceResult != null && rayTraceResult.boundingBox != null) {
 			switch (rayTraceResult.hitPart) {
 				case Pluggable: {
-					CoreUnroutedPipe pipe = getPipe(world, x, y, z);
+					CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, x, y, z);
 					IBCPipePluggable pluggable = pipe.container.tilePart.getBCPipePluggable(rayTraceResult.sideHit);
 					ItemStack[] drops = pluggable.getDropItems(pipe.container);
 					if (drops != null && drops.length > 0) {
 						return drops[0];
 					}
 				}
-			case Pipe:
-				return new ItemStack(getPipe(world, x, y, z).item);
+				case Pipe:
+					return new ItemStack(LogisticsBlockGenericPipe.getPipe(world, x, y, z).item);
 			}
 		}
 		return null;
@@ -668,9 +673,9 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	public void onNeighborBlockChange(World world, int x, int y, int z, Block block) {
 		super.onNeighborBlockChange(world, x, y, z, block);
 
-		CoreUnroutedPipe pipe = getPipe(world, x, y, z);
+		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, x, y, z);
 
-		if (isValid(pipe)) {
+		if (LogisticsBlockGenericPipe.isValid(pipe)) {
 			pipe.container.scheduleNeighborChange();
 		}
 		SimpleServiceLocator.buildCraftProxy.callBCNeighborBlockChange(world, x, y, z, block);
@@ -679,9 +684,9 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	@Override
 	public int onBlockPlaced(World world, int x, int y, int z, int side, float par6, float par7, float par8, int meta) {
 		super.onBlockPlaced(world, x, y, z, side, par6, par7, par8, meta);
-		CoreUnroutedPipe pipe = getPipe(world, x, y, z);
+		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, x, y, z);
 
-		if (isValid(pipe)) {
+		if (LogisticsBlockGenericPipe.isValid(pipe)) {
 			pipe.onBlockPlaced();
 		}
 
@@ -691,28 +696,28 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase placer, ItemStack stack) {
 		super.onBlockPlacedBy(world, x, y, z, placer, stack);
-		CoreUnroutedPipe pipe = getPipe(world, x, y, z);
+		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, x, y, z);
 
-		if (isValid(pipe)) {
+		if (LogisticsBlockGenericPipe.isValid(pipe)) {
 			pipe.onBlockPlacedBy(placer);
-			if(pipe instanceof IRotationProvider) {
+			if (pipe instanceof IRotationProvider) {
 				double xPos = pipe.getX() + 0.5 - placer.posX;
 				double zPos = pipe.getZ() + 0.5 - placer.posZ;
 				double w = Math.atan2(xPos, zPos);
 				double halfPI = Math.PI / 2;
 				double halfhalfPI = halfPI / 2;
 				w -= halfhalfPI;
-				if(w < 0) {
+				if (w < 0) {
 					w += 2 * Math.PI;
 				}
-				if(0 < w && w <= halfPI) {
-					((IRotationProvider)pipe).setRotation(1);
-				} else if(halfPI < w && w <= 2*halfPI) {
-					((IRotationProvider)pipe).setRotation(2);
-				} else if(2*halfPI < w && w <= 3*halfPI) {
-					((IRotationProvider)pipe).setRotation(0);
-				} else if(3*halfPI < w && w <= 4*halfPI) {
-					((IRotationProvider)pipe).setRotation(3);
+				if (0 < w && w <= halfPI) {
+					((IRotationProvider) pipe).setRotation(1);
+				} else if (halfPI < w && w <= 2 * halfPI) {
+					((IRotationProvider) pipe).setRotation(2);
+				} else if (2 * halfPI < w && w <= 3 * halfPI) {
+					((IRotationProvider) pipe).setRotation(0);
+				} else if (3 * halfPI < w && w <= 4 * halfPI) {
+					((IRotationProvider) pipe).setRotation(3);
 				}
 			}
 		}
@@ -724,9 +729,9 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 		world.notifyBlocksOfNeighborChange(x, y, z, LogisticsPipes.LogisticsPipeBlock);
 
-		CoreUnroutedPipe pipe = getPipe(world, x, y, z);
+		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, x, y, z);
 
-		if (isValid(pipe)) {
+		if (LogisticsBlockGenericPipe.isValid(pipe)) {
 			ItemStack currentItem = player.getCurrentEquippedItem();
 
 			if (currentItem == null) {
@@ -742,10 +747,10 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				return pipe.blockActivated(player);
 			}
 			IBCClickResult result = SimpleServiceLocator.buildCraftProxy.handleBCClickOnPipe(world, x, y, z, player, side, xOffset, yOffset, zOffset, pipe);
-			if(result.handled()) {
+			if (result.handled()) {
 				return true;
 			}
-			if(result.blocked()) {
+			if (result.blocked()) {
 				return false;
 			}
 			if (pipe.bcPipePart.hasGate()) {
@@ -766,18 +771,18 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	public void onEntityCollidedWithBlock(World world, int i, int j, int k, Entity entity) {
 		super.onEntityCollidedWithBlock(world, i, j, k, entity);
 
-		CoreUnroutedPipe pipe = getPipe(world, i, j, k);
+		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, i, j, k);
 
-		if (isValid(pipe)) {
+		if (LogisticsBlockGenericPipe.isValid(pipe)) {
 			pipe.onEntityCollidedWithBlock(entity);
 		}
 	}
 
 	@Override
 	public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side) {
-		CoreUnroutedPipe pipe = getPipe(world, x, y, z);
+		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, x, y, z);
 
-		if (isValid(pipe)) {
+		if (LogisticsBlockGenericPipe.isValid(pipe)) {
 			return pipe.bcPipePart.canConnectRedstone();
 		} else {
 			return false;
@@ -786,9 +791,9 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	@Override
 	public int isProvidingStrongPower(IBlockAccess iblockaccess, int x, int y, int z, int l) {
-		CoreUnroutedPipe pipe = getPipe(iblockaccess, x, y, z);
+		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(iblockaccess, x, y, z);
 
-		if (isValid(pipe)) {
+		if (LogisticsBlockGenericPipe.isValid(pipe)) {
 			return pipe.bcPipePart.isPoweringTo(l);
 		} else {
 			return 0;
@@ -802,9 +807,9 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	@Override
 	public int isProvidingWeakPower(IBlockAccess world, int i, int j, int k, int l) {
-		CoreUnroutedPipe pipe = getPipe(world, i, j, k);
+		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, i, j, k);
 
-		if (isValid(pipe)) {
+		if (LogisticsBlockGenericPipe.isValid(pipe)) {
 			return pipe.bcPipePart.isIndirectlyPoweringTo(l);
 		} else {
 			return 0;
@@ -817,9 +822,9 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		item.setUnlocalizedName(clas.getSimpleName());
 		GameRegistry.registerItem(item, item.getUnlocalizedName());
 
-		pipes.put(item, clas);
+		LogisticsBlockGenericPipe.pipes.put(item, clas);
 
-		CoreUnroutedPipe dummyPipe = createPipe(item);
+		CoreUnroutedPipe dummyPipe = LogisticsBlockGenericPipe.createPipe(item);
 		if (dummyPipe != null) {
 			item.setPipeIconIndex(dummyPipe.getIconIndexForItem(), dummyPipe.getTextureIndex());
 			MainProxy.proxy.setIconProviderFromPipe(item, dummyPipe);
@@ -829,13 +834,13 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 
 	public static boolean isPipeRegistered(int key) {
-		return pipes.containsKey(key);
+		return LogisticsBlockGenericPipe.pipes.containsKey(key);
 	}
 
 	public static CoreUnroutedPipe createPipe(Item key) {
 
 		try {
-			Class<? extends CoreUnroutedPipe> pipe = pipes.get(key);
+			Class<? extends CoreUnroutedPipe> pipe = LogisticsBlockGenericPipe.pipes.get(key);
 			if (pipe != null) {
 				return pipe.getConstructor(Item.class).newInstance(key);
 			} else {
@@ -884,7 +889,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 
 	public static boolean isValid(CoreUnroutedPipe pipe) {
-		return isFullyDefined(pipe);
+		return LogisticsBlockGenericPipe.isFullyDefined(pipe);
 	}
 
 	@Override
@@ -896,8 +901,8 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			skippedFirstIconRegister = true;
 			return;
 		}
-		for (Item i : pipes.keySet()) {
-			CoreUnroutedPipe dummyPipe = createPipe(i);
+		for (Item i : LogisticsBlockGenericPipe.pipes.keySet()) {
+			CoreUnroutedPipe dummyPipe = LogisticsBlockGenericPipe.createPipe(i);
 			if (dummyPipe != null) {
 				dummyPipe.getIconProvider().registerIcons(iconRegister);
 			}
@@ -910,9 +915,12 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	 * the particles. Useful when you have entirely different texture sheets for
 	 * different sides/locations in the world.
 	 *
-	 * @param worldObj The current world
-	 * @param target The target the player is looking at {x/y/z/side/sub}
-	 * @param effectRenderer A reference to the current effect renderer.
+	 * @param worldObj
+	 *            The current world
+	 * @param target
+	 *            The target the player is looking at {x/y/z/side/sub}
+	 * @param effectRenderer
+	 *            A reference to the current effect renderer.
 	 * @return True to prevent vanilla digging particles form spawning.
 	 */
 	@SideOnly(Side.CLIENT)
@@ -922,7 +930,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		int y = target.blockY;
 		int z = target.blockZ;
 
-		CoreUnroutedPipe pipe = getPipe(worldObj, x, y, z);
+		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(worldObj, x, y, z);
 		if (pipe == null) {
 			return false;
 		}
@@ -973,18 +981,24 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	 * your block. So be sure to do proper sanity checks before assuming that
 	 * the location is this block.
 	 *
-	 * @param worldObj The current world
-	 * @param x X position to spawn the particle
-	 * @param y Y position to spawn the particle
-	 * @param z Z position to spawn the particle
-	 * @param meta The metadata for the block before it was destroyed.
-	 * @param effectRenderer A reference to the current effect renderer.
+	 * @param worldObj
+	 *            The current world
+	 * @param x
+	 *            X position to spawn the particle
+	 * @param y
+	 *            Y position to spawn the particle
+	 * @param z
+	 *            Z position to spawn the particle
+	 * @param meta
+	 *            The metadata for the block before it was destroyed.
+	 * @param effectRenderer
+	 *            A reference to the current effect renderer.
 	 * @return True to prevent vanilla break particles from spawning.
 	 */
 	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean addDestroyEffects(World worldObj, int x, int y, int z, int meta, EffectRenderer effectRenderer) {
-		CoreUnroutedPipe pipe = getPipe(worldObj, x, y, z);
+		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(worldObj, x, y, z);
 		if (pipe == null) {
 			return false;
 		}
@@ -1016,7 +1030,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		}
 		return super.colorMultiplier(world, x, y, z);
 	}
-	
+
 	private static void cacheTileToPreventRemoval(CoreUnroutedPipe pipe) {
 		final World worldCache = pipe.getWorld();
 		final int xCache = pipe.getX();
@@ -1026,19 +1040,22 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		final CoreUnroutedPipe fPipe = pipe;
 		fPipe.setPreventRemove(true);
 		QueuedTasks.queueTask(new Callable<Object>() {
+
 			@Override
 			public Object call() throws Exception {
-				if(!fPipe.preventRemove()) return null;
+				if (!fPipe.preventRemove()) {
+					return null;
+				}
 				boolean changed = false;
-				if(worldCache.getBlock(xCache, yCache, zCache) != LogisticsPipes.LogisticsPipeBlock) {
+				if (worldCache.getBlock(xCache, yCache, zCache) != LogisticsPipes.LogisticsPipeBlock) {
 					worldCache.setBlock(xCache, yCache, zCache, LogisticsPipes.LogisticsPipeBlock);
 					changed = true;
 				}
-				if(worldCache.getTileEntity(xCache, yCache, zCache) != tileCache) {
+				if (worldCache.getTileEntity(xCache, yCache, zCache) != tileCache) {
 					worldCache.setTileEntity(xCache, yCache, zCache, tileCache);
 					changed = true;
 				}
-				if(changed) {
+				if (changed) {
 					worldCache.notifyBlockChange(xCache, yCache, zCache, LogisticsPipes.LogisticsPipeBlock);
 				}
 				fPipe.setPreventRemove(false);

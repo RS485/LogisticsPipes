@@ -5,7 +5,6 @@ import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 
-
 public class CraftingCleanupUpgrade implements IPipeUpgrade {
 
 	@Override
@@ -25,11 +24,11 @@ public class CraftingCleanupUpgrade implements IPipeUpgrade {
 
 	@Override
 	public String[] getAllowedPipes() {
-		return new String[]{"crafting"};
+		return new String[] { "crafting" };
 	}
 
 	@Override
 	public String[] getAllowedModules() {
-		return new String[]{"crafting"};
+		return new String[] { "crafting" };
 	}
 }

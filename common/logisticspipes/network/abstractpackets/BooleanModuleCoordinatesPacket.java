@@ -4,11 +4,12 @@ import java.io.IOException;
 
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public abstract class BooleanModuleCoordinatesPacket extends ModuleCoordinatesPacket {
 
 	@Getter

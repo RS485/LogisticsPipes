@@ -2,10 +2,11 @@ package logisticspipes.pipes;
 
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 
-public class PipeLogisticsChassiMk1 extends PipeLogisticsChassi{
+public class PipeLogisticsChassiMk1 extends PipeLogisticsChassi {
 
 	public PipeLogisticsChassiMk1(Item item) {
 		super(item);
@@ -20,11 +21,12 @@ public class PipeLogisticsChassiMk1 extends PipeLogisticsChassi{
 	public int getChassiSize() {
 		return 1;
 	}
+
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/chassipipe_size1.png");
 
 	@Override
 	public ResourceLocation getChassiGUITexture() {
-		return TEXTURE;
+		return PipeLogisticsChassiMk1.TEXTURE;
 	}
 
 }

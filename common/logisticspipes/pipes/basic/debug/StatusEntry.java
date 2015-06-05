@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class StatusEntry {
+
 	public String name;
 	public List<StatusEntry> subEntry;
 }

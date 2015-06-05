@@ -10,9 +10,11 @@ import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierInventory;
+
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+
 import net.minecraftforge.oredict.OreDictionary;
 
 public class GuiOreDictItemSink extends ModuleBaseGui {
@@ -38,7 +40,7 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 
 		dummy.addNormalSlotsForPlayerInventory(7, 126);
 
-	    this.inventorySlots = dummy;
+		inventorySlots = dummy;
 		xSize = 175;
 		ySize = 208;
 	}
@@ -47,18 +49,18 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 	@Override
 	public void initGui() {
 		super.initGui();
-		this.buttonList.clear();
-		this.buttonList.add(new SmallGuiButton(0, guiLeft + 159, guiTop + 5, 10, 10, ""));
-		this.buttonList.add(new SmallGuiButton(1, guiLeft + 159, guiTop + 17, 10, 10, ""));
-		((GuiButton)buttonList.get(0)).enabled = true;
-		((GuiButton)buttonList.get(1)).enabled = true;
+		buttonList.clear();
+		buttonList.add(new SmallGuiButton(0, guiLeft + 159, guiTop + 5, 10, 10, ""));
+		buttonList.add(new SmallGuiButton(1, guiLeft + 159, guiTop + 17, 10, 10, ""));
+		((GuiButton) buttonList.get(0)).enabled = true;
+		((GuiButton) buttonList.get(1)).enabled = true;
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton par1GuiButton) {
-		if(par1GuiButton.id == 0) {
+		if (par1GuiButton.id == 0) {
 			currentOffset -= 1;
-		} else if(par1GuiButton.id == 1) {
+		} else if (par1GuiButton.id == 1) {
 			currentOffset += 1;
 		} else {
 			super.actionPerformed(par1GuiButton);
@@ -69,7 +71,7 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 	protected void mouseClicked(int i, int j, int k) {
 		int x = i - guiLeft;
 		int y = j - guiTop;
-		if(0 < x && x < 175 && 0 < y && y < 208) {
+		if (0 < x && x < 175 && 0 < y && y < 208) {
 			mouseX = x;
 			mouseY = y;
 		}
@@ -84,33 +86,36 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 7, guiTop + 126);
 		GuiGraphics.drawSlotBackground(mc, guiLeft + 6, guiTop + 7);
 
-		if(tmpInv.getStackInSlot(0) != null) {
+		if (tmpInv.getStackInSlot(0) != null) {
 			List<String> oreNames = getOreNames(tmpInv.getStackInSlot(0));
-			for(String name : oreNames) {
-				if(!unsunkNames.contains(name))
+			for (String name : oreNames) {
+				if (!unsunkNames.contains(name)) {
 					unsunkNames.add(name);
+				}
 			}
 			tmpInv.clearInventorySlotContents(0);
 		}
 
-		if(currentOffset > unsunkNames.size() - 2)
+		if (currentOffset > unsunkNames.size() - 2) {
 			currentOffset = unsunkNames.size() - 2;
-		if(currentOffset < 0)
+		}
+		if (currentOffset < 0) {
 			currentOffset = 0;
+		}
 
 		//draw unsunk list and highlight bar, handle clicks
 		SimpleGraphics.drawRectNoBlend(guiLeft + 26, guiTop + 5, guiLeft + 159, guiTop + 27, Color.DARK_GREY, 0.0);
-		for(int i=0; i + currentOffset < unsunkNames.size() && i < 2; i++) {
-			if(27 <= pointerX && pointerX < 158 && 6 + (10 * i) <= pointerY && pointerY < 6 + (10 * (i + 1))) {
+		for (int i = 0; i + currentOffset < unsunkNames.size() && i < 2; i++) {
+			if (27 <= pointerX && pointerX < 158 && 6 + (10 * i) <= pointerY && pointerY < 6 + (10 * (i + 1))) {
 				SimpleGraphics.drawRectNoBlend(guiLeft + 27, guiTop + 6 + (10 * i), guiLeft + 158, guiTop + 6 + (10 * (i + 1)), Color.LIGHT_GREY, 0.0);
 			}
 			mc.fontRenderer.drawString(unsunkNames.get(currentOffset + i), guiLeft + 28, guiTop + 7 + (10 * i), 0x404040);
-			if(27 <= mouseX && mouseX < 158 && 6 + (10 * i) <= mouseY && mouseY < 6 + (10 * (i + 1))) {
+			if (27 <= mouseX && mouseX < 158 && 6 + (10 * i) <= mouseY && mouseY < 6 + (10 * (i + 1))) {
 				mouseX = 0;
 				mouseY = 0;
-				if(_itemSink.oreList.size() < 9) {
+				if (_itemSink.oreList.size() < 9) {
 					String oreName = unsunkNames.get(currentOffset + i);
-					if(!_itemSink.oreList.contains(oreName)) {
+					if (!_itemSink.oreList.contains(oreName)) {
 						_itemSink.oreList.add(oreName);
 						_itemSink.OreListChanged();
 					}
@@ -121,17 +126,18 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 
 		//draw main list and highlight bar, handle clicks
 		SimpleGraphics.drawRectNoBlend(guiLeft + 5, guiTop + 30, guiLeft + 169, guiTop + 122, Color.DARK_GREY, 0.0);
-		for(int i=0; i < _itemSink.oreList.size() && i < 9; i++) {
-			if(6 <= pointerX && pointerX < 168 && 31 + (10 * i) <= pointerY && pointerY < 31 + (10 * (i + 1))) {
+		for (int i = 0; i < _itemSink.oreList.size() && i < 9; i++) {
+			if (6 <= pointerX && pointerX < 168 && 31 + (10 * i) <= pointerY && pointerY < 31 + (10 * (i + 1))) {
 				SimpleGraphics.drawRectNoBlend(guiLeft + 6, guiTop + 31 + (10 * i), guiLeft + 168, guiTop + 31 + (10 * (i + 1)), Color.LIGHT_GREY, 0.0);
 			}
 			mc.fontRenderer.drawString(_itemSink.oreList.get(i), guiLeft + 7, guiTop + 32 + (10 * i), 0x404040);
-			if(6 <= mouseX && mouseX < 168 && 31 + (10 * i) <= mouseY && mouseY < 31 + (10 * (i + 1))) {
+			if (6 <= mouseX && mouseX < 168 && 31 + (10 * i) <= mouseY && mouseY < 31 + (10 * (i + 1))) {
 				mouseX = 0;
 				mouseY = 0;
 				String oreName = _itemSink.oreList.get(i);
-				if(!unsunkNames.contains(oreName))
+				if (!unsunkNames.contains(oreName)) {
 					unsunkNames.add(oreName);
+				}
 				_itemSink.oreList.remove(oreName);
 				_itemSink.OreListChanged();
 			}
@@ -141,10 +147,11 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 	private List<String> getOreNames(ItemStack s) {
 		int oreids[] = OreDictionary.getOreIDs(s);
 		List<String> oreNames = new ArrayList<String>(oreids.length);
-		for(int i=0; i < oreids.length; i++) {
-			String oreName = OreDictionary.getOreName(oreids[i]);
-			if(oreName != null && !oreName.equals("Unknown") && !oreNames.contains(oreName))
+		for (int oreid : oreids) {
+			String oreName = OreDictionary.getOreName(oreid);
+			if (oreName != null && !oreName.equals("Unknown") && !oreNames.contains(oreName)) {
 				oreNames.add(oreName);
+			}
 		}
 		return oreNames;
 	}

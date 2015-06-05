@@ -5,16 +5,18 @@ import java.util.List;
 
 import logisticspipes.proxy.interfaces.ICraftingParts;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+
+import cofh.api.transport.IEnderItemHandler;
+import cofh.api.transport.RegistryEnderAttuned;
 import cofh.thermalexpansion.block.TEBlocks;
 import cofh.thermalexpansion.block.ender.TileTesseract;
 import cofh.thermalexpansion.item.TEItems;
-import cofh.api.transport.IEnderItemHandler;
-import cofh.api.transport.RegistryEnderAttuned;
 
 public class ThermalExpansionProxy implements IThermalExpansionProxy {
-	
+
 	@Override
 	public boolean isTesseract(TileEntity tile) {
 		return tile instanceof TileTesseract;
@@ -22,15 +24,17 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 
 	@Override
 	public List<TileEntity> getConnectedTesseracts(TileEntity tile) {
-		List<IEnderItemHandler> interfaces = RegistryEnderAttuned.getLinkedItemOutputs((TileTesseract)tile);
-	    List<TileEntity> validOutputs = new LinkedList<TileEntity>();
-	    if(interfaces == null) return validOutputs;
-	    for (IEnderItemHandler object: interfaces) {
-	    	if(object.canReceiveItems() && object.canSendItems() && object instanceof TileEntity) {
-	    		validOutputs.add((TileEntity) object);
-	    	}
-	    }
-	    return validOutputs;
+		List<IEnderItemHandler> interfaces = RegistryEnderAttuned.getLinkedItemOutputs((TileTesseract) tile);
+		List<TileEntity> validOutputs = new LinkedList<TileEntity>();
+		if (interfaces == null) {
+			return validOutputs;
+		}
+		for (IEnderItemHandler object : interfaces) {
+			if (object.canReceiveItems() && object.canSendItems() && object instanceof TileEntity) {
+				validOutputs.add((TileEntity) object);
+			}
+		}
+		return validOutputs;
 	}
 
 	@Override
@@ -122,7 +126,7 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 			public Object getPowerCoilGold() {
 				return TEItems.powerCoilGold;
 			}
-			
+
 		};
 	}
 }

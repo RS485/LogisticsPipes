@@ -24,11 +24,11 @@ public class CraftingByproductUpgrade implements IPipeUpgrade {
 
 	@Override
 	public String[] getAllowedPipes() {
-		return new String[]{"crafting"};
+		return new String[] { "crafting" };
 	}
 
 	@Override
 	public String[] getAllowedModules() {
-		return new String[]{"crafting"};
+		return new String[] { "crafting" };
 	}
 }

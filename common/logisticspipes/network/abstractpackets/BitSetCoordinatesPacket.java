@@ -5,17 +5,18 @@ import java.util.BitSet;
 
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public abstract class BitSetCoordinatesPacket extends CoordinatesPacket {
 
 	@Getter
 	@Setter
 	private BitSet flags;
-	
+
 	public BitSetCoordinatesPacket(int id) {
 		super(id);
 	}

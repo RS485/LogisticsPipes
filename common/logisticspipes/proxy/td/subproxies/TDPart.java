@@ -1,20 +1,22 @@
 package logisticspipes.proxy.td.subproxies;
 
-import cofh.thermaldynamics.core.TickHandler;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.td.LPItemDuct;
 import logisticspipes.utils.tuples.LPPosition;
-import net.minecraft.nbt.NBTTagCompound;
+
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+
 import net.minecraftforge.common.util.ForgeDirection;
 
+import cofh.thermaldynamics.core.TickHandler;
+
 public class TDPart implements ITDPart {
-	
+
 	private final LogisticsTileGenericPipe pipe;
 	private final LPItemDuct[] thermalDynamicsDucts;
-	
+
 	public TDPart(LogisticsTileGenericPipe pipe) {
 		this.pipe = pipe;
 		thermalDynamicsDucts = new LPItemDuct[6];
@@ -22,11 +24,11 @@ public class TDPart implements ITDPart {
 
 	@Override
 	public TileEntity getInternalDuctForSide(ForgeDirection opposite) {
-		if(opposite.ordinal() < 6) {
-			LPItemDuct duct =  thermalDynamicsDucts[opposite.ordinal()];
-			if(duct == null) {
+		if (opposite.ordinal() < 6) {
+			LPItemDuct duct = thermalDynamicsDucts[opposite.ordinal()];
+			if (duct == null) {
 				duct = thermalDynamicsDucts[opposite.ordinal()] = new LPItemDuct(pipe, opposite);
-				if(MainProxy.isServer(pipe.getWorldObj())) {
+				if (MainProxy.isServer(pipe.getWorldObj())) {
 					TickHandler.addMultiBlockToCalculate(duct);
 				}
 				duct.setWorldObj(pipe.getWorldObj());
@@ -34,9 +36,9 @@ public class TDPart implements ITDPart {
 				duct.yCoord = pipe.yCoord;
 				duct.zCoord = pipe.zCoord;
 				duct.validate();
-			    LPPosition pos = new LPPosition((TileEntity) pipe);
-			    pos.moveForward(opposite);
-			    duct.onNeighborTileChange(pos.getX(), pos.getY(), pos.getZ());
+				LPPosition pos = new LPPosition((TileEntity) pipe);
+				pos.moveForward(opposite);
+				duct.onNeighborTileChange(pos.getX(), pos.getY(), pos.getZ());
 			}
 			return duct;
 		}
@@ -45,8 +47,8 @@ public class TDPart implements ITDPart {
 
 	@Override
 	public void setWorldObj_LP(World world) {
-		for(int i=0; i < 6;i++) {
-			if(thermalDynamicsDucts[i] != null) {
+		for (int i = 0; i < 6; i++) {
+			if (thermalDynamicsDucts[i] != null) {
 				thermalDynamicsDucts[i].setWorldObj(world);
 				thermalDynamicsDucts[i].xCoord = pipe.xCoord;
 				thermalDynamicsDucts[i].yCoord = pipe.yCoord;
@@ -57,8 +59,8 @@ public class TDPart implements ITDPart {
 
 	@Override
 	public void invalidate() {
-		for(int i=0; i < 6;i++) {
-			if(thermalDynamicsDucts[i] != null) {
+		for (int i = 0; i < 6; i++) {
+			if (thermalDynamicsDucts[i] != null) {
 				thermalDynamicsDucts[i].invalidate();
 			}
 		}
@@ -66,8 +68,8 @@ public class TDPart implements ITDPart {
 
 	@Override
 	public void onChunkUnload() {
-		for(int i=0; i < 6;i++) {
-			if(thermalDynamicsDucts[i] != null) {
+		for (int i = 0; i < 6; i++) {
+			if (thermalDynamicsDucts[i] != null) {
 				thermalDynamicsDucts[i].onChunkUnload();
 			}
 		}
@@ -75,8 +77,8 @@ public class TDPart implements ITDPart {
 
 	@Override
 	public void scheduleNeighborChange() {
-		for(int i=0; i < 6;i++) {
-			if(thermalDynamicsDucts[i] != null) {
+		for (int i = 0; i < 6; i++) {
+			if (thermalDynamicsDucts[i] != null) {
 				thermalDynamicsDucts[i].onNeighborBlockChange();
 			}
 		}
@@ -84,8 +86,8 @@ public class TDPart implements ITDPart {
 
 	@Override
 	public void connectionsChanged() {
-		for(int i=0; i < 6;i++) {
-			if(thermalDynamicsDucts[i] != null && thermalDynamicsDucts[i].myGrid != null) {
+		for (int i = 0; i < 6; i++) {
+			if (thermalDynamicsDucts[i] != null && thermalDynamicsDucts[i].myGrid != null) {
 				thermalDynamicsDucts[i].myGrid.destroyAndRecreate();
 			}
 		}

@@ -2,15 +2,19 @@ package logisticspipes.proxy.buildcraft;
 
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
+
 import net.minecraftforge.common.util.ForgeDirection;
+
 import buildcraft.api.transport.pluggable.IFacadePluggable;
 import buildcraft.api.transport.pluggable.PipePluggable;
 import buildcraft.transport.render.FacadeBlockAccess;
 
 public class LPFacadeBlockAccess extends FacadeBlockAccess {
+
 	private final IBlockAccess world;
 	private final ForgeDirection side;
 
@@ -46,7 +50,7 @@ public class LPFacadeBlockAccess extends FacadeBlockAccess {
 
 	@Override
 	public boolean isAirBlock(int x, int y, int z) {
-		if(world.getBlock(x, y, z) instanceof LogisticsBlockGenericPipe) {
+		if (world.getBlock(x, y, z) instanceof LogisticsBlockGenericPipe) {
 			return false;
 		}
 		return super.isAirBlock(x, y, z);

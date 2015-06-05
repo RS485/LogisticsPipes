@@ -1,9 +1,5 @@
 package logisticspipes.network;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.buffer.Unpooled;
-
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -26,13 +22,19 @@ import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
+
 import net.minecraft.item.Item;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTSizeTracker;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+
 import net.minecraftforge.common.util.ForgeDirection;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.Unpooled;
 
 public class LPDataInputStream extends DataInputStream {
 
@@ -43,23 +45,26 @@ public class LPDataInputStream extends DataInputStream {
 	public LPDataInputStream(ByteBuf inputBytes) throws IOException {
 		super(new ByteBufInputStream(inputBytes));
 	}
-	
+
 	public ForgeDirection readForgeDirection() throws IOException {
 		int dir = in.read();
-		if(dir == 10) return null;
+		if (dir == 10) {
+			return null;
+		}
 		return ForgeDirection.values()[dir];
 	}
-	
+
 	public ExitRoute readExitRoute(World world) throws IOException {
-		IRouter destination = this.readIRouter(world);
-		IRouter root = this.readIRouter(world);
-		ForgeDirection exitOri = this.readForgeDirection();
-		ForgeDirection insertOri = this.readForgeDirection();
+		IRouter destination = readIRouter(world);
+		IRouter root = readIRouter(world);
+		ForgeDirection exitOri = readForgeDirection();
+		ForgeDirection insertOri = readForgeDirection();
 		EnumSet<PipeRoutingConnectionType> connectionDetails = this.readEnumSet(PipeRoutingConnectionType.class);
-		double distanceToDestination = this.readDouble();
-		double destinationDistanceToRoot = this.readDouble();
-		int blockDistance = this.readInt();
+		double distanceToDestination = readDouble();
+		double destinationDistanceToRoot = readDouble();
+		int blockDistance = readInt();
 		List<LPPosition> positions = this.readList(new IReadListObject<LPPosition>() {
+
 			@Override
 			public LPPosition readObject(LPDataInputStream data) throws IOException {
 				return data.readLPPosition();
@@ -69,9 +74,9 @@ public class LPDataInputStream extends DataInputStream {
 		e.distanceToDestination = distanceToDestination;
 		e.debug.filterPosition = positions;
 		e.debug.toStringNetwork = this.readUTF();
-		e.debug.isNewlyAddedCanidate = this.readBoolean();
-		e.debug.isTraced = this.readBoolean();
-		e.debug.index = this.readInt();
+		e.debug.isNewlyAddedCanidate = readBoolean();
+		e.debug.isTraced = readBoolean();
+		e.debug.index = readInt();
 		return e;
 	}
 
@@ -80,38 +85,38 @@ public class LPDataInputStream extends DataInputStream {
 	 * @throws IOException
 	 */
 	public IRouter readIRouter(World world) throws IOException {
-		if(in.read() == 0) {
+		if (in.read() == 0) {
 			return null;
 		} else {
-			LPPosition pos = this.readLPPosition();
+			LPPosition pos = readLPPosition();
 			TileEntity tile = pos.getTileEntity(world);
-			if(tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe)tile).pipe instanceof CoreRoutedPipe) {
-				return ((CoreRoutedPipe)((LogisticsTileGenericPipe)tile).pipe).getRouter();
+			if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe) {
+				return ((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).getRouter();
 			}
 			return null;
 		}
 	}
 
 	public LPPosition readLPPosition() throws IOException {
-		return new LPPosition(this.readDouble(), this.readDouble(), this.readDouble());
+		return new LPPosition(readDouble(), readDouble(), readDouble());
 	}
-	
+
 	public <T extends Enum<T>> EnumSet<T> readEnumSet(Class<T> clazz) throws IOException {
 		EnumSet<T> types = EnumSet.noneOf(clazz);
 		T[] parts = clazz.getEnumConstants();
 		int length = in.read();
 		byte[] set = new byte[length];
 		in.read(set);
-		for(T part: parts) {
-			if((set[part.ordinal() / 8] & (1 << (part.ordinal() % 8))) != 0) {
+		for (T part : parts) {
+			if ((set[part.ordinal() / 8] & (1 << (part.ordinal() % 8))) != 0) {
 				types.add(part);
 			}
 		}
 		return types;
 	}
-	
+
 	public BitSet readBitSet() throws IOException {
-		byte size = this.readByte();
+		byte size = readByte();
 		byte[] bytes = new byte[size];
 		this.read(bytes);
 		BitSet bits = new BitSet();
@@ -122,112 +127,120 @@ public class LPDataInputStream extends DataInputStream {
 		}
 		return bits;
 	}
-	
+
 	public NBTTagCompound readNBTTagCompound() throws IOException {
-		short legth = this.readShort();
-		if(legth < 0) {
+		short legth = readShort();
+		if (legth < 0) {
 			return null;
 		} else {
 			byte[] array = new byte[legth];
 			this.readFully(array);
 			return CompressedStreamTools.func_152457_a(array, new NBTSizeTracker(Long.MAX_VALUE));
 		}
-		
+
 	}
-	
+
 	public boolean[] readBooleanArray() throws IOException {
-		boolean[] array = new boolean[this.readInt()];
-		BitSet set = this.readBitSet();
-		for(int i=0;i<array.length;i++) {
+		boolean[] array = new boolean[readInt()];
+		BitSet set = readBitSet();
+		for (int i = 0; i < array.length; i++) {
 			array[i] = set.get(i);
 		}
 		return array;
 	}
-	
+
 	public int[] readIntegerArray() throws IOException {
-		int[] array = new int[this.readInt()];
-		for(int i=0;i<array.length;i++) {
-			array[i] = this.readInt();
+		int[] array = new int[readInt()];
+		for (int i = 0; i < array.length; i++) {
+			array[i] = readInt();
 		}
 		return array;
 	}
-	
+
 	public ItemIdentifier readItemIdentifier() throws IOException {
-		if(!this.readBoolean()) return null;
-		int itemID = this.readInt();
-		int damage = this.readInt();
-		NBTTagCompound tag = this.readNBTTagCompound();
+		if (!readBoolean()) {
+			return null;
+		}
+		int itemID = readInt();
+		int damage = readInt();
+		NBTTagCompound tag = readNBTTagCompound();
 		return ItemIdentifier.get(Item.getItemById(itemID), damage, tag);
 	}
-	
+
 	public ItemIdentifierStack readItemIdentifierStack() throws IOException {
-		ItemIdentifier item = this.readItemIdentifier();
-		int stacksize = this.readInt();
+		ItemIdentifier item = readItemIdentifier();
+		int stacksize = readInt();
 		return new ItemIdentifierStack(item, stacksize);
 	}
-	
+
 	public <T> List<T> readList(IReadListObject<T> handler) throws IOException {
-		int size = this.readInt();
+		int size = readInt();
 		List<T> list = new ArrayList<T>(size);
-		for(int i=0;i<size;i++) {
+		for (int i = 0; i < size; i++) {
 			list.add(handler.readObject(this));
 		}
 		return list;
 	}
 
 	public IOrderInfoProvider readOrderInfo() throws IOException {
-		ItemIdentifierStack stack = this.readItemIdentifierStack();
-		int routerId = this.readInt();
-		boolean isFinished = this.readBoolean();
-		boolean inProgress = this.readBoolean();
+		ItemIdentifierStack stack = readItemIdentifierStack();
+		int routerId = readInt();
+		boolean isFinished = readBoolean();
+		boolean inProgress = readBoolean();
 		ResourceType type = this.readEnum(ResourceType.class);
 		List<Float> list = this.readList(new IReadListObject<Float>() {
+
 			@Override
 			public Float readObject(LPDataInputStream data) throws IOException {
 				return data.readFloat();
-			}});
-		byte machineProgress = this.readByte();
-		LPPosition pos = this.readLPPosition();
-		ItemIdentifier ident = this.readItemIdentifier();
+			}
+		});
+		byte machineProgress = readByte();
+		LPPosition pos = readLPPosition();
+		ItemIdentifier ident = readItemIdentifier();
 		return new ClientSideOrderInfo(stack, isFinished, type, inProgress, routerId, list, machineProgress, pos, ident);
 	}
-	
+
 	public <T extends Enum<T>> T readEnum(Class<T> clazz) throws IOException {
-		return clazz.getEnumConstants()[this.readInt()];
+		return clazz.getEnumConstants()[readInt()];
 	}
 
 	public LinkedLogisticsOrderList readLinkedLogisticsOrderList() throws IOException {
 		LinkedLogisticsOrderList list = new LinkedLogisticsOrderList();
 		list.addAll(this.readList(new IReadListObject<IOrderInfoProvider>() {
+
 			@Override
 			public IOrderInfoProvider readObject(LPDataInputStream data) throws IOException {
 				return data.readOrderInfo();
-			}}));
+			}
+		}));
 		list.getSubOrders().addAll(this.readList(new IReadListObject<LinkedLogisticsOrderList>() {
+
 			@Override
 			public LinkedLogisticsOrderList readObject(LPDataInputStream data) throws IOException {
 				return data.readLinkedLogisticsOrderList();
-			}}));
+			}
+		}));
 		return list;
 	}
 
 	public byte[] readByteArray() throws IOException {
-		byte[] array = new byte[this.readInt()];
-		for(int i=0;i<array.length;i++) {
-			array[i] = this.readByte();
+		byte[] array = new byte[readInt()];
+		for (int i = 0; i < array.length; i++) {
+			array[i] = readByte();
 		}
 		return array;
 	}
 
 	public ByteBuf readByteBuf() throws IOException {
-		byte[] bytes = this.readByteArray();
+		byte[] bytes = readByteArray();
 		return Unpooled.copiedBuffer(bytes);
 	}
 
 	public long[] readLongArray() throws IOException {
-		long[] array = new long[this.readInt()];
-		for(int i=0;i<array.length;i++) {
-			array[i] = this.readLong();
+		long[] array = new long[readInt()];
+		for (int i = 0; i < array.length; i++) {
+			array[i] = readLong();
 		}
 		return array;
 	}

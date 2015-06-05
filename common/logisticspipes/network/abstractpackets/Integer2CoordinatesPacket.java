@@ -4,11 +4,12 @@ import java.io.IOException;
 
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public abstract class Integer2CoordinatesPacket extends IntegerCoordinatesPacket {
 
 	@Getter
@@ -18,7 +19,7 @@ public abstract class Integer2CoordinatesPacket extends IntegerCoordinatesPacket
 	public Integer2CoordinatesPacket(int id) {
 		super(id);
 	}
-	
+
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);

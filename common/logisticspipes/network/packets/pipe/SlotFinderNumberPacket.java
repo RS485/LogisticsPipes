@@ -12,9 +12,7 @@ import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.item.ItemIdentifier;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
@@ -23,9 +21,14 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentTranslation;
+
 import net.minecraftforge.common.util.ForgeDirection;
 
-@Accessors(chain=true)
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+
+@Accessors(chain = true)
 public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 
 	@Getter
@@ -42,42 +45,45 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 	@Getter
 	@Setter
 	private int slot;
-	
+
 	public SlotFinderNumberPacket(int id) {
 		super(id);
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new SlotFinderNumberPacket(getId());
 	}
-	
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public void processPacket(EntityPlayer player) {
 		IInventory inv = this.getTile(player.worldObj, IInventory.class);
-		if (inv instanceof ISidedInventory) inv = new SidedInventoryMinecraftAdapter((ISidedInventory) inv, ForgeDirection.UNKNOWN, false);
-		IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);Slot result = null;
-		if(((List<Slot>)player.openContainer.inventorySlots).get(inventorySlot).slotNumber == inventorySlot) {
-			result = ((List<Slot>)player.openContainer.inventorySlots).get(inventorySlot);
+		if (inv instanceof ISidedInventory) {
+			inv = new SidedInventoryMinecraftAdapter((ISidedInventory) inv, ForgeDirection.UNKNOWN, false);
 		}
-		if(result == null) {
-			for(Slot slotObject:(List<Slot>)player.openContainer.inventorySlots) {
-				if(slotObject.slotNumber == inventorySlot) {
+		IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
+		Slot result = null;
+		if (((List<Slot>) player.openContainer.inventorySlots).get(inventorySlot).slotNumber == inventorySlot) {
+			result = ((List<Slot>) player.openContainer.inventorySlots).get(inventorySlot);
+		}
+		if (result == null) {
+			for (Slot slotObject : (List<Slot>) player.openContainer.inventorySlots) {
+				if (slotObject.slotNumber == inventorySlot) {
 					result = slotObject;
 					break;
 				}
 			}
 		}
-		if(result == null) {
+		if (result == null) {
 			player.addChatComponentMessage(new ChatComponentTranslation("lp.chat.slotnotfound"));
 		}
 		int resultIndex = -1;
-		if(resultIndex == -1) {
+		if (resultIndex == -1) {
 			ItemStack content = result.getStack();
-			if(content != null) {
-				for(int i=0;i<util.getSizeInventory();i++) {
-					if(content == util.getStackInSlot(i)) {
+			if (content != null) {
+				for (int i = 0; i < util.getSizeInventory(); i++) {
+					if (content == util.getStackInSlot(i)) {
 						resultIndex = i;
 						break;
 					}
@@ -88,17 +94,19 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 				nbt.setBoolean("LPStackFinderBoolean", true); //Make it unique
 				dummyStack.setTagCompound(nbt);
 				result.putStack(dummyStack);
-				for(int i=0;i < util.getSizeInventory();i++) {
-					if(dummyStack == util.getStackInSlot(i)) {
+				for (int i = 0; i < util.getSizeInventory(); i++) {
+					if (dummyStack == util.getStackInSlot(i)) {
 						resultIndex = i;
 						break;
 					}
 				}
-				if(resultIndex == -1) {
-					for(int i=0;i < util.getSizeInventory();i++) {
+				if (resultIndex == -1) {
+					for (int i = 0; i < util.getSizeInventory(); i++) {
 						ItemStack stack = util.getStackInSlot(i);
-						if(stack == null) continue;
-						if(ItemIdentifier.get(stack).equals(ItemIdentifier.get(dummyStack)) && stack.stackSize == dummyStack.stackSize) {
+						if (stack == null) {
+							continue;
+						}
+						if (ItemIdentifier.get(stack).equals(ItemIdentifier.get(dummyStack)) && stack.stackSize == dummyStack.stackSize) {
 							resultIndex = i;
 							break;
 						}
@@ -107,7 +115,7 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 				result.putStack(null);
 			}
 		}
-		if(resultIndex == -1) {
+		if (resultIndex == -1) {
 			player.addChatComponentMessage(new ChatComponentTranslation("lp.chat.slotnotfound"));
 		} else {
 			//Copy pipe to coordinates to use the getPipe method
@@ -115,7 +123,7 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 			setPosY(getPipePosY());
 			setPosZ(getPipePosZ());
 			ModuleActiveSupplier module = this.getLogisticsModule(player, ModuleActiveSupplier.class);
-			if(module != null) {
+			if (module != null) {
 				module.slotArray[slot] = resultIndex;
 			}
 		}

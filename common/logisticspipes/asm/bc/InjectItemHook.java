@@ -2,8 +2,11 @@ package logisticspipes.asm.bc;
 
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.LPRoutedBCTravelingItem;
+
 import net.minecraft.item.ItemStack;
+
 import net.minecraftforge.common.util.ForgeDirection;
+
 import buildcraft.BuildCraftTransport;
 import buildcraft.core.DefaultProps;
 import buildcraft.core.utils.BlockUtils;
@@ -15,23 +18,23 @@ import buildcraft.transport.pipes.events.PipeEventItem;
 import buildcraft.transport.utils.TransportUtils;
 
 public class InjectItemHook {
+
 	public static void handleInjectItem(PipeTransportItems pipe, TravelingItem item, ForgeDirection inputOrientation) {
-		if (item.isCorrupted())
+		if (item.isCorrupted()) {
 			// Safe guard - if for any reason the item is corrupted at this
 			// stage, avoid adding it to the pipe to avoid further exceptions.
 			return;
+		}
 
 		item.reset();
 		item.input = inputOrientation;
 
 		pipe.readjustSpeed(item);
-		readjustPosition(pipe, item);
-
+		InjectItemHook.readjustPosition(pipe, item);
 
 		if (!pipe.container.getWorldObj().isRemote) {
 			item.output = pipe.resolveDestination(item);
 		}
-
 
 		PipeEventItem.Entered event = new PipeEventItem.Entered(item);
 		pipe.container.pipe.eventBus.handleEvent(PipeEventItem.Entered.class, event);
@@ -41,12 +44,12 @@ public class InjectItemHook {
 		pipe.items.add(item);
 
 		if (!pipe.container.getWorldObj().isRemote) {
-			sendTravelerPacket(pipe, item, false);
+			InjectItemHook.sendTravelerPacket(pipe, item, false);
 
 			int stackCount = 0;
 			int numItems = 0;
 			for (TravelingItem travellingItem : pipe.items) {
-				if(!(travellingItem instanceof LPRoutedBCTravelingItem)) {
+				if (!(travellingItem instanceof LPRoutedBCTravelingItem)) {
 					ItemStack stack = travellingItem.getItemStack();
 					if (stack != null && stack.stackSize > 0) {
 						numItems += stack.stackSize;
@@ -62,7 +65,7 @@ public class InjectItemHook {
 			stackCount = 0;
 			numItems = 0;
 			for (TravelingItem travellingItem : pipe.items) {
-				if(!(travellingItem instanceof LPRoutedBCTravelingItem)) {
+				if (!(travellingItem instanceof LPRoutedBCTravelingItem)) {
 					ItemStack stack = travellingItem.getItemStack();
 					if (stack != null && stack.stackSize > 0) {
 						numItems += stack.stackSize;
@@ -73,13 +76,13 @@ public class InjectItemHook {
 
 			if (stackCount > PipeTransportItems.MAX_PIPE_STACKS) {
 				SimpleServiceLocator.buildCraftProxy.logWarning(String.format("Pipe exploded at %d,%d,%d because it had too many stacks: %d", pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord, stackCount));
-				destroyPipe(pipe);
+				InjectItemHook.destroyPipe(pipe);
 				return;
 			}
 
 			if (numItems > PipeTransportItems.MAX_PIPE_ITEMS) {
 				SimpleServiceLocator.buildCraftProxy.logWarning(String.format("Pipe exploded at %d,%d,%d because it had too many items: %d", pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord, numItems));
-				destroyPipe(pipe);
+				InjectItemHook.destroyPipe(pipe);
 			}
 		}
 	}

@@ -8,18 +8,20 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.utils.PlayerIdentifier;
+
+import net.minecraft.entity.player.EntityPlayer;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class PlayerConfigToServerPacket extends ModernPacket {
-	
+
 	@Getter
 	@Setter
 	private PlayerConfig config;
-	
+
 	public PlayerConfigToServerPacket(int id) {
 		super(id);
 	}
@@ -29,17 +31,17 @@ public class PlayerConfigToServerPacket extends ModernPacket {
 		config = new PlayerConfig(null);
 		config.readData(data);
 	}
-	
+
 	@Override
 	public void processPacket(EntityPlayer player) {
 		config.applyTo(LogisticsEventListener.getPlayerConfig(PlayerIdentifier.get(player)));
 	}
-	
+
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
 		config.writeData(data);
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new PlayerConfigToServerPacket(getId());

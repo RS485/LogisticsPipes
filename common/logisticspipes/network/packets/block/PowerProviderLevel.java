@@ -3,6 +3,7 @@ package logisticspipes.network.packets.block;
 import logisticspipes.blocks.powertile.LogisticsPowerProviderTileEntity;
 import logisticspipes.network.abstractpackets.FloatCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+
 import net.minecraft.entity.player.EntityPlayer;
 
 public class PowerProviderLevel extends FloatCoordinatesPacket {
@@ -19,9 +20,8 @@ public class PowerProviderLevel extends FloatCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsPowerProviderTileEntity tile = this.getTile(player.worldObj, LogisticsPowerProviderTileEntity.class);
-		if(tile != null) {
+		if (tile != null) {
 			tile.handlePowerPacket(getFloat());
 		}
 	}
 }
-

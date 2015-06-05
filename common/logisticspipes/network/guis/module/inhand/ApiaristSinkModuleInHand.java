@@ -7,8 +7,8 @@ import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.DummyModuleContainer;
-import net.minecraft.entity.player.EntityPlayer;
 
+import net.minecraft.entity.player.EntityPlayer;
 
 public class ApiaristSinkModuleInHand extends ModuleInHandGuiProvider {
 
@@ -18,15 +18,19 @@ public class ApiaristSinkModuleInHand extends ModuleInHandGuiProvider {
 
 	@Override
 	public Object getClientGui(EntityPlayer player) {
-		LogisticsModule module = this.getLogisticsModule(player);
-		if(!(module instanceof ModuleApiaristSink)) return null;
+		LogisticsModule module = getLogisticsModule(player);
+		if (!(module instanceof ModuleApiaristSink)) {
+			return null;
+		}
 		return new GuiApiaristSink((ModuleApiaristSink) module, player);
 	}
 
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
 		DummyModuleContainer dummy = new DummyModuleContainer(player, getInvSlot());
-		if(!(dummy.getModule() instanceof ModuleApiaristSink)) return null;
+		if (!(dummy.getModule() instanceof ModuleApiaristSink)) {
+			return null;
+		}
 		return dummy;
 	}
 

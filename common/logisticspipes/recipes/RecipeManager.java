@@ -20,6 +20,9 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
+//@formatter:off
+//CHECKSTYLE:OFF
+
 public class RecipeManager {
 	public static class LocalCraftingManager {
 		private CraftingManager craftingManager = CraftingManager.getInstance();

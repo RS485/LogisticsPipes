@@ -111,7 +111,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 		if(dummyInventory.getStackInSlot(0) == null) return;
 		WorldUtil worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
 		for (AdjacentTile tile :  worldUtil.getAdjacentTileEntities(true)){
-			if (!(tile.tile instanceof IFluidHandler) || SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile.tile)) continue;
+			if (!(tile.tile instanceof IFluidHandler) || SimpleServiceLocator.pipeInformaitonManager.isPipe(tile.tile)) continue;
 			IFluidHandler container = (IFluidHandler) tile.tile;
 			if (container.getTankInfo(ForgeDirection.UNKNOWN) == null || container.getTankInfo(ForgeDirection.UNKNOWN).length == 0) continue;
 			

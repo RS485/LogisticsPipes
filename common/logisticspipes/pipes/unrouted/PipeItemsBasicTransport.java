@@ -14,7 +14,7 @@ public class PipeItemsBasicTransport extends CoreUnroutedPipe {
 	
 	public PipeItemsBasicTransport(Item item) {
 		super(new PipeTransportLogistics(false), item);
-	}
+		}
 
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {}

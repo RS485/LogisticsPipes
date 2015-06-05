@@ -167,12 +167,7 @@ public class PipeTransportLogistics {
 	public int injectItem(LPTravelingItemServer item, ForgeDirection inputOrientation) {
 		return injectItem((LPTravelingItem)item, inputOrientation);
 	}
-	
-	
-	public float getPipeLength() {
-		return 1.0F;
-	}
-	
+
 	public int injectItem(LPTravelingItem item, ForgeDirection inputOrientation) {
 		if(item.isCorrupted())
 		// Safe guard - if for any reason the item is corrupted at this
@@ -184,8 +179,8 @@ public class PipeTransportLogistics {
 
 		item.input = inputOrientation;
 		
-		if(item.getPosition() >= getPipeLength()) {
-			item.setPosition(item.getPosition() - getPipeLength());
+		while(item.getPosition() >= 1.0F) {
+			item.setPosition(item.getPosition() - 1.0F);
 		}
 		
 		if(MainProxy.isServer(container.getWorldObj())) {
@@ -231,8 +226,8 @@ public class PipeTransportLogistics {
 		// Assign new ID to update ItemStack content
 		item.id = item.getNextId();
 		
-		if(item.getPosition() >= getPipeLength()) {
-			item.setPosition(item.getPosition() - getPipeLength());
+		if(item.getPosition() >= 1.0F) {
+			item.setPosition(item.getPosition() - 1.0F);
 		}
 		
 		item.input = item.output.getOpposite();
@@ -269,7 +264,7 @@ public class PipeTransportLogistics {
 			LPPosition pos = getPipe().getLPPosition();
 			pos.moveForward(dir);
 			TileEntity tile = pos.getTileEntity(getWorld());
-			if(!SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile)) {
+			if(!SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) {
 				iter.remove();
 			}
 		}
@@ -450,7 +445,7 @@ public class PipeTransportLogistics {
 				SimpleServiceLocator.specialtileconnection.transmit(tile, arrivingItem);
 			}
 		}
-		if(SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile)) {
+		if(SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) {
 			if(passToNextPipe(arrivingItem, tile)) return;
 		} else if(tile instanceof IInventory && isRouted) {
 			getRoutedPipe().getCacheHolder().trigger(CacheTypes.Inventory);
@@ -586,7 +581,7 @@ public class PipeTransportLogistics {
 	}
 	
 	protected void handleTileReachedClient(LPTravelingItemClient arrivingItem, TileEntity tile) {
-		if(SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile)) {
+		if(SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) {
 			passToNextPipe(arrivingItem, tile);
 		}
 		// Just ignore any other case
@@ -598,17 +593,8 @@ public class PipeTransportLogistics {
 	}
 	
 	protected void insertedItemStack(ItemRoutingInformation info, TileEntity tile) {}
-
+	
 	public boolean canPipeConnect(TileEntity tile, ForgeDirection side) {
-		return canPipeConnect_internal(tile, side);
-	}
-
-	public final boolean canPipeConnect_internal(TileEntity tile, ForgeDirection side) {
-		if(tile instanceof LogisticsTileGenericPipe) {
-			if(((LogisticsTileGenericPipe)tile).pipe != null && ((LogisticsTileGenericPipe)tile).pipe.isMultiBlock()) {
-				return false;
-			}
-		}
 		if(isRouted) {
 			if(tile instanceof ILogisticsPowerProvider || tile instanceof ISubSystemPowerProvider) {
 				ForgeDirection ori = OrientationsUtil.getOrientationOfTilewithTile(this.container, tile);
@@ -626,24 +612,9 @@ public class PipeTransportLogistics {
 				int[] slots = ((ISidedInventory)tile).getAccessibleSlotsFromSide(side.getOpposite().ordinal());
 				return slots != null && slots.length > 0;
 			}
-			return isPipeCheck(tile) || (tile instanceof IInventory && ((IInventory)tile).getSizeInventory() > 0);
+			return SimpleServiceLocator.pipeInformaitonManager.isPipe(tile) || (tile instanceof IInventory && ((IInventory)tile).getSizeInventory() > 0);
 		} else {
-			return isPipeCheck(tile);
-		}
-	}
-	
-	protected boolean isPipeCheck(TileEntity tile) {
-		return SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile);
-	}
-	
-	protected void reachedEnd(LPTravelingItem item) {
-		TileEntity tile = container.getTile(item.output);
-		if(items.scheduleRemoval(item)) {
-			if(MainProxy.isServer(container.getWorldObj())) {
-				handleTileReachedServer((LPTravelingItemServer)item, tile, item.output);
-			} else {
-				handleTileReachedClient((LPTravelingItemClient)item, tile);
-			}
+			return SimpleServiceLocator.pipeInformaitonManager.isPipe(tile);
 		}
 	}
 	
@@ -655,7 +626,7 @@ public class PipeTransportLogistics {
 			item.lastTicked = MainProxy.getGlobalTick();
 			item.addAge();
 			item.setPosition(item.getPosition() + item.getSpeed());
-			if(hasReachedEnd(item)) {
+			if(endReached(item)) {
 				if(item.output == ForgeDirection.UNKNOWN) {
 					if(MainProxy.isServer(container.getWorldObj())) {
 						dropItem((LPTravelingItemServer)item);
@@ -663,17 +634,23 @@ public class PipeTransportLogistics {
 					items.scheduleRemoval(item);
 					continue;
 				}
-				reachedEnd(item);
+				TileEntity tile = container.getTile(item.output);
+				if(items.scheduleRemoval(item)) {
+					if(MainProxy.isServer(container.getWorldObj())) {
+						handleTileReachedServer((LPTravelingItemServer)item, tile, item.output);
+					} else {
+						handleTileReachedClient((LPTravelingItemClient)item, tile);
+					}
+				}
 			}
 		}
 		items.removeScheduledItems();
 		items.addScheduledItems();
 	}
 	
-	protected boolean passToNextPipe(LPTravelingItem item, TileEntity tile) {
+	private boolean passToNextPipe(LPTravelingItem item, TileEntity tile) {
 		IPipeInformationProvider information = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(tile);
 		if(information != null) {
-			item.setPosition(item.getPosition() - this.getPipeLength());
 			return information.acceptItem(item, this.container);
 		}
 		return false;
@@ -717,7 +694,7 @@ public class PipeTransportLogistics {
 		}
 	}
 	
-	protected boolean hasReachedEnd(LPTravelingItem item) {
+	protected boolean endReached(LPTravelingItem item) {
 		return item.getPosition() >= ((item.output == ForgeDirection.UNKNOWN)?0.75F:1.0F);
 	}
 	

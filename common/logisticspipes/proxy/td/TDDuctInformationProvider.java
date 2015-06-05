@@ -36,7 +36,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 	}
 	
 	@Override
-	public boolean isCorrect(ConnectionPipeType type) {
+	public boolean isCorrect() {
 		return duct != null && !duct.isInvalid() && SimpleServiceLocator.thermalDynamicsProxy.isActive();
 	}
 	

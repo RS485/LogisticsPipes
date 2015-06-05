@@ -9,7 +9,6 @@ import logisticspipes.asm.te.LPTileEntityObject;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import logisticspipes.ticks.LPTickHandler;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.ticks.LPTickHandler.LPWorldInfo;
@@ -31,24 +30,24 @@ public class TEControl {
 			return;
 		}
 		
-		if(SimpleServiceLocator.pipeInformaitonManager.isPipe(tile, false, ConnectionPipeType.BOTH) || SimpleServiceLocator.specialtileconnection.isType(tile)) {
+		if(SimpleServiceLocator.pipeInformaitonManager.isPipe(tile, false) || SimpleServiceLocator.specialtileconnection.isType(tile)) {
 			((ILPTEInformation)tile).setObject(new LPTileEntityObject());
 			((ILPTEInformation)tile).getObject().initialised = LPTickHandler.getWorldInfo(world).getWorldTick();
 			if(((ILPTEInformation)tile).getObject().initialised < 5) return;
 			QueuedTasks.queueTask(new Callable<Object>() {
 				@Override
 				public Object call() throws Exception {
-					if(!SimpleServiceLocator.pipeInformaitonManager.isPipe(tile, true, ConnectionPipeType.BOTH)) return null;
+					if(!SimpleServiceLocator.pipeInformaitonManager.isPipe(tile, true)) return null;
 					for(ForgeDirection dir:ForgeDirection.VALID_DIRECTIONS) {
 						LPPosition newPos = pos.copy();
 						newPos.moveForward(dir);
 						if(!newPos.blockExists(world)) continue;
 						TileEntity nextTile = newPos.getTileEntity(world);
 						if(nextTile != null && ((ILPTEInformation)nextTile).getObject() != null) {
-							if(SimpleServiceLocator.pipeInformaitonManager.isItemPipe(nextTile)) {
+							if(SimpleServiceLocator.pipeInformaitonManager.isPipe(nextTile)) {
 								SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(nextTile).refreshTileCacheOnSide(dir.getOpposite());
 							}
-							if(SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile)) {
+							if(SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) {
 								SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(tile).refreshTileCacheOnSide(dir);
 								SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(tile).refreshTileCacheOnSide(dir.getOpposite());
 							}
@@ -79,7 +78,7 @@ public class TEControl {
 						if(!newPos.blockExists(world)) continue;
 						TileEntity nextTile = newPos.getTileEntity(world);
 						if(nextTile != null && ((ILPTEInformation)nextTile).getObject() != null) {
-							if(SimpleServiceLocator.pipeInformaitonManager.isItemPipe(nextTile)) {
+							if(SimpleServiceLocator.pipeInformaitonManager.isPipe(nextTile)) {
 								SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(nextTile).refreshTileCacheOnSide(dir.getOpposite());
 							}
 						}
@@ -117,7 +116,7 @@ public class TEControl {
 		if(!pos.blockExists(world)) return;
 		final TileEntity tile = pos.getTileEntity(world);
 		if(tile == null || ((ILPTEInformation)tile).getObject() == null) return;
-		if(SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile) || SimpleServiceLocator.specialtileconnection.isType(tile)) {
+		if(SimpleServiceLocator.pipeInformaitonManager.isPipe(tile) || SimpleServiceLocator.specialtileconnection.isType(tile)) {
 			info.getUpdateQueued().add(pos);
 			QueuedTasks.queueTask(new Callable<Object>() {
 				@Override

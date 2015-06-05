@@ -7,7 +7,6 @@ import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import cpw.mods.fml.client.FMLClientHandler;
 import logisticspipes.api.IHUDArmor;
 import logisticspipes.config.Configs;
 import logisticspipes.hud.HUDConfig;
@@ -23,10 +22,10 @@ import logisticspipes.routing.LaserData;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.utils.MathVector;
 import logisticspipes.utils.gui.GuiGraphics;
-import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 import logisticspipes.utils.tuples.Pair;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.Tessellator;
@@ -35,7 +34,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.ResourceLocation;
+
 import net.minecraftforge.client.GuiIngameForge;
+
+import cpw.mods.fml.client.FMLClientHandler;
+
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
@@ -170,8 +173,8 @@ public class LogisticsHUDRenderer {
 	}
 	
 	private boolean checkItemStackForHUD(ItemStack stack) {
-		if(stack.getItem() instanceof IHUDArmor) {
-			return ((IHUDArmor)stack.getItem()).isEnabled(stack);
+		if(FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].getItem() instanceof IHUDArmor) {
+			return ((IHUDArmor)FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].getItem()).isEnabled(FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3]);
 		}
 		return false;
 	}
@@ -184,7 +187,7 @@ public class LogisticsHUDRenderer {
 	public void renderPlayerDisplay(long renderTicks) {
 		if(!displayRenderer()) return;
 		Minecraft mc = FMLClientHandler.instance().getClient();
-		if(displayHUD() && displayCross) {
+		if(displayCross) {
 			ScaledResolution res = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
 	        int width = res.getScaledWidth();
 	        int height = res.getScaledHeight();
@@ -460,7 +463,7 @@ public class LogisticsHUDRenderer {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		last = System.currentTimeMillis();
 	}
-
+	
 	private void setColor(float i, EnumSet<PipeRoutingConnectionType> flags) {
 		GL11.glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
 		if(!flags.isEmpty()) {

@@ -124,7 +124,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		WorldUtil wUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if (!(tile.tile instanceof IInventory)) continue;
-			if (SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile.tile)) continue;
+			if (SimpleServiceLocator.pipeInformaitonManager.isPipe(tile.tile)) continue;
 			IInventoryUtil inv = this.getAdaptedInventoryUtil(tile);
 			count += inv.itemCount(item);
 		}
@@ -149,7 +149,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		WorldUtil wUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if (!(tile.tile instanceof IInventory)) continue;
-			if (SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile.tile)) continue;
+			if (SimpleServiceLocator.pipeInformaitonManager.isPipe(tile.tile)) continue;
 			
 			IInventoryUtil inv = getAdaptedInventoryUtil(tile);
 			int available = inv.itemCount(item);
@@ -310,7 +310,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		WorldUtil wUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if (!(tile.tile instanceof IInventory)) continue;
-			if (SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile.tile)) continue;
+			if (SimpleServiceLocator.pipeInformaitonManager.isPipe(tile.tile)) continue;
 			IInventoryUtil inv = this.getAdaptedInventoryUtil(tile);
 			
 			Map<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
@@ -440,7 +440,7 @@ outer:
 		Set<ItemIdentifier> l1 = null;
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if (!(tile.tile instanceof IInventory)) continue;
-			if (SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile.tile)) continue;
+			if (SimpleServiceLocator.pipeInformaitonManager.isPipe(tile.tile)) continue;
 			
 			IInventoryUtil inv = getAdaptedInventoryUtil(tile);
 			Set<ItemIdentifier> items = inv.getItems();

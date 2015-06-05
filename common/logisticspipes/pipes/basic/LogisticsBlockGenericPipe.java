@@ -8,15 +8,11 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
-import codechicken.lib.render.CCModel;
-import codechicken.lib.vec.Cuboid6;
 import buildcraft.transport.gates.GatePluggable;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
-import logisticspipes.config.PlayerConfig;
 import logisticspipes.interfaces.IRotationProvider;
-import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.proxy.MainProxy;
@@ -26,10 +22,8 @@ import logisticspipes.proxy.buildcraft.subproxies.IBCPipePluggable;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer;
-import logisticspipes.renderer.newpipe.RenderEntry;
 import logisticspipes.textures.Textures;
 import logisticspipes.ticks.QueuedTasks;
-import logisticspipes.utils.LPPositionSet;
 import logisticspipes.utils.MatrixTranformations;
 import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.block.Block;
@@ -111,19 +105,13 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 	
 	@Override
-	@SuppressWarnings({ "rawtypes" })
+	@SuppressWarnings("rawtypes")
 	public void addCollisionBoxesToList(World world, int i, int j, int k, AxisAlignedBB axisalignedbb, List arraylist, Entity par7Entity) {
 		TileEntity tile = world.getTileEntity(i, j, k);
 		if(tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe)tile).pipe instanceof PipeBlockRequestTable) {
 			setBlockBounds(0, 0, 0, 1, 1, 1);
 			super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			return;
-		}
-		if(tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe)tile).pipe != null && ((LogisticsTileGenericPipe)tile).pipe.isMultiBlock()) {
-			((CoreMultiBlockPipe)((LogisticsTileGenericPipe)tile).pipe).addCollisionBoxesToList(arraylist, axisalignedbb);
-			if(!((CoreMultiBlockPipe)((LogisticsTileGenericPipe)tile).pipe).renderNormalPipe()) {
-				return;
-			}
 		}
 		setBlockBounds(LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS);
 		super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
@@ -329,41 +317,14 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		LogisticsTileGenericPipe tileG = null;
 		if (pipeTileEntity instanceof LogisticsTileGenericPipe) {
 			tileG = (LogisticsTileGenericPipe) pipeTileEntity;
-			CoreUnroutedPipe pipe = tileG.pipe;
-			if (!isValid(pipe)) {
-				return null;
-			}
-			if(pipe.isMultiBlock()) {
-				RaytraceResult result1 = doRayTrace(tileG, (CoreMultiBlockPipe)pipe, origin, direction);
-				if(!pipe.renderNormalPipe()) {
-					return result1;
-				}
-				RaytraceResult result2 = doRayTrace(tileG, pipe, origin, direction);
-				if(result1 == null) {
-					return result2;
-				} else if(result2 == null) {
-					return result1;
-				}
-
-				double length1 = result1.movingObjectPosition.hitVec.squareDistanceTo(origin);
-				double length2 = result2.movingObjectPosition.hitVec.squareDistanceTo(origin);
-				
-				if(length1 < length2) {
-					return result1;
-				} else {
-					return result2;
-				}
-			} else {
-				return doRayTrace(tileG, pipe, origin, direction);
-			}
 		}
-		return null;
-	}
-	
-	private RaytraceResult doRayTrace(LogisticsTileGenericPipe tileG, CoreUnroutedPipe pipe, Vec3 origin, Vec3 direction) {
+
 		if (tileG == null) {
 			return null;
 		}
+
+		CoreUnroutedPipe pipe = tileG.pipe;
+
 		if (!isValid(pipe)) {
 			return null;
 		}
@@ -384,7 +345,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				AxisAlignedBB bb = getPipeBoundingBox(side);
 				setBlockBounds(bb);
 				boxes[side.ordinal()] = bb;
-				hits[side.ordinal()] = super.collisionRayTrace(tileG.getWorldObj(), tileG.xCoord, tileG.yCoord, tileG.zCoord, origin, direction);
+				hits[side.ordinal()] = super.collisionRayTrace(world, x, y, z, origin, direction);
 				sideHit[side.ordinal()] = side;
 			}
 		}
@@ -396,7 +357,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				AxisAlignedBB bb = tileG.getPipePluggable(side).getBoundingBox(side);
 				setBlockBounds(bb);
 				boxes[7 + side.ordinal()] = bb;
-				hits[7 + side.ordinal()] = super.collisionRayTrace(tileG.getWorldObj(), tileG.xCoord, tileG.yCoord, tileG.zCoord, origin, direction);
+				hits[7 + side.ordinal()] = super.collisionRayTrace(world, x, y, z, origin, direction);
 				sideHit[7 + side.ordinal()] = side;
 			}
 		}
@@ -440,70 +401,9 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			return new RaytraceResult(hitPart, hits[minIndex], boxes[minIndex], sideHit[minIndex]);
 		}
 	}
-	
-	private RaytraceResult doRayTrace(LogisticsTileGenericPipe tileG, CoreMultiBlockPipe pipe, Vec3 origin, Vec3 direction) {
-		if (tileG == null) {
-			return null;
-		}
-		if (!isValid(pipe)) {
-			return null;
-		}
-
-		List<MovingObjectPosition> hits = new ArrayList<MovingObjectPosition>();
-		List<AxisAlignedBB> boxes = new ArrayList<AxisAlignedBB>();
-		
-		pipe.addCollisionBoxesToList(boxes, null);
-		
-		while(hits.size() < boxes.size()) {
-			hits.add(null);
-		}
-		
-		for(int i=0;i<boxes.size();i++) {
-			AxisAlignedBB bb = boxes.get(i);
-			setBlockBoundsFromAbsolut(bb, tileG);
-			hits.set(i, super.collisionRayTrace(tileG.getWorldObj(), tileG.xCoord, tileG.yCoord, tileG.zCoord, origin, direction));
-		}
-		
-		double minLengthSquared = Double.POSITIVE_INFINITY;
-		int minIndex = -1;
-
-		for (int i = 0; i < hits.size(); i++) {
-			MovingObjectPosition hit = hits.get(i);
-			if (hit == null) {
-				continue;
-			}
-
-			double lengthSquared = hit.hitVec.squareDistanceTo(origin);
-
-			if (lengthSquared < minLengthSquared) {
-				minLengthSquared = lengthSquared;
-				minIndex = i;
-			}
-		}
-
-		// reset bounds
-
-		setBlockBounds(0, 0, 0, 1, 1, 1);
-
-		if (minIndex == -1) {
-			return null;
-		} else {
-			return new RaytraceResult(Part.Pipe, hits.get(minIndex), 
-					/*
-					pipe.getCompleteBox()
-					/*/
-					boxes.get(minIndex).getOffsetBoundingBox(-tileG.xCoord, -tileG.yCoord, -tileG.zCoord)
-					//*/
-					, ForgeDirection.UNKNOWN);
-		}
-	}
 
 	private void setBlockBounds(AxisAlignedBB bb) {
 		setBlockBounds((float) bb.minX, (float) bb.minY, (float) bb.minZ, (float) bb.maxX, (float) bb.maxY, (float) bb.maxZ);
-	}
-
-	private void setBlockBoundsFromAbsolut(AxisAlignedBB bb, TileEntity tile) {
-		setBlockBounds((float) bb.minX - tile.xCoord, (float) bb.minY - tile.yCoord, (float) bb.minZ - tile.zCoord, (float) bb.maxX - tile.xCoord, (float) bb.maxY - tile.yCoord, (float) bb.maxZ - tile.zCoord);
 	}
 
 	private AxisAlignedBB getPipeBoundingBox(ForgeDirection side) {
@@ -681,15 +581,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 		World world = pipe.container.getWorldObj();
 
-		if(pipe.isMultiBlock()) {
-			if(pipe.preventRemove()) {
-				throw new UnsupportedOperationException("A multi block can't be protected against removal.");
-			}
-			for(LPPosition pos:pipe.container.subMultiBlock) {
-				pos.setBlockToAir(world);
-			}
-		}
-
 		if (world == null) {
 			return;
 		}
@@ -760,11 +651,9 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				case Pluggable: {
 					CoreUnroutedPipe pipe = getPipe(world, x, y, z);
 					IBCPipePluggable pluggable = pipe.container.tilePart.getBCPipePluggable(rayTraceResult.sideHit);
-					if(pluggable != null) {
-						ItemStack[] drops = pluggable.getDropItems(pipe.container);
-						if (drops != null && drops.length > 0) {
-							return drops[0];
-						}
+					ItemStack[] drops = pluggable.getDropItems(pipe.container);
+					if (drops != null && drops.length > 0) {
+						return drops[0];
 					}
 				}
 			case Pipe:
@@ -934,7 +823,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		if (dummyPipe != null) {
 			item.setPipeIconIndex(dummyPipe.getIconIndexForItem(), dummyPipe.getTextureIndex());
 			MainProxy.proxy.setIconProviderFromPipe(item, dummyPipe);
-			item.setDummyPipe(dummyPipe);
 		}
 
 		return item;
@@ -962,36 +850,18 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 
 	public static boolean placePipe(CoreUnroutedPipe pipe, World world, int i, int j, int k, Block block, int meta) {
-		return placePipe(pipe, world, i, j, k, block, meta, null);
-	}
-	public static boolean placePipe(CoreUnroutedPipe pipe, World world, int i, int j, int k, Block block, int meta, ITubeOrientation orientation) {
 		if (world.isRemote) {
 			return true;
 		}
-		
+
 		boolean placed = world.setBlock(i, j, k, block, meta, 2);
-		
+
 		if (placed) {
 			TileEntity tile = world.getTileEntity(i, j, k);
 			if (tile instanceof LogisticsTileGenericPipe) {
 				LogisticsTileGenericPipe tilePipe = (LogisticsTileGenericPipe) tile;
 				tilePipe.initialize(pipe);
 				tilePipe.sendUpdateToClient();
-				if(tilePipe.pipe instanceof CoreMultiBlockPipe) {
-					if(orientation == null) throw new NullPointerException();
-					CoreMultiBlockPipe mPipe = (CoreMultiBlockPipe) tilePipe.pipe;
-					orientation.setOnPipe(mPipe);
-					LPPosition placeAt = new LPPosition(i, j, k);
-					LogisticsBlockGenericSubMultiBlock.currentCreatedMultiBlock = placeAt;
-					LPPositionSet positions = ((CoreMultiBlockPipe)tilePipe.pipe).getSubBlocks();
-					orientation.rotatePositions(positions);
-					for(LPPosition pos:positions) {
-						pos.add(placeAt);
-						world.setBlock(pos.getX(), pos.getY(), pos.getZ(), LogisticsPipes.LogisticsSubMultiBlock, 0, 2);
-						world.notifyBlockChange(pos.getX(), pos.getY(), pos.getZ(), LogisticsPipes.LogisticsSubMultiBlock);
-					}
-					LogisticsBlockGenericSubMultiBlock.currentCreatedMultiBlock = null;
-				}
 			}
 			world.notifyBlockChange(i, j, k, block);
 		}
@@ -1118,42 +988,20 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		if (pipe == null) {
 			return false;
 		}
-		
-		PlayerConfig config = LogisticsPipes.getClientPlayerConfig();
-		if(config.isUseNewRenderer()) {
-			LogisticsNewRenderPipe.renderDestruction(pipe, worldObj, x, y, z, effectRenderer);
-		} else {
-			IIcon icon = pipe.getIconProvider().getIcon(pipe.getIconIndexForItem());
-	
-			byte its = 4;
-			for (int i = 0; i < its; ++i) {
-				for (int j = 0; j < its; ++j) {
-					for (int k = 0; k < its; ++k) {
-						if(pipe.isMultiBlock()) {
-							LPPositionSet set = ((CoreMultiBlockPipe)pipe).getRotatedSubBlocks();
-							set.add(new LPPosition(0, 0, 0));
-							for(LPPosition pos:set) {
-								int localx = x + pos.getX();
-								int localy = y + pos.getY();
-								int localz = z + pos.getZ();
-								double px = localx + (i + 0.5D) / its;
-								double py = localy + (j + 0.5D) / its;
-								double pz = localz + (k + 0.5D) / its;
-								int random = rand.nextInt(6);
-								EntityDiggingFX fx = new EntityDiggingFX(worldObj, px, py, pz, px - localx - 0.5D, py - localy - 0.5D, pz - localz - 0.5D, LogisticsPipes.LogisticsPipeBlock, random, meta);
-								fx.setParticleIcon(icon);
-								effectRenderer.addEffect(fx.applyColourMultiplier(x, y, z));
-							}
-						} else {
-							double px = x + (i + 0.5D) / its;
-							double py = y + (j + 0.5D) / its;
-							double pz = z + (k + 0.5D) / its;
-							int random = rand.nextInt(6);
-							EntityDiggingFX fx = new EntityDiggingFX(worldObj, px, py, pz, px - x - 0.5D, py - y - 0.5D, pz - z - 0.5D, LogisticsPipes.LogisticsPipeBlock, random, meta);
-							fx.setParticleIcon(icon);
-							effectRenderer.addEffect(fx.applyColourMultiplier(x, y, z));
-						}
-					}
+
+		IIcon icon = pipe.getIconProvider().getIcon(pipe.getIconIndexForItem());
+
+		byte its = 4;
+		for (int i = 0; i < its; ++i) {
+			for (int j = 0; j < its; ++j) {
+				for (int k = 0; k < its; ++k) {
+					double px = x + (i + 0.5D) / its;
+					double py = y + (j + 0.5D) / its;
+					double pz = z + (k + 0.5D) / its;
+					int random = rand.nextInt(6);
+					EntityDiggingFX fx = new EntityDiggingFX(worldObj, px, py, pz, px - x - 0.5D, py - y - 0.5D, pz - z - 0.5D, LogisticsPipes.LogisticsPipeBlock, random, meta);
+					fx.setParticleIcon(icon);
+					effectRenderer.addEffect(fx.applyColourMultiplier(x, y, z));
 				}
 			}
 		}

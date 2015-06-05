@@ -72,9 +72,6 @@ import logisticspipes.pipes.PipeLogisticsChassiMk5;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
-import logisticspipes.pipes.basic.LogisticsBlockGenericSubMultiBlock;
-import logisticspipes.pipes.tubes.HSTubeCurve;
-import logisticspipes.pipes.tubes.HSTubeSpeedup;
 import logisticspipes.pipes.unrouted.PipeItemsBasicTransport;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.ProxyManager;
@@ -259,10 +256,6 @@ public class LogisticsPipes {
 	
 	//Transport Pipes
 	public static Item BasicTransportPipe;
-	
-	//Tubes
-	public static Item HSTubeCurve;
-	public static Item HSTubeSpeedup;
 
 	// Logistics Modules/Upgrades
 	public static ItemModule ModuleItem;
@@ -283,7 +276,6 @@ public class LogisticsPipes {
 	// Logistics Blocks
 	public static Block LogisticsSolidBlock;
     public static LogisticsBlockGenericPipe LogisticsPipeBlock;
-    public static LogisticsBlockGenericSubMultiBlock LogisticsSubMultiBlock;
 
 	public static Textures textures = new Textures();
 	
@@ -321,9 +313,7 @@ public class LogisticsPipes {
 		FMLCommonHandler.instance().bus().register(new LPTickHandler());
 		
 		if(event.getSide().equals(Side.CLIENT)) {
-			RenderTickHandler sub = new RenderTickHandler();
-			FMLCommonHandler.instance().bus().register(sub);
-			MinecraftForge.EVENT_BUS.register(sub);
+			FMLCommonHandler.instance().bus().register(new RenderTickHandler());
 		}
 		FMLCommonHandler.instance().bus().register(new QueuedTasks());
 		if(event.getSide() == Side.CLIENT) {
@@ -462,10 +452,7 @@ public class LogisticsPipes {
 
 		LogisticsPipeBlock = new LogisticsBlockGenericPipe();
 		GameRegistry.registerBlock(LogisticsPipeBlock, "logisticsPipeBlock");
-		
-		LogisticsSubMultiBlock = new LogisticsBlockGenericSubMultiBlock();
-		GameRegistry.registerBlock(LogisticsSubMultiBlock, "logisticsSubMultiBlock");
-		
+
 		registerPipes(event.getSide());
 		
 
@@ -607,13 +594,8 @@ public class LogisticsPipes {
 		LogisticsPipes.LogisticsFluidSupplierPipeMk2 = createPipe(PipeFluidSupplierMk2.class, "Logistics Fluid Supplier Pipe Mk2", side);
 	
 		LogisticsPipes.logisticsRequestTable = createPipe(PipeBlockRequestTable.class, "Request Table", side);
-
-		LogisticsPipes.BasicTransportPipe = createPipe(PipeItemsBasicTransport.class, "Basic Transport Pipe", side);
 		
-		if(LPConstants.DEBUG) {
-			LogisticsPipes.HSTubeCurve = createPipe(HSTubeCurve.class, "High Speed Tube Curve", side);
-			LogisticsPipes.HSTubeSpeedup = createPipe(HSTubeSpeedup.class, "High Speed Tube Speedup", side);
-		}
+		LogisticsPipes.BasicTransportPipe = createPipe(PipeItemsBasicTransport.class, "Basic Transport Pipe", side);
 	}
 	
 	protected Item createPipe(Class <? extends CoreUnroutedPipe> clas, String descr, Side side) {

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
-import scala.actors.threadpool.Arrays;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.buildcraft.robots.LPRobotConnectionControl;
 import logisticspipes.proxy.buildcraft.robots.boards.LogisticsRoutingBoardRobot;
@@ -37,7 +36,6 @@ import buildcraft.transport.render.FakeBlock;
 public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart {
 	
 	private final LPBCPipe bcPipe;
-	private final LPBCFluidPipe bcFluidPipe;
 	private final LPBCPluggableState bcPlugState;
 	private final LPBCPipeRenderState bcRenderState;
 	@Getter
@@ -48,11 +46,9 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 	
 	public LPBCTileGenericPipe(LPBCPipe pipe, LogisticsTileGenericPipe lpPipe) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		this.pipe = this.bcPipe = pipe;
-		bcFluidPipe = new LPBCFluidPipe(new LPBCPipeTransportsFluids(lpPipe), lpPipe, bcPipe);
 		bcPipe.setTile(this);
 		this.lpPipe = lpPipe;
 		bcPlugState = new LPBCPluggableState();
-		
 		bcRenderState = new LPBCPipeRenderState();
 		ReflectionHelper.setFinalField(TileGenericPipe.class, "pluggableState", this, bcPlugState);
 		ReflectionHelper.setFinalField(TileGenericPipe.class, "renderState", this, bcRenderState);
@@ -195,7 +191,7 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 		}
 
 		if (blockNeighborChange) {
-			//ReflectionHelper.invokePrivateMethod(Object.class, TileGenericPipe.class, this, "computeConnections", new Class[]{}, new Object[]{});
+			ReflectionHelper.invokePrivateMethod(Object.class, TileGenericPipe.class, this, "computeConnections", new Class[]{}, new Object[]{});
 			pipe.onNeighborBlockChange(0);
 			blockNeighborChange = false;
 			refreshRenderState = true;
@@ -239,12 +235,6 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 
 	@Override
 	public IBCPipePart getBCPipePart() {
-		if(lpPipe.isFluidPipe()) {
-			StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-			if(trace.length > 4 && trace[4].getMethodName().equals("canPipeConnect") && trace[4].getClassName().equals("buildcraft.transport.PipeTransportFluids")) {
-				return bcFluidPipe;
-			}
-		}
 		return bcPipe;
 	}
 

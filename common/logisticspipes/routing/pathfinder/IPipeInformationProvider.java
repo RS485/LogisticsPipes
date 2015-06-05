@@ -12,11 +12,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public interface IPipeInformationProvider {
-	public enum ConnectionPipeType {
-		ITEM,FLUID,BOTH;
-	}
-	
-	public boolean isCorrect(ConnectionPipeType type);
+	public boolean isCorrect();
 	public int getX();
 	public int getY();
 	public int getZ();

@@ -15,6 +15,9 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
+//@formatter:off
+//CHECKSTYLE:OFF
+
 public class SolderingStationRecipes {
 	
 	public static class SolderingStationRecipe {

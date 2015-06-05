@@ -83,4 +83,9 @@ public class LPRoutedBCTravelingItem extends TravelingItem {
 		}
 		return null;
 	}
+
+	@Override
+	public boolean ignoreWeight() {
+		return true;
+	}
 }

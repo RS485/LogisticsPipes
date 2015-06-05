@@ -22,7 +22,7 @@ public class AutoWorkbench implements ICraftingRecipeProvider {
 		}
 
 		TileAutoWorkbench bench = (TileAutoWorkbench) tile;
-		ItemStack result = bench.findRecipeOutput();
+		ItemStack result = bench.craftMatrix.getRecipeOutput();
 		//ItemStack result = bench.getStackInSlot(TileAutoWorkbench.SLOT_RESULT);
 
 		if (result == null) {

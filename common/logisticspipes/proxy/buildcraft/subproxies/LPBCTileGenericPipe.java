@@ -16,6 +16,7 @@ import logisticspipes.utils.tuples.LPPosition;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -23,16 +24,17 @@ import net.minecraft.world.World;
 
 import net.minecraftforge.common.util.ForgeDirection;
 
+import buildcraft.api.robots.DockingStation;
 import buildcraft.api.robots.EntityRobotBase;
 import buildcraft.api.statements.IStatementParameter;
+import buildcraft.api.statements.StatementSlot;
 import buildcraft.api.transport.pluggable.PipePluggable;
-import buildcraft.robots.DockingStation;
-import buildcraft.robots.RobotStationPluggable;
+import buildcraft.core.lib.render.FakeBlock;
+import buildcraft.robotics.RobotStationPluggable;
 import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.gates.GatePluggable;
-import buildcraft.transport.gates.StatementSlot;
-import buildcraft.transport.render.FakeBlock;
+import buildcraft.transport.pluggable.LensPluggable;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -45,8 +47,6 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 	@Getter
 	private final LogisticsTileGenericPipe lpPipe;
 	public Map<ForgeDirection, List<StatementSlot>> activeActions = new HashMap<ForgeDirection, List<StatementSlot>>();
-
-	private boolean blockPluggableAccess = false;
 
 	public LPBCTileGenericPipe(LPBCPipe pipe, LogisticsTileGenericPipe lpPipe) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		this.pipe = bcPipe = pipe;
@@ -334,27 +334,6 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 	}
 
 	@Override
-	public PipePluggable getPipePluggable(ForgeDirection side) {
-		if (blockPluggableAccess) {
-			StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-			if (trace.length > 2 && (trace[2].getMethodName().equals("onBlockActivated") || trace[2].getMethodName().equals("func_149727_a")) && trace[2].getClassName().equals("buildcraft.transport.BlockGenericPipe") && trace[2].getLineNumber() > 680) {
-				return null;
-			}
-		}
-		return super.getPipePluggable(side);
-	}
-
-	@Override
-	public void disablePluggableAccess() {
-		blockPluggableAccess = true;
-	}
-
-	@Override
-	public void reenablePluggableAccess() {
-		blockPluggableAccess = false;
-	}
-
-	@Override
 	public void afterStateUpdated() {
 		if (worldObj == null) {
 			worldObj = lpPipe.getWorldObj();
@@ -396,15 +375,21 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 
 	@Override
 	public PipeType getPipeType() {
-		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-		if (trace.length > 2 && trace[2].getClassName().equals("buildcraft.transport.pluggable.ItemLens") && trace[2].getMethodName().equals("createPipePluggable")) {
-			return PipeType.ITEM;
-		}
-		return PipeType.STRUCTURE;
+		return PipeType.ITEM;
 	}
 
 	@Override
 	public boolean isPipeConnected(ForgeDirection with) {
 		return lpPipe.isPipeConnected(with);
+	}
+
+	@Override
+	public boolean setPluggable(ForgeDirection direction, PipePluggable pluggable, EntityPlayer player) {
+		if (pluggable instanceof LensPluggable) {
+			// Coloring fundamentally doesn't work on Logistics Pipes
+			return false;
+		}
+
+		return super.setPluggable(direction, pluggable, player);
 	}
 }

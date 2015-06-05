@@ -7,7 +7,6 @@ import java.lang.reflect.Method;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
-import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.VersionNotSupportedException;
@@ -37,7 +36,6 @@ import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.ReflectionHelper;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -48,14 +46,16 @@ import net.minecraft.world.World;
 
 import net.minecraftforge.common.util.ForgeDirection;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import cpw.mods.fml.common.FMLCommonHandler;
 
-import buildcraft.BuildCraftEnergy;
+import buildcraft.BuildCraftCore;
 import buildcraft.BuildCraftSilicon;
 import buildcraft.BuildCraftTransport;
 import buildcraft.api.boards.RedstoneBoardRegistry;
+import buildcraft.api.boards.RedstoneBoardRobotNBT;
 import buildcraft.api.core.BCLog;
+import buildcraft.api.events.RobotPlacementEvent;
+import buildcraft.api.robots.DockingStation;
 import buildcraft.api.robots.RobotManager;
 import buildcraft.api.statements.IActionInternal;
 import buildcraft.api.statements.ITriggerExternal;
@@ -64,19 +64,20 @@ import buildcraft.api.statements.StatementManager;
 import buildcraft.api.transport.IPipeConnection;
 import buildcraft.api.transport.IPipeTile;
 import buildcraft.api.transport.IPipeTile.PipeType;
-import buildcraft.core.ITileBufferHolder;
 import buildcraft.core.ItemMapLocation;
+import buildcraft.core.lib.ITileBufferHolder;
+import buildcraft.robotics.EntityRobot;
+import buildcraft.robotics.ItemRobot;
+import buildcraft.robotics.RobotStationPluggable;
 import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.ItemGateCopier;
 import buildcraft.transport.ItemPipe;
 import buildcraft.transport.Pipe;
+import buildcraft.transport.PipeEventBus;
 import buildcraft.transport.PipeTransportFluids;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.render.FacadeRenderHelper;
-import buildcraft.transport.render.FakeBlock;
 import buildcraft.transport.render.PipeRendererTESR;
-import buildcraft.transport.render.PipeRendererWorld;
 import lombok.SneakyThrows;
 
 public class BuildCraftProxy implements IBCProxy {
@@ -101,8 +102,8 @@ public class BuildCraftProxy implements IBCProxy {
 			e.printStackTrace();
 		}
 		if (BCVersion != null && !BCVersion.equals("@VERSION@")) {
-			if (!BCVersion.startsWith("6.") || BCVersion.startsWith("6.0") || BCVersion.startsWith("6.1") || BCVersion.startsWith("6.2") || BCVersion.startsWith("6.3")) {
-				throw new VersionNotSupportedException("BC", BCVersion, "6.4.0", "");
+			if (!BCVersion.startsWith("7.")) {
+				throw new VersionNotSupportedException("BC", BCVersion, "7.0.0", "");
 			}
 		} else {
 			LogisticsPipes.log.info("Couldn't check the BC Version.");
@@ -151,6 +152,8 @@ public class BuildCraftProxy implements IBCProxy {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		PipeEventBus.registerGlobalHandler(new BCEventHandler());
 	}
 
 	@Override
@@ -351,7 +354,7 @@ public class BuildCraftProxy implements IBCProxy {
 
 			@Override
 			public Object getBlockDynamo() {
-				return new ItemStack(BuildCraftEnergy.engineBlock, 1, 2);
+				return new ItemStack(BuildCraftCore.engineBlock, 1, 2);
 			}
 
 			@Override
@@ -391,23 +394,9 @@ public class BuildCraftProxy implements IBCProxy {
 	}
 
 	@Override
-	@SneakyThrows({ SecurityException.class, IllegalAccessException.class, IllegalArgumentException.class, NoSuchFieldException.class })
 	public IBCClickResult handleBCClickOnPipe(World world, int x, int y, int z, EntityPlayer player, int side, float xOffset, float yOffset, float zOffset, CoreUnroutedPipe pipe) {
-		Object trace = BuildCraftTransport.genericPipeBlock.doRayTrace(world, x, y, z, player);
-		String type = "null";
-		if (trace != null) {
-			Enum<?> hitPart = ReflectionHelper.getPrivateField(Enum.class, trace.getClass(), "hitPart", trace);
-			if (hitPart != null) {
-				type = hitPart.name();
-			}
-		}
-		if ("Pluggable".equals(type)) {
-			pipe.container.tilePart.disablePluggableAccess();
-		}
-		final boolean result = BuildCraftTransport.genericPipeBlock.onBlockActivated(world, x, y, z, player, side, xOffset, yOffset, zOffset);
-		if ("Pluggable".equals(type)) {
-			pipe.container.tilePart.reenablePluggableAccess();
-		}
+		boolean result = BuildCraftTransport.genericPipeBlock.onBlockActivated(world, x, y, z, player, side, xOffset, yOffset, zOffset);
+
 		world.notifyBlocksOfNeighborChange(x, y, z, LogisticsPipes.LogisticsPipeBlock); //Again because not all changes have been applied before the call inside the BC method is made.
 		boolean block = false;
 		if (!result) {
@@ -421,15 +410,18 @@ public class BuildCraftProxy implements IBCProxy {
 					block = true;
 				} else if (currentItem.getItem() instanceof ItemMapLocation) {
 					block = true;
+				} else if (currentItem.getItem() instanceof ItemRobot) {
+					result = checkRobot(world, x, y, z, player, currentItem);
 				}
 			}
 		}
+		final boolean fResult = result;
 		final boolean fBlock = block;
 		return new IBCClickResult() {
 
 			@Override
 			public boolean handled() {
-				return result;
+				return fResult;
 			}
 
 			@Override
@@ -437,6 +429,60 @@ public class BuildCraftProxy implements IBCProxy {
 				return fBlock;
 			}
 		};
+	}
+
+	/**
+	 * @see buildcraft.robotics.ItemRobot#onItemUse(ItemStack, EntityPlayer,
+	 *      World, int, int, int, int, float, float, float)
+	 */
+	private boolean checkRobot(World world, int x, int y, int z, EntityPlayer player, ItemStack currentItem) {
+		if (!world.isRemote) {
+			Pipe<?> bcPipe = BlockGenericPipe.getPipe(world, x, y, z);
+			if (bcPipe == null) {
+				return false;
+			}
+
+			BlockGenericPipe pipeBlock = BuildCraftTransport.genericPipeBlock;
+			BlockGenericPipe.RaytraceResult rayTraceResult = pipeBlock.doRayTrace(world, x, y, z, player);
+
+			if (rayTraceResult != null && rayTraceResult.hitPart == BlockGenericPipe.Part.Pluggable && bcPipe.container.getPipePluggable(rayTraceResult.sideHit) instanceof RobotStationPluggable) {
+				RobotStationPluggable pluggable = (RobotStationPluggable) bcPipe.container.getPipePluggable(rayTraceResult.sideHit);
+				DockingStation station = pluggable.getStation();
+
+				if (!station.isTaken()) {
+					RedstoneBoardRobotNBT robotNBT = ItemRobot.getRobotNBT(currentItem);
+					if (robotNBT == RedstoneBoardRegistry.instance.getEmptyRobotBoard()) {
+						return true;
+					}
+					RobotPlacementEvent robotEvent = new RobotPlacementEvent(player, robotNBT.getID());
+					FMLCommonHandler.instance().bus().post(robotEvent);
+					if (robotEvent.isCanceled()) {
+						return true;
+					}
+					EntityRobot robot = ((ItemRobot) currentItem.getItem()).createRobot(currentItem, world);
+
+					if (robot != null && robot.getRegistry() != null) {
+						robot.setUniqueRobotId(robot.getRegistry().getNextRobotId());
+
+						float px = x + 0.5F + rayTraceResult.sideHit.offsetX * 0.5F;
+						float py = y + 0.5F + rayTraceResult.sideHit.offsetY * 0.5F;
+						float pz = z + 0.5F + rayTraceResult.sideHit.offsetZ * 0.5F;
+
+						robot.setPosition(px, py, pz);
+						station.takeAsMain(robot);
+						robot.dock(robot.getLinkedStation());
+						world.spawnEntityInWorld(robot);
+
+						if (!player.capabilities.isCreativeMode) {
+							player.getCurrentEquippedItem().stackSize--;
+						}
+					}
+				}
+
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -456,22 +502,20 @@ public class BuildCraftProxy implements IBCProxy {
 
 	@Override
 	public IBCRenderTESR getBCRenderTESR() {
-		final PipeRendererTESR renderer = new PipeRendererTESR();
-		renderer.func_147497_a(TileEntityRendererDispatcher.instance);
 		return new IBCRenderTESR() {
 
 			@Override
 			@SneakyThrows(Exception.class)
 			public void renderWires(LogisticsTileGenericPipe pipe, double x, double y, double z) {
 				TileGenericPipe tgPipe = (TileGenericPipe) pipe.tilePart.getOriginal();
-				ReflectionHelper.invokePrivateMethod(Object.class, PipeRendererTESR.class, renderer, "renderGatesWires", new Class[] { TileGenericPipe.class, double.class, double.class, double.class }, new Object[] { tgPipe, x, y, z });
+				ReflectionHelper.invokePrivateMethod(Object.class, PipeRendererTESR.class, PipeRendererTESR.INSTANCE, "renderGatesWires", new Class[] { TileGenericPipe.class, double.class, double.class, double.class }, new Object[] { tgPipe, x, y, z });
 			}
 
 			@Override
 			@SneakyThrows(Exception.class)
-			public void renderGates(LogisticsTileGenericPipe pipe, double x, double y, double z) {
+			public void dynamicRenderPluggables(LogisticsTileGenericPipe pipe, double x, double y, double z) {
 				TileGenericPipe tgPipe = (TileGenericPipe) pipe.tilePart.getOriginal();
-				ReflectionHelper.invokePrivateMethod(Object.class, PipeRendererTESR.class, renderer, "renderGates", new Class[] { TileGenericPipe.class, double.class, double.class, double.class }, new Object[] { tgPipe, x, y, z });
+				ReflectionHelper.invokePrivateMethod(Object.class, PipeRendererTESR.class, PipeRendererTESR.INSTANCE, "renderPluggables", new Class[] { TileGenericPipe.class, double.class, double.class, double.class }, new Object[] { tgPipe, x, y, z });
 			}
 		};
 	}
@@ -479,19 +523,6 @@ public class BuildCraftProxy implements IBCProxy {
 	@Override
 	public boolean isTileGenericPipe(TileEntity tile) {
 		return tile instanceof TileGenericPipe;
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, LogisticsTileGenericPipe pipe, int x, int y, int z, int renderPass) {
-		TileGenericPipe tile = (TileGenericPipe) pipe.tilePart.getOriginal();
-		PipeRendererWorld.renderPass = renderPass;
-		FacadeRenderHelper.pipeFacadeRenderer(renderblocks, FakeBlock.INSTANCE, tile, tile.renderState, x, y, z);
-	}
-
-	@Override
-	public int getFacadeRenderColor() {
-		return BlockGenericPipe.facadeRenderColor;
 	}
 
 	@Override

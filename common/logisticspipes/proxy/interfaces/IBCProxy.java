@@ -2,7 +2,6 @@ package logisticspipes.proxy.interfaces;
 
 import logisticspipes.asm.IgnoreDisabledProxy;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
-import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.buildcraft.subproxies.IBCClickResult;
 import logisticspipes.proxy.buildcraft.subproxies.IBCRenderTESR;
@@ -10,15 +9,11 @@ import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
 import logisticspipes.proxy.buildcraft.subproxies.IConnectionOverrideResult;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import net.minecraftforge.common.util.ForgeDirection;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public interface IBCProxy {
 
@@ -65,11 +60,6 @@ public interface IBCProxy {
 	void logWarning(String format);
 
 	IBCRenderTESR getBCRenderTESR();
-
-	@SideOnly(Side.CLIENT)
-	void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, LogisticsTileGenericPipe pipe, int x, int y, int z, int renderPass);
-
-	int getFacadeRenderColor();
 
 	boolean isTileGenericPipe(TileEntity tile);
 

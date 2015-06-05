@@ -10,7 +10,6 @@ import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
-import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.binnie.BinnieProxy;
 import logisticspipes.proxy.bs.BetterStorageProxy;
@@ -146,8 +145,6 @@ public class ProxyManager {
 					}
 					@Override public IBCPipePart getBCPipePart() {
 						return new IBCPipePart() {
-							@Override public void openGateGui(EntityPlayer player, int ordinal) {}
-							@Override public boolean hasGate() {return false;}
 							@Override public boolean canConnectRedstone() {return false;}
 							@Override public int isPoweringTo(int l) {return 0;}
 							@Override public int isIndirectlyPoweringTo(int l) {return 0;}
@@ -176,8 +173,6 @@ public class ProxyManager {
 						};
 					}
 					@Override public void readOldRedStone(NBTTagCompound nbt) {}
-					@Override public void disablePluggableAccess() {}
-					@Override public void reenablePluggableAccess() {}
 					@Override public void afterStateUpdated() {}
 					@Override public Object getOriginal() {return null;}
 					@Override public boolean hasPipePluggable(ForgeDirection dir) {return false;}
@@ -196,12 +191,10 @@ public class ProxyManager {
 			@Override public IBCRenderTESR getBCRenderTESR() {
 				return new IBCRenderTESR() {
 					@Override public void renderWires(LogisticsTileGenericPipe pipe, double x, double y, double z) {}
-					@Override public void renderGates(LogisticsTileGenericPipe pipe, double x, double y, double z) {}
+					@Override public void dynamicRenderPluggables(LogisticsTileGenericPipe pipe, double x, double y, double z) {}
 				};
 			}
 			@Override public boolean isTileGenericPipe(TileEntity tile) {return false;}
-			@Override @SideOnly(Side.CLIENT) public void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, LogisticsTileGenericPipe pipe, int x, int y, int z, int renderPass) {}
-			@Override public int getFacadeRenderColor() {return -1;}
 			@Override public void cleanup() {}
 		}, IBCTilePart.class, IBCPipePart.class, IBCPipePluggable.class, IBCPluggableState.class, IBCRenderState.class, IBCRenderTESR.class));
 

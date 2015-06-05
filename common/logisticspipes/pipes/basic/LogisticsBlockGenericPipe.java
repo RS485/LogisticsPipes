@@ -56,8 +56,6 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-import buildcraft.transport.gates.GatePluggable;
-
 public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	public LogisticsBlockGenericPipe() {
@@ -854,22 +852,10 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				// interface callbacks for the individual pipe/logic calls
 				return pipe.blockActivated(player);
 			}
-			IBCClickResult result = SimpleServiceLocator.buildCraftProxy.handleBCClickOnPipe(world, x, y, z, player, side, xOffset, yOffset, zOffset, pipe);
-			if (result.handled()) {
-				return true;
-			}
-			if (result.blocked()) {
-				return false;
-			}
-			if (pipe.bcPipePart.hasGate()) {
-				RaytraceResult rayTraceResult = doRayTrace(world, x, y, z, player);
 
-				if (rayTraceResult != null && rayTraceResult.hitPart == Part.Pluggable && pipe.container.getPipePluggable(rayTraceResult.sideHit) instanceof GatePluggable) {
-					pipe.bcPipePart.openGateGui(player, rayTraceResult.sideHit.ordinal());
-					return true;
-				}
-			}
-			return pipe.blockActivated(player);
+			IBCClickResult result = SimpleServiceLocator.buildCraftProxy.handleBCClickOnPipe(world, x, y, z, player, side, xOffset, yOffset, zOffset, pipe);
+
+			return result.handled() || !result.blocked() && pipe.blockActivated(player);
 		}
 
 		return false;
@@ -1172,15 +1158,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			}
 		}
 		return true;
-	}
-
-	@Override
-	public int colorMultiplier(IBlockAccess world, int x, int y, int z) {
-		int facadeRenderColor = SimpleServiceLocator.buildCraftProxy.getFacadeRenderColor();
-		if (facadeRenderColor != -1) {
-			return facadeRenderColor;
-		}
-		return super.colorMultiplier(world, x, y, z);
 	}
 
 	private static void cacheTileToPreventRemoval(CoreUnroutedPipe pipe) {

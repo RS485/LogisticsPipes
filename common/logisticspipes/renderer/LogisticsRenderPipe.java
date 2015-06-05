@@ -118,8 +118,12 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		if (LogisticsRenderPipe.config.getRenderPipeContentDistance() * LogisticsRenderPipe.config.getRenderPipeContentDistance() < distance) {
 			return;
 		}
+
 		bcRenderer.renderWires(pipe, x, y, z);
-		bcRenderer.renderGates(pipe, x, y, z);
+
+		// dynamically render pluggables (like gates)
+		bcRenderer.dynamicRenderPluggables(pipe, x, y, z);
+
 		if (!pipe.isOpaque()) {
 			if (pipe.pipe.transport instanceof PipeFluidTransportLogistics) {
 				renderFluids(pipe.pipe, x, y, z);

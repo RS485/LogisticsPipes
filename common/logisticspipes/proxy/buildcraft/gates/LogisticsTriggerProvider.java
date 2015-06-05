@@ -56,12 +56,7 @@ public class LogisticsTriggerProvider implements ITriggerProvider {
 
 	@Override
 	public Collection<ITriggerExternal> getExternalTriggers(ForgeDirection paramForgeDirection, TileEntity tile) {
-		if (tile instanceof LogisticsPowerJunctionTileEntity) {
-			LinkedList<ITriggerExternal> triggers = new LinkedList<ITriggerExternal>();
-			triggers.add(BuildCraftProxy.LogisticsNeedPowerTrigger);
-			return triggers;
-		}
-		if (tile instanceof LogisticsSolderingTileEntity) {
+		if (tile instanceof LogisticsPowerJunctionTileEntity || tile instanceof LogisticsSolderingTileEntity) {
 			LinkedList<ITriggerExternal> triggers = new LinkedList<ITriggerExternal>();
 			triggers.add(BuildCraftProxy.LogisticsNeedPowerTrigger);
 			return triggers;

@@ -41,10 +41,6 @@ public interface IBCTilePart {
 
 	void readOldRedStone(NBTTagCompound nbt);
 
-	void disablePluggableAccess();
-
-	void reenablePluggableAccess();
-
 	void afterStateUpdated();
 
 	Object getOriginal();

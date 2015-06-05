@@ -6,5 +6,5 @@ public interface IBCRenderTESR {
 
 	void renderWires(LogisticsTileGenericPipe pipe, double x, double y, double z);
 
-	void renderGates(LogisticsTileGenericPipe pipe, double x, double y, double z);
+	void dynamicRenderPluggables(LogisticsTileGenericPipe pipe, double x, double y, double z);
 }

@@ -7,7 +7,8 @@
 	<property name="resource.dir"         value="${build.dir}/resources/main"/>
 	
 	<property name="sign.dir"             value="/home/jenkins/.sign"/>
-	<property name="crowdin.dir"          value="/home/jenkins/.crowdin"/>
+	
+	<property name="languageDownload"     value="https://github.com/RS485/LogisticsPipes-Language/archive/master.zip"/>
 	
 	<property name="downloadserver"       value="http://rs485.theZorro266.com"/>
 	<property name="downloadserver.dir"   value="external/"/>
@@ -42,49 +43,36 @@
 		</if>
 	</target>
 
-	<target name="downloadCrowdin" depends="loadAntContrib">
-		<if>
-			<available file="${crowdin.dir}/.token"/>
-			<then>
-				<trycatch>
-					<try>
-						<echo message="Loading Token"/>
-						<loadfile property="crowdintoken" srcFile="${crowdin.dir}/.token"/>
-						<echo message="Building Crowdin"/>
-						<get src="https://api.crowdin.net/api/project/logistics-pipes/export?key=${crowdintoken}" dest="${download.dir}/crowdin-build.log"/>
-						<echo message="Downloading Crowdin"/>
-						<get src="https://api.crowdin.net/api/project/logistics-pipes/download/all.zip?key=${crowdintoken}" dest="${download.dir}/crowdin-language.zip"/>
-					</try>
-					<catch>
-						<fail>Failed to Download Crowdin.</fail>
-					</catch>
-				</trycatch>
-			</then>
-		</if>
+	<target name="downloadLang" depends="loadAntContrib">
+		<trycatch>
+			<try>
+				<echo message="Download Language"/>
+				<get src="${languageDownload}" dest="${download.dir}/language.zip"/>
+			</try>
+			<catch>
+				<fail>Failed to Download Language.</fail>
+			</catch>
+		</trycatch>
 	</target>
 
-	<target name="integradeCrowdin" depends="downloadCrowdin">
-		<if>
-			<available file="${crowdin.dir}/.token"/>
-			<then>
-				<echo message="Integrating Crowdin"/>
-				<unzip dest="${download.dir}/crowdin-language/" failOnEmptyArchive="true">
-					<fileset dir="${download.dir}">
-						<include name="crowdin-language.zip"/>
-					</fileset>
-					<mapper type="flatten"/>
-					<patternset>
-						<exclude name="**/en_US.lang"/>
-					</patternset>
-				</unzip>
-				<copy todir="${resource.dir}/assets/logisticspipes/lang/">
-					<fileset dir="${download.dir}/crowdin-language/">
-						<include name="**.lang"/>
-					</fileset>
-				</copy>
-				<delete dir="${download.dir}/crowdin-language/"/>
-			</then>
-		</if>
+	<target name="integrateLang" depends="downloadLang">
+		<echo message="Integrating Language"/>
+		<unzip dest="${download.dir}/language/" failOnEmptyArchive="true">
+			<fileset dir="${download.dir}">
+				<include name="language.zip"/>
+			</fileset>
+			<mapper type="flatten"/>
+			<patternset>
+				<include name="**/**.lang"/>
+				<exclude name="**/en_US.lang"/>
+			</patternset>
+		</unzip>
+		<copy todir="${resource.dir}/assets/logisticspipes/lang/">
+			<fileset dir="${download.dir}/language/">
+				<include name="**.lang"/>
+			</fileset>
+		</copy>
+		<delete dir="${download.dir}/language/"/>
 	</target>
 
 	<target name="signJars" depends="loadFingerprints, deobfJar, sourceJar, jar">

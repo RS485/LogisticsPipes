@@ -70,7 +70,6 @@ sourceSets {
     main {
         java {
             srcDir 'common'
-            srcDir 'proxy_bc61'
             // exclude 'some exclusion'
             // include 'some inclusion'
         }
@@ -112,6 +111,22 @@ dependencies {
     compile 'codechicken:CodeChickenCore:1.7.10-1.0.3.23:dev'
     compile 'codechicken:CodeChickenLib:1.7.10-1.1.1.98:dev'
     compile 'codechicken:EnderStorage:1.7.10-1.4.5.19:dev'
+}
+
+eclipse {
+    wtp {
+        component {
+            sourceDirs += file('dummy')
+            sourceDirs += file('api')
+        }
+    }
+}
+
+idea {
+    module {
+        sourceDirs += file('dummy')
+        sourceDirs += file('api')
+    }
 }
 
 task deobfJar(type: Jar) {

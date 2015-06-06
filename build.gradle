@@ -132,5 +132,5 @@ artifacts {
 
 tasks.compileApiJava.dependsOn('extract')
 tasks.compileJava.dependsOn('loadFingerprints')
-tasks.processResources.dependsOn('integradeCrowdin')
+tasks.processResources.dependsOn('integrateLang')
 tasks.assemble.dependsOn('deobfJar', 'sourceJar', 'signJars')

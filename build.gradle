@@ -113,7 +113,8 @@ dependencies {
     compile 'codechicken:EnderStorage:1.7.10-1.4.5.19:dev'
 }
 
-eclipse {
+apply plugin: 'eclipse-wtp'
+eclipse { // only works with newer Gradle
     wtp {
         component {
             sourceDirs += file('dummy')
@@ -122,6 +123,7 @@ eclipse {
     }
 }
 
+apply plugin: 'idea'
 idea {
     module {
         sourceDirs += file('dummy')

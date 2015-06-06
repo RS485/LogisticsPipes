@@ -113,15 +113,6 @@ dependencies {
     compile 'codechicken:EnderStorage:1.7.10-1.4.5.19:dev'
 }
 
-eclipse {
-    wtp {
-        component {
-            sourceDirs += file('dummy')
-            sourceDirs += file('api')
-        }
-    }
-}
-
 idea {
     module {
         sourceDirs += file('dummy')

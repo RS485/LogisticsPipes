@@ -8,6 +8,14 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.object3d.interfaces.I3DOperation;
+import logisticspipes.proxy.object3d.interfaces.IIconTransformation;
+import logisticspipes.proxy.object3d.interfaces.IModel3D;
+import logisticspipes.proxy.object3d.operation.LPRotation;
+import logisticspipes.proxy.object3d.operation.LPScale;
+import logisticspipes.proxy.object3d.operation.LPTranslation;
+import logisticspipes.proxy.object3d.operation.LPUVScale;
 import logisticspipes.utils.tuples.LPPosition;
 
 import net.minecraft.block.Block;
@@ -17,15 +25,6 @@ import net.minecraft.tileentity.TileEntity;
 
 import net.minecraftforge.common.util.ForgeDirection;
 
-import codechicken.lib.lighting.LightModel;
-import codechicken.lib.render.CCModel;
-import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.CCRenderState.IVertexOperation;
-import codechicken.lib.render.uv.IconTransformation;
-import codechicken.lib.render.uv.UVScale;
-import codechicken.lib.vec.Rotation;
-import codechicken.lib.vec.Scale;
-import codechicken.lib.vec.Translation;
 import lombok.Getter;
 import org.lwjgl.opengl.GL11;
 
@@ -85,25 +84,26 @@ public class LogisticsNewSolidBlockWorldRenderer {
 		}
 	}
 
-	static Map<BlockRotation, CCModel> block = new HashMap<BlockRotation, CCModel>();
-	static Map<CoverSides, Map<BlockRotation, CCModel>> texturePlate_Inner = new HashMap<CoverSides, Map<BlockRotation, CCModel>>();
-	static Map<CoverSides, Map<BlockRotation, CCModel>> texturePlate_Outer = new HashMap<CoverSides, Map<BlockRotation, CCModel>>();
+	static Map<BlockRotation, IModel3D> block = new HashMap<BlockRotation, IModel3D>();
+	static Map<CoverSides, Map<BlockRotation, IModel3D>> texturePlate_Inner = new HashMap<CoverSides, Map<BlockRotation, IModel3D>>();
+	static Map<CoverSides, Map<BlockRotation, IModel3D>> texturePlate_Outer = new HashMap<CoverSides, Map<BlockRotation, IModel3D>>();
 
 	static {
 		LogisticsNewSolidBlockWorldRenderer.loadModels();
 	}
 
 	public static void loadModels() {
+		if(!SimpleServiceLocator.cclProxy.isActivated()) return;
 		try {
-			Map<String, CCModel> blockPartModels = CCModel.parseObjModels(LogisticsPipes.class.getResourceAsStream("/logisticspipes/models/BlockModel_result.obj"), 7, new Scale(1 / 100f));
+			Map<String, IModel3D> blockPartModels = SimpleServiceLocator.cclProxy.parseObjModels(LogisticsPipes.class.getResourceAsStream("/logisticspipes/models/BlockModel_result.obj"), 7, new LPScale(1 / 100f));
 
 			LogisticsNewSolidBlockWorldRenderer.block = null;
-			for (Entry<String, CCModel> entry : blockPartModels.entrySet()) {
+			for (Entry<String, IModel3D> entry : blockPartModels.entrySet()) {
 				if (entry.getKey().contains(" Block ")) {
 					if (LogisticsNewSolidBlockWorldRenderer.block != null) {
 						throw new UnsupportedOperationException();
 					}
-					LogisticsNewSolidBlockWorldRenderer.block = LogisticsNewSolidBlockWorldRenderer.computeRotated(entry.getValue().backfacedCopy().apply(new Translation(0.0, 0.0, 1.0)));
+					LogisticsNewSolidBlockWorldRenderer.block = LogisticsNewSolidBlockWorldRenderer.computeRotated(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0)));
 				}
 			}
 
@@ -112,12 +112,12 @@ public class LogisticsNewSolidBlockWorldRenderer {
 			for (CoverSides side : CoverSides.values()) {
 				String grp_Outer = "OutSide_" + side.getLetter();
 				String grp_Inside = "Inside_" + side.getLetter();
-				for (Entry<String, CCModel> entry : blockPartModels.entrySet()) {
+				for (Entry<String, IModel3D> entry : blockPartModels.entrySet()) {
 					if (entry.getKey().contains(" " + grp_Outer + " ")) {
-						LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.put(side, LogisticsNewSolidBlockWorldRenderer.computeRotated(entry.getValue().backfacedCopy().apply(new Translation(0.0, 0.0, 1.0))));
+						LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.put(side, LogisticsNewSolidBlockWorldRenderer.computeRotated(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
 					}
 					if (entry.getKey().contains(" " + grp_Inside + " ")) {
-						LogisticsNewSolidBlockWorldRenderer.texturePlate_Inner.put(side, LogisticsNewSolidBlockWorldRenderer.computeRotated(entry.getValue().backfacedCopy().apply(new Translation(0.0, 0.0, 1.0))));
+						LogisticsNewSolidBlockWorldRenderer.texturePlate_Inner.put(side, LogisticsNewSolidBlockWorldRenderer.computeRotated(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
 					}
 				}
 				if (LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side) == null) {
@@ -133,29 +133,29 @@ public class LogisticsNewSolidBlockWorldRenderer {
 		}
 	}
 
-	private static Map<BlockRotation, CCModel> computeRotated(CCModel m) {
-		m.apply(new UVScale(1, 0.75));
-		Map<BlockRotation, CCModel> map = new HashMap<BlockRotation, CCModel>();
+	private static Map<BlockRotation, IModel3D> computeRotated(IModel3D m) {
+		m.apply(new LPUVScale(1, 0.75));
+		Map<BlockRotation, IModel3D> map = new HashMap<BlockRotation, IModel3D>();
 		for (BlockRotation rot : BlockRotation.values()) {
-			CCModel model = m.copy();
+			IModel3D model = m.copy();
 			switch (rot.getInteger()) {
 				case 0:
-					model.apply(Rotation.sideOrientation(0, 3));
-					model.apply(new Translation(0, 0, 1));
+					model.apply(LPRotation.sideOrientation(0, 3));
+					model.apply(new LPTranslation(0, 0, 1));
 					break;
 				case 1:
-					model.apply(Rotation.sideOrientation(0, 1));
-					model.apply(new Translation(1, 0, 0));
+					model.apply(LPRotation.sideOrientation(0, 1));
+					model.apply(new LPTranslation(1, 0, 0));
 					break;
 				case 2:
 					break;
 				case 3:
-					model.apply(Rotation.sideOrientation(0, 2));
-					model.apply(new Translation(1, 0, 1));
+					model.apply(LPRotation.sideOrientation(0, 2));
+					model.apply(new LPTranslation(1, 0, 1));
 					break;
 			}
 			model.computeNormals();
-			model.computeLighting(LightModel.standardLightModel);
+			model.computeStandardLighting();
 			map.put(rot, model);
 		}
 		return map;
@@ -163,9 +163,9 @@ public class LogisticsNewSolidBlockWorldRenderer {
 
 	public void renderWorldBlock(LogisticsSolidTileEntity blockTile, RenderBlocks renderer, int x, int y, int z) {
 		Tessellator tess = Tessellator.instance;
-		CCRenderState.reset();
-		CCRenderState.useNormals = true;
-		CCRenderState.alphaOverride = 0xff;
+		SimpleServiceLocator.cclProxy.getRenderState().reset();
+		SimpleServiceLocator.cclProxy.getRenderState().setUseNormals(true);
+		SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
 
 		BlockRotation rotation = BlockRotation.getRotation(blockTile.getRotation());
 
@@ -174,10 +174,10 @@ public class LogisticsNewSolidBlockWorldRenderer {
 		tess.setColorOpaque_F(1F, 1F, 1F);
 		tess.setBrightness(brightness);
 
-		IconTransformation icon = new IconTransformation(LogisticsSolidBlock.getNewIcon(blockTile.getWorldObj(), blockTile.xCoord, blockTile.yCoord, blockTile.zCoord));
+		IIconTransformation icon = SimpleServiceLocator.cclProxy.createIconTransformer(LogisticsSolidBlock.getNewIcon(blockTile.getWorldObj(), blockTile.xCoord, blockTile.yCoord, blockTile.zCoord));
 
 		//Draw
-		LogisticsNewSolidBlockWorldRenderer.block.get(rotation).render(new IVertexOperation[] { new Translation(x, y, z), icon });
+		LogisticsNewSolidBlockWorldRenderer.block.get(rotation).render(new I3DOperation[] { new LPTranslation(x, y, z), icon });
 		LPPosition pos = new LPPosition(blockTile);
 		for (CoverSides side : CoverSides.values()) {
 			boolean render = true;
@@ -191,8 +191,8 @@ public class LogisticsNewSolidBlockWorldRenderer {
 				}
 			}
 			if (render) {
-				LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation).render(new IVertexOperation[] { new Translation(x, y, z), icon });
-				LogisticsNewSolidBlockWorldRenderer.texturePlate_Inner.get(side).get(rotation).render(new IVertexOperation[] { new Translation(x, y, z), icon });
+				LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation).render(new I3DOperation[] { new LPTranslation(x, y, z), icon });
+				LogisticsNewSolidBlockWorldRenderer.texturePlate_Inner.get(side).get(rotation).render(new I3DOperation[] { new LPTranslation(x, y, z), icon });
 			}
 		}
 
@@ -212,12 +212,12 @@ public class LogisticsNewSolidBlockWorldRenderer {
 
 		tess.startDrawingQuads();
 
-		IconTransformation icon = new IconTransformation(LogisticsSolidBlock.getNewIcon(metadata));
+		IIconTransformation icon = SimpleServiceLocator.cclProxy.createIconTransformer(LogisticsSolidBlock.getNewIcon(metadata));
 
 		//Draw
-		LogisticsNewSolidBlockWorldRenderer.block.get(rotation).render(new IVertexOperation[] { icon });
+		LogisticsNewSolidBlockWorldRenderer.block.get(rotation).render(new I3DOperation[] { icon });
 		for (CoverSides side : CoverSides.values()) {
-			LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation).render(new IVertexOperation[] { icon });
+			LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation).render(new I3DOperation[] { icon });
 		}
 		tess.draw();
 		block.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);

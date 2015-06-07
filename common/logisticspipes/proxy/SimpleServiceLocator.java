@@ -17,6 +17,7 @@ import logisticspipes.logistics.ILogisticsManager;
 import logisticspipes.proxy.interfaces.IBCProxy;
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
 import logisticspipes.proxy.interfaces.IBinnieProxy;
+import logisticspipes.proxy.interfaces.ICCLProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.ICoFHPowerProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
@@ -258,5 +259,11 @@ public final class SimpleServiceLocator {
 
 	public static void setBinnieProxy(IBinnieProxy proxy) {
 		SimpleServiceLocator.binnieProxy = proxy;
+	}
+
+	public static ICCLProxy cclProxy;
+
+	public static void setCCLProxy(ICCLProxy proxy) {
+		SimpleServiceLocator.cclProxy = proxy;
 	}
 }

@@ -8,6 +8,8 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.proxy.buildcraft.subproxies.IBCRenderState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
+import logisticspipes.proxy.object3d.interfaces.I3DOperation;
+import logisticspipes.proxy.object3d.interfaces.IModel3D;
 import logisticspipes.renderer.newpipe.GLRenderList;
 import logisticspipes.utils.tuples.Pair;
 
@@ -16,16 +18,13 @@ import net.minecraft.util.IIcon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-import codechicken.lib.render.CCModel;
-import codechicken.lib.render.CCRenderState.IVertexOperation;
-
 public class PipeRenderState implements IClientState {
 
 	public final ConnectionMatrix pipeConnectionMatrix = new ConnectionMatrix();
 	public final TextureMatrix textureMatrix = new TextureMatrix();
 	public final IBCRenderState bcRenderState;
 
-	public List<Pair<CCModel, IVertexOperation[]>> cachedRenderer = null;
+	public List<Pair<IModel3D, I3DOperation[]>> cachedRenderer = null;
 	public boolean forceRenderOldPipe = false;
 	public boolean solidSidesCache[] = new boolean[6];
 

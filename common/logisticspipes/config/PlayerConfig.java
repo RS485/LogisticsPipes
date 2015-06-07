@@ -17,6 +17,7 @@ import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.PlayerConfigToServerPacket;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.PlayerIdentifier;
 
 import net.minecraft.nbt.CompressedStreamTools;
@@ -31,7 +32,7 @@ import lombok.SneakyThrows;
 public class PlayerConfig {
 
 	private final PlayerIdentifier playerIdent;
-	@Getter
+
 	private boolean useNewRenderer = true;
 	@Getter
 	private boolean useFallbackRenderer = true;
@@ -181,5 +182,9 @@ public class PlayerConfig {
 		playerConfig.useNewRenderer = useNewRenderer;
 		playerConfig.useFallbackRenderer = useFallbackRenderer;
 		playerConfig.isUninitialised = false;
+	}
+
+	public boolean isUseNewRenderer() {
+		return useNewRenderer && SimpleServiceLocator.cclProxy.isActivated();
 	}
 }

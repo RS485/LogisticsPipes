@@ -10,6 +10,11 @@ import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePluggable;
+import logisticspipes.proxy.object3d.interfaces.I3DOperation;
+import logisticspipes.proxy.object3d.interfaces.IIconTransformation;
+import logisticspipes.proxy.object3d.interfaces.IModel3D;
+import logisticspipes.proxy.object3d.operation.LPScale;
+import logisticspipes.proxy.object3d.operation.LPTranslation;
 import logisticspipes.renderer.IIconProvider;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer.BlockRotation;
@@ -28,16 +33,9 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
-import codechicken.lib.render.CCModel;
-import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.CCRenderState.IVertexOperation;
-import codechicken.lib.render.uv.IconTransformation;
-import codechicken.lib.vec.Scale;
-import codechicken.lib.vec.Translation;
-
 public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandler {
 
-	private Map<BlockRotation, CCModel> requestBlock = null;
+	private Map<BlockRotation, IModel3D> requestBlock = null;
 
 	@Override
 	public void renderInventoryBlock(Block block, int metadata, int modelID, RenderBlocks renderer) {}
@@ -58,9 +56,9 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 				return false;
 			}
 			if (requestBlock == null || true) {
-				requestBlock = new HashMap<BlockRotation, CCModel>();
+				requestBlock = new HashMap<BlockRotation, IModel3D>();
 				for (BlockRotation rot : BlockRotation.values()) {
-					requestBlock.put(rot, LogisticsNewSolidBlockWorldRenderer.block.get(rot).copy().apply(new Scale(0.999)).apply(new Translation(0.0005, 0.0005, 0.0005)));
+					requestBlock.put(rot, LogisticsNewSolidBlockWorldRenderer.block.get(rot).copy().apply(new LPScale(0.999)).apply(new LPTranslation(0.0005, 0.0005, 0.0005)));
 				}
 			}
 
@@ -70,9 +68,9 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 			renderer.setRenderBoundsFromBlock(block);
 			renderer.renderStandardBlock(block, x, y, z);
 
-			CCRenderState.reset();
-			CCRenderState.useNormals = true;
-			CCRenderState.alphaOverride = 0xff;
+			SimpleServiceLocator.cclProxy.getRenderState().reset();
+			SimpleServiceLocator.cclProxy.getRenderState().setUseNormals(true);
+			SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
 
 			BlockRotation rotation = BlockRotation.getRotation(((PipeBlockRequestTable) pipeTile.pipe).getRotation());
 
@@ -81,14 +79,14 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 			tess.setColorOpaque_F(1F, 1F, 1F);
 			tess.setBrightness(brightness);
 
-			IconTransformation icon = new IconTransformation(Textures.LOGISTICS_REQUEST_TABLE_NEW);
+			IIconTransformation icon = SimpleServiceLocator.cclProxy.createIconTransformer(Textures.LOGISTICS_REQUEST_TABLE_NEW);
 
-			requestBlock.get(rotation).render(new IVertexOperation[] { new Translation(x, y, z), icon });
+			requestBlock.get(rotation).render(new I3DOperation[] { new LPTranslation(x, y, z), icon });
 
 			for (CoverSides side : CoverSides.values()) {
 				if (!pipeTile.renderState.pipeConnectionMatrix.isConnected(side.getDir(rotation))) {
-					LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation).render(new IVertexOperation[] { new Translation(x, y, z), icon });
-					LogisticsNewSolidBlockWorldRenderer.texturePlate_Inner.get(side).get(rotation).render(new IVertexOperation[] { new Translation(x, y, z), icon });
+					LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation).render(new I3DOperation[] { new LPTranslation(x, y, z), icon });
+					LogisticsNewSolidBlockWorldRenderer.texturePlate_Inner.get(side).get(rotation).render(new I3DOperation[] { new LPTranslation(x, y, z), icon });
 				}
 			}
 

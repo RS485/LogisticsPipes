@@ -9,6 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -129,6 +130,7 @@ public class LogisticsWrapperHandler {
 			ignoreModLoaded = true;
 			modId = modId.substring(1);
 		}
+		List<Class<?>> wrapperInterfacesList = Arrays.asList(wrapperInterfaces);
 		Class<?> clazz = LogisticsWrapperHandler.lookupMap.get(className);
 		if (clazz == null) {
 			String fieldName = interfaze.getName().replace('.', '/');
@@ -180,9 +182,8 @@ public class LogisticsWrapperHandler {
 				mv.visitEnd();
 			}
 			int lineAddition = 100;
-			List<Class<?>> list = Arrays.asList(wrapperInterfaces);
 			for (Method method : interfaze.getMethods()) {
-				LogisticsWrapperHandler.addProxyMethod(cw, method, fieldName, className, lineAddition, !list.contains(method.getReturnType()));
+				LogisticsWrapperHandler.addProxyMethod(cw, method, fieldName, className, lineAddition, !wrapperInterfacesList.contains(method.getReturnType()));
 				lineAddition += 10;
 			}
 			LogisticsWrapperHandler.addGetName(cw, className, proxyName);
@@ -219,8 +220,10 @@ public class LogisticsWrapperHandler {
 					e = e1;
 				}
 			} catch (NoClassDefFoundError e1) {
-				e1.printStackTrace();
-				e = e1;
+				if(!ignoreModLoaded) {
+					e1.printStackTrace();
+					e = e1;
+				}
 			}
 		}
 		T instance = (T) clazz.getConstructor(new Class<?>[] { interfaze, interfaze }).newInstance(dummyProxy, proxy);
@@ -236,6 +239,7 @@ public class LogisticsWrapperHandler {
 			}
 		}
 		((AbstractWrapper) instance).setModId(modId);
+		((AbstractWrapper) instance).setWrapperInterfaces(Collections.unmodifiableList(wrapperInterfacesList));
 		LogisticsWrapperHandler.wrapperController.add((AbstractWrapper) instance);
 		return instance;
 	}
@@ -302,7 +306,7 @@ public class LogisticsWrapperHandler {
 			}
 			int lineAddition = 100;
 			for (Method method : interfaze.getMethods()) {
-				LogisticsWrapperHandler.addProxyMethod(cw, method, fieldName, className, lineAddition, true);
+				LogisticsWrapperHandler.addProxyMethod(cw, method, fieldName, className, lineAddition, !wrapper.getWrapperInterfaces().contains(method.getReturnType()));
 				lineAddition += 10;
 			}
 			cw.visitEnd();
@@ -324,6 +328,7 @@ public class LogisticsWrapperHandler {
 		}
 
 		T instance = (T) clazz.getConstructor(new Class<?>[] { AbstractWrapper.class, interfaze, interfaze }).newInstance(wrapper, dummyProxy, proxy);
+		((AbstractWrapper) instance).setWrapperInterfaces(wrapper.getWrapperInterfaces());
 		return instance;
 	}
 

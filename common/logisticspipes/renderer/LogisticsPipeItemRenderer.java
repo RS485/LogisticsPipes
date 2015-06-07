@@ -3,6 +3,7 @@ package logisticspipes.renderer;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.PlayerConfig;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.newpipe.LogisticsNewPipeItemRenderer;
 
 import net.minecraft.block.Block;
@@ -158,7 +159,7 @@ public class LogisticsPipeItemRenderer implements IItemRenderer {
 
 	@Override
 	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
-		if (config.isUseNewRenderer()) {
+		if (config.isUseNewRenderer() && SimpleServiceLocator.cclProxy.isActivated()) {
 			newRenderer.renderItem(type, item, data);
 			return;
 		}

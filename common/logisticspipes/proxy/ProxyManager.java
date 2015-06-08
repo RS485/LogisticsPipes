@@ -184,7 +184,7 @@ public class ProxyManager {
 							@Override public ItemStack[] getDropItems(LogisticsTileGenericPipe container) {return new ItemStack[]{};}
 							@Override public boolean isBlocking() {return false;}
 							@Override public Object getOriginal() {return null;}
-							@Override public void renderPluggable(RenderBlocks renderblocks, ForgeDirection dir, int renderPass, int x, int y, int z) {}
+							@Override @SideOnly(Side.CLIENT) public void renderPluggable(RenderBlocks renderblocks, ForgeDirection dir, int renderPass, int x, int y, int z) {}
 							@Override public boolean isAcceptingItems(LPTravelingItemServer arrivingItem) {return false;}
 							@Override public LPTravelingItemServer handleItem(LPTravelingItemServer arrivingItem) {return arrivingItem;}
 						};
@@ -395,7 +395,7 @@ public class ProxyManager {
 			@Override public boolean isActive() {return false;}
 			@Override public void registerPipeInformationProvider() {}
 			@Override public boolean isItemDuct(TileEntity tile) {return false;}
-			@Override public void renderPipeConnections(LogisticsTileGenericPipe pipeTile, RenderBlocks renderer) {}
+			@Override @SideOnly(Side.CLIENT) public void renderPipeConnections(LogisticsTileGenericPipe pipeTile, RenderBlocks renderer) {}
 			@Override public void registerTextures(IIconRegister iconRegister) {}
 			@Override public boolean isBlockedSide(TileEntity with, ForgeDirection opposite) {return false;}
 		}, ITDPart.class));

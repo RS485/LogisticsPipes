@@ -1342,7 +1342,9 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 			ItemIdentifierStack stack = information.getItem();
 			if (stack.getItem().isFluidContainer()) {
 				FluidStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(stack);
-				((IRequireReliableFluidTransport) this).liquidArrived(FluidIdentifier.get(liquid), liquid.amount);
+				if (liquid != null) {
+					((IRequireReliableFluidTransport) this).liquidArrived(FluidIdentifier.get(liquid), liquid.amount);
+				}
 			}
 		}
 	}

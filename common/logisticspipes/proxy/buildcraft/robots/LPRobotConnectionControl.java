@@ -57,6 +57,10 @@ public class LPRobotConnectionControl implements ISpecialPipedConnection {
 	}
 
 	public void checkAll(World world) {
+		if (!globalAvailableRobots.containsKey(world)) {
+			return;
+		}
+
 		for (Pair<LPPosition, ForgeDirection> canidatePos : globalAvailableRobots.get(world)) {
 			TileEntity connectedPipeTile = canidatePos.getValue1().getTileEntity(world);
 			if (!(connectedPipeTile instanceof LogisticsTileGenericPipe)) {

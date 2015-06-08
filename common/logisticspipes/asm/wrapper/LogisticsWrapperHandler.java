@@ -394,13 +394,10 @@ public class LogisticsWrapperHandler {
 			desc.append(LogisticsWrapperHandler.getPrimitiveMapping(retclazz));
 			returnType = LogisticsWrapperHandler.getPrimitiveReturnMapping(retclazz);
 		} else if (retclazz.isArray()) {
-			if (retclazz.getComponentType().isPrimitive()) {
-				resultClassL = retclazz.getName().replace('.', '/');
-				resultClass = retclazz.getName().replace('.', '/');
-			} else {
-				resultClassL = "L" + retclazz.getName().replace('.', '/') + ";";
-				resultClass = retclazz.getName().replace('.', '/');
-			}
+			// Arrays in bytecode are always typeless, like primitives
+			// e.g. Object[] = [Ljava/lang/Object; (not L[Ljava/lang/Object;;)
+			resultClassL = retclazz.getName().replace('.', '/');
+			resultClass = resultClassL;
 			desc.append(resultClassL);
 			returnType = Opcodes.ARETURN;
 		} else {

@@ -397,4 +397,8 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		}
 		return lowest;
 	}
+
+	public boolean canHoldBCParts() {
+		return true;
+	}
 }

@@ -13,6 +13,7 @@ public class LPBCPipeRenderState extends PipeRenderState implements IBCRenderSta
 
 	@Override
 	public void writeData_LP(LPDataOutputStream data) throws IOException {
+		data.writeBoolean(true);
 		ByteBuf buf = Unpooled.buffer(128);
 		writeData(buf);
 		data.writeByteBuf(buf);
@@ -20,7 +21,9 @@ public class LPBCPipeRenderState extends PipeRenderState implements IBCRenderSta
 
 	@Override
 	public void readData_LP(LPDataInputStream data) throws IOException {
-		ByteBuf buf = data.readByteBuf();
-		readData(buf);
+		if (data.readBoolean()) {
+			ByteBuf buf = data.readByteBuf();
+			readData(buf);
+		}
 	}
 }

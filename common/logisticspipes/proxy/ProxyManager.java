@@ -152,7 +152,9 @@ public class ProxyManager {
 						return new IBCRenderState() {
 							@Override public boolean needsRenderUpdate() {return false;}
 							@Override public boolean isDirty() {return false;}
-							@Override public void writeData_LP(LPDataOutputStream data) {}
+							@Override public void writeData_LP(LPDataOutputStream data) throws IOException {
+								data.writeBoolean(false);
+							}
 							@Override public void readData_LP(LPDataInputStream data) {}
 							@Override public void clean() {}
 						};
@@ -396,7 +398,7 @@ public class ProxyManager {
 		SimpleServiceLocator.setBinnieProxy(ProxyManager.getWrappedProxy("Genetics", IBinnieProxy.class, BinnieProxy.class, new IBinnieProxy() {
 			@Override public boolean isTileAnalyser(TileEntity tile) {return false;}
 		}));
-		
+
 		ICCLProxy dummyCCLProxy = new ICCLProxy() {
 			@Override public IIconTransformation createIconTransformer(IIcon registerIcon) {
 				return new IIconTransformation() {

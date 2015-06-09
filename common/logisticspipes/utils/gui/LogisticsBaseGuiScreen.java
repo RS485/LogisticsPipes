@@ -39,7 +39,7 @@ import codechicken.nei.api.TaggedInventoryArea;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-@ModDependentInterface(modId = { "NotEnoughItems" }, interfacePath = { "codechicken.nei.INEIGuiHandler" })
+@ModDependentInterface(modId = { "NotEnoughItems" }, interfacePath = { "codechicken.nei.api.INEIGuiHandler" })
 public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISubGuiControler, INEIGuiHandler {
 
 	protected static final ResourceLocation ITEMSINK = new ResourceLocation("logisticspipes", "textures/gui/itemsink.png");

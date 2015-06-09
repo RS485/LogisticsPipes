@@ -601,4 +601,9 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		//Unused for Pipes
 		return 0;
 	}
+
+	@Override
+	public boolean canHoldBCParts() {
+		return false;
+	}
 }

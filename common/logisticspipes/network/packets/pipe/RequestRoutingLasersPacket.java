@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -29,11 +30,26 @@ import net.minecraft.world.World;
 
 import net.minecraftforge.common.util.ForgeDirection;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 public class RequestRoutingLasersPacket extends CoordinatesPacket {
 
 	private abstract class Log {
 
 		abstract void log(String log);
+	}
+
+	@Data
+	@AllArgsConstructor
+	private class DataEntry {
+
+		final LogisticsTileGenericPipe pipe;
+		final ForgeDirection dir;
+		final ArrayList<ExitRoute> connectedRouters;
+		final List<LaserData> lasers;
+		final EnumSet<PipeRoutingConnectionType> connectionType;
+		final Log log;
 	}
 
 	private boolean firstPipe = false;
@@ -90,81 +106,91 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 		}
 	}
 
-	private void handleRouteInDirection(final LogisticsTileGenericPipe pipe, ForgeDirection dir, ArrayList<ExitRoute> connectedRouters, final List<LaserData> lasers, EnumSet<PipeRoutingConnectionType> connectionType, final Log log) {
-		if (LPConstants.DEBUG) {
-			log.log("Size: " + connectedRouters.size());
-		}
-		lasers.add(new LaserData(pipe.xCoord, pipe.yCoord, pipe.zCoord, dir, connectionType).setStartPipe(firstPipe));
-		firstPipe = false;
-		HashMap<CoreRoutedPipe, ExitRoute> map = PathFinder.paintAndgetConnectedRoutingPipes(pipe, dir, Configs.LOGISTICS_DETECTION_COUNT, Configs.LOGISTICS_DETECTION_LENGTH, new IPaintPath() {
+	private void handleRouteInDirection(final LogisticsTileGenericPipe pipeIn, ForgeDirection dirIn, ArrayList<ExitRoute> connectedRoutersIn, final List<LaserData> lasersIn, EnumSet<PipeRoutingConnectionType> connectionTypeIn, final Log logIn) {
+		List<DataEntry> worklist = new LinkedList<DataEntry>();
+		worklist.add(new DataEntry(pipeIn, dirIn, connectedRoutersIn, lasersIn, connectionTypeIn, logIn));
+		while (!worklist.isEmpty()) {
+			final DataEntry entry = worklist.remove(0);
+			final LogisticsTileGenericPipe pipe = entry.pipe;
+			final ForgeDirection dir = entry.dir;
+			final ArrayList<ExitRoute> connectedRouters = entry.connectedRouters;
+			final List<LaserData> lasers = entry.lasers;
+			final EnumSet<PipeRoutingConnectionType> connectionType = entry.connectionType;
+			final Log log = entry.log;
+			if (LPConstants.DEBUG) {
+				log.log("Size: " + connectedRouters.size());
+			}
+			lasers.add(new LaserData(pipe.xCoord, pipe.yCoord, pipe.zCoord, dir, connectionType).setStartPipe(firstPipe));
+			firstPipe = false;
+			HashMap<CoreRoutedPipe, ExitRoute> map = PathFinder.paintAndgetConnectedRoutingPipes(pipe, dir, Configs.LOGISTICS_DETECTION_COUNT, Configs.LOGISTICS_DETECTION_LENGTH, new IPaintPath() {
 
-			@Override
-			public void addLaser(World worldObj, LaserData laser) {
-				if (pipe.getWorld() == worldObj) {
-					lasers.add(laser);
+				@Override
+				public void addLaser(World worldObj, LaserData laser) {
+					if (pipe.getWorld() == worldObj) {
+						lasers.add(laser);
+					}
 				}
-			}
-		}, connectionType);
-		for (CoreRoutedPipe connectedPipe : map.keySet()) {
-			IRouter newRouter = connectedPipe.getRouter();
-			Iterator<ExitRoute> iRoutes = connectedRouters.iterator();
-			while (iRoutes.hasNext()) {
-				ExitRoute route = iRoutes.next();
-				if (route.destination == newRouter) {
-					iRoutes.remove();
-				}
-			}
-		}
-		Map<CoreRoutedPipe, ArrayList<ExitRoute>> sort = new HashMap<CoreRoutedPipe, ArrayList<ExitRoute>>();
-		for (ExitRoute routeTo : connectedRouters) {
-			ExitRoute result = null;
-			CoreRoutedPipe resultPipe = null;
-			for (Entry<CoreRoutedPipe, ExitRoute> routeCanidate : map.entrySet()) {
-				List<ExitRoute> distances = routeCanidate.getValue().destination.getDistanceTo(routeTo.destination);
-				for (ExitRoute distance : distances) {
-					if (distance.isSameWay(routeTo)) {
-						if (result == null || result.distanceToDestination > distance.distanceToDestination) {
-							result = distance;
-							resultPipe = routeCanidate.getKey();
-						}
+			}, connectionType);
+			for (CoreRoutedPipe connectedPipe : map.keySet()) {
+				IRouter newRouter = connectedPipe.getRouter();
+				Iterator<ExitRoute> iRoutes = connectedRouters.iterator();
+				while (iRoutes.hasNext()) {
+					ExitRoute route = iRoutes.next();
+					if (route.destination == newRouter) {
+						iRoutes.remove();
 					}
 				}
 			}
-			if (result == null) {
-				continue;
-			}
-			if (!sort.containsKey(resultPipe)) {
-				sort.put(resultPipe, new ArrayList<ExitRoute>());
-			}
-			if (!sort.get(resultPipe).contains(result)) {
-				sort.get(resultPipe).add(result);
-			}
-		}
-
-		for (Entry<CoreRoutedPipe, ArrayList<ExitRoute>> connectedPipe : sort.entrySet()) {
-			HashMap<ForgeDirection, ArrayList<ExitRoute>> routers = new HashMap<ForgeDirection, ArrayList<ExitRoute>>();
-			for (ExitRoute exit : connectedPipe.getValue()) {
-				if (!routers.containsKey(exit.exitOrientation)) {
-					routers.put(exit.exitOrientation, new ArrayList<ExitRoute>());
+			Map<CoreRoutedPipe, ArrayList<ExitRoute>> sort = new HashMap<CoreRoutedPipe, ArrayList<ExitRoute>>();
+			for (ExitRoute routeTo : connectedRouters) {
+				ExitRoute result = null;
+				CoreRoutedPipe resultPipe = null;
+				for (Entry<CoreRoutedPipe, ExitRoute> routeCanidate : map.entrySet()) {
+					List<ExitRoute> distances = routeCanidate.getValue().destination.getDistanceTo(routeTo.destination);
+					for (ExitRoute distance : distances) {
+						if (distance.isSameWay(routeTo)) {
+							if (result == null || result.distanceToDestination > distance.distanceToDestination) {
+								result = distance;
+								resultPipe = routeCanidate.getKey();
+							}
+						}
+					}
 				}
-				if (!routers.get(exit.exitOrientation).contains(exit)) {
-					routers.get(exit.exitOrientation).add(exit);
-				}
-			}
-			for (final ForgeDirection exitDir : routers.keySet()) {
-				if (exitDir == ForgeDirection.UNKNOWN) {
+				if (result == null) {
 					continue;
 				}
-				handleRouteInDirection(connectedPipe.getKey().container, exitDir, routers.get(exitDir), lasers, map.get(connectedPipe.getKey()).connectionDetails, new Log() {
+				if (!sort.containsKey(resultPipe)) {
+					sort.put(resultPipe, new ArrayList<ExitRoute>());
+				}
+				if (!sort.get(resultPipe).contains(result)) {
+					sort.get(resultPipe).add(result);
+				}
+			}
 
-					@Override
-					void log(String logString) {
-						if (LPConstants.DEBUG) {
-							log.log(exitDir.name() + ": " + logString);
-						}
+			for (Entry<CoreRoutedPipe, ArrayList<ExitRoute>> connectedPipe : sort.entrySet()) {
+				HashMap<ForgeDirection, ArrayList<ExitRoute>> routers = new HashMap<ForgeDirection, ArrayList<ExitRoute>>();
+				for (ExitRoute exit : connectedPipe.getValue()) {
+					if (!routers.containsKey(exit.exitOrientation)) {
+						routers.put(exit.exitOrientation, new ArrayList<ExitRoute>());
 					}
-				});
+					if (!routers.get(exit.exitOrientation).contains(exit)) {
+						routers.get(exit.exitOrientation).add(exit);
+					}
+				}
+				for (final ForgeDirection exitDir : routers.keySet()) {
+					if (exitDir == ForgeDirection.UNKNOWN) {
+						continue;
+					}
+					worklist.add(new DataEntry(connectedPipe.getKey().container, exitDir, routers.get(exitDir), lasers, map.get(connectedPipe.getKey()).connectionDetails, new Log() {
 
+						@Override
+						void log(String logString) {
+							if (LPConstants.DEBUG) {
+								log.log(exitDir.name() + ": " + logString);
+							}
+						}
+					}));
+				}
 			}
 		}
 	}

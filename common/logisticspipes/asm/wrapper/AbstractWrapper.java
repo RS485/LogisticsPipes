@@ -1,5 +1,7 @@
 package logisticspipes.asm.wrapper;
 
+import java.util.List;
+
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
@@ -21,6 +23,9 @@ public abstract class AbstractWrapper {
 	@Getter
 	@Setter(value = AccessLevel.PACKAGE)
 	private String modId;
+	@Getter
+	@Setter(value = AccessLevel.PACKAGE)
+	private List<Class<?>> wrapperInterfaces;
 
 	@SneakyThrows(Throwable.class)
 	public void handleException(Throwable e) {
@@ -49,11 +54,11 @@ public abstract class AbstractWrapper {
 		reason = null;
 	}
 
-	protected final boolean isEnabled() {
+	protected boolean isEnabled() {
 		return state == WrapperState.Enabled;
 	}
 
-	protected final boolean canTryAnyway() {
+	protected boolean canTryAnyway() {
 		return state != WrapperState.ModMissing;
 	}
 

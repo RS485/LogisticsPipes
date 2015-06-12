@@ -24,6 +24,9 @@ import net.minecraft.world.World;
 
 import net.minecraftforge.common.util.ForgeDirection;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 import buildcraft.api.robots.DockingStation;
 import buildcraft.api.robots.EntityRobotBase;
 import buildcraft.api.statements.IStatementParameter;
@@ -296,6 +299,7 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 			}
 
 			@Override
+			@SideOnly(Side.CLIENT)
 			public void renderPluggable(RenderBlocks renderblocks, ForgeDirection dir, int renderPass, int x, int y, int z) {
 				if (plug.getRenderer() == null) {
 					return;

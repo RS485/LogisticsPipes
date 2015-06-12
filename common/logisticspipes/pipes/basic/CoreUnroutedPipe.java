@@ -400,6 +400,10 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		return lowest;
 	}
 
+	public boolean canHoldBCParts() {
+		return true;
+	}
+
 	public boolean isMultiBlock() {
 		return false;
 	}

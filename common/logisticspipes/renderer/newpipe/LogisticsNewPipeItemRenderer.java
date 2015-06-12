@@ -5,6 +5,10 @@ import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemLogisticsPipe;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.object3d.interfaces.I3DOperation;
+import logisticspipes.proxy.object3d.interfaces.IIconTransformation;
+import logisticspipes.proxy.object3d.interfaces.IModel3D;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe.Corner;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe.Edge;
 import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer.BlockRotation;
@@ -22,9 +26,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import codechicken.lib.render.CCModel;
-import codechicken.lib.render.CCRenderState.IVertexOperation;
-import codechicken.lib.render.uv.IconTransformation;
 import org.lwjgl.opengl.GL11;
 
 public class LogisticsNewPipeItemRenderer implements IItemRenderer {
@@ -77,29 +78,29 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 	}
 
 	private void generatePipeRenderList(int texture) {
-		List<Pair<CCModel, IconTransformation>> objectsToRender = new ArrayList<Pair<CCModel, IconTransformation>>();
+		List<Pair<IModel3D, IIconTransformation>> objectsToRender = new ArrayList<Pair<IModel3D, IIconTransformation>>();
 
 		for (Corner corner : Corner.values()) {
-			for (CCModel model : LogisticsNewRenderPipe.corners_M.get(corner)) {
-				objectsToRender.add(new Pair<CCModel, IconTransformation>(model, LogisticsNewRenderPipe.basicPipeTexture));
+			for (IModel3D model : LogisticsNewRenderPipe.corners_M.get(corner)) {
+				objectsToRender.add(new Pair<IModel3D, IIconTransformation>(model, LogisticsNewRenderPipe.basicPipeTexture));
 			}
 		}
 
 		for (Edge edge : Edge.values()) {
-			objectsToRender.add(new Pair<CCModel, IconTransformation>(LogisticsNewRenderPipe.edges.get(edge), LogisticsNewRenderPipe.basicPipeTexture));
+			objectsToRender.add(new Pair<IModel3D, IIconTransformation>(LogisticsNewRenderPipe.edges.get(edge), LogisticsNewRenderPipe.basicPipeTexture));
 		}
 
 		//ArrayList<Pair<CCModel, IconTransformation>> objectsToRender2 = new ArrayList<Pair<CCModel, IconTransformation>>();
 		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-			for (CCModel model : LogisticsNewRenderPipe.texturePlate_Outer.get(dir)) {
-				IconTransformation icon = Textures.LPnewPipeIconProvider.getIcon(texture);
+			for (IModel3D model : LogisticsNewRenderPipe.texturePlate_Outer.get(dir)) {
+				IIconTransformation icon = Textures.LPnewPipeIconProvider.getIcon(texture);
 				if (icon != null) {
-					objectsToRender.add(new Pair<CCModel, IconTransformation>(model, icon));
+					objectsToRender.add(new Pair<IModel3D, IIconTransformation>(model, icon));
 				}
 			}
 		}
 
-		for (Pair<CCModel, IconTransformation> part : objectsToRender) {
+		for (Pair<IModel3D, IIconTransformation> part : objectsToRender) {
 			part.getValue1().render(part.getValue2());
 		}
 
@@ -119,12 +120,12 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 
 		tess.startDrawingQuads();
 
-		IconTransformation icon = new IconTransformation(Textures.LOGISTICS_REQUEST_TABLE_NEW);
+		IIconTransformation icon = SimpleServiceLocator.cclProxy.createIconTransformer(Textures.LOGISTICS_REQUEST_TABLE_NEW);
 
 		//Draw
-		LogisticsNewSolidBlockWorldRenderer.block.get(rotation).render(new IVertexOperation[] { icon });
+		LogisticsNewSolidBlockWorldRenderer.block.get(rotation).render(new I3DOperation[] { icon });
 		for (CoverSides side : CoverSides.values()) {
-			LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation).render(new IVertexOperation[] { icon });
+			LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation).render(new I3DOperation[] { icon });
 		}
 		tess.draw();
 		block.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);

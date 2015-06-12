@@ -8,6 +8,8 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.proxy.buildcraft.subproxies.IBCRenderState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
+import logisticspipes.proxy.object3d.interfaces.I3DOperation;
+import logisticspipes.proxy.object3d.interfaces.IModel3D;
 import logisticspipes.renderer.newpipe.GLRenderList;
 import logisticspipes.renderer.newpipe.RenderEntry;
 
@@ -62,13 +64,13 @@ public class PipeRenderState implements IClientState {
 	public void writeData(LPDataOutputStream data) throws IOException {
 		pipeConnectionMatrix.writeData(data);
 		textureMatrix.writeData(data);
-		bcRenderState.writeData_LP(data);
+		bcRenderState.writeData_LP(data); //Always needs to be last. Different length depending on proxy loading state.
 	}
 
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		pipeConnectionMatrix.readData(data);
 		textureMatrix.readData(data);
-		bcRenderState.readData_LP(data);
+		bcRenderState.readData_LP(data); //Always needs to be last. Different length depending on proxy loading state.
 	}
 }

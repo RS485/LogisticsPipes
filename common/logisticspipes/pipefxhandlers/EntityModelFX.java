@@ -1,26 +1,27 @@
 package logisticspipes.pipefxhandlers;
 
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.object3d.interfaces.I3DOperation;
+import logisticspipes.proxy.object3d.interfaces.IModel3D;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
-import codechicken.lib.render.CCModel;
-import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.CCRenderState.IVertexOperation;
 import org.lwjgl.opengl.GL11;
 
 public class EntityModelFX extends EntityFX {
 
-	private final CCModel model;
-	private final IVertexOperation[] operations;
+	private final IModel3D model;
+	private final I3DOperation[] operations;
 	private final ResourceLocation texture;
 
-	public EntityModelFX(World world, double x, double y, double z, CCModel model, IVertexOperation[] operations, ResourceLocation texture) {
+	public EntityModelFX(World world, double x, double y, double z, IModel3D model, I3DOperation[] i3dOperations, ResourceLocation texture) {
 		super(world, x, y, z, 0, -5, 0);
 		this.model = model;
-		this.operations = operations;
+		this.operations = i3dOperations;
 		this.texture = texture;
 	}
 
@@ -33,14 +34,14 @@ public class EntityModelFX extends EntityFX {
 		double z = posZ - EntityFX.interpPosZ;
 		GL11.glTranslated(x, y, z);
 
-		CCRenderState.reset();
-		CCRenderState.useNormals = true;
-		CCRenderState.alphaOverride = 0xff;
+		SimpleServiceLocator.cclProxy.getRenderState().reset();
+		SimpleServiceLocator.cclProxy.getRenderState().setUseNormals(true);
+		SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
-		CCRenderState.startDrawing();
+		SimpleServiceLocator.cclProxy.getRenderState().startDrawing();
 		model.render(operations);
-		CCRenderState.draw();
+		SimpleServiceLocator.cclProxy.getRenderState().draw();
 
 		GL11.glPopMatrix();
 		tess.startDrawingQuads();

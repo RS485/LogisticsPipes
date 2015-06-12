@@ -2,15 +2,16 @@ package logisticspipes.textures.provider;
 
 import java.util.ArrayList;
 
-import net.minecraft.util.IIcon;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.object3d.interfaces.IIconTransformation;
 
-import codechicken.lib.render.uv.IconTransformation;
+import net.minecraft.util.IIcon;
 
 public class LPPipeIconTransformerProvider {
 
-	public ArrayList<IconTransformation> icons = new ArrayList<IconTransformation>();
+	public ArrayList<IIconTransformation> icons = new ArrayList<IIconTransformation>();
 
-	public IconTransformation getIcon(int iconIndex) {
+	public IIconTransformation getIcon(int iconIndex) {
 		return icons.get(iconIndex);
 	}
 
@@ -19,9 +20,9 @@ public class LPPipeIconTransformerProvider {
 			icons.add(null);
 		}
 		if (icons.get(index) != null) {
-			icons.get(index).icon = icon;
+			icons.get(index).update(icon);
 		} else {
-			icons.set(index, new IconTransformation(icon));
+			icons.set(index, SimpleServiceLocator.cclProxy.createIconTransformer(icon));
 		}
 	}
 }

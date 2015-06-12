@@ -1,8 +1,12 @@
 package logisticspipes.proxy;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import logisticspipes.LPConstants;
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
@@ -24,9 +28,11 @@ import logisticspipes.proxy.buildcraft.subproxies.IBCRenderTESR;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
 import logisticspipes.proxy.buildcraft.subproxies.IConnectionOverrideResult;
 import logisticspipes.proxy.cc.CCProxy;
+import logisticspipes.proxy.ccl.CCLProxy;
 import logisticspipes.proxy.cofh.CoFHPowerProxy;
 import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyReceiver;
 import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyStorage;
+import logisticspipes.proxy.cofhccl.CoFHCCLProxy;
 import logisticspipes.proxy.ec.ExtraCellsProxy;
 import logisticspipes.proxy.enderchest.EnderStorageProxy;
 import logisticspipes.proxy.enderio.EnderIOProxy;
@@ -37,6 +43,7 @@ import logisticspipes.proxy.ic2.IC2Proxy;
 import logisticspipes.proxy.interfaces.IBCProxy;
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
 import logisticspipes.proxy.interfaces.IBinnieProxy;
+import logisticspipes.proxy.interfaces.ICCLProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.ICoFHPowerProxy;
 import logisticspipes.proxy.interfaces.ICraftingParts;
@@ -55,6 +62,14 @@ import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
 import logisticspipes.proxy.interfaces.IToolWrenchProxy;
 import logisticspipes.proxy.nei.NEIProxy;
+import logisticspipes.proxy.object3d.interfaces.I3DOperation;
+import logisticspipes.proxy.object3d.interfaces.IBounds;
+import logisticspipes.proxy.object3d.interfaces.IIconTransformation;
+import logisticspipes.proxy.object3d.interfaces.IModel3D;
+import logisticspipes.proxy.object3d.interfaces.IRenderState;
+import logisticspipes.proxy.object3d.interfaces.ITranslation;
+import logisticspipes.proxy.object3d.interfaces.IVec3;
+import logisticspipes.proxy.object3d.operation.LPScale;
 import logisticspipes.proxy.opencomputers.IOCTile;
 import logisticspipes.proxy.opencomputers.OpenComputersProxy;
 import logisticspipes.proxy.td.ThermalDynamicsProxy;
@@ -76,8 +91,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import net.minecraftforge.common.util.ForgeDirection;
@@ -138,7 +155,9 @@ public class ProxyManager {
 						return new IBCRenderState() {
 							@Override public boolean needsRenderUpdate() {return false;}
 							@Override public boolean isDirty() {return false;}
-							@Override public void writeData_LP(LPDataOutputStream data) {}
+							@Override public void writeData_LP(LPDataOutputStream data) throws IOException {
+								data.writeBoolean(false);
+							}
 							@Override public void readData_LP(LPDataInputStream data) {}
 							@Override public void clean() {}
 						};
@@ -167,7 +186,7 @@ public class ProxyManager {
 							@Override public ItemStack[] getDropItems(LogisticsTileGenericPipe container) {return new ItemStack[]{};}
 							@Override public boolean isBlocking() {return false;}
 							@Override public Object getOriginal() {return null;}
-							@Override public void renderPluggable(RenderBlocks renderblocks, ForgeDirection dir, int renderPass, int x, int y, int z) {}
+							@Override @SideOnly(Side.CLIENT) public void renderPluggable(RenderBlocks renderblocks, ForgeDirection dir, int renderPass, int x, int y, int z) {}
 							@Override public boolean isAcceptingItems(LPTravelingItemServer arrivingItem) {return false;}
 							@Override public LPTravelingItemServer handleItem(LPTravelingItemServer arrivingItem) {return arrivingItem;}
 						};
@@ -374,7 +393,7 @@ public class ProxyManager {
 			@Override public boolean isActive() {return false;}
 			@Override public void registerPipeInformationProvider() {}
 			@Override public boolean isItemDuct(TileEntity tile) {return false;}
-			@Override public void renderPipeConnections(LogisticsTileGenericPipe pipeTile, RenderBlocks renderer) {}
+			@Override @SideOnly(Side.CLIENT) public void renderPipeConnections(LogisticsTileGenericPipe pipeTile, RenderBlocks renderer) {}
 			@Override public void registerTextures(IIconRegister iconRegister) {}
 			@Override public boolean isBlockedSide(TileEntity with, ForgeDirection opposite) {return false;}
 		}, ITDPart.class));
@@ -382,5 +401,92 @@ public class ProxyManager {
 		SimpleServiceLocator.setBinnieProxy(ProxyManager.getWrappedProxy("Genetics", IBinnieProxy.class, BinnieProxy.class, new IBinnieProxy() {
 			@Override public boolean isTileAnalyser(TileEntity tile) {return false;}
 		}));
+		
+		final IBounds dummyBounds = new IBounds() {
+			@Override public IVec3 min() {
+				return new IVec3() {
+					@Override public double x() {return 0;}
+					@Override public double y() {return 0;}
+					@Override public double z() {return 0;}
+					@Override public Object getOriginal() {return null;}
+				};
+			}
+			@Override public IVec3 max() {
+				return new IVec3() {
+					@Override public double x() {return 0;}
+					@Override public double y() {return 0;}
+					@Override public double z() {return 0;}
+					@Override public Object getOriginal() {return null;}
+				};
+			}
+			@Override public AxisAlignedBB toAABB() {return null;}
+		};
+		final IModel3D dummy3DModel = new IModel3D() {
+			@Override public IModel3D backfacedCopy() {return this;}
+			@Override public void render(I3DOperation... i3dOperations) {}
+			@Override public void computeNormals() {}
+			@Override public void computeStandardLighting() {}
+			@Override public IBounds bounds() {
+				return dummyBounds;
+			}
+			@Override public IModel3D apply(I3DOperation translation) {return this;}
+			@Override public IModel3D copy() {return this;}
+			@Override public IModel3D twoFacedCopy() {return this;}
+			@Override public Object getOriginal() {return this;}
+			@Override public IBounds getBoundsInside(AxisAlignedBB boundingBox) {
+				return dummyBounds;
+			}
+		};
+		ICCLProxy dummyCCLProxy = new ICCLProxy() {
+			@Override public IIconTransformation createIconTransformer(IIcon registerIcon) {
+				return new IIconTransformation() {
+					@Override public Object getOriginal() {return null;}
+					@Override public void update(IIcon registerIcon) {}
+				};
+			}
+			@Override public IRenderState getRenderState() {
+				return new IRenderState() {
+					@Override public void reset() {}
+					@Override public void setUseNormals(boolean b) {}
+					@Override public void setAlphaOverride(int i) {}
+					@Override public void draw() {}
+					@Override public void setBrightness(int brightness) {}
+					@Override public void startDrawing() {}
+				};
+			}
+			@Override public Map<String, IModel3D> parseObjModels(InputStream resourceAsStream, int i, LPScale scale) {return new HashMap<String, IModel3D>();}
+			@Override public Object getRotation(int i, int j) {return null;}
+			@Override public Object getScale(double d, double e, double f) {return null;}
+			@Override public Object getScale(double d) {return null;}
+			@Override public ITranslation getTranslation(double d, double e, double f) {
+				return new ITranslation() {
+					@Override public ITranslation inverse() {return this;}
+					@Override public Object getOriginal() {return null;}
+				};
+			}
+			@Override public ITranslation getTranslation(IVec3 min) {
+				return new ITranslation() {
+					@Override public ITranslation inverse() {return this;}
+					@Override public Object getOriginal() {return null;}
+				};
+			}
+			@Override public Object getUVScale(double i, double d) {return null;}
+			@Override public Object getUVTranslation(float i, float f) {return null;}
+			@Override public Object getUVTransformationList(I3DOperation[] uvTranslation) {return null;}
+			@Override public IModel3D wrapModel(Object model) {
+				return dummy3DModel;
+			}
+			@Override public boolean isActivated() {return false;}
+			@Override public Object getRotation(double d, int i, int j, int k) {return null;}
+			@Override public IModel3D combine(Collection<IModel3D> list) {
+				return dummy3DModel;
+			}
+			@Override public Object getColourMultiplier(int i) {return null;}
+		};
+		Class<?>[] cclSubWrapper = new Class<?>[] {IIconTransformation.class, IRenderState.class, IModel3D.class, ITranslation.class, IVec3.class, IBounds.class};
+		SimpleServiceLocator.setCCLProxy(ProxyManager.getWrappedProxy("!CCLRender", ICCLProxy.class, CCLProxy.class, dummyCCLProxy, cclSubWrapper));
+		if(!SimpleServiceLocator.cclProxy.isActivated()) {
+			SimpleServiceLocator.setCCLProxy(ProxyManager.getWrappedProxy("!CoFHCCLRender", ICCLProxy.class, CoFHCCLProxy.class, dummyCCLProxy, cclSubWrapper));
+		}
 	}
 }

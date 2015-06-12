@@ -1,9 +1,10 @@
 package logisticspipes.renderer.newpipe;
 
+import logisticspipes.proxy.object3d.interfaces.I3DOperation;
+import logisticspipes.proxy.object3d.interfaces.IModel3D;
+
 import net.minecraft.util.ResourceLocation;
 
-import codechicken.lib.render.CCModel;
-import codechicken.lib.render.CCRenderState.IVertexOperation;
 import lombok.Data;
 
 @Data
@@ -11,25 +12,25 @@ public class RenderEntry {
 
 	private static final ResourceLocation BLOCKS = new ResourceLocation("textures/atlas/blocks.png");
 
-	public RenderEntry(CCModel model, IVertexOperation[] operations, ResourceLocation texture) {
+	public RenderEntry(IModel3D model, I3DOperation[] operations, ResourceLocation texture) {
 		this.model = model;
 		this.operations = operations;
 		this.texture = texture;
 	}
 
-	public RenderEntry(CCModel model, IVertexOperation[] operations) {
+	public RenderEntry(IModel3D model, I3DOperation[] operations) {
 		this(model, operations, RenderEntry.BLOCKS);
 	}
 
-	public RenderEntry(CCModel model) {
-		this(model, new IVertexOperation[] {});
+	public RenderEntry(IModel3D model) {
+		this(model, new I3DOperation[] {});
 	}
 
-	public RenderEntry(CCModel model, ResourceLocation texture) {
-		this(model, new IVertexOperation[] {}, texture);
+	public RenderEntry(IModel3D model, ResourceLocation texture) {
+		this(model, new I3DOperation[] {}, texture);
 	}
 
-	private final CCModel model;
-	private final IVertexOperation[] operations;
+	private final IModel3D model;
+	private final I3DOperation[] operations;
 	private final ResourceLocation texture;
 }

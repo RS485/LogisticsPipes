@@ -59,6 +59,7 @@ public abstract class InventoryModuleCoordinatesPacket extends ModuleCoordinates
 			data.writeByte(1);
 			for (ItemIdentifierStack stack : identList) {
 				if (stack == null) {
+					data.writeByte(0);
 					continue;
 				}
 				data.writeByte(1);
@@ -69,6 +70,7 @@ public abstract class InventoryModuleCoordinatesPacket extends ModuleCoordinates
 			data.writeByte(1);
 			for (ItemIdentifierStack stack : identSet) {
 				if (stack == null) {
+					data.writeByte(0);
 					continue;
 				}
 				data.writeByte(1);
@@ -95,7 +97,11 @@ public abstract class InventoryModuleCoordinatesPacket extends ModuleCoordinates
 			identList = new LinkedList<ItemIdentifierStack>();
 			byte index = data.readByte();
 			while (index != -1) { // read until the end
-				((LinkedList<ItemIdentifierStack>) identList).addLast(data.readItemIdentifierStack());
+				if (index == 0) {
+					((LinkedList<ItemIdentifierStack>) identList).addLast(null);
+				} else {
+					((LinkedList<ItemIdentifierStack>) identList).addLast(data.readItemIdentifierStack());
+				}
 				index = data.readByte(); // read the next slot
 			}
 		} else {

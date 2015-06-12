@@ -16,6 +16,15 @@ import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.object3d.interfaces.I3DOperation;
+import logisticspipes.proxy.object3d.interfaces.IBounds;
+import logisticspipes.proxy.object3d.interfaces.IIconTransformation;
+import logisticspipes.proxy.object3d.interfaces.IModel3D;
+import logisticspipes.proxy.object3d.interfaces.IVec3;
+import logisticspipes.proxy.object3d.operation.LPScale;
+import logisticspipes.proxy.object3d.operation.LPTranslation;
+import logisticspipes.proxy.object3d.operation.LPUVTransformationList;
+import logisticspipes.proxy.object3d.operation.LPUVTranslation;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.textures.Textures;
 import logisticspipes.utils.tuples.LPPosition;
@@ -31,17 +40,8 @@ import net.minecraft.world.World;
 
 import net.minecraftforge.common.util.ForgeDirection;
 
-import codechicken.lib.lighting.LightModel;
-import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.CCRenderState.IVertexOperation;
-import codechicken.lib.render.uv.IconTransformation;
-import codechicken.lib.render.uv.UVTransformationList;
-import codechicken.lib.render.uv.UVTranslation;
-import codechicken.lib.vec.Cuboid6;
-import codechicken.lib.vec.Scale;
-import codechicken.lib.vec.Translation;
-import codechicken.lib.vec.Vector3;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.lwjgl.opengl.GL11;
@@ -265,59 +265,58 @@ public class LogisticsNewRenderPipe {
 		}
 	}
 
-	//Pipe Models
-	static Map<ForgeDirection, List<CCModel>> sideNormal = new HashMap<ForgeDirection, List<CCModel>>();
-	static Map<ForgeDirection, List<CCModel>> sideBC = new HashMap<ForgeDirection, List<CCModel>>();
-	static Map<Edge, CCModel> edges = new HashMap<Edge, CCModel>();
-	static Map<Corner, List<CCModel>> corners_M = new HashMap<Corner, List<CCModel>>();
-	static Map<Corner, List<CCModel>> corners_I3 = new HashMap<Corner, List<CCModel>>();
-	static Map<PipeTurnCorner, CCModel> corners_I = new HashMap<PipeTurnCorner, CCModel>();
-	static Map<PipeSupport, CCModel> supports = new HashMap<PipeSupport, CCModel>();
-	static Map<PipeTurnCorner, CCModel> spacers = new HashMap<PipeTurnCorner, CCModel>();
-	static Map<PipeMount, CCModel> mounts = new HashMap<PipeMount, CCModel>();
+	static Map<ForgeDirection, List<IModel3D>> sideNormal = new HashMap<ForgeDirection, List<IModel3D>>();
+	static Map<ForgeDirection, List<IModel3D>> sideBC = new HashMap<ForgeDirection, List<IModel3D>>();
+	static Map<Edge, IModel3D> edges = new HashMap<Edge, IModel3D>();
+	static Map<Corner, List<IModel3D>> corners_M = new HashMap<Corner, List<IModel3D>>();
+	static Map<Corner, List<IModel3D>> corners_I3 = new HashMap<Corner, List<IModel3D>>();
+	static Map<PipeTurnCorner, IModel3D> corners_I = new HashMap<PipeTurnCorner, IModel3D>();
+	static Map<PipeSupport, IModel3D> supports = new HashMap<PipeSupport, IModel3D>();
+	static Map<PipeTurnCorner, IModel3D> spacers = new HashMap<PipeTurnCorner, IModel3D>();
+	static Map<PipeMount, IModel3D> mounts = new HashMap<PipeMount, IModel3D>();
 
-	static Map<ForgeDirection, List<CCModel>> texturePlate_Inner = new HashMap<ForgeDirection, List<CCModel>>();
-	static Map<ForgeDirection, List<CCModel>> texturePlate_Outer = new HashMap<ForgeDirection, List<CCModel>>();
-	static Map<ForgeDirection, Quartet<List<CCModel>, List<CCModel>, List<CCModel>, List<CCModel>>> sideTexturePlate = new HashMap<ForgeDirection, Quartet<List<CCModel>, List<CCModel>, List<CCModel>, List<CCModel>>>();
-	static Map<PipeMount, List<CCModel>> textureConnectorPlate = new HashMap<PipeMount, List<CCModel>>();
-	static Map<Edge, Quartet<CCModel, CCModel, CCModel, CCModel>> centerEdgeLEDs = new HashMap<Edge, Quartet<CCModel, CCModel, CCModel, CCModel>>();
-	static Map<ForgeDirection, List<CCModel>> sidedInnerLEDs = new HashMap<ForgeDirection, List<CCModel>>();
-	static Map<ForgeDirection, List<CCModel>> sidedOuterLEDs = new HashMap<ForgeDirection, List<CCModel>>();
+	static Map<ForgeDirection, List<IModel3D>> texturePlate_Inner = new HashMap<ForgeDirection, List<IModel3D>>();
+	static Map<ForgeDirection, List<IModel3D>> texturePlate_Outer = new HashMap<ForgeDirection, List<IModel3D>>();
+	static Map<ForgeDirection, Quartet<List<IModel3D>, List<IModel3D>, List<IModel3D>, List<IModel3D>>> sideTexturePlate = new HashMap<ForgeDirection, Quartet<List<IModel3D>, List<IModel3D>, List<IModel3D>, List<IModel3D>>>();
+	static Map<PipeMount, List<IModel3D>> textureConnectorPlate = new HashMap<PipeMount, List<IModel3D>>();
+	static Map<Edge, Quartet<IModel3D, IModel3D, IModel3D, IModel3D>> centerEdgeLEDs = new HashMap<Edge, Quartet<IModel3D, IModel3D, IModel3D, IModel3D>>();
+	static Map<ForgeDirection, List<IModel3D>> sidedInnerLEDs = new HashMap<ForgeDirection, List<IModel3D>>();
+	static Map<ForgeDirection, List<IModel3D>> sidedOuterLEDs = new HashMap<ForgeDirection, List<IModel3D>>();
 
-	static Map<ScaleObject, CCModel> scaleMap = new HashMap<ScaleObject, CCModel>();
+	static Map<ScaleObject, IModel3D> scaleMap = new HashMap<ScaleObject, IModel3D>();
 
 	@Data
 	@AllArgsConstructor
 	private static class ScaleObject {
 
-		private final CCModel original;
+		private final IModel3D original;
 		private final double scale;
 	}
 
-	static CCModel innerTransportBox;
+	static IModel3D innerTransportBox;
 
-	//Pipe Textures
-	public static IconTransformation basicPipeTexture;
-	public static IconTransformation inactiveTexture;
-	public static IconTransformation glassCenterTexture;
-	public static IconTransformation innerBoxTexture;
-	public static IconTransformation statusTexture;
-	public static IconTransformation statusBCTexture;
+	public static IIconTransformation basicPipeTexture;
+	public static IIconTransformation inactiveTexture;
+	public static IIconTransformation glassCenterTexture;
+	public static IIconTransformation innerBoxTexture;
+	public static IIconTransformation statusTexture;
+	public static IIconTransformation statusBCTexture;
 
 	static {
 		LogisticsNewRenderPipe.loadModels();
 	}
 
 	public static void loadModels() {
+		if(!SimpleServiceLocator.cclProxy.isActivated()) return;
 		try {
-			Map<String, CCModel> pipePartModels = CCModel.parseObjModels(LogisticsPipes.class.getResourceAsStream("/logisticspipes/models/PipeModel_result.obj"), 7, new Scale(1 / 100f));
+			Map<String, IModel3D> pipePartModels = SimpleServiceLocator.cclProxy.parseObjModels(LogisticsPipes.class.getResourceAsStream("/logisticspipes/models/PipeModel_result.obj"), 7, new LPScale(1 / 100f));
 
 			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-				LogisticsNewRenderPipe.sideNormal.put(dir, new ArrayList<CCModel>());
+				LogisticsNewRenderPipe.sideNormal.put(dir, new ArrayList<IModel3D>());
 				String grp = "Side_" + LogisticsNewRenderPipe.getDirAsString_Type1(dir);
-				for (Entry<String, CCModel> entry : pipePartModels.entrySet()) {
+				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
 					if (entry.getKey().contains(" " + grp + " ") || entry.getKey().endsWith(" " + grp)) {
-						LogisticsNewRenderPipe.sideNormal.get(dir).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new Translation(0.0, 0.0, 1.0))));
+						LogisticsNewRenderPipe.sideNormal.get(dir).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
 					}
 				}
 				if (LogisticsNewRenderPipe.sideNormal.get(dir).size() != 4) {
@@ -326,11 +325,11 @@ public class LogisticsNewRenderPipe {
 			}
 
 			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-				LogisticsNewRenderPipe.sideBC.put(dir, new ArrayList<CCModel>());
+				LogisticsNewRenderPipe.sideBC.put(dir, new ArrayList<IModel3D>());
 				String grp = "Side_BC_" + LogisticsNewRenderPipe.getDirAsString_Type1(dir);
-				for (Entry<String, CCModel> entry : pipePartModels.entrySet()) {
+				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
 					if (entry.getKey().contains(" " + grp + " ") || entry.getKey().endsWith(" " + grp)) {
-						LogisticsNewRenderPipe.sideBC.get(dir).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new Translation(0.0, 0.0, 1.0))));
+						LogisticsNewRenderPipe.sideBC.get(dir).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
 					}
 				}
 				if (LogisticsNewRenderPipe.sideBC.get(dir).size() != 8) {
@@ -345,9 +344,9 @@ public class LogisticsNewRenderPipe {
 				} else {
 					grp = "Edge_M_S_" + LogisticsNewRenderPipe.getDirAsString_Type1(edge.part1) + LogisticsNewRenderPipe.getDirAsString_Type1(edge.part2);
 				}
-				for (Entry<String, CCModel> entry : pipePartModels.entrySet()) {
+				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
 					if (entry.getKey().contains(" " + grp + " ") || entry.getKey().endsWith(" " + grp)) {
-						LogisticsNewRenderPipe.edges.put(edge, LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new Translation(0.0, 0.0, 1.0))));
+						LogisticsNewRenderPipe.edges.put(edge, LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
 						break;
 					}
 				}
@@ -357,11 +356,11 @@ public class LogisticsNewRenderPipe {
 			}
 
 			for (Corner corner : Corner.values()) {
-				LogisticsNewRenderPipe.corners_M.put(corner, new ArrayList<CCModel>());
+				LogisticsNewRenderPipe.corners_M.put(corner, new ArrayList<IModel3D>());
 				String grp = "Corner_M_" + corner.ud.s + "_" + corner.ns.s + corner.ew.s;
-				for (Entry<String, CCModel> entry : pipePartModels.entrySet()) {
+				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
 					if (entry.getKey().contains(" " + grp + " ") || entry.getKey().endsWith(" " + grp)) {
-						LogisticsNewRenderPipe.corners_M.get(corner).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new Translation(0.0, 0.0, 1.0))));
+						LogisticsNewRenderPipe.corners_M.get(corner).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
 					}
 				}
 				if (LogisticsNewRenderPipe.corners_M.get(corner).size() != 2) {
@@ -370,11 +369,11 @@ public class LogisticsNewRenderPipe {
 			}
 
 			for (Corner corner : Corner.values()) {
-				LogisticsNewRenderPipe.corners_I3.put(corner, new ArrayList<CCModel>());
+				LogisticsNewRenderPipe.corners_I3.put(corner, new ArrayList<IModel3D>());
 				String grp = "Corner_I3_" + corner.ud.s + "_" + corner.ns.s + corner.ew.s;
-				for (Entry<String, CCModel> entry : pipePartModels.entrySet()) {
+				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
 					if (entry.getKey().contains(" " + grp + " ") || entry.getKey().endsWith(" " + grp)) {
-						LogisticsNewRenderPipe.corners_I3.get(corner).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new Translation(0.0, 0.0, 1.0))));
+						LogisticsNewRenderPipe.corners_I3.get(corner).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
 					}
 				}
 				if (LogisticsNewRenderPipe.corners_I3.get(corner).size() != 2) {
@@ -384,9 +383,9 @@ public class LogisticsNewRenderPipe {
 
 			for (PipeSupport support : PipeSupport.values()) {
 				String grp = "Support_" + LogisticsNewRenderPipe.getDirAsString_Type1(support.dir) + "_" + support.ori.s;
-				for (Entry<String, CCModel> entry : pipePartModels.entrySet()) {
+				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
 					if (entry.getKey().contains(" " + grp + " ") || entry.getKey().endsWith(" " + grp)) {
-						LogisticsNewRenderPipe.supports.put(support, LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new Translation(0.0, 0.0, 1.0))));
+						LogisticsNewRenderPipe.supports.put(support, LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
 						break;
 					}
 				}
@@ -397,7 +396,7 @@ public class LogisticsNewRenderPipe {
 
 			for (PipeTurnCorner corner : PipeTurnCorner.values()) {
 				String grp = "Corner_I_" + corner.corner.ud.s + "_" + corner.corner.ns.s + corner.corner.ew.s;
-				for (Entry<String, CCModel> entry : pipePartModels.entrySet()) {
+				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
 					if (entry.getKey().contains(" " + grp)) {
 						char c = ' ';
 						if (!entry.getKey().endsWith(" " + grp)) {
@@ -420,7 +419,7 @@ public class LogisticsNewRenderPipe {
 								continue;
 							}
 						}
-						LogisticsNewRenderPipe.corners_I.put(corner, LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new Translation(0.0, 0.0, 1.0))));
+						LogisticsNewRenderPipe.corners_I.put(corner, LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
 						break;
 					}
 				}
@@ -431,9 +430,9 @@ public class LogisticsNewRenderPipe {
 
 			for (PipeTurnCorner corner : PipeTurnCorner.values()) {
 				String grp = "Spacer" + corner.number;
-				for (Entry<String, CCModel> entry : pipePartModels.entrySet()) {
+				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
 					if (entry.getKey().contains(" " + grp + " ") || entry.getKey().endsWith(" " + grp)) {
-						LogisticsNewRenderPipe.spacers.put(corner, LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new Translation(0.0, 0.0, 1.0))));
+						LogisticsNewRenderPipe.spacers.put(corner, LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
 						break;
 					}
 				}
@@ -444,9 +443,9 @@ public class LogisticsNewRenderPipe {
 
 			for (PipeMount mount : PipeMount.values()) {
 				String grp = "Mount_" + LogisticsNewRenderPipe.getDirAsString_Type1(mount.dir) + "_" + LogisticsNewRenderPipe.getDirAsString_Type1(mount.side);
-				for (Entry<String, CCModel> entry : pipePartModels.entrySet()) {
+				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
 					if (entry.getKey().contains(" " + grp + " ") || entry.getKey().endsWith(" " + grp)) {
-						LogisticsNewRenderPipe.mounts.put(mount, LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new Translation(0.0, 0.0, 1.0))));
+						LogisticsNewRenderPipe.mounts.put(mount, LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
 						break;
 					}
 				}
@@ -456,11 +455,11 @@ public class LogisticsNewRenderPipe {
 			}
 
 			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-				LogisticsNewRenderPipe.texturePlate_Inner.put(dir, new ArrayList<CCModel>());
+				LogisticsNewRenderPipe.texturePlate_Inner.put(dir, new ArrayList<IModel3D>());
 				String grp = "Inner_Plate_" + LogisticsNewRenderPipe.getDirAsString_Type1(dir);
-				for (Entry<String, CCModel> entry : pipePartModels.entrySet()) {
+				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
 					if (entry.getKey().contains(" " + grp)) {
-						LogisticsNewRenderPipe.texturePlate_Inner.get(dir).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new Translation(0.0, 0.0, 1.0))));
+						LogisticsNewRenderPipe.texturePlate_Inner.get(dir).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
 					}
 				}
 				if (LogisticsNewRenderPipe.texturePlate_Inner.get(dir).size() != 2) {
@@ -469,11 +468,11 @@ public class LogisticsNewRenderPipe {
 			}
 
 			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-				LogisticsNewRenderPipe.texturePlate_Outer.put(dir, new ArrayList<CCModel>());
+				LogisticsNewRenderPipe.texturePlate_Outer.put(dir, new ArrayList<IModel3D>());
 				String grp = "Texture_Plate_" + LogisticsNewRenderPipe.getDirAsString_Type1(dir);
-				for (Entry<String, CCModel> entry : pipePartModels.entrySet()) {
+				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
 					if (entry.getKey().contains(" " + grp)) {
-						LogisticsNewRenderPipe.texturePlate_Outer.get(dir).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new Translation(0.0, 0.0, 1.0)).apply(new Translation(-0.5, -0.5, -0.5)).apply(new Scale(1.001D)).apply(new Translation(0.5, 0.5, 0.5))));
+						LogisticsNewRenderPipe.texturePlate_Outer.get(dir).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0)).apply(new LPTranslation(-0.5, -0.5, -0.5)).apply(new LPScale(1.001D)).apply(new LPTranslation(0.5, 0.5, 0.5))));
 					}
 				}
 				if (LogisticsNewRenderPipe.texturePlate_Outer.get(dir).size() != 2) {
@@ -482,13 +481,13 @@ public class LogisticsNewRenderPipe {
 			}
 
 			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-				LogisticsNewRenderPipe.sideTexturePlate.put(dir, new Quartet<List<CCModel>, List<CCModel>, List<CCModel>, List<CCModel>>(new ArrayList<CCModel>(), new ArrayList<CCModel>(), new ArrayList<CCModel>(), new ArrayList<CCModel>()));
+				LogisticsNewRenderPipe.sideTexturePlate.put(dir, new Quartet<List<IModel3D>, List<IModel3D>, List<IModel3D>, List<IModel3D>>(new ArrayList<IModel3D>(), new ArrayList<IModel3D>(), new ArrayList<IModel3D>(), new ArrayList<IModel3D>()));
 				String grp = "Texture_Side_" + LogisticsNewRenderPipe.getDirAsString_Type1(dir);
-				for (Entry<String, CCModel> entry : pipePartModels.entrySet()) {
+				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
 					if (entry.getKey().contains(" " + grp)) {
-						CCModel model = LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new Translation(0.0, 0.0, 1.0)));
-						double sizeA = (model.bounds().max.x - model.bounds().min.x) + (model.bounds().max.y - model.bounds().min.y) + (model.bounds().max.z - model.bounds().min.z);
-						double dis = Math.pow(model.bounds().min.x - 0.5D, 2) + Math.pow(model.bounds().min.y - 0.5D, 2) + Math.pow(model.bounds().min.z - 0.5D, 2);
+						IModel3D model = LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0)));
+						double sizeA = (model.bounds().max().x() - model.bounds().min().x()) + (model.bounds().max().y() - model.bounds().min().y()) + (model.bounds().max().z() - model.bounds().min().z());
+						double dis = Math.pow(model.bounds().min().x() - 0.5D, 2) + Math.pow(model.bounds().min().y() - 0.5D, 2) + Math.pow(model.bounds().min().z() - 0.5D, 2);
 						if (sizeA < 0.5D) {
 							if ((dis > 0.21 && dis < 0.23) || (dis > 0.37 && dis < 0.39)) {
 								LogisticsNewRenderPipe.sideTexturePlate.get(dir).getValue4().add(model);
@@ -523,11 +522,11 @@ public class LogisticsNewRenderPipe {
 			}
 
 			for (PipeMount mount : PipeMount.values()) {
-				LogisticsNewRenderPipe.textureConnectorPlate.put(mount, new ArrayList<CCModel>());
+				LogisticsNewRenderPipe.textureConnectorPlate.put(mount, new ArrayList<IModel3D>());
 				String grp = "Texture_Connector_" + LogisticsNewRenderPipe.getDirAsString_Type1(mount.dir) + "_" + LogisticsNewRenderPipe.getDirAsString_Type1(mount.side);
-				for (Entry<String, CCModel> entry : pipePartModels.entrySet()) {
+				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
 					if (entry.getKey().contains(" " + grp + " ") || entry.getKey().endsWith(" " + grp)) {
-						LogisticsNewRenderPipe.textureConnectorPlate.get(mount).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new Translation(0.0, 0.0, 1.0))));
+						LogisticsNewRenderPipe.textureConnectorPlate.get(mount).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
 					}
 				}
 				if (LogisticsNewRenderPipe.textureConnectorPlate.get(mount).size() != 4) {
@@ -536,12 +535,12 @@ public class LogisticsNewRenderPipe {
 			}
 
 			for (Edge edge : Edge.values()) {
-				LogisticsNewRenderPipe.centerEdgeLEDs.put(edge, new Quartet<CCModel, CCModel, CCModel, CCModel>(null, null, null, null));
+				LogisticsNewRenderPipe.centerEdgeLEDs.put(edge, new Quartet<IModel3D, IModel3D, IModel3D, IModel3D>(null, null, null, null));
 				for (int i = 0; i < 4; i++) {
 					String grp = "Center_LED_" + (i + 1) + "_" + LogisticsNewRenderPipe.getDirAsString_Type1(edge.part1) + LogisticsNewRenderPipe.getDirAsString_Type1(edge.part2);
-					for (Entry<String, CCModel> entry : pipePartModels.entrySet()) {
+					for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
 						if (entry.getKey().contains(" " + grp + " ") || entry.getKey().endsWith(" " + grp)) {
-							CCModel model = LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new Translation(0.0, 0.0, 1.0)).apply(new Translation(-0.5, -0.5, -0.5)).apply(new Scale(1.001D)).apply(new Translation(0.5, 0.5, 0.5)));
+							IModel3D model = LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0)).apply(new LPTranslation(-0.5, -0.5, -0.5)).apply(new LPScale(1.001D)).apply(new LPTranslation(0.5, 0.5, 0.5)));
 							if (i == 0) {
 								LogisticsNewRenderPipe.centerEdgeLEDs.get(edge).setValue1(model);
 							}
@@ -564,11 +563,11 @@ public class LogisticsNewRenderPipe {
 			}
 
 			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-				LogisticsNewRenderPipe.sidedInnerLEDs.put(dir, new ArrayList<CCModel>());
+				LogisticsNewRenderPipe.sidedInnerLEDs.put(dir, new ArrayList<IModel3D>());
 				String grp = "Inner_LED_" + LogisticsNewRenderPipe.getDirAsString_Type1(dir);
-				for (Entry<String, CCModel> entry : pipePartModels.entrySet()) {
+				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
 					if (entry.getKey().contains(" " + grp)) {
-						LogisticsNewRenderPipe.sidedInnerLEDs.get(dir).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new Translation(0.0, 0.0, 1.0)).apply(new Translation(-0.5, -0.5, -0.5)).apply(new Scale(1.001D)).apply(new Translation(0.5, 0.5, 0.5))));
+						LogisticsNewRenderPipe.sidedInnerLEDs.get(dir).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0)).apply(new LPTranslation(-0.5, -0.5, -0.5)).apply(new LPScale(1.001D)).apply(new LPTranslation(0.5, 0.5, 0.5))));
 					}
 				}
 				if (LogisticsNewRenderPipe.sidedInnerLEDs.get(dir).size() != 4) {
@@ -577,11 +576,11 @@ public class LogisticsNewRenderPipe {
 			}
 
 			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-				LogisticsNewRenderPipe.sidedOuterLEDs.put(dir, new ArrayList<CCModel>());
+				LogisticsNewRenderPipe.sidedOuterLEDs.put(dir, new ArrayList<IModel3D>());
 				String grp = "Outer_LED_" + LogisticsNewRenderPipe.getDirAsString_Type1(dir);
-				for (Entry<String, CCModel> entry : pipePartModels.entrySet()) {
+				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
 					if (entry.getKey().contains(" " + grp)) {
-						LogisticsNewRenderPipe.sidedOuterLEDs.get(dir).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new Translation(0.0, 0.0, 1.0)).apply(new Translation(-0.5, -0.5, -0.5)).apply(new Scale(1.001D)).apply(new Translation(0.5, 0.5, 0.5))));
+						LogisticsNewRenderPipe.sidedOuterLEDs.get(dir).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0)).apply(new LPTranslation(-0.5, -0.5, -0.5)).apply(new LPScale(1.001D)).apply(new LPTranslation(0.5, 0.5, 0.5))));
 					}
 				}
 				if (LogisticsNewRenderPipe.sidedOuterLEDs.get(dir).size() != 4) {
@@ -589,9 +588,9 @@ public class LogisticsNewRenderPipe {
 				}
 			}
 
-			pipePartModels = CCModel.parseObjModels(LogisticsPipes.class.getResourceAsStream("/logisticspipes/models/PipeModel_Transport_Box.obj"), 7, new Scale(1 / 100f));
+			pipePartModels = SimpleServiceLocator.cclProxy.parseObjModels(LogisticsPipes.class.getResourceAsStream("/logisticspipes/models/PipeModel_Transport_Box.obj"), 7, new LPScale(1 / 100f));
 
-			LogisticsNewRenderPipe.innerTransportBox = LogisticsNewRenderPipe.compute(pipePartModels.get("InnerTransportBox").backfacedCopy().apply(new Translation(0.0, 0.0, 1.0)).apply(new Translation(-0.5, -0.5, -0.5)).apply(new Scale(0.99D)).apply(new Translation(0.5, 0.5, 0.5)));
+			LogisticsNewRenderPipe.innerTransportBox = LogisticsNewRenderPipe.compute(pipePartModels.get("InnerTransportBox").backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0)).apply(new LPTranslation(-0.5, -0.5, -0.5)).apply(new LPScale(0.99D)).apply(new LPTranslation(0.5, 0.5, 0.5)));
 
 		} catch (Throwable e) {
 			throw new RuntimeException(e);
@@ -617,27 +616,28 @@ public class LogisticsNewRenderPipe {
 		}
 	}
 
-	public static CCModel compute(CCModel m) {
+	public static IModel3D compute(IModel3D m) {
 		m.computeNormals();
-		m.computeLighting(LightModel.standardLightModel);
+		//m.computeLighting(LightModel.standardLightModel);
+		m.computeStandardLighting();
 		return m;
 	}
 
 	public static void registerTextures(IIconRegister iconRegister) {
 		if (LogisticsNewRenderPipe.basicPipeTexture == null) {
-			LogisticsNewRenderPipe.basicPipeTexture = new IconTransformation(iconRegister.registerIcon("logisticspipes:" + "pipes/PipeModel"));
-			LogisticsNewRenderPipe.inactiveTexture = new IconTransformation(iconRegister.registerIcon("logisticspipes:" + "pipes/PipeModel-inactive"));
-			LogisticsNewRenderPipe.innerBoxTexture = new IconTransformation(iconRegister.registerIcon("logisticspipes:" + "pipes/InnerBox"));
-			LogisticsNewRenderPipe.glassCenterTexture = new IconTransformation(iconRegister.registerIcon("logisticspipes:" + "pipes/Glass_Texture_Center"));
-			LogisticsNewRenderPipe.statusTexture = new IconTransformation(iconRegister.registerIcon("logisticspipes:" + "pipes/PipeModel-status"));
-			LogisticsNewRenderPipe.statusBCTexture = new IconTransformation(iconRegister.registerIcon("logisticspipes:" + "pipes/PipeModel-status-BC"));
+			LogisticsNewRenderPipe.basicPipeTexture = SimpleServiceLocator.cclProxy.createIconTransformer(iconRegister.registerIcon("logisticspipes:" + "pipes/PipeModel"));
+			LogisticsNewRenderPipe.inactiveTexture = SimpleServiceLocator.cclProxy.createIconTransformer(iconRegister.registerIcon("logisticspipes:" + "pipes/PipeModel-inactive"));
+			LogisticsNewRenderPipe.innerBoxTexture = SimpleServiceLocator.cclProxy.createIconTransformer(iconRegister.registerIcon("logisticspipes:" + "pipes/InnerBox"));
+			LogisticsNewRenderPipe.glassCenterTexture = SimpleServiceLocator.cclProxy.createIconTransformer(iconRegister.registerIcon("logisticspipes:" + "pipes/Glass_Texture_Center"));
+			LogisticsNewRenderPipe.statusTexture = SimpleServiceLocator.cclProxy.createIconTransformer(iconRegister.registerIcon("logisticspipes:" + "pipes/PipeModel-status"));
+			LogisticsNewRenderPipe.statusBCTexture = SimpleServiceLocator.cclProxy.createIconTransformer(iconRegister.registerIcon("logisticspipes:" + "pipes/PipeModel-status-BC"));
 		} else {
-			LogisticsNewRenderPipe.basicPipeTexture.icon = iconRegister.registerIcon("logisticspipes:" + "pipes/PipeModel");
-			LogisticsNewRenderPipe.inactiveTexture.icon = iconRegister.registerIcon("logisticspipes:" + "pipes/PipeModel-inactive");
-			LogisticsNewRenderPipe.innerBoxTexture.icon = iconRegister.registerIcon("logisticspipes:" + "pipes/InnerBox");
-			LogisticsNewRenderPipe.glassCenterTexture.icon = iconRegister.registerIcon("logisticspipes:" + "pipes/Glass_Texture_Center");
-			LogisticsNewRenderPipe.statusTexture.icon = iconRegister.registerIcon("logisticspipes:" + "pipes/PipeModel-status");
-			LogisticsNewRenderPipe.statusBCTexture.icon = iconRegister.registerIcon("logisticspipes:" + "pipes/PipeModel-status-BC");
+			LogisticsNewRenderPipe.basicPipeTexture.update(iconRegister.registerIcon("logisticspipes:" + "pipes/PipeModel"));
+			LogisticsNewRenderPipe.inactiveTexture.update(iconRegister.registerIcon("logisticspipes:" + "pipes/PipeModel-inactive"));
+			LogisticsNewRenderPipe.innerBoxTexture.update(iconRegister.registerIcon("logisticspipes:" + "pipes/InnerBox"));
+			LogisticsNewRenderPipe.glassCenterTexture.update(iconRegister.registerIcon("logisticspipes:" + "pipes/Glass_Texture_Center"));
+			LogisticsNewRenderPipe.statusTexture.update(iconRegister.registerIcon("logisticspipes:" + "pipes/PipeModel-status"));
+			LogisticsNewRenderPipe.statusBCTexture.update(iconRegister.registerIcon("logisticspipes:" + "pipes/PipeModel-status-BC"));
 		}
 	}
 
@@ -686,14 +686,13 @@ public class LogisticsNewRenderPipe {
 				ResourceLocation oldTexture = null;
 				renderState.renderList.startListCompile();
 
-				CCRenderState.reset();
 
-				GL11.glNormal3f(0.0F, 0.0F, 1.0F);
-				CCRenderState.useNormals = true;
-				CCRenderState.alphaOverride = 0xff;
+				SimpleServiceLocator.cclProxy.getRenderState().reset();
+				SimpleServiceLocator.cclProxy.getRenderState().setUseNormals(true);
+				SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
 
 				int brightness = new LPPosition((TileEntity) pipeTile).getBlock(pipeTile.getWorldObj()).getMixedBrightnessForBlock(pipeTile.getWorldObj(), pipeTile.xCoord, pipeTile.yCoord, pipeTile.zCoord);
-				CCRenderState.setBrightness(brightness);
+				SimpleServiceLocator.cclProxy.getRenderState().setBrightness(brightness);
 				boolean tesselating = false;
 
 				for (RenderEntry model : renderState.cachedRenderer) {
@@ -703,21 +702,21 @@ public class LogisticsNewRenderPipe {
 					}
 					if (texture != oldTexture || oldTexture == null) {
 						if (tesselating) {
-							CCRenderState.draw();
+							SimpleServiceLocator.cclProxy.getRenderState().draw();
 							tesselating = false;
 						}
 						oldTexture = texture;
 						Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
 
-						CCRenderState.startDrawing();
+						SimpleServiceLocator.cclProxy.getRenderState().startDrawing();
 						tesselating = true;
 					}
 					model.getModel().render(model.getOperations());
 				}
 				if (tesselating) {
-					CCRenderState.draw();
+					SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
+					SimpleServiceLocator.cclProxy.getRenderState().draw();
 				}
-
 				renderState.renderList.stopCompile();
 			}
 			if (renderState.renderList != null) {
@@ -733,9 +732,7 @@ public class LogisticsNewRenderPipe {
 		}
 	}
 
-	private void fillObjectsToRenderList(List<RenderEntry> objectsToRender, LogisticsTileGenericPipe pipeTile, PipeRenderState renderState) {
-
-		List<Edge> edgesToRender = new ArrayList<Edge>(Arrays.asList(Edge.values()));
+	private void fillObjectsToRenderList(List<RenderEntry> objectsToRender, LogisticsTileGenericPipe pipeTile, PipeRenderState renderState) {		List<Edge> edgesToRender = new ArrayList<Edge>(Arrays.asList(Edge.values()));
 		Map<Corner, Integer> connectionAtCorner = new HashMap<Corner, Integer>();
 		List<PipeMount> mountCanidates = new ArrayList<PipeMount>(Arrays.asList(PipeMount.values()));
 
@@ -745,67 +742,67 @@ public class LogisticsNewRenderPipe {
 			if (renderState.pipeConnectionMatrix.isConnected(dir) || pipeTile.pipe.hasSpecialPipeEndAt(dir)) {
 				connectionCount++;
 				if (renderState.pipeConnectionMatrix.isBCConnected(dir) || renderState.pipeConnectionMatrix.isTDConnected(dir)) {
-					IVertexOperation[] texture = new IVertexOperation[] { LogisticsNewRenderPipe.basicPipeTexture };
+					I3DOperation[] texture = new I3DOperation[] { LogisticsNewRenderPipe.basicPipeTexture };
 					if (renderState.textureMatrix.isRouted()) {
 						if (renderState.textureMatrix.isRoutedInDir(dir)) {
 							if (renderState.textureMatrix.isSubPowerInDir(dir)) {
-								texture = new IVertexOperation[] { new UVTransformationList(new UVTranslation(0, +23F / 100), LogisticsNewRenderPipe.statusBCTexture) };
+								texture = new I3DOperation[] { new LPUVTransformationList(new LPUVTranslation(0, +23F / 100), LogisticsNewRenderPipe.statusBCTexture) };
 							} else {
-								texture = new IVertexOperation[] { LogisticsNewRenderPipe.statusBCTexture };
+								texture = new I3DOperation[] { LogisticsNewRenderPipe.statusBCTexture };
 							}
 						} else {
-							texture = new IVertexOperation[] { new UVTransformationList(new UVTranslation(0, -23F / 100), LogisticsNewRenderPipe.statusBCTexture) };
+							texture = new I3DOperation[] { new LPUVTransformationList(new LPUVTranslation(0, -23F / 100), LogisticsNewRenderPipe.statusBCTexture) };
 						}
 					}
-					for (CCModel model : LogisticsNewRenderPipe.sideBC.get(dir)) {
+					for (IModel3D model : LogisticsNewRenderPipe.sideBC.get(dir)) {
 						objectsToRender.add(new RenderEntry(model, texture));
 					}
 				} else if (!pipeTile.pipe.hasSpecialPipeEndAt(dir)) {
-					IVertexOperation[] texture = new IVertexOperation[] { LogisticsNewRenderPipe.basicPipeTexture };
+					I3DOperation[] texture = new I3DOperation[] { LogisticsNewRenderPipe.basicPipeTexture };
 					if (renderState.textureMatrix.isRouted()) {
 						if (renderState.textureMatrix.isRoutedInDir(dir)) {
 							if (renderState.textureMatrix.isSubPowerInDir(dir)) {
-								texture = new IVertexOperation[] { new UVTransformationList(new UVTranslation(-2.5F / 10, 0), LogisticsNewRenderPipe.statusTexture) };
+								texture = new I3DOperation[] { new LPUVTransformationList(new LPUVTranslation(-2.5F / 10, 0), LogisticsNewRenderPipe.statusTexture) };
 							} else {
-								texture = new IVertexOperation[] { LogisticsNewRenderPipe.statusTexture };
+								texture = new I3DOperation[] { LogisticsNewRenderPipe.statusTexture };
 							}
 						} else {
 							if (renderState.textureMatrix.isHasPowerUpgrade()) {
 								if (renderState.textureMatrix.getPointedOrientation() == dir) {
-									texture = new IVertexOperation[] { new UVTransformationList(new UVTranslation(+2.5F / 10, 0), LogisticsNewRenderPipe.statusTexture) };
+									texture = new I3DOperation[] { new LPUVTransformationList(new LPUVTranslation(+2.5F / 10, 0), LogisticsNewRenderPipe.statusTexture) };
 								} else {
-									texture = new IVertexOperation[] { new UVTransformationList(new UVTranslation(-2.5F / 10, 37F / 100), LogisticsNewRenderPipe.statusTexture) };
+									texture = new I3DOperation[] { new LPUVTransformationList(new LPUVTranslation(-2.5F / 10, 37F / 100), LogisticsNewRenderPipe.statusTexture) };
 								}
 							} else {
 								if (renderState.textureMatrix.getPointedOrientation() == dir) {
-									texture = new IVertexOperation[] { new UVTransformationList(new UVTranslation(+2.5F / 10, 37F / 100), LogisticsNewRenderPipe.statusTexture) };
+									texture = new I3DOperation[] { new LPUVTransformationList(new LPUVTranslation(+2.5F / 10, 37F / 100), LogisticsNewRenderPipe.statusTexture) };
 								} else {
-									texture = new IVertexOperation[] { new UVTransformationList(new UVTranslation(0, 37F / 100), LogisticsNewRenderPipe.statusTexture) };
+									texture = new I3DOperation[] { new LPUVTransformationList(new LPUVTranslation(0, 37F / 100), LogisticsNewRenderPipe.statusTexture) };
 								}
 							}
 						}
 					}
-					for (CCModel model : LogisticsNewRenderPipe.sideNormal.get(dir)) {
+					for (IModel3D model : LogisticsNewRenderPipe.sideNormal.get(dir)) {
 						Block block = new LPPosition((TileEntity) pipeTile).moveForward(dir).getBlock(pipeTile.getWorld());
 						double[] bounds = { block.getBlockBoundsMinY(), block.getBlockBoundsMinZ(), block.getBlockBoundsMinX(), block.getBlockBoundsMaxY(), block.getBlockBoundsMaxZ(), block.getBlockBoundsMaxX() };
 						double bound = bounds[dir.ordinal() / 2 + (dir.ordinal() % 2 == 0 ? 3 : 0)];
 						ScaleObject key = new ScaleObject(model, bound);
-						CCModel model2 = LogisticsNewRenderPipe.scaleMap.get(key);
+						IModel3D model2 = LogisticsNewRenderPipe.scaleMap.get(key);
 						if (model2 == null) {
 							model2 = model.copy();
-							Vector3 min = model2.bounds().min;
-							model2.apply(new Translation(min).inverse());
+							IVec3 min = model2.bounds().min();
+							model2.apply(new LPTranslation(min).inverse());
 							double toAdd = 1;
 							if (dir.ordinal() % 2 == 1) {
 								toAdd = 1 + (bound / LPConstants.PIPE_MIN_POS);
-								model2.apply(new Scale(dir.offsetX != 0 ? toAdd : 1, dir.offsetY != 0 ? toAdd : 1, dir.offsetZ != 0 ? toAdd : 1));
+								model2.apply(new LPScale(dir.offsetX != 0 ? toAdd : 1, dir.offsetY != 0 ? toAdd : 1, dir.offsetZ != 0 ? toAdd : 1));
 							} else {
 								bound = 1 - bound;
 								toAdd = 1 + (bound / LPConstants.PIPE_MIN_POS);
-								model2.apply(new Scale(dir.offsetX != 0 ? toAdd : 1, dir.offsetY != 0 ? toAdd : 1, dir.offsetZ != 0 ? toAdd : 1));
-								model2.apply(new Translation(dir.offsetX * bound, dir.offsetY * bound, dir.offsetZ * bound));
+								model2.apply(new LPScale(dir.offsetX != 0 ? toAdd : 1, dir.offsetY != 0 ? toAdd : 1, dir.offsetZ != 0 ? toAdd : 1));
+								model2.apply(new LPTranslation(dir.offsetX * bound, dir.offsetY * bound, dir.offsetZ * bound));
 							}
-							model2.apply(new Translation(min));
+							model2.apply(new LPTranslation(min));
 							LogisticsNewRenderPipe.scaleMap.put(key, model2);
 						}
 						objectsToRender.add(new RenderEntry(model2, texture));
@@ -834,7 +831,7 @@ public class LogisticsNewRenderPipe {
 		}
 
 		for (Corner corner : Corner.values()) {
-			IconTransformation cornerTexture = LogisticsNewRenderPipe.basicPipeTexture;
+			IIconTransformation cornerTexture = LogisticsNewRenderPipe.basicPipeTexture;
 			if (!renderState.textureMatrix.isHasPower() && renderState.textureMatrix.isRouted()) {
 				cornerTexture = LogisticsNewRenderPipe.inactiveTexture;
 			} else if (!renderState.textureMatrix.isRouted() && connectionCount > 2) {
@@ -842,8 +839,8 @@ public class LogisticsNewRenderPipe {
 			}
 			int count = connectionAtCorner.containsKey(corner) ? connectionAtCorner.get(corner) : 0;
 			if (count == 0) {
-				for (CCModel model : LogisticsNewRenderPipe.corners_M.get(corner)) {
-					objectsToRender.add(new RenderEntry(model, new IVertexOperation[] { cornerTexture }));
+				for (IModel3D model : LogisticsNewRenderPipe.corners_M.get(corner)) {
+					objectsToRender.add(new RenderEntry(model, new I3DOperation[] { cornerTexture }));
 				}
 			} else if (count == 1) {
 				for (PipeTurnCorner turn : PipeTurnCorner.values()) {
@@ -851,7 +848,7 @@ public class LogisticsNewRenderPipe {
 						continue;
 					}
 					if (renderState.pipeConnectionMatrix.isConnected(turn.getPointer()) || pipeTile.pipe.hasSpecialPipeEndAt(turn.getPointer())) {
-						objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.spacers.get(turn), new IVertexOperation[] { cornerTexture }));
+						objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.spacers.get(turn), new I3DOperation[] { cornerTexture }));
 						break;
 					}
 				}
@@ -861,19 +858,19 @@ public class LogisticsNewRenderPipe {
 						continue;
 					}
 					if (!renderState.pipeConnectionMatrix.isConnected(turn.getPointer()) || pipeTile.pipe.hasSpecialPipeEndAt(turn.getPointer())) {
-						objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.corners_I.get(turn), new IVertexOperation[] { cornerTexture }));
+						objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.corners_I.get(turn), new I3DOperation[] { cornerTexture }));
 						break;
 					}
 				}
 			} else if (count == 3) {
-				for (CCModel model : LogisticsNewRenderPipe.corners_I3.get(corner)) {
-					objectsToRender.add(new RenderEntry(model, new IVertexOperation[] { cornerTexture }));
+				for (IModel3D model : LogisticsNewRenderPipe.corners_I3.get(corner)) {
+					objectsToRender.add(new RenderEntry(model, new I3DOperation[] { cornerTexture }));
 				}
 			}
 		}
 
 		for (Edge edge : edgesToRender) {
-			objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.edges.get(edge), new IVertexOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
+			objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.edges.get(edge), new I3DOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
 
 			/*
 			objectsToRender.add(new Pair<CCModel, IconTransformation>(centerEdgeLEDs.get(edge).getValue1(), activeTexture));
@@ -899,22 +896,22 @@ public class LogisticsNewRenderPipe {
 				if (!found) {
 					switch (dir) {
 						case DOWN:
-							objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.supports.get(PipeSupport.EAST_SIDE), new IVertexOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
-							objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.supports.get(PipeSupport.WEST_SIDE), new IVertexOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
-							objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.supports.get(PipeSupport.NORTH_SIDE), new IVertexOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
-							objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.supports.get(PipeSupport.SOUTH_SIDE), new IVertexOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
+							objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.supports.get(PipeSupport.EAST_SIDE), new I3DOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
+							objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.supports.get(PipeSupport.WEST_SIDE), new I3DOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
+							objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.supports.get(PipeSupport.NORTH_SIDE), new I3DOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
+							objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.supports.get(PipeSupport.SOUTH_SIDE), new I3DOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
 							break;
 						case NORTH:
-							objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.supports.get(PipeSupport.EAST_UP), new IVertexOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
-							objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.supports.get(PipeSupport.WEST_UP), new IVertexOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
-							objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.supports.get(PipeSupport.UP_SIDE), new IVertexOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
-							objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.supports.get(PipeSupport.DOWN_SIDE), new IVertexOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
+							objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.supports.get(PipeSupport.EAST_UP), new I3DOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
+							objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.supports.get(PipeSupport.WEST_UP), new I3DOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
+							objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.supports.get(PipeSupport.UP_SIDE), new I3DOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
+							objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.supports.get(PipeSupport.DOWN_SIDE), new I3DOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
 							break;
 						case WEST:
-							objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.supports.get(PipeSupport.UP_UP), new IVertexOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
-							objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.supports.get(PipeSupport.DOWN_UP), new IVertexOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
-							objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.supports.get(PipeSupport.NORTH_UP), new IVertexOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
-							objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.supports.get(PipeSupport.SOUTH_UP), new IVertexOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
+							objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.supports.get(PipeSupport.UP_UP), new I3DOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
+							objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.supports.get(PipeSupport.DOWN_UP), new I3DOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
+							objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.supports.get(PipeSupport.NORTH_UP), new I3DOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
+							objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.supports.get(PipeSupport.SOUTH_UP), new I3DOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
 							break;
 						default:
 							break;
@@ -965,16 +962,16 @@ public class LogisticsNewRenderPipe {
 			}
 
 			for (PipeMount mount : mountCanidates) {
-				objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.mounts.get(mount), new IVertexOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
+				objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.mounts.get(mount), new I3DOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
 			}
 		}
 
 		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
 			if (!renderState.pipeConnectionMatrix.isConnected(dir)) {
-				for (CCModel model : LogisticsNewRenderPipe.texturePlate_Outer.get(dir)) {
-					IconTransformation icon = Textures.LPnewPipeIconProvider.getIcon(renderState.textureMatrix.getTextureIndex());
+				for (IModel3D model : LogisticsNewRenderPipe.texturePlate_Outer.get(dir)) {
+					IIconTransformation icon = Textures.LPnewPipeIconProvider.getIcon(renderState.textureMatrix.getTextureIndex());
 					if (icon != null) {
-						objectsToRender.add(new RenderEntry(model, new IVertexOperation[] { icon }));
+						objectsToRender.add(new RenderEntry(model, new I3DOperation[] { icon }));
 					}
 				}
 			}
@@ -982,13 +979,13 @@ public class LogisticsNewRenderPipe {
 		if (renderState.textureMatrix.isFluid()) {
 			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
 				if (!renderState.pipeConnectionMatrix.isConnected(dir)) {
-					for (CCModel model : LogisticsNewRenderPipe.texturePlate_Inner.get(dir)) {
-						objectsToRender.add(new RenderEntry(model, new IVertexOperation[] { LogisticsNewRenderPipe.glassCenterTexture }));
+					for (IModel3D model : LogisticsNewRenderPipe.texturePlate_Inner.get(dir)) {
+						objectsToRender.add(new RenderEntry(model, new I3DOperation[] { LogisticsNewRenderPipe.glassCenterTexture }));
 					}
 				} else {
 					if (!renderState.textureMatrix.isRoutedInDir(dir)) {
-						for (CCModel model : LogisticsNewRenderPipe.sideTexturePlate.get(dir).getValue1()) {
-							objectsToRender.add(new RenderEntry(model, new IVertexOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
+						for (IModel3D model : LogisticsNewRenderPipe.sideTexturePlate.get(dir).getValue1()) {
+							objectsToRender.add(new RenderEntry(model, new I3DOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
 						}
 					}
 				}
@@ -1124,12 +1121,12 @@ public class LogisticsNewRenderPipe {
 	public static void renderDestruction(CoreUnroutedPipe pipe, World worldObj, int x, int y, int z, EffectRenderer effectRenderer) {
 		if (pipe.container != null && pipe.container.renderState != null && pipe.container.renderState.cachedRenderer != null) {
 			for (RenderEntry entry : pipe.container.renderState.cachedRenderer) {
-				CCModel model = entry.getModel().twoFacedCopy();
-				Cuboid6 bounds = model.bounds();
-				double xMid = (bounds.min.x + bounds.max.x) / 2;
-				double yMid = (bounds.min.y + bounds.max.y) / 2;
-				double zMid = (bounds.min.z + bounds.max.z) / 2;
-				model.apply(new Translation(-xMid, -yMid, -zMid));
+				IModel3D model = entry.getModel().twoFacedCopy();
+				IBounds bounds = model.bounds();
+				double xMid = (bounds.min().x() + bounds.max().x()) / 2;
+				double yMid = (bounds.min().y() + bounds.max().y()) / 2;
+				double zMid = (bounds.min().z() + bounds.max().z()) / 2;
+				model.apply(new LPTranslation(-xMid, -yMid, -zMid));
 				effectRenderer.addEffect(new EntityModelFX(worldObj, x + xMid, y + yMid, z + zMid, model, entry.getOperations(), entry.getTexture()));
 			}
 		}
@@ -1155,11 +1152,11 @@ public class LogisticsNewRenderPipe {
 			}
 		}
 		for (Corner corner : Corner.values()) {
-			IconTransformation cornerTexture = LogisticsNewRenderPipe.basicPipeTexture;
+			IIconTransformation cornerTexture = LogisticsNewRenderPipe.basicPipeTexture;
 			int count = connectionAtCorner.containsKey(corner) ? connectionAtCorner.get(corner) : 0;
 			if (count == 0) {
-				for (CCModel model : LogisticsNewRenderPipe.corners_M.get(corner)) {
-					objectsToRender.add(new RenderEntry(model, new IVertexOperation[] { cornerTexture }));
+				for (IModel3D model : LogisticsNewRenderPipe.corners_M.get(corner)) {
+					objectsToRender.add(new RenderEntry(model, new I3DOperation[] { cornerTexture }));
 				}
 			} else if (count == 1) {
 				for (PipeTurnCorner turn : PipeTurnCorner.values()) {
@@ -1167,7 +1164,7 @@ public class LogisticsNewRenderPipe {
 						continue;
 					}
 					if (turn.getPointer() == dir) {
-						objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.spacers.get(turn), new IVertexOperation[] { cornerTexture }));
+						objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.spacers.get(turn), new I3DOperation[] { cornerTexture }));
 						break;
 					}
 				}
@@ -1177,19 +1174,19 @@ public class LogisticsNewRenderPipe {
 						continue;
 					}
 					if (turn.getPointer() == dir) {
-						objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.corners_I.get(turn), new IVertexOperation[] { cornerTexture }));
+						objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.corners_I.get(turn), new I3DOperation[] { cornerTexture }));
 						break;
 					}
 				}
 			} else if (count == 3) {
-				for (CCModel model : LogisticsNewRenderPipe.corners_I3.get(corner)) {
-					objectsToRender.add(new RenderEntry(model, new IVertexOperation[] { cornerTexture }));
+				for (IModel3D model : LogisticsNewRenderPipe.corners_I3.get(corner)) {
+					objectsToRender.add(new RenderEntry(model, new I3DOperation[] { cornerTexture }));
 				}
 			}
 		}
 
 		for (Edge edge : edgesToRender) {
-			objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.edges.get(edge), new IVertexOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
+			objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.edges.get(edge), new I3DOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
 		}
 		for (RenderEntry model : objectsToRender) {
 			model.getModel().render(model.getOperations());

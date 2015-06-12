@@ -671,12 +671,12 @@ public class LogisticsNewRenderPipe {
 			if (renderState.cachedRenderer == null) {
 				List<RenderEntry> objectsToRender = new ArrayList<RenderEntry>();
 
-				if (pipeTile.pipe != null && pipeTile.pipe.getSpecialRenderer() != null) {
-					pipeTile.pipe.getSpecialRenderer().renderToList(pipeTile.pipe, objectsToRender);
-				}
-
 				if (pipeTile.pipe != null && pipeTile.pipe.actAsNormalPipe()) {
 					fillObjectsToRenderList(objectsToRender, pipeTile, renderState);
+				}
+
+				if (pipeTile.pipe != null && pipeTile.pipe.getSpecialRenderer() != null) {
+					pipeTile.pipe.getSpecialRenderer().renderToList(pipeTile.pipe, objectsToRender);
 				}
 
 				renderState.cachedRenderer = objectsToRender;
@@ -707,7 +707,12 @@ public class LogisticsNewRenderPipe {
 						}
 						oldTexture = texture;
 						Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
-
+						
+						SimpleServiceLocator.cclProxy.getRenderState().reset();
+						SimpleServiceLocator.cclProxy.getRenderState().setUseNormals(true);
+						SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
+						SimpleServiceLocator.cclProxy.getRenderState().setBrightness(brightness);
+						
 						SimpleServiceLocator.cclProxy.getRenderState().startDrawing();
 						tesselating = true;
 					}

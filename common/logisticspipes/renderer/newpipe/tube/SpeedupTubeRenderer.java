@@ -12,7 +12,6 @@ import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.tubes.HSTubeSpeedup;
 import logisticspipes.pipes.tubes.HSTubeSpeedup.SpeedupDirection;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.object3d.interfaces.I3DOperation;
 import logisticspipes.proxy.object3d.interfaces.IModel3D;
 import logisticspipes.proxy.object3d.operation.LPColourMultiplier;
 import logisticspipes.proxy.object3d.operation.LPRotation;
@@ -25,7 +24,7 @@ import logisticspipes.renderer.newpipe.RenderEntry;
 
 import net.minecraft.util.ResourceLocation;
 
-public class SpeedupTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacementRenderer {
+public final class SpeedupTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacementRenderer {
 
 	private SpeedupTubeRenderer() {}
 
@@ -76,7 +75,8 @@ public class SpeedupTubeRenderer implements ISpecialPipeRenderer, IHighlightPlac
 		if (pipe instanceof HSTubeSpeedup) {
 			HSTubeSpeedup tube = (HSTubeSpeedup) pipe;
 			if (tube.getOrientation() != null) {
-				for (IModel3D model : SpeedupTubeRenderer.tubeSpeedupBase.get(tube.getOrientation().getRenderOrientation())) {
+				SpeedupDirection speedupDirection = (SpeedupDirection) tube.getOrientation().getRenderOrientation();
+				for (IModel3D model : SpeedupTubeRenderer.tubeSpeedupBase.get(speedupDirection)) {
 					objectsToRender.add(new RenderEntry(model, SpeedupTubeRenderer.TEXTURE));
 				}
 			}
@@ -85,7 +85,9 @@ public class SpeedupTubeRenderer implements ISpecialPipeRenderer, IHighlightPlac
 
 	@Override
 	public void renderHighlight(ITubeOrientation orientation) {
-		SpeedupTubeRenderer.tubeSpeedup.get(orientation.getRenderOrientation()).copy().render(new I3DOperation[] { LPColourMultiplier.instance(LogisticsPipes.LogisticsPipeBlock.getBlockColor() << 8 | 0xFF) });
+		SpeedupDirection speedupDirection = (SpeedupDirection) orientation.getRenderOrientation();
+		SpeedupTubeRenderer.tubeSpeedup.get(speedupDirection).copy().render(LPColourMultiplier.instance(LogisticsPipes.LogisticsPipeBlock.getBlockColor() << 8 | 0xFF));
 		LogisticsNewRenderPipe.renderBoxWithDir(((SpeedupDirection) orientation.getRenderOrientation()).getDir1());
 	}
 }
+

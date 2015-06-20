@@ -1009,7 +1009,11 @@ public class RecipeManager {
 			});
 
 			/*
+<<<<<<< HEAD
+			 * added by Chaos234 - Date: 20150620
+=======
 			 * added by Chaos234
+>>>>>>> 8591e71125387113e59bc334d477514b2221a828
 			 */
 			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CRAFTING_CLEANUP), CraftingDependency.Upgrades, new Object[] {
 				false,
@@ -1872,7 +1876,11 @@ public class RecipeManager {
 			});
 			
 			/*
+<<<<<<< HEAD
+			 * added by Chaos234  - Date: 20150620
+=======
 			 * added by Chaos234
+>>>>>>> 8591e71125387113e59bc334d477514b2221a828
 			 */
 			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CRAFTING_CLEANUP), CraftingDependency.Upgrades, new Object[] {
 				false,

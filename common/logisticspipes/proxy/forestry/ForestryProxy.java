@@ -347,7 +347,7 @@ public class ForestryProxy implements IForestryProxy {
 		if (!isBee(bee)) {
 			return false;
 		}
-		return root.getMember(bee).isPureBred(EnumBeeChromosome.SPECIES.ordinal());
+		return root.getMember(bee).isPureBred(EnumBeeChromosome.SPECIES);
 	}
 
 	/**
@@ -378,7 +378,7 @@ public class ForestryProxy implements IForestryProxy {
 		if (!isBee(bee)) {
 			return false;
 		}
-		return root.getMember(bee).getGenome().getNocturnal() && root.getMember(bee).isPureBred(EnumBeeChromosome.NOCTURNAL.ordinal());
+		return root.getMember(bee).getGenome().getNocturnal() && root.getMember(bee).isPureBred(EnumBeeChromosome.NOCTURNAL);
 	}
 
 	/**
@@ -410,7 +410,7 @@ public class ForestryProxy implements IForestryProxy {
 		if (!isBee(bee)) {
 			return false;
 		}
-		return root.getMember(bee).getGenome().getTolerantFlyer() && root.getMember(bee).isPureBred(EnumBeeChromosome.TOLERANT_FLYER.ordinal());
+		return root.getMember(bee).getGenome().getTolerantFlyer() && root.getMember(bee).isPureBred(EnumBeeChromosome.TOLERANT_FLYER);
 	}
 
 	/**
@@ -441,7 +441,7 @@ public class ForestryProxy implements IForestryProxy {
 		if (!isBee(bee)) {
 			return false;
 		}
-		return root.getMember(bee).getGenome().getCaveDwelling() && root.getMember(bee).isPureBred(EnumBeeChromosome.CAVE_DWELLING.ordinal());
+		return root.getMember(bee).getGenome().getCaveDwelling() && root.getMember(bee).isPureBred(EnumBeeChromosome.CAVE_DWELLING);
 	}
 
 	/**

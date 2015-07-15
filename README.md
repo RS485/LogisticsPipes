@@ -14,7 +14,7 @@ Credits for the idea and basic code goes to Krapht.
 
 ##Translate
 
-See [Crowdin](https://crowdin.com/project/logistics-pipes) for translations.
+See [this repo](https://github.com/RS485/LogisticsPipes-Language) for translations.
 
 ##Builds
 

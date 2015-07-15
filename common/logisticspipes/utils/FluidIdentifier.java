@@ -126,7 +126,7 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 	}
 
 	public static FluidIdentifier get(FluidStack stack) {
-		return FluidIdentifier.get(stack.fluidID, stack.tag);
+		return FluidIdentifier.get(stack.getFluidID(), stack.tag);
 	}
 
 	public static FluidIdentifier get(ItemIdentifier stack) {
@@ -186,7 +186,7 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 			return 0;
 		}
 		FluidStack liquid = tanks.fluid;
-		if (liquid == null || liquid.fluidID <= 0) {
+		if (liquid == null || liquid.getFluidID() <= 0) {
 			return tanks.capacity;
 		}
 		if (FluidIdentifier.get(liquid).equals(this)) {
@@ -197,7 +197,7 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 
 	public int getFreeSpaceInsideTank(IFluidTank tank) {
 		FluidStack liquid = tank.getFluid();
-		if (liquid == null || liquid.fluidID <= 0) {
+		if (liquid == null || liquid.getFluidID() <= 0) {
 			return tank.getCapacity();
 		}
 		if (FluidIdentifier.get(liquid).equals(this)) {

@@ -122,7 +122,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 					continue;
 				}
 				FluidStack liquid = tank.fluid;
-				if (liquid != null && liquid.fluidID != 0) {
+				if (liquid != null && liquid.getFluidID() != 0) {
 					addToList(FluidIdentifier.get(liquid).getItemIdentifier().makeStack(liquid.amount));
 				}
 			}

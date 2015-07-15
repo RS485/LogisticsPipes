@@ -45,7 +45,7 @@ public class BuildCraftTankHandler implements ISpecialTankAccessHandler {
 				continue;
 			}
 			FluidStack liquid;
-			if ((liquid = tank.fluid) != null && liquid.fluidID != 0) {
+			if ((liquid = tank.fluid) != null && liquid.getFluidID() != 0) {
 				FluidIdentifier ident = FluidIdentifier.get(liquid);
 				if (((IFluidHandler) tile).drain(ForgeDirection.UNKNOWN, 1, false) != null) {
 					if (map.containsKey(ident)) {

@@ -58,7 +58,7 @@ public class PipeFluidUpdate extends CoordinatesPacket {
 
 			if (delta.get(dir.ordinal() * 3 + 0)) {
 				if (liquid != null) {
-					data.writeShort(liquid.fluidID);
+					data.writeShort(liquid.getFluidID());
 				} else {
 					data.writeShort(0);
 				}
@@ -104,7 +104,7 @@ public class PipeFluidUpdate extends CoordinatesPacket {
 				}
 				if (delta.get(dir.ordinal() * 3 + 1)) {
 					//FIXME:handle NBT
-					renderCache[dir.ordinal()] = new FluidStack(renderCache[dir.ordinal()].fluidID, renderCache[dir.ordinal()].amount);
+					renderCache[dir.ordinal()] = new FluidStack(renderCache[dir.ordinal()].getFluidID(), renderCache[dir.ordinal()].amount);
 				}
 				if (delta.get(dir.ordinal() * 3 + 2)) {
 					if (dir != ForgeDirection.UNKNOWN) {

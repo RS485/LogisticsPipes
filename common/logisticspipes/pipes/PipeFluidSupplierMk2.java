@@ -137,7 +137,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 
 			FluidTankInfo[] result = container.getTankInfo(ForgeDirection.UNKNOWN);
 			for (FluidTankInfo slot : result) {
-				if (slot == null || slot.fluid == null || slot.fluid.fluidID == 0 || !wantFluids.containsKey(FluidIdentifier.get(slot.fluid))) {
+				if (slot == null || slot.fluid == null || slot.fluid.getFluidID() == 0 || !wantFluids.containsKey(FluidIdentifier.get(slot.fluid))) {
 					continue;
 				}
 				Integer liquidWant = haveFluids.get(FluidIdentifier.get(slot.fluid));

@@ -45,7 +45,7 @@ ant.version = version
 ant.archivesBaseName = archivesBaseName
 
 minecraft {
-    version = "1.7.10-10.13.2.1291"
+    version = "1.7.10-10.13.4.1448-1.7.10"
     runDir = "run/assets"
     replace '%VERSION%', project.version
     replace '%MCVERSION%', "1.7.10"

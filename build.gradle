@@ -139,8 +139,6 @@ curse {
     releaseType = 'release'
 
     changelog = project.hasProperty('changelog') ? project.changelog : ''
-
-    addGameVersion 'BC6.4'
 }
 
 artifacts {

@@ -132,13 +132,15 @@ task sourceJar(type: Jar) {
 }
 
 curse {
+	displayName = 'Logistics Pipes 0.9.1 (BC6.4)' + System.getenv().hasProperty('BUILD_NUMBER') ? ' build ' + System.getenv().BUILD_NUMBER : ''
+	
     projectId = '232838'
     apiKey = project.curseForgeApiKey
     releaseType = 'release'
 
     changelog = project.hasProperty('changelog') ? project.changelog : ''
 
-    addGameVersion '1.7.10'
+    addGameVersion 'BC6.4'
 }
 
 artifacts {

@@ -26,6 +26,7 @@ ant.importBuild 'download-api.xml'
 ant.importBuild 'build-ant.xml'
 
 apply plugin: 'forge'
+apply plugin: 'curseforge'
 
 version = "0.9.1"
 def buildby = 'local'
@@ -128,6 +129,16 @@ task deobfJar(type: Jar) {
 task sourceJar(type: Jar) {
 	from sourceSets.main.allSource
 	classifier = 'src'
+}
+
+curse {
+    projectId = '232838'
+    apiKey = project.curseForgeApiKey
+    releaseType = 'release'
+
+    changelog = project.hasProperty('changelog') ? project.changelog : ''
+
+    addGameVersion '1.7.10'
 }
 
 artifacts {

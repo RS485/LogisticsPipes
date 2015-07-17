@@ -132,7 +132,7 @@ task sourceJar(type: Jar) {
 }
 
 curse {
-	displayName = 'Logistics Pipes 0.9.1 (BC6.4)' + System.getenv().hasProperty('BUILD_NUMBER') ? ' build ' + System.getenv().BUILD_NUMBER : ''
+	displayName = System.getenv().hasProperty('BUILD_NUMBER') ? 'Logistics Pipes 0.9.1 (BC6.4) build ' + System.getenv().BUILD_NUMBER : 'Logistics Pipes 0.9.1 (BC6.4)'
 	
     projectId = '232838'
     apiKey = project.curseForgeApiKey

@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -124,86 +125,110 @@ public class LogisticsWrapperHandler {
 			throw new RuntimeException("UnuportedProxyName: " + proxyName);
 		}
 		proxyName = proxyName.substring(0, proxyName.length() - 5);
-		String className = "logisticspipes/asm/wrapper/" + proxyName + "ProxyWrapper";
+		String className = "logisticspipes/asm/wrapper/generated/" + proxyName + "ProxyWrapper";
 		boolean ignoreModLoaded = false;
 		if (modId.startsWith("!")) {
 			ignoreModLoaded = true;
 			modId = modId.substring(1);
 		}
 		List<Class<?>> wrapperInterfacesList = Arrays.asList(wrapperInterfaces);
-		Class<?> clazz = LogisticsWrapperHandler.lookupMap.get(className);
-		if (clazz == null) {
-			String fieldName = interfaze.getName().replace('.', '/');
-			//String classFile = interfaze.getSimpleName().substring(1) + "Wrapper.java";
-			ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+		Class<?> clazz = null;
+		synchronized (lookupMap) {
+			clazz = LogisticsWrapperHandler.lookupMap.get(className);
+			if (clazz == null) {
+				String fieldName = interfaze.getName().replace('.', '/');
+				//String classFile = interfaze.getSimpleName().substring(1) + "Wrapper.java";
+				ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 
-			cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, className, null, "logisticspipes/asm/wrapper/AbstractWrapper", new String[] { fieldName });
+				cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, className, null, "logisticspipes/asm/wrapper/AbstractWrapper", new String[] { fieldName });
 
-			cw.visitSource(".LP|ASM.dynamic", null);
+				cw.visitSource(".LP|ASM.dynamic", null);
 
-			{
-				FieldVisitor fv = cw.visitField(Opcodes.ACC_PRIVATE, "proxy", "L" + fieldName + ";", null, null);
-				fv.visitEnd();
-			}
-			{
-				FieldVisitor fv = cw.visitField(Opcodes.ACC_PRIVATE + Opcodes.ACC_FINAL, "dummyProxy", "L" + fieldName + ";", null, null);
-				fv.visitEnd();
-			}
-			{
-				MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "(L" + fieldName + ";L" + fieldName + ";)V", null, null);
-				mv.visitCode();
-				Label l0 = new Label();
-				mv.visitLabel(l0);
-				mv.visitLineNumber(11, l0);
-				mv.visitVarInsn(Opcodes.ALOAD, 0);
-				mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "logisticspipes/asm/wrapper/AbstractWrapper", "<init>", "()V");
-				Label l1 = new Label();
-				mv.visitLabel(l1);
-				mv.visitLineNumber(12, l1);
-				mv.visitVarInsn(Opcodes.ALOAD, 0);
-				mv.visitVarInsn(Opcodes.ALOAD, 1);
-				mv.visitFieldInsn(Opcodes.PUTFIELD, className, "dummyProxy", "L" + fieldName + ";");
-				Label l2 = new Label();
-				mv.visitLabel(l2);
-				mv.visitLineNumber(13, l2);
-				mv.visitVarInsn(Opcodes.ALOAD, 0);
-				mv.visitVarInsn(Opcodes.ALOAD, 2);
-				mv.visitFieldInsn(Opcodes.PUTFIELD, className, "proxy", "L" + fieldName + ";");
-				Label l3 = new Label();
-				mv.visitLabel(l3);
-				mv.visitLineNumber(14, l3);
-				mv.visitInsn(Opcodes.RETURN);
-				Label l4 = new Label();
-				mv.visitLabel(l4);
-				mv.visitLocalVariable("this", "L" + className + ";", null, l0, l4, 0);
-				mv.visitLocalVariable("dProxy", "L" + fieldName + ";", null, l0, l4, 1);
-				mv.visitLocalVariable("iProxy", "L" + fieldName + ";", null, l0, l4, 2);
-				mv.visitMaxs(2, 3);
-				mv.visitEnd();
-			}
-			int lineAddition = 100;
-			for (Method method : interfaze.getMethods()) {
-				LogisticsWrapperHandler.addProxyMethod(cw, method, fieldName, className, lineAddition, !wrapperInterfacesList.contains(method.getReturnType()));
-				lineAddition += 10;
-			}
-			LogisticsWrapperHandler.addGetName(cw, className, proxyName);
-			LogisticsWrapperHandler.addGetTypeName(cw, className, "Proxy");
-			cw.visitEnd();
-
-			String lookfor = className.replace('/', '.');
-
-			byte[] bytes = cw.toByteArray();
-
-			if (LPConstants.DEBUG) {
-				if (LogisticsWrapperHandler.DUMP) {
-					LogisticsWrapperHandler.saveGeneratedClass(bytes, lookfor, "LP_WRAPPER_CLASSES");
+				{
+					FieldVisitor fv = cw.visitField(Opcodes.ACC_PRIVATE, "proxy", "L" + fieldName + ";", null, null);
+					fv.visitEnd();
 				}
-				ClassReader cr = new ClassReader(bytes);
-				org.objectweb.asm.util.CheckClassAdapter.verify(cr, Launch.classLoader, false, new PrintWriter(System.err));
-			}
+				{
+					FieldVisitor fv = cw.visitField(Opcodes.ACC_PRIVATE + Opcodes.ACC_FINAL, "dummyProxy", "L" + fieldName + ";", null, null);
+					fv.visitEnd();
+				}
+				{
+					MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "(L" + fieldName + ";L" + fieldName + ";)V", null, null);
+					mv.visitCode();
+					Label l0 = new Label();
+					mv.visitLabel(l0);
+					mv.visitLineNumber(11, l0);
+					mv.visitVarInsn(Opcodes.ALOAD, 0);
+					mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "logisticspipes/asm/wrapper/AbstractWrapper", "<init>", "()V");
+					Label l1 = new Label();
+					mv.visitLabel(l1);
+					mv.visitLineNumber(12, l1);
+					mv.visitVarInsn(Opcodes.ALOAD, 0);
+					mv.visitVarInsn(Opcodes.ALOAD, 1);
+					mv.visitFieldInsn(Opcodes.PUTFIELD, className, "dummyProxy", "L" + fieldName + ";");
+					Label l2 = new Label();
+					mv.visitLabel(l2);
+					mv.visitLineNumber(13, l2);
+					mv.visitVarInsn(Opcodes.ALOAD, 0);
+					mv.visitVarInsn(Opcodes.ALOAD, 2);
+					mv.visitFieldInsn(Opcodes.PUTFIELD, className, "proxy", "L" + fieldName + ";");
+					Label l3 = new Label();
+					mv.visitLabel(l3);
+					mv.visitLineNumber(14, l3);
+					mv.visitInsn(Opcodes.RETURN);
+					Label l4 = new Label();
+					mv.visitLabel(l4);
+					mv.visitLocalVariable("this", "L" + className + ";", null, l0, l4, 0);
+					mv.visitLocalVariable("dProxy", "L" + fieldName + ";", null, l0, l4, 1);
+					mv.visitLocalVariable("iProxy", "L" + fieldName + ";", null, l0, l4, 2);
+					mv.visitMaxs(2, 3);
+					mv.visitEnd();
+				}
+				int lineAddition = 100;
+				for (Method method : interfaze.getMethods()) {
+					LogisticsWrapperHandler.addProxyMethod(cw, method, fieldName, className, lineAddition, !wrapperInterfacesList.contains(method.getReturnType()));
+					lineAddition += 10;
+				}
+				LogisticsWrapperHandler.addGetName(cw, className, proxyName);
+				LogisticsWrapperHandler.addGetTypeName(cw, className, "Proxy");
+				cw.visitEnd();
 
-			clazz = LogisticsWrapperHandler.loadClass(bytes, lookfor);
-			LogisticsWrapperHandler.lookupMap.put(className, clazz);
+				String lookfor = className.replace('/', '.');
+
+				byte[] bytes = cw.toByteArray();
+
+				if (LPConstants.DEBUG) {
+					if (LogisticsWrapperHandler.DUMP) {
+						LogisticsWrapperHandler.saveGeneratedClass(bytes, lookfor, "LP_WRAPPER_CLASSES");
+					}
+					ClassReader cr = new ClassReader(bytes);
+					org.objectweb.asm.util.CheckClassAdapter.verify(cr, Launch.classLoader, false, new PrintWriter(System.err));
+				}
+
+				try {
+					clazz = LogisticsWrapperHandler.loadClass(bytes, lookfor);
+				} catch(LinkageError e) {
+					try {
+						if(e.getMessage().contains("attempted") && e.getMessage().contains("duplicate class definition")) {
+							Class<?> prev = Class.forName(className);
+							System.err.println(e.getMessage());
+							System.err.println("Already loaded: " + String.valueOf(prev));
+							String resourcePath = className.replace('.', '/').concat(".class");
+							URL classResource = Launch.classLoader.findResource(resourcePath);
+							if(classResource != null) {
+								String path = classResource.getPath().toString();
+								System.err.println("Class source: " + path);
+							} else {
+								System.err.println("Class source: Null");
+							}
+						}
+					} catch(Exception e2) {
+						e2.printStackTrace();
+					}
+					throw e;
+				}
+				LogisticsWrapperHandler.lookupMap.put(className, clazz);
+			}
 		}
 
 		T proxy = null;
@@ -220,7 +245,7 @@ public class LogisticsWrapperHandler {
 					e = e1;
 				}
 			} catch (NoClassDefFoundError e1) {
-				if(!ignoreModLoaded) {
+				if (!ignoreModLoaded) {
 					e1.printStackTrace();
 					e = e1;
 				}
@@ -250,81 +275,105 @@ public class LogisticsWrapperHandler {
 			return null;
 		}
 		String proxyName = interfaze.getSimpleName().substring(1);
-		String className = "logisticspipes/asm/wrapper/" + proxyName + "ProxyWrapper";
+		String className = "logisticspipes/asm/wrapper/generated/" + proxyName + "ProxyWrapper";
 
-		Class<?> clazz = LogisticsWrapperHandler.lookupMap.get(className);
-		if (clazz == null) {
-			String fieldName = interfaze.getName().replace('.', '/');
-			//String classFile = interfaze.getSimpleName().substring(1) + "Wrapper.java";
-			ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+		Class<?> clazz = null;
+		synchronized (lookupMap) {
+			clazz = LogisticsWrapperHandler.lookupMap.get(className);
+			if (clazz == null) {
+				String fieldName = interfaze.getName().replace('.', '/');
+				//String classFile = interfaze.getSimpleName().substring(1) + "Wrapper.java";
+				ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 
-			cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, className, null, "logisticspipes/asm/wrapper/AbstractSubWrapper", new String[] { fieldName });
+				cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, className, null, "logisticspipes/asm/wrapper/AbstractSubWrapper", new String[] { fieldName });
 
-			cw.visitSource(".LP|ASM.dynamic", null);
+				cw.visitSource(".LP|ASM.dynamic", null);
 
-			{
-				FieldVisitor fv = cw.visitField(Opcodes.ACC_PRIVATE, "proxy", "L" + fieldName + ";", null, null);
-				fv.visitEnd();
-			}
-			{
-				FieldVisitor fv = cw.visitField(Opcodes.ACC_PRIVATE + Opcodes.ACC_FINAL, "dummyProxy", "L" + fieldName + ";", null, null);
-				fv.visitEnd();
-			}
-			{
-				MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "(Llogisticspipes/asm/wrapper/AbstractWrapper;L" + fieldName + ";L" + fieldName + ";)V", null, null);
-				mv.visitCode();
-				Label l0 = new Label();
-				mv.visitLabel(l0);
-				mv.visitLineNumber(11, l0);
-				mv.visitVarInsn(Opcodes.ALOAD, 0);
-				mv.visitVarInsn(Opcodes.ALOAD, 1);
-				mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "logisticspipes/asm/wrapper/AbstractSubWrapper", "<init>", "(Llogisticspipes/asm/wrapper/AbstractWrapper;)V");
-				Label l1 = new Label();
-				mv.visitLabel(l1);
-				mv.visitLineNumber(12, l1);
-				mv.visitVarInsn(Opcodes.ALOAD, 0);
-				mv.visitVarInsn(Opcodes.ALOAD, 2);
-				mv.visitFieldInsn(Opcodes.PUTFIELD, className, "dummyProxy", "L" + fieldName + ";");
-				Label l2 = new Label();
-				mv.visitLabel(l2);
-				mv.visitLineNumber(13, l2);
-				mv.visitVarInsn(Opcodes.ALOAD, 0);
-				mv.visitVarInsn(Opcodes.ALOAD, 3);
-				mv.visitFieldInsn(Opcodes.PUTFIELD, className, "proxy", "L" + fieldName + ";");
-				Label l3 = new Label();
-				mv.visitLabel(l3);
-				mv.visitLineNumber(14, l3);
-				mv.visitInsn(Opcodes.RETURN);
-				Label l4 = new Label();
-				mv.visitLabel(l4);
-				mv.visitLocalVariable("this", "L" + className + ";", null, l0, l4, 0);
-				mv.visitLocalVariable("wrapper", "Llogisticspipes/asm/wrapper/AbstractWrapper;", null, l0, l4, 1);
-				mv.visitLocalVariable("dProxy", "L" + fieldName + ";", null, l0, l4, 2);
-				mv.visitLocalVariable("iProxy", "L" + fieldName + ";", null, l0, l4, 3);
-				mv.visitMaxs(2, 3);
-				mv.visitEnd();
-			}
-			int lineAddition = 100;
-			for (Method method : interfaze.getMethods()) {
-				LogisticsWrapperHandler.addProxyMethod(cw, method, fieldName, className, lineAddition, !wrapper.getWrapperInterfaces().contains(method.getReturnType()));
-				lineAddition += 10;
-			}
-			cw.visitEnd();
-
-			String lookfor = className.replace('/', '.');
-
-			byte[] bytes = cw.toByteArray();
-
-			if (LPConstants.DEBUG) {
-				if (LogisticsWrapperHandler.DUMP) {
-					LogisticsWrapperHandler.saveGeneratedClass(bytes, lookfor, "LP_WRAPPER_CLASSES");
+				{
+					FieldVisitor fv = cw.visitField(Opcodes.ACC_PRIVATE, "proxy", "L" + fieldName + ";", null, null);
+					fv.visitEnd();
 				}
-				ClassReader cr = new ClassReader(bytes);
-				org.objectweb.asm.util.CheckClassAdapter.verify(cr, Launch.classLoader, false, new PrintWriter(System.err));
-			}
+				{
+					FieldVisitor fv = cw.visitField(Opcodes.ACC_PRIVATE + Opcodes.ACC_FINAL, "dummyProxy", "L" + fieldName + ";", null, null);
+					fv.visitEnd();
+				}
+				{
+					MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "(Llogisticspipes/asm/wrapper/AbstractWrapper;L" + fieldName + ";L" + fieldName + ";)V", null, null);
+					mv.visitCode();
+					Label l0 = new Label();
+					mv.visitLabel(l0);
+					mv.visitLineNumber(11, l0);
+					mv.visitVarInsn(Opcodes.ALOAD, 0);
+					mv.visitVarInsn(Opcodes.ALOAD, 1);
+					mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "logisticspipes/asm/wrapper/AbstractSubWrapper", "<init>", "(Llogisticspipes/asm/wrapper/AbstractWrapper;)V");
+					Label l1 = new Label();
+					mv.visitLabel(l1);
+					mv.visitLineNumber(12, l1);
+					mv.visitVarInsn(Opcodes.ALOAD, 0);
+					mv.visitVarInsn(Opcodes.ALOAD, 2);
+					mv.visitFieldInsn(Opcodes.PUTFIELD, className, "dummyProxy", "L" + fieldName + ";");
+					Label l2 = new Label();
+					mv.visitLabel(l2);
+					mv.visitLineNumber(13, l2);
+					mv.visitVarInsn(Opcodes.ALOAD, 0);
+					mv.visitVarInsn(Opcodes.ALOAD, 3);
+					mv.visitFieldInsn(Opcodes.PUTFIELD, className, "proxy", "L" + fieldName + ";");
+					Label l3 = new Label();
+					mv.visitLabel(l3);
+					mv.visitLineNumber(14, l3);
+					mv.visitInsn(Opcodes.RETURN);
+					Label l4 = new Label();
+					mv.visitLabel(l4);
+					mv.visitLocalVariable("this", "L" + className + ";", null, l0, l4, 0);
+					mv.visitLocalVariable("wrapper", "Llogisticspipes/asm/wrapper/AbstractWrapper;", null, l0, l4, 1);
+					mv.visitLocalVariable("dProxy", "L" + fieldName + ";", null, l0, l4, 2);
+					mv.visitLocalVariable("iProxy", "L" + fieldName + ";", null, l0, l4, 3);
+					mv.visitMaxs(2, 3);
+					mv.visitEnd();
+				}
+				int lineAddition = 100;
+				for (Method method : interfaze.getMethods()) {
+					LogisticsWrapperHandler.addProxyMethod(cw, method, fieldName, className, lineAddition, !wrapper.getWrapperInterfaces().contains(method.getReturnType()));
+					lineAddition += 10;
+				}
+				cw.visitEnd();
 
-			clazz = LogisticsWrapperHandler.loadClass(bytes, lookfor);
-			LogisticsWrapperHandler.lookupMap.put(className, clazz);
+				String lookfor = className.replace('/', '.');
+
+				byte[] bytes = cw.toByteArray();
+
+				if (LPConstants.DEBUG) {
+					if (LogisticsWrapperHandler.DUMP) {
+						LogisticsWrapperHandler.saveGeneratedClass(bytes, lookfor, "LP_WRAPPER_CLASSES");
+					}
+					ClassReader cr = new ClassReader(bytes);
+					org.objectweb.asm.util.CheckClassAdapter.verify(cr, Launch.classLoader, false, new PrintWriter(System.err));
+				}
+
+				try {
+					clazz = LogisticsWrapperHandler.loadClass(bytes, lookfor);
+				} catch(LinkageError e) {
+					try {
+						if(e.getMessage().contains("attempted") && e.getMessage().contains("duplicate class definition")) {
+							Class<?> prev = Class.forName(className);
+							System.err.println(e.getMessage());
+							System.err.println("Already loaded: " + String.valueOf(prev));
+							String resourcePath = className.replace('.', '/').concat(".class");
+							URL classResource = Launch.classLoader.findResource(resourcePath);
+							if(classResource != null) {
+								String path = classResource.getPath().toString();
+								System.err.println("Class source: " + path);
+							} else {
+								System.err.println("Class source: Null");
+							}
+						}
+					} catch(Exception e2) {
+						e2.printStackTrace();
+					}
+					throw e;
+				}
+				LogisticsWrapperHandler.lookupMap.put(className, clazz);
+			}
 		}
 
 		T instance = (T) clazz.getConstructor(new Class<?>[] { AbstractWrapper.class, interfaze, interfaze }).newInstance(wrapper, dummyProxy, proxy);

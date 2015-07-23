@@ -172,7 +172,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 
 			FluidTankInfo[] result = container.getTankInfo(ForgeDirection.UNKNOWN);
 			for (FluidTankInfo slot : result) {
-				if (slot == null || slot.fluid == null || slot.fluid.fluidID == 0 || !wantFluids.containsKey(FluidIdentifier.get(slot.fluid))) {
+				if (slot == null || slot.fluid == null || slot.fluid.getFluidID() == 0 || !wantFluids.containsKey(FluidIdentifier.get(slot.fluid))) {
 					continue;
 				}
 				Integer liquidWant = haveFluids.get(FluidIdentifier.get(slot.fluid));

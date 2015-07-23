@@ -641,7 +641,7 @@ public class LogisticsPipes {
 				MinecraftForgeClient.registerItemRenderer(res, MainProxy.proxy.getPipeItemRenderer());
 			}
 		}
-		if (clas != PipeItemsBasicLogistics.class) {
+		if (clas != PipeItemsBasicLogistics.class && CoreRoutedPipe.class.isAssignableFrom(clas)) {
 			if (clas != PipeFluidBasic.class && PipeFluidBasic.class.isAssignableFrom(clas)) {
 				registerShapelessResetRecipe(res, 0, LogisticsPipes.LogisticsFluidBasicPipe, 0);
 			} else {

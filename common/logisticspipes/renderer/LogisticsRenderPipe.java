@@ -587,7 +587,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 	// BC copy
 	private DisplayFluidList getListFromBuffer(FluidStack stack, World world) {
 
-		int liquidId = stack.fluidID;
+		int liquidId = stack.getFluidID();
 
 		if (liquidId == 0) {
 			return null;

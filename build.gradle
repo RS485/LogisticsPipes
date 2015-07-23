@@ -26,6 +26,7 @@ ant.importBuild 'download-api.xml'
 ant.importBuild 'build-ant.xml'
 
 apply plugin: 'forge'
+apply plugin: 'curseforge'
 
 version = "0.10.0"
 def buildby = 'local'
@@ -45,7 +46,7 @@ ant.version = version
 ant.archivesBaseName = archivesBaseName
 
 minecraft {
-    version = "1.7.10-10.13.2.1291"
+    version = "1.7.10-10.13.4.1448-1.7.10"
     runDir = "run/assets"
     replace '%VERSION%', project.version
     replace '%MCVERSION%', "1.7.10"
@@ -139,6 +140,16 @@ task deobfJar(type: Jar) {
 task sourceJar(type: Jar) {
 	from sourceSets.main.allSource
 	classifier = 'src'
+}
+
+curse {
+	displayName = 'Logistics Pipes 0.9.2 (BC7) build ' + System.getenv().BUILD_NUMBER
+	
+    projectId = '232838'
+    apiKey = project.curseForgeApiKey
+    releaseType = 'release'
+
+    changelog = project.hasProperty('changelog') ? project.changelog : ''
 }
 
 artifacts {

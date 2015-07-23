@@ -70,7 +70,7 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 	@Override
 	public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
 		if (sideTanks[from.ordinal()].getFluid() == null || !(sideTanks[from.ordinal()].getFluid().isFluidEqual(resource))) {
-			return new FluidStack(resource.fluidID, 0);
+			return new FluidStack(resource.getFluidID(), 0);
 		}
 		return drain(from, resource.amount, doDrain);
 	}
@@ -231,9 +231,9 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 				continue;
 			}
 
-			if (prev.fluidID != current.fluidID || initPacket) {
+			if (prev.getFluidID() != current.getFluidID() || initPacket) {
 				changed = true;
-				renderCache[dir.ordinal()] = new FluidStack(current.fluidID, renderCache[dir.ordinal()].amount);
+				renderCache[dir.ordinal()] = new FluidStack(current.getFluidID(), renderCache[dir.ordinal()].amount);
 				//TODO check: @GUIpsp Possibly instanciating multiple times, might be slow
 				delta.set(dir.ordinal() * 3 + 0);
 			}

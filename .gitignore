@@ -5,8 +5,6 @@
 !/gradle
 !/resources
 !/style
-!/proxy_bc60
-!/proxy_bc61
 
 !/.gitignore
 !/.travis.yml

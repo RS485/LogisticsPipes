@@ -257,7 +257,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	}
 
 	public boolean canBeDestroyed() {
-		return false;
+		return true;
 	}
 
 	public boolean destroyByPlayer() {

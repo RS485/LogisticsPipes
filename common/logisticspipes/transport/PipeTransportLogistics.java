@@ -278,6 +278,11 @@ public class PipeTransportLogistics {
 			TileEntity tile = pos.getTileEntity(getWorld());
 			if (!SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) {
 				iter.remove();
+				continue;
+			}
+			if(!this.container.isPipeConnected(dir)) {
+				iter.remove();
+				continue;
 			}
 		}
 		if (dirs.isEmpty()) {

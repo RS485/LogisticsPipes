@@ -130,7 +130,8 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 
 	private void updateInv(boolean force) {
 		itemList.clear();
-		for (ForgeDirection ori : ForgeDirection.values()) {
+		for (ForgeDirection ori : ForgeDirection.VALID_DIRECTIONS) {
+			if(!this.container.isPipeConnected(ori)) continue;
 			IInventory inv = getInventory(ori);
 			if (inv != null) {
 				for (int i = 0; i < inv.getSizeInventory(); i++) {

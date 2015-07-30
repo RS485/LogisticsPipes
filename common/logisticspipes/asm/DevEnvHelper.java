@@ -163,6 +163,11 @@ public class DevEnvHelper {
 				String cfg = mfAttributes.getValue("AccessTransformer");
 				((List<IClassTransformer>) transformers.get(classLoader)).add(new AccessTransformer(cfg) {});
 			}
+			//FMLAT //For newer NEI
+			if (mfAttributes.getValue("FMLAT") != null) {
+				String cfg = "META-INF/" + mfAttributes.getValue("FMLAT");
+				((List<IClassTransformer>) transformers.get(classLoader)).add(new AccessTransformer(cfg) {});
+			}
 			String cascadedTweaker = mfAttributes.getValue("TweakClass");
 			if (cascadedTweaker != null) {
 				FMLRelaunchLog.info("Loading tweaker %s from %s", cascadedTweaker, coreMod.getName());

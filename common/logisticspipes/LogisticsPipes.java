@@ -338,6 +338,8 @@ public class LogisticsPipes {
 		LogisticsPipes.textures.registerBlockIcons(null);
 
 		FMLCommonHandler.instance().bus().register(DebugGuiTickHandler.instance());
+
+		RecipeManager.registerRecipeClasses();
 	}
 
 	@EventHandler

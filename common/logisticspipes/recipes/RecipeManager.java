@@ -1861,10 +1861,11 @@ public class RecipeManager {
 			
 			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CRAFTING_CLEANUP), CraftingDependency.Upgrades, new Object[] {
 				false,
-				" b ",
+				"bEb",
 				"bDb",
 				" b ",
 				Character.valueOf('b'), "dyeRed",
+				Character.valueOf('E'), expand,
 				Character.valueOf('D'), "gemDiamond"
 			});
 

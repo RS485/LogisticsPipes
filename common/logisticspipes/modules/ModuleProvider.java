@@ -141,7 +141,9 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 	@Override
 	public void setSneakyDirection(ForgeDirection sneakyDirection) {
 		_sneakyDirection = sneakyDirection;
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(ExtractorModuleMode.class).setDirection(_sneakyDirection).setModulePos(this), localModeWatchers);
+		if(MainProxy.isServer(this._world.getWorld())) {
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(ExtractorModuleMode.class).setDirection(_sneakyDirection).setModulePos(this), localModeWatchers);
+		}
 	}
 
 	@Override

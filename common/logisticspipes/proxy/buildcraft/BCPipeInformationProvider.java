@@ -39,7 +39,7 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 
 	@Override
 	public boolean isCorrect() {
-		return pipe != null && pipe.pipe != null && pipe.pipe.transport instanceof PipeTransportItems && SimpleServiceLocator.buildCraftProxy.isActive();
+		return pipe != null && pipe.pipe != null && pipe.pipe != null && SimpleServiceLocator.buildCraftProxy.isActive();
 	}
 
 	@Override

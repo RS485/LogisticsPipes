@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import buildcraft.transport.*;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
@@ -69,13 +70,6 @@ import buildcraft.core.lib.ITileBufferHolder;
 import buildcraft.robotics.EntityRobot;
 import buildcraft.robotics.ItemRobot;
 import buildcraft.robotics.RobotStationPluggable;
-import buildcraft.transport.BlockGenericPipe;
-import buildcraft.transport.ItemGateCopier;
-import buildcraft.transport.ItemPipe;
-import buildcraft.transport.Pipe;
-import buildcraft.transport.PipeEventBus;
-import buildcraft.transport.PipeTransportItems;
-import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.render.PipeRendererTESR;
 import lombok.SneakyThrows;
 
@@ -167,8 +161,14 @@ public class BuildCraftProxy implements IBCProxy {
 				return false;
 			}
 
-			if (!(otherPipe.transport instanceof PipeTransportItems)) {
-				return false;
+			if(pipe.pipe != null && pipe.pipe.isFluidPipe()) {
+				if (!(otherPipe.transport instanceof PipeTransportItems) && !(otherPipe.transport instanceof PipeTransportFluids)) {
+					return false;
+				}
+			} else {
+				if (!(otherPipe.transport instanceof PipeTransportItems)) {
+					return false;
+				}
 			}
 		}
 		return true;

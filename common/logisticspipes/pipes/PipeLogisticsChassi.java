@@ -174,7 +174,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		if (tile == null) {
 			return false;
 		}
-		if (SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) {
+		if (SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile)) {
 			return false;
 		}
 		return MainProxy.checkPipesConnections(container, tile, connection);

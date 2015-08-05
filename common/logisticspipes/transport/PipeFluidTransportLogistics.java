@@ -186,13 +186,11 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 	private ModernPacket computeFluidUpdate(boolean initPacket, boolean persistChange) {
 
 		boolean changed = false;
-		BitSet delta = new BitSet(21);
 
 		if (initClient > 0) {
 			initClient--;
 			if (initClient == 1) {
 				changed = true;
-				delta.set(0, 21);
 			}
 		}
 
@@ -214,49 +212,23 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 			if (prev == null && current != null) {
 				changed = true;
 				renderCache[dir.ordinal()] = current.copy();
-				delta.set(dir.ordinal() * 3 + 0);
-				delta.set(dir.ordinal() * 3 + 1);
-				delta.set(dir.ordinal() * 3 + 2);
 				continue;
 			}
 
 			if (prev != null && current == null) {
 				changed = true;
 				renderCache[dir.ordinal()] = null;
-				delta.set(dir.ordinal() * 3 + 0);
-				delta.set(dir.ordinal() * 3 + 1);
-				delta.set(dir.ordinal() * 3 + 2);
 				continue;
 			}
 
 			if (prev.getFluidID() != current.getFluidID() || initPacket) {
 				changed = true;
-				renderCache[dir.ordinal()] = new FluidStack(current.getFluidID(), renderCache[dir.ordinal()].amount);
-				//TODO check: @GUIpsp Possibly instanciating multiple times, might be slow
-				delta.set(dir.ordinal() * 3 + 0);
+				renderCache[dir.ordinal()] = new FluidStack(current.getFluid(), renderCache[dir.ordinal()].amount);
 			}
 
-			//FIXME:Handle NBTTAGS
-			/*			if (prev.itemMeta != current.itemMeta || initPacket) {
-							changed = true;
-							renderCache[dir.ordinal()]=new FluidStack(current.fluidID,renderCache[dir.ordinal()].amount,current.itemMeta);
-							delta.set(dir.ordinal() * 3 + 1);
-						}*/
-
-			int displayQty = (prev.amount * 4 + current.amount) / 5;
-			if (displayQty == 0 && current.amount > 0 || initPacket) {
-				displayQty = current.amount;
-			}
-			if (dir != ForgeDirection.UNKNOWN) {
-				displayQty = Math.min(getSideCapacity(), displayQty);
-			} else {
-				displayQty = Math.min(getInnerCapacity(), displayQty);
-			}
-
-			if (prev.amount != displayQty || initPacket) {
+			if (prev.amount != current.amount || initPacket) {
 				changed = true;
-				renderCache[dir.ordinal()].amount = displayQty;
-				delta.set(dir.ordinal() * 3 + 2);
+				renderCache[dir.ordinal()].amount = current.amount;
 			}
 		}
 
@@ -265,11 +237,10 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 		}
 
 		if (changed || initPacket) {
-			return PacketHandler.getPacket(PipeFluidUpdate.class).setRenderCache(renderCache).setDelta(delta).setPosX(container.xCoord).setPosY(container.yCoord).setPosZ(container.zCoord).setChunkDataPacket(initPacket);
+			return PacketHandler.getPacket(PipeFluidUpdate.class).setRenderCache(renderCache).setPosX(container.xCoord).setPosY(container.yCoord).setPosZ(container.zCoord).setChunkDataPacket(initPacket);
 		}
 
 		return null;
-
 	}
 
 	@Override

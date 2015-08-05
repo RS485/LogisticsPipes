@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import buildcraft.api.transport.IPipeConnection;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILPPipe;
@@ -83,9 +84,9 @@ import li.cil.oc.api.network.Node;
 import li.cil.oc.api.network.SidedEnvironment;
 import org.apache.logging.log4j.Level;
 
-@ModDependentInterface(modId = { "CoFHCore", "OpenComputers@1.3", "OpenComputers@1.3", "OpenComputers@1.3", "BuildCraft|Transport" }, interfacePath = { "cofh.api.transport.IItemDuct", "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment",
-		"buildcraft.api.transport.IPipeTile" })
-public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILPPipeTile, IPipeInformationProvider, IItemDuct, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IPipeTile, ILogicControllerTile {
+@ModDependentInterface(modId = { "CoFHCore", "OpenComputers@1.3", "OpenComputers@1.3", "OpenComputers@1.3", "BuildCraft|Transport", "BuildCraft|Transport" }, interfacePath = { "cofh.api.transport.IItemDuct", "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment",
+		"buildcraft.api.transport.IPipeTile", "buildcraft.api.transport.IPipeConnection" })
+public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILPPipeTile, IPipeInformationProvider, IItemDuct, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IPipeTile, ILogicControllerTile, IPipeConnection {
 
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
 
@@ -1057,6 +1058,17 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 			return false;
 		}
 		return tilePart.getBCPipePluggable(direction).isBlocking();
+	}
+
+	@Override
+	@ModDependentMethod(modId = "BuildCraft|Transport")
+	public ConnectOverride overridePipeConnection(PipeType pipeType, ForgeDirection forgeDirection) {
+		if(this.pipe.isFluidPipe()) {
+			if(pipeType == PipeType.FLUID) {
+				return ConnectOverride.CONNECT;
+			}
+		}
+		return ConnectOverride.DEFAULT;
 	}
 
 	@Override

@@ -147,7 +147,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 		if (tile == null) {
 			return null;
 		}
-		if (SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) {
+		if (SimpleServiceLocator.pipeInformationManager.isPipe(tile)) {
 			return null;
 		}
 		if (!(tile instanceof IInventory)) {

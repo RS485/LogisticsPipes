@@ -68,7 +68,7 @@ public class PathFinder {
 	 */
 
 	public static HashMap<CoreRoutedPipe, ExitRoute> paintAndgetConnectedRoutingPipes(TileEntity startPipe, ForgeDirection startOrientation, int maxVisited, int maxLength, IPaintPath pathPainter, EnumSet<PipeRoutingConnectionType> connectionType) {
-		IPipeInformationProvider startProvider = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(startPipe);
+		IPipeInformationProvider startProvider = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(startPipe);
 		if (startProvider == null) {
 			return new HashMap<CoreRoutedPipe, ExitRoute>();
 		}
@@ -77,7 +77,7 @@ public class PathFinder {
 		newSearch.setVisited.add(p);
 		p.moveForward(startOrientation);
 		TileEntity entity = p.getTileEntity(startProvider.getWorld());
-		IPipeInformationProvider provider = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(entity);
+		IPipeInformationProvider provider = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(entity);
 		if (provider == null) {
 			return new HashMap<CoreRoutedPipe, ExitRoute>();
 		}
@@ -268,9 +268,9 @@ public class PathFinder {
 				continue;
 			}
 
-			IPipeInformationProvider currentPipe = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(tile);
+			IPipeInformationProvider currentPipe = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(tile);
 
-			if (currentPipe != null && currentPipe.isInitialised() && (isDirectConnection || SimpleServiceLocator.pipeInformaitonManager.canConnect(startPipe, currentPipe, direction, true))) {
+			if (currentPipe != null && currentPipe.isInitialised() && (isDirectConnection || SimpleServiceLocator.pipeInformationManager.canConnect(startPipe, currentPipe, direction, true))) {
 
 				listTileEntity(tile);
 
@@ -383,14 +383,14 @@ public class PathFinder {
 		if (tile == null) {
 			return 0;
 		}
-		IPipeInformationProvider info = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(tile);
+		IPipeInformationProvider info = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(tile);
 		while (info != null && !info.isRoutingPipe()) {
 			tile = info.getTile(exitOrientation);
 			if (tile == null) {
 				info = null;
 				continue;
 			}
-			info = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(tile);
+			info = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(tile);
 			dis++;
 		}
 		return dis;

@@ -163,7 +163,7 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 			if (ignore == dir) {
 				continue;
 			}
-			IPipeInformationProvider information = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(getTile(dir));
+			IPipeInformationProvider information = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(getTile(dir));
 			if (information != null) {
 				LPPosition pos = new LPPosition(information);
 				if (visited.contains(pos)) {

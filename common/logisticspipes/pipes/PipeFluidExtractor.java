@@ -34,7 +34,7 @@ public class PipeFluidExtractor extends PipeFluidInsertion {
 		}
 		LinkedList<AdjacentTile> connected = getConnectedEntities();
 		for (AdjacentTile tile : connected) {
-			if (tile.tile instanceof IFluidHandler && SimpleServiceLocator.pipeInformaitonManager.isNotAPipe(tile.tile)) {
+			if (tile.tile instanceof IFluidHandler && SimpleServiceLocator.pipeInformationManager.isNotAPipe(tile.tile)) {
 				extractFrom((IFluidHandler) tile.tile, tile.orientation);
 			}
 		}

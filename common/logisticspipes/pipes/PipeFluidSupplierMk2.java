@@ -119,7 +119,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 		}
 		WorldUtil worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
 		for (AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
-			if (!(tile.tile instanceof IFluidHandler) || SimpleServiceLocator.pipeInformaitonManager.isPipe(tile.tile)) {
+			if (!(tile.tile instanceof IFluidHandler) || SimpleServiceLocator.pipeInformationManager.isPipe(tile.tile)) {
 				continue;
 			}
 			IFluidHandler container = (IFluidHandler) tile.tile;

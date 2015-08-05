@@ -104,7 +104,7 @@ import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.renderer.LogisticsPipeItemRenderer;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
-import logisticspipes.routing.pathfinder.PipeInformaitonManager;
+import logisticspipes.routing.pathfinder.PipeInformationManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.ticks.ClientPacketBufferHandlerThread;
 import logisticspipes.ticks.DebugGuiTickHandler;
@@ -350,7 +350,7 @@ public class LogisticsPipes {
 			LogisticsPipes.log.debug("While the dev versions contain cutting edge features, they may also contain more bugs.");
 			LogisticsPipes.log.debug("Please report any you find to https://github.com/RS485/LogisticsPipes/issues");
 		}
-		SimpleServiceLocator.setPipeInformationManager(new PipeInformaitonManager());
+		SimpleServiceLocator.setPipeInformationManager(new PipeInformationManager());
 
 		if (Configs.EASTER_EGGS) {
 			Calendar calendar = Calendar.getInstance();

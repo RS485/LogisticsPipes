@@ -175,7 +175,7 @@ public class LPRobotConnectionControl implements ISpecialPipedConnection {
 				if (!connectedPipe.isRoutingPipe()) {
 					continue;
 				}
-				IPipeInformationProvider connectedInfo = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(connectedPipe);
+				IPipeInformationProvider connectedInfo = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(connectedPipe);
 				EntityRobotBase connectedRobot = currentTarget.getValue2().robot;
 				if (connectedRobot == null) {
 					continue;
@@ -217,7 +217,7 @@ public class LPRobotConnectionControl implements ISpecialPipedConnection {
 					if (!connectedPipe.isRoutingPipe()) {
 						continue;
 					}
-					IPipeInformationProvider connectedInfo = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(connectedPipe);
+					IPipeInformationProvider connectedInfo = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(connectedPipe);
 					PipePluggable connectedPluggable = ((TileGenericPipe) connectedPipe.tilePart.getOriginal()).getPipePluggable(canidatePos.getValue2());
 					if (!(connectedPluggable instanceof RobotStationPluggable)) {
 						continue;

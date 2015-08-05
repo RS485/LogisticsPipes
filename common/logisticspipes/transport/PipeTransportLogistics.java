@@ -276,7 +276,7 @@ public class PipeTransportLogistics {
 			LPPosition pos = getPipe().getLPPosition();
 			pos.moveForward(dir);
 			TileEntity tile = pos.getTileEntity(getWorld());
-			if (!SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) {
+			if (!SimpleServiceLocator.pipeInformationManager.isPipe(tile)) {
 				iter.remove();
 			}
 		}
@@ -463,7 +463,7 @@ public class PipeTransportLogistics {
 				SimpleServiceLocator.specialtileconnection.transmit(tile, arrivingItem);
 			}
 		}
-		if (SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) {
+		if (SimpleServiceLocator.pipeInformationManager.isPipe(tile)) {
 			if (passToNextPipe(arrivingItem, tile)) {
 				return;
 			}
@@ -605,7 +605,7 @@ public class PipeTransportLogistics {
 	}
 
 	protected void handleTileReachedClient(LPTravelingItemClient arrivingItem, TileEntity tile) {
-		if (SimpleServiceLocator.pipeInformaitonManager.isPipe(tile)) {
+		if (SimpleServiceLocator.pipeInformationManager.isPipe(tile)) {
 			passToNextPipe(arrivingItem, tile);
 		}
 		// Just ignore any other case
@@ -640,9 +640,9 @@ public class PipeTransportLogistics {
 				int[] slots = ((ISidedInventory) tile).getAccessibleSlotsFromSide(side.getOpposite().ordinal());
 				return slots != null && slots.length > 0;
 			}
-			return SimpleServiceLocator.pipeInformaitonManager.isPipe(tile) || (tile instanceof IInventory && ((IInventory) tile).getSizeInventory() > 0);
+			return SimpleServiceLocator.pipeInformationManager.isPipe(tile) || (tile instanceof IInventory && ((IInventory) tile).getSizeInventory() > 0);
 		} else {
-			return SimpleServiceLocator.pipeInformaitonManager.isPipe(tile);
+			return SimpleServiceLocator.pipeInformationManager.isPipe(tile);
 		}
 	}
 
@@ -679,7 +679,7 @@ public class PipeTransportLogistics {
 	}
 
 	private boolean passToNextPipe(LPTravelingItem item, TileEntity tile) {
-		IPipeInformationProvider information = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(tile);
+		IPipeInformationProvider information = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(tile);
 		if (information != null) {
 			return information.acceptItem(item, container);
 		}

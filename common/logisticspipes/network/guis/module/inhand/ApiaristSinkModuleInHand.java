@@ -5,6 +5,7 @@ import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.DummyModuleContainer;
 
@@ -27,6 +28,7 @@ public class ApiaristSinkModuleInHand extends ModuleInHandGuiProvider {
 
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
+		SimpleServiceLocator.forestryProxy.syncTracker(player.getEntityWorld(), player);
 		DummyModuleContainer dummy = new DummyModuleContainer(player, getInvSlot());
 		if (!(dummy.getModule() instanceof ModuleApiaristSink)) {
 			return null;

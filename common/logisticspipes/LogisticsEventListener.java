@@ -10,7 +10,9 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ForkJoinPool;
 
+import logisticspipes.config.Configs;
 import logisticspipes.config.PlayerConfig;
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.modules.ModuleQuickSort;
@@ -26,13 +28,13 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.LogisticsGuiOverrenderer;
 import logisticspipes.renderer.LogisticsHUDRenderer;
-import logisticspipes.ticks.VersionChecker;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.PlayerIdentifier;
 import logisticspipes.utils.QuickSortChestMarkerStorage;
 import logisticspipes.utils.WorldUtil;
 
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -52,6 +54,7 @@ import net.minecraftforge.event.world.ChunkWatchEvent.UnWatch;
 import net.minecraftforge.event.world.ChunkWatchEvent.Watch;
 import net.minecraftforge.event.world.WorldEvent;
 
+import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
@@ -185,10 +188,7 @@ public class LogisticsEventListener {
 			SimpleServiceLocator.securityStationManager.sendClientAuthorizationList(event.player);
 			SimpleServiceLocator.craftingPermissionManager.sendCraftingPermissionsToPlayer(event.player);
 		}
-		if (VersionChecker.hasNewVersion && !VersionChecker.sentIMCMessage) {
-			event.player.addChatComponentMessage(new ChatComponentText("Your LogisticsPipes version is outdated. The newest version is #" + VersionChecker.newVersion + "."));
-			event.player.addChatComponentMessage(new ChatComponentText("Use \"/logisticspipes changelog\" to see a changelog."));
-		}
+
 		SimpleServiceLocator.serverBufferHandler.clear(event.player);
 		PlayerConfig config = LogisticsEventListener.getPlayerConfig(PlayerIdentifier.get(event.player));
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PlayerConfigToClientPacket.class).setConfig(config), event.player);
@@ -258,6 +258,39 @@ public class LogisticsEventListener {
 	@SubscribeEvent
 	public void clientLoggedIn(ClientConnectedToServerEvent event) {
 		SimpleServiceLocator.clientBufferHandler.clear();
+
+		if (Configs.CHECK_FOR_UPDATES) {
+			ForkJoinPool.commonPool().execute(new Runnable() {
+
+				@Override
+				public void run() {
+					// try to get player entity ten times, once a second
+					int times = 0;
+					EntityClientPlayerMP playerEntity;
+					do {
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							return;
+						}
+						playerEntity = FMLClientHandler.instance().getClientPlayerEntity();
+						++times;
+					} while (playerEntity == null && times <= 10);
+
+					if (times > 10) {
+						return;
+					}
+					assert playerEntity != null;
+
+					// send player message
+					String versionMessage = LogisticsPipes.versionChecker.getVersionCheckerStatus();
+					playerEntity.addChatComponentMessage(new ChatComponentText(versionMessage));
+					if (LogisticsPipes.versionChecker.isVersionCheckDone() && LogisticsPipes.versionChecker.getVersionInfo().isNewVersionAvailable()) {
+						playerEntity.addChatComponentMessage(new ChatComponentText("Use \"/logisticspipes changelog\" to see a changelog."));
+					}
+				}
+			});
+		}
 	}
 
 	public static void serverShutdown() {

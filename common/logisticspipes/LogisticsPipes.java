@@ -1,6 +1,5 @@
 /**
  * Copyright (c) Krapht, 2011
- * 
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
@@ -285,16 +284,14 @@ public class LogisticsPipes {
 	public static Block LogisticsSolidBlock;
 	public static LogisticsBlockGenericPipe LogisticsPipeBlock;
 
+	// other statics
 	public static Textures textures = new Textures();
-
 	public static final String logisticsTileGenericPipeMapping = "logisticspipes.pipes.basic.LogisticsTileGenericPipe";
-
 	public static CreativeTabLP LPCreativeTab = new CreativeTabLP();
-
 	public static Logger log;
+	public static VersionChecker versionChecker;
 
 	private static LPGlobalCCAccess generalAccess;
-
 	private static PlayerConfig playerConfig;
 
 	@EventHandler
@@ -503,7 +500,7 @@ public class LogisticsPipes {
 		//init Fluids
 		FluidIdentifier.initFromForge(false);
 
-		new VersionChecker();
+		versionChecker = VersionChecker.runVersionCheck();
 	}
 
 	private void loadClasses() {
@@ -524,7 +521,7 @@ public class LogisticsPipes {
 	private void forName(String string) {
 		try {
 			Class.forName(string);
-		} catch (Exception e) {}
+		} catch (Exception ignore) {}
 	}
 
 	@EventHandler

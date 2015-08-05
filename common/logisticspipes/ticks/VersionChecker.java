@@ -1,17 +1,19 @@
 package logisticspipes.ticks;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
-import logisticspipes.config.Configs;
+import logisticspipes.asm.DevEnvHelper;
 
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -20,108 +22,170 @@ import cpw.mods.fml.common.event.FMLInterModComms;
 
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
+import lombok.Data;
 
-public class VersionChecker extends Thread {
+public final class VersionChecker implements Callable<VersionChecker.VersionInfo> {
 
-	public static boolean hasNewVersion = false;
-	public static String newVersion = "";
-	public static List<String> changeLog = new ArrayList<String>(0);
-	public static boolean sentIMCMessage;
+	public static final int COMMIT_MAX_LINE_LENGTH = 60;
 
-	public VersionChecker() {
-		setDaemon(true);
-		start();
+	private static ForkJoinTask<VersionInfo> versionCheckTask;
+	private String statusString;
+	private VersionInfo versionInfo = null;
+
+	private VersionChecker() {
+	}
+
+	public static VersionChecker runVersionCheck() {
+		VersionChecker obj = new VersionChecker();
+		versionCheckTask = ForkJoinPool.commonPool().submit(obj);
+		return obj;
+	}
+
+	public String getVersionCheckerStatus() {
+		if (versionCheckTask != null) {
+			if (versionCheckTask.isDone()) {
+				// has to be done, before getting final string and setting to null
+				statusString = internalGetVersionCheckerStatus();
+				versionCheckTask = null;
+			} else {
+				statusString = internalGetVersionCheckerStatus();
+			}
+		}
+		return statusString;
+	}
+
+	public boolean isVersionCheckDone() {
+		return versionInfo != null;
+	}
+
+	public VersionInfo getVersionInfo() {
+		return versionInfo;
+	}
+
+	private String internalGetVersionCheckerStatus() {
+		if (versionCheckTask.isDone()) {
+			try {
+				versionInfo = versionCheckTask.get();
+				if (versionInfo == null) {
+					if (DevEnvHelper.isDevelopmentEnvironment()) {
+						return "You are running Logistics Pipes from a development environment.";
+					} else {
+						return "It seems you are missing the current version information on Logistics Pipes. There is no version checking available.";
+					}
+				} else {
+					return "New Logistics Pipes build found: #" + versionInfo.getNewestBuild();
+				}
+			} catch (InterruptedException e) {
+				return "The version check task was interrupted and there is no version information available.";
+			} catch (ExecutionException e) {
+				LogisticsPipes.log.warn("The version check task had an exception while getting the newest version information", e);
+				return "The version check task had an exception. See the log file for more information.";
+			}
+		} else {
+			return "The version check is not yet ready, sorry.";
+		}
 	}
 
 	@Override
-	@SuppressWarnings({ "resource", "rawtypes", "unchecked" })
-	public void run() {
+	public VersionInfo call() throws Exception {
+		if (LPConstants.VERSION.equals("%" + "VERSION%:%DEBUG" + "%")) {
+			return null;
+		}
+
+		VersionInfo versionInfo = new VersionInfo();
+		URL url = new URL("http://rs485.network/version?VERSION=" + LPConstants.VERSION);
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		InputStream inputStream = (InputStream) conn.getContent();
+		String jsonString;
+		Scanner sc = new Scanner(inputStream);
 		try {
-			if (LPConstants.VERSION.equals("%" + "VERSION%:%DEBUG" + "%")) {
-				return;
-			}
-			if (LPConstants.VERSION.contains("-")) {
-				return;
-			}
-			URL url = new URL("http://rs485.thezorro266.com/version/check.php?VERSION=" + LPConstants.VERSION);
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			InputStream inputStream = (InputStream) conn.getContent();
-			Scanner s = new Scanner(inputStream).useDelimiter("\\A");
-			String string = s.next();
-			s.close();
-			if (!Configs.CHECK_FOR_UPDATES) {
-				return;
-			}
-			Gson gson = new Gson();
-			LinkedTreeMap part = gson.fromJson(string, LinkedTreeMap.class);
-			Boolean hasNew = (Boolean) part.get("new");
-			if (hasNew) {
-				VersionChecker.hasNewVersion = true;
-				VersionChecker.newVersion = Integer.toString(Double.valueOf(part.get("build").toString()).intValue());
-				LogisticsPipes.log.info("New LogisticsPipes" + (LPConstants.DEV_BUILD ? "-Dev" : "") + " version found: #" + Double.valueOf(part.get("build").toString()).intValue());
-				LinkedTreeMap changeLog = (LinkedTreeMap) part.get("changelog");
-				List<String> changeLogList = new ArrayList<String>();
-				if (changeLog != null) {
-					for (Object oVersion : changeLog.keySet()) {
-						String build = oVersion.toString();
-						changeLogList.add(new StringBuilder(build).append(": ").toString());
-						List<String> sub = (List<String>) changeLog.get(build);
-						for (String msg : sub) {
-							if (msg.length() > 60) {
-								boolean first = true;
-								while (!msg.isEmpty()) {
-									int splitAt = msg.substring(0, Math.min(first ? 60 : 55, msg.length())).lastIndexOf(' ');
-									if (msg.length() < 60) {
-										splitAt = msg.length();
-									}
-									if (splitAt <= 0) {
-										splitAt = Math.min(first ? 60 : 55, msg.length());
-									} else if (msg.length() > 60 && splitAt < 40) {
-										splitAt = Math.min(first ? 60 : 55, msg.length());
-									}
-									changeLogList.add((first ? "" : "    ") + msg.substring(0, splitAt));
-									msg = msg.substring(splitAt);
-									first = false;
+			sc.useDelimiter("\\A");
+			jsonString = sc.next();
+		} finally {
+			sc.close();
+		}
+
+		Gson gson = new Gson();
+		LinkedTreeMap part = gson.fromJson(jsonString, LinkedTreeMap.class);
+
+		Boolean hasNew = (Boolean) part.get("new");
+		versionInfo.setNewVersionAvailable(hasNew);
+		if (hasNew) {
+			versionInfo.setNewestBuild(String.valueOf(part.get("build")));
+			LogisticsPipes.log.info("New Logistics Pipes build found: #" + versionInfo.getNewestBuild());
+
+			@SuppressWarnings("unchecked")
+			LinkedTreeMap<String, List<String>> changelog = (LinkedTreeMap<String, List<String>>) part.get("changelog");
+
+			List<String> changeLogList = new ArrayList<String>();
+			if (changelog != null) {
+				for (String build : changelog.keySet()) {
+					changeLogList.add(build + ": ");
+					for (String commit : changelog.get(build)) {
+						if (commit.length() > COMMIT_MAX_LINE_LENGTH) {
+							String prefix = "    ";
+							boolean first = true;
+							while (!commit.isEmpty()) {
+								int maxLength;
+								if (first) {
+									maxLength = COMMIT_MAX_LINE_LENGTH;
+								} else {
+									maxLength = COMMIT_MAX_LINE_LENGTH - prefix.length();
 								}
-							} else {
-								changeLogList.add(msg);
+								int splitAt = commit.substring(0, Math.min(maxLength, commit.length())).lastIndexOf(' ');
+								if (commit.length() < COMMIT_MAX_LINE_LENGTH) {
+									splitAt = commit.length();
+								}
+								if (splitAt <= 0) {
+									splitAt = Math.min(maxLength, commit.length());
+								} else if (commit.length() > COMMIT_MAX_LINE_LENGTH && splitAt < COMMIT_MAX_LINE_LENGTH - 20) {
+									splitAt = Math.min(maxLength, commit.length());
+								}
+								changeLogList.add((first ? "" : prefix) + commit.substring(0, splitAt));
+								commit = commit.substring(splitAt);
+								first = false;
 							}
+						} else {
+							changeLogList.add(commit);
 						}
 					}
 				}
-				VersionChecker.changeLog = changeLogList;
-				VersionChecker.sendIMCOutdatedMessage();
 			}
-		} catch (MalformedURLException e) {
-			if (Configs.CHECK_FOR_UPDATES) {
-				e.printStackTrace();
-			}
-		} catch (IOException e) {
-			if (Configs.CHECK_FOR_UPDATES) {
-				e.printStackTrace();
-			}
+
+			versionInfo.setChangelog(changeLogList);
+			sendIMCOutdatedMessage(versionInfo);
 		}
+		return versionInfo;
 	}
 
 	/**
 	 * Integration with Version Checker
 	 * (http://www.minecraftforum.net/topic/2721902-/)
 	 */
-	public static void sendIMCOutdatedMessage() {
+	private void sendIMCOutdatedMessage(VersionInfo versionInfo) {
 		if (Loader.isModLoaded("VersionChecker")) {
 			NBTTagCompound tag = new NBTTagCompound();
 			tag.setString("oldVersion", LPConstants.VERSION);
-			tag.setString("newVersion", VersionChecker.newVersion);
+			tag.setString("newVersion", versionInfo.getNewestBuild());
 			tag.setString("updateUrl", "http://ci.thezorro266.com/view/Logistics%20Pipes/");
 			tag.setBoolean("isDirectLink", false);
 
 			StringBuilder stringBuilder = new StringBuilder();
-			for (String changeLogLine : VersionChecker.changeLog) {
+			for (String changeLogLine : versionInfo.getChangelog()) {
 				stringBuilder.append(changeLogLine).append("\n");
 			}
 			tag.setString("changeLog", stringBuilder.toString());
 			FMLInterModComms.sendRuntimeMessage("LogisticsPipes", "VersionChecker", "addUpdate", tag);
-			VersionChecker.sentIMCMessage = true;
+			versionInfo.setImcMessageSent(true);
 		}
+	}
+
+	@Data
+	public class VersionInfo {
+
+		private boolean newVersionAvailable;
+		private boolean imcMessageSent;
+		private String newestBuild;
+		private List<String> changelog;
 	}
 }

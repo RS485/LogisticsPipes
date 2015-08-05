@@ -10,6 +10,8 @@ package logisticspipes;
 import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import logisticspipes.asm.LogisticsPipesClassInjector;
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
@@ -289,6 +291,7 @@ public class LogisticsPipes {
 	public static final String logisticsTileGenericPipeMapping = "logisticspipes.pipes.basic.LogisticsTileGenericPipe";
 	public static CreativeTabLP LPCreativeTab = new CreativeTabLP();
 	public static Logger log;
+	public static ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
 	public static VersionChecker versionChecker;
 
 	private static LPGlobalCCAccess generalAccess;

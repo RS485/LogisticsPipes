@@ -8,8 +8,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.Future;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
@@ -28,7 +27,7 @@ public final class VersionChecker implements Callable<VersionChecker.VersionInfo
 
 	public static final int COMMIT_MAX_LINE_LENGTH = 60;
 
-	private static ForkJoinTask<VersionInfo> versionCheckTask;
+	private static Future<VersionInfo> versionCheckFuture;
 	private String statusString;
 	private VersionInfo versionInfo = null;
 
@@ -37,16 +36,16 @@ public final class VersionChecker implements Callable<VersionChecker.VersionInfo
 
 	public static VersionChecker runVersionCheck() {
 		VersionChecker obj = new VersionChecker();
-		versionCheckTask = ForkJoinPool.commonPool().submit(obj);
+		versionCheckFuture = LogisticsPipes.singleThreadExecutor.submit(obj);
 		return obj;
 	}
 
 	public String getVersionCheckerStatus() {
-		if (versionCheckTask != null) {
-			if (versionCheckTask.isDone()) {
+		if (versionCheckFuture != null) {
+			if (versionCheckFuture.isDone()) {
 				// has to be done, before getting final string and setting to null
 				statusString = internalGetVersionCheckerStatus();
-				versionCheckTask = null;
+				versionCheckFuture = null;
 			} else {
 				statusString = internalGetVersionCheckerStatus();
 			}
@@ -63,9 +62,9 @@ public final class VersionChecker implements Callable<VersionChecker.VersionInfo
 	}
 
 	private String internalGetVersionCheckerStatus() {
-		if (versionCheckTask.isDone()) {
+		if (versionCheckFuture.isDone()) {
 			try {
-				versionInfo = versionCheckTask.get();
+				versionInfo = versionCheckFuture.get();
 				if (versionInfo == null) {
 					if (DevEnvHelper.isDevelopmentEnvironment()) {
 						return "You are running Logistics Pipes from a development environment.";

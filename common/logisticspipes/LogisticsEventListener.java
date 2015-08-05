@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ForkJoinPool;
 
 import logisticspipes.config.Configs;
 import logisticspipes.config.PlayerConfig;
@@ -260,7 +259,7 @@ public class LogisticsEventListener {
 		SimpleServiceLocator.clientBufferHandler.clear();
 
 		if (Configs.CHECK_FOR_UPDATES) {
-			ForkJoinPool.commonPool().execute(new Runnable() {
+			LogisticsPipes.singleThreadExecutor.execute(new Runnable() {
 
 				@Override
 				public void run() {

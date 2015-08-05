@@ -90,7 +90,7 @@ public class TesseractConnection implements ISpecialTileConnection {
 		if (pipe instanceof LogisticsTileGenericPipe) {
 			((CoreRoutedPipe) ((LogisticsTileGenericPipe) pipe).pipe).queueUnroutedItemInformation(data.getItemIdentifierStack().clone(), data.getInfo());
 		} else {
-			new RuntimeException("Only LP pipes can be next to Teseracts to queue item informaiton").printStackTrace();
+			new RuntimeException("Only LP pipes can be next to Tesseracts to queue item information").printStackTrace();
 		}
 	}
 }

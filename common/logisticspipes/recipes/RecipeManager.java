@@ -9,7 +9,6 @@ import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.proxy.interfaces.ICraftingParts;
-
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
@@ -17,8 +16,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.nbt.NBTTagCompound;
-
+import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
+
+import static net.minecraftforge.oredict.RecipeSorter.Category.SHAPED;
+import static net.minecraftforge.oredict.RecipeSorter.Category.SHAPELESS;
 
 //@formatter:off
 //CHECKSTYLE:OFF
@@ -33,20 +35,7 @@ public class RecipeManager {
 		}
 		@SuppressWarnings("unchecked")
 		public void addOrdererRecipe(ItemStack stack, String dye, ItemStack orderer) {
-			craftingManager.getRecipeList().add(new ShapelessOreRecipe(stack, new Object[] {dye, orderer}) {
-				@Override
-				public ItemStack getCraftingResult(InventoryCrafting var1) {
-					ItemStack result = super.getCraftingResult(var1);
-					for(int i=0;i<var1.getInventoryStackLimit();i++) {
-						ItemStack stack = var1.getStackInSlot(i);
-						if(stack != null && stack.getItem() instanceof RemoteOrderer) {
-							result.setTagCompound(stack.getTagCompound());
-							break;
-						}
-					}
-					return result;
-				}
-			});
+			craftingManager.getRecipeList().add(new ShapelessOrdererRecipe(stack, new Object[] {dye, orderer}));
 		}
 		@SuppressWarnings("unchecked")
 		public void addShapelessRecipe(ItemStack stack, CraftingDependency dependent, Object... objects) {
@@ -56,9 +45,35 @@ public class RecipeManager {
 		public void addShapelessResetRecipe(Item item, int meta) {
 			craftingManager.getRecipeList().add(new ShapelessResetRecipe(item, meta));
 		}
+
+		public class ShapelessOrdererRecipe extends ShapelessOreRecipe {
+			public ShapelessOrdererRecipe(ItemStack result, Object... recipe) {
+				super(result, recipe);
+			}
+
+			@Override
+			public ItemStack getCraftingResult(InventoryCrafting var1) {
+				ItemStack result = super.getCraftingResult(var1);
+				for (int i = 0; i < var1.getInventoryStackLimit(); i++) {
+					ItemStack stack = var1.getStackInSlot(i);
+					if (stack != null && stack.getItem() instanceof RemoteOrderer) {
+						result.setTagCompound(stack.getTagCompound());
+						break;
+					}
+				}
+				return result;
+			}
+		}
 	}
 
 	public static LocalCraftingManager craftingManager = new LocalCraftingManager();
+
+	public static void registerRecipeClasses() {
+		RecipeSorter.register("logisticspipes:shapedore", LPShapedOreRecipe.class, SHAPED, "after:minecraft:shaped before:minecraft:shapeless");
+		RecipeSorter.register("logisticspipes:shapelessore", LPShapelessOreRecipe.class, SHAPELESS, "after:minecraft:shapeless");
+		RecipeSorter.register("logisticspipes:shapelessreset", ShapelessResetRecipe.class, SHAPELESS, "after:minecraft:shapeless");
+		RecipeSorter.register("logisticspipes:shapelessorderer", LocalCraftingManager.ShapelessOrdererRecipe.class, SHAPELESS, "after:minecraft:shapeless");
+	}
 
 	public static void loadRecipes(ICraftingParts parts) {
 

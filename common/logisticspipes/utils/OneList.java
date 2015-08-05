@@ -11,34 +11,34 @@ public class OneList<E> implements List<E> {
 
 	public OneList(E object) {
 		if (object == null) {
-			throw new NullPointerException();
+			throw new NullPointerException("OneList content must not be null");
 		}
 		this.content = object;
 	}
 
 	@Override
 	public boolean add(E e) {
-		throw new UnsupportedOperationException("Can't mofidy the OneList");
+		throw new UnsupportedOperationException("Cannot modify OneList");
 	}
 
 	@Override
 	public void add(int index, E element) {
-		throw new UnsupportedOperationException("Can't mofidy the OneList");
+		throw new UnsupportedOperationException("Cannot modify OneList");
 	}
 
 	@Override
 	public boolean addAll(Collection<? extends E> c) {
-		throw new UnsupportedOperationException("Can't mofidy the OneList");
+		throw new UnsupportedOperationException("Cannot modify OneList");
 	}
 
 	@Override
 	public boolean addAll(int index, Collection<? extends E> c) {
-		throw new UnsupportedOperationException("Can't mofidy the OneList");
+		throw new UnsupportedOperationException("Cannot modify OneList");
 	}
 
 	@Override
 	public void clear() {
-		throw new UnsupportedOperationException("Can't mofidy the OneList");
+		throw new UnsupportedOperationException("Cannot modify OneList");
 	}
 
 	@Override
@@ -48,16 +48,13 @@ public class OneList<E> implements List<E> {
 
 	@Override
 	public boolean containsAll(Collection<?> c) {
-		if (c.size() != 1) {
-			return false;
-		}
-		return content.equals(c.iterator().next());
+		return c.size() == 1 && content.equals(c.iterator().next());
 	}
 
 	@Override
 	public E get(int index) {
-		if (index != 0) {
-			throw new IndexOutOfBoundsException("OneList can't access an object at: " + index);
+		if (!checkRange(index)) {
+			throw new IndexOutOfBoundsException("OneList does not have an object at index " + index);
 		}
 		return content;
 	}
@@ -77,7 +74,17 @@ public class OneList<E> implements List<E> {
 
 	@Override
 	public Iterator<E> iterator() {
-		return new Iterator<E>() {
+		return listIterator();
+	}
+
+	@Override
+	public int lastIndexOf(Object o) {
+		return indexOf(o);
+	}
+
+	@Override
+	public ListIterator<E> listIterator() {
+		return new ListIterator<E>() {
 
 			private boolean handled = false;
 
@@ -96,50 +103,77 @@ public class OneList<E> implements List<E> {
 			}
 
 			@Override
+			public boolean hasPrevious() {
+				return handled;
+			}
+
+			@Override
+			public E previous() {
+				if (!handled) {
+					return null;
+				}
+				handled = false;
+				return OneList.this.content;
+			}
+
+			@Override
+			public int nextIndex() {
+				return handled ? 1 : 0;
+			}
+
+			@Override
+			public int previousIndex() {
+				return handled ? 0 : -1;
+			}
+
+			@Override
 			public void remove() {
-				throw new UnsupportedOperationException("Can't mofidy the OneList");
+				throw new UnsupportedOperationException("Cannot modify OneList");
+			}
+
+			@Override
+			public void set(E e) {
+				throw new UnsupportedOperationException("Cannot modify OneList");
+			}
+
+			@Override
+			public void add(E e) {
+				throw new UnsupportedOperationException("Cannot modify OneList");
 			}
 		};
 	}
 
 	@Override
-	public int lastIndexOf(Object o) {
-		return indexOf(o);
-	}
-
-	@Override
-	public ListIterator<E> listIterator() {
-		throw new UnsupportedOperationException("OneList doesn't have this kind of iterator");
-	}
-
-	@Override
 	public ListIterator<E> listIterator(int index) {
-		throw new UnsupportedOperationException("OneList doesn't have this kind of iterator");
+		if (!checkRange(index)) {
+			throw new IndexOutOfBoundsException("OneList does not have an object at index " + index);
+		}
+		return listIterator();
 	}
 
 	@Override
 	public boolean remove(Object o) {
-		throw new UnsupportedOperationException("Can't mofidy the OneList");
+		throw new UnsupportedOperationException("Cannot modify OneList");
 	}
 
 	@Override
 	public E remove(int index) {
-		throw new UnsupportedOperationException("Can't mofidy the OneList");
+		throw new UnsupportedOperationException("Cannot modify OneList");
 	}
 
 	@Override
 	public boolean removeAll(Collection<?> c) {
-		throw new UnsupportedOperationException("Can't mofidy the OneList");
+		throw new UnsupportedOperationException("Cannot modify OneList");
 	}
 
 	@Override
 	public boolean retainAll(Collection<?> c) {
-		throw new UnsupportedOperationException("Can't mofidy the OneList");
+		throw new UnsupportedOperationException("Cannot modify OneList");
 	}
 
 	@Override
 	public E set(int index, E element) {
-		throw new UnsupportedOperationException("Can't mofidy the OneList");
+		throw new UnsupportedOperationException("Cannot modify OneList");
 	}
 
 	@Override
@@ -164,14 +198,15 @@ public class OneList<E> implements List<E> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof OneList)) {
-			return false;
-		}
-		return content.equals(((OneList<?>) obj).content);
+		return obj instanceof OneList && content.equals(((OneList<?>) obj).content);
 	}
 
 	@Override
 	public String toString() {
 		return "[" + content.toString() + "]";
+	}
+
+	private boolean checkRange(int index) {
+		return index == 0;
 	}
 }

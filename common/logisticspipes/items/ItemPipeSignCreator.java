@@ -62,6 +62,10 @@ public class ItemPipeSignCreator extends LogisticsItem {
 			return false;
 		}
 
+		if(!(((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe)) {
+			return false;
+		}
+
 		CoreRoutedPipe pipe = (CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe;
 		if (pipe == null) {
 			return false;

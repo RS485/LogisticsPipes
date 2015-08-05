@@ -245,6 +245,7 @@ public class ProxyManager {
 			@Override public String getNextAlleleId(String uid, World world) {return "";}
 			@Override public String getPrevAlleleId(String uid, World world) {return "";}
 			@Override @SideOnly(Side.CLIENT) public IIcon getIconFromTextureManager(String name) {return null;}
+			@Override public void syncTracker(World world, EntityPlayer player) {}
 		}));
 
 		SimpleServiceLocator.setElectricItemProxy(ProxyManager.getWrappedProxy("IC2", IIC2Proxy.class, IC2Proxy.class, new IIC2Proxy() {

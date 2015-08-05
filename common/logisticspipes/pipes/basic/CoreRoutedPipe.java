@@ -1286,14 +1286,14 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		}
 	}
 
-	public void queueUnroutedItemInformation(ItemIdentifierStack item, ItemRoutingInformation informaiton) {
+	public void queueUnroutedItemInformation(ItemIdentifierStack item, ItemRoutingInformation information) {
 		if (item != null) {
 			synchronized (queuedDataForUnroutedItems) {
 				Queue<Pair<Integer, ItemRoutingInformation>> queue = queuedDataForUnroutedItems.get(item.getItem());
 				if (queue == null) {
 					queuedDataForUnroutedItems.put(item.getItem(), queue = new LinkedList<Pair<Integer, ItemRoutingInformation>>());
 				}
-				queue.add(new Pair<Integer, ItemRoutingInformation>(item.getStackSize(), informaiton));
+				queue.add(new Pair<Integer, ItemRoutingInformation>(item.getStackSize(), information));
 			}
 		}
 	}

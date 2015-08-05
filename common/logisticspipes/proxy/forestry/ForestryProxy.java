@@ -14,6 +14,7 @@ import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.RecipeManager.LocalCraftingManager;
 import logisticspipes.utils.item.ItemIdentifier;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -629,5 +630,10 @@ public class ForestryProxy implements IForestryProxy {
 	@SideOnly(Side.CLIENT)
 	public IIcon getIconFromTextureManager(String name) {
 		return ForestryAPI.textureManager.getDefault(name);
+	}
+
+	@Override
+	public void syncTracker(World world, EntityPlayer player) {
+		root.getBreedingTracker(world, player.getGameProfile()).synchToPlayer(player);
 	}
 }

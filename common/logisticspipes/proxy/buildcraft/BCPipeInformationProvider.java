@@ -39,6 +39,10 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 
 	@Override
 	public boolean isCorrect(ConnectionPipeType type) {
+		if (pipe == null || pipe.pipe == null || !SimpleServiceLocator.buildCraftProxy.isActive()) {
+			return false;
+		}
+
 		boolean precheck = false;
 		if (type == ConnectionPipeType.BOTH) {
 			precheck = pipe.pipe.transport instanceof PipeTransportItems || pipe.pipe.transport instanceof PipeTransportFluids;
@@ -47,7 +51,7 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 		} else if (type == ConnectionPipeType.FLUID) {
 			precheck = pipe.pipe.transport instanceof PipeTransportFluids;
 		}
-		return pipe != null && pipe.pipe != null && SimpleServiceLocator.buildCraftProxy.isActive() && precheck;
+		return precheck;
 	}
 
 	@Override
@@ -171,7 +175,7 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 			if (ignore == dir) {
 				continue;
 			}
-			IPipeInformationProvider information = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(getTile(dir));
+			IPipeInformationProvider information = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(getTile(dir));
 			if (information != null) {
 				LPPosition pos = new LPPosition(information);
 				if (visited.contains(pos)) {

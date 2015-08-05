@@ -333,7 +333,9 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 
 	public void setTimeout(int time) {
 		timeout = time;
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortMode.class).setTimeOut(timeout).setModulePos(this), localModeWatchers);
+		if(MainProxy.isServer(this._world.getWorld())) {
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortMode.class).setTimeOut(timeout).setModulePos(this), localModeWatchers);
+		}
 	}
 
 	public void setSinkSize(int integer) {

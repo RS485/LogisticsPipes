@@ -77,7 +77,7 @@ public class TeleportPipes implements ISpecialPipedConnection {
 			try {
 				LinkedList<? extends Pipe> pipes = getConnectedTeleportPipes(((TileGenericPipe) tile.getTile()).pipe);
 				for (Pipe pipe : pipes) {
-					list.add(new ConnectionInformation(SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(pipe.container), connection, side, ForgeDirection.UNKNOWN, 0));
+					list.add(new ConnectionInformation(SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(pipe.container), connection, side, ForgeDirection.UNKNOWN, 0));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

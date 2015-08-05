@@ -279,7 +279,7 @@ public class PipeTransportLogistics {
 			LPPosition pos = getPipe().getLPPosition();
 			pos.moveForward(dir);
 			TileEntity tile = pos.getTileEntity(getWorld());
-			if (!SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile)) {
+			if (!SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
 				iter.remove();
 			} else if (!canPipeConnect(tile, dir)) {
 				iter.remove();
@@ -474,7 +474,7 @@ public class PipeTransportLogistics {
 				SimpleServiceLocator.specialtileconnection.transmit(tile, arrivingItem);
 			}
 		}
-		if (SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile)) {
+		if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
 			if (passToNextPipe(arrivingItem, tile)) {
 				return;
 			}
@@ -616,7 +616,7 @@ public class PipeTransportLogistics {
 	}
 
 	protected void handleTileReachedClient(LPTravelingItemClient arrivingItem, TileEntity tile, ForgeDirection dir) {
-		if (SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile)) {
+		if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
 			passToNextPipe(arrivingItem, tile);
 		}
 		// Just ignore any other case
@@ -667,7 +667,7 @@ public class PipeTransportLogistics {
 	}
 
 	protected boolean isPipeCheck(TileEntity tile) {
-		return SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile);
+		return SimpleServiceLocator.pipeInformationManager.isItemPipe(tile);
 	}
 
 	protected void reachedEnd(LPTravelingItem item) {
@@ -707,7 +707,7 @@ public class PipeTransportLogistics {
 	}
 
 	protected boolean passToNextPipe(LPTravelingItem item, TileEntity tile) {
-		IPipeInformationProvider information = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(tile);
+		IPipeInformationProvider information = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(tile);
 		if (information != null) {
 			item.setPosition(item.getPosition() - getPipeLength());
 			return information.acceptItem(item, container);

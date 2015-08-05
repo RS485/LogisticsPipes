@@ -11,6 +11,7 @@ import net.minecraft.inventory.Container;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import net.minecraftforge.common.util.FakePlayer;
 
 @Accessors(chain = true)
 public abstract class GuiProvider {
@@ -36,6 +37,7 @@ public abstract class GuiProvider {
 	public abstract GuiProvider template();
 
 	public final void open(EntityPlayer player) {
+		if(player instanceof FakePlayer) return;
 		NewGuiHandler.openGui(this, player);
 	}
 }

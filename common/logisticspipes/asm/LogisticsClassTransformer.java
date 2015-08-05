@@ -72,7 +72,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			return null;
 		}
 		if (transformedName.startsWith("logisticspipes.") || transformedName.startsWith("net.minecraft") || LPConstants.DEBUG) {
-			return applyLPTransforms(transformedName, bytes);
+			return ParamProfiler.handleClass(applyLPTransforms(transformedName, bytes));
 		}
 		byte[] tmp = bytes.clone();
 		bytes = applyLPTransforms(transformedName, bytes);
@@ -85,7 +85,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			node.accept(writer);
 			bytes = writer.toByteArray();
 		}
-		return bytes;
+		return ParamProfiler.handleClass(bytes);
 	}
 
 	private byte[] applyLPTransforms(String name, byte[] bytes) {

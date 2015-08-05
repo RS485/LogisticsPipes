@@ -50,7 +50,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 				if (super.canPipeConnect(tile, dir)) {
 					return true;
 				}
-				if (SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile)) {
+				if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
 					return false;
 				}
 				if (tile instanceof IFluidHandler) {
@@ -97,7 +97,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 		if (!(tile instanceof IFluidHandler)) {
 			return;
 		}
-		if (SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile)) {
+		if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
 			return;
 		}
 		IFluidHandler container = (IFluidHandler) tile;
@@ -147,7 +147,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 		super.throttledUpdateEntity();
 		WorldUtil worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
 		for (AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
-			if (!(tile.tile instanceof IFluidHandler) || SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile.tile)) {
+			if (!(tile.tile instanceof IFluidHandler) || SimpleServiceLocator.pipeInformationManager.isItemPipe(tile.tile)) {
 				continue;
 			}
 			IFluidHandler container = (IFluidHandler) tile.tile;

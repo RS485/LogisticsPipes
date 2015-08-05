@@ -127,7 +127,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 			if (!(tile.tile instanceof IInventory)) {
 				continue;
 			}
-			if (SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile.tile)) {
+			if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile.tile)) {
 				continue;
 			}
 			IInventoryUtil inv = getAdaptedInventoryUtil(tile);
@@ -156,7 +156,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 			if (!(tile.tile instanceof IInventory)) {
 				continue;
 			}
-			if (SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile.tile)) {
+			if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile.tile)) {
 				continue;
 			}
 
@@ -340,7 +340,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 			if (!(tile.tile instanceof IInventory)) {
 				continue;
 			}
-			if (SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile.tile)) {
+			if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile.tile)) {
 				continue;
 			}
 			IInventoryUtil inv = getAdaptedInventoryUtil(tile);
@@ -484,7 +484,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 			if (!(tile.tile instanceof IInventory)) {
 				continue;
 			}
-			if (SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile.tile)) {
+			if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile.tile)) {
 				continue;
 			}
 

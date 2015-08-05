@@ -1,6 +1,5 @@
 /**
  * Copyright (c) Krapht, 2011
- * 
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
@@ -11,6 +10,8 @@ package logisticspipes;
 import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import logisticspipes.asm.LogisticsPipesClassInjector;
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
@@ -109,7 +110,7 @@ import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.renderer.LogisticsPipeItemRenderer;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
-import logisticspipes.routing.pathfinder.PipeInformaitonManager;
+import logisticspipes.routing.pathfinder.PipeInformationManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.ticks.ClientPacketBufferHandlerThread;
 import logisticspipes.ticks.DebugGuiTickHandler;
@@ -295,16 +296,15 @@ public class LogisticsPipes {
 	public static LogisticsBlockGenericPipe LogisticsPipeBlock;
 	public static LogisticsBlockGenericSubMultiBlock LogisticsSubMultiBlock;
 
+	// other statics
 	public static Textures textures = new Textures();
-
 	public static final String logisticsTileGenericPipeMapping = "logisticspipes.pipes.basic.LogisticsTileGenericPipe";
-
 	public static CreativeTabLP LPCreativeTab = new CreativeTabLP();
-
 	public static Logger log;
+	public static ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
+	public static VersionChecker versionChecker;
 
 	private static LPGlobalCCAccess generalAccess;
-
 	private static PlayerConfig playerConfig;
 
 	@EventHandler
@@ -350,6 +350,8 @@ public class LogisticsPipes {
 		LogisticsPipes.textures.registerBlockIcons(null);
 
 		FMLCommonHandler.instance().bus().register(DebugGuiTickHandler.instance());
+
+		RecipeManager.registerRecipeClasses();
 	}
 
 	@EventHandler
@@ -365,7 +367,7 @@ public class LogisticsPipes {
 			LogisticsPipes.log.debug("While the dev versions contain cutting edge features, they may also contain more bugs.");
 			LogisticsPipes.log.debug("Please report any you find to https://github.com/RS485/LogisticsPipes/issues");
 		}
-		SimpleServiceLocator.setPipeInformationManager(new PipeInformaitonManager());
+		SimpleServiceLocator.setPipeInformationManager(new PipeInformationManager());
 
 		if (Configs.EASTER_EGGS) {
 			Calendar calendar = Calendar.getInstance();
@@ -518,7 +520,7 @@ public class LogisticsPipes {
 		//init Fluids
 		FluidIdentifier.initFromForge(false);
 
-		new VersionChecker();
+		versionChecker = VersionChecker.runVersionCheck();
 	}
 
 	private void loadClasses() {
@@ -539,7 +541,7 @@ public class LogisticsPipes {
 	private void forName(String string) {
 		try {
 			Class.forName(string);
-		} catch (Exception e) {}
+		} catch (Exception ignore) {}
 	}
 
 	@EventHandler

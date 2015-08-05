@@ -10,7 +10,7 @@ import net.minecraft.tileentity.TileEntity;
 
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class PipeInformaitonManager {
+public class PipeInformationManager {
 
 	private Map<Class<?> /*TileEntity*/, Class<? extends IPipeInformationProvider>> infoProvider = new HashMap<Class<?>, Class<? extends IPipeInformationProvider>>();
 

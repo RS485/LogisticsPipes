@@ -69,19 +69,21 @@ public class DevEnvHelper {
 
 	private static final Attributes.Name COREMODCONTAINSFMLMOD = new Attributes.Name("FMLCorePluginContainsFMLMod");
 
-	@SuppressWarnings("unchecked")
-	public static void detectCoreModInDevEnv() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, NoSuchFieldException, IOException {
-
-		// check for development environment
+	public static boolean isDevelopmentEnvironment() {
 		if (!LPConstants.DEBUG) {
-			return;
+			return false;
 		} else {
 			boolean eclipseCheck = (new File(".classpath")).exists();
 			boolean ideaCheck = System.getProperty("java.class.path").contains("idea_rt.jar");
 
-			if (!eclipseCheck && !ideaCheck) {
-				return;
-			}
+			return eclipseCheck || ideaCheck;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static void detectCoreModInDevEnv() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, NoSuchFieldException, IOException {
+		if (!isDevelopmentEnvironment()) {
+			return;
 		}
 
 		Method handleCascadingTweak = CoreModManager.class.getDeclaredMethod("handleCascadingTweak", File.class, JarFile.class, String.class, LaunchClassLoader.class, Integer.class);
@@ -203,7 +205,7 @@ public class DevEnvHelper {
 	}
 
 	public static void handleSpecialClassTransformer() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException, IOException, CantLoadMCPMappingException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
-		if (!LPConstants.DEBUG || !new File(".classpath").exists() || !new File(".mcpMappings").exists()) {
+		if (!isDevelopmentEnvironment() || !new File(".mcpMappings").exists()) {
 			return;
 		}
 		DevEnvHelper.m = new MappingLoader_MCP("1.7.10", Side.UNIVERSAL, new File(".mcpMappings")).getForwardCSV();
@@ -218,11 +220,20 @@ public class DevEnvHelper {
 		loadersF.setAccessible(true);
 		addURL.setAccessible(true);
 
-		for (File f : new File("mods").listFiles()) {
+		ArrayList<File> modFileList = new ArrayList<File>();
+		File modsFolder = new File("mods");
+		if (modsFolder.exists()) {
+			File[] modses = modsFolder.listFiles();
+			if (modses != null) {
+				Collections.addAll(modFileList, modses);
+			}
+		}
+
+		for (File f : modFileList) {
 			if (!f.isFile()) {
 				continue;
 			}
-			String path = f.getAbsolutePath().toString();
+			String path = f.getAbsolutePath();
 			if (path.endsWith("LP_DEOBF.jar")) {
 				URL toMove = f.toURI().toURL();
 				addURL.invoke(ucp, toMove);

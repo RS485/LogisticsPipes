@@ -382,7 +382,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 			if (ignore == dir) {
 				continue;
 			}
-			IPipeInformationProvider information = SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(container.getTile(dir));
+			IPipeInformationProvider information = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(container.getTile(dir));
 			if (information != null) {
 				LPPosition pos = new LPPosition(information);
 				if (visited.contains(pos)) {

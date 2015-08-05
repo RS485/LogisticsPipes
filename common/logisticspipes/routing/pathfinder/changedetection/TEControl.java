@@ -38,7 +38,7 @@ public class TEControl {
 			return;
 		}
 
-		if (SimpleServiceLocator.pipeInformaitonManager.isPipe(tile, false) || SimpleServiceLocator.specialtileconnection.isType(tile)) {
+		if (SimpleServiceLocator.pipeInformationManager.isPipe(tile, false) || SimpleServiceLocator.specialtileconnection.isType(tile)) {
 			((ILPTEInformation) tile).setObject(new LPTileEntityObject());
 			((ILPTEInformation) tile).getObject().initialised = LPTickHandler.getWorldInfo(world).getWorldTick();
 			if (((ILPTEInformation) tile).getObject().initialised < 5) {
@@ -48,7 +48,7 @@ public class TEControl {
 
 				@Override
 				public Object call() throws Exception {
-					if (!SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile)) {
+					if (!SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
 						return null;
 					}
 					for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
@@ -59,12 +59,12 @@ public class TEControl {
 						}
 						TileEntity nextTile = newPos.getTileEntity(world);
 						if (nextTile != null && ((ILPTEInformation) nextTile).getObject() != null) {
-							if (SimpleServiceLocator.pipeInformaitonManager.isItemPipe(nextTile)) {
-								SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(nextTile).refreshTileCacheOnSide(dir.getOpposite());
+							if (SimpleServiceLocator.pipeInformationManager.isItemPipe(nextTile)) {
+								SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(nextTile).refreshTileCacheOnSide(dir.getOpposite());
 							}
-							if (SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile)) {
-								SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(tile).refreshTileCacheOnSide(dir);
-								SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(tile).refreshTileCacheOnSide(dir.getOpposite());
+							if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
+								SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(tile).refreshTileCacheOnSide(dir);
+								SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(tile).refreshTileCacheOnSide(dir.getOpposite());
 							}
 							for (ITileEntityChangeListener listener : new ArrayList<ITileEntityChangeListener>(((ILPTEInformation) nextTile).getObject().changeListeners)) {
 								listener.pipeAdded(pos, dir.getOpposite());
@@ -102,8 +102,8 @@ public class TEControl {
 						}
 						TileEntity nextTile = newPos.getTileEntity(world);
 						if (nextTile != null && ((ILPTEInformation) nextTile).getObject() != null) {
-							if (SimpleServiceLocator.pipeInformaitonManager.isItemPipe(nextTile)) {
-								SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(nextTile).refreshTileCacheOnSide(dir.getOpposite());
+							if (SimpleServiceLocator.pipeInformationManager.isItemPipe(nextTile)) {
+								SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(nextTile).refreshTileCacheOnSide(dir.getOpposite());
 							}
 						}
 					}
@@ -152,7 +152,7 @@ public class TEControl {
 		if (tile == null || ((ILPTEInformation) tile).getObject() == null) {
 			return;
 		}
-		if (SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile) || SimpleServiceLocator.specialtileconnection.isType(tile)) {
+		if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile) || SimpleServiceLocator.specialtileconnection.isType(tile)) {
 			info.getUpdateQueued().add(pos);
 			QueuedTasks.queueTask(new Callable<Object>() {
 

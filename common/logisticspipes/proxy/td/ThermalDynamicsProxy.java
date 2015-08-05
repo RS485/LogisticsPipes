@@ -29,7 +29,7 @@ public class ThermalDynamicsProxy implements ITDProxy {
 
 	@Override
 	public void registerPipeInformationProvider() {
-		SimpleServiceLocator.pipeInformaitonManager.registerProvider(TileItemDuct.class, TDDuctInformationProvider.class);
+		SimpleServiceLocator.pipeInformationManager.registerProvider(TileItemDuct.class, TDDuctInformationProvider.class);
 	}
 
 	@Override

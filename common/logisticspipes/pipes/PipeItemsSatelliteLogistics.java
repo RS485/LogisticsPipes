@@ -101,7 +101,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		LPPosition pos = new LPPosition(getX(), getY(), getZ());
 		pos.moveForward(ori);
 		TileEntity tile = pos.getTileEntity(getWorld());
-		if (SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile)) {
+		if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
 			return null;
 		}
 		if (!(tile instanceof IInventory)) {

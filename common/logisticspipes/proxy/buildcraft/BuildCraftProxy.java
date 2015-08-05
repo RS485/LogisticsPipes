@@ -129,7 +129,7 @@ public class BuildCraftProxy implements IBCProxy {
 
 	@Override
 	public void registerPipeInformationProvider() {
-		SimpleServiceLocator.pipeInformaitonManager.registerProvider(TileGenericPipe.class, BCPipeInformationProvider.class);
+		SimpleServiceLocator.pipeInformationManager.registerProvider(TileGenericPipe.class, BCPipeInformationProvider.class);
 	}
 
 	@Override

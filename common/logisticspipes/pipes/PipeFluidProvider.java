@@ -186,7 +186,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 
 	@Override
 	public boolean disconnectPipe(TileEntity tile, ForgeDirection dir) {
-		return SimpleServiceLocator.pipeInformaitonManager.isFluidPipe(tile);
+		return SimpleServiceLocator.pipeInformationManager.isFluidPipe(tile);
 	}
 
 	@Override

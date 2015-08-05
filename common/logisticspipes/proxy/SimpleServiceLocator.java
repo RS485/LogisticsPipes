@@ -41,7 +41,7 @@ import logisticspipes.proxy.specialtankhandler.SpecialTankHandler;
 import logisticspipes.recipes.CraftingPermissionManager;
 import logisticspipes.renderer.newpipe.GLRenderListHandler;
 import logisticspipes.routing.IRouterManager;
-import logisticspipes.routing.pathfinder.PipeInformaitonManager;
+import logisticspipes.routing.pathfinder.PipeInformationManager;
 import logisticspipes.ticks.ClientPacketBufferHandlerThread;
 import logisticspipes.ticks.ServerPacketBufferHandlerThread;
 import logisticspipes.utils.InventoryUtilFactory;
@@ -183,10 +183,10 @@ public final class SimpleServiceLocator {
 		SimpleServiceLocator.factorizationProxy = proxy;
 	}
 
-	public static PipeInformaitonManager pipeInformaitonManager;
+	public static PipeInformationManager pipeInformationManager;
 
-	public static void setPipeInformationManager(PipeInformaitonManager manager) {
-		SimpleServiceLocator.pipeInformaitonManager = manager;
+	public static void setPipeInformationManager(PipeInformationManager manager) {
+		SimpleServiceLocator.pipeInformationManager = manager;
 	}
 
 	public static IEnderIOProxy enderIOProxy;

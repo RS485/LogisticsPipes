@@ -63,7 +63,7 @@ public class WorldUtil {
 			}
 
 			if (flag) {
-				if (SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tilePipe)) {
+				if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tilePipe)) {
 					if (!MainProxy.checkPipesConnections(tilePipe, tile, o)) {
 						continue;
 					}

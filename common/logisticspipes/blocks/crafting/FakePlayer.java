@@ -7,10 +7,12 @@ import net.minecraft.util.IChatComponent;
 
 import com.mojang.authlib.GameProfile;
 
+import java.util.UUID;
+
 public class FakePlayer extends EntityPlayer {
 
 	public FakePlayer(TileEntity from) {
-		super(from.getWorldObj(), new GameProfile(null, "[LogisticsPipes]"));
+		super(from.getWorldObj(), new GameProfile(UUID.fromString("e7d8e347-3828-4f39-b76f-ea519857c004"), "[LogisticsPipes]"));
 		posX = from.xCoord;
 		posY = from.yCoord + 1;
 		posZ = from.zCoord;

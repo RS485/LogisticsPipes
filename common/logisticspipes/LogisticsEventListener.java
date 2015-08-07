@@ -283,9 +283,12 @@ public class LogisticsEventListener {
 
 					// send player message
 					String versionMessage = LogisticsPipes.versionChecker.getVersionCheckerStatus();
-					playerEntity.addChatComponentMessage(new ChatComponentText(versionMessage));
+
 					if (LogisticsPipes.versionChecker.isVersionCheckDone() && LogisticsPipes.versionChecker.getVersionInfo().isNewVersionAvailable()) {
+						playerEntity.addChatComponentMessage(new ChatComponentText(versionMessage));
 						playerEntity.addChatComponentMessage(new ChatComponentText("Use \"/logisticspipes changelog\" to see a changelog."));
+					} else if (!LogisticsPipes.versionChecker.isVersionCheckDone()) {
+						playerEntity.addChatComponentMessage(new ChatComponentText(versionMessage));
 					}
 				}
 			});

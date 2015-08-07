@@ -72,7 +72,11 @@ public final class VersionChecker implements Callable<VersionChecker.VersionInfo
 						return "It seems you are missing the current version information on Logistics Pipes. There is no version checking available.";
 					}
 				} else {
-					return "New Logistics Pipes build found: #" + versionInfo.getNewestBuild();
+					if (versionInfo.isNewVersionAvailable()) {
+						return "New Logistics Pipes build found: #" + versionInfo.getNewestBuild();
+					} else {
+						return "You have the newest Logistics Pipes build :)";
+					}
 				}
 			} catch (InterruptedException e) {
 				return "The version check task was interrupted and there is no version information available.";

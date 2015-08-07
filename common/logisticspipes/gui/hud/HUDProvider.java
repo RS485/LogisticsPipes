@@ -119,7 +119,8 @@ public class HUDProvider extends BasicHUDGui {
 		float scaleY = 1.125F;
 		float scaleZ = -0.0001F;
 		GL11.glScalef(scaleX, scaleY, scaleZ);
-		ItemStackRenderer itemStackRenderer = new ItemStackRenderer(null, DisplayAmount.ALWAYS, 0, 0, 0.0F, false, shifted, true);
+		ItemStackRenderer itemStackRenderer = new ItemStackRenderer(0, 0, 0.0F, false, shifted, true);
+		itemStackRenderer.setDisplayAmount(DisplayAmount.ALWAYS);
 		itemStackRenderer.setScaleX(scaleX).setScaleY(scaleY).setScaleZ(scaleZ);
 		ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.displayList, null, page, -36, -37, 4, 12, 18, 18, itemStackRenderer);
 		ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.itemListOrderer, null, pageB, -36, 23, 4, 4, 18, 18, itemStackRenderer);

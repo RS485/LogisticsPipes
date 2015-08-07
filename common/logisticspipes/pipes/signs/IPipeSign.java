@@ -15,23 +15,23 @@ import cpw.mods.fml.relauncher.SideOnly;
 public interface IPipeSign {
 
 	// Methods used when assigning a sign
-	public boolean isAllowedFor(CoreRoutedPipe pipe);
+	boolean isAllowedFor(CoreRoutedPipe pipe);
 
-	public void addSignTo(CoreRoutedPipe pipe, ForgeDirection dir, EntityPlayer player);
+	void addSignTo(CoreRoutedPipe pipe, ForgeDirection dir, EntityPlayer player);
 
 	// For Final Pipe
-	public void readFromNBT(NBTTagCompound tag);
+	void readFromNBT(NBTTagCompound tag);
 
-	public void writeToNBT(NBTTagCompound tag);
+	void writeToNBT(NBTTagCompound tag);
 
-	public void init(CoreRoutedPipe pipe, ForgeDirection dir);
+	void init(CoreRoutedPipe pipe, ForgeDirection dir);
 
-	public void activate(EntityPlayer player);
+	void activate(EntityPlayer player);
 
-	public ModernPacket getPacket();
+	ModernPacket getPacket();
 
-	public void updateServerSide();
+	void updateServerSide();
 
 	@SideOnly(Side.CLIENT)
-	public void render(CoreRoutedPipe pipe, LogisticsRenderPipe renderer);
+	void render(CoreRoutedPipe pipe, LogisticsRenderPipe renderer);
 }

@@ -67,8 +67,14 @@ public class ItemStackRenderer {
 		this.renderInColor = renderInColor;
 		renderManager = RenderManager.instance;
 		fontRenderer = renderManager.getFontRenderer();
+		if (fontRenderer == null) {
+			fontRenderer = Minecraft.getMinecraft().fontRenderer;
+		}
 		worldObj = renderManager.worldObj;
 		texManager = renderManager.renderEngine;
+		if (texManager == null) {
+			texManager = Minecraft.getMinecraft().getTextureManager();
+		}
 		renderBlocks = RenderBlocks.getInstance();
 		renderItem = RenderItem.getInstance();
 		scaleX = 1.0F;

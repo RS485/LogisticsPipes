@@ -27,6 +27,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.LogisticsGuiOverrenderer;
 import logisticspipes.renderer.LogisticsHUDRenderer;
+import logisticspipes.ticks.VersionChecker;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.PlayerIdentifier;
@@ -281,13 +282,15 @@ public class LogisticsEventListener {
 					}
 					assert playerEntity != null;
 
-					// send player message
-					String versionMessage = LogisticsPipes.versionChecker.getVersionCheckerStatus();
+					VersionChecker checker = LogisticsPipes.versionChecker;
 
-					if (LogisticsPipes.versionChecker.isVersionCheckDone() && LogisticsPipes.versionChecker.getVersionInfo().isNewVersionAvailable()) {
+					// send player message
+					String versionMessage = checker.getVersionCheckerStatus();
+
+					if (checker.isVersionCheckDone() && checker.getVersionInfo().isNewVersionAvailable() && !checker.getVersionInfo().isImcMessageSent()) {
 						playerEntity.addChatComponentMessage(new ChatComponentText(versionMessage));
 						playerEntity.addChatComponentMessage(new ChatComponentText("Use \"/logisticspipes changelog\" to see a changelog."));
-					} else if (!LogisticsPipes.versionChecker.isVersionCheckDone()) {
+					} else if (!checker.isVersionCheckDone()) {
 						playerEntity.addChatComponentMessage(new ChatComponentText(versionMessage));
 					}
 				}

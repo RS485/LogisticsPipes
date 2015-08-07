@@ -252,6 +252,6 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 
 	@Override
 	protected boolean isPipeCheck(TileEntity tile) {
-		return SimpleServiceLocator.pipeInformaitonManager.isPipe(tile);
+		return SimpleServiceLocator.pipeInformationManager.isPipe(tile);
 	}
 }

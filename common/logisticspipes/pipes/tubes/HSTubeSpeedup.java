@@ -101,7 +101,7 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 			@Override
 			protected void handleTileReachedClient(LPTravelingItemClient arrivingItem, TileEntity tile, ForgeDirection dir) {
 				if (dir.getOpposite() == ((HSTubeSpeedup) getMultiPipe()).orientation.dir1) {
-					if (SimpleServiceLocator.pipeInformaitonManager.isItemPipe(tile)) {
+					if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
 						arrivingItem.setSpeed(LPConstants.PIPE_NORMAL_SPEED * 20);
 						passToNextPipe(arrivingItem, tile);
 					}

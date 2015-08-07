@@ -307,7 +307,7 @@ public class LogisticsNewRenderPipe {
 	}
 
 	public static void loadModels() {
-		if(!SimpleServiceLocator.cclProxy.isActivated()) return;
+		if (!SimpleServiceLocator.cclProxy.isActivated()) return;
 		try {
 			Map<String, IModel3D> pipePartModels = SimpleServiceLocator.cclProxy.parseObjModels(LogisticsPipes.class.getResourceAsStream("/logisticspipes/models/PipeModel_result.obj"), 7, new LPScale(1 / 100f));
 
@@ -643,8 +643,7 @@ public class LogisticsNewRenderPipe {
 
 	private PlayerConfig config = LogisticsPipes.getClientPlayerConfig();
 
-	public void renderTileEntityAt(LogisticsTileGenericPipe pipeTile, double x, double y, double z, float f, double distance) {
-
+	public void renderTileEntityAt(LogisticsTileGenericPipe pipeTile, double x, double y, double z, float partialTickTime, double distance) {
 		if (pipeTile.pipe instanceof PipeBlockRequestTable) {
 			return;
 		}
@@ -731,7 +730,6 @@ public class LogisticsNewRenderPipe {
 				GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ZERO);
 				renderState.renderList.render();
 				GL11.glDisable(GL11.GL_BLEND);
-				GL11.glTranslated(-x, -y, -z);
 				GL11.glPopMatrix();
 			}
 		}

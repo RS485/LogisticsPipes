@@ -17,9 +17,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.utils.tuples.Pair;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
 
@@ -38,17 +36,12 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 
 	private void renderPipeItem(RenderBlocks render, ItemStack item, float translateX, float translateY, float translateZ) {
 		GL11.glPushMatrix();
-		// fix changing lightning when having an item in hand
-		GL11.glNormal3f(0.0F, 0.0F, 1.0F);
 
-		GL11.glPushAttrib(GL11.GL_COLOR_BUFFER_BIT); //don't break other mods' guis when holding a pipe
-		//force transparency
+		GL11.glPushAttrib(GL11.GL_COLOR_BUFFER_BIT); // don't break other mods' guis when holding a pipe
+
+		// force transparency
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glEnable(GL11.GL_BLEND);
-
-		// fix lightning for rendering
-		RenderHelper.enableStandardItemLighting();
-		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);
 
 		// GL11.glBindTexture(GL11.GL_TEXTURE_2D, 10);
 		Tessellator tessellator = Tessellator.instance;
@@ -73,7 +66,7 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 		GL11.glTranslatef(0.5F, 0.5F, 0.5F);
 		block.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 
-		GL11.glPopAttrib(); // nicely leave the rendering how it was
+		GL11.glPopAttrib();
 		GL11.glPopMatrix();
 	}
 
@@ -141,7 +134,9 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 		}
 	}
 
-	/** IItemRenderer implementation **/
+	/**
+	 * IItemRenderer implementation
+	 **/
 
 	@Override
 	public boolean handleRenderType(ItemStack item, ItemRenderType type) {

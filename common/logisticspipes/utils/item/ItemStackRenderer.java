@@ -22,8 +22,11 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 import net.minecraftforge.client.ForgeHooksClient;
 
@@ -35,11 +38,7 @@ import org.lwjgl.opengl.GL11;
 @Accessors(chain = true)
 public class ItemStackRenderer {
 
-	public static final RenderBlocks mcRenderBlocks = new RenderBlocks();
-	public static final RenderItem mcRenderItem = new RenderItem();
-	public static final TextureManager mcTextureManager = Minecraft.getMinecraft().getTextureManager();
-	public static final FontRenderer mcFontRenderer = Minecraft.getMinecraft().fontRenderer;
-
+	private RenderManager renderManager;
 	private RenderBlocks renderBlocks;
 	private RenderItem renderItem;
 	private TextureManager texManager;
@@ -56,20 +55,22 @@ public class ItemStackRenderer {
 	private boolean renderEffects;
 	private boolean ignoreDepth;
 	private boolean renderInColor;
+	private World worldObj;
+	private float partialTickTime;
 
-	public ItemStackRenderer(ItemStack itemstack, DisplayAmount displayAmount, int posX, int posY, float zLevel, boolean renderEffects, boolean ignoreDepth, boolean renderInColor) {
-		this.itemstack = itemstack;
-		this.displayAmount = displayAmount;
+	public ItemStackRenderer(int posX, int posY, float zLevel, boolean renderEffects, boolean ignoreDepth, boolean renderInColor) {
 		this.posX = posX;
 		this.posY = posY;
 		this.zLevel = zLevel;
 		this.renderEffects = renderEffects;
 		this.ignoreDepth = ignoreDepth;
 		this.renderInColor = renderInColor;
-		renderBlocks = ItemStackRenderer.mcRenderBlocks;
-		renderItem = ItemStackRenderer.mcRenderItem;
-		texManager = ItemStackRenderer.mcTextureManager;
-		fontRenderer = ItemStackRenderer.mcFontRenderer;
+		renderManager = RenderManager.instance;
+		fontRenderer = renderManager.getFontRenderer();
+		worldObj = renderManager.worldObj;
+		texManager = renderManager.renderEngine;
+		renderBlocks = RenderBlocks.getInstance();
+		renderItem = RenderItem.getInstance();
 		scaleX = 1.0F;
 		scaleY = 1.0F;
 		scaleZ = 1.0F;
@@ -80,7 +81,8 @@ public class ItemStackRenderer {
 	}
 
 	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, float zLevel, DisplayAmount displayAmount, boolean renderInColor, boolean renderEffect, boolean ignoreDepth) {
-		ItemStackRenderer itemStackRenderer = new ItemStackRenderer(null, displayAmount, 0, 0, zLevel, renderEffect, ignoreDepth, renderInColor);
+		ItemStackRenderer itemStackRenderer = new ItemStackRenderer(0, 0, zLevel, renderEffect, ignoreDepth, renderInColor);
+		itemStackRenderer.setDisplayAmount(displayAmount);
 		ItemStackRenderer.renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, itemStackRenderer);
 	}
 
@@ -117,7 +119,7 @@ public class ItemStackRenderer {
 
 			if (itemstack != null) {
 				itemStackRenderer.setItemstack(itemstack).setPosX(x).setPosY(y);
-				itemStackRenderer.render();
+				itemStackRenderer.renderInGui();
 			}
 
 			column++;
@@ -128,7 +130,7 @@ public class ItemStackRenderer {
 		}
 	}
 
-	public void render() {
+	public void renderInGui() {
 		assert itemstack != null;
 		assert displayAmount != null;
 		assert renderBlocks != null;
@@ -200,6 +202,29 @@ public class ItemStackRenderer {
 		}
 
 		GL11.glPopAttrib();
+	}
+
+	public void renderInWorld() {
+		assert renderManager != null;
+		assert renderItem != null;
+		assert itemstack != null;
+		assert worldObj != null;
+		assert scaleX != 0.0F;
+		assert scaleY != 0.0F;
+		assert scaleZ != 0.0F;
+
+		EntityItem entityitem = new EntityItem(worldObj, 0.0D, 0.0D, 0.0D, itemstack);
+		entityitem.getEntityItem().stackSize = 1;
+		entityitem.hoverStart = 0.0F;
+
+		boolean changeColor = renderItem.renderWithColor != renderInColor;
+		if (changeColor) {
+			renderItem.renderWithColor = renderInColor;
+		}
+		renderManager.renderEntityWithPosYaw(entityitem, posX, posY, zLevel, 0.0F, partialTickTime);
+		if (changeColor) {
+			renderItem.renderWithColor = !renderInColor;
+		}
 	}
 
 	public enum DisplayAmount {

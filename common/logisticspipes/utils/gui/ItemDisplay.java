@@ -42,7 +42,7 @@ public class ItemDisplay {
 		SIZE,
 		SIZE_DOWN,
 		NAME,
-		NAME_DOWN;
+		NAME_DOWN,
 	}
 
 	private static final ResourceLocation TEXTURE = new ResourceLocation("textures/gui/icons.png");
@@ -317,8 +317,9 @@ public class ItemDisplay {
 				}
 
 				// use GuiGraphics to render the ItemStacks
-				ItemStackRenderer itemstackRenderer = new ItemStackRenderer(itemstack, DisplayAmount.HIDE_ONE, x, y, 100.0F, true, false, true);
-				itemstackRenderer.render();
+				ItemStackRenderer itemstackRenderer = new ItemStackRenderer(x, y, 100.0F, true, false, true);
+				itemstackRenderer.setItemstack(itemstack).setDisplayAmount(DisplayAmount.HIDE_ONE);
+				itemstackRenderer.renderInGui();
 
 				x += panelxSize;
 				if (x > width) {

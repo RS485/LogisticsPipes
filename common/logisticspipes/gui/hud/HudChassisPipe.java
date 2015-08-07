@@ -261,9 +261,10 @@ public class HudChassisPipe extends BasicHUDGui {
 
 			if (module != null) {
 				boolean renderInColor = buttonEnabled() || isSlotSelected(position);
-				ItemStackRenderer itemStackRenderer = new ItemStackRenderer(module, DisplayAmount.NEVER, posX + ((sizeX - 16) / 2), posY + ((sizeY - 16) / 2), -0.002F, false, shifted, renderInColor);
+				ItemStackRenderer itemStackRenderer = new ItemStackRenderer(posX + ((sizeX - 16) / 2), posY + ((sizeY - 16) / 2), -0.002F, false, shifted, renderInColor);
+				itemStackRenderer.setItemstack(module).setDisplayAmount(DisplayAmount.NEVER);
 
-				itemStackRenderer.render();
+				itemStackRenderer.renderInGui();
 			}
 		}
 

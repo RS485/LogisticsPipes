@@ -142,7 +142,7 @@ public class PathFinder {
 			return foundPipes;
 		}
 
-		if (!startPipe.isInitialised()) {
+		if (!startPipe.isRouterInitialized()) {
 			return foundPipes;
 		}
 
@@ -270,7 +270,7 @@ public class PathFinder {
 
 			IPipeInformationProvider currentPipe = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(tile);
 
-			if (currentPipe != null && currentPipe.isInitialised() && (isDirectConnection || SimpleServiceLocator.pipeInformationManager.canConnect(startPipe, currentPipe, direction, true))) {
+			if (currentPipe != null && currentPipe.isRouterInitialized() && (isDirectConnection || SimpleServiceLocator.pipeInformationManager.canConnect(startPipe, currentPipe, direction, true))) {
 
 				listTileEntity(tile);
 

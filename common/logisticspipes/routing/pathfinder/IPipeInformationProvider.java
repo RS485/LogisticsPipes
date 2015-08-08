@@ -25,7 +25,7 @@ public interface IPipeInformationProvider {
 
 	public World getWorld();
 
-	public boolean isInitialised();
+	public boolean isRouterInitialized();
 
 	public boolean isRoutingPipe();
 

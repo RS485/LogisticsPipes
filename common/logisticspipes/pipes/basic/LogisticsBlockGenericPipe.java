@@ -840,17 +840,15 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 
 	public static CoreUnroutedPipe createPipe(Item key) {
-
-		try {
-			Class<? extends CoreUnroutedPipe> pipe = LogisticsBlockGenericPipe.pipes.get(key);
-			if (pipe != null) {
+		Class<? extends CoreUnroutedPipe> pipe = LogisticsBlockGenericPipe.pipes.get(key);
+		if (pipe != null) {
+			try {
 				return pipe.getConstructor(Item.class).newInstance(key);
-			} else {
-				LogisticsPipes.log.warn("Detected pipe with unknown key (" + key + "). Did you remove a buildcraft addon?");
+			} catch (ReflectiveOperationException e) {
+				LogisticsPipes.log.error("Could not construct class " + pipe.getSimpleName() + " for key " + key, e);
 			}
-
-		} catch (Throwable t) {
-			LogisticsPipes.log.warn("Failed to create pipe with (" + key + "). No valid constructor found. Possibly a item ID conflit.");
+		} else {
+			LogisticsPipes.log.warn("Detected pipe with unknown key (" + key + "). Did you remove a buildcraft addon?");
 		}
 
 		return null;

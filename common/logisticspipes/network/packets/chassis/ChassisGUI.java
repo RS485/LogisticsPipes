@@ -42,21 +42,17 @@ public class ChassisGUI extends CoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe pipe = getPipe(player.worldObj);
-		if (pipe == null) {
+		if (pipe == null || !(pipe.pipe instanceof PipeLogisticsChassi)) {
 			return;
 		}
 
-		if (!(pipe.pipe instanceof PipeLogisticsChassi)) {
+		final PipeLogisticsChassi chassisPipe = (PipeLogisticsChassi) pipe.pipe;
+
+		if (!(chassisPipe.getLogisticsModule().getSubModule(getButtonID()) instanceof LogisticsGuiModule)) {
 			return;
 		}
 
-		final PipeLogisticsChassi cassiPipe = (PipeLogisticsChassi) pipe.pipe;
-
-		if (!(cassiPipe.getLogisticsModule().getSubModule(getButtonID()) instanceof LogisticsGuiModule)) {
-			return;
-		}
-
-		((LogisticsGuiModule) cassiPipe.getLogisticsModule().getSubModule(getButtonID())).getPipeGuiProviderForModule().setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).open(player);
+		((LogisticsGuiModule) chassisPipe.getLogisticsModule().getSubModule(getButtonID())).getPipeGuiProviderForModule().setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).open(player);
 	}
 
 	@Override

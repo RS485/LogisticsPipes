@@ -24,10 +24,7 @@ public class RequestFluidOrdererRefreshPacket extends IntegerCoordinatesPacket {
 	public void processPacket(EntityPlayer player) {
 		int dimension = getInteger();
 		final LogisticsTileGenericPipe pipe = MainProxy.proxy.getPipeInDimensionAt(dimension, getPosX(), getPosY(), getPosZ(), player);
-		if (pipe == null) {
-			return;
-		}
-		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
+		if (pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) {
 			return;
 		}
 		RequestHandler.refreshFluid(player, (CoreRoutedPipe) pipe.pipe);

@@ -36,7 +36,6 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -59,38 +58,29 @@ import org.lwjgl.opengl.GL12;
 
 public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 
-	final static private int LIQUID_STAGES = 40;
-	final static private int MAX_ITEMS_TO_RENDER = 10;
-
-	private static ItemStackRenderer itemRenderer = new ItemStackRenderer(0, 0, 0, false, false, false);
-
-	private final EntityItem dummyEntityItem = new EntityItem(null);
-	private final RenderItem customRenderItem;
-
-	private final int[] angleY = { 0, 0, 270, 90, 0, 180 };
-	private final int[] angleZ = { 90, 270, 0, 0, 0, 0 };
-
-	private HashMap<Integer, DisplayFluidList> displayFluidLists = new HashMap<Integer, DisplayFluidList>();
-	private ModelSign modelSign = new ModelSign();
-	private RenderBlocks renderBlocks = new RenderBlocks();
-	private IBCRenderTESR bcRenderer = SimpleServiceLocator.buildCraftProxy.getBCRenderTESR();
-
-	private class DisplayFluidList {
-
-		public int[] sideHorizontal = new int[LogisticsRenderPipe.LIQUID_STAGES];
-		public int[] sideVertical = new int[LogisticsRenderPipe.LIQUID_STAGES];
-		public int[] centerHorizontal = new int[LogisticsRenderPipe.LIQUID_STAGES];
-		public int[] centerVertical = new int[LogisticsRenderPipe.LIQUID_STAGES];
-	}
+	private static final int LIQUID_STAGES = 40;
+	private static final int MAX_ITEMS_TO_RENDER = 10;
+	private static final ResourceLocation SIGN = new ResourceLocation("textures/entity/sign.png");
 
 	public static LogisticsNewRenderPipe secondRenderer = new LogisticsNewRenderPipe();
 	public static LogisticsNewPipeItemBoxRenderer boxRenderer = new LogisticsNewPipeItemBoxRenderer();
 	public static PlayerConfig config;
+	private static ItemStackRenderer itemRenderer = new ItemStackRenderer(0, 0, 0, false, false, false);
+
+	private final int[] angleY = { 0, 0, 270, 90, 0, 180 };
+	private final int[] angleZ = { 90, 270, 0, 0, 0, 0 };
+	private HashMap<Integer, DisplayFluidList> displayFluidLists = new HashMap<Integer, DisplayFluidList>();
+	private ModelSign modelSign;
+	private RenderBlocks renderBlocks = new RenderBlocks();
+	private IBCRenderTESR bcRenderer = SimpleServiceLocator.buildCraftProxy.getBCRenderTESR();
 
 	public LogisticsRenderPipe() {
 		super();
+		modelSign = new ModelSign();
+		modelSign.signStick.showModel = false;
+
 		LogisticsRenderPipe.config = LogisticsPipes.getClientPlayerConfig();
-		customRenderItem = new RenderItem() {
+		RenderItem customRenderItem = new RenderItem() {
 
 			@Override
 			public boolean shouldBob() {
@@ -104,8 +94,6 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		};
 		customRenderItem.setRenderManager(RenderManager.instance);
 		itemRenderer.setRenderItem(customRenderItem);
-		dummyEntityItem.age = 0;
-		dummyEntityItem.hoverStart = 0;
 	}
 
 	@Override
@@ -199,7 +187,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 				continue;
 			}
 			ItemStack itemstack = item.getItemIdentifierStack().makeNormalStack();
-			doRenderItem(itemstack, x + pos.getXD(), y + pos.getYD(), z + pos.getZD(), light, 0.75F, boxScale, partialTickTime);
+			doRenderItem(itemstack, pipe.container.getWorldObj(), x + pos.getXD(), y + pos.getYD(), z + pos.getZD(), light, 0.75F, boxScale, partialTickTime);
 			count++;
 		}
 		count = 0;
@@ -213,7 +201,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 				continue;
 			}
 			ItemStack itemstack = item.getValue1().makeNormalStack();
-			doRenderItem(itemstack, x + pos.getXD(), y + pos.getYD(), z + pos.getZD(), light, 0.25F, 0, partialTickTime);
+			doRenderItem(itemstack, pipe.container.getWorldObj(), x + pos.getXD(), y + pos.getYD(), z + pos.getZD(), light, 0.25F, 0, partialTickTime);
 			count++;
 			if (count >= 27) {
 				break;
@@ -232,7 +220,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		GL11.glPopMatrix();
 	}
 
-	public void doRenderItem(ItemStack itemstack, double x, double y, double z, float light, float renderScale, double boxScale, float partialTickTime) {
+	public void doRenderItem(ItemStack itemstack, World worldObj, double x, double y, double z, float light, float renderScale, double boxScale, float partialTickTime) {
 		if (LogisticsRenderPipe.config.isUseNewRenderer() && boxScale != 0) {
 			LogisticsRenderPipe.boxRenderer.doRenderItem(itemstack, light, x, y, z, boxScale);
 		}
@@ -240,7 +228,8 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		GL11.glPushMatrix();
 		GL11.glTranslated(x, y, z);
 		GL11.glScalef(renderScale, renderScale, renderScale);
-		itemRenderer.setItemstack(itemstack).setPartialTickTime(partialTickTime);
+		GL11.glTranslatef(0.0F, -0.1F, 0.0F);
+		itemRenderer.setItemstack(itemstack).setWorldObj(worldObj).setPartialTickTime(partialTickTime);
 		itemRenderer.renderInWorld();
 		GL11.glPopMatrix();
 	}
@@ -328,8 +317,6 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		}
 	}
 
-	private static final ResourceLocation SIGN = new ResourceLocation("textures/entity/sign.png");
-
 	private void renderSign(CoreRoutedPipe pipe, IPipeSign type, float partialTickTime) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
@@ -338,7 +325,6 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		float signScale = 2 / 3.0F;
 		GL11.glTranslatef(0.0F, -0.3125F, -0.36F);
 		GL11.glRotatef(180, 0.0f, 1.0f, 0.0f);
-		modelSign.signStick.showModel = false;
 		Minecraft.getMinecraft().renderEngine.bindTexture(LogisticsRenderPipe.SIGN);
 
 		GL11.glPushMatrix();
@@ -694,5 +680,13 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		}
 
 		return d;
+	}
+
+	private class DisplayFluidList {
+
+		public int[] sideHorizontal = new int[LogisticsRenderPipe.LIQUID_STAGES];
+		public int[] sideVertical = new int[LogisticsRenderPipe.LIQUID_STAGES];
+		public int[] centerHorizontal = new int[LogisticsRenderPipe.LIQUID_STAGES];
+		public int[] centerVertical = new int[LogisticsRenderPipe.LIQUID_STAGES];
 	}
 }

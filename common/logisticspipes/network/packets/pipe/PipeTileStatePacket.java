@@ -46,16 +46,16 @@ public class PipeTileStatePacket extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		LogisticsTileGenericPipe tile = this.getPipe(player.getEntityWorld());
-		if (tile == null) {
+		LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld());
+		if (pipe == null || !pipe.isInitialized()) {
 			return;
 		}
 		try {
-			tile.renderState.readData(new LPDataInputStream(bytesRenderState));
-			tile.coreState.readData(new LPDataInputStream(bytesCoreState));
-			tile.bcPlugableState.readData(new LPDataInputStream(bytesBCPluggableState));
-			tile.afterStateUpdated();
-			tile.pipe.readData(new LPDataInputStream(bytesPipe));
+			pipe.renderState.readData(new LPDataInputStream(bytesRenderState));
+			pipe.coreState.readData(new LPDataInputStream(bytesCoreState));
+			pipe.bcPlugableState.readData(new LPDataInputStream(bytesBCPluggableState));
+			pipe.afterStateUpdated();
+			pipe.pipe.readData(new LPDataInputStream(bytesPipe));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

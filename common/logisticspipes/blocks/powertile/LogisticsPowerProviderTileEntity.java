@@ -118,7 +118,7 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 															}
 														}
 														CoreRoutedPipe pipe = sourceRouter.getPipe();
-														if (pipe != null && pipe.container instanceof LogisticsTileGenericPipe) {
+														if (pipe != null && pipe.isInitialized()) {
 															pipe.container.addLaser(adjacent.orientation.getOpposite(), 1, getLaserColor(), true, true);
 														}
 														sendPowerLaserPackets(sourceRouter, destinationRouter, exit.exitOrientation, exit.exitOrientation != adjacent.orientation);
@@ -159,7 +159,7 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 				if (exit.containsFlag(PipeRoutingConnectionType.canPowerSubSystemFrom)) { // Find only result (caused by only straight connections)
 					int distance = part.getValue1().getDistanceToNextPowerPipe(exit.exitOrientation);
 					CoreRoutedPipe pipe = part.getValue1().getPipe();
-					if (pipe != null && pipe.container instanceof LogisticsTileGenericPipe) {
+					if (pipe != null && pipe.isInitialized()) {
 						pipe.container.addLaser(exit.exitOrientation, distance, getLaserColor(), false, part.getValue3());
 					}
 					IRouter nextRouter = exit.destination; // Use new sourceRouter

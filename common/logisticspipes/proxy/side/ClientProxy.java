@@ -173,10 +173,7 @@ public class ClientProxy implements IProxy {
 	 * @return
 	 */
 	private static LogisticsTileGenericPipe getPipe(World world, int x, int y, int z) {
-		if (world == null) {
-			return null;
-		}
-		if (!world.blockExists(x, y, z)) {
+		if (world == null || !world.blockExists(x, y, z)) {
 			return null;
 		}
 

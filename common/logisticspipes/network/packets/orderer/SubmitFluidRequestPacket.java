@@ -24,13 +24,7 @@ public class SubmitFluidRequestPacket extends RequestPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe pipe = MainProxy.proxy.getPipeInDimensionAt(getDimension(), getPosX(), getPosY(), getPosZ(), player);
-		if (pipe == null) {
-			return;
-		}
-		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
-			return;
-		}
-		if (!(pipe.pipe instanceof IRequestFluid)) {
+		if (pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(pipe.pipe instanceof IRequestFluid)) {
 			return;
 		}
 		RequestHandler.requestFluid(player, getStack(), (CoreRoutedPipe) pipe.pipe, (IRequestFluid) pipe.pipe);

@@ -15,10 +15,10 @@ public class PipeDebugResponse extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		LogisticsTileGenericPipe tile = this.getPipe(player.getEntityWorld());
-		if (tile != null) {
-			tile.pipe.debug.debugThisPipe = !tile.pipe.debug.debugThisPipe;
-			if (tile.pipe.debug.debugThisPipe) {
+		LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld());
+		if (pipe != null && pipe.isInitialized()) {
+			pipe.pipe.debug.debugThisPipe = !pipe.pipe.debug.debugThisPipe;
+			if (pipe.pipe.debug.debugThisPipe) {
 				player.addChatComponentMessage(new ChatComponentText("Debug enabled on Server"));
 			} else {
 				player.addChatComponentMessage(new ChatComponentText("Debug disabled on Server"));

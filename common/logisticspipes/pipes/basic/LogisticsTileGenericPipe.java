@@ -82,6 +82,7 @@ import li.cil.oc.api.network.ManagedPeripheral;
 import li.cil.oc.api.network.Message;
 import li.cil.oc.api.network.Node;
 import li.cil.oc.api.network.SidedEnvironment;
+import lombok.Getter;
 import org.apache.logging.log4j.Level;
 
 @ModDependentInterface(modId = { "CoFHCore", "OpenComputers@1.3", "OpenComputers@1.3", "OpenComputers@1.3", "BuildCraft|Transport", "BuildCraft|Transport" }, interfacePath = { "cofh.api.transport.IItemDuct", "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment",
@@ -494,8 +495,8 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	}
 
 	@Override
-	public boolean isInitialised() {
-		return initialized && (!isRoutingPipe() || !getRoutingPipe().stillNeedReplace());
+	public boolean isRouterInitialized() {
+		return isInitialized() && (!isRoutingPipe() || !getRoutingPipe().stillNeedReplace());
 	}
 
 	@Override
@@ -668,7 +669,8 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		return node();
 	}
 
-	public boolean initialized = false;
+	@Getter
+	private boolean initialized = false;
 
 	public boolean[] pipeConnectionsBuffer = new boolean[6];
 	public boolean[] pipeBCConnectionsBuffer = new boolean[6];
@@ -741,10 +743,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 			coreState.pipeId = Item.getIdFromItem(pipe.item);
 			pipeBound = true;
 		}
-	}
-
-	public boolean isInitialized() {
-		return initialized;
 	}
 
 	/* SMP */

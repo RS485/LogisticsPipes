@@ -107,6 +107,8 @@ public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
 			if (pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) {
 				targetNotFound("Couldn't find " + clazz.getName() + ", pipe didn't exsist");
 				return null;
+			} else if (!pipe.isInitialized()) {
+				return null;
 			}
 			if (!(pipe.pipe instanceof PipeLogisticsChassi)) {
 				targetNotFound("Couldn't find " + clazz.getName() + ", pipe wasn't a chassi pipe");

@@ -10,12 +10,15 @@ package logisticspipes.utils.item;
 
 import java.util.List;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.string.StringUtils;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockPane;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -25,6 +28,8 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
@@ -55,6 +60,7 @@ public class ItemStackRenderer {
 	private boolean renderEffects;
 	private boolean ignoreDepth;
 	private boolean renderInColor;
+	private EntityItem entityitem;
 	private World worldObj;
 	private float partialTickTime;
 
@@ -213,21 +219,40 @@ public class ItemStackRenderer {
 	public void renderInWorld() {
 		assert renderManager != null;
 		assert renderItem != null;
-		assert itemstack != null;
-		assert worldObj != null;
 		assert scaleX != 0.0F;
 		assert scaleY != 0.0F;
 		assert scaleZ != 0.0F;
 
-		EntityItem entityitem = new EntityItem(worldObj, 0.0D, 0.0D, 0.0D, itemstack);
-		entityitem.getEntityItem().stackSize = 1;
-		entityitem.hoverStart = 0.0F;
+		if (entityitem == null || !ItemStack.areItemStacksEqual(entityitem.getEntityItem(), itemstack)) {
+			if (itemstack == null) {
+				throw new RuntimeException("No EntityItem and no ItemStack, I do not know what to render!");
+			} else {
+				if (worldObj == null) {
+					throw new NullPointerException("World object is null");
+				}
+				entityitem = new EntityItem(worldObj, 0.0D, 0.0D, 0.0D, itemstack);
+				entityitem.getEntityItem().stackSize = 1;
+				entityitem.hoverStart = 0.0F;
+			}
+		}
 
 		boolean changeColor = renderItem.renderWithColor != renderInColor;
 		if (changeColor) {
 			renderItem.renderWithColor = renderInColor;
 		}
+
+		Item item = itemstack.getItem();
+		if (item instanceof ItemBlock) {
+			Block block = ((ItemBlock) item).field_150939_a;
+			if (block instanceof BlockPane) {
+				GL11.glScalef(0.5F, 0.5F, 0.5F);
+			}
+		} else if (item == LogisticsPipes.logisticsRequestTable) {
+			GL11.glScalef(0.5F, 0.5F, 0.5F);
+		}
+
 		renderManager.renderEntityWithPosYaw(entityitem, posX, posY, zLevel, 0.0F, partialTickTime);
+
 		if (changeColor) {
 			renderItem.renderWithColor = !renderInColor;
 		}

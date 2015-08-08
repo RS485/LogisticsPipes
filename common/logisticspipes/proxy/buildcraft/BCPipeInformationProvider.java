@@ -75,7 +75,7 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 	}
 
 	@Override
-	public boolean isInitialised() {
+	public boolean isRouterInitialized() {
 		return pipe.initialized;
 	}
 

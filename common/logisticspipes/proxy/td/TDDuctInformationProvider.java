@@ -65,7 +65,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 	}
 
 	@Override
-	public boolean isInitialised() {
+	public boolean isRouterInitialized() {
 		return !duct.isInvalid();
 	}
 

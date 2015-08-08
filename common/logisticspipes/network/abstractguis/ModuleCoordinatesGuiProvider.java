@@ -51,7 +51,7 @@ public abstract class ModuleCoordinatesGuiProvider extends CoordinatesGuiProvide
 	public <T> T getLogisticsModule(World world, Class<T> clazz) {
 		LogisticsTileGenericPipe pipe = getPipe(world);
 		if (pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) {
-			if (LPConstants.DEBUG) {
+			if (LPConstants.DEBUG && (pipe == null || pipe.isInitialized())) {
 				LogisticsPipes.log.fatal(toString());
 				new RuntimeException("Couldn't find " + clazz.getName() + ", pipe didn't exsist").printStackTrace();
 			}

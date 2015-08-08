@@ -24,10 +24,7 @@ public class OrdererRefreshRequestPacket extends IntegerCoordinatesPacket {
 	public void processPacket(EntityPlayer player) {
 		int dimension = (getInteger() - (getInteger() % 10)) / 10;
 		final LogisticsTileGenericPipe pipe = MainProxy.proxy.getPipeInDimensionAt(dimension, getPosX(), getPosY(), getPosZ(), player);
-		if (pipe == null) {
-			return;
-		}
-		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
+		if (pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) {
 			return;
 		}
 		RequestHandler.DisplayOptions option;

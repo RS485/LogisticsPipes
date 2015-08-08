@@ -468,4 +468,8 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public double getItemRenderYaw(float fPos, LPTravelingItem travelItem) {
 		return 0;
 	}
+
+	public boolean isInitialized() {
+		return container != null;
+	}
 }

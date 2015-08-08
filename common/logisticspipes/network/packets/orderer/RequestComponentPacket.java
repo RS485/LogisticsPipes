@@ -26,10 +26,7 @@ public class RequestComponentPacket extends RequestPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe pipe = MainProxy.proxy.getPipeInDimensionAt(getDimension(), getPosX(), getPosY(), getPosZ(), player);
-		if (pipe == null) {
-			return;
-		}
-		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
+		if (pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) {
 			return;
 		}
 		RequestHandler.simulate(player, getStack(), (CoreRoutedPipe) pipe.pipe);

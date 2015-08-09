@@ -14,13 +14,13 @@ import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTree;
+import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeFluidTransportLogistics;
-import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.FluidIdentifier;
-import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifierInventory;
+import logisticspipes.utils.tuples.Pair;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -33,6 +33,7 @@ import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
 import lombok.Getter;
+import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFluid, IRequireReliableFluidTransport {
 
@@ -117,115 +118,120 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 		if (dummyInventory.getStackInSlot(0) == null) {
 			return;
 		}
-		WorldUtil worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
-		for (AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
-			if (!(tile.tile instanceof IFluidHandler) || SimpleServiceLocator.pipeInformationManager.isItemPipe(tile.tile)) {
-				continue;
-			}
-			IFluidHandler container = (IFluidHandler) tile.tile;
-			if (container.getTankInfo(ForgeDirection.UNKNOWN) == null || container.getTankInfo(ForgeDirection.UNKNOWN).length == 0) {
-				continue;
-			}
 
-			//How much do I want?
-			Map<FluidIdentifier, Integer> wantFluids = new HashMap<FluidIdentifier, Integer>();
-			FluidIdentifier fIdent = FluidIdentifier.get(dummyInventory.getIDStackInSlot(0).getItem());
-			wantFluids.put(fIdent, amount);
+		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(container);
 
-			//How much do I have?
-			HashMap<FluidIdentifier, Integer> haveFluids = new HashMap<FluidIdentifier, Integer>();
-
-			FluidTankInfo[] result = container.getTankInfo(ForgeDirection.UNKNOWN);
-			for (FluidTankInfo slot : result) {
-				if (slot == null || slot.fluid == null || slot.fluid.getFluidID() == 0 || !wantFluids.containsKey(FluidIdentifier.get(slot.fluid))) {
-					continue;
-				}
-				Integer liquidWant = haveFluids.get(FluidIdentifier.get(slot.fluid));
-				if (liquidWant == null) {
-					haveFluids.put(FluidIdentifier.get(slot.fluid), slot.fluid.amount);
-				} else {
-					haveFluids.put(FluidIdentifier.get(slot.fluid), liquidWant + slot.fluid.amount);
-				}
-			}
-
-			//What does our sided internal tank have
-			if (tile.orientation.ordinal() < ((PipeFluidTransportLogistics) transport).sideTanks.length) {
-				FluidTank centerTank = ((PipeFluidTransportLogistics) transport).sideTanks[tile.orientation.ordinal()];
-				if (centerTank != null && centerTank.getFluid() != null && wantFluids.containsKey(FluidIdentifier.get(centerTank.getFluid()))) {
-					Integer liquidWant = haveFluids.get(FluidIdentifier.get(centerTank.getFluid()));
-					if (liquidWant == null) {
-						haveFluids.put(FluidIdentifier.get(centerTank.getFluid()), centerTank.getFluid().amount);
-					} else {
-						haveFluids.put(FluidIdentifier.get(centerTank.getFluid()), liquidWant + centerTank.getFluid().amount);
+		//@formatter:off
+		worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
+				.filter(adjacent -> adjacent.tileEntity instanceof IFluidHandler)
+				.filter(adjacent -> SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.tileEntity))
+				.map(adjacent -> new Pair<>((IFluidHandler) adjacent.tileEntity, adjacent.direction))
+		//@formatter:on
+				.forEach(fluidHandlerDirectionPair -> {
+					FluidTankInfo[] tankInfo = fluidHandlerDirectionPair.getValue1().getTankInfo(ForgeDirection.UNKNOWN);
+					if (tankInfo == null || tankInfo.length == 0) {
+						return;
 					}
-				}
-			}
 
-			//What does our center internal tank have
-			FluidTank centerTank = ((PipeFluidTransportLogistics) transport).internalTank;
-			if (centerTank != null && centerTank.getFluid() != null && wantFluids.containsKey(FluidIdentifier.get(centerTank.getFluid()))) {
-				Integer liquidWant = haveFluids.get(FluidIdentifier.get(centerTank.getFluid()));
-				if (liquidWant == null) {
-					haveFluids.put(FluidIdentifier.get(centerTank.getFluid()), centerTank.getFluid().amount);
-				} else {
-					haveFluids.put(FluidIdentifier.get(centerTank.getFluid()), liquidWant + centerTank.getFluid().amount);
-				}
-			}
+					//How much do I want?
+					Map<FluidIdentifier, Integer> wantFluids = new HashMap<FluidIdentifier, Integer>();
+					FluidIdentifier fIdent = FluidIdentifier.get(dummyInventory.getIDStackInSlot(0).getItem());
+					wantFluids.put(fIdent, amount);
 
-			//HashMap<Integer, Integer> needFluids = new HashMap<Integer, Integer>();
-			//Reduce what I have and what have been requested already
-			for (Entry<FluidIdentifier, Integer> liquidId : wantFluids.entrySet()) {
-				Integer haveCount = haveFluids.get(liquidId.getKey());
-				if (haveCount != null) {
-					liquidId.setValue(liquidId.getValue() - haveCount);
-				}
-				for (Entry<FluidIdentifier, Integer> requestedItem : _requestedItems.entrySet()) {
-					if (requestedItem.getKey().equals(liquidId.getKey())) {
-						liquidId.setValue(liquidId.getValue() - requestedItem.getValue());
+					//How much do I have?
+					HashMap<FluidIdentifier, Integer> haveFluids = new HashMap<FluidIdentifier, Integer>();
+
+					FluidTankInfo[] result = container.getTankInfo(ForgeDirection.UNKNOWN);
+					for (FluidTankInfo slot : result) {
+						if (slot == null || slot.fluid == null || slot.fluid.getFluidID() == 0 || !wantFluids.containsKey(FluidIdentifier.get(slot.fluid))) {
+							continue;
+						}
+						Integer liquidWant = haveFluids.get(FluidIdentifier.get(slot.fluid));
+						if (liquidWant == null) {
+							haveFluids.put(FluidIdentifier.get(slot.fluid), slot.fluid.amount);
+						} else {
+							haveFluids.put(FluidIdentifier.get(slot.fluid), liquidWant + slot.fluid.amount);
+						}
 					}
-				}
-			}
 
-			setRequestFailed(false);
-
-			//Make request
-
-			for (FluidIdentifier need : wantFluids.keySet()) {
-				int countToRequest = wantFluids.get(need);
-				if (countToRequest < 1) {
-					continue;
-				}
-				if (_bucketMinimum.getAmount() != 0 && countToRequest < _bucketMinimum.getAmount()) {
-					continue;
-				}
-
-				if (!useEnergy(11)) {
-					break;
-				}
-
-				boolean success = false;
-
-				if (_requestPartials) {
-					countToRequest = RequestTree.requestFluidPartial(need, countToRequest, this, null);
-					if (countToRequest > 0) {
-						success = true;
+					//What does our sided internal tank have
+					if (fluidHandlerDirectionPair.getValue2().ordinal() < ((PipeFluidTransportLogistics) transport).sideTanks.length) {
+						FluidTank centerTank = ((PipeFluidTransportLogistics) transport).sideTanks[fluidHandlerDirectionPair.getValue2().ordinal()];
+						if (centerTank != null && centerTank.getFluid() != null && wantFluids.containsKey(FluidIdentifier.get(centerTank.getFluid()))) {
+							Integer liquidWant = haveFluids.get(FluidIdentifier.get(centerTank.getFluid()));
+							if (liquidWant == null) {
+								haveFluids.put(FluidIdentifier.get(centerTank.getFluid()), centerTank.getFluid().amount);
+							} else {
+								haveFluids.put(FluidIdentifier.get(centerTank.getFluid()), liquidWant + centerTank.getFluid().amount);
+							}
+						}
 					}
-				} else {
-					success = RequestTree.requestFluid(need, countToRequest, this, null);
-				}
 
-				if (success) {
-					Integer currentRequest = _requestedItems.get(need);
-					if (currentRequest == null) {
-						_requestedItems.put(need, countToRequest);
-					} else {
-						_requestedItems.put(need, currentRequest + countToRequest);
+					//What does our center internal tank have
+					FluidTank centerTank = ((PipeFluidTransportLogistics) transport).internalTank;
+					if (centerTank != null && centerTank.getFluid() != null && wantFluids.containsKey(FluidIdentifier.get(centerTank.getFluid()))) {
+						Integer liquidWant = haveFluids.get(FluidIdentifier.get(centerTank.getFluid()));
+						if (liquidWant == null) {
+							haveFluids.put(FluidIdentifier.get(centerTank.getFluid()), centerTank.getFluid().amount);
+						} else {
+							haveFluids.put(FluidIdentifier.get(centerTank.getFluid()), liquidWant + centerTank.getFluid().amount);
+						}
 					}
-				} else {
-					setRequestFailed(true);
-				}
-			}
-		}
+
+					//HashMap<Integer, Integer> needFluids = new HashMap<Integer, Integer>();
+					//Reduce what I have and what have been requested already
+					for (Entry<FluidIdentifier, Integer> liquidId : wantFluids.entrySet()) {
+						Integer haveCount = haveFluids.get(liquidId.getKey());
+						if (haveCount != null) {
+							liquidId.setValue(liquidId.getValue() - haveCount);
+						}
+						//@formatter:off
+						_requestedItems.entrySet().stream()
+								.filter(requestedItem -> requestedItem.getKey().equals(liquidId.getKey()))
+								.forEach(requestedItem -> liquidId.setValue(liquidId.getValue() - requestedItem.getValue()));
+						//@formatter:on
+					}
+
+					setRequestFailed(false);
+
+					//Make request
+
+					for (FluidIdentifier need : wantFluids.keySet()) {
+						int countToRequest = wantFluids.get(need);
+						if (countToRequest < 1) {
+							continue;
+						}
+						if (_bucketMinimum.getAmount() != 0 && countToRequest < _bucketMinimum.getAmount()) {
+							continue;
+						}
+
+						if (!useEnergy(11)) {
+							break;
+						}
+
+						boolean success = false;
+
+						if (_requestPartials) {
+							countToRequest = RequestTree.requestFluidPartial(need, countToRequest, this, null);
+							if (countToRequest > 0) {
+								success = true;
+							}
+						} else {
+							success = RequestTree.requestFluid(need, countToRequest, this, null);
+						}
+
+						if (success) {
+							Integer currentRequest = _requestedItems.get(need);
+							if (currentRequest == null) {
+								_requestedItems.put(need, countToRequest);
+							} else {
+								_requestedItems.put(need, currentRequest + countToRequest);
+							}
+						} else {
+							setRequestFailed(true);
+						}
+					}
+				});
 	}
 
 	@Override

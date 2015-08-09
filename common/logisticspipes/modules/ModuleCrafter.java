@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.DelayQueue;
+import java.util.stream.Collectors;
 
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.interfaces.IHUDModuleHandler;
@@ -83,7 +84,7 @@ import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.routing.order.LogisticsItemOrder;
-import logisticspipes.utils.AdjacentTile;
+import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.DelayedGeneric;
 import logisticspipes.utils.FluidIdentifier;
@@ -92,11 +93,12 @@ import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.BufferMode;
 import logisticspipes.utils.SinkReply.FixedPriority;
-import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
+import logisticspipes.world.WorldCoordinatesWrapper;
+import logisticspipes.world.WorldCoordinatesWrapper.AdjacentTileEntity;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -104,6 +106,7 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -196,23 +199,25 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			}
 			return count;
 		}
-		int count = 0;
-		WorldUtil wUtil = new WorldUtil(getWorld(), _service.getX(), _service.getY(), _service.getZ());
-		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)) {
-			if (!(tile.tile instanceof IInventory)) {
-				continue;
-			}
-			IInventory base = (IInventory) tile.tile;
-			if (base instanceof net.minecraft.inventory.ISidedInventory) {
-				base = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) base, tile.orientation.getOpposite(), false);
-			}
-			ForgeDirection dir = tile.orientation;
-			if (getUpgradeManager().hasSneakyUpgrade()) {
-				dir = getUpgradeManager().getSneakyOrientation();
-			}
-			IInventoryUtil inv = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(base, dir);
-			count += inv.roomForItem(item, 9999);
-		}
+		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(getWorld(), _service.getX(), _service.getY(), _service.getZ());
+
+		//@formatter:off
+		int count = worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
+				.filter(adjacent -> adjacent.tileEntity instanceof IInventory)
+				.map(adjacent -> new Pair<>((IInventory) adjacent.tileEntity, adjacent.direction))
+		//@formatter:on
+				.map(invDirPair -> {
+					if (invDirPair.getValue1() instanceof ISidedInventory) {
+						invDirPair.setValue1(
+								new SidedInventoryMinecraftAdapter((ISidedInventory) invDirPair.getValue1(), invDirPair.getValue2().getOpposite(), false));
+					}
+					if (getUpgradeManager().hasSneakyUpgrade()) {
+						invDirPair.setValue2(getUpgradeManager().getSneakyOrientation());
+					}
+					IInventoryUtil inv = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(invDirPair.getValue1(), invDirPair.getValue2());
+					return inv.roomForItem(item, 9999); // ToDo: Magic number
+				}).reduce(Integer::sum).orElse(0);
+
 		_service.getCacheHolder().setCache(CacheTypes.Inventory, key, count);
 		if (includeInTransit) {
 			count -= _service.countOnRoute(item);
@@ -823,7 +828,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	@Override
 	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
-		return NewGuiHandler.getGui(CraftingModuleSlot.class).setAdvancedSat(getUpgradeManager().isAdvancedSatelliteCrafter()).setLiquidCrafter(getUpgradeManager().getFluidCrafter()).setAmount(amount).setHasByproductExtractor(getUpgradeManager().hasByproductExtractor()).setFuzzy(getUpgradeManager().isFuzzyUpgrade())
+		return NewGuiHandler.getGui(CraftingModuleSlot.class).setAdvancedSat(getUpgradeManager().isAdvancedSatelliteCrafter()).setLiquidCrafter(getUpgradeManager().getFluidCrafter()).setAmount(amount).setHasByproductExtractor(getUpgradeManager().hasByproductExtractor()).setFuzzy(
+				getUpgradeManager().isFuzzyUpgrade())
 				.setCleanupSize(getUpgradeManager().getCrafterCleanup()).setCleanupExclude(cleanupModeIsExclude);
 	}
 
@@ -834,7 +840,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	/**
 	 * Simply get the dummy inventory
-	 * 
+	 *
 	 * @return the dummy inventory
 	 */
 	public ItemIdentifierInventory getDummyInventory() {
@@ -860,13 +866,15 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			MainProxy.sendPacketToServer(packet);
 		} else {
 			boolean fuzzyFlagsChanged = false;
-			final WorldUtil worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
-			for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
+			WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(getWorld(), getX(), getY(), getZ());
+
+			for (AdjacentTileEntity adjacent : worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM).collect(Collectors.toList())) {
 				for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
-					if (provider.importRecipe(tile.tile, _dummyInventory)) {
+					if (provider.importRecipe(adjacent.tileEntity, _dummyInventory)) {
 						if (provider instanceof IFuzzyRecipeProvider) {
-							fuzzyFlagsChanged = ((IFuzzyRecipeProvider) provider).importFuzzyFlags(tile.tile, _dummyInventory, fuzzyCraftingFlagArray);
+							fuzzyFlagsChanged = ((IFuzzyRecipeProvider) provider).importFuzzyFlags(adjacent.tileEntity, _dummyInventory, fuzzyCraftingFlagArray);
 						}
+						// ToDo: break only out of the inner loop?
 						break;
 					}
 				}
@@ -1097,29 +1105,24 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			player.inventory.currentItem = (player.inventory.currentItem + 1) % 9;
 		}
 
-		final WorldUtil worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
-		boolean found = false;
-		for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
-			for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
-				if (provider.canOpenGui(tile.tile)) {
-					found = true;
-					break;
-				}
-			}
+		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(getWorld(), getX(), getY(), getZ());
+
+		worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM).anyMatch(adjacent -> {
+			boolean found = SimpleServiceLocator.craftingRecipeProviders.stream().anyMatch(provider -> provider.canOpenGui(adjacent.tileEntity));
 
 			if (!found) {
-				found = (tile.tile instanceof IInventory);
+				found = (adjacent.tileEntity instanceof IInventory);
 			}
 
 			if (found) {
-				Block block = getWorld().getBlock(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord);
-				if (block != null) {
-					if (block.onBlockActivated(getWorld(), tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, player, 0, 0, 0, 0)) {
-						break;
-					}
+				Block block = getWorld().getBlock(adjacent.tileEntity.xCoord, adjacent.tileEntity.yCoord, adjacent.tileEntity.zCoord);
+				if (block != null && block
+						.onBlockActivated(getWorld(), adjacent.tileEntity.xCoord, adjacent.tileEntity.yCoord, adjacent.tileEntity.zCoord, player, 0, 0, 0, 0)) {
+					return true;
 				}
 			}
-		}
+			return false;
+		});
 		player.inventory.currentItem = savedEquipped;
 	}
 
@@ -1148,12 +1151,10 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 		if ((!_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING) && _extras.isEmpty())) {
 			if (getUpgradeManager().getCrafterCleanup() > 0) {
-				List<AdjacentTile> crafters = locateCrafters();
+				List<AdjacentTileEntity> crafters = locateCrafters();
 				ItemStack extracted = null;
-				AdjacentTile tile = null;
-				for (Iterator<AdjacentTile> it = crafters.iterator(); it.hasNext();) {
-					tile = it.next();
-					extracted = extractFiltered(tile, _cleanupInventory, cleanupModeIsExclude, getUpgradeManager().getCrafterCleanup() * 3);
+				for (AdjacentTileEntity adjacentCrafter : crafters) {
+					extracted = extractFiltered(adjacentCrafter, _cleanupInventory, cleanupModeIsExclude, getUpgradeManager().getCrafterCleanup() * 3);
 					if (extracted != null && extracted.stackSize > 0) {
 						break;
 					}
@@ -1168,8 +1169,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 		waitingForCraft = true;
 
-		List<AdjacentTile> crafters = locateCrafters();
-		if (crafters.size() < 1) {
+		List<AdjacentTileEntity> adjacentCrafters = locateCrafters();
+		if (adjacentCrafters.size() < 1) {
 			if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING)) {
 				_service.getItemOrderManager().sendFailed();
 			} else {
@@ -1200,10 +1201,10 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			maxtosend = Math.min(nextOrder.getItemStack().getItem().getMaxStackSize(), maxtosend);
 			// retrieve the new crafted items
 			ItemStack extracted = null;
-			AdjacentTile tile = null;
-			for (Iterator<AdjacentTile> it = crafters.iterator(); it.hasNext();) {
-				tile = it.next();
-				extracted = extract(tile, nextOrder.getItemStack().getItem(), maxtosend);
+			AdjacentTileEntity adjacent = null;
+			for (AdjacentTileEntity adjacentCrafter : adjacentCrafters) {
+				adjacent = adjacentCrafter;
+				extracted = extract(adjacent, nextOrder.getItemStack().getItem(), maxtosend);
 				if (extracted != null && extracted.stackSize > 0) {
 					break;
 				}
@@ -1215,7 +1216,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				break;
 			}
 			_service.getCacheHolder().trigger(CacheTypes.Inventory);
-			lastAccessedCrafter = new WeakReference<TileEntity>(tile.tile);
+			lastAccessedCrafter = new WeakReference<>(adjacent.tileEntity);
 			// send the new crafted items to the destination
 			ItemIdentifier extractedID = ItemIdentifier.get(extracted);
 			while (extracted.stackSize > 0) {
@@ -1250,7 +1251,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				itemsleft -= numtosend;
 				ItemStack stackToSend = extracted.splitStack(numtosend);
 				if (processingOrder) {
-					SinkReply reply = LogisticsManager.canSink(nextOrder.getDestination().getRouter(), null, true, ItemIdentifier.get(stackToSend), null, true, false);
+					SinkReply reply = LogisticsManager.canSink(nextOrder.getDestination().getRouter(), null, true, ItemIdentifier.get(stackToSend), null, true,
+							false);
 					boolean defersend = false;
 					if (reply == null || reply.bufferMode != BufferMode.NONE || reply.maxNumberOfItems < 1) {
 						defersend = true;
@@ -1259,7 +1261,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 					item.setDestination(nextOrder.getDestination().getRouter().getSimpleID());
 					item.setTransportMode(TransportMode.Active);
 					item.setAdditionalTargetInformation(nextOrder.getInformation());
-					_service.queueRoutedItem(item, tile.orientation);
+					_service.queueRoutedItem(item, adjacent.direction);
 					_service.getItemOrderManager().sendSuccessfull(stackToSend.stackSize, defersend, item);
 					if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING)) {
 						nextOrder = _service.getItemOrderManager().peekAtTopRequest(ResourceType.CRAFTING); // fetch but not remove.
@@ -1320,24 +1322,24 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		}
 	}
 
-	private ItemStack extract(AdjacentTile tile, ItemIdentifier item, int amount) {
-		if (tile.tile instanceof LogisticsCraftingTableTileEntity) {
-			return extractFromLogisticsCraftingTable((LogisticsCraftingTableTileEntity) tile.tile, item, amount, tile.orientation);
-		} else if (tile.tile instanceof net.minecraft.inventory.ISidedInventory) {
-			IInventory sidedadapter = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) tile.tile, ForgeDirection.UNKNOWN, true);
-			return extractFromIInventory(sidedadapter, item, amount, tile.orientation);
-		} else if (tile.tile instanceof IInventory) {
-			return extractFromIInventory((IInventory) tile.tile, item, amount, tile.orientation);
+	private ItemStack extract(AdjacentTileEntity adjacent, ItemIdentifier item, int amount) {
+		if (adjacent.tileEntity instanceof LogisticsCraftingTableTileEntity) {
+			return extractFromLogisticsCraftingTable((LogisticsCraftingTableTileEntity) adjacent.tileEntity, item, amount, adjacent.direction);
+		} else if (adjacent.tileEntity instanceof ISidedInventory) {
+			IInventory sidedadapter = new SidedInventoryMinecraftAdapter((ISidedInventory) adjacent.tileEntity, ForgeDirection.UNKNOWN, true);
+			return extractFromIInventory(sidedadapter, item, amount, adjacent.direction);
+		} else if (adjacent.tileEntity instanceof IInventory) {
+			return extractFromIInventory((IInventory) adjacent.tileEntity, item, amount, adjacent.direction);
 		}
 		return null;
 	}
 
-	private ItemStack extractFiltered(AdjacentTile tile, ItemIdentifierInventory inv, boolean isExcluded, int filterInvLimit) {
-		if (tile.tile instanceof net.minecraft.inventory.ISidedInventory) {
-			IInventory sidedadapter = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) tile.tile, ForgeDirection.UNKNOWN, true);
-			return extractFromIInventoryFiltered(sidedadapter, inv, isExcluded, filterInvLimit, tile.orientation);
-		} else if (tile.tile instanceof IInventory) {
-			return extractFromIInventoryFiltered((IInventory) tile.tile, inv, isExcluded, filterInvLimit, tile.orientation);
+	private ItemStack extractFiltered(AdjacentTileEntity adjacent, ItemIdentifierInventory inv, boolean isExcluded, int filterInvLimit) {
+		if (adjacent.tileEntity instanceof ISidedInventory) {
+			IInventory sidedadapter = new SidedInventoryMinecraftAdapter((ISidedInventory) adjacent.tileEntity, ForgeDirection.UNKNOWN, true);
+			return extractFromIInventoryFiltered(sidedadapter, inv, isExcluded, filterInvLimit, adjacent.direction);
+		} else if (adjacent.tileEntity instanceof IInventory) {
+			return extractFromIInventoryFiltered((IInventory) adjacent.tileEntity, inv, isExcluded, filterInvLimit, adjacent.direction);
 		}
 		return null;
 	}
@@ -1452,26 +1454,23 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		return 1;
 	}
 
-	private List<AdjacentTile> _cachedCrafters = null;
+	private List<AdjacentTileEntity> cachedCrafters = null;
 
-	public List<AdjacentTile> locateCrafters() {
-		if (_cachedCrafters != null) {
-			return _cachedCrafters;
+	public List<AdjacentTileEntity> locateCrafters() {
+		if (cachedCrafters == null) {
+			//@formatter:off
+			cachedCrafters = new WorldCoordinatesWrapper(getWorld(), getX(), getY(), getZ())
+					.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
+					.filter(adjacent -> adjacent.tileEntity instanceof IInventory)
+					.collect(Collectors.toList());
+			//formatter:on
 		}
-		WorldUtil worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
-		LinkedList<AdjacentTile> crafters = new LinkedList<AdjacentTile>();
-		for (AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
-			if (!(tile.tile instanceof IInventory)) {
-				continue;
-			}
-			crafters.add(tile);
-		}
-		_cachedCrafters = crafters;
-		return _cachedCrafters;
+
+		return cachedCrafters;
 	}
 
 	public void clearCraftersCache() {
-		_cachedCrafters = null;
+		cachedCrafters = null;
 	}
 
 	@Override

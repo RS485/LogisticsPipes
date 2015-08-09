@@ -20,7 +20,6 @@ import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.textures.Textures;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeTransportLogistics;
-import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.LPPosition;
 
@@ -312,10 +311,6 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 
 	public LPPosition getLPPosition() {
 		return new LPPosition(this);
-	}
-
-	public WorldUtil getWorldUtil() {
-		return new WorldUtil(getWorld(), getX(), getY(), getZ());
 	}
 
 	public IPipeUpgradeManager getUpgradeManager() {

@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import logisticspipes.LPConstants;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
@@ -36,10 +37,10 @@ import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.ServerRouter;
-import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.tuples.Triplet;
+import logisticspipes.world.WorldCoordinatesWrapper;
+import logisticspipes.world.WorldCoordinatesWrapper.AdjacentTileEntity;
 
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
@@ -99,15 +100,15 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 					}
 					IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(order.getKey());
 					if (destinationRouter != null && destinationRouter.getPipe() != null) {
-						WorldUtil util = new WorldUtil(getWorldObj(), xCoord, yCoord, zCoord);
+						WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(this);
 						outerTiles:
-							for (AdjacentTile adjacent : util.getAdjacentTileEntities(false)) {
-								if (adjacent.tile instanceof LogisticsTileGenericPipe) {
-									if (((LogisticsTileGenericPipe) adjacent.tile).pipe instanceof CoreRoutedPipe) {
-										if (((CoreRoutedPipe) ((LogisticsTileGenericPipe) adjacent.tile).pipe).stillNeedReplace()) {
+							for (AdjacentTileEntity adjacent : worldCoordinates.getAdjacentTileEntities().collect(Collectors.toList())) {
+								if (adjacent.tileEntity instanceof LogisticsTileGenericPipe) {
+									if (((LogisticsTileGenericPipe) adjacent.tileEntity).pipe instanceof CoreRoutedPipe) {
+										if (((CoreRoutedPipe) ((LogisticsTileGenericPipe) adjacent.tileEntity).pipe).stillNeedReplace()) {
 											continue;
 										}
-										IRouter sourceRouter = ((CoreRoutedPipe) ((LogisticsTileGenericPipe) adjacent.tile).pipe).getRouter();
+										IRouter sourceRouter = ((CoreRoutedPipe) ((LogisticsTileGenericPipe) adjacent.tileEntity).pipe).getRouter();
 										if (sourceRouter != null) {
 											outerRouters:
 												for (ExitRoute exit : sourceRouter.getDistanceTo(destinationRouter)) {
@@ -119,9 +120,9 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 														}
 														CoreRoutedPipe pipe = sourceRouter.getPipe();
 														if (pipe != null && pipe.isInitialized()) {
-															pipe.container.addLaser(adjacent.orientation.getOpposite(), 1, getLaserColor(), true, true);
+															pipe.container.addLaser(adjacent.direction.getOpposite(), 1, getLaserColor(), true, true);
 														}
-														sendPowerLaserPackets(sourceRouter, destinationRouter, exit.exitOrientation, exit.exitOrientation != adjacent.orientation);
+														sendPowerLaserPackets(sourceRouter, destinationRouter, exit.exitOrientation, exit.exitOrientation != adjacent.direction);
 														internalStorage -= toSend;
 														handlePower(destinationRouter.getPipe(), toSend);
 														break outerTiles;

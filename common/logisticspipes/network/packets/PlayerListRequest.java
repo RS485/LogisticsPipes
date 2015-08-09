@@ -1,8 +1,10 @@
 package logisticspipes.network.packets;
 
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
@@ -11,7 +13,6 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.MainProxy;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.WorldServer;
 
 import net.minecraftforge.common.DimensionManager;
 
@@ -31,15 +32,10 @@ public class PlayerListRequest extends ModernPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		List<String> list = new LinkedList<String>();
-		for (WorldServer world : DimensionManager.getWorlds()) {
-			for (Object o : world.playerEntities) {
-				if (o instanceof EntityPlayer) {
-					list.add(((EntityPlayer) o).getGameProfile().getName());
-				}
-			}
-		}
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PlayerList.class).setStringList(list), player);
+		Stream<?> allPlayers = Arrays.stream(DimensionManager.getWorlds()).map(worldServer -> worldServer.playerEntities).flatMap(Collection::stream);
+		Stream<EntityPlayer> allPlayerEntities = allPlayers.filter(o -> o instanceof EntityPlayer).map(o -> (EntityPlayer) o);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PlayerList.class)
+				.setStringList(allPlayerEntities.map(entityPlayer -> entityPlayer.getGameProfile().getName()).collect(Collectors.toList())), player);
 	}
 
 	@Override

@@ -1,12 +1,10 @@
 package logisticspipes.pipes;
 
-import java.util.LinkedList;
-
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeFluidTransportLogistics;
-import logisticspipes.utils.AdjacentTile;
+import logisticspipes.world.WorldCoordinatesWrapper;
 
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
@@ -32,12 +30,11 @@ public class PipeFluidExtractor extends PipeFluidInsertion {
 		if (!isNthTick(10)) {
 			return;
 		}
-		LinkedList<AdjacentTile> connected = getConnectedEntities();
-		for (AdjacentTile tile : connected) {
-			if (tile.tile instanceof IFluidHandler && SimpleServiceLocator.pipeInformationManager.isNotAPipe(tile.tile)) {
-				extractFrom((IFluidHandler) tile.tile, tile.orientation);
-			}
-		}
+
+		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(container);
+		worldCoordinates.getAdjacentTileEntities()
+				.filter(adjacent -> adjacent.tileEntity instanceof IFluidHandler && SimpleServiceLocator.pipeInformationManager.isNotAPipe(adjacent.tileEntity))
+				.forEach(adjacent -> extractFrom((IFluidHandler) adjacent.tileEntity, adjacent.direction));
 	}
 
 	private void extractFrom(IFluidHandler container, ForgeDirection side) {

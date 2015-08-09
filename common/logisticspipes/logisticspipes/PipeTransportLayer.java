@@ -1,11 +1,15 @@
 package logisticspipes.logisticspipes;
 
 import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
-import logisticspipes.utils.AdjacentTile;
+import logisticspipes.routing.pathfinder.IPipeInformationProvider;
+import logisticspipes.world.WorldCoordinatesWrapper;
+import logisticspipes.world.WorldCoordinatesWrapper.AdjacentTileEntity;
 
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -32,49 +36,50 @@ public class PipeTransportLayer extends TransportLayer {
 			_trackStatistics.recievedItem(item.getItemIdentifierStack().getStackSize());
 		}
 
-		LinkedList<AdjacentTile> adjacentEntities = routedPipe.getConnectedEntities();
+		List<AdjacentTileEntity> adjacentEntities = new WorldCoordinatesWrapper(routedPipe.container)
+				.getConnectedAdjacentTileEntities(IPipeInformationProvider.ConnectionPipeType.ITEM).collect(Collectors.toList());
 		LinkedList<ForgeDirection> possibleForgeDirection = new LinkedList<ForgeDirection>();
 
 		// 1st prio, deliver to adjacent IInventories
 
-		for (AdjacentTile tile : adjacentEntities) {
-			if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile.tile)) {
+		for (AdjacentTileEntity adjacent : adjacentEntities) {
+			if (SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.tileEntity)) {
 				continue;
 			}
-			if (_router.isRoutedExit(tile.orientation)) {
+			if (_router.isRoutedExit(adjacent.direction)) {
 				continue;
 			}
-			if (denyed != null && denyed.equals(tile.orientation)) {
+			if (denyed != null && denyed.equals(adjacent.direction)) {
 				continue;
 			}
 
 			CoreRoutedPipe pipe = _router.getPipe();
 			if (pipe != null) {
-				if (pipe.isLockedExit(tile.orientation)) {
+				if (pipe.isLockedExit(adjacent.direction)) {
 					continue;
 				}
 			}
 
-			possibleForgeDirection.add(tile.orientation);
+			possibleForgeDirection.add(adjacent.direction);
 		}
 		if (possibleForgeDirection.size() != 0) {
 			return possibleForgeDirection.get(routedPipe.getWorld().rand.nextInt(possibleForgeDirection.size()));
 		}
 
 		// 2nd prio, deliver to non-routed exit
-		for (AdjacentTile tile : adjacentEntities) {
-			if (_router.isRoutedExit(tile.orientation)) {
+		for (AdjacentTileEntity adjacent : adjacentEntities) {
+			if (_router.isRoutedExit(adjacent.direction)) {
 				continue;
 			}
 			CoreRoutedPipe pipe = _router.getPipe();
 
 			if (pipe != null) {
-				if (pipe.isLockedExit(tile.orientation)) {
+				if (pipe.isLockedExit(adjacent.direction)) {
 					continue;
 				}
 			}
 
-			possibleForgeDirection.add(tile.orientation);
+			possibleForgeDirection.add(adjacent.direction);
 		}
 		// 3rd prio, drop item
 

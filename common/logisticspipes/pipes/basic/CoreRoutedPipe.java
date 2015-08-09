@@ -1,6 +1,6 @@
 /**
  * Copyright (c) Krapht, 2011
- * 
+ *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +23,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.stream.Collectors;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
@@ -93,13 +93,13 @@ import logisticspipes.routing.ServerRouter;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LogisticsItemOrderManager;
 import logisticspipes.routing.order.LogisticsOrderManager;
+import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import logisticspipes.security.PermissionException;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.transport.PipeTransportLogistics;
-import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.CacheHolder;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.InventoryHelper;
@@ -107,12 +107,12 @@ import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SinkReply;
-import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
+import logisticspipes.world.WorldCoordinatesWrapper;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReportCategory;
@@ -315,7 +315,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	/**
 	 * Designed to help protect against routing loops - if both pipes are on the
 	 * same block, and of ISided overlapps, return true
-	 * 
+	 *
 	 * @param other
 	 * @return boolean indicating if both pull from the same inventory.
 	 */
@@ -333,18 +333,12 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	}
 
 	protected List<IInventory> getConnectedRawInventories() {
-		if (_cachedAdjacentInventories != null) {
-			return _cachedAdjacentInventories;
+		if (_cachedAdjacentInventories == null) {
+			WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(container);
+			_cachedAdjacentInventories = worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
+					.filter(adjacent -> adjacent.tileEntity instanceof IInventory).map(adjacent -> (IInventory) adjacent.tileEntity)
+					.collect(Collectors.toList());
 		}
-		WorldUtil worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
-		LinkedList<IInventory> adjacent = new LinkedList<IInventory>();
-		for (AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
-			if (!(tile.tile instanceof IInventory)) {
-				continue;
-			}
-			adjacent.add(InventoryHelper.getInventory((IInventory) tile.tile));
-		}
-		_cachedAdjacentInventories = adjacent;
 		return _cachedAdjacentInventories;
 	}
 
@@ -963,21 +957,6 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		}
 	}
 
-	public LinkedList<AdjacentTile> getConnectedEntities() {
-		WorldUtil world = new WorldUtil(getWorld(), getX(), getY(), getZ());
-		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(true);
-
-		Iterator<AdjacentTile> iterator = adjacent.iterator();
-		while (iterator.hasNext()) {
-			AdjacentTile tile = iterator.next();
-			if (!MainProxy.checkPipesConnections(container, tile.tile, tile.orientation)) {
-				iterator.remove();
-			}
-		}
-
-		return adjacent;
-	}
-
 	/*** -- ITrackStatistics -- ***/
 
 	@Override
@@ -1317,7 +1296,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	/**
 	 * used as a distance offset when deciding which pipe to use NOTE: called
 	 * very regularly, returning a pre-calculated int is probably appropriate.
-	 * 
+	 *
 	 * @return
 	 */
 	public double getLoadFactor() {

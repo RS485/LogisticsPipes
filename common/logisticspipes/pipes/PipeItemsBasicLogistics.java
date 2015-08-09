@@ -6,6 +6,7 @@
 
 package logisticspipes.pipes;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -17,14 +18,16 @@ import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
-import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.tuples.Pair;
+import logisticspipes.world.WorldCoordinatesWrapper;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
@@ -122,14 +125,13 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	public IInventoryUtil getPointedInventory(boolean forExtraction) {
 		IInventoryUtil inv = super.getPointedInventory(forExtraction);
 		if (inv == null) {
-			for (AdjacentTile connected : getConnectedEntities()) {
-				if (connected.tile instanceof IInventory) {
-					IInventory iinv = InventoryHelper.getInventory((IInventory) connected.tile);
-					if (iinv != null) {
-						inv = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(iinv, connected.orientation.getOpposite());
-						break;
-					}
-				}
+			Optional<Pair<IInventory, ForgeDirection>> first = new WorldCoordinatesWrapper(container).getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
+					.filter(adjacent -> adjacent.tileEntity instanceof IInventory)
+					.map(adjacentInventory -> new Pair<>(InventoryHelper.getInventory((IInventory) adjacentInventory.tileEntity), adjacentInventory.direction))
+					.filter(inventoryDirectionPair -> inventoryDirectionPair.getValue1() != null).findFirst();
+			if (first.isPresent()) {
+				Pair<IInventory, ForgeDirection> p = first.get();
+				inv = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(p.getValue1(), p.getValue2().getOpposite());
 			}
 		}
 		return inv;

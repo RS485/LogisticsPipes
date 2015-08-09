@@ -2,6 +2,7 @@ package logisticspipes.blocks.stats;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.interfaces.IGuiTileEntity;
@@ -11,12 +12,9 @@ import logisticspipes.network.guis.block.StatisticsGui;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.WorldUtil;
+import logisticspipes.world.WorldCoordinatesWrapper;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-
-import net.minecraftforge.common.util.ForgeDirection;
 
 public class LogisticsStatisticsTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity {
 
@@ -75,12 +73,13 @@ public class LogisticsStatisticsTileEntity extends LogisticsSolidTileEntity impl
 
 	public CoreRoutedPipe getConnectedPipe() {
 		if (cachedConnectedPipe == null) {
-			WorldUtil util = new WorldUtil(this);
-			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-				TileEntity tile = util.getAdjacentTileEntitie(dir);
-				if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe) {
-					cachedConnectedPipe = (CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe;
-				}
+			Optional<CoreRoutedPipe> first = new WorldCoordinatesWrapper(this).getAdjacentTileEntities()
+					.filter(adjacent -> adjacent.tileEntity instanceof LogisticsTileGenericPipe)
+					.filter(adjacent -> ((LogisticsTileGenericPipe) adjacent.tileEntity).pipe instanceof CoreRoutedPipe)
+					.map(adjacent -> (CoreRoutedPipe) (((LogisticsTileGenericPipe) adjacent.tileEntity).pipe)).findFirst();
+
+			if (first.isPresent()) {
+				cachedConnectedPipe = first.get();
 			}
 		}
 		return cachedConnectedPipe;

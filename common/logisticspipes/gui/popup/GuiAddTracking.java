@@ -1,6 +1,7 @@
 package logisticspipes.gui.popup;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -157,7 +158,7 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 		if (search.isEmpty()) {
 			return true;
 		}
-		if (isSearched(item.getFriendlyName().toLowerCase(), search.getContent().toLowerCase())) {
+		if (isSearched(item.getFriendlyName().toLowerCase(Locale.US), search.getContent().toLowerCase(Locale.US))) {
 			return true;
 		}
 		//if(isSearched(String.valueOf(Item.getIdFromItem(item.item)), search.getContent())) return true;
@@ -167,7 +168,7 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 			if (e.getKey().intValue() < Enchantment.enchantmentsList.length && Enchantment.enchantmentsList[e.getKey()] != null) {
 				String enchantname = Enchantment.enchantmentsList[e.getKey()].getTranslatedName(e.getValue());
 				if (enchantname != null) {
-					if (isSearched(enchantname.toLowerCase(), search.getContent().toLowerCase())) {
+					if (isSearched(enchantname.toLowerCase(Locale.US), search.getContent().toLowerCase(Locale.US))) {
 						return true;
 					}
 				}

@@ -1,12 +1,14 @@
 /**
  * Copyright (c) Krapht, 2012
- * 
+ *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
 package logisticspipes.gui.modules;
+
+import java.util.Locale;
 
 import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
 import logisticspipes.network.PacketHandler;
@@ -96,7 +98,7 @@ public class GuiExtractor extends ModuleBaseGui {
 		if (o == _directionReceiver.getSneakyDirection()) {
 			return "\u00a7a>" + s + "<";
 		}
-		return s.toLowerCase();
+		return s.toLowerCase(Locale.US);
 	}
 
 	public void setMode(ForgeDirection o) {

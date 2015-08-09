@@ -2,6 +2,7 @@ package logisticspipes.gui.popup;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import logisticspipes.interfaces.IDiskProvider;
 import logisticspipes.network.PacketHandler;
@@ -393,13 +394,10 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		if (Search1.isEmpty() && Search2.isEmpty()) {
 			return true;
 		}
-		if (isSearched(item.getFriendlyName().toLowerCase(), (Search1 + Search2).toLowerCase())) {
+		if (isSearched(item.getFriendlyName().toLowerCase(Locale.US), (Search1 + Search2).toLowerCase(Locale.US))) {
 			return true;
 		}
-		if (isSearched(String.valueOf(Item.getIdFromItem(item.item)), (Search1 + Search2))) {
-			return true;
-		}
-		return false;
+		return isSearched(String.valueOf(Item.getIdFromItem(item.item)), (Search1 + Search2));
 	}
 
 	private boolean isSearched(String value, String search) {

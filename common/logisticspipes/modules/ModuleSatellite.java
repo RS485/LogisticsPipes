@@ -8,11 +8,10 @@ import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.AdjacentTile;
+import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
-import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -22,6 +21,8 @@ import net.minecraft.util.IIcon;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+
+import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 //IHUDModuleHandler,
 public class ModuleSatellite extends LogisticsModule {
@@ -61,19 +62,21 @@ public class ModuleSatellite extends LogisticsModule {
 	}
 
 	private int spaceFor(ItemIdentifier item, boolean includeInTransit) {
-		int count = 0;
-		WorldUtil wUtil = new WorldUtil(pipe.getWorld(), pipe.getX(), pipe.getY(), pipe.getZ());
-		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)) {
-			if (!(tile.tile instanceof IInventory)) {
-				continue;
-			}
-			IInventory base = (IInventory) tile.tile;
-			if (base instanceof net.minecraft.inventory.ISidedInventory) {
-				base = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) base, tile.orientation.getOpposite(), false);
-			}
-			IInventoryUtil inv = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(base, tile.orientation);
-			count += inv.roomForItem(item, 9999);
-		}
+		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(pipe.container);
+
+		//@formatter:off
+		int count = worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
+				.filter(adjacent -> adjacent.tileEntity instanceof IInventory)
+		//@formatter:on
+				.map(adjacent -> {
+					IInventory inv = (IInventory) adjacent.tileEntity;
+					if (inv instanceof net.minecraft.inventory.ISidedInventory) {
+						inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) inv, adjacent.direction.getOpposite(), false);
+					}
+					IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv, adjacent.direction);
+					return util.roomForItem(item, 9999);
+				}).reduce(Integer::sum).orElse(0);
+
 		if (includeInTransit) {
 			count -= pipe.countOnRoute(item);
 		}

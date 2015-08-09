@@ -15,7 +15,7 @@ import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
-import logisticspipes.modules.ModuleSatelite;
+import logisticspipes.modules.ModuleSatellite;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
@@ -75,7 +75,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 
 	@Override
 	public LogisticsModule getLogisticsModule() {
-		return new ModuleSatelite(this);
+		return new ModuleSatellite(this);
 	}
 
 	@Override
@@ -277,7 +277,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 		// Send the satellite id when opening gui
 		final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 		MainProxy.sendPacketToPlayer(packet, entityplayer);
-		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SatelitePipe_ID, getWorld(), getX(), getY(), getZ());
+		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SatellitePipe_ID, getWorld(), getX(), getY(), getZ());
 	}
 
 	@Override

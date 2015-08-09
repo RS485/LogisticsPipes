@@ -24,11 +24,11 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 //IHUDModuleHandler,
-public class ModuleSatelite extends LogisticsModule {
+public class ModuleSatellite extends LogisticsModule {
 
 	private final CoreRoutedPipe pipe;
 
-	public ModuleSatelite(CoreRoutedPipe pipeItemsSatelliteLogistics) {
+	public ModuleSatellite(CoreRoutedPipe pipeItemsSatelliteLogistics) {
 		pipe = pipeItemsSatelliteLogistics;
 	}
 

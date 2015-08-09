@@ -293,7 +293,7 @@ public class ItemUpgrade extends LogisticsItem {
 		icons[12] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/DisEAST");
 		icons[13] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/DisWEST");
 
-		icons[14] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/Satelite");
+		icons[14] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/Satellite");
 		icons[15] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/FluidCrafting");
 		icons[16] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/CraftingByproduct");
 		icons[17] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/PlacementRules");

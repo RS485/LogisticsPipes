@@ -126,7 +126,7 @@ public class GuiHandler implements IGuiHandler {
 					}
 					return dummy;
 
-				case GuiIDs.GUI_SatelitePipe_ID:
+				case GuiIDs.GUI_SatellitePipe_ID:
 					if (pipe != null && pipe.pipe != null && pipe.pipe instanceof PipeItemsSatelliteLogistics) {
 						return new DummyContainer(player.inventory, null);
 					}
@@ -323,7 +323,7 @@ public class GuiHandler implements IGuiHandler {
 					}
 					return new GuiProviderPipe(player.inventory, ((PipeItemsProviderLogistics) pipe.pipe).getprovidingInventory(), (PipeItemsProviderLogistics) pipe.pipe);
 
-				case GuiIDs.GUI_SatelitePipe_ID:
+				case GuiIDs.GUI_SatellitePipe_ID:
 					if (pipe != null && pipe.pipe != null && pipe.pipe instanceof PipeItemsSatelliteLogistics) {
 						return new GuiSatellitePipe((PipeItemsSatelliteLogistics) pipe.pipe, player);
 					}

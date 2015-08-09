@@ -6,7 +6,7 @@ public class GuiIDs {
 	//public static final int GUI_CRAFTINGPIPE_ID = 10;
 	public static final int GUI_FluidSupplier_ID = 11;
 	public static final int GUI_ProviderPipe_ID = 12;
-	public static final int GUI_SatelitePipe_ID = 13;
+	public static final int GUI_SatellitePipe_ID = 13;
 	//public static final int GUI_SupplierPipe_ID = 14;
 	public static final int GUI_Freq_Card_ID = 15;
 	public static final int GUI_Inv_Sys_Connector_ID = 16;

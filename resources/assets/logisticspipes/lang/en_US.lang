@@ -46,21 +46,21 @@ item.PipeItemsCraftingLogistics.tip1=Type: Active Requester + Source
 item.PipeItemsCraftingLogistics.tip2= - Crafts one item at a time.
 item.PipeItemsCraftingLogistics.tip3= - Attaches to an Automatic Crafting Table.
 item.PipeItemsCraftingLogistics.tip4= - Automatically crafts the item inside when requested.
-item.PipeItemsCraftingLogistics.tip5= - Can use a satelite pipe to send inputs elsewhere.
+item.PipeItemsCraftingLogistics.tip5= - Can use a satellite pipe to send inputs elsewhere.
 
 item.PipeItemsCraftingLogisticsMk2=Crafting Logistics Pipe Mk2
 item.PipeItemsCraftingLogisticsMk2.tip1=Type: Active Requester + Source
 item.PipeItemsCraftingLogisticsMk2.tip2= - Crafts 16 items at a time.
 item.PipeItemsCraftingLogisticsMk2.tip3= - Attaches to an Automatic Crafting Table.
 item.PipeItemsCraftingLogisticsMk2.tip4= - Automatically crafts the item inside when requested.
-item.PipeItemsCraftingLogisticsMk2.tip5= - Can use a satelite pipe to send inputs elsewhere.
+item.PipeItemsCraftingLogisticsMk2.tip5= - Can use a satellite pipe to send inputs elsewhere.
 
 item.PipeItemsCraftingLogisticsMk3=Crafting Logistics Pipe Mk3
 item.PipeItemsCraftingLogisticsMk3.tip1=Type: Active Requester + Source
 item.PipeItemsCraftingLogisticsMk3.tip2= - Crafts a stack at a time.
 item.PipeItemsCraftingLogisticsMk3.tip3= - Attaches to an Automatic Crafting Table.
 item.PipeItemsCraftingLogisticsMk3.tip4= - Automatically crafts the item inside when requested.
-item.PipeItemsCraftingLogisticsMk3.tip5= - Can use a satelite pipe to send inputs elsewhere.
+item.PipeItemsCraftingLogisticsMk3.tip5= - Can use a satellite pipe to send inputs elsewhere.
 
 item.PipeItemsSatelliteLogistics=Satellite Logistics Pipe
 item.PipeItemsSatelliteLogistics.tip1=Type: Active request destination

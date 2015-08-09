@@ -21,7 +21,7 @@ import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
-import logisticspipes.modules.ModuleSatelite;
+import logisticspipes.modules.ModuleSatellite;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
@@ -79,7 +79,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 
 	@Override
 	public LogisticsModule getLogisticsModule() {
-		return new ModuleSatelite(this);
+		return new ModuleSatellite(this);
 	}
 
 	@Override
@@ -280,7 +280,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		// Send the satellite id when opening gui
 		final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 		MainProxy.sendPacketToPlayer(packet, entityplayer);
-		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SatelitePipe_ID, getWorld(), getX(), getY(), getZ());
+		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SatellitePipe_ID, getWorld(), getX(), getY(), getZ());
 	}
 
 	@Override

@@ -8,8 +8,8 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
-import logisticspipes.world.WorldCoordinatesWrapper;
-import logisticspipes.world.WorldCoordinatesWrapper.AdjacentTileEntity;
+import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
+import network.rs485.logisticspipes.world.WorldCoordinatesWrapper.AdjacentTileEntity;
 
 import net.minecraftforge.common.util.ForgeDirection;
 

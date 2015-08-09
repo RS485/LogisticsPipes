@@ -24,7 +24,7 @@ import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
-import logisticspipes.world.WorldCoordinatesWrapper;
+import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;

@@ -4,7 +4,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeFluidTransportLogistics;
-import logisticspipes.world.WorldCoordinatesWrapper;
+import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;

@@ -4,11 +4,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import buildcraft.api.transport.IPipeConnection;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILPPipe;
@@ -41,13 +39,11 @@ import logisticspipes.renderer.LogisticsTileRenderController;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.transport.LPTravelingItem;
-import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.LPPositionSet;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.StackTraceUtil;
 import logisticspipes.utils.StackTraceUtil.Info;
 import logisticspipes.utils.TileBuffer;
-import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.LPPosition;
 
@@ -73,6 +69,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 import buildcraft.api.core.EnumColor;
 import buildcraft.api.transport.IPipe;
+import buildcraft.api.transport.IPipeConnection;
 import buildcraft.api.transport.IPipeTile;
 import buildcraft.api.transport.pluggable.PipePluggable;
 import buildcraft.transport.TileGenericPipe;
@@ -86,6 +83,7 @@ import li.cil.oc.api.network.Message;
 import li.cil.oc.api.network.Node;
 import li.cil.oc.api.network.SidedEnvironment;
 import lombok.Getter;
+import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 import org.apache.logging.log4j.Level;
 
 @ModDependentInterface(modId = { "CoFHCore", "OpenComputers@1.3", "OpenComputers@1.3", "OpenComputers@1.3", "BuildCraft|Transport", "BuildCraft|Transport" }, interfacePath = { "cofh.api.transport.IItemDuct", "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment",
@@ -96,7 +94,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 
 	public Set<LPPosition> subMultiBlock = new HashSet<LPPosition>();
 
-	public boolean turtleConnect[] = new boolean[7];
+	public boolean[] turtleConnect = new boolean[7];
 
 	private LogisticsTileRenderController renderController;
 
@@ -137,17 +135,12 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 			tileEntityInvalid = true;
 			initialized = false;
 			tileBuffer = null;
-			if (pipe != null) {
-				pipe.invalidate();
-			}
 			super.invalidate();
 		} else if (!pipe.preventRemove()) {
 			tileEntityInvalid = true;
 			initialized = false;
 			tileBuffer = null;
-			if (pipe != null) {
-				pipe.invalidate();
-			}
+			pipe.invalidate();
 			super.invalidate();
 			SimpleServiceLocator.openComputersProxy.handleInvalidate(this);
 			tilePart.invalidate_LP();
@@ -306,14 +299,10 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		tilePart.scheduleNeighborChange();
 		tdPart.scheduleNeighborChange();
 		blockNeighborChange = true;
-		boolean connected[] = new boolean[6];
-		WorldUtil world = new WorldUtil(getWorld(), xCoord, yCoord, zCoord);
-		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(false);
-		for (AdjacentTile aTile : adjacent) {
-			if (SimpleServiceLocator.ccProxy.isTurtle(aTile.tile)) {
-				connected[aTile.orientation.ordinal()] = true;
-			}
-		}
+		boolean[] connected = new boolean[6];
+		new WorldCoordinatesWrapper(this).getAdjacentTileEntities()
+				.filter(adjacent -> SimpleServiceLocator.ccProxy.isTurtle(adjacent.tileEntity))
+				.forEach(adjacent -> connected[adjacent.direction.ordinal()] = true);
 		for (int i = 0; i < 6; i++) {
 			if (!connected[i]) {
 				turtleConnect[i] = false;

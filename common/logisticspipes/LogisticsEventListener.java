@@ -32,8 +32,8 @@ import logisticspipes.ticks.VersionChecker;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.PlayerIdentifier;
 import logisticspipes.utils.QuickSortChestMarkerStorage;
-import logisticspipes.utils.tuples.Pair;
-import logisticspipes.world.WorldCoordinatesWrapper;
+
+import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.inventory.GuiChest;

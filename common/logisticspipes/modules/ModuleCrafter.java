@@ -97,8 +97,8 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
-import logisticspipes.world.WorldCoordinatesWrapper;
-import logisticspipes.world.WorldCoordinatesWrapper.AdjacentTileEntity;
+import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
+import network.rs485.logisticspipes.world.WorldCoordinatesWrapper.AdjacentTileEntity;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.entity.EntityPlayerSP;

@@ -36,11 +36,10 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTree;
 import logisticspipes.routing.IRouter;
-import logisticspipes.utils.AdjacentTile;
+import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
-import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -59,6 +58,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 import lombok.Getter;
 import lombok.Setter;
+import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequestItems, IRequireReliableTransport, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
 
@@ -206,35 +206,28 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 			return;
 		}
 
-		for (int amount : _requestedItems.values()) {
-			if (amount > 0) {
-				_service.spawnParticle(Particles.VioletParticle, 2);
-			}
-		}
+		_requestedItems.values().stream().filter(amount -> amount > 0).forEach(amount -> _service.spawnParticle(Particles.VioletParticle, 2));
 
-		WorldUtil worldUtil = new WorldUtil(_world.getWorld(), getX(), getY(), getZ());
-		for (AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
-			if (!(tile.tile instanceof IInventory)) {
-				continue;
-			}
+		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(_world.getWorld(), getX(), getY(), getZ());
 
-			IInventory inv = (IInventory) tile.tile;
-			if (inv.getSizeInventory() < 1) {
-				continue;
-			}
-			ForgeDirection dir = tile.orientation;
-			if (_service.getUpgradeManager(slot, positionInt).hasSneakyUpgrade()) {
-				dir = _service.getUpgradeManager(slot, positionInt).getSneakyOrientation();
-			}
-			IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv, dir);
+		//@formatter:off
+		worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
+				.filter(adjacent -> adjacent instanceof IInventory)
+				.filter(adjacent -> ((IInventory) adjacent.tileEntity).getSizeInventory() > 0)
+		//@formatter:on
+				.forEach(adjacent -> {
+					ForgeDirection direction = adjacent.direction;
+					if (_service.getUpgradeManager(slot, positionInt).hasSneakyUpgrade()) {
+						direction = _service.getUpgradeManager(slot, positionInt).getSneakyOrientation();
+					}
+					IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil((IInventory) adjacent.tileEntity, direction);
 
-			if (_service.getUpgradeManager(slot, positionInt).hasPatternUpgrade()) {
-				createPatternRequest(invUtil);
-			} else {
-				createSupplyRequest(invUtil);
-			}
-
-		}
+					if (_service.getUpgradeManager(slot, positionInt).hasPatternUpgrade()) {
+						createPatternRequest(invUtil);
+					} else {
+						createSupplyRequest(invUtil);
+					}
+				});
 	}
 
 	private void createPatternRequest(IInventoryUtil invUtil) {

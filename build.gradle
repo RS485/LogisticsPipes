@@ -15,32 +15,35 @@ buildscript {
     }
 }
 
+apply plugin: 'forge'
+apply plugin: 'curseforge'
+
 repositories {
-	maven {
-		name 'CB Repo'
-		url "http://chickenbones.net/maven/"
-	}
+    maven {
+        name 'CB Repo'
+        url "http://chickenbones.net/maven/"
+    }
 }
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 ant.importBuild 'download-api.xml'
 ant.importBuild 'build-ant.xml'
 
-apply plugin: 'forge'
-apply plugin: 'curseforge'
-
 version = "0.10.0"
+group= "network.rs485.logisticspipes" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = "logisticspipes"
+
 def buildby = 'local'
 
 def ENV = System.getenv()
 if (ENV.BUILD_NUMBER) {
-	version += "." + ENV.BUILD_NUMBER
-	buildby = 'RS485-Jenkins'
+    version += "." + ENV.BUILD_NUMBER
+    buildby = 'RS485-Jenkins'
 } else {
-	version += ".local"
+    version += ".local"
 }
-
-group= "rs485.logisticspipes" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "logisticspipes"
 
 ant.version = version
 ant.archivesBaseName = archivesBaseName
@@ -51,18 +54,18 @@ minecraft {
     replace '%VERSION%', project.version
     replace '%MCVERSION%', "1.7.10"
     replace '%DEBUG%', "false"
-	replaceIn "LogisticsPipes.java"
-	replaceIn "LPConstants.java"
+    replaceIn "LogisticsPipes.java"
+    replaceIn "LPConstants.java"
 }
 
 jar {
     manifest {
-        attributes(	'FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader', 
-					'FMLCorePluginContainsFMLMod': 'true',
-					'Implementation-Vendor': 'RS485',
-					'Implementation-Title': 'LogisticsPipes',
-					'Implementation-Version': version,
-					'Built-By': buildby )
+        attributes('FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader', 
+                   'FMLCorePluginContainsFMLMod': 'true',
+                   'Implementation-Vendor': 'RS485',
+                   'Implementation-Title': 'LogisticsPipes',
+                   'Implementation-Version': version,
+                   'Built-By': buildby )
     }
 }
 
@@ -71,32 +74,30 @@ sourceSets {
     main {
         java {
             srcDir 'common'
-            // exclude 'some exclusion'
-            // include 'some inclusion'
         }
         resources {
             srcDir 'resources'
-            // exclude 'some exclusion'
-            // include 'some inclusion'
         }
     }
     api {
         java {
             srcDir 'dummy'
             srcDir 'api'
-            // exclude 'some exclusion'
-            // include 'some inclusion'
         }
-	}
+    }
 }
 
 processResources {
+    // this will ensure that this task is redone when the versions change.
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-        
+                
         // replace version and mcversion
-		expand 'version':project.version, 'mcversion':project.minecraft.version
+        expand 'version':project.version, 'mcversion':project.minecraft.version
     }
         
     // copy everything else, thats not the mcmod.info
@@ -114,37 +115,19 @@ dependencies {
     compile 'codechicken:EnderStorage:1.7.10-1.4.7.36:dev'
 }
 
-apply plugin: 'eclipse-wtp'
-eclipse { // only works with newer Gradle
-    wtp {
-        component {
-            sourceDirs += file('dummy')
-            sourceDirs += file('api')
-        }
-    }
-}
-
-apply plugin: 'idea'
-idea {
-    module {
-        sourceDirs += file('dummy')
-        sourceDirs += file('api')
-    }
-}
-
 task deobfJar(type: Jar) {
-	from sourceSets.main.output
-	classifier = 'dev'
+    from sourceSets.main.output
+    classifier = 'dev'
 }
 
 task sourceJar(type: Jar) {
-	from sourceSets.main.allSource
-	classifier = 'src'
+    from sourceSets.main.allSource
+    classifier = 'src'
 }
 
 curse {
-	displayName = 'Logistics Pipes 0.9.2 (BC7) build ' + System.getenv().BUILD_NUMBER
-	
+    displayName = 'Logistics Pipes 0.10.0 (BC7) build ' + System.getenv().BUILD_NUMBER
+    
     projectId = '232838'
     apiKey = project.hasProperty('curseForgeApiKey') ? project.curseForgeApiKey : ''
     releaseType = 'release'
@@ -153,12 +136,13 @@ curse {
 }
 
 artifacts {
-	archives deobfJar
-	archives sourceJar
-	archives jar
+    archives deobfJar
+    archives sourceJar
+    archives jar
 }
 
 tasks.compileApiJava.dependsOn('extract')
 tasks.compileJava.dependsOn('loadFingerprints')
 tasks.processResources.dependsOn('integrateLang')
 tasks.assemble.dependsOn('deobfJar', 'sourceJar', 'signJars')
+

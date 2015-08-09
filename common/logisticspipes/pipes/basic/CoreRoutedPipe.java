@@ -50,7 +50,6 @@ import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.items.ItemPipeSignCreator;
 import logisticspipes.logisticspipes.ExtractionMode;
-import logisticspipes.logisticspipes.IAdjacentWorldAccess;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.logisticspipes.ITrackStatistics;
@@ -133,7 +132,7 @@ import net.minecraftforge.fluids.FluidStack;
 import lombok.Getter;
 
 @CCType(name = "LogisticsPipes:Normal")
-public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClientState, IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IPipeServiceProvider, IQueueCCEvent, ILPPositionProvider {
+public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClientState, IRequestItems, ITrackStatistics, IWorldProvider, IWatchingHandler, IPipeServiceProvider, IQueueCCEvent, ILPPositionProvider {
 
 	public enum ItemSendMode {
 		Normal,
@@ -964,9 +963,6 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		}
 	}
 
-	/*** -- IAdjacentWorldAccess -- ***/
-
-	@Override
 	public LinkedList<AdjacentTile> getConnectedEntities() {
 		WorldUtil world = new WorldUtil(getWorld(), getX(), getY(), getZ());
 		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(true);
@@ -980,11 +976,6 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		}
 
 		return adjacent;
-	}
-
-	@Override
-	public int getRandomInt(int maxSize) {
-		return getWorld().rand.nextInt(maxSize);
 	}
 
 	/*** -- ITrackStatistics -- ***/

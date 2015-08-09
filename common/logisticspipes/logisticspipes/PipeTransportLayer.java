@@ -11,17 +11,17 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 /**
  * This class is responsible for handling incoming items for standard pipes
- * 
+ *
  * @author Krapht
  */
 public class PipeTransportLayer extends TransportLayer {
 
-	private final IAdjacentWorldAccess _worldAccess;
+	private final CoreRoutedPipe routedPipe;
 	private final ITrackStatistics _trackStatistics;
 	private final IRouter _router;
 
-	public PipeTransportLayer(IAdjacentWorldAccess worldAccess, ITrackStatistics trackStatistics, IRouter router) {
-		_worldAccess = worldAccess;
+	public PipeTransportLayer(CoreRoutedPipe routedPipe, ITrackStatistics trackStatistics, IRouter router) {
+		this.routedPipe = routedPipe;
 		_trackStatistics = trackStatistics;
 		_router = router;
 	}
@@ -32,7 +32,7 @@ public class PipeTransportLayer extends TransportLayer {
 			_trackStatistics.recievedItem(item.getItemIdentifierStack().getStackSize());
 		}
 
-		LinkedList<AdjacentTile> adjacentEntities = _worldAccess.getConnectedEntities();
+		LinkedList<AdjacentTile> adjacentEntities = routedPipe.getConnectedEntities();
 		LinkedList<ForgeDirection> possibleForgeDirection = new LinkedList<ForgeDirection>();
 
 		// 1st prio, deliver to adjacent IInventories
@@ -58,7 +58,7 @@ public class PipeTransportLayer extends TransportLayer {
 			possibleForgeDirection.add(tile.orientation);
 		}
 		if (possibleForgeDirection.size() != 0) {
-			return possibleForgeDirection.get(_worldAccess.getRandomInt(possibleForgeDirection.size()));
+			return possibleForgeDirection.get(routedPipe.getWorld().rand.nextInt(possibleForgeDirection.size()));
 		}
 
 		// 2nd prio, deliver to non-routed exit
@@ -82,7 +82,7 @@ public class PipeTransportLayer extends TransportLayer {
 			return null;
 		}
 
-		return possibleForgeDirection.get(_worldAccess.getRandomInt(possibleForgeDirection.size()));
+		return possibleForgeDirection.get(routedPipe.getWorld().rand.nextInt(possibleForgeDirection.size()));
 	}
 
 	//Pipes are dumb and always want the item

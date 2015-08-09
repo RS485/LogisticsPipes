@@ -45,12 +45,14 @@ import logisticspipes.world.WorldCoordinatesWrapper.AdjacentTileEntity;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagFloat;
 import net.minecraft.world.World;
 
 import net.minecraftforge.common.util.ForgeDirection;
 
 @CCType(name = "LogisticsPowerProvider")
-public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ISubSystemPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler {
+public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTileEntity
+		implements IGuiTileEntity, ISubSystemPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler {
 
 	public static final int BC_COLOR = 0x00ffff;
 	public static final int RF_COLOR = 0xff0000;
@@ -59,14 +61,13 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 	// true if it needs more power, turns off at full, turns on at 50%.
 	public boolean needMorePowerTriggerCheck = true;
 
-	protected Map<Integer, Float> orders = new HashMap<Integer, Float>();
+	protected Map<Integer, Double> orders = new HashMap<>();
 	protected BitSet reOrdered = new BitSet(ServerRouter.getBiggestSimpleID());
 	protected boolean pauseRequesting = false;
 
-	protected float internalStorage = 0;
-	private float lastUpdateStorage = 0;
+	protected double internalStorage = 0;
 	protected int maxMode = 1;
-
+	private double lastUpdateStorage = 0;
 	private PlayerCollectionList guiListener = new PlayerCollectionList();
 	private PlayerCollectionList watcherList = new PlayerCollectionList();
 	private IHeadUpDisplayRenderer HUD;
@@ -86,15 +87,12 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 			}
 			init = true;
 		}
-		float globalRequest = 0;
-		for (Entry<Integer, Float> order : orders.entrySet()) {
-			globalRequest += order.getValue();
-		}
+		double globalRequest = orders.values().stream().reduce(Double::sum).orElse(0.0);
 		if (globalRequest > 0) {
-			float fullfullratio = Math.min(1, Math.min(internalStorage, getMaxProvidePerTick()) / globalRequest);
-			if (fullfullratio > 0) {
-				for (Entry<Integer, Float> order : orders.entrySet()) {
-					float toSend = order.getValue() * fullfullratio;
+			double fullfillRatio = Math.min(1, Math.min(internalStorage, getMaxProvidePerTick()) / globalRequest);
+			if (fullfillRatio > 0) {
+				for (Entry<Integer, Double> order : orders.entrySet()) {
+					double toSend = order.getValue() * fullfillRatio;
 					if (toSend > internalStorage) {
 						toSend = internalStorage;
 					}
@@ -102,36 +100,37 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 					if (destinationRouter != null && destinationRouter.getPipe() != null) {
 						WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(this);
 						outerTiles:
-							for (AdjacentTileEntity adjacent : worldCoordinates.getAdjacentTileEntities().collect(Collectors.toList())) {
-								if (adjacent.tileEntity instanceof LogisticsTileGenericPipe) {
-									if (((LogisticsTileGenericPipe) adjacent.tileEntity).pipe instanceof CoreRoutedPipe) {
-										if (((CoreRoutedPipe) ((LogisticsTileGenericPipe) adjacent.tileEntity).pipe).stillNeedReplace()) {
-											continue;
-										}
-										IRouter sourceRouter = ((CoreRoutedPipe) ((LogisticsTileGenericPipe) adjacent.tileEntity).pipe).getRouter();
-										if (sourceRouter != null) {
-											outerRouters:
-												for (ExitRoute exit : sourceRouter.getDistanceTo(destinationRouter)) {
-													if (exit.containsFlag(PipeRoutingConnectionType.canPowerSubSystemFrom)) {
-														for (IFilter filter : exit.filters) {
-															if (filter.blockPower()) {
-																continue outerRouters;
-															}
-														}
-														CoreRoutedPipe pipe = sourceRouter.getPipe();
-														if (pipe != null && pipe.isInitialized()) {
-															pipe.container.addLaser(adjacent.direction.getOpposite(), 1, getLaserColor(), true, true);
-														}
-														sendPowerLaserPackets(sourceRouter, destinationRouter, exit.exitOrientation, exit.exitOrientation != adjacent.direction);
-														internalStorage -= toSend;
-														handlePower(destinationRouter.getPipe(), toSend);
-														break outerTiles;
+						for (AdjacentTileEntity adjacent : worldCoordinates.getAdjacentTileEntities().collect(Collectors.toList())) {
+							if (adjacent.tileEntity instanceof LogisticsTileGenericPipe) {
+								if (((LogisticsTileGenericPipe) adjacent.tileEntity).pipe instanceof CoreRoutedPipe) {
+									if (((CoreRoutedPipe) ((LogisticsTileGenericPipe) adjacent.tileEntity).pipe).stillNeedReplace()) {
+										continue;
+									}
+									IRouter sourceRouter = ((CoreRoutedPipe) ((LogisticsTileGenericPipe) adjacent.tileEntity).pipe).getRouter();
+									if (sourceRouter != null) {
+										outerRouters:
+										for (ExitRoute exit : sourceRouter.getDistanceTo(destinationRouter)) {
+											if (exit.containsFlag(PipeRoutingConnectionType.canPowerSubSystemFrom)) {
+												for (IFilter filter : exit.filters) {
+													if (filter.blockPower()) {
+														continue outerRouters;
 													}
 												}
+												CoreRoutedPipe pipe = sourceRouter.getPipe();
+												if (pipe != null && pipe.isInitialized()) {
+													pipe.container.addLaser(adjacent.direction.getOpposite(), 1, getLaserColor(), true, true);
+												}
+												sendPowerLaserPackets(sourceRouter, destinationRouter, exit.exitOrientation,
+														exit.exitOrientation != adjacent.direction);
+												internalStorage -= toSend;
+												handlePower(destinationRouter.getPipe(), toSend);
+												break outerTiles;
+											}
 										}
 									}
 								}
 							}
+						}
 					}
 				}
 			}
@@ -145,14 +144,14 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 		}
 	}
 
-	protected abstract void handlePower(CoreRoutedPipe pipe, float toSend);
+	protected abstract void handlePower(CoreRoutedPipe pipe, double toSend);
 
 	private void sendPowerLaserPackets(IRouter sourceRouter, IRouter destinationRouter, ForgeDirection exitOrientation, boolean addBall) {
 		if (sourceRouter == destinationRouter) {
 			return;
 		}
 		LinkedList<Triplet<IRouter, ForgeDirection, Boolean>> todo = new LinkedList<Triplet<IRouter, ForgeDirection, Boolean>>();
-		todo.add(new Triplet<IRouter, ForgeDirection, Boolean>(sourceRouter, exitOrientation, addBall));
+		todo.add(new Triplet<>(sourceRouter, exitOrientation, addBall));
 		while (!todo.isEmpty()) {
 			Triplet<IRouter, ForgeDirection, Boolean> part = todo.pollFirst();
 			List<ExitRoute> exits = part.getValue1().getRoutersOnSide(part.getValue2());
@@ -168,22 +167,22 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 						return;
 					}
 					outerRouters:
-						for (ExitRoute newExit : nextRouter.getDistanceTo(destinationRouter)) {
-							if (newExit.containsFlag(PipeRoutingConnectionType.canPowerSubSystemFrom)) {
-								for (IFilter filter : newExit.filters) {
-									if (filter.blockPower()) {
-										continue outerRouters;
-									}
+					for (ExitRoute newExit : nextRouter.getDistanceTo(destinationRouter)) {
+						if (newExit.containsFlag(PipeRoutingConnectionType.canPowerSubSystemFrom)) {
+							for (IFilter filter : newExit.filters) {
+								if (filter.blockPower()) {
+									continue outerRouters;
 								}
-								todo.addLast(new Triplet<IRouter, ForgeDirection, Boolean>(nextRouter, newExit.exitOrientation, newExit.exitOrientation != exit.exitOrientation));
 							}
+							todo.addLast(new Triplet<>(nextRouter, newExit.exitOrientation, newExit.exitOrientation != exit.exitOrientation));
 						}
+					}
 				}
 			}
 		}
 	}
 
-	protected abstract float getMaxProvidePerTick();
+	protected abstract double getMaxProvidePerTick();
 
 	@CCCommand(description = "Returns the color for the power provided by this power provider")
 	protected abstract int getLaserColor();
@@ -221,7 +220,7 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 	}
 
 	@Override
-	public void requestPower(int destination, float amount) {
+	public void requestPower(int destination, double amount) {
 		if (pauseRequesting) {
 			return;
 		}
@@ -243,7 +242,7 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 
 	@Override
 	@CCCommand(description = "Returns the current power level for this power provider")
-	public float getPowerLevel() {
+	public double getPowerLevel() {
 		return lastUpdateStorage;
 	}
 
@@ -255,7 +254,11 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
-		internalStorage = nbt.getFloat("internalStorage");
+		if (nbt.getTag("internalStorage") instanceof NBTTagFloat) { // support for old float
+			internalStorage = nbt.getFloat("internalStorage");
+		} else {
+			internalStorage = nbt.getDouble("internalStorage");
+		}
 		maxMode = nbt.getInteger("maxMode");
 
 	}
@@ -263,7 +266,7 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 	@Override
 	public void writeToNBT(NBTTagCompound nbt) {
 		super.writeToNBT(nbt);
-		nbt.setFloat("internalStorage", internalStorage);
+		nbt.setDouble("internalStorageDouble", internalStorage);
 		nbt.setInteger("maxMode", maxMode);
 	}
 
@@ -330,8 +333,8 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 	}
 
 	public void updateClients() {
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(PowerProviderLevel.class).setFloat(internalStorage).setTilePos(this), guiListener);
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(PowerProviderLevel.class).setFloat(internalStorage).setTilePos(this), watcherList);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(PowerProviderLevel.class).setDouble(internalStorage).setTilePos(this), guiListener);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(PowerProviderLevel.class).setDouble(internalStorage).setTilePos(this), watcherList);
 	}
 
 	@Override
@@ -340,9 +343,9 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 		par1CrashReportCategory.addCrashSection("LP-Version", LPConstants.VERSION);
 	}
 
-	public void handlePowerPacket(float float1) {
+	public void handlePowerPacket(double d) {
 		if (MainProxy.isClient(getWorld())) {
-			internalStorage = float1;
+			internalStorage = d;
 		}
 	}
 
@@ -353,7 +356,8 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 
 	@Override
 	public int getDisplayPowerLevel() {
-		return Math.round(internalStorage);
+		long rounded = Math.round(internalStorage);
+		return rounded > (long) Integer.MAX_VALUE ? (int) rounded : Integer.MAX_VALUE;
 	}
 
 	@Override

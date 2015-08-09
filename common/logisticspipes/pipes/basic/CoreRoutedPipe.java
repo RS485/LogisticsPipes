@@ -1493,11 +1493,11 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 
 	}
 
-	public void handleRFPowerArival(float toSend) {
+	public void handleRFPowerArival(double toSend) {
 		powerHandler.addRFPower(toSend);
 	}
 
-	public void handleIC2PowerArival(float toSend) {
+	public void handleIC2PowerArival(double toSend) {
 		powerHandler.addIC2Power(toSend);
 	}
 

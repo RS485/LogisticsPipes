@@ -74,7 +74,7 @@ public class LogisticsIC2PowerProviderTileEntity extends LogisticsPowerProviderT
 		}
 	}
 
-	public void addEnergy(float amount) {
+	public void addEnergy(double amount) {
 		if (MainProxy.isClient(getWorld())) {
 			return;
 		}
@@ -87,7 +87,7 @@ public class LogisticsIC2PowerProviderTileEntity extends LogisticsPowerProviderT
 		}
 	}
 
-	public float freeSpace() {
+	public double freeSpace() {
 		return getMaxStorage() - internalStorage;
 	}
 
@@ -113,12 +113,12 @@ public class LogisticsIC2PowerProviderTileEntity extends LogisticsPowerProviderT
 	}
 
 	@Override
-	protected float getMaxProvidePerTick() {
+	protected double getMaxProvidePerTick() {
 		return LogisticsIC2PowerProviderTileEntity.MAX_PROVIDE_PER_TICK;
 	}
 
 	@Override
-	protected void handlePower(CoreRoutedPipe pipe, float toSend) {
+	protected void handlePower(CoreRoutedPipe pipe, double toSend) {
 		pipe.handleIC2PowerArival(toSend);
 	}
 
@@ -148,7 +148,7 @@ public class LogisticsIC2PowerProviderTileEntity extends LogisticsPowerProviderT
 	@Override
 	@ModDependentMethod(modId = "IC2")
 	public double injectEnergy(ForgeDirection directionFrom, double amount, double voltage) {
-		addEnergy((float) amount);
+		addEnergy(amount);
 		return 0;
 	}
 }

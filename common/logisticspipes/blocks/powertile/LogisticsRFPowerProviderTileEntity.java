@@ -26,7 +26,7 @@ public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTi
 		storage = SimpleServiceLocator.cofhPowerProxy.getEnergyStorage(10000);
 	}
 
-	public void addEnergy(float amount) {
+	public void addEnergy(double amount) {
 		if (MainProxy.isClient(getWorldObj())) {
 			return;
 		}
@@ -117,12 +117,12 @@ public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTi
 	}
 
 	@Override
-	protected float getMaxProvidePerTick() {
+	protected double getMaxProvidePerTick() {
 		return LogisticsRFPowerProviderTileEntity.MAX_PROVIDE_PER_TICK;
 	}
 
 	@Override
-	protected void handlePower(CoreRoutedPipe pipe, float toSend) {
+	protected void handlePower(CoreRoutedPipe pipe, double toSend) {
 		pipe.handleRFPowerArival(toSend);
 	}
 

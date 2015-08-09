@@ -2,6 +2,7 @@ package logisticspipes.pipes.basic.fluid;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import logisticspipes.LPConstants;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
@@ -21,9 +22,9 @@ import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.FluidIdentifier;
-import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
+import logisticspipes.world.WorldCoordinatesWrapper;
 
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
@@ -35,7 +36,6 @@ import net.minecraftforge.fluids.IFluidHandler;
 
 public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 
-	private WorldUtil worldUtil;
 	private LogisticsFluidOrderManager _orderFluidManager;
 
 	public FluidRoutedPipe(Item item) {
@@ -74,10 +74,9 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	}
 
 	private boolean isFluidSidedTexture(ForgeDirection connection) {
-		WorldUtil util = new WorldUtil(getWorld(), getX(), getY(), getZ());
-		TileEntity tile = util.getAdjacentTileEntitie(connection);
-		if (tile instanceof IFluidHandler) {
-			IFluidHandler liq = (IFluidHandler) tile;
+		TileEntity tileEntity = new WorldCoordinatesWrapper(container).getAdjacentFromDirection(connection).tileEntity;
+		if (tileEntity instanceof IFluidHandler) {
+			IFluidHandler liq = (IFluidHandler) tileEntity;
 
 			if (liq.getTankInfo(connection.getOpposite()) != null && liq.getTankInfo(connection.getOpposite()).length > 0) {
 				return true;
@@ -97,18 +96,9 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	 */
 
 	public final List<Pair<TileEntity, ForgeDirection>> getAdjacentTanks(boolean flag) {
-		if (worldUtil == null) {
-			worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
-		}
-		List<Pair<TileEntity, ForgeDirection>> tileList = new ArrayList<Pair<TileEntity, ForgeDirection>>();
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-			TileEntity tile = worldUtil.getAdjacentTileEntitie(dir);
-			if (!isConnectableTank(tile, dir, flag)) {
-				continue;
-			}
-			tileList.add(new Pair<TileEntity, ForgeDirection>(tile, dir));
-		}
-		return tileList;
+		return new WorldCoordinatesWrapper(container).getAdjacentTileEntities()
+				.filter(adjacent -> isConnectableTank(adjacent.tileEntity, adjacent.direction, flag))
+				.map(adjacent -> new Pair<>(adjacent.tileEntity, adjacent.direction)).collect(Collectors.toList());
 	}
 
 	/***

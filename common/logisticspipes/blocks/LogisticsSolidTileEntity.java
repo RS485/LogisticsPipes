@@ -15,8 +15,8 @@ import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
 import logisticspipes.proxy.opencomputers.IOCTile;
 import logisticspipes.proxy.opencomputers.asm.BaseWrapperClass;
-import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.tuples.LPPosition;
+import logisticspipes.world.WorldCoordinatesWrapper;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -151,17 +151,14 @@ public class LogisticsSolidTileEntity extends TileEntity implements ILPCCTypeHol
 	@SideOnly(Side.CLIENT)
 	@ModDependentMethod(modId = "OpenComputers@1.3")
 	public boolean canConnect(ForgeDirection dir) {
-		return !(new WorldUtil(this).getAdjacentTileEntitie(dir) instanceof LogisticsTileGenericPipe) && !(new WorldUtil(this).getAdjacentTileEntitie(dir) instanceof LogisticsSolidTileEntity);
+		TileEntity tileEntity = new WorldCoordinatesWrapper(this).getAdjacentFromDirection(dir).tileEntity;
+		return !(tileEntity instanceof LogisticsTileGenericPipe) && !(tileEntity instanceof LogisticsSolidTileEntity);
 	}
 
 	@Override
 	@ModDependentMethod(modId = "OpenComputers@1.3")
 	public Node sidedNode(ForgeDirection dir) {
-		if (new WorldUtil(this).getAdjacentTileEntitie(dir) instanceof LogisticsTileGenericPipe || new WorldUtil(this).getAdjacentTileEntitie(dir) instanceof LogisticsSolidTileEntity) {
-			return null;
-		} else {
-			return node();
-		}
+		return canConnect(dir) ? node() : null;
 	}
 
 	@Override

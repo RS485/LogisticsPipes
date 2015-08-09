@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import logisticspipes.LPConstants;
@@ -237,7 +238,7 @@ public class ProxyManager {
 			@Override public boolean isPureFlyer(ItemStack bee) {return false;}
 			@Override public boolean isCave(ItemStack bee) {return false;}
 			@Override public boolean isPureCave(ItemStack bee) {return false;}
-			@Override public String getForestryTranslation(String input) {return input.substring(input.lastIndexOf(".") + 1).toLowerCase().replace("_", " ");}
+			@Override public String getForestryTranslation(String input) {return input.substring(input.lastIndexOf(".") + 1).toLowerCase(Locale.US).replace("_", " ");}
 			@Override @SideOnly(Side.CLIENT) public IIcon getIconIndexForAlleleId(String id, int phase) {return null;}
 			@Override @SideOnly(Side.CLIENT) public int getColorForAlleleId(String id, int phase) {return 16777215;}
 			@Override @SideOnly(Side.CLIENT) public int getRenderPassesForAlleleId(String id) {return 0;}

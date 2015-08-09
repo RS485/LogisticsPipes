@@ -2,7 +2,7 @@ package logisticspipes;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import logisticspipes.config.Configs;
 import logisticspipes.config.PlayerConfig;
@@ -28,11 +29,11 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.LogisticsGuiOverrenderer;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.ticks.VersionChecker;
-import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.PlayerIdentifier;
 import logisticspipes.utils.QuickSortChestMarkerStorage;
-import logisticspipes.utils.WorldUtil;
+import logisticspipes.utils.tuples.Pair;
+import logisticspipes.world.WorldCoordinatesWrapper;
 
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -118,23 +119,22 @@ public class LogisticsEventListener {
 				}
 			}
 			if (event.action == Action.RIGHT_CLICK_BLOCK) {
-				final TileEntity tile = event.entityPlayer.worldObj.getTileEntity(event.x, event.y, event.z);
-				if (tile instanceof TileEntityChest || SimpleServiceLocator.ironChestProxy.isIronChest(tile)) {
-					List<WeakReference<ModuleQuickSort>> list = new ArrayList<WeakReference<ModuleQuickSort>>();
-					for (AdjacentTile adj : new WorldUtil(tile).getAdjacentTileEntities()) {
-						if (adj.tile instanceof LogisticsTileGenericPipe) {
-							if (((LogisticsTileGenericPipe) adj.tile).pipe instanceof PipeLogisticsChassi) {
-								if (((PipeLogisticsChassi) ((LogisticsTileGenericPipe) adj.tile).pipe).getPointedOrientation() == adj.orientation.getOpposite()) {
-									PipeLogisticsChassi chassi = (PipeLogisticsChassi) ((LogisticsTileGenericPipe) adj.tile).pipe;
-									for (int i = 0; i < chassi.getChassiSize(); i++) {
-										if (chassi.getLogisticsModule().getSubModule(i) instanceof ModuleQuickSort) {
-											list.add(new WeakReference<ModuleQuickSort>((ModuleQuickSort) chassi.getLogisticsModule().getSubModule(i)));
-										}
-									}
-								}
-							}
-						}
-					}
+				WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(event.entityPlayer.worldObj, event.x, event.y, event.z);
+				TileEntity tileEntity = worldCoordinates.getTileEntity();
+				if (tileEntity instanceof TileEntityChest || SimpleServiceLocator.ironChestProxy.isIronChest(tileEntity)) {
+					//@formatter:off
+					List<WeakReference<ModuleQuickSort>> list = worldCoordinates.getAdjacentTileEntities()
+							.filter(adjacent -> adjacent.tileEntity instanceof LogisticsTileGenericPipe)
+							.filter(adjacent -> ((LogisticsTileGenericPipe) adjacent.tileEntity).pipe instanceof PipeLogisticsChassi)
+							.filter(adjacent -> ((PipeLogisticsChassi) ((LogisticsTileGenericPipe) adjacent.tileEntity).pipe).getPointedOrientation()
+									== adjacent.direction.getOpposite())
+							.map(adjacent -> (PipeLogisticsChassi) ((LogisticsTileGenericPipe) adjacent.tileEntity).pipe)
+							.flatMap(pipeLogisticsChassi -> Arrays.stream(pipeLogisticsChassi.getModules().getModules()))
+							.filter(logisticsModule -> logisticsModule instanceof ModuleQuickSort)
+							.map(logisticsModule -> new WeakReference<>((ModuleQuickSort) logisticsModule))
+							.collect(Collectors.toList());
+					//@formatter:on
+
 					if (!list.isEmpty()) {
 						LogisticsEventListener.chestQuickSortConnection.put(event.entityPlayer, list);
 					}

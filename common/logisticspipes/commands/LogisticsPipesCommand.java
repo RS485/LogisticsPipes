@@ -2,6 +2,7 @@ package logisticspipes.commands;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import logisticspipes.LPConstants;
 import logisticspipes.commands.abstracts.ICommandHandler;
@@ -70,6 +71,7 @@ public class LogisticsPipesCommand extends CommandBase {
 	}
 
 	public static boolean isOP(ICommandSender sender) {
-		return Arrays.asList(FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().func_152603_m().func_152685_a()).contains(sender.getCommandSenderName().toLowerCase()) || (MainProxy.proxy.checkSinglePlayerOwner(sender.getCommandSenderName()));
+		return Arrays.asList(FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().func_152603_m().func_152685_a())
+				.contains(sender.getCommandSenderName().toLowerCase(Locale.US)) || (MainProxy.proxy.checkSinglePlayerOwner(sender.getCommandSenderName()));
 	}
 }

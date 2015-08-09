@@ -1,6 +1,7 @@
 package logisticspipes.proxy.forestry;
 
 import java.lang.reflect.Method;
+import java.util.Locale;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
@@ -454,7 +455,7 @@ public class ForestryProxy implements IForestryProxy {
 	@Override
 	public String getForestryTranslation(String input) {
 		try {
-			return (String) localize.invoke(null, new Object[] { input.toLowerCase() });
+			return (String) localize.invoke(null, input.toLowerCase(Locale.US));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return input;

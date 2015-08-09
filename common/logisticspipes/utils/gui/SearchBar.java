@@ -3,6 +3,7 @@ package logisticspipes.utils.gui;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.util.Locale;
 
 import logisticspipes.utils.Color;
 
@@ -143,7 +144,7 @@ public class SearchBar {
 		}
 		if (c == 13 || i == 28) { //Enter
 			unFocus();
-		} else if (c == 8 || (i == 14 && System.getProperty("os.name").toLowerCase().indexOf("mac") >= 0)) { //Backspace
+		} else if (c == 8 || (i == 14 && System.getProperty("os.name").toLowerCase(Locale.US).contains("mac"))) { //Backspace
 			if (searchinput1.length() > 0) {
 				searchinput1 = searchinput1.substring(0, searchinput1.length() - 1);
 			}

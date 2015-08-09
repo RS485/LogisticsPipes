@@ -9,6 +9,7 @@
 package logisticspipes.gui.orderer;
 
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -146,7 +147,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		if (search.isEmpty()) {
 			return true;
 		}
-		if (isSearched(item.getFriendlyName().toLowerCase(), search.getContent().toLowerCase())) {
+		if (isSearched(item.getFriendlyName().toLowerCase(Locale.US), search.getContent().toLowerCase(Locale.US))) {
 			return true;
 		}
 		//if(isSearched(String.valueOf(Item.getIdFromItem(item.item)), search.getContent())) return true;
@@ -156,7 +157,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 			if (e.getKey().intValue() < Enchantment.enchantmentsList.length && Enchantment.enchantmentsList[e.getKey()] != null) {
 				String enchantname = Enchantment.enchantmentsList[e.getKey()].getTranslatedName(e.getValue());
 				if (enchantname != null) {
-					if (isSearched(enchantname.toLowerCase(), search.getContent().toLowerCase())) {
+					if (isSearched(enchantname.toLowerCase(Locale.US), search.getContent().toLowerCase(Locale.US))) {
 						return true;
 					}
 				}

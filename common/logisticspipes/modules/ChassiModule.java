@@ -25,36 +25,40 @@ import net.minecraft.util.IIcon;
 
 public class ChassiModule extends LogisticsGuiModule {
 
-	private final LogisticsModule[] _modules;
-	private final PipeLogisticsChassi _parentPipe;
+	private final LogisticsModule[] modules;
+	private final PipeLogisticsChassi parentChassis;
 
-	public ChassiModule(int moduleCount, PipeLogisticsChassi parentPipe) {
-		_modules = new LogisticsModule[moduleCount];
-		_parentPipe = parentPipe;
-		_service = parentPipe;
+	public ChassiModule(int moduleCount, PipeLogisticsChassi parentChassis) {
+		modules = new LogisticsModule[moduleCount];
+		this.parentChassis = parentChassis;
+		_service = parentChassis;
 		registerPosition(ModulePositionType.IN_PIPE, 0);
 	}
 
 	public void installModule(int slot, LogisticsModule module) {
-		_modules[slot] = module;
+		modules[slot] = module;
 	}
 
 	public void removeModule(int slot) {
-		_modules[slot] = null;
+		modules[slot] = null;
 	}
 
 	public LogisticsModule getModule(int slot) {
-		return _modules[slot];
+		return modules[slot];
 	}
 
 	public boolean hasModule(int slot) {
-		return (_modules[slot] != null);
+		return (modules[slot] != null);
+	}
+
+	public LogisticsModule[] getModules() {
+		return modules;
 	}
 
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		SinkReply bestresult = null;
-		for (LogisticsModule module : _modules) {
+		for (LogisticsModule module : modules) {
 			if (module != null) {
 				SinkReply result = module.sinksItem(item, bestPriority, bestCustomPriority, allowDefault, includeInTransit);
 				if (result != null && result.maxNumberOfItems >= 0) {
@@ -69,7 +73,7 @@ public class ChassiModule extends LogisticsGuiModule {
 			return null;
 		}
 		//Always deny items when we can't put the item anywhere
-		IInventoryUtil invUtil = _parentPipe.getSneakyInventory(false, ModulePositionType.SLOT, ((ChassiTargetInformation) bestresult.addInfo).getModuleSlot());
+		IInventoryUtil invUtil = parentChassis.getSneakyInventory(false, ModulePositionType.SLOT, ((ChassiTargetInformation) bestresult.addInfo).getModuleSlot());
 		if (invUtil == null) {
 			return null;
 		}
@@ -78,7 +82,7 @@ public class ChassiModule extends LogisticsGuiModule {
 			return null;
 		}
 		if (includeInTransit) {
-			int onRoute = _parentPipe.countOnRoute(item);
+			int onRoute = parentChassis.countOnRoute(item);
 			roomForItem = invUtil.roomForItem(item, onRoute + item.getMaxStackSize());
 			roomForItem -= onRoute;
 			if (roomForItem < 1) {
@@ -94,19 +98,19 @@ public class ChassiModule extends LogisticsGuiModule {
 
 	@Override
 	public LogisticsModule getSubModule(int slot) {
-		if (slot < 0 || slot >= _modules.length) {
+		if (slot < 0 || slot >= modules.length) {
 			return null;
 		}
-		return _modules[slot];
+		return modules[slot];
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		for (int i = 0; i < _modules.length; i++) {
-			if (_modules[i] != null) {
+		for (int i = 0; i < modules.length; i++) {
+			if (modules[i] != null) {
 				NBTTagCompound slot = nbttagcompound.getCompoundTag("slot" + i);
 				if (slot != null) {
-					_modules[i].readFromNBT(slot);
+					modules[i].readFromNBT(slot);
 				}
 			}
 		}
@@ -114,10 +118,10 @@ public class ChassiModule extends LogisticsGuiModule {
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
-		for (int i = 0; i < _modules.length; i++) {
-			if (_modules[i] != null) {
+		for (int i = 0; i < modules.length; i++) {
+			if (modules[i] != null) {
 				NBTTagCompound slot = new NBTTagCompound();
-				_modules[i].writeToNBT(slot);
+				modules[i].writeToNBT(slot);
 				nbttagcompound.setTag("slot" + i, slot);
 			}
 		}
@@ -125,7 +129,7 @@ public class ChassiModule extends LogisticsGuiModule {
 
 	@Override
 	public void tick() {
-		for (LogisticsModule module : _modules) {
+		for (LogisticsModule module : modules) {
 			if (module == null) {
 				continue;
 			}
@@ -160,7 +164,7 @@ public class ChassiModule extends LogisticsGuiModule {
 
 	@Override
 	public boolean recievePassive() {
-		for (LogisticsModule module : _modules) {
+		for (LogisticsModule module : modules) {
 			if (module != null && module.recievePassive()) {
 				return true;
 			}
@@ -171,7 +175,7 @@ public class ChassiModule extends LogisticsGuiModule {
 	@Override
 	public List<CCSinkResponder> queueCCSinkEvent(ItemIdentifierStack item) {
 		List<CCSinkResponder> list = new ArrayList<CCSinkResponder>();
-		for (LogisticsModule module : _modules) {
+		for (LogisticsModule module : modules) {
 			if (module != null) {
 				list.addAll(module.queueCCSinkEvent(item));
 			}
@@ -187,7 +191,7 @@ public class ChassiModule extends LogisticsGuiModule {
 
 	@Override
 	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
-		return NewGuiHandler.getGui(ChassiGuiProvider.class).setFlag(_parentPipe.getUpgradeManager().hasUpgradeModuleUpgrade());
+		return NewGuiHandler.getGui(ChassiGuiProvider.class).setFlag(parentChassis.getUpgradeManager().hasUpgradeModuleUpgrade());
 	}
 
 	@Override

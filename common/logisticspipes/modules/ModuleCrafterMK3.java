@@ -14,7 +14,6 @@ import logisticspipes.pipes.PipeItemsCraftingLogisticsMk3;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
-import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.InventoryHelper;
@@ -24,6 +23,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Triplet;
+import logisticspipes.world.WorldCoordinatesWrapper.AdjacentTileEntity;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -60,10 +60,12 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISi
 
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
-		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
+		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal()
+				&& bestCustomPriority >= _sinkReply.customPriority)) {
 			return null;
 		}
-		return new SinkReply(_sinkReply, spaceFor(item, includeInTransit, true), isForBuffer(item, includeInTransit) ? BufferMode.BUFFERED : areAllOrderesToBuffer() ? BufferMode.DESTINATION_BUFFERED : BufferMode.NONE);
+		return new SinkReply(_sinkReply, spaceFor(item, includeInTransit, true),
+				isForBuffer(item, includeInTransit) ? BufferMode.BUFFERED : areAllOrderesToBuffer() ? BufferMode.DESTINATION_BUFFERED : BufferMode.NONE);
 	}
 
 	protected int spaceFor(ItemIdentifier item, boolean includeInTransit, boolean addBufferSpace) {
@@ -127,29 +129,30 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISi
 			return;
 		}
 		//Add from internal buffer
-		List<AdjacentTile> crafters = locateCrafters();
+		List<AdjacentTileEntity> crafters = locateCrafters();
 		boolean change = false;
-		for (AdjacentTile tile : crafters) {
+		for (AdjacentTileEntity adjacent : crafters) {
 			for (int i = inv.getSizeInventory() - 1; i >= 0; i--) {
 				ItemIdentifierStack slot = inv.getIDStackInSlot(i);
 				if (slot == null) {
 					continue;
 				}
-				ForgeDirection insertion = tile.orientation.getOpposite();
+				ForgeDirection insertion = adjacent.direction.getOpposite();
 				if (getUpgradeManager().hasSneakyUpgrade()) {
 					insertion = getUpgradeManager().getSneakyOrientation();
 				}
 				ItemIdentifierStack toadd = slot.clone();
 				toadd.setStackSize(Math.min(toadd.getStackSize(), toadd.getItem().getMaxStackSize()));
 				if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING)) {
-					toadd.setStackSize(Math.min(toadd.getStackSize(), ((IInventory) tile.tile).getInventoryStackLimit()));
-					ItemStack added = InventoryHelper.getTransactorFor(tile.tile, tile.orientation.getOpposite()).add(toadd.makeNormalStack(), insertion, true);
+					toadd.setStackSize(Math.min(toadd.getStackSize(), ((IInventory) adjacent.tileEntity).getInventoryStackLimit()));
+					ItemStack added = InventoryHelper.getTransactorFor(adjacent.tileEntity, adjacent.direction.getOpposite())
+							.add(toadd.makeNormalStack(), insertion, true);
 					slot.setStackSize(slot.getStackSize() - added.stackSize);
 					if (added.stackSize != 0) {
 						change = true;
 					}
 				} else {
-					_service.queueRoutedItem(SimpleServiceLocator.routedItemHelper.createNewTravelItem(toadd), tile.orientation.getOpposite());
+					_service.queueRoutedItem(SimpleServiceLocator.routedItemHelper.createNewTravelItem(toadd), adjacent.direction.getOpposite());
 					slot.setStackSize(slot.getStackSize() - toadd.getStackSize());
 					change = true;
 				}
@@ -170,7 +173,9 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISi
 	@Override
 	public void InventoryChanged(IInventory inventory) {
 		if (MainProxy.isServer(_world.getWorld())) {
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(inv, true)).setModulePos(this), localModeWatchers);
+			MainProxy.sendToPlayerList(
+					PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(inv, true)).setModulePos(this),
+					localModeWatchers);
 		}
 	}
 
@@ -182,7 +187,8 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISi
 
 	@Override
 	public void startWatching(EntityPlayer player) {
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(inv, true)).setModulePos(this), player);
+		MainProxy.sendPacketToPlayer(
+				PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(inv, true)).setModulePos(this), player);
 		super.startWatching(player);
 	}
 

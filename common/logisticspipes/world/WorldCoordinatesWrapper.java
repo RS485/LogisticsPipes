@@ -82,7 +82,7 @@ public class WorldCoordinatesWrapper {
 			LogisticsPipes.log.warn("The coordinates didn't hold a pipe at all", new Throwable("Stack trace"));
 			return Stream.empty();
 		}
-		return getAdjacentTileEntities().filter(adjacent -> MainProxy.checkPipesConnections(pipe, adjacent.adjTileEntity, adjacent.direction));
+		return getAdjacentTileEntities().filter(adjacent -> MainProxy.checkPipesConnections(pipe, adjacent.tileEntity, adjacent.direction));
 	}
 
 	public Stream<AdjacentTileEntity> getConnectedAdjacentTileEntities(ConnectionPipeType pipeType) {
@@ -93,7 +93,7 @@ public class WorldCoordinatesWrapper {
 			}
 			return Stream.empty();
 		}
-		return getAdjacentTileEntities().filter(adjacent -> MainProxy.checkPipesConnections(pipe, adjacent.adjTileEntity, adjacent.direction));
+		return getAdjacentTileEntities().filter(adjacent -> MainProxy.checkPipesConnections(pipe, adjacent.tileEntity, adjacent.direction));
 	}
 
 	public TileEntity getTileEntity() {
@@ -105,11 +105,10 @@ public class WorldCoordinatesWrapper {
 		return new AdjacentTileEntity(world.getTileEntity(newCoords.getXCoord(), newCoords.getYCoord(), newCoords.getZCoord()), direction);
 	}
 
-	@Data
 	@AllArgsConstructor
 	public static class AdjacentTileEntity {
 
-		public TileEntity adjTileEntity;
+		public TileEntity tileEntity;
 		public ForgeDirection direction;
 	}
 }

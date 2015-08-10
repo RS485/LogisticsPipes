@@ -1364,7 +1364,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 
 	@CCCommand(description = "Returns the Router UUID for the givvin router Id")
 	public String getRouterUUID(Double id) {
-		IRouter router = SimpleServiceLocator.routerManager.getRouter((int) ((double) id));
+		IRouter router = SimpleServiceLocator.routerManager.getRouter(id.intValue());
 		if (router == null) {
 			return null;
 		}
@@ -1416,7 +1416,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 
 					@Override
 					public void call(CoreRoutedPipe pipe, IRouter router) {
-						pipe.handleMesssage((int) ((double) computerId), message, fSourceId);
+						pipe.handleMesssage(computerId.intValue(), message, fSourceId);
 					}
 				});
 				set.set(exit.destination.getSimpleID());

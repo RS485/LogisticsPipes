@@ -190,12 +190,13 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			doRenderItem(itemstack, pipe.container.getWorldObj(), x + pos.getXCoord(), y + pos.getYCoord(), z + pos.getZCoord(), light, 0.75F, boxScale, itemYaw, itemPitch, partialTickTime);
 			count++;
 		}
+
 		count = 0;
-		float dist = 0.135F;
-		DoubleCoordinates pos = new DoubleCoordinates(0.5D, 0.5D, 0.5D);
-		CoordinateUtils.add(pos, ForgeDirection.SOUTH, (double) dist);
-		CoordinateUtils.add(pos, ForgeDirection.EAST, (double) dist);
-		CoordinateUtils.add(pos, ForgeDirection.UP, (double) dist);
+		double dist = 0.135;
+		DoubleCoordinates pos = new DoubleCoordinates(0.5, 0.5, 0.5);
+		CoordinateUtils.add(pos, ForgeDirection.SOUTH, dist);
+		CoordinateUtils.add(pos, ForgeDirection.EAST, dist);
+		CoordinateUtils.add(pos, ForgeDirection.UP, dist);
 		for (Pair<ItemIdentifierStack, Pair<Integer, Integer>> item : pipe.transport._itemBuffer) {
 			if (item == null || item.getValue1() == null) {
 				continue;
@@ -206,14 +207,14 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			if (count >= 27) {
 				break;
 			} else if (count % 9 == 0) {
-				CoordinateUtils.add(pos, ForgeDirection.SOUTH, (double) (dist * 2));
-				CoordinateUtils.add(pos, ForgeDirection.EAST, (double) (dist * 2));
-				CoordinateUtils.add(pos, ForgeDirection.DOWN, (double) dist);
+				CoordinateUtils.add(pos, ForgeDirection.SOUTH, dist * 2.0);
+				CoordinateUtils.add(pos, ForgeDirection.EAST, dist * 2.0);
+				CoordinateUtils.add(pos, ForgeDirection.DOWN, dist);
 			} else if (count % 3 == 0) {
-				CoordinateUtils.add(pos, ForgeDirection.SOUTH, (double) (dist * 2));
-				CoordinateUtils.add(pos, ForgeDirection.WEST, (double) dist);
+				CoordinateUtils.add(pos, ForgeDirection.SOUTH, dist * 2.0);
+				CoordinateUtils.add(pos, ForgeDirection.WEST, dist);
 			} else {
-				CoordinateUtils.add(pos, ForgeDirection.NORTH, (double) dist);
+				CoordinateUtils.add(pos, ForgeDirection.NORTH, dist);
 			}
 		}
 

@@ -284,12 +284,12 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 			if (!container.renderState.pipeConnectionMatrix.isConnected(travelItem.input.getOpposite())) {
 				return null;
 			}
-			CoordinateUtils.add(pos, travelItem.input.getOpposite(), (double) (0.5F - fPos));
+			CoordinateUtils.add(pos, travelItem.input.getOpposite(), 0.5 - fPos);
 		} else {
 			if (travelItem.output == ForgeDirection.UNKNOWN) {
 				return null;
 			}
-			CoordinateUtils.add(pos, travelItem.output, (double) (fPos - 0.5F));
+			CoordinateUtils.add(pos, travelItem.output, fPos - 0.5);
 		}
 		return pos;
 	}

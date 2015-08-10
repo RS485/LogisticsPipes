@@ -199,7 +199,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int x, int y, int z) {
 		TileEntity tile = world.getTileEntity(x, y, z);
 		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe instanceof PipeBlockRequestTable) {
-			return AxisAlignedBB.getBoundingBox((double) x + 0, (double) y + 0, (double) z + 0, (double) x + 1, (double) y + 1, (double) z + 1);
+			return AxisAlignedBB.getBoundingBox(x + 0.0, y + 0.0, z + 0.0, x + 1.0, y + 1.0, z + 1.0);
 		}
 		RaytraceResult rayTraceResult = doRayTrace(world, x, y, z, Minecraft.getMinecraft().thePlayer);
 

@@ -142,7 +142,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 							long addition = ((long) map.get(entry.getKey())) + entry.getValue();
 							map.put(entry.getKey(), addition > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) addition);
 						} else {
-							map.put(entry.getKey(), entry.getValue() > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) (long) entry.getValue());
+							map.put(entry.getKey(), entry.getValue() > Integer.MAX_VALUE ? Integer.MAX_VALUE : entry.getValue().intValue());
 						}
 					}
 				}

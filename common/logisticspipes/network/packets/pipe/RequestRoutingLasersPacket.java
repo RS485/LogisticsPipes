@@ -26,6 +26,7 @@ import logisticspipes.routing.pathfinder.PathFinder;
 
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
+import network.rs485.logisticspipes.world.IntegerCoordinates;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
@@ -204,18 +205,18 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 		while (iLasers.hasNext()) {
 			boolean compressed = false;
 			LaserData data = iLasers.next();
-			DoubleCoordinates next = new DoubleCoordinates(data.getPosX(), data.getPosY(), data.getPosZ());
-			CoordinateUtils.add(next, data.getDir(), (double) data.getLength());
+			IntegerCoordinates next = new IntegerCoordinates(data.getPosX(), data.getPosY(), data.getPosZ());
+			CoordinateUtils.add(next, data.getDir(), data.getLength());
 			boolean found = false;
 			do {
 				found = false;
 				Iterator<LaserData> iOptions = options.iterator();
 				while (iOptions.hasNext()) {
 					LaserData d = iOptions.next();
-					if (d.getPosX() == next.getXInt() && d.getPosY() == next.getYInt() && d.getPosZ() == next.getZInt()) {
+					if (d.getPosX() == next.getXCoord() && d.getPosY() == next.getYCoord() && d.getPosZ() == next.getZCoord()) {
 						if (data.getDir().equals(d.getDir()) && data.getConnectionType().equals(d.getConnectionType())) {
 							data.setLength(data.getLength() + d.getLength());
-							CoordinateUtils.add(next, data.getDir(), (double) d.getLength());
+							CoordinateUtils.add(next, data.getDir(), d.getLength());
 							found = true;
 							iOptions.remove();
 							lasers.remove(d);

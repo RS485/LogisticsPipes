@@ -120,8 +120,8 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 				if (isMouseButtonDown == 0) {
 					isMouseButtonDown = 1;
 				} else {
-					guiMapX -= (double) (par1 - mouseX) * 1 / zoom.zoom;
-					guiMapY -= (double) (par2 - mouseY) * 1 / zoom.zoom;
+					guiMapX -= (double) (par1 - mouseX) / zoom.zoom;
+					guiMapY -= (double) (par2 - mouseY) / zoom.zoom;
 				}
 
 				mouseX = par1;

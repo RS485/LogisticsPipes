@@ -269,7 +269,7 @@ public abstract class LPTravelingItem {
 				}
 
 				DoubleCoordinates motion = new DoubleCoordinates(0, 0, 0);
-				CoordinateUtils.add(motion, exitdirection, (double) (getSpeed() * 2F));
+				CoordinateUtils.add(motion, exitdirection, getSpeed() * 2.0);
 
 				EntityItem entityitem = getItemIdentifierStack().makeEntityItem(worldObj, position.getXCoord(), position.getYCoord(), position.getZCoord());
 

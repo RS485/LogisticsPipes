@@ -144,8 +144,8 @@ public class RequestMonitorPopup extends SubGuiScreen {
 				if (isMouseButtonDown == 0) {
 					isMouseButtonDown = 1;
 				} else {
-					guiMapX -= (double) (par1 - mouseX) * 1 / zoom.zoom;
-					guiMapY -= (double) (par2 - mouseY) * 1 / zoom.zoom;
+					guiMapX -= (double) (par1 - mouseX) / zoom.zoom;
+					guiMapY -= (double) (par2 - mouseY) / zoom.zoom;
 				}
 
 				mouseX = par1;
@@ -319,7 +319,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		}
 		renderLinkedOrderListLines(list, left, top + 17);
 		for (Float progress : list.getProgresses()) {
-			int pos = (int) (29.0F * progress.floatValue());
+			int pos = (int) (29.0F * progress);
 			drawProgressPoint(left + 8, top + pos, 0xff00ff00);
 		}
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -408,7 +408,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		}
 		renderLinkedOrderListLines(list, innerLeftSide - mapX + 102, innerTopSide - mapY - 180);
 		for (Float progress : list.getProgresses()) {
-			int pos = (int) (29.0F * progress.floatValue());
+			int pos = (int) (29.0F * progress);
 			drawProgressPoint(innerLeftSide - mapX + 110, innerTopSide - mapY - 197 + pos, 0xff00ff00);
 		}
 		GL11.glEnable(GL11.GL_TEXTURE_2D);

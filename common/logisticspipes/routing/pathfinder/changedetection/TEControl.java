@@ -3,6 +3,8 @@ package logisticspipes.routing.pathfinder.changedetection;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 import logisticspipes.asm.te.ILPTEInformation;
 import logisticspipes.asm.te.ITileEntityChangeListener;
 import logisticspipes.asm.te.LPTileEntityObject;
@@ -13,8 +15,6 @@ import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipe
 import logisticspipes.ticks.LPTickHandler;
 import logisticspipes.ticks.LPTickHandler.LPWorldInfo;
 import logisticspipes.ticks.QueuedTasks;
-
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -54,7 +54,7 @@ public class TEControl {
 						return null;
 					}
 					for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-						DoubleCoordinates newPos = pos.copy();
+						DoubleCoordinates newPos = new DoubleCoordinates(pos);
 						newPos.moveForward(dir);
 						if (!newPos.blockExists(world)) {
 							continue;
@@ -97,7 +97,7 @@ public class TEControl {
 				public Object call() throws Exception {
 					DoubleCoordinates pos = new DoubleCoordinates(tile);
 					for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-						DoubleCoordinates newPos = pos.copy();
+						DoubleCoordinates newPos = new DoubleCoordinates(pos);
 						newPos.moveForward(dir);
 						if (!newPos.blockExists(world)) {
 							continue;
@@ -161,7 +161,7 @@ public class TEControl {
 				@Override
 				public Object call() throws Exception {
 					for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-						DoubleCoordinates newPos = pos.copy();
+						DoubleCoordinates newPos = new DoubleCoordinates(pos);
 						newPos.moveForward(dir);
 						if (!newPos.blockExists(world)) {
 							continue;

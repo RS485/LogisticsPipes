@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
@@ -16,8 +18,6 @@ import logisticspipes.proxy.object3d.operation.LPRotation;
 import logisticspipes.proxy.object3d.operation.LPScale;
 import logisticspipes.proxy.object3d.operation.LPTranslation;
 import logisticspipes.proxy.object3d.operation.LPUVScale;
-
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -182,7 +182,7 @@ public class LogisticsNewSolidBlockWorldRenderer {
 		DoubleCoordinates pos = new DoubleCoordinates(blockTile);
 		for (CoverSides side : CoverSides.values()) {
 			boolean render = true;
-			DoubleCoordinates newPos = pos.copy();
+			DoubleCoordinates newPos = new DoubleCoordinates(pos);
 			newPos.moveForward(side.getDir(rotation));
 			TileEntity sideTile = newPos.getTileEntity(blockTile.getWorldObj());
 			if (sideTile instanceof LogisticsTileGenericPipe) {

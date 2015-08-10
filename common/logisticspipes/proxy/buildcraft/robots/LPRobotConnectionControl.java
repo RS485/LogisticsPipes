@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.routing.ISpecialPipedConnection;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -16,9 +18,6 @@ import logisticspipes.proxy.buildcraft.robots.boards.LogisticsRoutingBoardRobot;
 import logisticspipes.proxy.specialconnection.SpecialPipeConnection.ConnectionInformation;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
-
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-
 import logisticspipes.utils.tuples.Pair;
 
 import net.minecraft.tileentity.TileEntity;
@@ -99,7 +98,7 @@ public class LPRobotConnectionControl implements ISpecialPipedConnection {
 		DoubleCoordinates sourceRobotPosition = board.getLinkedStationPosition().center().moveForward(board.robot.getDockingStation().side(), 0.5);
 		IZone zone = board.robot.getZoneToWork();
 		for (Pair<DoubleCoordinates, ForgeDirection> canidatePos : globalAvailableRobots.get(board.robot.worldObj)) {
-			DoubleCoordinates canidateRobotPosition = canidatePos.getValue1().copy().center().moveForward(canidatePos.getValue2(), 0.5);
+			DoubleCoordinates canidateRobotPosition = new DoubleCoordinates(canidatePos.getValue1()).center().moveForward(canidatePos.getValue2(), 0.5);
 			double distance = canidateRobotPosition.distanceTo(sourceRobotPosition);
 			boolean isPartOfZone;
 			if (zone != null) {
@@ -195,22 +194,23 @@ public class LPRobotConnectionControl implements ISpecialPipedConnection {
 					continue;
 				}
 				DoubleCoordinates connectedRobotPos = new DoubleCoordinates(connectedRobot);
-				if (pipePos.copy().center().moveForward(currentTarget.getValue2().robot.getLinkedStation().side(), 0.5).distanceTo(connectedRobotPos) > 0.05) {
+				if (new DoubleCoordinates(pipePos).center().moveForward(currentTarget.getValue2().robot.getLinkedStation().side(), 0.5)
+						.distanceTo(connectedRobotPos) > 0.05) {
 					continue; // Not at station
 				}
 				EnumSet<PipeRoutingConnectionType> newCon = connection.clone();
 				newCon.removeAll(EnumSet.of(PipeRoutingConnectionType.canPowerFrom, PipeRoutingConnectionType.canPowerSubSystemFrom));
-				double distance = currentTarget.getValue2().getLinkedStationPosition().copy().center().moveForward(currentTarget.getValue2().robot.getLinkedStation().side(), 0.5).distanceTo(robotPos);
+				double distance = new DoubleCoordinates(currentTarget.getValue2().getLinkedStationPosition()).center().moveForward(currentTarget.getValue2().robot.getLinkedStation().side(), 0.5).distanceTo(robotPos);
 				list.add(new ConnectionInformation(connectedInfo, newCon, currentTarget.getValue2().robot.getLinkedStation().side().getOpposite(), dir, (distance * 3) + 21));
 			} else {
-				if (pos.copy().moveForward(dir, 0.5).distanceTo(robotPos) > 0.05) {
+				if (new DoubleCoordinates(pos).moveForward(dir, 0.5).distanceTo(robotPos) > 0.05) {
 					continue; // Not at station
 				}
 				for (Pair<DoubleCoordinates, ForgeDirection> canidatePos : ((LogisticsRoutingBoardRobot) robot.getBoard()).getConnectionDetails().localConnectedRobots) {
 					if (canidatePos.getValue1().equals(new DoubleCoordinates(startPipe))) {
 						continue;
 					}
-					double distance = canidatePos.getValue1().copy().center().moveForward(canidatePos.getValue2(), 0.5).distanceTo(robotPos);
+					double distance = new DoubleCoordinates(canidatePos.getValue1()).center().moveForward(canidatePos.getValue2(), 0.5).distanceTo(robotPos);
 					TileEntity connectedPipeTile = canidatePos.getValue1().getTileEntity(pipe.getWorldObj());
 					if (!(connectedPipeTile instanceof LogisticsTileGenericPipe)) {
 						continue;
@@ -248,7 +248,7 @@ public class LPRobotConnectionControl implements ISpecialPipedConnection {
 						continue;
 					}
 					DoubleCoordinates connectedRobotPos = new DoubleCoordinates(connectedRobot);
-					if (canidatePos.getValue1().copy().center().moveForward(canidatePos.getValue2(), 0.5).distanceTo(connectedRobotPos) > 0.05) {
+					if (new DoubleCoordinates(canidatePos.getValue1()).center().moveForward(canidatePos.getValue2(), 0.5).distanceTo(connectedRobotPos) > 0.05) {
 						continue; // Not at station
 					}
 					EnumSet<PipeRoutingConnectionType> newCon = connection.clone();

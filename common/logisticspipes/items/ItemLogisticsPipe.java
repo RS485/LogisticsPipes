@@ -10,6 +10,9 @@ package logisticspipes.items;
 
 import java.util.List;
 
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.pipes.basic.CoreMultiBlockPipe;
@@ -18,8 +21,6 @@ import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.renderer.IIconProvider;
 import logisticspipes.utils.LPPositionSet;
 import logisticspipes.utils.string.StringUtils;
-
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -132,16 +133,14 @@ public class ItemLogisticsPipe extends LogisticsItem {
 			boolean isFreeSpace = true;
 			DoubleCoordinates placeAt = new DoubleCoordinates(i, j, k);
 			LPPositionSet globalPos = new LPPositionSet();
-			globalPos.add(placeAt.copy());
+			globalPos.add(new DoubleCoordinates(placeAt));
 			LPPositionSet positions = multiPipe.getSubBlocks();
 			ITubeOrientation orientation = multiPipe.getTubeOrientation(entityplayer, i, k);
 			if (orientation == null) {
 				return false;
 			}
 			orientation.rotatePositions(positions);
-			for (DoubleCoordinates pos : positions) {
-				globalPos.add(pos.copy().add(placeAt));
-			}
+			positions.stream().map(pos -> CoordinateUtils.sum(pos, placeAt)).forEach(globalPos::add);
 			globalPos.addToAll(orientation.getOffset());
 			placeAt.add(orientation.getOffset());
 

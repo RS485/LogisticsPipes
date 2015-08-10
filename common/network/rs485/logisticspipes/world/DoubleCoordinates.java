@@ -159,10 +159,6 @@ public class DoubleCoordinates implements IPositionRotateble, ICoordinates {
 		return "(" + getXCoord() + ", " + getYCoord() + ", " + getZCoord() + ")";
 	}
 
-	public DoubleCoordinates copy() {
-		return new DoubleCoordinates(xCoord, yCoord, zCoord);
-	}
-
 	public Block getBlock(IBlockAccess world) {
 		return world.getBlock(getXInt(), getYInt(), getZInt());
 	}

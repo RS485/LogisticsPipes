@@ -3,6 +3,8 @@ package logisticspipes.proxy.buildcraft.robots.boards;
 import java.util.HashSet;
 import java.util.Set;
 
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -14,9 +16,6 @@ import logisticspipes.routing.ExitRoute;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.transactor.ITransactor;
-
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-
 import logisticspipes.utils.tuples.Pair;
 
 import net.minecraft.item.ItemStack;
@@ -181,7 +180,7 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 			if (canidatePos.getValue1().equals(new DoubleCoordinates(robot.getLinkedStation().x(), robot.getLinkedStation().y(), robot.getLinkedStation().z()))) {
 				continue;
 			}
-			double distance = canidatePos.getValue1().copy().center().moveForward(canidatePos.getValue2(), 0.5).distanceTo(robotPos);
+			double distance = new DoubleCoordinates(canidatePos.getValue1()).center().moveForward(canidatePos.getValue2(), 0.5).distanceTo(robotPos);
 			if (result == null || result.getValue1() > distance) {
 				TileEntity connectedPipeTile = canidatePos.getValue1().getTileEntity(robot.worldObj);
 				if (!(connectedPipeTile instanceof LogisticsTileGenericPipe)) {
@@ -219,7 +218,7 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 					continue;
 				}
 				DoubleCoordinates connectedRobotPos = new DoubleCoordinates(connectedRobot);
-				if (canidatePos.getValue1().copy().center().moveForward(canidatePos.getValue2(), 0.5).distanceTo(connectedRobotPos) > 0.05) {
+				if (new DoubleCoordinates(canidatePos.getValue1()).center().moveForward(canidatePos.getValue2(), 0.5).distanceTo(connectedRobotPos) > 0.05) {
 					continue; // Not at station
 				}
 				Double mindis = Double.NaN;

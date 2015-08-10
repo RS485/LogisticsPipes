@@ -1,7 +1,6 @@
 package logisticspipes.utils;
 
 import java.util.HashSet;
-import java.util.Set;
 
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -81,15 +80,6 @@ public class LPPositionSet extends HashSet<DoubleCoordinates> implements IPositi
 			z = Math.min(z, pos.getZCoord());
 		}
 		return z;
-	}
-
-	public void copyPositions() {
-		Set<DoubleCoordinates> tmp = new HashSet<DoubleCoordinates>();
-		for (DoubleCoordinates pos : this) {
-			tmp.add(pos.copy());
-		}
-		clear();
-		addAll(tmp);
 	}
 
 	public void addToAll(DoubleCoordinates lpPosition) {

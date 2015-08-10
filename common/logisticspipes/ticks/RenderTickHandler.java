@@ -1,5 +1,8 @@
 package logisticspipes.ticks;
 
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.items.ItemLogisticsPipe;
@@ -8,8 +11,6 @@ import logisticspipes.renderer.LogisticsGuiOverrenderer;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.debug.ClientViewController;
 import logisticspipes.utils.LPPositionSet;
-
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -115,14 +116,12 @@ public class RenderTickHandler {
 				boolean isFreeSpace = true;
 				DoubleCoordinates placeAt = new DoubleCoordinates(xCoord, yCoord, zCoord);
 				LPPositionSet globalPos = new LPPositionSet();
-				globalPos.add(placeAt.copy());
+				globalPos.add(new DoubleCoordinates(placeAt));
 				LPPositionSet positions = multiPipe.getSubBlocks();
 				ITubeOrientation orientation = multiPipe.getTubeOrientation(player, (int) xCoord, (int) zCoord);
 				if (orientation != null) {
 					orientation.rotatePositions(positions);
-					for (DoubleCoordinates pos : positions) {
-						globalPos.add(pos.copy().add(placeAt));
-					}
+					positions.stream().map(pos -> CoordinateUtils.sum(pos, placeAt)).forEach(globalPos::add);
 					globalPos.addToAll(orientation.getOffset());
 
 					for (DoubleCoordinates pos : globalPos) {

@@ -20,9 +20,25 @@
 
 package network.rs485.logisticspipes.world;
 
+import net.minecraftforge.common.util.ForgeDirection;
+
 public final class CoordinateUtils {
 
 	private CoordinateUtils() {}
+
+	public static DoubleCoordinates add(DoubleCoordinates coords, DoubleCoordinates toAdd) {
+		coords.setXCoord(coords.getXCoord() + toAdd.getXCoord());
+		coords.setYCoord(coords.getYCoord() + toAdd.getYCoord());
+		coords.setZCoord(coords.getZCoord() + toAdd.getZCoord());
+		return coords;
+	}
+
+	public static IntegerCoordinates add(IntegerCoordinates coords, IntegerCoordinates toAdd) {
+		coords.setXCoord(coords.getXCoord() + toAdd.getXCoord());
+		coords.setYCoord(coords.getYCoord() + toAdd.getYCoord());
+		coords.setZCoord(coords.getZCoord() + toAdd.getZCoord());
+		return coords;
+	}
 
 	public static DoubleCoordinates sum(DoubleCoordinates first, DoubleCoordinates second) {
 		DoubleCoordinates ret = new DoubleCoordinates();
@@ -38,5 +54,27 @@ public final class CoordinateUtils {
 		ret.setYCoord(first.getYCoord() + second.getYCoord());
 		ret.setZCoord(first.getZCoord() + second.getZCoord());
 		return ret;
+	}
+
+	public static DoubleCoordinates add(DoubleCoordinates coords, ForgeDirection direction) {
+		return CoordinateUtils.add(coords, direction, 1);
+	}
+
+	public static IntegerCoordinates add(IntegerCoordinates coords, ForgeDirection direction) {
+		return CoordinateUtils.add(coords, direction, 1);
+	}
+
+	public static DoubleCoordinates add(DoubleCoordinates coords, ForgeDirection direction, int times) {
+		coords.setXCoord(coords.getXCoord() + direction.offsetX * times);
+		coords.setYCoord(coords.getYCoord() + direction.offsetY * times);
+		coords.setZCoord(coords.getZCoord() + direction.offsetZ * times);
+		return coords;
+	}
+
+	public static IntegerCoordinates add(IntegerCoordinates coords, ForgeDirection direction, int times) {
+		coords.setXCoord(coords.getXCoord() + direction.offsetX * times);
+		coords.setYCoord(coords.getYCoord() + direction.offsetY * times);
+		coords.setZCoord(coords.getZCoord() + direction.offsetZ * times);
+		return coords;
 	}
 }

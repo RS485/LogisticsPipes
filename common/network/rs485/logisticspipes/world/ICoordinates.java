@@ -20,71 +20,17 @@
 
 package network.rs485.logisticspipes.world;
 
-import net.minecraftforge.common.util.ForgeDirection;
+public interface ICoordinates {
 
-import lombok.Data;
+	double getXDouble();
 
-@Data
-public class IntegerCoordinates implements ICoordinates {
+	double getYDouble();
 
-	private int xCoord;
-	private int yCoord;
-	private int zCoord;
+	double getZDouble();
 
-	public IntegerCoordinates() {
-		setXCoord(0);
-		setYCoord(0);
-		setZCoord(0);
-	}
+	int getXInt();
 
-	public IntegerCoordinates(int xCoord, int yCoord, int zCoord) {
-		setXCoord(xCoord);
-		setYCoord(yCoord);
-		setZCoord(zCoord);
-	}
+	int getYInt();
 
-	public IntegerCoordinates(IntegerCoordinates copy) {
-		this(copy.xCoord, copy.yCoord, copy.zCoord);
-	}
-
-	@Override
-	public double getXDouble() {
-		return getXCoord() + 0.5;
-	}
-
-	@Override
-	public double getYDouble() {
-		return getYCoord() + 0.5;
-	}
-
-	@Override
-	public double getZDouble() {
-		return getZCoord() + 0.5;
-	}
-
-	@Override
-	public int getXInt() {
-		return getXCoord();
-	}
-
-	@Override
-	public int getYInt() {
-		return getYCoord();
-	}
-
-	@Override
-	public int getZInt() {
-		return getZCoord();
-	}
-
-	public IntegerCoordinates add(ForgeDirection direction) {
-		return add(direction, 1);
-	}
-
-	public IntegerCoordinates add(ForgeDirection direction, int times) {
-		setXCoord(xCoord + direction.offsetX * times);
-		setYCoord(yCoord + direction.offsetY * times);
-		setZCoord(zCoord + direction.offsetZ * times);
-		return this;
-	}
+	int getZInt();
 }

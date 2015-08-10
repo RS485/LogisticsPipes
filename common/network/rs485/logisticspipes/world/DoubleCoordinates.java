@@ -37,7 +37,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import lombok.Data;
 
 @Data
-public class DoubleCoordinates implements IPositionRotateble {
+public class DoubleCoordinates implements IPositionRotateble, ICoordinates {
 
 	private double xCoord;
 	private double yCoord;
@@ -79,14 +79,32 @@ public class DoubleCoordinates implements IPositionRotateble {
 		this(entity.posX, entity.posY, entity.posZ);
 	}
 
+	@Override
+	public double getXDouble() {
+		return getXCoord();
+	}
+
+	@Override
+	public double getYDouble() {
+		return getYCoord();
+	}
+
+	@Override
+	public double getZDouble() {
+		return getZCoord();
+	}
+
+	@Override
 	public int getXInt() {
 		return (int) getXCoord();
 	}
 
+	@Override
 	public int getYInt() {
 		return (int) getYCoord();
 	}
 
+	@Override
 	public int getZInt() {
 		return (int) getZCoord();
 	}

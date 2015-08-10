@@ -42,21 +42,21 @@ import lombok.Data;
 public class WorldCoordinatesWrapper {
 
 	private World world;
-	private Coordinates coords;
+	private IntegerCoordinates coords;
 
 	public WorldCoordinatesWrapper(World world) {
 		setWorld(world);
-		setCoords(new Coordinates());
+		setCoords(new IntegerCoordinates());
 	}
 
-	public WorldCoordinatesWrapper(World world, Coordinates coords) {
+	public WorldCoordinatesWrapper(World world, IntegerCoordinates coords) {
 		setWorld(world);
 		setCoords(coords);
 	}
 
 	public WorldCoordinatesWrapper(World world, int xCoord, int yCoord, int zCoord) {
 		setWorld(world);
-		setCoords(new Coordinates(xCoord, yCoord, zCoord));
+		setCoords(new IntegerCoordinates(xCoord, yCoord, zCoord));
 	}
 
 	public WorldCoordinatesWrapper(TileEntity tileEntity) {
@@ -68,7 +68,7 @@ public class WorldCoordinatesWrapper {
 		this.world = world;
 	}
 
-	public void setCoords(Coordinates coords) {
+	public void setCoords(IntegerCoordinates coords) {
 		if (coords == null) throw new NullPointerException("Coordinates must not be null");
 		this.coords = coords;
 	}
@@ -106,7 +106,7 @@ public class WorldCoordinatesWrapper {
 	}
 
 	public AdjacentTileEntity getAdjacentFromDirection(ForgeDirection direction) {
-		Coordinates newCoords = new Coordinates(coords).add(direction);
+		IntegerCoordinates newCoords = new IntegerCoordinates(coords).add(direction);
 		return new AdjacentTileEntity(world.getTileEntity(newCoords.getXCoord(), newCoords.getYCoord(), newCoords.getZCoord()), direction);
 	}
 

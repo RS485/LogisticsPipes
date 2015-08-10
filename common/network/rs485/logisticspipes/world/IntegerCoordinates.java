@@ -25,33 +25,33 @@ import net.minecraftforge.common.util.ForgeDirection;
 import lombok.Data;
 
 @Data
-public class Coordinates {
+public class IntegerCoordinates {
 
 	private int xCoord;
 	private int yCoord;
 	private int zCoord;
 
-	public Coordinates() {
+	public IntegerCoordinates() {
 		setXCoord(0);
 		setYCoord(0);
 		setZCoord(0);
 	}
 
-	public Coordinates(int xCoord, int yCoord, int zCoord) {
+	public IntegerCoordinates(int xCoord, int yCoord, int zCoord) {
 		setXCoord(xCoord);
 		setYCoord(yCoord);
 		setZCoord(zCoord);
 	}
 
-	public Coordinates(Coordinates copy) {
+	public IntegerCoordinates(IntegerCoordinates copy) {
 		this(copy.xCoord, copy.yCoord, copy.zCoord);
 	}
 
-	public Coordinates add(ForgeDirection direction) {
+	public IntegerCoordinates add(ForgeDirection direction) {
 		return add(direction, 1);
 	}
 
-	public Coordinates add(ForgeDirection direction, int times) {
+	public IntegerCoordinates add(ForgeDirection direction, int times) {
 		setXCoord(xCoord + direction.offsetX * times);
 		setYCoord(yCoord + direction.offsetY * times);
 		setZCoord(zCoord + direction.offsetZ * times);

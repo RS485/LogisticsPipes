@@ -20,8 +20,6 @@
 
 package network.rs485.logisticspipes.world;
 
-import net.minecraftforge.common.util.ForgeDirection;
-
 import lombok.Data;
 
 @Data
@@ -77,14 +75,4 @@ public class IntegerCoordinates implements ICoordinates {
 		return getZCoord();
 	}
 
-	public IntegerCoordinates add(ForgeDirection direction) {
-		return add(direction, 1);
-	}
-
-	public IntegerCoordinates add(ForgeDirection direction, int times) {
-		setXCoord(xCoord + direction.offsetX * times);
-		setYCoord(yCoord + direction.offsetY * times);
-		setZCoord(zCoord + direction.offsetZ * times);
-		return this;
-	}
 }

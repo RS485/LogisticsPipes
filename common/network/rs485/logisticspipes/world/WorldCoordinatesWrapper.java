@@ -106,7 +106,7 @@ public class WorldCoordinatesWrapper {
 	}
 
 	public AdjacentTileEntity getAdjacentFromDirection(ForgeDirection direction) {
-		IntegerCoordinates newCoords = new IntegerCoordinates(coords).add(direction);
+		IntegerCoordinates newCoords = CoordinateUtils.add(new IntegerCoordinates(coords), direction);
 		return new AdjacentTileEntity(world.getTileEntity(newCoords.getXCoord(), newCoords.getYCoord(), newCoords.getZCoord()), direction);
 	}
 

@@ -1,6 +1,7 @@
 package logisticspipes.network.packets.pipe;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import logisticspipes.interfaces.ISpecialInsertion;
 import logisticspipes.network.LPDataInputStream;
@@ -11,8 +12,7 @@ import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
-import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.WorldUtil;
+import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,6 +23,8 @@ import net.minecraft.item.ItemStack;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
+import network.rs485.logisticspipes.world.WorldCoordinatesWrapper.AdjacentTileEntity;
 
 @Accessors(chain = true)
 public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
@@ -64,32 +66,49 @@ public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 			player.inventory.currentItem = (player.inventory.currentItem + 1) % 9;
 		}
 
-		final WorldUtil worldUtil = new WorldUtil(player.worldObj, getPosX(), getPosY(), getPosZ());
+		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(player.worldObj, getPosX(), getPosY(), getPosZ());
+		Iterator<AdjacentTileEntity> adjacentIt = worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM).iterator();
+
 		boolean found = false;
-		for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
-			if (tile instanceof IInventory && !(SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil((IInventory) tile) instanceof ISpecialInsertion)) {
-				continue;
+		while (adjacentIt.hasNext()) {
+			AdjacentTileEntity adjacent = adjacentIt.next();
+
+			if (adjacent.tileEntity instanceof IInventory) {
+				if (!(SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil((IInventory) adjacent.tileEntity) instanceof ISpecialInsertion)) {
+					continue;
+				}
 			}
 			for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
-				if (provider.canOpenGui(tile.tile)) {
+				if (provider.canOpenGui(adjacent.tileEntity)) {
 					found = true;
 					break;
 				}
 			}
 
 			if (!found) {
-				found = (tile.tile instanceof IInventory);
+				found = (adjacent.tileEntity instanceof IInventory);
 			}
 
 			if (found) {
-				Block block = player.worldObj.getBlock(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord);
+				Block block = adjacent.tileEntity.getBlockType();
+				int xCoord = adjacent.tileEntity.xCoord;
+				int yCoord = adjacent.tileEntity.yCoord;
+				int zCoord = adjacent.tileEntity.zCoord;
+
 				if (SimpleServiceLocator.enderStorageProxy.isEnderChestBlock(block)) {
-					SimpleServiceLocator.enderStorageProxy.openEnderChest(player.worldObj, tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, player);
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class).setTagetPosX(tile.tile.xCoord).setTagetPosY(tile.tile.yCoord).setTagetPosZ(tile.tile.zCoord).setSlot(getSlot()).setPacketPos(this), player);
+					SimpleServiceLocator.enderStorageProxy.openEnderChest(player.worldObj, xCoord, yCoord, zCoord, player);
+					//@formatter:off
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class)
+							.setTagetPosX(xCoord).setTagetPosY(yCoord).setTagetPosZ(zCoord).setSlot(getSlot()).setPacketPos(this), player);
+					//@formatter:on
 				}
+
 				if (block != null) {
-					if (block.onBlockActivated(player.worldObj, tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, player, 0, 0, 0, 0)) {
-						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class).setTagetPosX(tile.tile.xCoord).setTagetPosY(tile.tile.yCoord).setTagetPosZ(tile.tile.zCoord).setSlot(getSlot()).setPacketPos(this), player);
+					if (block.onBlockActivated(player.worldObj, xCoord, yCoord, zCoord, player, 0, 0, 0, 0)) {
+						//@formatter:off
+						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class)
+								.setTagetPosX(xCoord).setTagetPosY(yCoord).setTagetPosZ(zCoord).setSlot(getSlot()).setPacketPos(this), player);
+						//@formatter:on
 						break;
 					}
 				}

@@ -15,12 +15,9 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.SinkReply;
-import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Triplet;
 
 import net.minecraft.inventory.IInventory;
@@ -28,6 +25,8 @@ import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 
 import net.minecraftforge.common.util.ForgeDirection;
+
+import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRoutedItem {
 
@@ -87,29 +86,21 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 
 	@Override
 	public ForgeDirection getPointedOrientation() {
-		for (ForgeDirection ori : ForgeDirection.values()) {
-			LPPosition pos = new LPPosition((TileEntity) container);
-			pos.moveForward(ori);
-			TileEntity tile = pos.getTileEntity(getWorld());
-			if (tile != null) {
-				if (SimpleServiceLocator.forestryProxy.isTileAnalyser(tile) || SimpleServiceLocator.binnieProxy.isTileAnalyser(tile)) {
-					return ori;
-				}
-			}
-		}
-		return null;
+		//@formatter:off
+		return new WorldCoordinatesWrapper(container).getConnectedAdjacentTileEntities()
+				.filter(adjacent -> isTileAnalyser(adjacent.tileEntity))
+				.map(adjacent -> adjacent.direction)
+				.findFirst().orElse(ForgeDirection.UNKNOWN);
+		//@formatter:on
 	}
 
 	public TileEntity getPointedTileEntity() {
-		WorldUtil wUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
-		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)) {
-			if (tile.tile != null) {
-				if (SimpleServiceLocator.forestryProxy.isTileAnalyser(tile.tile) || SimpleServiceLocator.binnieProxy.isTileAnalyser(tile.tile)) {
-					return tile.tile;
-				}
-			}
-		}
-		return null;
+		//@formatter:off
+		return new WorldCoordinatesWrapper(container).getConnectedAdjacentTileEntities()
+				.map(adjacent -> adjacent.tileEntity)
+				.filter(this::isTileAnalyser)
+				.findFirst().orElse(null);
+		//@formatter:on
 	}
 
 	@Override
@@ -182,4 +173,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 		return true;
 	}
 
+	private boolean isTileAnalyser(TileEntity tile) {
+		return SimpleServiceLocator.forestryProxy.isTileAnalyser(tile) || SimpleServiceLocator.binnieProxy.isTileAnalyser(tile);
+	}
 }

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import logisticspipes.LogisticsPipes;
@@ -182,8 +183,7 @@ public class LogisticsNewSolidBlockWorldRenderer {
 		DoubleCoordinates pos = new DoubleCoordinates(blockTile);
 		for (CoverSides side : CoverSides.values()) {
 			boolean render = true;
-			DoubleCoordinates newPos = new DoubleCoordinates(pos);
-			newPos.moveForward(side.getDir(rotation));
+			DoubleCoordinates newPos = CoordinateUtils.sum(pos, side.getDir(rotation));
 			TileEntity sideTile = newPos.getTileEntity(blockTile.getWorldObj());
 			if (sideTile instanceof LogisticsTileGenericPipe) {
 				LogisticsTileGenericPipe tilePipe = (LogisticsTileGenericPipe) sideTile;

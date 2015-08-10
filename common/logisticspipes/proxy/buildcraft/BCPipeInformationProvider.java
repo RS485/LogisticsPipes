@@ -2,6 +2,9 @@ package logisticspipes.proxy.buildcraft;
 
 import java.util.List;
 
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -9,8 +12,6 @@ import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.item.ItemIdentifier;
-
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -197,7 +198,7 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 	@Override
 	public boolean acceptItem(LPTravelingItem item, TileEntity from) {
 		if (BlockGenericPipe.isValid(pipe.pipe) && pipe.pipe.transport instanceof PipeTransportItems) {
-			TravelingItem bcItem = null;
+			TravelingItem bcItem;
 			if (item instanceof LPTravelingItemServer) {
 				LPRoutedBCTravelingItem lpBCItem = new LPRoutedBCTravelingItem();
 				lpBCItem.setRoutingInformation(((LPTravelingItemServer) item).getInfo());
@@ -206,14 +207,18 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 			} else {
 				return true;
 			}
+
 			DoubleCoordinates p = new DoubleCoordinates(pipe.xCoord + 0.5F, pipe.yCoord + CoreConstants.PIPE_MIN_POS, pipe.zCoord + 0.5F);
+			double move;
 			if (item.output.getOpposite() == ForgeDirection.DOWN) {
-				p.moveForward(item.output.getOpposite(), 0.24F);
+				move = 0.24;
 			} else if (item.output.getOpposite() == ForgeDirection.UP) {
-				p.moveForward(item.output.getOpposite(), 0.74F);
+				move = 0.74;
 			} else {
-				p.moveForward(item.output.getOpposite(), 0.49F);
+				move = 0.49;
 			}
+			CoordinateUtils.add(p, item.output.getOpposite(), move);
+
 			bcItem.setPosition(p.getXCoord(), p.getYCoord(), p.getZCoord());
 			bcItem.setSpeed(item.getSpeed());
 			if (item.getItemIdentifierStack() != null) {

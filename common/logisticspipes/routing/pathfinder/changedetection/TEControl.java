@@ -3,6 +3,7 @@ package logisticspipes.routing.pathfinder.changedetection;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
+import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import logisticspipes.asm.te.ILPTEInformation;
@@ -54,8 +55,7 @@ public class TEControl {
 						return null;
 					}
 					for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-						DoubleCoordinates newPos = new DoubleCoordinates(pos);
-						newPos.moveForward(dir);
+						DoubleCoordinates newPos = CoordinateUtils.sum(pos, dir);
 						if (!newPos.blockExists(world)) {
 							continue;
 						}
@@ -97,8 +97,7 @@ public class TEControl {
 				public Object call() throws Exception {
 					DoubleCoordinates pos = new DoubleCoordinates(tile);
 					for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-						DoubleCoordinates newPos = new DoubleCoordinates(pos);
-						newPos.moveForward(dir);
+						DoubleCoordinates newPos = CoordinateUtils.sum(pos, dir);
 						if (!newPos.blockExists(world)) {
 							continue;
 						}
@@ -161,8 +160,7 @@ public class TEControl {
 				@Override
 				public Object call() throws Exception {
 					for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-						DoubleCoordinates newPos = new DoubleCoordinates(pos);
-						newPos.moveForward(dir);
+						DoubleCoordinates newPos = CoordinateUtils.sum(pos, dir);
 						if (!newPos.blockExists(world)) {
 							continue;
 						}

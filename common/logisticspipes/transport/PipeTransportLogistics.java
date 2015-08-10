@@ -16,6 +16,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
@@ -56,7 +59,6 @@ import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SyncList;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
 
@@ -276,8 +278,7 @@ public class PipeTransportLogistics {
 		Iterator<ForgeDirection> iter = dirs.iterator();
 		while (iter.hasNext()) {
 			ForgeDirection dir = iter.next();
-			DoubleCoordinates pos = getPipe().getLPPosition();
-			pos.moveForward(dir);
+			DoubleCoordinates pos = CoordinateUtils.add(getPipe().getLPPosition(), dir);
 			TileEntity tile = pos.getTileEntity(getWorld());
 			if (!SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
 				iter.remove();

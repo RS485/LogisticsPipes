@@ -13,6 +13,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.hud.HUDSatellite;
 import logisticspipes.interfaces.IChestContentReceiver;
@@ -42,8 +45,6 @@ import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -98,9 +99,8 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
-	private IInventory getRawInventory(ForgeDirection ori) {
-		DoubleCoordinates pos = new DoubleCoordinates(getX(), getY(), getZ());
-		pos.moveForward(ori);
+	private IInventory getRawInventory(ForgeDirection dir) {
+		DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates(this), dir);
 		TileEntity tile = pos.getTileEntity(getWorld());
 		if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
 			return null;

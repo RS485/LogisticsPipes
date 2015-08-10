@@ -16,6 +16,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
@@ -74,7 +77,6 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -167,8 +169,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		if (getRouter().isRoutedExit(connection)) {
 			return false;
 		}
-		DoubleCoordinates pos = new DoubleCoordinates(getX(), getY(), getZ());
-		pos.moveForward(connection);
+		DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates(this), connection);
 		TileEntity tile = pos.getTileEntity(getWorld());
 
 		if (tile == null) {

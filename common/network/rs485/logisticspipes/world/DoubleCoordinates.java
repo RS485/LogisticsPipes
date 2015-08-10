@@ -120,43 +120,6 @@ public class DoubleCoordinates implements IPositionRotateble, ICoordinates {
 		return world.getTileEntity(getXInt(), getYInt(), getZInt());
 	}
 
-	public DoubleCoordinates moveForward(ForgeDirection dir, double steps) {
-		switch (dir) {
-			case UP:
-				yCoord += steps;
-				break;
-			case DOWN:
-				yCoord -= steps;
-				break;
-			case NORTH:
-				zCoord -= steps;
-				break;
-			case SOUTH:
-				zCoord += steps;
-				break;
-			case EAST:
-				xCoord += steps;
-				break;
-			case WEST:
-				xCoord -= steps;
-				break;
-			default:
-		}
-		return this;
-	}
-
-	public DoubleCoordinates moveForward(ForgeDirection dir) {
-		return moveForward(dir, 1);
-	}
-
-	public DoubleCoordinates moveBackward(ForgeDirection dir, double steps) {
-		return moveForward(dir, -1 * steps);
-	}
-
-	public DoubleCoordinates moveBackward(ForgeDirection dir) {
-		return moveBackward(dir, 1);
-	}
-
 	@Override
 	public String toString() {
 		return "(" + getXCoord() + ", " + getYCoord() + ", " + getZCoord() + ")";

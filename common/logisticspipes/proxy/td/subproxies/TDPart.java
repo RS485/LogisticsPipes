@@ -1,9 +1,11 @@
 package logisticspipes.proxy.td.subproxies;
 
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.td.LPItemDuct;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -36,8 +38,7 @@ public class TDPart implements ITDPart {
 				duct.yCoord = pipe.yCoord;
 				duct.zCoord = pipe.zCoord;
 				duct.validate();
-				DoubleCoordinates pos = new DoubleCoordinates((TileEntity) pipe);
-				pos.moveForward(opposite);
+				DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates((TileEntity) pipe), opposite);
 				duct.onNeighborTileChange(pos.getXInt(), pos.getYInt(), pos.getZInt());
 			}
 			return duct;

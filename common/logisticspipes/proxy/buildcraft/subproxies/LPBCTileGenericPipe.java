@@ -13,6 +13,7 @@ import logisticspipes.proxy.buildcraft.robots.boards.LogisticsRoutingBoardRobot;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.ReflectionHelper;
 
+import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.block.Block;
@@ -330,7 +331,7 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 					return arrivingItem;
 				}
 				DoubleCoordinates robotPos = new DoubleCoordinates(robot);
-				if (new DoubleCoordinates(LPBCTileGenericPipe.this).center().moveForward(sideHit, 0.5).distanceTo(robotPos) > 0.05) {
+				if (CoordinateUtils.add(new DoubleCoordinates(LPBCTileGenericPipe.this).center(), sideHit, 0.5).distanceTo(robotPos) > 0.05) {
 					return arrivingItem; // Not at station
 				}
 				return ((LogisticsRoutingBoardRobot) robot.getBoard()).handleItem(arrivingItem);

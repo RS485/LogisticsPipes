@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.PlayerConfig;
@@ -27,7 +30,6 @@ import logisticspipes.proxy.object3d.operation.LPUVTransformationList;
 import logisticspipes.proxy.object3d.operation.LPUVTranslation;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.textures.Textures;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 import logisticspipes.utils.tuples.Quartet;
 
 import net.minecraft.block.Block;
@@ -784,7 +786,8 @@ public class LogisticsNewRenderPipe {
 						}
 					}
 					for (IModel3D model : LogisticsNewRenderPipe.sideNormal.get(dir)) {
-						Block block = new DoubleCoordinates((TileEntity) pipeTile).moveForward(dir).getBlock(pipeTile.getWorld());
+						DoubleCoordinates coords = CoordinateUtils.add(new DoubleCoordinates((TileEntity) pipeTile), dir);
+						Block block = coords.getBlock(pipeTile.getWorld());
 						double[] bounds = { block.getBlockBoundsMinY(), block.getBlockBoundsMinZ(), block.getBlockBoundsMinX(), block.getBlockBoundsMaxY(), block.getBlockBoundsMaxZ(), block.getBlockBoundsMaxX() };
 						double bound = bounds[dir.ordinal() / 2 + (dir.ordinal() % 2 == 0 ? 3 : 0)];
 						ScaleObject key = new ScaleObject(model, bound);
@@ -921,10 +924,9 @@ public class LogisticsNewRenderPipe {
 			}
 		}
 
-		boolean solidSides[] = new boolean[6];
+		boolean[] solidSides = new boolean[6];
 		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-			DoubleCoordinates pos = new DoubleCoordinates((TileEntity) pipeTile);
-			pos.moveForward(dir);
+			DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates((TileEntity) pipeTile), dir);
 			Block blockSide = pos.getBlock(pipeTile.getWorldObj());
 			if (blockSide == null || !blockSide.isSideSolid(pipeTile.getWorldObj(), pos.getXInt(), pos.getYInt(), pos.getZInt(), dir.getOpposite()) || renderState.pipeConnectionMatrix.isConnected(dir)) {
 				Iterator<PipeMount> iter = mountCanidates.iterator();

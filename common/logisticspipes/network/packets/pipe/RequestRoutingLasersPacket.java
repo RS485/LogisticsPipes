@@ -24,6 +24,7 @@ import logisticspipes.routing.LaserData;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.pathfinder.PathFinder;
 
+import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -204,7 +205,7 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 			boolean compressed = false;
 			LaserData data = iLasers.next();
 			DoubleCoordinates next = new DoubleCoordinates(data.getPosX(), data.getPosY(), data.getPosZ());
-			next.moveForward(data.getDir(), data.getLength());
+			CoordinateUtils.add(next, data.getDir(), (double) data.getLength());
 			boolean found = false;
 			do {
 				found = false;
@@ -214,7 +215,7 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 					if (d.getPosX() == next.getXInt() && d.getPosY() == next.getYInt() && d.getPosZ() == next.getZInt()) {
 						if (data.getDir().equals(d.getDir()) && data.getConnectionType().equals(d.getConnectionType())) {
 							data.setLength(data.getLength() + d.getLength());
-							next.moveForward(data.getDir(), d.getLength());
+							CoordinateUtils.add(next, data.getDir(), (double) d.getLength());
 							found = true;
 							iOptions.remove();
 							lasers.remove(d);

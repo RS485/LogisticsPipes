@@ -22,6 +22,8 @@ import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.item.ItemStackRenderer;
+
+import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 import logisticspipes.utils.tuples.Pair;
 
@@ -191,9 +193,9 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		count = 0;
 		float dist = 0.135F;
 		DoubleCoordinates pos = new DoubleCoordinates(0.5D, 0.5D, 0.5D);
-		pos.moveForward(ForgeDirection.SOUTH, dist);
-		pos.moveForward(ForgeDirection.EAST, dist);
-		pos.moveForward(ForgeDirection.UP, dist);
+		CoordinateUtils.add(pos, ForgeDirection.SOUTH, (double) dist);
+		CoordinateUtils.add(pos, ForgeDirection.EAST, (double) dist);
+		CoordinateUtils.add(pos, ForgeDirection.UP, (double) dist);
 		for (Pair<ItemIdentifierStack, Pair<Integer, Integer>> item : pipe.transport._itemBuffer) {
 			if (item == null || item.getValue1() == null) {
 				continue;
@@ -204,14 +206,14 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			if (count >= 27) {
 				break;
 			} else if (count % 9 == 0) {
-				pos.moveForward(ForgeDirection.SOUTH, dist * 2);
-				pos.moveForward(ForgeDirection.EAST, dist * 2);
-				pos.moveForward(ForgeDirection.DOWN, dist);
+				CoordinateUtils.add(pos, ForgeDirection.SOUTH, (double) (dist * 2));
+				CoordinateUtils.add(pos, ForgeDirection.EAST, (double) (dist * 2));
+				CoordinateUtils.add(pos, ForgeDirection.DOWN, (double) dist);
 			} else if (count % 3 == 0) {
-				pos.moveForward(ForgeDirection.SOUTH, dist * 2);
-				pos.moveForward(ForgeDirection.WEST, dist);
+				CoordinateUtils.add(pos, ForgeDirection.SOUTH, (double) (dist * 2));
+				CoordinateUtils.add(pos, ForgeDirection.WEST, (double) dist);
 			} else {
-				pos.moveForward(ForgeDirection.NORTH, dist);
+				CoordinateUtils.add(pos, ForgeDirection.NORTH, (double) dist);
 			}
 		}
 

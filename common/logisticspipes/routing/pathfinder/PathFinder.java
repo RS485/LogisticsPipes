@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.asm.te.ILPTEInformation;
 import logisticspipes.asm.te.ITileEntityChangeListener;
@@ -37,9 +40,6 @@ import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.pathfinder.IRouteProvider.RouteInfo;
 import logisticspipes.utils.OneList;
 import logisticspipes.utils.OrientationsUtil;
-
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-
 import logisticspipes.utils.tuples.Pair;
 
 import net.minecraft.inventory.IInventory;
@@ -77,7 +77,7 @@ public class PathFinder {
 		PathFinder newSearch = new PathFinder(maxVisited, maxLength, pathPainter);
 		DoubleCoordinates p = new DoubleCoordinates(startProvider);
 		newSearch.setVisited.add(p);
-		p.moveForward(startOrientation);
+		CoordinateUtils.add(p, startOrientation);
 		TileEntity entity = p.getTileEntity(startProvider.getWorld());
 		IPipeInformationProvider provider = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(entity);
 		if (provider == null) {

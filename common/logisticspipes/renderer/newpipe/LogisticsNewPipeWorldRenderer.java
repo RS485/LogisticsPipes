@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 import logisticspipes.LPConstants;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
@@ -21,7 +24,6 @@ import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer.Block
 import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer.CoverSides;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.textures.Textures;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -104,12 +106,12 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 		}
 		tess.addTranslation(-0.00002F, -0.00002F, -0.00002F);
 
-		boolean solidSides[] = new boolean[6];
+		boolean[] solidSides = new boolean[6];
 		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-			DoubleCoordinates pos = new DoubleCoordinates((TileEntity) pipeTile);
-			pos.moveForward(dir);
+			DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates((TileEntity) pipeTile), dir);
 			Block blockSide = pos.getBlock(pipeTile.getWorldObj());
-			if (blockSide == null || !blockSide.isSideSolid(pipeTile.getWorldObj(), pos.getXInt(), pos.getYInt(), pos.getZInt(), dir.getOpposite()) || renderState.pipeConnectionMatrix.isConnected(dir)) {} else {
+			if (blockSide != null && blockSide.isSideSolid(pipeTile.getWorldObj(), pos.getXInt(), pos.getYInt(), pos.getZInt(), dir.getOpposite())
+					&& !renderState.pipeConnectionMatrix.isConnected(dir)) {
 				solidSides[dir.ordinal()] = true;
 			}
 		}

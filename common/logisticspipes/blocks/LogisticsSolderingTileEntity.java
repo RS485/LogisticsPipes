@@ -3,6 +3,9 @@ package logisticspipes.blocks;
 import java.util.LinkedList;
 import java.util.List;
 
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 import logisticspipes.LPConstants;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ICraftingResultHandler;
@@ -24,8 +27,6 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
@@ -230,8 +231,7 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 				usedEnergy = true;
 			} else {
 				for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-					DoubleCoordinates pos = new DoubleCoordinates(this);
-					pos.moveForward(dir);
+					DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates(this), dir);
 					TileEntity tile = pos.getTileEntity(getWorldObj());
 					if (!(tile instanceof LogisticsTileGenericPipe)) {
 						continue;
@@ -265,8 +265,7 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 		}
 		if (hasWork && heat >= 100) {
 			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-				DoubleCoordinates pos = new DoubleCoordinates(this);
-				pos.moveForward(dir);
+				DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates(this), dir);
 				TileEntity tile = pos.getTileEntity(getWorldObj());
 				if (!(tile instanceof LogisticsTileGenericPipe)) {
 					continue;

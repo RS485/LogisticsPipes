@@ -6,14 +6,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 import logisticspipes.interfaces.routing.ISpecialTileConnection;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.tileentity.TileEntity;
 
@@ -35,8 +36,7 @@ public class EnderIOTransceiverConnection implements ISpecialTileConnection {
 	public Collection<TileEntity> getConnections(TileEntity tile) {
 		boolean onlyOnePipe = false;
 		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-			DoubleCoordinates p = new DoubleCoordinates(tile);
-			p.moveForward(direction);
+			DoubleCoordinates p = CoordinateUtils.add(new DoubleCoordinates(tile), direction);
 			TileEntity candidate = p.getTileEntity(tile.getWorldObj());
 			if (candidate instanceof LogisticsTileGenericPipe && MainProxy.checkPipesConnections(tile, candidate, direction)) {
 				if (onlyOnePipe) {
@@ -58,8 +58,7 @@ public class EnderIOTransceiverConnection implements ISpecialTileConnection {
 			}
 			LogisticsTileGenericPipe pipe = null;
 			for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-				DoubleCoordinates p = new DoubleCoordinates(connected);
-				p.moveForward(direction);
+				DoubleCoordinates p = CoordinateUtils.add(new DoubleCoordinates(connected), direction);
 				TileEntity candidate = p.getTileEntity(tile.getWorldObj());
 				if (candidate instanceof LogisticsTileGenericPipe && MainProxy.checkPipesConnections(connected, candidate, direction)) {
 					if (pipe != null) {

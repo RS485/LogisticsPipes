@@ -20,6 +20,8 @@ import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.transport.PipeMultiBlockTransportLogistics;
 import logisticspipes.utils.IPositionRotateble;
 import logisticspipes.utils.LPPositionSet;
+
+import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -273,7 +275,7 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 	public DoubleCoordinates getItemRenderPos(float fPos, LPTravelingItem travelItem) {
 		DoubleCoordinates pos = new DoubleCoordinates(0.5D, 0.5D, 0.5D);
 		if (travelItem.input.getOpposite() == orientation.dir1) {
-			pos.moveForward(orientation.dir1, 3.5);
+			CoordinateUtils.add(pos, orientation.dir1, 3.5);
 		}
 		if (fPos < 0.5) {
 			if (travelItem.input == ForgeDirection.UNKNOWN) {
@@ -282,12 +284,12 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 			if (!container.renderState.pipeConnectionMatrix.isConnected(travelItem.input.getOpposite())) {
 				return null;
 			}
-			pos.moveForward(travelItem.input.getOpposite(), 0.5F - fPos);
+			CoordinateUtils.add(pos, travelItem.input.getOpposite(), (double) (0.5F - fPos));
 		} else {
 			if (travelItem.output == ForgeDirection.UNKNOWN) {
 				return null;
 			}
-			pos.moveForward(travelItem.output, fPos - 0.5F);
+			CoordinateUtils.add(pos, travelItem.output, (double) (fPos - 0.5F));
 		}
 		return pos;
 	}

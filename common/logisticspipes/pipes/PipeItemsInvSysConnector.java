@@ -12,6 +12,10 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.hud.HUDInvSysConnector;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
@@ -43,8 +47,6 @@ import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.transactor.ITransactor;
 
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -55,8 +57,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
 import net.minecraftforge.common.util.ForgeDirection;
-
-import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectRoutingConnection, IHeadUpDisplayRendererProvider, IOrderManagerContentReceiver {
 
@@ -310,8 +310,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 
 	private boolean inventoryConnected() {
 		for (int i = 0; i < 6; i++) {
-			DoubleCoordinates p = new DoubleCoordinates(getX(), getY(), getZ());
-			p.moveForward(ForgeDirection.values()[i]);
+			DoubleCoordinates p = CoordinateUtils.add(new DoubleCoordinates(this), ForgeDirection.values()[i]);
 			TileEntity tile = p.getTileEntity(getWorld());
 			if (tile instanceof IInventory) {
 				return true;
@@ -365,14 +364,10 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 
 	public boolean isConnectedInv(TileEntity tile) {
 		for (int i = 0; i < 6; i++) {
-			DoubleCoordinates p = new DoubleCoordinates(getX(), getY(), getZ());
-			p.moveForward(ForgeDirection.values()[i]);
+			DoubleCoordinates p = CoordinateUtils.add(new DoubleCoordinates(this), ForgeDirection.values()[i]);
 			TileEntity lTile = p.getTileEntity(getWorld());
 			if (lTile instanceof IInventory) {
-				if (lTile == tile) {
-					return true;
-				}
-				return false;
+				return lTile == tile;
 			}
 		}
 		return false;

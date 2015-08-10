@@ -3,6 +3,9 @@ package logisticspipes.pipes.basic;
 import java.util.ArrayList;
 import java.util.List;
 
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILPPipe;
 import logisticspipes.config.Configs;
@@ -21,8 +24,6 @@ import logisticspipes.textures.Textures;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.item.ItemIdentifier;
-
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -422,7 +423,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	}
 
 	public DoubleCoordinates getItemRenderPos(float fPos, LPTravelingItem travelItem) {
-		DoubleCoordinates pos = new DoubleCoordinates(0.5D, 0.5D, 0.5D);
+		DoubleCoordinates pos = new DoubleCoordinates(0.5, 0.5, 0.5);
 		if (fPos < 0.5) {
 			if (travelItem.input == ForgeDirection.UNKNOWN) {
 				return null;
@@ -430,7 +431,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 			if (!container.renderState.pipeConnectionMatrix.isConnected(travelItem.input.getOpposite())) {
 				return null;
 			}
-			pos.moveForward(travelItem.input.getOpposite(), 0.5F - fPos);
+			CoordinateUtils.add(pos, travelItem.input.getOpposite(), 0.5 - fPos);
 		} else {
 			if (travelItem.output == ForgeDirection.UNKNOWN) {
 				return null;
@@ -438,7 +439,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 			if (!container.renderState.pipeConnectionMatrix.isConnected(travelItem.output)) {
 				return null;
 			}
-			pos.moveForward(travelItem.output, fPos - 0.5F);
+			CoordinateUtils.add(pos, travelItem.output, fPos - 0.5);
 		}
 		return pos;
 	}

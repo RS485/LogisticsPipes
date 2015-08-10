@@ -25,6 +25,7 @@ import logisticspipes.routing.order.IDistanceTracker;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
+import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import logisticspipes.utils.tuples.Pair;
@@ -251,16 +252,16 @@ public abstract class LPTravelingItem {
 
 				switch (exitdirection) {
 					case DOWN:
-						position.moveForward(exitdirection, 0.5);
+						CoordinateUtils.add(position, exitdirection, 0.5);
 						break;
 					case UP:
-						position.moveForward(exitdirection, 0.75);
+						CoordinateUtils.add(position, exitdirection, 0.75);
 						break;
 					case NORTH:
 					case SOUTH:
 					case WEST:
 					case EAST:
-						position.moveForward(exitdirection, 0.625);
+						CoordinateUtils.add(position, exitdirection, 0.625);
 						break;
 					case UNKNOWN:
 					default:
@@ -268,7 +269,7 @@ public abstract class LPTravelingItem {
 				}
 
 				DoubleCoordinates motion = new DoubleCoordinates(0, 0, 0);
-				motion.moveForward(exitdirection, getSpeed() * 2F);
+				CoordinateUtils.add(motion, exitdirection, (double) (getSpeed() * 2F));
 
 				EntityItem entityitem = getItemIdentifierStack().makeEntityItem(worldObj, position.getXCoord(), position.getYCoord(), position.getZCoord());
 

@@ -15,7 +15,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.tuples.LPPosition;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 import logisticspipes.utils.tuples.Pair;
 
 import net.minecraft.tileentity.TileEntity;
@@ -122,8 +122,8 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public LPPosition getLPPosition() {
-		return new LPPosition(_xCoord, _yCoord, _zCoord);
+	public DoubleCoordinates getLPPosition() {
+		return new DoubleCoordinates(_xCoord, _yCoord, _zCoord);
 	}
 
 	@Override

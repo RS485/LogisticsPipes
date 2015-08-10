@@ -37,7 +37,9 @@ import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.pathfinder.IRouteProvider.RouteInfo;
 import logisticspipes.utils.OneList;
 import logisticspipes.utils.OrientationsUtil;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 import logisticspipes.utils.tuples.Pair;
 
 import net.minecraft.inventory.IInventory;
@@ -73,7 +75,7 @@ public class PathFinder {
 			return new HashMap<CoreRoutedPipe, ExitRoute>();
 		}
 		PathFinder newSearch = new PathFinder(maxVisited, maxLength, pathPainter);
-		LPPosition p = new LPPosition(startProvider);
+		DoubleCoordinates p = new DoubleCoordinates(startProvider);
 		newSearch.setVisited.add(p);
 		p.moveForward(startOrientation);
 		TileEntity entity = p.getTileEntity(startProvider.getWorld());
@@ -102,15 +104,15 @@ public class PathFinder {
 	private PathFinder(int maxVisited, int maxLength, IPaintPath pathPainter) {
 		this.maxVisited = maxVisited;
 		this.maxLength = maxLength;
-		setVisited = new HashSet<LPPosition>();
-		distances = new HashMap<LPPosition, Double>();
+		setVisited = new HashSet<DoubleCoordinates>();
+		distances = new HashMap<DoubleCoordinates, Double>();
 		this.pathPainter = pathPainter;
 	}
 
 	private final int maxVisited;
 	private final int maxLength;
-	private final HashSet<LPPosition> setVisited;
-	private final HashMap<LPPosition, Double> distances;
+	private final HashSet<DoubleCoordinates> setVisited;
+	private final HashMap<DoubleCoordinates, Double> distances;
 	private final IPaintPath pathPainter;
 	private int pipesVisited;
 
@@ -167,19 +169,19 @@ public class PathFinder {
 		}
 
 		//Visited is checked after, so we can reach the same target twice to allow to keep the shortest path
-		setVisited.add(new LPPosition(startPipe));
-		distances.put(new LPPosition(startPipe), startPipe.getDistance());
+		setVisited.add(new DoubleCoordinates(startPipe));
+		distances.put(new DoubleCoordinates(startPipe), startPipe.getDistance());
 
 		// first check specialPipeConnections (tesseracts, teleports, other connectors)
 		List<ConnectionInformation> pipez = SimpleServiceLocator.specialpipeconnection.getConnectedPipes(startPipe, connectionFlags, side);
 		for (ConnectionInformation specialConnection : pipez) {
-			if (setVisited.contains(new LPPosition(specialConnection.getConnectedPipe()))) {
+			if (setVisited.contains(new DoubleCoordinates(specialConnection.getConnectedPipe()))) {
 				//Don't go where we have been before
 				continue;
 			}
-			distances.put(new LPPosition(startPipe).center(), specialConnection.getDistance());
+			distances.put(new DoubleCoordinates(startPipe).center(), specialConnection.getDistance());
 			HashMap<CoreRoutedPipe, ExitRoute> result = getConnectedRoutingPipes(specialConnection.getConnectedPipe(), specialConnection.getConnectionFlags(), specialConnection.getInsertOrientation());
-			distances.remove(new LPPosition(startPipe).center());
+			distances.remove(new DoubleCoordinates(startPipe).center());
 			for (Entry<CoreRoutedPipe, ExitRoute> pipe : result.entrySet()) {
 				pipe.getValue().exitOrientation = specialConnection.getExitOrientation();
 				ExitRoute foundPipe = foundPipes.get(pipe.getKey());
@@ -274,7 +276,7 @@ public class PathFinder {
 
 				listTileEntity(tile);
 
-				if (setVisited.contains(new LPPosition(tile))) {
+				if (setVisited.contains(new DoubleCoordinates(tile))) {
 					//Don't go where we have been before
 					continue;
 				}
@@ -316,7 +318,7 @@ public class PathFinder {
 					List<RouteInfo> list = ((IRouteProvider) currentPipe).getConnectedPipes(direction.getOpposite());
 					if (list != null) {
 						result = new HashMap<CoreRoutedPipe, ExitRoute>();
-						LPPosition pos = new LPPosition(currentPipe);
+						DoubleCoordinates pos = new DoubleCoordinates(currentPipe);
 						for (RouteInfo info : list) {
 							distances.put(pos, currentPipe.getDistance() + info.getLength());
 							result.putAll(getConnectedRoutingPipes(info.getPipe(), nextConnectionFlags, direction));
@@ -348,8 +350,8 @@ public class PathFinder {
 				}
 			}
 		}
-		setVisited.remove(new LPPosition(startPipe));
-		distances.remove(new LPPosition(startPipe));
+		setVisited.remove(new DoubleCoordinates(startPipe));
+		distances.remove(new DoubleCoordinates(startPipe));
 		if (startPipe.isRoutingPipe()) { // ie, has the recursion returned to the pipe it started from?
 			for (ExitRoute e : foundPipes.values()) {
 				e.root = (startPipe.getRoutingPipe()).getRouter();
@@ -374,7 +376,7 @@ public class PathFinder {
 		}
 	}
 
-	public static int messureDistanceToNextRoutedPipe(LPPosition lpPosition, ForgeDirection exitOrientation, World world) {
+	public static int messureDistanceToNextRoutedPipe(DoubleCoordinates lpPosition, ForgeDirection exitOrientation, World world) {
 		int dis = 1;
 		TileEntity tile = lpPosition.getTileEntity(world);
 		if (tile instanceof LogisticsTileGenericPipe) {

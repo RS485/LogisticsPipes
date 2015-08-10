@@ -332,7 +332,7 @@ public class LogisticsHUDRenderer {
 			if (progress != 0) {
 				List<String> textData = new ArrayList<String>();
 
-				//TileEntity tile = new LPPosition(box.blockX, box.blockY, box.blockZ).getTileEntity(DimensionManager.getWorld(0));
+				//TileEntity tile = new DoubleCoordinates(box.blockX, box.blockY, box.blockZ).getTileEntity(DimensionManager.getWorld(0));
 				//Insert debug code here
 
 				if (textData.isEmpty()) {

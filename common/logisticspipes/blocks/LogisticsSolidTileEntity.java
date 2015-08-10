@@ -15,7 +15,7 @@ import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
 import logisticspipes.proxy.opencomputers.IOCTile;
 import logisticspipes.proxy.opencomputers.asm.BaseWrapperClass;
-import logisticspipes.utils.tuples.LPPosition;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -166,8 +166,8 @@ public class LogisticsSolidTileEntity extends TileEntity implements ILPCCTypeHol
 		return node();
 	}
 
-	public LPPosition getLPPosition() {
-		return new LPPosition(this);
+	public DoubleCoordinates getLPPosition() {
+		return new DoubleCoordinates(this);
 	}
 
 	@Override

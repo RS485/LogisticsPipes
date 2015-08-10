@@ -6,7 +6,7 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.exception.TargetNotFoundException;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.utils.tuples.LPPosition;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -64,7 +64,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 		return this;
 	}
 
-	public CoordinatesPacket setLPPos(LPPosition pos) {
+	public CoordinatesPacket setLPPos(DoubleCoordinates pos) {
 		setPosX(pos.getX());
 		setPosY(pos.getY());
 		setPosZ(pos.getZ());

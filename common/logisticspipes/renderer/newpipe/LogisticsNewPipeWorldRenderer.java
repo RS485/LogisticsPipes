@@ -21,7 +21,7 @@ import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer.Block
 import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer.CoverSides;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.textures.Textures;
-import logisticspipes.utils.tuples.LPPosition;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -74,7 +74,7 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 
 			BlockRotation rotation = BlockRotation.getRotation(((PipeBlockRequestTable) pipeTile.pipe).getRotation());
 
-			int brightness = new LPPosition(x, y, z).getBlock(world).getMixedBrightnessForBlock(world, x, y, z);
+			int brightness = new DoubleCoordinates(x, y, z).getBlock(world).getMixedBrightnessForBlock(world, x, y, z);
 
 			tess.setColorOpaque_F(1F, 1F, 1F);
 			tess.setBrightness(brightness);
@@ -106,7 +106,7 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 
 		boolean solidSides[] = new boolean[6];
 		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-			LPPosition pos = new LPPosition((TileEntity) pipeTile);
+			DoubleCoordinates pos = new DoubleCoordinates((TileEntity) pipeTile);
 			pos.moveForward(dir);
 			Block blockSide = pos.getBlock(pipeTile.getWorldObj());
 			if (blockSide == null || !blockSide.isSideSolid(pipeTile.getWorldObj(), pos.getX(), pos.getY(), pos.getZ(), dir.getOpposite()) || renderState.pipeConnectionMatrix.isConnected(dir)) {} else {

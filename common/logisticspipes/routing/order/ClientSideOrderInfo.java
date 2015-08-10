@@ -4,7 +4,8 @@ import java.util.List;
 
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import lombok.Getter;
 
@@ -27,11 +28,11 @@ public class ClientSideOrderInfo implements IOrderInfoProvider {
 	@Getter
 	private final byte machineProgress;
 	@Getter
-	private final LPPosition targetPosition;
+	private final DoubleCoordinates targetPosition;
 	@Getter
 	private final ItemIdentifier targetType;
 
-	public ClientSideOrderInfo(ItemIdentifierStack item, boolean isFinished, ResourceType type, boolean inProgress, int routerId, List<Float> progresses, byte machineProgress, LPPosition pos, ItemIdentifier targetType) {
+	public ClientSideOrderInfo(ItemIdentifierStack item, boolean isFinished, ResourceType type, boolean inProgress, int routerId, List<Float> progresses, byte machineProgress, DoubleCoordinates pos, ItemIdentifier targetType) {
 		asDisplayItem = item;
 		this.isFinished = isFinished;
 		this.type = type;

@@ -42,7 +42,8 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.transactor.ITransactor;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -309,7 +310,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 
 	private boolean inventoryConnected() {
 		for (int i = 0; i < 6; i++) {
-			LPPosition p = new LPPosition(getX(), getY(), getZ());
+			DoubleCoordinates p = new DoubleCoordinates(getX(), getY(), getZ());
 			p.moveForward(ForgeDirection.values()[i]);
 			TileEntity tile = p.getTileEntity(getWorld());
 			if (tile instanceof IInventory) {
@@ -364,7 +365,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 
 	public boolean isConnectedInv(TileEntity tile) {
 		for (int i = 0; i < 6; i++) {
-			LPPosition p = new LPPosition(getX(), getY(), getZ());
+			DoubleCoordinates p = new DoubleCoordinates(getX(), getY(), getZ());
 			p.moveForward(ForgeDirection.values()[i]);
 			TileEntity lTile = p.getTileEntity(getWorld());
 			if (lTile instanceof IInventory) {

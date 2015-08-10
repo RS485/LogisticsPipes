@@ -1,8 +1,8 @@
 package logisticspipes.interfaces;
 
-import logisticspipes.utils.tuples.LPPosition;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public interface ILPPositionProvider {
 
-	public LPPosition getLPPosition();
+	public DoubleCoordinates getLPPosition();
 }

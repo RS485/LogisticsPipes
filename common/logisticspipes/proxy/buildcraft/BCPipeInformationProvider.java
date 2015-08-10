@@ -9,7 +9,8 @@ import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -167,7 +168,7 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 	}
 
 	@Override
-	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double traveled, double max, List<LPPosition> visited) {
+	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double traveled, double max, List<DoubleCoordinates> visited) {
 		if (traveled >= max) {
 			return Integer.MAX_VALUE;
 		}
@@ -177,7 +178,7 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 			}
 			IPipeInformationProvider information = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(getTile(dir));
 			if (information != null) {
-				LPPosition pos = new LPPosition(information);
+				DoubleCoordinates pos = new DoubleCoordinates(information);
 				if (visited.contains(pos)) {
 					continue;
 				}
@@ -205,7 +206,7 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 			} else {
 				return true;
 			}
-			LPPosition p = new LPPosition(pipe.xCoord + 0.5F, pipe.yCoord + CoreConstants.PIPE_MIN_POS, pipe.zCoord + 0.5F);
+			DoubleCoordinates p = new DoubleCoordinates(pipe.xCoord + 0.5F, pipe.yCoord + CoreConstants.PIPE_MIN_POS, pipe.zCoord + 0.5F);
 			if (item.output.getOpposite() == ForgeDirection.DOWN) {
 				p.moveForward(item.output.getOpposite(), 0.24F);
 			} else if (item.output.getOpposite() == ForgeDirection.UP) {

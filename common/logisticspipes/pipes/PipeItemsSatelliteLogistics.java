@@ -42,7 +42,8 @@ import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -98,7 +99,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	}
 
 	private IInventory getRawInventory(ForgeDirection ori) {
-		LPPosition pos = new LPPosition(getX(), getY(), getZ());
+		DoubleCoordinates pos = new DoubleCoordinates(getX(), getY(), getZ());
 		pos.moveForward(ori);
 		TileEntity tile = pos.getTileEntity(getWorld());
 		if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {

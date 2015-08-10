@@ -9,7 +9,8 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.pathfinder.changedetection.LPWorldAccess;
 import logisticspipes.utils.FluidIdentifier;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.world.World;
 
@@ -76,6 +77,6 @@ public class LPTickHandler {
 		@Setter(value = AccessLevel.PRIVATE)
 		private long worldTick = 0;
 		@Getter
-		private Set<LPPosition> updateQueued = new HashSet<LPPosition>();
+		private Set<DoubleCoordinates> updateQueued = new HashSet<DoubleCoordinates>();
 	}
 }

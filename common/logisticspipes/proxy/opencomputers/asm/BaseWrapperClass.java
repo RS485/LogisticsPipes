@@ -27,7 +27,7 @@ import logisticspipes.security.PermissionException;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.LPPosition;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -378,7 +378,7 @@ public abstract class BaseWrapperClass extends AbstractValue {
 			int x = nbt.getInteger("X");
 			int y = nbt.getInteger("Y");
 			int z = nbt.getInteger("Z");
-			final LPPosition pos = new LPPosition(x, y, z);
+			final DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
 			final int dim = nbt.getInteger("Dim");
 			QueuedTasks.queueTask(new Callable<Object>() {
 
@@ -420,7 +420,7 @@ public abstract class BaseWrapperClass extends AbstractValue {
 			int x = nbt.getInteger("X");
 			int y = nbt.getInteger("Y");
 			int z = nbt.getInteger("Z");
-			final LPPosition pos = new LPPosition(x, y, z);
+			final DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
 			final int dim = nbt.getInteger("Dim");
 			QueuedTasks.queueTask(new Callable<Object>() {
 
@@ -450,7 +450,7 @@ public abstract class BaseWrapperClass extends AbstractValue {
 		if (object instanceof LPGlobalCCAccess) {
 			nbt.setString("Type", "LPGlobalCCAccess");
 		} else if (object instanceof CoreRoutedPipe) {
-			LPPosition pos = ((CoreRoutedPipe) object).getLPPosition();
+			DoubleCoordinates pos = ((CoreRoutedPipe) object).getLPPosition();
 			nbt.setString("Type", "CoreRoutedPipe");
 			nbt.setInteger("Dim", MainProxy.getDimensionForWorld(((CoreRoutedPipe) object).getWorld()));
 			nbt.setInteger("X", pos.getX());
@@ -466,7 +466,7 @@ public abstract class BaseWrapperClass extends AbstractValue {
 			nbt.setString("Type", "CCItemIdentifierBuilder");
 			((CCItemIdentifierBuilder) object).build().makeNormalStack(1).writeToNBT(nbt);
 		} else if (object instanceof LogisticsSolidTileEntity) {
-			LPPosition pos = ((LogisticsSolidTileEntity) object).getLPPosition();
+			DoubleCoordinates pos = ((LogisticsSolidTileEntity) object).getLPPosition();
 			nbt.setString("Type", "LogisticsSolidTileEntity");
 			nbt.setInteger("Dim", MainProxy.getDimensionForWorld(((LogisticsSolidTileEntity) object).getWorldObj()));
 			nbt.setInteger("X", pos.getX());

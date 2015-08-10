@@ -2,7 +2,8 @@ package logisticspipes.interfaces.routing;
 
 import logisticspipes.request.resources.IResource;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public interface IFilter {
 
@@ -20,5 +21,5 @@ public interface IFilter {
 
 	boolean blockPower();
 
-	LPPosition getLPPosition();
+	DoubleCoordinates getLPPosition();
 }

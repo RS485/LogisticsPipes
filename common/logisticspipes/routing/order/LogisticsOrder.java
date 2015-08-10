@@ -6,7 +6,8 @@ import java.util.List;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -95,7 +96,7 @@ public abstract class LogisticsOrder implements IOrderInfoProvider {
 	}
 
 	@Override
-	public LPPosition getTargetPosition() {
+	public DoubleCoordinates getTargetPosition() {
 		return getRouter().getLPPosition();
 	}
 }

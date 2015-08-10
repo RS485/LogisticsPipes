@@ -13,7 +13,8 @@ import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipe
 import logisticspipes.ticks.LPTickHandler;
 import logisticspipes.ticks.LPTickHandler.LPWorldInfo;
 import logisticspipes.ticks.QueuedTasks;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -34,7 +35,7 @@ public class TEControl {
 			return;
 		}
 
-		final LPPosition pos = new LPPosition(tile);
+		final DoubleCoordinates pos = new DoubleCoordinates(tile);
 		if (pos.getX() == 0 && pos.getY() <= 0 && pos.getZ() == 0) {
 			return;
 		}
@@ -53,7 +54,7 @@ public class TEControl {
 						return null;
 					}
 					for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-						LPPosition newPos = pos.copy();
+						DoubleCoordinates newPos = pos.copy();
 						newPos.moveForward(dir);
 						if (!newPos.blockExists(world)) {
 							continue;
@@ -94,9 +95,9 @@ public class TEControl {
 
 				@Override
 				public Object call() throws Exception {
-					LPPosition pos = new LPPosition(tile);
+					DoubleCoordinates pos = new DoubleCoordinates(tile);
 					for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-						LPPosition newPos = pos.copy();
+						DoubleCoordinates newPos = pos.copy();
 						newPos.moveForward(dir);
 						if (!newPos.blockExists(world)) {
 							continue;
@@ -142,7 +143,7 @@ public class TEControl {
 		if (info.getWorldTick() < 5) {
 			return;
 		}
-		final LPPosition pos = new LPPosition(x, y, z);
+		final DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
 		if (info.getUpdateQueued().contains(pos)) {
 			return;
 		}
@@ -160,7 +161,7 @@ public class TEControl {
 				@Override
 				public Object call() throws Exception {
 					for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-						LPPosition newPos = pos.copy();
+						DoubleCoordinates newPos = pos.copy();
 						newPos.moveForward(dir);
 						if (!newPos.blockExists(world)) {
 							continue;

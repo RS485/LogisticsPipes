@@ -74,7 +74,7 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.LPPosition;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -167,7 +167,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		if (getRouter().isRoutedExit(connection)) {
 			return false;
 		}
-		LPPosition pos = new LPPosition(getX(), getY(), getZ());
+		DoubleCoordinates pos = new DoubleCoordinates(getX(), getY(), getZ());
 		pos.moveForward(connection);
 		TileEntity tile = pos.getTileEntity(getWorld());
 

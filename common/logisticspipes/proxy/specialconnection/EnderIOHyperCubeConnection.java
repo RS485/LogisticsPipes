@@ -9,7 +9,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.tuples.LPPosition;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.tileentity.TileEntity;
 
@@ -31,7 +31,7 @@ public class EnderIOHyperCubeConnection implements ISpecialTileConnection {
 	public List<TileEntity> getConnections(TileEntity tile) {
 		boolean onlyOnePipe = false;
 		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-			LPPosition p = new LPPosition(tile);
+			DoubleCoordinates p = new DoubleCoordinates(tile);
 			p.moveForward(direction);
 			TileEntity canidate = p.getTileEntity(tile.getWorldObj());
 			if (canidate instanceof LogisticsTileGenericPipe && MainProxy.checkPipesConnections(tile, canidate, direction)) {
@@ -54,7 +54,7 @@ public class EnderIOHyperCubeConnection implements ISpecialTileConnection {
 			}
 			LogisticsTileGenericPipe pipe = null;
 			for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-				LPPosition p = new LPPosition(connected);
+				DoubleCoordinates p = new DoubleCoordinates(connected);
 				p.moveForward(direction);
 				TileEntity canidate = p.getTileEntity(tile.getWorldObj());
 				if (canidate instanceof LogisticsTileGenericPipe && MainProxy.checkPipesConnections(connected, canidate, direction)) {

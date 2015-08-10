@@ -6,7 +6,8 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -63,7 +64,7 @@ public interface IPipeInformationProvider {
 
 	public boolean isPowerPipe();
 
-	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double travled, double max, List<LPPosition> visited);
+	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double travled, double max, List<DoubleCoordinates> visited);
 
 	public boolean acceptItem(LPTravelingItem item, TileEntity from);
 

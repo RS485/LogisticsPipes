@@ -16,7 +16,9 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 import logisticspipes.utils.tuples.Pair;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -127,7 +129,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 				}
 
 				@Override
-				public LPPosition getLPPosition() {
+				public DoubleCoordinates getLPPosition() {
 					return PipeItemsFirewall.this.getLPPosition();
 				}
 

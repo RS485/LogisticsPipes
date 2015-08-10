@@ -20,7 +20,7 @@ import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.transport.PipeMultiBlockTransportLogistics;
 import logisticspipes.utils.IPositionRotateble;
 import logisticspipes.utils.LPPositionSet;
-import logisticspipes.utils.tuples.LPPosition;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -64,8 +64,8 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 		}
 
 		@Override
-		public LPPosition getOffset() {
-			return new LPPosition(0, 0, 0);
+		public DoubleCoordinates getOffset() {
+			return new DoubleCoordinates(0, 0, 0);
 		}
 
 		@Override
@@ -126,9 +126,9 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 	@Override
 	public LPPositionSet getSubBlocks() {
 		LPPositionSet set = new LPPositionSet();
-		set.add(new LPPosition(0, 0, -1));
-		set.add(new LPPosition(0, 0, -2));
-		set.add(new LPPosition(0, 0, -3));
+		set.add(new DoubleCoordinates(0, 0, -1));
+		set.add(new DoubleCoordinates(0, 0, -2));
+		set.add(new DoubleCoordinates(0, 0, -3));
 		return set;
 	}
 
@@ -141,17 +141,17 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 
 	@Override
 	public void addCollisionBoxesToList(List arraylist, AxisAlignedBB axisalignedbb) {
-		LPPosition pos = getLPPosition();
-		LPPosition posMin = new LPPosition(LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS);
-		LPPosition posMax = new LPPosition(LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, -3);
+		DoubleCoordinates pos = getLPPosition();
+		DoubleCoordinates posMin = new DoubleCoordinates(LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS);
+		DoubleCoordinates posMax = new DoubleCoordinates(LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, -3);
 		orientation.rotatePositions(posMin);
 		orientation.rotatePositions(posMax);
 		if (orientation == SpeedupDirection.EAST) {
-			pos.add(new LPPosition(1, 0, 0));
+			pos.add(new DoubleCoordinates(1, 0, 0));
 		} else if (orientation == SpeedupDirection.SOUTH) {
-			pos.add(new LPPosition(1, 0, 1));
+			pos.add(new DoubleCoordinates(1, 0, 1));
 		} else if (orientation == SpeedupDirection.WEST) {
-			pos.add(new LPPosition(0, 0, 1));
+			pos.add(new DoubleCoordinates(0, 0, 1));
 		}
 		posMin.add(pos);
 		posMax.add(pos);
@@ -223,7 +223,7 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 	@Override
 	public TileEntity getConnectedEndTile(ForgeDirection output) {
 		if (orientation.dir1 == output) {
-			LPPosition pos = new LPPosition(0, 0, -3);
+			DoubleCoordinates pos = new DoubleCoordinates(0, 0, -3);
 			LPPositionSet set = new LPPositionSet();
 			set.add(pos);
 			orientation.rotatePositions(set);
@@ -270,8 +270,8 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public LPPosition getItemRenderPos(float fPos, LPTravelingItem travelItem) {
-		LPPosition pos = new LPPosition(0.5D, 0.5D, 0.5D);
+	public DoubleCoordinates getItemRenderPos(float fPos, LPTravelingItem travelItem) {
+		DoubleCoordinates pos = new DoubleCoordinates(0.5D, 0.5D, 0.5D);
 		if (travelItem.input.getOpposite() == orientation.dir1) {
 			pos.moveForward(orientation.dir1, 3.5);
 		}

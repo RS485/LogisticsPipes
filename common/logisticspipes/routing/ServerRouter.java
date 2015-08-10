@@ -56,7 +56,9 @@ import logisticspipes.utils.OneList;
 import logisticspipes.utils.StackTraceUtil;
 import logisticspipes.utils.StackTraceUtil.Info;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Quartet;
 
@@ -338,8 +340,8 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	}
 
 	@Override
-	public LPPosition getLPPosition() {
-		return new LPPosition(_xCoord, _yCoord, _zCoord);
+	public DoubleCoordinates getLPPosition() {
+		return new DoubleCoordinates(_xCoord, _yCoord, _zCoord);
 	}
 
 	@Override
@@ -413,12 +415,12 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	}
 
 	private int connectionNeedsChecking = 0;
-	private List<LPPosition> causedBy = new LinkedList<LPPosition>();
+	private List<DoubleCoordinates> causedBy = new LinkedList<DoubleCoordinates>();
 
 	private ITileEntityChangeListener localChangeListener = new ITileEntityChangeListener() {
 
 		@Override
-		public void pipeRemoved(LPPosition pos) {
+		public void pipeRemoved(DoubleCoordinates pos) {
 			if (connectionNeedsChecking == 0) {
 				connectionNeedsChecking = 1;
 			}
@@ -428,7 +430,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		}
 
 		@Override
-		public void pipeAdded(LPPosition pos, ForgeDirection side) {
+		public void pipeAdded(DoubleCoordinates pos, ForgeDirection side) {
 			if (connectionNeedsChecking == 0) {
 				connectionNeedsChecking = 1;
 			}
@@ -438,7 +440,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		}
 
 		@Override
-		public void pipeModified(LPPosition pos) {
+		public void pipeModified(DoubleCoordinates pos) {
 			if (connectionNeedsChecking == 0) {
 				connectionNeedsChecking = 1;
 			}

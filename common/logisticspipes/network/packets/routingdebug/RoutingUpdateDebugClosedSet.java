@@ -8,7 +8,8 @@ import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.debug.ClientViewController;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -21,7 +22,7 @@ public class RoutingUpdateDebugClosedSet extends ModernPacket {
 
 	@Getter
 	@Setter
-	private LPPosition pos;
+	private DoubleCoordinates pos;
 
 	@Getter
 	@Setter

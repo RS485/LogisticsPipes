@@ -7,7 +7,8 @@ import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -44,7 +45,7 @@ public class MultiBlockCoordinatesPacket extends CoordinatesPacket {
 		targetPosZ = data.readInt();
 	}
 
-	public MultiBlockCoordinatesPacket setTargetLPPos(LPPosition pos) {
+	public MultiBlockCoordinatesPacket setTargetLPPos(DoubleCoordinates pos) {
 		setTargetPosX(pos.getX());
 		setTargetPosY(pos.getY());
 		setTargetPosZ(pos.getZ());
@@ -58,7 +59,7 @@ public class MultiBlockCoordinatesPacket extends CoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericSubMultiBlock block = this.getTile(player.getEntityWorld(), LogisticsTileGenericSubMultiBlock.class);
-		block.setPosition(new LPPosition(targetPosX, targetPosY, targetPosZ));
+		block.setPosition(new DoubleCoordinates(targetPosX, targetPosY, targetPosZ));
 	}
 
 	@Override

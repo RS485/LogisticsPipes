@@ -18,7 +18,8 @@ import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.renderer.IIconProvider;
 import logisticspipes.utils.LPPositionSet;
 import logisticspipes.utils.string.StringUtils;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -129,7 +130,7 @@ public class ItemLogisticsPipe extends LogisticsItem {
 		} else {
 			CoreMultiBlockPipe multiPipe = (CoreMultiBlockPipe) dummyPipe;
 			boolean isFreeSpace = true;
-			LPPosition placeAt = new LPPosition(i, j, k);
+			DoubleCoordinates placeAt = new DoubleCoordinates(i, j, k);
 			LPPositionSet globalPos = new LPPositionSet();
 			globalPos.add(placeAt.copy());
 			LPPositionSet positions = multiPipe.getSubBlocks();
@@ -138,13 +139,13 @@ public class ItemLogisticsPipe extends LogisticsItem {
 				return false;
 			}
 			orientation.rotatePositions(positions);
-			for (LPPosition pos : positions) {
+			for (DoubleCoordinates pos : positions) {
 				globalPos.add(pos.copy().add(placeAt));
 			}
 			globalPos.addToAll(orientation.getOffset());
 			placeAt.add(orientation.getOffset());
 
-			for (LPPosition pos : globalPos) {
+			for (DoubleCoordinates pos : globalPos) {
 				if (!world.canPlaceEntityOnSide(block, pos.getX(), pos.getY(), pos.getZ(), false, side, entityplayer, itemstack)) {
 					isFreeSpace = false;
 					break;

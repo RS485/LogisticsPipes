@@ -2,11 +2,11 @@ package logisticspipes.routing.debug;
 
 import java.util.List;
 
-import logisticspipes.utils.tuples.LPPosition;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class ExitRouteDebug {
 
-	public List<LPPosition> filterPosition = null;
+	public List<DoubleCoordinates> filterPosition = null;
 	public String toStringNetwork = null;
 	public boolean isNewlyAddedCanidate = true;
 	public boolean isTraced = true;

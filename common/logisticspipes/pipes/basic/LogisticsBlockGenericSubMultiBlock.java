@@ -7,7 +7,8 @@ import java.util.Random;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
@@ -52,7 +53,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 	@SideOnly(Side.CLIENT)
 	@SuppressWarnings({ "all" })
 	public IIcon getIcon(IBlockAccess iblockaccess, int i, int j, int k, int l) {
-		LPPosition pos = new LPPosition(i, j, k);
+		DoubleCoordinates pos = new DoubleCoordinates(i, j, k);
 		TileEntity tile = pos.getTileEntity(iblockaccess);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			LogisticsTileGenericPipe mainPipe = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
@@ -63,7 +64,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 		return null;
 	}
 
-	public static LPPosition currentCreatedMultiBlock;
+	public static DoubleCoordinates currentCreatedMultiBlock;
 
 	@Override
 	public TileEntity createNewTileEntity(World p_149915_1_, int p_149915_2_) {
@@ -75,12 +76,12 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 
 	@Override
 	public void breakBlock(World world, int x, int y, int z, Block block, int par6) {
-		LPPosition pos = new LPPosition(x, y, z);
+		DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
 		TileEntity tile = pos.getTileEntity(world);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			LogisticsTileGenericPipe mainPipe = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
 			if (mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock()) {
-				LPPosition mainPipePos = mainPipe.pipe.getLPPosition();
+				DoubleCoordinates mainPipePos = mainPipe.pipe.getLPPosition();
 				mainPipePos.setBlockToAir(world);
 			}
 		}
@@ -109,7 +110,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void addCollisionBoxesToList(World world, int x, int y, int z, AxisAlignedBB axisalignedbb, List arraylist, Entity entity) {
-		LPPosition pos = new LPPosition(x, y, z);
+		DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
 		TileEntity tile = pos.getTileEntity(world);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			LogisticsTileGenericPipe mainPipe = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
@@ -122,7 +123,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 
 	@Override
 	public MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3 origin, Vec3 direction) {
-		LPPosition pos = new LPPosition(x, y, z);
+		DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
 		TileEntity tile = pos.getTileEntity(world);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			LogisticsTileGenericPipe mainPipe = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
@@ -142,7 +143,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int x, int y, int z) {
-		LPPosition pos = new LPPosition(x, y, z);
+		DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
 		TileEntity tile = pos.getTileEntity(world);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			LogisticsTileGenericPipe mainPipe = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
@@ -156,7 +157,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 	@Override
 	public void onNeighborBlockChange(World world, int x, int y, int z, Block block) {
 		super.onNeighborBlockChange(world, x, y, z, block);
-		LPPosition pos = new LPPosition(x, y, z);
+		DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
 		TileEntity tile = pos.getTileEntity(world);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			((LogisticsTileGenericSubMultiBlock) tile).scheduleNeighborChange();
@@ -165,7 +166,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 
 	@Override
 	public boolean addDestroyEffects(World world, int x, int y, int z, int meta, EffectRenderer effectRenderer) {
-		LPPosition pos = new LPPosition(x, y, z);
+		DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
 		TileEntity tile = pos.getTileEntity(world);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			LogisticsTileGenericPipe mainPipe = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
@@ -178,7 +179,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 
 	@Override
 	public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer player) {
-		LPPosition pos = new LPPosition(x, y, z);
+		DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
 		TileEntity tile = pos.getTileEntity(world);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			LogisticsTileGenericPipe mainPipe = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
@@ -192,7 +193,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 	@Override
 	@SuppressWarnings("deprecation")
 	public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z) {
-		LPPosition pos = new LPPosition(x, y, z);
+		DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
 		TileEntity tile = pos.getTileEntity(world);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			LogisticsTileGenericPipe mainPipe = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
@@ -208,7 +209,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 		int x = target.blockX;
 		int y = target.blockY;
 		int z = target.blockZ;
-		LPPosition pos = new LPPosition(x, y, z);
+		DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
 		TileEntity tile = pos.getTileEntity(worldObj);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			LogisticsTileGenericPipe mainPipe = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();

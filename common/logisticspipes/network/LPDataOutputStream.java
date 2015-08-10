@@ -19,7 +19,7 @@ import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.LPPosition;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.item.Item;
 import net.minecraft.nbt.CompressedStreamTools;
@@ -83,7 +83,7 @@ public class LPDataOutputStream extends DataOutputStream {
 		}
 	}
 
-	public void writeLPPosition(LPPosition pos) throws IOException {
+	public void writeLPPosition(DoubleCoordinates pos) throws IOException {
 		writeDouble(pos.getXD());
 		writeDouble(pos.getYD());
 		writeDouble(pos.getZD());

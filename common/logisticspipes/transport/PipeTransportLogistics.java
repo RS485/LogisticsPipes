@@ -56,7 +56,7 @@ import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SyncList;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.LPPosition;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
 
@@ -276,7 +276,7 @@ public class PipeTransportLogistics {
 		Iterator<ForgeDirection> iter = dirs.iterator();
 		while (iter.hasNext()) {
 			ForgeDirection dir = iter.next();
-			LPPosition pos = getPipe().getLPPosition();
+			DoubleCoordinates pos = getPipe().getLPPosition();
 			pos.moveForward(dir);
 			TileEntity tile = pos.getTileEntity(getWorld());
 			if (!SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {

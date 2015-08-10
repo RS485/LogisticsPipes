@@ -11,7 +11,7 @@ import logisticspipes.pipefxhandlers.PipeFXLaserPowerBall;
 import logisticspipes.pipefxhandlers.PipeFXLaserPowerBeam;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.tuples.LPPosition;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.tileentity.TileEntity;
@@ -67,7 +67,7 @@ public class LogisticsTileRenderController {
 
 		public LaserBeamDataClient(float length, int timeout, boolean reverse, ForgeDirection dir, int color) {
 			super(length, timeout, reverse);
-			entity = new PipeFXLaserPowerBeam(pipe.getWorldObj(), new LPPosition((TileEntity) pipe), length, dir, color, pipe).setReverse(reverse);
+			entity = new PipeFXLaserPowerBeam(pipe.getWorldObj(), new DoubleCoordinates((TileEntity) pipe), length, dir, color, pipe).setReverse(reverse);
 			Minecraft.getMinecraft().effectRenderer.addEffect(entity);
 
 		}
@@ -123,7 +123,7 @@ public class LogisticsTileRenderController {
 
 		public LaserBallDataClient(float length, int timeout, int color) {
 			super(length, timeout);
-			entity = new PipeFXLaserPowerBall(pipe.getWorldObj(), new LPPosition((TileEntity) pipe), color, pipe);
+			entity = new PipeFXLaserPowerBall(pipe.getWorldObj(), new DoubleCoordinates((TileEntity) pipe), color, pipe);
 			Minecraft.getMinecraft().effectRenderer.addEffect(entity);
 		}
 

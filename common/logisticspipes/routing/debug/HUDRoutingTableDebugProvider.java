@@ -2,16 +2,17 @@ package logisticspipes.routing.debug;
 
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.world.World;
 
 public class HUDRoutingTableDebugProvider implements IHeadUpDisplayRendererProvider {
 
 	private final IHeadUpDisplayRenderer hud;
-	private final LPPosition pos;
+	private final DoubleCoordinates pos;
 
-	HUDRoutingTableDebugProvider(IHeadUpDisplayRenderer hud, LPPosition pos) {
+	HUDRoutingTableDebugProvider(IHeadUpDisplayRenderer hud, DoubleCoordinates pos) {
 		this.hud = hud;
 		this.pos = pos;
 	}

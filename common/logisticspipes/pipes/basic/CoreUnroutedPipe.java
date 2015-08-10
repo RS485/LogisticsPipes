@@ -21,7 +21,8 @@ import logisticspipes.textures.Textures;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -309,8 +310,8 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		return super.toString() + " (" + getX() + ", " + getY() + ", " + getZ() + ")";
 	}
 
-	public LPPosition getLPPosition() {
-		return new LPPosition(this);
+	public DoubleCoordinates getLPPosition() {
+		return new DoubleCoordinates(this);
 	}
 
 	public IPipeUpgradeManager getUpgradeManager() {
@@ -373,7 +374,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		};
 	}
 
-	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double travled, double max, List<LPPosition> visited) {
+	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double travled, double max, List<DoubleCoordinates> visited) {
 		double lowest = Integer.MAX_VALUE;
 		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
 			if (ignore == dir) {
@@ -381,7 +382,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 			}
 			IPipeInformationProvider information = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(container.getTile(dir));
 			if (information != null) {
-				LPPosition pos = new LPPosition(information);
+				DoubleCoordinates pos = new DoubleCoordinates(information);
 				if (visited.contains(pos)) {
 					continue;
 				}
@@ -420,8 +421,8 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		return false;
 	}
 
-	public LPPosition getItemRenderPos(float fPos, LPTravelingItem travelItem) {
-		LPPosition pos = new LPPosition(0.5D, 0.5D, 0.5D);
+	public DoubleCoordinates getItemRenderPos(float fPos, LPTravelingItem travelItem) {
+		DoubleCoordinates pos = new DoubleCoordinates(0.5D, 0.5D, 0.5D);
 		if (fPos < 0.5) {
 			if (travelItem.input == ForgeDirection.UNKNOWN) {
 				return null;

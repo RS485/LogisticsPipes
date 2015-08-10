@@ -15,7 +15,9 @@ import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
 
@@ -156,7 +158,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 	}
 
 	@Override
-	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double traveled, double max, List<LPPosition> visited) {
+	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double traveled, double max, List<DoubleCoordinates> visited) {
 		if (traveled >= max) {
 			return Integer.MAX_VALUE;
 		}
@@ -174,7 +176,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 					continue;
 				}
 
-				LPPosition pos = new LPPosition((TileEntity) lpDuct.pipe);
+				DoubleCoordinates pos = new DoubleCoordinates((TileEntity) lpDuct.pipe);
 				if (visited.contains(pos)) {
 					continue;
 				}
@@ -220,8 +222,8 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 			}
 			if (route == null) {
 				Pair<Double, Route> closesedConnection = null;
-				List<LPPosition> visited = new ArrayList<LPPosition>();
-				visited.add(new LPPosition(from));
+				List<DoubleCoordinates> visited = new ArrayList<DoubleCoordinates>();
+				visited.add(new DoubleCoordinates(from));
 				for (Route localRoute1 : paramIterable) {
 					if (localRoute1.endPoint instanceof LPItemDuct) {
 						LPItemDuct lpDuct = (LPItemDuct) localRoute1.endPoint;
@@ -231,7 +233,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 							max = closesedConnection.getValue1();
 						}
 
-						LPPosition pos = new LPPosition((TileEntity) lpDuct.pipe);
+						DoubleCoordinates pos = new DoubleCoordinates((TileEntity) lpDuct.pipe);
 						if (visited.contains(pos)) {
 							continue;
 						}

@@ -17,7 +17,8 @@ import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeMultiBlockTransportLogistics;
 import logisticspipes.utils.IPositionRotateble;
 import logisticspipes.utils.LPPositionSet;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -39,20 +40,20 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 	public enum CurveSOrientation implements ITubeOrientation {
 		//@formatter:off
 		// Name: Placement from  _ TurnDirection
-		NORTH_EAST(TurnSDirection.NORTH_INV, new LPPosition(0, 0, 0), ForgeDirection.NORTH, ForgeDirection.EAST),
-		NORTH_WEST(TurnSDirection.NORTH, new LPPosition(0, 0, 0), ForgeDirection.NORTH, ForgeDirection.WEST),
-		EAST_SOUTH(TurnSDirection.EAST_INV, new LPPosition(0, 0, 0), ForgeDirection.EAST, ForgeDirection.SOUTH),
-		EAST_NORTH(TurnSDirection.EAST, new LPPosition(0, 0, 0), ForgeDirection.EAST, ForgeDirection.NORTH),
-		SOUTH_WEST(TurnSDirection.NORTH_INV, new LPPosition(-1, 0, 3), ForgeDirection.SOUTH, ForgeDirection.WEST),
-		SOUTH_EAST(TurnSDirection.NORTH, new LPPosition(1, 0, 3), ForgeDirection.SOUTH, ForgeDirection.EAST),
-		WEST_NORTH(TurnSDirection.EAST_INV, new LPPosition(-3, 0, -1), ForgeDirection.WEST, ForgeDirection.NORTH),
-		WEST_SOUTH(TurnSDirection.EAST, new LPPosition(-3, 0, 1), ForgeDirection.WEST, ForgeDirection.SOUTH);
+		NORTH_EAST(TurnSDirection.NORTH_INV, new DoubleCoordinates(0, 0, 0), ForgeDirection.NORTH, ForgeDirection.EAST),
+		NORTH_WEST(TurnSDirection.NORTH, new DoubleCoordinates(0, 0, 0), ForgeDirection.NORTH, ForgeDirection.WEST),
+		EAST_SOUTH(TurnSDirection.EAST_INV, new DoubleCoordinates(0, 0, 0), ForgeDirection.EAST, ForgeDirection.SOUTH),
+		EAST_NORTH(TurnSDirection.EAST, new DoubleCoordinates(0, 0, 0), ForgeDirection.EAST, ForgeDirection.NORTH),
+		SOUTH_WEST(TurnSDirection.NORTH_INV, new DoubleCoordinates(-1, 0, 3), ForgeDirection.SOUTH, ForgeDirection.WEST),
+		SOUTH_EAST(TurnSDirection.NORTH, new DoubleCoordinates(1, 0, 3), ForgeDirection.SOUTH, ForgeDirection.EAST),
+		WEST_NORTH(TurnSDirection.EAST_INV, new DoubleCoordinates(-3, 0, -1), ForgeDirection.WEST, ForgeDirection.NORTH),
+		WEST_SOUTH(TurnSDirection.EAST, new DoubleCoordinates(-3, 0, 1), ForgeDirection.WEST, ForgeDirection.SOUTH);
 		//@formatter:on
 
 		@Getter
 		TurnSDirection renderOrientation;
 		@Getter
-		LPPosition offset;
+		DoubleCoordinates offset;
 		@Getter
 		ForgeDirection dir;
 		@Getter
@@ -133,11 +134,11 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 	@Override
 	public LPPositionSet getSubBlocks() {
 		LPPositionSet list = new LPPositionSet();
-		list.add(new LPPosition(0, 0, -1));
-		list.add(new LPPosition(0, 0, -2));
-		list.add(new LPPosition(1, 0, -1));
-		list.add(new LPPosition(1, 0, -2));
-		list.add(new LPPosition(1, 0, -3));
+		list.add(new DoubleCoordinates(0, 0, -1));
+		list.add(new DoubleCoordinates(0, 0, -2));
+		list.add(new DoubleCoordinates(1, 0, -1));
+		list.add(new DoubleCoordinates(1, 0, -2));
+		list.add(new DoubleCoordinates(1, 0, -3));
 		return list;
 	}
 
@@ -183,7 +184,7 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 				if (box != null) {
 					LPPositionSet lpBox = new LPPositionSet();
 					lpBox.addFrom(box);
-					LPPosition center = lpBox.getCenter();
+					DoubleCoordinates center = lpBox.getCenter();
 					box = AxisAlignedBB.getBoundingBox(center.getXD() - 0.3D, center.getYD() - 0.3D, center.getZD() - 0.3D, center.getXD() + 0.3D, center.getYD() + 0.3D, center.getZD() + 0.3D);
 					if (box != null) {
 						AxisAlignedBB cBox = getCompleteBox();
@@ -313,7 +314,7 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 			return container.getTile(output);
 		}
 		if (orientation.dir == output) {
-			LPPosition pos = new LPPosition(1, 0, -3);
+			DoubleCoordinates pos = new DoubleCoordinates(1, 0, -3);
 			LPPositionSet set = new LPPositionSet();
 			set.add(pos);
 			orientation.rotatePositions(set);
@@ -342,7 +343,7 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public LPPosition getItemRenderPos(float fPos, LPTravelingItem travelItem) {
+	public DoubleCoordinates getItemRenderPos(float fPos, LPTravelingItem travelItem) {
 		if (fPos < 0) {
 			fPos = 0;
 		}
@@ -381,7 +382,7 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 			double b = -0.030238483815369 * Math.pow(a, 5) + 0.225914176523007 * Math.pow(a, 4) - 0.502711673373567 * Math.pow(a, 3) + 0.233256545765967 * Math.pow(a, 2) - 0.074807924321475 * a + 0.000099653425518;
 			z += b * transport.getPipeLength() / 3;
 		}
-		return new LPPosition(x, y, z);
+		return new DoubleCoordinates(x, y, z);
 	}
 
 	@Override

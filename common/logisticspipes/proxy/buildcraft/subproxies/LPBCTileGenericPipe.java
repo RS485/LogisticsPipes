@@ -12,7 +12,8 @@ import logisticspipes.proxy.buildcraft.robots.LPRobotConnectionControl;
 import logisticspipes.proxy.buildcraft.robots.boards.LogisticsRoutingBoardRobot;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.ReflectionHelper;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -328,8 +329,8 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 				if (!((LogisticsRoutingBoardRobot) robot.getBoard()).isAcceptsItems()) {
 					return arrivingItem;
 				}
-				LPPosition robotPos = new LPPosition(robot);
-				if (new LPPosition(LPBCTileGenericPipe.this).center().moveForward(sideHit, 0.5).distanceTo(robotPos) > 0.05) {
+				DoubleCoordinates robotPos = new DoubleCoordinates(robot);
+				if (new DoubleCoordinates(LPBCTileGenericPipe.this).center().moveForward(sideHit, 0.5).distanceTo(robotPos) > 0.05) {
 					return arrivingItem; // Not at station
 				}
 				return ((LogisticsRoutingBoardRobot) robot.getBoard()).handleItem(arrivingItem);

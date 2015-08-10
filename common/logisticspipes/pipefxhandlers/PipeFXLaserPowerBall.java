@@ -2,7 +2,7 @@ package logisticspipes.pipefxhandlers;
 
 import java.util.Random;
 
-import logisticspipes.utils.tuples.LPPosition;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -28,7 +28,7 @@ public class PipeFXLaserPowerBall extends EntityFX {
 	private float random = 0;
 	private TileEntity tile;
 
-	public PipeFXLaserPowerBall(World par1World, LPPosition pos, int color, TileEntity tile) {
+	public PipeFXLaserPowerBall(World par1World, DoubleCoordinates pos, int color, TileEntity tile) {
 		super(par1World, pos.getXD() + 0.5D, pos.getYD() + 0.5D, pos.getZD() + 0.5D, 0.0D, 0.0D, 0.0D);
 		this.tile = tile;
 		setSize(0.02F, 0.02F);

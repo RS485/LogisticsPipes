@@ -3,11 +3,11 @@ package logisticspipes.utils;
 import java.util.HashSet;
 import java.util.Set;
 
-import logisticspipes.utils.tuples.LPPosition;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.util.AxisAlignedBB;
 
-public class LPPositionSet extends HashSet<LPPosition> implements IPositionRotateble {
+public class LPPositionSet extends HashSet<DoubleCoordinates> implements IPositionRotateble {
 
 	private static final long serialVersionUID = -3611750920959862658L;
 
@@ -37,7 +37,7 @@ public class LPPositionSet extends HashSet<LPPosition> implements IPositionRotat
 
 	public double getMaxXD() {
 		double x = Integer.MIN_VALUE;
-		for (LPPosition pos : this) {
+		for (DoubleCoordinates pos : this) {
 			x = Math.max(x, pos.getXD());
 		}
 		return x;
@@ -45,7 +45,7 @@ public class LPPositionSet extends HashSet<LPPosition> implements IPositionRotat
 
 	public double getMaxYD() {
 		double y = Integer.MIN_VALUE;
-		for (LPPosition pos : this) {
+		for (DoubleCoordinates pos : this) {
 			y = Math.max(y, pos.getYD());
 		}
 		return y;
@@ -53,7 +53,7 @@ public class LPPositionSet extends HashSet<LPPosition> implements IPositionRotat
 
 	public double getMaxZD() {
 		double z = Integer.MIN_VALUE;
-		for (LPPosition pos : this) {
+		for (DoubleCoordinates pos : this) {
 			z = Math.max(z, pos.getZD());
 		}
 		return z;
@@ -61,7 +61,7 @@ public class LPPositionSet extends HashSet<LPPosition> implements IPositionRotat
 
 	public double getMinXD() {
 		double x = Integer.MAX_VALUE;
-		for (LPPosition pos : this) {
+		for (DoubleCoordinates pos : this) {
 			x = Math.min(x, pos.getXD());
 		}
 		return x;
@@ -69,7 +69,7 @@ public class LPPositionSet extends HashSet<LPPosition> implements IPositionRotat
 
 	public double getMinYD() {
 		double y = Integer.MAX_VALUE;
-		for (LPPosition pos : this) {
+		for (DoubleCoordinates pos : this) {
 			y = Math.min(y, pos.getYD());
 		}
 		return y;
@@ -77,37 +77,37 @@ public class LPPositionSet extends HashSet<LPPosition> implements IPositionRotat
 
 	public double getMinZD() {
 		double z = Integer.MAX_VALUE;
-		for (LPPosition pos : this) {
+		for (DoubleCoordinates pos : this) {
 			z = Math.min(z, pos.getZD());
 		}
 		return z;
 	}
 
 	public void copyPositions() {
-		Set<LPPosition> tmp = new HashSet<LPPosition>();
-		for (LPPosition pos : this) {
+		Set<DoubleCoordinates> tmp = new HashSet<DoubleCoordinates>();
+		for (DoubleCoordinates pos : this) {
 			tmp.add(pos.copy());
 		}
 		clear();
 		addAll(tmp);
 	}
 
-	public void addToAll(LPPosition lpPosition) {
-		for (LPPosition pos : this) {
+	public void addToAll(DoubleCoordinates lpPosition) {
+		for (DoubleCoordinates pos : this) {
 			pos.add(lpPosition);
 		}
 	}
 
 	@Override
 	public void rotateLeft() {
-		for (LPPosition pos : this) {
+		for (DoubleCoordinates pos : this) {
 			pos.rotateLeft();
 		}
 	}
 
 	@Override
 	public void rotateRight() {
-		for (LPPosition pos : this) {
+		for (DoubleCoordinates pos : this) {
 			pos.rotateRight();
 		}
 	}
@@ -118,24 +118,24 @@ public class LPPositionSet extends HashSet<LPPosition> implements IPositionRotat
 
 	@Override
 	public void mirrorX() {
-		for (LPPosition pos : this) {
+		for (DoubleCoordinates pos : this) {
 			pos.mirrorX();
 		}
 	}
 
 	@Override
 	public void mirrorZ() {
-		for (LPPosition pos : this) {
+		for (DoubleCoordinates pos : this) {
 			pos.mirrorZ();
 		}
 	}
 
 	public void addFrom(AxisAlignedBB completeBox) {
-		add(new LPPosition(completeBox.minX, completeBox.minY, completeBox.minZ));
-		add(new LPPosition(completeBox.maxX, completeBox.maxY, completeBox.maxZ));
+		add(new DoubleCoordinates(completeBox.minX, completeBox.minY, completeBox.minZ));
+		add(new DoubleCoordinates(completeBox.maxX, completeBox.maxY, completeBox.maxZ));
 	}
 
-	public LPPosition getCenter() {
-		return new LPPosition((getMaxXD() - getMinXD()) / 2 + getMinXD(), (getMaxYD() - getMinYD()) / 2 + getMinYD(), (getMaxZD() - getMinZD()) / 2 + getMinZD());
+	public DoubleCoordinates getCenter() {
+		return new DoubleCoordinates((getMaxXD() - getMinXD()) / 2 + getMinXD(), (getMaxYD() - getMinYD()) / 2 + getMinYD(), (getMaxZD() - getMinZD()) / 2 + getMinZD());
 	}
 }

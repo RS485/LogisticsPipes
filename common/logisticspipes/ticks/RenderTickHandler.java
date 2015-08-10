@@ -8,7 +8,8 @@ import logisticspipes.renderer.LogisticsGuiOverrenderer;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.debug.ClientViewController;
 import logisticspipes.utils.LPPositionSet;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -112,19 +113,19 @@ public class RenderTickHandler {
 				double zCoord = k;
 
 				boolean isFreeSpace = true;
-				LPPosition placeAt = new LPPosition(xCoord, yCoord, zCoord);
+				DoubleCoordinates placeAt = new DoubleCoordinates(xCoord, yCoord, zCoord);
 				LPPositionSet globalPos = new LPPositionSet();
 				globalPos.add(placeAt.copy());
 				LPPositionSet positions = multiPipe.getSubBlocks();
 				ITubeOrientation orientation = multiPipe.getTubeOrientation(player, (int) xCoord, (int) zCoord);
 				if (orientation != null) {
 					orientation.rotatePositions(positions);
-					for (LPPosition pos : positions) {
+					for (DoubleCoordinates pos : positions) {
 						globalPos.add(pos.copy().add(placeAt));
 					}
 					globalPos.addToAll(orientation.getOffset());
 
-					for (LPPosition pos : globalPos) {
+					for (DoubleCoordinates pos : globalPos) {
 						if (!player.getEntityWorld().canPlaceEntityOnSide(LogisticsPipes.LogisticsPipeBlock, pos.getX(), pos.getY(), pos.getZ(), false, side, player, stack)) {
 							isFreeSpace = false;
 							break;

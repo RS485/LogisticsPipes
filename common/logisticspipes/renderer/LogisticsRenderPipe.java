@@ -22,7 +22,7 @@ import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.item.ItemStackRenderer;
-import logisticspipes.utils.tuples.LPPosition;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 import logisticspipes.utils.tuples.Pair;
 
 import net.minecraft.block.Block;
@@ -176,7 +176,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 				}
 			}
 
-			LPPosition pos = lPipe.getItemRenderPos(fPos, item);
+			DoubleCoordinates pos = lPipe.getItemRenderPos(fPos, item);
 			if (pos == null) {
 				continue;
 			}
@@ -190,7 +190,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		}
 		count = 0;
 		float dist = 0.135F;
-		LPPosition pos = new LPPosition(0.5D, 0.5D, 0.5D);
+		DoubleCoordinates pos = new DoubleCoordinates(0.5D, 0.5D, 0.5D);
 		pos.moveForward(ForgeDirection.SOUTH, dist);
 		pos.moveForward(ForgeDirection.EAST, dist);
 		pos.moveForward(ForgeDirection.UP, dist);

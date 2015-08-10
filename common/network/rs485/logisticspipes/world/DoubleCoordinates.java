@@ -1,9 +1,10 @@
-package logisticspipes.utils.tuples;
+package network.rs485.logisticspipes.world;
 
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.utils.IPositionRotateble;
+import logisticspipes.utils.tuples.Triplet;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -14,33 +15,33 @@ import net.minecraft.world.World;
 
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class LPPosition extends Triplet<Double, Double, Double> implements IPositionRotateble {
+public class DoubleCoordinates extends Triplet<Double, Double, Double> implements IPositionRotateble {
 
-	public LPPosition(double xPos, double yPos, double zPos) {
+	public DoubleCoordinates(double xPos, double yPos, double zPos) {
 		super(xPos, yPos, zPos);
 	}
 
-	public LPPosition(int xPos, int yPos, int zPos) {
+	public DoubleCoordinates(int xPos, int yPos, int zPos) {
 		super((double) xPos, (double) yPos, (double) zPos);
 	}
 
-	public LPPosition(TileEntity tile) {
+	public DoubleCoordinates(TileEntity tile) {
 		super((double) tile.xCoord, (double) tile.yCoord, (double) tile.zCoord);
 	}
 
-	public LPPosition(CoreUnroutedPipe pipe) {
+	public DoubleCoordinates(CoreUnroutedPipe pipe) {
 		super((double) pipe.getX(), (double) pipe.getY(), (double) pipe.getZ());
 	}
 
-	public LPPosition(IPipeInformationProvider pipe) {
+	public DoubleCoordinates(IPipeInformationProvider pipe) {
 		super((double) pipe.getX(), (double) pipe.getY(), (double) pipe.getZ());
 	}
 
-	public LPPosition(CoordinatesPacket packet) {
+	public DoubleCoordinates(CoordinatesPacket packet) {
 		super((double) packet.getPosX(), (double) packet.getPosY(), (double) packet.getPosZ());
 	}
 
-	public LPPosition(Entity entity) {
+	public DoubleCoordinates(Entity entity) {
 		super(entity.posX, entity.posY, entity.posZ);
 	}
 
@@ -72,7 +73,7 @@ public class LPPosition extends Triplet<Double, Double, Double> implements IPosi
 		return world.getTileEntity(getX(), getY(), getZ());
 	}
 
-	public LPPosition moveForward(ForgeDirection dir, double steps) {
+	public DoubleCoordinates moveForward(ForgeDirection dir, double steps) {
 		switch (dir) {
 			case UP:
 				value2 += steps;
@@ -97,15 +98,15 @@ public class LPPosition extends Triplet<Double, Double, Double> implements IPosi
 		return this;
 	}
 
-	public LPPosition moveForward(ForgeDirection dir) {
+	public DoubleCoordinates moveForward(ForgeDirection dir) {
 		return moveForward(dir, 1);
 	}
 
-	public LPPosition moveBackward(ForgeDirection dir, double steps) {
+	public DoubleCoordinates moveBackward(ForgeDirection dir, double steps) {
 		return moveForward(dir, -1 * steps);
 	}
 
-	public LPPosition moveBackward(ForgeDirection dir) {
+	public DoubleCoordinates moveBackward(ForgeDirection dir) {
 		return moveBackward(dir, 1);
 	}
 
@@ -119,8 +120,8 @@ public class LPPosition extends Triplet<Double, Double, Double> implements IPosi
 	}
 
 	@Override
-	public LPPosition copy() {
-		return new LPPosition(value1, value2, value3);
+	public DoubleCoordinates copy() {
+		return new DoubleCoordinates(value1, value2, value3);
 	}
 
 	public Block getBlock(IBlockAccess world) {
@@ -131,11 +132,11 @@ public class LPPosition extends Triplet<Double, Double, Double> implements IPosi
 		return world.blockExists(getX(), getY(), getZ());
 	}
 
-	public double distanceTo(LPPosition targetPos) {
+	public double distanceTo(DoubleCoordinates targetPos) {
 		return Math.sqrt(Math.pow(targetPos.getXD() - getXD(), 2) + Math.pow(targetPos.getYD() - getYD(), 2) + Math.pow(targetPos.getZD() - getZD(), 2));
 	}
 
-	public LPPosition center() {
+	public DoubleCoordinates center() {
 		value1 += 0.5D;
 		value2 += 0.5D;
 		value3 += 0.5D;
@@ -148,14 +149,14 @@ public class LPPosition extends Triplet<Double, Double, Double> implements IPosi
 		nbt.setDouble(prefix + "zPos", value3);
 	}
 
-	public static LPPosition readFromNBT(String prefix, NBTTagCompound nbt) {
+	public static DoubleCoordinates readFromNBT(String prefix, NBTTagCompound nbt) {
 		if (nbt.hasKey(prefix + "xPos") && nbt.hasKey(prefix + "yPos") && nbt.hasKey(prefix + "zPos")) {
-			return new LPPosition(nbt.getDouble(prefix + "xPos"), nbt.getDouble(prefix + "yPos"), nbt.getDouble(prefix + "zPos"));
+			return new DoubleCoordinates(nbt.getDouble(prefix + "xPos"), nbt.getDouble(prefix + "yPos"), nbt.getDouble(prefix + "zPos"));
 		}
 		return null;
 	}
 
-	public LPPosition add(LPPosition toAdd) {
+	public DoubleCoordinates add(DoubleCoordinates toAdd) {
 		value1 += toAdd.value1;
 		value2 += toAdd.value2;
 		value3 += toAdd.value3;

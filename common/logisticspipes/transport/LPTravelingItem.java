@@ -24,7 +24,9 @@ import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.order.IDistanceTracker;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 import logisticspipes.utils.tuples.Pair;
 
 import net.minecraft.entity.item.EntityItem;
@@ -245,7 +247,7 @@ public abstract class LPTravelingItem {
 					exitdirection = input;
 				}
 
-				LPPosition position = new LPPosition(container.xCoord + 0.5, container.yCoord + 0.375, container.zCoord + 0.5);
+				DoubleCoordinates position = new DoubleCoordinates(container.xCoord + 0.5, container.yCoord + 0.375, container.zCoord + 0.5);
 
 				switch (exitdirection) {
 					case DOWN:
@@ -265,7 +267,7 @@ public abstract class LPTravelingItem {
 						break;
 				}
 
-				LPPosition motion = new LPPosition(0, 0, 0);
+				DoubleCoordinates motion = new DoubleCoordinates(0, 0, 0);
 				motion.moveForward(exitdirection, getSpeed() * 2F);
 
 				EntityItem entityitem = getItemIdentifierStack().makeEntityItem(worldObj, position.getXD(), position.getYD(), position.getZD());

@@ -2,7 +2,8 @@ package logisticspipes.interfaces;
 
 import logisticspipes.pipes.basic.CoreMultiBlockPipe;
 import logisticspipes.utils.IPositionRotateble;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public interface ITubeOrientation {
 
@@ -10,7 +11,7 @@ public interface ITubeOrientation {
 
 	void rotatePositions(IPositionRotateble set);
 
-	LPPosition getOffset();
+	DoubleCoordinates getOffset();
 
 	void setOnPipe(CoreMultiBlockPipe pipe);
 }

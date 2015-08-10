@@ -4,7 +4,8 @@ import java.util.List;
 
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public interface IOrderInfoProvider {
 
@@ -34,6 +35,6 @@ public interface IOrderInfoProvider {
 
 	ItemIdentifier getTargetType();
 
-	LPPosition getTargetPosition();
+	DoubleCoordinates getTargetPosition();
 
 }

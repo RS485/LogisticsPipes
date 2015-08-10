@@ -109,7 +109,7 @@ import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.LPPosition;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
@@ -1807,7 +1807,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	}
 
 	@Override
-	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double traveled, double max, List<LPPosition> visited) {
+	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double traveled, double max, List<DoubleCoordinates> visited) {
 		if (!stillNeedReplace) {
 			if (getRouterId() == destinationint) {
 				return 0;

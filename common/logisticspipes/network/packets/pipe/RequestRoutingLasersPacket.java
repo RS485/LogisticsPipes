@@ -23,7 +23,8 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LaserData;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.pathfinder.PathFinder;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
@@ -202,7 +203,7 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 		while (iLasers.hasNext()) {
 			boolean compressed = false;
 			LaserData data = iLasers.next();
-			LPPosition next = new LPPosition(data.getPosX(), data.getPosY(), data.getPosZ());
+			DoubleCoordinates next = new DoubleCoordinates(data.getPosX(), data.getPosY(), data.getPosZ());
 			next.moveForward(data.getDir(), data.getLength());
 			boolean found = false;
 			do {

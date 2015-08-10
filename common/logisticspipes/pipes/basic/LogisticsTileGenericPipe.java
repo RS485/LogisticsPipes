@@ -45,7 +45,7 @@ import logisticspipes.utils.StackTraceUtil;
 import logisticspipes.utils.StackTraceUtil.Info;
 import logisticspipes.utils.TileBuffer;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.tuples.LPPosition;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.block.Block;
 import net.minecraft.crash.CrashReportCategory;
@@ -92,7 +92,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
 
-	public Set<LPPosition> subMultiBlock = new HashSet<LPPosition>();
+	public Set<DoubleCoordinates> subMultiBlock = new HashSet<DoubleCoordinates>();
 
 	public boolean[] turtleConnect = new boolean[7];
 
@@ -1087,15 +1087,15 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		} else {
 			LPPositionSet set = ((CoreMultiBlockPipe) pipe).getRotatedSubBlocks();
 			set.addToAll(pipe.getLPPosition());
-			set.add(new LPPosition(xCoord, yCoord, zCoord));
-			set.add(new LPPosition(xCoord + 1, yCoord + 1, zCoord + 1));
+			set.add(new DoubleCoordinates(xCoord, yCoord, zCoord));
+			set.add(new DoubleCoordinates(xCoord + 1, yCoord + 1, zCoord + 1));
 			renderBox = AxisAlignedBB.getBoundingBox(set.getMinXD() - 1, set.getMinYD() - 1, set.getMinZD() - 1, set.getMaxXD() + 1, set.getMaxYD() + 1, set.getMaxZD() + 1);
 		}
 		return renderBox;
 	}
 
 	@Override
-	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double traveled, double max, List<LPPosition> visited) {
+	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double traveled, double max, List<DoubleCoordinates> visited) {
 		if (pipe == null || traveled > max) {
 			return Integer.MAX_VALUE;
 		}

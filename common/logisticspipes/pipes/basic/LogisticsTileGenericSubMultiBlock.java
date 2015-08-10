@@ -5,7 +5,8 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.multiblock.MultiBlockCoordinatesPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.TileBuffer;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
@@ -16,7 +17,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 public class LogisticsTileGenericSubMultiBlock extends TileEntity {
 
-	private LPPosition mainPipePos;
+	private DoubleCoordinates mainPipePos;
 	private LogisticsTileGenericPipe mainPipe;
 	private TileBuffer[] tileBuffer;
 
@@ -25,7 +26,7 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity {
 
 	}
 
-	public LogisticsTileGenericSubMultiBlock(LPPosition pos) {
+	public LogisticsTileGenericSubMultiBlock(DoubleCoordinates pos) {
 		mainPipePos = pos;
 	}
 
@@ -51,7 +52,7 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity {
 		}
 		LogisticsTileGenericPipe pipe = getMainPipe();
 		if (pipe != null) {
-			pipe.subMultiBlock.add(new LPPosition(this));
+			pipe.subMultiBlock.add(new DoubleCoordinates(this));
 		}
 	}
 
@@ -63,7 +64,7 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity {
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
-		mainPipePos = LPPosition.readFromNBT("MainPipePos_", nbt);
+		mainPipePos = DoubleCoordinates.readFromNBT("MainPipePos_", nbt);
 	}
 
 	@Override
@@ -89,7 +90,7 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity {
 		return packet;
 	}
 
-	public void setPosition(LPPosition lpPosition) {
+	public void setPosition(DoubleCoordinates lpPosition) {
 		mainPipePos = lpPosition;
 	}
 

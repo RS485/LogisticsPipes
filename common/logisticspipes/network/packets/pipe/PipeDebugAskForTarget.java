@@ -6,10 +6,10 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -44,7 +44,7 @@ public class PipeDebugAskForTarget extends ModernPacket {
 		MovingObjectPosition box = FMLClientHandler.instance().getClient().objectMouseOver;
 		if (box != null && box.typeOfHit == MovingObjectType.BLOCK) {
 			if (!isServer) {
-				TileEntity tile = new LPPosition(box.blockX, box.blockY, box.blockZ).getTileEntity(player.getEntityWorld());
+				TileEntity tile = new DoubleCoordinates(box.blockX, box.blockY, box.blockZ).getTileEntity(player.getEntityWorld());
 				if (tile instanceof LogisticsTileGenericPipe) {
 					((LogisticsTileGenericPipe) tile).pipe.debug.debugThisPipe = !((LogisticsTileGenericPipe) tile).pipe.debug.debugThisPipe;
 					if (((LogisticsTileGenericPipe) tile).pipe.debug.debugThisPipe) {

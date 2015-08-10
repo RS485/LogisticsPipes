@@ -18,7 +18,7 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.tuples.LPPosition;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 import logisticspipes.utils.tuples.Pair;
 
 import net.minecraftforge.common.util.ForgeDirection;
@@ -68,7 +68,7 @@ public interface IRouter {
 
 	public int getSimpleID();
 
-	public LPPosition getLPPosition();
+	public DoubleCoordinates getLPPosition();
 
 	/**
 	 * @param hasBeenProcessed

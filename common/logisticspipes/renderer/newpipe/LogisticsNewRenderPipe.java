@@ -27,7 +27,7 @@ import logisticspipes.proxy.object3d.operation.LPUVTransformationList;
 import logisticspipes.proxy.object3d.operation.LPUVTranslation;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.textures.Textures;
-import logisticspipes.utils.tuples.LPPosition;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 import logisticspipes.utils.tuples.Quartet;
 
 import net.minecraft.block.Block;
@@ -39,8 +39,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import net.minecraftforge.common.util.ForgeDirection;
-
-import codechicken.lib.render.CCRenderState;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -690,7 +688,7 @@ public class LogisticsNewRenderPipe {
 				SimpleServiceLocator.cclProxy.getRenderState().setUseNormals(true);
 				SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
 
-				int brightness = new LPPosition((TileEntity) pipeTile).getBlock(pipeTile.getWorldObj()).getMixedBrightnessForBlock(pipeTile.getWorldObj(), pipeTile.xCoord, pipeTile.yCoord, pipeTile.zCoord);
+				int brightness = new DoubleCoordinates((TileEntity) pipeTile).getBlock(pipeTile.getWorldObj()).getMixedBrightnessForBlock(pipeTile.getWorldObj(), pipeTile.xCoord, pipeTile.yCoord, pipeTile.zCoord);
 				SimpleServiceLocator.cclProxy.getRenderState().setBrightness(brightness);
 				boolean tesselating = false;
 
@@ -786,7 +784,7 @@ public class LogisticsNewRenderPipe {
 						}
 					}
 					for (IModel3D model : LogisticsNewRenderPipe.sideNormal.get(dir)) {
-						Block block = new LPPosition((TileEntity) pipeTile).moveForward(dir).getBlock(pipeTile.getWorld());
+						Block block = new DoubleCoordinates((TileEntity) pipeTile).moveForward(dir).getBlock(pipeTile.getWorld());
 						double[] bounds = { block.getBlockBoundsMinY(), block.getBlockBoundsMinZ(), block.getBlockBoundsMinX(), block.getBlockBoundsMaxY(), block.getBlockBoundsMaxZ(), block.getBlockBoundsMaxX() };
 						double bound = bounds[dir.ordinal() / 2 + (dir.ordinal() % 2 == 0 ? 3 : 0)];
 						ScaleObject key = new ScaleObject(model, bound);
@@ -925,7 +923,7 @@ public class LogisticsNewRenderPipe {
 
 		boolean solidSides[] = new boolean[6];
 		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-			LPPosition pos = new LPPosition((TileEntity) pipeTile);
+			DoubleCoordinates pos = new DoubleCoordinates((TileEntity) pipeTile);
 			pos.moveForward(dir);
 			Block blockSide = pos.getBlock(pipeTile.getWorldObj());
 			if (blockSide == null || !blockSide.isSideSolid(pipeTile.getWorldObj(), pos.getX(), pos.getY(), pos.getZ(), dir.getOpposite()) || renderState.pipeConnectionMatrix.isConnected(dir)) {

@@ -16,7 +16,8 @@ import logisticspipes.proxy.object3d.operation.LPRotation;
 import logisticspipes.proxy.object3d.operation.LPScale;
 import logisticspipes.proxy.object3d.operation.LPTranslation;
 import logisticspipes.proxy.object3d.operation.LPUVScale;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -169,7 +170,7 @@ public class LogisticsNewSolidBlockWorldRenderer {
 
 		BlockRotation rotation = BlockRotation.getRotation(blockTile.getRotation());
 
-		int brightness = new LPPosition(blockTile).getBlock(blockTile.getWorldObj()).getMixedBrightnessForBlock(blockTile.getWorldObj(), blockTile.xCoord, blockTile.yCoord, blockTile.zCoord);
+		int brightness = new DoubleCoordinates(blockTile).getBlock(blockTile.getWorldObj()).getMixedBrightnessForBlock(blockTile.getWorldObj(), blockTile.xCoord, blockTile.yCoord, blockTile.zCoord);
 
 		tess.setColorOpaque_F(1F, 1F, 1F);
 		tess.setBrightness(brightness);
@@ -178,10 +179,10 @@ public class LogisticsNewSolidBlockWorldRenderer {
 
 		//Draw
 		LogisticsNewSolidBlockWorldRenderer.block.get(rotation).render(new I3DOperation[] { new LPTranslation(x, y, z), icon });
-		LPPosition pos = new LPPosition(blockTile);
+		DoubleCoordinates pos = new DoubleCoordinates(blockTile);
 		for (CoverSides side : CoverSides.values()) {
 			boolean render = true;
-			LPPosition newPos = pos.copy();
+			DoubleCoordinates newPos = pos.copy();
 			newPos.moveForward(side.getDir(rotation));
 			TileEntity sideTile = newPos.getTileEntity(blockTile.getWorldObj());
 			if (sideTile instanceof LogisticsTileGenericPipe) {

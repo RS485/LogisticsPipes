@@ -14,7 +14,9 @@ import logisticspipes.routing.ExitRoute;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.transactor.ITransactor;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 import logisticspipes.utils.tuples.Pair;
 
 import net.minecraft.item.ItemStack;
@@ -44,7 +46,7 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 	private boolean init = false;
 	@Getter
 	private Set<LPTravelingItemServer> items = new HashSet<LPTravelingItemServer>();
-	private LPPosition targetStationPos;
+	private DoubleCoordinates targetStationPos;
 	private ForgeDirection targetStationSide = ForgeDirection.UNKNOWN;
 
 	private int ticksWithContent = 0;
@@ -78,7 +80,7 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 		if (dock == null) {
 			return;
 		}
-		LPPosition pos = new LPPosition(dock.x(), dock.y(), dock.z());
+		DoubleCoordinates pos = new DoubleCoordinates(dock.x(), dock.y(), dock.z());
 		LPRobotConnectionControl.instance.addRobot(robot.worldObj, pos, dock.side());
 	}
 
@@ -171,12 +173,12 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 
 	private Pair<Double, LogisticsRoutingBoardRobot> findTarget() {
 		Pair<Double, LogisticsRoutingBoardRobot> result = null;
-		LPPosition robotPos = new LPPosition(robot);
-		for (Pair<LPPosition, ForgeDirection> canidatePos : connectionDetails.localConnectedRobots) {
+		DoubleCoordinates robotPos = new DoubleCoordinates(robot);
+		for (Pair<DoubleCoordinates, ForgeDirection> canidatePos : connectionDetails.localConnectedRobots) {
 			if (robot.getLinkedStation() == null) {
 				continue;
 			}
-			if (canidatePos.getValue1().equals(new LPPosition(robot.getLinkedStation().x(), robot.getLinkedStation().y(), robot.getLinkedStation().z()))) {
+			if (canidatePos.getValue1().equals(new DoubleCoordinates(robot.getLinkedStation().x(), robot.getLinkedStation().y(), robot.getLinkedStation().z()))) {
 				continue;
 			}
 			double distance = canidatePos.getValue1().copy().center().moveForward(canidatePos.getValue2(), 0.5).distanceTo(robotPos);
@@ -216,7 +218,7 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 				if (((LogisticsRoutingBoardRobot) connectedRobot.getBoard()).getCurrentTarget() != null && ((LogisticsRoutingBoardRobot) connectedRobot.getBoard()).getCurrentTarget().getValue2() != robot.getBoard()) {
 					continue;
 				}
-				LPPosition connectedRobotPos = new LPPosition(connectedRobot);
+				DoubleCoordinates connectedRobotPos = new DoubleCoordinates(connectedRobot);
 				if (canidatePos.getValue1().copy().center().moveForward(canidatePos.getValue2(), 0.5).distanceTo(connectedRobotPos) > 0.05) {
 					continue; // Not at station
 				}
@@ -280,7 +282,7 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 
 	private void startTransport(LogisticsRoutingBoardRobot target, DockingStation station) {
 		acceptsItems = false;
-		targetStationPos = new LPPosition(station.x(), station.y(), station.z());
+		targetStationPos = new DoubleCoordinates(station.x(), station.y(), station.z());
 		targetStationSide = station.side();
 		startDelegateAI(new AIRobotGotoBlock(robot, station.x() + station.side().offsetX, station.y() + station.side().offsetY, station.z() + station.side().offsetZ));
 	}
@@ -342,11 +344,11 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 				items.add(new LPTravelingItemServer(nbt.getCompoundTag("LP_Item_" + i)));
 			}
 		}
-		targetStationPos = LPPosition.readFromNBT("targetStationPos_", nbt);
+		targetStationPos = DoubleCoordinates.readFromNBT("targetStationPos_", nbt);
 		targetStationSide = ForgeDirection.getOrientation(nbt.getByte("targetStationSide"));
 	}
 
-	public LPPosition getLinkedStationPosition() {
-		return new LPPosition(robot.getLinkedStation().x(), robot.getLinkedStation().y(), robot.getLinkedStation().z());
+	public DoubleCoordinates getLinkedStationPosition() {
+		return new DoubleCoordinates(robot.getLinkedStation().x(), robot.getLinkedStation().y(), robot.getLinkedStation().z());
 	}
 }

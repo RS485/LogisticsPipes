@@ -26,7 +26,8 @@ import logisticspipes.textures.Textures;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.LPPositionSet;
 import logisticspipes.utils.MatrixTranformations;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
@@ -75,7 +76,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, x, y, z);
 
 			if (pipe == null) {
-				pipe = LogisticsBlockGenericPipe.pipeRemoved.get(new LPPosition(x, y, z));
+				pipe = LogisticsBlockGenericPipe.pipeRemoved.get(new DoubleCoordinates(x, y, z));
 			}
 
 			if (pipe != null) {
@@ -557,7 +558,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 
 	public static Map<Item, Class<? extends CoreUnroutedPipe>> pipes = new HashMap<Item, Class<? extends CoreUnroutedPipe>>();
-	public static Map<LPPosition, CoreUnroutedPipe> pipeRemoved = new HashMap<LPPosition, CoreUnroutedPipe>();
+	public static Map<DoubleCoordinates, CoreUnroutedPipe> pipeRemoved = new HashMap<DoubleCoordinates, CoreUnroutedPipe>();
 
 	private static long lastRemovedDate = -1;
 
@@ -685,7 +686,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			if (pipe.preventRemove()) {
 				throw new UnsupportedOperationException("A multi block can't be protected against removal.");
 			}
-			for (LPPosition pos : pipe.container.subMultiBlock) {
+			for (DoubleCoordinates pos : pipe.container.subMultiBlock) {
 				pos.setBlockToAir(world);
 			}
 		}
@@ -703,7 +704,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			LogisticsBlockGenericPipe.pipeRemoved.clear();
 		}
 
-		LogisticsBlockGenericPipe.pipeRemoved.put(new LPPosition(x, y, z), pipe);
+		LogisticsBlockGenericPipe.pipeRemoved.put(new DoubleCoordinates(x, y, z), pipe);
 		world.removeTileEntity(x, y, z);
 	}
 
@@ -730,7 +731,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, i, j, k);
 
 			if (pipe == null) {
-				pipe = LogisticsBlockGenericPipe.pipeRemoved.get(new LPPosition(i, j, k));
+				pipe = LogisticsBlockGenericPipe.pipeRemoved.get(new DoubleCoordinates(i, j, k));
 			}
 
 			if (pipe.item != null && (pipe.canBeDestroyed() || pipe.destroyByPlayer())) {
@@ -974,11 +975,11 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 					}
 					CoreMultiBlockPipe mPipe = (CoreMultiBlockPipe) pipe;
 					orientation.setOnPipe(mPipe);
-					LPPosition placeAt = new LPPosition(i, j, k);
+					DoubleCoordinates placeAt = new DoubleCoordinates(i, j, k);
 					LogisticsBlockGenericSubMultiBlock.currentCreatedMultiBlock = placeAt;
 					LPPositionSet positions = ((CoreMultiBlockPipe) pipe).getSubBlocks();
 					orientation.rotatePositions(positions);
-					for (LPPosition pos : positions) {
+					for (DoubleCoordinates pos : positions) {
 						pos.add(placeAt);
 						world.setBlock(pos.getX(), pos.getY(), pos.getZ(), LogisticsPipes.LogisticsSubMultiBlock, 0, 2);
 						world.notifyBlockChange(pos.getX(), pos.getY(), pos.getZ(), LogisticsPipes.LogisticsSubMultiBlock);
@@ -1135,8 +1136,8 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 					for (int k = 0; k < its; ++k) {
 						if (pipe.isMultiBlock()) {
 							LPPositionSet set = ((CoreMultiBlockPipe) pipe).getRotatedSubBlocks();
-							set.add(new LPPosition(0, 0, 0));
-							for (LPPosition pos : set) {
+							set.add(new DoubleCoordinates(0, 0, 0));
+							for (DoubleCoordinates pos : set) {
 								int localx = x + pos.getX();
 								int localy = y + pos.getY();
 								int localz = z + pos.getZ();

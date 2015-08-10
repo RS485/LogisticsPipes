@@ -22,7 +22,7 @@ import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.PipeRoutingConnectionType;
-import logisticspipes.utils.tuples.LPPosition;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class ClientViewController implements IDebugHUDProvider {
 
@@ -30,13 +30,13 @@ public class ClientViewController implements IDebugHUDProvider {
 
 	private ClientViewController() {}
 
-	private LPPosition mainPipe = null;
+	private DoubleCoordinates mainPipe = null;
 	private int tick = 0;
-	private final List<LPPosition> canidates = new ArrayList<LPPosition>();
+	private final List<DoubleCoordinates> canidates = new ArrayList<DoubleCoordinates>();
 	private DebugWindow debugWindow;
 
 	private List<IHeadUpDisplayRendererProvider> listHUD = new ArrayList<IHeadUpDisplayRendererProvider>();
-	private HashMap<LPPosition, DebugInformation> HUDPositions = new HashMap<LPPosition, DebugInformation>();
+	private HashMap<DoubleCoordinates, DebugInformation> HUDPositions = new HashMap<DoubleCoordinates, DebugInformation>();
 
 	public static class DebugInformation {
 
@@ -45,7 +45,7 @@ public class ClientViewController implements IDebugHUDProvider {
 		public List<Integer> positions = new ArrayList<Integer>();
 		public List<ExitRoute> routes = new ArrayList<ExitRoute>();
 		public EnumSet<PipeRoutingConnectionType> closedSet;
-		public EnumMap<PipeRoutingConnectionType, List<List<LPPosition>>> filters;
+		public EnumMap<PipeRoutingConnectionType, List<List<DoubleCoordinates>>> filters;
 		public EnumSet<PipeRoutingConnectionType> nextFlags;
 	}
 
@@ -56,7 +56,7 @@ public class ClientViewController implements IDebugHUDProvider {
 		return ClientViewController.instance;
 	}
 
-	private DebugInformation getDebugInformation(LPPosition pos) {
+	private DebugInformation getDebugInformation(DoubleCoordinates pos) {
 		DebugInformation info = HUDPositions.get(pos);
 		if (info == null) {
 			info = new DebugInformation();
@@ -72,7 +72,7 @@ public class ClientViewController implements IDebugHUDProvider {
 		if (mainPipe != null) {
 			PipeFXRenderHandler.spawnGenericParticle(Particles.WhiteParticle, mainPipe.getX(), mainPipe.getY(), mainPipe.getZ(), 1);
 		}
-		for (LPPosition pos : canidates) {
+		for (DoubleCoordinates pos : canidates) {
 			PipeFXRenderHandler.spawnGenericParticle(Particles.OrangeParticle, pos.getX(), pos.getY(), pos.getZ(), 1);
 		}
 	}
@@ -90,7 +90,7 @@ public class ClientViewController implements IDebugHUDProvider {
 	}
 
 	public void handlePacket(RoutingUpdateCanidatePipe routingUpdateCanidatePipe) {
-		LPPosition pos = routingUpdateCanidatePipe.getExitRoute().destination.getLPPosition();
+		DoubleCoordinates pos = routingUpdateCanidatePipe.getExitRoute().destination.getLPPosition();
 		canidates.add(routingUpdateCanidatePipe.getExitRoute().destination.getLPPosition());
 		//listHUD.add(new HUDRoutingTableDebugProvider(new HUDRoutingTableNewCandateUntrace(routingUpdateCanidatePipe.getExitRoute()), pos));
 		getDebugInformation(pos).isNew = true;
@@ -137,11 +137,11 @@ public class ClientViewController implements IDebugHUDProvider {
 			}
 			debugWindow.showInfo(exit.debug.toStringNetwork, color);
 			debugWindow.showInfo("\n", color);
-			LPPosition pos = exit.destination.getLPPosition();
+			DoubleCoordinates pos = exit.destination.getLPPosition();
 			getDebugInformation(pos).routes.add(exit);
 			getDebugInformation(pos).positions.add(i);
 		}
-		for (Entry<LPPosition, DebugInformation> entry : HUDPositions.entrySet()) {
+		for (Entry<DoubleCoordinates, DebugInformation> entry : HUDPositions.entrySet()) {
 			listHUD.add(new HUDRoutingTableDebugProvider(new HUDRoutingTableGeneralInfo(entry.getValue()), entry.getKey()));
 		}
 	}

@@ -21,7 +21,8 @@ import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.item.Item;
 import net.minecraft.nbt.CompressedStreamTools;
@@ -63,10 +64,10 @@ public class LPDataInputStream extends DataInputStream {
 		double distanceToDestination = readDouble();
 		double destinationDistanceToRoot = readDouble();
 		int blockDistance = readInt();
-		List<LPPosition> positions = this.readList(new IReadListObject<LPPosition>() {
+		List<DoubleCoordinates> positions = this.readList(new IReadListObject<DoubleCoordinates>() {
 
 			@Override
-			public LPPosition readObject(LPDataInputStream data) throws IOException {
+			public DoubleCoordinates readObject(LPDataInputStream data) throws IOException {
 				return data.readLPPosition();
 			}
 		});
@@ -88,7 +89,7 @@ public class LPDataInputStream extends DataInputStream {
 		if (in.read() == 0) {
 			return null;
 		} else {
-			LPPosition pos = readLPPosition();
+			DoubleCoordinates pos = readLPPosition();
 			TileEntity tile = pos.getTileEntity(world);
 			if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe) {
 				return ((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).getRouter();
@@ -97,8 +98,8 @@ public class LPDataInputStream extends DataInputStream {
 		}
 	}
 
-	public LPPosition readLPPosition() throws IOException {
-		return new LPPosition(readDouble(), readDouble(), readDouble());
+	public DoubleCoordinates readLPPosition() throws IOException {
+		return new DoubleCoordinates(readDouble(), readDouble(), readDouble());
 	}
 
 	public <T extends Enum<T>> EnumSet<T> readEnumSet(Class<T> clazz) throws IOException {
@@ -196,7 +197,7 @@ public class LPDataInputStream extends DataInputStream {
 			}
 		});
 		byte machineProgress = readByte();
-		LPPosition pos = readLPPosition();
+		DoubleCoordinates pos = readLPPosition();
 		ItemIdentifier ident = readItemIdentifier();
 		return new ClientSideOrderInfo(stack, isFinished, type, inProgress, routerId, list, machineProgress, pos, ident);
 	}

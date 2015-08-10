@@ -11,7 +11,8 @@ import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.debug.ClientViewController;
-import logisticspipes.utils.tuples.LPPosition;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -24,13 +25,13 @@ public class RoutingUpdateDebugFilters extends ModernPacket {
 
 	@Getter
 	@Setter
-	private LPPosition pos;
+	private DoubleCoordinates pos;
 
 	@Setter
 	private EnumMap<PipeRoutingConnectionType, List<List<IFilter>>> filters;
 
 	@Getter
-	private EnumMap<PipeRoutingConnectionType, List<List<LPPosition>>> filterPositions;
+	private EnumMap<PipeRoutingConnectionType, List<List<DoubleCoordinates>>> filterPositions;
 
 	public RoutingUpdateDebugFilters(int id) {
 		super(id);
@@ -39,14 +40,14 @@ public class RoutingUpdateDebugFilters extends ModernPacket {
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		pos = data.readLPPosition();
-		filterPositions = new EnumMap<PipeRoutingConnectionType, List<List<LPPosition>>>(PipeRoutingConnectionType.class);
+		filterPositions = new EnumMap<PipeRoutingConnectionType, List<List<DoubleCoordinates>>>(PipeRoutingConnectionType.class);
 		short id;
 		while ((id = data.readShort()) != -1) {
 			PipeRoutingConnectionType type = PipeRoutingConnectionType.values[id];
-			List<List<LPPosition>> typeFilters = new ArrayList<List<LPPosition>>();
+			List<List<DoubleCoordinates>> typeFilters = new ArrayList<List<DoubleCoordinates>>();
 			int length;
 			while ((length = data.readShort()) != -1) {
-				List<LPPosition> linkedFilter = new ArrayList<LPPosition>();
+				List<DoubleCoordinates> linkedFilter = new ArrayList<DoubleCoordinates>();
 				for (int i = 0; i < length; i++) {
 					linkedFilter.add(data.readLPPosition());
 				}

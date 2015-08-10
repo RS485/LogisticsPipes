@@ -64,7 +64,7 @@ public final class CoordinateUtils {
 		return CoordinateUtils.add(coords, direction, 1);
 	}
 
-	public static DoubleCoordinates add(DoubleCoordinates coords, ForgeDirection direction, int times) {
+	public static DoubleCoordinates add(DoubleCoordinates coords, ForgeDirection direction, double times) {
 		coords.setXCoord(coords.getXCoord() + direction.offsetX * times);
 		coords.setYCoord(coords.getYCoord() + direction.offsetY * times);
 		coords.setZCoord(coords.getZCoord() + direction.offsetZ * times);
@@ -76,5 +76,23 @@ public final class CoordinateUtils {
 		coords.setYCoord(coords.getYCoord() + direction.offsetY * times);
 		coords.setZCoord(coords.getZCoord() + direction.offsetZ * times);
 		return coords;
+	}
+
+	public static DoubleCoordinates sum(DoubleCoordinates coords, ForgeDirection direction) {
+		return CoordinateUtils.sum(coords, direction, 1);
+	}
+
+	public static IntegerCoordinates sum(IntegerCoordinates coords, ForgeDirection direction) {
+		return CoordinateUtils.sum(coords, direction, 1);
+	}
+
+	public static DoubleCoordinates sum(DoubleCoordinates coords, ForgeDirection direction, double times) {
+		DoubleCoordinates ret = new DoubleCoordinates(coords);
+		return CoordinateUtils.add(ret, direction, times);
+	}
+
+	public static IntegerCoordinates sum(IntegerCoordinates coords, ForgeDirection direction, int times) {
+		IntegerCoordinates ret = new IntegerCoordinates(coords);
+		return CoordinateUtils.add(ret, direction, times);
 	}
 }

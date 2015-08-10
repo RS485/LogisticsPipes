@@ -55,8 +55,8 @@ public class DoubleCoordinates implements IPositionRotateble, ICoordinates {
 		setZCoord(zCoord);
 	}
 
-	public DoubleCoordinates(DoubleCoordinates copy) {
-		this(copy.getXCoord(), copy.getYCoord(), copy.getZCoord());
+	public DoubleCoordinates(ICoordinates coords) {
+		this(coords.getXDouble(), coords.getYDouble(), coords.getZDouble());
 	}
 
 	public DoubleCoordinates(TileEntity tile) {
@@ -77,6 +77,13 @@ public class DoubleCoordinates implements IPositionRotateble, ICoordinates {
 
 	public DoubleCoordinates(Entity entity) {
 		this(entity.posX, entity.posY, entity.posZ);
+	}
+
+	public static DoubleCoordinates readFromNBT(String prefix, NBTTagCompound nbt) {
+		if (nbt.hasKey(prefix + "xPos") && nbt.hasKey(prefix + "yPos") && nbt.hasKey(prefix + "zPos")) {
+			return new DoubleCoordinates(nbt.getDouble(prefix + "xPos"), nbt.getDouble(prefix + "yPos"), nbt.getDouble(prefix + "zPos"));
+		}
+		return null;
 	}
 
 	@Override
@@ -168,7 +175,8 @@ public class DoubleCoordinates implements IPositionRotateble, ICoordinates {
 	}
 
 	public double distanceTo(DoubleCoordinates targetPos) {
-		return Math.sqrt(Math.pow(targetPos.getXCoord() - getXCoord(), 2) + Math.pow(targetPos.getYCoord() - getYCoord(), 2) + Math.pow(targetPos.getZCoord() - getZCoord(), 2));
+		return Math.sqrt(Math.pow(targetPos.getXCoord() - getXCoord(), 2) + Math.pow(targetPos.getYCoord() - getYCoord(), 2) + Math
+				.pow(targetPos.getZCoord() - getZCoord(), 2));
 	}
 
 	public DoubleCoordinates center() {
@@ -183,13 +191,6 @@ public class DoubleCoordinates implements IPositionRotateble, ICoordinates {
 		nbt.setDouble(prefix + "xPos", xCoord);
 		nbt.setDouble(prefix + "yPos", yCoord);
 		nbt.setDouble(prefix + "zPos", zCoord);
-	}
-
-	public static DoubleCoordinates readFromNBT(String prefix, NBTTagCompound nbt) {
-		if (nbt.hasKey(prefix + "xPos") && nbt.hasKey(prefix + "yPos") && nbt.hasKey(prefix + "zPos")) {
-			return new DoubleCoordinates(nbt.getDouble(prefix + "xPos"), nbt.getDouble(prefix + "yPos"), nbt.getDouble(prefix + "zPos"));
-		}
-		return null;
 	}
 
 	public DoubleCoordinates add(DoubleCoordinates toAdd) {

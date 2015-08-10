@@ -41,8 +41,8 @@ public class IntegerCoordinates implements ICoordinates {
 		setZCoord(zCoord);
 	}
 
-	public IntegerCoordinates(IntegerCoordinates copy) {
-		this(copy.getXCoord(), copy.getYCoord(), copy.getZCoord());
+	public IntegerCoordinates(ICoordinates coords) {
+		this(coords.getXInt(), coords.getYInt(), coords.getZInt());
 	}
 
 	@Override

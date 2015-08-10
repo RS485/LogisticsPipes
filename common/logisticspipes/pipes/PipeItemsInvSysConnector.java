@@ -31,14 +31,13 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ItemRoutingInformation;
+import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.TransportInvConnection;
-import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
-import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -48,12 +47,15 @@ import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
 import net.minecraftforge.common.util.ForgeDirection;
+
+import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectRoutingConnection, IHeadUpDisplayRendererProvider, IOrderManagerContentReceiver {
 
@@ -112,21 +114,21 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 
 	private void checkConnectedInvs() {
 		if (!itemsOnRoute.isEmpty()) { // don't check the inventory if you don't want anything
+			//@formatter:off
+			new WorldCoordinatesWrapper(container).getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
+					.filter(adjacent -> adjacent.tileEntity instanceof IInventory)
+					.map(adjacent -> {
+						IInventory inv = InventoryHelper.getInventory((IInventory) adjacent.tileEntity);
+						if (inv instanceof ISidedInventory) {
+							inv = new SidedInventoryMinecraftAdapter((ISidedInventory) inv, adjacent.direction.getOpposite(), false);
+						}
 
-			WorldUtil wUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
-			for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)) {
-				if (tile.tile instanceof IInventory) {
-					IInventory inv = InventoryHelper.getInventory((IInventory) tile.tile);
-					if (inv instanceof net.minecraft.inventory.ISidedInventory) {
-						inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) inv, tile.orientation.getOpposite(), false);
-					}
-					IInventoryUtil access = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv, tile.orientation.getOpposite());
-					if (checkOneConnectedInv(access, tile.orientation)) {
-						updateContentListener();
-						break;
-					}
-				}
-			}
+						IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv, adjacent.direction.getOpposite());
+						return checkOneConnectedInv(util, adjacent.direction);
+					})
+					.filter(ret -> ret) // filter only true
+					.findFirst().ifPresent(bool -> updateContentListener());
+			//@formatter:on
 		}
 	}
 

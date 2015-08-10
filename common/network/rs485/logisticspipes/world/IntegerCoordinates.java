@@ -42,7 +42,7 @@ public class IntegerCoordinates implements ICoordinates {
 	}
 
 	public IntegerCoordinates(IntegerCoordinates copy) {
-		this(copy.xCoord, copy.yCoord, copy.zCoord);
+		this(copy.getXCoord(), copy.getYCoord(), copy.getZCoord());
 	}
 
 	@Override

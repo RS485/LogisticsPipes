@@ -29,7 +29,7 @@ public class PipeFXLaserPowerBall extends EntityFX {
 	private TileEntity tile;
 
 	public PipeFXLaserPowerBall(World par1World, DoubleCoordinates pos, int color, TileEntity tile) {
-		super(par1World, pos.getXD() + 0.5D, pos.getYD() + 0.5D, pos.getZD() + 0.5D, 0.0D, 0.0D, 0.0D);
+		super(par1World, pos.getXCoord() + 0.5D, pos.getYCoord() + 0.5D, pos.getZCoord() + 0.5D, 0.0D, 0.0D, 0.0D);
 		this.tile = tile;
 		setSize(0.02F, 0.02F);
 		particleRed = ((float) ((color & 0xff0000) >> 16)) / 0xff;

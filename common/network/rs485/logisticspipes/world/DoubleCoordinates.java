@@ -1,10 +1,29 @@
+/*
+ * Copyright (c) 2015  RS485
+ *
+ * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
+ * License 1.0.1, or MMPL. Please check the contents of the license located in
+ * https://github.com/RS485/LogisticsPipes/blob/dev/LICENSE.md
+ *
+ * This file can instead be distributed under the license terms of the MIT license:
+ *
+ * Copyright (c) 2015  RS485
+ *
+ * This MIT license was reworded to only match this file. If you use the regular MIT license in your project, replace this copyright notice (this line and any lines below and NOT the copyright line above) with the lines from the original MIT license located here: http://opensource.org/licenses/MIT
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this file and associated documentation files (the "Source Code"), to deal in the Source Code without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Source Code, and to permit persons to whom the Source Code is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Source Code, which also can be distributed under the MIT.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package network.rs485.logisticspipes.world;
 
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.utils.IPositionRotateble;
-import logisticspipes.utils.tuples.Triplet;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -15,83 +34,86 @@ import net.minecraft.world.World;
 
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class DoubleCoordinates extends Triplet<Double, Double, Double> implements IPositionRotateble {
+import lombok.Data;
 
-	public DoubleCoordinates(double xPos, double yPos, double zPos) {
-		super(xPos, yPos, zPos);
+@Data
+public class DoubleCoordinates implements IPositionRotateble {
+
+	private double xCoord;
+	private double yCoord;
+	private double zCoord;
+
+	public DoubleCoordinates() {
+		setXCoord(0.0);
+		setYCoord(0.0);
+		setZCoord(0.0);
 	}
 
-	public DoubleCoordinates(int xPos, int yPos, int zPos) {
-		super((double) xPos, (double) yPos, (double) zPos);
+	public DoubleCoordinates(double xCoord, double yCoord, double zCoord) {
+		setXCoord(xCoord);
+		setYCoord(yCoord);
+		setZCoord(zCoord);
+	}
+
+	public DoubleCoordinates(DoubleCoordinates copy) {
+		this(copy.getXCoord(), copy.getYCoord(), copy.getZCoord());
 	}
 
 	public DoubleCoordinates(TileEntity tile) {
-		super((double) tile.xCoord, (double) tile.yCoord, (double) tile.zCoord);
+		this(tile.xCoord, tile.yCoord, tile.zCoord);
 	}
 
 	public DoubleCoordinates(CoreUnroutedPipe pipe) {
-		super((double) pipe.getX(), (double) pipe.getY(), (double) pipe.getZ());
+		this(pipe.getX(), pipe.getY(), pipe.getZ());
 	}
 
 	public DoubleCoordinates(IPipeInformationProvider pipe) {
-		super((double) pipe.getX(), (double) pipe.getY(), (double) pipe.getZ());
+		this(pipe.getX(), pipe.getY(), pipe.getZ());
 	}
 
 	public DoubleCoordinates(CoordinatesPacket packet) {
-		super((double) packet.getPosX(), (double) packet.getPosY(), (double) packet.getPosZ());
+		this(packet.getPosX(), packet.getPosY(), packet.getPosZ());
 	}
 
 	public DoubleCoordinates(Entity entity) {
-		super(entity.posX, entity.posY, entity.posZ);
+		this(entity.posX, entity.posY, entity.posZ);
 	}
 
-	public int getX() {
-		return (int) (double) getValue1();
+	public int getXInt() {
+		return (int) getXCoord();
 	}
 
-	public int getY() {
-		return (int) (double) getValue2();
+	public int getYInt() {
+		return (int) getYCoord();
 	}
 
-	public int getZ() {
-		return (int) (double) getValue3();
-	}
-
-	public double getXD() {
-		return getValue1();
-	}
-
-	public double getYD() {
-		return getValue2();
-	}
-
-	public double getZD() {
-		return getValue3();
+	public int getZInt() {
+		return (int) getZCoord();
 	}
 
 	public TileEntity getTileEntity(IBlockAccess world) {
-		return world.getTileEntity(getX(), getY(), getZ());
+		return world.getTileEntity(getXInt(), getYInt(), getZInt());
 	}
 
 	public DoubleCoordinates moveForward(ForgeDirection dir, double steps) {
 		switch (dir) {
 			case UP:
-				value2 += steps;
+				yCoord += steps;
 				break;
 			case DOWN:
-				value2 -= steps;
+				yCoord -= steps;
 				break;
 			case NORTH:
-				value3 -= steps;
+				zCoord -= steps;
 				break;
 			case SOUTH:
-				value3 += steps;
+				zCoord += steps;
 				break;
 			case EAST:
-				value1 += steps;
+				xCoord += steps;
 				break;
 			case WEST:
-				value1 -= steps;
+				xCoord -= steps;
 				break;
 			default:
 		}
@@ -112,41 +134,41 @@ public class DoubleCoordinates extends Triplet<Double, Double, Double> implement
 
 	@Override
 	public String toString() {
-		return "(" + getXD() + ", " + getYD() + ", " + getZD() + ")";
+		return "(" + getXCoord() + ", " + getYCoord() + ", " + getZCoord() + ")";
 	}
 
 	public String toIntBasedString() {
-		return "(" + getXD() + ", " + getYD() + ", " + getZD() + ")";
+		return "(" + getXCoord() + ", " + getYCoord() + ", " + getZCoord() + ")";
 	}
 
-	@Override
 	public DoubleCoordinates copy() {
-		return new DoubleCoordinates(value1, value2, value3);
+		return new DoubleCoordinates(xCoord, yCoord, zCoord);
 	}
 
 	public Block getBlock(IBlockAccess world) {
-		return world.getBlock(getX(), getY(), getZ());
+		return world.getBlock(getXInt(), getYInt(), getZInt());
 	}
 
 	public boolean blockExists(World world) {
-		return world.blockExists(getX(), getY(), getZ());
+		return world.blockExists(getXInt(), getYInt(), getZInt());
 	}
 
 	public double distanceTo(DoubleCoordinates targetPos) {
-		return Math.sqrt(Math.pow(targetPos.getXD() - getXD(), 2) + Math.pow(targetPos.getYD() - getYD(), 2) + Math.pow(targetPos.getZD() - getZD(), 2));
+		return Math.sqrt(Math.pow(targetPos.getXCoord() - getXCoord(), 2) + Math.pow(targetPos.getYCoord() - getYCoord(), 2) + Math.pow(targetPos.getZCoord() - getZCoord(), 2));
 	}
 
 	public DoubleCoordinates center() {
-		value1 += 0.5D;
-		value2 += 0.5D;
-		value3 += 0.5D;
+		DoubleCoordinates coords = new DoubleCoordinates();
+		coords.setXCoord(getXInt() + 0.5);
+		coords.setYCoord(getYInt() + 0.5);
+		coords.setYCoord(getZInt() + 0.5);
 		return this;
 	}
 
 	public void writeToNBT(String prefix, NBTTagCompound nbt) {
-		nbt.setDouble(prefix + "xPos", value1);
-		nbt.setDouble(prefix + "yPos", value2);
-		nbt.setDouble(prefix + "zPos", value3);
+		nbt.setDouble(prefix + "xPos", xCoord);
+		nbt.setDouble(prefix + "yPos", yCoord);
+		nbt.setDouble(prefix + "zPos", zCoord);
 	}
 
 	public static DoubleCoordinates readFromNBT(String prefix, NBTTagCompound nbt) {
@@ -157,37 +179,37 @@ public class DoubleCoordinates extends Triplet<Double, Double, Double> implement
 	}
 
 	public DoubleCoordinates add(DoubleCoordinates toAdd) {
-		value1 += toAdd.value1;
-		value2 += toAdd.value2;
-		value3 += toAdd.value3;
+		setXCoord(getXCoord() + toAdd.getXCoord());
+		setYCoord(getYCoord() + toAdd.getYCoord());
+		setZCoord(getZCoord() + toAdd.getZCoord());
 		return this;
 	}
 
 	public void setBlockToAir(World world) {
-		world.setBlockToAir(getX(), getY(), getZ());
+		world.setBlockToAir(getXInt(), getYInt(), getZInt());
 	}
 
 	@Override
 	public void rotateLeft() {
-		double tmp = value3;
-		value3 = -value1;
-		value1 = tmp;
+		double tmp = getZCoord();
+		setZCoord(-getXCoord());
+		setXCoord(tmp);
 	}
 
 	@Override
 	public void rotateRight() {
-		double tmp = value1;
-		value1 = -value3;
-		value3 = tmp;
+		double tmp = getXCoord();
+		setXCoord(-getZCoord());
+		setZCoord(tmp);
 	}
 
 	@Override
 	public void mirrorX() {
-		value1 = -value1;
+		setXCoord(-getXCoord());
 	}
 
 	@Override
 	public void mirrorZ() {
-		value3 = -value3;
+		setZCoord(-getZCoord());
 	}
 }

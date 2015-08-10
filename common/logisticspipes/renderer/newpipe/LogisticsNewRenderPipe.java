@@ -926,7 +926,7 @@ public class LogisticsNewRenderPipe {
 			DoubleCoordinates pos = new DoubleCoordinates((TileEntity) pipeTile);
 			pos.moveForward(dir);
 			Block blockSide = pos.getBlock(pipeTile.getWorldObj());
-			if (blockSide == null || !blockSide.isSideSolid(pipeTile.getWorldObj(), pos.getX(), pos.getY(), pos.getZ(), dir.getOpposite()) || renderState.pipeConnectionMatrix.isConnected(dir)) {
+			if (blockSide == null || !blockSide.isSideSolid(pipeTile.getWorldObj(), pos.getXInt(), pos.getYInt(), pos.getZInt(), dir.getOpposite()) || renderState.pipeConnectionMatrix.isConnected(dir)) {
 				Iterator<PipeMount> iter = mountCanidates.iterator();
 				while (iter.hasNext()) {
 					PipeMount mount = iter.next();

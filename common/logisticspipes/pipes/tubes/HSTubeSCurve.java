@@ -185,7 +185,7 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 					LPPositionSet lpBox = new LPPositionSet();
 					lpBox.addFrom(box);
 					DoubleCoordinates center = lpBox.getCenter();
-					box = AxisAlignedBB.getBoundingBox(center.getXD() - 0.3D, center.getYD() - 0.3D, center.getZD() - 0.3D, center.getXD() + 0.3D, center.getYD() + 0.3D, center.getZD() + 0.3D);
+					box = AxisAlignedBB.getBoundingBox(center.getXCoord() - 0.3D, center.getYCoord() - 0.3D, center.getZCoord() - 0.3D, center.getXCoord() + 0.3D, center.getYCoord() + 0.3D, center.getZCoord() + 0.3D);
 					if (box != null) {
 						AxisAlignedBB cBox = getCompleteBox();
 						if (box.minX < cBox.minX) {

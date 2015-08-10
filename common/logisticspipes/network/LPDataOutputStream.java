@@ -84,9 +84,9 @@ public class LPDataOutputStream extends DataOutputStream {
 	}
 
 	public void writeLPPosition(DoubleCoordinates pos) throws IOException {
-		writeDouble(pos.getXD());
-		writeDouble(pos.getYD());
-		writeDouble(pos.getZD());
+		writeDouble(pos.getXCoord());
+		writeDouble(pos.getYCoord());
+		writeDouble(pos.getZCoord());
 	}
 
 	public <T extends Enum<T>> void writeEnumSet(EnumSet<T> types, Class<T> clazz) throws IOException {

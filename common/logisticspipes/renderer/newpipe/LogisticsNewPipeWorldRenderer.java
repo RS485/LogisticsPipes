@@ -109,7 +109,7 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 			DoubleCoordinates pos = new DoubleCoordinates((TileEntity) pipeTile);
 			pos.moveForward(dir);
 			Block blockSide = pos.getBlock(pipeTile.getWorldObj());
-			if (blockSide == null || !blockSide.isSideSolid(pipeTile.getWorldObj(), pos.getX(), pos.getY(), pos.getZ(), dir.getOpposite()) || renderState.pipeConnectionMatrix.isConnected(dir)) {} else {
+			if (blockSide == null || !blockSide.isSideSolid(pipeTile.getWorldObj(), pos.getXInt(), pos.getYInt(), pos.getZInt(), dir.getOpposite()) || renderState.pipeConnectionMatrix.isConnected(dir)) {} else {
 				solidSides[dir.ordinal()] = true;
 			}
 		}

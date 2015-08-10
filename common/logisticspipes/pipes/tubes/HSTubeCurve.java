@@ -327,7 +327,7 @@ public class HSTubeCurve extends CoreMultiBlockPipe {
 
 	@Override
 	public DoubleCoordinates getItemRenderPos(float fPos, LPTravelingItem travelItem) {
-		if (orientation.getOffset().getX() == 0) {
+		if (orientation.getOffset().getXInt() == 0) {
 			fPos = transport.getPipeLength() - fPos;
 		}
 		double angle = 0;
@@ -365,7 +365,7 @@ public class HSTubeCurve extends CoreMultiBlockPipe {
 
 	@Override
 	public double getItemRenderYaw(float fPos, LPTravelingItem travelItem) {
-		if (orientation.getOffset().getX() == 0) {
+		if (orientation.getOffset().getXInt() == 0) {
 			fPos = transport.getPipeLength() - fPos;
 		}
 		double angle = 0;
@@ -384,7 +384,7 @@ public class HSTubeCurve extends CoreMultiBlockPipe {
 	@Override
 	public double getBoxRenderScale(float fPos, LPTravelingItem travelItem) {
 		/*
-		if(orientation.getOffset().getX() == 0) {
+		if(orientation.getOffset().getXInt() == 0) {
 			fPos = this.transport.getPipeLength() - fPos;
 		}
 		if(fPos > this.transport.getPipeLength() - 0.5) {

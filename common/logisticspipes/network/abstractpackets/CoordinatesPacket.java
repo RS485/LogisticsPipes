@@ -65,9 +65,9 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	}
 
 	public CoordinatesPacket setLPPos(DoubleCoordinates pos) {
-		setPosX(pos.getX());
-		setPosY(pos.getY());
-		setPosZ(pos.getZ());
+		setPosX(pos.getXInt());
+		setPosY(pos.getYInt());
+		setPosZ(pos.getZInt());
 		return this;
 	}
 

@@ -38,7 +38,7 @@ public class LPPositionSet extends HashSet<DoubleCoordinates> implements IPositi
 	public double getMaxXD() {
 		double x = Integer.MIN_VALUE;
 		for (DoubleCoordinates pos : this) {
-			x = Math.max(x, pos.getXD());
+			x = Math.max(x, pos.getXCoord());
 		}
 		return x;
 	}
@@ -46,7 +46,7 @@ public class LPPositionSet extends HashSet<DoubleCoordinates> implements IPositi
 	public double getMaxYD() {
 		double y = Integer.MIN_VALUE;
 		for (DoubleCoordinates pos : this) {
-			y = Math.max(y, pos.getYD());
+			y = Math.max(y, pos.getYCoord());
 		}
 		return y;
 	}
@@ -54,7 +54,7 @@ public class LPPositionSet extends HashSet<DoubleCoordinates> implements IPositi
 	public double getMaxZD() {
 		double z = Integer.MIN_VALUE;
 		for (DoubleCoordinates pos : this) {
-			z = Math.max(z, pos.getZD());
+			z = Math.max(z, pos.getZCoord());
 		}
 		return z;
 	}
@@ -62,7 +62,7 @@ public class LPPositionSet extends HashSet<DoubleCoordinates> implements IPositi
 	public double getMinXD() {
 		double x = Integer.MAX_VALUE;
 		for (DoubleCoordinates pos : this) {
-			x = Math.min(x, pos.getXD());
+			x = Math.min(x, pos.getXCoord());
 		}
 		return x;
 	}
@@ -70,7 +70,7 @@ public class LPPositionSet extends HashSet<DoubleCoordinates> implements IPositi
 	public double getMinYD() {
 		double y = Integer.MAX_VALUE;
 		for (DoubleCoordinates pos : this) {
-			y = Math.min(y, pos.getYD());
+			y = Math.min(y, pos.getYCoord());
 		}
 		return y;
 	}
@@ -78,7 +78,7 @@ public class LPPositionSet extends HashSet<DoubleCoordinates> implements IPositi
 	public double getMinZD() {
 		double z = Integer.MAX_VALUE;
 		for (DoubleCoordinates pos : this) {
-			z = Math.min(z, pos.getZD());
+			z = Math.min(z, pos.getZCoord());
 		}
 		return z;
 	}

@@ -214,7 +214,7 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 			} else {
 				p.moveForward(item.output.getOpposite(), 0.49F);
 			}
-			bcItem.setPosition(p.getXD(), p.getYD(), p.getZD());
+			bcItem.setPosition(p.getXCoord(), p.getYCoord(), p.getZCoord());
 			bcItem.setSpeed(item.getSpeed());
 			if (item.getItemIdentifierStack() != null) {
 				bcItem.setItemStack(item.getItemIdentifierStack().makeNormalStack());

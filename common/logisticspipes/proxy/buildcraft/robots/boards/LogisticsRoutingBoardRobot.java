@@ -137,7 +137,7 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 				dropAndClear();
 				startDelegateAI(new AIRobotGotoStation(robot, robot.getLinkedStation()));
 			} else {
-				startDelegateAI(new AIRobotStraightMoveTo(robot, (float) targetStationPos.getXD() + 0.5F + targetStationSide.offsetX * 0.5F, (float) targetStationPos.getYD() + 0.5F + targetStationSide.offsetY * 0.5F, (float) targetStationPos.getZD() + 0.5F + targetStationSide.offsetZ * 0.5F));
+				startDelegateAI(new AIRobotStraightMoveTo(robot, (float) targetStationPos.getXCoord() + 0.5F + targetStationSide.offsetX * 0.5F, (float) targetStationPos.getYCoord() + 0.5F + targetStationSide.offsetY * 0.5F, (float) targetStationPos.getZCoord() + 0.5F + targetStationSide.offsetZ * 0.5F));
 			}
 		} else if (ai instanceof AIRobotStraightMoveTo) {
 			if (!ai.success()) {
@@ -209,7 +209,7 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 				if (connectedRobot.isDead) {
 					continue;
 				}
-				if (connectedRobot.getZoneToWork() != null && !connectedRobot.getZoneToWork().contains(robotPos.getXD(), robotPos.getYD(), robotPos.getZD())) {
+				if (connectedRobot.getZoneToWork() != null && !connectedRobot.getZoneToWork().contains(robotPos.getXCoord(), robotPos.getYCoord(), robotPos.getZCoord())) {
 					continue;
 				}
 				if (!((LogisticsRoutingBoardRobot) connectedRobot.getBoard()).isAcceptsItems()) {

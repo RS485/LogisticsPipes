@@ -38,7 +38,7 @@ public class PipeFXLaserPowerBeam extends EntityFX {
 	private TileEntity tile;
 
 	public PipeFXLaserPowerBeam(World par1World, DoubleCoordinates pos, float length, ForgeDirection dir, int color, TileEntity tile) {
-		super(par1World, pos.getXD() + 0.5D, pos.getYD() + 0.5D, pos.getZD() + 0.5D, 0.0D, 0.0D, 0.0D);
+		super(par1World, pos.getXCoord() + 0.5D, pos.getYCoord() + 0.5D, pos.getZCoord() + 0.5D, 0.0D, 0.0D, 0.0D);
 		setSize(0.02F, 0.02F);
 		this.tile = tile;
 		particleRed = ((float) ((color & 0xff0000) >> 16)) / 0xff;

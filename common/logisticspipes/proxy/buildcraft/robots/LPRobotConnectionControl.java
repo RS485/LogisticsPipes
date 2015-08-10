@@ -103,7 +103,7 @@ public class LPRobotConnectionControl implements ISpecialPipedConnection {
 			double distance = canidateRobotPosition.distanceTo(sourceRobotPosition);
 			boolean isPartOfZone;
 			if (zone != null) {
-				isPartOfZone = zone.contains(canidateRobotPosition.getXD(), canidateRobotPosition.getYD(), canidateRobotPosition.getZD());
+				isPartOfZone = zone.contains(canidateRobotPosition.getXCoord(), canidateRobotPosition.getYCoord(), canidateRobotPosition.getZCoord());
 			} else {
 				isPartOfZone = distance < Configs.MAX_ROBOT_DISTANCE;
 			}
@@ -188,7 +188,7 @@ public class LPRobotConnectionControl implements ISpecialPipedConnection {
 				if (connectedRobot.isDead) {
 					continue;
 				}
-				if (connectedRobot.getZoneToWork() != null && !connectedRobot.getZoneToWork().contains(robotPos.getXD(), robotPos.getYD(), robotPos.getZD())) {
+				if (connectedRobot.getZoneToWork() != null && !connectedRobot.getZoneToWork().contains(robotPos.getXCoord(), robotPos.getYCoord(), robotPos.getZCoord())) {
 					continue;
 				}
 				if (!((LogisticsRoutingBoardRobot) connectedRobot.getBoard()).isAcceptsItems()) {
@@ -238,7 +238,7 @@ public class LPRobotConnectionControl implements ISpecialPipedConnection {
 					if (connectedRobot.isDead) {
 						continue;
 					}
-					if (connectedRobot.getZoneToWork() != null && !connectedRobot.getZoneToWork().contains(robotPos.getXD(), robotPos.getYD(), robotPos.getZD())) {
+					if (connectedRobot.getZoneToWork() != null && !connectedRobot.getZoneToWork().contains(robotPos.getXCoord(), robotPos.getYCoord(), robotPos.getZCoord())) {
 						continue;
 					}
 					if (!((LogisticsRoutingBoardRobot) connectedRobot.getBoard()).isAcceptsItems()) {

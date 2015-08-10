@@ -981,8 +981,8 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 					orientation.rotatePositions(positions);
 					for (DoubleCoordinates pos : positions) {
 						pos.add(placeAt);
-						world.setBlock(pos.getX(), pos.getY(), pos.getZ(), LogisticsPipes.LogisticsSubMultiBlock, 0, 2);
-						world.notifyBlockChange(pos.getX(), pos.getY(), pos.getZ(), LogisticsPipes.LogisticsSubMultiBlock);
+						world.setBlock(pos.getXInt(), pos.getYInt(), pos.getZInt(), LogisticsPipes.LogisticsSubMultiBlock, 0, 2);
+						world.notifyBlockChange(pos.getXInt(), pos.getYInt(), pos.getZInt(), LogisticsPipes.LogisticsSubMultiBlock);
 					}
 					LogisticsBlockGenericSubMultiBlock.currentCreatedMultiBlock = null;
 				}
@@ -1138,9 +1138,9 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 							LPPositionSet set = ((CoreMultiBlockPipe) pipe).getRotatedSubBlocks();
 							set.add(new DoubleCoordinates(0, 0, 0));
 							for (DoubleCoordinates pos : set) {
-								int localx = x + pos.getX();
-								int localy = y + pos.getY();
-								int localz = z + pos.getZ();
+								int localx = x + pos.getXInt();
+								int localy = y + pos.getYInt();
+								int localz = z + pos.getZInt();
 								double px = localx + (i + 0.5D) / its;
 								double py = localy + (j + 0.5D) / its;
 								double pz = localz + (k + 0.5D) / its;

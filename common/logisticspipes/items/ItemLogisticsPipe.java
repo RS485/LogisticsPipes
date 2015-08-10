@@ -146,7 +146,7 @@ public class ItemLogisticsPipe extends LogisticsItem {
 			placeAt.add(orientation.getOffset());
 
 			for (DoubleCoordinates pos : globalPos) {
-				if (!world.canPlaceEntityOnSide(block, pos.getX(), pos.getY(), pos.getZ(), false, side, entityplayer, itemstack)) {
+				if (!world.canPlaceEntityOnSide(block, pos.getXInt(), pos.getYInt(), pos.getZInt(), false, side, entityplayer, itemstack)) {
 					isFreeSpace = false;
 					break;
 				}
@@ -159,7 +159,7 @@ public class ItemLogisticsPipe extends LogisticsItem {
 					return true;
 				}
 
-				if (LogisticsBlockGenericPipe.placePipe(pipe, world, placeAt.getX(), placeAt.getY(), placeAt.getZ(), block, 0, orientation)) { //TODO
+				if (LogisticsBlockGenericPipe.placePipe(pipe, world, placeAt.getXInt(), placeAt.getYInt(), placeAt.getZInt(), block, 0, orientation)) { //TODO
 					block.onBlockPlacedBy(world, i, j, k, entityplayer, itemstack);
 					itemstack.stackSize--;
 				}

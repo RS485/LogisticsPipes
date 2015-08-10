@@ -46,9 +46,9 @@ public class MultiBlockCoordinatesPacket extends CoordinatesPacket {
 	}
 
 	public MultiBlockCoordinatesPacket setTargetLPPos(DoubleCoordinates pos) {
-		setTargetPosX(pos.getX());
-		setTargetPosY(pos.getY());
-		setTargetPosZ(pos.getZ());
+		setTargetPosX(pos.getXInt());
+		setTargetPosY(pos.getYInt());
+		setTargetPosZ(pos.getZInt());
 		return this;
 	}
 

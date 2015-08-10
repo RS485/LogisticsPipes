@@ -36,7 +36,7 @@ public class TEControl {
 		}
 
 		final DoubleCoordinates pos = new DoubleCoordinates(tile);
-		if (pos.getX() == 0 && pos.getY() <= 0 && pos.getZ() == 0) {
+		if (pos.getXInt() == 0 && pos.getYInt() <= 0 && pos.getZInt() == 0) {
 			return;
 		}
 

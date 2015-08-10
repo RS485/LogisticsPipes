@@ -211,7 +211,7 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 				Iterator<LaserData> iOptions = options.iterator();
 				while (iOptions.hasNext()) {
 					LaserData d = iOptions.next();
-					if (d.getPosX() == next.getX() && d.getPosY() == next.getY() && d.getPosZ() == next.getZ()) {
+					if (d.getPosX() == next.getXInt() && d.getPosY() == next.getYInt() && d.getPosZ() == next.getZInt()) {
 						if (data.getDir().equals(d.getDir()) && data.getConnectionType().equals(d.getConnectionType())) {
 							data.setLength(data.getLength() + d.getLength());
 							next.moveForward(data.getDir(), d.getLength());

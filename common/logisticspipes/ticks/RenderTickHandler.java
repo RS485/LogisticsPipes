@@ -126,16 +126,16 @@ public class RenderTickHandler {
 					globalPos.addToAll(orientation.getOffset());
 
 					for (DoubleCoordinates pos : globalPos) {
-						if (!player.getEntityWorld().canPlaceEntityOnSide(LogisticsPipes.LogisticsPipeBlock, pos.getX(), pos.getY(), pos.getZ(), false, side, player, stack)) {
+						if (!player.getEntityWorld().canPlaceEntityOnSide(LogisticsPipes.LogisticsPipeBlock, pos.getXInt(), pos.getYInt(), pos.getZInt(), false, side, player, stack)) {
 							isFreeSpace = false;
 							break;
 						}
 					}
 					if (isFreeSpace) {
 						GL11.glPushMatrix();
-						double x = xCoord + orientation.getOffset().getX() - player.prevPosX - ((player.posX - player.prevPosX) * worldEvent.partialTicks);
-						double y = yCoord + orientation.getOffset().getY() - player.prevPosY - ((player.posY - player.prevPosY) * worldEvent.partialTicks);
-						double z = zCoord + orientation.getOffset().getZ() - player.prevPosZ - ((player.posZ - player.prevPosZ) * worldEvent.partialTicks);
+						double x = xCoord + orientation.getOffset().getXInt() - player.prevPosX - ((player.posX - player.prevPosX) * worldEvent.partialTicks);
+						double y = yCoord + orientation.getOffset().getYInt() - player.prevPosY - ((player.posY - player.prevPosY) * worldEvent.partialTicks);
+						double z = zCoord + orientation.getOffset().getZInt() - player.prevPosZ - ((player.posZ - player.prevPosZ) * worldEvent.partialTicks);
 
 						GL11.glTranslated(x + 0.001, y + 0.001, z + 0.001);
 

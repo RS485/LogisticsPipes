@@ -453,9 +453,9 @@ public abstract class BaseWrapperClass extends AbstractValue {
 			DoubleCoordinates pos = ((CoreRoutedPipe) object).getLPPosition();
 			nbt.setString("Type", "CoreRoutedPipe");
 			nbt.setInteger("Dim", MainProxy.getDimensionForWorld(((CoreRoutedPipe) object).getWorld()));
-			nbt.setInteger("X", pos.getX());
-			nbt.setInteger("Y", pos.getY());
-			nbt.setInteger("Z", pos.getZ());
+			nbt.setInteger("X", pos.getXInt());
+			nbt.setInteger("Y", pos.getYInt());
+			nbt.setInteger("Z", pos.getZInt());
 		} else if (object instanceof CCItemIdentifierImplementation) {
 			nbt.setString("Type", "CCItemIdentifierImplementation");
 			((CCItemIdentifierImplementation) object).getObject().makeNormalStack(1).writeToNBT(nbt);
@@ -469,9 +469,9 @@ public abstract class BaseWrapperClass extends AbstractValue {
 			DoubleCoordinates pos = ((LogisticsSolidTileEntity) object).getLPPosition();
 			nbt.setString("Type", "LogisticsSolidTileEntity");
 			nbt.setInteger("Dim", MainProxy.getDimensionForWorld(((LogisticsSolidTileEntity) object).getWorldObj()));
-			nbt.setInteger("X", pos.getX());
-			nbt.setInteger("Y", pos.getY());
-			nbt.setInteger("Z", pos.getZ());
+			nbt.setInteger("X", pos.getXInt());
+			nbt.setInteger("Y", pos.getYInt());
+			nbt.setInteger("Z", pos.getZInt());
 		} else {
 			System.out.println("Couldn't find mapping for: " + object.getClass());
 		}

@@ -24,17 +24,17 @@ public class HUDRoutingTableDebugProvider implements IHeadUpDisplayRendererProvi
 
 	@Override
 	public int getX() {
-		return pos.getX();
+		return pos.getXInt();
 	}
 
 	@Override
 	public int getY() {
-		return pos.getY();
+		return pos.getYInt();
 	}
 
 	@Override
 	public int getZ() {
-		return pos.getZ();
+		return pos.getZInt();
 	}
 
 	@Override

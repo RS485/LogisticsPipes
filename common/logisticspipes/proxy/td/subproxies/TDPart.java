@@ -38,7 +38,7 @@ public class TDPart implements ITDPart {
 				duct.validate();
 				DoubleCoordinates pos = new DoubleCoordinates((TileEntity) pipe);
 				pos.moveForward(opposite);
-				duct.onNeighborTileChange(pos.getX(), pos.getY(), pos.getZ());
+				duct.onNeighborTileChange(pos.getXInt(), pos.getYInt(), pos.getZInt());
 			}
 			return duct;
 		}

@@ -185,7 +185,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			double itemPitch = lPipe.getItemRenderPitch(fPos, item);
 
 			ItemStack itemstack = item.getItemIdentifierStack().makeNormalStack();
-			doRenderItem(itemstack, pipe.container.getWorldObj(), x + pos.getXD(), y + pos.getYD(), z + pos.getZD(), light, 0.75F, boxScale, itemYaw, itemPitch, partialTickTime);
+			doRenderItem(itemstack, pipe.container.getWorldObj(), x + pos.getXCoord(), y + pos.getYCoord(), z + pos.getZCoord(), light, 0.75F, boxScale, itemYaw, itemPitch, partialTickTime);
 			count++;
 		}
 		count = 0;
@@ -199,7 +199,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 				continue;
 			}
 			ItemStack itemstack = item.getValue1().makeNormalStack();
-			doRenderItem(itemstack, pipe.container.getWorldObj(), x + pos.getXD(), y + pos.getYD(), z + pos.getZD(), light, 0.25F, 0, 0, 0, partialTickTime);
+			doRenderItem(itemstack, pipe.container.getWorldObj(), x + pos.getXCoord(), y + pos.getYCoord(), z + pos.getZCoord(), light, 0.25F, 0, 0, 0, partialTickTime);
 			count++;
 			if (count >= 27) {
 				break;

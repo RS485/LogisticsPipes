@@ -270,16 +270,16 @@ public abstract class LPTravelingItem {
 				DoubleCoordinates motion = new DoubleCoordinates(0, 0, 0);
 				motion.moveForward(exitdirection, getSpeed() * 2F);
 
-				EntityItem entityitem = getItemIdentifierStack().makeEntityItem(worldObj, position.getXD(), position.getYD(), position.getZD());
+				EntityItem entityitem = getItemIdentifierStack().makeEntityItem(worldObj, position.getXCoord(), position.getYCoord(), position.getZCoord());
 
 				//entityitem.lifespan = 1200;
 				//entityitem.delayBeforeCanPickup = 10;
 
 				//uniformly distributed in -0.005 .. 0.01 to increase bias toward smaller values
 				float f3 = worldObj.rand.nextFloat() * 0.015F - 0.005F;
-				entityitem.motionX = (float) worldObj.rand.nextGaussian() * f3 + motion.getXD();
-				entityitem.motionY = (float) worldObj.rand.nextGaussian() * f3 + motion.getYD();
-				entityitem.motionZ = (float) worldObj.rand.nextGaussian() * f3 + motion.getZD();
+				entityitem.motionX = (float) worldObj.rand.nextGaussian() * f3 + motion.getXCoord();
+				entityitem.motionY = (float) worldObj.rand.nextGaussian() * f3 + motion.getYCoord();
+				entityitem.motionZ = (float) worldObj.rand.nextGaussian() * f3 + motion.getZCoord();
 				itemWasLost();
 
 				return entityitem;

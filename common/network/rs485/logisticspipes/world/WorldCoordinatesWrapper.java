@@ -29,6 +29,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 
+import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
@@ -98,6 +99,10 @@ public class WorldCoordinatesWrapper {
 
 	public TileEntity getTileEntity() {
 		return world.getTileEntity(coords.getXCoord(), coords.getYCoord(), coords.getZCoord());
+	}
+
+	public Block getBlock() {
+		return world.getBlock(coords.getXCoord(), coords.getYCoord(), coords.getZCoord());
 	}
 
 	public AdjacentTileEntity getAdjacentFromDirection(ForgeDirection direction) {

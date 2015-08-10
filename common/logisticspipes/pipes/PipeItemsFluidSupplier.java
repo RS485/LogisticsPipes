@@ -1,6 +1,7 @@
 package logisticspipes.pipes;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -18,10 +19,8 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.transport.PipeTransportLogistics;
-import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.FluidIdentifier;
-import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -37,6 +36,8 @@ import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
+
+import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport {
 
@@ -145,13 +146,20 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 			return;
 		}
 		super.throttledUpdateEntity();
-		WorldUtil worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
-		for (AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
-			if (!(tile.tile instanceof IFluidHandler) || SimpleServiceLocator.pipeInformationManager.isItemPipe(tile.tile)) {
-				continue;
-			}
-			IFluidHandler container = (IFluidHandler) tile.tile;
-			if (container.getTankInfo(ForgeDirection.UNKNOWN) == null || container.getTankInfo(ForgeDirection.UNKNOWN).length == 0) {
+
+		//@formatter:off
+		Iterator<IFluidHandler> iterator = new WorldCoordinatesWrapper(container).getConnectedAdjacentTileEntities()
+				.filter(adjacent -> adjacent.tileEntity instanceof IFluidHandler)
+				.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.tileEntity))
+				.map(adjacent -> (IFluidHandler) adjacent.tileEntity)
+				.iterator();
+		//@formatter:on
+
+		while (iterator.hasNext()) {
+			IFluidHandler next = iterator.next();
+
+			FluidTankInfo[] result = next.getTankInfo(ForgeDirection.UNKNOWN);
+			if (result == null || result.length == 0) {
 				continue;
 			}
 
@@ -170,7 +178,6 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 			//How much do I have?
 			HashMap<FluidIdentifier, Integer> haveFluids = new HashMap<FluidIdentifier, Integer>();
 
-			FluidTankInfo[] result = container.getTankInfo(ForgeDirection.UNKNOWN);
 			for (FluidTankInfo slot : result) {
 				if (slot == null || slot.fluid == null || slot.fluid.getFluidID() == 0 || !wantFluids.containsKey(FluidIdentifier.get(slot.fluid))) {
 					continue;
@@ -204,7 +211,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 				}
 			}
 
-			((PipeItemsFluidSupplier) this.container.pipe).setRequestFailed(false);
+			((PipeItemsFluidSupplier) container.pipe).setRequestFailed(false);
 
 			//Make request
 
@@ -228,12 +235,12 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 				boolean success = false;
 
 				if (_requestPartials) {
-					countToRequest = RequestTree.requestPartial(need.makeStack(countToRequest), (IRequestItems) this.container.pipe, null);
+					countToRequest = RequestTree.requestPartial(need.makeStack(countToRequest), (IRequestItems) container.pipe, null);
 					if (countToRequest > 0) {
 						success = true;
 					}
 				} else {
-					success = RequestTree.request(need.makeStack(countToRequest), (IRequestItems) this.container.pipe, null, null);
+					success = RequestTree.request(need.makeStack(countToRequest), (IRequestItems) container.pipe, null, null);
 				}
 
 				if (success) {
@@ -244,7 +251,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 						_requestedItems.put(need, currentRequest + countToRequest);
 					}
 				} else {
-					((PipeItemsFluidSupplier) this.container.pipe).setRequestFailed(true);
+					((PipeItemsFluidSupplier) container.pipe).setRequestFailed(true);
 				}
 			}
 		}

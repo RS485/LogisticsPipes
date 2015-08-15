@@ -152,6 +152,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	 * @param world
 	 * @return
 	 */
+	@Deprecated
 	public LogisticsTileGenericPipe getPipe(World world) {
 		return getPipe(world, LTGPCompletionCheck.NONE);
 	}

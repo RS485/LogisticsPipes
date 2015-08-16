@@ -14,13 +14,15 @@
         "Forge@[9.10.1.850,)",
         "BuildCraft|Core",
         "BuildCraft|Transport",
-        "BuildCraft|Silicon"
+        "BuildCraft|Silicon",
+        "BuildCraft|Robotics"
     ],
     "dependencies": [
         "Forge@[9.10.1.850,)",
         "BuildCraft|Core",
         "BuildCraft|Transport",
         "BuildCraft|Silicon",
+        "BuildCraft|Robotics",
         "IC2",
         "Forestry",
         "Thaumcraft",

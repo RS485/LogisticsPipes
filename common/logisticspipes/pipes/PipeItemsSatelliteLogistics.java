@@ -8,10 +8,7 @@
 
 package logisticspipes.pipes;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.hud.HUDSatellite;
@@ -177,7 +174,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		return HUD;
 	}
 
-	public static HashSet<PipeItemsSatelliteLogistics> AllSatellites = new HashSet<PipeItemsSatelliteLogistics>();
+	public static Set<PipeItemsSatelliteLogistics> AllSatellites = Collections.newSetFromMap(new WeakHashMap<PipeItemsSatelliteLogistics, Boolean>());;
 
 	// called only on server shutdown
 	public static void cleanup() {

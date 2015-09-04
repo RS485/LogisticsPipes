@@ -109,7 +109,6 @@ import logisticspipes.routing.ServerRouter;
 import logisticspipes.routing.pathfinder.PipeInformationManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.ticks.ClientPacketBufferHandlerThread;
-import logisticspipes.ticks.DebugGuiTickHandler;
 import logisticspipes.ticks.HudUpdateTick;
 import logisticspipes.ticks.LPTickHandler;
 import logisticspipes.ticks.QueuedTasks;
@@ -336,8 +335,6 @@ public class LogisticsPipes {
 		FMLCommonHandler.instance().bus().register(eventListener);
 		MinecraftForge.EVENT_BUS.register(new LPChatListener());
 		LogisticsPipes.textures.registerBlockIcons(null);
-
-		FMLCommonHandler.instance().bus().register(DebugGuiTickHandler.instance());
 
 		RecipeManager.registerRecipeClasses();
 	}

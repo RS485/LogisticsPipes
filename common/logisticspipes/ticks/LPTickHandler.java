@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import logisticspipes.commands.commands.debug.DebugGuiController;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.pathfinder.changedetection.LPWorldAccess;
@@ -34,6 +35,7 @@ public class LPTickHandler {
 		FluidIdentifier.initFromForge(true);
 		SimpleServiceLocator.clientBufferHandler.clientTick(event);
 		MainProxy.proxy.tickClient();
+		DebugGuiController.instance().execClient();
 	}
 
 	@SubscribeEvent
@@ -43,6 +45,7 @@ public class LPTickHandler {
 		SimpleServiceLocator.serverBufferHandler.serverTick(event);
 		MainProxy.proxy.tickServer();
 		LPTickHandler.adjChecksDone = 0;
+		DebugGuiController.instance().execServer();
 	}
 
 	private static Map<World, LPWorldInfo> worldInfo = new ConcurrentHashMap<World, LPWorldInfo>();

@@ -12,6 +12,7 @@ import java.util.Map;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.exception.DelayPacketException;
 import logisticspipes.network.exception.TargetNotFoundException;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -170,7 +171,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 			if (LPConstants.DEBUG) {
 				PacketHandler.debugMap.remove(packet.getDebugId());
 			}
-		} catch (TargetNotFoundException e) {
+		} catch (DelayPacketException e) {
 			if (packet.retry() && MainProxy.isClient(player.getEntityWorld())) {
 				SimpleServiceLocator.clientBufferHandler.queueFailedPacket(packet, player);
 			} else if (LPConstants.DEBUG) {

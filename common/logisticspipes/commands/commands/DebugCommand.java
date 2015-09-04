@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import logisticspipes.LPConstants;
 import logisticspipes.commands.abstracts.SubCommandHandler;
-import logisticspipes.commands.commands.debug.CloseCommand;
 import logisticspipes.commands.commands.debug.HandCommand;
 import logisticspipes.commands.commands.debug.MeCommand;
 import logisticspipes.commands.commands.debug.PipeCommand;
@@ -36,7 +35,6 @@ public class DebugCommand extends SubCommandHandler {
 	public void registerSubCommands() {
 		registerSubCommand(new MeCommand());
 		registerSubCommand(new TargetCommand());
-		registerSubCommand(new CloseCommand());
 		registerSubCommand(new RoutingTableCommand());
 		registerSubCommand(new PipeCommand());
 		registerSubCommand(new HandCommand());

@@ -8,7 +8,7 @@ import logisticspipes.LPConstants;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 
-public class TargetNotFoundException extends RuntimeException {
+public class TargetNotFoundException extends DelayPacketException {
 
 	private static final long serialVersionUID = 8830733712757259675L;
 

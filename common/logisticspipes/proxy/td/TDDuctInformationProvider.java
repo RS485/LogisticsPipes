@@ -268,7 +268,8 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 
 	@Override
 	public void refreshTileCacheOnSide(ForgeDirection side) {
-		// Nothing to do here
+		if(duct.myGrid == null) return;
+		duct.myGrid.destroyAndRecreate();
 	}
 
 	@Override

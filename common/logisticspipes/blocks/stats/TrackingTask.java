@@ -40,7 +40,7 @@ public class TrackingTask {
 			if (i >= amountRecorded_A.length || i >= amountRecorded_B.length) {
 				break;
 			}
-			amountRecorded[i] = amountRecorded_B[i] << 32 | amountRecorded_A[i];
+			amountRecorded[i] = (((long) amountRecorded_B[i]) << 32) | amountRecorded_A[i];
 		}
 		arrayPos = nbt.getInteger("arrayPos");
 		item = ItemIdentifier.get(ItemStack.loadItemStackFromNBT(nbt));
@@ -50,8 +50,8 @@ public class TrackingTask {
 		int[] amountRecorded_A = new int[amountRecorded.length];
 		int[] amountRecorded_B = new int[amountRecorded.length];
 		for (int i = 0; i < amountRecorded.length; i++) {
-			amountRecorded_A[i] = (int) amountRecorded[i] & 0xffffffff;
-			amountRecorded_B[i] = (int) amountRecorded[i] >> 32;
+			amountRecorded_A[i] = (int) amountRecorded[i];
+			amountRecorded_B[i] = (int) (amountRecorded[i] >> 32);
 		}
 		nbt.setIntArray("amountRecorded_A", amountRecorded_A);
 		nbt.setIntArray("amountRecorded_B", amountRecorded_B);

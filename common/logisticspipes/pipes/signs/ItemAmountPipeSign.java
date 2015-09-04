@@ -91,9 +91,11 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 		int newAmount = 0;
 		if (itemTypeInv.getIDStackInSlot(0) != null) {
 			Map<ItemIdentifier, Integer> availableItems = SimpleServiceLocator.logisticsManager.getAvailableItems(pipe.getRouter().getIRoutersByCost());
-			BitSet set = new BitSet(ServerRouter.getBiggestSimpleID());
-			spread(availableItems, set);
-			newAmount = availableItems.get(itemTypeInv.getIDStackInSlot(0).getItem());
+			if(availableItems != null) {
+				BitSet set = new BitSet(ServerRouter.getBiggestSimpleID());
+				spread(availableItems, set);
+				newAmount = availableItems.get(itemTypeInv.getIDStackInSlot(0).getItem());
+			}
 		}
 		if (newAmount != amount) {
 			amount = newAmount;
@@ -108,7 +110,7 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 		for(ExitRoute exit: router.getIRoutersByCost()) {
 			if(exit.distanceToDestination > 2) break; // Only when the signs are in one wall. To not spread to far.
 			if(!exit.filters.isEmpty()) continue;
-			if(set.get(exit.destination.getSimpleID())) continue;
+			if (set.get(exit.destination.getSimpleID())) continue;
 			if(exit.connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom) && exit.connectionDetails.contains(PipeRoutingConnectionType.canRouteTo)) {
 				CoreRoutedPipe cachedPipe = exit.destination.getCachedPipe();
 				if(cachedPipe != null) {

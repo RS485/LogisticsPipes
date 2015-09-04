@@ -94,7 +94,9 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 			if(availableItems != null) {
 				BitSet set = new BitSet(ServerRouter.getBiggestSimpleID());
 				spread(availableItems, set);
-				newAmount = availableItems.get(itemTypeInv.getIDStackInSlot(0).getItem());
+				if(availableItems.containsKey(itemTypeInv.getIDStackInSlot(0).getItem())) {
+					newAmount = availableItems.get(itemTypeInv.getIDStackInSlot(0).getItem());
+				}
 			}
 		}
 		if (newAmount != amount) {
@@ -129,7 +131,9 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 		hasUpdated = true;
 		int newAmount = 0;
 		if (itemTypeInv.getIDStackInSlot(0) != null) {
-			newAmount = availableItems.get(itemTypeInv.getIDStackInSlot(0).getItem());
+			if(availableItems.containsKey(itemTypeInv.getIDStackInSlot(0).getItem())) {
+				newAmount = availableItems.get(itemTypeInv.getIDStackInSlot(0).getItem());
+			}
 		}
 		if (newAmount != amount) {
 			amount = newAmount;

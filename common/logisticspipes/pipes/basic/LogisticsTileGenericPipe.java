@@ -1061,7 +1061,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	@Override
 	@ModDependentMethod(modId = "BuildCraft|Transport")
 	public ConnectOverride overridePipeConnection(PipeType pipeType, ForgeDirection forgeDirection) {
-		if(this.pipe.isFluidPipe()) {
+		if(this.pipe != null && this.pipe.isFluidPipe()) {
 			if(pipeType == PipeType.FLUID) {
 				return ConnectOverride.CONNECT;
 			}

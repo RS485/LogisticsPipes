@@ -66,14 +66,14 @@ public class LogisticsWrapperHandler {
 		}
 		GenericProgressProviderWrapper instance = new GenericProgressProviderWrapper(provider, modId + ": " + name);
 		if (provider != null) {
-			LogisticsPipes.log.info("Loaded " + name + " ProgressProvider");
+			LogisticsPipes.log.info("Loaded " + modId + ", " + name + " ProgressProvider");
 		} else {
 			if (e != null) {
 				((AbstractWrapper) instance).setState(WrapperState.Exception);
 				((AbstractWrapper) instance).setReason(e);
-				LogisticsPipes.log.info("Couldn't load " + name + " ProgressProvider");
+				LogisticsPipes.log.info("Couldn't load " + modId + ", " + name + " ProgressProvider");
 			} else {
-				LogisticsPipes.log.info("Didn't load " + name + " ProgressProvider");
+				LogisticsPipes.log.info("Didn't load " + modId + ", " + name + " ProgressProvider");
 				((AbstractWrapper) instance).setState(WrapperState.ModMissing);
 			}
 		}

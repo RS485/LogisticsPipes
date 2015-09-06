@@ -69,6 +69,8 @@ public class LogisticsCraftingOverlayHandler implements IOverlayHandler {
 				stacks[slot] = list.toArray(new ItemStack[0]);
 				if (stacks[slot].length > 1) {
 					hasCanidates = true;
+				} else if(stacks[slot].length == 1) {
+					stack[slot] = stacks[slot][0];
 				}
 			}
 		}

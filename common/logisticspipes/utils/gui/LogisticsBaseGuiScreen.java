@@ -167,18 +167,14 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 					e.printStackTrace();
 				}
 			}
-			RenderHelper.disableStandardItemLighting();
-			GL11.glTranslatef(0.0F, 0.0F, 101.0F);
+			GL11.glPushAttrib(GL11.GL_DEPTH_BUFFER_BIT);
 			if (!subGui.hasSubGui()) {
-				GL11.glDisable(GL11.GL_DEPTH_TEST);
+				GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 				super.drawDefaultBackground();
-				GL11.glEnable(GL11.GL_DEPTH_TEST);
 			}
-			GL11.glDisable(GL11.GL_DEPTH_TEST);
+			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 			subGui.drawScreen(par1, par2, par3);
-			GL11.glEnable(GL11.GL_DEPTH_TEST);
-			GL11.glTranslatef(0.0F, 0.0F, -101.0F);
-			RenderHelper.enableStandardItemLighting();
+			GL11.glPopAttrib();
 		} else {
 			super.drawScreen(par1, par2, par3);
 			RenderHelper.disableStandardItemLighting();

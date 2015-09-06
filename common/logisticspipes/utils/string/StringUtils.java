@@ -147,7 +147,7 @@ public final class StringUtils {
 			return input;
 		}
 		input += "...";
-		while (renderer.getStringWidth(input) > maxLength && input.length() > 0) {
+		while (renderer.getStringWidth(input) > maxLength && input.length() > 5) {
 			input = input.substring(0, input.length() - 4) + "...";
 		}
 		return input;

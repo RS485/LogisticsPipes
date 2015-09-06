@@ -19,12 +19,9 @@ import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-
-import org.lwjgl.opengl.GL11;
 
 public class GuiRecipeImport extends SubGuiScreen {
 
@@ -43,6 +40,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 	private final TileEntity tile;
 	private final Canidates[] grid = new Canidates[9];
 	private final List<Canidates> list;
+	private Object[] tooltip = null;
 
 	public GuiRecipeImport(TileEntity tile, ItemStack[][] stacks) {
 		super(150, 200, 0, 0);
@@ -98,17 +96,16 @@ public class GuiRecipeImport extends SubGuiScreen {
 	}
 
 	@Override
-	public void drawScreen(int mouseX, int mouseY, float par3) {
-		GL11.glEnable(GL11.GL_BLEND);
-		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+	protected void renderToolTips(int mouseX, int mouseY, float par3) {
+		GuiGraphics.displayItemToolTip(tooltip, this, zLevel, guiLeft, guiTop);
+	}
+
+	@Override
+	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		fontRendererObj.renderString(StringUtils.translate("misc.selectOreDict"), guiLeft + 10, guiTop + 6, 0x404040, false);
-		GL11.glTranslated(0, 0, 100);
-		Object[] tooltip = null;
+		tooltip = null;
 		for (int x = 0; x < 3; x++) {
 			for (int y = 0; y < 3; y++) {
-				RenderHelper.enableGUIStandardItemLighting();
-				GuiGraphics.drawSlotBackground(mc, guiLeft + 44 + x * 18, guiTop + 19 + y * 18);
-
 				if (grid[x + y * 3] == null) {
 					continue;
 				}
@@ -125,13 +122,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 				itemRenderer.renderItemOverlayIntoGUI(font, mc.renderEngine, itemStack, guiLeft + 45 + x * 18, guiTop + 20 + y * 18, null);
 
 				if (guiLeft + 45 + x * 18 < mouseX && mouseX < guiLeft + 45 + x * 18 + 16 && guiTop + 20 + y * 18 < mouseY && mouseY < guiTop + 20 + y * 18 + 16 && !hasSubGui()) {
-					GL11.glDisable(GL11.GL_LIGHTING);
-					GL11.glDisable(GL11.GL_DEPTH_TEST);
-					GL11.glColorMask(true, true, true, false);
 					SimpleGraphics.drawGradientRect(guiLeft + 45 + x * 18, guiTop + 20 + y * 18, guiLeft + 45 + x * 18 + 16, guiTop + 20 + y * 18 + 16, Color.WHITE_50, Color.WHITE_50, 0.0);
-					GL11.glColorMask(true, true, true, true);
-					GL11.glEnable(GL11.GL_LIGHTING);
-					GL11.glEnable(GL11.GL_DEPTH_TEST);
 					tooltip = new Object[] { guiLeft + mouseX, guiTop + mouseY, itemStack };
 				}
 			}
@@ -146,20 +137,12 @@ public class GuiRecipeImport extends SubGuiScreen {
 				font = fontRendererObj;
 			}
 
-			RenderHelper.enableGUIStandardItemLighting();
-			GuiGraphics.drawSlotBackground(mc, guiLeft + 19 + x * 40, guiTop + 89 + y * 40);
 			itemRenderer.renderItemAndEffectIntoGUI(font, mc.renderEngine, itemStack, guiLeft + 20 + x * 40, guiTop + 90 + y * 40);
 			// With empty string, because damage value indicator struggles with the depth
 			itemRenderer.renderItemOverlayIntoGUI(font, mc.renderEngine, itemStack, guiLeft + 20 + x * 40, guiTop + 90 + y * 40, "");
 
 			if (guiLeft + 20 + x * 40 < mouseX && mouseX < guiLeft + 20 + x * 40 + 16 && guiTop + 90 + y * 40 < mouseY && mouseY < guiTop + 90 + y * 40 + 16 && !hasSubGui()) {
-				GL11.glDisable(GL11.GL_LIGHTING);
-				GL11.glDisable(GL11.GL_DEPTH_TEST);
-				GL11.glColorMask(true, true, true, false);
 				SimpleGraphics.drawGradientRect(guiLeft + 20 + x * 40, guiTop + 90 + y * 40, guiLeft + 20 + x * 40 + 16, guiTop + 90 + y * 40 + 16, Color.WHITE_50, Color.WHITE_50, 0.0);
-				GL11.glColorMask(true, true, true, true);
-				GL11.glEnable(GL11.GL_LIGHTING);
-				GL11.glEnable(GL11.GL_DEPTH_TEST);
 				tooltip = new Object[] { guiLeft + mouseX, guiTop + mouseY, itemStack };
 			}
 
@@ -169,9 +152,27 @@ public class GuiRecipeImport extends SubGuiScreen {
 				y++;
 			}
 		}
-		GL11.glTranslated(0, 0, -100);
-		super.drawScreen(mouseX, mouseY, par3);
-		GuiGraphics.displayItemToolTip(tooltip, this, zLevel, guiLeft, guiTop);
+	}
+
+	@Override
+	protected void renderGuiBackground(int par1, int par2) {
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		fontRendererObj.renderString(StringUtils.translate("misc.selectOreDict"), guiLeft + 10, guiTop + 6, 0x404040, false);
+		for (int x = 0; x < 3; x++) {
+			for (int y = 0; y < 3; y++) {
+				GuiGraphics.drawSlotBackground(mc, guiLeft + 44 + x * 18, guiTop + 19 + y * 18);
+			}
+		}
+		int x = 0;
+		int y = 0;
+		for (Canidates canidate : list) {
+			GuiGraphics.drawSlotBackground(mc, guiLeft + 19 + x * 40, guiTop + 89 + y * 40);
+			x++;
+			if (x > 2) {
+				x = 0;
+				y++;
+			}
+		}
 	}
 
 	@Override

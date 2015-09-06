@@ -27,8 +27,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
 public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 
@@ -143,7 +141,157 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 	}
 
 	@Override
-	public void drawScreen(int par1, int par2, float par3) {
+	protected void renderToolTips(int mouseX, int mouseY, float par3) {
+		if (!hasSubGui()) {
+			GuiGraphics.displayItemToolTip(tooltip, 300, guiLeft, guiTop, true, false);
+		}
+	}
+
+	@Override
+	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
+		int panelxSize = 20;
+		int panelySize = 20;
+
+		int ppi = 0;
+		int column = 0;
+		int row = 0;
+
+		int wheel = org.lwjgl.input.Mouse.getDWheel();
+		if (wheel != 0) {
+			if (wheel < 0) {
+				mousebutton = 0;
+			} else {
+				mousebutton = 1;
+			}
+			mousePosX = mouseX;
+			mousePosY = mouseY;
+		}
+
+		tooltip = null;
+
+		for (ItemIdentifierStack itemStack : diskProvider.getItemDisplay()._allItems) {
+			ItemIdentifier item = itemStack.getItem();
+			if (!itemSearched(item)) {
+				continue;
+			}
+			ppi++;
+
+			if (ppi <= 45 * pageAll) {
+				continue;
+			}
+			if (ppi > 45 * (pageAll + 1)) {
+				continue;
+			}
+			ItemStack st = itemStack.unsafeMakeNormalStack();
+			int x = guiLeft + 10 + panelxSize * column;
+			int y = guiTop + 18 + panelySize * row;
+
+			if (!super.hasSubGui()) {
+				if (mouseX >= x && mouseX < x + panelxSize && mouseY >= y && mouseY < y + panelySize) {
+					Gui.drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Color.getValue(Color.BLACK));
+					Gui.drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Color.getValue(Color.DARKER_GREY));
+					tooltip = new Object[] { mouseX + guiLeft, mouseY + guiTop, st, false };
+				}
+
+				if (mousePosX != 0 && mousePosY != 0) {
+					if ((mousePosX >= x && mousePosX < x + panelxSize && mousePosY >= y && mousePosY < y + panelySize) || (mouseX >= x && mouseX < x + panelxSize && mouseY >= y && mouseY < y + panelySize && (wheeldown != 0 || wheelup != 0))) {
+						boolean handled = false;
+						for (ItemIdentifierStack stack : macroItems) {
+							if (stack.getItem().equals(item)) {
+								if (mousebutton == 0 || wheelup != 0) {
+									stack.setStackSize(stack.getStackSize() + (1 + (wheelup != 0 ? wheelup - 1 : 0)));
+								} else if (mousebutton == 1 || wheeldown != 0) {
+									stack.setStackSize(stack.getStackSize() - (1 + (wheeldown != 0 ? wheeldown - 1 : 0)));
+									if (stack.getStackSize() <= 0) {
+										macroItems.remove(stack);
+									}
+								}
+								handled = true;
+								break;
+							}
+						}
+						if (!handled) {
+							int i = 0;
+							for (ItemIdentifierStack stack : macroItems) {
+								if (item == stack.getItem() && item.itemDamage < stack.getItem().itemDamage) {
+									if (mousebutton == 0 || wheelup != 0) {
+										macroItems.add(i, item.makeStack(1 + (wheelup != 0 ? wheelup - 1 : 0)));
+									} else if (mousebutton == 2) {
+										macroItems.add(i, item.makeStack(64));
+									}
+									handled = true;
+									break;
+								}
+								if (Item.getIdFromItem(item.item) < Item.getIdFromItem(stack.getItem().item)) {
+									if (mousebutton == 0 || wheelup != 0) {
+										macroItems.add(i, item.makeStack(1 + (wheelup != 0 ? wheelup - 1 : 0)));
+									} else if (mousebutton == 2) {
+										macroItems.add(i, item.makeStack(64));
+									}
+									handled = true;
+									break;
+								}
+								i++;
+							}
+							if (!handled) {
+								if (mousebutton == 0 || wheelup != 0) {
+									macroItems.addLast(item.makeStack(1 + (wheelup != 0 ? wheelup - 1 : 0)));
+								} else if (mousebutton == 2) {
+									macroItems.addLast(item.makeStack(64));
+								}
+							}
+						}
+						mousePosX = 0;
+						mousePosY = 0;
+					}
+				}
+			}
+			column++;
+			if (column == 9) {
+				row++;
+				column = 0;
+			}
+		}
+
+		ItemStackRenderer.renderItemIdentifierStackListIntoGui(diskProvider.getItemDisplay()._allItems, this, pageAll, guiLeft + 9, guiTop + 17, 9, 45, panelxSize, panelySize, 100.0F, DisplayAmount.NEVER);
+
+		ppi = 0;
+		column = 0;
+		row = 0;
+
+		for (ItemIdentifierStack itemStack : macroItems) {
+			ItemIdentifier item = itemStack.getItem();
+			if (!itemSearched(item)) {
+				continue;
+			}
+			ppi++;
+
+			if (ppi <= 9 * pageMacro) {
+				continue;
+			}
+			if (ppi > 9 * (pageMacro + 1)) {
+				continue;
+			}
+			ItemStack st = itemStack.unsafeMakeNormalStack();
+			int x = guiLeft + 10 + panelxSize * column;
+			int y = guiTop + 150 + panelySize * row;
+
+			if (!super.hasSubGui()) {
+				if (mouseX >= x && mouseX < x + panelxSize && mouseY >= y && mouseY < y + panelySize) {
+					tooltip = new Object[] { mouseX + guiLeft, mouseY + guiTop, st };
+				}
+			}
+			column++;
+			if (column == 9) {
+				row++;
+				column = 0;
+			}
+		}
+		ItemStackRenderer.renderItemIdentifierStackListIntoGui(macroItems, this, pageMacro, guiLeft + 10, guiTop + 150, 9, 9, panelxSize, panelySize, 100.0F, DisplayAmount.ALWAYS);
+	}
+
+	@Override
+	protected void renderGuiBackground(int par1, int par2) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, false);
 		mc.fontRenderer.drawString("Add Macro", guiLeft + mc.fontRenderer.getStringWidth("Add Macro") / 2, guiTop + 6, 0x404040);
 
@@ -217,166 +365,8 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 			}
 		}
 
-		int panelxSize = 20;
-		int panelySize = 20;
-
-		int ppi = 0;
-		int column = 0;
-		int row = 0;
-
-		int mouseX = Mouse.getX() * width / mc.displayWidth;
-		int mouseY = height - Mouse.getY() * height / mc.displayHeight - 1;
-
-		int wheel = org.lwjgl.input.Mouse.getDWheel() / 120;
-		if (wheel != 0) {
-			if (wheel < 0) {
-				mousebutton = 0;
-			} else {
-				mousebutton = 1;
-			}
-			mousePosX = mouseX;
-			mousePosY = mouseY;
-		}
-
-		tooltip = null;
-
 		Gui.drawRect(guiLeft + 6, guiTop + 16, right - 12, bottom - 84, Color.getValue(Color.GREY));
 		Gui.drawRect(guiLeft + 6, bottom - 52, right - 12, bottom - 32, Color.getValue(Color.DARKER_GREY));
-
-		for (ItemIdentifierStack itemStack : diskProvider.getItemDisplay()._allItems) {
-			ItemIdentifier item = itemStack.getItem();
-			if (!itemSearched(item)) {
-				continue;
-			}
-			ppi++;
-
-			if (ppi <= 45 * pageAll) {
-				continue;
-			}
-			if (ppi > 45 * (pageAll + 1)) {
-				continue;
-			}
-			ItemStack st = itemStack.unsafeMakeNormalStack();
-			int x = guiLeft + 10 + panelxSize * column;
-			int y = guiTop + 18 + panelySize * row;
-
-			GL11.glDisable(2896 /*GL_LIGHTING*/);
-
-			if (!super.hasSubGui()) {
-				if (mouseX >= x && mouseX < x + panelxSize && mouseY >= y && mouseY < y + panelySize) {
-					Gui.drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Color.getValue(Color.BLACK));
-					Gui.drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Color.getValue(Color.DARKER_GREY));
-
-					tooltip = new Object[] { mouseX + guiLeft, mouseY + guiTop, st, false };
-				}
-
-				if (mousePosX != 0 && mousePosY != 0) {
-					if ((mousePosX >= x && mousePosX < x + panelxSize && mousePosY >= y && mousePosY < y + panelySize) || (mouseX >= x && mouseX < x + panelxSize && mouseY >= y && mouseY < y + panelySize && (wheeldown != 0 || wheelup != 0))) {
-						boolean handled = false;
-						for (ItemIdentifierStack stack : macroItems) {
-							if (stack.getItem().equals(item)) {
-								if (mousebutton == 0 || wheelup != 0) {
-									stack.setStackSize(stack.getStackSize() + (1 + (wheelup != 0 ? wheelup - 1 : 0)));
-								} else if (mousebutton == 1 || wheeldown != 0) {
-									stack.setStackSize(stack.getStackSize() - (1 + (wheeldown != 0 ? wheeldown - 1 : 0)));
-									if (stack.getStackSize() <= 0) {
-										macroItems.remove(stack);
-									}
-								}
-								handled = true;
-								break;
-							}
-						}
-						if (!handled) {
-							int i = 0;
-							for (ItemIdentifierStack stack : macroItems) {
-								if (item == stack.getItem() && item.itemDamage < stack.getItem().itemDamage) {
-									if (mousebutton == 0 || wheelup != 0) {
-										macroItems.add(i, item.makeStack(1 + (wheelup != 0 ? wheelup - 1 : 0)));
-									} else if (mousebutton == 2) {
-										macroItems.add(i, item.makeStack(64));
-									}
-									handled = true;
-									break;
-								}
-								if (Item.getIdFromItem(item.item) < Item.getIdFromItem(stack.getItem().item)) {
-									if (mousebutton == 0 || wheelup != 0) {
-										macroItems.add(i, item.makeStack(1 + (wheelup != 0 ? wheelup - 1 : 0)));
-									} else if (mousebutton == 2) {
-										macroItems.add(i, item.makeStack(64));
-									}
-									handled = true;
-									break;
-								}
-								i++;
-							}
-							if (!handled) {
-								if (mousebutton == 0 || wheelup != 0) {
-									macroItems.addLast(item.makeStack(1 + (wheelup != 0 ? wheelup - 1 : 0)));
-								} else if (mousebutton == 2) {
-									macroItems.addLast(item.makeStack(64));
-								}
-							}
-						}
-						mousePosX = 0;
-						mousePosY = 0;
-					}
-				}
-			}
-			column++;
-			if (column == 9) {
-				row++;
-				column = 0;
-			}
-		}
-
-		ItemStackRenderer.renderItemIdentifierStackListIntoGui(diskProvider.getItemDisplay()._allItems, this, pageAll, guiLeft + 10, guiTop + 18, 9, 45, panelxSize, panelySize, 100.0F, DisplayAmount.NEVER);
-
-		ppi = 0;
-		column = 0;
-		row = 0;
-
-		for (ItemIdentifierStack itemStack : macroItems) {
-			ItemIdentifier item = itemStack.getItem();
-			if (!itemSearched(item)) {
-				continue;
-			}
-			ppi++;
-
-			if (ppi <= 9 * pageMacro) {
-				continue;
-			}
-			if (ppi > 9 * (pageMacro + 1)) {
-				continue;
-			}
-			ItemStack st = itemStack.unsafeMakeNormalStack();
-			int x = guiLeft + 10 + panelxSize * column;
-			int y = guiTop + 150 + panelySize * row;
-
-			GL11.glDisable(2896 /*GL_LIGHTING*/);
-
-			if (!super.hasSubGui()) {
-				if (mouseX >= x && mouseX < x + panelxSize && mouseY >= y && mouseY < y + panelySize) {
-					//drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Color.getValue(Color.BLACK));
-					//drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Color.getValue(Color.DARKER_GREY));
-
-					tooltip = new Object[] { mouseX + guiLeft, mouseY + guiTop, st };
-				}
-			}
-			column++;
-			if (column == 9) {
-				row++;
-				column = 0;
-			}
-		}
-		ItemStackRenderer.renderItemIdentifierStackListIntoGui(macroItems, this, pageMacro, guiLeft + 10, guiTop + 150, 9, 9, panelxSize, panelySize, 100.0F, DisplayAmount.ALWAYS);
-
-		GL11.glDisable(2929 /*GL_DEPTH_TEST*/);
-		super.drawScreen(par1, par2, par3);
-
-		if (!hasSubGui()) {
-			GuiGraphics.displayItemToolTip(tooltip, 300, guiLeft, guiTop, true, false);
-		}
 	}
 
 	private int getSearchedItemNumber(List<ItemIdentifierStack> list) {

@@ -57,9 +57,8 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 	}
 
 	@Override
-	public void drawScreen(int par1, int par2, float par3) {
+	protected void renderGuiBackground(int par1, int par2) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-
 		mc.fontRenderer.drawString("(" + (page + 1) + "/" + ((int) ((_tile.excludedCC.size() / 9D) + 1 - (_tile.excludedCC.size() % 9 == 0 && _tile.excludedCC.size() != 0 ? 1 : 0))) + ")", guiLeft + 100, guiTop + 5, 0x4F4F4F);
 
 		boolean dark = true;
@@ -121,7 +120,6 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 				}
 			}
 		}
-		super.drawScreen(par1, par2, par3);
 	}
 
 	@Override

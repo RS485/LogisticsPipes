@@ -18,7 +18,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
 
 public class GuiDiskPopup extends SubGuiScreen {
 
@@ -91,10 +90,8 @@ public class GuiDiskPopup extends SubGuiScreen {
 	}
 
 	@Override
-	public void drawScreen(int par1, int par2, float par3) {
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+	protected void renderGuiBackground(int par1, int par2) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-
 		mc.fontRenderer.drawStringWithShadow("Disk", xCenter - (mc.fontRenderer.getStringWidth("Disk") / 2), guiTop + 10, 0xFFFFFF);
 
 		//NameInput
@@ -160,7 +157,6 @@ public class GuiDiskPopup extends SubGuiScreen {
 				Gui.drawRect(linex, guiTop + 31, linex + 1, guiTop + 42, Color.getValue(Color.WHITE));
 			}
 		}
-		super.drawScreen(par1, par2, par3);
 	}
 
 	@Override

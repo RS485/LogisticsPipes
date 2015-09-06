@@ -3,9 +3,12 @@ package logisticspipes.utils.gui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
-public class SubGuiScreen extends GuiScreen implements ISubGuiControler {
+public abstract class SubGuiScreen extends GuiScreen implements ISubGuiControler {
 
 	protected int guiLeft;
 	protected int guiTop;
@@ -58,18 +61,47 @@ public class SubGuiScreen extends GuiScreen implements ISubGuiControler {
 	}
 
 	@Override
-	public void drawScreen(int par1, int par2, float par3) {
+	public final void drawScreen(int par1, int par2, float par3) {
+		RenderHelper.disableStandardItemLighting();
+		renderGuiBackground(par1, par2);
+		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		super.drawScreen(par1, par2, par3);
+		RenderHelper.enableGUIStandardItemLighting();
+
+		GL11.glPushMatrix();
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+		short short1 = 240;
+		short short2 = 240;
+		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) short1 / 1.0F, (float) short2 / 1.0F);
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+
+		this.drawGuiContainerForegroundLayer(par1, par2);
+
+		GL11.glPopMatrix();
+
+		GL11.glEnable(GL11.GL_LIGHTING);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		if (subGui != null) {
-			GL11.glTranslatef(0.0F, 0.0F, 1.0F);
-			GL11.glDisable(GL11.GL_DEPTH_TEST);
+			GL11.glPushAttrib(GL11.GL_DEPTH_BUFFER_BIT);
 			if (!subGui.hasSubGui()) {
+				GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 				super.drawDefaultBackground();
 			}
+			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 			subGui.drawScreen(par1, par2, par3);
-			GL11.glTranslatef(0.0F, 0.0F, -1.0F);
+			GL11.glPopAttrib();
 		}
+		renderToolTips(par1, par2, par3);
 	}
+
+	protected void renderToolTips(int mouseX, int mouseY, float par3) {}
+
+	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {}
+
+	protected abstract void renderGuiBackground(int par1, int par2);
 
 	@Override
 	public final void handleMouseInput() {

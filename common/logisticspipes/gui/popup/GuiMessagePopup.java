@@ -35,7 +35,7 @@ public class GuiMessagePopup extends SubGuiScreen {
 	}
 
 	@Override
-	public void drawScreen(int par1, int par2, float par3) {
+	protected void renderGuiBackground(int par1, int par2) {
 		if (mWidth == 0) {
 			int lWidth = 0;
 			for (String msg : text) {
@@ -56,7 +56,6 @@ public class GuiMessagePopup extends SubGuiScreen {
 			int stringWidth = mc.fontRenderer.getStringWidth(msg);
 			mc.fontRenderer.drawString(msg, xCenter - (stringWidth / 2), guiTop + 10 + (i * 10), 0x404040);
 		}
-		super.drawScreen(par1, par2, par3);
 	}
 
 	@Override

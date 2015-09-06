@@ -42,7 +42,7 @@ public class GuiSecurityStationPopup extends SubGuiScreen {
 	}
 
 	@Override
-	public void drawScreen(int par1, int par2, float par3) {
+	protected void renderGuiBackground(int par1, int par2) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "Player") + ": " + activeSetting.name, guiLeft + 10, guiTop + 10, 0x404040);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "ConfigureSettings") + ": ", guiLeft + 10, guiTop + 30, 0x404040);
@@ -50,7 +50,6 @@ public class GuiSecurityStationPopup extends SubGuiScreen {
 		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "UpgradePipes") + ": ", guiLeft + 10, guiTop + 60, 0x404040);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "CheckNetwork") + ": ", guiLeft + 10, guiTop + 75, 0x404040);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "RemovePipes") + ": ", guiLeft + 10, guiTop + 90, 0x404040);
-		super.drawScreen(par1, par2, par3);
 	}
 
 	@Override

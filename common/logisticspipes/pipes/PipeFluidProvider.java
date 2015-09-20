@@ -65,7 +65,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 				if (handler instanceof ISpecialTankAccessHandler) {
 					fallback = false;
 					FluidStack drained = ((ISpecialTankAccessHandler) handler).drainFrom(pair.getValue1(), order.getFluid(), amountToSend, false);
-					if (drained != null && order.getFluid().equals(FluidIdentifier.get(drained))) {
+					if (drained != null && drained.amount > 0 && order.getFluid().equals(FluidIdentifier.get(drained))) {
 						drained = ((ISpecialTankAccessHandler) handler).drainFrom(pair.getValue1(), order.getFluid(), amountToSend, true);
 						int amount = drained.amount;
 						amountToSend -= amount;
@@ -93,11 +93,11 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 							if (order.getFluid().equals(FluidIdentifier.get(liquid))) {
 								int amount = Math.min(liquid.amount, amountToSend);
 								FluidStack drained = ((IFluidHandler) pair.getValue1()).drain(pair.getValue2().getOpposite(), amount, false);
-								if (drained != null && order.getFluid().equals(FluidIdentifier.get(drained))) {
+								if (drained != null && drained.amount > 0  && order.getFluid().equals(FluidIdentifier.get(drained))) {
 									drained = ((IFluidHandler) pair.getValue1()).drain(pair.getValue2().getOpposite(), amount, true);
 									while (drained.amount < amountToSend) {
 										FluidStack addition = ((IFluidHandler) pair.getValue1()).drain(pair.getValue2().getOpposite(), amountToSend - drained.amount, false);
-										if (addition != null && order.getFluid().equals(FluidIdentifier.get(addition))) {
+										if (addition != null && addition.amount > 0  && order.getFluid().equals(FluidIdentifier.get(addition))) {
 											addition = ((IFluidHandler) pair.getValue1()).drain(pair.getValue2().getOpposite(), amountToSend - drained.amount, true);
 											drained.amount += addition.amount;
 										} else {

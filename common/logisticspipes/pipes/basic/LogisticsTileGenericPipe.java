@@ -347,6 +347,13 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
+		if(pipe != null) {
+			StackTraceElement[] trace = Thread.currentThread().getStackTrace();
+			if (trace.length > 2 && trace[2].getMethodName().equals("handle") && trace[2].getClassName().equals("com.xcompwiz.lookingglass.network.packet.PacketTileEntityNBT")) {
+				System.out.println("Prevented false data injection by LookingGlass");
+				return;
+			}
+		}
 		super.readFromNBT(nbt);
 
 		if (nbt.hasKey("redstoneInputSide[0]")) {

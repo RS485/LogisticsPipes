@@ -26,11 +26,7 @@ import cpw.mods.fml.common.versioning.VersionParser;
 import cpw.mods.fml.common.versioning.VersionRange;
 import cpw.mods.fml.relauncher.Side;
 
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.*;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
@@ -98,6 +94,15 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			}
 			if (name.equals("net.minecraft.world.World")) {
 				return handleWorldClass(bytes);
+			}
+			if (name.equals("net.minecraft.item.ItemStack")) {
+				return handleItemStackClass(bytes);
+			}
+			if (name.equals("net.minecraftforge.fluids.FluidStack")) {
+				return handleFluidStackClass(bytes);
+			}
+			if (name.equals("net.minecraftforge.fluids.Fluid")) {
+				return handleFluidClass(bytes);
 			}
 			if (name.equals("dan200.computercraft.core.lua.LuaJLuaMachine")) {
 				return handleCCLuaJLuaMachine(bytes);
@@ -505,6 +510,200 @@ public class LogisticsClassTransformer implements IClassTransformer {
 				node.methods.set(node.methods.indexOf(m), mv);
 			}
 		}
+		ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+		node.accept(writer);
+		return writer.toByteArray();
+	}
+
+	private byte[] handleItemStackClass(byte[] bytes) {
+		return addAddInfoPart(bytes, "net/minecraft/item/ItemStack");
+	}
+
+	private byte[] handleFluidStackClass(byte[] bytes) {
+		return addAddInfoPart(bytes, "net/minecraftforge/fluids/FluidStack");
+	}
+
+	private byte[] handleFluidClass(byte[] bytes) {
+		return addAddInfoPart(bytes, "net/minecraftforge/fluids/Fluid");
+	}
+
+	private byte[] addAddInfoPart(byte[] bytes, String className) {
+		final ClassReader reader = new ClassReader(bytes);
+		final ClassNode node = new ClassNode();
+		reader.accept(node, 0);
+
+		node.interfaces.add("logisticspipes/asm/addinfo/IAddInfoProvider");
+
+		{
+			FieldVisitor fv = node.visitField(Opcodes.ACC_PRIVATE, "logisticsPipesAdditionalInformation", "Ljava/util/ArrayList;", "Ljava/util/ArrayList<Llogisticspipes/asm/addinfo/IAddInfo;>;", null);
+			fv.visitEnd();
+		}
+
+		MethodVisitor mv;
+		{
+			mv = node.visitMethod(Opcodes.ACC_PUBLIC, "getLogisticsPipesAddInfo", "(Ljava/lang/Class;)Llogisticspipes/asm/addinfo/IAddInfo;", "<T::Llogisticspipes/asm/addinfo/IAddInfo;>(Ljava/lang/Class<TT;>;)TT;", null);
+			mv.visitCode();
+			Label l0 = new Label();
+			mv.visitLabel(l0);
+			mv.visitLineNumber(11, l0);
+			mv.visitVarInsn(Opcodes.ALOAD, 0);
+			mv.visitFieldInsn(Opcodes.GETFIELD, className, "logisticsPipesAdditionalInformation", "Ljava/util/ArrayList;");
+			Label l1 = new Label();
+			mv.visitJumpInsn(Opcodes.IFNONNULL, l1);
+			Label l2 = new Label();
+			mv.visitLabel(l2);
+			mv.visitLineNumber(12, l2);
+			mv.visitInsn(Opcodes.ACONST_NULL);
+			mv.visitInsn(Opcodes.ARETURN);
+			mv.visitLabel(l1);
+			mv.visitLineNumber(14, l1);
+			mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+			mv.visitVarInsn(Opcodes.ALOAD, 0);
+			mv.visitFieldInsn(Opcodes.GETFIELD, className, "logisticsPipesAdditionalInformation", "Ljava/util/ArrayList;");
+			mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/ArrayList", "iterator", "()Ljava/util/Iterator;", false);
+			mv.visitVarInsn(Opcodes.ASTORE, 2);
+			Label l3 = new Label();
+			mv.visitLabel(l3);
+			mv.visitFrame(Opcodes.F_APPEND, 1, new Object[]{"java/util/Iterator"}, 0, null);
+			mv.visitVarInsn(Opcodes.ALOAD, 2);
+			mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Iterator", "hasNext", "()Z", true);
+			Label l4 = new Label();
+			mv.visitJumpInsn(Opcodes.IFEQ, l4);
+			mv.visitVarInsn(Opcodes.ALOAD, 2);
+			mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Iterator", "next", "()Ljava/lang/Object;", true);
+			mv.visitTypeInsn(Opcodes.CHECKCAST, "logisticspipes/asm/addinfo/IAddInfo");
+			mv.visitVarInsn(Opcodes.ASTORE, 3);
+			Label l5 = new Label();
+			mv.visitLabel(l5);
+			mv.visitLineNumber(15, l5);
+			mv.visitVarInsn(Opcodes.ALOAD, 3);
+			Label l6 = new Label();
+			mv.visitJumpInsn(Opcodes.IFNONNULL, l6);
+			mv.visitJumpInsn(Opcodes.GOTO, l3);
+			mv.visitLabel(l6);
+			mv.visitLineNumber(16, l6);
+			mv.visitFrame(Opcodes.F_APPEND, 1, new Object[]{"logisticspipes/asm/addinfo/IAddInfo"}, 0, null);
+			mv.visitVarInsn(Opcodes.ALOAD, 3);
+			mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Object", "getClass", "()Ljava/lang/Class;", false);
+			mv.visitVarInsn(Opcodes.ALOAD, 1);
+			Label l7 = new Label();
+			mv.visitJumpInsn(Opcodes.IF_ACMPNE, l7);
+			Label l8 = new Label();
+			mv.visitLabel(l8);
+			mv.visitLineNumber(17, l8);
+			mv.visitVarInsn(Opcodes.ALOAD, 3);
+			mv.visitInsn(Opcodes.ARETURN);
+			mv.visitLabel(l7);
+			mv.visitLineNumber(19, l7);
+			mv.visitFrame(Opcodes.F_CHOP, 1, null, 0, null);
+			mv.visitJumpInsn(Opcodes.GOTO, l3);
+			mv.visitLabel(l4);
+			mv.visitLineNumber(20, l4);
+			mv.visitFrame(Opcodes.F_CHOP, 1, null, 0, null);
+			mv.visitInsn(Opcodes.ACONST_NULL);
+			mv.visitInsn(Opcodes.ARETURN);
+			Label l9 = new Label();
+			mv.visitLabel(l9);
+			mv.visitLocalVariable("info", "Llogisticspipes/asm/addinfo/IAddInfo;", null, l5, l7, 3);
+			mv.visitLocalVariable("this", "L" + className + ";", null, l0, l9, 0);
+			mv.visitLocalVariable("clazz", "Ljava/lang/Class;", "Ljava/lang/Class<TT;>;", l0, l9, 1);
+			mv.visitMaxs(2, 4);
+			mv.visitEnd();
+		}
+		{
+			mv = node.visitMethod(Opcodes.ACC_PUBLIC, "setLogisticsPipesAddInfo", "(Llogisticspipes/asm/addinfo/IAddInfo;)V", null, null);
+			mv.visitCode();
+			Label l0 = new Label();
+			mv.visitLabel(l0);
+			mv.visitLineNumber(25, l0);
+			mv.visitVarInsn(Opcodes.ALOAD, 0);
+			mv.visitFieldInsn(Opcodes.GETFIELD, className, "logisticsPipesAdditionalInformation", "Ljava/util/ArrayList;");
+			Label l1 = new Label();
+			mv.visitJumpInsn(Opcodes.IFNONNULL, l1);
+			Label l2 = new Label();
+			mv.visitLabel(l2);
+			mv.visitLineNumber(26, l2);
+			mv.visitVarInsn(Opcodes.ALOAD, 0);
+			mv.visitTypeInsn(Opcodes.NEW, "java/util/ArrayList");
+			mv.visitInsn(Opcodes.DUP);
+			mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/ArrayList", "<init>", "()V", false);
+			mv.visitFieldInsn(Opcodes.PUTFIELD, className, "logisticsPipesAdditionalInformation", "Ljava/util/ArrayList;");
+			mv.visitLabel(l1);
+			mv.visitLineNumber(28, l1);
+			mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+			mv.visitInsn(Opcodes.ICONST_0);
+			mv.visitVarInsn(Opcodes.ISTORE, 2);
+			Label l3 = new Label();
+			mv.visitLabel(l3);
+			mv.visitFrame(Opcodes.F_APPEND, 1, new Object[]{Opcodes.INTEGER}, 0, null);
+			mv.visitVarInsn(Opcodes.ILOAD, 2);
+			mv.visitVarInsn(Opcodes.ALOAD, 0);
+			mv.visitFieldInsn(Opcodes.GETFIELD, className, "logisticsPipesAdditionalInformation", "Ljava/util/ArrayList;");
+			mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/ArrayList", "size", "()I", false);
+			Label l4 = new Label();
+			mv.visitJumpInsn(Opcodes.IF_ICMPGE, l4);
+			Label l5 = new Label();
+			mv.visitLabel(l5);
+			mv.visitLineNumber(29, l5);
+			mv.visitVarInsn(Opcodes.ALOAD, 0);
+			mv.visitFieldInsn(Opcodes.GETFIELD, className, "logisticsPipesAdditionalInformation", "Ljava/util/ArrayList;");
+			mv.visitVarInsn(Opcodes.ILOAD, 2);
+			mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/ArrayList", "get", "(I)Ljava/lang/Object;", false);
+			Label l6 = new Label();
+			mv.visitJumpInsn(Opcodes.IFNONNULL, l6);
+			Label l7 = new Label();
+			mv.visitJumpInsn(Opcodes.GOTO, l7);
+			mv.visitLabel(l6);
+			mv.visitLineNumber(30, l6);
+			mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+			mv.visitVarInsn(Opcodes.ALOAD, 0);
+			mv.visitFieldInsn(Opcodes.GETFIELD, className, "logisticsPipesAdditionalInformation", "Ljava/util/ArrayList;");
+			mv.visitVarInsn(Opcodes.ILOAD, 2);
+			mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/ArrayList", "get", "(I)Ljava/lang/Object;", false);
+			mv.visitTypeInsn(Opcodes.CHECKCAST, "logisticspipes/asm/addinfo/IAddInfo");
+			mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Object", "getClass", "()Ljava/lang/Class;", false);
+			mv.visitVarInsn(Opcodes.ALOAD, 1);
+			mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Object", "getClass", "()Ljava/lang/Class;", false);
+			mv.visitJumpInsn(Opcodes.IF_ACMPNE, l7);
+			Label l8 = new Label();
+			mv.visitLabel(l8);
+			mv.visitLineNumber(31, l8);
+			mv.visitVarInsn(Opcodes.ALOAD, 0);
+			mv.visitFieldInsn(Opcodes.GETFIELD, className, "logisticsPipesAdditionalInformation", "Ljava/util/ArrayList;");
+			mv.visitVarInsn(Opcodes.ILOAD, 2);
+			mv.visitVarInsn(Opcodes.ALOAD, 1);
+			mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/ArrayList", "set", "(ILjava/lang/Object;)Ljava/lang/Object;", false);
+			mv.visitInsn(Opcodes.POP);
+			Label l9 = new Label();
+			mv.visitLabel(l9);
+			mv.visitLineNumber(32, l9);
+			mv.visitInsn(Opcodes.RETURN);
+			mv.visitLabel(l7);
+			mv.visitLineNumber(28, l7);
+			mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+			mv.visitIincInsn(2, 1);
+			mv.visitJumpInsn(Opcodes.GOTO, l3);
+			mv.visitLabel(l4);
+			mv.visitLineNumber(35, l4);
+			mv.visitFrame(Opcodes.F_CHOP, 1, null, 0, null);
+			mv.visitVarInsn(Opcodes.ALOAD, 0);
+			mv.visitFieldInsn(Opcodes.GETFIELD, className, "logisticsPipesAdditionalInformation", "Ljava/util/ArrayList;");
+			mv.visitVarInsn(Opcodes.ALOAD, 1);
+			mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/ArrayList", "add", "(Ljava/lang/Object;)Z", false);
+			mv.visitInsn(Opcodes.POP);
+			Label l10 = new Label();
+			mv.visitLabel(l10);
+			mv.visitLineNumber(36, l10);
+			mv.visitInsn(Opcodes.RETURN);
+			Label l11 = new Label();
+			mv.visitLabel(l11);
+			mv.visitLocalVariable("i", "I", null, l3, l4, 2);
+			mv.visitLocalVariable("this", "L" + className + ";", null, l0, l11, 0);
+			mv.visitLocalVariable("info", "Llogisticspipes/asm/addinfo/IAddInfo;", null, l0, l11, 1);
+			mv.visitMaxs(3, 3);
+			mv.visitEnd();
+		}
+
 		ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 		node.accept(writer);
 		return writer.toByteArray();

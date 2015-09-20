@@ -22,12 +22,16 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import logisticspipes.asm.addinfo.IAddInfo;
+import logisticspipes.asm.addinfo.IAddInfoProvider;
 import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.utils.FinalNBTTagCompound;
 import logisticspipes.utils.ReflectionHelper;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityItem;
@@ -245,7 +249,12 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 
 	public static boolean allowNullsForTesting;
 
-	private static ItemIdentifier getOrCreateSimple(Item item) {
+	private static ItemIdentifier getOrCreateSimple(Item item, ItemIdentifier proposal) {
+		if(proposal != null) {
+			if(proposal.item == item && proposal.itemDamage == 0 && proposal.tag == null) {
+				return proposal;
+			}
+		}
 		//no locking here. if 2 threads race and create the same ItemIdentifier, they end up .equal() and one of them ends up in the map
 		ItemIdentifier ret = ItemIdentifier.simpleIdentifiers.get(item);
 		if (ret != null) {
@@ -256,7 +265,12 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		return ret;
 	}
 
-	private static ItemIdentifier getOrCreateDamage(Item item, int damage) {
+	private static ItemIdentifier getOrCreateDamage(Item item, int damage, ItemIdentifier proposal) {
+		if(proposal != null) {
+			if(proposal.item == item && proposal.itemDamage == damage && proposal.tag == null) {
+				return proposal;
+			}
+		}
 		//again no locking, we can end up removing or overwriting ItemIdentifiers concurrently added by another thread, but that doesn't affect anything.
 		IDamagedIdentifierHolder damages = ItemIdentifier.damageIdentifiers.get(item);
 		if (damages == null) {
@@ -318,26 +332,49 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 	}
 
 	public static ItemIdentifier get(Item item, int itemUndamagableDamage, NBTTagCompound tag) {
+		return get(item, itemUndamagableDamage, tag, null);
+	}
+
+	private static ItemIdentifier get(Item item, int itemUndamagableDamage, NBTTagCompound tag, ItemIdentifier proposal) {
 		if (itemUndamagableDamage < 0) {
 			throw new IllegalArgumentException("Item Damage out of range");
 		}
 		if (tag == null && itemUndamagableDamage == 0) {
 			//no tag, no damage
-			return ItemIdentifier.getOrCreateSimple(item);
+			return ItemIdentifier.getOrCreateSimple(item, proposal);
 		} else if (tag == null) {
 			//no tag, damage
-			return ItemIdentifier.getOrCreateDamage(item, itemUndamagableDamage);
+			return ItemIdentifier.getOrCreateDamage(item, itemUndamagableDamage, proposal);
 		} else {
 			//tag
 			return ItemIdentifier.getOrCreateTag(item, itemUndamagableDamage, new FinalNBTTagCompound(tag));
 		}
 	}
 
+	@AllArgsConstructor
+	public static class ItemStackAddInfo implements IAddInfo {
+		private final ItemIdentifier ident;
+	}
+
+	@SuppressWarnings("ConstantConditions")
 	public static ItemIdentifier get(ItemStack itemStack) {
 		if (itemStack == null && ItemIdentifier.allowNullsForTesting) {
 			return null;
 		}
-		return ItemIdentifier.get(itemStack.getItem(), itemStack.getItemDamage(), itemStack.stackTagCompound);
+		ItemIdentifier proposal = null;
+		IAddInfoProvider prov = null;
+		if(((Object)itemStack) instanceof IAddInfoProvider && !itemStack.hasTagCompound()) {
+			prov = (IAddInfoProvider) (Object) itemStack;
+			ItemStackAddInfo info = prov.getLogisticsPipesAddInfo(ItemStackAddInfo.class);
+			if(info != null) {
+				proposal = info.ident;
+			}
+		}
+		ItemIdentifier ident = ItemIdentifier.get(itemStack.getItem(), itemStack.getItemDamage(), itemStack.stackTagCompound, proposal);
+		if(ident != proposal && prov != null && !itemStack.hasTagCompound()) {
+			prov.setLogisticsPipesAddInfo(new ItemStackAddInfo(ident));
+		}
+		return ident;
 	}
 
 	public static List<ItemIdentifier> getMatchingNBTIdentifier(Item item, int itemData) {
@@ -374,7 +411,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 			if (tag == null) {
 				_IDIgnoringNBT = this;
 			} else {
-				_IDIgnoringNBT = ItemIdentifier.get(item, itemDamage, null);
+				_IDIgnoringNBT = ItemIdentifier.get(item, itemDamage, null, null);
 			}
 		}
 		return _IDIgnoringNBT;
@@ -385,7 +422,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 			if (itemDamage == 0) {
 				_IDIgnoringData = this;
 			} else {
-				_IDIgnoringData = ItemIdentifier.get(item, 0, tag);
+				_IDIgnoringData = ItemIdentifier.get(item, 0, tag, null);
 			}
 		}
 		return _IDIgnoringData;

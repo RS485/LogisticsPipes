@@ -573,10 +573,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		if (getCraftedItem() == null) {
 			return false;
 		}
-		if (toCraft instanceof ItemResource) {
-			return getCraftedItem().getItem().equals(((ItemResource) toCraft).getItem());
-		} else if (toCraft instanceof DictResource) {
-			return ((DictResource) toCraft).matches(((ItemResource) toCraft).getItem());
+		if (toCraft instanceof ItemResource || toCraft instanceof DictResource) {
+			return toCraft.matches(getCraftedItem().getItem());
 		}
 		return false;
 	}

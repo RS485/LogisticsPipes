@@ -28,7 +28,7 @@ ant.importBuild 'build-ant.xml'
 apply plugin: 'forge'
 apply plugin: 'curseforge'
 
-version = "0.9.2"
+version = "0.9.3"
 def buildby = 'local'
 
 def ENV = System.getenv()
@@ -106,7 +106,7 @@ processResources {
 }
 
 dependencies {
-    compile files("build/download/buildcraft-7.0.6-dev.jar")
+    compile files("build/download/buildcraft-7.1.5-dev.jar")
     compile 'org.projectlombok:lombok:1.16.4'
     compile 'codechicken:NotEnoughItems:1.7.10-1.0.5.111:dev'
     compile 'codechicken:CodeChickenCore:1.7.10-1.0.7.46:dev'
@@ -131,8 +131,9 @@ task sourceJar(type: Jar) {
 	classifier = 'src'
 }
 
+/*
 curse {
-	displayName = 'Logistics Pipes 0.9.2 (BC7) build ' + System.getenv().BUILD_NUMBER
+	displayName = 'Logistics Pipes 0.9.3 (BC7) build ' + System.getenv().BUILD_NUMBER
 	
     projectId = '232838'
     apiKey = project.hasProperty('curseForgeApiKey') ? project.curseForgeApiKey : ''
@@ -140,6 +141,7 @@ curse {
 
     changelog = project.hasProperty('changelog') ? project.changelog : ''
 }
+*/
 
 artifacts {
 	archives deobfJar

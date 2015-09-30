@@ -73,17 +73,21 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 		if (init) {
 			return;
 		}
-		init = true;
 		DockingStation dock = robot.getLinkedStation();
 		if (dock == null) {
 			return;
 		}
 		LPPosition pos = new LPPosition(dock.x(), dock.y(), dock.z());
 		LPRobotConnectionControl.instance.addRobot(robot.worldObj, pos, dock.side());
+		init = true;
 	}
 
 	@Override
 	public void update() {
+		lpUpdate();
+	}
+
+	public void lpUpdate() {
 		index();
 		if (robot.containsItems()) {
 			ticksWithContent++;

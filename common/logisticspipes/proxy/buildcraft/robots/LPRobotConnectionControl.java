@@ -94,7 +94,7 @@ public class LPRobotConnectionControl implements ISpecialPipedConnection {
 
 	public boolean isModified(LogisticsRoutingBoardRobot board) {
 		Set<Pair<LPPosition, ForgeDirection>> localConnectedRobots = new HashSet<Pair<LPPosition, ForgeDirection>>();
-		LPPosition sourceRobotPosition = board.getLinkedStationPosition().center().moveForward(board.robot.getDockingStation().side(), 0.5);
+		LPPosition sourceRobotPosition = board.getLinkedStationPosition().center().moveForward(board.robot.getLinkedStation().side(), 0.5);
 		IZone zone = board.robot.getZoneToWork();
 		for (Pair<LPPosition, ForgeDirection> canidatePos : globalAvailableRobots.get(board.robot.worldObj)) {
 			LPPosition canidateRobotPosition = canidatePos.getValue1().copy().center().moveForward(canidatePos.getValue2(), 0.5);

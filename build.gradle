@@ -131,7 +131,6 @@ task sourceJar(type: Jar) {
 	classifier = 'src'
 }
 
-/*
 curse {
 	displayName = 'Logistics Pipes 0.9.3 (BC7) build ' + System.getenv().BUILD_NUMBER
 	
@@ -141,7 +140,6 @@ curse {
 
     changelog = project.hasProperty('changelog') ? project.changelog : ''
 }
-*/
 
 artifacts {
 	archives deobfJar

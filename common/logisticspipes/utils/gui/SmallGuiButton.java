@@ -18,12 +18,20 @@ import org.lwjgl.opengl.GL11;
 
 public class SmallGuiButton extends GuiButton {
 
+	private final int stringOffset;
+
 	public SmallGuiButton(int buttonId, int x, int y, int width, int height, String label) {
+		this(buttonId, x, y, width, height, label, 0);
+	}
+
+	public SmallGuiButton(int buttonId, int x, int y, int width, int height, String label, int offset) {
 		super(buttonId, x, y, width, height, label);
+		stringOffset = offset;
 	}
 
 	public SmallGuiButton(int i, int j, int k, String s) {
 		super(i, j, k, s);
+		stringOffset = 0;
 		// TODO Auto-generated constructor stub
 	}
 
@@ -53,7 +61,7 @@ public class SmallGuiButton extends GuiButton {
 		} else if (flag) {
 			color = Color.getValue(Color.LIGHT_YELLOW);
 		}
-		drawCenteredString(fontrenderer, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, color);
+		drawCenteredString(fontrenderer, displayString, xPosition + width / 2, yPosition + (height - 8) / 2 + stringOffset, color);
 	}
 
 }

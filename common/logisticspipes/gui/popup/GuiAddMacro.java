@@ -213,7 +213,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 						if (!handled) {
 							int i = 0;
 							for (ItemIdentifierStack stack : macroItems) {
-								if (item == stack.getItem() && item.itemDamage < stack.getItem().itemDamage) {
+								if (item.equals(stack.getItem()) && item.itemDamage < stack.getItem().itemDamage) {
 									if (mousebutton == 0 || wheelup != 0) {
 										macroItems.add(i, item.makeStack(1 + (wheelup != 0 ? wheelup - 1 : 0)));
 									} else if (mousebutton == 2) {

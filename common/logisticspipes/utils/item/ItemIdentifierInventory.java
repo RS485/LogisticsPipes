@@ -69,6 +69,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 
 	@Override
 	@Deprecated
+	//NOTE: this is a clone, changing the return of this function does not altet the inventory
 	public ItemStack getStackInSlot(int i) {
 		if (_contents[i] == null) {
 			return null;
@@ -76,7 +77,6 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 		return _contents[i].makeNormalStack();
 	}
 
-	//NOTE: this is a clone, changing the return of this function does not altet the inventory
 	public ItemIdentifierStack getIDStackInSlot(int i) {
 		return _contents[i];
 	}
@@ -516,5 +516,12 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 				throw new UnsupportedOperationException();
 			}
 		};
+	}
+
+	public void clearGrid() {
+		for(int i=0;i<getSizeInventory();i++) {
+			_contents[i] = null;
+		}
+		updateContents();
 	}
 }

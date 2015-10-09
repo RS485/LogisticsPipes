@@ -1,12 +1,6 @@
 package logisticspipes.gui.orderer;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import logisticspipes.LogisticsPipes;
@@ -18,6 +12,7 @@ import logisticspipes.interfaces.IDiskProvider;
 import logisticspipes.interfaces.ISlotClick;
 import logisticspipes.interfaces.ISpecialItemRenderer;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.block.ClearCraftingGridPacket;
 import logisticspipes.network.packets.block.CraftingCycleRecipe;
 import logisticspipes.network.packets.orderer.DiskRequestConectPacket;
 import logisticspipes.network.packets.orderer.OrdererRefreshRequestPacket;
@@ -155,6 +150,9 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		buttonList.add(new SmallGuiButton(14, guiLeft + 96, guiTop + 53, 10, 10, "+")); // +1
 		buttonList.add(new SmallGuiButton(15, guiLeft + 108, guiTop + 53, 15, 10, "++")); // +10
 		buttonList.add(new SmallGuiButton(16, guiLeft + 96, guiTop + 64, 26, 10, "+++")); // +64
+
+		buttonList.add(new SmallGuiButton(30, guiLeft + 96 + 2, guiTop + 18, 10, 10, "X")); // x
+		buttonList.add(new SmallGuiButton(31, guiLeft + 108 + 2, guiTop + 18, 10, 10, "~", 3)); // ~
 
 		buttonList.add(new SmallGuiButton(17, guiLeft + 173, guiTop + 5, 36, 10, "Hide")); // Hide
 		buttonList.add(Macrobutton = new SmallGuiButton(18, right - 55, bottom - 60, 50, 10, "Disk"));
@@ -499,6 +497,34 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			itemDisplay.cycle();
 		} else if (guibutton.id == 21 || guibutton.id == 22) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingCycleRecipe.class).setDown(guibutton.id == 22).setTilePos(_table.container));
+		} else if(guibutton.id == 30) {
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(ClearCraftingGridPacket.class).setTilePos(_table.container));
+		} else if(guibutton.id == 31) {
+			ArrayList<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>(9);
+			for (Entry<ItemIdentifier, Integer> e : _table.matrix.getItemsAndCount().entrySet()) {
+				list.add(e.getKey().makeStack(e.getValue()));
+			}
+			for(Pair<ItemStack, Integer> entry:_table.inv) {
+				if(entry.getValue1() == null) continue;
+				int size = entry.getValue1().stackSize;
+				ItemIdentifier ident = ItemIdentifier.get(entry.getValue1());
+				for(ItemIdentifierStack stack:list) {
+					if(!stack.getItem().equals(ident)) continue;
+					int toUse = Math.min(size, stack.getStackSize());
+					stack.lowerStackSize(toUse);
+					size -= toUse;
+				}
+			}
+			Iterator<ItemIdentifierStack> iter = list.iterator();
+			while(iter.hasNext()) {
+				if(iter.next().getStackSize() <= 0) {
+					iter.remove();
+				}
+			}
+			if(!list.isEmpty()) {
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitListPacket.class).setIdentList(list).setTilePos(_table.container));
+				refreshItems();
+			}
 		}
 	}
 

@@ -93,7 +93,7 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 		if (guibutton.id == 0 && itemDisplay.getSelectedItem() != null) {
 			boolean found = false;
 			for (TrackingTask task : tile.tasks) {
-				if (task.item == itemDisplay.getSelectedItem().getItem()) {
+				if (task.item.equals(itemDisplay.getSelectedItem().getItem())) {
 					found = true;
 					break;
 				}

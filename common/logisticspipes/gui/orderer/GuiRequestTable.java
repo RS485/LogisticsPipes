@@ -190,6 +190,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			for (GuiButton button:hideWhileSmall) {
 				button.visible = false;
 			}
+			Macrobutton.visible = false;
 		}
 	}
 

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 
 import logisticspipes.LPConstants;
-import logisticspipes.asm.bc.ClassPipeRendererTESRHandler;
 import logisticspipes.asm.td.ClassRenderDuctItemsHandler;
 import logisticspipes.asm.td.ClassTileMultiBlockHandler;
 import logisticspipes.asm.td.ClassTravelingItemHandler;
@@ -86,9 +85,6 @@ public class LogisticsClassTransformer implements IClassTransformer {
 
 	private byte[] applyLPTransforms(String name, byte[] bytes) {
 		try {
-			if (name.equals("buildcraft.transport.render.PipeRendererTESR")) {
-				return ClassPipeRendererTESRHandler.handlePipeRendererTESRClass(bytes);
-			}
 			if (name.equals("net.minecraft.tileentity.TileEntity")) {
 				return handleTileEntityClass(bytes);
 			}

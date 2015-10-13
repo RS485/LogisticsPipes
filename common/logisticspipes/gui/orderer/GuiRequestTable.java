@@ -182,13 +182,13 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			showRequest = false;
 			xSize = startXSize - 210;
 			guiLeft = startLeft + 105;
-			for (int i = 14; i < 17; i++) {
-				((GuiButton) buttonList.get(i)).xPosition += 105;
+			for (GuiButton button:moveWhileSmall) {
+				button.xPosition += 105;
 			}
-			((GuiButton) buttonList.get(17)).xPosition += 90;
-			((SmallGuiButton) buttonList.get(17)).displayString = "Show";
-			for (int i = 0; i < 14; i++) {
-				((GuiButton) buttonList.get(i)).visible = false;
+			hideShowButton.xPosition += 90;
+			hideShowButton.displayString = "Show";
+			for (GuiButton button:hideWhileSmall) {
+				button.visible = false;
 			}
 		}
 	}

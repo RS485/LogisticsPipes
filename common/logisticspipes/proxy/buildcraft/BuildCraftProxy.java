@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import buildcraft.transport.*;
+import buildcraft.transport.render.PipeTransportItemsRenderer;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
@@ -107,7 +108,7 @@ public class BuildCraftProxy implements IBCProxy {
 	public void resetItemRotation() {
 		try {
 			Object renderer = TileEntityRendererDispatcher.instance.mapSpecialRenderers.get(TileGenericPipe.class);
-			Field f = PipeRendererTESR.class.getDeclaredField("dummyEntityItem");
+			Field f = PipeTransportItemsRenderer.class.getDeclaredField("dummyEntityItem");
 			f.setAccessible(true);
 			EntityItem item = (EntityItem) f.get(renderer);
 			item.hoverStart = 0;

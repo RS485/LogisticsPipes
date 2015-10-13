@@ -893,6 +893,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 			if (!entityplayer.isSneaking()) {
 				return false;
 			}
+			/*
 			if (MainProxy.isClient(entityplayer.worldObj)) {
 				if (!LogisticsHUDRenderer.instance().hasLasers()) {
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestRoutingLasersPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
@@ -900,6 +901,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 					LogisticsHUDRenderer.instance().resetLasers();
 				}
 			}
+			*/
 			if (LPConstants.DEBUG) {
 				doDebugStuff(entityplayer);
 			}

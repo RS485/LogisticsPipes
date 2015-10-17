@@ -1,11 +1,11 @@
 package crazypants.enderio.machine.transceiver;
 
-import java.util.Iterator;
+import com.enderio.core.common.util.RoundRobinIterator;
 
 public class ServerChannelRegister {
     public static ServerChannelRegister instance;
 
-    public Iterable<TileTransceiver> getIterator(Channel channel) {
+    public RoundRobinIterator<TileTransceiver> getIterator(Channel channel) {
         return null;
     }
 }

@@ -507,6 +507,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingCycleRecipe.class).setDown(guibutton.id == 22).setTilePos(_table.container));
 		} else if(guibutton.id == 30) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ClearCraftingGridPacket.class).setTilePos(_table.container));
+			_table.cacheRecipe();
 		} else if(guibutton.id == 31) {
 			ArrayList<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>(9);
 			for (Entry<ItemIdentifier, Integer> e : _table.matrix.getItemsAndCount().entrySet()) {

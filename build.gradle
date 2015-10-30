@@ -121,12 +121,20 @@ idea {
     }
 }
 
-task deobfJar(type: Jar) {
+task deobfJar(type: Jar, dependsOn: 'jar') {
 	from sourceSets.main.output
 	classifier = 'dev'
+	manifest {
+        attributes(	'FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader', 
+					'FMLCorePluginContainsFMLMod': 'true',
+					'Implementation-Vendor': 'RS485',
+					'Implementation-Title': 'LogisticsPipes',
+					'Implementation-Version': version,
+					'Built-By': buildby )
+    }
 }
 
-task sourceJar(type: Jar) {
+task sourceJar(type: Jar, dependsOn: 'jar') {
 	from sourceSets.main.allSource
 	classifier = 'src'
 }

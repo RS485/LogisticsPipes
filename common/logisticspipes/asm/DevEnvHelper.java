@@ -205,11 +205,14 @@ public class DevEnvHelper {
 			loadCoreMod.invoke(null, classLoader, fmlCorePlugin, coreMod);
 		}
 
-		URL resource = Resources.getResource("CoFH_at.cfg");
-		if(resource != null) {
-			AccessTransformer acc = new AccessTransformer("CoFH_at.cfg") {};
-			insertTransformer(acc);
-		}
+		try {
+			URL resource = Resources.getResource("CoFH_at.cfg");
+			if (resource != null) {
+				AccessTransformer acc = new AccessTransformer("CoFH_at.cfg") {
+				};
+				insertTransformer(acc);
+			}
+		} catch(Throwable t) {}
 	}
 
 	@SneakyThrows

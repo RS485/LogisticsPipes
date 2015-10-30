@@ -2,6 +2,7 @@ package logisticspipes;
 
 public class LPConstants {
 
+
 	private LPConstants() {}
 
 	public static final float FACADE_THICKNESS = 2F / 16F;
@@ -20,6 +21,7 @@ public class LPConstants {
 	public static int solidBlockModel = -1;
 
 	public static final String computerCraftModID = "ComputerCraft@1.7";
+	public static final String openComputersModID = "OpenComputers";
 
 	public static boolean COREMOD_LOADED = false;
 

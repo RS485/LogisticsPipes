@@ -21,6 +21,7 @@ import cpw.mods.fml.common.versioning.VersionRange;
 
 import com.jaquadro.minecraft.storagedrawers.api.storage.IDrawer;
 import com.jaquadro.minecraft.storagedrawers.api.storage.IDrawerGroup;
+import com.jaquadro.minecraft.storagedrawers.api.storage.attribute.IVoidable;
 
 public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 
@@ -228,7 +229,11 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 				if (drawer.isEmpty()) {
 					room += drawer.getMaxCapacity(protoStack);
 				} else {
-					room += drawer.getRemainingCapacity();
+					if (drawer instanceof IVoidable && ((IVoidable) drawer).isVoid()) {
+						room += drawer.getMaxCapacity();
+					} else {
+						room += drawer.getRemainingCapacity();
+					}
 				}
 			}
 
@@ -263,6 +268,10 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 				} else {
 					avail = Math.min(stack.stackSize, drawer.getRemainingCapacity());
 					drawer.setStoredItemCount(drawer.getStoredItemCount() + avail);
+				}
+
+				if (drawer instanceof IVoidable && ((IVoidable) drawer).isVoid()) {
+					return stack;
 				}
 
 				stack.stackSize -= avail;

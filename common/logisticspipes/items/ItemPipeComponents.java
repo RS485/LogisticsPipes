@@ -32,7 +32,8 @@ public class ItemPipeComponents extends LogisticsItem {
 	private IIcon[] _icons;
 
 	public ItemPipeComponents() {
-		setHasSubtypes(true);
+		if(Configs.ENABLE_BETA_RECIPES)
+			setHasSubtypes(true);
 	}
 
 	@Override

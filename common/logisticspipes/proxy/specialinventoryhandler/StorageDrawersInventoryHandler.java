@@ -136,7 +136,7 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 			}
 
 			IDrawer drawer = _drawer.getDrawer(i);
-			if (drawer != null && !drawer.isEmpty() && drawer.getStoredItemCount() > 0) {
+			if (drawer != null && !drawer.isEmpty()) {
 				result.add(ItemIdentifier.get(drawer.getStoredItemPrototype()));
 			}
 		}

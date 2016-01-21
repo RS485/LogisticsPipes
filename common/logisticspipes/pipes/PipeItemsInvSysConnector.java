@@ -140,6 +140,9 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 				amounts = inv.getItemsAndCount();
 			}
 			for (ItemIdentifier ident : items) {
+				if (!amounts.containsKey(ident)) {
+					continue;
+				}
 				int itemAmount = amounts.get(ident);
 				List<ItemRoutingInformation> needs = itemsOnRoute.get(ident);
 				for (Iterator<ItemRoutingInformation> iterator = needs.iterator(); iterator.hasNext();) {

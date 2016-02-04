@@ -43,7 +43,7 @@ import forestry.api.recipes.RecipeManagers;
 public class ForestryProxy implements IForestryProxy {
 
 	public ForestryProxy() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
-		analyserClass = Class.forName("forestry.core.gadgets.TileAnalyzer");
+		analyserClass = Class.forName("forestry.core.tiles.TileAnalyzer");
 		Class<?> stringUtil = Class.forName("forestry.core.utils.StringUtil");
 		localize = stringUtil.getDeclaredMethod("localize", new Class[] { String.class });
 		localize.setAccessible(true);

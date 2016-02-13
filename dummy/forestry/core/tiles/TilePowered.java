@@ -1,4 +1,4 @@
-package forestry.core.gadgets;
+package forestry.core.tiles;
 
 import net.minecraft.tileentity.TileEntity;
 

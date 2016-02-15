@@ -6,7 +6,7 @@ import logisticspipes.proxy.interfaces.IGenericProgressProvider;
 
 import net.minecraft.tileentity.TileEntity;
 
-import forestry.core.gadgets.TilePowered;
+import forestry.core.tiles.TilePowered;
 
 public class ForestryProgressProvider implements IGenericProgressProvider {
 

@@ -45,10 +45,7 @@ public class LogisticsPipesClassInjector implements IClassTransformer {
 								String version = a.values.get(3).toString();
 								String classData = a.values.get(5).toString();
 								String classDataDev = a.values.get(7).toString();
-								System.out.println("Checking version for mod: " + modId);
-								System.out.println("Version: " + version);
 								if (ModStatusHelper.isModLoaded(modId) && !ModStatusHelper.isModVersionEqualsOrHigher(modId, version)) {
-									System.out.println("FallBack");
 									if(isObfEnv == null) {
 										try {
 											isObfEnv = (Class.forName("net.minecraft.world.World").getDeclaredField("chunkProvider") == null);

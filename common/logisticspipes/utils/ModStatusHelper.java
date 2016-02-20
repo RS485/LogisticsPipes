@@ -42,12 +42,9 @@ public class ModStatusHelper {
 
 	public static boolean isModVersionEqualsOrHigher(String modId, String version) {
 		ComparableVersion v1 = new ComparableVersion(version);
-		System.out.println("v1: " + v1);
 		ModContainer mod = Loader.instance().getIndexedModList().get(modId);
 		if (mod != null) {
 			ComparableVersion v2 = new ComparableVersion(mod.getVersion());
-			System.out.println("v2: " + v2);
-			System.out.println("v1.compareTo(v2): " + v1.compareTo(v2));
 			return v1.compareTo(v2) <= 0;
 		}
 		return false;

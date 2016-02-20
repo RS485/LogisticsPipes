@@ -22,6 +22,7 @@ import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.extention.GuiExtention;
 import logisticspipes.utils.string.StringUtils;
 
+import lombok.Getter;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -38,6 +39,7 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 
 	private static final String PREFIX = "gui.crafting.";
 
+	@Getter
 	private final ModuleCrafter _pipe;
 	private final EntityPlayer _player;
 	private final GuiButton[] normalButtonArray;

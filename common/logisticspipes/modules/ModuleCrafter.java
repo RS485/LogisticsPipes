@@ -599,6 +599,9 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	protected int getNextConnectSatelliteId(boolean prev, int x) {
 		int closestIdFound = prev ? 0 : Integer.MAX_VALUE;
+		if(_service == null) {
+			return prev ? Math.max(0, satelliteId - 1) : satelliteId + 1;
+		}
 		for (final PipeItemsSatelliteLogistics satellite : PipeItemsSatelliteLogistics.AllSatellites) {
 			CoreRoutedPipe satPipe = satellite;
 			if (satPipe == null || satPipe.stillNeedReplace() || satPipe.getRouter() == null || satPipe.isFluidPipe()) {

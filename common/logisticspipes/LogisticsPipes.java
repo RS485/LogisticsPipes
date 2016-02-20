@@ -164,6 +164,7 @@ import org.apache.logging.log4j.Logger;
 				"required-after:BuildCraft|Core;" +
 				"required-after:BuildCraft|Transport;" +
 				"required-after:BuildCraft|Silicon;" +
+				"required-after:BuildCraft|Robotics;" +
 				"after:IC2;" +
 				"after:Forestry;" +
 				"after:Thaumcraft;" +

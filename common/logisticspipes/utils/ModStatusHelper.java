@@ -27,6 +27,19 @@ public class ModStatusHelper {
 		}
 	}
 
+	public static boolean areModsLoaded(String modIds) {
+		if(modIds.contains("+")) {
+			for(String modId:modIds.split("\\+")) {
+				if(!isModLoaded(modId)) {
+					return false;
+				}
+			}
+			return true;
+		} else {
+			return isModLoaded(modIds);
+		}
+	}
+
 	public static boolean isModVersionEqualsOrHigher(String modId, String version) {
 		ComparableVersion v1 = new ComparableVersion(version);
 		System.out.println("v1: " + v1);

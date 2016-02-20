@@ -233,7 +233,7 @@ public class LogisticsWrapperHandler {
 
 		T proxy = null;
 		Throwable e = null;
-		if (ModStatusHelper.isModLoaded(modId) || ignoreModLoaded) {
+		if (ModStatusHelper.areModsLoaded(modId) || ignoreModLoaded) {
 			try {
 				proxy = proxyClazz.newInstance();
 			} catch (Exception e1) {

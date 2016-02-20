@@ -340,12 +340,16 @@ public class LogisticsPipes {
 		LogisticsPipes.textures.registerBlockIcons(null);
 
 		RecipeManager.registerRecipeClasses();
+
+		registerRecipes();
 	}
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent evt) {
-		Configs.load();
 		LogisticsPipes.log = evt.getModLog();
+		loadClasses();
+		ProxyManager.load();
+		Configs.load();
 		if (certificateError) {
 			LogisticsPipes.log.fatal("Certificate not correct");
 			LogisticsPipes.log.fatal("This in not a LogisticsPipes version from RS485.");
@@ -365,15 +369,12 @@ public class LogisticsPipes {
 				Items.slime_ball.setTextureName("logisticspipes:eastereggs/guipsp");
 			}
 		}
+
+		initItems(evt.getSide());
 	}
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-		loadClasses();
-
-		boolean isClient = event.getSide() == Side.CLIENT;
-
-		ProxyManager.load();
 		SpecialInventoryHandlerManager.load();
 		SpecialTankHandlerManager.load();
 
@@ -385,6 +386,37 @@ public class LogisticsPipes {
 		SimpleServiceLocator.specialtileconnection.registerHandler(new TesseractConnection());
 		SimpleServiceLocator.specialtileconnection.registerHandler(new EnderIOHyperCubeConnection());
 		SimpleServiceLocator.specialtileconnection.registerHandler(new EnderIOTransceiverConnection());
+
+		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Factory", "AutoWorkbench", AutoWorkbench.class));
+		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Silicon", "AssemblyAdvancedWorkbench", AssemblyAdvancedWorkbench.class));
+		if (SimpleServiceLocator.buildCraftProxy.getAssemblyTableProviderClass() != null) {
+			SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Silicon", "AssemblyTable", SimpleServiceLocator.buildCraftProxy.getAssemblyTableProviderClass()));
+		}
+		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("Railcraft", "RollingMachine", RollingMachine.class));
+		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("Tubestuff", "ImmibisCraftingTableMk2", ImmibisCraftingTableMk2.class));
+		SimpleServiceLocator.addCraftingRecipeProvider(new SolderingStation());
+		SimpleServiceLocator.addCraftingRecipeProvider(new LogisticsCraftingTable());
+
+		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("Forestry", "Generic", ForestryProgressProvider.class));
+		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("ThermalExpansion", "Generic", ThermalExpansionProgressProvider.class));
+		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("IC2", "Generic", IC2ProgressProvider.class));
+		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("EnderIO", "Generic", EnderIOProgressProvider.class));
+		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("endercore", "Generic", EnderCoreProgressProvider.class));
+
+		MainProxy.proxy.registerTileEntities();
+
+		//Registering special particles
+		MainProxy.proxy.registerParticles();
+
+		//init Fluids
+		FluidIdentifier.initFromForge(false);
+
+		versionChecker = VersionChecker.runVersionCheck();
+	}
+
+	private void initItems(Side side) {
+
+		boolean isClient = side == Side.CLIENT;
 
 		Object renderer = null;
 		if (isClient) {
@@ -463,26 +495,10 @@ public class LogisticsPipes {
 		LogisticsPipes.LogisticsPipeBlock = new LogisticsBlockGenericPipe();
 		GameRegistry.registerBlock(LogisticsPipes.LogisticsPipeBlock, "logisticsPipeBlock");
 
-		registerPipes(event.getSide());
+		registerPipes(side);
+	}
 
-		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Factory", "AutoWorkbench", AutoWorkbench.class));
-		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Silicon", "AssemblyAdvancedWorkbench", AssemblyAdvancedWorkbench.class));
-		if (SimpleServiceLocator.buildCraftProxy.getAssemblyTableProviderClass() != null) {
-			SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Silicon", "AssemblyTable", SimpleServiceLocator.buildCraftProxy.getAssemblyTableProviderClass()));
-		}
-		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("Railcraft", "RollingMachine", RollingMachine.class));
-		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("Tubestuff", "ImmibisCraftingTableMk2", ImmibisCraftingTableMk2.class));
-		SimpleServiceLocator.addCraftingRecipeProvider(new SolderingStation());
-		SimpleServiceLocator.addCraftingRecipeProvider(new LogisticsCraftingTable());
-
-		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("Forestry", "Generic", ForestryProgressProvider.class));
-		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("ThermalExpansion", "Generic", ThermalExpansionProgressProvider.class));
-		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("IC2", "Generic", IC2ProgressProvider.class));
-		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("EnderIO", "Generic", EnderIOProgressProvider.class));
-		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("endercore", "Generic", EnderCoreProgressProvider.class));
-
-		MainProxy.proxy.registerTileEntities();
-
+	private void registerRecipes() {
 		ICraftingParts parts = SimpleServiceLocator.buildCraftProxy.getRecipeParts();
 		//NO BC => NO RECIPES (for now)
 		if (parts != null) {
@@ -500,14 +516,6 @@ public class LogisticsPipes {
 		if (parts != null) {
 			SimpleServiceLocator.cofhPowerProxy.addCraftingRecipes(parts);
 		}
-
-		//Registering special particles
-		MainProxy.proxy.registerParticles();
-
-		//init Fluids
-		FluidIdentifier.initFromForge(false);
-
-		versionChecker = VersionChecker.runVersionCheck();
 	}
 
 	private void loadClasses() {

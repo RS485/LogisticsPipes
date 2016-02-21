@@ -52,7 +52,7 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 			ModContainer mod = modList.get(i);
 			if (mod.getModId().equals("StorageDrawers")) {
 				try {
-					VersionRange validVersions = VersionRange.createFromVersionSpec("[1.3.4,)");
+					VersionRange validVersions = VersionRange.createFromVersionSpec("[1.7.8,)");
 					ArtifactVersion version = new DefaultArtifactVersion(mod.getVersion());
 					return validVersions.containsVersion(version);
 				} catch (InvalidVersionSpecificationException e) {

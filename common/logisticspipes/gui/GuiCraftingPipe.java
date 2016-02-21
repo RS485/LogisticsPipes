@@ -9,6 +9,7 @@
 package logisticspipes.gui;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.gui.modules.ModuleBaseGui;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.network.PacketHandler;
@@ -17,7 +18,6 @@ import logisticspipes.network.packets.cpipe.CPipeCleanupToggle;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
-import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.extention.GuiExtention;
 import logisticspipes.utils.string.StringUtils;
@@ -35,7 +35,7 @@ import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
+public class GuiCraftingPipe extends ModuleBaseGui {
 
 	private static final String PREFIX = "gui.crafting.";
 
@@ -56,7 +56,7 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 	private GuiButton cleanupModeButton;
 
 	public GuiCraftingPipe(EntityPlayer player, IInventory dummyInventory, ModuleCrafter module, boolean isAdvancedSat, int liquidCrafter, int[] amount, boolean hasByproductExtractor, boolean isFuzzy, int cleanupSize, boolean cleanupExclude) {
-		super(null);
+		super(null, module);
 		_player = player;
 		this.isAdvancedSat = isAdvancedSat;
 		this.liquidCrafter = liquidCrafter;

@@ -700,6 +700,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 	}
 
 	public boolean equals(ItemIdentifier that) {
+		if(that == null) return false;
 		return item == that.item && itemDamage == that.itemDamage && uniqueID == that.uniqueID;
 	}
 

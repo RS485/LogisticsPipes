@@ -8,23 +8,24 @@
 
 package logisticspipes.request;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.request.resources.DictResource;
 import logisticspipes.request.resources.IResource;
 import logisticspipes.request.resources.ItemResource;
+import logisticspipes.routing.LogisticsDictPromise;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 
-public class ItemCraftingTemplate implements IReqCraftingTemplate {
+import java.util.ArrayList;
+import java.util.List;
 
-	protected ItemIdentifierStack _result;
+public class DictCraftingTemplate implements IReqCraftingTemplate {
+
+	protected DictResource _result;
 	protected ICraftItems _crafter;
 
 	protected ArrayList<Pair<IResource, IAdditionalTargetInformation>> _required = new ArrayList<Pair<IResource, IAdditionalTargetInformation>>(9);
@@ -33,7 +34,7 @@ public class ItemCraftingTemplate implements IReqCraftingTemplate {
 
 	private final int priority;
 
-	public ItemCraftingTemplate(ItemIdentifierStack result, ICraftItems crafter, int priority) {
+	public DictCraftingTemplate(DictResource result, ICraftItems crafter, int priority) {
 		_result = result;
 		_crafter = crafter;
 		this.priority = priority;
@@ -55,7 +56,7 @@ public class ItemCraftingTemplate implements IReqCraftingTemplate {
 
 	@Override
 	public LogisticsPromise generatePromise(int nResultSets) {
-		return new LogisticsPromise(_result.getItem(), _result.getStackSize() * nResultSets, _crafter, ResourceType.CRAFTING);
+		return new LogisticsDictPromise(_result, _result.stack.getStackSize() * nResultSets, _crafter, ResourceType.CRAFTING);
 	}
 
 	//TODO: refactor so that other classes don't reach through the template to the crafter.
@@ -74,7 +75,7 @@ public class ItemCraftingTemplate implements IReqCraftingTemplate {
 	public int compareTo(ICraftingTemplate o) {
 		int c = o.comparePriority(priority);
 		if (c == 0) {
-			c = o.compareStack(_result);
+			c = o.compareStack(_result.stack);
 		}
 		if (c == 0) {
 			c = o.compareCrafter(_crafter);
@@ -89,7 +90,7 @@ public class ItemCraftingTemplate implements IReqCraftingTemplate {
 
 	@Override
 	public int compareStack(ItemIdentifierStack stack) {
-		return stack.compareTo(this._result);
+		return stack.compareTo(this._result.stack);
 	}
 
 	@Override
@@ -99,22 +100,20 @@ public class ItemCraftingTemplate implements IReqCraftingTemplate {
 
 	@Override
 	public boolean canCraft(IResource type) {
-		if (type instanceof ItemResource) {
-			return ((ItemResource) type).getItem().equals(_result.getItem());
-		} else if (type instanceof DictResource) {
-			return ((DictResource) type).matches(_result.getItem());
+		if (type instanceof DictResource) {
+			return ((DictResource) type).matches(_result.getItem()) && _result.matches(((DictResource) type).getItem()) && _result.getBitSet().equals(((DictResource) type).getBitSet());
 		}
 		return false;
 	}
 
 	@Override
 	public int getResultStackSize() {
-		return _result.getStackSize();
+		return _result.stack.getStackSize();
 	}
 
 	@Override
 	public IResource getResultItem() {
-		return new ItemResource(_result, null);
+		return _result;
 	}
 
 	@Override

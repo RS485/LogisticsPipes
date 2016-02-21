@@ -9,19 +9,22 @@
 package logisticspipes.utils.gui;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import logisticspipes.LPConstants;
 import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
+import logisticspipes.interfaces.IFuzzySlot;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.DummyContainerSlotClick;
+import logisticspipes.network.packets.gui.FuzzySlotSettingsPacket;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.request.resources.DictResource;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.extention.GuiExtentionController;
 import logisticspipes.utils.gui.extention.GuiExtentionController.GuiSide;
 
+import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
@@ -58,6 +61,14 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	protected GuiExtentionController extentionControllerLeft = new GuiExtentionController(GuiSide.LEFT);
 	protected GuiExtentionController extentionControllerRight = new GuiExtentionController(GuiSide.RIGHT);
 	private GuiButton selectedButton;
+
+	private int currentDrawScreenMouseX;
+	private int currentDrawScreenMouseY;
+
+	private IFuzzySlot fuzzySlot;
+	private boolean fuzzySlotActiveGui;
+	private int fuzzySlotGuiHoverTime;
+	private Queue<Runnable> renderAtTheEnd = new LinkedList<Runnable>();
 
 	public LogisticsBaseGuiScreen(int xSize, int ySize, int xCenterOffset, int yCenterOffset) {
 		this(new DummyContainer(null, null), xSize, ySize, xCenterOffset, yCenterOffset);
@@ -134,6 +145,8 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 
 	@Override
 	public void drawScreen(int par1, int par2, float par3) {
+		currentDrawScreenMouseX = par1;
+		currentDrawScreenMouseY = par2;
 		checkButtons();
 		if (subGui != null) {
 			//Save Mouse Pos
@@ -195,6 +208,11 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 			}
 			RenderHelper.enableStandardItemLighting();
 		}
+		Runnable run = renderAtTheEnd.poll();
+		while(run != null) {
+			run.run();
+			run = renderAtTheEnd.poll();
+		}
 	}
 
 	@Override
@@ -210,7 +228,77 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	@Override
 	protected void func_146977_a(Slot slot) {
 		if (extentionControllerLeft.renderSlot(slot) && extentionControllerRight.renderSlot(slot)) {
+			if(subGui == null) {
+				onRenderSlot(slot);
+			}
 			super.func_146977_a(slot);
+		}
+	}
+
+	private void onRenderSlot(Slot slot) {
+		if(slot instanceof IFuzzySlot) {
+			final DictResource resource = ((IFuzzySlot) slot).getFuzzyFlags();
+			int x1 = slot.xDisplayPosition;
+			int y1 = slot.yDisplayPosition;
+			GL11.glDisable(GL11.GL_LIGHTING);
+			if (resource.use_od) {
+				Gui.drawRect(x1 + 8, y1 - 1, x1 + 17, y1, 0xFFFF4040);
+				Gui.drawRect(x1 + 16, y1, x1 + 17, y1 + 8, 0xFFFF4040);
+			}
+			if (resource.ignore_dmg) {
+				Gui.drawRect(x1 - 1, y1 - 1, x1 + 8, y1, 0xFF40FF40);
+				Gui.drawRect(x1 - 1, y1, x1, y1 + 8, 0xFF40FF40);
+			}
+			if (resource.ignore_nbt) {
+				Gui.drawRect(x1 - 1, y1 + 16, x1 + 8, y1 + 17, 0xFF4040FF);
+				Gui.drawRect(x1 - 1, y1 + 8, x1, y1 + 17, 0xFF4040FF);
+			}
+			if (resource.use_category) {
+				Gui.drawRect(x1 + 8, y1 + 16, x1 + 17, y1 + 17, 0xFF7F7F40);
+				Gui.drawRect(x1 + 16, y1 + 8, x1 + 17, y1 + 17, 0xFF7F7F40);
+			}
+			GL11.glEnable(GL11.GL_LIGHTING);
+			final boolean mouseOver = this.isMouseOverSlot(slot, currentDrawScreenMouseX, currentDrawScreenMouseY);
+			if(mouseOver) {
+				if(fuzzySlot == slot) {
+					fuzzySlotGuiHoverTime++;
+					if(fuzzySlotGuiHoverTime >= 10) {
+						fuzzySlotActiveGui = true;
+					}
+				} else {
+					fuzzySlot = (IFuzzySlot) slot;
+					fuzzySlotGuiHoverTime = 0;
+					fuzzySlotActiveGui = false;
+				}
+			}
+			if(fuzzySlotActiveGui && fuzzySlot == slot) {
+				if(!mouseOver) {
+					//Check within FuzzyGui
+					if(!func_146978_c(slot.xDisplayPosition, slot.yDisplayPosition + 16, 60, 52, currentDrawScreenMouseX, currentDrawScreenMouseY)) {
+						fuzzySlotActiveGui = false;
+						fuzzySlot = null;
+					}
+				}
+				//int posX = -60;
+				//int posY = 0;
+				final int posX = slot.xDisplayPosition + guiLeft;
+				final int posY = slot.yDisplayPosition + 17 + guiTop;
+				renderAtTheEnd.add(new Runnable() {
+					@Override
+					public void run() {
+						GL11.glDisable(GL11.GL_DEPTH_TEST);
+						GL11.glDisable(GL11.GL_LIGHTING);
+						GuiGraphics.drawGuiBackGround(mc, posX, posY, posX + 60, posY + 52, zLevel, true, true, true, true, true);
+						final String PREFIX = "gui.crafting.";
+						mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OreDict"), posX + 4, posY + 4, (!resource.use_od ? 0x404040 : 0xFF4040));
+						mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnDamage"), posX + 4, posY + 14, (!resource.ignore_dmg ? 0x404040 : 0x40FF40));
+						mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnNBT"), posX + 4, posY + 26, (!resource.ignore_nbt ? 0x404040 : 0x4040FF));
+						mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OrePrefix"), posX + 4, posY + 38, (!resource.use_category ? 0x404040 : 0x7F7F40));
+						GL11.glEnable(GL11.GL_LIGHTING);
+						GL11.glEnable(GL11.GL_DEPTH_TEST);
+					}
+				});
+			}
 		}
 	}
 
@@ -222,7 +310,13 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 		if (!extentionControllerRight.renderSelectSlot(par1Slot)) {
 			return false;
 		}
+		if (isMouseInFuzzyPanel(currentDrawScreenMouseX, currentDrawScreenMouseY)) return false;
 		return super.isMouseOverSlot(par1Slot, par2, par3);
+	}
+
+	private boolean isMouseInFuzzyPanel(int x, int y) {
+		if (!fuzzySlotActiveGui || fuzzySlot == null) return false;
+		return func_146978_c(fuzzySlot.getX(), fuzzySlot.getY() + 16, 60, 52, x, y);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -308,6 +402,33 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 				return;
 			}
 		}
+		if (isMouseInFuzzyPanel(par1, par2)) {
+			final int posX = fuzzySlot.getX() + guiLeft;
+			final int posY = fuzzySlot.getY() + 17 + guiTop;
+			int sel = -1;
+			if (par1 >= posX + 4 && par1 <= posX + 60 - 4) {
+				if (par2 >= posY + 4 && par2 <= posY + 52 - 4) {
+					sel = (par2 - posY - 4) / 11;
+				}
+			}
+			DictResource resource = fuzzySlot.getFuzzyFlags();
+			BitSet set = resource.getBitSet();
+			if (sel == 0) {
+				resource.use_od = !resource.use_od;
+			}
+			if (sel == 1) {
+				resource.ignore_dmg = !resource.ignore_dmg;
+			}
+			if (sel == 2) {
+				resource.ignore_nbt = !resource.ignore_nbt;
+			}
+			if (sel == 3) {
+				resource.use_category = !resource.use_category;
+			}
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(FuzzySlotSettingsPacket.class).setSlotNumber(fuzzySlot.getSlotId()).setFlags(resource.getBitSet()));
+			resource.loadFromBitSet(set); // Reset to wait for server
+			return;
+		}
 		boolean handledButton = false;
 		if (par3 == 0) {
 			for (int l = 0; l < buttonList.size(); ++l) {
@@ -337,9 +458,10 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 		if (selectedButton != null && par3 == 0) {
 			selectedButton.mouseReleased(par1, par2);
 			selectedButton = null;
+		} else if (isMouseInFuzzyPanel(par1 - guiLeft, par2 - guiTop)) {
 		} else {
-			super.mouseMovedOrUp(par1, par2, par3);
-		}
+				super.mouseMovedOrUp(par1, par2, par3);
+			}
 	}
 
 	private boolean mouseCanPressButton(int par1, int par2) {

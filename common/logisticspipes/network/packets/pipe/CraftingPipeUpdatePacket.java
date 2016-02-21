@@ -40,10 +40,6 @@ public class CraftingPipeUpdatePacket extends ModuleCoordinatesPacket {
 
 	@Getter
 	@Setter
-	private int[] fuzzyCraftingFlagArray = new int[9];
-
-	@Getter
-	@Setter
 	private int priority = 0;
 
 	public CraftingPipeUpdatePacket(int id) {
@@ -67,7 +63,6 @@ public class CraftingPipeUpdatePacket extends ModuleCoordinatesPacket {
 		data.writeInt(liquidSatelliteId);
 		data.writeInt(satelliteId);
 		data.writeIntegerArray(advancedSatelliteIdArray);
-		data.writeIntegerArray(fuzzyCraftingFlagArray);
 		data.writeInt(priority);
 	}
 
@@ -79,7 +74,6 @@ public class CraftingPipeUpdatePacket extends ModuleCoordinatesPacket {
 		liquidSatelliteId = data.readInt();
 		satelliteId = data.readInt();
 		advancedSatelliteIdArray = data.readIntegerArray();
-		fuzzyCraftingFlagArray = data.readIntegerArray();
 		priority = data.readInt();
 	}
 

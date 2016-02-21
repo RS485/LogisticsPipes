@@ -54,10 +54,10 @@ public class AutoCraftingGui extends CoordinatesGuiProvider {
 
 		for (int X = 0; X < 3; X++) {
 			for (int Y = 0; Y < 3; Y++) {
-				dummy.addDummySlot(Y * 3 + X, 35 + X * 18, 10 + Y * 18);
+				dummy.addFuzzyDummySlot(Y * 3 + X, 35 + X * 18, 10 + Y * 18, tile.fuzzyFlags[Y * 3 + X]);
 			}
 		}
-		dummy.addUnmodifiableSlot(0, tile.resultInv, 125, 28);
+		dummy.addFuzzyUnmodifiableSlot(0, tile.resultInv, 125, 28, tile.outputFuzzyFlags);
 		for (int Y = 0; Y < 2; Y++) {
 			for (int X = 0; X < 9; X++) {
 				dummy.addNormalSlot(Y * 9 + X, tile.inv, 8 + X * 18, 80 + Y * 18);

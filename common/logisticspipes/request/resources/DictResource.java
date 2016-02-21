@@ -193,4 +193,20 @@ public class DictResource implements IResource {
 	public ItemIdentifierStack getDisplayItem() {
 		return stack;
 	}
+
+	public void loadFromBitSet(BitSet bits) {
+		use_od = bits.get(0);
+		ignore_dmg = bits.get(1);
+		ignore_nbt = bits.get(2);
+		use_category = bits.get(3);
+	}
+
+	public BitSet getBitSet() {
+		BitSet bits = new BitSet();
+		bits.set(0, use_od);
+		bits.set(1, ignore_dmg);
+		bits.set(2, ignore_nbt);
+		bits.set(3, use_category);
+		return bits;
+	}
 }

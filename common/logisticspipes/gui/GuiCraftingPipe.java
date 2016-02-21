@@ -54,7 +54,6 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 	private final int byproductSlotID;
 	private final int[] cleanupSlotIDs;
 
-	private int fuzzyPanelSelection = -1;
 	private GuiButton cleanupModeButton;
 
 	public GuiCraftingPipe(EntityPlayer player, IInventory dummyInventory, ModuleCrafter module, boolean isAdvancedSat, int liquidCrafter, int[] amount, boolean hasByproductExtractor, boolean isFuzzy, int cleanupSize, boolean cleanupExclude) {
@@ -84,14 +83,18 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 
 		// Input slots
 		for (int l = 0; l < 9; l++) {
-			dummy.addDummySlot(l, 8 + l * 18, 18);
+			if(isFuzzy) {
+				dummy.addFuzzyDummySlot(l, 8 + l * 18, 18, module.fuzzyCraftingFlagArray[l]);
+			}
 		}
 
 		// Output slot
-		if (!isAdvancedSat) {
-			dummy.addDummySlot(9, 85, 55);
+		int yPosOutput = 55;
+		if(isAdvancedSat) yPosOutput = 105;
+		if(isFuzzy) {
+			dummy.addFuzzyDummySlot(9, 85, yPosOutput, module.outputFuzzyFlags);
 		} else {
-			dummy.addDummySlot(9, 85, 105);
+			dummy.addDummySlot(9, 85, yPosOutput);
 		}
 
 		liquidGuiParts = new GuiButton[liquidCrafter][];
@@ -337,61 +340,6 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 			mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Priority") + ":", 123, 95, 0x404040);
 			mc.fontRenderer.drawString("" + _pipe.priority, 143 - (mc.fontRenderer.getStringWidth("" + _pipe.priority) / 2), 107, 0x404040);
 		}
-
-		if (isFuzzy) {
-			int mx = par1 - guiLeft;
-			int my = par2 - guiTop;
-			if (!isMouseInFuzzyPanel(mx, my)) {
-				fuzzyPanelSelection = -1;
-			}
-			int hovered_slot = -1;
-			if (my >= 18 && my <= 18 + 16) {
-				if ((mx - 8) % 18 <= 16 && (mx - 8) % 18 >= 0) {
-					hovered_slot = (mx - 8) / 18;
-				}
-			}
-			if (hovered_slot < 0 || hovered_slot >= 9) {
-				hovered_slot = -1;
-			}
-			if (hovered_slot != -1) {
-				fuzzyPanelSelection = hovered_slot;
-			}
-		}
-
-		if (fuzzyPanelSelection != -1) {
-			int posX = 8 + fuzzyPanelSelection * 18;
-			int posY = 18 + 16;
-			GuiGraphics.drawGuiBackGround(mc, posX, posY, posX + 60, posY + 52, zLevel, true, true, true, true, true);
-			int flag = _pipe.fuzzyCraftingFlagArray[fuzzyPanelSelection];
-			mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "OreDict"), posX + 4, posY + 4, ((flag & 0x1) == 0 ? 0x404040 : 0xFF4040));
-			mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "IgnDamage"), posX + 4, posY + 14, ((flag & 0x2) == 0 ? 0x404040 : 0x40FF40));
-			mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "IgnNBT"), posX + 4, posY + 26, ((flag & 0x4) == 0 ? 0x404040 : 0x4040FF));
-			mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "OrePrefix"), posX + 4, posY + 38, ((flag & 0x8) == 0 ? 0x404040 : 0x7F7F40));
-		}
-
-		if (isFuzzy) {
-			for (int i = 0; i < 9; i++) {
-				int flag = _pipe.fuzzyCraftingFlagArray[i];
-				int x1 = 8 + 18 * i;
-				int y1 = 18;
-				if ((flag & 0x1) != 0) {
-					Gui.drawRect(x1 + 8, y1 - 1, x1 + 17, y1, 0xFFFF4040);
-					Gui.drawRect(x1 + 16, y1, x1 + 17, y1 + 8, 0xFFFF4040);
-				}
-				if ((flag & 0x2) != 0) {
-					Gui.drawRect(x1 - 1, y1 - 1, x1 + 8, y1, 0xFF40FF40);
-					Gui.drawRect(x1 - 1, y1, x1, y1 + 8, 0xFF40FF40);
-				}
-				if ((flag & 0x4) != 0) {
-					Gui.drawRect(x1 - 1, y1 + 16, x1 + 8, y1 + 17, 0xFF4040FF);
-					Gui.drawRect(x1 - 1, y1 + 8, x1, y1 + 17, 0xFF4040FF);
-				}
-				if ((flag & 0x8) != 0) {
-					Gui.drawRect(x1 + 8, y1 + 16, x1 + 17, y1 + 17, 0xFF7F7F40);
-					Gui.drawRect(x1 + 16, y1 + 8, x1 + 17, y1 + 17, 0xFF7F7F40);
-				}
-			}
-		}
 	}
 
 	@Override
@@ -413,40 +361,6 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 8, guiTop + ySize - 82);
 
 		super.renderExtentions();
-	}
-
-	private boolean isMouseInFuzzyPanel(int mx, int my) {
-		if (fuzzyPanelSelection == -1) {
-			return false;
-		}
-		int posX = 8 + fuzzyPanelSelection * 18;
-		int posY = 18 + 16;
-		return mx >= posX && my >= posY && mx <= posX + 60 && my <= posY + 52;
-	}
-
-	@Override
-	protected void mouseMovedOrUp(int mouseX, int mouseY, int which) {
-		if (isMouseInFuzzyPanel(mouseX - guiLeft, mouseY - guiTop)) {
-			return;
-		}
-		super.mouseMovedOrUp(mouseX, mouseY, which);
-	}
-
-	@Override
-	protected void mouseClicked(int mouseX, int mouseY, int par3) {
-		if (isMouseInFuzzyPanel(mouseX - guiLeft, mouseY - guiTop)) {
-			int posX = 8 + fuzzyPanelSelection * 18;
-			int posY = 18 + 16;
-			int sel = -1;
-			if (mouseX - guiLeft >= posX + 4 && mouseX - guiLeft <= posX + 60 - 4) {
-				if (mouseY - guiTop >= posY + 4 && mouseY - guiTop <= posY + 52 - 4) {
-					sel = (mouseY - guiTop - posY - 4) / 11;
-				}
-			}
-			_pipe.setFuzzyCraftingFlag(fuzzyPanelSelection, sel, null);
-			return;
-		}
-		super.mouseClicked(mouseX, mouseY, par3);
 	}
 
 	public void onCleanupModeChange() {

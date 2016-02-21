@@ -2,12 +2,15 @@ package logisticspipes.proxy.recipeproviders;
 
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.proxy.interfaces.IFuzzyRecipeProvider;
+import logisticspipes.request.resources.DictResource;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+
+import java.util.BitSet;
 
 public class LogisticsCraftingTable implements IFuzzyRecipeProvider {
 
@@ -51,23 +54,24 @@ public class LogisticsCraftingTable implements IFuzzyRecipeProvider {
 	}
 
 	@Override
-	public boolean importFuzzyFlags(TileEntity tile, ItemIdentifierInventory inventory, int[] flags) {
+	public void importFuzzyFlags(TileEntity tile, ItemIdentifierInventory inventory, DictResource[] flags, DictResource output) {
 		if (!(tile instanceof LogisticsCraftingTableTileEntity)) {
-			return false;
+			return;
 		}
 
 		LogisticsCraftingTableTileEntity bench = (LogisticsCraftingTableTileEntity) tile;
 
 		if (!bench.isFuzzy()) {
-			return false;
+			return;
 		}
 
 		for (int i = 0; i < bench.fuzzyFlags.length; i++) {
 			if (i >= flags.length) {
 				break;
 			}
-			flags[i] = (bench.fuzzyFlags[i].use_od ? 1 : 0) | (bench.fuzzyFlags[i].ignore_dmg ? 2 : 0) | (bench.fuzzyFlags[i].ignore_nbt ? 4 : 0) | (bench.fuzzyFlags[i].use_category ? 8 : 0);
+			flags[i].loadFromBitSet(bench.fuzzyFlags[i].getBitSet());
 		}
+		output.loadFromBitSet(bench.outputFuzzyFlags.getBitSet());
 
 		//compact with fuzzy flags
 
@@ -82,10 +86,10 @@ public class LogisticsCraftingTable implements IFuzzyRecipeProvider {
 				if (stackInOtherSlot == null) {
 					continue;
 				}
-				if (itemInSlot.equals(stackInOtherSlot.getItem()) && flags[i] == flags[j]) {
+				if (itemInSlot.equals(stackInOtherSlot.getItem()) && flags[i].getBitSet().equals(flags[j].getBitSet())) {
 					stackInSlot.setStackSize(stackInSlot.getStackSize() + stackInOtherSlot.getStackSize());
 					inventory.clearInventorySlotContents(j);
-					flags[j] = 0;
+					flags[j].loadFromBitSet(new BitSet()); // clear
 				}
 			}
 			inventory.setInventorySlotContents(i, stackInSlot);
@@ -100,13 +104,13 @@ public class LogisticsCraftingTable implements IFuzzyRecipeProvider {
 					continue;
 				}
 				inventory.setInventorySlotContents(i, inventory.getStackInSlot(j));
-				flags[i] = flags[j];
+				flags[i].loadFromBitSet(flags[j].getBitSet());
 				inventory.clearInventorySlotContents(j);
-				flags[j] = 0;
+				flags[j].loadFromBitSet(new BitSet()); // clear
 				break;
 			}
 		}
 
-		return true;
+		return;
 	}
 }

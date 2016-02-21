@@ -185,20 +185,25 @@ public class MainProxy {
 	}
 
 	public static void sendToPlayerList(ModernPacket packet, PlayerCollectionList players) {
+		if (players.isEmpty()) {
+			return;
+		}
+		sendToPlayerList(packet, players.players());
+	}
+
+	public static void sendToPlayerList(ModernPacket packet, Iterable<EntityPlayer> players) {
+
 		if (!MainProxy.isServer()) {
 			System.err.println("sendToPlayerList called clientside !");
 			new Exception().printStackTrace();
 			return;
 		}
-		if (players.isEmpty()) {
-			return;
-		}
 		if (packet.isCompressable() || MainProxy.needsToBeCompressed(packet)) {
-			for (EntityPlayer player : players.players()) {
+			for (EntityPlayer player : players) {
 				SimpleServiceLocator.serverBufferHandler.addPacketToCompressor(packet, player);
 			}
 		} else {
-			for (EntityPlayer player : players.players()) {
+			for (EntityPlayer player : players) {
 				MainProxy.sendPacketToPlayer(packet, player);
 			}
 		}

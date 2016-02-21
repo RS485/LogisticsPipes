@@ -9,16 +9,21 @@
 package logisticspipes.utils.gui;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.IFuzzySlot;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.interfaces.ISlotClick;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.gui.FuzzySlotSettingsPacket;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.request.resources.DictResource;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.MinecraftColor;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -47,6 +52,7 @@ public class DummyContainer extends Container {
 	private long lastDragnDropLockup;
 	boolean wasDummyLookup;
 	boolean overrideMCAntiSend;
+	public List<BitSet> inventoryFuzzySlotsContent = new ArrayList<BitSet>();
 
 	public DummyContainer(IInventory playerInventory, IInventory dummyInventory) {
 		_playerInventory = playerInventory;
@@ -153,6 +159,14 @@ public class DummyContainer extends Container {
 
 	public Slot addCallableSlotHandler(int slotId, IInventory inventory, int xCoord, int yCoord, ISlotClick handler) {
 		return addSlotToContainer(new HandelableSlot(inventory, slotId, xCoord, yCoord, handler));
+	}
+
+	public Slot addFuzzyDummySlot(int slotId, int xCoord, int yCoord, DictResource dictResource) {
+		return addSlotToContainer(new FuzzyDummySlot(_dummyInventory, slotId, xCoord, yCoord, dictResource));
+	}
+
+	public Slot addFuzzyUnmodifiableSlot(int slotId, IInventory inventory, int xCoord, int yCoord, DictResource dictResource) {
+		return addSlotToContainer(new FuzzyUnmodifiableSlot(inventory, slotId, xCoord, yCoord, dictResource));
 	}
 
 	@Override
@@ -772,6 +786,21 @@ public class DummyContainer extends Container {
 	@SuppressWarnings("unchecked")
 	public void detectAndSendChanges() {
 		for (int i = 0; i < inventorySlots.size(); ++i) {
+			if(inventorySlots.get(i) instanceof IFuzzySlot) {
+				IFuzzySlot fuzzySlot = (IFuzzySlot) inventorySlots.get(i);
+				BitSet set = inventoryFuzzySlotsContent.get(i);
+				if(set == null) {
+					set = fuzzySlot.getFuzzyFlags().getBitSet();
+					MainProxy.sendToPlayerList(PacketHandler.getPacket(FuzzySlotSettingsPacket.class).setSlotNumber(fuzzySlot.getSlotId()).setFlags(set), crafters);
+					inventoryFuzzySlotsContent.set(i, set);
+				} else {
+					BitSet setB = fuzzySlot.getFuzzyFlags().getBitSet();
+					if(!set.equals(setB)) {
+						MainProxy.sendToPlayerList(PacketHandler.getPacket(FuzzySlotSettingsPacket.class).setSlotNumber(fuzzySlot.getSlotId()).setFlags(setB), crafters);
+						inventoryFuzzySlotsContent.set(i, setB);
+					}
+				}
+			}
 			ItemStack itemstack = ((Slot) inventorySlots.get(i)).getStack();
 			ItemStack itemstack1 = (ItemStack) inventoryItemStacks.get(i);
 
@@ -793,5 +822,11 @@ public class DummyContainer extends Container {
 			}
 		}
 		overrideMCAntiSend = false;
+	}
+
+	@Override
+	protected Slot addSlotToContainer(Slot p_75146_1_) {
+		this.inventoryFuzzySlotsContent.add(null);
+		return super.addSlotToContainer(p_75146_1_);
 	}
 }

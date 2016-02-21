@@ -60,6 +60,7 @@ import logisticspipes.request.ICraftingTemplate;
 import logisticspipes.request.IPromise;
 import logisticspipes.request.RequestTree;
 import logisticspipes.request.RequestTreeNode;
+import logisticspipes.request.resources.DictResource;
 import logisticspipes.request.resources.IResource;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
@@ -687,7 +688,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 			throw new UnsupportedOperationException("Extra has to be an item for a chassis pipe");
 		}
 		ItemIdentifierStack stack = new ItemIdentifierStack(((LogisticsPromise) promise).item, ((LogisticsPromise) promise).numberOfItems);
-		_extras.add(new LogisticsItemOrder(stack, null, ResourceType.EXTRA, null));
+		_extras.add(new LogisticsItemOrder(new DictResource(stack, null), null, ResourceType.EXTRA, null));
 	}
 
 	@Override

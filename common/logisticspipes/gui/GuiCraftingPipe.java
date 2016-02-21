@@ -46,7 +46,6 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 	private final GuiButton[][] advancedSatButtonArray;
 	private final GuiButton[][] liquidGuiParts;
 	private final boolean isAdvancedSat;
-	private final boolean isFuzzy;
 	private final int liquidCrafter;
 	private final boolean hasByproductExtractor;
 	private final int cleanupSize;
@@ -60,7 +59,6 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 		super(null);
 		_player = player;
 		this.isAdvancedSat = isAdvancedSat;
-		this.isFuzzy = isFuzzy;
 		this.liquidCrafter = liquidCrafter;
 		this.hasByproductExtractor = hasByproductExtractor;
 		this.cleanupSize = cleanupSize;
@@ -85,6 +83,8 @@ public class GuiCraftingPipe extends LogisticsBaseGuiScreen {
 		for (int l = 0; l < 9; l++) {
 			if(isFuzzy) {
 				dummy.addFuzzyDummySlot(l, 8 + l * 18, 18, module.fuzzyCraftingFlagArray[l]);
+			} else {
+				dummy.addDummySlot(l, 8 + l * 18, 18);
 			}
 		}
 

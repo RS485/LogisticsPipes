@@ -147,7 +147,11 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	protected final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
-	public ModuleCrafter() {}
+	public ModuleCrafter() {
+		for(int i=0;i < fuzzyCraftingFlagArray.length;i++) {
+			fuzzyCraftingFlagArray[i] = new DictResource(null, null);
+		}
+	}
 
 	public ModuleCrafter(PipeItemsCraftingLogistics parent) {
 		_pipe = parent;

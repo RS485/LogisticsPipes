@@ -15,7 +15,7 @@ import java.util.List;
 import logisticspipes.utils.Color;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.fontRendererObj;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -25,7 +25,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -58,7 +58,7 @@ public final class GuiGraphics {
 	 *            the y-coordinate for the bar
 	 * @param zLevel
 	 *            the z-level for the bar
-	 * @see net.minecraft.client.renderer.entity.RenderItem#renderItemOverlayIntoGUI(FontRenderer,
+	 * @see net.minecraft.client.renderer.entity.RenderItem#renderItemOverlayIntoGUI(fontRendererObj,
 	 *      TextureManager, ItemStack, int, int, String)
 	 */
 	public static void drawDurabilityBar(ItemStack itemstack, int x, int y, double zLevel) {
@@ -137,7 +137,7 @@ public final class GuiGraphics {
 			int var12;
 
 			for (var11 = 0; var11 < msg.size(); ++var11) {
-				var12 = FMLClientHandler.instance().getClient().fontRenderer.getStringWidth(msg.get(var11));
+				var12 = FMLClientHandler.instance().getClient().fontRendererObj.getStringWidth(msg.get(var11));
 
 				if (var12 > var10) {
 					var10 = var12;
@@ -178,7 +178,7 @@ public final class GuiGraphics {
 					var19 = "\u00a77" + var19;
 				}
 
-				FMLClientHandler.instance().getClient().fontRenderer.drawStringWithShadow(var19, var11, var12, -1);
+				FMLClientHandler.instance().getClient().fontRendererObj.drawStringWithShadow(var19, var11, var12, -1);
 
 				if (var18 == 0) {
 					var12 += 2;

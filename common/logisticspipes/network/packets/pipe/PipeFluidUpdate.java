@@ -13,7 +13,7 @@ import logisticspipes.transport.PipeFluidTransportLogistics;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -31,7 +31,7 @@ public class PipeFluidUpdate extends CoordinatesPacket {
 
 	@Getter(value = AccessLevel.PRIVATE)
 	@Setter
-	private FluidStack[] renderCache = new FluidStack[ForgeDirection.values().length];
+	private FluidStack[] renderCache = new FluidStack[EnumFacing.values().length];
 
 	private BitSet bits = new BitSet();
 

@@ -17,7 +17,7 @@ import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtils;
 
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.fontRendererObj;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
@@ -112,7 +112,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 				ItemIdentifierStack stack = grid[x + y * 3].order.get(grid[x + y * 3].pos);
 				ItemStack itemStack = stack.makeNormalStack();
 
-				FontRenderer font = itemStack.getItem().getFontRenderer(itemStack);
+				fontRendererObj font = itemStack.getItem().getfontRendererObj(itemStack);
 				if (font == null) {
 					font = fontRendererObj;
 				}
@@ -132,7 +132,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 		for (Canidates canidate : list) {
 			ItemIdentifierStack stack = canidate.order.get(canidate.pos);
 			ItemStack itemStack = stack.makeNormalStack();
-			FontRenderer font = itemStack.getItem().getFontRenderer(itemStack);
+			fontRendererObj font = itemStack.getItem().getfontRendererObj(itemStack);
 			if (font == null) {
 				font = fontRendererObj;
 			}

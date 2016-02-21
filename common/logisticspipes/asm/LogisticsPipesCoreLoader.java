@@ -4,7 +4,7 @@ import java.util.Map;
 
 import net.minecraft.launchwrapper.Launch;
 
-import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
+import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
 public class LogisticsPipesCoreLoader implements IFMLLoadingPlugin {
 

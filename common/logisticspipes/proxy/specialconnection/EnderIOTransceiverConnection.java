@@ -1,22 +1,17 @@
 package logisticspipes.proxy.specialconnection;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import logisticspipes.interfaces.routing.ISpecialTileConnection;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.UtilEnumFacing;
 import logisticspipes.utils.tuples.LPPosition;
-
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import java.util.*;
 
 public class EnderIOTransceiverConnection implements ISpecialTileConnection {
 
@@ -33,10 +28,10 @@ public class EnderIOTransceiverConnection implements ISpecialTileConnection {
 	@Override
 	public Collection<TileEntity> getConnections(TileEntity tile) {
 		boolean onlyOnePipe = false;
-		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing direction : UtilEnumFacing.VALID_DIRECTIONS) {
 			LPPosition p = new LPPosition(tile);
 			p.moveForward(direction);
-			TileEntity candidate = p.getTileEntity(tile.getWorldObj());
+			TileEntity candidate = p.getTileEntity(tile.getWorld());
 			if (candidate instanceof LogisticsTileGenericPipe && MainProxy.checkPipesConnections(tile, candidate, direction)) {
 				if (onlyOnePipe) {
 					onlyOnePipe = false;
@@ -56,10 +51,10 @@ public class EnderIOTransceiverConnection implements ISpecialTileConnection {
 				continue;
 			}
 			LogisticsTileGenericPipe pipe = null;
-			for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+			for (EnumFacing direction : UtilEnumFacing.VALID_DIRECTIONS) {
 				LPPosition p = new LPPosition(connected);
 				p.moveForward(direction);
-				TileEntity candidate = p.getTileEntity(tile.getWorldObj());
+				TileEntity candidate = p.getTileEntity(tile.getWorld());
 				if (candidate instanceof LogisticsTileGenericPipe && MainProxy.checkPipesConnections(connected, candidate, direction)) {
 					if (pipe != null) {
 						pipe = null;

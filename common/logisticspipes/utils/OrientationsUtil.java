@@ -1,46 +1,46 @@
 package logisticspipes.utils;
 
 import net.minecraft.tileentity.TileEntity;
-
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 
 public class OrientationsUtil {
 
-	public static ForgeDirection getOrientationOfTilewithTile(TileEntity pipe, TileEntity tile) {
-		if (pipe.zCoord == tile.zCoord) {
-			if (pipe.yCoord == tile.yCoord) {
-				if (pipe.xCoord < tile.xCoord) {
-					return ForgeDirection.EAST;
-				} else if (pipe.xCoord > tile.xCoord) {
-					return ForgeDirection.WEST;
+	public static EnumFacing getOrientationOfTilewithTile(TileEntity pipe, TileEntity tile) {
+		if (pipe.getPos().getX() == tile.getPos().getX()) {
+			if (pipe.getPos().getX() == tile.getPos().getX()) {
+				if (pipe.getPos().getX() < tile.getPos().getX()) {
+					return EnumFacing.EAST;
+				} else if (pipe.getPos().getX() > tile.getPos().getX()) {
+					return EnumFacing.WEST;
 				}
 			}
 		}
-		if (pipe.xCoord == tile.xCoord) {
-			if (pipe.zCoord == tile.zCoord) {
-				if (pipe.yCoord < tile.yCoord) {
-					return ForgeDirection.UP;
-				} else if (pipe.yCoord > tile.yCoord) {
-					return ForgeDirection.DOWN;
+		if (pipe.getPos().getX() == tile.getPos().getX()) {
+			if (pipe.getPos().getY() == tile.getPos().getY()) {
+				if (pipe.getPos().getZ() < tile.getPos().getZ()) {
+					return EnumFacing.UP;
+				} else if (pipe.getPos().getZ() > tile.getPos().getZ()) {
+					return EnumFacing.DOWN;
 				}
 			}
 		}
-		if (pipe.xCoord == tile.xCoord) {
-			if (pipe.yCoord == tile.yCoord) {
-				if (pipe.zCoord < tile.zCoord) {
-					return ForgeDirection.SOUTH;
-				} else if (pipe.zCoord > tile.zCoord) {
-					return ForgeDirection.NORTH;
+		if (pipe.getPos().getX() == tile.getPos().getX()) {
+			if (pipe.getPos().getY() == tile.getPos().getY()) {
+				if (pipe.getPos().getZ() < tile.getPos().getZ()) {
+					return EnumFacing.SOUTH;
+				} else if (pipe.getPos().getZ() > tile.getPos().getZ()) {
+					return EnumFacing.NORTH;
 				}
 			}
 		}
-		return ForgeDirection.UNKNOWN;
+		return UtilEnumFacing.UNKNOWN;
 	}
 
-	public static TileEntity getTileNextToThis(TileEntity tile, ForgeDirection dir) {
-		int x = tile.xCoord;
-		int y = tile.yCoord;
-		int z = tile.zCoord;
+	public static TileEntity getTileNextToThis(TileEntity tile, EnumFacing dir) {
+		int x = tile.getPos().getX();
+		int y = tile.getPos().getY();
+		int z = tile.getPos().getZ();
 		switch (dir) {
 			case UP:
 				y = y + 1;
@@ -63,10 +63,10 @@ public class OrientationsUtil {
 			default:
 				break;
 		}
-		return tile.getWorldObj().getTileEntity(x, y, z);
+		return tile.getWorld().getTileEntity(BlockPos.ORIGIN);
 	}
 
-	public static boolean isSide(ForgeDirection ori) {
-		return ori == ForgeDirection.EAST || ori == ForgeDirection.WEST || ori == ForgeDirection.SOUTH || ori == ForgeDirection.NORTH;
+	public static boolean isSide(EnumFacing ori) {
+		return ori == EnumFacing.EAST || ori == EnumFacing.WEST || ori == EnumFacing.SOUTH || ori == EnumFacing.NORTH;
 	}
 }

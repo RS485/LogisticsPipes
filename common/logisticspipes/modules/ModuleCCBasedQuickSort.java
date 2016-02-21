@@ -1,21 +1,7 @@
 package logisticspipes.modules;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import logisticspipes.gui.hud.modules.HUDCCBasedQuickSort;
-import logisticspipes.interfaces.IClientInformationProvider;
-import logisticspipes.interfaces.IHUDModuleHandler;
-import logisticspipes.interfaces.IHUDModuleRenderer;
-import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.*;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
@@ -41,17 +27,13 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
+import lombok.Getter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import lombok.Getter;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 
@@ -262,12 +244,6 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 			sended = true;
 		}
 		return sended;
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleCCQuickSort");
 	}
 
 	@Override

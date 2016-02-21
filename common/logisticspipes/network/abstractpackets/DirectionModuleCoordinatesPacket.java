@@ -1,22 +1,20 @@
 package logisticspipes.network.abstractpackets;
 
-import java.io.IOException;
-
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
-
-import net.minecraftforge.common.util.ForgeDirection;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.minecraft.util.EnumFacing;
+
+import java.io.IOException;
 
 @Accessors(chain = true)
 public abstract class DirectionModuleCoordinatesPacket extends ModuleCoordinatesPacket {
 
 	@Getter
 	@Setter
-	private ForgeDirection direction;
+	private EnumFacing direction;
 
 	public DirectionModuleCoordinatesPacket(int id) {
 		super(id);
@@ -25,12 +23,12 @@ public abstract class DirectionModuleCoordinatesPacket extends ModuleCoordinates
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
 		super.writeData(data);
-		data.writeForgeDirection(direction);
+		data.writeEnumFacing(direction);
 	}
 
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);
-		direction = data.readForgeDirection();
+		direction = data.readEnumFacing();
 	}
 }

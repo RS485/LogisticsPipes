@@ -8,10 +8,6 @@
 
 package logisticspipes.routing;
 
-import java.util.BitSet;
-import java.util.List;
-import java.util.UUID;
-
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.routing.IFilter;
@@ -20,8 +16,11 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
+import net.minecraft.util.EnumFacing;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import java.util.BitSet;
+import java.util.List;
+import java.util.UUID;
 
 public interface IRouter {
 
@@ -38,11 +37,11 @@ public interface IRouter {
 
 	public void updateInterests(); // calls getInterests on the attached pipe, and updates the global cache.
 
-	public boolean isRoutedExit(ForgeDirection connection);
+	public boolean isRoutedExit(EnumFacing connection);
 
-	public boolean isSubPoweredExit(ForgeDirection connection);
+	public boolean isSubPoweredExit(EnumFacing connection);
 
-	public int getDistanceToNextPowerPipe(ForgeDirection dir);
+	public int getDistanceToNextPowerPipe(EnumFacing dir);
 
 	public boolean hasRoute(int id, boolean active, ItemIdentifier type);
 
@@ -86,7 +85,7 @@ public interface IRouter {
 	public boolean checkAdjacentUpdate();
 
 	/* Automated Disconnection */
-	public boolean isSideDisconneceted(ForgeDirection dir);
+	public boolean isSideDisconneceted(EnumFacing dir);
 
 	public List<ExitRoute> getDistanceTo(IRouter r);
 
@@ -101,7 +100,7 @@ public interface IRouter {
 	//force-update LSA version in the network
 	public void forceLsaUpdate();
 
-	public List<ExitRoute> getRoutersOnSide(ForgeDirection direction);
+	public List<ExitRoute> getRoutersOnSide(EnumFacing direction);
 
 	public int getDimension();
 

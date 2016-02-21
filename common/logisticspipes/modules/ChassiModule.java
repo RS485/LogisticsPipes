@@ -1,8 +1,5 @@
 package logisticspipes.modules;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
@@ -18,10 +15,11 @@ import logisticspipes.proxy.computers.objects.CCSinkResponder;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.BlockPos;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChassiModule extends LogisticsGuiModule {
 
@@ -180,18 +178,17 @@ public class ChassiModule extends LogisticsGuiModule {
 	}
 
 	@Override
-	public IIcon getIconTexture(IIconRegister register) {
-		//Not Needed
-		return null;
-	}
-
-	@Override
 	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
 		return NewGuiHandler.getGui(ChassiGuiProvider.class).setFlag(_parentPipe.getUpgradeManager().hasUpgradeModuleUpgrade());
 	}
 
 	@Override
 	protected ModuleInHandGuiProvider getInHandGuiProvider() {
+		return null;
+	}
+
+	@Override
+	public BlockPos getblockpos() {
 		return null;
 	}
 }

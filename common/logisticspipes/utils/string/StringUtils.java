@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.fontRendererObj;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 
@@ -130,9 +131,9 @@ public final class StringUtils {
 		return Integer.toString(percent) + "%";
 	}
 
-	public static String getWithMaxWidth(String name, int width, FontRenderer fontRenderer) {
+	public static String getWithMaxWidth(String name, int width, FontRenderer fontRendererObj) {
 		boolean changed = false;
-		while (fontRenderer.getStringWidth(name) > width) {
+		while (fontRendererObj.getStringWidth(name) > width) {
 			name = name.substring(0, name.length() - 2);
 			changed = true;
 		}
@@ -142,7 +143,7 @@ public final class StringUtils {
 		return name;
 	}
 
-	public static String getCuttedString(String input, int maxLength, FontRenderer renderer) {
+	public static String getCuttedString(String input, int maxLength, fontRenderer renderer) {
 		if (renderer.getStringWidth(input) < maxLength) {
 			return input;
 		}

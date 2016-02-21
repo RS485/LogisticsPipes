@@ -1,12 +1,11 @@
 package logisticspipes.proxy.side;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import logisticspipes.Client.Modelhelper;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
+import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.blocks.powertile.LogisticsIC2PowerProviderTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
@@ -16,61 +15,56 @@ import logisticspipes.gui.modules.ModuleBaseGui;
 import logisticspipes.gui.popup.SelectItemOutOfList;
 import logisticspipes.gui.popup.SelectItemOutOfList.IHandleItemChoise;
 import logisticspipes.items.ItemLogisticsPipe;
+import logisticspipes.items.LogisticsItem;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.DummyContainerSlotClick;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
-import logisticspipes.pipefxhandlers.providers.EntityBlueSparkleFXProvider;
-import logisticspipes.pipefxhandlers.providers.EntityGoldSparkleFXProvider;
-import logisticspipes.pipefxhandlers.providers.EntityGreenSparkleFXProvider;
-import logisticspipes.pipefxhandlers.providers.EntityLightGreenSparkleFXProvider;
-import logisticspipes.pipefxhandlers.providers.EntityLightRedSparkleFXProvider;
-import logisticspipes.pipefxhandlers.providers.EntityOrangeSparkleFXProvider;
-import logisticspipes.pipefxhandlers.providers.EntityRedSparkleFXProvider;
-import logisticspipes.pipefxhandlers.providers.EntityVioletSparkleFXProvider;
-import logisticspipes.pipefxhandlers.providers.EntityWhiteSparkleFXProvider;
+import logisticspipes.pipefxhandlers.providers.*;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
+import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.IProxy;
-import logisticspipes.renderer.LogisticsPipeItemRenderer;
+import logisticspipes.reference.Reference;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.renderer.LogisticsSolidBlockWorldRenderer;
 import logisticspipes.renderer.newpipe.GLRenderListHandler;
-import logisticspipes.textures.Textures;
 import logisticspipes.utils.FluidIdentifier;
+import logisticspipes.utils.UtilWorld;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-
-import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.client.registry.ClientRegistry;
-import cpw.mods.fml.client.registry.RenderingRegistry;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.registry.GameRegistry;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClientProxy implements IProxy {
 
-	private IItemRenderer pipeRenderer;
+	private static ArrayList<BlockModelEntry> blocksToRegister = new ArrayList();
+	private static ArrayList<ItemModelEntry> itemsToRegister = new ArrayList();
+	private static ArrayList<PipeModelEntry> PipesToRegister = new ArrayList();
 
 	@Override
 	public String getSide() {
@@ -149,17 +143,17 @@ public class ClientProxy implements IProxy {
 	@Override
 	public int getDimensionForWorld(World world) {
 		if (world instanceof WorldServer) {
-			return ((WorldServer) world).provider.dimensionId;
+			return ((WorldServer) world).provider.getDimensionId();
 		}
 		if (world instanceof WorldClient) {
-			return ((WorldClient) world).provider.dimensionId;
+			return ((WorldClient) world).provider.getDimensionId();
 		}
 		return world.getWorldInfo().getVanillaDimension();
 	}
 
 	@Override
-	public LogisticsTileGenericPipe getPipeInDimensionAt(int dimension, int x, int y, int z, EntityPlayer player) {
-		return ClientProxy.getPipe(DimensionManager.getWorld(dimension), x, y, z);
+	public LogisticsTileGenericPipe getPipeInDimensionAt(int dimension, BlockPos pos, EntityPlayer player) {
+		return ClientProxy.getPipe(DimensionManager.getWorld(dimension),pos);
 	}
 
 	// BuildCraft method
@@ -167,17 +161,15 @@ public class ClientProxy implements IProxy {
 	 * Retrieves pipe at specified coordinates if any.
 	 * 
 	 * @param world
-	 * @param x
-	 * @param y
-	 * @param z
+	 * @param pos
 	 * @return
 	 */
-	private static LogisticsTileGenericPipe getPipe(World world, int x, int y, int z) {
-		if (world == null || !world.blockExists(x, y, z)) {
+	private static LogisticsTileGenericPipe getPipe(World world, BlockPos pos) {
+		if (world == null || !UtilWorld.blockExists(pos ,world)) {
 			return null;
 		}
 
-		final TileEntity tile = world.getTileEntity(x, y, z);
+		final TileEntity tile = world.getTileEntity(pos);
 		if (!(tile instanceof LogisticsTileGenericPipe)) {
 			return null;
 		}
@@ -186,19 +178,6 @@ public class ClientProxy implements IProxy {
 	}
 
 	// BuildCraft method end
-
-	@Override
-	public void addLogisticsPipesOverride(IIconRegister par1IIconRegister, int index, String override1, String override2, boolean flag) {
-		if (par1IIconRegister != null) {
-			if ("NewPipeTexture".equals(override2) && !override1.contains("status_overlay")) {
-				Textures.LPnewPipeIconProvider.setIcon(index, par1IIconRegister.registerIcon("logisticspipes:" + override1.replace("pipes/", "pipes/new_texture/")));
-			} else if (flag) {
-				Textures.LPpipeIconProvider.setIcon(index, par1IIconRegister.registerIcon("logisticspipes:" + override1));
-			} else {
-				Textures.LPpipeIconProvider.setIcon(index, par1IIconRegister.registerIcon("logisticspipes:" + override1.replace("pipes/", "pipes/overlay_gen/") + "/" + override2.replace("pipes/status_overlay/", "")));
-			}
-		}
-	}
 
 	@Override
 	public void sendBroadCast(String message) {
@@ -226,11 +205,6 @@ public class ClientProxy implements IProxy {
 	}
 
 	@Override
-	public void setIconProviderFromPipe(ItemLogisticsPipe item, CoreUnroutedPipe dummyPipe) {
-		item.setPipesIcons(dummyPipe.getIconProvider());
-	}
-
-	@Override
 	public LogisticsModule getModuleFromGui() {
 		if (FMLClientHandler.instance().getClient().currentScreen instanceof ModuleBaseGui) {
 			return ((ModuleBaseGui) FMLClientHandler.instance().getClient().currentScreen).getModule();
@@ -238,13 +212,6 @@ public class ClientProxy implements IProxy {
 		return null;
 	}
 
-	@Override
-	public IItemRenderer getPipeItemRenderer() {
-		if (pipeRenderer == null) {
-			pipeRenderer = new LogisticsPipeItemRenderer(false);
-		}
-		return pipeRenderer;
-	}
 
 	@Override
 	public boolean checkSinglePlayerOwner(String commandSenderName) {
@@ -280,6 +247,93 @@ public class ClientProxy implements IProxy {
 			}
 		} else {
 			throw new UnsupportedOperationException(String.valueOf(Minecraft.getMinecraft().currentScreen));
+		}
+	}
+
+	@Override
+	public void registerItemRenders() {
+
+	}
+
+	@Override
+	public void registerBlockRenderers() {
+
+	}
+
+	@Override
+	public void registerPipeRenderers() {
+
+	}
+
+	@Override
+	public void registerBlockForMeshing(LogisticsSolidBlock block, int metadata, String name) {
+		{
+			for (BlockModelEntry blockModelEntry : blocksToRegister)
+			{
+				Modelhelper.registerBlock(blockModelEntry.block, blockModelEntry.metadata, Reference.MOD_ID + ":" + blockModelEntry.name
+				);
+			}
+		}
+
+	}
+
+	@Override
+	public void registerItemForMeshing(LogisticsItem item, int metadata, String name) {
+		{
+			for (ItemModelEntry ItemModelEntry : itemsToRegister)
+			{
+				Modelhelper.registerItem(ItemModelEntry.item, ItemModelEntry.metadata, Reference.MOD_ID + ":" + ItemModelEntry.name
+				);
+			}
+		}
+
+	}
+
+	@Override
+	public void registerPipeForMeshing(LogisticsTileGenericPipe block, int metadata, String name) {
+		{
+			for (PipeModelEntry pipeModelEntry : PipesToRegister)
+			{
+				Modelhelper.registerBlock(pipeModelEntry.block, pipeModelEntry.metadata, Reference.MOD_ID + ":" + pipeModelEntry.name
+				);
+			}
+		}
+
+	}
+	private static class BlockModelEntry
+	{
+		public LogisticsSolidBlock block;
+		public int metadata;
+		public String name;
+		public BlockModelEntry(LogisticsSolidBlock block, int metadata, String name)
+		{
+			this.block = block;
+			this.metadata = metadata;
+			this.name = name;
+		}
+	}
+	private static class ItemModelEntry
+	{
+		public LogisticsItem item;
+		public int metadata;
+		public String name;
+		public ItemModelEntry(LogisticsItem item, int metadata, String name)
+		{
+			this.item = item;
+			this.metadata = metadata;
+			this.name = name;
+		}
+	}
+	private static class PipeModelEntry
+	{
+		public LogisticsBlockGenericPipe block;
+		public int metadata;
+		public String name;
+		public PipeModelEntry(LogisticsBlockGenericPipe block, int metadata, String name)
+		{
+			this.block = block;
+			this.metadata = metadata;
+			this.name = name;
 		}
 	}
 }

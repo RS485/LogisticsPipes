@@ -1,9 +1,5 @@
 package logisticspipes.renderer.newpipe;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 import logisticspipes.LPConstants;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
@@ -21,17 +17,20 @@ import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer.Block
 import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer.CoverSides;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.textures.Textures;
+import logisticspipes.utils.UtilEnumFacing;
 import logisticspipes.utils.tuples.LPPosition;
-
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.client.registry.ISimpleBlockRenderingHandler;
 
-import net.minecraftforge.common.util.ForgeDirection;
-
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandler {
 
@@ -42,7 +41,7 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 
 	@Override
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
-		Tessellator tess = Tessellator.instance;
+		Tessellator tess = Tessellator.getInstance();
 		TileEntity tile = world.getTileEntity(x, y, z);
 		LogisticsTileGenericPipe pipeTile = (LogisticsTileGenericPipe) tile;
 		PipeRenderState renderState = pipeTile.renderState;
@@ -62,7 +61,7 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 				}
 			}
 
-			renderState.currentTexture = icons.getIcon(renderState.textureMatrix.getTextureIndex(ForgeDirection.UNKNOWN));
+			renderState.currentTexture = icons.getIcon(renderState.textureMatrix.getTextureIndex(EnumFacing.OR));
 			((LogisticsBlockGenericPipe) block).setRenderAllSides();
 			block.setBlockBounds(0, 0, 0, 1, 1, 1);
 			renderer.setRenderBoundsFromBlock(block);
@@ -96,7 +95,7 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 		tess.addTranslation(0.00002F, 0.00002F, 0.00002F);
 		renderer.setRenderBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing dir : UtilEnumFacing.VALID_DIRECTIONS) {
 			if (pipeTile.tilePart.hasPipePluggable(dir)) {
 				IBCPipePluggable p = pipeTile.tilePart.getBCPipePluggable(dir);
 				p.renderPluggable(renderer, dir, LogisticsPipeWorldRenderer.renderPass, x, y, z);
@@ -105,11 +104,11 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 		tess.addTranslation(-0.00002F, -0.00002F, -0.00002F);
 
 		boolean solidSides[] = new boolean[6];
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing dir : UtilEnumFacing.VALID_DIRECTIONS) {
 			LPPosition pos = new LPPosition((TileEntity) pipeTile);
 			pos.moveForward(dir);
-			Block blockSide = pos.getBlock(pipeTile.getWorldObj());
-			if (blockSide == null || !blockSide.isSideSolid(pipeTile.getWorldObj(), pos.getX(), pos.getY(), pos.getZ(), dir.getOpposite()) || renderState.pipeConnectionMatrix.isConnected(dir)) {} else {
+			Block blockSide = pos.getBlock(pipeTile.getWorld());
+			if (blockSide == null || !blockSide.isSideSolid(pipeTile.getWorld(), pos.getX(), pos.getY(), pos.getZ(), dir.getOpposite()) || renderState.pipeConnectionMatrix.isConnected(dir)) {} else {
 				solidSides[dir.ordinal()] = true;
 			}
 		}

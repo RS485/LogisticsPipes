@@ -26,9 +26,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import forestry.api.apiculture.EnumBeeChromosome;
 import forestry.api.apiculture.EnumBeeType;
@@ -204,7 +204,7 @@ public class ForestryProxy implements IForestryProxy {
 	 * Returns a String of a uid after the one passed in.
 	 * 
 	 * @param uid
-	 *            The uid used as a reference.
+	 *            The uid used as a Reference.
 	 * @param world
 	 *            The world to check in.
 	 * @return String of uid after the one passed in.
@@ -231,7 +231,7 @@ public class ForestryProxy implements IForestryProxy {
 	 * Returns a String of a uid before the one passed in.
 	 * 
 	 * @param uid
-	 *            The uid used as a reference.
+	 *            The uid used as a Reference.
 	 * @param world
 	 * @return String of uid before the one passed in.
 	 */

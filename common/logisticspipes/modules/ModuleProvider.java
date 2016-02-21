@@ -1,20 +1,7 @@
 package logisticspipes.modules;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-
 import logisticspipes.gui.hud.modules.HUDProviderModule;
-import logisticspipes.interfaces.IClientInformationProvider;
-import logisticspipes.interfaces.IHUDModuleHandler;
-import logisticspipes.interfaces.IHUDModuleRenderer;
-import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.interfaces.ILegacyActiveModule;
-import logisticspipes.interfaces.IModuleInventoryReceive;
-import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.*;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
@@ -51,27 +38,25 @@ import logisticspipes.routing.order.LogisticsItemOrder;
 import logisticspipes.routing.order.LogisticsOrder;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
+import logisticspipes.utils.UtilEnumFacing;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 
-import net.minecraftforge.common.util.ForgeDirection;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.*;
+import java.util.Map.Entry;
 
 @CCType(name = "Provider Module")
 public class ModuleProvider extends LogisticsSneakyDirectionModule implements ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive {
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Items to provide (or empty for all)", 1);
-	private ForgeDirection _sneakyDirection = ForgeDirection.UNKNOWN;
+	private EnumFacing _sneakyDirection = UtilEnumFacing.UNKNOWN;
 
 	private boolean isActive = false;
 
@@ -99,23 +84,23 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 		isExcludeFilter = nbttagcompound.getBoolean("filterisexclude");
 		_extractionMode = ExtractionMode.getMode(nbttagcompound.getInteger("extractionMode"));
 		if (nbttagcompound.hasKey("sneakydirection")) {
-			_sneakyDirection = ForgeDirection.values()[nbttagcompound.getInteger("sneakydirection")];
+			_sneakyDirection = EnumFacing.values()[nbttagcompound.getInteger("sneakydirection")];
 		} else if (nbttagcompound.hasKey("sneakyorientation")) {
 			//convert sneakyorientation to sneakydirection
 			int t = nbttagcompound.getInteger("sneakyorientation");
 			switch (t) {
 				default:
 				case 0:
-					_sneakyDirection = ForgeDirection.UNKNOWN;
+					_sneakyDirection = UtilEnumFacing.UNKNOWN;
 					break;
 				case 1:
-					_sneakyDirection = ForgeDirection.UP;
+					_sneakyDirection = EnumFacing.UP;
 					break;
 				case 2:
-					_sneakyDirection = ForgeDirection.SOUTH;
+					_sneakyDirection = EnumFacing.SOUTH;
 					break;
 				case 3:
-					_sneakyDirection = ForgeDirection.DOWN;
+					_sneakyDirection = EnumFacing.DOWN;
 					break;
 			}
 		}
@@ -134,12 +119,12 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 	}
 
 	@Override
-	public ForgeDirection getSneakyDirection() {
+	public EnumFacing getSneakyDirection() {
 		return _sneakyDirection;
 	}
 
 	@Override
-	public void setSneakyDirection(ForgeDirection sneakyDirection) {
+	public void setSneakyDirection(EnumFacing sneakyDirection) {
 		_sneakyDirection = sneakyDirection;
 		if(MainProxy.isServer(this._world.getWorld())) {
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(ExtractorModuleMode.class).setDirection(_sneakyDirection).setModulePos(this), localModeWatchers);
@@ -156,6 +141,11 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 	@Override
 	protected ModuleInHandGuiProvider getInHandGuiProvider() {
 		return NewGuiHandler.getGui(ProviderModuleInHand.class);
+	}
+
+	@Override
+	public BlockPos getblockpos() {
+		return null;
 	}
 
 	protected int neededEnergy() {
@@ -502,9 +492,4 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 		return false;
 	}
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleProvider");
-	}
 }

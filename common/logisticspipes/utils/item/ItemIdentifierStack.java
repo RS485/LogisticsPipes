@@ -8,19 +8,19 @@
 
 package logisticspipes.utils.item;
 
-import java.util.LinkedList;
-
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.utils.tuples.Triplet;
-
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import java.util.LinkedList;
+
+
 
 public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack>, ILPCCTypeHolder {
 
@@ -122,9 +122,9 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 		return list;
 	}
 
-	public static LinkedList<ItemIdentifierStack> getListSendQueue(LinkedList<Triplet<IRoutedItem, ForgeDirection, ItemSendMode>> _sendQueue) {
+	public static LinkedList<ItemIdentifierStack> getListSendQueue(LinkedList<Triplet<IRoutedItem, EnumFacing, ItemSendMode>> _sendQueue) {
 		LinkedList<ItemIdentifierStack> list = new LinkedList<ItemIdentifierStack>();
-		for (Triplet<IRoutedItem, ForgeDirection, ItemSendMode> part : _sendQueue) {
+		for (Triplet<IRoutedItem, EnumFacing, ItemSendMode> part : _sendQueue) {
 			if (part == null) {
 				list.add(null);
 			} else {

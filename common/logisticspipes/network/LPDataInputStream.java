@@ -1,13 +1,8 @@
 package logisticspipes.network;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.EnumSet;
-import java.util.List;
-
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.Unpooled;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.request.resources.IResource;
@@ -22,19 +17,19 @@ import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
-
 import net.minecraft.item.Item;
-import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTSizeTracker;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.buffer.Unpooled;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.EnumSet;
+import java.util.List;
 
 public class LPDataInputStream extends DataInputStream {
 
@@ -46,19 +41,19 @@ public class LPDataInputStream extends DataInputStream {
 		super(new ByteBufInputStream(inputBytes));
 	}
 
-	public ForgeDirection readForgeDirection() throws IOException {
+	public EnumFacing readEnumFacing() throws IOException {
 		int dir = in.read();
 		if (dir == 10) {
 			return null;
 		}
-		return ForgeDirection.values()[dir];
+		return EnumFacing.values()[dir];
 	}
 
 	public ExitRoute readExitRoute(World world) throws IOException {
 		IRouter destination = readIRouter(world);
 		IRouter root = readIRouter(world);
-		ForgeDirection exitOri = readForgeDirection();
-		ForgeDirection insertOri = readForgeDirection();
+		EnumFacing exitOri = readEnumFacing();
+		EnumFacing insertOri = readEnumFacing();
 		EnumSet<PipeRoutingConnectionType> connectionDetails = this.readEnumSet(PipeRoutingConnectionType.class);
 		double distanceToDestination = readDouble();
 		double destinationDistanceToRoot = readDouble();
@@ -127,17 +122,18 @@ public class LPDataInputStream extends DataInputStream {
 		}
 		return bits;
 	}
-
+//TODO // FIXME: 19-2-2016
 	public NBTTagCompound readNBTTagCompound() throws IOException {
-		short legth = readShort();
-		if (legth < 0) {
-			return null;
-		} else {
-			byte[] array = new byte[legth];
-			this.readFully(array);
-			return CompressedStreamTools.func_152457_a(array, new NBTSizeTracker(Long.MAX_VALUE));
-		}
+//		short legth = readShort();
+//		if (legth < 0) {
+//			return null;
+//		} else {
+//			byte[] array = new byte[legth];
+//			this.readFully(array);
+//			return CompressedStreamTools.func_152457_a(array, new NBTSizeTracker(Long.MAX_VALUE));
+//		}
 
+		return null;
 	}
 
 	public boolean[] readBooleanArray() throws IOException {

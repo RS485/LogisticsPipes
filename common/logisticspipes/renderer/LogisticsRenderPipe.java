@@ -27,7 +27,7 @@ import logisticspipes.utils.tuples.Pair;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.fontRendererObj;
 import net.minecraft.client.model.ModelSign;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -48,7 +48,7 @@ import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.IItemRenderer.ItemRenderType;
 import net.minecraftforge.client.IItemRenderer.ItemRendererHelper;
 import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -136,7 +136,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 	private void renderSolids(CoreUnroutedPipe pipe, double x, double y, double z, float partialTickTime) {
 		GL11.glPushMatrix();
 
-		float light = pipe.container.getWorldObj().getLightBrightness(pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord);
+		float light = pipe.container.getWorld().getLightBrightness(pipe.container.xCoord, pipe.container.yCoord, pipe.container.zCoord);
 
 		int count = 0;
 		for (LPTravelingItem item : pipe.transport.items) {
@@ -154,7 +154,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			double boxScale = 1;
 
 			if (fPos < 0.5) {
-				if (item.input == ForgeDirection.UNKNOWN) {
+				if (item.input == UtilEnumFacing.UNKNOWN) {
 					continue;
 				}
 				if (!pipe.container.renderState.pipeConnectionMatrix.isConnected(item.input.getOpposite())) {
@@ -162,7 +162,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 				}
 				pos.moveForward(item.input.getOpposite(), 0.5F - fPos);
 			} else {
-				if (item.output == ForgeDirection.UNKNOWN) {
+				if (item.output == UtilEnumFacing.UNKNOWN) {
 					continue;
 				}
 				if (!pipe.container.renderState.pipeConnectionMatrix.isConnected(item.output)) {
@@ -187,33 +187,33 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 				continue;
 			}
 			ItemStack itemstack = item.getItemIdentifierStack().makeNormalStack();
-			doRenderItem(itemstack, pipe.container.getWorldObj(), x + pos.getXD(), y + pos.getYD(), z + pos.getZD(), light, 0.75F, boxScale, partialTickTime);
+			doRenderItem(itemstack, pipe.container.getWorld(), x + pos.getXD(), y + pos.getYD(), z + pos.getZD(), light, 0.75F, boxScale, partialTickTime);
 			count++;
 		}
 		count = 0;
 		float dist = 0.135F;
 		LPPosition pos = new LPPosition(0.5D, 0.5D, 0.5D);
-		pos.moveForward(ForgeDirection.SOUTH, dist);
-		pos.moveForward(ForgeDirection.EAST, dist);
-		pos.moveForward(ForgeDirection.UP, dist);
+		pos.moveForward(EnumFacing.SOUTH, dist);
+		pos.moveForward(EnumFacing.EAST, dist);
+		pos.moveForward(EnumFacing.UP, dist);
 		for (Pair<ItemIdentifierStack, Pair<Integer, Integer>> item : pipe.transport._itemBuffer) {
 			if (item == null || item.getValue1() == null) {
 				continue;
 			}
 			ItemStack itemstack = item.getValue1().makeNormalStack();
-			doRenderItem(itemstack, pipe.container.getWorldObj(), x + pos.getXD(), y + pos.getYD(), z + pos.getZD(), light, 0.25F, 0, partialTickTime);
+			doRenderItem(itemstack, pipe.container.getWorld(), x + pos.getXD(), y + pos.getYD(), z + pos.getZD(), light, 0.25F, 0, partialTickTime);
 			count++;
 			if (count >= 27) {
 				break;
 			} else if (count % 9 == 0) {
-				pos.moveForward(ForgeDirection.SOUTH, dist * 2);
-				pos.moveForward(ForgeDirection.EAST, dist * 2);
-				pos.moveForward(ForgeDirection.DOWN, dist);
+				pos.moveForward(EnumFacing.SOUTH, dist * 2);
+				pos.moveForward(EnumFacing.EAST, dist * 2);
+				pos.moveForward(EnumFacing.DOWN, dist);
 			} else if (count % 3 == 0) {
-				pos.moveForward(ForgeDirection.SOUTH, dist * 2);
-				pos.moveForward(ForgeDirection.WEST, dist);
+				pos.moveForward(EnumFacing.SOUTH, dist * 2);
+				pos.moveForward(EnumFacing.WEST, dist);
 			} else {
-				pos.moveForward(ForgeDirection.NORTH, dist);
+				pos.moveForward(EnumFacing.NORTH, dist);
 			}
 		}
 
@@ -234,25 +234,25 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		GL11.glPopMatrix();
 	}
 
-	private boolean needDistance(List<Pair<ForgeDirection, IPipeSign>> list) {
-		List<Pair<ForgeDirection, IPipeSign>> copy = new ArrayList<Pair<ForgeDirection, IPipeSign>>(list);
-		Iterator<Pair<ForgeDirection, IPipeSign>> iter = copy.iterator();
+	private boolean needDistance(List<Pair<EnumFacing, IPipeSign>> list) {
+		List<Pair<EnumFacing, IPipeSign>> copy = new ArrayList<Pair<EnumFacing, IPipeSign>>(list);
+		Iterator<Pair<EnumFacing, IPipeSign>> iter = copy.iterator();
 		boolean north = false, south = false, east = false, west = false;
 		while (iter.hasNext()) {
-			Pair<ForgeDirection, IPipeSign> pair = iter.next();
-			if (pair.getValue1() == ForgeDirection.UP || pair.getValue1() == ForgeDirection.DOWN || pair.getValue1() == ForgeDirection.UNKNOWN) {
+			Pair<EnumFacing, IPipeSign> pair = iter.next();
+			if (pair.getValue1() == EnumFacing.UP || pair.getValue1() == EnumFacing.DOWN || pair.getValue1() == UtilEnumFacing.UNKNOWN) {
 				iter.remove();
 			}
-			if (pair.getValue1() == ForgeDirection.NORTH) {
+			if (pair.getValue1() == EnumFacing.NORTH) {
 				north = true;
 			}
-			if (pair.getValue1() == ForgeDirection.SOUTH) {
+			if (pair.getValue1() == EnumFacing.SOUTH) {
 				south = true;
 			}
-			if (pair.getValue1() == ForgeDirection.EAST) {
+			if (pair.getValue1() == EnumFacing.EAST) {
 				east = true;
 			}
-			if (pair.getValue1() == ForgeDirection.WEST) {
+			if (pair.getValue1() == EnumFacing.WEST) {
 				west = true;
 			}
 		}
@@ -270,8 +270,8 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 
 	private void renderPipeSigns(CoreRoutedPipe pipe, double x, double y, double z, float partialTickTime) {
 		if (!pipe.getPipeSigns().isEmpty()) {
-			List<Pair<ForgeDirection, IPipeSign>> list = pipe.getPipeSigns();
-			for (Pair<ForgeDirection, IPipeSign> pair : list) {
+			List<Pair<EnumFacing, IPipeSign>> list = pipe.getPipeSigns();
+			for (Pair<EnumFacing, IPipeSign> pair : list) {
 				if (pipe.container.renderState.pipeConnectionMatrix.isConnected(pair.getValue1())) {
 					continue;
 				}
@@ -452,7 +452,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		GL11.glPopMatrix();
 	}
 
-	public String cut(String name, FontRenderer renderer) {
+	public String cut(String name, fontRendererObj renderer) {
 		if (renderer.getStringWidth(name) < 90) {
 			return name;
 		}
@@ -502,7 +502,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			FluidStack fluidStack = trans.renderCache[i];
 
 			if (fluidStack != null && fluidStack.amount > 0) {
-				DisplayFluidList d = getListFromBuffer(fluidStack, pipe.container.getWorldObj());
+				DisplayFluidList d = getListFromBuffer(fluidStack, pipe.container.getWorld());
 
 				if (d == null) {
 					continue;
@@ -514,7 +514,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 				GL11.glPushMatrix();
 				int list = 0;
 
-				switch (ForgeDirection.VALID_DIRECTIONS[i]) {
+				switch (UtilEnumFacing.VALID_DIRECTIONS[i]) {
 					case UP:
 						above = true;
 						list = d.sideVertical[stage];
@@ -544,10 +544,10 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			}
 		}
 		// CENTER
-		FluidStack fluidStack = trans.renderCache[ForgeDirection.UNKNOWN.ordinal()];
+		FluidStack fluidStack = trans.renderCache[UtilEnumFacing.UNKNOWN.ordinal()];
 
 		if (fluidStack != null && fluidStack.amount > 0) {
-			DisplayFluidList d = getListFromBuffer(fluidStack, pipe.container.getWorldObj());
+			DisplayFluidList d = getListFromBuffer(fluidStack, pipe.container.getWorld());
 
 			if (d != null) {
 				// XXX int stage = (int) ((float) fluidStack.amount / (float) (trans.getCapacity()) * (LIQUID_STAGES - 1));

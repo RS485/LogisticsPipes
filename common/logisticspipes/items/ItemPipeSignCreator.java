@@ -1,29 +1,28 @@
 package logisticspipes.items;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.signs.CraftingPipeSign;
 import logisticspipes.pipes.signs.IPipeSign;
 import logisticspipes.pipes.signs.ItemAmountPipeSign;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.UtilEnumFacing;
 import logisticspipes.utils.string.StringUtils;
-
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-import net.minecraftforge.common.util.ForgeDirection;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ItemPipeSignCreator extends LogisticsItem {
 
@@ -38,14 +37,14 @@ public class ItemPipeSignCreator extends LogisticsItem {
 	}
 
 	@Override
-	public boolean onItemUseFirst(ItemStack itemStack, EntityPlayer player, World world, int x, int y, int z, int sideinput, float hitX, float hitY, float hitZ) {
+	public boolean onItemUseFirst(ItemStack itemStack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ) {
 		if (MainProxy.isClient(world)) {
 			return false;
 		}
 		if (itemStack.getItemDamage() > this.getMaxDamage() || itemStack.stackSize == 0) {
 			return false;
 		}
-		TileEntity tile = world.getTileEntity(x, y, z);
+		TileEntity tile = world.getTileEntity(pos);
 		if (!(tile instanceof LogisticsTileGenericPipe)) {
 			return false;
 		}
@@ -56,9 +55,9 @@ public class ItemPipeSignCreator extends LogisticsItem {
 		itemStack.getTagCompound().setInteger("PipeClicked", 0);
 
 		int mode = itemStack.getTagCompound().getInteger("CreatorMode");
-
-		ForgeDirection dir = ForgeDirection.getOrientation(sideinput);
-		if (dir == ForgeDirection.UNKNOWN) {
+// FIXME: 21-2-2016
+		EnumFacing dir = UtilEnumFacing.getOrientation(0);
+		if (dir == UtilEnumFacing.UNKNOWN) {
 			return false;
 		}
 
@@ -99,42 +98,6 @@ public class ItemPipeSignCreator extends LogisticsItem {
 				itemStack.damageItem(-1, player);
 			}
 			return true;
-		}
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister par1IconRegister) {
-		super.registerIcons(par1IconRegister); // Fallback
-		for (int i = 0; i < ItemPipeSignCreator.signTypes.size(); i++) {
-			itemIcon[i] = par1IconRegister.registerIcon("logisticspipes:" + getUnlocalizedName().replace("item.", "") + "." + i);
-		}
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public IIcon getIconIndex(ItemStack stack) {
-		if (!stack.hasTagCompound()) {
-			stack.setTagCompound(new NBTTagCompound());
-		}
-		int mode = stack.getTagCompound().getInteger("CreatorMode");
-		if (mode < ItemPipeSignCreator.signTypes.size()) {
-			return itemIcon[mode];
-		} else {
-			return super.getIconIndex(stack); // Fallback
-		}
-	}
-
-	@Override
-	public IIcon getIcon(ItemStack stack, int pass) {
-		if (!stack.hasTagCompound()) {
-			stack.setTagCompound(new NBTTagCompound());
-		}
-		int mode = stack.getTagCompound().getInteger("CreatorMode");
-		if (mode < ItemPipeSignCreator.signTypes.size()) {
-			return itemIcon[mode];
-		} else {
-			return super.getIcon(stack, pass); // Fallback
 		}
 	}
 

@@ -18,8 +18,8 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IIcon;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import org.lwjgl.opengl.GL11;
 
@@ -58,7 +58,7 @@ public class GuiApiaristSink extends ModuleBaseGui {
 			GL11.glColor4f(colorR, colorG, colorB, 1.0F);
 
 			// Render icon
-			Tessellator var9 = Tessellator.instance;
+			Tessellator var9 = Tessellator.getInstance();
 			var9.startDrawingQuads();
 			var9.addVertexWithUV(x, y + 16, zLevel, icon.getMinU(), icon.getMaxV());
 			var9.addVertexWithUV(x + 16, y + 16, zLevel, icon.getMaxU(), icon.getMaxV());
@@ -88,14 +88,7 @@ public class GuiApiaristSink extends ModuleBaseGui {
 			this.row = row;
 		}
 
-		@Override
-		@SideOnly(Side.CLIENT)
-		public IIcon getTextureIcon() {
-			if (setting.filterType == null) {
-				return null;
-			}
-			return SimpleServiceLocator.forestryProxy.getIconFromTextureManager("analyzer/" + setting.filterType.icon);
-		}
+
 
 		@Override
 		public void mouseClicked(int button) {

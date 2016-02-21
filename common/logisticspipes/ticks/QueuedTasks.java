@@ -1,16 +1,15 @@
 package logisticspipes.ticks;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.concurrent.Callable;
-
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.utils.tuples.Pair;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.concurrent.Callable;
 
 public class QueuedTasks {
 

@@ -1,8 +1,5 @@
 package logisticspipes.modules;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -16,14 +13,12 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.BlockPos;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientInformationProvider {
 
@@ -60,6 +55,11 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 
 	@Override
 	protected ModuleInHandGuiProvider getInHandGuiProvider() {
+		return null;
+	}
+
+	@Override
+	public BlockPos getblockpos() {
 		return null;
 	}
 
@@ -113,11 +113,5 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 	@Override
 	public boolean recievePassive() {
 		return true;
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
-		return null;
 	}
 }

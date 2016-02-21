@@ -1,19 +1,17 @@
 package logisticspipes.pipes;
 
-import java.util.LinkedList;
-
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
-
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
-
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidHandler;
+
+import java.util.LinkedList;
 
 public class PipeFluidExtractor extends PipeFluidInsertion {
 
@@ -40,7 +38,7 @@ public class PipeFluidExtractor extends PipeFluidInsertion {
 		}
 	}
 
-	private void extractFrom(IFluidHandler container, ForgeDirection side) {
+	private void extractFrom(IFluidHandler container, EnumFacing side) {
 		int i = side.ordinal();
 		FluidStack contained = ((PipeFluidTransportLogistics) transport).getTankInfo(side)[0].fluid;
 		int amountMissing = ((PipeFluidTransportLogistics) transport).getSideCapacity() - (contained != null ? contained.amount : 0);

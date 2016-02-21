@@ -19,7 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import cofh.api.energy.EnergyStorage;
 import cofh.api.energy.IEnergyReceiver;
@@ -37,22 +37,22 @@ public class CoFHPowerProxy implements ICoFHPowerProxy {
 		return new ICoFHEnergyReceiver() {
 
 			@Override
-			public int getMaxEnergyStored(ForgeDirection opposite) {
+			public int getMaxEnergyStored(EnumFacing opposite) {
 				return handler.getMaxEnergyStored(opposite);
 			}
 
 			@Override
-			public int getEnergyStored(ForgeDirection opposite) {
+			public int getEnergyStored(EnumFacing opposite) {
 				return handler.getEnergyStored(opposite);
 			}
 
 			@Override
-			public boolean canConnectEnergy(ForgeDirection opposite) {
+			public boolean canConnectEnergy(EnumFacing opposite) {
 				return handler.canConnectEnergy(opposite);
 			}
 
 			@Override
-			public int receiveEnergy(ForgeDirection opposite, int i, boolean b) {
+			public int receiveEnergy(EnumFacing opposite, int i, boolean b) {
 				return handler.receiveEnergy(opposite, i, b);
 			}
 		};

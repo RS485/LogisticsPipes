@@ -1,18 +1,7 @@
 package logisticspipes.modules;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import logisticspipes.gui.hud.modules.HUDItemSink;
-import logisticspipes.interfaces.IClientInformationProvider;
-import logisticspipes.interfaces.IHUDModuleHandler;
-import logisticspipes.interfaces.IHUDModuleRenderer;
-import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.interfaces.IModuleInventoryReceive;
-import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.*;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
@@ -39,15 +28,12 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.BlockPos;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.*;
 
 @CCType(name = "ItemSink Module")
 public class ModuleItemSink extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive {
@@ -154,6 +140,11 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 	@Override
 	public ModuleInHandGuiProvider getInHandGuiProvider() {
 		return NewGuiHandler.getGui(ItemSinkInHand.class);
+	}
+
+	@Override
+	public BlockPos getblockpos() {
+		return null;
 	}
 
 	@Override
@@ -280,12 +271,6 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 		return true;
 	}
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleItemSink");
-	}
-
 	public void setIgnoreData(BitSet ignoreData) {
 		this.ignoreData = ignoreData;
 	}
@@ -316,7 +301,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 			if (player != null) {
 				MainProxy.sendPacketToPlayer(pak, player);
 			}
-			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(_world.getWorld()), pak);
+			MainProxy.sendPacketToAllWatchingChunk(getblockpos().getX(), getblockpos().getZ(), MainProxy.getDimensionForWorld(_world.getWorld()), pak);
 		}
 	}
 
@@ -334,7 +319,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 			if (player != null) {
 				MainProxy.sendPacketToPlayer(pak, player);
 			}
-			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(_world.getWorld()), pak);
+			MainProxy.sendPacketToAllWatchingChunk(getblockpos().getX(), getblockpos().getZ(), MainProxy.getDimensionForWorld(_world.getWorld()), pak);
 		}
 	}
 

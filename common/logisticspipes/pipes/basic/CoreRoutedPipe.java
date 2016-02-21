@@ -8,23 +8,6 @@
 
 package logisticspipes.pipes.basic;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Queue;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.UUID;
-import java.util.concurrent.PriorityBlockingQueue;
-
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
@@ -32,44 +15,19 @@ import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.asm.te.ILPTEInformation;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.config.Configs;
-import logisticspipes.interfaces.IClientState;
-import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.interfaces.ILPPositionProvider;
-import logisticspipes.interfaces.IPipeServiceProvider;
-import logisticspipes.interfaces.IPipeUpgradeManager;
-import logisticspipes.interfaces.IQueueCCEvent;
-import logisticspipes.interfaces.ISecurityProvider;
-import logisticspipes.interfaces.ISlotUpgradeManager;
-import logisticspipes.interfaces.ISubSystemPowerProvider;
-import logisticspipes.interfaces.IWatchingHandler;
-import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
-import logisticspipes.interfaces.routing.IRequireReliableTransport;
+import logisticspipes.interfaces.*;
+import logisticspipes.interfaces.routing.*;
 import logisticspipes.items.ItemPipeSignCreator;
-import logisticspipes.logisticspipes.ExtractionMode;
-import logisticspipes.logisticspipes.IAdjacentWorldAccess;
-import logisticspipes.logisticspipes.IRoutedItem;
+import logisticspipes.logisticspipes.*;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
-import logisticspipes.logisticspipes.ITrackStatistics;
-import logisticspipes.logisticspipes.PipeTransportLayer;
-import logisticspipes.logisticspipes.RouteLayer;
-import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
-import logisticspipes.network.GuiIDs;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.NewGuiHandler;
-import logisticspipes.network.PacketHandler;
+import logisticspipes.network.*;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.guis.pipe.PipeController;
 import logisticspipes.network.packets.pipe.ParticleFX;
 import logisticspipes.network.packets.pipe.PipeSignTypes;
-import logisticspipes.network.packets.pipe.RequestRoutingLasersPacket;
 import logisticspipes.network.packets.pipe.RequestSignPacket;
 import logisticspipes.network.packets.pipe.StatUpdate;
 import logisticspipes.pipefxhandlers.Particles;
@@ -85,12 +43,7 @@ import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCDirectCall;
 import logisticspipes.proxy.computers.interfaces.CCSecurtiyCheck;
 import logisticspipes.proxy.computers.interfaces.CCType;
-import logisticspipes.renderer.LogisticsHUDRenderer;
-import logisticspipes.routing.ExitRoute;
-import logisticspipes.routing.IRouter;
-import logisticspipes.routing.IRouterQueuedTask;
-import logisticspipes.routing.ItemRoutingInformation;
-import logisticspipes.routing.ServerRouter;
+import logisticspipes.routing.*;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LogisticsItemOrderManager;
 import logisticspipes.routing.order.LogisticsOrderManager;
@@ -100,21 +53,13 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.transport.PipeTransportLogistics;
-import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.CacheHolder;
-import logisticspipes.utils.FluidIdentifier;
-import logisticspipes.utils.InventoryHelper;
-import logisticspipes.utils.OrientationsUtil;
-import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.SidedInventoryMinecraftAdapter;
-import logisticspipes.utils.SinkReply;
-import logisticspipes.utils.WorldUtil;
+import logisticspipes.utils.*;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
-
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
@@ -124,13 +69,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
-
-import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
-import lombok.Getter;
+import java.io.IOException;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.PriorityBlockingQueue;
 
 @CCType(name = "LogisticsPipes:Normal")
 public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClientState, IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IPipeServiceProvider, IQueueCCEvent, ILPPositionProvider {
@@ -181,7 +129,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 
 	public int server_routing_table_size = 0;
 
-	protected final LinkedList<Triplet<IRoutedItem, ForgeDirection, ItemSendMode>> _sendQueue = new LinkedList<Triplet<IRoutedItem, ForgeDirection, ItemSendMode>>();
+	protected final LinkedList<Triplet<IRoutedItem, EnumFacing, ItemSendMode>> _sendQueue = new LinkedList<Triplet<IRoutedItem, EnumFacing, ItemSendMode>>();
 
 	protected final Map<ItemIdentifier, Queue<Pair<Integer, ItemRoutingInformation>>> queuedDataForUnroutedItems = Collections.synchronizedMap(new TreeMap<ItemIdentifier, Queue<Pair<Integer, ItemRoutingInformation>>>());
 
@@ -189,7 +137,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 
 	protected List<IInventory> _cachedAdjacentInventories;
 
-	protected ForgeDirection pointedDirection = ForgeDirection.UNKNOWN;
+	protected EnumFacing pointedDirection = UtilEnumFacing.UNKNOWN;
 	//public BaseRoutingLogic logic;
 	// from BaseRoutingLogic
 	protected int throttleTime = 20;
@@ -245,19 +193,19 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	}
 
 	@Override
-	public void queueRoutedItem(IRoutedItem routedItem, ForgeDirection from) {
+	public void queueRoutedItem(IRoutedItem routedItem, EnumFacing from) {
 		if (from == null) {
 			throw new NullPointerException();
 		}
-		_sendQueue.addLast(new Triplet<IRoutedItem, ForgeDirection, ItemSendMode>(routedItem, from, ItemSendMode.Normal));
+		_sendQueue.addLast(new Triplet<IRoutedItem, EnumFacing, ItemSendMode>(routedItem, from, ItemSendMode.Normal));
 		sendQueueChanged(false);
 	}
 
-	public void queueRoutedItem(IRoutedItem routedItem, ForgeDirection from, ItemSendMode mode) {
+	public void queueRoutedItem(IRoutedItem routedItem, EnumFacing from, ItemSendMode mode) {
 		if (from == null) {
 			throw new NullPointerException();
 		}
-		_sendQueue.addLast(new Triplet<IRoutedItem, ForgeDirection, ItemSendMode>(routedItem, from, mode));
+		_sendQueue.addLast(new Triplet<IRoutedItem, EnumFacing, ItemSendMode>(routedItem, from, mode));
 		sendQueueChanged(false);
 	}
 
@@ -270,7 +218,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		return 0;
 	}
 
-	private void sendRoutedItem(IRoutedItem routedItem, ForgeDirection from) {
+	private void sendRoutedItem(IRoutedItem routedItem, EnumFacing from) {
 
 		if (from == null) {
 			throw new NullPointerException();
@@ -337,7 +285,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		if (_cachedAdjacentInventories != null) {
 			return _cachedAdjacentInventories;
 		}
-		WorldUtil worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
+		WorldUtil worldUtil = new WorldUtil(getWorld(), xCoord, yCoord, zCoord);
 		LinkedList<IInventory> adjacent = new LinkedList<IInventory>();
 		for (AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
 			if (!(tile.tile instanceof IInventory)) {
@@ -382,9 +330,9 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		spawnParticleTick();
 		if (stillNeedReplace) {
 			stillNeedReplace = false;
-			getWorld().notifyBlockChange(getX(), getY(), getZ(), getWorld().getBlock(getX(), getY(), getZ()));
+			getWorld().notifyNeighborsOfStateExcept(pos, getWorld().getBlockState(getblockpos()));
 			/* TravelingItems are just held by a pipe, they don't need to know their world
-			 * for(Triplet<IRoutedItem, ForgeDirection, ItemSendMode> item : _sendQueue) {
+			 * for(Triplet<IRoutedItem, EnumFacing, ItemSendMode> item : _sendQueue) {
 				//assign world to any entityitem we created in readfromnbt
 				item.getValue1().getTravelingItem().setWorld(getWorld());
 			}*/
@@ -396,7 +344,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 			if (delayTo < System.currentTimeMillis()) {
 				delayTo = System.currentTimeMillis() + 200;
 				repeatFor--;
-				getWorld().markBlockForUpdate(getX(), getY(), getZ());
+				getWorld().markBlockForUpdate(BlockPos.ORIGIN);
 			}
 		}
 
@@ -428,7 +376,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		_initialInit = false;
 		if (!_sendQueue.isEmpty()) {
 			if (getItemSendMode() == ItemSendMode.Normal) {
-				Triplet<IRoutedItem, ForgeDirection, ItemSendMode> itemToSend = _sendQueue.getFirst();
+				Triplet<IRoutedItem, EnumFacing, ItemSendMode> itemToSend = _sendQueue.getFirst();
 				sendRoutedItem(itemToSend.getValue1(), itemToSend.getValue2());
 				_sendQueue.removeFirst();
 				for (int i = 0; i < 16 && !_sendQueue.isEmpty() && _sendQueue.getFirst().getValue3() == ItemSendMode.Fast; i++) {
@@ -442,7 +390,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 			} else if (getItemSendMode() == ItemSendMode.Fast) {
 				for (int i = 0; i < 16; i++) {
 					if (!_sendQueue.isEmpty()) {
-						Triplet<IRoutedItem, ForgeDirection, ItemSendMode> itemToSend = _sendQueue.getFirst();
+						Triplet<IRoutedItem, EnumFacing, ItemSendMode> itemToSend = _sendQueue.getFirst();
 						sendRoutedItem(itemToSend.getValue1(), itemToSend.getValue2());
 						_sendQueue.removeFirst();
 					}
@@ -534,7 +482,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		}
 		System.out.println();
 		System.out.println("++++++++++CONNECTIONS+++++++++++++++");
-		System.out.println(Arrays.toString(ForgeDirection.VALID_DIRECTIONS));
+		System.out.println(Arrays.toString(UtilEnumFacing.VALID_DIRECTIONS));
 		System.out.println(Arrays.toString(sr.sideDisconnected));
 		System.out.println(Arrays.toString(container.pipeConnectionsBuffer));
 		System.out.println();
@@ -616,12 +564,12 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 
 	public abstract TextureType getCenterTexture();
 
-	public TextureType getTextureType(ForgeDirection connection) {
+	public TextureType getTextureType(EnumFacing connection) {
 		if (stillNeedReplace || _initialInit) {
 			return getCenterTexture();
 		}
 
-		if (connection == ForgeDirection.UNKNOWN) {
+		if (connection == UtilEnumFacing.UNKNOWN) {
 			return getCenterTexture();
 		} else if ((router != null) && getRouter().isRoutedExit(connection)) {
 			return getRoutedTexture(connection);
@@ -648,7 +596,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		}
 	}
 
-	public TextureType getRoutedTexture(ForgeDirection connection) {
+	public TextureType getRoutedTexture(EnumFacing connection) {
 		if (getRouter().isSubPoweredExit(connection)) {
 			return Textures.LOGISTICSPIPE_SUBPOWER_TEXTURE;
 		} else {
@@ -656,7 +604,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		}
 	}
 
-	public TextureType getNonRoutedTexture(ForgeDirection connection) {
+	public TextureType getNonRoutedTexture(EnumFacing connection) {
 		if (isPowerProvider(connection)) {
 			return Textures.LOGISTICSPIPE_POWERED_TEXTURE;
 		}
@@ -683,12 +631,12 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 					tosend.add(new ParticleCount(Particles.values()[i], queuedParticles[i]));
 				}
 			}
-			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), PacketHandler.getPacket(ParticleFX.class).setParticles(tosend).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+			MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(getWorld()), PacketHandler.getPacket(ParticleFX.class).setParticles(tosend).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 		} else {
 			if (Minecraft.isFancyGraphicsEnabled()) {
 				for (int i = 0; i < queuedParticles.length; i++) {
 					if (queuedParticles[i] > 0) {
-						PipeFXRenderHandler.spawnGenericParticle(Particles.values()[i], getX(), getY(), getZ(), queuedParticles[i]);
+						PipeFXRenderHandler.spawnGenericParticle(Particles.values()[i], xCoord, yCoord, zCoord, queuedParticles[i]);
 					}
 				}
 			}
@@ -699,7 +647,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		hasQueuedParticles = false;
 	}
 
-	protected boolean isPowerProvider(ForgeDirection ori) {
+	protected boolean isPowerProvider(EnumFacing ori) {
 		TileEntity tilePipe = container.getTile(ori);
 		if (tilePipe == null || !container.canPipeConnect(tilePipe, ori)) {
 			return false;
@@ -742,7 +690,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		}
 
 		NBTTagList sendqueue = new NBTTagList();
-		for (Triplet<IRoutedItem, ForgeDirection, ItemSendMode> p : _sendQueue) {
+		for (Triplet<IRoutedItem, EnumFacing, ItemSendMode> p : _sendQueue) {
 			NBTTagCompound tagentry = new NBTTagCompound();
 			NBTTagCompound tagentityitem = new NBTTagCompound();
 			p.getValue1().writeToNBT(tagentityitem);
@@ -797,9 +745,9 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 			NBTTagCompound tagentry = sendqueue.getCompoundTagAt(i);
 			NBTTagCompound tagentityitem = tagentry.getCompoundTag("entityitem");
 			LPTravelingItemServer item = new LPTravelingItemServer(tagentityitem);
-			ForgeDirection from = ForgeDirection.values()[tagentry.getByte("from")];
+			EnumFacing from = EnumFacing.values()[tagentry.getByte("from")];
 			ItemSendMode mode = ItemSendMode.values()[tagentry.getByte("mode")];
-			_sendQueue.add(new Triplet<IRoutedItem, ForgeDirection, ItemSendMode>(item, from, mode));
+			_sendQueue.add(new Triplet<IRoutedItem, EnumFacing, ItemSendMode>(item, from, mode));
 		}
 		for (int i = 0; i < 6; i++) {
 			if (nbttagcompound.getBoolean("PipeSign_" + i)) {
@@ -807,7 +755,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 				Class<? extends IPipeSign> typeClass = ItemPipeSignCreator.signTypes.get(type);
 				try {
 					signItem[i] = typeClass.newInstance();
-					signItem[i].init(this, ForgeDirection.getOrientation(i));
+					signItem[i].init(this, UtilEnumFacing.getOrientation(i));
 					signItem[i].readFromNBT(nbttagcompound.getCompoundTag("PipeSign_" + i + "_tags"));
 				} catch (InstantiationException e) {
 					throw new RuntimeException(e);
@@ -831,7 +779,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 				if (routerId != null && !routerId.isEmpty()) {
 					routerIntId = UUID.fromString(routerId);
 				}
-				router = SimpleServiceLocator.routerManager.getOrCreateRouter(routerIntId, MainProxy.getDimensionForWorld(getWorld()), getX(), getY(), getZ(), false);
+				router = SimpleServiceLocator.routerManager.getOrCreateRouter(routerIntId, MainProxy.getDimensionForWorld(getWorld()),xCoord, yCoord, zCoord, false);
 			}
 		}
 		return router;
@@ -911,7 +859,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
 			if (MainProxy.isServer(entityplayer.worldObj)) {
 				if (settings == null || settings.openRequest) {
-					entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, getWorld(), getX(), getY(), getZ());
+					entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, getWorld(), xCoord, yCoord, zCoord);
 				} else {
 					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
 				}
@@ -919,7 +867,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 			return true;
 		}
 
-		if (SimpleServiceLocator.toolWrenchHandler.isWrenchEquipped(entityplayer) && SimpleServiceLocator.toolWrenchHandler.canWrench(entityplayer, getX(), getY(), getZ())) {
+		if (SimpleServiceLocator.toolWrenchHandler.isWrenchEquipped(entityplayer) && SimpleServiceLocator.toolWrenchHandler.canWrench(entityplayer, xCoord, yCoord, zCoord)) {
 			if (MainProxy.isServer(entityplayer.worldObj)) {
 				if (settings == null || settings.openGui) {
 					if (getLogisticsModule() != null && getLogisticsModule() instanceof LogisticsGuiModule) {
@@ -931,7 +879,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
 				}
 			}
-			SimpleServiceLocator.toolWrenchHandler.wrenchUsed(entityplayer, getX(), getY(), getZ());
+			SimpleServiceLocator.toolWrenchHandler.wrenchUsed(entityplayer, pos);
 			return true;
 		}
 
@@ -970,7 +918,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 
 	@Override
 	public LinkedList<AdjacentTile> getConnectedEntities() {
-		WorldUtil world = new WorldUtil(getWorld(), getX(), getY(), getZ());
+		WorldUtil world = new WorldUtil(getWorld(), pos);
 		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(true);
 
 		Iterator<AdjacentTile> iterator = adjacent.iterator();
@@ -1038,28 +986,28 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		}
 	}
 
-	public boolean isLockedExit(ForgeDirection orientation) {
+	public boolean isLockedExit(EnumFacing orientation) {
 		return false;
 	}
 
-	public boolean logisitcsIsPipeConnected(TileEntity tile, ForgeDirection dir) {
+	public boolean logisitcsIsPipeConnected(TileEntity tile, EnumFacing dir) {
 		return false;
 	}
 
-	public boolean disconnectPipe(TileEntity tile, ForgeDirection dir) {
+	public boolean disconnectPipe(TileEntity tile, EnumFacing dir) {
 		return false;
 	}
 
 	@Override
-	public final boolean canPipeConnect(TileEntity tile, ForgeDirection dir) {
+	public final boolean canPipeConnect(TileEntity tile, EnumFacing dir) {
 		return canPipeConnect(tile, dir, false);
 	}
 
 	public boolean globalIgnoreConnectionDisconnection = false;
 
 	@Override
-	public final boolean canPipeConnect(TileEntity tile, ForgeDirection dir, boolean ignoreSystemDisconnection) {
-		ForgeDirection side = OrientationsUtil.getOrientationOfTilewithTile(container, tile);
+	public final boolean canPipeConnect(TileEntity tile, EnumFacing dir, boolean ignoreSystemDisconnection) {
+		EnumFacing side = OrientationsUtil.getOrientationOfTilewithTile(container, tile);
 		if (isSideBlocked(side, ignoreSystemDisconnection)) {
 			return false;
 		}
@@ -1067,11 +1015,11 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	}
 
 	@Override
-	public final boolean isSideBlocked(ForgeDirection side, boolean ignoreSystemDisconnection) {
+	public final boolean isSideBlocked(EnumFacing side, boolean ignoreSystemDisconnection) {
 		if (getUpgradeManager().isSideDisconnected(side)) {
 			return true;
 		}
-		if (container != null && side != ForgeDirection.UNKNOWN && container.tilePart.hasBlockingPluggable(side)) {
+		if (container != null && side != UtilEnumFacing.UNKNOWN && container.tilePart.hasBlockingPluggable(side)) {
 			return true;
 		}
 		if (!stillNeedReplace) {
@@ -1085,7 +1033,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	public void connectionUpdate() {
 		if (container != null && !stillNeedReplace) {
 			container.scheduleNeighborChange();
-			getWorld().notifyBlockChange(getX(), getY(), getZ(), getWorld().getBlock(getX(), getY(), getZ()));
+			getWorld().notifyBlockOfStateChange(pos, IBlockAccess(pos));
 		}
 	}
 
@@ -1363,7 +1311,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	}
 
 	@Override
-	public final int getIconIndex(ForgeDirection connection) {
+	public final int getIconIndex(EnumFacing connection) {
 		TextureType texture = getTextureType(connection);
 		if (_textureBufferPowered) {
 			return texture.powered;
@@ -1547,7 +1495,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 			return null;
 		}
 		if (inv instanceof net.minecraft.inventory.ISidedInventory) {
-			inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) inv, getPointedOrientation().getOpposite(), forExtraction);
+			inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) inv, getPointedOrientation().getOpposite(), forExtraction, utilEnumFacing);
 		}
 		switch (mode) {
 			case LeaveFirst:
@@ -1569,7 +1517,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	@Override
 	public IInventoryUtil getSneakyInventory(boolean forExtraction, ModulePositionType slot, int positionInt) {
 		ISlotUpgradeManager manager = getUpgradeManager(slot, positionInt);
-		ForgeDirection insertion = getPointedOrientation().getOpposite();
+		EnumFacing insertion = getPointedOrientation().getOpposite();
 		if (manager.hasSneakyUpgrade()) {
 			insertion = manager.getSneakyOrientation();
 		}
@@ -1577,13 +1525,13 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	}
 
 	@Override
-	public IInventoryUtil getSneakyInventory(ForgeDirection _sneakyOrientation, boolean forExtraction) {
+	public IInventoryUtil getSneakyInventory(EnumFacing _sneakyOrientation, boolean forExtraction) {
 		IInventory inv = getRealInventory();
 		if (inv == null) {
 			return null;
 		}
 		if (inv instanceof net.minecraft.inventory.ISidedInventory) {
-			inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) inv, _sneakyOrientation, forExtraction);
+			inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) inv, _sneakyOrientation, forExtraction, utilEnumFacing);
 		}
 		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv, _sneakyOrientation);
 	}
@@ -1610,14 +1558,14 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	}
 
 	private TileEntity getPointedTileEntity() {
-		if (pointedDirection == ForgeDirection.UNKNOWN) {
+		if (pointedDirection == UtilEnumFacing.UNKNOWN) {
 			return null;
 		}
 		return getContainer().getTile(pointedDirection);
 	}
 
 	@Override
-	public ForgeDirection inventoryOrientation() {
+	public EnumFacing inventoryOrientation() {
 		return getPointedOrientation();
 	}
 
@@ -1658,7 +1606,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		return itemToSend;
 	}
 
-	public ForgeDirection getPointedOrientation() {
+	public EnumFacing getPointedOrientation() {
 		return pointedDirection;
 	}
 
@@ -1672,7 +1620,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		return getItemOrderManager();
 	}
 
-	public void addPipeSign(ForgeDirection dir, IPipeSign type, EntityPlayer player) {
+	public void addPipeSign(EnumFacing dir, IPipeSign type, EntityPlayer player) {
 		if (dir.ordinal() < 6) {
 			if (signItem[dir.ordinal()] == null) {
 				signItem[dir.ordinal()] = type;
@@ -1700,13 +1648,13 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 			}
 		}
 		ModernPacket packet = PacketHandler.getPacket(PipeSignTypes.class).setTypes(types).setTilePos(container);
-		MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), packet);
+		MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(getWorld()), packet);
 		MainProxy.sendPacketToPlayer(packet, player);
 		for (int i = 0; i < 6; i++) {
 			if (signItem[i] != null) {
 				packet = signItem[i].getPacket();
 				if (packet != null) {
-					MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), packet);
+					MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(getWorld()), packet);
 					MainProxy.sendPacketToPlayer(packet, player);
 				}
 			}
@@ -1714,21 +1662,21 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		refreshRender(false);
 	}
 
-	public void removePipeSign(ForgeDirection dir, EntityPlayer player) {
+	public void removePipeSign(EnumFacing dir, EntityPlayer player) {
 		if (dir.ordinal() < 6) {
 			signItem[dir.ordinal()] = null;
 		}
 		sendSignData(player);
 	}
 
-	public boolean hasPipeSign(ForgeDirection dir) {
+	public boolean hasPipeSign(EnumFacing dir) {
 		if (dir.ordinal() < 6) {
 			return signItem[dir.ordinal()] != null;
 		}
 		return false;
 	}
 
-	public void activatePipeSign(ForgeDirection dir, EntityPlayer player) {
+	public void activatePipeSign(EnumFacing dir, EntityPlayer player) {
 		if (dir.ordinal() < 6) {
 			if (signItem[dir.ordinal()] != null) {
 				signItem[dir.ordinal()].activate(player);
@@ -1736,11 +1684,11 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		}
 	}
 
-	public List<Pair<ForgeDirection, IPipeSign>> getPipeSigns() {
-		List<Pair<ForgeDirection, IPipeSign>> list = new ArrayList<Pair<ForgeDirection, IPipeSign>>();
+	public List<Pair<EnumFacing, IPipeSign>> getPipeSigns() {
+		List<Pair<EnumFacing, IPipeSign>> list = new ArrayList<Pair<EnumFacing, IPipeSign>>();
 		for (int i = 0; i < 6; i++) {
 			if (signItem[i] != null) {
-				list.add(new Pair<ForgeDirection, IPipeSign>(ForgeDirection.getOrientation(i), signItem[i]));
+				list.add(new Pair<EnumFacing, IPipeSign>(UtilEnumFacing.getOrientation(i), signItem[i]));
 			}
 		}
 		return list;
@@ -1757,7 +1705,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 				if (signItem[i] == null || signItem[i].getClass() != type) {
 					try {
 						signItem[i] = type.newInstance();
-						signItem[i].init(this, ForgeDirection.getOrientation(i));
+						signItem[i].init(this, UtilEnumFacing.getOrientation(i));
 					} catch (InstantiationException e) {
 						throw new RuntimeException(e);
 					} catch (IllegalAccessException e) {
@@ -1770,7 +1718,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		}
 	}
 
-	public IPipeSign getPipeSign(ForgeDirection dir) {
+	public IPipeSign getPipeSign(EnumFacing dir) {
 		if (dir.ordinal() < 6) {
 			return signItem[dir.ordinal()];
 		}
@@ -1801,7 +1749,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		StatusEntry entry = new StatusEntry();
 		entry.name = "Send Queue";
 		entry.subEntry = new ArrayList<StatusEntry>();
-		for (Triplet<IRoutedItem, ForgeDirection, ItemSendMode> part : _sendQueue) {
+		for (Triplet<IRoutedItem, EnumFacing, ItemSendMode> part : _sendQueue) {
 			StatusEntry subEntry = new StatusEntry();
 			subEntry.name = part.toString();
 			entry.subEntry.add(subEntry);
@@ -1839,7 +1787,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	}
 
 	@Override
-	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double traveled, double max, List<LPPosition> visited) {
+	public double getDistanceTo(int destinationint, EnumFacing ignore, ItemIdentifier ident, boolean isActive, double traveled, double max, List<LPPosition> visited) {
 		if (!stillNeedReplace) {
 			if (getRouterId() == destinationint) {
 				return 0;

@@ -155,22 +155,22 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 			}
 		}
 		if (_chassiPipe.getChassiSize() > 0) {
-			mc.fontRenderer.drawString(getModuleName(0), 40, 14, 0x404040);
+			mc.fontRendererObj.drawString(getModuleName(0), 40, 14, 0x404040);
 		}
 		if (_chassiPipe.getChassiSize() > 1) {
-			mc.fontRenderer.drawString(getModuleName(1), 40, 34, 0x404040);
+			mc.fontRendererObj.drawString(getModuleName(1), 40, 34, 0x404040);
 		}
 		if (_chassiPipe.getChassiSize() > 2) {
-			mc.fontRenderer.drawString(getModuleName(2), 40, 54, 0x404040);
+			mc.fontRendererObj.drawString(getModuleName(2), 40, 54, 0x404040);
 		}
 		if (_chassiPipe.getChassiSize() > 3) {
-			mc.fontRenderer.drawString(getModuleName(3), 40, 74, 0x404040);
+			mc.fontRendererObj.drawString(getModuleName(3), 40, 74, 0x404040);
 		}
 		if (_chassiPipe.getChassiSize() > 4) {
-			mc.fontRenderer.drawString(getModuleName(4), 40, 94, 0x404040);
-			mc.fontRenderer.drawString(getModuleName(5), 40, 114, 0x404040);
-			mc.fontRenderer.drawString(getModuleName(6), 40, 134, 0x404040);
-			mc.fontRenderer.drawString(getModuleName(7), 40, 154, 0x404040);
+			mc.fontRendererObj.drawString(getModuleName(4), 40, 94, 0x404040);
+			mc.fontRendererObj.drawString(getModuleName(5), 40, 114, 0x404040);
+			mc.fontRendererObj.drawString(getModuleName(6), 40, 134, 0x404040);
+			mc.fontRendererObj.drawString(getModuleName(7), 40, 154, 0x404040);
 		}
 	}
 

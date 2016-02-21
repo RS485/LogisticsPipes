@@ -1,17 +1,17 @@
 package logisticspipes.routing.pathfinder;
 
-import java.util.List;
-
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.LPPosition;
-
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import java.util.List;
+
+
 
 public interface IPipeInformationProvider {
 
@@ -31,7 +31,7 @@ public interface IPipeInformationProvider {
 
 	public CoreRoutedPipe getRoutingPipe();
 
-	public TileEntity getTile(ForgeDirection direction);
+	public TileEntity getTile(EnumFacing direction);
 
 	public boolean isFirewallPipe();
 
@@ -45,9 +45,9 @@ public interface IPipeInformationProvider {
 
 	public boolean isOnewayPipe();
 
-	public boolean isOutputOpen(ForgeDirection direction);
+	public boolean isOutputOpen(EnumFacing direction);
 
-	public boolean canConnect(TileEntity to, ForgeDirection direction, boolean flag);
+	public boolean canConnect(TileEntity to, EnumFacing direction, boolean flag);
 
 	public double getDistance();
 
@@ -57,9 +57,9 @@ public interface IPipeInformationProvider {
 
 	public boolean isPowerPipe();
 
-	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double travled, double max, List<LPPosition> visited);
+	public double getDistanceTo(int destinationint, EnumFacing ignore, ItemIdentifier ident, boolean isActive, double travled, double max, List<LPPosition> visited);
 
 	public boolean acceptItem(LPTravelingItem item, TileEntity from);
 
-	public void refreshTileCacheOnSide(ForgeDirection side);
+	public void refreshTileCacheOnSide(EnumFacing side);
 }

@@ -9,11 +9,9 @@
 package logisticspipes.utils.gui;
 
 import logisticspipes.utils.Color;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
-
 import org.lwjgl.opengl.GL11;
 
 public class SmallGuiButton extends GuiButton {
@@ -40,7 +38,7 @@ public class SmallGuiButton extends GuiButton {
 		if (!visible) {
 			return;
 		}
-		FontRenderer fontrenderer = minecraft.fontRenderer;
+		FontRenderer fontRendererObj = minecraft.fontRendererObj;
 		minecraft.renderEngine.bindTexture(GuiButton.buttonTextures);
 		// GL11.glBindTexture(3553 /*GL_TEXTURE_2D*/, minecraft.renderEngine.getTexture("/gui/gui.png"));
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -61,7 +59,7 @@ public class SmallGuiButton extends GuiButton {
 		} else if (flag) {
 			color = Color.getValue(Color.LIGHT_YELLOW);
 		}
-		drawCenteredString(fontrenderer, displayString, xPosition + width / 2, yPosition + (height - 8) / 2 + stringOffset, color);
+		drawCenteredString(fontRendererObj, displayString, xPosition + width / 2, yPosition + (height - 8) / 2 + stringOffset, color);
 	}
 
 }

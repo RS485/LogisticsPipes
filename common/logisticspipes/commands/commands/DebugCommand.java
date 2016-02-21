@@ -1,16 +1,11 @@
 package logisticspipes.commands.commands;
 
-import java.util.Arrays;
-
 import logisticspipes.LPConstants;
 import logisticspipes.commands.abstracts.SubCommandHandler;
-import logisticspipes.commands.commands.debug.HandCommand;
-import logisticspipes.commands.commands.debug.MeCommand;
-import logisticspipes.commands.commands.debug.PipeCommand;
-import logisticspipes.commands.commands.debug.RoutingTableCommand;
-import logisticspipes.commands.commands.debug.TargetCommand;
-
+import logisticspipes.commands.commands.debug.*;
 import net.minecraft.command.ICommandSender;
+
+import java.util.Arrays;
 
 public class DebugCommand extends SubCommandHandler {
 
@@ -23,7 +18,7 @@ public class DebugCommand extends SubCommandHandler {
 
 	@Override
 	public boolean isCommandUsableBy(ICommandSender sender) {
-		return LPConstants.DEBUG || Arrays.asList(DebugCommand.allowedPlayers).contains(sender.getCommandSenderName());
+		return LPConstants.DEBUG || Arrays.asList(DebugCommand.allowedPlayers).contains(sender.getName());
 	}
 
 	@Override

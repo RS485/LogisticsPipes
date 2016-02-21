@@ -12,8 +12,9 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
+import logisticspipes.utils.UtilEnumFacing;
+import net.minecraft.util.EnumFacing;
 
-import net.minecraftforge.common.util.ForgeDirection;
 
 /**
  * @author Krapht This class is responsible for resolving where incoming items
@@ -31,7 +32,7 @@ public class RouteLayer {
 		_pipe = pipe;
 	}
 
-	public ForgeDirection getOrientationForItem(IRoutedItem item, ForgeDirection blocked) {
+	public EnumFacing getOrientationForItem(IRoutedItem item, EnumFacing blocked) {
 
 		item.checkIDFromUUID();
 		//If a item has no destination, find one
@@ -49,7 +50,7 @@ public class RouteLayer {
 		item.checkIDFromUUID();
 		//If we still have no destination or client side unroutable, drop it
 		if (item.getDestination() < 0) {
-			return ForgeDirection.UNKNOWN;
+			return UtilEnumFacing.UNKNOWN;
 		}
 
 		//Is the destination ourself? Deliver it
@@ -68,19 +69,19 @@ public class RouteLayer {
 
 			item.setDoNotBuffer(true);
 			item.setArrived(true);
-			ForgeDirection o = _transport.itemArrived(item, blocked);
-			return o != null ? o : ForgeDirection.UNKNOWN;
+			EnumFacing o = _transport.itemArrived(item, blocked);
+			return o != null ? o : UtilEnumFacing.UNKNOWN;
 		}
 
 		//Do we now know the destination?
 		if (!_router.hasRoute(item.getDestination(), item.getTransportMode() == TransportMode.Active, item.getItemIdentifierStack().getItem())) {
-			return ForgeDirection.UNKNOWN;
+			return UtilEnumFacing.UNKNOWN;
 		}
 
 		//Which direction should we send it
 		ExitRoute exit = _router.getExitFor(item.getDestination(), item.getTransportMode() == TransportMode.Active, item.getItemIdentifierStack().getItem());
 		if (exit == null) {
-			return ForgeDirection.UNKNOWN;
+			return UtilEnumFacing.UNKNOWN;
 		}
 
 		if (item.getDistanceTracker() != null) {

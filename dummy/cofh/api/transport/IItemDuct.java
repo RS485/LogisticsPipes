@@ -1,7 +1,7 @@
 package cofh.api.transport;
 
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 /**
  * This interface is implemented on ItemDucts. Use it to attempt to eject items into an entry point.
@@ -21,6 +21,6 @@ public interface IItemDuct {
 	 *            ItemStack to be inserted. The size of this stack corresponds to the maximum amount to insert.
 	 * @return An ItemStack representing how much is remaining after the item was inserted into the Duct.
 	 */
-	public ItemStack insertItem(ForgeDirection from, ItemStack item);
+	public ItemStack insertItem(EnumFacing from, ItemStack item);
 
 }

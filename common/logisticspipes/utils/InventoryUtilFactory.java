@@ -8,16 +8,14 @@
 
 package logisticspipes.utils;
 
-import java.util.LinkedList;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
-
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import java.util.LinkedList;
 
 public class InventoryUtilFactory {
 
@@ -43,7 +41,7 @@ public class InventoryUtilFactory {
 		return null;
 	}
 
-	public SpecialInventoryHandler getUtilForInv(IInventory inv, ForgeDirection dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+	public SpecialInventoryHandler getUtilForInv(IInventory inv, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		TileEntity tile = getTileEntityFromInventory(inv);
 		if (tile == null) {
 			return null;
@@ -58,14 +56,14 @@ public class InventoryUtilFactory {
 
 	@Deprecated
 	public IInventoryUtil getInventoryUtil(IInventory inv) {
-		return getInventoryUtil(inv, ForgeDirection.UNKNOWN);
+		return getInventoryUtil(inv, UtilEnumFacing.UNKNOWN);
 	}
 
-	public IInventoryUtil getInventoryUtil(IInventory inv, ForgeDirection dir) {
+	public IInventoryUtil getInventoryUtil(IInventory inv, EnumFacing dir) {
 		return getHidingInventoryUtil(inv, dir, false, false, 0, 0);
 	}
 
-	public IInventoryUtil getHidingInventoryUtil(IInventory inv, ForgeDirection dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+	public IInventoryUtil getHidingInventoryUtil(IInventory inv, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		IInventoryUtil util = getUtilForInv(inv, dir, hideOnePerStack, hideOne, cropStart, cropEnd);
 		if (util == null) {
 			util = new InventoryUtil(InventoryHelper.getInventory(inv), hideOnePerStack, hideOne, cropStart, cropEnd);;

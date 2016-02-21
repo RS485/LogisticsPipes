@@ -30,6 +30,8 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
+import java.io.IOException;
+
 public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 
 	private static final String PREFIX = "gui.supplierpipe.";
@@ -72,12 +74,12 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 		} else {
 			name = StringUtils.translate(GuiSupplierPipe.PREFIX + "TargetInv");
 		}
-		mc.fontRenderer.drawString(name, xSize / 2 - mc.fontRenderer.getStringWidth(name) / 2, 6, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiSupplierPipe.PREFIX + "Inventory"), 18, ySize - 102, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiSupplierPipe.PREFIX + "RequestMode"), xSize - 140, ySize - 112, 0x404040);
+		mc.fontRendererObj.drawString(name, xSize / 2 - mc.fontRendererObj.getStringWidth(name) / 2, 6, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiSupplierPipe.PREFIX + "Inventory"), 18, ySize - 102, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiSupplierPipe.PREFIX + "RequestMode"), xSize - 140, ySize - 112, 0x404040);
 		if (hasPatternUpgrade) {
 			for (int i = 0; i < 9; i++) {
-				mc.fontRenderer.drawString(Integer.toString(module.slotArray[i]), 22 + i * 18, 55, 0x404040);
+				mc.fontRendererObj.drawString(Integer.toString(module.slotArray[i]), 22 + i * 18, 55, 0x404040);
 			}
 		}
 	}
@@ -149,7 +151,11 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(SlotFinderOpenGuiPacket.class).setSlot(guibutton.id - 2).setModulePos(module));
 			}
 		}
-		super.actionPerformed(guibutton);
+		try {
+			super.actionPerformed(guibutton);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void refreshMode() {

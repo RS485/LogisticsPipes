@@ -1,21 +1,16 @@
 package logisticspipes.modules;
 
-import java.util.List;
-
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.PipeLogisticsChassi.ChassiTargetInformation;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.BlockPos;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.List;
 
 public class ModuleApiaristTerminus extends LogisticsModule {
 
@@ -24,21 +19,6 @@ public class ModuleApiaristTerminus extends LogisticsModule {
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
-
-	@Override
-	public final int getX() {
-		return _service.getX();
-	}
-
-	@Override
-	public final int getY() {
-		return _service.getY();
-	}
-
-	@Override
-	public final int getZ() {
-		return _service.getZ();
-	}
 
 	private boolean replyCheck(ItemStack item) {
 		if (SimpleServiceLocator.forestryProxy.isDrone(item)) {
@@ -53,6 +33,11 @@ public class ModuleApiaristTerminus extends LogisticsModule {
 	public void registerPosition(ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);
 		_sinkReply = new SinkReply(FixedPriority.Terminus, 0, true, false, 5, 0, new ChassiTargetInformation(getPositionInt()));
+	}
+
+	@Override
+	public BlockPos getblockpos() {
+		return _service.getblockpos();
 	}
 
 	@Override
@@ -102,9 +87,4 @@ public class ModuleApiaristTerminus extends LogisticsModule {
 		return true;
 	}
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleApiaristTerminus");
-	}
 }

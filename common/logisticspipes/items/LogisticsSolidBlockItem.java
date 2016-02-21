@@ -1,18 +1,16 @@
 package logisticspipes.items;
 
-import java.util.List;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.string.StringUtils;
-
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+
+import java.util.List;
 
 public class LogisticsSolidBlockItem extends ItemBlock {
 
@@ -76,7 +74,4 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 			par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_IC2_POWERPROVIDER));
 		}
 	}
-
-	@Override
-	public void registerIcons(IIconRegister par1IIconRegister) {}
 }

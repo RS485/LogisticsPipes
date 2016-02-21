@@ -46,12 +46,12 @@ public class GuiPowerJunction extends LogisticsBaseGuiScreen {
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 		int level = 100 - junction.getChargeState();
 		drawTexturedModalRect(j + 10, k + 11 + (level * 59 / 100), 176, level * 59 / 100, 5, 59 - (level * 59 / 100));
-		mc.fontRenderer.drawString(StringUtils.translate(GuiPowerJunction.PREFIX + "LogisticsPowerJunction"), guiLeft + 30, guiTop + 8, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiPowerJunction.PREFIX + "StoredEnergy") + ":", guiLeft + 40, guiTop + 23, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.getStringWithSpacesFromInteger(junction.getPowerLevel()) + " LP", guiLeft + 40, guiTop + 33, 0x404040);
-		mc.fontRenderer.drawString("/ " + StringUtils.getStringWithSpacesFromInteger(LogisticsPowerJunctionTileEntity.MAX_STORAGE) + " LP", guiLeft + 40, guiTop + 43, 0x404040);
-		mc.fontRenderer.drawString("10 RF = 5 LP", guiLeft + 24, guiTop + 58, 0x404040);
-		mc.fontRenderer.drawString("1 EU = 2 LP", guiLeft + 100, guiTop + 58, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiPowerJunction.PREFIX + "LogisticsPowerJunction"), guiLeft + 30, guiTop + 8, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiPowerJunction.PREFIX + "StoredEnergy") + ":", guiLeft + 40, guiTop + 23, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.getStringWithSpacesFromInteger(junction.getPowerLevel()) + " LP", guiLeft + 40, guiTop + 33, 0x404040);
+		mc.fontRendererObj.drawString("/ " + StringUtils.getStringWithSpacesFromInteger(LogisticsPowerJunctionTileEntity.MAX_STORAGE) + " LP", guiLeft + 40, guiTop + 43, 0x404040);
+		mc.fontRendererObj.drawString("10 RF = 5 LP", guiLeft + 24, guiTop + 58, 0x404040);
+		mc.fontRendererObj.drawString("1 EU = 2 LP", guiLeft + 100, guiTop + 58, 0x404040);
 	}
 
 	@SuppressWarnings("unchecked")

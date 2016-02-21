@@ -1,16 +1,17 @@
 package logisticspipes.proxy.buildcraft.subproxies;
 
-import java.util.ArrayList;
-
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
+
+import java.util.ArrayList;
 
 public interface IBCPipePart {
 
 	boolean canConnectRedstone();
 
-	int isPoweringTo(int l);
+	int isPoweringTo(EnumFacing side);
 
 	int isIndirectlyPoweringTo(int l);
 

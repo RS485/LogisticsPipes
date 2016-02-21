@@ -1,8 +1,5 @@
 package logisticspipes.pipes.basic.fluid;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import logisticspipes.LPConstants;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -21,17 +18,19 @@ import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.FluidIdentifier;
+import logisticspipes.utils.UtilEnumFacing;
 import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
-
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
-
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 
@@ -48,7 +47,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	}
 
 	@Override
-	public boolean logisitcsIsPipeConnected(TileEntity tile, ForgeDirection dir) {
+	public boolean logisitcsIsPipeConnected(TileEntity tile, EnumFacing dir) {
 		if (tile instanceof IFluidHandler) {
 			IFluidHandler liq = (IFluidHandler) tile;
 
@@ -66,15 +65,15 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	}
 
 	@Override
-	public TextureType getNonRoutedTexture(ForgeDirection connection) {
+	public TextureType getNonRoutedTexture(EnumFacing connection) {
 		if (isFluidSidedTexture(connection)) {
 			return Textures.LOGISTICSPIPE_LIQUID_TEXTURE;
 		}
 		return super.getNonRoutedTexture(connection);
 	}
 
-	private boolean isFluidSidedTexture(ForgeDirection connection) {
-		WorldUtil util = new WorldUtil(getWorld(), getX(), getY(), getZ());
+	private boolean isFluidSidedTexture(EnumFacing connection) {
+		WorldUtil util = new WorldUtil(getWorld(), pos);
 		TileEntity tile = util.getAdjacentTileEntitie(connection);
 		if (tile instanceof IFluidHandler) {
 			IFluidHandler liq = (IFluidHandler) tile;
@@ -96,17 +95,17 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	 *            Weather to list a Nearby Pipe or not
 	 */
 
-	public final List<Pair<TileEntity, ForgeDirection>> getAdjacentTanks(boolean flag) {
+	public final List<Pair<TileEntity, EnumFacing>> getAdjacentTanks(boolean flag) {
 		if (worldUtil == null) {
-			worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
+			worldUtil = new WorldUtil(getWorld(), pos);
 		}
-		List<Pair<TileEntity, ForgeDirection>> tileList = new ArrayList<Pair<TileEntity, ForgeDirection>>();
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+		List<Pair<TileEntity, EnumFacing>> tileList = new ArrayList<Pair<TileEntity, EnumFacing>>();
+		for (EnumFacing dir : UtilEnumFacing.VALID_DIRECTIONS) {
 			TileEntity tile = worldUtil.getAdjacentTileEntitie(dir);
 			if (!isConnectableTank(tile, dir, flag)) {
 				continue;
 			}
-			tileList.add(new Pair<TileEntity, ForgeDirection>(tile, dir));
+			tileList.add(new Pair<TileEntity, EnumFacing>(tile, dir));
 		}
 		return tileList;
 	}
@@ -121,7 +120,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	 *            Weather to list a Nearby Pipe or not
 	 */
 
-	public final boolean isConnectableTank(TileEntity tile, ForgeDirection dir, boolean flag) {
+	public final boolean isConnectableTank(TileEntity tile, EnumFacing dir, boolean flag) {
 		if (SimpleServiceLocator.specialTankHandler.hasHandlerFor(tile)) {
 			return true;
 		}
@@ -150,8 +149,8 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 		super.enabledUpdateEntity();
 		if (canInsertFromSideToTanks()) {
 			int validDirections = 0;
-			List<Pair<TileEntity, ForgeDirection>> list = getAdjacentTanks(true);
-			for (Pair<TileEntity, ForgeDirection> pair : list) {
+			List<Pair<TileEntity, EnumFacing>> list = getAdjacentTanks(true);
+			for (Pair<TileEntity, EnumFacing> pair : list) {
 				if (pair.getValue1() instanceof LogisticsTileGenericPipe) {
 					if (((LogisticsTileGenericPipe) pair.getValue1()).pipe instanceof CoreRoutedPipe) {
 						continue;
@@ -181,7 +180,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 			if (stack == null) {
 				return;
 			}
-			for (Pair<TileEntity, ForgeDirection> pair : list) {
+			for (Pair<TileEntity, EnumFacing> pair : list) {
 				if (pair.getValue1() instanceof LogisticsTileGenericPipe) {
 					if (((LogisticsTileGenericPipe) pair.getValue1()).pipe instanceof CoreRoutedPipe) {
 						continue;
@@ -239,12 +238,12 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 			int filled = 0;
 			FluidStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(arrivingItem.getItemIdentifierStack());
 			if (isConnectableTank(tile, arrivingItem.output, false)) {
-				List<Pair<TileEntity, ForgeDirection>> adjTanks = getAdjacentTanks(false);
+				List<Pair<TileEntity, EnumFacing>> adjTanks = getAdjacentTanks(false);
 				//Try to put liquid into all adjacent tanks.
 				for (int i = 0; i < adjTanks.size(); i++) {
-					Pair<TileEntity, ForgeDirection> pair = adjTanks.get(i);
+					Pair<TileEntity, EnumFacing> pair = adjTanks.get(i);
 					IFluidHandler tank = (IFluidHandler) pair.getValue1();
-					ForgeDirection dir = pair.getValue2();
+					EnumFacing dir = pair.getValue2();
 					filled = tank.fill(dir.getOpposite(), liquid.copy(), true);
 					liquid.amount -= filled;
 					if (liquid.amount != 0) {
@@ -304,7 +303,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 
 	public List<TileEntity> getAllTankTiles() {
 		List<TileEntity> list = new ArrayList<TileEntity>();
-		for (Pair<TileEntity, ForgeDirection> pair : getAdjacentTanks(false)) {
+		for (Pair<TileEntity, EnumFacing> pair : getAdjacentTanks(false)) {
 			list.addAll(SimpleServiceLocator.specialTankHandler.getBaseTileFor(pair.getValue1()));
 		}
 		return list;

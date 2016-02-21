@@ -29,27 +29,11 @@ import org.lwjgl.input.Keyboard;
 
 public class RemoteOrderer extends Item {
 
-	final static IIcon[] _icons = new IIcon[17];
-
-	@Override
-	public void registerIcons(IIconRegister par1IIconRegister) {
-		for (int i = 0; i < 17; i++) {
-			RemoteOrderer._icons[i] = par1IIconRegister.registerIcon("logisticspipes:" + getUnlocalizedName().replace("item.", "") + "/" + i);
-		}
-	}
-
 	@Override
 	public boolean getShareTag() {
 		return true;
 	}
 
-	@Override
-	public IIcon getIconFromDamage(int par1) {
-		if (par1 > 16) {
-			par1 = 0;
-		}
-		return RemoteOrderer._icons[par1];
-	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override

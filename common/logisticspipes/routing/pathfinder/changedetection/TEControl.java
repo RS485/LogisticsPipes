@@ -17,12 +17,12 @@ import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public class TEControl {
 
 	public static void validate(final TileEntity tile) {
-		final World world = tile.getWorldObj();
+		final World world = tile.getWorld();
 		if (world == null) {
 			return;
 		}
@@ -51,7 +51,7 @@ public class TEControl {
 					if (!SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
 						return null;
 					}
-					for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+					for (EnumFacing dir : UtilEnumFacing.VALID_DIRECTIONS) {
 						LPPosition newPos = pos.copy();
 						newPos.moveForward(dir);
 						if (!newPos.blockExists(world)) {
@@ -78,7 +78,7 @@ public class TEControl {
 	}
 
 	public static void invalidate(final TileEntity tile) {
-		final World world = tile.getWorldObj();
+		final World world = tile.getWorld();
 		if (world == null) {
 			return;
 		}
@@ -94,7 +94,7 @@ public class TEControl {
 				@Override
 				public Object call() throws Exception {
 					LPPosition pos = new LPPosition(tile);
-					for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+					for (EnumFacing dir : UtilEnumFacing.VALID_DIRECTIONS) {
 						LPPosition newPos = pos.copy();
 						newPos.moveForward(dir);
 						if (!newPos.blockExists(world)) {
@@ -158,7 +158,7 @@ public class TEControl {
 
 				@Override
 				public Object call() throws Exception {
-					for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+					for (EnumFacing dir : UtilEnumFacing.VALID_DIRECTIONS) {
 						LPPosition newPos = pos.copy();
 						newPos.moveForward(dir);
 						if (!newPos.blockExists(world)) {

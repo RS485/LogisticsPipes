@@ -21,7 +21,8 @@ import lombok.AllArgsConstructor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
+
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -224,7 +225,7 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 		return new FluidStack(fluidID, amount, tag);
 	}
 
-	public int getFreeSpaceInsideTank(IFluidHandler container, ForgeDirection dir) {
+	public int getFreeSpaceInsideTank(IFluidHandler container, EnumFacing dir) {
 		int free = 0;
 		FluidTankInfo[] tanks = container.getTankInfo(dir);
 		if (tanks != null && tanks.length > 0) {

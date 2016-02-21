@@ -11,7 +11,7 @@ import logisticspipes.utils.gui.DummyContainer;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -34,7 +34,7 @@ public class ProviderModuleGuiProvider extends ModuleCoordinatesGuiProvider {
 
 	@Getter
 	@Setter
-	private ForgeDirection sneakyOrientation;
+	private EnumFacing sneakyOrientation;
 
 	public ProviderModuleGuiProvider(int id) {
 		super(id);
@@ -84,7 +84,7 @@ public class ProviderModuleGuiProvider extends ModuleCoordinatesGuiProvider {
 		data.writeBoolean(exclude);
 		data.writeInt(extractorMode);
 		data.writeBoolean(isActive);
-		data.writeForgeDirection(sneakyOrientation);
+		data.writeEnumFacing(sneakyOrientation);
 	}
 
 	@Override
@@ -93,6 +93,6 @@ public class ProviderModuleGuiProvider extends ModuleCoordinatesGuiProvider {
 		exclude = data.readBoolean();
 		extractorMode = data.readInt();
 		isActive = data.readBoolean();
-		sneakyOrientation = data.readForgeDirection();
+		sneakyOrientation = data.readEnumFacing();
 	}
 }

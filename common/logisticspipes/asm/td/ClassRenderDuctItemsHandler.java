@@ -2,7 +2,7 @@ package logisticspipes.asm.td;
 
 import logisticspipes.asm.util.ASMHelper;
 
-import cpw.mods.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;

@@ -88,7 +88,7 @@ public class GuiStringBasedItemSink extends ModuleBaseGui {
 		SimpleGraphics.drawRectNoBlend(guiLeft + 26, guiTop + 5, guiLeft + 169, guiTop + 17, Color.DARK_GREY, 0.0);
 		if (tmpInv.getIDStackInSlot(0) != null) {
 			name = "";
-			mc.fontRenderer.drawString(_itemSink.getStringForItem(tmpInv.getIDStackInSlot(0).getItem()), guiLeft + 28, guiTop + 7, 0x404040);
+			mc.fontRendererObj.drawString(_itemSink.getStringForItem(tmpInv.getIDStackInSlot(0).getItem()), guiLeft + 28, guiTop + 7, 0x404040);
 			if (_itemSink.getStringList().contains(_itemSink.getStringForItem(tmpInv.getIDStackInSlot(0).getItem()))) {
 				((GuiButton) buttonList.get(0)).enabled = false;
 				((GuiButton) buttonList.get(1)).enabled = true;
@@ -104,7 +104,7 @@ public class GuiStringBasedItemSink extends ModuleBaseGui {
 			((GuiButton) buttonList.get(1)).enabled = false;
 		} else {
 			if (_itemSink.getStringList().contains(name)) {
-				mc.fontRenderer.drawString(name, guiLeft + 28, guiTop + 7, 0x404040);
+				mc.fontRendererObj.drawString(name, guiLeft + 28, guiTop + 7, 0x404040);
 				((GuiButton) buttonList.get(0)).enabled = false;
 				((GuiButton) buttonList.get(1)).enabled = true;
 			} else {
@@ -120,7 +120,7 @@ public class GuiStringBasedItemSink extends ModuleBaseGui {
 			if (6 <= pointerX && pointerX < 168 && 31 + (10 * i) <= pointerY && pointerY < 31 + (10 * (i + 1))) {
 				SimpleGraphics.drawRectNoBlend(guiLeft + 6, guiTop + 31 + (10 * i), guiLeft + 168, guiTop + 31 + (10 * (i + 1)), Color.LIGHT_GREY, 0.0);
 			}
-			mc.fontRenderer.drawString(_itemSink.getStringList().get(i), guiLeft + 7, guiTop + 32 + (10 * i), 0x404040);
+			mc.fontRendererObj.drawString(_itemSink.getStringList().get(i), guiLeft + 7, guiTop + 32 + (10 * i), 0x404040);
 			if (6 <= mouseX && mouseX < 168 && 31 + (10 * i) <= mouseY && mouseY < 31 + (10 * (i + 1))) {
 				name = _itemSink.getStringList().get(i);
 				mouseX = 0;

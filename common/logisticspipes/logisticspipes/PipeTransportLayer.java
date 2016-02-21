@@ -7,7 +7,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.AdjacentTile;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 /**
  * This class is responsible for handling incoming items for standard pipes
@@ -27,13 +27,13 @@ public class PipeTransportLayer extends TransportLayer {
 	}
 
 	@Override
-	public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection denyed) {
+	public EnumFacing itemArrived(IRoutedItem item, EnumFacing denyed) {
 		if (item.getItemIdentifierStack() != null) {
 			_trackStatistics.recievedItem(item.getItemIdentifierStack().getStackSize());
 		}
 
 		LinkedList<AdjacentTile> adjacentEntities = _worldAccess.getConnectedEntities();
-		LinkedList<ForgeDirection> possibleForgeDirection = new LinkedList<ForgeDirection>();
+		LinkedList<EnumFacing> possibleEnumFacing = new LinkedList<EnumFacing>();
 
 		// 1st prio, deliver to adjacent IInventories
 
@@ -55,10 +55,10 @@ public class PipeTransportLayer extends TransportLayer {
 				}
 			}
 
-			possibleForgeDirection.add(tile.orientation);
+			possibleEnumFacing.add(tile.orientation);
 		}
-		if (possibleForgeDirection.size() != 0) {
-			return possibleForgeDirection.get(_worldAccess.getRandomInt(possibleForgeDirection.size()));
+		if (possibleEnumFacing.size() != 0) {
+			return possibleEnumFacing.get(_worldAccess.getRandomInt(possibleEnumFacing.size()));
 		}
 
 		// 2nd prio, deliver to non-routed exit
@@ -74,15 +74,15 @@ public class PipeTransportLayer extends TransportLayer {
 				}
 			}
 
-			possibleForgeDirection.add(tile.orientation);
+			possibleEnumFacing.add(tile.orientation);
 		}
 		// 3rd prio, drop item
 
-		if (possibleForgeDirection.size() == 0) {
+		if (possibleEnumFacing.size() == 0) {
 			return null;
 		}
 
-		return possibleForgeDirection.get(_worldAccess.getRandomInt(possibleForgeDirection.size()));
+		return possibleEnumFacing.get(_worldAccess.getRandomInt(possibleEnumFacing.size()));
 	}
 
 	//Pipes are dumb and always want the item

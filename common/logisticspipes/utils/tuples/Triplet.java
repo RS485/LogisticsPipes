@@ -3,6 +3,7 @@ package logisticspipes.utils.tuples;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import net.minecraft.util.BlockPos;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

@@ -1,19 +1,6 @@
 package logisticspipes.modules;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import logisticspipes.interfaces.IClientInformationProvider;
-import logisticspipes.interfaces.IHUDModuleHandler;
-import logisticspipes.interfaces.IHUDModuleRenderer;
-import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.interfaces.IModuleInventoryReceive;
-import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.*;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
@@ -36,29 +23,21 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTree;
 import logisticspipes.routing.IRouter;
-import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.ISimpleInventoryEventHandler;
-import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.SinkReply;
-import logisticspipes.utils.WorldUtil;
+import logisticspipes.utils.*;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 
-import net.minecraftforge.common.util.ForgeDirection;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import lombok.Getter;
-import lombok.Setter;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequestItems, IRequireReliableTransport, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
 
@@ -153,11 +132,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 		return true;
 	}
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleActiveSupplier");
-	}
+
 
 	/* TRIGGER INTERFACE */
 	public boolean isRequestFailed() {
@@ -212,7 +187,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 			}
 		}
 
-		WorldUtil worldUtil = new WorldUtil(_world.getWorld(), getX(), getY(), getZ());
+		WorldUtil worldUtil = new WorldUtil(_world.getWorld(), getblockpos());
 		for (AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
 			if (!(tile.tile instanceof IInventory)) {
 				continue;
@@ -222,7 +197,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 			if (inv.getSizeInventory() < 1) {
 				continue;
 			}
-			ForgeDirection dir = tile.orientation;
+			EnumFacing dir = tile.orientation;
 			if (_service.getUpgradeManager(slot, positionInt).hasSneakyUpgrade()) {
 				dir = _service.getUpgradeManager(slot, positionInt).getSneakyOrientation();
 			}
@@ -569,6 +544,11 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 	@Override
 	protected ModuleInHandGuiProvider getInHandGuiProvider() {
 		return NewGuiHandler.getGui(ActiveSupplierInHand.class);
+	}
+
+	@Override
+	public BlockPos getblockpos() {
+		return null;
 	}
 
 	@Override

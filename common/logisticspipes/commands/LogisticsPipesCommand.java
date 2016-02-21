@@ -1,22 +1,20 @@
 package logisticspipes.commands;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-
 import logisticspipes.LPConstants;
 import logisticspipes.commands.abstracts.ICommandHandler;
 import logisticspipes.commands.exception.CommandNotFoundException;
 import logisticspipes.commands.exception.LPCommandException;
 import logisticspipes.commands.exception.PermissionDeniedException;
 import logisticspipes.proxy.MainProxy;
-
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
-import cpw.mods.fml.common.FMLCommonHandler;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 public class LogisticsPipesCommand extends CommandBase {
 
@@ -47,7 +45,7 @@ public class LogisticsPipesCommand extends CommandBase {
 	}
 
 	@Override
-	public void processCommand(ICommandSender sender, String[] arguments) {
+	public void processCommand(ICommandSender sender, String[] arguments) throws CommandException {
 		if (arguments.length <= 0) {
 			throw new WrongUsageException("Type '" + getCommandUsage(sender) + "' for help.");
 		}
@@ -71,7 +69,7 @@ public class LogisticsPipesCommand extends CommandBase {
 	}
 
 	public static boolean isOP(ICommandSender sender) {
-		return Arrays.asList(FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().func_152603_m().func_152685_a())
-				.contains(sender.getCommandSenderName().toLowerCase(Locale.US)) || (MainProxy.proxy.checkSinglePlayerOwner(sender.getCommandSenderName()));
+		return Arrays.asList(FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().getOppedPlayers().getKeys())
+				.contains(sender.getName().toLowerCase(Locale.US)) || (MainProxy.proxy.checkSinglePlayerOwner(sender.getName()));
 	}
 }

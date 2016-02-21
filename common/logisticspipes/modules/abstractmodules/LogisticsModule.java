@@ -1,9 +1,5 @@
 package logisticspipes.modules.abstractmodules;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.interfaces.IWorldProvider;
@@ -13,16 +9,15 @@ import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.proxy.computers.objects.CCSinkResponder;
 import logisticspipes.utils.SinkReply;
+import logisticspipes.utils.UtilWorld;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.util.IIcon;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 import lombok.Getter;
+import net.minecraft.util.BlockPos;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @CCType(name = "LogisticsModule")
 public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
@@ -31,6 +26,7 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 
 	protected IWorldProvider _world;
 	protected IPipeServiceProvider _service;
+	protected UtilWorld utilWorld;
 
 	/**
 	 * Registers the Inventory and ItemSender to the module
@@ -73,19 +69,10 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 	}
 
 	/**
-	 * typically returns the coord of the pipe that holds it.
+	 * typically returns the blockpos of the pipe that holds it.
 	 */
-	public abstract int getX();
+	public abstract BlockPos getblockpos();
 
-	/**
-	 * typically returns the coord of the pipe that holds it.
-	 */
-	public abstract int getY();
-
-	/**
-	 * typically returns the coord of the pipe that holds it.
-	 */
-	public abstract int getZ();
 
 	/**
 	 * Gives an sink answer on the given itemstack
@@ -108,7 +95,7 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 	/**
 	 * Returns submodules. Normal modules don't have submodules
 	 * 
-	 * @param slotnumber
+	 * @param slot
 	 *            of the requested module
 	 * @return
 	 */
@@ -155,8 +142,6 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 	 * 
 	 * @return
 	 */
-	@SideOnly(Side.CLIENT)
-	public abstract IIcon getIconTexture(IIconRegister register);
 
 	/**
 	 * Returns whether the module should be displayed the effect when as an
@@ -181,7 +166,7 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 
 	@Override
 	public String toString() {
-		return (new StringBuilder()).append(getClass().getSimpleName()).append("@").append("(").append(getX()).append(", ").append(getY()).append(", ").append(getZ()).append(")").toString();
+		return (new StringBuilder()).append(getClass().getSimpleName()).append("@").append(getblockpos()).append(")").toString();
 	}
 
 	/**

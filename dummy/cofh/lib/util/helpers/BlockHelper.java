@@ -1,11 +1,11 @@
 package cofh.lib.util.helpers;
 
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public class BlockHelper {
 
-	public static TileEntity getAdjacentTileEntity(TileEntity tile, ForgeDirection direction) {
+	public static TileEntity getAdjacentTileEntity(TileEntity tile, EnumFacing direction) {
 		return null;
 	}
 	

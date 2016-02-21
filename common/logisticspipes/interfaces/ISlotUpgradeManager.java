@@ -1,6 +1,6 @@
 package logisticspipes.interfaces;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public interface ISlotUpgradeManager {
 
@@ -18,7 +18,7 @@ public interface ISlotUpgradeManager {
 
 	boolean hasSneakyUpgrade();
 
-	ForgeDirection getSneakyOrientation();
+	EnumFacing getSneakyOrientation();
 
 	boolean hasOwnSneakyUpgrade();
 }

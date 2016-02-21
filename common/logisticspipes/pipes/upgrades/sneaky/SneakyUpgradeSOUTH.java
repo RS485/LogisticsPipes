@@ -1,14 +1,14 @@
 package logisticspipes.pipes.upgrades.sneaky;
 
 import logisticspipes.pipes.upgrades.SneakyUpgrade;
+import net.minecraft.util.EnumFacing;
 
-import net.minecraftforge.common.util.ForgeDirection;
 
 public class SneakyUpgradeSOUTH extends SneakyUpgrade {
 
 	@Override
-	public ForgeDirection getSneakyOrientation() {
-		return ForgeDirection.SOUTH;
+	public EnumFacing getSneakyOrientation() {
+		return EnumFacing.SOUTH;
 	}
 
 }

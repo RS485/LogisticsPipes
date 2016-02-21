@@ -22,10 +22,11 @@ import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.util.ITickable;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Context;
@@ -37,7 +38,7 @@ import li.cil.oc.api.network.SidedEnvironment;
 
 @ModDependentInterface(modId = {LPConstants.openComputersModID, LPConstants.openComputersModID, LPConstants.openComputersModID }, interfacePath = { "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment" })
 @CCType(name = "LogisticsSolidBlock")
-public class LogisticsSolidTileEntity extends TileEntity implements ILPCCTypeHolder, IRotationProvider, ManagedPeripheral, Environment, SidedEnvironment, IOCTile {
+public class LogisticsSolidTileEntity extends TileEntity implements ITickable, ILPCCTypeHolder, IRotationProvider, ManagedPeripheral, Environment, SidedEnvironment, IOCTile {
 
 	private boolean addedToNetwork = false;
 	private Object ccType = null;
@@ -72,24 +73,18 @@ public class LogisticsSolidTileEntity extends TileEntity implements ILPCCTypeHol
 	}
 
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
 		if (!addedToNetwork) {
 			addedToNetwork = true;
 			SimpleServiceLocator.openComputersProxy.addToNetwork(this);
 		}
-		if (MainProxy.isClient(getWorldObj())) {
+		if (MainProxy.isClient(getWorld())) {
 			if (!init) {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestRotationPacket.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestRotationPacket.class).setPosX(getPos().getX()).setPosY(getPos().getY()).setPosZ(getPos().getZ()));
 				init = true;
 			}
 			return;
 		}
-	}
-
-	@Override
-	public final boolean canUpdate() {
-		return true;
 	}
 
 	@Override
@@ -151,13 +146,13 @@ public class LogisticsSolidTileEntity extends TileEntity implements ILPCCTypeHol
 	@Override
 	@SideOnly(Side.CLIENT)
 	@ModDependentMethod(modId = LPConstants.openComputersModID)
-	public boolean canConnect(ForgeDirection dir) {
+	public boolean canConnect(EnumFacing dir) {
 		return !(new WorldUtil(this).getAdjacentTileEntitie(dir) instanceof LogisticsTileGenericPipe) && !(new WorldUtil(this).getAdjacentTileEntitie(dir) instanceof LogisticsSolidTileEntity);
 	}
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.openComputersModID)
-	public Node sidedNode(ForgeDirection dir) {
+	public Node sidedNode(EnumFacing dir) {
 		if (new WorldUtil(this).getAdjacentTileEntitie(dir) instanceof LogisticsTileGenericPipe || new WorldUtil(this).getAdjacentTileEntitie(dir) instanceof LogisticsSolidTileEntity) {
 			return null;
 		} else {
@@ -183,4 +178,6 @@ public class LogisticsSolidTileEntity extends TileEntity implements ILPCCTypeHol
 	public Object getCCType() {
 		return ccType;
 	}
+
+
 }

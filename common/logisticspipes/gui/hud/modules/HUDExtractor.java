@@ -8,9 +8,9 @@ import logisticspipes.modules.ModuleExtractor;
 
 import net.minecraft.client.Minecraft;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class HUDExtractor implements IHUDModuleRenderer {
 
@@ -24,10 +24,10 @@ public class HUDExtractor implements IHUDModuleRenderer {
 	public void renderContent(boolean shifted) {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 
-		ForgeDirection d = module.getSneakyDirection();
-		mc.fontRenderer.drawString("Extract", -22, -22, 0);
-		mc.fontRenderer.drawString("from:", -22, -9, 0);
-		mc.fontRenderer.drawString(((d == ForgeDirection.UNKNOWN) ? "DEFAULT" : d.name()), -22, 18, 0);
+		EnumFacing d = module.getSneakyDirection();
+		mc.fontRendererObj.drawString("Extract", -22, -22, 0);
+		mc.fontRendererObj.drawString("from:", -22, -9, 0);
+		mc.fontRendererObj.drawString(((d == UtilEnumFacing.UNKNOWN) ? "DEFAULT" : d.name()), -22, 18, 0);
 	}
 
 	@Override

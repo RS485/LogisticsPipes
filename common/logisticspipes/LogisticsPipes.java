@@ -85,6 +85,7 @@ import logisticspipes.proxy.enderio.EnderIOProgressProvider;
 import logisticspipes.proxy.forestry.ForestryProgressProvider;
 import logisticspipes.proxy.ic2.IC2ProgressProvider;
 import logisticspipes.proxy.interfaces.ICraftingParts;
+import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.proxy.progressprovider.MachineProgressProvider;
 import logisticspipes.proxy.recipeproviders.AssemblyAdvancedWorkbench;
 import logisticspipes.proxy.recipeproviders.AutoWorkbench;
@@ -122,6 +123,7 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.RoutedItemHelper;
 
+import logisticspipes.utils.UtilEnumFacing;
 import net.minecraft.block.Block;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -131,24 +133,25 @@ import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.client.registry.RenderingRegistry;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.event.FMLFingerprintViolationEvent;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.event.FMLServerStoppingEvent;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 
 import org.apache.logging.log4j.Logger;
 
@@ -318,6 +321,10 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setMachineProgressProvider(new MachineProgressProvider());
 		SimpleServiceLocator.setRoutedItemHelper(new RoutedItemHelper());
 
+		MainProxy.proxy.registerBlockRenderers();
+		MainProxy.proxy.registerItemRenders();
+		MainProxy.proxy.registerPipeRenderers();
+
 		NetworkRegistry.INSTANCE.registerGuiHandler(LogisticsPipes.instance, new GuiHandler());
 		FMLCommonHandler.instance().bus().register(new LPTickHandler());
 
@@ -356,14 +363,14 @@ public class LogisticsPipes {
 		}
 		SimpleServiceLocator.setPipeInformationManager(new PipeInformationManager());
 
-		if (Configs.EASTER_EGGS) {
-			Calendar calendar = Calendar.getInstance();
-			int day = calendar.get(Calendar.DAY_OF_MONTH);
-			int month = calendar.get(Calendar.MONTH);
-			if (month == Calendar.OCTOBER && day == 1) { //GUIpsp's birthday.
-				Items.slime_ball.setTextureName("logisticspipes:eastereggs/guipsp");
-			}
-		}
+//		if (Configs.EASTER_EGGS) {
+//			Calendar calendar = Calendar.getInstance();
+//			int day = calendar.get(Calendar.DAY_OF_MONTH);
+//			int month = calendar.get(Calendar.MONTH);
+//			if (month == Calendar.OCTOBER && day == 1) { //GUIpsp's birthday.
+//				Items.slime_ball.setTextureName("logisticspipes:eastereggs/guipsp");
+//			}
+//		}
 	}
 
 	@EventHandler
@@ -613,7 +620,7 @@ public class LogisticsPipes {
 		res.setUnlocalizedName(clas.getSimpleName());
 		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.createPipe(res);
 		if (pipe instanceof CoreRoutedPipe) {
-			res.setPipeIconIndex(((CoreRoutedPipe) pipe).getTextureType(ForgeDirection.UNKNOWN).normal, ((CoreRoutedPipe) pipe).getTextureType(ForgeDirection.UNKNOWN).newTexture);
+			res.setPipeIconIndex(((CoreRoutedPipe) pipe).getTextureType(UtilEnumFacing.UNKNOWN).normal, ((CoreRoutedPipe) pipe).getTextureType(UtilEnumFacing.UNKNOWN).newTexture);
 		}
 
 		if (side.isClient()) {

@@ -27,7 +27,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRoutedItem {
 
@@ -50,8 +50,8 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 			_transportLayer = new TransportLayer() {
 
 				@Override
-				public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection blocked) {
-					ForgeDirection pointed = getPointedOrientation();
+				public EnumFacing itemArrived(IRoutedItem item, EnumFacing blocked) {
+					EnumFacing pointed = getPointedOrientation();
 					if (blocked != null && blocked.equals(pointed)) {
 						return null;
 					}
@@ -68,7 +68,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 	}
 
 	@Override
-	public TextureType getNonRoutedTexture(ForgeDirection connection) {
+	public TextureType getNonRoutedTexture(EnumFacing connection) {
 		if (connection.equals(getPointedOrientation())) {
 			return Textures.LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE;
 		}
@@ -86,8 +86,8 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 	}
 
 	@Override
-	public ForgeDirection getPointedOrientation() {
-		for (ForgeDirection ori : ForgeDirection.values()) {
+	public EnumFacing getPointedOrientation() {
+		for (EnumFacing ori : EnumFacing.values()) {
 			LPPosition pos = new LPPosition((TileEntity) container);
 			pos.moveForward(ori);
 			TileEntity tile = pos.getTileEntity(getWorld());
@@ -128,7 +128,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 	}
 
 	@Override
-	public IInventoryUtil getSneakyInventory(ForgeDirection _sneakyOrientation, boolean forExtract) {
+	public IInventoryUtil getSneakyInventory(EnumFacing _sneakyOrientation, boolean forExtract) {
 		return null;
 	}
 
@@ -157,7 +157,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 	}
 
 	@Override
-	public ForgeDirection inventoryOrientation() {
+	public EnumFacing inventoryOrientation() {
 		return getPointedOrientation();
 	}
 

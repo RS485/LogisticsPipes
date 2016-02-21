@@ -19,17 +19,17 @@ import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.string.StringUtils;
 
 import logisticspipes.utils.tuples.Pair;
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.fontRendererObj;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import org.lwjgl.opengl.GL11;
 
@@ -42,7 +42,7 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 	public ItemIdentifierInventory itemTypeInv = new ItemIdentifierInventory(1, "", 1);
 	public int amount = 100;
 	public CoreRoutedPipe pipe;
-	public ForgeDirection dir;
+	public EnumFacing dir;
 	private boolean hasUpdated = false;
 
 	public ItemAmountPipeSign() {
@@ -55,12 +55,12 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 	}
 
 	@Override
-	public void addSignTo(CoreRoutedPipe pipe, ForgeDirection dir, EntityPlayer player) {
+	public void addSignTo(CoreRoutedPipe pipe, EnumFacing dir, EntityPlayer player) {
 		pipe.addPipeSign(dir, new ItemAmountPipeSign(), player);
 		openGUI(pipe, dir, player);
 	}
 
-	private void openGUI(CoreRoutedPipe pipe, ForgeDirection dir, EntityPlayer player) {
+	private void openGUI(CoreRoutedPipe pipe, EnumFacing dir, EntityPlayer player) {
 		NewGuiHandler.getGui(ItemAmountSignGui.class).setDir(dir).setTilePos(pipe.container).open(player);
 	}
 
@@ -116,8 +116,8 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 			if(exit.connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom) && exit.connectionDetails.contains(PipeRoutingConnectionType.canRouteTo)) {
 				CoreRoutedPipe cachedPipe = exit.destination.getCachedPipe();
 				if(cachedPipe != null) {
-					List<Pair<ForgeDirection, IPipeSign>> pipeSigns = cachedPipe.getPipeSigns();
-					for(Pair<ForgeDirection, IPipeSign> signPair:pipeSigns) {
+					List<Pair<EnumFacing, IPipeSign>> pipeSigns = cachedPipe.getPipeSigns();
+					for(Pair<EnumFacing, IPipeSign> signPair:pipeSigns) {
 						if(signPair != null && signPair.getValue2() instanceof ItemAmountPipeSign) {
 							((ItemAmountPipeSign)signPair.getValue2()).updateStats(availableItems, set);
 						}
@@ -148,7 +148,7 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 	}
 
 	@Override
-	public void init(CoreRoutedPipe pipe, ForgeDirection dir) {
+	public void init(CoreRoutedPipe pipe, EnumFacing dir) {
 		this.pipe = pipe;
 		this.dir = dir;
 	}
@@ -156,7 +156,7 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void render(CoreRoutedPipe pipe, LogisticsRenderPipe renderer) {
-		FontRenderer var17 = renderer.func_147498_b();
+		fontRendererObj var17 = renderer.func_147498_b();
 		if (pipe != null) {
 			String name = "";
 			if (itemTypeInv != null && itemTypeInv.getIDStackInSlot(0) != null) {

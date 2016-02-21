@@ -1,16 +1,13 @@
 package logisticspipes.interfaces;
 
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
 public interface IHeadUpDisplayRendererProvider {
 
 	public IHeadUpDisplayRenderer getRenderer();
 
-	public int getX();
-
-	public int getY();
-
-	public int getZ();
+	public BlockPos getblockpos();
 
 	public World getWorld();
 

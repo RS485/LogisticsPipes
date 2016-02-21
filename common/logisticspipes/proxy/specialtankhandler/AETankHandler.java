@@ -1,20 +1,5 @@
 package logisticspipes.proxy.specialtankhandler;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import logisticspipes.interfaces.ISpecialTankAccessHandler;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.FluidIdentifier;
-
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.FluidStack;
-
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.implementations.tiles.ITileStorageMonitorable;
@@ -29,6 +14,19 @@ import appeng.api.storage.IStorageMonitorable;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.util.AECableType;
 import appeng.api.util.DimensionalCoord;
+import logisticspipes.interfaces.ISpecialTankAccessHandler;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.FluidIdentifier;
+import logisticspipes.utils.UtilEnumFacing;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.world.World;
+import net.minecraftforge.fluids.FluidStack;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AETankHandler implements ISpecialTankAccessHandler {
 
@@ -47,7 +45,7 @@ public class AETankHandler implements ISpecialTankAccessHandler {
 		List<TileEntity> tiles = new ArrayList<TileEntity>(1);
 		if (tile instanceof IGridHost) {
 			IGridHost host = (IGridHost) tile;
-			IGridNode node = host.getGridNode(ForgeDirection.UNKNOWN);
+			IGridNode node = host.getGridNode(UtilEnumFacing.UNKNOWN);
 			if (node != null) {
 				TileEntity base = getBaseTileEntity(node);
 				if (base != null) {
@@ -69,7 +67,7 @@ public class AETankHandler implements ISpecialTankAccessHandler {
 			if (mon == null) {
 				return map;
 			}
-			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+			for (EnumFacing dir : UtilEnumFacing.VALID_DIRECTIONS) {
 				MachineSource source = new MachineSource(new LPActionHost(((IGridHost) tile).getGridNode(dir)));
 				IStorageMonitorable monitor = mon.getMonitorable(dir, source);
 				if (monitor == null || monitor.getFluidInventory() == null) {
@@ -95,7 +93,7 @@ public class AETankHandler implements ISpecialTankAccessHandler {
 			if (mon == null) {
 				return null;
 			}
-			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+			for (EnumFacing dir : UtilEnumFacing.VALID_DIRECTIONS) {
 				MachineSource source = new MachineSource(new LPActionHost(((IGridHost) tile).getGridNode(dir)));
 				IStorageMonitorable monitor = mon.getMonitorable(dir, source);
 				if (monitor == null || monitor.getFluidInventory() == null) {
@@ -149,12 +147,12 @@ public class AETankHandler implements ISpecialTankAccessHandler {
 		public void securityBreak() {}
 
 		@Override
-		public IGridNode getGridNode(ForgeDirection paramForgeDirection) {
+		public IGridNode getGridNode(EnumFacing paramEnumFacing) {
 			return null;
 		}
 
 		@Override
-		public AECableType getCableConnectionType(ForgeDirection paramForgeDirection) {
+		public AECableType getCableConnectionType(EnumFacing paramEnumFacing) {
 			return null;
 		}
 

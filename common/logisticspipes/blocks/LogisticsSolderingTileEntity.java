@@ -1,8 +1,5 @@
 package logisticspipes.blocks;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import logisticspipes.LPConstants;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ICraftingResultHandler;
@@ -21,19 +18,22 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.recipes.SolderingStationRecipes.SolderingStationRecipe;
 import logisticspipes.utils.PlayerCollectionList;
+import logisticspipes.utils.UtilEnumFacing;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
-
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.IChatComponent;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import java.util.LinkedList;
+import java.util.List;
 
 public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ISidedInventory, IGuiOpenControler {
 
@@ -198,22 +198,22 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	}
 
 	private void updateHeat() {
-		MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(getWorldObj()), PacketHandler.getPacket(SolderingStationHeat.class).setInteger(heat).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(SolderingStationHeat.class).setInteger(heat).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), listener);
+		MainProxy.sendPacketToAllWatchingChunk(pos.getX(), pos.getZ(), MainProxy.getDimensionForWorld(getWorld()), PacketHandler.getPacket(SolderingStationHeat.class).setInteger(heat).setPosX(pos.getX()).setPosY(pos.getY()).setPosZ(pos.getZ()));
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(SolderingStationHeat.class).setInteger(heat).setPosX(pos.getX()).setPosY(pos.getY()).setPosZ(pos.getZ()), listener);
 	}
 
 	private void updateProgress() {
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(SolderingStationProgress.class).setInteger(progress).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), listener);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(SolderingStationProgress.class).setInteger(progress).setPosX(pos.getX()).setPosY(pos.getY()).setPosZ(pos.getZ()), listener);
 	}
 
 	private void updateInventory() {
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(SolderingStationInventory.class).setInventory(this).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), listener);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(SolderingStationInventory.class).setInventory(this).setPosX(pos.getX()).setPosY(pos.getY()).setPosZ(pos.getZ()), listener);
 	}
 
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
-		if (MainProxy.isClient(getWorldObj())) {
+	public void update() {
+		super.update();
+		if (MainProxy.isClient(getWorld())) {
 			return;
 		}
 		hasWork = hasWork();
@@ -228,10 +228,10 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 				}
 				usedEnergy = true;
 			} else {
-				for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+				for (EnumFacing dir : UtilEnumFacing.VALID_DIRECTIONS) {
 					LPPosition pos = new LPPosition(this);
 					pos.moveForward(dir);
-					TileEntity tile = pos.getTileEntity(getWorldObj());
+					TileEntity tile = pos.getTileEntity(getWorld());
 					if (!(tile instanceof LogisticsTileGenericPipe)) {
 						continue;
 					}
@@ -251,7 +251,7 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 					}
 				}
 			}
-			if (!usedEnergy && getWorldObj().getTotalWorldTime() % 5 == 0) {
+			if (!usedEnergy && getWorld().getTotalWorldTime() % 5 == 0) {
 				heat--;
 				if (heat < 0) {
 					heat = 0;
@@ -263,10 +263,10 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 			updateHeat();
 		}
 		if (hasWork && heat >= 100) {
-			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+			for (EnumFacing dir : UtilEnumFacing.VALID_DIRECTIONS) {
 				LPPosition pos = new LPPosition(this);
 				pos.moveForward(dir);
-				TileEntity tile = pos.getTileEntity(getWorldObj());
+				TileEntity tile = pos.getTileEntity(getWorld());
 				if (!(tile instanceof LogisticsTileGenericPipe)) {
 					continue;
 				}
@@ -344,6 +344,11 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	}
 
 	@Override
+	public ItemStack removeStackFromSlot(int index) {
+		return null;
+	}
+
+	@Override
 	public ItemStack getStackInSlotOnClosing(int var1) {
 		return inv.getStackInSlotOnClosing(var1);
 	}
@@ -369,14 +374,16 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	}
 
 	@Override
-	public void openInventory() {
-		inv.openInventory();
+	public void openInventory(EntityPlayer player) {
+
 	}
 
 	@Override
-	public void closeInventory() {
-		inv.closeInventory();
+	public void closeInventory(EntityPlayer player) {
+
 	}
+
+
 
 	@Override
 	public void guiOpenedByPlayer(EntityPlayer player) {
@@ -389,7 +396,7 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	}
 
 	public void onBlockBreak() {
-		inv.dropContents(getWorldObj(), xCoord, yCoord, zCoord);
+		inv.dropContents(getWorld(), getPos());
 	}
 
 	@Override
@@ -401,10 +408,6 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 		}
 	}
 
-	@Override
-	public boolean hasCustomInventoryName() {
-		return false;
-	}
 
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
@@ -412,8 +415,28 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	}
 
 	@Override
-	public void func_145828_a(CrashReportCategory par1CrashReportCategory) {
-		super.func_145828_a(par1CrashReportCategory);
+	public int getField(int id) {
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, int value) {
+
+	}
+
+	@Override
+	public int getFieldCount() {
+		return 0;
+	}
+
+	@Override
+	public void clear() {
+
+	}
+
+	@Override
+	public void addInfoToCrashReport (CrashReportCategory par1CrashReportCategory) {
+		super.addInfoToCrashReport(par1CrashReportCategory);
 		par1CrashReportCategory.addCrashSection("LP-Version", LPConstants.VERSION);
 	}
 
@@ -435,5 +458,35 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	@Override
 	public boolean canExtractItem(int var1, ItemStack var2, int var3) {
 		return var1 == 10;
+	}
+
+	@Override
+	public int[] getSlotsForFace(EnumFacing side) {
+		return new int[0];
+	}
+
+	@Override
+	public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction) {
+		return false;
+	}
+
+	@Override
+	public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
+		return false;
+	}
+
+	@Override
+	public String getName() {
+		return null;
+	}
+
+	@Override
+	public boolean hasCustomName() {
+		return false;
+	}
+
+	@Override
+	public IChatComponent getDisplayName() {
+		return null;
 	}
 }

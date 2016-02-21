@@ -3,7 +3,7 @@ package logisticspipes.utils.transactor;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public final class InventoryIterator {
 
@@ -19,7 +19,7 @@ public final class InventoryIterator {
 	 * @param side
 	 * @return Iterable
 	 */
-	public static Iterable<IInvSlot> getIterable(IInventory inv, ForgeDirection side) {
+	public static Iterable<IInvSlot> getIterable(IInventory inv, EnumFacing side) {
 		if (inv instanceof ISidedInventory) {
 			return new InventoryIteratorSided((ISidedInventory) inv, side);
 		}

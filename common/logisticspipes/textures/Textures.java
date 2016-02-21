@@ -10,7 +10,7 @@ import logisticspipes.textures.provider.LPPipeIconTransformerProvider;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.IIcon;
 
-import cpw.mods.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class Textures {
 

@@ -15,10 +15,13 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtils;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -31,6 +34,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 public class LogicLayoutGui extends LogisticsBaseGuiScreen {
+	Minecraft minecraft;
 
 	private enum ZOOM_LEVEL {
 		NORMAL(1, 165, 224, 1, 0),
@@ -69,6 +73,7 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 			}
 		}
 	}
+	private static TextureAtlasSprite texture;
 
 	private static final ResourceLocation achievementTextures = new ResourceLocation("textures/gui/achievement/achievement_background.png");
 
@@ -198,9 +203,9 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 		GL11.glColor4f(0.7F, 0.7F, 0.7F, 1.0F);
 		for (int yVar = 0; yVar * 16 - moveBackgroundY < zoom.bottomRenderBorder; yVar++) {
 			for (int xVar = 0; xVar * 16 - moveBackgroundX < zoom.rightRenderBorder; xVar++) {
-				IIcon icon = Blocks.stone.getIcon(0, 0);
+				TextureAtlasSprite sprite=
 				mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
-				drawTexturedModelRectFromIcon(innerLeftSide + xVar * 16 - moveBackgroundX, innerTopSide + yVar * 16 - moveBackgroundY, icon, 16, 16);
+				drawTexturedModalRect(innerLeftSide + xVar * 16 - moveBackgroundX, innerTopSide + yVar * 16 - moveBackgroundY, sprite, 16, 16);
 			}
 		}
 
@@ -375,15 +380,15 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 	}
 
 	private void renderItemAt(ItemIdentifierStack item, int x, int y) {
-		renderitem.renderItemAndEffectIntoGUI(mc.fontRenderer, mc.getTextureManager(), item.makeNormalStack(), x, y);
+		renderitem.renderItemAndEffectIntoGUI(item.makeNormalStack(), x, y);
 		if (guiLeft < x && x < guiLeft + xSize - 16 && guiTop < y && y < guiTop + ySize - 16) {
-			renderitem.renderItemOverlayIntoGUI(mc.fontRenderer, mc.renderEngine, item.makeNormalStack(), x, y, "");
+			renderitem.renderItemOverlayIntoGUI(mc.fontRendererObj, item.makeNormalStack(), x, y, "");
 			String s = StringUtils.getFormatedStackSize(item.getStackSize(), false);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 			renderitem.zLevel = 0.0F;
 			// Draw number
-			mc.fontRenderer.drawStringWithShadow(s, x + 17 - mc.fontRenderer.getStringWidth(s), y + 9, 16777215);
+			mc.fontRendererObj.drawStringWithShadow(s, x + 17 - mc.fontRendererObj.getStringWidth(s), y + 9, 16777215);
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 			GL11.glEnable(GL11.GL_LIGHTING);
 		}

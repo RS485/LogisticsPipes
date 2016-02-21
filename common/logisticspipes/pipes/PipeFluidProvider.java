@@ -34,7 +34,7 @@ import logisticspipes.utils.tuples.Pair;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
@@ -55,7 +55,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 		LogisticsFluidOrder order = getFluidOrderManager().peekAtTopRequest(ResourceType.PROVIDER);
 		int amountToSend, attemptedAmount;
 		amountToSend = attemptedAmount = Math.min(order.getAmount(), 5000);
-		for (Pair<TileEntity, ForgeDirection> pair : getAdjacentTanks(false)) {
+		for (Pair<TileEntity, EnumFacing> pair : getAdjacentTanks(false)) {
 			if (amountToSend <= 0) {
 				break;
 			}
@@ -130,7 +130,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 	@Override
 	public Map<FluidIdentifier, Integer> getAvailableFluids() {
 		Map<FluidIdentifier, Integer> map = new HashMap<FluidIdentifier, Integer>();
-		for (Pair<TileEntity, ForgeDirection> pair : getAdjacentTanks(false)) {
+		for (Pair<TileEntity, EnumFacing> pair : getAdjacentTanks(false)) {
 			boolean fallback = true;
 			if (SimpleServiceLocator.specialTankHandler.hasHandlerFor(pair.getValue1())) {
 				ISpecialTankHandler handler = SimpleServiceLocator.specialTankHandler.getTankHandlerFor(pair.getValue1());
@@ -185,7 +185,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 	}
 
 	@Override
-	public boolean disconnectPipe(TileEntity tile, ForgeDirection dir) {
+	public boolean disconnectPipe(TileEntity tile, EnumFacing dir) {
 		return SimpleServiceLocator.pipeInformationManager.isFluidPipe(tile);
 	}
 
@@ -204,7 +204,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 		}
 		FluidIdentifier fluid = ((FluidResource) tree.getRequestType()).getFluid();
 		int containedAmount = 0;
-		for (Pair<TileEntity, ForgeDirection> pair : getAdjacentTanks(false)) {
+		for (Pair<TileEntity, EnumFacing> pair : getAdjacentTanks(false)) {
 			boolean fallback = true;
 			if (SimpleServiceLocator.specialTankHandler.hasHandlerFor(pair.getValue1())) {
 				ISpecialTankHandler handler = SimpleServiceLocator.specialTankHandler.getTankHandlerFor(pair.getValue1());
@@ -268,7 +268,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 	//work in progress, currently not active code.
 	public Set<ItemIdentifier> getSpecificInterests() {
 		Set<ItemIdentifier> l1 = new TreeSet<ItemIdentifier>();
-		for (Pair<TileEntity, ForgeDirection> pair : getAdjacentTanks(false)) {
+		for (Pair<TileEntity, EnumFacing> pair : getAdjacentTanks(false)) {
 			boolean fallback = true;
 			if (SimpleServiceLocator.specialTankHandler.hasHandlerFor(pair.getValue1())) {
 				ISpecialTankHandler handler = SimpleServiceLocator.specialTankHandler.getTankHandlerFor(pair.getValue1());

@@ -8,24 +8,9 @@
 
 package logisticspipes.pipes;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeMap;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.hud.HUDProvider;
-import logisticspipes.interfaces.IChangeListener;
-import logisticspipes.interfaces.IChestContentReceiver;
-import logisticspipes.interfaces.IHeadUpDisplayRenderer;
-import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
-import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.interfaces.IOrderManagerContentReceiver;
+import logisticspipes.interfaces.*;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
@@ -60,20 +45,18 @@ import logisticspipes.routing.order.LogisticsItemOrderManager;
 import logisticspipes.routing.order.LogisticsOrder;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.SidedInventoryMinecraftAdapter;
-import logisticspipes.utils.SinkReply;
-import logisticspipes.utils.WorldUtil;
+import logisticspipes.utils.*;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvideItems, IHeadUpDisplayRendererProvider, IChestContentReceiver, IChangeListener, IOrderManagerContentReceiver {
 
@@ -122,7 +105,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		}
 
 		int count = 0;
-		WorldUtil wUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
+		WorldUtil wUtil = new WorldUtil(getWorld(), getblockpos());
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)) {
 			if (!(tile.tile instanceof IInventory)) {
 				continue;
@@ -151,7 +134,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination, IAdditionalTargetInformation info) {
 		ItemIdentifier item = stack.getItem();
 
-		WorldUtil wUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
+		WorldUtil wUtil = new WorldUtil(getWorld(), getblockpos());
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)) {
 			if (!(tile.tile instanceof IInventory)) {
 				continue;
@@ -212,7 +195,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	private IInventoryUtil getAdaptedInventoryUtil(AdjacentTile tile) {
 		IInventory base = (IInventory) tile.tile;
 		if (base instanceof net.minecraft.inventory.ISidedInventory) {
-			base = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) base, tile.orientation.getOpposite(), true);
+			base = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) base, tile.orientation.getOpposite(), true, utilEnumFacing);
 		}
 		ExtractionMode mode = getExtractionMode();
 		switch (mode) {
@@ -335,7 +318,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		}
 		HashMap<ItemIdentifier, Integer> addedItems = new HashMap<ItemIdentifier, Integer>();
 
-		WorldUtil wUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
+		WorldUtil wUtil = new WorldUtil(getWorld(), getblockpos());
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)) {
 			if (!(tile.tile instanceof IInventory)) {
 				continue;
@@ -394,12 +377,12 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 
 	@Override
 	public void startWatching() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartWatchingPacket.class).setInteger(1 /*TODO*/).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartWatchingPacket.class).setInteger(1 /*TODO*/).setPosX(getblockpos().getX()).setPosY(getblockpos().getY()).setPosZ(getblockpos().getZ()));
 	}
 
 	@Override
 	public void stopWatching() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopWatchingPacket.class).setInteger(1 /*TODO*/).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopWatchingPacket.class).setInteger(1 /*TODO*/).setPosX(getblockpos().getX()).setPosY(getblockpos().getY()).setPosZ(getblockpos().getZ()));
 	}
 
 	private void updateInv(EntityPlayer player) {
@@ -417,9 +400,9 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 			oldList.clear();
 			oldList.ensureCapacity(displayList.size());
 			oldList.addAll(displayList);
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(ChestContent.class).setIdentList(displayList).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(ChestContent.class).setIdentList(displayList).setPosX(getblockpos().getX()).setPosY(getblockpos().getY()).setPosZ(getblockpos().getZ()), localModeWatchers);
 		} else if (player != null) {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ChestContent.class).setIdentList(displayList).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ChestContent.class).setIdentList(displayList).setPosX(getblockpos().getX()).setPosY(getblockpos().getY()).setPosZ(getblockpos().getZ()), player);
 		}
 	}
 
@@ -434,9 +417,9 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		if (!oldManagerList.equals(all)) {
 			oldManagerList.clear();
 			oldManagerList.addAll(all);
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(OrdererManagerContent.class).setIdentList(all).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(OrdererManagerContent.class).setIdentList(all).setPosX(getblockpos().getX()).setPosY(getblockpos().getY()).setPosZ(getblockpos().getZ()), localModeWatchers);
 		} else if (player != null) {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererManagerContent.class).setIdentList(all).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererManagerContent.class).setIdentList(all).setPosX(getblockpos().getX()).setPosY(getblockpos().getY()).setPosZ(getblockpos().getZ()), player);
 		}
 	}
 
@@ -478,7 +461,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	@Override
 	//work in progress, currently not active code.
 	public Set<ItemIdentifier> getSpecificInterests() {
-		WorldUtil wUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
+		WorldUtil wUtil = new WorldUtil(getWorld(), getblockpos());
 		Set<ItemIdentifier> l1 = null;
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)) {
 			if (!(tile.tile instanceof IInventory)) {
@@ -511,9 +494,9 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
-		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_ProviderPipe_ID, getWorld(), getX(), getY(), getZ());
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeMode.class).setInteger(getExtractionMode().ordinal()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), entityplayer);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeInclude.class).setInteger(isExcludeFilter() ? 1 : 0).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), entityplayer);
+		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_ProviderPipe_ID, getWorld(), getblockpos().getX(),getblockpos().getY(),getblockpos().getZ());
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeMode.class).setInteger(getExtractionMode().ordinal()).setPosX(getblockpos().getX()).setPosY(getblockpos().getY()).setPosZ(getblockpos().getZ()), entityplayer);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeInclude.class).setInteger(isExcludeFilter() ? 1 : 0).setPosX(getblockpos().getX()).setPosY(getblockpos().getY()).setPosZ(getblockpos().getZ()), entityplayer);
 	}
 
 	/*** GUI ***/

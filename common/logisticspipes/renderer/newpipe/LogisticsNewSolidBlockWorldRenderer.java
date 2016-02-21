@@ -1,9 +1,5 @@
 package logisticspipes.renderer.newpipe;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
@@ -17,44 +13,45 @@ import logisticspipes.proxy.object3d.operation.LPScale;
 import logisticspipes.proxy.object3d.operation.LPTranslation;
 import logisticspipes.proxy.object3d.operation.LPUVScale;
 import logisticspipes.utils.tuples.LPPosition;
-
+import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
-
-import net.minecraftforge.common.util.ForgeDirection;
-
-import lombok.Getter;
+import net.minecraft.util.EnumFacing;
 import org.lwjgl.opengl.GL11;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class LogisticsNewSolidBlockWorldRenderer {
 
 	enum CoverSides {
-		DOWN(ForgeDirection.DOWN, "D"),
-		NORTH(ForgeDirection.NORTH, "N"),
-		SOUTH(ForgeDirection.SOUTH, "S"),
-		WEST(ForgeDirection.WEST, "W"),
-		EAST(ForgeDirection.EAST, "E");
+		DOWN(EnumFacing.DOWN, "D"),
+		NORTH(EnumFacing.NORTH, "N"),
+		SOUTH(EnumFacing.SOUTH, "S"),
+		WEST(EnumFacing.WEST, "W"),
+		EAST(EnumFacing.EAST, "E");
 
-		private ForgeDirection dir;
+		private EnumFacing dir;
 		@Getter
 		private String letter;
 
-		CoverSides(ForgeDirection dir, String letter) {
+		CoverSides(EnumFacing dir, String letter) {
 			this.dir = dir;
 			this.letter = letter;
 		}
 
-		public ForgeDirection getDir(BlockRotation rot) {
-			ForgeDirection result = dir;
+		public EnumFacing getDir(BlockRotation rot) {
+			EnumFacing result = dir;
 			switch (rot.getInteger()) {
 				case 0:
-					result = result.getRotation(ForgeDirection.UP);
+					result = result.getRotation(EnumFacing.UP);
 				case 3:
-					result = result.getRotation(ForgeDirection.UP);
+					result = result.getRotation(EnumFacing.UP);
 				case 1:
-					result = result.getRotation(ForgeDirection.UP);
+					result = result.getRotation(EnumFacing.UP);
 				case 2:
 			}
 			return result;
@@ -162,19 +159,19 @@ public class LogisticsNewSolidBlockWorldRenderer {
 	}
 
 	public void renderWorldBlock(LogisticsSolidTileEntity blockTile, RenderBlocks renderer, int x, int y, int z) {
-		Tessellator tess = Tessellator.instance;
+		Tessellator tess = Tessellator.getInstance();
 		SimpleServiceLocator.cclProxy.getRenderState().reset();
 		SimpleServiceLocator.cclProxy.getRenderState().setUseNormals(true);
 		SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
 
 		BlockRotation rotation = BlockRotation.getRotation(blockTile.getRotation());
 
-		int brightness = new LPPosition(blockTile).getBlock(blockTile.getWorldObj()).getMixedBrightnessForBlock(blockTile.getWorldObj(), blockTile.xCoord, blockTile.yCoord, blockTile.zCoord);
+		int brightness = new LPPosition(blockTile).getBlock(blockTile.getWorld()).getMixedBrightnessForBlock(blockTile.getWorld(), blockTile.xCoord, blockTile.yCoord, blockTile.zCoord);
 
 		tess.setColorOpaque_F(1F, 1F, 1F);
 		tess.setBrightness(brightness);
 
-		IIconTransformation icon = SimpleServiceLocator.cclProxy.createIconTransformer(LogisticsSolidBlock.getNewIcon(blockTile.getWorldObj(), blockTile.xCoord, blockTile.yCoord, blockTile.zCoord));
+		IIconTransformation icon = SimpleServiceLocator.cclProxy.createIconTransformer(LogisticsSolidBlock.getNewIcon(blockTile.getWorld(), blockTile.xCoord, blockTile.yCoord, blockTile.zCoord));
 
 		//Draw
 		LogisticsNewSolidBlockWorldRenderer.block.get(rotation).render(new I3DOperation[] { new LPTranslation(x, y, z), icon });
@@ -183,7 +180,7 @@ public class LogisticsNewSolidBlockWorldRenderer {
 			boolean render = true;
 			LPPosition newPos = pos.copy();
 			newPos.moveForward(side.getDir(rotation));
-			TileEntity sideTile = newPos.getTileEntity(blockTile.getWorldObj());
+			TileEntity sideTile = newPos.getTileEntity(blockTile.getWorld());
 			if (sideTile instanceof LogisticsTileGenericPipe) {
 				LogisticsTileGenericPipe tilePipe = (LogisticsTileGenericPipe) sideTile;
 				if (tilePipe.renderState.pipeConnectionMatrix.isConnected(side.getDir(rotation).getOpposite())) {
@@ -206,7 +203,7 @@ public class LogisticsNewSolidBlockWorldRenderer {
 
 		GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
 		Block block = LogisticsPipes.LogisticsPipeBlock;
-		Tessellator tess = Tessellator.instance;
+		Tessellator tess = Tessellator.getInstance();
 
 		BlockRotation rotation = BlockRotation.ZERO;
 

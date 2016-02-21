@@ -1,25 +1,22 @@
 package logisticspipes.proxy.td;
 
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.interfaces.ITDProxy;
-import logisticspipes.proxy.td.subproxies.ITDPart;
-import logisticspipes.proxy.td.subproxies.TDPart;
-
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.tileentity.TileEntity;
-
-import net.minecraftforge.common.util.ForgeDirection;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 import cofh.repack.codechicken.lib.render.CCRenderState;
 import cofh.repack.codechicken.lib.render.uv.IconTransformation;
 import cofh.repack.codechicken.lib.vec.Translation;
 import cofh.thermaldynamics.duct.item.TileItemDuct;
 import cofh.thermaldynamics.render.RenderDuct;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.interfaces.ITDProxy;
+import logisticspipes.proxy.td.subproxies.ITDPart;
+import logisticspipes.proxy.td.subproxies.TDPart;
+import logisticspipes.utils.UtilEnumFacing;
+import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ThermalDynamicsProxy implements ITDProxy {
 
@@ -50,7 +47,7 @@ public class ThermalDynamicsProxy implements ITDProxy {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void renderPipeConnections(LogisticsTileGenericPipe pipeTile, RenderBlocks renderer) {
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing dir : UtilEnumFacing.VALID_DIRECTIONS) {
 			if (pipeTile.renderState.pipeConnectionMatrix.isTDConnected(dir)) {
 				IconTransformation texture = connectionTextureBasic;
 				if (pipeTile.renderState.textureMatrix.isRouted()) {
@@ -61,7 +58,7 @@ public class ThermalDynamicsProxy implements ITDProxy {
 					}
 				}
 				double move = 0.25;
-				Translation localTranslation = new Translation(pipeTile.xCoord + 0.5D + dir.offsetX * move, pipeTile.yCoord + 0.5D + dir.offsetY * move, pipeTile.zCoord + 0.5D + dir.offsetZ * move);
+				Translation localTranslation = new Translation(pipeTile.xCoord + 0.5D + dir.getFrontOffsetX() * move, pipeTile.yCoord + 0.5D + dir.getFrontOffsetY() * move, pipeTile.zCoord + 0.5D + dir.getFrontOffsetZ() * move);
 				RenderDuct.modelConnection[2][dir.ordinal()].render(new CCRenderState.IVertexOperation[] { localTranslation, texture });
 			}
 		}
@@ -81,7 +78,7 @@ public class ThermalDynamicsProxy implements ITDProxy {
 	}
 
 	@Override
-	public boolean isBlockedSide(TileEntity with, ForgeDirection opposite) {
+	public boolean isBlockedSide(TileEntity with, EnumFacing opposite) {
 		if (!(with instanceof TileItemDuct)) {
 			return false;
 		}

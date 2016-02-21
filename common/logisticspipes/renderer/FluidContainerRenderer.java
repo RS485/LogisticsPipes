@@ -20,9 +20,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.fluids.FluidStack;
 
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -180,7 +180,7 @@ public class FluidContainerRenderer implements IItemRenderer {
 			renderItem.setRenderManager(RenderManager.instance);
 		}
 		if (type == ItemRenderType.INVENTORY) {
-			renderItem.renderItemAndEffectIntoGUI(mc.fontRenderer, mc.renderEngine, itemstack, 0, 0);
+			renderItem.renderItemAndEffectIntoGUI(mc.fontRendererObj, mc.renderEngine, itemstack, 0, 0);
 		} else {
 			GL11.glPushMatrix();
 			dummyEntityItem.setEntityItemStack(itemstack);

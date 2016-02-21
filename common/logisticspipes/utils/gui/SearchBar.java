@@ -7,7 +7,7 @@ import java.util.Locale;
 
 import logisticspipes.utils.Color;
 
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.fontRendererObj;
 
 import org.lwjgl.input.Keyboard;
 
@@ -22,24 +22,24 @@ public class SearchBar {
 	private boolean numberOnly = false;
 	private boolean alignRight = false;
 
-	private final FontRenderer fontRenderer;
+	private final fontRendererObj fontRendererObj;
 	private final LogisticsBaseGuiScreen screen;
 	private int left, top, heigth, width;
 
-	public SearchBar(FontRenderer fontRenderer, LogisticsBaseGuiScreen screen, int left, int top, int width, int heigth) {
-		this(fontRenderer, screen, left, top, width, heigth, true);
+	public SearchBar(fontRendererObj fontRendererObj, LogisticsBaseGuiScreen screen, int left, int top, int width, int heigth) {
+		this(fontRendererObj, screen, left, top, width, heigth, true);
 	}
 
-	public SearchBar(FontRenderer fontRenderer, LogisticsBaseGuiScreen screen, int left, int top, int width, int heigth, boolean isActive) {
-		this(fontRenderer, screen, left, top, width, heigth, isActive, false);
+	public SearchBar(fontRendererObj fontRendererObj, LogisticsBaseGuiScreen screen, int left, int top, int width, int heigth, boolean isActive) {
+		this(fontRendererObj, screen, left, top, width, heigth, isActive, false);
 	}
 
-	public SearchBar(FontRenderer fontRenderer, LogisticsBaseGuiScreen screen, int left, int top, int width, int heigth, boolean isActive, boolean numberOnly) {
-		this(fontRenderer, screen, left, top, width, heigth, isActive, numberOnly, false);
+	public SearchBar(fontRendererObj fontRendererObj, LogisticsBaseGuiScreen screen, int left, int top, int width, int heigth, boolean isActive, boolean numberOnly) {
+		this(fontRendererObj, screen, left, top, width, heigth, isActive, numberOnly, false);
 	}
 
-	public SearchBar(FontRenderer fontRenderer, LogisticsBaseGuiScreen screen, int left, int top, int width, int heigth, boolean isActive, boolean numberOnly, boolean alignRight) {
-		this.fontRenderer = fontRenderer;
+	public SearchBar(fontRendererObj fontRendererObj, LogisticsBaseGuiScreen screen, int left, int top, int width, int heigth, boolean isActive, boolean numberOnly, boolean alignRight) {
+		this.fontRendererObj = fontRendererObj;
 		this.screen = screen;
 		this.left = left;
 		this.top = top;
@@ -68,16 +68,16 @@ public class SearchBar {
 		}
 		screen.drawRect(left + 2, top - 0, left + width - 2, top + heigth - 2, Color.DARKER_GREY);
 		if (alignRight) {
-			fontRenderer.drawString(searchinput1 + searchinput2, left + 5 + searchWidth - fontRenderer.getStringWidth(searchinput1 + searchinput2), top + 3, 0xFFFFFF);
+			fontRendererObj.drawString(searchinput1 + searchinput2, left + 5 + searchWidth - fontRendererObj.getStringWidth(searchinput1 + searchinput2), top + 3, 0xFFFFFF);
 		} else {
-			fontRenderer.drawString(searchinput1 + searchinput2, left + 5, top + 3, 0xFFFFFF);
+			fontRendererObj.drawString(searchinput1 + searchinput2, left + 5, top + 3, 0xFFFFFF);
 		}
 		if (isFocused()) {
 			int linex = 0;
 			if (alignRight) {
-				linex = left + 5 + searchWidth - fontRenderer.getStringWidth(searchinput2);
+				linex = left + 5 + searchWidth - fontRendererObj.getStringWidth(searchinput2);
 			} else {
-				linex = left + 5 + fontRenderer.getStringWidth(searchinput1);
+				linex = left + 5 + fontRendererObj.getStringWidth(searchinput1);
 			}
 			if (System.currentTimeMillis() - oldSystemTime > 500) {
 				displaycursor = !displaycursor;
@@ -179,13 +179,13 @@ public class SearchBar {
 			}
 			if (isFine) {
 				String toAdd = SearchBar.getClipboardString();
-				while (fontRenderer.getStringWidth(searchinput1 + toAdd + searchinput2) > searchWidth) {
+				while (fontRendererObj.getStringWidth(searchinput1 + toAdd + searchinput2) > searchWidth) {
 					toAdd = toAdd.substring(0, toAdd.length() - 1);
 				}
 				searchinput1 = searchinput1 + toAdd;
 			}
 		} else if ((!numberOnly && !Character.isISOControl(c)) || (numberOnly && Character.isDigit(c))) {
-			if (fontRenderer.getStringWidth(searchinput1 + c + searchinput2) <= searchWidth) {
+			if (fontRendererObj.getStringWidth(searchinput1 + c + searchinput2) <= searchWidth) {
 				searchinput1 += c;
 			}
 		} else {

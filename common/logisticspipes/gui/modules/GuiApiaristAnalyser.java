@@ -8,6 +8,8 @@ import logisticspipes.utils.gui.GuiStringHandlerButton;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
 
+import java.io.IOException;
+
 public class GuiApiaristAnalyser extends ModuleBaseGui {
 
 	private final ModuleApiaristAnalyser module;
@@ -34,7 +36,7 @@ public class GuiApiaristAnalyser extends ModuleBaseGui {
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton par1GuiButton) {
+	protected void actionPerformed(GuiButton par1GuiButton) throws IOException {
 		if (par1GuiButton.id == 0) {
 			int mode = module.getExtractMode();
 			if (mode == 1) {

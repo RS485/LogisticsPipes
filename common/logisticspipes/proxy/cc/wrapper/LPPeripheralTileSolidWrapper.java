@@ -3,7 +3,7 @@ package logisticspipes.proxy.cc.wrapper;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -11,11 +11,11 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 
 public class LPPeripheralTileSolidWrapper implements IPeripheral {
 
-	private final ForgeDirection dir;
+	private final EnumFacing dir;
 	private CCCommandWrapper wrapped;
 	private LogisticsSolidTileEntity tile;
 
-	public LPPeripheralTileSolidWrapper(LogisticsSolidTileEntity tile, ForgeDirection dir) {
+	public LPPeripheralTileSolidWrapper(LogisticsSolidTileEntity tile, EnumFacing dir) {
 		this.tile = tile;
 		wrapped = (CCCommandWrapper) CCObjectWrapper.checkForAnnotations(tile, CCCommandWrapper.WRAPPER);
 		this.dir = dir;

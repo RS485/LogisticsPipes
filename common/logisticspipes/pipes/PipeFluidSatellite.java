@@ -13,8 +13,10 @@ import logisticspipes.gui.hud.HUDSatellite;
 import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
+import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.modules.ModuleSatelite;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
@@ -41,7 +43,7 @@ import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
@@ -108,7 +110,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 
 	private void updateInv(boolean force) {
 		itemList.clear();
-		for (Pair<TileEntity, ForgeDirection> pair : getAdjacentTanks(false)) {
+		for (Pair<TileEntity, EnumFacing> pair : getAdjacentTanks(false)) {
 			if (!(pair.getValue1() instanceof IFluidHandler)) {
 				continue;
 			}
@@ -122,7 +124,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 					continue;
 				}
 				FluidStack liquid = tank.fluid;
-				if (liquid != null && liquid.getFluidID() != 0) {
+				if (liquid != null && liquid.getUnlocalizedName() != null) {
 					addToList(FluidIdentifier.get(liquid).getItemIdentifier().makeStack(liquid.amount));
 				}
 			}

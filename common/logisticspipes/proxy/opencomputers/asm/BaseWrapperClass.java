@@ -1,11 +1,9 @@
 package logisticspipes.proxy.opencomputers.asm;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Callable;
-
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Callback;
+import li.cil.oc.api.machine.Context;
+import li.cil.oc.api.prefab.AbstractValue;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
@@ -28,19 +26,18 @@ import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
-
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-
 import net.minecraftforge.common.DimensionManager;
 
-import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Callback;
-import li.cil.oc.api.machine.Context;
-import li.cil.oc.api.prefab.AbstractValue;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
 public abstract class BaseWrapperClass extends AbstractValue {
 
@@ -468,7 +465,7 @@ public abstract class BaseWrapperClass extends AbstractValue {
 		} else if (object instanceof LogisticsSolidTileEntity) {
 			LPPosition pos = ((LogisticsSolidTileEntity) object).getLPPosition();
 			nbt.setString("Type", "LogisticsSolidTileEntity");
-			nbt.setInteger("Dim", MainProxy.getDimensionForWorld(((LogisticsSolidTileEntity) object).getWorldObj()));
+			nbt.setInteger("Dim", MainProxy.getDimensionForWorld(((LogisticsSolidTileEntity) object).getWorld()));
 			nbt.setInteger("X", pos.getX());
 			nbt.setInteger("Y", pos.getY());
 			nbt.setInteger("Z", pos.getZ());

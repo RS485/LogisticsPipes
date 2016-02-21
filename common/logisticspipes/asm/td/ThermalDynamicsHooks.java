@@ -1,18 +1,15 @@
 package logisticspipes.asm.td;
 
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.renderer.LogisticsRenderPipe;
-import logisticspipes.routing.ItemRoutingInformation;
-
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-
-import net.minecraftforge.common.util.ForgeDirection;
-
 import cofh.thermaldynamics.block.TileTDBase;
 import cofh.thermaldynamics.duct.item.TileItemDuct;
 import cofh.thermaldynamics.duct.item.TravelingItem;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.renderer.LogisticsRenderPipe;
+import logisticspipes.routing.ItemRoutingInformation;
+import logisticspipes.utils.UtilEnumFacing;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 
 public class ThermalDynamicsHooks {
 
@@ -20,7 +17,7 @@ public class ThermalDynamicsHooks {
 		if (source instanceof TileItemDuct) {
 			if (tile instanceof LogisticsTileGenericPipe) {
 				LogisticsTileGenericPipe pipe = (LogisticsTileGenericPipe) tile;
-				return pipe.tdPart.getInternalDuctForSide(ForgeDirection.getOrientation(side).getOpposite());
+				return pipe.tdPart.getInternalDuctForSide(UtilEnumFacing.getOrientation(side).getOpposite());
 			}
 		}
 		return tile;

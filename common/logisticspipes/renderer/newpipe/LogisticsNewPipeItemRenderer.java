@@ -1,8 +1,5 @@
 package logisticspipes.renderer.newpipe;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -14,17 +11,18 @@ import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe.Edge;
 import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer.BlockRotation;
 import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer.CoverSides;
 import logisticspipes.textures.Textures;
+import logisticspipes.utils.UtilEnumFacing;
 import logisticspipes.utils.tuples.Pair;
-
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
-
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.client.IItemRenderer;
-import net.minecraftforge.common.util.ForgeDirection;
-
 import org.lwjgl.opengl.GL11;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 
@@ -44,7 +42,7 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 		GL11.glEnable(GL11.GL_BLEND);
 
 		// GL11.glBindTexture(GL11.GL_TEXTURE_2D, 10);
-		Tessellator tessellator = Tessellator.instance;
+		Tessellator tessellator = Tessellator.getInstance();
 
 		GL11.glTranslatef(translateX, translateY, translateZ);
 		Block block = LogisticsPipes.LogisticsPipeBlock;
@@ -84,7 +82,7 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 		}
 
 		//ArrayList<Pair<CCModel, IconTransformation>> objectsToRender2 = new ArrayList<Pair<CCModel, IconTransformation>>();
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing dir : UtilEnumFacing.VALID_DIRECTIONS) {
 			for (IModel3D model : LogisticsNewRenderPipe.texturePlate_Outer.get(dir)) {
 				IIconTransformation icon = Textures.LPnewPipeIconProvider.getIcon(texture);
 				if (icon != null) {
@@ -107,7 +105,7 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 
 		GL11.glTranslatef(translateX, translateY, translateZ);
 		Block block = LogisticsPipes.LogisticsPipeBlock;
-		Tessellator tess = Tessellator.instance;
+		Tessellator tess = Tessellator.getInstance();
 
 		BlockRotation rotation = BlockRotation.ZERO;
 

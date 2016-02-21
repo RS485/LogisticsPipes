@@ -20,7 +20,7 @@ import logisticspipes.utils.string.StringUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPane;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.fontRendererObj;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.RenderHelper;
@@ -47,7 +47,7 @@ public class ItemStackRenderer {
 	private RenderBlocks renderBlocks;
 	private RenderItem renderItem;
 	private TextureManager texManager;
-	private FontRenderer fontRenderer;
+	private fontRendererObj fontRendererObj;
 
 	private ItemStack itemstack;
 	private int posX;
@@ -72,9 +72,9 @@ public class ItemStackRenderer {
 		this.ignoreDepth = ignoreDepth;
 		this.renderInColor = renderInColor;
 		renderManager = RenderManager.instance;
-		fontRenderer = renderManager.getFontRenderer();
-		if (fontRenderer == null) {
-			fontRenderer = Minecraft.getMinecraft().fontRenderer;
+		fontRendererObj = renderManager.getfontRendererObj();
+		if (fontRendererObj == null) {
+			fontRendererObj = Minecraft.getMinecraft().fontRendererObj;
 		}
 		worldObj = renderManager.worldObj;
 		texManager = renderManager.renderEngine;
@@ -148,7 +148,7 @@ public class ItemStackRenderer {
 		assert renderBlocks != null;
 		assert renderItem != null;
 		assert texManager != null;
-		assert fontRenderer != null;
+		assert fontRendererObj != null;
 		assert scaleX != 0.0F;
 		assert scaleY != 0.0F;
 		assert scaleZ != 0.0F;
@@ -172,7 +172,7 @@ public class ItemStackRenderer {
 
 		if (!ForgeHooksClient.renderInventoryItem(renderBlocks, texManager, itemstack, renderInColor, zLevel, posX, posY)) {
 			renderItem.zLevel += zLevel;
-			renderItem.renderItemIntoGUI(fontRenderer, texManager, itemstack, posX, posY, renderEffects);
+			renderItem.renderItemIntoGUI(fontRendererObj, texManager, itemstack, posX, posY, renderEffects);
 			renderItem.zLevel -= zLevel;
 		}
 
@@ -195,10 +195,10 @@ public class ItemStackRenderer {
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
 			}
 
-			FontRenderer specialFontRenderer = itemstack.getItem().getFontRenderer(itemstack);
+			fontRendererObj specialfontRendererObj = itemstack.getItem().getfontRendererObj(itemstack);
 
-			if (specialFontRenderer != null) {
-				fontRenderer = specialFontRenderer;
+			if (specialfontRendererObj != null) {
+				fontRendererObj = specialfontRendererObj;
 			}
 
 			GL11.glDisable(GL11.GL_LIGHTING);
@@ -208,7 +208,7 @@ public class ItemStackRenderer {
 			GL11.glTranslatef(0.0F, 0.0F, zLevel + 40.0F);
 
 			// using a translated shadow does not hurt and works with the HUD
-			SimpleGraphics.drawStringWithTranslatedShadow(fontRenderer, amountString, posX + 17 - fontRenderer.getStringWidth(amountString), posY + 9, Color.getValue(Color.WHITE));
+			SimpleGraphics.drawStringWithTranslatedShadow(fontRendererObj, amountString, posX + 17 - fontRendererObj.getStringWidth(amountString), posY + 9, Color.getValue(Color.WHITE));
 
 			GL11.glTranslatef(0.0F, 0.0F, -(zLevel + 40.0F));
 		}

@@ -1,17 +1,14 @@
 package logisticspipes.proxy.interfaces;
 
-import logisticspipes.items.ItemLogisticsPipe;
+import logisticspipes.blocks.LogisticsSolidBlock;
+import logisticspipes.items.LogisticsItem;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
-import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.item.ItemIdentifier;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetHandler;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
-
-import net.minecraftforge.client.IItemRenderer;
 
 public interface IProxy {
 
@@ -23,7 +20,7 @@ public interface IProxy {
 
 	public EntityPlayer getClientPlayer();
 
-	public void addLogisticsPipesOverride(IIconRegister par1IIconRegister, int index, String override1, String override2, boolean flag);
+//	public void addLogisticsPipesOverride(IIconRegister par1IIconRegister, int index, String override1, String override2, boolean flag);
 
 	public void registerParticles();
 
@@ -37,7 +34,7 @@ public interface IProxy {
 
 	public int getDimensionForWorld(World world);
 
-	public LogisticsTileGenericPipe getPipeInDimensionAt(int dimension, int x, int y, int z, EntityPlayer player);
+	public LogisticsTileGenericPipe getPipeInDimensionAt(int dimension, BlockPos pos, EntityPlayer player);
 
 	public void sendBroadCast(String message);
 
@@ -47,13 +44,25 @@ public interface IProxy {
 
 	public EntityPlayer getEntityPlayerFromNetHandler(INetHandler handler);
 
-	public void setIconProviderFromPipe(ItemLogisticsPipe item, CoreUnroutedPipe dummyPipe);
+//	public void setIconProviderFromPipe(ItemLogisticsPipe item, CoreUnroutedPipe dummyPipe);
 
 	public LogisticsModule getModuleFromGui();
 
-	public IItemRenderer getPipeItemRenderer();
+//	public IItemRenderer getPipeItemRenderer();
 
 	public boolean checkSinglePlayerOwner(String commandSenderName);
 
 	public void openFluidSelectGui(int slotId);
+
+	public abstract void registerItemRenders();;
+
+	public abstract void registerBlockRenderers();
+
+	public abstract void registerPipeRenderers();
+
+	public abstract void registerBlockForMeshing(LogisticsSolidBlock block, int metadata, String name);
+
+	public abstract void registerItemForMeshing(LogisticsItem item, int metadata, String name);
+
+	public abstract void registerPipeForMeshing(LogisticsTileGenericPipe block, int metadata, String name);
 }

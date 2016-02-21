@@ -1,43 +1,9 @@
 package logisticspipes.items;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
-import logisticspipes.modules.ModuleActiveSupplier;
-import logisticspipes.modules.ModuleAdvancedExtractor;
-import logisticspipes.modules.ModuleAdvancedExtractorMK2;
-import logisticspipes.modules.ModuleAdvancedExtractorMK3;
-import logisticspipes.modules.ModuleApiaristAnalyser;
-import logisticspipes.modules.ModuleApiaristRefiller;
-import logisticspipes.modules.ModuleApiaristSink;
-import logisticspipes.modules.ModuleApiaristTerminus;
-import logisticspipes.modules.ModuleCCBasedItemSink;
-import logisticspipes.modules.ModuleCCBasedQuickSort;
-import logisticspipes.modules.ModuleCrafter;
-import logisticspipes.modules.ModuleCrafterMK2;
-import logisticspipes.modules.ModuleCrafterMK3;
-import logisticspipes.modules.ModuleCreativeTabBasedItemSink;
-import logisticspipes.modules.ModuleElectricBuffer;
-import logisticspipes.modules.ModuleElectricManager;
-import logisticspipes.modules.ModuleEnchantmentSink;
-import logisticspipes.modules.ModuleEnchantmentSinkMK2;
-import logisticspipes.modules.ModuleExtractor;
-import logisticspipes.modules.ModuleExtractorMk2;
-import logisticspipes.modules.ModuleExtractorMk3;
-import logisticspipes.modules.ModuleItemSink;
-import logisticspipes.modules.ModuleModBasedItemSink;
-import logisticspipes.modules.ModuleOreDictItemSink;
-import logisticspipes.modules.ModulePassiveSupplier;
-import logisticspipes.modules.ModulePolymorphicItemSink;
-import logisticspipes.modules.ModuleProvider;
-import logisticspipes.modules.ModuleProviderMk2;
-import logisticspipes.modules.ModuleQuickSort;
-import logisticspipes.modules.ModuleTerminus;
-import logisticspipes.modules.ModuleThaumicAspectSink;
+import logisticspipes.modules.*;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
@@ -48,8 +14,11 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtils;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.IIconCreator;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -58,13 +27,17 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ItemModule extends LogisticsItem {
 
@@ -118,7 +91,7 @@ public class ItemModule extends LogisticsItem {
 
 		private int id;
 		private Class<? extends LogisticsModule> moduleClass;
-		private IIcon moduleIcon = null;
+		private TextureAtlasSprite moduleIcon = null;
 
 		private Module(int id, Class<? extends LogisticsModule> moduleClass) {
 			this.id = id;
@@ -130,7 +103,7 @@ public class ItemModule extends LogisticsItem {
 				return null;
 			}
 			try {
-				return moduleClass.getConstructor(new Class[] {}).newInstance(new Object[] {});
+				return (LogisticsModule) moduleClass.getConstructor(new Class[] {}).newInstance(new Object[] {});
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (SecurityException e) {
@@ -155,24 +128,8 @@ public class ItemModule extends LogisticsItem {
 			return id;
 		}
 
-		private IIcon getIcon() {
+		private TextureAtlasSprite getIcon() {
 			return moduleIcon;
-		}
-
-		@SideOnly(Side.CLIENT)
-		private void registerModuleIcon(IIconRegister par1IIconRegister) {
-			if (moduleClass == null) {
-				moduleIcon = par1IIconRegister.registerIcon("logisticspipes:" + getUnlocalizedName().replace("item.", "") + "/blank");
-			} else {
-				try {
-					LogisticsModule instance = moduleClass.newInstance();
-					moduleIcon = instance.getIconTexture(par1IIconRegister);
-				} catch (InstantiationException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 	}
 
@@ -284,12 +241,12 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	@Override
-	public boolean onItemUse(final ItemStack par1ItemStack, final EntityPlayer par2EntityPlayer, final World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10) {
+	public boolean onItemUse(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ) {
 		if (MainProxy.isServer(par2EntityPlayer.worldObj)) {
-			TileEntity tile = par3World.getTileEntity(par4, par5, par6);
+			TileEntity tile = par3World.getTileEntity(pos);
 			if (tile instanceof LogisticsTileGenericPipe) {
 				if (par2EntityPlayer.getDisplayName().equals("ComputerCraft")) { //Allow turtle to place modules in pipes.
-					CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(par3World, par4, par5, par6);
+					CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(par3World, pos);
 					if (LogisticsBlockGenericPipe.isValid(pipe)) {
 						pipe.blockActivated(par2EntityPlayer);
 					}
@@ -342,30 +299,6 @@ public class ItemModule extends LogisticsItem {
 		return null;
 	}
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister par1IIconRegister) {
-		if (modules.size() <= 0) {
-			return;
-		}
-		for (Module module : modules) {
-			module.registerModuleIcon(par1IIconRegister);
-		}
-	}
-
-	@Override
-	public IIcon getIconFromDamage(int i) {
-		// should set and store TextureIndex with this object.
-		for (Module module : modules) {
-			if (module.getId() == i) {
-				if (module.getIcon() != null) {
-					return module.getIcon();
-				}
-			}
-		}
-		return null;
-	}
-
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void addInformation(ItemStack itemStack, EntityPlayer player, List list, boolean flag) {
@@ -376,10 +309,10 @@ public class ItemModule extends LogisticsItem {
 					NBTTagList nbttaglist = nbt.getTagList("informationList", 8);
 					for (int i = 0; i < nbttaglist.tagCount(); i++) {
 						Object nbttag = nbttaglist.tagList.get(i);
-						String data = ((NBTTagString) nbttag).func_150285_a_();
+						String data = ((NBTTagString) nbttag).getString();
 						if (data.equals("<inventory>") && i + 1 < nbttaglist.tagCount()) {
 							nbttag = nbttaglist.tagList.get(i + 1);
-							data = ((NBTTagString) nbttag).func_150285_a_();
+							data = ((NBTTagString) nbttag).getString();
 							if (data.startsWith("<that>")) {
 								String prefix = data.substring(6);
 								NBTTagCompound module = nbt.getCompoundTag("moduleInformation");

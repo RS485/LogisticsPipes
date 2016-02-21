@@ -158,10 +158,10 @@ public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
 			GuiGraphics.drawGuiBackGround(mc, posX, posY, posX + 60, posY + 52, zLevel, true, true, true, true, true);
 			DictResource flag = _crafter.fuzzyFlags[fuzzyPanelSelection];
 			final String PREFIX = "gui.crafting.";
-			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OreDict"), posX + 4, posY + 4, (!flag.use_od ? 0x404040 : 0xFF4040));
-			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnDamage"), posX + 4, posY + 14, (!flag.ignore_dmg ? 0x404040 : 0x40FF40));
-			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnNBT"), posX + 4, posY + 26, (!flag.ignore_nbt ? 0x404040 : 0x4040FF));
-			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OrePrefix"), posX + 4, posY + 38, (!flag.use_category ? 0x404040 : 0x7F7F40));
+			mc.fontRendererObj.drawString(StringUtils.translate(PREFIX + "OreDict"), posX + 4, posY + 4, (!flag.use_od ? 0x404040 : 0xFF4040));
+			mc.fontRendererObj.drawString(StringUtils.translate(PREFIX + "IgnDamage"), posX + 4, posY + 14, (!flag.ignore_dmg ? 0x404040 : 0x40FF40));
+			mc.fontRendererObj.drawString(StringUtils.translate(PREFIX + "IgnNBT"), posX + 4, posY + 26, (!flag.ignore_nbt ? 0x404040 : 0x4040FF));
+			mc.fontRendererObj.drawString(StringUtils.translate(PREFIX + "OrePrefix"), posX + 4, posY + 38, (!flag.use_category ? 0x404040 : 0x7F7F40));
 		}
 	}
 

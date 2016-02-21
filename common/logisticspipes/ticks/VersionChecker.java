@@ -1,5 +1,15 @@
 package logisticspipes.ticks;
 
+import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
+import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
+import logisticspipes.asm.DevEnvHelper;
+import lombok.Data;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
+
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -9,19 +19,6 @@ import java.util.Scanner;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
-import logisticspipes.LPConstants;
-import logisticspipes.LogisticsPipes;
-import logisticspipes.asm.DevEnvHelper;
-
-import net.minecraft.nbt.NBTTagCompound;
-
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.event.FMLInterModComms;
-
-import com.google.gson.Gson;
-import com.google.gson.internal.LinkedTreeMap;
-import lombok.Data;
 
 public final class VersionChecker implements Callable<VersionChecker.VersionInfo> {
 

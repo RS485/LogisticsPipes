@@ -1,6 +1,6 @@
 package extracells.api;
 
-import cpw.mods.fml.common.FMLLog;
+import net.minecraftforge.fml.common.FMLLog;
 
 public class ECApi {
 	

@@ -1,13 +1,5 @@
 package logisticspipes.renderer.newpipe;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.PlayerConfig;
@@ -24,82 +16,83 @@ import logisticspipes.proxy.object3d.operation.LPUVTransformationList;
 import logisticspipes.proxy.object3d.operation.LPUVTranslation;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.textures.Textures;
+import logisticspipes.utils.UtilEnumFacing;
 import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Quartet;
-
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-
-import net.minecraftforge.common.util.ForgeDirection;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.lwjgl.opengl.GL11;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 public class LogisticsNewRenderPipe {
 
 	enum Edge {
-		Upper_North(ForgeDirection.UP, ForgeDirection.NORTH),
-		Upper_South(ForgeDirection.UP, ForgeDirection.SOUTH),
-		Upper_East(ForgeDirection.UP, ForgeDirection.EAST),
-		Upper_West(ForgeDirection.UP, ForgeDirection.WEST),
-		Lower_North(ForgeDirection.DOWN, ForgeDirection.NORTH),
-		Lower_South(ForgeDirection.DOWN, ForgeDirection.SOUTH),
-		Lower_East(ForgeDirection.DOWN, ForgeDirection.EAST),
-		Lower_West(ForgeDirection.DOWN, ForgeDirection.WEST),
-		Middle_North_West(ForgeDirection.NORTH, ForgeDirection.WEST),
-		Middle_North_East(ForgeDirection.NORTH, ForgeDirection.EAST),
-		Lower_South_East(ForgeDirection.SOUTH, ForgeDirection.EAST),
-		Lower_South_West(ForgeDirection.SOUTH, ForgeDirection.WEST);
+		Upper_North(EnumFacing.UP, EnumFacing.NORTH),
+		Upper_South(EnumFacing.UP, EnumFacing.SOUTH),
+		Upper_East(EnumFacing.UP, EnumFacing.EAST),
+		Upper_West(EnumFacing.UP, EnumFacing.WEST),
+		Lower_North(EnumFacing.DOWN, EnumFacing.NORTH),
+		Lower_South(EnumFacing.DOWN, EnumFacing.SOUTH),
+		Lower_East(EnumFacing.DOWN, EnumFacing.EAST),
+		Lower_West(EnumFacing.DOWN, EnumFacing.WEST),
+		Middle_North_West(EnumFacing.NORTH, EnumFacing.WEST),
+		Middle_North_East(EnumFacing.NORTH, EnumFacing.EAST),
+		Lower_South_East(EnumFacing.SOUTH, EnumFacing.EAST),
+		Lower_South_West(EnumFacing.SOUTH, EnumFacing.WEST);
 
-		final ForgeDirection part1;
-		final ForgeDirection part2;
+		final EnumFacing part1;
+		final EnumFacing part2;
 
-		Edge(ForgeDirection part1, ForgeDirection part2) {
+		Edge(EnumFacing part1, EnumFacing part2) {
 			this.part1 = part1;
 			this.part2 = part2;
 		}
 	}
 
 	enum UpDown {
-		UP("U", ForgeDirection.UP),
-		DOWN("D", ForgeDirection.DOWN);
+		UP("U", EnumFacing.UP),
+		DOWN("D", EnumFacing.DOWN);
 
 		final String s;
-		final ForgeDirection dir;
+		final EnumFacing dir;
 
-		UpDown(String s, ForgeDirection dir) {
+		UpDown(String s, EnumFacing dir) {
 			this.s = s;
 			this.dir = dir;
 		}
 	}
 
 	enum NorthSouth {
-		NORTH("N", ForgeDirection.NORTH),
-		SOUTH("S", ForgeDirection.SOUTH);
+		NORTH("N", EnumFacing.NORTH),
+		SOUTH("S", EnumFacing.SOUTH);
 
 		final String s;
-		final ForgeDirection dir;
+		final EnumFacing dir;
 
-		NorthSouth(String s, ForgeDirection dir) {
+		NorthSouth(String s, EnumFacing dir) {
 			this.s = s;
 			this.dir = dir;
 		}
 	}
 
 	enum EastWest {
-		EAST("E", ForgeDirection.EAST),
-		WEST("W", ForgeDirection.WEST);
+		EAST("E", EnumFacing.EAST),
+		WEST("W", EnumFacing.WEST);
 
 		final String s;
-		final ForgeDirection dir;
+		final EnumFacing dir;
 
-		EastWest(String s, ForgeDirection dir) {
+		EastWest(String s, EnumFacing dir) {
 			this.s = s;
 			this.dir = dir;
 		}
@@ -127,14 +120,14 @@ public class LogisticsNewRenderPipe {
 	}
 
 	enum Turn {
-		NORTH_SOUTH(ForgeDirection.NORTH, ForgeDirection.SOUTH),
-		EAST_WEST(ForgeDirection.EAST, ForgeDirection.WEST),
-		UP_DOWN(ForgeDirection.UP, ForgeDirection.DOWN);
+		NORTH_SOUTH(EnumFacing.NORTH, EnumFacing.SOUTH),
+		EAST_WEST(EnumFacing.EAST, EnumFacing.WEST),
+		UP_DOWN(EnumFacing.UP, EnumFacing.DOWN);
 
-		final ForgeDirection dir1;
-		final ForgeDirection dir2;
+		final EnumFacing dir1;
+		final EnumFacing dir2;
 
-		Turn(ForgeDirection dir1, ForgeDirection dir2) {
+		Turn(EnumFacing dir1, EnumFacing dir2) {
 			this.dir1 = dir1;
 			this.dir2 = dir2;
 		}
@@ -176,8 +169,8 @@ public class LogisticsNewRenderPipe {
 			this.number = number;
 		}
 
-		public ForgeDirection getPointer() {
-			List<ForgeDirection> canidates = new ArrayList<ForgeDirection>();
+		public EnumFacing getPointer() {
+			List<EnumFacing> canidates = new ArrayList<EnumFacing>();
 			canidates.add(corner.ew.dir);
 			canidates.add(corner.ns.dir);
 			canidates.add(corner.ud.dir);
@@ -203,65 +196,65 @@ public class LogisticsNewRenderPipe {
 	}
 
 	enum Support {
-		UP_UP(ForgeDirection.UP, SupportOri.UP_DOWN),
-		UP_SIDE(ForgeDirection.UP, SupportOri.SIDE),
-		DOWN_UP(ForgeDirection.DOWN, SupportOri.UP_DOWN),
-		DOWN_SIDE(ForgeDirection.DOWN, SupportOri.SIDE),
-		NORTH_UP(ForgeDirection.NORTH, SupportOri.UP_DOWN),
-		NORTH_SIDE(ForgeDirection.NORTH, SupportOri.SIDE),
-		SOUTH_UP(ForgeDirection.SOUTH, SupportOri.UP_DOWN),
-		SOUTH_SIDE(ForgeDirection.SOUTH, SupportOri.SIDE),
-		EAST_UP(ForgeDirection.EAST, SupportOri.UP_DOWN),
-		EAST_SIDE(ForgeDirection.EAST, SupportOri.SIDE),
-		WEST_UP(ForgeDirection.WEST, SupportOri.UP_DOWN),
-		WEST_SIDE(ForgeDirection.WEST, SupportOri.SIDE);
+		UP_UP(EnumFacing.UP, SupportOri.UP_DOWN),
+		UP_SIDE(EnumFacing.UP, SupportOri.SIDE),
+		DOWN_UP(EnumFacing.DOWN, SupportOri.UP_DOWN),
+		DOWN_SIDE(EnumFacing.DOWN, SupportOri.SIDE),
+		NORTH_UP(EnumFacing.NORTH, SupportOri.UP_DOWN),
+		NORTH_SIDE(EnumFacing.NORTH, SupportOri.SIDE),
+		SOUTH_UP(EnumFacing.SOUTH, SupportOri.UP_DOWN),
+		SOUTH_SIDE(EnumFacing.SOUTH, SupportOri.SIDE),
+		EAST_UP(EnumFacing.EAST, SupportOri.UP_DOWN),
+		EAST_SIDE(EnumFacing.EAST, SupportOri.SIDE),
+		WEST_UP(EnumFacing.WEST, SupportOri.UP_DOWN),
+		WEST_SIDE(EnumFacing.WEST, SupportOri.SIDE);
 
-		Support(ForgeDirection dir, SupportOri ori) {
+		Support(EnumFacing dir, SupportOri ori) {
 			this.dir = dir;
 			this.ori = ori;
 		}
 
-		final ForgeDirection dir;
+		final EnumFacing dir;
 		final SupportOri ori;
 	}
 
 	enum Mount {
-		UP_NORTH(ForgeDirection.UP, ForgeDirection.NORTH),
-		UP_SOUTH(ForgeDirection.UP, ForgeDirection.SOUTH),
-		UP_EAST(ForgeDirection.UP, ForgeDirection.EAST),
-		UP_WEST(ForgeDirection.UP, ForgeDirection.WEST),
-		DOWN_NORTH(ForgeDirection.DOWN, ForgeDirection.NORTH),
-		DOWN_SOUTH(ForgeDirection.DOWN, ForgeDirection.SOUTH),
-		DOWN_EAST(ForgeDirection.DOWN, ForgeDirection.EAST),
-		DOWN_WEST(ForgeDirection.DOWN, ForgeDirection.WEST),
-		NORTH_UP(ForgeDirection.NORTH, ForgeDirection.UP),
-		NORTH_DOWN(ForgeDirection.NORTH, ForgeDirection.DOWN),
-		NORTH_EAST(ForgeDirection.NORTH, ForgeDirection.EAST),
-		NORTH_WEST(ForgeDirection.NORTH, ForgeDirection.WEST),
-		SOUTH_UP(ForgeDirection.SOUTH, ForgeDirection.UP),
-		SOUTH_DOWN(ForgeDirection.SOUTH, ForgeDirection.DOWN),
-		SOUTH_EAST(ForgeDirection.SOUTH, ForgeDirection.EAST),
-		SOUTH_WEST(ForgeDirection.SOUTH, ForgeDirection.WEST),
-		EAST_UP(ForgeDirection.EAST, ForgeDirection.UP),
-		EAST_DOWN(ForgeDirection.EAST, ForgeDirection.DOWN),
-		EAST_NORTH(ForgeDirection.EAST, ForgeDirection.NORTH),
-		EAST_SOUTH(ForgeDirection.EAST, ForgeDirection.SOUTH),
-		WEST_UP(ForgeDirection.WEST, ForgeDirection.UP),
-		WEST_DOWN(ForgeDirection.WEST, ForgeDirection.DOWN),
-		WEST_NORTH(ForgeDirection.WEST, ForgeDirection.NORTH),
-		WEST_SOUTH(ForgeDirection.WEST, ForgeDirection.SOUTH);
+		UP_NORTH(EnumFacing.UP, EnumFacing.NORTH),
+		UP_SOUTH(EnumFacing.UP, EnumFacing.SOUTH),
+		UP_EAST(EnumFacing.UP, EnumFacing.EAST),
+		UP_WEST(EnumFacing.UP, EnumFacing.WEST),
+		DOWN_NORTH(EnumFacing.DOWN, EnumFacing.NORTH),
+		DOWN_SOUTH(EnumFacing.DOWN, EnumFacing.SOUTH),
+		DOWN_EAST(EnumFacing.DOWN, EnumFacing.EAST),
+		DOWN_WEST(EnumFacing.DOWN, EnumFacing.WEST),
+		NORTH_UP(EnumFacing.NORTH, EnumFacing.UP),
+		NORTH_DOWN(EnumFacing.NORTH, EnumFacing.DOWN),
+		NORTH_EAST(EnumFacing.NORTH, EnumFacing.EAST),
+		NORTH_WEST(EnumFacing.NORTH, EnumFacing.WEST),
+		SOUTH_UP(EnumFacing.SOUTH, EnumFacing.UP),
+		SOUTH_DOWN(EnumFacing.SOUTH, EnumFacing.DOWN),
+		SOUTH_EAST(EnumFacing.SOUTH, EnumFacing.EAST),
+		SOUTH_WEST(EnumFacing.SOUTH, EnumFacing.WEST),
+		EAST_UP(EnumFacing.EAST, EnumFacing.UP),
+		EAST_DOWN(EnumFacing.EAST, EnumFacing.DOWN),
+		EAST_NORTH(EnumFacing.EAST, EnumFacing.NORTH),
+		EAST_SOUTH(EnumFacing.EAST, EnumFacing.SOUTH),
+		WEST_UP(EnumFacing.WEST, EnumFacing.UP),
+		WEST_DOWN(EnumFacing.WEST, EnumFacing.DOWN),
+		WEST_NORTH(EnumFacing.WEST, EnumFacing.NORTH),
+		WEST_SOUTH(EnumFacing.WEST, EnumFacing.SOUTH);
 
-		ForgeDirection dir;
-		ForgeDirection side;
+		EnumFacing dir;
+		EnumFacing side;
 
-		Mount(ForgeDirection dir, ForgeDirection side) {
+		Mount(EnumFacing dir, EnumFacing side) {
 			this.dir = dir;
 			this.side = side;
 		}
 	}
 
-	static Map<ForgeDirection, List<IModel3D>> sideNormal = new HashMap<ForgeDirection, List<IModel3D>>();
-	static Map<ForgeDirection, List<IModel3D>> sideBC = new HashMap<ForgeDirection, List<IModel3D>>();
+	static Map<EnumFacing, List<IModel3D>> sideNormal = new HashMap<EnumFacing, List<IModel3D>>();
+	static Map<EnumFacing, List<IModel3D>> sideBC = new HashMap<EnumFacing, List<IModel3D>>();
 	static Map<Edge, IModel3D> edges = new HashMap<Edge, IModel3D>();
 	static Map<Corner, List<IModel3D>> corners_M = new HashMap<Corner, List<IModel3D>>();
 	static Map<Corner, List<IModel3D>> corners_I3 = new HashMap<Corner, List<IModel3D>>();
@@ -270,13 +263,13 @@ public class LogisticsNewRenderPipe {
 	static Map<Turn_Corner, IModel3D> spacers = new HashMap<Turn_Corner, IModel3D>();
 	static Map<Mount, IModel3D> mounts = new HashMap<Mount, IModel3D>();
 
-	static Map<ForgeDirection, List<IModel3D>> texturePlate_Inner = new HashMap<ForgeDirection, List<IModel3D>>();
-	static Map<ForgeDirection, List<IModel3D>> texturePlate_Outer = new HashMap<ForgeDirection, List<IModel3D>>();
-	static Map<ForgeDirection, Quartet<List<IModel3D>, List<IModel3D>, List<IModel3D>, List<IModel3D>>> sideTexturePlate = new HashMap<ForgeDirection, Quartet<List<IModel3D>, List<IModel3D>, List<IModel3D>, List<IModel3D>>>();
+	static Map<EnumFacing, List<IModel3D>> texturePlate_Inner = new HashMap<EnumFacing, List<IModel3D>>();
+	static Map<EnumFacing, List<IModel3D>> texturePlate_Outer = new HashMap<EnumFacing, List<IModel3D>>();
+	static Map<EnumFacing, Quartet<List<IModel3D>, List<IModel3D>, List<IModel3D>, List<IModel3D>>> sideTexturePlate = new HashMap<EnumFacing, Quartet<List<IModel3D>, List<IModel3D>, List<IModel3D>, List<IModel3D>>>();
 	static Map<Mount, List<IModel3D>> textureConnectorPlate = new HashMap<Mount, List<IModel3D>>();
 	static Map<Edge, Quartet<IModel3D, IModel3D, IModel3D, IModel3D>> centerEdgeLEDs = new HashMap<Edge, Quartet<IModel3D, IModel3D, IModel3D, IModel3D>>();
-	static Map<ForgeDirection, List<IModel3D>> sidedInnerLEDs = new HashMap<ForgeDirection, List<IModel3D>>();
-	static Map<ForgeDirection, List<IModel3D>> sidedOuterLEDs = new HashMap<ForgeDirection, List<IModel3D>>();
+	static Map<EnumFacing, List<IModel3D>> sidedInnerLEDs = new HashMap<EnumFacing, List<IModel3D>>();
+	static Map<EnumFacing, List<IModel3D>> sidedOuterLEDs = new HashMap<EnumFacing, List<IModel3D>>();
 
 	static Map<ScaleObject, IModel3D> scaleMap = new HashMap<ScaleObject, IModel3D>();
 
@@ -308,7 +301,7 @@ public class LogisticsNewRenderPipe {
 		try {
 			Map<String, IModel3D> pipePartModels = SimpleServiceLocator.cclProxy.parseObjModels(LogisticsPipes.class.getResourceAsStream("/logisticspipes/models/PipeModel_result.obj"), 7, new LPScale(1 / 100f));
 
-			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+			for (EnumFacing dir : UtilEnumFacing.VALID_DIRECTIONS) {
 				LogisticsNewRenderPipe.sideNormal.put(dir, new ArrayList<IModel3D>());
 				String grp = "Side_" + LogisticsNewRenderPipe.getDirAsString_Type1(dir);
 				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
@@ -321,7 +314,7 @@ public class LogisticsNewRenderPipe {
 				}
 			}
 
-			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+			for (EnumFacing dir : UtilEnumFacing.VALID_DIRECTIONS) {
 				LogisticsNewRenderPipe.sideBC.put(dir, new ArrayList<IModel3D>());
 				String grp = "Side_BC_" + LogisticsNewRenderPipe.getDirAsString_Type1(dir);
 				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
@@ -336,7 +329,7 @@ public class LogisticsNewRenderPipe {
 
 			for (Edge edge : Edge.values()) {
 				String grp;
-				if (edge.part1 == ForgeDirection.UP || edge.part1 == ForgeDirection.DOWN) {
+				if (edge.part1 == EnumFacing.UP || edge.part1 == EnumFacing.DOWN) {
 					grp = "Edge_M_" + LogisticsNewRenderPipe.getDirAsString_Type1(edge.part1) + "_" + LogisticsNewRenderPipe.getDirAsString_Type1(edge.part2);
 				} else {
 					grp = "Edge_M_S_" + LogisticsNewRenderPipe.getDirAsString_Type1(edge.part1) + LogisticsNewRenderPipe.getDirAsString_Type1(edge.part2);
@@ -451,7 +444,7 @@ public class LogisticsNewRenderPipe {
 				}
 			}
 
-			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+			for (EnumFacing dir : UtilEnumFacing.VALID_DIRECTIONS) {
 				LogisticsNewRenderPipe.texturePlate_Inner.put(dir, new ArrayList<IModel3D>());
 				String grp = "Inner_Plate_" + LogisticsNewRenderPipe.getDirAsString_Type1(dir);
 				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
@@ -464,7 +457,7 @@ public class LogisticsNewRenderPipe {
 				}
 			}
 
-			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+			for (EnumFacing dir : UtilEnumFacing.VALID_DIRECTIONS) {
 				LogisticsNewRenderPipe.texturePlate_Outer.put(dir, new ArrayList<IModel3D>());
 				String grp = "Texture_Plate_" + LogisticsNewRenderPipe.getDirAsString_Type1(dir);
 				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
@@ -477,7 +470,7 @@ public class LogisticsNewRenderPipe {
 				}
 			}
 
-			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+			for (EnumFacing dir : UtilEnumFacing.VALID_DIRECTIONS) {
 				LogisticsNewRenderPipe.sideTexturePlate.put(dir, new Quartet<List<IModel3D>, List<IModel3D>, List<IModel3D>, List<IModel3D>>(new ArrayList<IModel3D>(), new ArrayList<IModel3D>(), new ArrayList<IModel3D>(), new ArrayList<IModel3D>()));
 				String grp = "Texture_Side_" + LogisticsNewRenderPipe.getDirAsString_Type1(dir);
 				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
@@ -559,7 +552,7 @@ public class LogisticsNewRenderPipe {
 				}
 			}
 
-			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+			for (EnumFacing dir : UtilEnumFacing.VALID_DIRECTIONS) {
 				LogisticsNewRenderPipe.sidedInnerLEDs.put(dir, new ArrayList<IModel3D>());
 				String grp = "Inner_LED_" + LogisticsNewRenderPipe.getDirAsString_Type1(dir);
 				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
@@ -572,7 +565,7 @@ public class LogisticsNewRenderPipe {
 				}
 			}
 
-			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+			for (EnumFacing dir : UtilEnumFacing.VALID_DIRECTIONS) {
 				LogisticsNewRenderPipe.sidedOuterLEDs.put(dir, new ArrayList<IModel3D>());
 				String grp = "Outer_LED_" + LogisticsNewRenderPipe.getDirAsString_Type1(dir);
 				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
@@ -594,7 +587,7 @@ public class LogisticsNewRenderPipe {
 		}
 	}
 
-	private static String getDirAsString_Type1(ForgeDirection dir) {
+	private static String getDirAsString_Type1(EnumFacing dir) {
 		switch (dir) {
 			case NORTH:
 				return "N";
@@ -678,7 +671,7 @@ public class LogisticsNewRenderPipe {
 				SimpleServiceLocator.cclProxy.getRenderState().setUseNormals(true);
 				SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
 
-				int brightness = new LPPosition((TileEntity) pipeTile).getBlock(pipeTile.getWorldObj()).getMixedBrightnessForBlock(pipeTile.getWorldObj(), pipeTile.xCoord, pipeTile.yCoord, pipeTile.zCoord);
+				int brightness = new LPPosition((TileEntity) pipeTile).getBlock(pipeTile.getWorld()).getMixedBrightnessForBlock(pipeTile.getWorld(), pipeTile.xCoord, pipeTile.yCoord, pipeTile.zCoord);
 
 				tess.setColorOpaque_F(1F, 1F, 1F);
 				tess.setBrightness(brightness);
@@ -715,7 +708,7 @@ public class LogisticsNewRenderPipe {
 
 		int connectionCount = 0;
 
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing dir : UtilEnumFacing.VALID_DIRECTIONS) {
 			if (renderState.pipeConnectionMatrix.isConnected(dir)) {
 				connectionCount++;
 				if (renderState.pipeConnectionMatrix.isBCConnected(dir) || renderState.pipeConnectionMatrix.isTDConnected(dir)) {
@@ -772,12 +765,12 @@ public class LogisticsNewRenderPipe {
 							double toAdd = 1;
 							if (dir.ordinal() % 2 == 1) {
 								toAdd = 1 + (bound / LPConstants.PIPE_MIN_POS);
-								model2.apply(new LPScale(dir.offsetX != 0 ? toAdd : 1, dir.offsetY != 0 ? toAdd : 1, dir.offsetZ != 0 ? toAdd : 1));
+								model2.apply(new LPScale(dir.getFrontOffsetX() != 0 ? toAdd : 1, dir.getFrontOffsetY() != 0 ? toAdd : 1, dir.getFrontOffsetZ() != 0 ? toAdd : 1));
 							} else {
 								bound = 1 - bound;
 								toAdd = 1 + (bound / LPConstants.PIPE_MIN_POS);
-								model2.apply(new LPScale(dir.offsetX != 0 ? toAdd : 1, dir.offsetY != 0 ? toAdd : 1, dir.offsetZ != 0 ? toAdd : 1));
-								model2.apply(new LPTranslation(dir.offsetX * bound, dir.offsetY * bound, dir.offsetZ * bound));
+								model2.apply(new LPScale(dir.getFrontOffsetX() != 0 ? toAdd : 1, dir.getFrontOffsetY() != 0 ? toAdd : 1, dir.getFrontOffsetZ() != 0 ? toAdd : 1));
+								model2.apply(new LPTranslation(dir.getFrontOffsetX() * bound, dir.getFrontOffsetY() * bound, dir.getFrontOffsetZ() * bound));
 							}
 							model2.apply(new LPTranslation(min));
 							LogisticsNewRenderPipe.scaleMap.put(key, model2);
@@ -879,13 +872,13 @@ public class LogisticsNewRenderPipe {
 		}
 
 		for (int i = 0; i < 6; i += 2) {
-			ForgeDirection dir = ForgeDirection.getOrientation(i);
-			List<ForgeDirection> list = new ArrayList<ForgeDirection>(Arrays.asList(ForgeDirection.VALID_DIRECTIONS));
+			EnumFacing dir = UtilEnumFacing.getOrientation(i);
+			List<EnumFacing> list = new ArrayList<EnumFacing>(Arrays.asList(UtilEnumFacing.VALID_DIRECTIONS));
 			list.remove(dir);
 			list.remove(dir.getOpposite());
 			if (renderState.pipeConnectionMatrix.isConnected(dir) && renderState.pipeConnectionMatrix.isConnected(dir.getOpposite())) {
 				boolean found = false;
-				for (ForgeDirection dir2 : list) {
+				for (EnumFacing dir2 : list) {
 					if (renderState.pipeConnectionMatrix.isConnected(dir2)) {
 						found = true;
 						break;
@@ -919,11 +912,11 @@ public class LogisticsNewRenderPipe {
 		}
 
 		boolean solidSides[] = new boolean[6];
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing dir : UtilEnumFacing.VALID_DIRECTIONS) {
 			LPPosition pos = new LPPosition((TileEntity) pipeTile);
 			pos.moveForward(dir);
-			Block blockSide = pos.getBlock(pipeTile.getWorldObj());
-			if (blockSide == null || !blockSide.isSideSolid(pipeTile.getWorldObj(), pos.getX(), pos.getY(), pos.getZ(), dir.getOpposite()) || renderState.pipeConnectionMatrix.isConnected(dir)) {
+			Block blockSide = pos.getBlock(pipeTile.getWorld());
+			if (blockSide == null || !blockSide.isSideSolid(pipeTile.getWorld(), pos, dir.getOpposite()) || renderState.pipeConnectionMatrix.isConnected(dir)) {
 				Iterator<Mount> iter = mountCanidates.iterator();
 				while (iter.hasNext()) {
 					Mount mount = iter.next();
@@ -937,13 +930,13 @@ public class LogisticsNewRenderPipe {
 		}
 
 		if (!mountCanidates.isEmpty()) {
-			if (solidSides[ForgeDirection.DOWN.ordinal()]) {
-				findOponentOnSameSide(mountCanidates, ForgeDirection.DOWN);
-			} else if (solidSides[ForgeDirection.UP.ordinal()]) {
-				findOponentOnSameSide(mountCanidates, ForgeDirection.UP);
+			if (solidSides[EnumFacing.DOWN.ordinal()]) {
+				findOponentOnSameSide(mountCanidates, EnumFacing.DOWN);
+			} else if (solidSides[EnumFacing.UP.ordinal()]) {
+				findOponentOnSameSide(mountCanidates, EnumFacing.UP);
 			} else {
-				removeFromSide(mountCanidates, ForgeDirection.DOWN);
-				removeFromSide(mountCanidates, ForgeDirection.UP);
+				removeFromSide(mountCanidates, EnumFacing.DOWN);
+				removeFromSide(mountCanidates, EnumFacing.UP);
 				if (mountCanidates.size() > 2) {
 					removeIfHasOponentSide(mountCanidates);
 				}
@@ -964,7 +957,7 @@ public class LogisticsNewRenderPipe {
 			}
 		}
 
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing dir : UtilEnumFacing.VALID_DIRECTIONS) {
 			if (!renderState.pipeConnectionMatrix.isConnected(dir)) {
 				for (IModel3D model : LogisticsNewRenderPipe.texturePlate_Outer.get(dir)) {
 					IIconTransformation icon = Textures.LPnewPipeIconProvider.getIcon(renderState.textureMatrix.getTextureIndex());
@@ -975,7 +968,7 @@ public class LogisticsNewRenderPipe {
 			}
 		}
 		if (renderState.textureMatrix.isFluid()) {
-			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+			for (EnumFacing dir : UtilEnumFacing.VALID_DIRECTIONS) {
 				if (!renderState.pipeConnectionMatrix.isConnected(dir)) {
 					for (IModel3D model : LogisticsNewRenderPipe.texturePlate_Inner.get(dir)) {
 						objectsToRender.add(new Pair<IModel3D, I3DOperation[]>(model, new I3DOperation[] { LogisticsNewRenderPipe.glassCenterTexture }));
@@ -991,7 +984,7 @@ public class LogisticsNewRenderPipe {
 		}
 	}
 
-	private void findOponentOnSameSide(List<Mount> mountCanidates, ForgeDirection dir) {
+	private void findOponentOnSameSide(List<Mount> mountCanidates, EnumFacing dir) {
 		boolean sides[] = new boolean[6];
 		Iterator<Mount> iter = mountCanidates.iterator();
 		while (iter.hasNext()) {
@@ -1005,16 +998,16 @@ public class LogisticsNewRenderPipe {
 		if (mountCanidates.size() <= 2) {
 			return;
 		}
-		List<ForgeDirection> keep = new ArrayList<ForgeDirection>();
+		List<EnumFacing> keep = new ArrayList<EnumFacing>();
 		if (sides[2] && sides[3]) {
-			keep.add(ForgeDirection.NORTH);
-			keep.add(ForgeDirection.SOUTH);
+			keep.add(EnumFacing.NORTH);
+			keep.add(EnumFacing.SOUTH);
 		} else if (sides[4] && sides[5]) {
-			keep.add(ForgeDirection.EAST);
-			keep.add(ForgeDirection.WEST);
+			keep.add(EnumFacing.EAST);
+			keep.add(EnumFacing.WEST);
 		} else if (sides[0] && sides[1]) {
-			keep.add(ForgeDirection.UP);
-			keep.add(ForgeDirection.DOWN);
+			keep.add(EnumFacing.UP);
+			keep.add(EnumFacing.DOWN);
 		}
 		iter = mountCanidates.iterator();
 		while (iter.hasNext()) {
@@ -1025,7 +1018,7 @@ public class LogisticsNewRenderPipe {
 		}
 	}
 
-	private void removeFromSide(List<Mount> mountCanidates, ForgeDirection dir) {
+	private void removeFromSide(List<Mount> mountCanidates, EnumFacing dir) {
 		Iterator<Mount> iter = mountCanidates.iterator();
 		while (iter.hasNext()) {
 			Mount mount = iter.next();
@@ -1035,7 +1028,7 @@ public class LogisticsNewRenderPipe {
 		}
 	}
 
-	private void reduceToOnePerSide(List<Mount> mountCanidates, ForgeDirection dir, ForgeDirection pref) {
+	private void reduceToOnePerSide(List<Mount> mountCanidates, EnumFacing dir, EnumFacing pref) {
 		boolean found = false;
 		Iterator<Mount> iter = mountCanidates.iterator();
 		while (iter.hasNext()) {
@@ -1063,7 +1056,7 @@ public class LogisticsNewRenderPipe {
 		}
 	}
 
-	private void reduceToOnePerSide(List<Mount> mountCanidates, ForgeDirection dir) {
+	private void reduceToOnePerSide(List<Mount> mountCanidates, EnumFacing dir) {
 		boolean found = false;
 		Iterator<Mount> iter = mountCanidates.iterator();
 		while (iter.hasNext()) {
@@ -1087,15 +1080,15 @@ public class LogisticsNewRenderPipe {
 			sides[mount.dir.ordinal()] = true;
 		}
 		if (sides[2] && sides[3]) {
-			removeFromSide(mountCanidates, ForgeDirection.EAST);
-			removeFromSide(mountCanidates, ForgeDirection.WEST);
-			reduceToOnePerSide(mountCanidates, ForgeDirection.NORTH);
-			reduceToOnePerSide(mountCanidates, ForgeDirection.SOUTH);
+			removeFromSide(mountCanidates, EnumFacing.EAST);
+			removeFromSide(mountCanidates, EnumFacing.WEST);
+			reduceToOnePerSide(mountCanidates, EnumFacing.NORTH);
+			reduceToOnePerSide(mountCanidates, EnumFacing.SOUTH);
 		} else if (sides[4] && sides[5]) {
-			removeFromSide(mountCanidates, ForgeDirection.NORTH);
-			removeFromSide(mountCanidates, ForgeDirection.SOUTH);
-			reduceToOnePerSide(mountCanidates, ForgeDirection.EAST);
-			reduceToOnePerSide(mountCanidates, ForgeDirection.WEST);
+			removeFromSide(mountCanidates, EnumFacing.NORTH);
+			removeFromSide(mountCanidates, EnumFacing.SOUTH);
+			reduceToOnePerSide(mountCanidates, EnumFacing.EAST);
+			reduceToOnePerSide(mountCanidates, EnumFacing.WEST);
 		}
 	}
 
@@ -1107,11 +1100,11 @@ public class LogisticsNewRenderPipe {
 			sides[mount.dir.ordinal()] = true;
 		}
 		for (int i = 2; i < 6; i++) {
-			ForgeDirection dir = ForgeDirection.getOrientation(i);
-			ForgeDirection rot = dir.getRotation(ForgeDirection.UP);
+			EnumFacing dir = UtilEnumFacing.getOrientation(i);
+			EnumFacing rot = dir.getRotation(EnumFacing.UP);
 			if (sides[dir.ordinal()] && sides[rot.ordinal()]) {
-				reduceToOnePerSide(mountCanidates, dir, dir.getRotation(ForgeDirection.DOWN));
-				reduceToOnePerSide(mountCanidates, rot, rot.getRotation(ForgeDirection.UP));
+				reduceToOnePerSide(mountCanidates, dir, dir.getRotation(EnumFacing.DOWN));
+				reduceToOnePerSide(mountCanidates, rot, rot.getRotation(EnumFacing.UP));
 			}
 		}
 	}

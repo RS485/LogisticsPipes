@@ -8,10 +8,10 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-
-import net.minecraftforge.common.util.ForgeDirection;
 
 public class LPPosition extends Triplet<Double, Double, Double> {
 
@@ -19,16 +19,16 @@ public class LPPosition extends Triplet<Double, Double, Double> {
 		super(xPos, yPos, zPos);
 	}
 
-	public LPPosition(int xPos, int yPos, int zPos) {
-		super((double) xPos, (double) yPos, (double) zPos);
+	public LPPosition(BlockPos pos) {
+		super((double) pos.getX(), (double) pos.getY(), (double) pos.getZ());
 	}
 
 	public LPPosition(TileEntity tile) {
-		super((double) tile.xCoord, (double) tile.yCoord, (double) tile.zCoord);
+		super(tile.getPos());
 	}
 
 	public LPPosition(CoreUnroutedPipe pipe) {
-		super((double) pipe.getX(), (double) pipe.getY(), (double) pipe.getZ());
+		super(pipe.getblockpos());
 	}
 
 	public LPPosition(IPipeInformationProvider pipe) {
@@ -68,10 +68,10 @@ public class LPPosition extends Triplet<Double, Double, Double> {
 	}
 
 	public TileEntity getTileEntity(World world) {
-		return world.getTileEntity(getX(), getY(), getZ());
+		return world.getTileEntity(BlockPos.ORIGIN);
 	}
 
-	public LPPosition moveForward(ForgeDirection dir, double steps) {
+	public LPPosition moveForward(EnumFacing dir, double steps) {
 		switch (dir) {
 			case UP:
 				value2 += steps;
@@ -96,15 +96,15 @@ public class LPPosition extends Triplet<Double, Double, Double> {
 		return this;
 	}
 
-	public LPPosition moveForward(ForgeDirection dir) {
+	public LPPosition moveForward(EnumFacing dir) {
 		return moveForward(dir, 1);
 	}
 
-	public LPPosition moveBackward(ForgeDirection dir, double steps) {
+	public LPPosition moveBackward(EnumFacing dir, double steps) {
 		return moveForward(dir, -1 * steps);
 	}
 
-	public LPPosition moveBackward(ForgeDirection dir) {
+	public LPPosition moveBackward(EnumFacing dir) {
 		return moveBackward(dir, 1);
 	}
 

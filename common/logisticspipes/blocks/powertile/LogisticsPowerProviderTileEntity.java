@@ -1,22 +1,9 @@
 package logisticspipes.blocks.powertile;
 
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import logisticspipes.LPConstants;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.gui.hud.HUDPowerLevel;
-import logisticspipes.interfaces.IBlockWatchingHandler;
-import logisticspipes.interfaces.IGuiOpenControler;
-import logisticspipes.interfaces.IGuiTileEntity;
-import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;
-import logisticspipes.interfaces.IHeadUpDisplayRenderer;
-import logisticspipes.interfaces.IPowerLevelDisplay;
-import logisticspipes.interfaces.ISubSystemPowerProvider;
+import logisticspipes.interfaces.*;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
@@ -40,13 +27,14 @@ import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.tuples.Triplet;
-
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import java.util.*;
+import java.util.Map.Entry;
 
 @CCType(name = "LogisticsPowerProvider")
 public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ISubSystemPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler {
@@ -76,8 +64,8 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 	}
 
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		pauseRequesting = false;
 		if (!init) {
 			if (MainProxy.isClient(getWorld())) {
@@ -99,7 +87,7 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 					}
 					IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(order.getKey());
 					if (destinationRouter != null && destinationRouter.getPipe() != null) {
-						WorldUtil util = new WorldUtil(getWorldObj(), xCoord, yCoord, zCoord);
+						WorldUtil util = new WorldUtil(getWorld(), pos);
 						outerTiles:
 							for (AdjacentTile adjacent : util.getAdjacentTileEntities(false)) {
 								if (adjacent.tile instanceof LogisticsTileGenericPipe) {
@@ -146,14 +134,14 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 
 	protected abstract void handlePower(CoreRoutedPipe pipe, float toSend);
 
-	private void sendPowerLaserPackets(IRouter sourceRouter, IRouter destinationRouter, ForgeDirection exitOrientation, boolean addBall) {
+	private void sendPowerLaserPackets(IRouter sourceRouter, IRouter destinationRouter, EnumFacing exitOrientation, boolean addBall) {
 		if (sourceRouter == destinationRouter) {
 			return;
 		}
-		LinkedList<Triplet<IRouter, ForgeDirection, Boolean>> todo = new LinkedList<Triplet<IRouter, ForgeDirection, Boolean>>();
-		todo.add(new Triplet<IRouter, ForgeDirection, Boolean>(sourceRouter, exitOrientation, addBall));
+		LinkedList<Triplet<IRouter, EnumFacing, Boolean>> todo = new LinkedList<Triplet<IRouter, EnumFacing, Boolean>>();
+		todo.add(new Triplet<IRouter, EnumFacing, Boolean>(sourceRouter, exitOrientation, addBall));
 		while (!todo.isEmpty()) {
-			Triplet<IRouter, ForgeDirection, Boolean> part = todo.pollFirst();
+			Triplet<IRouter, EnumFacing, Boolean> part = todo.pollFirst();
 			List<ExitRoute> exits = part.getValue1().getRoutersOnSide(part.getValue2());
 			for (ExitRoute exit : exits) {
 				if (exit.containsFlag(PipeRoutingConnectionType.canPowerSubSystemFrom)) { // Find only result (caused by only straight connections)
@@ -174,7 +162,7 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 										continue outerRouters;
 									}
 								}
-								todo.addLast(new Triplet<IRouter, ForgeDirection, Boolean>(nextRouter, newExit.exitOrientation, newExit.exitOrientation != exit.exitOrientation));
+								todo.addLast(new Triplet<IRouter, EnumFacing, Boolean>(nextRouter, newExit.exitOrientation, newExit.exitOrientation != exit.exitOrientation));
 							}
 						}
 				}
@@ -273,22 +261,22 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 
 	@Override
 	public int getX() {
-		return xCoord;
+		return getPos().getX();
 	}
 
 	@Override
 	public int getY() {
-		return yCoord;
+		return getPos().getY();
 	}
 
 	@Override
 	public int getZ() {
-		return zCoord;
+		return getPos().getZ();
 	}
 
 	@Override
 	public World getWorld() {
-		return getWorldObj();
+		return getWorld();
 	}
 
 	@Override
@@ -314,7 +302,7 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 
 	@Override
 	public boolean isHUDExistent() {
-		return getWorld().getTileEntity(xCoord, yCoord, zCoord) == this;
+		return getWorld().getTileEntity(pos) == this;
 	}
 
 	@Override
@@ -334,8 +322,8 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 	}
 
 	@Override
-	public void func_145828_a(CrashReportCategory par1CrashReportCategory) {
-		super.func_145828_a(par1CrashReportCategory);
+	public void addInfoToCrashReport(CrashReportCategory par1CrashReportCategory) {
+		super.addInfoToCrashReport(par1CrashReportCategory);
 		par1CrashReportCategory.addCrashSection("LP-Version", LPConstants.VERSION);
 	}
 

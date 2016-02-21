@@ -1,20 +1,20 @@
 package extracells.api;
 
 import net.minecraft.inventory.IInventory;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 
 public interface IFluidInterface {
 	
-	public void setFilter(ForgeDirection side, Fluid fluid);
+	public void setFilter(EnumFacing side, Fluid fluid);
 	
-	public Fluid getFilter(ForgeDirection side);
+	public Fluid getFilter(EnumFacing side);
 	
-	public IFluidTank getFluidTank(ForgeDirection side);
+	public IFluidTank getFluidTank(EnumFacing side);
 	
-	public void setFluidTank(ForgeDirection side, FluidStack fluid);
+	public void setFluidTank(EnumFacing side, FluidStack fluid);
 	
 	public IInventory getPatternInventory();
 	

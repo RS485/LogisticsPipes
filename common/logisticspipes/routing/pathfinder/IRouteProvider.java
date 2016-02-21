@@ -2,7 +2,7 @@ package logisticspipes.routing.pathfinder;
 
 import java.util.List;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,8 +15,8 @@ public interface IRouteProvider {
 
 		private IPipeInformationProvider pipe;
 		private int length;
-		private ForgeDirection exitOrientation;
+		private EnumFacing exitOrientation;
 	}
 
-	List<RouteInfo> getConnectedPipes(ForgeDirection from);
+	List<RouteInfo> getConnectedPipes(EnumFacing from);
 }

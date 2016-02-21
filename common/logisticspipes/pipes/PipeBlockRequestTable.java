@@ -1,12 +1,5 @@
 package logisticspipes.pipes;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.AutoCraftingInventory;
 import logisticspipes.interfaces.IGuiOpenControler;
@@ -33,12 +26,12 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.CraftingUtil;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
+import logisticspipes.utils.UtilEnumFacing;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.item.SimpleStackInventory;
 import logisticspipes.utils.tuples.Pair;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.SlotCrafting;
@@ -46,10 +39,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.EnumFacing;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import java.util.*;
+import java.util.Map.Entry;
+
 
 public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements ISimpleInventoryEventHandler, IRequestWatcher, IGuiOpenControler, IRotationProvider {
 
@@ -96,7 +92,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	public void ignoreDisableUpdateEntity() {
 		super.ignoreDisableUpdateEntity();
 		if (tick++ == 5) {
-			getWorld().func_147479_m(getX(), getY(), getZ());
+			getWorld().markBlockForUpdate(getPos());
 		}
 		if (MainProxy.isClient(getWorld())) {
 			if (!init) {
@@ -161,7 +157,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 			IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
 			SimpleServiceLocator.logisticsManager.assignDestinationFor(itemToSend, getRouter().getSimpleID(), false);
 			if (itemToSend.getDestinationUUID() != null) {
-				ForgeDirection dir = getRouteLayer().getOrientationForItem(itemToSend, null);
+				EnumFacing dir = getRouteLayer().getOrientationForItem(itemToSend, null);
 				super.queueRoutedItem(itemToSend, dir.getOpposite());
 				spawnParticle(Particles.OrangeParticle, 4);
 				toSortInv.clearInventorySlotContents(0);
@@ -184,7 +180,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 			}
 		}
 		if (flag) {
-			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Request_Table_ID, getWorld(), getX(), getY(), getZ());
+			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Request_Table_ID, getWorld(), getblockpos().getX(),getblockpos().getY(),getblockpos().getZ());
 		}
 	}
 
@@ -194,59 +190,21 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	}
 
 	@Override
-	public TextureType getRoutedTexture(ForgeDirection connection) {
+	public TextureType getRoutedTexture(EnumFacing connection) {
 		return Textures.empty_1;
 	}
 
 	@Override
-	public TextureType getNonRoutedTexture(ForgeDirection connection) {
+	public TextureType getNonRoutedTexture(EnumFacing connection) {
 		return Textures.empty_2;
-	}
-
-	public IIcon getTextureFor(int l) {
-		ForgeDirection dir = ForgeDirection.getOrientation(l);
-		if (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer()) {
-			switch (dir) {
-				case UP:
-				case DOWN:
-					return Textures.LOGISTICS_REQUEST_TABLE_NEW_EMPTY;
-				default:
-					if (container.renderState.pipeConnectionMatrix.isConnected(dir)) {
-						if (container.renderState.textureMatrix.getTextureIndex(dir) == 1) {
-							return Textures.LOGISTICS_REQUEST_TABLE_NEW_ROUTED;
-						} else {
-							return Textures.LOGISTICS_REQUEST_TABLE_NEW_UNROUTED;
-						}
-					} else {
-						return Textures.LOGISTICS_REQUEST_TABLE_NEW_EMPTY;
-					}
-			}
-		} else {
-			switch (dir) {
-				case UP:
-					return Textures.LOGISTICS_REQUEST_TABLE[0];
-				case DOWN:
-					return Textures.LOGISTICS_REQUEST_TABLE[1];
-				default:
-					if (container.renderState.pipeConnectionMatrix.isConnected(dir)) {
-						if (container.renderState.textureMatrix.getTextureIndex(dir) == 1) {
-							return Textures.LOGISTICS_REQUEST_TABLE[2];
-						} else {
-							return Textures.LOGISTICS_REQUEST_TABLE[3];
-						}
-					} else {
-						return Textures.LOGISTICS_REQUEST_TABLE[4];
-					}
-			}
-		}
 	}
 
 	@Override
 	public void onAllowedRemoval() {
 		if (MainProxy.isServer(getWorld())) {
-			inv.dropContents(getWorld(), getX(), getY(), getZ());
-			toSortInv.dropContents(getWorld(), getX(), getY(), getZ());
-			diskInv.dropContents(getWorld(), getX(), getY(), getZ());
+			inv.dropContents(getWorld(), getblockpos());
+			toSortInv.dropContents(getWorld(), getblockpos());
+			diskInv.dropContents(getWorld(), getblockpos());
 		}
 	}
 
@@ -438,7 +396,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 			if (left != null) {
 				left.stackSize = inv.addCompressed(left, false);
 				if (left.stackSize > 0) {
-					ItemIdentifierInventory.dropItems(getWorld(), left, getX(), getY(), getZ());
+					ItemIdentifierInventory.dropItems(getWorld(), left, getblockpos());
 				}
 			}
 		}
@@ -448,7 +406,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 			if (left != null) {
 				left.stackSize = inv.addCompressed(left, false);
 				if (left.stackSize > 0) {
-					ItemIdentifierInventory.dropItems(getWorld(), left, getX(), getY(), getZ());
+					ItemIdentifierInventory.dropItems(getWorld(), left, getblockpos());
 				}
 			}
 		}
@@ -526,7 +484,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 				}
 
 				@Override
-				public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection denyed) {
+				public EnumFacing itemArrived(IRoutedItem item, EnumFacing denyed) {
 					return null;
 				}
 

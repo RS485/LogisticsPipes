@@ -1,8 +1,5 @@
 package logisticspipes.modules;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleWatchReciver;
@@ -24,15 +21,13 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.Pair;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.BlockPos;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClientInformationProvider, IModuleWatchReciver {
 
@@ -185,11 +180,6 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 		localModeWatchers.remove(player);
 	}
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleApiaristAnalyser");
-	}
 
 	@Override
 	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
@@ -199,5 +189,10 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 	@Override
 	protected ModuleInHandGuiProvider getInHandGuiProvider() {
 		return NewGuiHandler.getGui(ApiaristAnalyserModuleInHand.class);
+	}
+
+	@Override
+	public BlockPos getblockpos() {
+		return null;
 	}
 }

@@ -6,12 +6,14 @@ import java.util.List;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
+import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.blocks.powertile.LogisticsIC2PowerProviderTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
 import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
 import logisticspipes.items.ItemLogisticsPipe;
+import logisticspipes.items.LogisticsItem;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.UpdateName;
@@ -20,6 +22,7 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.IProxy;
+import logisticspipes.utils.UtilWorld;
 import logisticspipes.utils.item.ItemIdentifier;
 
 import net.minecraft.client.multiplayer.WorldClient;
@@ -31,6 +34,7 @@ import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -39,8 +43,8 @@ import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.config.Configuration;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.server.FMLServerHandler;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.server.FMLServerHandler;
 
 public class ServerProxy implements IProxy {
 
@@ -184,17 +188,17 @@ public class ServerProxy implements IProxy {
 	@Override
 	public int getDimensionForWorld(World world) {
 		if (world instanceof WorldServer) {
-			return ((WorldServer) world).provider.dimensionId;
+			return ((WorldServer) world).provider.getDimensionId();
 		}
 		if (world instanceof WorldClient) {
-			return ((WorldClient) world).provider.dimensionId;
+			return ((WorldClient) world).provider.getDimensionId();
 		}
 		return world.getWorldInfo().getVanillaDimension();
 	}
 
 	@Override
-	public LogisticsTileGenericPipe getPipeInDimensionAt(int dimension, int x, int y, int z, EntityPlayer player) {
-		return ServerProxy.getPipe(DimensionManager.getWorld(dimension), x, y, z);
+	public LogisticsTileGenericPipe getPipeInDimensionAt(int dimension, BlockPos pos, EntityPlayer player) {
+		return ServerProxy.getPipe(DimensionManager.getWorld(dimension),BlockPos.ORIGIN);
 	}
 
 	// BuildCraft method
@@ -202,20 +206,19 @@ public class ServerProxy implements IProxy {
 	 * Retrieves pipe at specified coordinates if any.
 	 * 
 	 * @param world
-	 * @param x
-	 * @param y
-	 * @param z
+	 * @param pos
+
 	 * @return
 	 */
-	protected static LogisticsTileGenericPipe getPipe(World world, int x, int y, int z) {
+	protected static LogisticsTileGenericPipe getPipe(World world, BlockPos pos) {
 		if (world == null) {
 			return null;
 		}
-		if (!world.blockExists(x, y, z)) {
+		if (!UtilWorld.blockExists(pos ,world)) {
 			return null;
 		}
 
-		final TileEntity tile = world.getTileEntity(x, y, z);
+		final TileEntity tile = world.getTileEntity(pos);
 		if (!(tile instanceof LogisticsTileGenericPipe)) {
 			return null;
 		}
@@ -224,11 +227,6 @@ public class ServerProxy implements IProxy {
 	}
 
 	// BuildCraft method end
-	@Override
-	public void addLogisticsPipesOverride(IIconRegister par1IIconRegister, int index, String override1, String override2, boolean flag) {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	@SuppressWarnings("rawtypes")
@@ -263,15 +261,7 @@ public class ServerProxy implements IProxy {
 	}
 
 	@Override
-	public void setIconProviderFromPipe(ItemLogisticsPipe item, CoreUnroutedPipe dummyPipe) {}
-
-	@Override
 	public LogisticsModule getModuleFromGui() {
-		return null;
-	}
-
-	@Override
-	public IItemRenderer getPipeItemRenderer() {
 		return null;
 	}
 
@@ -282,4 +272,22 @@ public class ServerProxy implements IProxy {
 
 	@Override
 	public void openFluidSelectGui(int slotId) {}
+
+	@Override
+	public void registerItemRenders() {}
+
+	@Override
+	public void registerBlockRenderers() {}
+
+	@Override
+	public void registerPipeRenderers() {}
+
+	@Override
+	public void registerBlockForMeshing(LogisticsSolidBlock block, int metadata, String name) {}
+
+	@Override
+	public void registerItemForMeshing(LogisticsItem item, int metadata, String name) {}
+
+	@Override
+	public void registerPipeForMeshing(LogisticsTileGenericPipe block, int metadata, String name) {}
 }

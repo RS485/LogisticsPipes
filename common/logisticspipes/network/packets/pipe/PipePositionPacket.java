@@ -10,7 +10,7 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -30,10 +30,10 @@ public class PipePositionPacket extends CoordinatesPacket {
 	private float position;
 	@Getter
 	@Setter
-	private ForgeDirection input;
+	private EnumFacing input;
 	@Getter
 	@Setter
-	private ForgeDirection output;
+	private EnumFacing output;
 
 	public PipePositionPacket(int id) {
 		super(id);
@@ -54,8 +54,8 @@ public class PipePositionPacket extends CoordinatesPacket {
 		data.writeInt(travelId);
 		data.writeFloat(speed);
 		data.writeFloat(position);
-		data.writeForgeDirection(input);
-		data.writeForgeDirection(output);
+		data.writeEnumFacing(input);
+		data.writeEnumFacing(output);
 	}
 
 	@Override
@@ -64,8 +64,8 @@ public class PipePositionPacket extends CoordinatesPacket {
 		travelId = data.readInt();
 		speed = data.readFloat();
 		position = data.readFloat();
-		input = data.readForgeDirection();
-		output = data.readForgeDirection();
+		input = data.readEnumFacing();
+		output = data.readEnumFacing();
 	}
 
 	@Override

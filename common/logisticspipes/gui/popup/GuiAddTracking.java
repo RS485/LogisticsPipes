@@ -55,12 +55,12 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 		buttonList.add(new SmallGuiButton(20, xCenter - 13, bottom - 21, 26, 10, "Sort")); // Sort
 
 		if (search == null) {
-			search = new SearchBar(Minecraft.getMinecraft().fontRenderer, getBaseScreen(), guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
+			search = new SearchBar(Minecraft.getMinecraft().fontRendererObj, getBaseScreen(), guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
 		}
 		search.reposition(guiLeft + 10, bottom - 58, right - guiLeft - 20, 15);
 
 		if (itemDisplay == null) {
-			itemDisplay = new ItemDisplay(this, Minecraft.getMinecraft().fontRenderer, getBaseScreen(), null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[] { 1, 10, 64, 64 }, true);
+			itemDisplay = new ItemDisplay(this, Minecraft.getMinecraft().fontRendererObj, getBaseScreen(), null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[] { 1, 10, 64, 64 }, true);
 		}
 		itemDisplay.reposition(guiLeft + 10, guiTop + 18, xSize - 20, ySize - 80);
 	}
@@ -80,7 +80,7 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 	@Override
 	protected void renderGuiBackground(int par1, int par2) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		//mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "title"), guiLeft + 5, guiTop + 6, 0x404040);
+		//mc.fontRendererObj.drawString(StringUtils.translate(PREFIX + "title"), guiLeft + 5, guiTop + 6, 0x404040);
 		itemDisplay.renderPageNumber(right - 47, guiTop + 6);
 
 		search.renderSearchBar();
@@ -151,7 +151,7 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 
 	public void handlePacket(List<ItemIdentifierStack> identList) {
 		if (itemDisplay == null) {
-			itemDisplay = new ItemDisplay(this, Minecraft.getMinecraft().fontRenderer, getBaseScreen(), null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[] { 1, 10, 64, 64 }, true);
+			itemDisplay = new ItemDisplay(this, Minecraft.getMinecraft().fontRendererObj, getBaseScreen(), null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[] { 1, 10, 64, 64 }, true);
 		}
 		itemDisplay.setItemList(identList);
 	}

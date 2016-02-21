@@ -22,8 +22,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentTranslation;
 
-import net.minecraftforge.common.util.ForgeDirection;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -60,7 +58,7 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 	public void processPacket(EntityPlayer player) {
 		IInventory inv = this.getTile(player.worldObj, IInventory.class);
 		if (inv instanceof ISidedInventory) {
-			inv = new SidedInventoryMinecraftAdapter((ISidedInventory) inv, ForgeDirection.UNKNOWN, false);
+			inv = new SidedInventoryMinecraftAdapter((ISidedInventory) inv, UtilEnumFacing.UNKNOWN, false, utilEnumFacing);
 		}
 		IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
 		Slot result = null;

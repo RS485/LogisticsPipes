@@ -8,38 +8,39 @@
 
 package logisticspipes.utils;
 
-import java.util.LinkedList;
-
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.tuples.LPPosition;
-
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+
+import java.util.LinkedList;
 
 public class WorldUtil {
 
 	private int _x;
 	private int _y;
 	private int _z;
+	private BlockPos _pos;
 
 	private World _worldObj;
 
-	public WorldUtil(World worldObj, int x, int y, int z) {
+	public WorldUtil(World worldObj, BlockPos pos) {
 		_worldObj = worldObj;
-		_x = x;
-		_y = y;
-		_z = z;
+		_x = pos.getX();
+		_y = pos.getY();
+		_z = pos.getZ();
 	}
 
 	public WorldUtil(TileEntity tile) {
-		_worldObj = tile.getWorldObj();
-		_x = tile.xCoord;
-		_y = tile.yCoord;
-		_z = tile.zCoord;
+		_worldObj = tile.getWorld();
+		TileEntity getpos =_worldObj.getTileEntity(tile.getPos());
 	}
+
+
 
 	public LinkedList<AdjacentTile> getAdjacentTileEntities() {
 		return getAdjacentTileEntities(false);
@@ -49,12 +50,9 @@ public class WorldUtil {
 		LinkedList<AdjacentTile> foundTiles = new LinkedList<AdjacentTile>();
 		TileEntity tilePipe = null;
 		if (flag) {
-			tilePipe = _worldObj.getTileEntity(_x, _y, _z);
+			tilePipe = _worldObj.getTileEntity(BlockPos.ORIGIN);
 		}
-		for (ForgeDirection o : ForgeDirection.values()) {
-			if (o == ForgeDirection.UNKNOWN) {
-				continue;
-			}
+		for (EnumFacing o : EnumFacing.values()) {
 
 			TileEntity tile = getAdjacentTileEntitie(o);
 
@@ -74,7 +72,7 @@ public class WorldUtil {
 		return foundTiles;
 	}
 
-	public TileEntity getAdjacentTileEntitie(ForgeDirection direction) {
+	public TileEntity getAdjacentTileEntitie(EnumFacing direction) {
 		LPPosition p = new LPPosition(_x, _y, _z);
 		p.moveForward(direction);
 		return p.getTileEntity(_worldObj);

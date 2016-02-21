@@ -8,7 +8,7 @@ import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import cofh.thermaldynamics.core.TickHandler;
 
@@ -23,18 +23,18 @@ public class TDPart implements ITDPart {
 	}
 
 	@Override
-	public TileEntity getInternalDuctForSide(ForgeDirection opposite) {
+	public TileEntity getInternalDuctForSide(EnumFacing opposite) {
 		if (opposite.ordinal() < 6) {
 			LPItemDuct duct = thermalDynamicsDucts[opposite.ordinal()];
 			if (duct == null) {
 				duct = thermalDynamicsDucts[opposite.ordinal()] = new LPItemDuct(pipe, opposite);
-				if (MainProxy.isServer(pipe.getWorldObj())) {
+				if (MainProxy.isServer(pipe.getWorld())) {
 					TickHandler.addMultiBlockToCalculate(duct);
 				}
-				duct.setWorldObj(pipe.getWorldObj());
-				duct.xCoord = pipe.xCoord;
-				duct.yCoord = pipe.yCoord;
-				duct.zCoord = pipe.zCoord;
+				duct.setWorldObj(pipe.getWorld());
+				duct.getPos().getX() = pipe.getPos().getX();
+				duct.getPos().getY() = pipe.getPos().getY();
+				duct.getPos().getZ() = pipe.getPos().getZ();
 				duct.validate();
 				LPPosition pos = new LPPosition((TileEntity) pipe);
 				pos.moveForward(opposite);
@@ -50,7 +50,7 @@ public class TDPart implements ITDPart {
 		for (int i = 0; i < 6; i++) {
 			if (thermalDynamicsDucts[i] != null) {
 				thermalDynamicsDucts[i].setWorldObj(world);
-				thermalDynamicsDucts[i].xCoord = pipe.xCoord;
+				thermalDynamicsDucts[i].getPos().getX() = pipe.pos().getX();
 				thermalDynamicsDucts[i].yCoord = pipe.yCoord;
 				thermalDynamicsDucts[i].zCoord = pipe.zCoord;
 			}

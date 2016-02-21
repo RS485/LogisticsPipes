@@ -28,7 +28,7 @@ import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -45,7 +45,7 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 	private class DataEntry {
 
 		final LogisticsTileGenericPipe pipe;
-		final ForgeDirection dir;
+		final EnumFacing dir;
 		final ArrayList<ExitRoute> connectedRouters;
 		final List<LaserData> lasers;
 		final EnumSet<PipeRoutingConnectionType> connectionType;
@@ -71,7 +71,7 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 			router.forceLsaUpdate();
 
 			List<List<ExitRoute>> exits = router.getRouteTable();
-			HashMap<ForgeDirection, ArrayList<ExitRoute>> routers = new HashMap<ForgeDirection, ArrayList<ExitRoute>>();
+			HashMap<EnumFacing, ArrayList<ExitRoute>> routers = new HashMap<EnumFacing, ArrayList<ExitRoute>>();
 			for (List<ExitRoute> exit : exits) {
 				if (exit == null) {
 					continue;
@@ -87,8 +87,8 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 			}
 			ArrayList<LaserData> lasers = new ArrayList<LaserData>();
 			firstPipe = true;
-			for (final ForgeDirection dir : routers.keySet()) {
-				if (dir == ForgeDirection.UNKNOWN) {
+			for (final EnumFacing dir : routers.keySet()) {
+				if (dir == UtilEnumFacing.UNKNOWN) {
 					continue;
 				}
 				handleRouteInDirection(tile, dir, routers.get(dir), lasers, EnumSet.allOf(PipeRoutingConnectionType.class), new Log() {
@@ -106,13 +106,13 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 		}
 	}
 
-	private void handleRouteInDirection(final LogisticsTileGenericPipe pipeIn, ForgeDirection dirIn, ArrayList<ExitRoute> connectedRoutersIn, final List<LaserData> lasersIn, EnumSet<PipeRoutingConnectionType> connectionTypeIn, final Log logIn) {
+	private void handleRouteInDirection(final LogisticsTileGenericPipe pipeIn, EnumFacing dirIn, ArrayList<ExitRoute> connectedRoutersIn, final List<LaserData> lasersIn, EnumSet<PipeRoutingConnectionType> connectionTypeIn, final Log logIn) {
 		List<DataEntry> worklist = new LinkedList<DataEntry>();
 		worklist.add(new DataEntry(pipeIn, dirIn, connectedRoutersIn, lasersIn, connectionTypeIn, logIn));
 		while (!worklist.isEmpty()) {
 			final DataEntry entry = worklist.remove(0);
 			final LogisticsTileGenericPipe pipe = entry.pipe;
-			final ForgeDirection dir = entry.dir;
+			final EnumFacing dir = entry.dir;
 			final ArrayList<ExitRoute> connectedRouters = entry.connectedRouters;
 			final List<LaserData> lasers = entry.lasers;
 			final EnumSet<PipeRoutingConnectionType> connectionType = entry.connectionType;
@@ -168,7 +168,7 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 			}
 
 			for (Entry<CoreRoutedPipe, ArrayList<ExitRoute>> connectedPipe : sort.entrySet()) {
-				HashMap<ForgeDirection, ArrayList<ExitRoute>> routers = new HashMap<ForgeDirection, ArrayList<ExitRoute>>();
+				HashMap<EnumFacing, ArrayList<ExitRoute>> routers = new HashMap<EnumFacing, ArrayList<ExitRoute>>();
 				for (ExitRoute exit : connectedPipe.getValue()) {
 					if (!routers.containsKey(exit.exitOrientation)) {
 						routers.put(exit.exitOrientation, new ArrayList<ExitRoute>());
@@ -177,8 +177,8 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 						routers.get(exit.exitOrientation).add(exit);
 					}
 				}
-				for (final ForgeDirection exitDir : routers.keySet()) {
-					if (exitDir == ForgeDirection.UNKNOWN) {
+				for (final EnumFacing exitDir : routers.keySet()) {
+					if (exitDir == UtilEnumFacing.UNKNOWN) {
 						continue;
 					}
 					worklist.add(new DataEntry(connectedPipe.getKey().container, exitDir, routers.get(exitDir), lasers, map.get(connectedPipe.getKey()).connectionDetails, new Log() {

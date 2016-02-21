@@ -2,6 +2,7 @@ package logisticspipes.modules.abstractmodules;
 
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
+import net.minecraft.util.BlockPos;
 
 public abstract class LogisticsGuiModule extends LogisticsModule {
 
@@ -21,31 +22,6 @@ public abstract class LogisticsGuiModule extends LogisticsModule {
 	public boolean hasGui() {
 		return true;
 	}
-
-	@Override
-	public final int getX() {
-		if (slot.isInWorld()) {
-			return _service.getX();
-		} else {
-			return 0;
-		}
-	}
-
-	@Override
-	public final int getY() {
-		if (slot.isInWorld()) {
-			return _service.getY();
-		} else {
-			return -1;
-		}
-	}
-
-	@Override
-	public final int getZ() {
-		if (slot.isInWorld()) {
-			return _service.getZ();
-		} else {
-			return -1 - positionInt;
-		}
-	}
+	public abstract BlockPos getblockpos();
 }
+

@@ -1,19 +1,14 @@
 package logisticspipes.modules;
 
-import java.util.Collection;
-
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.PipeLogisticsChassi.ChassiTargetInformation;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.BlockPos;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.Collection;
 
 public class ModuleEnchantmentSink extends LogisticsModule {
 
@@ -23,32 +18,7 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
 
-	@Override
-	public int getX() {
-		if (slot.isInWorld()) {
-			return _service.getX();
-		} else {
-			return 0;
-		}
-	}
 
-	@Override
-	public int getY() {
-		if (slot.isInWorld()) {
-			return _service.getY();
-		} else {
-			return 0;
-		}
-	}
-
-	@Override
-	public int getZ() {
-		if (slot.isInWorld()) {
-			return _service.getZ();
-		} else {
-			return 0;
-		}
-	}
 
 	private SinkReply _sinkReply;
 
@@ -56,6 +26,16 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 	public void registerPosition(ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);
 		_sinkReply = new SinkReply(FixedPriority.EnchantmentItemSink, 0, true, false, 1, 0, new ChassiTargetInformation(getPositionInt()));
+	}
+
+	@Override
+	public BlockPos getblockpos() {
+		if (slot.isInWorld()){
+			return  _service.getblockpos();
+		}else {
+			return  null;
+		}
+
 	}
 
 	@Override
@@ -112,12 +92,6 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 	@Override
 	public boolean recievePassive() {
 		return true;
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleEnchantmentSink");
 	}
 
 	@Override

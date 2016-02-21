@@ -24,6 +24,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
 public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pair<ItemStack, Integer>> {
@@ -141,18 +142,18 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 		nbttagcompound.setInteger(prefix + "itemsCount", _contents.length);
 	}
 
-	public void dropContents(World worldObj, int posX, int posY, int posZ) {
+	public void dropContents(World worldObj, BlockPos pos) {
 		if (MainProxy.isServer(worldObj)) {
 			for (int i = 0; i < _contents.length; i++) {
 				while (_contents[i] != null) {
 					ItemStack todrop = decrStackSize(i, _contents[i].getMaxStackSize());
-					dropItems(worldObj, todrop, posX, posY, posZ);
+					dropItems(worldObj, todrop, pos);
 				}
 			}
 		}
 	}
 
-	private void dropItems(World world, ItemStack stack, int i, int j, int k) {
+	private void dropItems(World world, ItemStack stack, BlockPos pos) {
 		if (stack.stackSize <= 0) {
 			return;
 		}

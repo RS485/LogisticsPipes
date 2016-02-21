@@ -8,6 +8,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.IChatComponent;
 
 public class CardManagmentInventory implements IInventory {
 
@@ -110,10 +111,6 @@ public class CardManagmentInventory implements IInventory {
 		return "Card Managment Inventory";
 	}
 
-	@Override
-	public boolean hasCustomInventoryName() {
-		return false;
-	}
 
 	@Override
 	public int getInventoryStackLimit() {
@@ -128,11 +125,6 @@ public class CardManagmentInventory implements IInventory {
 	@Override
 	public void markDirty() {}
 
-	@Override
-	public void openInventory() {}
-
-	@Override
-	public void closeInventory() {}
 
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack itemstack) {

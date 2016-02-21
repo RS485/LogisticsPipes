@@ -36,8 +36,8 @@ public class LogisticsNewPipeItemBoxRenderer {
 		if (renderList == -1) {
 			renderList = GLAllocation.generateDisplayLists(1);
 			GL11.glNewList(renderList, GL11.GL_COMPILE);
-			Tessellator tess = Tessellator.instance;
-			tess.startDrawingQuads();
+			Tessellator tess = Tessellator.getInstance();
+			tess.draw();
 			LogisticsNewRenderPipe.innerTransportBox.render(LogisticsNewRenderPipe.innerBoxTexture);
 			tess.draw();
 			GL11.glEndList();

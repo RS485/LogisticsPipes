@@ -12,7 +12,7 @@ import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 
 import net.minecraft.client.Minecraft;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import org.lwjgl.opengl.GL11;
 

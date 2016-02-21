@@ -95,11 +95,11 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.Fluid;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 //@formatter:off
 //CHECKSTYLE:OFF
@@ -122,14 +122,14 @@ public class ProxyManager {
 			@Override public boolean isIPipeTile(TileEntity tile) {return false;}
 			@Override public void registerPipeInformationProvider() {}
 			@Override public void initProxy() {}
-			@Override public boolean checkForPipeConnection(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe) {return true;}
-			@Override public IConnectionOverrideResult checkConnectionOverride(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe) {
+			@Override public boolean checkForPipeConnection(TileEntity with, EnumFacing side, LogisticsTileGenericPipe pipe) {return true;}
+			@Override public IConnectionOverrideResult checkConnectionOverride(TileEntity with, EnumFacing side, LogisticsTileGenericPipe pipe) {
 				return new IConnectionOverrideResult() {
 					@Override public boolean forceConnect() {return false;}
 					@Override public boolean forceDisconnect() {return false;}
 				};
 			}
-			@Override public boolean canPipeConnect(TileEntity pipe, TileEntity tile, ForgeDirection direction) {return false;}
+			@Override public boolean canPipeConnect(TileEntity pipe, TileEntity tile, EnumFacing direction) {return false;}
 			@Override public boolean isActive() {return false;}
 			@Override public boolean isInstalled() {return false;}
 			@Override public Object getLPPipeType() {return null;}
@@ -137,18 +137,18 @@ public class ProxyManager {
 			@Override public ICraftingParts getRecipeParts() {return null;}
 			@Override public void addCraftingRecipes(ICraftingParts parts) {}
 			@Override public Class<? extends ICraftingRecipeProvider> getAssemblyTableProviderClass() {return null;}
-			@Override public void notifyOfChange(LogisticsTileGenericPipe logisticsTileGenericPipe, TileEntity tile, ForgeDirection o) {}
+			@Override public void notifyOfChange(LogisticsTileGenericPipe logisticsTileGenericPipe, TileEntity tile, EnumFacing o) {}
 			@Override public IBCTilePart getBCTilePart(LogisticsTileGenericPipe logisticsTileGenericPipe) {
 				return new IBCTilePart() {
-					@Override public boolean hasBlockingPluggable(ForgeDirection side) {return false;}
+					@Override public boolean hasBlockingPluggable(EnumFacing side) {return false;}
 					@Override public void writeToNBT_LP(NBTTagCompound nbt) {}
 					@Override public void readFromNBT_LP(NBTTagCompound nbt) {}
-					@Override public boolean isSolidOnSide(ForgeDirection side) {return false;}
+					@Override public boolean isSolidOnSide(EnumFacing side) {return false;}
 					@Override public void invalidate_LP() {}
 					@Override public void validate_LP() {}
 					@Override public void updateEntity_LP() {}
 					@Override public void scheduleNeighborChange() {}
-					@Override public boolean hasGate(ForgeDirection orientation) {return false;}
+					@Override public boolean hasGate(EnumFacing orientation) {return false;}
 					@Override public IBCRenderState getBCRenderState() {
 						return new IBCRenderState() {
 							@Override public boolean needsRenderUpdate() {return false;}
@@ -178,13 +178,13 @@ public class ProxyManager {
 							@Override public boolean isDirty(boolean clean) {return false;}
 						};
 					}
-					@Override public boolean hasEnabledFacade(ForgeDirection dir) {return false;}
-					@Override public IBCPipePluggable getBCPipePluggable(ForgeDirection sideHit) {
+					@Override public boolean hasEnabledFacade(EnumFacing dir) {return false;}
+					@Override public IBCPipePluggable getBCPipePluggable(EnumFacing sideHit) {
 						return new IBCPipePluggable() {
 							@Override public ItemStack[] getDropItems(LogisticsTileGenericPipe container) {return new ItemStack[]{};}
 							@Override public boolean isBlocking() {return false;}
 							@Override public Object getOriginal() {return null;}
-							@Override @SideOnly(Side.CLIENT) public void renderPluggable(RenderBlocks renderblocks, ForgeDirection dir, int renderPass, int x, int y, int z) {}
+							@Override @SideOnly(Side.CLIENT) public void renderPluggable(RenderBlocks renderblocks, EnumFacing dir, int renderPass, int x, int y, int z) {}
 							@Override public boolean isAcceptingItems(LPTravelingItemServer arrivingItem) {return false;}
 							@Override public LPTravelingItemServer handleItem(LPTravelingItemServer arrivingItem) {return arrivingItem;}
 						};
@@ -192,7 +192,7 @@ public class ProxyManager {
 					@Override public void readOldRedStone(NBTTagCompound nbt) {}
 					@Override public void afterStateUpdated() {}
 					@Override public Object getOriginal() {return null;}
-					@Override public boolean hasPipePluggable(ForgeDirection dir) {return false;}
+					@Override public boolean hasPipePluggable(EnumFacing dir) {return false;}
 					@Override public void setWorldObj_LP(World world) {}
 				};
 			}
@@ -256,10 +256,10 @@ public class ProxyManager {
 			@Override public boolean hasIC2() {return false;}
 			@Override public void registerToEneryNet(TileEntity tile) {}
 			@Override public void unregisterToEneryNet(TileEntity tile) {}
-			@Override public boolean acceptsEnergyFrom(TileEntity tile1, TileEntity tile2, ForgeDirection opposite) {return false;}
+			@Override public boolean acceptsEnergyFrom(TileEntity tile1, TileEntity tile2, EnumFacing opposite) {return false;}
 			@Override public boolean isEnergySink(TileEntity tile) {return false;}
 			@Override public double demandedEnergyUnits(TileEntity tile) {return 0;}
-			@Override public double injectEnergyUnits(TileEntity tile, ForgeDirection opposite, double d) {return d;}
+			@Override public double injectEnergyUnits(TileEntity tile, EnumFacing opposite, double d) {return d;}
 		}));
 
 		SimpleServiceLocator.setCCProxy(ProxyManager.getWrappedProxy(LPConstants.computerCraftModID, ICCProxy.class, CCProxy.class, new ICCProxy() {
@@ -358,10 +358,10 @@ public class ProxyManager {
 			@Override public boolean isEnergyReceiver(TileEntity tile) {return false;}
 			@Override public ICoFHEnergyReceiver getEnergyReceiver(TileEntity tile) {
 				return new ICoFHEnergyReceiver() {
-					@Override public int getMaxEnergyStored(ForgeDirection opposite) {return 0;}
-					@Override public int getEnergyStored(ForgeDirection opposite) {return 0;}
-					@Override public boolean canConnectEnergy(ForgeDirection opposite) {return false;}
-					@Override public int receiveEnergy(ForgeDirection opposite, int i, boolean b) {return 0;}
+					@Override public int getMaxEnergyStored(EnumFacing opposite) {return 0;}
+					@Override public int getEnergyStored(EnumFacing opposite) {return 0;}
+					@Override public boolean canConnectEnergy(EnumFacing opposite) {return false;}
+					@Override public int receiveEnergy(EnumFacing opposite, int i, boolean b) {return 0;}
 				};
 			}
 			@Override public void addCraftingRecipes(ICraftingParts parts) {}
@@ -381,7 +381,7 @@ public class ProxyManager {
 		SimpleServiceLocator.setThermalDynamicsProxy(ProxyManager.getWrappedProxy("ThermalDynamics", ITDProxy.class, ThermalDynamicsProxy.class, new ITDProxy() {
 			@Override public ITDPart getTDPart(final LogisticsTileGenericPipe pipe) {
 				return new ITDPart() {
-					@Override public TileEntity getInternalDuctForSide(ForgeDirection opposite) {return pipe;}
+					@Override public TileEntity getInternalDuctForSide(EnumFacing opposite) {return pipe;}
 					@Override public void setWorldObj_LP(World world) {}
 					@Override public void invalidate() {}
 					@Override public void onChunkUnload() {}
@@ -394,7 +394,7 @@ public class ProxyManager {
 			@Override public boolean isItemDuct(TileEntity tile) {return false;}
 			@Override @SideOnly(Side.CLIENT) public void renderPipeConnections(LogisticsTileGenericPipe pipeTile, RenderBlocks renderer) {}
 			@Override public void registerTextures(IIconRegister iconRegister) {}
-			@Override public boolean isBlockedSide(TileEntity with, ForgeDirection opposite) {return false;}
+			@Override public boolean isBlockedSide(TileEntity with, EnumFacing opposite) {return false;}
 		}, ITDPart.class));
 
 		SimpleServiceLocator.setBinnieProxy(ProxyManager.getWrappedProxy("Genetics", IBinnieProxy.class, BinnieProxy.class, new IBinnieProxy() {

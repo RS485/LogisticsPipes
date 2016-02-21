@@ -8,9 +8,9 @@ import logisticspipes.security.SecuritySettings;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import lombok.experimental.Accessors;
 

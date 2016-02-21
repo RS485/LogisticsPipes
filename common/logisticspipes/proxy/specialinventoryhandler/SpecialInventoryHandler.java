@@ -1,15 +1,14 @@
 package logisticspipes.proxy.specialinventoryhandler;
 
-import java.util.Map;
-
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.transactor.ITransactor;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import java.util.Map;
+
 
 public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransactor {
 
@@ -17,7 +16,7 @@ public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransa
 
 	public abstract boolean isType(TileEntity tile);
 
-	public abstract SpecialInventoryHandler getUtilForTile(TileEntity tile, ForgeDirection dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd);
+	public abstract SpecialInventoryHandler getUtilForTile(TileEntity tile, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd);
 
 	@Override
 	public int itemCount(ItemIdentifier itemIdent) {

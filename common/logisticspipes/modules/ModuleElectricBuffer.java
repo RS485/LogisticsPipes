@@ -1,7 +1,5 @@
 package logisticspipes.modules;
 
-import java.util.List;
-
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -13,14 +11,11 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.Triplet;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.BlockPos;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.List;
 
 public class ModuleElectricBuffer extends LogisticsModule {
 
@@ -35,27 +30,17 @@ public class ModuleElectricBuffer extends LogisticsModule {
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
 
-	@Override
-	public final int getX() {
-		return _service.getX();
-	}
-
-	@Override
-	public final int getY() {
-		return _service.getY();
-	}
-
-	@Override
-	public final int getZ() {
-		return _service.getZ();
-	}
-
 	private SinkReply _sinkReply;
 
 	@Override
 	public void registerPosition(ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);
 		_sinkReply = new SinkReply(FixedPriority.ElectricBuffer, 0, true, false, 1, 0, new ChassiTargetInformation(getPositionInt()));
+	}
+
+	@Override
+	public BlockPos getblockpos() {
+		return _service.getblockpos();
 	}
 
 	@Override
@@ -128,11 +113,5 @@ public class ModuleElectricBuffer extends LogisticsModule {
 	@Override
 	public boolean recievePassive() {
 		return true;
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleElectricBuffer");
 	}
 }

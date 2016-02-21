@@ -5,14 +5,14 @@ import java.util.Iterator;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 class InventoryIteratorSided implements Iterable<IInvSlot> {
 
 	private final ISidedInventory inv;
 	private final int side;
 
-	InventoryIteratorSided(ISidedInventory inv, ForgeDirection side) {
+	InventoryIteratorSided(ISidedInventory inv, EnumFacing side) {
 		this.inv = inv;
 		this.side = side.ordinal();
 	}

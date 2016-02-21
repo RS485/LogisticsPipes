@@ -1,7 +1,5 @@
 package logisticspipes.network.abstractpackets;
 
-import java.io.IOException;
-
 import logisticspipes.LPConstants;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
@@ -12,13 +10,13 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyModuleContainer;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.World;
+
+import java.io.IOException;
 
 @Accessors(chain = true)
 public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
@@ -57,9 +55,9 @@ public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
 	public ModuleCoordinatesPacket setModulePos(LogisticsModule module) {
 		type = module.getSlot();
 		positionInt = module.getPositionInt();
-		setPosX(module.getX());
-		setPosY(module.getY());
-		setPosZ(module.getZ());
+		setPosX(module.getblockpos().getX());
+		setPosY(module.getblockpos().getY());
+		setPosZ(module.getblockpos().getZ());
 		return this;
 	}
 

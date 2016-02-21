@@ -47,7 +47,7 @@ import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport, IHeadUpDisplayRendererProvider, IChestContentReceiver {
 
@@ -94,7 +94,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
-	private IInventory getRawInventory(ForgeDirection ori) {
+	private IInventory getRawInventory(EnumFacing ori) {
 		LPPosition pos = new LPPosition(getX(), getY(), getZ());
 		pos.moveForward(ori);
 		TileEntity tile = pos.getTileEntity(getWorld());
@@ -107,10 +107,10 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		return InventoryHelper.getInventory((IInventory) tile);
 	}
 
-	private IInventory getInventory(ForgeDirection ori) {
+	private IInventory getInventory(EnumFacing ori) {
 		IInventory rawInventory = getRawInventory(ori);
 		if (rawInventory instanceof net.minecraft.inventory.ISidedInventory) {
-			return new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) rawInventory, ori.getOpposite(), false);
+			return new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) rawInventory, ori.getOpposite(), false, utilEnumFacing);
 		}
 		return rawInventory;
 	}
@@ -127,7 +127,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 
 	private void updateInv(boolean force) {
 		itemList.clear();
-		for (ForgeDirection ori : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing ori : UtilEnumFacing.VALID_DIRECTIONS) {
 			if(!this.container.isPipeConnected(ori)) continue;
 			IInventory inv = getInventory(ori);
 			if (inv != null) {

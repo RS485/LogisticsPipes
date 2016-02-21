@@ -22,7 +22,7 @@ import logisticspipes.utils.tuples.Pair;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import buildcraft.api.core.IZone;
 import buildcraft.api.robots.DockingStation;
@@ -35,23 +35,23 @@ public class LPRobotConnectionControl implements ISpecialPipedConnection {
 
 	public static class RobotConnection {
 
-		public final Set<Pair<LPPosition, ForgeDirection>> localConnectedRobots = new HashSet<Pair<LPPosition, ForgeDirection>>();
+		public final Set<Pair<LPPosition, EnumFacing>> localConnectedRobots = new HashSet<Pair<LPPosition, EnumFacing>>();
 	}
 
-	private final Map<World, Set<Pair<LPPosition, ForgeDirection>>> globalAvailableRobots = new WeakHashMap<World, Set<Pair<LPPosition, ForgeDirection>>>();
+	private final Map<World, Set<Pair<LPPosition, EnumFacing>>> globalAvailableRobots = new WeakHashMap<World, Set<Pair<LPPosition, EnumFacing>>>();
 
-	public void addRobot(World world, LPPosition pos, ForgeDirection dir) {
+	public void addRobot(World world, LPPosition pos, EnumFacing dir) {
 		if (globalAvailableRobots.get(world) == null) {
-			globalAvailableRobots.put(world, new HashSet<Pair<LPPosition, ForgeDirection>>());
+			globalAvailableRobots.put(world, new HashSet<Pair<LPPosition, EnumFacing>>());
 		}
-		globalAvailableRobots.get(world).add(new Pair<LPPosition, ForgeDirection>(pos, dir));
+		globalAvailableRobots.get(world).add(new Pair<LPPosition, EnumFacing>(pos, dir));
 		checkAll(world);
 	}
 
 	//TODO: Call this somewhere...
-	public void removeRobot(World world, LPPosition pos, ForgeDirection dir) {
+	public void removeRobot(World world, LPPosition pos, EnumFacing dir) {
 		if (globalAvailableRobots.containsKey(world)) {
-			globalAvailableRobots.get(world).remove(new Pair<LPPosition, ForgeDirection>(pos, dir));
+			globalAvailableRobots.get(world).remove(new Pair<LPPosition, EnumFacing>(pos, dir));
 		}
 		checkAll(world);
 	}
@@ -61,7 +61,7 @@ public class LPRobotConnectionControl implements ISpecialPipedConnection {
 			return;
 		}
 
-		for (Pair<LPPosition, ForgeDirection> canidatePos : globalAvailableRobots.get(world)) {
+		for (Pair<LPPosition, EnumFacing> canidatePos : globalAvailableRobots.get(world)) {
 			TileEntity connectedPipeTile = canidatePos.getValue1().getTileEntity(world);
 			if (!(connectedPipeTile instanceof LogisticsTileGenericPipe)) {
 				continue;
@@ -93,10 +93,10 @@ public class LPRobotConnectionControl implements ISpecialPipedConnection {
 	}
 
 	public boolean isModified(LogisticsRoutingBoardRobot board) {
-		Set<Pair<LPPosition, ForgeDirection>> localConnectedRobots = new HashSet<Pair<LPPosition, ForgeDirection>>();
+		Set<Pair<LPPosition, EnumFacing>> localConnectedRobots = new HashSet<Pair<LPPosition, EnumFacing>>();
 		LPPosition sourceRobotPosition = board.getLinkedStationPosition().center().moveForward(board.robot.getLinkedStation().side(), 0.5);
 		IZone zone = board.robot.getZoneToWork();
-		for (Pair<LPPosition, ForgeDirection> canidatePos : globalAvailableRobots.get(board.robot.worldObj)) {
+		for (Pair<LPPosition, EnumFacing> canidatePos : globalAvailableRobots.get(board.robot.worldObj)) {
 			LPPosition canidateRobotPosition = canidatePos.getValue1().copy().center().moveForward(canidatePos.getValue2(), 0.5);
 			double distance = canidateRobotPosition.distanceTo(sourceRobotPosition);
 			boolean isPartOfZone;
@@ -133,7 +133,7 @@ public class LPRobotConnectionControl implements ISpecialPipedConnection {
 	}
 
 	@Override
-	public List<ConnectionInformation> getConnections(IPipeInformationProvider startPipe, EnumSet<PipeRoutingConnectionType> connection, ForgeDirection side) {
+	public List<ConnectionInformation> getConnections(IPipeInformationProvider startPipe, EnumSet<PipeRoutingConnectionType> connection, EnumFacing side) {
 		List<ConnectionInformation> list = new ArrayList<ConnectionInformation>();
 		LogisticsTileGenericPipe pipe = (LogisticsTileGenericPipe) startPipe;
 		if (pipe == null || pipe.tilePart.getOriginal() == null) {
@@ -141,7 +141,7 @@ public class LPRobotConnectionControl implements ISpecialPipedConnection {
 		}
 		LPPosition pos = new LPPosition(startPipe);
 		pos.center();
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing dir : UtilEnumFacing.VALID_DIRECTIONS) {
 			PipePluggable pluggable = ((TileGenericPipe) pipe.tilePart.getOriginal()).getPipePluggable(dir);
 			if (!(pluggable instanceof RobotStationPluggable)) {
 				continue;
@@ -167,7 +167,7 @@ public class LPRobotConnectionControl implements ISpecialPipedConnection {
 			if (((LogisticsRoutingBoardRobot) robot.getBoard()).getCurrentTarget() != null) {
 				Pair<Double, LogisticsRoutingBoardRobot> currentTarget = ((LogisticsRoutingBoardRobot) robot.getBoard()).getCurrentTarget();
 				LPPosition pipePos = currentTarget.getValue2().getLinkedStationPosition();
-				TileEntity connectedPipeTile = pipePos.getTileEntity(pipe.getWorldObj());
+				TileEntity connectedPipeTile = pipePos.getTileEntity(pipe.getWorld());
 				if (!(connectedPipeTile instanceof LogisticsTileGenericPipe)) {
 					continue;
 				}
@@ -204,12 +204,12 @@ public class LPRobotConnectionControl implements ISpecialPipedConnection {
 				if (pos.copy().moveForward(dir, 0.5).distanceTo(robotPos) > 0.05) {
 					continue; // Not at station
 				}
-				for (Pair<LPPosition, ForgeDirection> canidatePos : ((LogisticsRoutingBoardRobot) robot.getBoard()).getConnectionDetails().localConnectedRobots) {
+				for (Pair<LPPosition, EnumFacing> canidatePos : ((LogisticsRoutingBoardRobot) robot.getBoard()).getConnectionDetails().localConnectedRobots) {
 					if (canidatePos.getValue1().equals(new LPPosition(startPipe))) {
 						continue;
 					}
 					double distance = canidatePos.getValue1().copy().center().moveForward(canidatePos.getValue2(), 0.5).distanceTo(robotPos);
-					TileEntity connectedPipeTile = canidatePos.getValue1().getTileEntity(pipe.getWorldObj());
+					TileEntity connectedPipeTile = canidatePos.getValue1().getTileEntity(pipe.getWorld());
 					if (!(connectedPipeTile instanceof LogisticsTileGenericPipe)) {
 						continue;
 					}

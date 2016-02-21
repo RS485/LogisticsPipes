@@ -1,57 +1,24 @@
 package logisticspipes.items;
 
+import logisticspipes.LPConstants;
+import logisticspipes.pipes.upgrades.*;
+import logisticspipes.pipes.upgrades.connection.*;
+import logisticspipes.pipes.upgrades.power.*;
+import logisticspipes.pipes.upgrades.sneaky.*;
+import logisticspipes.utils.string.StringUtils;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
+
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import logisticspipes.LPConstants;
-import logisticspipes.pipes.upgrades.AdvancedSatelliteUpgrade;
-import logisticspipes.pipes.upgrades.CCRemoteControlUpgrade;
-import logisticspipes.pipes.upgrades.CombinedSneakyUpgrade;
-import logisticspipes.pipes.upgrades.CraftingByproductUpgrade;
-import logisticspipes.pipes.upgrades.CraftingCleanupUpgrade;
-import logisticspipes.pipes.upgrades.CraftingMonitoringUpgrade;
-import logisticspipes.pipes.upgrades.FluidCraftingUpgrade;
-import logisticspipes.pipes.upgrades.FuzzyUpgrade;
-import logisticspipes.pipes.upgrades.IPipeUpgrade;
-import logisticspipes.pipes.upgrades.LogicControllerUpgrade;
-import logisticspipes.pipes.upgrades.OpaqueUpgrade;
-import logisticspipes.pipes.upgrades.PatternUpgrade;
-import logisticspipes.pipes.upgrades.PowerTransportationUpgrade;
-import logisticspipes.pipes.upgrades.SpeedUpgrade;
-import logisticspipes.pipes.upgrades.UpgradeModuleUpgrade;
-import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeDOWN;
-import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeEAST;
-import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeNORTH;
-import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeSOUTH;
-import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeUP;
-import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeWEST;
-import logisticspipes.pipes.upgrades.power.IC2EVPowerSupplierUpgrade;
-import logisticspipes.pipes.upgrades.power.IC2HVPowerSupplierUpgrade;
-import logisticspipes.pipes.upgrades.power.IC2LVPowerSupplierUpgrade;
-import logisticspipes.pipes.upgrades.power.IC2MVPowerSupplierUpgrade;
-import logisticspipes.pipes.upgrades.power.RFPowerSupplierUpgrade;
-import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeDOWN;
-import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeEAST;
-import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeNORTH;
-import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeSOUTH;
-import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeUP;
-import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeWEST;
-import logisticspipes.utils.string.StringUtils;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import org.lwjgl.input.Keyboard;
 
 public class ItemUpgrade extends LogisticsItem {
 
@@ -103,7 +70,6 @@ public class ItemUpgrade extends LogisticsItem {
 	public static final int MAX_CRAFTING_CLEANUP = 4;
 
 	List<Upgrade> upgrades = new ArrayList<Upgrade>();
-	private IIcon[] icons;
 
 	private class Upgrade {
 
@@ -122,7 +88,7 @@ public class ItemUpgrade extends LogisticsItem {
 				return null;
 			}
 			try {
-				return upgradeClass.getConstructor(new Class[] {}).newInstance(new Object[] {});
+				return (IPipeUpgrade) upgradeClass.getConstructor(new Class[] {}).newInstance(new Object[] {});
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (SecurityException e) {
@@ -271,59 +237,6 @@ public class ItemUpgrade extends LogisticsItem {
 	@Override
 	public String getItemStackDisplayName(ItemStack itemstack) {
 		return StringUtils.translate(getUnlocalizedName(itemstack));
-	}
-
-	@Override
-	public void registerIcons(IIconRegister par1IIconRegister) {
-		icons = new IIcon[32];
-		icons[0] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyUP");
-		icons[1] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyDOWN");
-		icons[2] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyNORTH");
-		icons[3] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakySOUTH");
-		icons[4] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyEAST");
-		icons[5] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyWEST");
-		icons[6] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyCombination");
-
-		icons[7] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/Speed");
-
-		icons[8] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/DisUP");
-		icons[9] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/DisDOWN");
-		icons[10] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/DisNORTH");
-		icons[11] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/DisSOUTH");
-		icons[12] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/DisEAST");
-		icons[13] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/DisWEST");
-
-		icons[14] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/Satelite");
-		icons[15] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/FluidCrafting");
-		icons[16] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/CraftingByproduct");
-		icons[17] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/PlacementRules");
-		icons[18] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/FuzzyCrafting");
-		icons[19] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransport");
-		icons[20] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportBC");
-		icons[21] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportTE");
-		icons[22] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-LV");
-		icons[23] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-MV");
-		icons[24] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-HV");
-		icons[25] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-EV");
-		icons[26] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/CCRemoteControl");
-		icons[27] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/CraftingMonitoring");
-		icons[28] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/OpaqueUpgrade");
-		icons[29] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/CraftingCleanup");
-		icons[30] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/LogicController");
-		icons[31] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/UpgradeModule");
-	}
-
-	@Override
-	public IIcon getIconFromDamage(int i) {
-
-		for (Upgrade upgrade : upgrades) {
-			if (upgrade.getId() == i) {
-				if (upgrade.getTextureIndex() != -1) {
-					return icons[upgrade.getTextureIndex()];
-				}
-			}
-		}
-		return icons[0];
 	}
 
 	public static String SHIFT_INFO_PREFIX = "item.upgrade.info.";

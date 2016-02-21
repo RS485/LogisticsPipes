@@ -1,7 +1,5 @@
 package logisticspipes.modules;
 
-import java.util.List;
-
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
@@ -14,14 +12,11 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.BlockPos;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.List;
 
 public class ModuleApiaristSink extends LogisticsGuiModule {
 
@@ -233,6 +228,11 @@ public class ModuleApiaristSink extends LogisticsGuiModule {
 		return NewGuiHandler.getGui(ApiaristSinkModuleInHand.class);
 	}
 
+	@Override
+	public BlockPos getblockpos() {
+		return null;
+	}
+
 	public boolean isFiltered(ItemIdentifier item) {
 		for (int i = 0; i < 6; i++) {
 			Boolean accept = null;
@@ -318,9 +318,4 @@ public class ModuleApiaristSink extends LogisticsGuiModule {
 		return true;
 	}
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleApiaristSink");
-	}
 }

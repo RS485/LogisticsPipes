@@ -32,7 +32,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
@@ -46,7 +46,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 		super(new PipeTransportLogistics(true) {
 
 			@Override
-			public boolean canPipeConnect(TileEntity tile, ForgeDirection dir) {
+			public boolean canPipeConnect(TileEntity tile, EnumFacing dir) {
 				if (super.canPipeConnect(tile, dir)) {
 					return true;
 				}
@@ -108,7 +108,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 		if (liquidId == null) {
 			return;
 		}
-		ForgeDirection orientation = data.output.getOpposite();
+		EnumFacing orientation = data.output.getOpposite();
 		if (getOriginalUpgradeManager().hasSneakyUpgrade()) {
 			orientation = getOriginalUpgradeManager().getSneakyOrientation();
 		}
@@ -151,7 +151,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 				continue;
 			}
 			IFluidHandler container = (IFluidHandler) tile.tile;
-			if (container.getTankInfo(ForgeDirection.UNKNOWN) == null || container.getTankInfo(ForgeDirection.UNKNOWN).length == 0) {
+			if (container.getTankInfo(UtilEnumFacing.UNKNOWN) == null || container.getTankInfo(UtilEnumFacing.UNKNOWN).length == 0) {
 				continue;
 			}
 
@@ -170,7 +170,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 			//How much do I have?
 			HashMap<FluidIdentifier, Integer> haveFluids = new HashMap<FluidIdentifier, Integer>();
 
-			FluidTankInfo[] result = container.getTankInfo(ForgeDirection.UNKNOWN);
+			FluidTankInfo[] result = container.getTankInfo(UtilEnumFacing.UNKNOWN);
 			for (FluidTankInfo slot : result) {
 				if (slot == null || slot.fluid == null || slot.fluid.getFluidID() == 0 || !wantFluids.containsKey(FluidIdentifier.get(slot.fluid))) {
 					continue;

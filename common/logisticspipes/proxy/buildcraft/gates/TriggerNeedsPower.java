@@ -6,7 +6,7 @@ import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import buildcraft.api.statements.IStatementContainer;
 import buildcraft.api.statements.IStatementParameter;
@@ -29,7 +29,7 @@ public class TriggerNeedsPower extends LPTrigger implements ITriggerExternal {
 	}
 
 	@Override
-	public boolean isTriggerActive(TileEntity tile, ForgeDirection dir, IStatementContainer paramIStatementContainer, IStatementParameter[] paramArrayOfIStatementParameter) {
+	public boolean isTriggerActive(TileEntity tile, EnumFacing dir, IStatementContainer paramIStatementContainer, IStatementParameter[] paramArrayOfIStatementParameter) {
 		if (tile instanceof LogisticsPowerJunctionTileEntity) {
 			LogisticsPowerJunctionTileEntity LPJTE = (LogisticsPowerJunctionTileEntity) tile;
 			if (LPJTE.needMorePowerTriggerCheck) {

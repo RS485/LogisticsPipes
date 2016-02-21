@@ -10,7 +10,7 @@ import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtils;
 
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.fontRendererObj;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
@@ -62,7 +62,7 @@ public class SelectItemOutOfList extends SubGuiScreen {
 		for (ItemIdentifierStack stack : canidate) {
 			if (y >= 0) {
 				ItemStack itemStack = stack.makeNormalStack();
-				FontRenderer font = itemStack.getItem().getFontRenderer(itemStack);
+				fontRendererObj font = itemStack.getItem().getfontRendererObj(itemStack);
 				if (font == null) {
 					font = fontRendererObj;
 				}

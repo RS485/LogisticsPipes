@@ -5,17 +5,16 @@ import logisticspipes.api.IHUDArmor;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.string.StringUtils;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
-
 import net.minecraftforge.common.ISpecialArmor;
 
 public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor {
@@ -54,7 +53,7 @@ public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor 
 	}
 
 	@Override
-	public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
+	public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ) {
 		useItem(player, world);
 		if (MainProxy.isClient(world)) {
 			return false;
@@ -69,11 +68,6 @@ public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor 
 	@Override
 	public CreativeTabs[] getCreativeTabs() {
 		return new CreativeTabs[] { getCreativeTab(), LogisticsPipes.LPCreativeTab };
-	}
-
-	@Override
-	public void registerIcons(IIconRegister par1IIconRegister) {
-		itemIcon = par1IIconRegister.registerIcon("logisticspipes:" + getUnlocalizedName().replace("item.", ""));
 	}
 
 	@Override

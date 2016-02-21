@@ -8,7 +8,8 @@
 
 package logisticspipes.logisticspipes;
 
-import net.minecraftforge.common.util.ForgeDirection;
+
+import net.minecraft.util.EnumFacing;
 
 /**
  * This class is responsible for handling items arriving at its destination
@@ -19,7 +20,7 @@ public abstract class TransportLayer {
 
 	public abstract boolean stillWantItem(IRoutedItem item);
 
-	public abstract ForgeDirection itemArrived(IRoutedItem item, ForgeDirection denyed);
+	public abstract EnumFacing itemArrived(IRoutedItem item, EnumFacing denyed);
 
 	public void handleItem(IRoutedItem item) {}
 

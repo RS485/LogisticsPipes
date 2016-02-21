@@ -1,14 +1,7 @@
 package logisticspipes.network;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
-
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufOutputStream;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.request.resources.IResource;
 import logisticspipes.request.resources.ResourceNetwork;
@@ -20,15 +13,14 @@ import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
-
 import net.minecraft.item.Item;
-import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 
-import net.minecraftforge.common.util.ForgeDirection;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.*;
 
 public class LPDataOutputStream extends DataOutputStream {
 
@@ -44,7 +36,7 @@ public class LPDataOutputStream extends DataOutputStream {
 		byteStream = null;
 	}
 
-	public void writeForgeDirection(ForgeDirection dir) throws IOException {
+	public void writeEnumFacing(EnumFacing dir) throws IOException {
 		if (dir == null) {
 			out.write(10);
 		} else {
@@ -55,8 +47,8 @@ public class LPDataOutputStream extends DataOutputStream {
 	public void writeExitRoute(ExitRoute route) throws IOException {
 		writeIRouter(route.destination);
 		writeIRouter(route.root);
-		writeForgeDirection(route.exitOrientation);
-		writeForgeDirection(route.insertOrientation);
+		writeEnumFacing(route.exitOrientation);
+		writeEnumFacing(route.insertOrientation);
 		this.writeEnumSet(route.connectionDetails, PipeRoutingConnectionType.class);
 		writeDouble(route.distanceToDestination);
 		writeDouble(route.destinationDistanceToRoot);
@@ -112,16 +104,16 @@ public class LPDataOutputStream extends DataOutputStream {
 		writeByte(bytes.length);
 		this.write(bytes);
 	}
-
+	//TODO // FIXME: 19-2-2016
 	public void writeNBTTagCompound(NBTTagCompound tag) throws IOException {
-		if (tag == null) {
-			writeShort(-1);
-		} else {
-			byte[] var3 = CompressedStreamTools.compress(tag);
-			writeShort((short) var3.length);
-			this.write(var3);
+//		if (tag == null) {
+//			writeShort(-1);
+//		} else {
+//			byte[] var3 = CompressedStreamTools.compress(tag);
+//			writeShort((short) var3.length);
+//			this.write(var3);
 		}
-	}
+
 
 	public void writeBooleanArray(boolean[] array) throws IOException {
 		writeInt(array.length);

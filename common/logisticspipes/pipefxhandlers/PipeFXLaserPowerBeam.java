@@ -1,25 +1,21 @@
 package logisticspipes.pipefxhandlers;
 
-import java.util.Random;
-
 import logisticspipes.utils.tuples.LPPosition;
-
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-
-import net.minecraftforge.common.util.ForgeDirection;
-
-import cpw.mods.fml.client.FMLClientHandler;
-
-import lombok.Setter;
-import lombok.experimental.Accessors;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.opengl.GL11;
+
+import java.util.Random;
 
 @Accessors(chain = true)
 public class PipeFXLaserPowerBeam extends EntityFX {
@@ -37,7 +33,7 @@ public class PipeFXLaserPowerBeam extends EntityFX {
 	private float random = 0;
 	private TileEntity tile;
 
-	public PipeFXLaserPowerBeam(World par1World, LPPosition pos, float length, ForgeDirection dir, int color, TileEntity tile) {
+	public PipeFXLaserPowerBeam(World par1World, LPPosition pos, float length, EnumFacing dir, int color, TileEntity tile) {
 		super(par1World, pos.getXD() + 0.5D, pos.getYD() + 0.5D, pos.getZD() + 0.5D, 0.0D, 0.0D, 0.0D);
 		setSize(0.02F, 0.02F);
 		this.tile = tile;
@@ -54,10 +50,10 @@ public class PipeFXLaserPowerBeam extends EntityFX {
 		this.length = length;
 		random = PipeFXLaserPowerBeam.RAND.nextFloat() * PipeFXLaserPowerBeam.RAND.nextInt(10);
 		dir = dir.getOpposite();
-		yaw = ((float) (Math.atan2(dir.offsetX, dir.offsetZ) * 180.0D / Math.PI));
-		pitch = ((float) (Math.atan2(dir.offsetY, MathHelper.sqrt_double(dir.offsetX * dir.offsetX + dir.offsetZ * dir.offsetZ)) * 180.0D / Math.PI));
+		yaw = ((float) (Math.atan2(dir.getFrontOffsetX(), dir.getFrontOffsetZ()) * 180.0D / Math.PI));
+		pitch = ((float) (Math.atan2(dir.getFrontOffsetY(), MathHelper.sqrt_double(dir.getFrontOffsetX() * dir.getFrontOffsetX() + dir.getFrontOffsetZ() * dir.getFrontOffsetZ())) * 180.0D / Math.PI));
 		particleMaxAge = 0;
-		EntityLivingBase renderentity = FMLClientHandler.instance().getClient().renderViewEntity;
+		EntityLivingBase renderentity = (EntityLivingBase) FMLClientHandler.instance().getClient().getRenderViewEntity();
 		int visibleDistance = 50;
 		if (!FMLClientHandler.instance().getClient().gameSettings.fancyGraphics) {
 			visibleDistance = 25;

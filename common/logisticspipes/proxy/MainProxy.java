@@ -1,9 +1,5 @@
 package logisticspipes.proxy;
 
-import java.io.File;
-import java.util.EnumMap;
-import java.util.WeakHashMap;
-
 import logisticspipes.LogisticsEventListener;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.FakePlayer;
@@ -16,25 +12,26 @@ import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.PlayerCollectionList;
-
+import lombok.Getter;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
-
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.network.FMLEmbeddedChannel;
+import net.minecraftforge.fml.common.network.FMLOutboundHandler;
+import net.minecraftforge.fml.common.network.FMLOutboundHandler.OutboundTarget;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.network.FMLEmbeddedChannel;
-import cpw.mods.fml.common.network.FMLOutboundHandler;
-import cpw.mods.fml.common.network.FMLOutboundHandler.OutboundTarget;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.relauncher.Side;
-
-import lombok.Getter;
+import java.io.File;
+import java.util.EnumMap;
+import java.util.WeakHashMap;
 
 public class MainProxy {
 
@@ -247,8 +244,8 @@ public class MainProxy {
 		MainProxy.globalTick++;
 	}
 
-	public static EntityItem dropItems(World worldObj, ItemStack stack, int xCoord, int yCoord, int zCoord) {
-		EntityItem item = new EntityItem(worldObj, xCoord, yCoord, zCoord, stack);
+	public static EntityItem dropItems(World worldObj, ItemStack stack, BlockPos pos) {
+		EntityItem item = new EntityItem(worldObj ,pos.getX(),pos.getY(),pos.getZ(),stack);
 		worldObj.spawnEntityInWorld(item);
 		return item;
 	}
@@ -257,11 +254,11 @@ public class MainProxy {
 		return MainProxy.checkPipesConnections(from, to, OrientationsUtil.getOrientationOfTilewithTile(from, to));
 	}
 
-	public static boolean checkPipesConnections(TileEntity from, TileEntity to, ForgeDirection way) {
+	public static boolean checkPipesConnections(TileEntity from, TileEntity to, EnumFacing way) {
 		return MainProxy.checkPipesConnections(from, to, way, false);
 	}
 
-	public static boolean checkPipesConnections(TileEntity from, TileEntity to, ForgeDirection way, boolean ignoreSystemDisconnection) {
+	public static boolean checkPipesConnections(TileEntity from, TileEntity to, EnumFacing way, boolean ignoreSystemDisconnection) {
 		if (from == null || to == null) {
 			return false;
 		}

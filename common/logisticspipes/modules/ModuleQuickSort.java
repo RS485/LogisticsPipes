@@ -1,10 +1,5 @@
 package logisticspipes.modules;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -20,15 +15,15 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.Pair;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.BlockPos;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class ModuleQuickSort extends LogisticsGuiModule {
 
@@ -264,7 +259,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 	}
 
 	private void sendPacketTo(EntityPlayer player) {
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(QuickSortState.class).setInteger2(lastPosSend).setInteger(getPositionInt()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(QuickSortState.class).setInteger2(lastPosSend).setInteger(getPositionInt()).setPosX(getblockpos().getX()).setPosY(getblockpos().getY()).setPosZ(getblockpos().getZ()), player);
 	}
 
 	@Override
@@ -292,11 +287,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 		return true;
 	}
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleQuickSort");
-	}
+
 
 	public void addWatchingPlayer(EntityPlayer player) {
 		_watchingPlayer.add(player);
@@ -310,6 +301,11 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 	@Override
 	public boolean hasGui() {
 		return false;
+	}
+
+	@Override
+	public BlockPos getblockpos() {
+		return null;
 	}
 
 	@Override

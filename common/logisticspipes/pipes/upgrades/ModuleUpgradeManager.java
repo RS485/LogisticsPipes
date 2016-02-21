@@ -5,15 +5,13 @@ import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
+import logisticspipes.utils.UtilEnumFacing;
 import logisticspipes.utils.item.SimpleStackInventory;
-
+import lombok.Getter;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-
-import net.minecraftforge.common.util.ForgeDirection;
-
-import lombok.Getter;
+import net.minecraft.util.EnumFacing;
 
 public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgradeManager {
 
@@ -25,7 +23,7 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 
 	private final UpgradeManager parent;
 
-	private ForgeDirection sneakyOrientation = ForgeDirection.UNKNOWN;
+	private EnumFacing sneakyOrientation = UtilEnumFacing.UNKNOWN;
 	private boolean isAdvancedCrafter = false;
 	private boolean isFuzzyUpgrade = false;
 	private int liquidCrafter = 0;
@@ -71,15 +69,15 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 
 	@Override
 	public boolean hasSneakyUpgrade() {
-		if (sneakyOrientation != ForgeDirection.UNKNOWN) {
+		if (sneakyOrientation != UtilEnumFacing.UNKNOWN) {
 			return true;
 		}
 		return parent.hasSneakyUpgrade();
 	}
 
 	@Override
-	public ForgeDirection getSneakyOrientation() {
-		if (sneakyOrientation != ForgeDirection.UNKNOWN) {
+	public EnumFacing getSneakyOrientation() {
+		if (sneakyOrientation != UtilEnumFacing.UNKNOWN) {
 			return sneakyOrientation;
 		}
 		return parent.getSneakyOrientation();
@@ -87,7 +85,7 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 
 	@Override
 	public boolean hasOwnSneakyUpgrade() {
-		return sneakyOrientation != ForgeDirection.UNKNOWN;
+		return sneakyOrientation != UtilEnumFacing.UNKNOWN;
 	}
 
 	@Override
@@ -102,7 +100,7 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 			}
 		}
 		//update sneaky direction, speed upgrade count and disconnection
-		sneakyOrientation = ForgeDirection.UNKNOWN;
+		sneakyOrientation = UtilEnumFacing.UNKNOWN;
 		isAdvancedCrafter = false;
 		isFuzzyUpgrade = false;
 		liquidCrafter = 0;
@@ -111,7 +109,7 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 		craftingCleanup = 0;
 		for (int i = 0; i < upgrades.length; i++) {
 			IPipeUpgrade upgrade = upgrades[i];
-			if (upgrade instanceof SneakyUpgrade && sneakyOrientation == ForgeDirection.UNKNOWN) {
+			if (upgrade instanceof SneakyUpgrade && sneakyOrientation == UtilEnumFacing.UNKNOWN) {
 				sneakyOrientation = ((SneakyUpgrade) upgrade).getSneakyOrientation();
 			} else if (upgrade instanceof AdvancedSatelliteUpgrade) {
 				isAdvancedCrafter = true;

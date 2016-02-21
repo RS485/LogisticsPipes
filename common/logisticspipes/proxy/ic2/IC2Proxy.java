@@ -16,7 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import ic2.api.energy.event.EnergyTileLoadEvent;
 import ic2.api.energy.event.EnergyTileUnloadEvent;
@@ -227,7 +227,7 @@ public class IC2Proxy implements IIC2Proxy {
 	 */
 	@Override
 	public void registerToEneryNet(TileEntity tile) {
-		if (MainProxy.isServer(tile.getWorldObj())) {
+		if (MainProxy.isServer(tile.getWorld())) {
 			MinecraftForge.EVENT_BUS.post(new EnergyTileLoadEvent((IEnergyTile) tile));
 		}
 	}
@@ -240,7 +240,7 @@ public class IC2Proxy implements IIC2Proxy {
 	 */
 	@Override
 	public void unregisterToEneryNet(TileEntity tile) {
-		if (MainProxy.isServer(tile.getWorldObj())) {
+		if (MainProxy.isServer(tile.getWorld())) {
 			MinecraftForge.EVENT_BUS.post(new EnergyTileUnloadEvent((IEnergyTile) tile));
 		}
 	}
@@ -254,7 +254,7 @@ public class IC2Proxy implements IIC2Proxy {
 	}
 
 	@Override
-	public boolean acceptsEnergyFrom(TileEntity energy, TileEntity tile, ForgeDirection opposite) {
+	public boolean acceptsEnergyFrom(TileEntity energy, TileEntity tile, EnumFacing opposite) {
 		return ((IEnergySink) energy).acceptsEnergyFrom(tile, opposite);
 	}
 
@@ -269,7 +269,7 @@ public class IC2Proxy implements IIC2Proxy {
 	}
 
 	@Override
-	public double injectEnergyUnits(TileEntity tile, ForgeDirection opposite, double d) {
+	public double injectEnergyUnits(TileEntity tile, EnumFacing opposite, double d) {
 		return ((IEnergySink) tile).injectEnergy(opposite, d, 1); //TODO check the voltage
 	}
 }

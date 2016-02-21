@@ -7,13 +7,14 @@ import logisticspipes.proxy.buildcraft.subproxies.IBCClickResult;
 import logisticspipes.proxy.buildcraft.subproxies.IBCRenderTESR;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
 import logisticspipes.proxy.buildcraft.subproxies.IConnectionOverrideResult;
-
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+
 
 public interface IBCProxy {
 
@@ -25,12 +26,12 @@ public interface IBCProxy {
 
 	void initProxy();
 
-	boolean checkForPipeConnection(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe);
+	boolean checkForPipeConnection(TileEntity with, EnumFacing side, LogisticsTileGenericPipe pipe);
 
-	IConnectionOverrideResult checkConnectionOverride(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe);
+	IConnectionOverrideResult checkConnectionOverride(TileEntity with, EnumFacing side, LogisticsTileGenericPipe pipe);
 
 	/** Only used by the BC proxy internaly */
-	boolean canPipeConnect(TileEntity pipe, TileEntity tile, ForgeDirection direction);
+	boolean canPipeConnect(TileEntity pipe, TileEntity tile, EnumFacing direction);
 
 	boolean isActive();
 
@@ -47,13 +48,13 @@ public interface IBCProxy {
 
 	Class<? extends ICraftingRecipeProvider> getAssemblyTableProviderClass();
 
-	void notifyOfChange(LogisticsTileGenericPipe logisticsTileGenericPipe, TileEntity tile, ForgeDirection o);
+	void notifyOfChange(LogisticsTileGenericPipe logisticsTileGenericPipe, TileEntity tile, EnumFacing o);
 
 	IBCTilePart getBCTilePart(LogisticsTileGenericPipe logisticsTileGenericPipe);
 
-	IBCClickResult handleBCClickOnPipe(World world, int x, int y, int z, EntityPlayer player, int side, float xOffset, float yOffset, float zOffset, CoreUnroutedPipe pipe);
+	IBCClickResult handleBCClickOnPipe(World world, BlockPos pos, EntityPlayer player, EnumFacing side, float xOffset, float yOffset, float zOffset, CoreUnroutedPipe pipe);
 
-	void callBCNeighborBlockChange(World world, int x, int y, int z, Block block);
+	void callBCNeighborBlockChange(World world, BlockPos pos, Block block);
 
 	void callBCRemovePipe(World world, int x, int y, int z);
 

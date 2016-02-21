@@ -32,10 +32,10 @@ public class GuiUpgradeManager extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		mc.fontRenderer.drawString(StringUtils.translate(GuiUpgradeManager.PREFIX + "Upgrades"), 8, 6, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiUpgradeManager.PREFIX + "Inventory"), 8, ySize - 92, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiUpgradeManager.PREFIX + "Upgrades"), 8, 6, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiUpgradeManager.PREFIX + "Inventory"), 8, ySize - 92, 0x404040);
 		if (upgrade.hasCombinedSneakyUpgrade()) {
-			mc.fontRenderer.drawString(StringUtils.translate(GuiUpgradeManager.PREFIX + "SneakyUpgrades"), 8, 47, 0x404040);
+			mc.fontRendererObj.drawString(StringUtils.translate(GuiUpgradeManager.PREFIX + "SneakyUpgrades"), 8, 47, 0x404040);
 		}
 	}
 

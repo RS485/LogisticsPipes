@@ -53,7 +53,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectRoutingConnection, IHeadUpDisplayRendererProvider, IOrderManagerContentReceiver {
 
@@ -118,7 +118,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 				if (tile.tile instanceof IInventory) {
 					IInventory inv = InventoryHelper.getInventory((IInventory) tile.tile);
 					if (inv instanceof net.minecraft.inventory.ISidedInventory) {
-						inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) inv, tile.orientation.getOpposite(), false);
+						inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) inv, tile.orientation.getOpposite(), false, utilEnumFacing);
 					}
 					IInventoryUtil access = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv, tile.orientation.getOpposite());
 					if (checkOneConnectedInv(access, tile.orientation)) {
@@ -130,7 +130,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		}
 	}
 
-	private boolean checkOneConnectedInv(IInventoryUtil inv, ForgeDirection dir) {
+	private boolean checkOneConnectedInv(IInventoryUtil inv, EnumFacing dir) {
 		boolean contentchanged = false;
 		if (!itemsOnRoute.isEmpty()) { // don't check the inventory if you don't want anything
 			List<ItemIdentifier> items = new ArrayList<ItemIdentifier>(itemsOnRoute.keySet());
@@ -159,7 +159,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 							if (inv instanceof ITransactor) {
 								((ITransactor) inv).add(toSend, dir.getOpposite(), true);
 							} else {
-								container.getWorldObj().spawnEntityInWorld(ItemIdentifierStack.getFromStack(toSend).makeEntityItem(getWorld(), container.xCoord, container.yCoord, container.zCoord));
+								container.getWorld().spawnEntityInWorld(ItemIdentifierStack.getFromStack(toSend).makeEntityItem(getWorld(), container.xCoord, container.yCoord, container.zCoord));
 							}
 							new UnsupportedOperationException("The extracted amount didn't match the requested one. (" + inv + ")").printStackTrace();
 							return contentchanged;
@@ -187,7 +187,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		return contentchanged;
 	}
 
-	public void sendStack(ItemRoutingInformation info, ForgeDirection dir) {
+	public void sendStack(ItemRoutingInformation info, EnumFacing dir) {
 		IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(info);
 		super.queueRoutedItem(itemToSend, dir);
 		spawnParticle(Particles.OrangeParticle, 4);
@@ -311,7 +311,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	private boolean inventoryConnected() {
 		for (int i = 0; i < 6; i++) {
 			LPPosition p = new LPPosition(getX(), getY(), getZ());
-			p.moveForward(ForgeDirection.values()[i]);
+			p.moveForward(EnumFacing.values()[i]);
 			TileEntity tile = p.getTileEntity(getWorld());
 			if (tile instanceof IInventory) {
 				return true;
@@ -366,7 +366,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	public boolean isConnectedInv(TileEntity tile) {
 		for (int i = 0; i < 6; i++) {
 			LPPosition p = new LPPosition(getX(), getY(), getZ());
-			p.moveForward(ForgeDirection.values()[i]);
+			p.moveForward(EnumFacing.values()[i]);
 			TileEntity lTile = p.getTileEntity(getWorld());
 			if (lTile instanceof IInventory) {
 				if (lTile == tile) {

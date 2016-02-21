@@ -8,24 +8,21 @@
 
 package logisticspipes.routing;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
-
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.routing.debug.ExitRouteDebug;
+import logisticspipes.utils.UtilEnumFacing;
+import net.minecraft.util.EnumFacing;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import java.util.*;
+
 
 /**
  * Defines direction with a cost
  */
 public class ExitRoute implements Comparable<ExitRoute> {
 
-	public ForgeDirection exitOrientation;
-	public ForgeDirection insertOrientation;
+	public EnumFacing exitOrientation;
+	public EnumFacing insertOrientation;
 	public double distanceToDestination;
 	public final double destinationDistanceToRoot;
 	public final int blockDistance;
@@ -39,7 +36,7 @@ public class ExitRoute implements Comparable<ExitRoute> {
 	 */
 	public ExitRouteDebug debug = new ExitRouteDebug();
 
-	public ExitRoute(IRouter source, IRouter destination, ForgeDirection exitOrientation, ForgeDirection insertOrientation, double metric, EnumSet<PipeRoutingConnectionType> connectionDetails, int blockDistance) {
+	public ExitRoute(IRouter source, IRouter destination, EnumFacing exitOrientation, EnumFacing insertOrientation, double metric, EnumSet<PipeRoutingConnectionType> connectionDetails, int blockDistance) {
 		this.destination = destination;
 		root = source;
 		this.exitOrientation = exitOrientation;
@@ -117,7 +114,7 @@ public class ExitRoute implements Comparable<ExitRoute> {
 	}
 
 	public ExitRoute(IRouter source, IRouter destination, double distance, EnumSet<PipeRoutingConnectionType> enumSet, List<IFilter> filterA, List<IFilter> filterB, int blockDistance) {
-		this(source, destination, ForgeDirection.UNKNOWN, ForgeDirection.UNKNOWN, distance, enumSet, blockDistance);
+		this(source, destination, UtilEnumFacing.UNKNOWN, UtilEnumFacing.UNKNOWN, distance, enumSet, blockDistance);
 		List<IFilter> filter = new ArrayList<IFilter>(filterA.size() + filterB.size());
 		filter.addAll(filterA);
 		filter.addAll(filterB);

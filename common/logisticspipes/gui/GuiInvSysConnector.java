@@ -1,9 +1,5 @@
 package logisticspipes.gui;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.items.LogisticsItemCard;
@@ -21,14 +17,17 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 import logisticspipes.utils.string.StringUtils;
-
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 
@@ -85,14 +84,14 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 115);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "InventorySystemConnector"), guiLeft + 5, guiTop + 6, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "InventorySystemConnector"), guiLeft + 5, guiTop + 6, 0x404040);
 		drawRect(guiLeft + 9, guiTop + 58, guiLeft + 170, guiTop + 112, Color.GREY);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "ConnectionCard") + ":", guiLeft + 10, guiTop + 21, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "ConnectionCard") + ":", guiLeft + 10, guiTop + 21, 0x404040);
 		GuiGraphics.drawSlotBackground(mc, guiLeft + 97, guiTop + 16);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "Waitingfor") + ":", guiLeft + 10, guiTop + 48, 0x404040);
-		mc.fontRenderer.drawString((page + 1) + "/" + maxPage(), guiLeft + 136, guiTop + 49, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "Resistance") + ":", guiLeft + 10, guiTop + 35, 0x404040);
-		mc.fontRenderer.drawString(Integer.toString(localresistance), guiLeft + 105 - (mc.fontRenderer.getStringWidth(Integer.toString(localresistance)) / 2), guiTop + 37, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "Waitingfor") + ":", guiLeft + 10, guiTop + 48, 0x404040);
+		mc.fontRendererObj.drawString((page + 1) + "/" + maxPage(), guiLeft + 136, guiTop + 49, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "Resistance") + ":", guiLeft + 10, guiTop + 35, 0x404040);
+		mc.fontRendererObj.drawString(Integer.toString(localresistance), guiLeft + 105 - (mc.fontRendererObj.getStringWidth(Integer.toString(localresistance)) / 2), guiTop + 37, 0x404040);
 	}
 
 	@Override
@@ -163,7 +162,11 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void actionPerformed(GuiButton button) {
-		super.actionPerformed(button);
+		try {
+			super.actionPerformed(button);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		if (button.id == 0) {
 			pageDown();
 		} else if (button.id == 1) {

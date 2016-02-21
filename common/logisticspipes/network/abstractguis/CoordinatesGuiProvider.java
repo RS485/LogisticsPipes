@@ -1,20 +1,20 @@
 package logisticspipes.network.abstractguis;
 
-import java.io.IOException;
-
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-
+import logisticspipes.utils.UtilWorld;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
+import net.minecraft.world.World;
+
+import java.io.IOException;
 
 @Accessors(chain = true)
 @ToString
@@ -26,35 +26,40 @@ public abstract class CoordinatesGuiProvider extends GuiProvider {
 
 	@Getter
 	@Setter
-	private int posX;
+	public BlockPos blockPos;
 	@Getter
 	@Setter
-	private int posY;
+	private int Xcoord = blockPos.getX();
 	@Getter
 	@Setter
-	private int posZ;
+	private int Ycoord = blockPos.getY();
+	@Getter
+	@Setter
+	private int Zcoord = blockPos.getZ();
+
+
 
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
 
-		data.writeInt(posX);
-		data.writeInt(posY);
-		data.writeInt(posZ);
+		data.writeInt(blockPos.getX());
+		data.writeInt(blockPos.getY());
+		data.writeInt(blockPos.getZ());
 	}
 
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 
-		posX = data.readInt();
-		posY = data.readInt();
-		posZ = data.readInt();
+		Xcoord = data.readInt();
+		Ycoord = data.readInt();
+		Zcoord = data.readInt();
 
 	}
 
 	public CoordinatesGuiProvider setTilePos(TileEntity tile) {
-		setPosX(tile.xCoord);
-		setPosY(tile.yCoord);
-		setPosZ(tile.zCoord);
+		setXcoord(tile.getPos().getX());
+		setYcoord(tile.getPos().getY());
+		setZcoord(tile.getPos().getZ());
 		return this;
 	}
 
@@ -70,7 +75,7 @@ public abstract class CoordinatesGuiProvider extends GuiProvider {
 		if (world == null) {
 			return null;
 		}
-		if (!world.blockExists(getPosX(), getPosY(), getPosZ())) {
+		if (!UtilWorld.blockExists(blockPos,world)) {
 			if (LPConstants.DEBUG) {
 				LogisticsPipes.log.fatal(toString());
 				new RuntimeException("Couldn't find " + clazz.getName()).printStackTrace();
@@ -78,7 +83,7 @@ public abstract class CoordinatesGuiProvider extends GuiProvider {
 			return null;
 		}
 
-		final TileEntity tile = world.getTileEntity(getPosX(), getPosY(), getPosZ());
+		final TileEntity tile = world.getTileEntity((getBlockPos()));
 		if (tile != null) {
 			if (!(clazz.isAssignableFrom(tile.getClass()))) {
 				if (LPConstants.DEBUG) {

@@ -1,8 +1,5 @@
 package logisticspipes.modules;
 
-import java.util.Collection;
-import java.util.List;
-
 import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -11,13 +8,11 @@ import logisticspipes.utils.OneList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.BlockPos;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.Collection;
+import java.util.List;
 
 public class ModuleCCBasedItemSink extends LogisticsModule {
 
@@ -35,18 +30,8 @@ public class ModuleCCBasedItemSink extends LogisticsModule {
 	}
 
 	@Override
-	public int getX() {
-		return _service.getX();
-	}
-
-	@Override
-	public int getY() {
-		return _service.getY();
-	}
-
-	@Override
-	public int getZ() {
-		return _service.getZ();
+	public BlockPos getblockpos() {
+		return _service.getblockpos();
 	}
 
 	@Override
@@ -94,9 +79,4 @@ public class ModuleCCBasedItemSink extends LogisticsModule {
 		return new OneList<CCSinkResponder>(resonse);
 	}
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleCCBasedItemSink");
-	}
 }

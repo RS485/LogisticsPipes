@@ -19,7 +19,7 @@ import logisticspipes.request.resources.IResource.ColorCode;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import lombok.Getter;
 import lombok.Setter;

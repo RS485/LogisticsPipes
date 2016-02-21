@@ -1,23 +1,18 @@
 package logisticspipes.items;
 
-import java.util.List;
-
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-
 import net.minecraftforge.fluids.FluidStack;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
+
+import java.util.List;
 
 public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvancedExistance {
 
@@ -33,11 +28,6 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 		return false;
 	}
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister iconReg) {
-		itemIcon = iconReg.registerIcon("logisticspipes:liquids/empty");
-	}
 
 	@Override
 	public int getItemStackLimit() {

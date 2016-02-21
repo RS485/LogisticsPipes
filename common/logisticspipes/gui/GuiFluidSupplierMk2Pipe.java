@@ -22,6 +22,8 @@ import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
 
+import java.io.IOException;
+
 public class GuiFluidSupplierMk2Pipe extends LogisticsBaseGuiScreen {
 
 	private static final String PREFIX = "gui.fluidsuppliermk2.";
@@ -41,19 +43,19 @@ public class GuiFluidSupplierMk2Pipe extends LogisticsBaseGuiScreen {
 		this.logic = logic;
 		xSize = 184;
 		ySize = 176;
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidSupplierAmount.class).setInteger(0).setPosX(this.logic.getX()).setPosY(this.logic.getY()).setPosZ(this.logic.getZ()));
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidSupplierAmount.class).setInteger(0).setPosX(this.logic.getPos().getX()).setPosY(this.logic.getPos().getY()).setPosZ(this.logic.getPos().getZ()));
 	}
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		mc.fontRenderer.drawString(StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "TargetInv"), xSize / 2 - mc.fontRenderer.getStringWidth(StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "TargetInv")) / 2, 6, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "Inventory"), 15, ySize - 95, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "Fluid") + ":", 25, 22, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "Partial") + ":", xSize - 176, ySize - 109, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "minMode") + ":", xSize - 108, ySize - 109, 0x404040);
-		mc.fontRenderer.drawString(Integer.toString(logic.getAmount()), xSize / 2, 22, 0x404040);
-		mc.fontRenderer.drawString("+", 32, 39, 0x404040);
-		mc.fontRenderer.drawString("-", 32, 50, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "TargetInv"), xSize / 2 - mc.fontRendererObj.getStringWidth(StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "TargetInv")) / 2, 6, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "Inventory"), 15, ySize - 95, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "Fluid") + ":", 25, 22, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "Partial") + ":", xSize - 176, ySize - 109, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "minMode") + ":", xSize - 108, ySize - 109, 0x404040);
+		mc.fontRendererObj.drawString(Integer.toString(logic.getAmount()), xSize / 2, 22, 0x404040);
+		mc.fontRendererObj.drawString("+", 32, 39, 0x404040);
+		mc.fontRendererObj.drawString("-", 32, 50, 0x404040);
 	}
 
 	@Override
@@ -90,7 +92,7 @@ public class GuiFluidSupplierMk2Pipe extends LogisticsBaseGuiScreen {
 		if (guibutton.id == 0) {
 			logic.setRequestingPartials(!logic.isRequestingPartials());
 			((GuiButton) buttonList.get(0)).displayString = logic.isRequestingPartials() ? StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "Yes") : StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "No");
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidSupplierMode.class).setInteger((logic.isRequestingPartials() ? 1 : 0)).setPosX(logic.getX()).setPosY(logic.getY()).setPosZ(logic.getZ()));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidSupplierMode.class).setInteger((logic.isRequestingPartials() ? 1 : 0)).setPosX(logic.getPos().getX()).setPosY(logic.getPos().getY()).setPosZ(logic.getPos().getZ()));
 		} else if (guibutton.id == 1) {
 			int index = logic.getMinMode().ordinal() + 1;
 			if (index >= MinMode.values().length) {
@@ -98,16 +100,20 @@ public class GuiFluidSupplierMk2Pipe extends LogisticsBaseGuiScreen {
 			}
 			logic.setMinMode(MinMode.values()[index]);
 			((GuiButton) buttonList.get(1)).displayString = StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + logic.getMinMode().name());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidSupplierMinMode.class).setInteger(logic.getMinMode().ordinal()).setPosX(logic.getX()).setPosY(logic.getY()).setPosZ(logic.getZ()));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidSupplierMinMode.class).setInteger(logic.getMinMode().ordinal()).setPosX(logic.getPos().getX()).setPosY(logic.getPos().getY()).setPosZ(logic.getPos().getZ()));
 		} else if ((guibutton.id % 10 == 0 || guibutton.id % 10 == 1) && guibutton.id / 10 < 5 && guibutton.id / 10 > 0) {
 			int change = 1;
 			if (guibutton.id % 10 == 1) {
 				change = -1;
 			}
 			change *= Math.pow(10, guibutton.id / 10 - 1);
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidSupplierAmount.class).setInteger(change).setPosX(logic.getX()).setPosY(logic.getY()).setPosZ(logic.getZ()));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidSupplierAmount.class).setInteger(change).setPosX(logic.getPos().getX()).setPosY(logic.getPos().getY()).setPosZ(logic.getPos().getZ()));
 		} else {
-			super.actionPerformed(guibutton);
+			try {
+				super.actionPerformed(guibutton);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

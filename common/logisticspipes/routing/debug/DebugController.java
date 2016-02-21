@@ -249,13 +249,11 @@ public class DebugController implements IRoutingDebugAdapter {
 
 	@Override
 	public void newFlagsForPipe(EnumSet<PipeRoutingConnectionType> newFlags) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void filterList(EnumMap<PipeRoutingConnectionType, List<List<IFilter>>> filters) {
-		// TODO Auto-generated method stub
 
 	}
 

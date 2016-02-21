@@ -31,6 +31,8 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.IChatComponent;
 import net.minecraft.world.World;
 
 public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTypeHolder, Iterable<Pair<ItemIdentifierStack, Integer>> {
@@ -99,6 +101,11 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 		return ret;
 	}
 
+	@Override
+	public ItemStack removeStackFromSlot(int index) {
+		return null;
+	}
+
 	// here so the returned stack can be stuck in another inventory without re-converting it/
 	public ItemIdentifierStack decrIDStackSize(int slot, int count) {
 		if (_contents[slot] == null) {
@@ -148,10 +155,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 		updateContents();
 	}
 
-	@Override
-	public String getInventoryName() {
-		return _name;
-	}
+
 
 	@Override
 	public int getInventoryStackLimit() {
@@ -172,10 +176,16 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 	}
 
 	@Override
-	public void openInventory() {}
+	public void openInventory(EntityPlayer player) {
+
+	}
 
 	@Override
-	public void closeInventory() {}
+	public void closeInventory(EntityPlayer player) {
+
+	}
+
+
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
@@ -222,19 +232,19 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 		nbttagcompound.setInteger(prefix + "itemsCount", _contents.length);
 	}
 
-	public void dropContents(World worldObj, int posX, int posY, int posZ) {
+	public void dropContents(World worldObj, BlockPos pos) {
 		if (MainProxy.isServer(worldObj)) {
 			for (int i = 0; i < _contents.length; i++) {
 				while (_contents[i] != null) {
 					ItemStack todrop = decrStackSize(i, _contents[i].getItem().getMaxStackSize());
-					ItemIdentifierInventory.dropItems(worldObj, todrop, posX, posY, posZ);
+					ItemIdentifierInventory.dropItems(worldObj, todrop, pos);
 				}
 			}
 			updateContents();
 		}
 	}
 
-	public static void dropItems(World world, ItemStack stack, int i, int j, int k) {
+	public static void dropItems(World world, ItemStack stack, BlockPos pos) {
 		if (stack.stackSize <= 0) {
 			return;
 		}
@@ -242,7 +252,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 		double d = (world.rand.nextFloat() * f1) + (1.0F - f1) * 0.5D;
 		double d1 = (world.rand.nextFloat() * f1) + (1.0F - f1) * 0.5D;
 		double d2 = (world.rand.nextFloat() * f1) + (1.0F - f1) * 0.5D;
-		EntityItem entityitem = new EntityItem(world, i + d, j + d1, k + d2, stack);
+		EntityItem entityitem = new EntityItem(world, pos.getX() + d, pos.getY() + d1, pos.getZ() + d2, stack);
 		entityitem.delayBeforeCanPickup = 10;
 		world.spawnEntityInWorld(entityitem);
 	}
@@ -408,15 +418,29 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 		return _contentsMap.isEmpty();
 	}
 
-	@Override
-	public boolean hasCustomInventoryName() {
+	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
+		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
-	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
-		// TODO Auto-generated method stub
-		return true;
+	public int getField(int id) {
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, int value) {
+
+	}
+
+	@Override
+	public int getFieldCount() {
+		return 0;
+	}
+
+	@Override
+	public void clear() {
+
 	}
 
 	public void clearInventorySlotContents(int i) {
@@ -523,5 +547,20 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 			_contents[i] = null;
 		}
 		updateContents();
+	}
+
+	@Override
+	public String getName() {
+		return null;
+	}
+
+	@Override
+	public boolean hasCustomName() {
+		return true;
+	}
+
+	@Override
+	public IChatComponent getDisplayName() {
+		return null;
 	}
 }

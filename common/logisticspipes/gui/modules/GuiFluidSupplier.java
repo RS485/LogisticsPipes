@@ -38,8 +38,8 @@ public class GuiFluidSupplier extends ModuleBaseGui {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		mc.fontRenderer.drawString(_liquidSupplier.getFilterInventory().getInventoryName(), 8, 6, 0x404040);
-		mc.fontRenderer.drawString("Inventory", 8, ySize - 92, 0x404040);
+		mc.fontRendererObj.drawString(_liquidSupplier.getFilterInventory().getInventoryName(), 8, 6, 0x404040);
+		mc.fontRendererObj.drawString("Inventory", 8, ySize - 92, 0x404040);
 	}
 
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/itemsink.png");

@@ -19,6 +19,7 @@ import logisticspipes.utils.tuples.Pair;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.fontRendererObj;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -26,7 +27,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import lombok.Getter;
 import org.lwjgl.input.Keyboard;
@@ -61,7 +62,7 @@ public class ItemDisplay {
 	private boolean listbyserver = false;
 
 	private final IItemSearch search;
-	private final FontRenderer fontRenderer;
+	private final fontRendererObj fontRendererObj;
 	private final LogisticsBaseGuiScreen screen;
 	private final ISpecialItemRenderer renderer;
 	private int left, top, height, width;
@@ -71,9 +72,9 @@ public class ItemDisplay {
 	private final Minecraft mc = FMLClientHandler.instance().getClient();
 	private static DisplayOption option = DisplayOption.ID;
 
-	public ItemDisplay(IItemSearch search, FontRenderer fontRenderer, LogisticsBaseGuiScreen screen, ISpecialItemRenderer renderer, int left, int top, int width, int height, int[] amountChangeMode, boolean shiftPageChange) {
+	public ItemDisplay(IItemSearch search, fontRendererObj fontRendererObj, LogisticsBaseGuiScreen screen, ISpecialItemRenderer renderer, int left, int top, int width, int height, int[] amountChangeMode, boolean shiftPageChange) {
 		this.search = search;
-		this.fontRenderer = fontRenderer;
+		this.fontRendererObj = fontRendererObj;
 		this.screen = screen;
 		this.renderer = renderer;
 		this.left = left;
@@ -197,7 +198,7 @@ public class ItemDisplay {
 			up = false;
 		}
 		name += !up ? " /\\" : " \\/";
-		fontRenderer.drawString(name, x - fontRenderer.getStringWidth(name) / 2, y, 0x404040);
+		fontRendererObj.drawString(name, x - fontRendererObj.getStringWidth(name) / 2, y, 0x404040);
 	}
 
 	public void renderPageNumber(int x, int y) {
@@ -209,7 +210,7 @@ public class ItemDisplay {
 			page = maxPage;
 		}
 		String pageString = "Page " + (page + 1) + " / " + (maxPage + 1);
-		fontRenderer.drawString(pageString, x - fontRenderer.getStringWidth(pageString) / 2, y, 0x404040);
+		fontRendererObj.drawString(pageString, x - fontRendererObj.getStringWidth(pageString) / 2, y, 0x404040);
 	}
 
 	private int getSearchedItemNumber() {
@@ -224,8 +225,8 @@ public class ItemDisplay {
 
 	public void renderAmount(int x, int y, int stackAmount) {
 		String StackrequestCount = "" + (requestCount / stackAmount) + "+" + (requestCount % stackAmount);
-		fontRenderer.drawString(requestCount + "", x - fontRenderer.getStringWidth(requestCount + "") / 2, y, 0x404040);
-		fontRenderer.drawString(StackrequestCount + "", x - fontRenderer.getStringWidth(StackrequestCount + "") / 2, y + 10, 0x404040);
+		fontRendererObj.drawString(requestCount + "", x - fontRendererObj.getStringWidth(requestCount + "") / 2, y, 0x404040);
+		fontRendererObj.drawString(StackrequestCount + "", x - fontRendererObj.getStringWidth(StackrequestCount + "") / 2, y + 10, 0x404040);
 	}
 
 	public void renderItemArea(double zLevel) {

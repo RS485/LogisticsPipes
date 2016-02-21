@@ -1,21 +1,32 @@
 package logisticspipes.utils;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 
-import net.minecraftforge.common.util.ForgeDirection;
 
 public final class TileBuffer {
 
 	private Block block = null;
 	private TileEntity tile;
+	public IBlockState iBlockState;
+	public Chunk chunk;
+	public UtilBlockPos ur;
+	public BlockPos blockpos;
+
 
 	private final SafeTimeTracker tracker = new SafeTimeTracker(20, 5);
 	private final World world;
-	private final int x, y, z;
+	private int x = blockpos.getX();
+	private int y = blockpos.getY();
+	private int z = blockpos.getZ();
+
+
 	private final boolean loadUnloaded;
 
 	public TileBuffer(World world, int x, int y, int z, boolean loadUnloaded) {
@@ -30,21 +41,21 @@ public final class TileBuffer {
 
 	public void refresh() {
 		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe != null && ((LogisticsTileGenericPipe) tile).pipe.preventRemove()) {
-			if (world.getBlock(x, y, z) == null) {
+			if (!UtilWorld.blockExists(blockpos, world)) {
 				return;
 			}
 		}
 		tile = null;
 		block = null;
 
-		if (!loadUnloaded && !world.blockExists(x, y, z)) {
+		if (!loadUnloaded && !UtilWorld.blockExists(blockpos, world)) {
 			return;
 		}
 
-		block = world.getBlock(x, y, z);
+		block = chunk.getBlock(blockpos.getX(),blockpos.getY(),blockpos.getZ());
 
-		if (block != null && block.hasTileEntity(world.getBlockMetadata(x, y, z))) {
-			tile = world.getTileEntity(x, y, z);
+		if (block != null && block.hasTileEntity(iBlockState)) {
+			tile = world.getTileEntity(blockpos);
 		}
 	}
 
@@ -91,15 +102,16 @@ public final class TileBuffer {
 			return true;
 		}
 
-		return world.blockExists(x, y, z);
+		return UtilWorld.blockExists(blockpos,world);
 	}
 
-	public static TileBuffer[] makeBuffer(World world, int x, int y, int z, boolean loadUnloaded) {
+	public static TileBuffer[] makeBuffer(World world, BlockPos blockpos, boolean loadUnloaded) {
 		TileBuffer[] buffer = new TileBuffer[6];
 
 		for (int i = 0; i < 6; i++) {
-			ForgeDirection d = ForgeDirection.getOrientation(i);
-			buffer[i] = new TileBuffer(world, x + d.offsetX, y + d.offsetY, z + d.offsetZ, loadUnloaded);
+			EnumFacing d = UtilEnumFacing.getOrientation(i);
+
+			buffer[i] = new TileBuffer(world, blockpos.getX() + d.getFrontOffsetX(), blockpos.getY() + d.getFrontOffsetY(), blockpos.getZ() + d.getFrontOffsetZ(), loadUnloaded);
 		}
 
 		return buffer;

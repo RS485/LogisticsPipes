@@ -9,7 +9,7 @@ import logisticspipes.proxy.buildcraft.robots.boards.LogisticsRoutingBoardRobot;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import buildcraft.api.robots.AIRobot;
 import buildcraft.api.robots.EntityRobotBase;
@@ -18,11 +18,11 @@ public class ItemInsertionAIRobot extends AIRobot {
 
 	private LogisticsTileGenericPipe pipe;
 	private LogisticsRoutingBoardRobot board;
-	private ForgeDirection insertion;
+	private EnumFacing insertion;
 	private IInventoryUtil robotInv;
 	private int tick = 0;
 
-	public ItemInsertionAIRobot(EntityRobotBase iRobot, LogisticsTileGenericPipe pipe, LogisticsRoutingBoardRobot board, ForgeDirection insertion) {
+	public ItemInsertionAIRobot(EntityRobotBase iRobot, LogisticsTileGenericPipe pipe, LogisticsRoutingBoardRobot board, EnumFacing insertion) {
 		super(iRobot);
 		this.pipe = pipe;
 		this.board = board;
@@ -35,7 +35,7 @@ public class ItemInsertionAIRobot extends AIRobot {
 			terminate();
 			return;
 		}
-		robotInv = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(robot, ForgeDirection.UNKNOWN);
+		robotInv = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(robot, UtilEnumFacing.UNKNOWN);
 		if (robotInv == null) {
 			terminate();
 		}

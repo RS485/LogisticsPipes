@@ -8,18 +8,18 @@
 
 package logisticspipes.logisticspipes;
 
-import java.util.List;
-import java.util.UUID;
-
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.order.IDistanceTracker;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import java.util.List;
+import java.util.UUID;
+
+
 
 /**
  * This interface describes the actions that must be available on an item that
@@ -80,5 +80,5 @@ public interface IRoutedItem {
 
 	public ItemRoutingInformation getInfo();
 
-	void split(int itemsToTake, ForgeDirection orientation);
+	void split(int itemsToTake, EnumFacing orientation);
 }

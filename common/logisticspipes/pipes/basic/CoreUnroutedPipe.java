@@ -1,8 +1,5 @@
 package logisticspipes.pipes.basic;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILPPipe;
 import logisticspipes.config.Configs;
@@ -14,14 +11,14 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePart;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
-import logisticspipes.renderer.IIconProvider;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
-import logisticspipes.textures.Textures;
 import logisticspipes.transport.PipeTransportLogistics;
+import logisticspipes.utils.UtilEnumFacing;
 import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.LPPosition;
-
+import lombok.Getter;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -29,13 +26,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSettings.GameType;
 
-import net.minecraftforge.common.util.ForgeDirection;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTypeHolder {
 
@@ -45,8 +43,22 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public final PipeTransportLogistics transport;
 	public final Item item;
 	public DebugLogController debug = new DebugLogController(this);
+	@Getter
+	public BlockPos pos;
 
 	public IBCPipePart bcPipePart;
+	@Getter
+	public int xCoord = pos.getX();
+	@Getter
+	public int yCoord = pos.getY();
+	@Getter
+	public int zCoord = pos.getZ();
+	public Block block;
+	public IBlockAccess iBlockAccess;
+
+
+
+
 
 	private boolean initialized = false;
 
@@ -77,7 +89,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		transport.onNeighborBlockChange(blockId);
 	}
 
-	public boolean canPipeConnect(TileEntity tile, ForgeDirection side) {
+	public boolean canPipeConnect(TileEntity tile, EnumFacing side) {
 		CoreUnroutedPipe otherPipe;
 
 		if (tile instanceof LogisticsTileGenericPipe) {
@@ -90,43 +102,13 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		return transport.canPipeConnect(tile, side);
 	}
 
-	/**
-	 * Should return the textureindex used by the Pipe Item Renderer, as this is
-	 * done client-side the default implementation might not work if your
-	 * getTextureIndex(Orienations.Unknown) has logic. Then override this
-	 */
-	public int getIconIndexForItem() {
-		return getIconIndex(ForgeDirection.UNKNOWN);
-	}
-
-	/**
-	 * Should return the IIconProvider that provides icons for this pipe
-	 *
-	 * @return An array of icons
-	 */
-	@SideOnly(Side.CLIENT)
-	public IIconProvider getIconProvider() {
-		return Textures.LPpipeIconProvider;
-	}
-
-	/**
-	 * Should return the index in the array returned by GetTextureIcons() for a
-	 * specified direction
-	 *
-	 * @param direction
-	 *            - The direction for which the indexed should be rendered.
-	 *            Unknown for pipe center
-	 * @return An index valid in the array returned by getTextureIcons()
-	 */
-	public abstract int getIconIndex(ForgeDirection direction);
-
 	public void updateEntity() {
 		transport.updateEntity();
 
 		if (MainProxy.isClient(getWorld())) {
 			if (oldRendererState != (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer() && !container.renderState.forceRenderOldPipe)) {
 				oldRendererState = (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer() && !container.renderState.forceRenderOldPipe);
-				getWorld().markBlockForUpdate(getX(), getY(), getZ());
+				getWorld().markBlockForUpdate(BlockPos.ORIGIN);
 			}
 		}
 	}
@@ -148,21 +130,21 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		initialized = true;
 	}
 
-	protected void notifyBlockOfNeighborChange(ForgeDirection side) {
-		container.getWorldObj().notifyBlockOfNeighborChange(container.xCoord + side.offsetX, container.yCoord + side.offsetY, container.zCoord + side.offsetZ, LogisticsPipes.LogisticsPipeBlock);
+	protected void notifyBlockOfNeighborChange(EnumFacing side) {
+		container.getWorld().notifyBlockOfStateChange(container.pos ,LogisticsPipes.LogisticsPipeBlock);
 	}
 
 	public void updateNeighbors(boolean needSelf) {
 		if (needSelf) {
-			container.getWorldObj().notifyBlockOfNeighborChange(container.xCoord, container.yCoord, container.zCoord, LogisticsPipes.LogisticsPipeBlock);
+			container.getWorld().notifyBlockOfStateChange(container.pos, LogisticsPipes.LogisticsPipeBlock);
 		}
-		for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing side : UtilEnumFacing.VALID_DIRECTIONS) {
 			notifyBlockOfNeighborChange(side);
 		}
 	}
 
 	public void dropItem(ItemStack stack) {
-		MainProxy.dropItems(container.getWorldObj(), stack, container.xCoord, container.yCoord, container.zCoord);
+		MainProxy.dropItems(container.getWorld(), stack, container.pos);
 	}
 
 	public void onBlockRemoval() {
@@ -190,12 +172,12 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	/**
 	 * If this pipe is open on one side, return it.
 	 */
-	public ForgeDirection getOpenOrientation() {
+	public EnumFacing getOpenOrientation() {
 		int connectionsNum = 0;
 
-		ForgeDirection targetOrientation = ForgeDirection.UNKNOWN;
+		EnumFacing targetOrientation = UtilEnumFacing.UNKNOWN;
 
-		for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing o : UtilEnumFacing.VALID_DIRECTIONS) {
 			if (container.isPipeConnected(o)) {
 
 				connectionsNum++;
@@ -207,7 +189,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		}
 
 		if (connectionsNum > 1 || connectionsNum == 0) {
-			return ForgeDirection.UNKNOWN;
+			return UtilEnumFacing.UNKNOWN;
 		}
 
 		return targetOrientation.getOpposite();
@@ -229,32 +211,25 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public void onChunkUnload() {}
 
 	public World getWorld() {
-		return container.getWorldObj();
+		return container.getWorld();
 	}
 
 	public void onEntityCollidedWithBlock(Entity entity) {
 
 	}
 
-	public boolean canPipeConnect(TileEntity tile, ForgeDirection direction, boolean flag) {
+	public boolean canPipeConnect(TileEntity tile, EnumFacing direction, boolean flag) {
 		return canPipeConnect(tile, direction);
 	}
 
-	public boolean isSideBlocked(ForgeDirection side, boolean ignoreSystemDisconnection) {
+	public boolean isSideBlocked(EnumFacing side, boolean ignoreSystemDisconnection) {
 		return false;
 	}
 
-	public final int getX() {
-		return container.xCoord;
+	public final BlockPos getblockpos() {
+		return container.getPos();
 	}
 
-	public final int getY() {
-		return container.yCoord;
-	}
-
-	public final int getZ() {
-		return container.zCoord;
-	}
 
 	public boolean canBeDestroyed() {
 		return true;
@@ -305,7 +280,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 
 	@Override
 	public String toString() {
-		return super.toString() + " (" + getX() + ", " + getY() + ", " + getZ() + ")";
+		return super.toString() + pos.toString() ;
 	}
 
 	public LPPosition getLPPosition() {
@@ -313,7 +288,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	}
 
 	public WorldUtil getWorldUtil() {
-		return new WorldUtil(getWorld(), getX(), getY(), getZ());
+		return new WorldUtil(getWorld(), getblockpos());
 	}
 
 	public IPipeUpgradeManager getUpgradeManager() {
@@ -340,7 +315,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 			}
 
 			@Override
-			public boolean isSideDisconnected(ForgeDirection side) {
+			public boolean isSideDisconnected(EnumFacing side) {
 				return false;
 			}
 
@@ -370,15 +345,15 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 			}
 
 			@Override
-			public ForgeDirection[] getCombinedSneakyOrientation() {
+			public EnumFacing[] getCombinedSneakyOrientation() {
 				return null;
 			}
 		};
 	}
 
-	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double travled, double max, List<LPPosition> visited) {
+	public double getDistanceTo(int destinationint, EnumFacing ignore, ItemIdentifier ident, boolean isActive, double travled, double max, List<LPPosition> visited) {
 		double lowest = Integer.MAX_VALUE;
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing dir : UtilEnumFacing.VALID_DIRECTIONS) {
 			if (ignore == dir) {
 				continue;
 			}

@@ -10,7 +10,7 @@ import logisticspipes.transport.PipeTransportLogistics;
 
 import net.minecraft.item.Item;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public class PipeItemsBasicTransport extends CoreUnroutedPipe {
 
@@ -25,7 +25,7 @@ public class PipeItemsBasicTransport extends CoreUnroutedPipe {
 	public void readData(LPDataInputStream data) throws IOException {}
 
 	@Override
-	public int getIconIndex(ForgeDirection direction) {
+	public int getIconIndex(EnumFacing direction) {
 		return Textures.LOGISTICSPIPE_BASIC_TRANSPORT_TEXTURE.normal;
 	}
 

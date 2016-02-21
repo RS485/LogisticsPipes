@@ -1,15 +1,14 @@
 package logisticspipes.pipefxhandlers;
 
-import java.util.Random;
-
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityClientPlayerMP;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-
 import org.lwjgl.opengl.GL11;
+
+import java.util.Random;
 
 public class EntitySparkleFX extends EntityFX {
 
@@ -78,7 +77,7 @@ public class EntitySparkleFX extends EntityFX {
 	@Override
 	public void onUpdate() {
 		try {
-			EntityClientPlayerMP var1 = Minecraft.getMinecraft().thePlayer;
+			EntityPlayerSP var1 = Minecraft.getMinecraft().thePlayer;
 
 			if (var1.getDistance(posX, posY, posZ) > 50) {
 				setDead();

@@ -37,7 +37,7 @@ import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.client.GuiIngameForge;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -363,7 +363,7 @@ public class LogisticsHUDRenderer {
 					int heigth = Math.max(32, 10 * textData.size() + 15);
 					int width = 0;
 					for (String s : textData) {
-						width = Math.max(width, mc.fontRenderer.getStringWidth(s) + 22);
+						width = Math.max(width, mc.fontRendererObj.getStringWidth(s) + 22);
 					}
 					width = Math.max(32, width + 15);
 
@@ -374,7 +374,7 @@ public class LogisticsHUDRenderer {
 					if (progress == 100) {
 						GL11.glTranslated((int) ((-0.5 * (width - 32)) * dProgress) - 16, (int) ((-0.5 * (heigth - 32)) * dProgress) - 16, -0.0001D);
 						for (int i = 0; i < textData.size(); i++) {
-							mc.fontRenderer.drawString(textData.get(i), 28, 8 + i * 10, 0x000000);
+							mc.fontRendererObj.drawString(textData.get(i), 28, 8 + i * 10, 0x000000);
 						}
 
 						ItemStack item = SimpleServiceLocator.neiProxy.getItemForPosition(player.worldObj, player, box);

@@ -5,7 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.EnumSet;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,7 +26,7 @@ public class LaserData {
 	@NonNull
 	private int posZ;
 	@NonNull
-	private ForgeDirection dir;
+	private EnumFacing dir;
 	@NonNull
 	private EnumSet<PipeRoutingConnectionType> connectionType;
 	private boolean finalPipe = true;
@@ -50,7 +50,7 @@ public class LaserData {
 		posX = data.readInt();
 		posY = data.readInt();
 		posZ = data.readInt();
-		dir = ForgeDirection.values()[data.readByte()];
+		dir = EnumFacing.values()[data.readByte()];
 		finalPipe = data.readBoolean();
 		startPipe = data.readBoolean();
 		length = data.readInt();

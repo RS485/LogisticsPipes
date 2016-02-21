@@ -3,7 +3,7 @@ package logisticspipes.proxy;
 import logisticspipes.proxy.specialtankhandler.AETankHandler;
 import logisticspipes.proxy.specialtankhandler.BuildCraftTankHandler;
 
-import cpw.mods.fml.common.Loader;
+import net.minecraftforge.fml.common.Loader;
 
 public class SpecialTankHandlerManager {
 

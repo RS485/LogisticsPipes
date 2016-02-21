@@ -1,20 +1,20 @@
 package logisticspipes.network.abstractpackets;
 
-import java.io.IOException;
-
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.exception.TargetNotFoundException;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.utils.UtilWorld;
 import logisticspipes.utils.tuples.LPPosition;
-
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
+import net.minecraft.world.World;
+
+import java.io.IOException;
 
 @Accessors(chain = true)
 @ToString
@@ -28,6 +28,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 
 	public CoordinatesPacket(int id) {
 		super(id);
+
 	}
 
 	@Getter
@@ -39,6 +40,11 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	@Getter
 	@Setter
 	private int posZ;
+	@Getter
+	@Setter
+	private BlockPos blockPos;
+    private long blockpos;
+    private TileEntity tileEntity;
 
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
@@ -58,11 +64,12 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	}
 
 	public CoordinatesPacket setTilePos(TileEntity tile) {
-		setPosX(tile.xCoord);
-		setPosY(tile.yCoord);
-		setPosZ(tile.zCoord);
+		setPosX(tile.getPos().getX());
+		setPosY(tile.getPos().getY());
+		setPosZ(tile.getPos().getZ());
 		return this;
 	}
+
 
 	public CoordinatesPacket setLPPos(LPPosition pos) {
 		setPosX(pos.getX());
@@ -91,12 +98,12 @@ public abstract class CoordinatesPacket extends ModernPacket {
 			targetNotFound("World was null");
 			return null;
 		}
-		if (!world.blockExists(getPosX(), getPosY(), getPosZ())) {
+		if (!UtilWorld.blockExists(getBlockPos(),world)) {
 			targetNotFound("Couldn't find " + clazz.getName());
 			return null;
 		}
 
-		final TileEntity tile = world.getTileEntity(getPosX(), getPosY(), getPosZ());
+		final TileEntity tile = world.getTileEntity(getBlockPos());
 		if (tile != null) {
 			if (!(clazz.isAssignableFrom(tile.getClass()))) {
 				targetNotFound("Couldn't find " + clazz.getName() + ", found " + tile.getClass());
@@ -107,6 +114,12 @@ public abstract class CoordinatesPacket extends ModernPacket {
 		}
 		return (T) tile;
 	}
+
+    public BlockPos buildblockposfromXYZ(int x,int y,int z)
+    {
+        return new BlockPos(x,y,z);
+    }
+
 
 	@SuppressWarnings("unchecked")
 	/**
@@ -121,12 +134,12 @@ public abstract class CoordinatesPacket extends ModernPacket {
 			targetNotFound("World was null");
 			return null;
 		}
-		if (!world.blockExists(getPosX(), getPosY(), getPosZ())) {
+		if (!UtilWorld.blockExists(getBlockPos(),world)) {
 			targetNotFound("Couldn't find " + clazz.getName());
 			return null;
 		}
 
-		final TileEntity tile = world.getTileEntity(getPosX(), getPosY(), getPosZ());
+		final TileEntity tile = world.getTileEntity(getBlockPos());
 		if (tile != null) {
 			if (clazz.isAssignableFrom(tile.getClass())) {
 				return (T) tile;

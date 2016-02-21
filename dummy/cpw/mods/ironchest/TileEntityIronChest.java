@@ -1,4 +1,4 @@
-package cpw.mods.ironchest;
+package net.minecraftforge.ironchest;
 
 import net.minecraft.tileentity.TileEntity;
 

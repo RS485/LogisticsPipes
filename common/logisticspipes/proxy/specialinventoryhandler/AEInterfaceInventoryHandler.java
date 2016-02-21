@@ -1,20 +1,5 @@
 package logisticspipes.proxy.specialinventoryhandler;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeSet;
-
-import logisticspipes.utils.item.ItemIdentifier;
-
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-
-import net.minecraftforge.common.util.ForgeDirection;
-
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.implementations.tiles.ITileStorageMonitorable;
@@ -25,6 +10,14 @@ import appeng.api.networking.security.MachineSource;
 import appeng.api.storage.IStorageMonitorable;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.AECableType;
+import logisticspipes.utils.UtilEnumFacing;
+import logisticspipes.utils.item.ItemIdentifier;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 /*
  * Compatibility for Applied Energistics
@@ -36,12 +29,12 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	private final ITileStorageMonitorable tile;
 	private final boolean hideOnePerStack;
 	private final MachineSource source;
-	private final ForgeDirection dir;
+	private final EnumFacing dir;
 	public boolean init = false;
 	LinkedList<Entry<ItemIdentifier, Integer>> cached;
 
-	private AEInterfaceInventoryHandler(TileEntity tile, ForgeDirection dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
-		if (dir.equals(ForgeDirection.UNKNOWN)) {
+	private AEInterfaceInventoryHandler(TileEntity tile, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+		if (dir.equals(UtilEnumFacing.UNKNOWN)) {
 			throw new IllegalArgumentException("The direction must not be unknown");
 		}
 		this.tile = (ITileStorageMonitorable) tile;
@@ -54,7 +47,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		tile = null;
 		hideOnePerStack = false;
 		source = null;
-		dir = ForgeDirection.UNKNOWN;
+		dir = UtilEnumFacing.UNKNOWN;
 	}
 
 	@Override
@@ -69,7 +62,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public SpecialInventoryHandler getUtilForTile(TileEntity tile, ForgeDirection dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+	public SpecialInventoryHandler getUtilForTile(TileEntity tile, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		return new AEInterfaceInventoryHandler(tile, dir, hideOnePerStack, hideOne, cropStart, cropEnd);
 	}
 
@@ -190,7 +183,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public ItemStack add(ItemStack stack, ForgeDirection from, boolean doAdd) {
+	public ItemStack add(ItemStack stack, EnumFacing from, boolean doAdd) {
 		ItemStack st = stack.copy();
 		IAEItemStack tst = AEApi.instance().storage().createItemStack(stack);
 
@@ -261,12 +254,12 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		public void securityBreak() {}
 
 		@Override
-		public IGridNode getGridNode(ForgeDirection paramForgeDirection) {
+		public IGridNode getGridNode(EnumFacing paramEnumFacing) {
 			return null;
 		}
 
 		@Override
-		public AECableType getCableConnectionType(ForgeDirection paramForgeDirection) {
+		public AECableType getCableConnectionType(EnumFacing paramEnumFacing) {
 			return null;
 		}
 

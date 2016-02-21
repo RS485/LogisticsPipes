@@ -2,16 +2,16 @@ package logisticspipes.utils.transactor;
 
 import net.minecraft.item.ItemStack;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public abstract class Transactor implements ITransactor {
 
 	@Override
-	public ItemStack add(ItemStack stack, ForgeDirection orientation, boolean doAdd) {
+	public ItemStack add(ItemStack stack, EnumFacing orientation, boolean doAdd) {
 		ItemStack added = stack.copy();
 		added.stackSize = inject(stack, orientation, doAdd);
 		return added;
 	}
 
-	public abstract int inject(ItemStack stack, ForgeDirection orientation, boolean doAdd);
+	public abstract int inject(ItemStack stack, EnumFacing orientation, boolean doAdd);
 }

@@ -1,7 +1,5 @@
 package logisticspipes.modules;
 
-import java.util.Collection;
-
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
@@ -14,14 +12,11 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.item.ItemIdentifier;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.BlockPos;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.Collection;
 
 //IHUDModuleHandler,
 public class ModuleSatelite extends LogisticsModule {
@@ -33,21 +28,12 @@ public class ModuleSatelite extends LogisticsModule {
 	}
 
 	@Override
-	public void registerHandler(IWorldProvider world, IPipeServiceProvider service) {}
-
-	@Override
-	public final int getX() {
-		return pipe.getX();
+	public void registerHandler(IWorldProvider world, IPipeServiceProvider service) {
 	}
 
 	@Override
-	public final int getY() {
-		return pipe.getY();
-	}
-
-	@Override
-	public final int getZ() {
-		return pipe.getZ();
+	public BlockPos getblockpos() {
+		return pipe.getblockpos();
 	}
 
 	private SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0, null);
@@ -62,14 +48,14 @@ public class ModuleSatelite extends LogisticsModule {
 
 	private int spaceFor(ItemIdentifier item, boolean includeInTransit) {
 		int count = 0;
-		WorldUtil wUtil = new WorldUtil(pipe.getWorld(), pipe.getX(), pipe.getY(), pipe.getZ());
+		WorldUtil wUtil = new WorldUtil(pipe.getWorld(), pipe.getblockpos());
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)) {
 			if (!(tile.tile instanceof IInventory)) {
 				continue;
 			}
 			IInventory base = (IInventory) tile.tile;
 			if (base instanceof net.minecraft.inventory.ISidedInventory) {
-				base = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) base, tile.orientation.getOpposite(), false);
+				base = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) base, tile.orientation.getOpposite(), false, utilEnumFacing);
 			}
 			IInventoryUtil inv = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(base, tile.orientation);
 			count += inv.roomForItem(item, 9999);
@@ -86,13 +72,16 @@ public class ModuleSatelite extends LogisticsModule {
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {}
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {}
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	}
 
 	@Override
-	public void tick() {}
+	public void tick() {
+	}
 
 	@Override
 	public boolean hasGenericInterests() {
@@ -119,10 +108,6 @@ public class ModuleSatelite extends LogisticsModule {
 	public boolean recievePassive() {
 		return false;
 	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
-		return null;
-	}
 }
+
+

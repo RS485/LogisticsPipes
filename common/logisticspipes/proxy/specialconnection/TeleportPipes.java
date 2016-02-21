@@ -13,7 +13,7 @@ import logisticspipes.proxy.specialconnection.SpecialPipeConnection.ConnectionIn
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
@@ -71,13 +71,13 @@ public class TeleportPipes implements ISpecialPipedConnection {
 	}
 
 	@Override
-	public List<ConnectionInformation> getConnections(IPipeInformationProvider tile, EnumSet<PipeRoutingConnectionType> connection, ForgeDirection side) {
+	public List<ConnectionInformation> getConnections(IPipeInformationProvider tile, EnumSet<PipeRoutingConnectionType> connection, EnumFacing side) {
 		List<ConnectionInformation> list = new ArrayList<ConnectionInformation>();
 		if (tile.getTile() instanceof TileGenericPipe && ((TileGenericPipe) tile.getTile()).pipe != null) {
 			try {
 				LinkedList<? extends Pipe> pipes = getConnectedTeleportPipes(((TileGenericPipe) tile.getTile()).pipe);
 				for (Pipe pipe : pipes) {
-					list.add(new ConnectionInformation(SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(pipe.container), connection, side, ForgeDirection.UNKNOWN, 0));
+					list.add(new ConnectionInformation(SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(pipe.container), connection, side, UtilEnumFacing.UNKNOWN, 0));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

@@ -1,10 +1,5 @@
 package logisticspipes.modules;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import logisticspipes.interfaces.IBufferItems;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
@@ -24,18 +19,16 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Triplet;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.EnumFacing;
 
-import net.minecraftforge.common.util.ForgeDirection;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISimpleInventoryEventHandler, IModuleInventoryReceive {
 
@@ -55,7 +48,7 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISi
 	@Override
 	//function-called-on-module-removal-from-pipe
 	public void onAllowedRemoval() {
-		inv.dropContents(getWorld(), getX(), getY(), getZ());
+		inv.dropContents(getWorld(), getblockpos());
 	}
 
 	@Override
@@ -112,12 +105,6 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISi
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleCrafterMK3");
-	}
-
-	@Override
 	public void tick() {
 		super.tick();
 		if (inv.isEmpty()) {
@@ -135,7 +122,7 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISi
 				if (slot == null) {
 					continue;
 				}
-				ForgeDirection insertion = tile.orientation.getOpposite();
+				EnumFacing insertion = tile.orientation.getOpposite();
 				if (getUpgradeManager().hasSneakyUpgrade()) {
 					insertion = getUpgradeManager().getSneakyOrientation();
 				}

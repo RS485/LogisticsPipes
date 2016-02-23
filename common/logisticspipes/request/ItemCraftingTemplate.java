@@ -102,7 +102,7 @@ public class ItemCraftingTemplate implements IReqCraftingTemplate {
 		if (type instanceof ItemResource) {
 			return ((ItemResource) type).getItem().equals(_result.getItem());
 		} else if (type instanceof DictResource) {
-			return ((DictResource) type).matches(_result.getItem());
+			return ((DictResource) type).matches(_result.getItem(), IResource.MatchSettings.NORMAL);
 		}
 		return false;
 	}

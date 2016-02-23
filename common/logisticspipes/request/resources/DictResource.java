@@ -54,12 +54,17 @@ public class DictResource implements IResource {
 	}
 
 	@Override
+	public ItemIdentifier getAsItem() {
+		return stack.getItem();
+	}
+
+	@Override
 	public int getRequestedAmount() {
 		return stack.getStackSize();
 	}
 
 	@Override
-	public boolean matches(ItemIdentifier other) {
+	public boolean matches(ItemIdentifier other, MatchSettings settings) {
 		if (use_od || use_category) {
 			if (stack.getItem().getDictIdentifiers() != null && other.getDictIdentifiers() != null) {
 				if (stack.getItem().getDictIdentifiers().canMatch(other.getDictIdentifiers(), true, use_category)) {

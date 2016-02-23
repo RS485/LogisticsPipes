@@ -162,7 +162,7 @@ public class RequestTreeNode {
 
 	protected void checkForExtras(IResource item, HashMap<IProvide, List<IExtraPromise>> extraMap) {
 		for (IExtraPromise extra : extrapromises) {
-			if (item.matches(extra.getItemType())) {
+			if (item.matches(extra.getItemType(), IResource.MatchSettings.NORMAL)) {
 				List<IExtraPromise> extras = extraMap.get(extra.getProvider());
 				if (extras == null) {
 					extras = new LinkedList<IExtraPromise>();
@@ -178,7 +178,7 @@ public class RequestTreeNode {
 
 	protected void removeUsedExtras(IResource item, HashMap<IProvide, List<IExtraPromise>> extraMap) {
 		for (IPromise promise : promises) {
-			if (!item.matches(promise.getItemType())) {
+			if (!item.matches(promise.getItemType(), IResource.MatchSettings.NORMAL)) {
 				continue;
 			}
 			if (!(promise instanceof IExtraPromise)) {

@@ -36,6 +36,11 @@ public class FluidResource implements IResource {
 	}
 
 	@Override
+	public ItemIdentifier getAsItem() {
+		return liquid.getItemIdentifier();
+	}
+
+	@Override
 	public int getRequestedAmount() {
 		return amount;
 	}
@@ -54,7 +59,7 @@ public class FluidResource implements IResource {
 	}
 
 	@Override
-	public boolean matches(ItemIdentifier itemType) {
+	public boolean matches(ItemIdentifier itemType, MatchSettings settings) {
 		if (itemType.isFluidContainer()) {
 			FluidIdentifier other = FluidIdentifier.get(itemType);
 			return other.equals(liquid);

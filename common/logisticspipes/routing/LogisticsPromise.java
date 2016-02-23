@@ -42,7 +42,7 @@ public class LogisticsPromise implements IPromise {
 
 	@Override
 	public boolean matches(IResource requestType) {
-		return requestType.matches(item);
+		return requestType.matches(item, IResource.MatchSettings.NORMAL);
 	}
 
 	@Override

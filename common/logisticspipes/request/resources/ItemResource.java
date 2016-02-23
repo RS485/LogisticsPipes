@@ -31,6 +31,11 @@ public class ItemResource implements IResource {
 	}
 
 	@Override
+	public ItemIdentifier getAsItem() {
+		return stack.getItem();
+	}
+
+	@Override
 	public int getRequestedAmount() {
 		return stack.getStackSize();
 	}
@@ -53,7 +58,13 @@ public class ItemResource implements IResource {
 	}
 
 	@Override
-	public boolean matches(ItemIdentifier itemType) {
+	public boolean matches(ItemIdentifier itemType, MatchSettings settings) {
+		switch(settings) {
+			case NORMAL:
+				return stack.getItem().equals(itemType);
+			case WITHOUT_NBT:
+				return stack.getItem().equalsWithoutNBT(itemType);
+		}
 		return stack.getItem().equals(itemType);
 	}
 

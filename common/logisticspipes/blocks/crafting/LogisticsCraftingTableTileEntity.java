@@ -16,6 +16,7 @@ import logisticspipes.network.guis.block.AutoCraftingGui;
 import logisticspipes.network.packets.block.CraftingSetType;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.resources.DictResource;
+import logisticspipes.request.resources.IResource;
 import logisticspipes.utils.CraftingUtil;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
@@ -165,10 +166,10 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 
 	private boolean testFuzzy(ItemIdentifier item, ItemIdentifierStack item2, int slot) {
 		fuzzyFlags[slot].stack = item.makeStack(1);
-		return fuzzyFlags[slot].matches(item2.getItem());
+		return fuzzyFlags[slot].matches(item2.getItem(), IResource.MatchSettings.NORMAL);
 	}
 
-	public ItemStack getOutput(ItemIdentifier wanted, IRoutedPowerProvider power) {
+	public ItemStack getOutput(IResource wanted, IRoutedPowerProvider power) {
 		boolean isFuzzy = isFuzzy();
 		if (cache == null) {
 			cacheRecipe();
@@ -215,7 +216,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 			if(isFuzzy && outputFuzzyFlags.getBitSet().nextSetBit(0) != -1) {
 				recipe = null;
 				for (IRecipe r : CraftingUtil.getRecipeList()) {
-					if (r.matches(crafter, getWorldObj()) && outputFuzzyFlags.matches(ItemIdentifier.get(r.getRecipeOutput()))) {
+					if (r.matches(crafter, getWorldObj()) && outputFuzzyFlags.matches(ItemIdentifier.get(r.getRecipeOutput()), IResource.MatchSettings.NORMAL)) {
 						recipe = r;
 						break;
 					}
@@ -232,17 +233,17 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 			return null;
 		}
 		if(isFuzzy && outputFuzzyFlags.getBitSet().nextSetBit(0) != -1) {
-			if (!outputFuzzyFlags.matches(ItemIdentifier.get(result))) {
+			if (!outputFuzzyFlags.matches(ItemIdentifier.get(result), IResource.MatchSettings.NORMAL)) {
 				return null;
 			}
-			if (!outputFuzzyFlags.matches(wanted)) {
+			if (!outputFuzzyFlags.matches(wanted.getAsItem(), IResource.MatchSettings.NORMAL)) {
 				return null;
 			}
 		} else {
 			if (!resultInv.getIDStackInSlot(0).getItem().equalsWithoutNBT(ItemIdentifier.get(result))) {
 				return null;
 			}
-			if (!wanted.equalsWithoutNBT(resultInv.getIDStackInSlot(0).getItem())) {
+			if (!wanted.matches(resultInv.getIDStackInSlot(0).getItem(), IResource.MatchSettings.WITHOUT_NBT)) {
 				return null;
 			}
 		}
@@ -431,7 +432,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 			if (stack != null && itemstack != null) {
 				if(isFuzzy() && fuzzyFlags[i].getBitSet().nextSetBit(0) != -1) {
 					fuzzyFlags[i].stack = stack;
-					return fuzzyFlags[i].matches(ItemIdentifier.get(itemstack));
+					return fuzzyFlags[i].matches(ItemIdentifier.get(itemstack), IResource.MatchSettings.NORMAL);
 				}
 				return stack.getItem().equalsWithoutNBT(ItemIdentifier.get(itemstack));
 			}

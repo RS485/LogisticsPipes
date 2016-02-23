@@ -12,7 +12,6 @@ import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.request.resources.DictResource;
 import logisticspipes.request.resources.IResource;
-import logisticspipes.request.resources.ItemResource;
 import logisticspipes.routing.LogisticsDictPromise;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.LogisticsPromise;
@@ -101,7 +100,7 @@ public class DictCraftingTemplate implements IReqCraftingTemplate {
 	@Override
 	public boolean canCraft(IResource type) {
 		if (type instanceof DictResource) {
-			return ((DictResource) type).matches(_result.getItem()) && _result.matches(((DictResource) type).getItem()) && _result.getBitSet().equals(((DictResource) type).getBitSet());
+			return ((DictResource) type).matches(_result.getItem(), IResource.MatchSettings.NORMAL) && _result.matches(((DictResource) type).getItem(), IResource.MatchSettings.NORMAL) && _result.getBitSet().equals(((DictResource) type).getBitSet());
 		}
 		return false;
 	}

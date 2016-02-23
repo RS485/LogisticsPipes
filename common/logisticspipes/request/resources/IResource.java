@@ -16,11 +16,21 @@ import cpw.mods.fml.relauncher.SideOnly;
  */
 public interface IResource extends ILPCCTypeHolder {
 
+	ItemIdentifier getAsItem();
+
+	/**
+	 * Settings only apply for the normal Item Implementation.
+	 */
+	enum MatchSettings {
+		NORMAL,
+		WITHOUT_NBT;
+	}
+
 	int getRequestedAmount();
 
 	IRouter getRouter();
 
-	boolean matches(ItemIdentifier itemType);
+	boolean matches(ItemIdentifier itemType, MatchSettings settings);
 
 	IResource clone(int multiplier);
 

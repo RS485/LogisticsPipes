@@ -1432,7 +1432,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 				}
 			}
 			for (Entry<ItemIdentifier, Set<IRouter>> entry : ServerRouter._globalSpecificInterests.entrySet()) {
-				if (dict.matches(entry.getKey())) {
+				if (dict.matches(entry.getKey(), IResource.MatchSettings.NORMAL)) {
 					for (IRouter r : entry.getValue()) {
 						s.set(r.getSimpleID());
 					}

@@ -135,7 +135,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 				public boolean isFilteredItem(IResource resultItem) {
 					for (Pair<ItemIdentifierStack, Integer> pair : inv) {
 						ItemIdentifierStack stack = pair.getValue1();
-						if (stack != null && resultItem.matches(stack.getItem())) {
+						if (stack != null && resultItem.matches(stack.getItem(), IResource.MatchSettings.NORMAL)) {
 							return true;
 						}
 					}

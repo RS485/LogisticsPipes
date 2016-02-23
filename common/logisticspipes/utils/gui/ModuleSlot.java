@@ -4,13 +4,16 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
 import logisticspipes.pipes.PipeLogisticsChassi;
 
+import lombok.Getter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
 public class ModuleSlot extends RestrictedSlot {
 
+	@Getter
 	private PipeLogisticsChassi _pipe;
+	@Getter
 	private int _moduleIndex;
 
 	public ModuleSlot(IInventory iinventory, int i, int j, int k, PipeLogisticsChassi pipe) {

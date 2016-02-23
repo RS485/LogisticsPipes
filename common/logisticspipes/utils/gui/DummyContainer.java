@@ -19,6 +19,10 @@ import logisticspipes.interfaces.IFuzzySlot;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.interfaces.ISlotClick;
+import logisticspipes.items.ItemModule;
+import logisticspipes.logisticspipes.ItemModuleInformationManager;
+import logisticspipes.modules.ChassiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.FuzzySlotSettingsPacket;
 import logisticspipes.pipes.PipeLogisticsChassi;
@@ -141,8 +145,8 @@ public class DummyContainer extends Container {
 		return addSlotToContainer(new StaticRestrictedSlot(inventory, slotId, xCoord, yCoord, slotCheck, stackLimit));
 	}
 
-	public Slot addModuleSlot(int slotId, IInventory inventory, int xCoord, int yCoord, PipeLogisticsChassi pipe) {
-		return addSlotToContainer(new ModuleSlot(inventory, slotId, xCoord, yCoord, pipe));
+	public void addModuleSlot(int slotId, IInventory inventory, int xCoord, int yCoord, PipeLogisticsChassi pipe) {
+		transferTop.add(addSlotToContainer(new ModuleSlot(inventory, slotId, xCoord, yCoord, pipe)));
 	}
 
 	public Slot addFluidSlot(int slotId, IInventory inventory, int xCoord, int yCoord) {
@@ -179,45 +183,57 @@ public class DummyContainer extends Container {
 			return null;
 		}
 		if (transferTop.contains(slot)) {
-			handleShiftClickLists(slot, transferBottom, true);
-			handleShiftClickLists(slot, transferBottom, false);
+			handleShiftClickLists(slot, transferBottom, true, pl);
+			handleShiftClickLists(slot, transferBottom, false, pl);
 			return null;
 		} else if (transferBottom.contains(slot)) {
-			handleShiftClickLists(slot, transferTop, true);
-			handleShiftClickLists(slot, transferTop, false);
+			handleShiftClickLists(slot, transferTop, true, pl);
+			handleShiftClickLists(slot, transferTop, false, pl);
 			return null;
 		} else {
 			return null;
 		}
 	}
 
-	private void handleShiftClickLists(Slot from, List<Slot> toList, boolean ignoreEmpty) {
+	private void handleShiftClickLists(Slot from, List<Slot> toList, boolean ignoreEmpty, EntityPlayer player) {
 		if (!from.getHasStack()) {
 			return;
 		}
 		for (Slot to : toList) {
-			if (handleShiftClickForSlots(from, to, ignoreEmpty)) {
+			if (handleShiftClickForSlots(from, to, ignoreEmpty, player)) {
 				return;
 			}
 		}
 	}
 
-	private boolean handleShiftClickForSlots(Slot from, Slot to, boolean ignoreEmpty) {
+	private boolean handleShiftClickForSlots(Slot from, Slot to, boolean ignoreEmpty, EntityPlayer player) {
 		if (!from.getHasStack()) {
 			return true;
 		}
 		if (!to.getHasStack() && !ignoreEmpty) {
-			to.putStack(from.getStack());
+			ItemStack out = from.getStack();
+			from.onPickupFromSlot(player, out);
+			to.putStack(out);
 			from.putStack(null);
 			return true;
 		}
-		if (to.getHasStack() && to.getStack().isItemEqual(from.getStack()) && ItemStack.areItemStackTagsEqual(to.getStack(), from.getStack())) {
-			int free = to.getStack().getMaxStackSize() - to.getStack().stackSize;
-			ItemStack toInsert = from.decrStackSize(free);
-			ItemStack toStack = to.getStack();
-			toStack.stackSize += toInsert.stackSize;
-			to.putStack(toStack);
-			return !from.getHasStack();
+		if(from instanceof ModuleSlot || to instanceof ModuleSlot) {
+			return false;
+		}
+		ItemStack out = from.getStack();
+		from.onPickupFromSlot(player, out);
+		if (to.getHasStack() && to.getStack().isItemEqual(out) && ItemStack.areItemStackTagsEqual(to.getStack(), from.getStack())) {
+			int free = Math.min(to.getSlotStackLimit(), to.getStack().getMaxStackSize()) - to.getStack().stackSize;
+			if(free > 0) {
+				ItemStack toInsert = from.decrStackSize(free);
+				from.onPickupFromSlot(player, toInsert);
+				ItemStack toStack = to.getStack();
+				if(toInsert != null && toStack != null) {
+					toStack.stackSize += toInsert.stackSize;
+					to.putStack(toStack);
+					return !from.getHasStack();
+				}
+			}
 		}
 		return false;
 	}
@@ -377,7 +393,7 @@ public class DummyContainer extends Container {
 
 								slot2.onPickupFromSlot(par4EntityPlayer, inventoryplayer.getItemStack());
 							} else if (slot2.isItemValid(itemstack4)) {
-								if (itemstack3.getItem() == itemstack4.getItem() && itemstack3.getItemDamage() == itemstack4.getItemDamage() && ItemStack.areItemStackTagsEqual(itemstack3, itemstack4)) {
+								if (itemstack3.getItem() == itemstack4.getItem() && itemstack3.getItemDamage() == itemstack4.getItemDamage() && areEqualForMerge(itemstack3, itemstack4, slot2)) { // XXX replaced ItemStack.areItemStackTagsEqual with areEqualForMerge for slot based handling
 									l1 = par2 == 0 ? itemstack4.stackSize : 1;
 
 									if (l1 > slot2.getSlotStackLimit() - itemstack3.stackSize) {
@@ -399,10 +415,11 @@ public class DummyContainer extends Container {
 									slot2.putStack(itemstack3); // XXX added reinserting of the modified itemStack (Fix ItemIdentifierInventory's disappearing items)
 
 								} else if (itemstack4.stackSize <= slot2.getSlotStackLimit()) {
+									handleSwitch(slot2, itemstack3, itemstack4, par4EntityPlayer); // XXX added Slot switching handle method
 									slot2.putStack(itemstack4);
 									inventoryplayer.setItemStack(itemstack3);
 								}
-							} else if (itemstack3.getItem() == itemstack4.getItem() && itemstack4.getMaxStackSize() > 1 && (!itemstack3.getHasSubtypes() || itemstack3.getItemDamage() == itemstack4.getItemDamage()) && ItemStack.areItemStackTagsEqual(itemstack3, itemstack4)) {
+							} else if (itemstack3.getItem() == itemstack4.getItem() && itemstack4.getMaxStackSize() > 1 && (!itemstack3.getHasSubtypes() || itemstack3.getItemDamage() == itemstack4.getItemDamage()) && areEqualForMerge(itemstack3, itemstack4, slot2)) { // XXX replaced ItemStack.areItemStackTagsEqual with areEqualForMerge for slot based handling
 								l1 = itemstack3.stackSize;
 
 								if (l1 > 0 && l1 + itemstack4.stackSize <= itemstack4.getMaxStackSize()) {
@@ -503,6 +520,26 @@ public class DummyContainer extends Container {
 		}
 
 		return itemstack;
+	}
+
+	private void handleSwitch(Slot slot2, ItemStack out, ItemStack in, EntityPlayer player) {
+		if(slot2 instanceof ModuleSlot) {
+			ChassiModule logisticsModule = (ChassiModule) ((ModuleSlot) slot2).get_pipe().getLogisticsModule();
+			int moduleIndex = ((ModuleSlot) slot2).get_moduleIndex();
+			if (out.getItem() instanceof ItemModule) {
+				ItemModuleInformationManager.saveInfotmation(out, logisticsModule.getSubModule(moduleIndex));
+				if (logisticsModule.hasModule(moduleIndex)) {
+					logisticsModule.removeModule(moduleIndex);
+				}
+			}
+		}
+	}
+
+	private boolean areEqualForMerge(ItemStack itemstack3, ItemStack itemstack4, Slot slot) {
+		if(slot instanceof ModuleSlot) {
+			return false;
+		}
+		return ItemStack.areItemStackTagsEqual(itemstack3, itemstack4);
 	}
 
 	/**

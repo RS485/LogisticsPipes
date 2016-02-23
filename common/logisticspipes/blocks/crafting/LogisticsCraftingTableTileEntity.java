@@ -430,6 +430,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 			ItemIdentifierStack stack = matrix.getIDStackInSlot(i);
 			if (stack != null && itemstack != null) {
 				if(isFuzzy() && fuzzyFlags[i].getBitSet().nextSetBit(0) != -1) {
+					fuzzyFlags[i].stack = stack;
 					return fuzzyFlags[i].matches(ItemIdentifier.get(itemstack));
 				}
 				return stack.getItem().equalsWithoutNBT(ItemIdentifier.get(itemstack));

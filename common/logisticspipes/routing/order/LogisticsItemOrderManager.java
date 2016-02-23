@@ -4,6 +4,7 @@ import logisticspipes.interfaces.IChangeListener;
 import logisticspipes.interfaces.ILPPositionProvider;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.request.resources.DictResource;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -25,6 +26,13 @@ public class LogisticsItemOrderManager extends LogisticsOrderManager<LogisticsIt
 	}
 
 	public LogisticsItemOrder addOrder(ItemIdentifierStack stack, IRequestItems requester, ResourceType type, IAdditionalTargetInformation info) {
+		LogisticsItemOrder order = new LogisticsItemOrder(new DictResource(stack, null), requester, type, info);
+		_orders.addLast(order);
+		listen();
+		return order;
+	}
+
+	public LogisticsItemOrder addOrder(DictResource stack, IRequestItems requester, ResourceType type, IAdditionalTargetInformation info) {
 		LogisticsItemOrder order = new LogisticsItemOrder(stack, requester, type, info);
 		_orders.addLast(order);
 		listen();
@@ -39,10 +47,10 @@ public class LogisticsItemOrderManager extends LogisticsOrderManager<LogisticsIt
 	public int totalItemsCountInOrders(ItemIdentifier item) {
 		int itemCount = 0;
 		for (LogisticsItemOrder request : _orders) {
-			if (!request.getItemStack().getItem().equals(item)) {
+			if (!request.getResource().getItem().equals(item)) {
 				continue;
 			}
-			itemCount += request.getItemStack().getStackSize();
+			itemCount += request.getResource().stack.getStackSize();
 		}
 		return itemCount;
 	}

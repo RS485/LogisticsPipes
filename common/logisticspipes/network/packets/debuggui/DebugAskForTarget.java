@@ -2,12 +2,15 @@ package logisticspipes.network.packets.debuggui;
 
 import java.io.IOException;
 
+import cpw.mods.fml.client.FMLClientHandler;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
+import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.ticks.DebugGuiTickHandler;
+import logisticspipes.proxy.MainProxy;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.MovingObjectPosition;
 
 public class DebugAskForTarget extends ModernPacket {
 
@@ -20,7 +23,14 @@ public class DebugAskForTarget extends ModernPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		DebugGuiTickHandler.instance().handleTargetRequest();
+		MovingObjectPosition box = FMLClientHandler.instance().getClient().objectMouseOver;
+		if (box == null) {
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(DebugTargetResponse.class).setMode(DebugTargetResponse.TargetMode.None));
+		} else if (box.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(DebugTargetResponse.class).setMode(DebugTargetResponse.TargetMode.Block).setAdditions(new Object[] { box.blockX, box.blockY, box.blockZ }));
+		} else if (box.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(DebugTargetResponse.class).setMode(DebugTargetResponse.TargetMode.Entity).setAdditions(new Object[] { box.entityHit.getEntityId() }));
+		}
 	}
 
 	@Override

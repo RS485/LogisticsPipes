@@ -508,23 +508,23 @@ public class RecipeManager {
 
 			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.CRAFTER), CraftingDependency.Modular_Pipes, new Object[] {
 				"rGR",
-				" B ",
-				"G r",
+				" b ",
+				"B r",
 				Character.valueOf('R'), "dyeRed",
-				Character.valueOf('G'), "dyeBlue",
+				Character.valueOf('B'), "dyeBlue",
 				Character.valueOf('G'), parts.getGearTear1(),
-				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK),
+				Character.valueOf('b'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK),
 				Character.valueOf('r'), Items.redstone
 			});
 
 			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.CRAFTER), CraftingDependency.Modular_Pipes, new Object[] {
 				" GR",
-				" B ",
-				"G  ",
+				" b ",
+				"B  ",
 				Character.valueOf('R'), "dyeRed",
-				Character.valueOf('G'), "dyeBlue",
+				Character.valueOf('B'), "dyeBlue",
 				Character.valueOf('G'), parts.getChipTear1(),
-				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+				Character.valueOf('b'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 			});
 
 			RecipeManager.craftingManager.addShapelessRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.CRAFTER_MK2), CraftingDependency.Modular_Pipes, new Object[] {

@@ -320,6 +320,11 @@ public class PathFinder {
 						result = new HashMap<CoreRoutedPipe, ExitRoute>();
 						DoubleCoordinates pos = new DoubleCoordinates(currentPipe);
 						for (RouteInfo info : list) {
+							if(info.getPipe() == startPipe) continue;
+							if (setVisited.contains(new LPPosition(info.getPipe()))) {
+								//Don't go where we have been before
+								continue;
+							}
 							distances.put(pos, currentPipe.getDistance() + info.getLength());
 							result.putAll(getConnectedRoutingPipes(info.getPipe(), nextConnectionFlags, direction));
 							distances.remove(pos);

@@ -1,5 +1,6 @@
 package logisticspipes.blocks;
 
+import logisticspipes.LPConstants;
 import logisticspipes.asm.ModDependentField;
 import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
@@ -34,7 +35,7 @@ import li.cil.oc.api.network.Message;
 import li.cil.oc.api.network.Node;
 import li.cil.oc.api.network.SidedEnvironment;
 
-@ModDependentInterface(modId = { "OpenComputers@1.3", "OpenComputers@1.3", "OpenComputers@1.3" }, interfacePath = { "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment" })
+@ModDependentInterface(modId = {LPConstants.openComputersModID, LPConstants.openComputersModID, LPConstants.openComputersModID }, interfacePath = { "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment" })
 @CCType(name = "LogisticsSolidBlock")
 public class LogisticsSolidTileEntity extends TileEntity implements ILPCCTypeHolder, IRotationProvider, ManagedPeripheral, Environment, SidedEnvironment, IOCTile {
 
@@ -43,7 +44,7 @@ public class LogisticsSolidTileEntity extends TileEntity implements ILPCCTypeHol
 	private boolean init = false;
 	public int rotation = 0;
 
-	@ModDependentField(modId = "OpenComputers@1.3")
+	@ModDependentField(modId = LPConstants.openComputersModID)
 	public Node node;
 
 	public LogisticsSolidTileEntity() {
@@ -116,25 +117,25 @@ public class LogisticsSolidTileEntity extends TileEntity implements ILPCCTypeHol
 	public void notifyOfBlockChange() {}
 
 	@Override
-	@ModDependentMethod(modId = "OpenComputers@1.3")
+	@ModDependentMethod(modId = LPConstants.openComputersModID)
 	public Node node() {
 		return node;
 	}
 
 	@Override
-	@ModDependentMethod(modId = "OpenComputers@1.3")
+	@ModDependentMethod(modId = LPConstants.openComputersModID)
 	public void onConnect(Node node1) {}
 
 	@Override
-	@ModDependentMethod(modId = "OpenComputers@1.3")
+	@ModDependentMethod(modId = LPConstants.openComputersModID)
 	public void onDisconnect(Node node1) {}
 
 	@Override
-	@ModDependentMethod(modId = "OpenComputers@1.3")
+	@ModDependentMethod(modId = LPConstants.openComputersModID)
 	public void onMessage(Message message) {}
 
 	@Override
-	@ModDependentMethod(modId = "OpenComputers@1.3")
+	@ModDependentMethod(modId = LPConstants.openComputersModID)
 	public Object[] invoke(String s, Context context, Arguments arguments) throws Exception {
 		BaseWrapperClass object = (BaseWrapperClass) CCObjectWrapper.getWrappedObject(this, BaseWrapperClass.WRAPPER);
 		object.isDirectCall = true;
@@ -142,21 +143,21 @@ public class LogisticsSolidTileEntity extends TileEntity implements ILPCCTypeHol
 	}
 
 	@Override
-	@ModDependentMethod(modId = "OpenComputers@1.3")
+	@ModDependentMethod(modId = LPConstants.openComputersModID)
 	public String[] methods() {
 		return new String[] { "getBlock" };
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	@ModDependentMethod(modId = "OpenComputers@1.3")
+	@ModDependentMethod(modId = LPConstants.openComputersModID)
 	public boolean canConnect(ForgeDirection dir) {
 		TileEntity tileEntity = new WorldCoordinatesWrapper(this).getAdjacentFromDirection(dir).tileEntity;
 		return !(tileEntity instanceof LogisticsTileGenericPipe) && !(tileEntity instanceof LogisticsSolidTileEntity);
 	}
 
 	@Override
-	@ModDependentMethod(modId = "OpenComputers@1.3")
+	@ModDependentMethod(modId = LPConstants.openComputersModID)
 	public Node sidedNode(ForgeDirection dir) {
 		return canConnect(dir) ? node() : null;
 	}

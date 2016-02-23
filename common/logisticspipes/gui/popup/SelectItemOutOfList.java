@@ -12,7 +12,6 @@ import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
 
@@ -30,6 +29,7 @@ public class SelectItemOutOfList extends SubGuiScreen {
 	private final RenderItem itemRenderer = new RenderItem();
 	private int page = 0;
 	private final int maxPage;
+	private Object[] tooltip = null;
 
 	public SelectItemOutOfList(List<ItemIdentifierStack> canidate, IHandleItemChoise handler) {
 		super(152, 200, 0, 0);
@@ -48,14 +48,15 @@ public class SelectItemOutOfList extends SubGuiScreen {
 	}
 
 	@Override
-	public void drawScreen(int mouseX, int mouseY, float par3) {
-		GL11.glEnable(GL11.GL_BLEND);
-		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		fontRendererObj.renderString(StringUtils.translate("misc.selectType"), guiLeft + 10, guiTop + 6, 0x404040, false); //TODO
-		String pageString = Integer.toString(page + 1) + "/" + Integer.toString(maxPage);
-		fontRendererObj.renderString(pageString, guiLeft + 128 - (fontRendererObj.getStringWidth(pageString) / 2), guiTop + 6, 0x404040, false);
-		GL11.glTranslated(0, 0, 100);
-		Object[] tooltip = null;
+	protected void renderToolTips(int mouseX, int mouseY, float par3) {
+		if (!hasSubGui()) {
+			GuiGraphics.displayItemToolTip(tooltip, this, zLevel, guiLeft, guiTop);
+		}
+	}
+
+	@Override
+	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
+		tooltip = null;
 		int x = 0;
 		int y = -page * 10;
 		for (ItemIdentifierStack stack : canidate) {
@@ -66,8 +67,6 @@ public class SelectItemOutOfList extends SubGuiScreen {
 					font = fontRendererObj;
 				}
 
-				RenderHelper.enableGUIStandardItemLighting();
-				GuiGraphics.drawSlotBackground(mc, guiLeft + 4 + x * 18, guiTop + 16 + y * 18);
 				itemRenderer.renderItemAndEffectIntoGUI(font, mc.renderEngine, itemStack, guiLeft + 5 + x * 18, guiTop + 17 + y * 18);
 				// With empty string, because damage value indicator struggles with the depth
 				itemRenderer.renderItemOverlayIntoGUI(font, mc.renderEngine, itemStack, guiLeft + 5 + x * 18, guiTop + 17 + y * 18, "");
@@ -93,10 +92,28 @@ public class SelectItemOutOfList extends SubGuiScreen {
 				break;
 			}
 		}
-		super.drawScreen(mouseX, mouseY, par3);
-		GL11.glTranslated(0, 0, -100);
-		if (!hasSubGui()) {
-			GuiGraphics.displayItemToolTip(tooltip, this, zLevel, guiLeft, guiTop);
+	}
+
+	@Override
+	protected void renderGuiBackground(int par1, int par2) {
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		fontRendererObj.renderString(StringUtils.translate("misc.selectType"), guiLeft + 10, guiTop + 6, 0x404040, false); //TODO
+		String pageString = Integer.toString(page + 1) + "/" + Integer.toString(maxPage);
+		fontRendererObj.renderString(pageString, guiLeft + 128 - (fontRendererObj.getStringWidth(pageString) / 2), guiTop + 6, 0x404040, false);
+		int x = 0;
+		int y = -page * 10;
+		for (ItemIdentifierStack stack : canidate) {
+			if (y >= 0) {
+				GuiGraphics.drawSlotBackground(mc, guiLeft + 4 + x * 18, guiTop + 16 + y * 18);
+			}
+			x++;
+			if (x > 7) {
+				x = 0;
+				y++;
+			}
+			if (y > 9) {
+				break;
+			}
 		}
 	}
 

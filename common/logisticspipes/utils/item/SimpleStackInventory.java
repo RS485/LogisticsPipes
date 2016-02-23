@@ -8,6 +8,8 @@
 
 package logisticspipes.utils.item;
 
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
@@ -15,6 +17,7 @@ import logisticspipes.interfaces.routing.ISaveState;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 
+import logisticspipes.utils.tuples.Pair;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -23,7 +26,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 
-public class SimpleStackInventory implements IInventory, ISaveState {
+public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pair<ItemStack, Integer>> {
 
 	private ItemStack[] _contents;
 	private final String _name;
@@ -252,5 +255,30 @@ public class SimpleStackInventory implements IInventory, ISaveState {
 	@Override
 	public boolean hasCustomInventoryName() {
 		return true;
+	}
+
+	@Override
+	public Iterator<Pair<ItemStack, Integer>> iterator() {
+		final Iterator<ItemStack> iter = Arrays.asList(_contents).iterator();
+		return new Iterator<Pair<ItemStack, Integer>>() {
+
+			int pos = -1;
+
+			@Override
+			public boolean hasNext() {
+				return iter.hasNext();
+			}
+
+			@Override
+			public Pair<ItemStack, Integer> next() {
+				pos++;
+				return new Pair<ItemStack, Integer>(iter.next(), pos);
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		};
 	}
 }

@@ -7,17 +7,27 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.util.concurrent.Callable;
 
+import logisticspipes.commands.chathelper.LPChatListener;
+import logisticspipes.commands.commands.debug.DebugGuiController;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
+import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.ticks.DebugGuiTickHandler;
+import logisticspipes.network.packets.gui.OpenChatGui;
+import logisticspipes.proxy.MainProxy;
 
+import logisticspipes.utils.string.ChatColor;
+import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatComponentText;
 
 @Accessors(chain = true)
 public class DebugTargetResponse extends ModernPacket {
@@ -62,8 +72,55 @@ public class DebugTargetResponse extends ModernPacket {
 	}
 
 	@Override
-	public void processPacket(EntityPlayer player) {
-		DebugGuiTickHandler.instance().targetResponse(mode, player, additions);
+	public void processPacket(final EntityPlayer player) {
+		if (mode == TargetMode.None) {
+			player.addChatComponentMessage(new ChatComponentText(ChatColor.RED + "No Target Found"));
+		} else if (mode == TargetMode.Block) {
+			int x = (Integer) additions[0];
+			int y = (Integer) additions[1];
+			int z = (Integer) additions[2];
+			player.addChatComponentMessage(new ChatComponentText("Checking Block at: x:" + x + " y:" + y + " z:" + z));
+			Block id = player.worldObj.getBlock(x, y, z);
+			player.addChatComponentMessage(new ChatComponentText("Found Block with Id: " + id.getClass()));
+			final TileEntity tile = player.worldObj.getTileEntity(x, y, z);
+			if (tile == null) {
+				player.addChatComponentMessage(new ChatComponentText(ChatColor.RED + "No TileEntity found"));
+			} else {
+				LPChatListener.addTask(new Callable<Boolean>() {
+
+					@Override
+					public Boolean call() throws Exception {
+						player.addChatComponentMessage(new ChatComponentText(ChatColor.GREEN + "Starting debuging of TileEntity: " + ChatColor.BLUE + ChatColor.UNDERLINE + tile.getClass().getSimpleName()));
+						DebugGuiController.instance().startWatchingOf(tile, player);
+						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
+						return true;
+					}
+				}, player);
+				player.addChatComponentMessage(new ChatComponentText(ChatColor.AQUA + "Start debuging of TileEntity: " + ChatColor.BLUE + ChatColor.UNDERLINE + tile.getClass().getSimpleName() + ChatColor.AQUA + "? " + ChatColor.RESET + "<" + ChatColor.GREEN + "yes" + ChatColor.RESET + "/" + ChatColor.RED + "no"
+						+ ChatColor.RESET + ">"));
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
+			}
+		} else if (mode == TargetMode.Entity) {
+			int entityId = (Integer) additions[0];
+			final Entity entity = player.worldObj.getEntityByID(entityId);
+			if (entity == null) {
+				player.addChatComponentMessage(new ChatComponentText(ChatColor.RED + "No Entity found"));
+			} else {
+				LPChatListener.addTask(new Callable<Boolean>() {
+
+					@Override
+					public Boolean call() throws Exception {
+						player.addChatComponentMessage(new ChatComponentText(ChatColor.GREEN + "Starting debuging of Entity: " + ChatColor.BLUE + ChatColor.UNDERLINE + entity.getClass().getSimpleName()));
+						DebugGuiController.instance().startWatchingOf(entity, player);
+						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
+						return true;
+					}
+				}, player);
+				player.addChatComponentMessage(new ChatComponentText(ChatColor.AQUA + "Start debuging of Entity: " + ChatColor.BLUE + ChatColor.UNDERLINE + entity.getClass().getSimpleName() + ChatColor.AQUA + "? " + ChatColor.RESET + "<" + ChatColor.GREEN + "yes" + ChatColor.RESET + "/" + ChatColor.RED + "no"
+						+ ChatColor.RESET + ">"));
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
+			}
+		}
 	}
 
 	@Override

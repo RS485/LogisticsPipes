@@ -86,7 +86,7 @@ import lombok.Getter;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 import org.apache.logging.log4j.Level;
 
-@ModDependentInterface(modId = { "CoFHCore", "OpenComputers@1.3", "OpenComputers@1.3", "OpenComputers@1.3", "BuildCraft|Transport", "BuildCraft|Transport" }, interfacePath = { "cofh.api.transport.IItemDuct", "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment",
+@ModDependentInterface(modId = { "CoFHCore", LPConstants.openComputersModID, LPConstants.openComputersModID, LPConstants.openComputersModID, "BuildCraft|Transport", "BuildCraft|Transport" }, interfacePath = { "cofh.api.transport.IItemDuct", "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment",
 		"buildcraft.api.transport.IPipeTile", "buildcraft.api.transport.IPipeConnection" })
 public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILPPipeTile, IPipeInformationProvider, IItemDuct, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IPipeTile, ILogicControllerTile, IPipeConnection {
 
@@ -104,7 +104,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	@ModDependentField(modId = LPConstants.computerCraftModID)
 	public IComputerAccess currentPC;
 
-	@ModDependentField(modId = "OpenComputers@1.3")
+	@ModDependentField(modId = LPConstants.openComputersModID)
 	public Node node;
 	private boolean addedToNetwork = false;
 
@@ -341,6 +341,13 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
+		if(pipe != null) {
+			StackTraceElement[] trace = Thread.currentThread().getStackTrace();
+			if (trace.length > 2 && trace[2].getMethodName().equals("handle") && trace[2].getClassName().equals("com.xcompwiz.lookingglass.network.packet.PacketTileEntityNBT")) {
+				System.out.println("Prevented false data injection by LookingGlass");
+				return;
+			}
+		}
 		super.readFromNBT(nbt);
 
 		if (nbt.hasKey("redstoneInputSide[0]")) {
@@ -610,25 +617,25 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	}
 
 	@Override
-	@ModDependentMethod(modId = "OpenComputers@1.3")
+	@ModDependentMethod(modId = LPConstants.openComputersModID)
 	public Node node() {
 		return node;
 	}
 
 	@Override
-	@ModDependentMethod(modId = "OpenComputers@1.3")
+	@ModDependentMethod(modId = LPConstants.openComputersModID)
 	public void onConnect(Node node1) {}
 
 	@Override
-	@ModDependentMethod(modId = "OpenComputers@1.3")
+	@ModDependentMethod(modId = LPConstants.openComputersModID)
 	public void onDisconnect(Node node1) {}
 
 	@Override
-	@ModDependentMethod(modId = "OpenComputers@1.3")
+	@ModDependentMethod(modId = LPConstants.openComputersModID)
 	public void onMessage(Message message) {}
 
 	@Override
-	@ModDependentMethod(modId = "OpenComputers@1.3")
+	@ModDependentMethod(modId = LPConstants.openComputersModID)
 	public Object[] invoke(String s, Context context, Arguments arguments) throws Exception {
 		BaseWrapperClass object = (BaseWrapperClass) CCObjectWrapper.getWrappedObject(pipe, BaseWrapperClass.WRAPPER);
 		object.isDirectCall = true;
@@ -636,20 +643,20 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	}
 
 	@Override
-	@ModDependentMethod(modId = "OpenComputers@1.3")
+	@ModDependentMethod(modId = LPConstants.openComputersModID)
 	public String[] methods() {
 		return new String[] { "getPipe" };
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	@ModDependentMethod(modId = "OpenComputers@1.3")
+	@ModDependentMethod(modId = LPConstants.openComputersModID)
 	public boolean canConnect(ForgeDirection dir) {
 		return !(this.getTile(dir) instanceof LogisticsTileGenericPipe) && !(this.getTile(dir) instanceof LogisticsSolidTileEntity);
 	}
 
 	@Override
-	@ModDependentMethod(modId = "OpenComputers@1.3")
+	@ModDependentMethod(modId = LPConstants.openComputersModID)
 	public Node sidedNode(ForgeDirection dir) {
 		if (this.getTile(dir) instanceof LogisticsTileGenericPipe || this.getTile(dir) instanceof LogisticsSolidTileEntity) {
 			return null;
@@ -1055,7 +1062,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	@Override
 	@ModDependentMethod(modId = "BuildCraft|Transport")
 	public ConnectOverride overridePipeConnection(PipeType pipeType, ForgeDirection forgeDirection) {
-		if(this.pipe.isFluidPipe()) {
+		if(this.pipe != null && this.pipe.isFluidPipe()) {
 			if(pipeType == PipeType.FLUID) {
 				return ConnectOverride.CONNECT;
 			}

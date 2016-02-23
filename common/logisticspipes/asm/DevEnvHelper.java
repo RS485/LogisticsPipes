@@ -28,10 +28,12 @@ import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
+import com.google.common.io.Resources;
 import logisticspipes.LPConstants;
 import logisticspipes.asm.DevEnvHelper.MappingLoader_MCP.CantLoadMCPMappingException;
 import logisticspipes.asm.DevEnvHelper.MinecraftNameSet.Side;
 
+import lombok.SneakyThrows;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
@@ -202,6 +204,24 @@ public class DevEnvHelper {
 			//}
 			loadCoreMod.invoke(null, classLoader, fmlCorePlugin, coreMod);
 		}
+
+		try {
+			URL resource = Resources.getResource("CoFH_at.cfg");
+			if (resource != null) {
+				AccessTransformer acc = new AccessTransformer("CoFH_at.cfg") {
+				};
+				insertTransformer(acc);
+			}
+		} catch(Throwable t) {}
+	}
+
+	@SneakyThrows
+	private static void insertTransformer(IClassTransformer transformer) {
+		Field fTransformers = LaunchClassLoader.class.getDeclaredField("transformers");
+		fTransformers.setAccessible(true);
+		@SuppressWarnings("unchecked")
+		List<IClassTransformer> transformerList = (List<IClassTransformer>) fTransformers.get(Launch.classLoader);
+		transformerList.add(transformer);
 	}
 
 	public static void handleSpecialClassTransformer() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException, IOException, CantLoadMCPMappingException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException {

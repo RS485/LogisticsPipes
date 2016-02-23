@@ -9,10 +9,16 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.LogisticsRenderPipe;
+import logisticspipes.routing.ExitRoute;
+import logisticspipes.routing.IRouter;
+import logisticspipes.routing.PipeRoutingConnectionType;
+import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
+import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.string.StringUtils;
 
+import logisticspipes.utils.tuples.Pair;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -27,12 +33,17 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 import org.lwjgl.opengl.GL11;
 
+import java.util.BitSet;
+import java.util.List;
+import java.util.Map;
+
 public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandler {
 
 	public ItemIdentifierInventory itemTypeInv = new ItemIdentifierInventory(1, "", 1);
 	public int amount = 100;
 	public CoreRoutedPipe pipe;
 	public ForgeDirection dir;
+	private boolean hasUpdated = false;
 
 	public ItemAmountPipeSign() {
 		itemTypeInv.addListener(this);
@@ -70,17 +81,65 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 
 	@Override
 	public void updateServerSide() {
-		if (pipe.getWorld().getTotalWorldTime() % 5 != 0) {
+		if (!pipe.isNthTick(20)) {
+			return;
+		}
+		if(hasUpdated) {
+			hasUpdated = false;
 			return;
 		}
 		int newAmount = 0;
 		if (itemTypeInv.getIDStackInSlot(0) != null) {
-			newAmount = SimpleServiceLocator.logisticsManager.getAmountFor(itemTypeInv.getIDStackInSlot(0).getItem(), pipe.getRouter().getIRoutersByCost());
+			Map<ItemIdentifier, Integer> availableItems = SimpleServiceLocator.logisticsManager.getAvailableItems(pipe.getRouter().getIRoutersByCost());
+			if(availableItems != null) {
+				BitSet set = new BitSet(ServerRouter.getBiggestSimpleID());
+				spread(availableItems, set);
+				if(availableItems.containsKey(itemTypeInv.getIDStackInSlot(0).getItem())) {
+					newAmount = availableItems.get(itemTypeInv.getIDStackInSlot(0).getItem());
+				}
+			}
 		}
 		if (newAmount != amount) {
 			amount = newAmount;
 			sendUpdatePacket();
 		}
+	}
+
+	private void spread(Map<ItemIdentifier, Integer> availableItems, BitSet set) { // Improve performance by updating a wall of Amount pipe signs all at once
+		IRouter router = pipe.getRouter();
+		if(set.get(router.getSimpleID())) return;
+		set.set(router.getSimpleID());
+		for(ExitRoute exit: router.getIRoutersByCost()) {
+			if(exit.distanceToDestination > 2) break; // Only when the signs are in one wall. To not spread to far.
+			if(!exit.filters.isEmpty()) continue;
+			if (set.get(exit.destination.getSimpleID())) continue;
+			if(exit.connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom) && exit.connectionDetails.contains(PipeRoutingConnectionType.canRouteTo)) {
+				CoreRoutedPipe cachedPipe = exit.destination.getCachedPipe();
+				if(cachedPipe != null) {
+					List<Pair<ForgeDirection, IPipeSign>> pipeSigns = cachedPipe.getPipeSigns();
+					for(Pair<ForgeDirection, IPipeSign> signPair:pipeSigns) {
+						if(signPair != null && signPair.getValue2() instanceof ItemAmountPipeSign) {
+							((ItemAmountPipeSign)signPair.getValue2()).updateStats(availableItems, set);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private void updateStats(Map<ItemIdentifier, Integer> availableItems, BitSet set) {
+		hasUpdated = true;
+		int newAmount = 0;
+		if (itemTypeInv.getIDStackInSlot(0) != null) {
+			if(availableItems.containsKey(itemTypeInv.getIDStackInSlot(0).getItem())) {
+				newAmount = availableItems.get(itemTypeInv.getIDStackInSlot(0).getItem());
+			}
+		}
+		if (newAmount != amount) {
+			amount = newAmount;
+			sendUpdatePacket();
+		}
+		spread(availableItems, set);
 	}
 
 	@Override
@@ -147,6 +206,8 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 	}
 
 	private void sendUpdatePacket() {
-		MainProxy.sendPacketToAllWatchingChunk(pipe.getX(), pipe.getZ(), MainProxy.getDimensionForWorld(pipe.getWorld()), getPacket());
+		if(MainProxy.isServer(pipe.getWorld())) {
+			MainProxy.sendPacketToAllWatchingChunk(pipe.getX(), pipe.getZ(), MainProxy.getDimensionForWorld(pipe.getWorld()), getPacket());
+		}
 	}
 }

@@ -22,7 +22,7 @@ import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 
-public class ItemCraftingTemplate implements Comparable<ItemCraftingTemplate>, ICraftingTemplate {
+public class ItemCraftingTemplate implements IReqCraftingTemplate {
 
 	protected ItemIdentifierStack _result;
 	protected ICraftItems _crafter;
@@ -71,15 +71,30 @@ public class ItemCraftingTemplate implements Comparable<ItemCraftingTemplate>, I
 	}
 
 	@Override
-	public int compareTo(ItemCraftingTemplate o) {
-		int c = priority - o.priority;
+	public int compareTo(ICraftingTemplate o) {
+		int c = o.comparePriority(priority);
 		if (c == 0) {
-			c = _result.compareTo(o._result);
+			c = o.compareStack(_result);
 		}
 		if (c == 0) {
-			c = _crafter.compareTo(o._crafter);
+			c = o.compareCrafter(_crafter);
 		}
 		return c;
+	}
+
+	@Override
+	public int comparePriority(int priority) {
+		return priority - this.priority;
+	}
+
+	@Override
+	public int compareStack(ItemIdentifierStack stack) {
+		return stack.compareTo(this._result);
+	}
+
+	@Override
+	public int compareCrafter(ICraftItems crafter) {
+		return crafter.compareTo(this._crafter);
 	}
 
 	@Override

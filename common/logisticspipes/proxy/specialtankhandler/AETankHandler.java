@@ -78,7 +78,7 @@ public class AETankHandler implements ISpecialTankAccessHandler {
 				IMEMonitor<IAEFluidStack> fluids = monitor.getFluidInventory();
 				for (IAEFluidStack stack : fluids.getStorageList()) {
 					if (SimpleServiceLocator.extraCellsProxy.canSeeFluidInNetwork(stack.getFluid())) {
-						map.put(FluidIdentifier.get(stack.getFluid().getID(), stack.getTagCompound() != null ? stack.getTagCompound().getNBTTagCompoundCopy() : null), stack.getStackSize());
+						map.put(FluidIdentifier.get(stack.getFluid(), stack.getTagCompound() != null ? stack.getTagCompound().getNBTTagCompoundCopy() : null, null), stack.getStackSize());
 					}
 				}
 				return map;

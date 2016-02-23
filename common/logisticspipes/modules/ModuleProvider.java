@@ -199,7 +199,7 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 				firstOrder = order;
 			}
 			order = _service.getItemOrderManager().peekAtTopRequest(ResourceType.PROVIDER);
-			int sent = sendStack(order.getItemStack(), itemsleft, order.getDestination().getRouter().getSimpleID(), order.getInformation());
+			int sent = sendStack(order.getResource().stack, itemsleft, order.getDestination().getRouter().getSimpleID(), order.getInformation());
 			if (sent < 0) {
 				break;
 			}

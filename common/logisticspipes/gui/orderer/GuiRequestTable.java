@@ -1,12 +1,6 @@
 package logisticspipes.gui.orderer;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import logisticspipes.LogisticsPipes;
@@ -14,10 +8,12 @@ import logisticspipes.config.Configs;
 import logisticspipes.gui.popup.GuiDiskPopup;
 import logisticspipes.gui.popup.GuiRequestPopup;
 import logisticspipes.gui.popup.RequestMonitorPopup;
+import logisticspipes.interfaces.IChainAddList;
 import logisticspipes.interfaces.IDiskProvider;
 import logisticspipes.interfaces.ISlotClick;
 import logisticspipes.interfaces.ISpecialItemRenderer;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.block.ClearCraftingGridPacket;
 import logisticspipes.network.packets.block.CraftingCycleRecipe;
 import logisticspipes.network.packets.orderer.DiskRequestConectPacket;
 import logisticspipes.network.packets.orderer.OrdererRefreshRequestPacket;
@@ -29,6 +25,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.resources.IResource;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
+import logisticspipes.utils.ChainAddArrayList;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
@@ -86,6 +83,9 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 	private int orderIdForButton;
 
 	private GuiButton[] sycleButtons = new GuiButton[2];
+	private IChainAddList<GuiButton> moveWhileSmall = new ChainAddArrayList<GuiButton>();
+	private IChainAddList<GuiButton> hideWhileSmall = new ChainAddArrayList<GuiButton>();
+	private GuiButton hideShowButton;
 
 	public GuiRequestTable(EntityPlayer entityPlayer, PipeBlockRequestTable table) {
 		super(410, 240, 0, 0);
@@ -136,27 +136,30 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		super.initGui();
 
 		buttonList.clear();
-		buttonList.add(new GuiButton(0, right - 55, bottom - 25, 50, 20, "Request")); // Request
-		buttonList.add(new SmallGuiButton(1, right - 15, guiTop + 5, 10, 10, ">")); // Next page
-		buttonList.add(new SmallGuiButton(2, right - 90, guiTop + 5, 10, 10, "<")); // Prev page
-		buttonList.add(new SmallGuiButton(10, right - 148, bottom - 15, 26, 10, "---")); // -64
-		buttonList.add(new SmallGuiButton(4, right - 148, bottom - 26, 15, 10, "--")); // -10
-		buttonList.add(new SmallGuiButton(5, right - 132, bottom - 26, 10, 10, "-")); // -1
-		buttonList.add(new SmallGuiButton(6, right - 86, bottom - 26, 10, 10, "+")); // +1
-		buttonList.add(new SmallGuiButton(7, right - 74, bottom - 26, 15, 10, "++")); // +10
-		buttonList.add(new SmallGuiButton(11, right - 86, bottom - 15, 26, 10, "+++")); // +64
-		buttonList.add(new GuiCheckBox(8, guiLeft + 209, bottom - 60, 14, 14, Configs.DISPLAY_POPUP)); // Popup
+		buttonList.add(hideWhileSmall.addChain(new GuiButton(0, right - 55, bottom - 25, 50, 20, "Request"))); // Request
+		buttonList.add(hideWhileSmall.addChain(new SmallGuiButton(1, right - 15, guiTop + 5, 10, 10, ">"))); // Next page
+		buttonList.add(hideWhileSmall.addChain(new SmallGuiButton(2, right - 90, guiTop + 5, 10, 10, "<"))); // Prev page
+		buttonList.add(hideWhileSmall.addChain(new SmallGuiButton(10, right - 148, bottom - 15, 26, 10, "---"))); // -64
+		buttonList.add(hideWhileSmall.addChain(new SmallGuiButton(4, right - 148, bottom - 26, 15, 10, "--"))); // -10
+		buttonList.add(hideWhileSmall.addChain(new SmallGuiButton(5, right - 132, bottom - 26, 10, 10, "-"))); // -1
+		buttonList.add(hideWhileSmall.addChain(new SmallGuiButton(6, right - 86, bottom - 26, 10, 10, "+"))); // +1
+		buttonList.add(hideWhileSmall.addChain(new SmallGuiButton(7, right - 74, bottom - 26, 15, 10, "++"))); // +10
+		buttonList.add(hideWhileSmall.addChain(new SmallGuiButton(11, right - 86, bottom - 15, 26, 10, "+++"))); // +64
+		buttonList.add(hideWhileSmall.addChain(new GuiCheckBox(8, guiLeft + 209, bottom - 60, 14, 14, Configs.DISPLAY_POPUP))); // Popup
 
-		buttonList.add(new SmallGuiButton(3, guiLeft + 210, bottom - 15, 46, 10, "Refresh")); // Refresh
-		buttonList.add(new SmallGuiButton(13, guiLeft + 210, bottom - 28, 46, 10, "Content")); // Component
-		buttonList.add(new SmallGuiButton(9, guiLeft + 210, bottom - 41, 46, 10, "Both"));
-		buttonList.add(new SmallGuiButton(20, right - 116, bottom - 41, 26, 10, "Sort")); // Sort
+		buttonList.add(hideWhileSmall.addChain(new SmallGuiButton(3, guiLeft + 210, bottom - 15, 46, 10, "Refresh"))); // Refresh
+		buttonList.add(hideWhileSmall.addChain(new SmallGuiButton(13, guiLeft + 210, bottom - 28, 46, 10, "Content"))); // Component
+		buttonList.add(hideWhileSmall.addChain(new SmallGuiButton(9, guiLeft + 210, bottom - 41, 46, 10, "Both")));
+		buttonList.add(hideWhileSmall.addChain(new SmallGuiButton(20, right - 116, bottom - 41, 26, 10, "Sort"))); // Sort
 
-		buttonList.add(new SmallGuiButton(14, guiLeft + 96, guiTop + 53, 10, 10, "+")); // +1
-		buttonList.add(new SmallGuiButton(15, guiLeft + 108, guiTop + 53, 15, 10, "++")); // +10
-		buttonList.add(new SmallGuiButton(16, guiLeft + 96, guiTop + 64, 26, 10, "+++")); // +64
+		buttonList.add(moveWhileSmall.addChain(new SmallGuiButton(14, guiLeft + 96, guiTop + 53, 10, 10, "+"))); // +1
+		buttonList.add(moveWhileSmall.addChain(new SmallGuiButton(15, guiLeft + 108, guiTop + 53, 15, 10, "++"))); // +10
+		buttonList.add(moveWhileSmall.addChain(new SmallGuiButton(16, guiLeft + 96, guiTop + 64, 26, 10, "+++"))); // +64
 
-		buttonList.add(new SmallGuiButton(17, guiLeft + 173, guiTop + 5, 36, 10, "Hide")); // Hide
+		buttonList.add(moveWhileSmall.addChain(new SmallGuiButton(30, guiLeft + 96 + 2, guiTop + 18, 10, 10, "X"))); // x
+		buttonList.add(moveWhileSmall.addChain(new SmallGuiButton(31, guiLeft + 108 + 2, guiTop + 18, 10, 10, "~", 3))); // ~
+
+		buttonList.add(hideShowButton = new SmallGuiButton(17, guiLeft + 173, guiTop + 5, 36, 10, "Hide")); // Hide
 		buttonList.add(Macrobutton = new SmallGuiButton(18, right - 55, bottom - 60, 50, 10, "Disk"));
 		Macrobutton.enabled = false;
 
@@ -179,14 +182,15 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			showRequest = false;
 			xSize = startXSize - 210;
 			guiLeft = startLeft + 105;
-			for (int i = 14; i < 17; i++) {
-				((GuiButton) buttonList.get(i)).xPosition += 105;
+			for (GuiButton button:moveWhileSmall) {
+				button.xPosition += 105;
 			}
-			((GuiButton) buttonList.get(17)).xPosition += 90;
-			((SmallGuiButton) buttonList.get(17)).displayString = "Show";
-			for (int i = 0; i < 14; i++) {
-				((GuiButton) buttonList.get(i)).visible = false;
+			hideShowButton.xPosition += 90;
+			hideShowButton.displayString = "Show";
+			for (GuiButton button:hideWhileSmall) {
+				button.visible = false;
 			}
+			Macrobutton.visible = false;
 		}
 	}
 
@@ -467,25 +471,27 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		} else if (guibutton.id == 16) {
 			requestMatrix(64);
 		} else if (guibutton.id == 17) {
+			//hideShowButton
+			// moveWhileSmall
 			showRequest = !showRequest;
 			if (showRequest) {
 				xSize = startXSize;
 				guiLeft = startLeft;
-				for (int i = 14; i < 17; i++) {
-					((GuiButton) buttonList.get(i)).xPosition -= 105;
+				for (GuiButton button:moveWhileSmall) {
+					button.xPosition -= 105;
 				}
-				((GuiButton) buttonList.get(17)).xPosition -= 90;
+				hideShowButton.xPosition -= 90;
 			} else {
 				xSize = startXSize - 210;
 				guiLeft = startLeft + 105;
-				for (int i = 14; i < 17; i++) {
-					((GuiButton) buttonList.get(i)).xPosition += 105;
+				for (GuiButton button:moveWhileSmall) {
+					button.xPosition += 105;
 				}
-				((GuiButton) buttonList.get(17)).xPosition += 90;
+				hideShowButton.xPosition += 90;
 			}
-			((SmallGuiButton) buttonList.get(17)).displayString = showRequest ? "Hide" : "Show";
-			for (int i = 0; i < 14; i++) {
-				((GuiButton) buttonList.get(i)).visible = showRequest;
+			hideShowButton.displayString = showRequest ? "Hide" : "Show";
+			for (GuiButton button:hideWhileSmall) {
+				button.visible = showRequest;
 			}
 			Macrobutton.visible = showRequest;
 			orderIdForButton = -1;
@@ -499,6 +505,35 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			itemDisplay.cycle();
 		} else if (guibutton.id == 21 || guibutton.id == 22) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingCycleRecipe.class).setDown(guibutton.id == 22).setTilePos(_table.container));
+		} else if(guibutton.id == 30) {
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(ClearCraftingGridPacket.class).setTilePos(_table.container));
+			_table.cacheRecipe();
+		} else if(guibutton.id == 31) {
+			ArrayList<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>(9);
+			for (Entry<ItemIdentifier, Integer> e : _table.matrix.getItemsAndCount().entrySet()) {
+				list.add(e.getKey().makeStack(e.getValue()));
+			}
+			for(Pair<ItemStack, Integer> entry:_table.inv) {
+				if(entry.getValue1() == null) continue;
+				int size = entry.getValue1().stackSize;
+				ItemIdentifier ident = ItemIdentifier.get(entry.getValue1());
+				for(ItemIdentifierStack stack:list) {
+					if(!stack.getItem().equals(ident)) continue;
+					int toUse = Math.min(size, stack.getStackSize());
+					stack.lowerStackSize(toUse);
+					size -= toUse;
+				}
+			}
+			Iterator<ItemIdentifierStack> iter = list.iterator();
+			while(iter.hasNext()) {
+				if(iter.next().getStackSize() <= 0) {
+					iter.remove();
+				}
+			}
+			if(!list.isEmpty()) {
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitListPacket.class).setIdentList(list).setTilePos(_table.container));
+				refreshItems();
+			}
 		}
 	}
 

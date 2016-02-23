@@ -273,7 +273,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 				firstOrder = order;
 			}
 			order = _orderManager.peekAtTopRequest(ResourceType.PROVIDER);
-			int sent = sendStack(order.getItemStack(), itemsleft, order.getRouter().getSimpleID(), order.getInformation());
+			int sent = sendStack(order.getResource().stack, itemsleft, order.getRouter().getSimpleID(), order.getInformation());
 			if (sent < 0) {
 				break;
 			}

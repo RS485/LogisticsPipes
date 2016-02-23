@@ -5,10 +5,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import buildcraft.transport.*;
+import buildcraft.transport.render.PipeTransportItemsRenderer;
+import buildcraft.transport.render.PipeTransportRenderer;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.VersionNotSupportedException;
 import logisticspipes.proxy.buildcraft.gates.ActionDisableLogistics;
@@ -96,8 +99,8 @@ public class BuildCraftProxy implements IBCProxy {
 			e.printStackTrace();
 		}
 		if (BCVersion != null && !BCVersion.equals("@VERSION@")) {
-			if (!BCVersion.startsWith("7.")) {
-				throw new VersionNotSupportedException("BC", BCVersion, "7.0.0", "");
+			if (!BCVersion.startsWith("7.1")) {
+				throw new VersionNotSupportedException("BC", BCVersion, "7.1.5", "");
 			}
 		} else {
 			LogisticsPipes.log.info("Couldn't check the BC Version.");
@@ -108,7 +111,7 @@ public class BuildCraftProxy implements IBCProxy {
 	public void resetItemRotation() {
 		try {
 			Object renderer = TileEntityRendererDispatcher.instance.mapSpecialRenderers.get(TileGenericPipe.class);
-			Field f = PipeRendererTESR.class.getDeclaredField("dummyEntityItem");
+			Field f = PipeTransportItemsRenderer.class.getDeclaredField("dummyEntityItem");
 			f.setAccessible(true);
 			EntityItem item = (EntityItem) f.get(renderer);
 			item.hoverStart = 0;
@@ -139,6 +142,10 @@ public class BuildCraftProxy implements IBCProxy {
 		RedstoneBoardRegistry.instance.registerBoardClass(LogisticsRoutingBoardRobotNBT.instance, 10);
 		RobotManager.registerAIRobot(LogisticsRoutingBoardRobot.class, "boardLogisticsRoutingRobot", "logisticspipes.proxy.buildcraft.robots.boards.LogisticsRoutingBoardRobot");
 		SimpleServiceLocator.specialpipeconnection.registerHandler(LPRobotConnectionControl.instance);
+
+		if(MainProxy.proxy.getSide().equals("Client")) {
+			PipeTransportRenderer.RENDERER_MAP.put(PipeTransportItems.class, new BCLPPipeTransportItemsRenderer());
+		}
 
 		try {
 			canPipeConnect = TileGenericPipe.class.getDeclaredMethod("canPipeConnect", new Class[] { TileEntity.class, ForgeDirection.class });

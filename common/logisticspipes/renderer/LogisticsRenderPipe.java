@@ -600,6 +600,10 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		Fluid fluid = FluidRegistry.getFluid(liquidId);
 		block.baseBlock = fluid.getBlock();
 		block.texture = fluid.getStillIcon();
+		
+		if(block.baseBlock == null) {
+			return d;
+		}
 
 		float size = LPConstants.BC_PIPE_MAX_POS - LPConstants.BC_PIPE_MIN_POS;
 

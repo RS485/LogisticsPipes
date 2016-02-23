@@ -2,6 +2,8 @@ package logisticspipes.routing.order;
 
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.request.resources.DictResource;
+import logisticspipes.request.resources.IResource;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
@@ -9,17 +11,17 @@ import lombok.Getter;
 
 public class LogisticsItemOrder extends LogisticsOrder {
 
-	public LogisticsItemOrder(ItemIdentifierStack item, IRequestItems destination, ResourceType type, IAdditionalTargetInformation info) {
+	public LogisticsItemOrder(DictResource item, IRequestItems destination, ResourceType type, IAdditionalTargetInformation info) {
 		super(type, info);
 		if (item == null) {
 			throw new NullPointerException();
 		}
-		itemStack = item;
+		resource = item;
 		this.destination = destination;
 	}
 
 	@Getter
-	private final ItemIdentifierStack itemStack;
+	private final DictResource resource;
 	@Getter
 	private final IRequestItems destination;
 
@@ -30,21 +32,21 @@ public class LogisticsItemOrder extends LogisticsOrder {
 
 	@Override
 	public void sendFailed() {
-		destination.itemCouldNotBeSend(getItemStack(), getInformation());
+		destination.itemCouldNotBeSend(getResource().stack, getInformation());
 	}
 
 	@Override
 	public ItemIdentifierStack getAsDisplayItem() {
-		return itemStack;
+		return resource.stack;
 	}
 
 	@Override
 	public int getAmount() {
-		return itemStack.getStackSize();
+		return resource.stack.getStackSize();
 	}
 
 	@Override
 	public void reduceAmountBy(int amount) {
-		itemStack.setStackSize(itemStack.getStackSize() - amount);
+		resource.stack.setStackSize(resource.stack.getStackSize() - amount);
 	}
 }

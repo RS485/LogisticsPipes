@@ -1,7 +1,6 @@
 package logisticspipes.commands.commands.debug;
 
 import logisticspipes.commands.abstracts.ICommandHandler;
-import logisticspipes.ticks.DebugGuiTickHandler;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
@@ -30,7 +29,7 @@ public class HandCommand implements ICommandHandler {
 		EntityPlayer player = (EntityPlayer) sender;
 		ItemStack item = player.inventory.mainInventory[player.inventory.currentItem];
 		if (item != null) {
-			DebugGuiTickHandler.instance().startWatchingOf(item, player);
+			DebugGuiController.instance().startWatchingOf(item, player);
 			sender.addChatMessage(new ChatComponentText("Starting HandDebuging"));
 		}
 	}

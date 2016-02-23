@@ -47,7 +47,6 @@ import logisticspipes.network.packets.cpipe.CPipeSatelliteId;
 import logisticspipes.network.packets.cpipe.CPipeSatelliteImport;
 import logisticspipes.network.packets.cpipe.CPipeSatelliteImportBack;
 import logisticspipes.network.packets.cpipe.CraftingAdvancedSatelliteId;
-import logisticspipes.network.packets.cpipe.CraftingFuzzyFlag;
 import logisticspipes.network.packets.cpipe.CraftingPipeOpenConnectedGuiPacket;
 import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
@@ -70,18 +69,12 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IFuzzyRecipeProvider;
-import logisticspipes.request.IPromise;
-import logisticspipes.request.ItemCraftingTemplate;
-import logisticspipes.request.RequestTree;
-import logisticspipes.request.RequestTreeNode;
+import logisticspipes.request.*;
 import logisticspipes.request.resources.DictResource;
 import logisticspipes.request.resources.FluidResource;
 import logisticspipes.request.resources.IResource;
 import logisticspipes.request.resources.ItemResource;
-import logisticspipes.routing.ExitRoute;
-import logisticspipes.routing.IRouter;
-import logisticspipes.routing.LogisticsExtraPromise;
-import logisticspipes.routing.LogisticsPromise;
+import logisticspipes.routing.*;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.routing.order.LogisticsItemOrder;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
@@ -110,10 +103,12 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import cpw.mods.fml.relauncher.Side;
@@ -130,7 +125,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	public int satelliteId = 0;
 	public int[] advancedSatelliteIdArray = new int[9];
-	public int[] fuzzyCraftingFlagArray = new int[9];
+	public DictResource[] fuzzyCraftingFlagArray = new DictResource[9];
+	public DictResource outputFuzzyFlags = new DictResource(null, null);
 	public int priority = 0;
 
 	// from PipeItemsCraftingLogistics
@@ -154,7 +150,11 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	protected final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
-	public ModuleCrafter() {}
+	public ModuleCrafter() {
+		for(int i=0;i < fuzzyCraftingFlagArray.length;i++) {
+			fuzzyCraftingFlagArray[i] = new DictResource(null, null);
+		}
+	}
 
 	public ModuleCrafter(PipeItemsCraftingLogistics parent) {
 		_pipe = parent;
@@ -162,6 +162,9 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		_invRequester = parent;
 		_world = parent;
 		registerPosition(ModulePositionType.IN_PIPE, 0);
+		for(int i=0;i < fuzzyCraftingFlagArray.length;i++) {
+			fuzzyCraftingFlagArray[i] = new DictResource(null, null);
+		}
 	}
 
 	/**
@@ -244,21 +247,22 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		}
 		// if(true) return;
 		DelayedGeneric<Pair<ItemIdentifierStack, IAdditionalTargetInformation>> lostItem = _lostItems.poll();
-		while (lostItem != null) {
-
+		int rerequested = 0;
+		while (lostItem != null && rerequested < 100) {
 			Pair<ItemIdentifierStack, IAdditionalTargetInformation> pair = lostItem.get();
 			if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING)) {
 				SinkReply reply = LogisticsManager.canSink(getRouter(), null, true, pair.getValue1().getItem(), null, true, true);
 				if (reply == null || reply.maxNumberOfItems < 1) {
-					_lostItems.add(new DelayedGeneric<Pair<ItemIdentifierStack, IAdditionalTargetInformation>>(pair, 5000));
+					_lostItems.add(new DelayedGeneric<Pair<ItemIdentifierStack, IAdditionalTargetInformation>>(pair, 9000 + (int)(Math.random() * 2000)));
 					lostItem = _lostItems.poll();
 					continue;
 				}
 			}
 			int received = RequestTree.requestPartial(pair.getValue1(), (CoreRoutedPipe) _service, pair.getValue2());
+			rerequested++;
 			if (received < pair.getValue1().getStackSize()) {
 				pair.getValue1().setStackSize(pair.getValue1().getStackSize() - received);
-				_lostItems.add(new DelayedGeneric<Pair<ItemIdentifierStack, IAdditionalTargetInformation>>(pair, 5000));
+				_lostItems.add(new DelayedGeneric<Pair<ItemIdentifierStack, IAdditionalTargetInformation>>(pair, 4500 + (int)(Math.random() * 1000)));
 			}
 			lostItem = _lostItems.poll();
 		}
@@ -340,8 +344,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		}
 		int remaining = 0;
 		for (LogisticsItemOrder extra : _extras) {
-			if (extra.getItemStack().getItem().equals(requestedItem)) {
-				remaining += extra.getItemStack().getStackSize();
+			if (extra.getResource().getItem().equals(requestedItem)) {
+				remaining += extra.getResource().stack.getStackSize();
 			}
 
 		}
@@ -358,6 +362,9 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	public LogisticsItemOrder fullFill(LogisticsPromise promise, IRequestItems destination, IAdditionalTargetInformation info) {
 		if (promise instanceof LogisticsExtraPromise) {
 			removeExtras(promise.numberOfItems, promise.item);
+		} else if(promise instanceof LogisticsDictPromise) {
+			_service.spawnParticle(Particles.WhiteParticle, 2);
+			return _service.getItemOrderManager().addOrder(((LogisticsDictPromise) promise).getResource(), destination, ResourceType.CRAFTING, info);
 		}
 		_service.spawnParticle(Particles.WhiteParticle, 2);
 		return _service.getItemOrderManager().addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, ResourceType.CRAFTING, info);
@@ -391,28 +398,38 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	@Override
 	public void registerExtras(IPromise promise) {
 		ItemIdentifierStack stack = new ItemIdentifierStack(promise.getItemType(), promise.getAmount());
-		_extras.add(new LogisticsItemOrder(stack, null, ResourceType.EXTRA, null));
+		_extras.add(new LogisticsItemOrder(new DictResource(stack, null), null, ResourceType.EXTRA, null));
 
 	}
 
 	@Override
-	public ItemCraftingTemplate addCrafting(IResource toCraft) {
+	public ICraftingTemplate addCrafting(IResource toCraft) {
 
 		List<ItemIdentifierStack> stack = getCraftedItems();
 		if (stack == null) {
 			return null;
 		}
-		boolean found = false;
-		ItemIdentifierStack craftingStack = null;
-		for (ItemIdentifierStack craftable : stack) {
-			craftingStack = craftable;
-			if (toCraft.matches(craftingStack.getItem())) {
-				found = true;
-				break;
+		IReqCraftingTemplate template = null;
+		if(this.getUpgradeManager().isFuzzyUpgrade() && outputFuzzyFlags.getBitSet().nextSetBit(0) != -1) {
+			if(toCraft instanceof DictResource) {
+				for (ItemIdentifierStack craftable : stack) {
+					DictResource dict = new DictResource(craftable, null);
+					dict.loadFromBitSet(outputFuzzyFlags.getBitSet());
+					if (toCraft.matches(craftable.getItem()) && dict.matches(((DictResource) toCraft).getItem()) && dict.getBitSet().equals(((DictResource) toCraft).getBitSet())) {
+						template = new DictCraftingTemplate(dict, this, priority);
+						break;
+					}
+				}
 			}
-
+		} else {
+			for (ItemIdentifierStack craftable : stack) {
+				if (toCraft.matches(craftable.getItem())) {
+					template = new ItemCraftingTemplate(craftable, this, priority);
+					break;
+				}
+			}
 		}
-		if (found == false) {
+		if (template == null) {
 			return null;
 		}
 
@@ -446,8 +463,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			}
 		}
 
-		ItemCraftingTemplate template = new ItemCraftingTemplate(craftingStack, this, priority);
-
 		//Check all materials
 		for (int i = 0; i < 9; i++) {
 			ItemIdentifierStack resourceStack = getMaterials(i);
@@ -455,21 +470,10 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				continue;
 			}
 			IResource req = null;
-			if (getUpgradeManager().isFuzzyUpgrade() && fuzzyCraftingFlagArray[i] != 0) {
+			if (getUpgradeManager().isFuzzyUpgrade() && fuzzyCraftingFlagArray[i].getBitSet().nextSetBit(0) != -1) {
 				DictResource dict;
 				req = dict = new DictResource(resourceStack, target[i]);
-				if ((fuzzyCraftingFlagArray[i] & 0x1) != 0) {
-					dict.use_od = true;
-				}
-				if ((fuzzyCraftingFlagArray[i] & 0x2) != 0) {
-					dict.ignore_dmg = true;
-				}
-				if ((fuzzyCraftingFlagArray[i] & 0x4) != 0) {
-					dict.ignore_nbt = true;
-				}
-				if ((fuzzyCraftingFlagArray[i] & 0x8) != 0) {
-					dict.use_category = true;
-				}
+				dict.loadFromBitSet(fuzzyCraftingFlagArray[i].getBitSet());
 			} else {
 				req = new ItemResource(resourceStack, target[i]);
 			}
@@ -578,10 +582,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		if (getCraftedItem() == null) {
 			return false;
 		}
-		if (toCraft instanceof ItemResource) {
-			return getCraftedItem().getItem().equals(((ItemResource) toCraft).getItem());
-		} else if (toCraft instanceof DictResource) {
-			return ((DictResource) toCraft).matches(((ItemResource) toCraft).getItem());
+		if (toCraft instanceof ItemResource || toCraft instanceof DictResource) {
+			return toCraft.matches(getCraftedItem().getItem());
 		}
 		return false;
 	}
@@ -606,6 +608,9 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	protected int getNextConnectSatelliteId(boolean prev, int x) {
 		int closestIdFound = prev ? 0 : Integer.MAX_VALUE;
+		if(_service == null) {
+			return prev ? Math.max(0, satelliteId - 1) : satelliteId + 1;
+		}
 		for (final PipeItemsSatelliteLogistics satellite : PipeItemsSatelliteLogistics.AllSatellites) {
 			CoreRoutedPipe satPipe = satellite;
 			if (satPipe == null || satPipe.stillNeedReplace() || satPipe.getRouter() == null || satPipe.isFluidPipe()) {
@@ -763,8 +768,40 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		for (int i = 0; i < 9; i++) {
 			advancedSatelliteIdArray[i] = nbttagcompound.getInteger("advancedSatelliteId" + i);
 		}
-		for (int i = 0; i < 9; i++) {
-			fuzzyCraftingFlagArray[i] = nbttagcompound.getByte("fuzzyCraftingFlag" + i);
+		if(nbttagcompound.hasKey("fuzzyCraftingFlag0")) {
+			for (int i = 0; i < 9; i++) {
+				int flags = nbttagcompound.getByte("fuzzyCraftingFlag" + i);
+				DictResource dict = fuzzyCraftingFlagArray[i];
+				if ((flags & 0x1) != 0) {
+					dict.use_od = true;
+				}
+				if ((flags & 0x2) != 0) {
+					dict.ignore_dmg = true;
+				}
+				if ((flags & 0x4) != 0) {
+					dict.ignore_nbt = true;
+				}
+				if ((flags & 0x8) != 0) {
+					dict.use_category = true;
+				}
+			}
+		}
+		if (nbttagcompound.hasKey("fuzzyFlags")) {
+			NBTTagList lst = nbttagcompound.getTagList("fuzzyFlags", Constants.NBT.TAG_COMPOUND);
+			for (int i = 0; i < 9; i++) {
+				NBTTagCompound comp = lst.getCompoundTagAt(i);
+				fuzzyCraftingFlagArray[i].ignore_dmg = comp.getBoolean("ignore_dmg");
+				fuzzyCraftingFlagArray[i].ignore_nbt = comp.getBoolean("ignore_nbt");
+				fuzzyCraftingFlagArray[i].use_od = comp.getBoolean("use_od");
+				fuzzyCraftingFlagArray[i].use_category = comp.getBoolean("use_category");
+			}
+		}
+		if (nbttagcompound.hasKey("outputFuzzyFlags")) {
+			NBTTagCompound comp = nbttagcompound.getCompoundTag("outputFuzzyFlags");
+			outputFuzzyFlags.ignore_dmg = comp.getBoolean("ignore_dmg");
+			outputFuzzyFlags.ignore_nbt = comp.getBoolean("ignore_nbt");
+			outputFuzzyFlags.use_od = comp.getBoolean("use_od");
+			outputFuzzyFlags.use_category = comp.getBoolean("use_category");
 		}
 		for (int i = 0; i < 6; i++) {
 			craftingSigns[i] = nbttagcompound.getBoolean("craftingSigns" + i);
@@ -797,8 +834,23 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		for (int i = 0; i < 9; i++) {
 			nbttagcompound.setInteger("advancedSatelliteId" + i, advancedSatelliteIdArray[i]);
 		}
+		NBTTagList lst = new NBTTagList();
 		for (int i = 0; i < 9; i++) {
-			nbttagcompound.setByte("fuzzyCraftingFlag" + i, (byte) fuzzyCraftingFlagArray[i]);
+			NBTTagCompound comp = new NBTTagCompound();
+			comp.setBoolean("ignore_dmg", fuzzyCraftingFlagArray[i].ignore_dmg);
+			comp.setBoolean("ignore_nbt", fuzzyCraftingFlagArray[i].ignore_nbt);
+			comp.setBoolean("use_od", fuzzyCraftingFlagArray[i].use_od);
+			comp.setBoolean("use_category", fuzzyCraftingFlagArray[i].use_category);
+			lst.appendTag(comp);
+		}
+		nbttagcompound.setTag("fuzzyFlags", lst);
+		{
+			NBTTagCompound comp = new NBTTagCompound();
+			comp.setBoolean("ignore_dmg", outputFuzzyFlags.ignore_dmg);
+			comp.setBoolean("ignore_nbt", outputFuzzyFlags.ignore_nbt);
+			comp.setBoolean("use_od", outputFuzzyFlags.use_od);
+			comp.setBoolean("use_category", outputFuzzyFlags.use_category);
+			nbttagcompound.setTag("outputFuzzyFlags", comp);
 		}
 		for (int i = 0; i < 6; i++) {
 			nbttagcompound.setBoolean("craftingSigns" + i, craftingSigns[i]);
@@ -812,7 +864,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	public ModernPacket getCPipePacket() {
-		return PacketHandler.getPacket(CraftingPipeUpdatePacket.class).setAmount(amount).setLiquidSatelliteIdArray(liquidSatelliteIdArray).setLiquidSatelliteId(liquidSatelliteId).setSatelliteId(satelliteId).setAdvancedSatelliteIdArray(advancedSatelliteIdArray).setFuzzyCraftingFlagArray(fuzzyCraftingFlagArray)
+		return PacketHandler.getPacket(CraftingPipeUpdatePacket.class).setAmount(amount).setLiquidSatelliteIdArray(liquidSatelliteIdArray).setLiquidSatelliteId(liquidSatelliteId).setSatelliteId(satelliteId).setAdvancedSatelliteIdArray(advancedSatelliteIdArray)
 				.setPriority(priority).setModulePos(this);
 	}
 
@@ -822,7 +874,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		liquidSatelliteId = packet.getLiquidSatelliteId();
 		satelliteId = packet.getSatelliteId();
 		advancedSatelliteIdArray = packet.getAdvancedSatelliteIdArray();
-		fuzzyCraftingFlagArray = packet.getFuzzyCraftingFlagArray();
 		priority = packet.getPriority();
 	}
 
@@ -865,14 +916,13 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteImport.class).setModulePos(this);
 			MainProxy.sendPacketToServer(packet);
 		} else {
-			boolean fuzzyFlagsChanged = false;
 			WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(getWorld(), getX(), getY(), getZ());
 
 			for (AdjacentTileEntity adjacent : worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM).collect(Collectors.toList())) {
 				for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
 					if (provider.importRecipe(adjacent.tileEntity, _dummyInventory)) {
 						if (provider instanceof IFuzzyRecipeProvider) {
-							fuzzyFlagsChanged = ((IFuzzyRecipeProvider) provider).importFuzzyFlags(adjacent.tileEntity, _dummyInventory, fuzzyCraftingFlagArray);
+							((IFuzzyRecipeProvider) provider).importFuzzyFlags(adjacent.tileEntity, _dummyInventory, fuzzyCraftingFlagArray, outputFuzzyFlags);
 						}
 						// ToDo: break only out of the inner loop?
 						break;
@@ -885,16 +935,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				MainProxy.sendPacketToPlayer(packet, player);
 			}
 			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), packet);
-
-			if (fuzzyFlagsChanged && getUpgradeManager().isFuzzyUpgrade()) {
-				for (int i = 0; i < 9; i++) {
-					final ModernPacket pak = PacketHandler.getPacket(CraftingFuzzyFlag.class).setInteger2(fuzzyCraftingFlagArray[i]).setInteger(i).setModulePos(this);
-					if (player != null) {
-						MainProxy.sendPacketToPlayer(pak, player);
-					}
-					MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), pak);
-				}
-			}
 		}
 	}
 
@@ -1047,26 +1087,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		return null;
 	}
 
-	public void setFuzzyCraftingFlag(int slot, int flag, EntityPlayer player) {
-		if (slot < 0 || slot >= 9) {
-			return;
-		}
-		if (MainProxy.isClient(getWorld())) {
-			if (player == null) {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingFuzzyFlag.class).setInteger2(flag).setInteger(slot).setModulePos(this));
-			} else {
-				fuzzyCraftingFlagArray[slot] = flag;
-			}
-		} else {
-			fuzzyCraftingFlagArray[slot] ^= 1 << flag;
-			ModernPacket pak = PacketHandler.getPacket(CraftingFuzzyFlag.class).setInteger2(fuzzyCraftingFlagArray[slot]).setInteger(slot).setModulePos(this);
-			if (player != null) {
-				MainProxy.sendPacketToPlayer(pak, player);
-			}
-			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), pak);
-		}
-	}
-
 	public void openAttachedGui(EntityPlayer player) {
 		if (MainProxy.isClient(player.worldObj)) {
 			if (player instanceof EntityPlayerMP) {
@@ -1197,14 +1217,14 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			} else {
 				nextOrder = _extras.getFirst(); // fetch but not remove.
 			}
-			int maxtosend = Math.min(itemsleft, nextOrder.getItemStack().getStackSize());
-			maxtosend = Math.min(nextOrder.getItemStack().getItem().getMaxStackSize(), maxtosend);
+			int maxtosend = Math.min(itemsleft, nextOrder.getResource().stack.getStackSize());
+			maxtosend = Math.min(nextOrder.getResource().getItem().getMaxStackSize(), maxtosend);
 			// retrieve the new crafted items
 			ItemStack extracted = null;
 			AdjacentTileEntity adjacent = null;
 			for (AdjacentTileEntity adjacentCrafter : adjacentCrafters) {
 				adjacent = adjacentCrafter;
-				extracted = extract(adjacent, nextOrder.getItemStack().getItem(), maxtosend);
+				extracted = extract(adjacent, nextOrder.getResource().getItem(), maxtosend);
 				if (extracted != null && extracted.stackSize > 0) {
 					break;
 				}
@@ -1220,13 +1240,13 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			// send the new crafted items to the destination
 			ItemIdentifier extractedID = ItemIdentifier.get(extracted);
 			while (extracted.stackSize > 0) {
-				if (!nextOrder.getItemStack().getItem().equals(extractedID)) {
+				if (!doesExtractionMatch(nextOrder, extractedID)) {
 					LogisticsItemOrder startOrder = nextOrder;
 					if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING)) {
 						do {
 							_service.getItemOrderManager().deferSend();
 							nextOrder = _service.getItemOrderManager().peekAtTopRequest(ResourceType.CRAFTING);
-						} while (!nextOrder.getItemStack().getItem().equals(extractedID) && startOrder != nextOrder);
+						} while (!doesExtractionMatch(nextOrder, extractedID) && startOrder != nextOrder);
 					}
 					if (startOrder == nextOrder) {
 						int numtosend = Math.min(extracted.stackSize, extractedID.getMaxStackSize());
@@ -1243,7 +1263,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 					}
 				}
 				int numtosend = Math.min(extracted.stackSize, extractedID.getMaxStackSize());
-				numtosend = Math.min(numtosend, nextOrder.getItemStack().getStackSize());
+				numtosend = Math.min(numtosend, nextOrder.getResource().stack.getStackSize());
 				if (numtosend == 0) {
 					break;
 				}
@@ -1272,12 +1292,16 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 						}
 					}
 				} else {
-					removeExtras(numtosend, nextOrder.getItemStack().getItem());
+					removeExtras(numtosend, nextOrder.getResource().getItem());
 					_service.sendStack(stackToSend, -1, ItemSendMode.Normal, nextOrder.getInformation());
 				}
 			}
 		}
 
+	}
+
+	private boolean doesExtractionMatch(LogisticsItemOrder nextOrder, ItemIdentifier extractedID) {
+		return nextOrder.getResource().getItem().equals(extractedID) || (this.getUpgradeManager().isFuzzyUpgrade() && nextOrder.getResource().getBitSet().nextSetBit(0) != -1 && nextOrder.getResource().matches(extractedID));
 	}
 
 	private boolean cachedAreAllOrderesToBuffer;
@@ -1290,7 +1314,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		boolean result = true;
 		for (LogisticsItemOrder order : _service.getItemOrderManager()) {
 			if (order.getDestination() instanceof IItemSpaceControl) {
-				SinkReply reply = LogisticsManager.canSink(order.getDestination().getRouter(), null, true, order.getItemStack().getItem(), null, true, false);
+				SinkReply reply = LogisticsManager.canSink(order.getDestination().getRouter(), null, true, order.getResource().getItem(), null, true, false);
 				if (reply != null && reply.bufferMode == BufferMode.NONE && reply.maxNumberOfItems >= 1) {
 					result = false;
 					break;
@@ -1306,7 +1330,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	private void removeExtras(int numToSend, ItemIdentifier item) {
 		Iterator<LogisticsItemOrder> i = _extras.iterator();
 		while (i.hasNext()) {
-			ItemIdentifierStack e = i.next().getItemStack();
+			ItemIdentifierStack e = i.next().getResource().stack;
 			if (e.getItem().equals(item)) {
 				if (numToSend >= e.getStackSize()) {
 					numToSend -= e.getStackSize();
@@ -1417,8 +1441,15 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				break;
 			}
 			if (retstack == null) {
-				if (!wanteditem.equalsWithoutNBT(stack)) {
-					break;
+				if(getUpgradeManager().isFuzzyUpgrade() && outputFuzzyFlags.getBitSet().nextSetBit(0) != -1) {
+					outputFuzzyFlags.stack = wanteditem.makeStack(1);
+					if(!outputFuzzyFlags.matches(ItemIdentifier.get(stack))) {
+						break;
+					}
+				} else {
+					if (!wanteditem.equalsWithoutNBT(stack)) {
+						break;
+					}
 				}
 			} else {
 				if (!retstack.isItemEqual(stack)) {
@@ -1438,6 +1469,9 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				retstack.stackSize += stack.stackSize;
 			}
 			count -= stack.stackSize;
+			if(getUpgradeManager().isFuzzyUpgrade()) {
+				break;
+			}
 		}
 		return retstack;
 	}

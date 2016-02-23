@@ -12,10 +12,8 @@ import logisticspipes.interfaces.IGuiTileEntity;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
-import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.guis.block.AutoCraftingGui;
 import logisticspipes.network.packets.block.CraftingSetType;
-import logisticspipes.network.packets.block.CraftingTableFuzzyFlagsModifyPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.resources.DictResource;
 import logisticspipes.utils.CraftingUtil;
@@ -46,6 +44,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	public ItemIdentifier targetType = null;
 	//just use CraftingRequirement to store flags; field "stack" is ignored
 	public DictResource[] fuzzyFlags = new DictResource[9];
+	public DictResource outputFuzzyFlags = new DictResource(null, null);
 	private IRecipe cache;
 	private EntityPlayer fake;
 	private PlayerIdentifier placedBy = null;
@@ -85,7 +84,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 						craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
 					}
 					ItemStack result = recipe.getCraftingResult(craftInv);
-					if (targetType == ItemIdentifier.get(result)) {
+					if (targetType.equals(ItemIdentifier.get(result))) {
 						resultInv.setInventorySlotContents(0, result);
 						cache = recipe;
 						break;
@@ -101,7 +100,8 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		} else {
 			targetType = null;
 		}
-		if (targetType != oldTargetType && !guiWatcher.isEmpty() && getWorldObj() != null && MainProxy.isServer(getWorldObj())) {
+		outputFuzzyFlags.stack = resultInv.getIDStackInSlot(0);
+		if (((targetType == null && oldTargetType != null) || (targetType != null && !targetType.equals(oldTargetType))) && !guiWatcher.isEmpty() && getWorldObj() != null && MainProxy.isServer(getWorldObj())) {
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(this), guiWatcher);
 		}
 	}
@@ -134,7 +134,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 				for (int i = 0; i < 9; i++) {
 					craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
 				}
-				if (targetType == ItemIdentifier.get(recipe.getCraftingResult(craftInv))) {
+				if (targetType != null && targetType.equals(ItemIdentifier.get(recipe.getCraftingResult(craftInv)))) {
 					if (down) {
 						found = true;
 					} else {
@@ -209,18 +209,42 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 				crafter.setInventorySlotContents(i, inv.getStackInSlot(j));
 			}
 		}
-		if (!cache.matches(crafter, getWorldObj())) {
-			return null; //Fix MystCraft
+		IRecipe recipe = cache;
+		outputFuzzyFlags.stack = resultInv.getIDStackInSlot(0);
+		if (!recipe.matches(crafter, getWorldObj())) {
+			if(isFuzzy && outputFuzzyFlags.getBitSet().nextSetBit(0) != -1) {
+				recipe = null;
+				for (IRecipe r : CraftingUtil.getRecipeList()) {
+					if (r.matches(crafter, getWorldObj()) && outputFuzzyFlags.matches(ItemIdentifier.get(r.getRecipeOutput()))) {
+						recipe = r;
+						break;
+					}
+				}
+				if(recipe == null) {
+					return null;
+				}
+			} else {
+				return null; //Fix MystCraft
+			}
 		}
-		ItemStack result = cache.getCraftingResult(crafter);
+		ItemStack result = recipe.getCraftingResult(crafter);
 		if (result == null) {
 			return null;
 		}
-		if (!resultInv.getIDStackInSlot(0).getItem().equalsWithoutNBT(ItemIdentifier.get(result))) {
-			return null;
-		}
-		if (!wanted.equalsWithoutNBT(resultInv.getIDStackInSlot(0).getItem())) {
-			return null;
+		if(isFuzzy && outputFuzzyFlags.getBitSet().nextSetBit(0) != -1) {
+			if (!outputFuzzyFlags.matches(ItemIdentifier.get(result))) {
+				return null;
+			}
+			if (!outputFuzzyFlags.matches(wanted)) {
+				return null;
+			}
+		} else {
+			if (!resultInv.getIDStackInSlot(0).getItem().equalsWithoutNBT(ItemIdentifier.get(result))) {
+				return null;
+			}
+			if (!wanted.equalsWithoutNBT(resultInv.getIDStackInSlot(0).getItem())) {
+				return null;
+			}
 		}
 		if (!power.useEnergy(Configs.LOGISTICS_CRAFTING_TABLE_POWER_USAGE)) {
 			return null;
@@ -232,7 +256,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 				crafter.setInventorySlotContents(i, inv.decrStackSize(j, 1));
 			}
 		}
-		result = cache.getCraftingResult(crafter);
+		result = recipe.getCraftingResult(crafter);
 		if (fake == null) {
 			fake = MainProxy.getFakePlayer(this);
 		}
@@ -301,6 +325,13 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 				fuzzyFlags[i].use_category = comp.getBoolean("use_category");
 			}
 		}
+		if (par1nbtTagCompound.hasKey("outputFuzzyFlags")) {
+			NBTTagCompound comp = par1nbtTagCompound.getCompoundTag("outputFuzzyFlags");
+			outputFuzzyFlags.ignore_dmg = comp.getBoolean("ignore_dmg");
+			outputFuzzyFlags.ignore_nbt = comp.getBoolean("ignore_nbt");
+			outputFuzzyFlags.use_od = comp.getBoolean("use_od");
+			outputFuzzyFlags.use_category = comp.getBoolean("use_category");
+		}
 		if (par1nbtTagCompound.hasKey("targetType")) {
 			targetType = ItemIdentifier.get(ItemStack.loadItemStackFromNBT(par1nbtTagCompound.getCompoundTag("targetType")));
 		}
@@ -325,6 +356,14 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 			lst.appendTag(comp);
 		}
 		par1nbtTagCompound.setTag("fuzzyFlags", lst);
+		{
+			NBTTagCompound comp = new NBTTagCompound();
+			comp.setBoolean("ignore_dmg", outputFuzzyFlags.ignore_dmg);
+			comp.setBoolean("ignore_nbt", outputFuzzyFlags.ignore_nbt);
+			comp.setBoolean("use_od", outputFuzzyFlags.use_od);
+			comp.setBoolean("use_category", outputFuzzyFlags.use_category);
+			par1nbtTagCompound.setTag("outputFuzzyFlags", comp);
+		}
 		if (targetType != null) {
 			NBTTagCompound type = new NBTTagCompound();
 			targetType.makeNormalStack(1).writeToNBT(type);
@@ -390,6 +429,10 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		if (i < 9 && i >= 0) {
 			ItemIdentifierStack stack = matrix.getIDStackInSlot(i);
 			if (stack != null && itemstack != null) {
+				if(isFuzzy() && fuzzyFlags[i].getBitSet().nextSetBit(0) != -1) {
+					fuzzyFlags[i].stack = stack;
+					return fuzzyFlags[i].matches(ItemIdentifier.get(itemstack));
+				}
 				return stack.getItem().equalsWithoutNBT(ItemIdentifier.get(itemstack));
 			}
 		}
@@ -404,40 +447,6 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 
 	public boolean isFuzzy() {
 		return worldObj.getBlockMetadata(xCoord, yCoord, zCoord) == LogisticsSolidBlock.LOGISTICS_FUZZYCRAFTING_TABLE;
-	}
-
-	public void handleFuzzyFlagsChange(int integer, int integer2, EntityPlayer pl) {
-		if (integer < 0 || integer >= 9) {
-			return;
-		}
-		if (MainProxy.isClient(getWorldObj())) {
-			if (pl == null) {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingTableFuzzyFlagsModifyPacket.class).setInteger2(integer2).setInteger(integer).setTilePos(this));
-			} else {
-				fuzzyFlags[integer].use_od = (integer2 & 1) != 0;
-				fuzzyFlags[integer].ignore_dmg = (integer2 & 2) != 0;
-				fuzzyFlags[integer].ignore_nbt = (integer2 & 4) != 0;
-				fuzzyFlags[integer].use_category = (integer2 & 8) != 0;
-			}
-		} else {
-			if (integer2 == 0) {
-				fuzzyFlags[integer].use_od = !fuzzyFlags[integer].use_od;
-			}
-			if (integer2 == 1) {
-				fuzzyFlags[integer].ignore_dmg = !fuzzyFlags[integer].ignore_dmg;
-			}
-			if (integer2 == 2) {
-				fuzzyFlags[integer].ignore_nbt = !fuzzyFlags[integer].ignore_nbt;
-			}
-			if (integer2 == 3) {
-				fuzzyFlags[integer].use_category = !fuzzyFlags[integer].use_category;
-			}
-			ModernPacket pak = PacketHandler.getPacket(CraftingTableFuzzyFlagsModifyPacket.class).setInteger2((fuzzyFlags[integer].use_od ? 1 : 0) | (fuzzyFlags[integer].ignore_dmg ? 2 : 0) | (fuzzyFlags[integer].ignore_nbt ? 4 : 0) | (fuzzyFlags[integer].use_category ? 8 : 0)).setInteger(integer).setTilePos(this);
-			if (pl != null) {
-				MainProxy.sendPacketToPlayer(pak, pl);
-			}
-			MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(worldObj), pak);
-		}
 	}
 
 	@Override

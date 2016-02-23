@@ -66,22 +66,26 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 	}
 
 	@Override
-	public void drawScreen(int par1, int par2, float par3) {
-		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+	protected void renderToolTips(int mouseX, int mouseY, float par3) {
+		if (!super.hasSubGui()) {
+			GuiGraphics.displayItemToolTip(itemDisplay.getToolTip(), this, zLevel, 0, 0);
+		}
+	}
 
+	@Override
+	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
+		itemDisplay.renderItemArea(zLevel);
+	}
+
+	@Override
+	protected void renderGuiBackground(int par1, int par2) {
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		//mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "title"), guiLeft + 5, guiTop + 6, 0x404040);
 		itemDisplay.renderPageNumber(right - 47, guiTop + 6);
 
 		search.renderSearchBar();
 
 		itemDisplay.renderSortMode(xCenter, bottom - 32);
-		itemDisplay.renderItemArea(zLevel);
-
-		super.drawScreen(par1, par2, par3);
-
-		if (!super.hasSubGui()) {
-			GuiGraphics.displayItemToolTip(itemDisplay.getToolTip(), this, zLevel, 0, 0);
-		}
 	}
 
 	@Override
@@ -89,7 +93,7 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 		if (guibutton.id == 0 && itemDisplay.getSelectedItem() != null) {
 			boolean found = false;
 			for (TrackingTask task : tile.tasks) {
-				if (task.item == itemDisplay.getSelectedItem().getItem()) {
+				if (task.item.equals(itemDisplay.getSelectedItem().getItem())) {
 					found = true;
 					break;
 				}

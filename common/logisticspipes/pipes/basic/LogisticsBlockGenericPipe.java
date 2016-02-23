@@ -1014,6 +1014,16 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 
 	@Override
+	public String getUnlocalizedName() {
+		return "LogisticsPipes Pipe Block";
+	}
+
+	@Override
+	public String getLocalizedName() {
+		return getUnlocalizedName();
+	}
+
+	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(IIconRegister iconRegister) {
 		LogisticsNewRenderPipe.registerTextures(iconRegister);

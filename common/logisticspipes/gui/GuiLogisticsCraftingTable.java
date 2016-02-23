@@ -38,10 +38,18 @@ public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
 
 		for (int x = 0; x < 3; x++) {
 			for (int y = 0; y < 3; y++) {
-				dummy.addDummySlot(y * 3 + x, 35 + x * 18, 10 + y * 18);
+				if(crafter.isFuzzy()) {
+					dummy.addFuzzyDummySlot(y * 3 + x, 35 + x * 18, 10 + y * 18, crafter.fuzzyFlags[y * 3 + x]);
+				} else {
+					dummy.addDummySlot(y * 3 + x, 35 + x * 18, 10 + y * 18);
+				}
 			}
 		}
-		dummy.addUnmodifiableSlot(0, crafter.resultInv, 125, 28);
+		if(crafter.isFuzzy()) {
+			dummy.addFuzzyUnmodifiableSlot(0, crafter.resultInv, 125, 28, crafter.outputFuzzyFlags);
+		} else {
+			dummy.addUnmodifiableSlot(0, crafter.resultInv, 125, 28);
+		}
 		for (int y = 0; y < 2; y++) {
 			for (int x = 0; x < 9; x++) {
 				dummy.addNormalSlot(y * 9 + x, crafter.inv, 8 + x * 18, 80 + y * 18);
@@ -97,75 +105,6 @@ public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
 	}
 
 	@Override
-	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		super.drawGuiContainerForegroundLayer(par1, par2);
-		if (_crafter.isFuzzy()) {
-			int mx = par1 - guiLeft;
-			int my = par2 - guiTop;
-			if ((mx - 35) % 18 <= 16 && (mx - 35) % 18 >= 0) {
-				if ((my - 10) % 18 <= 16 && (my - 10) % 18 >= 0) {
-					int x_slot = (mx - 35) / 18;
-					int y_slot = (my - 10) / 18;
-					if (x_slot >= 0 && x_slot < 3 && y_slot >= 0 && y_slot < 3) {
-						int newFuzzyPanelHover = y_slot * 3 + x_slot;
-						if (fuzzyPanelHover != newFuzzyPanelHover) {
-							fuzzyPanelHover = newFuzzyPanelHover;
-							fuzzyPanelHoverTime = 0;
-						} else {
-							fuzzyPanelHoverTime++;
-						}
-					} else {
-						fuzzyPanelHover = -1;
-					}
-				} else {
-					fuzzyPanelHover = -1;
-				}
-			}
-			if (fuzzyPanelHover != -1 && fuzzyPanelHoverTime >= 60) {
-				fuzzyPanelSelection = fuzzyPanelHover;
-			}
-		}
-
-		if (_crafter.isFuzzy()) {
-			for (int i = 0; i < 9; i++) {
-				int x1 = 35 + i % 3 * 18;
-				int y1 = 10 + i / 3 * 18;
-				if (_crafter.fuzzyFlags[i].use_od) {
-					Gui.drawRect(x1 + 8, y1 - 1, x1 + 17, y1, 0xFFFF4040);
-					Gui.drawRect(x1 + 16, y1, x1 + 17, y1 + 8, 0xFFFF4040);
-				}
-				if (_crafter.fuzzyFlags[i].ignore_dmg) {
-					Gui.drawRect(x1 - 1, y1 - 1, x1 + 8, y1, 0xFF40FF40);
-					Gui.drawRect(x1 - 1, y1, x1, y1 + 8, 0xFF40FF40);
-				}
-				if (_crafter.fuzzyFlags[i].ignore_nbt) {
-					Gui.drawRect(x1 - 1, y1 + 16, x1 + 8, y1 + 17, 0xFF4040FF);
-					Gui.drawRect(x1 - 1, y1 + 8, x1, y1 + 17, 0xFF4040FF);
-				}
-				if (_crafter.fuzzyFlags[i].use_category) {
-					Gui.drawRect(x1 + 8, y1 + 16, x1 + 17, y1 + 17, 0xFF7F7F40);
-					Gui.drawRect(x1 + 16, y1 + 8, x1 + 17, y1 + 17, 0xFF7F7F40);
-				}
-				if (fuzzyPanelSelection == i) {
-					Gui.drawRect(x1, y1, x1 + 16, y1 + 16, 0x7F000000);
-				}
-			}
-		}
-
-		if (fuzzyPanelSelection != -1) {
-			int posX = -60;
-			int posY = 0;
-			GuiGraphics.drawGuiBackGround(mc, posX, posY, posX + 60, posY + 52, zLevel, true, true, true, true, true);
-			DictResource flag = _crafter.fuzzyFlags[fuzzyPanelSelection];
-			final String PREFIX = "gui.crafting.";
-			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OreDict"), posX + 4, posY + 4, (!flag.use_od ? 0x404040 : 0xFF4040));
-			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnDamage"), posX + 4, posY + 14, (!flag.ignore_dmg ? 0x404040 : 0x40FF40));
-			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnNBT"), posX + 4, posY + 26, (!flag.ignore_nbt ? 0x404040 : 0x4040FF));
-			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OrePrefix"), posX + 4, posY + 38, (!flag.use_category ? 0x404040 : 0x7F7F40));
-		}
-	}
-
-	@Override
 	protected void actionPerformed(GuiButton button) {
 		if (button.id == 0 || button.id == 1) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingCycleRecipe.class).setDown(button.id == 1).setTilePos(_crafter));
@@ -179,30 +118,5 @@ public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
 		int posX = -60;
 		int posY = 0;
 		return mx >= posX && my >= posY && mx <= posX + 60 && my <= posY + 52;
-	}
-
-	@Override
-	protected void mouseMovedOrUp(int mouseX, int mouseY, int which) {
-		if (isMouseInFuzzyPanel(mouseX - guiLeft, mouseY - guiTop)) {
-			return;
-		}
-		super.mouseMovedOrUp(mouseX, mouseY, which);
-	}
-
-	@Override
-	protected void mouseClicked(int mouseX, int mouseY, int par3) {
-		if (isMouseInFuzzyPanel(mouseX - guiLeft, mouseY - guiTop)) {
-			int posX = -60;
-			int posY = 0;
-			int sel = -1;
-			if (mouseX - guiLeft >= posX + 4 && mouseX - guiLeft <= posX + 60 - 4) {
-				if (mouseY - guiTop >= posY + 4 && mouseY - guiTop <= posY + 52 - 4) {
-					sel = (mouseY - guiTop - posY - 4) / 11;
-				}
-			}
-			_crafter.handleFuzzyFlagsChange(fuzzyPanelSelection, sel, null);
-			return;
-		}
-		super.mouseClicked(mouseX, mouseY, par3);
 	}
 }

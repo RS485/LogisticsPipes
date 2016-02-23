@@ -96,7 +96,7 @@ public class LPRobotConnectionControl implements ISpecialPipedConnection {
 
 	public boolean isModified(LogisticsRoutingBoardRobot board) {
 		Set<Pair<DoubleCoordinates, ForgeDirection>> localConnectedRobots = new HashSet<Pair<DoubleCoordinates, ForgeDirection>>();
-		DoubleCoordinates sourceRobotPosition = CoordinateUtils.add(board.getLinkedStationPosition().center(), board.robot.getDockingStation().side(), 0.5);
+		DoubleCoordinates sourceRobotPosition = CoordinateUtils.add(board.getLinkedStationPosition().center(), board.robot.getLinkedStation().side(), 0.5);
 		IZone zone = board.robot.getZoneToWork();
 		for (Pair<DoubleCoordinates, ForgeDirection> canidatePos : globalAvailableRobots.get(board.robot.worldObj)) {
 			DoubleCoordinates canidateRobotPosition = CoordinateUtils

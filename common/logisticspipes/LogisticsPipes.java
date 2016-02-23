@@ -84,6 +84,8 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.SpecialInventoryHandlerManager;
 import logisticspipes.proxy.SpecialTankHandlerManager;
 import logisticspipes.proxy.computers.objects.LPGlobalCCAccess;
+import logisticspipes.proxy.endercore.EnderCoreProgressProvider;
+import logisticspipes.proxy.enderio.EnderIOProgressProvider;
 import logisticspipes.proxy.forestry.ForestryProgressProvider;
 import logisticspipes.proxy.ic2.IC2ProgressProvider;
 import logisticspipes.proxy.interfaces.ICraftingParts;
@@ -113,7 +115,6 @@ import logisticspipes.routing.ServerRouter;
 import logisticspipes.routing.pathfinder.PipeInformationManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.ticks.ClientPacketBufferHandlerThread;
-import logisticspipes.ticks.DebugGuiTickHandler;
 import logisticspipes.ticks.HudUpdateTick;
 import logisticspipes.ticks.LPTickHandler;
 import logisticspipes.ticks.QueuedTasks;
@@ -167,6 +168,7 @@ import org.apache.logging.log4j.Logger;
 				"required-after:BuildCraft|Core;" +
 				"required-after:BuildCraft|Transport;" +
 				"required-after:BuildCraft|Silicon;" +
+				"required-after:BuildCraft|Robotics;" +
 				"after:IC2;" +
 				"after:Forestry;" +
 				"after:Thaumcraft;" +
@@ -349,15 +351,17 @@ public class LogisticsPipes {
 		MinecraftForge.EVENT_BUS.register(new LPChatListener());
 		LogisticsPipes.textures.registerBlockIcons(null);
 
-		FMLCommonHandler.instance().bus().register(DebugGuiTickHandler.instance());
-
 		RecipeManager.registerRecipeClasses();
+
+		registerRecipes();
 	}
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent evt) {
-		Configs.load();
 		LogisticsPipes.log = evt.getModLog();
+		loadClasses();
+		ProxyManager.load();
+		Configs.load();
 		if (certificateError) {
 			LogisticsPipes.log.fatal("Certificate not correct");
 			LogisticsPipes.log.fatal("This in not a LogisticsPipes version from RS485.");
@@ -377,15 +381,12 @@ public class LogisticsPipes {
 				Items.slime_ball.setTextureName("logisticspipes:eastereggs/guipsp");
 			}
 		}
+
+		initItems(evt.getSide());
 	}
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-		loadClasses();
-
-		boolean isClient = event.getSide() == Side.CLIENT;
-
-		ProxyManager.load();
 		SpecialInventoryHandlerManager.load();
 		SpecialTankHandlerManager.load();
 
@@ -397,6 +398,37 @@ public class LogisticsPipes {
 		SimpleServiceLocator.specialtileconnection.registerHandler(new TesseractConnection());
 		SimpleServiceLocator.specialtileconnection.registerHandler(new EnderIOHyperCubeConnection());
 		SimpleServiceLocator.specialtileconnection.registerHandler(new EnderIOTransceiverConnection());
+
+		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Factory", "AutoWorkbench", AutoWorkbench.class));
+		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Silicon", "AssemblyAdvancedWorkbench", AssemblyAdvancedWorkbench.class));
+		if (SimpleServiceLocator.buildCraftProxy.getAssemblyTableProviderClass() != null) {
+			SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Silicon", "AssemblyTable", SimpleServiceLocator.buildCraftProxy.getAssemblyTableProviderClass()));
+		}
+		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("Railcraft", "RollingMachine", RollingMachine.class));
+		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("Tubestuff", "ImmibisCraftingTableMk2", ImmibisCraftingTableMk2.class));
+		SimpleServiceLocator.addCraftingRecipeProvider(new SolderingStation());
+		SimpleServiceLocator.addCraftingRecipeProvider(new LogisticsCraftingTable());
+
+		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("Forestry", "Generic", ForestryProgressProvider.class));
+		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("ThermalExpansion", "Generic", ThermalExpansionProgressProvider.class));
+		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("IC2", "Generic", IC2ProgressProvider.class));
+		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("EnderIO", "Generic", EnderIOProgressProvider.class));
+		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("endercore", "Generic", EnderCoreProgressProvider.class));
+
+		MainProxy.proxy.registerTileEntities();
+
+		//Registering special particles
+		MainProxy.proxy.registerParticles();
+
+		//init Fluids
+		FluidIdentifier.initFromForge(false);
+
+		versionChecker = VersionChecker.runVersionCheck();
+	}
+
+	private void initItems(Side side) {
+
+		boolean isClient = side == Side.CLIENT;
 
 		Object renderer = null;
 		if (isClient) {
@@ -478,24 +510,10 @@ public class LogisticsPipes {
 		LogisticsPipes.LogisticsSubMultiBlock = new LogisticsBlockGenericSubMultiBlock();
 		GameRegistry.registerBlock(LogisticsPipes.LogisticsSubMultiBlock, "logisticsSubMultiBlock");
 
-		registerPipes(event.getSide());
+		registerPipes(side);
+	}
 
-		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Factory", "AutoWorkbench", AutoWorkbench.class));
-		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Silicon", "AssemblyAdvancedWorkbench", AssemblyAdvancedWorkbench.class));
-		if (SimpleServiceLocator.buildCraftProxy.getAssemblyTableProviderClass() != null) {
-			SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Silicon", "AssemblyTable", SimpleServiceLocator.buildCraftProxy.getAssemblyTableProviderClass()));
-		}
-		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("Railcraft", "RollingMachine", RollingMachine.class));
-		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("Tubestuff", "ImmibisCraftingTableMk2", ImmibisCraftingTableMk2.class));
-		SimpleServiceLocator.addCraftingRecipeProvider(new SolderingStation());
-		SimpleServiceLocator.addCraftingRecipeProvider(new LogisticsCraftingTable());
-
-		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("Forestry", "Generic", ForestryProgressProvider.class));
-		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("ThermalExpansion", "Generic", ThermalExpansionProgressProvider.class));
-		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("IC2", "Generic", IC2ProgressProvider.class));
-
-		MainProxy.proxy.registerTileEntities();
-
+	private void registerRecipes() {
 		ICraftingParts parts = SimpleServiceLocator.buildCraftProxy.getRecipeParts();
 		//NO BC => NO RECIPES (for now)
 		if (parts != null) {
@@ -513,25 +531,15 @@ public class LogisticsPipes {
 		if (parts != null) {
 			SimpleServiceLocator.cofhPowerProxy.addCraftingRecipes(parts);
 		}
-
-		//Registering special particles
-		MainProxy.proxy.registerParticles();
-
-		//init Fluids
-		FluidIdentifier.initFromForge(false);
-
-		versionChecker = VersionChecker.runVersionCheck();
 	}
 
 	private void loadClasses() {
 		//Try to load all classes to let out checksums get generated
-		forName("buildcraft.transport.PipeTransportItems");
-		forName("buildcraft.transport.PipeEventBus");
-		forName("buildcraft.transport.render.PipeRendererTESR");
-		forName("buildcraft.transport.render.FacadeRenderHelper");
-		forName("net.minecraft.crash.CrashReport");
 		forName("net.minecraft.tileentity.TileEntity");
 		forName("net.minecraft.world.World");
+		forName("net.minecraft.item.ItemStack");
+		forName("net.minecraftforge.fluids.FluidStack");
+		forName("net.minecraftforge.fluids.Fluid");
 		forName("dan200.computercraft.core.lua.LuaJLuaMachine");
 		forName("cofh.thermaldynamics.block.TileTDBase");
 		forName("cofh.thermaldynamics.duct.item.TravelingItem");

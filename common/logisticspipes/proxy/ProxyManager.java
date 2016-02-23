@@ -120,7 +120,7 @@ public class ProxyManager {
 	}
 
 	public static void load() {
-		SimpleServiceLocator.setBuildCraftProxy(ProxyManager.getWrappedProxy("BuildCraft|Transport", IBCProxy.class, BuildCraftProxy.class, new IBCProxy() {
+		SimpleServiceLocator.setBuildCraftProxy(ProxyManager.getWrappedProxy("BuildCraft|Transport+BuildCraft|Silicon+BuildCraft|Robotics", IBCProxy.class, BuildCraftProxy.class, new IBCProxy() {
 			@Override public void resetItemRotation() {}
 			@Override public boolean isIPipeTile(TileEntity tile) {return false;}
 			@Override public void registerPipeInformationProvider() {}
@@ -336,7 +336,7 @@ public class ProxyManager {
 			@Override public void openEnderChest(World world, int x, int y, int z, EntityPlayer player) {}
 		}));
 
-		SimpleServiceLocator.setOpenComputersProxy(ProxyManager.getWrappedProxy("OpenComputers@1.3", IOpenComputersProxy.class, OpenComputersProxy.class, new IOpenComputersProxy() {
+		SimpleServiceLocator.setOpenComputersProxy(ProxyManager.getWrappedProxy(LPConstants.openComputersModID, IOpenComputersProxy.class, OpenComputersProxy.class, new IOpenComputersProxy() {
 			@Override public void initLogisticsTileGenericPipe(LogisticsTileGenericPipe tile) {}
 			@Override public void initLogisticsSolidTileEntity(LogisticsSolidTileEntity tile) {}
 			@Override public void handleWriteToNBT(IOCTile tile, NBTTagCompound nbt) {}

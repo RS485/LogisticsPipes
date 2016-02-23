@@ -30,6 +30,7 @@ public class LogisticsNewPipeItemBoxRenderer {
 	private static final Map<FluidIdentifier, int[]> renderLists = new HashMap<FluidIdentifier, int[]>();
 
 	public void doRenderItem(ItemStack itemstack, float light, double x, double y, double z, double boxScale, double yaw, double pitch) {
+		if(LogisticsNewRenderPipe.innerTransportBox == null) return;
 		GL11.glPushMatrix();
 
 		if (renderList == -1) {

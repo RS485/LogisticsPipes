@@ -1,12 +1,13 @@
-package logisticspipes.asm.bc;
+package logisticspipes.proxy.buildcraft;
 
+import buildcraft.api.core.EnumColor;
+import buildcraft.transport.TravelingItem;
+import buildcraft.transport.render.PipeTransportItemsRenderer;
 import logisticspipes.renderer.LogisticsRenderPipe;
 
-import buildcraft.transport.TravelingItem;
-
-public class RenderItemInPipeHook {
-
-	public static void renderItemInPipe(TravelingItem travellingItem, double x, double y, double z, float light) {
+public class BCLPPipeTransportItemsRenderer extends PipeTransportItemsRenderer {
+	@Override
+	public void doRenderItem(TravelingItem travellingItem, double x, double y, double z, float light, EnumColor color) {
 		if (travellingItem != null && travellingItem.getItemStack() != null && travellingItem.getItemStack().hasTagCompound()) {
 			if (travellingItem.getItemStack().getTagCompound().getString("LogsitcsPipes_ITEM_ON_TRANSPORTATION").equals("YES")) {
 				if (LogisticsRenderPipe.boxRenderer != null) {
@@ -14,5 +15,6 @@ public class RenderItemInPipeHook {
 				}
 			}
 		}
+		super.doRenderItem(travellingItem, x, y, z, light, color);
 	}
 }

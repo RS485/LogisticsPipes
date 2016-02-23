@@ -32,7 +32,7 @@ public class AddItemToTrackPacket extends CoordinatesPacket {
 		LogisticsStatisticsTileEntity tile = this.getTile(player.getEntityWorld(), LogisticsStatisticsTileEntity.class);
 		boolean found = false;
 		for (TrackingTask task : tile.tasks) {
-			if (task.item == item) {
+			if (task.item.equals(item)) {
 				found = true;
 				break;
 			}

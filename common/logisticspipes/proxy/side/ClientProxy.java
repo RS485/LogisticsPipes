@@ -12,6 +12,7 @@ import logisticspipes.blocks.powertile.LogisticsIC2PowerProviderTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
 import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
+import logisticspipes.gui.GuiCraftingPipe;
 import logisticspipes.gui.modules.ModuleBaseGui;
 import logisticspipes.gui.popup.SelectItemOutOfList;
 import logisticspipes.gui.popup.SelectItemOutOfList.IHandleItemChoise;
@@ -236,6 +237,9 @@ public class ClientProxy implements IProxy {
 	public LogisticsModule getModuleFromGui() {
 		if (FMLClientHandler.instance().getClient().currentScreen instanceof ModuleBaseGui) {
 			return ((ModuleBaseGui) FMLClientHandler.instance().getClient().currentScreen).getModule();
+		}
+		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiCraftingPipe) {
+			return ((GuiCraftingPipe) FMLClientHandler.instance().getClient().currentScreen).get_pipe();
 		}
 		return null;
 	}

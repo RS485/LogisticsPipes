@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import buildcraft.robotics.DockingStationPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.buildcraft.robots.LPRobotConnectionControl;
 import logisticspipes.proxy.buildcraft.robots.boards.LogisticsRoutingBoardRobot;
@@ -185,6 +186,12 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 					}
 				} else if (activeActions.containsKey(direction)) {
 					activeActions.remove(direction);
+				}
+
+				if(p instanceof RobotStationPluggable) {
+					if(((RobotStationPluggable)p).getStation() != null && ((RobotStationPluggable)p).getStation().robotTaking() != null && ((RobotStationPluggable)p).getStation().robotTaking().getBoard() instanceof LogisticsRoutingBoardRobot) {
+						((RobotStationPluggable)p).getStation().robotTaking().getBoard().cycle();
+					}
 				}
 			}
 		}

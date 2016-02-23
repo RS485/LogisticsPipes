@@ -90,7 +90,7 @@ public class ChassiGuiProvider extends BooleanModuleCoordinatesGuiProvider {
 		if (stack == null) {
 			return false;
 		}
-		if (stack.getItem() != LogisticsPipes.UpgradeItem) {
+		if (!stack.getItem().equals(LogisticsPipes.UpgradeItem)) {
 			return false;
 		}
 		LogisticsModule module = chassiPipe.getModules().getModule(moduleSlot);

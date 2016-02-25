@@ -53,6 +53,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTree;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.request.resources.DictResource;
+import logisticspipes.request.resources.IResource;
 import logisticspipes.request.resources.ItemResource;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsPromise;
@@ -309,7 +310,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 			HashMap<ItemIdentifier, Integer> available = new HashMap<ItemIdentifier, Integer>();
 			getAllItems(available, filters);
 			for (Entry<ItemIdentifier, Integer> item : available.entrySet()) {
-				if (!dict.matches(item.getKey())) {
+				if (!dict.matches(item.getKey(), IResource.MatchSettings.NORMAL)) {
 					continue;
 				}
 				int canProvide = getAvailableItemCount(item.getKey());

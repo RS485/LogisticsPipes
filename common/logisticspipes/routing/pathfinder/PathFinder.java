@@ -321,7 +321,7 @@ public class PathFinder {
 						DoubleCoordinates pos = new DoubleCoordinates(currentPipe);
 						for (RouteInfo info : list) {
 							if(info.getPipe() == startPipe) continue;
-							if (setVisited.contains(new LPPosition(info.getPipe()))) {
+							if (setVisited.contains(new DoubleCoordinates(info.getPipe()))) {
 								//Don't go where we have been before
 								continue;
 							}

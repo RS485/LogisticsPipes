@@ -415,7 +415,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				for (ItemIdentifierStack craftable : stack) {
 					DictResource dict = new DictResource(craftable, null);
 					dict.loadFromBitSet(outputFuzzyFlags.getBitSet());
-					if (toCraft.matches(craftable.getItem()) && dict.matches(((DictResource) toCraft).getItem()) && dict.getBitSet().equals(((DictResource) toCraft).getBitSet())) {
+					if (toCraft.matches(craftable.getItem(), IResource.MatchSettings.NORMAL) && dict.matches(((DictResource) toCraft).getItem(), IResource.MatchSettings.NORMAL) && dict.getBitSet().equals(((DictResource) toCraft).getBitSet())) {
 						template = new DictCraftingTemplate(dict, this, priority);
 						break;
 					}
@@ -423,7 +423,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			}
 		} else {
 			for (ItemIdentifierStack craftable : stack) {
-				if (toCraft.matches(craftable.getItem())) {
+				if (toCraft.matches(craftable.getItem(), IResource.MatchSettings.NORMAL)) {
 					template = new ItemCraftingTemplate(craftable, this, priority);
 					break;
 				}
@@ -583,7 +583,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			return false;
 		}
 		if (toCraft instanceof ItemResource || toCraft instanceof DictResource) {
-			return toCraft.matches(getCraftedItem().getItem());
+			return toCraft.matches(getCraftedItem().getItem(), IResource.MatchSettings.NORMAL);
 		}
 		return false;
 	}
@@ -1222,9 +1222,9 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			// retrieve the new crafted items
 			ItemStack extracted = null;
 			AdjacentTileEntity adjacent = null;
-			for (AdjacentTileEntity adjacentCrafter : adjacentCrafters) {
-				adjacent = adjacentCrafter;
-				extracted = extract(adjacent, nextOrder.getResource().getItem(), maxtosend);
+			for (Iterator<AdjacentTileEntity> it = adjacentCrafters.iterator(); it.hasNext();) {
+				adjacent = it.next();
+				extracted = extract(adjacent, nextOrder.getResource(), maxtosend);
 				if (extracted != null && extracted.stackSize > 0) {
 					break;
 				}
@@ -1301,7 +1301,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	private boolean doesExtractionMatch(LogisticsItemOrder nextOrder, ItemIdentifier extractedID) {
-		return nextOrder.getResource().getItem().equals(extractedID) || (this.getUpgradeManager().isFuzzyUpgrade() && nextOrder.getResource().getBitSet().nextSetBit(0) != -1 && nextOrder.getResource().matches(extractedID));
+		return nextOrder.getResource().getItem().equals(extractedID) || (this.getUpgradeManager().isFuzzyUpgrade() && nextOrder.getResource().getBitSet().nextSetBit(0) != -1 && nextOrder.getResource().matches(extractedID, IResource.MatchSettings.NORMAL));
 	}
 
 	private boolean cachedAreAllOrderesToBuffer;
@@ -1346,11 +1346,11 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		}
 	}
 
-	private ItemStack extract(AdjacentTileEntity adjacent, ItemIdentifier item, int amount) {
+	private ItemStack extract(AdjacentTileEntity adjacent, IResource item, int amount) {
 		if (adjacent.tileEntity instanceof LogisticsCraftingTableTileEntity) {
 			return extractFromLogisticsCraftingTable((LogisticsCraftingTableTileEntity) adjacent.tileEntity, item, amount, adjacent.direction);
-		} else if (adjacent.tileEntity instanceof ISidedInventory) {
-			IInventory sidedadapter = new SidedInventoryMinecraftAdapter((ISidedInventory) adjacent.tileEntity, ForgeDirection.UNKNOWN, true);
+		} else if (adjacent.tileEntity instanceof net.minecraft.inventory.ISidedInventory) {
+			IInventory sidedadapter = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) adjacent.tileEntity, ForgeDirection.UNKNOWN, true);
 			return extractFromIInventory(sidedadapter, item, amount, adjacent.direction);
 		} else if (adjacent.tileEntity instanceof IInventory) {
 			return extractFromIInventory((IInventory) adjacent.tileEntity, item, amount, adjacent.direction);
@@ -1368,16 +1368,35 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		return null;
 	}
 
-	private ItemStack extractFromIInventory(IInventory inv, ItemIdentifier wanteditem, int count, ForgeDirection dir) {
+	private ItemStack extractFromIInventory(IInventory inv, IResource wanteditem, int count, ForgeDirection dir) {
 		IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv, dir);
-		int available = invUtil.itemCount(wanteditem);
+		ItemIdentifier itemToExtract = null;
+		if(wanteditem instanceof ItemResource) {
+			itemToExtract = ((ItemResource) wanteditem).getItem();
+		} else if(wanteditem instanceof DictResource) {
+			int max = Integer.MIN_VALUE;
+			ItemIdentifier toExtract = null;
+			for (Map.Entry<ItemIdentifier, Integer> content : invUtil.getItemsAndCount().entrySet()) {
+				if (wanteditem.matches(content.getKey(), IResource.MatchSettings.NORMAL)) {
+					if (content.getValue() > max) {
+						max = content.getValue();
+						toExtract = content.getKey();
+					}
+				}
+			}
+			if(toExtract == null) {
+				return null;
+			}
+			itemToExtract = toExtract;
+		}
+		int available = invUtil.itemCount(itemToExtract);
 		if (available == 0) {
 			return null;
 		}
 		if (!_service.useEnergy(neededEnergy() * Math.min(count, available))) {
 			return null;
 		}
-		return invUtil.getMultipleItems(wanteditem, Math.min(count, available));
+		return invUtil.getMultipleItems(itemToExtract, Math.min(count, available));
 	}
 
 	private ItemStack extractFromIInventoryFiltered(IInventory inv, ItemIdentifierInventory filter, boolean isExcluded, int filterInvLimit, ForgeDirection dir) {
@@ -1429,7 +1448,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		return invUtil.getMultipleItems(wanteditem, Math.min(64, available));
 	}
 
-	private ItemStack extractFromLogisticsCraftingTable(LogisticsCraftingTableTileEntity tile, ItemIdentifier wanteditem, int count, ForgeDirection dir) {
+	private ItemStack extractFromLogisticsCraftingTable(LogisticsCraftingTableTileEntity tile, IResource wanteditem, int count, ForgeDirection dir) {
 		ItemStack extracted = extractFromIInventory(tile, wanteditem, count, dir);
 		if (extracted != null) {
 			return extracted;
@@ -1441,15 +1460,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				break;
 			}
 			if (retstack == null) {
-				if(getUpgradeManager().isFuzzyUpgrade() && outputFuzzyFlags.getBitSet().nextSetBit(0) != -1) {
-					outputFuzzyFlags.stack = wanteditem.makeStack(1);
-					if(!outputFuzzyFlags.matches(ItemIdentifier.get(stack))) {
-						break;
-					}
-				} else {
-					if (!wanteditem.equalsWithoutNBT(stack)) {
-						break;
-					}
+				if(!wanteditem.matches(ItemIdentifier.get(stack), wanteditem instanceof ItemResource ? IResource.MatchSettings.WITHOUT_NBT : IResource.MatchSettings.NORMAL)) {
+					break;
 				}
 			} else {
 				if (!retstack.isItemEqual(stack)) {

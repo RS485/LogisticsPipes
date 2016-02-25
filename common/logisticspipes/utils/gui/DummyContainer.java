@@ -212,9 +212,16 @@ public class DummyContainer extends Container {
 		}
 		if (!to.getHasStack() && !ignoreEmpty) {
 			ItemStack out = from.getStack();
+			boolean remove = true;
+			if(out.stackSize > to.getSlotStackLimit()) {
+				out = from.decrStackSize(to.getSlotStackLimit());
+				remove = false;
+			}
 			from.onPickupFromSlot(player, out);
 			to.putStack(out);
-			from.putStack(null);
+			if(remove) {
+				from.putStack(null);
+			}
 			return true;
 		}
 		if(from instanceof ModuleSlot || to instanceof ModuleSlot) {

@@ -43,6 +43,7 @@ import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.request.RequestTree;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.request.resources.DictResource;
+import logisticspipes.request.resources.IResource;
 import logisticspipes.request.resources.ItemResource;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsPromise;
@@ -234,7 +235,7 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 			if (inv != null) {
 				Map<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
 				for (ItemIdentifier item : currentInv.keySet()) {
-					if (((DictResource) tree.getRequestType()).matches(item)) {
+					if (((DictResource) tree.getRequestType()).matches(item, IResource.MatchSettings.NORMAL)) {
 						possible.add(item);
 					}
 				}

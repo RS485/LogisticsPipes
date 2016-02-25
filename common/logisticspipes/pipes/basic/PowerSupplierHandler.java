@@ -63,6 +63,7 @@ public class PowerSupplierHandler {
 
 			double globalNeed = 0;
 			double[] need = new double[(int) adjacentTileEntityStream.count()];
+			adjacentTileEntityStream = new WorldCoordinatesWrapper(pipe.container).getAdjacentTileEntities();
 			int i = 0;
 			Iterator<AdjacentTileEntity> adjacentIt = adjacentTileEntityStream.iterator();
 			while (adjacentIt.hasNext()) {
@@ -159,6 +160,7 @@ public class PowerSupplierHandler {
 
 			double globalNeed = 0;
 			double[] need = new double[(int) adjacentTileEntityStream.count()];
+			adjacentTileEntityStream = new WorldCoordinatesWrapper(pipe.container).getAdjacentTileEntities();
 			int i = 0;
 			Iterator<AdjacentTileEntity> adjacentIt = adjacentTileEntityStream.iterator();
 			while (adjacentIt.hasNext()) {

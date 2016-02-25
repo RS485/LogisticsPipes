@@ -29,36 +29,44 @@ public final class SidedInventoryMinecraftAdapter implements IInventory {
 
 	public final ISidedInventory _sidedInventory;
 	private final int _side;
-	private final int _slotMap[];
+	private final boolean _forExtraction;
+	private int[] _slotMapCache;
 
 	public SidedInventoryMinecraftAdapter(ISidedInventory sidedInventory, ForgeDirection side, boolean forExtraction) {
 		_sidedInventory = sidedInventory;
 		_side = side.ordinal();
-		if (side == ForgeDirection.UNKNOWN) {
-			_slotMap = buildAllSidedMap(sidedInventory, forExtraction);
-		} else {
-			ArrayList<Integer> list = new ArrayList<Integer>();
-
-			int allSlots[] = _sidedInventory.getAccessibleSlotsFromSide(_side);
-			for (int number : allSlots) {
-				ItemStack item = _sidedInventory.getStackInSlot(number);
-				if (!list.contains(number) && (!forExtraction || // check extract condition
-						(item != null && _sidedInventory.canExtractItem(number, item, _side)))) {
-					list.add(number);
-				}
-			}
-			_slotMap = Ints.toArray(list);
-		}
+		_forExtraction = forExtraction;
 	}
 
-	private int[] buildAllSidedMap(ISidedInventory sidedInventory, boolean forExtraction) {
+	private int[] getSlotMap() {
+		if(_slotMapCache == null) {
+			if (_side == ForgeDirection.UNKNOWN.ordinal()) {
+				_slotMapCache = buildAllSidedMap();
+			} else {
+				ArrayList<Integer> list = new ArrayList<Integer>();
+
+				int allSlots[] = _sidedInventory.getAccessibleSlotsFromSide(_side);
+				for (int number : allSlots) {
+					ItemStack item = _sidedInventory.getStackInSlot(number);
+					if (!list.contains(number) && (!_forExtraction || // check extract condition
+							(item != null && _sidedInventory.canExtractItem(number, item, _side)))) {
+						list.add(number);
+					}
+				}
+				_slotMapCache = Ints.toArray(list);
+			}
+		}
+		return _slotMapCache;
+	}
+
+	private int[] buildAllSidedMap() {
 		ArrayList<Integer> list = new ArrayList<Integer>();
 
 		for (int i = 0; i < 6; i++) {
 			int slots[] = _sidedInventory.getAccessibleSlotsFromSide(i);
 			for (int number : slots) {
 				ItemStack item = _sidedInventory.getStackInSlot(number);
-				if (!list.contains(number) && (!forExtraction || // check extract condition
+				if (!list.contains(number) && (!_forExtraction || // check extract condition
 						(item != null && _sidedInventory.canExtractItem(number, item, i)))) {
 					list.add(number);
 				}
@@ -74,22 +82,22 @@ public final class SidedInventoryMinecraftAdapter implements IInventory {
 
 	@Override
 	public int getSizeInventory() {
-		return _slotMap.length;
+		return getSlotMap().length;
 	}
 
 	@Override
 	public ItemStack getStackInSlot(int i) {
-		return _sidedInventory.getStackInSlot(_slotMap[i]);
+		return _sidedInventory.getStackInSlot(getSlotMap()[i]);
 	}
 
 	@Override
 	public ItemStack decrStackSize(int i, int j) {
-		return _sidedInventory.decrStackSize(_slotMap[i], j);
+		return _sidedInventory.decrStackSize(getSlotMap()[i], j);
 	}
 
 	@Override
 	public void setInventorySlotContents(int i, ItemStack itemstack) {
-		_sidedInventory.setInventorySlotContents(_slotMap[i], itemstack);
+		_sidedInventory.setInventorySlotContents(getSlotMap()[i], itemstack);
 	}
 
 	@Override
@@ -124,7 +132,7 @@ public final class SidedInventoryMinecraftAdapter implements IInventory {
 
 	@Override
 	public ItemStack getStackInSlotOnClosing(int slot) {
-		return _sidedInventory.getStackInSlotOnClosing(_slotMap[slot]);
+		return _sidedInventory.getStackInSlotOnClosing(getSlotMap()[slot]);
 	}
 
 	@Override
@@ -134,6 +142,6 @@ public final class SidedInventoryMinecraftAdapter implements IInventory {
 
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack itemstack) {
-		return _sidedInventory.isItemValidForSlot(_slotMap[slot], itemstack) && _sidedInventory.canInsertItem(_slotMap[slot], itemstack, _side);
+		return _sidedInventory.isItemValidForSlot(getSlotMap()[slot], itemstack) && _sidedInventory.canInsertItem(getSlotMap()[slot], itemstack, _side);
 	}
 }

@@ -23,6 +23,7 @@ import logisticspipes.routing.IRouterManager;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.order.IDistanceTracker;
 import logisticspipes.utils.FluidIdentifier;
+import logisticspipes.utils.SlidingWindowBitSet;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.LPPosition;
 import logisticspipes.utils.tuples.Pair;
@@ -43,7 +44,7 @@ public abstract class LPTravelingItem {
 	public static final Map<Integer, WeakReference<LPTravelingItemServer>> serverList = new HashMap<Integer, WeakReference<LPTravelingItemServer>>();
 	public static final Map<Integer, WeakReference<LPTravelingItemClient>> clientList = new HashMap<Integer, WeakReference<LPTravelingItemClient>>();
 	public static final List<Pair<Integer, Object>> forceKeep = new ArrayList<Pair<Integer, Object>>();
-	public static final BitSet clientSideKnownIDs = new BitSet();
+	public static final SlidingWindowBitSet clientSideKnownIDs = new SlidingWindowBitSet(20); // 20
 
 	private static int nextFreeId = 0;
 	protected int id;

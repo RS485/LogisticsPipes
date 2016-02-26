@@ -56,6 +56,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 
 public class LogisticsBlockGenericPipe extends BlockContainer {
 
@@ -686,8 +687,21 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			if (pipe.preventRemove()) {
 				throw new UnsupportedOperationException("A multi block can't be protected against removal.");
 			}
+			LPPositionSet<DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare>> list = ((CoreMultiBlockPipe) pipe).getRotatedSubBlocks();
+			list.stream().forEach(pos -> pos.add(new DoubleCoordinates(pipe)));
 			for (DoubleCoordinates pos : pipe.container.subMultiBlock) {
-				pos.setBlockToAir(world);
+				TileEntity tile = pos.getTileEntity(world);
+				if(tile instanceof LogisticsTileGenericSubMultiBlock) {
+					DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare> equ = list.findClosest(pos);
+					if(equ != null) {
+						((LogisticsTileGenericSubMultiBlock) tile).removeSubType(equ.getType());
+					}
+					if(((LogisticsTileGenericSubMultiBlock) tile).removeMainPipe(new DoubleCoordinates(pipe))) {
+						pos.setBlockToAir(world);
+					} else {
+						MainProxy.sendPacketToAllWatchingChunk(tile, ((LogisticsTileGenericSubMultiBlock) tile).getLPDescriptionPacket());
+					}
+				}
 			}
 		}
 
@@ -977,11 +991,22 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 					orientation.setOnPipe(mPipe);
 					DoubleCoordinates placeAt = new DoubleCoordinates(i, j, k);
 					LogisticsBlockGenericSubMultiBlock.currentCreatedMultiBlock = placeAt;
-					LPPositionSet positions = ((CoreMultiBlockPipe) pipe).getSubBlocks();
+					LPPositionSet<DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare>> positions = ((CoreMultiBlockPipe) pipe).getSubBlocks();
 					orientation.rotatePositions(positions);
-					for (DoubleCoordinates pos : positions) {
+					for (DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare> pos : positions) {
 						pos.add(placeAt);
-						world.setBlock(pos.getXInt(), pos.getYInt(), pos.getZInt(), LogisticsPipes.LogisticsSubMultiBlock, 0, 2);
+						TileEntity subTile = world.getTileEntity(pos.getXInt(), pos.getYInt(), pos.getZInt());
+						if(subTile instanceof LogisticsTileGenericSubMultiBlock) {
+							((LogisticsTileGenericSubMultiBlock) subTile).addMultiBlockMainPos(placeAt);
+							((LogisticsTileGenericSubMultiBlock) subTile).addSubTypeTo(pos.getType());
+							MainProxy.sendPacketToAllWatchingChunk(subTile, ((LogisticsTileGenericSubMultiBlock) subTile).getLPDescriptionPacket());
+						} else {
+							world.setBlock(pos.getXInt(), pos.getYInt(), pos.getZInt(), LogisticsPipes.LogisticsSubMultiBlock, 0, 2);
+							subTile = world.getTileEntity(pos.getXInt(), pos.getYInt(), pos.getZInt());
+							if (subTile instanceof LogisticsTileGenericSubMultiBlock) {
+								((LogisticsTileGenericSubMultiBlock) subTile).addSubTypeTo(pos.getType());
+							}
+						}
 						world.notifyBlockChange(pos.getXInt(), pos.getYInt(), pos.getZInt(), LogisticsPipes.LogisticsSubMultiBlock);
 					}
 					LogisticsBlockGenericSubMultiBlock.currentCreatedMultiBlock = null;
@@ -1145,8 +1170,8 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				for (int j = 0; j < its; ++j) {
 					for (int k = 0; k < its; ++k) {
 						if (pipe.isMultiBlock()) {
-							LPPositionSet set = ((CoreMultiBlockPipe) pipe).getRotatedSubBlocks();
-							set.add(new DoubleCoordinates(0, 0, 0));
+							LPPositionSet<DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare>> set = ((CoreMultiBlockPipe) pipe).getRotatedSubBlocks();
+							set.add(new DoubleCoordinatesType<>(0, 0, 0, CoreMultiBlockPipe.SubBlockTypeForShare.NON_SHARE));
 							for (DoubleCoordinates pos : set) {
 								int localx = x + pos.getXInt();
 								int localy = y + pos.getYInt();

@@ -1,7 +1,5 @@
 package logisticspipes.transport;
 
-import java.util.BitSet;
-
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.pipe.PipeFluidUpdate;

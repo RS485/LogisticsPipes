@@ -34,6 +34,9 @@ public class PipePositionPacket extends CoordinatesPacket {
 	@Getter
 	@Setter
 	private ForgeDirection output;
+	@Getter
+	@Setter
+	private float yaw;
 
 	public PipePositionPacket(int id) {
 		super(id);
@@ -45,7 +48,7 @@ public class PipePositionPacket extends CoordinatesPacket {
 		if (tile == null || tile.pipe == null || tile.pipe.transport == null) {
 			return;
 		}
-		tile.pipe.transport.handleItemPositionPacket(travelId, input, output, speed, position);
+		tile.pipe.transport.handleItemPositionPacket(travelId, input, output, speed, position, yaw);
 	}
 
 	@Override
@@ -56,6 +59,7 @@ public class PipePositionPacket extends CoordinatesPacket {
 		data.writeFloat(position);
 		data.writeForgeDirection(input);
 		data.writeForgeDirection(output);
+		data.writeFloat(yaw);
 	}
 
 	@Override
@@ -66,6 +70,7 @@ public class PipePositionPacket extends CoordinatesPacket {
 		position = data.readFloat();
 		input = data.readForgeDirection();
 		output = data.readForgeDirection();
+		yaw = data.readFloat();
 	}
 
 	@Override

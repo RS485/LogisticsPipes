@@ -33,6 +33,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 
 public class HSTubeCurve extends CoreMultiBlockPipe {
 
@@ -77,6 +78,7 @@ public class HSTubeCurve extends CoreMultiBlockPipe {
 		SOUTH_WEST(ForgeDirection.SOUTH, ForgeDirection.WEST),
 		WEST_NORTH(ForgeDirection.WEST, ForgeDirection.NORTH);
 		//@formatter:on
+		@Getter
 		ForgeDirection dir1;
 		ForgeDirection dir2;
 
@@ -131,20 +133,20 @@ public class HSTubeCurve extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public LPPositionSet getSubBlocks() {
-		LPPositionSet list = new LPPositionSet();
-		list.add(new DoubleCoordinates(-1, 0, 0));
-		list.add(new DoubleCoordinates(0, 0, 1));
-		list.add(new DoubleCoordinates(-1, 0, 1));
-		list.add(new DoubleCoordinates(-2, 0, 1));
-		list.add(new DoubleCoordinates(-1, 0, 2));
-		list.add(new DoubleCoordinates(-2, 0, 2));
+	public LPPositionSet<DoubleCoordinatesType<SubBlockTypeForShare>> getSubBlocks() {
+		LPPositionSet<DoubleCoordinatesType<SubBlockTypeForShare>> list = new LPPositionSet<>(DoubleCoordinatesType.class);
+		list.add(new DoubleCoordinatesType<>(-1, 0, 0, SubBlockTypeForShare.CURVE_INNER_A));
+		list.add(new DoubleCoordinatesType<>(0, 0, 1, SubBlockTypeForShare.CURVE_OUT_A));
+		list.add(new DoubleCoordinatesType<>(-1, 0, 1, SubBlockTypeForShare.NON_SHARE));
+		list.add(new DoubleCoordinatesType<>(-2, 0, 1, SubBlockTypeForShare.CURVE_INNER_B));
+		list.add(new DoubleCoordinatesType<>(-1, 0, 2, SubBlockTypeForShare.CURVE_OUT_B));
+		list.add(new DoubleCoordinatesType<>(-2, 0, 2, SubBlockTypeForShare.NON_SHARE));
 		return list;
 	}
 
 	@Override
-	public LPPositionSet getRotatedSubBlocks() {
-		LPPositionSet set = getSubBlocks();
+	public LPPositionSet<DoubleCoordinatesType<SubBlockTypeForShare>> getRotatedSubBlocks() {
+		LPPositionSet<DoubleCoordinatesType<SubBlockTypeForShare>> set = getSubBlocks();
 		orientation.rotatePositions(set);
 		return set;
 	}
@@ -298,7 +300,7 @@ public class HSTubeCurve extends CoreMultiBlockPipe {
 		}
 		if (ori.dir1 == output) {
 			DoubleCoordinates pos = new DoubleCoordinates(-2, 0, 2);
-			LPPositionSet set = new LPPositionSet();
+			LPPositionSet<DoubleCoordinates> set = new LPPositionSet<>(DoubleCoordinates.class);
 			set.add(pos);
 			orientation.rotatePositions(set);
 			TileEntity subTile = pos.add(getLPPosition()).getTileEntity(getWorld());
@@ -327,7 +329,7 @@ public class HSTubeCurve extends CoreMultiBlockPipe {
 
 	@Override
 	public DoubleCoordinates getItemRenderPos(float fPos, LPTravelingItem travelItem) {
-		if (orientation.getOffset().getXInt() == 0) {
+		if(orientation.getRenderOrientation().getDir1().getOpposite() != travelItem.input) {
 			fPos = transport.getPipeLength() - fPos;
 		}
 		double angle = 0;
@@ -365,7 +367,7 @@ public class HSTubeCurve extends CoreMultiBlockPipe {
 
 	@Override
 	public double getItemRenderYaw(float fPos, LPTravelingItem travelItem) {
-		if (orientation.getOffset().getXInt() == 0) {
+		if(orientation.getRenderOrientation().getDir1().getOpposite() != travelItem.input) {
 			fPos = transport.getPipeLength() - fPos;
 		}
 		double angle = 0;
@@ -383,9 +385,8 @@ public class HSTubeCurve extends CoreMultiBlockPipe {
 
 	@Override
 	public double getBoxRenderScale(float fPos, LPTravelingItem travelItem) {
-		/*
-		if(orientation.getOffset().getXInt() == 0) {
-			fPos = this.transport.getPipeLength() - fPos;
+		if(orientation.getRenderOrientation().getDir1().getOpposite() != travelItem.input) {
+			fPos = transport.getPipeLength() - fPos;
 		}
 		if(fPos > this.transport.getPipeLength() - 0.5) {
 			return 1 - (this.transport.getPipeLength() - fPos) * 0.1D;
@@ -394,8 +395,6 @@ public class HSTubeCurve extends CoreMultiBlockPipe {
 		} else {
 			return 1 - fPos * 0.1D;
 		}
-		 */
-		return 1;
 	}
 
 	@Override

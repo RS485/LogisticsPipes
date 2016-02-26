@@ -3,10 +3,7 @@ package logisticspipes.network;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -177,6 +174,15 @@ public class LPDataInputStream extends DataInputStream {
 	public <T> List<T> readList(IReadListObject<T> handler) throws IOException {
 		int size = readInt();
 		List<T> list = new ArrayList<T>(size);
+		for (int i = 0; i < size; i++) {
+			list.add(handler.readObject(this));
+		}
+		return list;
+	}
+
+	public <T> Set<T> readSet(IReadListObject<T> handler) throws IOException {
+		int size = readInt();
+		Set<T> list = new HashSet<>(size);
 		for (int i = 0; i < size; i++) {
 			list.add(handler.readObject(this));
 		}

@@ -12,11 +12,9 @@ import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.tubes.HSTubeSpeedup;
 import logisticspipes.pipes.tubes.HSTubeSpeedup.SpeedupDirection;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.object3d.interfaces.I3DOperation;
 import logisticspipes.proxy.object3d.interfaces.IModel3D;
-import logisticspipes.proxy.object3d.operation.LPColourMultiplier;
-import logisticspipes.proxy.object3d.operation.LPRotation;
-import logisticspipes.proxy.object3d.operation.LPScale;
-import logisticspipes.proxy.object3d.operation.LPTranslation;
+import logisticspipes.proxy.object3d.operation.*;
 import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
 import logisticspipes.renderer.newpipe.ISpecialPipeRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
@@ -77,7 +75,7 @@ public final class SpeedupTubeRenderer implements ISpecialPipeRenderer, IHighlig
 			if (tube.getOrientation() != null) {
 				SpeedupDirection speedupDirection = (SpeedupDirection) tube.getOrientation().getRenderOrientation();
 				for (IModel3D model : SpeedupTubeRenderer.tubeSpeedupBase.get(speedupDirection)) {
-					objectsToRender.add(new RenderEntry(model, SpeedupTubeRenderer.TEXTURE));
+					objectsToRender.add(new RenderEntry(model,  new I3DOperation[] { new LPUVTransformationList(new LPUVTranslation(0, 0)) }, SpeedupTubeRenderer.TEXTURE));
 				}
 			}
 		}

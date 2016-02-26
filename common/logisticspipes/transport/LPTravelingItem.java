@@ -57,6 +57,7 @@ public abstract class LPTravelingItem {
 
 	protected TileEntity container;
 	protected float position = 0;
+	protected float yaw = 0;
 	public ForgeDirection input = ForgeDirection.UNKNOWN;
 	public ForgeDirection output = ForgeDirection.UNKNOWN;
 	public final EnumSet<ForgeDirection> blacklist = EnumSet.noneOf(ForgeDirection.class);
@@ -65,11 +66,12 @@ public abstract class LPTravelingItem {
 		id = getNextId();
 	}
 
-	public LPTravelingItem(int id, float position, ForgeDirection input, ForgeDirection output) {
+	public LPTravelingItem(int id, float position, ForgeDirection input, ForgeDirection output, float yaw) {
 		this.id = id;
 		this.position = position;
 		this.input = input;
 		this.output = output;
+		this.yaw = yaw;
 	}
 
 	public LPTravelingItem(int id) {
@@ -84,8 +86,16 @@ public abstract class LPTravelingItem {
 		this.position = position;
 	}
 
+	public void setYaw(float yaw) {
+		this.yaw = yaw % 360;
+	}
+
 	public float getPosition() {
 		return position;
+	}
+
+	public float getYaw() {
+		return yaw;
 	}
 
 	public float getSpeed() {
@@ -133,8 +143,8 @@ public abstract class LPTravelingItem {
 		private int age;
 		private float hoverStart = (float) (Math.random() * Math.PI * 2.0D);
 
-		public LPTravelingItemClient(int id, float position, ForgeDirection input, ForgeDirection output) {
-			super(id, position, input, output);
+		public LPTravelingItemClient(int id, float position, ForgeDirection input, ForgeDirection output, float yaw) {
+			super(id, position, input, output, yaw);
 		}
 
 		public LPTravelingItemClient(int id, ItemIdentifierStack stack) {
@@ -147,11 +157,12 @@ public abstract class LPTravelingItem {
 			return item;
 		}
 
-		public void updateInformation(ForgeDirection input, ForgeDirection output, float speed, float position) {
+		public void updateInformation(ForgeDirection input, ForgeDirection output, float speed, float position, float yaw) {
 			this.input = input;
 			this.output = output;
 			this.speed = speed;
 			this.position = position;
+			this.yaw = yaw;
 		}
 
 		@Override
@@ -171,7 +182,7 @@ public abstract class LPTravelingItem {
 
 		@Override
 		public LPTravelingItem renderCopy() {
-			LPTravelingItemClient copy = new LPTravelingItemClient(id, position, input, output);
+			LPTravelingItemClient copy = new LPTravelingItemClient(id, position, input, output, yaw);
 			copy.speed = speed;
 			copy.hoverStart = hoverStart;
 			copy.item = item.clone();

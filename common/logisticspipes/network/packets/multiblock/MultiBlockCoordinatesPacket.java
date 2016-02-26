@@ -1,11 +1,17 @@
 package logisticspipes.network.packets.multiblock;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
+import logisticspipes.network.IReadListObject;
+import logisticspipes.network.IWriteListObject;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.basic.CoreMultiBlockPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
 
 import network.rs485.logisticspipes.world.DoubleCoordinates;
@@ -21,35 +27,24 @@ public class MultiBlockCoordinatesPacket extends CoordinatesPacket {
 
 	@Getter
 	@Setter
-	private int targetPosX;
+	private Set<DoubleCoordinates> targetPos;
+
 	@Getter
 	@Setter
-	private int targetPosY;
-	@Getter
-	@Setter
-	private int targetPosZ;
+	private List<CoreMultiBlockPipe.SubBlockTypeForShare> subTypes;
 
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
 		super.writeData(data);
-		data.writeInt(targetPosX);
-		data.writeInt(targetPosY);
-		data.writeInt(targetPosZ);
+		data.writeSet(targetPos, LPDataOutputStream::writeLPPosition);
+		data.writeList(subTypes, LPDataOutputStream::writeEnum);
 	}
 
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);
-		targetPosX = data.readInt();
-		targetPosY = data.readInt();
-		targetPosZ = data.readInt();
-	}
-
-	public MultiBlockCoordinatesPacket setTargetLPPos(DoubleCoordinates pos) {
-		setTargetPosX(pos.getXInt());
-		setTargetPosY(pos.getYInt());
-		setTargetPosZ(pos.getZInt());
-		return this;
+		targetPos = data.readSet(LPDataInputStream::readLPPosition);
+		subTypes = data.readList(data1 -> data1.readEnum(CoreMultiBlockPipe.SubBlockTypeForShare.class));
 	}
 
 	public MultiBlockCoordinatesPacket(int id) {
@@ -59,7 +54,7 @@ public class MultiBlockCoordinatesPacket extends CoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericSubMultiBlock block = this.getTile(player.getEntityWorld(), LogisticsTileGenericSubMultiBlock.class);
-		block.setPosition(new DoubleCoordinates(targetPosX, targetPosY, targetPosZ));
+		block.setPosition(targetPos, subTypes);
 	}
 
 	@Override

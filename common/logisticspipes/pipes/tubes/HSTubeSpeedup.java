@@ -34,6 +34,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 
 public class HSTubeSpeedup extends CoreMultiBlockPipe {
 
@@ -126,17 +127,17 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public LPPositionSet getSubBlocks() {
-		LPPositionSet set = new LPPositionSet();
-		set.add(new DoubleCoordinates(0, 0, -1));
-		set.add(new DoubleCoordinates(0, 0, -2));
-		set.add(new DoubleCoordinates(0, 0, -3));
+	public LPPositionSet<DoubleCoordinatesType<SubBlockTypeForShare>> getSubBlocks() {
+		LPPositionSet<DoubleCoordinatesType<SubBlockTypeForShare>> set = new LPPositionSet<>(DoubleCoordinatesType.class);
+		set.add(new DoubleCoordinatesType<>(0, 0, -1, SubBlockTypeForShare.NON_SHARE));
+		set.add(new DoubleCoordinatesType<>(0, 0, -2, SubBlockTypeForShare.NON_SHARE));
+		set.add(new DoubleCoordinatesType<>(0, 0, -3, SubBlockTypeForShare.NON_SHARE));
 		return set;
 	}
 
 	@Override
-	public LPPositionSet getRotatedSubBlocks() {
-		LPPositionSet set = getSubBlocks();
+	public LPPositionSet<DoubleCoordinatesType<SubBlockTypeForShare>> getRotatedSubBlocks() {
+		LPPositionSet<DoubleCoordinatesType<SubBlockTypeForShare>> set = getSubBlocks();
 		orientation.rotatePositions(set);
 		return set;
 	}
@@ -157,7 +158,7 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 		}
 		posMin.add(pos);
 		posMax.add(pos);
-		LPPositionSet set = new LPPositionSet();
+		LPPositionSet<DoubleCoordinates> set = new LPPositionSet<>(DoubleCoordinates.class);
 		set.add(posMin);
 		set.add(posMax);
 		AxisAlignedBB box = set.toABB();
@@ -226,7 +227,7 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 	public TileEntity getConnectedEndTile(ForgeDirection output) {
 		if (orientation.dir1 == output) {
 			DoubleCoordinates pos = new DoubleCoordinates(0, 0, -3);
-			LPPositionSet set = new LPPositionSet();
+			LPPositionSet<DoubleCoordinates> set = new LPPositionSet<>(DoubleCoordinates.class);
 			set.add(pos);
 			orientation.rotatePositions(set);
 			TileEntity subTile = pos.add(getLPPosition()).getTileEntity(getWorld());
@@ -274,10 +275,12 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 	@Override
 	public DoubleCoordinates getItemRenderPos(float fPos, LPTravelingItem travelItem) {
 		DoubleCoordinates pos = new DoubleCoordinates(0.5D, 0.5D, 0.5D);
+		float pPos = fPos;
 		if (travelItem.input.getOpposite() == orientation.dir1) {
-			CoordinateUtils.add(pos, orientation.dir1, 3.5);
+			CoordinateUtils.add(pos, orientation.dir1, 3);
+			pPos = this.getPipeLength() - fPos;
 		}
-		if (fPos < 0.5) {
+		if (pPos < 0.5) {
 			if (travelItem.input == ForgeDirection.UNKNOWN) {
 				return null;
 			}

@@ -11,6 +11,7 @@ import logisticspipes.config.PlayerConfig;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
 import logisticspipes.pipes.signs.IPipeSign;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCRenderTESR;
@@ -100,37 +101,36 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 
 	@Override
 	public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float partialTickTime) {
-		if (!(tileentity instanceof LogisticsTileGenericPipe)) {
-			return;
-		}
-		LogisticsTileGenericPipe pipe = ((LogisticsTileGenericPipe) tileentity);
-		if (pipe.pipe == null) {
-			return;
-		}
-
-		if (pipe.pipe instanceof CoreRoutedPipe) {
-			renderPipeSigns((CoreRoutedPipe) pipe.pipe, x, y, z, partialTickTime);
-		}
-
 		double distance = Math.pow(Minecraft.getMinecraft().thePlayer.lastTickPosX - tileentity.xCoord, 2) + Math.pow(Minecraft.getMinecraft().thePlayer.lastTickPosY - tileentity.yCoord, 2) + Math.pow(Minecraft.getMinecraft().thePlayer.lastTickPosZ - tileentity.zCoord, 2);
-		if (LogisticsRenderPipe.config.isUseNewRenderer()) {
-			LogisticsRenderPipe.secondRenderer.renderTileEntityAt((LogisticsTileGenericPipe) tileentity, x, y, z, partialTickTime, distance);
-		}
-		if (LogisticsRenderPipe.config.getRenderPipeContentDistance() * LogisticsRenderPipe.config.getRenderPipeContentDistance() < distance) {
-			return;
-		}
-
-		bcRenderer.renderWires(pipe, x, y, z);
-
-		// dynamically render pluggables (like gates)
-		bcRenderer.dynamicRenderPluggables(pipe, x, y, z);
-
-		if (!pipe.isOpaque()) {
-			if (pipe.pipe.transport instanceof PipeFluidTransportLogistics) {
-				renderFluids(pipe.pipe, x, y, z);
+		if (tileentity instanceof LogisticsTileGenericPipe) {
+			LogisticsTileGenericPipe pipe = ((LogisticsTileGenericPipe) tileentity);
+			if (pipe.pipe == null) {
+				return;
 			}
-			if (pipe.pipe.transport instanceof PipeTransportLogistics) {
-				renderSolids(pipe.pipe, x, y, z, partialTickTime);
+
+			if (pipe.pipe instanceof CoreRoutedPipe) {
+				renderPipeSigns((CoreRoutedPipe) pipe.pipe, x, y, z, partialTickTime);
+			}
+
+			if (LogisticsRenderPipe.config.isUseNewRenderer()) {
+				LogisticsRenderPipe.secondRenderer.renderTileEntityAt((LogisticsTileGenericPipe) tileentity, x, y, z, partialTickTime, distance);
+			}
+			if (LogisticsRenderPipe.config.getRenderPipeContentDistance() * LogisticsRenderPipe.config.getRenderPipeContentDistance() < distance) {
+				return;
+			}
+
+			bcRenderer.renderWires(pipe, x, y, z);
+
+			// dynamically render pluggables (like gates)
+			bcRenderer.dynamicRenderPluggables(pipe, x, y, z);
+
+			if (!pipe.isOpaque()) {
+				if (pipe.pipe.transport instanceof PipeFluidTransportLogistics) {
+					renderFluids(pipe.pipe, x, y, z);
+				}
+				if (pipe.pipe.transport instanceof PipeTransportLogistics) {
+					renderSolids(pipe.pipe, x, y, z, partialTickTime);
+				}
 			}
 		}
 	}
@@ -146,6 +146,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			double lX = x;
 			double lY = y;
 			double lZ = z;
+			float lItemYaw = item.getYaw();
 			if (count >= LogisticsRenderPipe.MAX_ITEMS_TO_RENDER) {
 				break;
 			}
@@ -169,6 +170,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 					lX -= lPipe.getX() - nPipe.getX();
 					lY -= lPipe.getY() - nPipe.getY();
 					lZ -= lPipe.getZ() - nPipe.getZ();
+					lItemYaw += lPipe.transport.getYawDiff(item);
 					lPipe = nPipe;
 					item = item.renderCopy();
 					item.input = item.output;
@@ -183,11 +185,11 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 				continue;
 			}
 			double boxScale = lPipe.getBoxRenderScale(fPos, item);
-			double itemYaw = lPipe.getItemRenderYaw(fPos, item);
+			double itemYaw = (lPipe.getItemRenderYaw(fPos, item) - lPipe.getItemRenderYaw(0, item) + lItemYaw) % 360;
 			double itemPitch = lPipe.getItemRenderPitch(fPos, item);
 
 			ItemStack itemstack = item.getItemIdentifierStack().makeNormalStack();
-			doRenderItem(itemstack, pipe.container.getWorldObj(), x + pos.getXCoord(), y + pos.getYCoord(), z + pos.getZCoord(), light, 0.75F, boxScale, itemYaw, itemPitch, partialTickTime);
+			doRenderItem(itemstack, pipe.container.getWorldObj(), lX + pos.getXCoord(), lY + pos.getYCoord(), lZ + pos.getZCoord(), light, 0.75F, boxScale, itemYaw, itemPitch, partialTickTime);
 			count++;
 		}
 

@@ -10,6 +10,8 @@ package logisticspipes.items;
 
 import java.util.List;
 
+import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
+import net.minecraft.tileentity.TileEntity;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -34,6 +36,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 import lombok.Getter;
+import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 import org.apache.logging.log4j.Level;
 
 /**
@@ -132,22 +135,31 @@ public class ItemLogisticsPipe extends LogisticsItem {
 			CoreMultiBlockPipe multiPipe = (CoreMultiBlockPipe) dummyPipe;
 			boolean isFreeSpace = true;
 			DoubleCoordinates placeAt = new DoubleCoordinates(i, j, k);
-			LPPositionSet globalPos = new LPPositionSet();
-			globalPos.add(new DoubleCoordinates(placeAt));
-			LPPositionSet positions = multiPipe.getSubBlocks();
+			LPPositionSet<DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare>> globalPos = new LPPositionSet<>(DoubleCoordinatesType.class);
+			globalPos.add(new DoubleCoordinatesType<>(placeAt, CoreMultiBlockPipe.SubBlockTypeForShare.NON_SHARE));
+			LPPositionSet<DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare>> positions = multiPipe.getSubBlocks();
 			ITubeOrientation orientation = multiPipe.getTubeOrientation(entityplayer, i, k);
 			if (orientation == null) {
 				return false;
 			}
 			orientation.rotatePositions(positions);
-			positions.stream().map(pos -> CoordinateUtils.sum(pos, placeAt)).forEach(globalPos::add);
+			positions.stream().map(pos -> pos.add(placeAt)).forEach(globalPos::add);
 			globalPos.addToAll(orientation.getOffset());
 			placeAt.add(orientation.getOffset());
 
-			for (DoubleCoordinates pos : globalPos) {
+			for (DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare> pos : globalPos) {
 				if (!world.canPlaceEntityOnSide(block, pos.getXInt(), pos.getYInt(), pos.getZInt(), false, side, entityplayer, itemstack)) {
-					isFreeSpace = false;
-					break;
+					TileEntity tile = world.getTileEntity(pos.getXInt(), pos.getYInt(), pos.getZInt());
+					boolean canPlace = false;
+					if(tile instanceof LogisticsTileGenericSubMultiBlock) {
+						if(CoreMultiBlockPipe.canShare(((LogisticsTileGenericSubMultiBlock) tile).getSubTypes(), pos.getType())) {
+							canPlace = true;
+						}
+					}
+					if(!canPlace) {
+						isFreeSpace = false;
+						break;
+					}
 				}
 			}
 			if (isFreeSpace) {

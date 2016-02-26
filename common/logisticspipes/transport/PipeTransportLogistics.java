@@ -178,6 +178,10 @@ public class PipeTransportLogistics {
 		return 1.0F;
 	}
 
+	public float getYawDiff(LPTravelingItem item) {
+		return 0.0F;
+	}
+
 	public int injectItem(LPTravelingItem item, ForgeDirection inputOrientation) {
 		if (item.isCorrupted()) {
 			// Safe guard - if for any reason the item is corrupted at this
@@ -711,6 +715,7 @@ public class PipeTransportLogistics {
 		IPipeInformationProvider information = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(tile);
 		if (information != null) {
 			item.setPosition(item.getPosition() - getPipeLength());
+			item.setYaw(item.getYaw() + (getYawDiff(item)));
 			return information.acceptItem(item, container);
 		}
 		return false;
@@ -783,11 +788,11 @@ public class PipeTransportLogistics {
 				LPTravelingItem.clientSideKnownIDs.set(item.getId());
 			}
 			MainProxy.sendPacketToAllWatchingChunk(container.xCoord, container.zCoord, MainProxy.getDimensionForWorld(getWorld()),
-					(PacketHandler.getPacket(PipePositionPacket.class).setSpeed(item.getSpeed()).setPosition(item.getPosition()).setInput(item.input).setOutput(item.output).setTravelId(item.getId()).setTilePos(container)));
+					(PacketHandler.getPacket(PipePositionPacket.class).setSpeed(item.getSpeed()).setPosition(item.getPosition()).setInput(item.input).setOutput(item.output).setTravelId(item.getId()).setYaw(item.getYaw()).setTilePos(container)));
 		}
 	}
 
-	public void handleItemPositionPacket(int travelId, ForgeDirection input, ForgeDirection output, float speed, float position) {
+	public void handleItemPositionPacket(int travelId, ForgeDirection input, ForgeDirection output, float speed, float position, float yaw) {
 		WeakReference<LPTravelingItemClient> ref = LPTravelingItem.clientList.get(travelId);
 		LPTravelingItemClient item = null;
 		if (ref != null) {
@@ -795,7 +800,7 @@ public class PipeTransportLogistics {
 		}
 		if (item == null) {
 			sendItemContentRequest(travelId);
-			item = new LPTravelingItemClient(travelId, position, input, output);
+			item = new LPTravelingItemClient(travelId, position, input, output, yaw);
 			item.setSpeed(speed);
 			LPTravelingItem.clientList.put(travelId, new WeakReference<LPTravelingItemClient>(item));
 		} else {
@@ -803,7 +808,7 @@ public class PipeTransportLogistics {
 				((LogisticsTileGenericPipe) item.getContainer()).pipe.transport.items.scheduleRemoval(item);
 				((LogisticsTileGenericPipe) item.getContainer()).pipe.transport.items.removeScheduledItems();
 			}
-			item.updateInformation(input, output, speed, position);
+			item.updateInformation(input, output, speed, position, yaw);
 		}
 		//update lastTicked so we don't double-move items
 		item.lastTicked = MainProxy.getGlobalTick();

@@ -12,6 +12,8 @@ import net.minecraft.tileentity.TileEntity;
 
 import net.minecraftforge.common.util.ForgeDirection;
 
+import java.util.List;
+
 public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 
 	private CoreMultiBlockPipe multiPipe;
@@ -25,7 +27,12 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe != null && ((LogisticsTileGenericPipe) tile).pipe.isHSTube()) {
 			return true;
 		}
-		if (tile instanceof LogisticsTileGenericSubMultiBlock && ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe() != null && ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe().pipe != null && ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe().pipe.isHSTube()) {
+		if (tile instanceof LogisticsTileGenericSubMultiBlock && ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe() != null && !((LogisticsTileGenericSubMultiBlock) tile).getMainPipe().isEmpty()) {
+			for(LogisticsTileGenericPipe pipe: ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe()) {
+				if(pipe.pipe == null || !pipe.pipe.isHSTube()) {
+					return false;
+				}
+			}
 			return true;
 		}
 		return false;
@@ -47,6 +54,14 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 			return getMultiPipe().getPipeLength();
 		}
 		return super.getPipeLength();
+	}
+
+	@Override
+	public float getYawDiff(LPTravelingItem item) {
+		if (getMultiPipe() != null) {
+			return getMultiPipe().getYawDiff(item);
+		}
+		return super.getYawDiff(item);
 	}
 
 	@Override
@@ -79,9 +94,12 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 			passToNextPipe(arrivingItem, tile);
 			return;
 		} else if (tile instanceof LogisticsTileGenericSubMultiBlock) {
-			LogisticsTileGenericPipe masterTile = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
-			if (masterTile != null) {
-				passToNextPipe(arrivingItem, masterTile);
+			List<LogisticsTileGenericPipe> masterTile = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
+			if (!masterTile.isEmpty()) {
+				if(masterTile.size() > 1) {
+					throw new UnsupportedOperationException();
+				}
+				passToNextPipe(arrivingItem, masterTile.get(0));
 				return;
 			}
 		}
@@ -94,9 +112,12 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 			passToNextPipe(arrivingItem, tile);
 			return;
 		} else if (tile instanceof LogisticsTileGenericSubMultiBlock) {
-			LogisticsTileGenericPipe masterTile = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
-			if (masterTile != null) {
-				passToNextPipe(arrivingItem, masterTile);
+			List<LogisticsTileGenericPipe> masterTile = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
+			if (!masterTile.isEmpty()) {
+				if(masterTile.size() > 1) {
+					throw new UnsupportedOperationException();
+				}
+				passToNextPipe(arrivingItem, masterTile.get(0));
 				return;
 			}
 		}
@@ -104,7 +125,7 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 
 	@Override
 	public void readjustSpeed(LPTravelingItemServer item) {
-		item.setSpeed(1F);
+		item.setSpeed(0.8F);
 	}
 
 	@Override
@@ -114,7 +135,13 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 			tile = getMultiPipe().getConnectedEndTile(output);
 		}
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
-			tile = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
+			List<LogisticsTileGenericPipe> list = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
+			if(!list.isEmpty()) {
+				if(list.size() > 1) {
+					throw new UnsupportedOperationException();
+				}
+				tile = list.get(0);
+			}
 		}
 		if (tile instanceof LogisticsTileGenericPipe) {
 			return ((LogisticsTileGenericPipe) tile).pipe;

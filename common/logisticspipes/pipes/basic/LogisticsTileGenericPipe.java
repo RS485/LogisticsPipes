@@ -526,7 +526,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		throw new RuntimeException("This is no firewall pipe");
 	}
 
-	@Override
 	public TileEntity getTile() {
 		return this;
 	}
@@ -800,6 +799,13 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	}
 
 	@Override
+	public TileEntity getNextConnectedTile(ForgeDirection to) {
+		if(this.pipe.isMultiBlock()) {
+			return ((CoreMultiBlockPipe)this.pipe).getConnectedEndTile(to);
+		}
+		return getTile(to, false);
+	}
+
 	public TileEntity getTile(ForgeDirection to) {
 		return getTile(to, false);
 	}

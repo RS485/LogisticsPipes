@@ -38,7 +38,7 @@ public interface IPipeInformationProvider {
 
 	public CoreRoutedPipe getRoutingPipe();
 
-	public TileEntity getTile(ForgeDirection direction);
+	public TileEntity getNextConnectedTile(ForgeDirection direction);
 
 	public boolean isFirewallPipe();
 

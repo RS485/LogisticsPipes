@@ -82,7 +82,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 	}
 
 	@Override
-	public TileEntity getTile(ForgeDirection direction) {
+	public TileEntity getNextConnectedTile(ForgeDirection direction) {
 		return BlockHelper.getAdjacentTileEntity(duct, direction);
 	}
 

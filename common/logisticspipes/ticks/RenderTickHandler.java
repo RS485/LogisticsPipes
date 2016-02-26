@@ -1,5 +1,10 @@
 package logisticspipes.ticks;
 
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.CoreUnroutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
+import logisticspipes.renderer.LogisticsRenderPipe;
+import net.minecraft.tileentity.TileEntity;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -33,7 +38,9 @@ import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.common.gameevent.TickEvent.RenderTickEvent;
 
 import codechicken.lib.render.CCRenderState;
+import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 import org.lwjgl.opengl.GL11;
+import tv.twitch.Core;
 
 public class RenderTickHandler {
 
@@ -70,72 +77,102 @@ public class RenderTickHandler {
 
 	@SubscribeEvent
 	public void renderWorldLast(RenderWorldLastEvent worldEvent) {
-		if (displayPipeGhost()) {
-			Minecraft mc = Minecraft.getMinecraft();
-			EntityPlayer player = mc.thePlayer;
-			MovingObjectPosition box = mc.objectMouseOver;
-			if (box != null && box.typeOfHit == MovingObjectType.BLOCK) {
-				ItemStack stack = FMLClientHandler.instance().getClient().thePlayer.inventory.mainInventory[FMLClientHandler.instance().getClient().thePlayer.inventory.currentItem];
-				CoreMultiBlockPipe multiPipe = (CoreMultiBlockPipe) ((ItemLogisticsPipe) stack.getItem()).getDummyPipe();
+		if (LogisticsRenderPipe.config.isUseNewRenderer()) {
+			if (displayPipeGhost()) {
+				Minecraft mc = Minecraft.getMinecraft();
+				EntityPlayer player = mc.thePlayer;
+				MovingObjectPosition box = mc.objectMouseOver;
+				if (box != null && box.typeOfHit == MovingObjectType.BLOCK) {
+					ItemStack stack = FMLClientHandler.instance().getClient().thePlayer.inventory.mainInventory[FMLClientHandler.instance().getClient().thePlayer.inventory.currentItem];
+					CoreUnroutedPipe pipe = ((ItemLogisticsPipe) stack.getItem()).getDummyPipe();
 
-				int i = box.blockX;
-				int j = box.blockY;
-				int k = box.blockZ;
-				World world = player.getEntityWorld();
-				int side = box.sideHit;
+					int i = box.blockX;
+					int j = box.blockY;
+					int k = box.blockZ;
+					World world = player.getEntityWorld();
+					int side = box.sideHit;
 
-				Block worldBlock = world.getBlock(i, j, k);
+					Block worldBlock = world.getBlock(i, j, k);
 
-				if (worldBlock == Blocks.snow) {
-					side = 1;
-				} else if (worldBlock != Blocks.vine && worldBlock != Blocks.tallgrass && worldBlock != Blocks.deadbush && (worldBlock == null || !worldBlock.isReplaceable(world, i, j, k))) {
-					if (side == 0) {
-						j--;
+					if (worldBlock == Blocks.snow) {
+						side = 1;
+					} else if (worldBlock != Blocks.vine && worldBlock != Blocks.tallgrass && worldBlock != Blocks.deadbush && (worldBlock == null || !worldBlock.isReplaceable(world, i, j, k))) {
+						if (side == 0) {
+							j--;
+						}
+						if (side == 1) {
+							j++;
+						}
+						if (side == 2) {
+							k--;
+						}
+						if (side == 3) {
+							k++;
+						}
+						if (side == 4) {
+							i--;
+						}
+						if (side == 5) {
+							i++;
+						}
 					}
-					if (side == 1) {
-						j++;
-					}
-					if (side == 2) {
-						k--;
-					}
-					if (side == 3) {
-						k++;
-					}
-					if (side == 4) {
-						i--;
-					}
-					if (side == 5) {
-						i++;
-					}
-				}
 
-				double xCoord = i;
-				double yCoord = j;
-				double zCoord = k;
+					double xCoord = i;
+					double yCoord = j;
+					double zCoord = k;
 
-				boolean isFreeSpace = true;
-				DoubleCoordinates placeAt = new DoubleCoordinates(xCoord, yCoord, zCoord);
-				LPPositionSet globalPos = new LPPositionSet();
-				globalPos.add(new DoubleCoordinates(placeAt));
-				LPPositionSet positions = multiPipe.getSubBlocks();
-				ITubeOrientation orientation = multiPipe.getTubeOrientation(player, (int) xCoord, (int) zCoord);
-				if (orientation != null) {
-					orientation.rotatePositions(positions);
-					positions.stream().map(pos -> CoordinateUtils.sum(pos, placeAt)).forEach(globalPos::add);
-					globalPos.addToAll(orientation.getOffset());
+					boolean isFreeSpace = true;
+					ITubeOrientation orientation = null;
 
-					for (DoubleCoordinates pos : globalPos) {
-						if (!player.getEntityWorld().canPlaceEntityOnSide(LogisticsPipes.LogisticsPipeBlock, pos.getXInt(), pos.getYInt(), pos.getZInt(), false, side, player, stack)) {
+					if (pipe instanceof CoreMultiBlockPipe) {
+						CoreMultiBlockPipe multipipe = (CoreMultiBlockPipe) pipe;
+						DoubleCoordinates placeAt = new DoubleCoordinates(xCoord, yCoord, zCoord);
+						LPPositionSet<DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare>> globalPos = new LPPositionSet<>(DoubleCoordinatesType.class);
+						globalPos.add(new DoubleCoordinatesType<>(placeAt, CoreMultiBlockPipe.SubBlockTypeForShare.NON_SHARE));
+						LPPositionSet<DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare>> positions = multipipe.getSubBlocks();
+						orientation = multipipe.getTubeOrientation(player, (int) xCoord, (int) zCoord);
+						if (orientation != null) {
+							orientation.rotatePositions(positions);
+							positions.stream().map(pos -> pos.add(placeAt)).forEach(globalPos::add);
+							globalPos.addToAll(orientation.getOffset());
+
+							for (DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare> pos : globalPos) {
+								if (!player.getEntityWorld().canPlaceEntityOnSide(LogisticsPipes.LogisticsPipeBlock, pos.getXInt(), pos.getYInt(), pos.getZInt(), false, side, player, stack)) {
+									TileEntity tile = player.getEntityWorld().getTileEntity(pos.getXInt(), pos.getYInt(), pos.getZInt());
+									boolean canPlace = false;
+									if (tile instanceof LogisticsTileGenericSubMultiBlock) {
+										if (CoreMultiBlockPipe.canShare(((LogisticsTileGenericSubMultiBlock) tile).getSubTypes(), pos.getType())) {
+											canPlace = true;
+										}
+									}
+									if (!canPlace) {
+										isFreeSpace = false;
+										break;
+									}
+								}
+							}
+						} else {
+							return;
+						}
+					} else {
+						if (!player.getEntityWorld().canPlaceEntityOnSide(LogisticsPipes.LogisticsPipeBlock, i, j, k, false, side, player, stack)) {
 							isFreeSpace = false;
-							break;
 						}
 					}
 					if (isFreeSpace) {
 						GL11.glPushMatrix();
-						double x = xCoord + orientation.getOffset().getXInt() - player.prevPosX - ((player.posX - player.prevPosX) * worldEvent.partialTicks);
-						double y = yCoord + orientation.getOffset().getYInt() - player.prevPosY - ((player.posY - player.prevPosY) * worldEvent.partialTicks);
-						double z = zCoord + orientation.getOffset().getZInt() - player.prevPosZ - ((player.posZ - player.prevPosZ) * worldEvent.partialTicks);
-
+						double x;
+						double y;
+						double z;
+						if (orientation != null) {
+							x = xCoord + orientation.getOffset().getXInt() - player.prevPosX - ((player.posX - player.prevPosX) * worldEvent.partialTicks);
+							y = yCoord + orientation.getOffset().getYInt() - player.prevPosY - ((player.posY - player.prevPosY) * worldEvent.partialTicks);
+							z = zCoord + orientation.getOffset().getZInt() - player.prevPosZ - ((player.posZ - player.prevPosZ) * worldEvent.partialTicks);
+						} else {
+							x = xCoord - player.prevPosX - ((player.posX - player.prevPosX) * worldEvent.partialTicks);
+							y = yCoord - player.prevPosY - ((player.posY - player.prevPosY) * worldEvent.partialTicks);
+							z = zCoord - player.prevPosZ - ((player.posZ - player.prevPosZ) * worldEvent.partialTicks);
+						}
 						GL11.glTranslated(x + 0.001, y + 0.001, z + 0.001);
 
 						GL11.glEnable(GL11.GL_BLEND);
@@ -156,7 +193,7 @@ public class RenderTickHandler {
 						CCRenderState.hasBrightness = false;
 						CCRenderState.startDrawing();
 
-						multiPipe.getHighlightRenderer().renderHighlight(orientation);
+						pipe.getHighlightRenderer().renderHighlight(orientation);
 
 						tess.draw();
 
@@ -179,7 +216,7 @@ public class RenderTickHandler {
 
 	private boolean checkItemStackForPipeGhost(ItemStack stack) {
 		if (stack.getItem() instanceof ItemLogisticsPipe) {
-			return ((ItemLogisticsPipe) stack.getItem()).getDummyPipe().isMultiBlock();
+			return true;
 		}
 		return false;
 	}

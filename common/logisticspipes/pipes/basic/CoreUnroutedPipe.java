@@ -3,6 +3,7 @@ package logisticspipes.pipes.basic;
 import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -381,7 +382,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 			if (ignore == dir) {
 				continue;
 			}
-			IPipeInformationProvider information = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(container.getTile(dir));
+			IPipeInformationProvider information = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(container.getNextConnectedTile(dir));
 			if (information != null) {
 				DoubleCoordinates pos = new DoubleCoordinates(information);
 				if (visited.contains(pos)) {
@@ -469,4 +470,6 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public boolean isInitialized() {
 		return container != null;
 	}
+
+	public abstract IHighlightPlacementRenderer getHighlightRenderer();
 }

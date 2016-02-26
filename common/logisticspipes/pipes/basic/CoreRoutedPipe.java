@@ -68,7 +68,6 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.guis.pipe.PipeController;
 import logisticspipes.network.packets.pipe.ParticleFX;
 import logisticspipes.network.packets.pipe.PipeSignTypes;
-import logisticspipes.network.packets.pipe.RequestRoutingLasersPacket;
 import logisticspipes.network.packets.pipe.RequestSignPacket;
 import logisticspipes.network.packets.pipe.StatUpdate;
 import logisticspipes.pipefxhandlers.Particles;
@@ -84,7 +83,8 @@ import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCDirectCall;
 import logisticspipes.proxy.computers.interfaces.CCSecurtiyCheck;
 import logisticspipes.proxy.computers.interfaces.CCType;
-import logisticspipes.renderer.LogisticsHUDRenderer;
+import logisticspipes.renderer.LogisticsRenderPipe;
+import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.IRouterQueuedTask;
@@ -1839,5 +1839,10 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 			}
 		}
 		return cacheHolder;
+	}
+
+	@Override
+	public IHighlightPlacementRenderer getHighlightRenderer() {
+		return LogisticsRenderPipe.secondRenderer;
 	}
 }

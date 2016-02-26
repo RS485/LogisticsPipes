@@ -1,13 +1,17 @@
 package logisticspipes.pipes.basic;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
 import logisticspipes.renderer.newpipe.ISpecialPipeRenderer;
+import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeMultiBlockTransportLogistics;
 import logisticspipes.utils.LPPositionSet;
 
+import logisticspipes.utils.tuples.Pair;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
@@ -17,8 +21,55 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 
 public abstract class CoreMultiBlockPipe extends CoreUnroutedPipe {
+
+	public enum SubBlockTypeForShare {
+		NON_SHARE,
+		S_CURVE_A,
+		S_CURVE_B,
+		CURVE_OUT_A,
+		CURVE_INNER_A,
+		CURVE_OUT_B,
+		type, CURVE_INNER_B
+	}
+
+	private static List<Pair<SubBlockTypeForShare, SubBlockTypeForShare>> allowedCombinations;
+
+	static {
+		allowedCombinations = new ArrayList<>();
+		allowedCombinations.add(new Pair<>(SubBlockTypeForShare.S_CURVE_A, SubBlockTypeForShare.S_CURVE_B));
+		allowedCombinations.add(new Pair<>(SubBlockTypeForShare.S_CURVE_A, SubBlockTypeForShare.S_CURVE_A));
+		allowedCombinations.add(new Pair<>(SubBlockTypeForShare.CURVE_OUT_A, SubBlockTypeForShare.CURVE_INNER_A));
+		allowedCombinations.add(new Pair<>(SubBlockTypeForShare.CURVE_OUT_B, SubBlockTypeForShare.CURVE_INNER_B));
+		allowedCombinations.add(new Pair<>(SubBlockTypeForShare.CURVE_OUT_A, SubBlockTypeForShare.S_CURVE_A));
+		allowedCombinations.add(new Pair<>(SubBlockTypeForShare.CURVE_OUT_B, SubBlockTypeForShare.S_CURVE_A));
+	}
+
+	public static boolean canShare(List<SubBlockTypeForShare> list, SubBlockTypeForShare toAdd) {
+		if(toAdd == SubBlockTypeForShare.NON_SHARE) return false;
+		if(toAdd == null) return false;
+		if(list.size() > 1) return false;
+		if(list.isEmpty()) return true;
+		SubBlockTypeForShare contained = list.get(0);
+		if(contained == SubBlockTypeForShare.NON_SHARE) return false;
+		for(Pair<SubBlockTypeForShare, SubBlockTypeForShare> allowed: allowedCombinations) {
+			if(allowed.getValue1() == contained) {
+				if(allowed.getValue2() == toAdd) {
+					return true;
+				}
+			}
+			if(allowed.getValue2() == contained) {
+				if(allowed.getValue1() == toAdd) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 
 	public CoreMultiBlockPipe(PipeMultiBlockTransportLogistics transport, Item item) {
 		super(transport, item);
@@ -34,9 +85,9 @@ public abstract class CoreMultiBlockPipe extends CoreUnroutedPipe {
 	 * 
 	 * @return Relative Positions
 	 */
-	public abstract LPPositionSet getSubBlocks();
+	public abstract LPPositionSet<DoubleCoordinatesType<SubBlockTypeForShare>> getSubBlocks();
 
-	public abstract LPPositionSet getRotatedSubBlocks();
+	public abstract LPPositionSet<DoubleCoordinatesType<SubBlockTypeForShare>> getRotatedSubBlocks();
 
 	@SideOnly(Side.CLIENT)
 	@SuppressWarnings("rawtypes")
@@ -49,6 +100,10 @@ public abstract class CoreMultiBlockPipe extends CoreUnroutedPipe {
 
 	public abstract float getPipeLength();
 
+	public float getYawDiff(LPTravelingItem item) {
+		return (float) (getItemRenderYaw(getPipeLength(), item) - getItemRenderYaw(0.0F, item));
+	}
+
 	public abstract ForgeDirection getExitForInput(ForgeDirection commingFrom);
 
 	public abstract TileEntity getConnectedEndTile(ForgeDirection output);
@@ -60,5 +115,16 @@ public abstract class CoreMultiBlockPipe extends CoreUnroutedPipe {
 	@SideOnly(Side.CLIENT)
 	public abstract ISpecialPipeRenderer getSpecialRenderer();
 
-	public abstract IHighlightPlacementRenderer getHighlightRenderer();
+	@Override
+	public boolean canPipeConnect(TileEntity tile, ForgeDirection side) {
+		if(tile instanceof LogisticsTileGenericSubMultiBlock) {
+			return true;
+		}
+		if(tile instanceof LogisticsTileGenericPipe) {
+			if(((LogisticsTileGenericPipe) tile).pipe.isMultiBlock()) {
+				return true;
+			}
+		}
+		return super.canPipeConnect(tile, side);
+	}
 }

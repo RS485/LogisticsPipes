@@ -28,17 +28,7 @@ public class PipeInformationManager {
 						if (provider.isCorrect(ConnectionPipeType.BOTH)) {
 							return provider;
 						}
-					} catch (InstantiationException e) {
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
-						e.printStackTrace();
-					} catch (IllegalArgumentException e) {
-						e.printStackTrace();
-					} catch (InvocationTargetException e) {
-						e.printStackTrace();
-					} catch (NoSuchMethodException e) {
-						e.printStackTrace();
-					} catch (SecurityException e) {
+					} catch (InstantiationException | IllegalAccessException | InvocationTargetException | IllegalArgumentException | SecurityException | NoSuchMethodException e) {
 						e.printStackTrace();
 					}
 				}
@@ -50,9 +40,7 @@ public class PipeInformationManager {
 	public void registerProvider(Class<?> source, Class<? extends IPipeInformationProvider> provider) {
 		try {
 			provider.getDeclaredConstructor(source);
-		} catch (NoSuchMethodException e) {
-			throw new RuntimeException(e);
-		} catch (SecurityException e) {
+		} catch (NoSuchMethodException | SecurityException e) {
 			throw new RuntimeException(e);
 		}
 		infoProvider.put(source, provider);
@@ -84,17 +72,7 @@ public class PipeInformationManager {
 						if (!check || provider.isCorrect(pipeType)) {
 							return true;
 						}
-					} catch (InstantiationException e) {
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
-						e.printStackTrace();
-					} catch (IllegalArgumentException e) {
-						e.printStackTrace();
-					} catch (InvocationTargetException e) {
-						e.printStackTrace();
-					} catch (NoSuchMethodException e) {
-						e.printStackTrace();
-					} catch (SecurityException e) {
+					} catch (InstantiationException | IllegalAccessException | InvocationTargetException | IllegalArgumentException | NoSuchMethodException | SecurityException e) {
 						e.printStackTrace();
 					}
 				}

@@ -190,4 +190,8 @@ public class DoubleCoordinates implements IPositionRotateble, ICoordinates {
 	public void mirrorZ() {
 		setZCoord(-getZCoord());
 	}
+
+	public double getLength() {
+		return Math.sqrt(getXDouble() * getXDouble() + getYDouble() * getYDouble() + getZDouble() * getZDouble());
+	}
 }

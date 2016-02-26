@@ -3,11 +3,7 @@ package logisticspipes.network;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
 
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.request.resources.IResource;
@@ -163,6 +159,14 @@ public class LPDataOutputStream extends DataOutputStream {
 		writeInt(list.size());
 		for (int i = 0; i < list.size(); i++) {
 			handler.writeObject(this, list.get(i));
+		}
+	}
+
+	public <T> void writeSet(Set<T> list, IWriteListObject<T> handler) throws IOException {
+		writeInt(list.size());
+		Object[] array = list.toArray();
+		for (int i = 0; i < list.size(); i++) {
+			handler.writeObject(this, (T) array[i]);
 		}
 	}
 

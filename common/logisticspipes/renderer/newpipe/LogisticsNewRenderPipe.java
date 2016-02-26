@@ -1,13 +1,14 @@
 package logisticspipes.renderer.newpipe;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
+import logisticspipes.interfaces.ITubeOrientation;
+import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
+import logisticspipes.pipes.tubes.HSTubeSCurve;
+import logisticspipes.proxy.object3d.operation.*;
+import logisticspipes.renderer.newpipe.tube.SCurveTubeRenderer;
+import logisticspipes.renderer.state.PipeSubRenderState;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -24,10 +25,6 @@ import logisticspipes.proxy.object3d.interfaces.IBounds;
 import logisticspipes.proxy.object3d.interfaces.IIconTransformation;
 import logisticspipes.proxy.object3d.interfaces.IModel3D;
 import logisticspipes.proxy.object3d.interfaces.IVec3;
-import logisticspipes.proxy.object3d.operation.LPScale;
-import logisticspipes.proxy.object3d.operation.LPTranslation;
-import logisticspipes.proxy.object3d.operation.LPUVTransformationList;
-import logisticspipes.proxy.object3d.operation.LPUVTranslation;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.textures.Textures;
 import logisticspipes.utils.tuples.Quartet;
@@ -46,7 +43,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.lwjgl.opengl.GL11;
 
-public class LogisticsNewRenderPipe {
+public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 
 	enum Edge {
 		Upper_North(ForgeDirection.UP, ForgeDirection.NORTH),
@@ -291,6 +288,7 @@ public class LogisticsNewRenderPipe {
 	}
 
 	static IModel3D innerTransportBox;
+	static IModel3D highlight;
 
 	public static IIconTransformation basicPipeTexture;
 	public static IIconTransformation inactiveTexture;
@@ -307,6 +305,7 @@ public class LogisticsNewRenderPipe {
 		if (!SimpleServiceLocator.cclProxy.isActivated()) return;
 		try {
 			Map<String, IModel3D> pipePartModels = SimpleServiceLocator.cclProxy.parseObjModels(LogisticsPipes.class.getResourceAsStream("/logisticspipes/models/PipeModel_moved.obj"), 7, new LPScale(1 / 100f));
+			List<IModel3D> highlightList = new ArrayList<>();
 
 			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
 				LogisticsNewRenderPipe.sideNormal.put(dir, new ArrayList<IModel3D>());
@@ -350,6 +349,7 @@ public class LogisticsNewRenderPipe {
 				if (LogisticsNewRenderPipe.edges.get(edge) == null) {
 					throw new RuntimeException("Couldn't load " + edge.name() + " (" + grp + ")");
 				}
+				highlightList.add(LogisticsNewRenderPipe.edges.get(edge));
 			}
 
 			for (Corner corner : Corner.values()) {
@@ -363,6 +363,7 @@ public class LogisticsNewRenderPipe {
 				if (LogisticsNewRenderPipe.corners_M.get(corner).size() != 2) {
 					throw new RuntimeException("Couldn't load " + corner.name() + " (" + grp + "). Only loaded " + LogisticsNewRenderPipe.corners_M.get(corner).size());
 				}
+				highlightList.addAll(LogisticsNewRenderPipe.corners_M.get(corner));
 			}
 
 			for (Corner corner : Corner.values()) {
@@ -531,6 +532,7 @@ public class LogisticsNewRenderPipe {
 				}
 			}
 
+			highlight = SimpleServiceLocator.cclProxy.combine(highlightList);
 
 			pipePartModels = SimpleServiceLocator.cclProxy.parseObjModels(LogisticsPipes.class.getResourceAsStream("/logisticspipes/models/PipeModel_Transport_Box.obj"), 7, new LPScale(1 / 100f));
 
@@ -617,7 +619,6 @@ public class LogisticsNewRenderPipe {
 				if (pipeTile.pipe != null && pipeTile.pipe.actAsNormalPipe()) {
 					fillObjectsToRenderList(objectsToRender, pipeTile, renderState);
 				}
-
 				if (pipeTile.pipe != null && pipeTile.pipe.getSpecialRenderer() != null) {
 					pipeTile.pipe.getSpecialRenderer().renderToList(pipeTile.pipe, objectsToRender);
 				}
@@ -625,61 +626,66 @@ public class LogisticsNewRenderPipe {
 				renderState.cachedRenderer = objectsToRender;
 				recalculateList = true;
 			}
-			if (!renderState.renderList.isFilled() || recalculateList) {
-				ResourceLocation oldTexture = null;
-				renderState.renderList.startListCompile();
-
-
-				SimpleServiceLocator.cclProxy.getRenderState().reset();
-				SimpleServiceLocator.cclProxy.getRenderState().setUseNormals(true);
-				SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
-
-				int brightness = new DoubleCoordinates((TileEntity) pipeTile).getBlock(pipeTile.getWorldObj()).getMixedBrightnessForBlock(pipeTile.getWorldObj(), pipeTile.xCoord, pipeTile.yCoord, pipeTile.zCoord);
-				SimpleServiceLocator.cclProxy.getRenderState().setBrightness(brightness);
-				boolean tesselating = false;
-
-				for (RenderEntry model : renderState.cachedRenderer) {
-					ResourceLocation texture = model.getTexture();
-					if (texture == null) {
-						throw new NullPointerException();
-					}
-					if (texture != oldTexture || oldTexture == null) {
-						if (tesselating) {
-							SimpleServiceLocator.cclProxy.getRenderState().draw();
-							tesselating = false;
-						}
-						oldTexture = texture;
-						Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
-						
-						SimpleServiceLocator.cclProxy.getRenderState().reset();
-						SimpleServiceLocator.cclProxy.getRenderState().setUseNormals(true);
-						SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
-						SimpleServiceLocator.cclProxy.getRenderState().setBrightness(brightness);
-						
-						SimpleServiceLocator.cclProxy.getRenderState().startDrawing();
-						tesselating = true;
-					}
-					model.getModel().render(model.getOperations());
-				}
-				if (tesselating) {
-					SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
-					SimpleServiceLocator.cclProxy.getRenderState().draw();
-				}
-				renderState.renderList.stopCompile();
-			}
-			if (renderState.renderList != null) {
-				GL11.glPushMatrix();
-				GL11.glTranslated(x, y, z);
-				GL11.glEnable(GL11.GL_BLEND);
-				GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ZERO);
-				renderState.renderList.render();
-				GL11.glDisable(GL11.GL_BLEND);
-				GL11.glPopMatrix();
-			}
+			renderList(pipeTile, x, y, z, renderState.renderList, renderState.cachedRenderer, recalculateList);
 		}
 	}
 
-	private void fillObjectsToRenderList(List<RenderEntry> objectsToRender, LogisticsTileGenericPipe pipeTile, PipeRenderState renderState) {		List<Edge> edgesToRender = new ArrayList<Edge>(Arrays.asList(Edge.values()));
+	private void renderList(TileEntity subTile, double x, double y, double z, GLRenderList renderList, List<RenderEntry> cachedRenderer, boolean recalculateList) {
+		if (!renderList.isFilled() || recalculateList) {
+			ResourceLocation oldTexture = null;
+			renderList.startListCompile();
+
+
+			SimpleServiceLocator.cclProxy.getRenderState().reset();
+			SimpleServiceLocator.cclProxy.getRenderState().setUseNormals(true);
+			SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
+
+			int brightness = new DoubleCoordinates(subTile).getBlock(subTile.getWorldObj()).getMixedBrightnessForBlock(subTile.getWorldObj(), subTile.xCoord, subTile.yCoord, subTile.zCoord);
+			SimpleServiceLocator.cclProxy.getRenderState().setBrightness(brightness);
+			boolean tesselating = false;
+
+			for (RenderEntry model : cachedRenderer) {
+				ResourceLocation texture = model.getTexture();
+				if (texture == null) {
+					throw new NullPointerException();
+				}
+				if (texture != oldTexture || oldTexture == null) {
+					if (tesselating) {
+						SimpleServiceLocator.cclProxy.getRenderState().draw();
+						tesselating = false;
+					}
+					oldTexture = texture;
+					Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
+
+					SimpleServiceLocator.cclProxy.getRenderState().reset();
+					SimpleServiceLocator.cclProxy.getRenderState().setUseNormals(true);
+					SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
+					SimpleServiceLocator.cclProxy.getRenderState().setBrightness(brightness);
+
+					SimpleServiceLocator.cclProxy.getRenderState().startDrawing();
+					tesselating = true;
+				}
+				model.getModel().render(model.getOperations());
+			}
+			if (tesselating) {
+				SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
+				SimpleServiceLocator.cclProxy.getRenderState().draw();
+			}
+			renderList.stopCompile();
+		}
+		if (renderList != null) {
+			GL11.glPushMatrix();
+			GL11.glTranslated(x, y, z);
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ZERO);
+			renderList.render();
+			GL11.glDisable(GL11.GL_BLEND);
+			GL11.glPopMatrix();
+		}
+	}
+
+	private void fillObjectsToRenderList(List<RenderEntry> objectsToRender, LogisticsTileGenericPipe pipeTile, PipeRenderState renderState) {
+		List<Edge> edgesToRender = new ArrayList<Edge>(Arrays.asList(Edge.values()));
 		Map<Corner, Integer> connectionAtCorner = new HashMap<Corner, Integer>();
 		List<PipeMount> mountCanidates = new ArrayList<PipeMount>(Arrays.asList(PipeMount.values()));
 
@@ -1131,5 +1137,10 @@ public class LogisticsNewRenderPipe {
 		for (RenderEntry model : objectsToRender) {
 			model.getModel().render(model.getOperations());
 		}
+	}
+
+	@Override
+	public void renderHighlight(ITubeOrientation orientation) {
+		highlight.render(new I3DOperation[] { LPColourMultiplier.instance(LogisticsPipes.LogisticsPipeBlock.getBlockColor() << 8 | 0xFF) });
 	}
 }

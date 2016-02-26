@@ -75,6 +75,7 @@ import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericSubMultiBlock;
 import logisticspipes.pipes.tubes.HSTubeCurve;
+import logisticspipes.pipes.tubes.HSTubeLine;
 import logisticspipes.pipes.tubes.HSTubeSCurve;
 import logisticspipes.pipes.tubes.HSTubeSpeedup;
 import logisticspipes.pipes.unrouted.PipeItemsBasicTransport;
@@ -205,16 +206,7 @@ public class LogisticsPipes {
 				transformers.set(i, transformers.get(i - 1));
 			}
 			transformers.set(0, lpClassInjector); // So that our injector can be first
-		} catch (NoSuchFieldException e) {
-			loader.registerTransformer("logisticspipes.asm.LogisticsPipesClassInjector");
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			loader.registerTransformer("logisticspipes.asm.LogisticsPipesClassInjector");
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			loader.registerTransformer("logisticspipes.asm.LogisticsPipesClassInjector");
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		} catch (NoSuchFieldException | SecurityException | IllegalAccessException | IllegalArgumentException e) {
 			loader.registerTransformer("logisticspipes.asm.LogisticsPipesClassInjector");
 			e.printStackTrace();
 		}
@@ -276,6 +268,7 @@ public class LogisticsPipes {
 	public static Item HSTubeCurve;
 	public static Item HSTubeSpeedup;
 	public static Item HSTubeSCurve;
+	public static Item HSTubeLine;
 
 	// Logistics Modules/Upgrades
 	public static ItemModule ModuleItem;
@@ -632,6 +625,7 @@ public class LogisticsPipes {
 			LogisticsPipes.HSTubeCurve = createPipe(HSTubeCurve.class, "High Speed Tube Curve", side);
 			LogisticsPipes.HSTubeSpeedup = createPipe(HSTubeSpeedup.class, "High Speed Tube Speedup", side);
 			LogisticsPipes.HSTubeSCurve = createPipe(HSTubeSCurve.class, "High Speed Tube S-Curve", side);
+			LogisticsPipes.HSTubeLine = createPipe(HSTubeLine.class, "High Speed Tube Line", side);
 		}
 	}
 

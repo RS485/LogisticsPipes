@@ -8,6 +8,7 @@ import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
 
+import net.minecraft.client.Minecraft;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.block.Block;
@@ -56,9 +57,9 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 		DoubleCoordinates pos = new DoubleCoordinates(i, j, k);
 		TileEntity tile = pos.getTileEntity(iblockaccess);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
-			LogisticsTileGenericPipe mainPipe = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
-			if (mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock()) {
-				return LogisticsPipes.LogisticsPipeBlock.getIcon(iblockaccess, mainPipe.xCoord, mainPipe.yCoord, mainPipe.zCoord, l);
+			List<LogisticsTileGenericPipe> mainPipe = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
+			if (!mainPipe.isEmpty() && mainPipe.get(0).pipe != null && mainPipe.get(0).pipe.isMultiBlock()) {
+				return LogisticsPipes.LogisticsPipeBlock.getIcon(iblockaccess, mainPipe.get(0).xCoord, mainPipe.get(0).yCoord, mainPipe.get(0).zCoord, l);
 			}
 		}
 		return null;
@@ -79,10 +80,24 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 		DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
 		TileEntity tile = pos.getTileEntity(world);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
-			LogisticsTileGenericPipe mainPipe = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
-			if (mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock()) {
-				DoubleCoordinates mainPipePos = mainPipe.pipe.getLPPosition();
-				mainPipePos.setBlockToAir(world);
+			boolean handled = false;
+			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
+			for(LogisticsTileGenericPipe mainPipe:mainPipeList) {
+				if (mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock()) {
+					if (LogisticsPipes.LogisticsPipeBlock.doRayTrace(world, mainPipe.xCoord, mainPipe.yCoord, mainPipe.zCoord, Minecraft.getMinecraft().thePlayer) != null) {
+						DoubleCoordinates mainPipePos = mainPipe.pipe.getLPPosition();
+						mainPipePos.setBlockToAir(world);
+						handled = true;
+					}
+				}
+			}
+			if(!handled) {
+				for(LogisticsTileGenericPipe mainPipe:mainPipeList) {
+					if (mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock()) {
+						DoubleCoordinates mainPipePos = mainPipe.pipe.getLPPosition();
+						mainPipePos.setBlockToAir(world);
+					}
+				}
 			}
 		}
 	}
@@ -113,10 +128,12 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 		DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
 		TileEntity tile = pos.getTileEntity(world);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
-			LogisticsTileGenericPipe mainPipe = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
-			if (mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock()) {
-				LogisticsPipes.LogisticsPipeBlock.addCollisionBoxesToList(world, mainPipe.xCoord, mainPipe.yCoord, mainPipe.zCoord, axisalignedbb, arraylist, entity);
-				//((CoreMultiBlockPipe)((LogisticsTileGenericPipe)mainPipe).pipe).addCollisionBoxesToList(arraylist, axisalignedbb);
+			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
+			for(LogisticsTileGenericPipe mainPipe:mainPipeList) {
+				if (mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock()) {
+					LogisticsPipes.LogisticsPipeBlock.addCollisionBoxesToList(world, mainPipe.xCoord, mainPipe.yCoord, mainPipe.zCoord, axisalignedbb, arraylist, entity);
+					//((CoreMultiBlockPipe)((LogisticsTileGenericPipe)mainPipe).pipe).addCollisionBoxesToList(arraylist, axisalignedbb);
+				}
 			}
 		}
 	}
@@ -126,15 +143,17 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 		DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
 		TileEntity tile = pos.getTileEntity(world);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
-			LogisticsTileGenericPipe mainPipe = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
-			if (mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock()) {
-				MovingObjectPosition result = LogisticsPipes.LogisticsPipeBlock.collisionRayTrace(world, mainPipe.xCoord, mainPipe.yCoord, mainPipe.zCoord, origin, direction);
-				if (result != null) {
-					result.blockX = x;
-					result.blockY = y;
-					result.blockZ = z;
+			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
+			for(LogisticsTileGenericPipe mainPipe:mainPipeList) {
+				if (mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock()) {
+					MovingObjectPosition result = LogisticsPipes.LogisticsPipeBlock.collisionRayTrace(world, mainPipe.xCoord, mainPipe.yCoord, mainPipe.zCoord, origin, direction);
+					if (result != null) {
+						result.blockX = x;
+						result.blockY = y;
+						result.blockZ = z;
+						return result;
+					}
 				}
-				return result;
 			}
 		}
 		return null;
@@ -146,9 +165,13 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 		DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
 		TileEntity tile = pos.getTileEntity(world);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
-			LogisticsTileGenericPipe mainPipe = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
-			if (mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock()) {
-				return LogisticsPipes.LogisticsPipeBlock.getSelectedBoundingBoxFromPool(world, mainPipe.xCoord, mainPipe.yCoord, mainPipe.zCoord);
+			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
+			for(LogisticsTileGenericPipe mainPipe:mainPipeList) {
+				if (mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock()) {
+					if (LogisticsPipes.LogisticsPipeBlock.doRayTrace(world, mainPipe.xCoord, mainPipe.yCoord, mainPipe.zCoord, Minecraft.getMinecraft().thePlayer) != null) {
+						return LogisticsPipes.LogisticsPipeBlock.getSelectedBoundingBoxFromPool(world, mainPipe.xCoord, mainPipe.yCoord, mainPipe.zCoord);
+					}
+				}
 			}
 		}
 		return super.getSelectedBoundingBoxFromPool(world, x, y, z).expand(-0.85F, -0.85F, -0.85F);
@@ -169,9 +192,13 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 		DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
 		TileEntity tile = pos.getTileEntity(world);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
-			LogisticsTileGenericPipe mainPipe = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
-			if (mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock()) {
-				return LogisticsPipes.LogisticsPipeBlock.addDestroyEffects(world, mainPipe.xCoord, mainPipe.yCoord, mainPipe.zCoord, meta, effectRenderer);
+			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
+			for(LogisticsTileGenericPipe mainPipe:mainPipeList) {
+				if (mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock()) {
+					if (LogisticsPipes.LogisticsPipeBlock.doRayTrace(world, mainPipe.xCoord, mainPipe.yCoord, mainPipe.zCoord, Minecraft.getMinecraft().thePlayer) != null) {
+						return LogisticsPipes.LogisticsPipeBlock.addDestroyEffects(world, mainPipe.xCoord, mainPipe.yCoord, mainPipe.zCoord, meta, effectRenderer);
+					}
+				}
 			}
 		}
 		return super.addDestroyEffects(world, x, y, z, meta, effectRenderer);
@@ -182,9 +209,13 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 		DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
 		TileEntity tile = pos.getTileEntity(world);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
-			LogisticsTileGenericPipe mainPipe = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
-			if (mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock()) {
-				return LogisticsPipes.LogisticsPipeBlock.getPickBlock(target, world, mainPipe.xCoord, mainPipe.yCoord, mainPipe.zCoord, player);
+			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
+			for(LogisticsTileGenericPipe mainPipe:mainPipeList) {
+				if (mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock()) {
+					if (LogisticsPipes.LogisticsPipeBlock.doRayTrace(world, mainPipe.xCoord, mainPipe.yCoord, mainPipe.zCoord, Minecraft.getMinecraft().thePlayer) != null) {
+						return LogisticsPipes.LogisticsPipeBlock.getPickBlock(target, world, mainPipe.xCoord, mainPipe.yCoord, mainPipe.zCoord, player);
+					}
+				}
 			}
 		}
 		return super.getPickBlock(target, world, x, y, z, player);
@@ -196,9 +227,16 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 		DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
 		TileEntity tile = pos.getTileEntity(world);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
-			LogisticsTileGenericPipe mainPipe = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
-			if (mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock()) {
-				return LogisticsPipes.LogisticsPipeBlock.getPickBlock(target, world, mainPipe.xCoord, mainPipe.yCoord, mainPipe.zCoord);
+			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
+			for(LogisticsTileGenericPipe mainPipe:mainPipeList) {
+				if (mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock()) {
+					if (LogisticsPipes.LogisticsPipeBlock.doRayTrace(world, mainPipe.xCoord, mainPipe.yCoord, mainPipe.zCoord, Minecraft.getMinecraft().thePlayer) != null) {
+						return LogisticsPipes.LogisticsPipeBlock.getPickBlock(target, world, mainPipe.xCoord, mainPipe.yCoord, mainPipe.zCoord);
+					}
+				}
+			}
+			if (!mainPipeList.isEmpty() && mainPipeList.get(0).pipe != null && mainPipeList.get(0).pipe.isMultiBlock()) {
+				return LogisticsPipes.LogisticsPipeBlock.getPickBlock(target, world, mainPipeList.get(0).xCoord, mainPipeList.get(0).yCoord, mainPipeList.get(0).zCoord);
 			}
 		}
 		return super.getPickBlock(target, world, x, y, z);
@@ -212,51 +250,55 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 		DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
 		TileEntity tile = pos.getTileEntity(worldObj);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
-			LogisticsTileGenericPipe mainPipe = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
-			if (mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock()) {
-				CoreUnroutedPipe pipe = mainPipe.pipe;
-				if (pipe == null) {
-					return false;
+			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
+			for(LogisticsTileGenericPipe mainPipe:mainPipeList) {
+				if (mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock()) {
+					if (LogisticsPipes.LogisticsPipeBlock.doRayTrace(worldObj, mainPipe.xCoord, mainPipe.yCoord, mainPipe.zCoord, Minecraft.getMinecraft().thePlayer) != null) {
+						CoreUnroutedPipe pipe = mainPipe.pipe;
+						if (pipe == null) {
+							return false;
+						}
+
+						IIcon icon = pipe.getIconProvider().getIcon(pipe.getIconIndexForItem());
+
+						int sideHit = target.sideHit;
+
+						Block block = LogisticsPipes.LogisticsPipeBlock;
+						float b = 0.1F;
+						double px = x + rand.nextDouble() * (block.getBlockBoundsMaxX() - block.getBlockBoundsMinX() - (b * 2.0F)) + b + block.getBlockBoundsMinX();
+						double py = y + rand.nextDouble() * (block.getBlockBoundsMaxY() - block.getBlockBoundsMinY() - (b * 2.0F)) + b + block.getBlockBoundsMinY();
+						double pz = z + rand.nextDouble() * (block.getBlockBoundsMaxZ() - block.getBlockBoundsMinZ() - (b * 2.0F)) + b + block.getBlockBoundsMinZ();
+
+						if (sideHit == 0) {
+							py = y + block.getBlockBoundsMinY() - b;
+						}
+
+						if (sideHit == 1) {
+							py = y + block.getBlockBoundsMaxY() + b;
+						}
+
+						if (sideHit == 2) {
+							pz = z + block.getBlockBoundsMinZ() - b;
+						}
+
+						if (sideHit == 3) {
+							pz = z + block.getBlockBoundsMaxZ() + b;
+						}
+
+						if (sideHit == 4) {
+							px = x + block.getBlockBoundsMinX() - b;
+						}
+
+						if (sideHit == 5) {
+							px = x + block.getBlockBoundsMaxX() + b;
+						}
+
+						EntityDiggingFX fx = new EntityDiggingFX(worldObj, px, py, pz, 0.0D, 0.0D, 0.0D, block, sideHit, worldObj.getBlockMetadata(x, y, z));
+						fx.setParticleIcon(icon);
+						effectRenderer.addEffect(fx.applyColourMultiplier(x, y, z).multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F));
+						return true;
+					}
 				}
-
-				IIcon icon = pipe.getIconProvider().getIcon(pipe.getIconIndexForItem());
-
-				int sideHit = target.sideHit;
-
-				Block block = LogisticsPipes.LogisticsPipeBlock;
-				float b = 0.1F;
-				double px = x + rand.nextDouble() * (block.getBlockBoundsMaxX() - block.getBlockBoundsMinX() - (b * 2.0F)) + b + block.getBlockBoundsMinX();
-				double py = y + rand.nextDouble() * (block.getBlockBoundsMaxY() - block.getBlockBoundsMinY() - (b * 2.0F)) + b + block.getBlockBoundsMinY();
-				double pz = z + rand.nextDouble() * (block.getBlockBoundsMaxZ() - block.getBlockBoundsMinZ() - (b * 2.0F)) + b + block.getBlockBoundsMinZ();
-
-				if (sideHit == 0) {
-					py = y + block.getBlockBoundsMinY() - b;
-				}
-
-				if (sideHit == 1) {
-					py = y + block.getBlockBoundsMaxY() + b;
-				}
-
-				if (sideHit == 2) {
-					pz = z + block.getBlockBoundsMinZ() - b;
-				}
-
-				if (sideHit == 3) {
-					pz = z + block.getBlockBoundsMaxZ() + b;
-				}
-
-				if (sideHit == 4) {
-					px = x + block.getBlockBoundsMinX() - b;
-				}
-
-				if (sideHit == 5) {
-					px = x + block.getBlockBoundsMaxX() + b;
-				}
-
-				EntityDiggingFX fx = new EntityDiggingFX(worldObj, px, py, pz, 0.0D, 0.0D, 0.0D, block, sideHit, worldObj.getBlockMetadata(x, y, z));
-				fx.setParticleIcon(icon);
-				effectRenderer.addEffect(fx.applyColourMultiplier(x, y, z).multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F));
-				return true;
 			}
 		}
 		return super.addHitEffects(worldObj, target, effectRenderer);

@@ -166,6 +166,10 @@ public class MainProxy {
 		return !players.isEmptyWithoutCheck();
 	}
 
+	public static void sendPacketToAllWatchingChunk(TileEntity tile, ModernPacket packet) {
+		sendPacketToAllWatchingChunk(tile.xCoord, tile.zCoord, MainProxy.getDimensionForWorld(tile.getWorldObj()), packet);
+	}
+
 	public static void sendPacketToAllWatchingChunk(int X, int Z, int dimensionId, ModernPacket packet) {
 		if (!MainProxy.isServer()) {
 			System.err.println("sendPacketToAllWatchingChunk called clientside !");

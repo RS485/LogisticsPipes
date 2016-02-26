@@ -92,7 +92,7 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 	}
 
 	@Override
-	public TileEntity getTile(ForgeDirection direction) {
+	public TileEntity getNextConnectedTile(ForgeDirection direction) {
 		return pipe.getTile(direction);
 	}
 
@@ -177,7 +177,7 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 			if (ignore == dir) {
 				continue;
 			}
-			IPipeInformationProvider information = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(getTile(dir));
+			IPipeInformationProvider information = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(getNextConnectedTile(dir));
 			if (information != null) {
 				DoubleCoordinates pos = new DoubleCoordinates(information);
 				if (visited.contains(pos)) {

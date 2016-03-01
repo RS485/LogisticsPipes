@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
@@ -83,6 +85,7 @@ import li.cil.oc.api.network.Message;
 import li.cil.oc.api.network.Node;
 import li.cil.oc.api.network.SidedEnvironment;
 import lombok.Getter;
+import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 import org.apache.logging.log4j.Level;
 
@@ -575,6 +578,9 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 
 	@Override
 	public double getDistance() {
+		if(this.pipe != null && this.pipe.transport != null) {
+			return this.pipe.transport.getPipeLength();
+		}
 		return 1;
 	}
 
@@ -1098,10 +1104,10 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		if (!pipe.isMultiBlock()) {
 			renderBox = AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 1, zCoord + 1);
 		} else {
-			LPPositionSet set = ((CoreMultiBlockPipe) pipe).getRotatedSubBlocks();
+			LPPositionSet<DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare>> set = ((CoreMultiBlockPipe) pipe).getRotatedSubBlocks();
 			set.addToAll(pipe.getLPPosition());
-			set.add(new DoubleCoordinates(xCoord, yCoord, zCoord));
-			set.add(new DoubleCoordinates(xCoord + 1, yCoord + 1, zCoord + 1));
+			set.add(new DoubleCoordinatesType<>(xCoord, yCoord, zCoord, CoreMultiBlockPipe.SubBlockTypeForShare.NON_SHARE));
+			set.add(new DoubleCoordinatesType<>(xCoord + 1, yCoord + 1, zCoord + 1, CoreMultiBlockPipe.SubBlockTypeForShare.NON_SHARE));
 			renderBox = AxisAlignedBB.getBoundingBox(set.getMinXD() - 1, set.getMinYD() - 1, set.getMinZD() - 1, set.getMaxXD() + 1, set.getMaxYD() + 1, set.getMaxZD() + 1);
 		}
 		return renderBox;
@@ -1134,5 +1140,15 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		if (cache != null) {
 			cache[side.ordinal()].refresh();
 		}
+	}
+
+	@Override
+	public boolean isMultiBlock() {
+		return pipe != null && pipe.isMultiBlock();
+	}
+
+	@Override
+	public Stream<TileEntity> getPartsOfPipe() {
+		return this.subMultiBlock.stream().map(pos -> pos.getTileEntity(worldObj));
 	}
 }

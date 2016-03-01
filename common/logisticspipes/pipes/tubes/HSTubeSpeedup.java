@@ -9,6 +9,7 @@ import logisticspipes.interfaces.ITubeRenderOrientation;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.pipes.basic.CoreMultiBlockPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
@@ -295,6 +296,16 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 			CoordinateUtils.add(pos, travelItem.output, fPos - 0.5);
 		}
 		return pos;
+	}
+
+	@Override
+	public boolean canPipeConnect(TileEntity tile, ForgeDirection side) {
+		if(tile instanceof LogisticsTileGenericSubMultiBlock) {
+			if(this.getOrientation().getDir1() != side) {
+				return false;
+			}
+		}
+		return super.canPipeConnect(tile, side);
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package logisticspipes.proxy.buildcraft;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
@@ -46,7 +47,7 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 		}
 
 		boolean precheck = false;
-		if (type == ConnectionPipeType.BOTH) {
+		if (type == ConnectionPipeType.UNDEFINED) {
 			precheck = pipe.pipe.transport instanceof PipeTransportItems || pipe.pipe.transport instanceof PipeTransportFluids;
 		} else if (type == ConnectionPipeType.ITEM) {
 			precheck = pipe.pipe.transport instanceof PipeTransportItems;
@@ -113,29 +114,18 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 
 	@Override
 	public boolean divideNetwork() {
-		if (pipe.pipe instanceof PipeItemsObsidian) { //Obsidian seperates networks
-			return true;
-		}
-		if (pipe.pipe instanceof PipeStructureCobblestone) { //don't recurse onto structure pipes.
-			return true;
-		}
-		return false;
+		//Obsidian seperates networks
+		return pipe.pipe instanceof PipeItemsObsidian || pipe.pipe instanceof PipeStructureCobblestone;
 	}
 
 	@Override
 	public boolean powerOnly() {
-		if (pipe.pipe instanceof PipeItemsDiamond) { //Diamond only allows power through
-			return true;
-		}
-		return false;
+		return pipe.pipe instanceof PipeItemsDiamond;
 	}
 
 	@Override
 	public boolean isOnewayPipe() {
-		if (pipe.pipe instanceof PipeItemsIron) { //Iron requests and power can come from closed sides
-			return true;
-		}
-		return false;
+		return pipe.pipe instanceof PipeItemsIron;
 	}
 
 	@Override
@@ -236,5 +226,15 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 		if (cache != null) {
 			cache[side.ordinal()].refresh();
 		}
+	}
+
+	@Override
+	public boolean isMultiBlock() {
+		return false;
+	}
+
+	@Override
+	public Stream<TileEntity> getPartsOfPipe() {
+		return Stream.empty();
 	}
 }

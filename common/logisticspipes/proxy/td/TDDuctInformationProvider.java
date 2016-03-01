@@ -2,6 +2,7 @@ package logisticspipes.proxy.td;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import logisticspipes.asm.te.ILPTEInformation;
 import logisticspipes.interfaces.routing.IFilter;
@@ -272,6 +273,16 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 	public void refreshTileCacheOnSide(ForgeDirection side) {
 		if(duct.myGrid == null) return;
 		duct.myGrid.destroyAndRecreate();
+	}
+
+	@Override
+	public boolean isMultiBlock() {
+		return false;
+	}
+
+	@Override
+	public Stream<TileEntity> getPartsOfPipe() {
+		return Stream.empty();
 	}
 
 	@Override

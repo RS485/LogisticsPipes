@@ -4,12 +4,14 @@ import logisticspipes.pipes.basic.CoreMultiBlockPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
+import logisticspipes.pipes.tubes.HSTubeSpeedup;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemClient;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 
 import net.minecraft.tileentity.TileEntity;
 
+import net.minecraft.world.Explosion;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.List;
@@ -103,7 +105,10 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 				return;
 			}
 		}
-		//TODO UNKNOWN TILE => destroy item in explosion
+		Explosion explosion = new Explosion(this.getWorld(), null, this.getPipe().getX(), this.getPipe().getY(), this.getPipe().getZ(), 4.0F);
+		explosion.isFlaming = false;
+		explosion.isSmoking = true;
+		explosion.doExplosionB(true);
 	}
 
 	@Override
@@ -121,6 +126,10 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 				return;
 			}
 		}
+		Explosion explosion = new Explosion(this.getWorld(), null, this.getPipe().getX(), this.getPipe().getY(), this.getPipe().getZ(), 4.0F);
+		explosion.isFlaming = false;
+		explosion.isSmoking = true;
+		explosion.doExplosionB(true);
 	}
 
 	@Override

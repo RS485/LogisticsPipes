@@ -20,12 +20,14 @@ public class PipeInformationManager {
 		}
 		if (tile instanceof IPipeInformationProvider) {
 			return (IPipeInformationProvider) tile;
+		} else if(tile instanceof ISubMultiBlockPipeInformationProvider) {
+			return ((ISubMultiBlockPipeInformationProvider) tile).getMainTile();
 		} else {
 			for (Class<?> type : infoProvider.keySet()) {
 				if (type.isAssignableFrom(tile.getClass())) {
 					try {
 						IPipeInformationProvider provider = infoProvider.get(type).getDeclaredConstructor(type).newInstance(type.cast(tile));
-						if (provider.isCorrect(ConnectionPipeType.BOTH)) {
+						if (provider.isCorrect(ConnectionPipeType.UNDEFINED)) {
 							return provider;
 						}
 					} catch (InstantiationException | IllegalAccessException | InvocationTargetException | IllegalArgumentException | SecurityException | NoSuchMethodException e) {
@@ -55,7 +57,7 @@ public class PipeInformationManager {
 	}
 
 	public boolean isPipe(TileEntity tile) {
-		return isPipe(tile, true, ConnectionPipeType.BOTH);
+		return isPipe(tile, true, ConnectionPipeType.UNDEFINED);
 	}
 
 	public boolean isPipe(TileEntity tile, boolean check, ConnectionPipeType pipeType) {
@@ -64,6 +66,8 @@ public class PipeInformationManager {
 		}
 		if (tile instanceof IPipeInformationProvider) {
 			return true;
+		} else if(tile instanceof ISubMultiBlockPipeInformationProvider) {
+			return pipeType == ConnectionPipeType.MULTI;
 		} else {
 			for (Class<?> type : infoProvider.keySet()) {
 				if (type.isAssignableFrom(tile.getClass())) {
@@ -83,6 +87,8 @@ public class PipeInformationManager {
 
 	public boolean isNotAPipe(TileEntity tile) {
 		if (tile instanceof IPipeInformationProvider) {
+			return false;
+		} else if (tile instanceof ISubMultiBlockPipeInformationProvider) {
 			return false;
 		} else {
 			for (Class<?> type : infoProvider.keySet()) {

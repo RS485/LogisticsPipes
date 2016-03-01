@@ -33,7 +33,9 @@ public abstract class CoreMultiBlockPipe extends CoreUnroutedPipe {
 		CURVE_OUT_A,
 		CURVE_INNER_A,
 		CURVE_OUT_B,
-		type, CURVE_INNER_B
+		CURVE_INNER_B,
+		GAIN_A,
+		GAIN_B
 	}
 
 	private static List<Pair<SubBlockTypeForShare, SubBlockTypeForShare>> allowedCombinations;
@@ -46,6 +48,8 @@ public abstract class CoreMultiBlockPipe extends CoreUnroutedPipe {
 		allowedCombinations.add(new Pair<>(SubBlockTypeForShare.CURVE_OUT_B, SubBlockTypeForShare.CURVE_INNER_B));
 		allowedCombinations.add(new Pair<>(SubBlockTypeForShare.CURVE_OUT_A, SubBlockTypeForShare.S_CURVE_A));
 		allowedCombinations.add(new Pair<>(SubBlockTypeForShare.CURVE_OUT_B, SubBlockTypeForShare.S_CURVE_A));
+		allowedCombinations.add(new Pair<>(SubBlockTypeForShare.GAIN_A, SubBlockTypeForShare.GAIN_B));
+		allowedCombinations.add(new Pair<>(SubBlockTypeForShare.GAIN_A, SubBlockTypeForShare.GAIN_A));
 	}
 
 	public static boolean canShare(List<SubBlockTypeForShare> list, SubBlockTypeForShare toAdd) {

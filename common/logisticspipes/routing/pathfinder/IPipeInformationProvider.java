@@ -1,6 +1,7 @@
 package logisticspipes.routing.pathfinder;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -16,57 +17,62 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 public interface IPipeInformationProvider {
 
-	public enum ConnectionPipeType {
+	enum ConnectionPipeType {
 		ITEM,
 		FLUID,
-		BOTH;
+		MULTI,
+		UNDEFINED
 	}
 
-	public boolean isCorrect(ConnectionPipeType type);
+	boolean isCorrect(ConnectionPipeType type);
 
-	public int getX();
+	int getX();
 
-	public int getY();
+	int getY();
 
-	public int getZ();
+	int getZ();
 
-	public World getWorld();
+	World getWorld();
 
-	public boolean isRouterInitialized();
+	boolean isRouterInitialized();
 
-	public boolean isRoutingPipe();
+	boolean isRoutingPipe();
 
-	public CoreRoutedPipe getRoutingPipe();
+	CoreRoutedPipe getRoutingPipe();
 
-	public TileEntity getNextConnectedTile(ForgeDirection direction);
+	TileEntity getNextConnectedTile(ForgeDirection direction);
 
-	public boolean isFirewallPipe();
+	boolean isFirewallPipe();
 
-	public IFilter getFirewallFilter();
+	IFilter getFirewallFilter();
 
-	public TileEntity getTile();
+	TileEntity getTile();
 
-	public boolean divideNetwork();
+	boolean divideNetwork();
 
-	public boolean powerOnly();
+	boolean powerOnly();
 
-	public boolean isOnewayPipe();
+	boolean isOnewayPipe();
 
-	public boolean isOutputOpen(ForgeDirection direction);
+	boolean isOutputOpen(ForgeDirection direction);
 
-	public boolean canConnect(TileEntity to, ForgeDirection direction, boolean flag);
+	boolean canConnect(TileEntity to, ForgeDirection direction, boolean flag);
 
-	public double getDistance();
+	double getDistance();
 
-	public boolean isItemPipe();
+	boolean isItemPipe();
 
-	public boolean isFluidPipe();
+	boolean isFluidPipe();
 
-	public boolean isPowerPipe();
+	boolean isPowerPipe();
 
-	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double travled, double max, List<DoubleCoordinates> visited);
+	double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double travled, double max, List<DoubleCoordinates> visited);
 
-	public boolean acceptItem(LPTravelingItem item, TileEntity from);
+	boolean acceptItem(LPTravelingItem item, TileEntity from);
 
-	public void refreshTileCacheOnSide(ForgeDirection side);
+	void refreshTileCacheOnSide(ForgeDirection side);
+
+	boolean isMultiBlock();
+
+	Stream<TileEntity> getPartsOfPipe();
 }

@@ -187,9 +187,10 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			double boxScale = lPipe.getBoxRenderScale(fPos, item);
 			double itemYaw = (lPipe.getItemRenderYaw(fPos, item) - lPipe.getItemRenderYaw(0, item) + lItemYaw) % 360;
 			double itemPitch = lPipe.getItemRenderPitch(fPos, item);
+			double itemYawForPitch = lPipe.getItemRenderYaw(fPos, item);
 
 			ItemStack itemstack = item.getItemIdentifierStack().makeNormalStack();
-			doRenderItem(itemstack, pipe.container.getWorldObj(), lX + pos.getXCoord(), lY + pos.getYCoord(), lZ + pos.getZCoord(), light, 0.75F, boxScale, itemYaw, itemPitch, partialTickTime);
+			doRenderItem(itemstack, pipe.container.getWorldObj(), lX + pos.getXCoord(), lY + pos.getYCoord(), lZ + pos.getZCoord(), light, 0.75F, boxScale, itemYaw, itemPitch, itemYawForPitch, partialTickTime);
 			count++;
 		}
 
@@ -204,7 +205,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 				continue;
 			}
 			ItemStack itemstack = item.getValue1().makeNormalStack();
-			doRenderItem(itemstack, pipe.container.getWorldObj(), x + pos.getXCoord(), y + pos.getYCoord(), z + pos.getZCoord(), light, 0.25F, 0, 0, 0, partialTickTime);
+			doRenderItem(itemstack, pipe.container.getWorldObj(), x + pos.getXCoord(), y + pos.getYCoord(), z + pos.getZCoord(), light, 0.25F, 0, 0, 0, 0, partialTickTime);
 			count++;
 			if (count >= 27) {
 				break;
@@ -223,16 +224,18 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		GL11.glPopMatrix();
 	}
 
-	public void doRenderItem(ItemStack itemstack, World worldObj, double x, double y, double z, float light, float renderScale, double boxScale, double yaw, double pitch, float partialTickTime) {
+	public void doRenderItem(ItemStack itemstack, World worldObj, double x, double y, double z, float light, float renderScale, double boxScale, double yaw, double pitch, double yawForPitch, float partialTickTime) {
 		if (LogisticsRenderPipe.config.isUseNewRenderer() && boxScale != 0) {
-			LogisticsRenderPipe.boxRenderer.doRenderItem(itemstack, light, x, y, z, boxScale, yaw, pitch);
+			LogisticsRenderPipe.boxRenderer.doRenderItem(itemstack, light, x, y, z, boxScale, yaw, pitch, yawForPitch);
 		}
 
 		GL11.glPushMatrix();
 		GL11.glTranslated(x, y, z);
 		GL11.glScalef(renderScale, renderScale, renderScale);
-		GL11.glRotated(yaw, 0, 1, 0);
+		GL11.glRotated(yawForPitch, 0, 1, 0);
 		GL11.glRotated(pitch, 1, 0, 0);
+		GL11.glRotated(-yawForPitch, 0, 1, 0);
+		GL11.glRotated(yaw, 0, 1, 0);
 		GL11.glTranslatef(0.0F, -0.1F, 0.0F);
 		itemRenderer.setItemstack(itemstack).setWorldObj(worldObj).setPartialTickTime(partialTickTime);
 		itemRenderer.renderInWorld();

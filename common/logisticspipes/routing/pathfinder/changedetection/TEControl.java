@@ -1,7 +1,6 @@
 package logisticspipes.routing.pathfinder.changedetection;
 
 import java.util.ArrayList;
-import java.util.concurrent.Callable;
 
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
@@ -41,40 +40,36 @@ public class TEControl {
 			return;
 		}
 
-		if (SimpleServiceLocator.pipeInformationManager.isPipe(tile, false, ConnectionPipeType.BOTH) || SimpleServiceLocator.specialtileconnection.isType(tile)) {
+		if (SimpleServiceLocator.pipeInformationManager.isPipe(tile, false, ConnectionPipeType.UNDEFINED) || SimpleServiceLocator.specialtileconnection.isType(tile)) {
 			((ILPTEInformation) tile).setObject(new LPTileEntityObject());
 			((ILPTEInformation) tile).getObject().initialised = LPTickHandler.getWorldInfo(world).getWorldTick();
 			if (((ILPTEInformation) tile).getObject().initialised < 5) {
 				return;
 			}
-			QueuedTasks.queueTask(new Callable<Object>() {
-
-				@Override
-				public Object call() throws Exception {
-					if (!SimpleServiceLocator.pipeInformationManager.isPipe(tile, true, ConnectionPipeType.BOTH)) {
-						return null;
-					}
-					for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-						DoubleCoordinates newPos = CoordinateUtils.sum(pos, dir);
-						if (!newPos.blockExists(world)) {
-							continue;
-						}
-						TileEntity nextTile = newPos.getTileEntity(world);
-						if (nextTile != null && ((ILPTEInformation) nextTile).getObject() != null) {
-							if (SimpleServiceLocator.pipeInformationManager.isItemPipe(nextTile)) {
-								SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(nextTile).refreshTileCacheOnSide(dir.getOpposite());
-							}
-							if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
-								SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(tile).refreshTileCacheOnSide(dir);
-								SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(tile).refreshTileCacheOnSide(dir.getOpposite());
-							}
-							for (ITileEntityChangeListener listener : new ArrayList<ITileEntityChangeListener>(((ILPTEInformation) nextTile).getObject().changeListeners)) {
-								listener.pipeAdded(pos, dir.getOpposite());
-							}
-						}
-					}
+			QueuedTasks.queueTask(() -> {
+				if (!SimpleServiceLocator.pipeInformationManager.isPipe(tile, true, ConnectionPipeType.UNDEFINED)) {
 					return null;
 				}
+				for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+					DoubleCoordinates newPos = CoordinateUtils.sum(pos, dir);
+					if (!newPos.blockExists(world)) {
+						continue;
+					}
+					TileEntity nextTile = newPos.getTileEntity(world);
+					if (nextTile != null && ((ILPTEInformation) nextTile).getObject() != null) {
+						if (SimpleServiceLocator.pipeInformationManager.isItemPipe(nextTile)) {
+							SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(nextTile).refreshTileCacheOnSide(dir.getOpposite());
+						}
+						if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
+							SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(tile).refreshTileCacheOnSide(dir);
+							SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(tile).refreshTileCacheOnSide(dir.getOpposite());
+						}
+						for (ITileEntityChangeListener listener : new ArrayList<>(((ILPTEInformation) nextTile).getObject().changeListeners)) {
+							listener.pipeAdded(pos, dir.getOpposite());
+						}
+					}
+				}
+				return null;
 			});
 		}
 	}
@@ -91,28 +86,24 @@ public class TEControl {
 			return;
 		}
 		if (((ILPTEInformation) tile).getObject() != null) {
-			QueuedTasks.queueTask(new Callable<Object>() {
-
-				@Override
-				public Object call() throws Exception {
-					DoubleCoordinates pos = new DoubleCoordinates(tile);
-					for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-						DoubleCoordinates newPos = CoordinateUtils.sum(pos, dir);
-						if (!newPos.blockExists(world)) {
-							continue;
-						}
-						TileEntity nextTile = newPos.getTileEntity(world);
-						if (nextTile != null && ((ILPTEInformation) nextTile).getObject() != null) {
-							if (SimpleServiceLocator.pipeInformationManager.isItemPipe(nextTile)) {
-								SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(nextTile).refreshTileCacheOnSide(dir.getOpposite());
-							}
+			QueuedTasks.queueTask(() -> {
+				DoubleCoordinates pos = new DoubleCoordinates(tile);
+				for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+					DoubleCoordinates newPos = CoordinateUtils.sum(pos, dir);
+					if (!newPos.blockExists(world)) {
+						continue;
+					}
+					TileEntity nextTile = newPos.getTileEntity(world);
+					if (nextTile != null && ((ILPTEInformation) nextTile).getObject() != null) {
+						if (SimpleServiceLocator.pipeInformationManager.isItemPipe(nextTile)) {
+							SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(nextTile).refreshTileCacheOnSide(dir.getOpposite());
 						}
 					}
-					for (ITileEntityChangeListener listener : new ArrayList<ITileEntityChangeListener>(((ILPTEInformation) tile).getObject().changeListeners)) {
-						listener.pipeRemoved(pos);
-					}
-					return null;
 				}
+				for (ITileEntityChangeListener listener : new ArrayList<>(((ILPTEInformation) tile).getObject().changeListeners)) {
+					listener.pipeRemoved(pos);
+				}
+				return null;
 			});
 		}
 	}
@@ -155,28 +146,24 @@ public class TEControl {
 		}
 		if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile) || SimpleServiceLocator.specialtileconnection.isType(tile)) {
 			info.getUpdateQueued().add(pos);
-			QueuedTasks.queueTask(new Callable<Object>() {
-
-				@Override
-				public Object call() throws Exception {
-					for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-						DoubleCoordinates newPos = CoordinateUtils.sum(pos, dir);
-						if (!newPos.blockExists(world)) {
-							continue;
-						}
-						TileEntity nextTile = newPos.getTileEntity(world);
-						if (nextTile != null && ((ILPTEInformation) nextTile).getObject() != null) {
-							for (ITileEntityChangeListener listener : new ArrayList<ITileEntityChangeListener>(((ILPTEInformation) nextTile).getObject().changeListeners)) {
-								listener.pipeModified(pos);
-							}
+			QueuedTasks.queueTask(() -> {
+				for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+					DoubleCoordinates newPos = CoordinateUtils.sum(pos, dir);
+					if (!newPos.blockExists(world)) {
+						continue;
+					}
+					TileEntity nextTile = newPos.getTileEntity(world);
+					if (nextTile != null && ((ILPTEInformation) nextTile).getObject() != null) {
+						for (ITileEntityChangeListener listener : new ArrayList<>(((ILPTEInformation) nextTile).getObject().changeListeners)) {
+							listener.pipeModified(pos);
 						}
 					}
-					for (ITileEntityChangeListener listener : new ArrayList<ITileEntityChangeListener>(((ILPTEInformation) tile).getObject().changeListeners)) {
-						listener.pipeModified(pos);
-					}
-					info.getUpdateQueued().remove(pos);
-					return null;
 				}
+				for (ITileEntityChangeListener listener : new ArrayList<>(((ILPTEInformation) tile).getObject().changeListeners)) {
+					listener.pipeModified(pos);
+				}
+				info.getUpdateQueued().remove(pos);
+				return null;
 			});
 		}
 	}

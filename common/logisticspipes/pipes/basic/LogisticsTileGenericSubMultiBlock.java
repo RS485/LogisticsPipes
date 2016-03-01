@@ -8,6 +8,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.state.PipeSubRenderState;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
+import logisticspipes.routing.pathfinder.ISubMultiBlockPipeInformationProvider;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.TileBuffer;
@@ -27,7 +28,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.*;
 
-public class LogisticsTileGenericSubMultiBlock extends TileEntity implements IPipeInformationProvider {
+public class LogisticsTileGenericSubMultiBlock extends TileEntity implements ISubMultiBlockPipeInformationProvider {
 
 	private Set<DoubleCoordinates> mainPipePos = new HashSet<>();
 	private List<LogisticsTileGenericPipe> mainPipe;
@@ -140,6 +141,7 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity implements IPi
 		nbt.setTag("MainPipePosList", nbtList);
 		NBTTagList nbtTypeList = new NBTTagList();
 		for(CoreMultiBlockPipe.SubBlockTypeForShare type: subTypes) {
+			if(type == null) continue;
 			nbtTypeList.appendTag(new NBTTagString(type.name()));
 		}
 		nbt.setTag("SubTypeList", nbtTypeList);
@@ -169,157 +171,8 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity implements IPi
 		mainPipe = null;
 	}
 
-	@Override
-	public boolean isCorrect(ConnectionPipeType type) {
-		return getMainPipe().size() == 1;
-	}
-
-	@Override
-	public int getX() {
-		return xCoord;
-	}
-
-	@Override
-	public int getY() {
-		return yCoord;
-	}
-
-	@Override
-	public int getZ() {
-		return zCoord;
-	}
-
-	@Override
-	public World getWorld() {
-		return getWorldObj();
-	}
-
-	@Override
-	public boolean isRouterInitialized() {
-		return true;
-	}
-
-	@Override
-	public boolean isRoutingPipe() {
-		return false;
-	}
-
-	@Override
-	public CoreRoutedPipe getRoutingPipe() {
-		return null;
-	}
-
-	@Override
-	public TileEntity getNextConnectedTile(ForgeDirection to) {
-		CoreUnroutedPipe pipe = this.getMainPipe().get(0).pipe;
-		if(pipe instanceof CoreMultiBlockPipe) {
-			return ((CoreMultiBlockPipe)pipe).getConnectedEndTile(to);
-		}
-		return null;
-	}
-
-	@Override
-	public boolean isFirewallPipe() {
-		return false;
-	}
-
-	@Override
-	public IFilter getFirewallFilter() {
-		return null;
-	}
-
 	public TileEntity getTile() {
 		return this;
-	}
-
-	@Override
-	public boolean divideNetwork() {
-		return false;
-	}
-
-	@Override
-	public boolean powerOnly() {
-		return false;
-	}
-
-	@Override
-	public boolean isOnewayPipe() {
-		return false;
-	}
-
-	@Override
-	public boolean isOutputOpen(ForgeDirection direction) {
-		return true;
-	}
-
-	@Override
-	public boolean canConnect(TileEntity to, ForgeDirection direction, boolean flag) {
-		return getNextConnectedTile(direction) != null;
-	}
-
-	@Override
-	public double getDistance() {
-		CoreUnroutedPipe pipe = this.getMainPipe().get(0).pipe;
-		if(pipe instanceof CoreMultiBlockPipe) {
-			return ((CoreMultiBlockPipe)pipe).getPipeLength();
-		}
-		return 0;
-	}
-
-	@Override
-	public boolean isItemPipe() {
-		return true;
-	}
-
-	@Override
-	public boolean isFluidPipe() {
-		return false;
-	}
-
-	@Override
-	public boolean isPowerPipe() {
-		return false;
-	}
-
-	@Override
-	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double traveled, double max, List<DoubleCoordinates> visited) {
-		if (traveled >= max) {
-			return Integer.MAX_VALUE;
-		}
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-			if (ignore == dir) {
-				continue;
-			}
-			IPipeInformationProvider information = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(getNextConnectedTile(dir));
-			if (information != null) {
-				DoubleCoordinates pos = new DoubleCoordinates(information);
-				if (visited.contains(pos)) {
-					continue;
-				}
-				visited.add(pos);
-				double result = information.getDistanceTo(destinationint, dir.getOpposite(), ident, isActive, traveled + getDistance(), max, visited);
-				visited.remove(pos);
-				if (result == Integer.MAX_VALUE) {
-					return result;
-				}
-				return result + (int) getDistance();
-			}
-		}
-		return Integer.MAX_VALUE;
-	}
-
-	@Override
-	public boolean acceptItem(LPTravelingItem item, TileEntity from) {
-		CoreUnroutedPipe pipe = this.getMainPipe().get(0).pipe;
-		if(pipe instanceof CoreMultiBlockPipe) {
-			return ((CoreMultiBlockPipe)pipe).transport.injectItem(item, OrientationsUtil.getOrientationOfTilewithTile(this, from).getOpposite()) == 0;
-		}
-		return false;
-	}
-
-	@Override
-	public void refreshTileCacheOnSide(ForgeDirection side) {
-
 	}
 
 	public TileEntity getTile(ForgeDirection to) {
@@ -371,6 +224,7 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity implements IPi
 	}
 
 	public void addSubTypeTo(CoreMultiBlockPipe.SubBlockTypeForShare type) {
+		if(type == null) throw new NullPointerException();
 		subTypes.add(type);
 	}
 
@@ -387,5 +241,14 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity implements IPi
 
 	public void removeSubType(CoreMultiBlockPipe.SubBlockTypeForShare type) {
 		subTypes.remove(type);
+	}
+
+	@Override
+	public IPipeInformationProvider getMainTile() {
+		List<LogisticsTileGenericPipe> mainTiles = this.getMainPipe();
+		if(mainTiles.size() != 1) {
+			return null;
+		}
+		return mainTiles.get(0);
 	}
 }

@@ -29,7 +29,7 @@ public class LogisticsNewPipeItemBoxRenderer {
 	private static final ResourceLocation BLOCKS = new ResourceLocation("textures/atlas/blocks.png");
 	private static final Map<FluidIdentifier, int[]> renderLists = new HashMap<FluidIdentifier, int[]>();
 
-	public void doRenderItem(ItemStack itemstack, float light, double x, double y, double z, double boxScale, double yaw, double pitch) {
+	public void doRenderItem(ItemStack itemstack, float light, double x, double y, double z, double boxScale, double yaw, double pitch, double yawForPitch) {
 		if(LogisticsNewRenderPipe.innerTransportBox == null) return;
 		GL11.glPushMatrix();
 
@@ -46,8 +46,10 @@ public class LogisticsNewPipeItemBoxRenderer {
 		GL11.glTranslated(x, y, z);
 		Minecraft.getMinecraft().getTextureManager().bindTexture(LogisticsNewPipeItemBoxRenderer.BLOCKS);
 		GL11.glScaled(boxScale, boxScale, boxScale);
-		GL11.glRotated(yaw, 0, 1, 0);
+		GL11.glRotated(yawForPitch, 0, 1, 0);
 		GL11.glRotated(pitch, 1, 0, 0);
+		GL11.glRotated(-yawForPitch, 0, 1, 0);
+		GL11.glRotated(yaw, 0, 1, 0);
 		GL11.glTranslated(-0.5, -0.5, -0.5);
 		GL11.glCallList(renderList);
 		GL11.glTranslated(0.5, 0.5, 0.5);

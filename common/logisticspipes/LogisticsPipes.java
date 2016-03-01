@@ -74,10 +74,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericSubMultiBlock;
-import logisticspipes.pipes.tubes.HSTubeCurve;
-import logisticspipes.pipes.tubes.HSTubeLine;
-import logisticspipes.pipes.tubes.HSTubeSCurve;
-import logisticspipes.pipes.tubes.HSTubeSpeedup;
+import logisticspipes.pipes.tubes.*;
 import logisticspipes.pipes.unrouted.PipeItemsBasicTransport;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.ProxyManager;
@@ -269,6 +266,7 @@ public class LogisticsPipes {
 	public static Item HSTubeSpeedup;
 	public static Item HSTubeSCurve;
 	public static Item HSTubeLine;
+	public static Item HSTubeGain;
 
 	// Logistics Modules/Upgrades
 	public static ItemModule ModuleItem;
@@ -626,6 +624,7 @@ public class LogisticsPipes {
 			LogisticsPipes.HSTubeSpeedup = createPipe(HSTubeSpeedup.class, "High Speed Tube Speedup", side);
 			LogisticsPipes.HSTubeSCurve = createPipe(HSTubeSCurve.class, "High Speed Tube S-Curve", side);
 			LogisticsPipes.HSTubeLine = createPipe(HSTubeLine.class, "High Speed Tube Line", side);
+			LogisticsPipes.HSTubeGain = createPipe(HSTubeGain.class, "High Speed Tube Gain", side);
 		}
 	}
 

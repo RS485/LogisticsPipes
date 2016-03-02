@@ -96,9 +96,9 @@ public class ClassCreator {
 	}
 
 	private static void addMethod(ClassWriter cw, String name, boolean direct, String doc, String newClassName_TYPE) {
-		MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, name, "(Lli/cil/oc/api/network/Context;Lli/cil/oc/api/network/Arguments;)[Ljava/lang/Object;", null, new String[] { "java/lang/Exception" });
+		MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, name, "(Lli/cil/oc/api/machine/Context;Lli/cil/oc/api/machine/Arguments;)[Ljava/lang/Object;", null, new String[] { "java/lang/Exception" });
 		{
-			AnnotationVisitor av0 = mv.visitAnnotation("Lli/cil/oc/api/network/Callback;", true);
+			AnnotationVisitor av0 = mv.visitAnnotation("Lli/cil/oc/api/machine/Callback;", true);
 			if (direct) {
 				av0.visit("direct", Boolean.TRUE);
 			} else {
@@ -115,13 +115,13 @@ public class ClassCreator {
 		mv.visitLdcInsn(name);
 		mv.visitVarInsn(Opcodes.ALOAD, 1);
 		mv.visitVarInsn(Opcodes.ALOAD, 2);
-		mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "logisticspipes/proxy/opencomputers/asm/BaseWrapperClass", "invokeMethod", "(Ljava/lang/String;Lli/cil/oc/api/network/Context;Lli/cil/oc/api/network/Arguments;)[Ljava/lang/Object;");
+		mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "logisticspipes/proxy/opencomputers/asm/BaseWrapperClass", "invokeMethod", "(Ljava/lang/String;Lli/cil/oc/api/machine/Context;Lli/cil/oc/api/machine/Arguments;)[Ljava/lang/Object;");
 		mv.visitInsn(Opcodes.ARETURN);
 		Label l1 = new Label();
 		mv.visitLabel(l1);
 		mv.visitLocalVariable("this", newClassName_TYPE, null, l0, l1, 0);
-		mv.visitLocalVariable("context", "Lli/cil/oc/api/network/Context;", null, l0, l1, 1);
-		mv.visitLocalVariable("args", "Lli/cil/oc/api/network/Arguments;", null, l0, l1, 2);
+		mv.visitLocalVariable("context", "Lli/cil/oc/api/machine/Context;", null, l0, l1, 1);
+		mv.visitLocalVariable("args", "Lli/cil/oc/api/machine/Arguments;", null, l0, l1, 2);
 		mv.visitMaxs(4, 3);
 		mv.visitEnd();
 	}

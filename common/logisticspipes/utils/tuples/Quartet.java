@@ -18,6 +18,6 @@ public class Quartet<T1, T2, T3, T4> extends Triplet<T1, T2, T3> {
 
 	@Override
 	public Quartet<T1, T2, T3, T4> copy() {
-		return new Quartet<T1, T2, T3, T4>(value1, value2, value3, value4);
+		return new Quartet<>(value1, value2, value3, value4);
 	}
 }

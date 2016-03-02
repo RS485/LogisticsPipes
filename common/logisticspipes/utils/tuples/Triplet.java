@@ -18,6 +18,6 @@ public class Triplet<T1, T2, T3> extends Pair<T1, T2> {
 
 	@Override
 	public Triplet<T1, T2, T3> copy() {
-		return new Triplet<T1, T2, T3>(value1, value2, value3);
+		return new Triplet<>(value1, value2, value3);
 	}
 }

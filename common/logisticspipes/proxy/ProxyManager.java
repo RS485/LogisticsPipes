@@ -290,7 +290,7 @@ public class ProxyManager {
 		SimpleServiceLocator.setThermalExpansionProxy(ProxyManager.getWrappedProxy("ThermalExpansion", IThermalExpansionProxy.class, ThermalExpansionProxy.class, new IThermalExpansionProxy() {
 			@Override public boolean isTesseract(TileEntity tile) {return false;}
 			@Override public boolean isTE() {return false;}
-			@Override public List<TileEntity> getConnectedTesseracts(TileEntity tile) {return new ArrayList<TileEntity>(0);}
+			@Override public List<TileEntity> getConnectedTesseracts(TileEntity tile) {return new ArrayList<>(0);}
 			@Override public ICraftingParts getRecipeParts() {return null;}
 		}));
 
@@ -309,19 +309,17 @@ public class ProxyManager {
 		}, ICrateStorageProxy.class));
 
 		SimpleServiceLocator.setNEIProxy(ProxyManager.getWrappedProxy("NotEnoughItems", INEIProxy.class, NEIProxy.class, new INEIProxy() {
-			@Override public List<String> getInfoForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver) {return new ArrayList<String>(0);}
+			@Override public List<String> getInfoForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver) {return new ArrayList<>(0);}
 			@Override public ItemStack getItemForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver) {return null;}
 		}));
 
-		SimpleServiceLocator.setFactorizationProxy(ProxyManager.getWrappedProxy("factorization", IFactorizationProxy.class, FactorizationProxy.class, new IFactorizationProxy() {
-			@Override public boolean isBarral(TileEntity tile) {return false;}
-		}));
+		SimpleServiceLocator.setFactorizationProxy(ProxyManager.getWrappedProxy("factorization", IFactorizationProxy.class, FactorizationProxy.class, tile-> false));
 
 		SimpleServiceLocator.setEnderIOProxy(ProxyManager.getWrappedProxy("EnderIO", IEnderIOProxy.class, EnderIOProxy.class, new IEnderIOProxy() {
 			@Override public boolean isSendAndReceive(TileEntity tile) {return false;}
 			@Override public boolean isHyperCube(TileEntity tile) {return false;}
 			@Override public boolean isTransceiver(TileEntity tile) {return false;}
-			@Override public List<TileEntity> getConnectedHyperCubes(TileEntity tile) {return new ArrayList<TileEntity>(0);}
+			@Override public List<TileEntity> getConnectedHyperCubes(TileEntity tile) {return new ArrayList<>(0);}
 			@Override public List<TileEntity> getConnectedTransceivers(TileEntity tile) {return null;}
 			@Override public boolean isEnderIO() {return false;}
 		}));
@@ -353,9 +351,7 @@ public class ProxyManager {
 			@Override public boolean isWrench(Item item) {return false;}
 		}));
 
-		SimpleServiceLocator.setExtraCellsProxy(ProxyManager.getWrappedProxy("extracells", IExtraCellsProxy.class, ExtraCellsProxy.class, new IExtraCellsProxy() {
-			@Override public boolean canSeeFluidInNetwork(Fluid fluid) {return true;}
-		}));
+		SimpleServiceLocator.setExtraCellsProxy(ProxyManager.getWrappedProxy("extracells", IExtraCellsProxy.class, ExtraCellsProxy.class, fluid-> true));
 
 		SimpleServiceLocator.setCoFHPowerProxy(ProxyManager.getWrappedProxy("CoFHAPI|energy", ICoFHPowerProxy.class, CoFHPowerProxy.class, new ICoFHPowerProxy() {
 			@Override public boolean isEnergyReceiver(TileEntity tile) {return false;}
@@ -400,9 +396,7 @@ public class ProxyManager {
 			@Override public boolean isBlockedSide(TileEntity with, ForgeDirection opposite) {return false;}
 		}, ITDPart.class));
 
-		SimpleServiceLocator.setBinnieProxy(ProxyManager.getWrappedProxy("Genetics", IBinnieProxy.class, BinnieProxy.class, new IBinnieProxy() {
-			@Override public boolean isTileAnalyser(TileEntity tile) {return false;}
-		}));
+		SimpleServiceLocator.setBinnieProxy(ProxyManager.getWrappedProxy("Genetics", IBinnieProxy.class, BinnieProxy.class, tile-> false));
 		
 		final IBounds dummyBounds = new IBounds() {
 			@Override public IVec3 min() {
@@ -456,7 +450,7 @@ public class ProxyManager {
 					@Override public void startDrawing() {}
 				};
 			}
-			@Override public Map<String, IModel3D> parseObjModels(InputStream resourceAsStream, int i, LPScale scale) {return new HashMap<String, IModel3D>();}
+			@Override public Map<String, IModel3D> parseObjModels(InputStream resourceAsStream, int i, LPScale scale) {return new HashMap<>();}
 			@Override public Object getRotation(int i, int j) {return null;}
 			@Override public Object getScale(double d, double e, double f) {return null;}
 			@Override public Object getScale(double d) {return null;}

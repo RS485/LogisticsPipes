@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.ISpecialPipedConnection;
@@ -72,13 +73,13 @@ public class TeleportPipes implements ISpecialPipedConnection {
 
 	@Override
 	public List<ConnectionInformation> getConnections(IPipeInformationProvider tile, EnumSet<PipeRoutingConnectionType> connection, ForgeDirection side) {
-		List<ConnectionInformation> list = new ArrayList<ConnectionInformation>();
+		List<ConnectionInformation> list = new ArrayList<>();
 		if (tile.getTile() instanceof TileGenericPipe && ((TileGenericPipe) tile.getTile()).pipe != null) {
 			try {
 				LinkedList<? extends Pipe> pipes = getConnectedTeleportPipes(((TileGenericPipe) tile.getTile()).pipe);
-				for (Pipe pipe : pipes) {
-					list.add(new ConnectionInformation(SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(pipe.container), connection, side, ForgeDirection.UNKNOWN, 0));
-				}
+				list.addAll(pipes.stream()
+						.map(pipe -> new ConnectionInformation(SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(pipe.container), connection, side, ForgeDirection.UNKNOWN, 0))
+						.collect(Collectors.toList()));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

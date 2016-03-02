@@ -97,16 +97,12 @@ public class LPPositionSet<T extends DoubleCoordinates> extends HashSet<T> imple
 
 	@Override
 	public void rotateLeft() {
-		for (DoubleCoordinates pos : this) {
-			pos.rotateLeft();
-		}
+		this.forEach(DoubleCoordinates::rotateLeft);
 	}
 
 	@Override
 	public void rotateRight() {
-		for (DoubleCoordinates pos : this) {
-			pos.rotateRight();
-		}
+		this.forEach(DoubleCoordinates::rotateRight);
 	}
 
 	public AxisAlignedBB toABB() {
@@ -115,16 +111,12 @@ public class LPPositionSet<T extends DoubleCoordinates> extends HashSet<T> imple
 
 	@Override
 	public void mirrorX() {
-		for (DoubleCoordinates pos : this) {
-			pos.mirrorX();
-		}
+		this.forEach(DoubleCoordinates::mirrorX);
 	}
 
 	@Override
 	public void mirrorZ() {
-		for (DoubleCoordinates pos : this) {
-			pos.mirrorZ();
-		}
+		this.forEach(DoubleCoordinates::mirrorZ);
 	}
 
 	@SneakyThrows({NoSuchMethodException.class, IllegalAccessException.class, InvocationTargetException.class, InstantiationException.class})

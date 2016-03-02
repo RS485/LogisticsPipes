@@ -16,7 +16,7 @@ public abstract class StringListPacket extends ModernPacket {
 
 	@Getter
 	@Setter
-	private List<String> stringList = new ArrayList<String>();
+	private List<String> stringList = new ArrayList<>();
 
 	public StringListPacket(int id) {
 		super(id);

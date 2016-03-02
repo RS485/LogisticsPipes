@@ -81,6 +81,6 @@ public class LPTickHandler {
 		@Setter(value = AccessLevel.PRIVATE)
 		private long worldTick = 0;
 		@Getter
-		private Set<DoubleCoordinates> updateQueued = new HashSet<DoubleCoordinates>();
+		private Set<DoubleCoordinates> updateQueued = new HashSet<>();
 	}
 }

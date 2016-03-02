@@ -73,7 +73,7 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity implements ISu
 		if(mainPipe != null) {
 			return mainPipe;
 		}
-		return Collections.EMPTY_LIST;
+		return Collections.emptyList();
 	}
 
 	public List<CoreMultiBlockPipe.SubBlockTypeForShare> getSubTypes() {

@@ -25,7 +25,7 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 	private int mouseX = 0;
 	private int mouseY = 0;
 
-	private List<String> unsunkNames = new ArrayList<String>();
+	private List<String> unsunkNames = new ArrayList<>();
 	private int currentOffset = 0;
 
 	public GuiOreDictItemSink(IInventory playerInventory, ModuleOreDictItemSink itemSink) {
@@ -88,11 +88,7 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 
 		if (tmpInv.getStackInSlot(0) != null) {
 			List<String> oreNames = getOreNames(tmpInv.getStackInSlot(0));
-			for (String name : oreNames) {
-				if (!unsunkNames.contains(name)) {
-					unsunkNames.add(name);
-				}
-			}
+			oreNames.stream().filter(name -> !unsunkNames.contains(name)).forEach(name -> unsunkNames.add(name));
 			tmpInv.clearInventorySlotContents(0);
 		}
 
@@ -146,7 +142,7 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 
 	private List<String> getOreNames(ItemStack s) {
 		int oreids[] = OreDictionary.getOreIDs(s);
-		List<String> oreNames = new ArrayList<String>(oreids.length);
+		List<String> oreNames = new ArrayList<>(oreids.length);
 		for (int oreid : oreids) {
 			String oreName = OreDictionary.getOreName(oreid);
 			if (oreName != null && !oreName.equals("Unknown") && !oreNames.contains(oreName)) {

@@ -87,12 +87,12 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
-	private final Map<ItemIdentifier, Integer> displayMap = new TreeMap<ItemIdentifier, Integer>();
-	public final ArrayList<ItemIdentifierStack> displayList = new ArrayList<ItemIdentifierStack>();
-	private final ArrayList<ItemIdentifierStack> oldList = new ArrayList<ItemIdentifierStack>();
+	private final Map<ItemIdentifier, Integer> displayMap = new TreeMap<>();
+	public final ArrayList<ItemIdentifierStack> displayList = new ArrayList<>();
+	private final ArrayList<ItemIdentifierStack> oldList = new ArrayList<>();
 
-	public final LinkedList<ItemIdentifierStack> oldManagerList = new LinkedList<ItemIdentifierStack>();
-	public final LinkedList<ItemIdentifierStack> itemListOrderer = new LinkedList<ItemIdentifierStack>();
+	public final LinkedList<ItemIdentifierStack> oldManagerList = new LinkedList<>();
+	public final LinkedList<ItemIdentifierStack> itemListOrderer = new LinkedList<>();
 	private final HUDProvider HUD = new HUDProvider(this);
 
 	protected LogisticsItemOrderManager _orderManager = new LogisticsItemOrderManager(this, this);
@@ -307,7 +307,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 			tree.addPromise(promise);
 		} else if (tree.getRequestType() instanceof DictResource) {
 			DictResource dict = (DictResource) tree.getRequestType();
-			HashMap<ItemIdentifier, Integer> available = new HashMap<ItemIdentifier, Integer>();
+			HashMap<ItemIdentifier, Integer> available = new HashMap<>();
 			getAllItems(available, filters);
 			for (Entry<ItemIdentifier, Integer> item : available.entrySet()) {
 				if (!dict.matches(item.getKey(), IResource.MatchSettings.NORMAL)) {
@@ -413,11 +413,11 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		}
 		displayList.clear();
 		displayMap.clear();
-		getAllItems(displayMap, new ArrayList<IFilter>(0));
+		getAllItems(displayMap, new ArrayList<>(0));
 		displayList.ensureCapacity(displayMap.size());
-		for (Entry<ItemIdentifier, Integer> item : displayMap.entrySet()) {
-			displayList.add(new ItemIdentifierStack(item.getKey(), item.getValue()));
-		}
+		displayList.addAll(displayMap.entrySet().stream()
+				.map(item -> new ItemIdentifierStack(item.getKey(), item.getValue()))
+				.collect(Collectors.toList()));
 		if (!oldList.equals(displayList)) {
 			oldList.clear();
 			oldList.ensureCapacity(displayList.size());

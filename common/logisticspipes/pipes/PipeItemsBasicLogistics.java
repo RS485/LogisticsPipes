@@ -142,7 +142,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 		if (itemSinkModule.isDefaultRoute()) {
 			return null;
 		}
-		Set<ItemIdentifier> l1 = new TreeSet<ItemIdentifier>();
+		Set<ItemIdentifier> l1 = new TreeSet<>();
 		for (int i = 0; i < 9; i++) {
 			ItemIdentifierStack item = itemSinkModule.getFilterInventory().getIDStackInSlot(i);
 			if (item != null) {

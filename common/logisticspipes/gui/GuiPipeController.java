@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ISlotCheck;
@@ -48,13 +49,13 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 	private final int TAB_COUNT = 5;
 	private int current_Tab;
 
-	private final List<Slot> TAB_SLOTS_1_1 = new ArrayList<Slot>();
-	private final List<Slot> TAB_SLOTS_1_2 = new ArrayList<Slot>();
-	private final List<Slot> TAB_SLOTS_2 = new ArrayList<Slot>();
-	private final List<Slot> TAB_SLOTS_4 = new ArrayList<Slot>();
+	private final List<Slot> TAB_SLOTS_1_1 = new ArrayList<>();
+	private final List<Slot> TAB_SLOTS_1_2 = new ArrayList<>();
+	private final List<Slot> TAB_SLOTS_2 = new ArrayList<>();
+	private final List<Slot> TAB_SLOTS_4 = new ArrayList<>();
 
-	private final List<GuiButton> TAB_BUTTON_4 = new ArrayList<GuiButton>();
-	private final List<GuiButton> TAB_BUTTON_5 = new ArrayList<GuiButton>();
+	private final List<GuiButton> TAB_BUTTON_4 = new ArrayList<>();
+	private final List<GuiButton> TAB_BUTTON_5 = new ArrayList<>();
 
 	private ItemDisplay _itemDisplay_5;
 
@@ -70,68 +71,56 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 
 		// TAB_1 SLOTS
 		for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
-			TAB_SLOTS_1_1.add(dummy.addRestrictedSlot(pipeSlot, pipe.getOriginalUpgradeManager().getInv(), 10 + pipeSlot * 18, 42, new ISlotCheck() {
-
-				@Override
-				public boolean isStackAllowed(ItemStack itemStack) {
-					if (itemStack == null) {
-						return false;
-					}
-					if (itemStack.getItem() == LogisticsPipes.UpgradeItem) {
-						if (!LogisticsPipes.UpgradeItem.getUpgradeForItem(itemStack, null).isAllowedForPipe(pipe)) {
-							return false;
-						}
-					} else {
-						return false;
-					}
-					return true;
+			TAB_SLOTS_1_1.add(dummy.addRestrictedSlot(pipeSlot, pipe.getOriginalUpgradeManager().getInv(), 10 + pipeSlot * 18, 42, itemStack -> {
+				if (itemStack == null) {
+					return false;
 				}
+				if (itemStack.getItem() == LogisticsPipes.UpgradeItem) {
+					if (!LogisticsPipes.UpgradeItem.getUpgradeForItem(itemStack, null).isAllowedForPipe(pipe)) {
+						return false;
+					}
+				} else {
+					return false;
+				}
+				return true;
 			}));
 		}
 
 		for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
-			TAB_SLOTS_1_2.add(dummy.addRestrictedSlot(pipeSlot, pipe.getOriginalUpgradeManager().getSneakyInv(), 10 + pipeSlot * 18, 78, new ISlotCheck() {
-
-				@Override
-				public boolean isStackAllowed(ItemStack itemStack) {
-					if (itemStack == null) {
-						return false;
-					}
-					if (itemStack.getItem() == LogisticsPipes.UpgradeItem) {
-						IPipeUpgrade upgrade = LogisticsPipes.UpgradeItem.getUpgradeForItem(itemStack, null);
-						if (!(upgrade instanceof SneakyUpgrade)) {
-							return false;
-						}
-						if (!upgrade.isAllowedForPipe(pipe)) {
-							return false;
-						}
-					} else {
-						return false;
-					}
-					return true;
+			TAB_SLOTS_1_2.add(dummy.addRestrictedSlot(pipeSlot, pipe.getOriginalUpgradeManager().getSneakyInv(), 10 + pipeSlot * 18, 78, itemStack -> {
+				if (itemStack == null) {
+					return false;
 				}
+				if (itemStack.getItem() == LogisticsPipes.UpgradeItem) {
+					IPipeUpgrade upgrade = LogisticsPipes.UpgradeItem.getUpgradeForItem(itemStack, null);
+					if (!(upgrade instanceof SneakyUpgrade)) {
+						return false;
+					}
+					if (!upgrade.isAllowedForPipe(pipe)) {
+						return false;
+					}
+				} else {
+					return false;
+				}
+				return true;
 			}));
 		}
 
 		// TAB_2 SLOTS
-		TAB_SLOTS_2.add(dummy.addStaticRestrictedSlot(0, pipe.getOriginalUpgradeManager().getSecInv(), 10, 42, new ISlotCheck() {
-
-			@Override
-			public boolean isStackAllowed(ItemStack itemStack) {
-				if (itemStack == null) {
-					return false;
-				}
-				if (itemStack.getItem() != LogisticsPipes.LogisticsItemCard) {
-					return false;
-				}
-				if (itemStack.getItemDamage() != LogisticsItemCard.SEC_CARD) {
-					return false;
-				}
-				if (!SimpleServiceLocator.securityStationManager.isAuthorized(UUID.fromString(itemStack.getTagCompound().getString("UUID")))) {
-					return false;
-				}
-				return true;
+		TAB_SLOTS_2.add(dummy.addStaticRestrictedSlot(0, pipe.getOriginalUpgradeManager().getSecInv(), 10, 42, itemStack -> {
+			if (itemStack == null) {
+				return false;
 			}
+			if (itemStack.getItem() != LogisticsPipes.LogisticsItemCard) {
+				return false;
+			}
+			if (itemStack.getItemDamage() != LogisticsItemCard.SEC_CARD) {
+				return false;
+			}
+			if (!SimpleServiceLocator.securityStationManager.isAuthorized(UUID.fromString(itemStack.getTagCompound().getString("UUID")))) {
+				return false;
+			}
+			return true;
 		}, 1));
 
 		TAB_SLOTS_4.add(dummy.addRestrictedSlot(0, pipe.container.logicController.diskInv, 14, 36, LogisticsPipes.LogisticsItemDisk));
@@ -322,10 +311,8 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 			s = StringUtils.getStringWithSpacesFromLong(pipe.server_routing_table_size);
 			fontRendererObj.drawString(s, 130 - fontRendererObj.getStringWidth(s) / 2, 110, 0x303030);
 		} else if (current_Tab == 4) {
-			List<ItemIdentifierStack> _allItems = new LinkedList<ItemIdentifierStack>();
-			for (IOrderInfoProvider entry : pipe.getClientSideOrderManager()) {
-				_allItems.add(entry.getAsDisplayItem());
-			}
+			List<ItemIdentifierStack> _allItems = pipe.getClientSideOrderManager().stream()
+					.map(IOrderInfoProvider::getAsDisplayItem).collect(Collectors.toCollection(LinkedList::new));
 			_itemDisplay_5.setItemList(_allItems);
 			_itemDisplay_5.renderItemArea(zLevel);
 			_itemDisplay_5.renderPageNumber(right - guiLeft - 45, 28);

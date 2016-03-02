@@ -71,7 +71,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		if (world.isRemote) {
 			return null;
 		}
-		ArrayList<ItemStack> list = new ArrayList<ItemStack>();
+		ArrayList<ItemStack> list = new ArrayList<>();
 		int count = quantityDropped(metadata, fortune, world.rand);
 		for (int i = 0; i < count; i++) {
 			CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, x, y, z);
@@ -449,8 +449,8 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			return null;
 		}
 
-		List<MovingObjectPosition> hits = new ArrayList<MovingObjectPosition>();
-		List<AxisAlignedBB> boxes = new ArrayList<AxisAlignedBB>();
+		List<MovingObjectPosition> hits = new ArrayList<>();
+		List<AxisAlignedBB> boxes = new ArrayList<>();
 
 		pipe.addCollisionBoxesToList(boxes, null);
 
@@ -558,8 +558,8 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		return new LogisticsTileGenericPipe();
 	}
 
-	public static Map<Item, Class<? extends CoreUnroutedPipe>> pipes = new HashMap<Item, Class<? extends CoreUnroutedPipe>>();
-	public static Map<DoubleCoordinates, CoreUnroutedPipe> pipeRemoved = new HashMap<DoubleCoordinates, CoreUnroutedPipe>();
+	public static Map<Item, Class<? extends CoreUnroutedPipe>> pipes = new HashMap<>();
+	public static Map<DoubleCoordinates, CoreUnroutedPipe> pipeRemoved = new HashMap<>();
 
 	private static long lastRemovedDate = -1;
 
@@ -1208,28 +1208,24 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		final TileEntity tileCache = pipe.container;
 		final CoreUnroutedPipe fPipe = pipe;
 		fPipe.setPreventRemove(true);
-		QueuedTasks.queueTask(new Callable<Object>() {
-
-			@Override
-			public Object call() throws Exception {
-				if (!fPipe.preventRemove()) {
-					return null;
-				}
-				boolean changed = false;
-				if (worldCache.getBlock(xCache, yCache, zCache) != LogisticsPipes.LogisticsPipeBlock) {
-					worldCache.setBlock(xCache, yCache, zCache, LogisticsPipes.LogisticsPipeBlock);
-					changed = true;
-				}
-				if (worldCache.getTileEntity(xCache, yCache, zCache) != tileCache) {
-					worldCache.setTileEntity(xCache, yCache, zCache, tileCache);
-					changed = true;
-				}
-				if (changed) {
-					worldCache.notifyBlockChange(xCache, yCache, zCache, LogisticsPipes.LogisticsPipeBlock);
-				}
-				fPipe.setPreventRemove(false);
+		QueuedTasks.queueTask(() -> {
+			if (!fPipe.preventRemove()) {
 				return null;
 			}
+			boolean changed = false;
+			if (worldCache.getBlock(xCache, yCache, zCache) != LogisticsPipes.LogisticsPipeBlock) {
+				worldCache.setBlock(xCache, yCache, zCache, LogisticsPipes.LogisticsPipeBlock);
+				changed = true;
+			}
+			if (worldCache.getTileEntity(xCache, yCache, zCache) != tileCache) {
+				worldCache.setTileEntity(xCache, yCache, zCache, tileCache);
+				changed = true;
+			}
+			if (changed) {
+				worldCache.notifyBlockChange(xCache, yCache, zCache, LogisticsPipes.LogisticsPipeBlock);
+			}
+			fPipe.setPreventRemove(false);
+			return null;
 		});
 	}
 }

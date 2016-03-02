@@ -32,13 +32,7 @@ public class GuiAdvancedExtractor extends ModuleBaseGui {
 		super.initGui();
 		//Default item toggle:
 		buttonList.clear();
-		buttonList.add(new GuiStringHandlerButton(0, width / 2 + 20, height / 2 - 34, 60, 20, new GuiStringHandlerButton.StringHandler() {
-
-			@Override
-			public String getContent() {
-				return _advancedExtractor.areItemsIncluded() ? "Included" : "Excluded";
-			}
-		}));
+		buttonList.add(new GuiStringHandlerButton(0, width / 2 + 20, height / 2 - 34, 60, 20, () -> _advancedExtractor.areItemsIncluded() ? "Included" : "Excluded"));
 
 		buttonList.add(new GuiButton(1, width / 2 - 25, height / 2 - 34, 40, 20, "Sneaky"));
 	}

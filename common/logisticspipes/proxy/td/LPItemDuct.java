@@ -38,7 +38,7 @@ public class LPItemDuct extends TileItemDuct {
 	public RouteInfo canRouteItem(ItemStack arg0) {
 		if (arg0 != null) {
 			if (pipe.pipe.isRoutedPipe() && !((CoreRoutedPipe)pipe.pipe).stillNeedReplace()) {
-				if (SimpleServiceLocator.logisticsManager.hasDestination(ItemIdentifier.get(arg0), true, ((CoreRoutedPipe) pipe.pipe).getRouterId(), new ArrayList<Integer>()) != null) {
+				if (SimpleServiceLocator.logisticsManager.hasDestination(ItemIdentifier.get(arg0), true, ((CoreRoutedPipe) pipe.pipe).getRouterId(), new ArrayList<>()) != null) {
 					return new RouteInfo(0, (byte) dir.getOpposite().ordinal());
 				}
 			}
@@ -58,7 +58,8 @@ public class LPItemDuct extends TileItemDuct {
 			int consumed = pipe.injectItem(item.stack, true, dir);
 			item.stack.stackSize -= consumed;
 			if (item.stack.stackSize > 0) {
-				pipe.pipe.transport._itemBuffer.add(new Triplet<ItemIdentifierStack, Pair<Integer, Integer>, LPTravelingItemServer>(ItemIdentifierStack.getFromStack(item.stack), new Pair<Integer, Integer>(20 * 2, 0), null));
+				pipe.pipe.transport._itemBuffer.add(new Triplet<>(ItemIdentifierStack
+						.getFromStack(item.stack), new Pair<>(20 * 2, 0), null));
 			}
 		}
 	}

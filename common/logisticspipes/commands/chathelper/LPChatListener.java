@@ -27,8 +27,8 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class LPChatListener {
 
-	private static final Map<String, Callable<Boolean>> tasks = new HashMap<String, Callable<Boolean>>();
-	private static final Map<String, MorePageDisplay> morePageDisplays = new HashMap<String, MorePageDisplay>();
+	private static final Map<String, Callable<Boolean>> tasks = new HashMap<>();
+	private static final Map<String, MorePageDisplay> morePageDisplays = new HashMap<>();
 
 	private List<String> sendChatMessages = null;
 
@@ -100,9 +100,7 @@ public class LPChatListener {
 				}
 				if (realMessage.contains("LPDISPLAYMISSING") && LPConstants.DEBUG) {
 					System.out.println("LIST:");
-					for (String key : StringUtils.UNTRANSLATED_STRINGS) {
-						System.out.println(key);
-					}
+					StringUtils.UNTRANSLATED_STRINGS.forEach(System.out::println);
 				}
 			}
 		}
@@ -116,7 +114,7 @@ public class LPChatListener {
 	@SuppressWarnings("unchecked")
 	@ClientSideOnlyMethodContent
 	private void storeSendMessages() {
-		sendChatMessages = new ArrayList<String>();
+		sendChatMessages = new ArrayList<>();
 		sendChatMessages.addAll(FMLClientHandler.instance().getClient().ingameGUI.getChatGUI().getSentMessages());
 	}
 

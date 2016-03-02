@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import logisticspipes.gui.hud.modules.HUDCCBasedQuickSort;
 import logisticspipes.interfaces.IClientInformationProvider;
@@ -55,7 +56,7 @@ import lombok.Getter;
 
 public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 
-	private Map<Integer, Pair<Integer, List<CCSinkResponder>>> sinkResponses = new HashMap<Integer, Pair<Integer, List<CCSinkResponder>>>();
+	private Map<Integer, Pair<Integer, List<CCSinkResponder>>> sinkResponses = new HashMap<>();
 
 	@Getter
 	private int timeout = 100;
@@ -68,22 +69,20 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 	private IHUDModuleRenderer HUD = new HUDCCBasedQuickSort(this);
 
 	private void createSinkMessage(int slot, ItemIdentifierStack stack) {
-		List<CCSinkResponder> respones = new ArrayList<CCSinkResponder>();
+		List<CCSinkResponder> respones = new ArrayList<>();
 		IRouter sourceRouter = _service.getRouter();
 		if (sourceRouter == null) {
 			return;
 		}
 		BitSet routersIndex = ServerRouter.getRoutersInterestedIn((ItemIdentifier) null); // get only pipes with generic interest
-		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(); // get the routing table
+		List<ExitRoute> validDestinations = new ArrayList<>(); // get the routing table
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i + 1)) {
 			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i, false);
 			List<ExitRoute> exits = sourceRouter.getDistanceTo(r);
 			if (exits != null) {
-				for (ExitRoute e : exits) {
-					if (e.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
-						validDestinations.add(e);
-					}
-				}
+				validDestinations.addAll(exits.stream()
+						.filter(e -> e.containsFlag(PipeRoutingConnectionType.canRouteTo))
+						.collect(Collectors.toList()));
 			}
 		}
 		Collections.sort(validDestinations);
@@ -103,7 +102,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 					respones.addAll(candidateRouter.destination.getLogisticsModule().queueCCSinkEvent(stack));
 				}
 			}
-		sinkResponses.put(slot, new Pair<Integer, List<CCSinkResponder>>(0, respones));
+		sinkResponses.put(slot, new Pair<>(0, respones));
 	}
 
 	@Override
@@ -204,7 +203,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 			return false;
 		}
 		final IRouter source = _service.getRouter();
-		List<Triplet<Integer, Double, CCSinkResponder>> posibilities = new ArrayList<Triplet<Integer, Double, CCSinkResponder>>();
+		List<Triplet<Integer, Double, CCSinkResponder>> posibilities = new ArrayList<>();
 		for (CCSinkResponder sink : list) {
 			if (!sink.isDone()) {
 				continue;
@@ -228,23 +227,19 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 					minDistance = Math.min(route.distanceToDestination, minDistance);
 				}
 			if (minDistance != Integer.MAX_VALUE) {
-				posibilities.add(new Triplet<Integer, Double, CCSinkResponder>(sink.getPriority(), minDistance, sink));
+				posibilities.add(new Triplet<>(sink.getPriority(), minDistance, sink));
 			}
 		}
 		if (posibilities.isEmpty()) {
 			return false;
 		}
-		Collections.sort(posibilities, new Comparator<Triplet<Integer, Double, CCSinkResponder>>() {
-
-			@Override
-			public int compare(Triplet<Integer, Double, CCSinkResponder> o1, Triplet<Integer, Double, CCSinkResponder> o2) {
-				int c = o2.getValue1() - o1.getValue1();
-				if (c != 0) {
-					return c;
-				}
-				double e = o1.getValue2() - o2.getValue2();
-				return e < 0 ? -1 : 1;
+		Collections.sort(posibilities, (o1, o2) -> {
+			int c = o2.getValue1() - o1.getValue1();
+			if (c != 0) {
+				return c;
 			}
+			double e = o1.getValue2() - o2.getValue2();
+			return e < 0 ? -1 : 1;
 		});
 		boolean sended = false;
 		for (Triplet<Integer, Double, CCSinkResponder> triple : posibilities) {
@@ -292,7 +287,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 
 	@Override
 	public List<String> getClientInformation() {
-		List<String> list = new ArrayList<String>(5);
+		List<String> list = new ArrayList<>(5);
 		list.add("Timeout: " + timeout);
 		return list;
 	}

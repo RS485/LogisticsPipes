@@ -26,6 +26,7 @@ import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class HSTubeGain extends CoreMultiBlockPipe {
 
@@ -214,11 +215,9 @@ public class HSTubeGain extends CoreMultiBlockPipe {
 				}
 			}
 		}
-		for (AxisAlignedBB box : boxes) {
-			if (box != null && (axisalignedbb == null || axisalignedbb.intersectsWith(box))) {
-				arraylist.add(box);
-			}
-		}
+		arraylist.addAll(boxes.stream()
+				.filter(box -> box != null && (axisalignedbb == null || axisalignedbb.intersectsWith(box)))
+				.collect(Collectors.toList()));
 	}
 
 	@Override

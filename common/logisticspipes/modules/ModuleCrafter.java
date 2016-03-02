@@ -141,12 +141,12 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	public boolean[] craftingSigns = new boolean[6];
 	public boolean waitingForCraft = false;
 
-	public final LinkedList<LogisticsItemOrder> _extras = new LinkedList<LogisticsItemOrder>();
-	private WeakReference<TileEntity> lastAccessedCrafter = new WeakReference<TileEntity>(null);
+	public final LinkedList<LogisticsItemOrder> _extras = new LinkedList<>();
+	private WeakReference<TileEntity> lastAccessedCrafter = new WeakReference<>(null);
 
 	public boolean cleanupModeIsExclude = true;
 	// for reliable transport
-	protected final DelayQueue<DelayedGeneric<Pair<ItemIdentifierStack, IAdditionalTargetInformation>>> _lostItems = new DelayQueue<DelayedGeneric<Pair<ItemIdentifierStack, IAdditionalTargetInformation>>>();
+	protected final DelayQueue<DelayedGeneric<Pair<ItemIdentifierStack, IAdditionalTargetInformation>>> _lostItems = new DelayQueue<>();
 
 	protected final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
@@ -193,7 +193,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	protected int spaceFor(ItemIdentifier item, boolean includeInTransit) {
-		Pair<String, ItemIdentifier> key = new Pair<String, ItemIdentifier>("spaceFor", item);
+		Pair<String, ItemIdentifier> key = new Pair<>("spaceFor", item);
 		Object cache = _service.getCacheHolder().getCacheFor(CacheTypes.Inventory, key);
 		if (cache != null) {
 			int count = (Integer) cache;
@@ -253,7 +253,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING)) {
 				SinkReply reply = LogisticsManager.canSink(getRouter(), null, true, pair.getValue1().getItem(), null, true, true);
 				if (reply == null || reply.maxNumberOfItems < 1) {
-					_lostItems.add(new DelayedGeneric<Pair<ItemIdentifierStack, IAdditionalTargetInformation>>(pair, 9000 + (int)(Math.random() * 2000)));
+					_lostItems.add(new DelayedGeneric<>(pair, 9000 + (int) (Math.random() * 2000)));
 					lostItem = _lostItems.poll();
 					continue;
 				}
@@ -262,7 +262,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			rerequested++;
 			if (received < pair.getValue1().getStackSize()) {
 				pair.getValue1().setStackSize(pair.getValue1().getStackSize() - received);
-				_lostItems.add(new DelayedGeneric<Pair<ItemIdentifierStack, IAdditionalTargetInformation>>(pair, 4500 + (int)(Math.random() * 1000)));
+				_lostItems.add(new DelayedGeneric<>(pair, 4500 + (int) (Math.random() * 1000)));
 			}
 			lostItem = _lostItems.poll();
 		}
@@ -273,7 +273,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	@Override
 	public void itemLost(ItemIdentifierStack item, IAdditionalTargetInformation info) {
-		_lostItems.add(new DelayedGeneric<Pair<ItemIdentifierStack, IAdditionalTargetInformation>>(new Pair<ItemIdentifierStack, IAdditionalTargetInformation>(item, info), 5000));
+		_lostItems.add(new DelayedGeneric<>(new Pair<>(item, info), 5000));
 	}
 
 	@Override
@@ -287,10 +287,9 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		if (result == null) {
 			return null;
 		}
-		Set<ItemIdentifier> l1 = new TreeSet<ItemIdentifier>();
-		for (ItemIdentifierStack craftable : result) {
-			l1.add(craftable.getItem());
-		}
+		Set<ItemIdentifier> l1 = result.stream()
+				.map(ItemIdentifierStack::getItem)
+				.collect(Collectors.toCollection(TreeSet::new));
 		/*
 		for(int i=0; i<9;i++) {
 			ItemIdentifierStack stack = getMaterials(i);
@@ -590,7 +589,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	@Override
 	public List<ItemIdentifierStack> getCraftedItems() {
-		List<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>(1);
+		List<ItemIdentifierStack> list = new ArrayList<>(1);
 		if (getCraftedItem() != null) {
 			list.add(getCraftedItem());
 		}
@@ -1222,8 +1221,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			// retrieve the new crafted items
 			ItemStack extracted = null;
 			AdjacentTileEntity adjacent = null;
-			for (Iterator<AdjacentTileEntity> it = adjacentCrafters.iterator(); it.hasNext();) {
-				adjacent = it.next();
+			for (AdjacentTileEntity adjacentCrafter : adjacentCrafters) {
+				adjacent = adjacentCrafter;
 				extracted = extract(adjacent, nextOrder.getResource(), maxtosend);
 				if (extracted != null && extracted.stackSize > 0) {
 					break;

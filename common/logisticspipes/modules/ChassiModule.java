@@ -174,7 +174,7 @@ public class ChassiModule extends LogisticsGuiModule {
 
 	@Override
 	public List<CCSinkResponder> queueCCSinkEvent(ItemIdentifierStack item) {
-		List<CCSinkResponder> list = new ArrayList<CCSinkResponder>();
+		List<CCSinkResponder> list = new ArrayList<>();
 		for (LogisticsModule module : modules) {
 			if (module != null) {
 				list.addAll(module.queueCCSinkEvent(item));

@@ -184,7 +184,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 		if (stack == null) {
 			return null;
 		}
-		List<String> list = new LinkedList<String>();
+		List<String> list = new LinkedList<>();
 		AspectList tags = getTagsForStack(stack);
 		Aspect[] tagArray = tags.getAspectsSorted();
 		if (tagArray.length == 0 || tagArray == null) {

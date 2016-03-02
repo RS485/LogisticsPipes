@@ -42,17 +42,12 @@ public class NewGuiHandler {
 	@SneakyThrows({ IOException.class, InvocationTargetException.class, IllegalAccessException.class, InstantiationException.class })
 	// Suppression+sneakiness because these shouldn't ever fail, and if they do, it needs to fail.
 	public static final void initialize() {
-		final List<ClassInfo> classes = new ArrayList<ClassInfo>(ClassPath.from(NewGuiHandler.class.getClassLoader()).getTopLevelClassesRecursive("logisticspipes.network.guis"));
-		Collections.sort(classes, new Comparator<ClassInfo>() {
+		final List<ClassInfo> classes = new ArrayList<>(ClassPath.from(NewGuiHandler.class.getClassLoader())
+				.getTopLevelClassesRecursive("logisticspipes.network.guis"));
+		Collections.sort(classes, (o1, o2) -> o1.getSimpleName().compareTo(o2.getSimpleName()));
 
-			@Override
-			public int compare(ClassInfo o1, ClassInfo o2) {
-				return o1.getSimpleName().compareTo(o2.getSimpleName());
-			}
-		});
-
-		NewGuiHandler.guilist = new ArrayList<GuiProvider>(classes.size());
-		NewGuiHandler.guimap = new HashMap<Class<? extends GuiProvider>, GuiProvider>(classes.size());
+		NewGuiHandler.guilist = new ArrayList<>(classes.size());
+		NewGuiHandler.guimap = new HashMap<>(classes.size());
 
 		int currentid = 0;
 

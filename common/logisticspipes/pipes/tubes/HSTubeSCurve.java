@@ -3,6 +3,7 @@ package logisticspipes.pipes.tubes;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.interfaces.ITubeRenderOrientation;
@@ -156,7 +157,7 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void addCollisionBoxesToList(List arraylist, AxisAlignedBB axisalignedbb) {
 		if (boxes == null || boxes.isEmpty()) {
-			boxes = new ArrayList<AxisAlignedBB>();
+			boxes = new ArrayList<>();
 			double x = getX();
 			double y = getY();
 			double z = getZ();
@@ -214,11 +215,9 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 				}
 			}
 		}
-		for (AxisAlignedBB box : boxes) {
-			if (box != null && (axisalignedbb == null || axisalignedbb.intersectsWith(box))) {
-				arraylist.add(box);
-			}
-		}
+		arraylist.addAll(boxes.stream()
+				.filter(box -> box != null && (axisalignedbb == null || axisalignedbb.intersectsWith(box)))
+				.collect(Collectors.toList()));
 	}
 
 	@Override

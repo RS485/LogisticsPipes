@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IFluidSink;
@@ -49,11 +50,11 @@ public class LogisticsFluidManager implements ILogisticsFluidManager {
 
 			int amount = ((IFluidSink) pipe).sinkAmount(stack);
 			if (amount > 0) {
-				Pair<Integer, Integer> result = new Pair<Integer, Integer>(candidateRouter.destination.getSimpleID(), amount);
+				Pair<Integer, Integer> result = new Pair<>(candidateRouter.destination.getSimpleID(), amount);
 				return result;
 			}
 		}
-		Pair<Integer, Integer> result = new Pair<Integer, Integer>(0, 0);
+		Pair<Integer, Integer> result = new Pair<>(0, 0);
 		return result;
 	}
 
@@ -76,7 +77,7 @@ public class LogisticsFluidManager implements ILogisticsFluidManager {
 
 	@Override
 	public TreeSet<ItemIdentifierStack> getAvailableFluid(List<ExitRoute> validDestinations) {
-		Map<FluidIdentifier, Integer> allAvailableItems = new HashMap<FluidIdentifier, Integer>();
+		Map<FluidIdentifier, Integer> allAvailableItems = new HashMap<>();
 		for (ExitRoute r : validDestinations) {
 			if (r == null) {
 				continue;
@@ -104,10 +105,9 @@ public class LogisticsFluidManager implements ILogisticsFluidManager {
 				}
 			}
 		}
-		TreeSet<ItemIdentifierStack> itemIdentifierStackList = new TreeSet<ItemIdentifierStack>();
-		for (Entry<FluidIdentifier, Integer> item : allAvailableItems.entrySet()) {
-			itemIdentifierStackList.add(new ItemIdentifierStack(item.getKey().getItemIdentifier(), item.getValue()));
-		}
+		TreeSet<ItemIdentifierStack> itemIdentifierStackList = allAvailableItems.entrySet().stream()
+				.map(item -> new ItemIdentifierStack(item.getKey().getItemIdentifier(), item.getValue()))
+				.collect(Collectors.toCollection(TreeSet::new));
 		return itemIdentifierStackList;
 	}
 }

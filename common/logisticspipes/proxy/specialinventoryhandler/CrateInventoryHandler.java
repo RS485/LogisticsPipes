@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.bs.ICrateStorageProxy;
@@ -48,7 +49,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public Set<ItemIdentifier> getItems() {
-		Set<ItemIdentifier> result = new TreeSet<ItemIdentifier>();
+		Set<ItemIdentifier> result = new TreeSet<>();
 		for (ItemStack stack : _tile.getContents()) {
 			result.add(ItemIdentifier.get(stack));
 		}
@@ -61,7 +62,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	private Map<ItemIdentifier, Integer> getItemsAndCount(boolean linked) {
-		HashMap<ItemIdentifier, Integer> map = new HashMap<ItemIdentifier, Integer>((int) (_tile.getUniqueItems() * 1.5));
+		HashMap<ItemIdentifier, Integer> map = new HashMap<>((int) (_tile.getUniqueItems() * 1.5));
 		for (ItemStack stack : _tile.getContents()) {
 			ItemIdentifier itemId = ItemIdentifier.get(stack);
 			int stackSize = stack.stackSize - (_hideOnePerStack ? 1 : 0);
@@ -151,10 +152,8 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 
 	public void initCache() {
 		Map<ItemIdentifier, Integer> map = getItemsAndCount(true);
-		cached = new LinkedList<Map.Entry<ItemIdentifier, Integer>>();
-		for (Entry<ItemIdentifier, Integer> e : map.entrySet()) {
-			cached.add(e);
-		}
+		cached = new LinkedList<>();
+		cached.addAll(map.entrySet().stream().collect(Collectors.toList()));
 	}
 
 	@Override

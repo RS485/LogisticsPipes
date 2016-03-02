@@ -82,7 +82,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 
 	@Override
 	public List<String> getClientInformation() {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		list.add("Supplied: ");
 		list.add("<inventory>");
 		list.add("<that>");
@@ -135,7 +135,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 
 	@Override
 	public List<ItemIdentifier> getSpecificInterests() {
-		return new ArrayList<ItemIdentifier>(0);
+		return new ArrayList<>(0);
 	}
 
 	@Override
@@ -170,7 +170,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 
 	private ItemIdentifierInventory dummyInventory = new ItemIdentifierInventory(9, "", 127);
 
-	private final HashMap<ItemIdentifier, Integer> _requestedItems = new HashMap<ItemIdentifier, Integer>();
+	private final HashMap<ItemIdentifier, Integer> _requestedItems = new HashMap<>();
 
 	public enum SupplyMode {
 		Partial,
@@ -314,7 +314,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 	private void createSupplyRequest(IInventoryUtil invUtil) {
 		_service.getDebug().log("Supplier: Start calculating supply request");
 		//How many do I want?
-		HashMap<ItemIdentifier, Integer> needed = new HashMap<ItemIdentifier, Integer>(dummyInventory.getItemsAndCount());
+		HashMap<ItemIdentifier, Integer> needed = new HashMap<>(dummyInventory.getItemsAndCount());
 		_service.getDebug().log("Supplier: Needed: " + needed);
 
 		//How many do I have?
@@ -322,7 +322,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 		_service.getDebug().log("Supplier: Have:   " + have);
 
 		//How many do I have?
-		HashMap<ItemIdentifier, Integer> haveUndamaged = new HashMap<ItemIdentifier, Integer>();
+		HashMap<ItemIdentifier, Integer> haveUndamaged = new HashMap<>();
 		for (Entry<ItemIdentifier, Integer> item : have.entrySet()) {
 			Integer n = haveUndamaged.get(item.getKey().getUndamaged());
 			if (n == null) {
@@ -545,7 +545,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 	public void addStatusInformation(List<StatusEntry> status) {
 		StatusEntry entry = new StatusEntry();
 		entry.name = "Requested Items";
-		entry.subEntry = new ArrayList<StatusEntry>();
+		entry.subEntry = new ArrayList<>();
 		for (Entry<ItemIdentifier, Integer> part : _requestedItems.entrySet()) {
 			StatusEntry subEntry = new StatusEntry();
 			subEntry.name = part.toString();

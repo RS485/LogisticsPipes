@@ -24,7 +24,7 @@ import java.util.Map;
 @SuppressWarnings("serial")
 public class LogWindow extends JPanel {
 
-	private static Map<Integer, LogWindow> map = new HashMap<Integer, LogWindow>();
+	private static Map<Integer, LogWindow> map = new HashMap<>();
 
 	public static LogWindow getWindow(int id) {
 		LogWindow window = LogWindow.map.get(id);
@@ -40,7 +40,7 @@ public class LogWindow extends JPanel {
 	private DefaultMutableTreeNode baseNode;
 	private JTree tree;
 	private JScrollPane treeView;
-	private List<StatusEntry> currentLayout = new ArrayList<StatusEntry>(0);
+	private List<StatusEntry> currentLayout = new ArrayList<>(0);
 	private JFrame frame;
 
 	private LogWindow() {
@@ -106,7 +106,7 @@ public class LogWindow extends JPanel {
 					if (oldList.get(i).subEntry != null) {
 						compareLists(entry.subEntry, oldList.get(i).subEntry, child);
 					} else {
-						compareLists(entry.subEntry, new ArrayList<StatusEntry>(0), child);
+						compareLists(entry.subEntry, new ArrayList<>(0), child);
 					}
 				} else if (oldList.get(i).subEntry != null) {
 					child.removeAllChildren();
@@ -123,7 +123,7 @@ public class LogWindow extends JPanel {
 			DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(entry.name);
 			node.add(newNode);
 			if (entry.subEntry != null) {
-				compareLists(entry.subEntry, new ArrayList<StatusEntry>(0), newNode);
+				compareLists(entry.subEntry, new ArrayList<>(0), newNode);
 			}
 			((DefaultTreeModel) tree.getModel()).reload(node);
 		}

@@ -86,9 +86,9 @@ public class LogisticsNewSolidBlockWorldRenderer {
 		}
 	}
 
-	static Map<BlockRotation, IModel3D> block = new HashMap<BlockRotation, IModel3D>();
-	static Map<CoverSides, Map<BlockRotation, IModel3D>> texturePlate_Inner = new HashMap<CoverSides, Map<BlockRotation, IModel3D>>();
-	static Map<CoverSides, Map<BlockRotation, IModel3D>> texturePlate_Outer = new HashMap<CoverSides, Map<BlockRotation, IModel3D>>();
+	static Map<BlockRotation, IModel3D> block = new HashMap<>();
+	static Map<CoverSides, Map<BlockRotation, IModel3D>> texturePlate_Inner = new HashMap<>();
+	static Map<CoverSides, Map<BlockRotation, IModel3D>> texturePlate_Outer = new HashMap<>();
 
 	static {
 		LogisticsNewSolidBlockWorldRenderer.loadModels();
@@ -137,7 +137,7 @@ public class LogisticsNewSolidBlockWorldRenderer {
 
 	private static Map<BlockRotation, IModel3D> computeRotated(IModel3D m) {
 		m.apply(new LPUVScale(1, 0.75));
-		Map<BlockRotation, IModel3D> map = new HashMap<BlockRotation, IModel3D>();
+		Map<BlockRotation, IModel3D> map = new HashMap<>();
 		for (BlockRotation rot : BlockRotation.values()) {
 			IModel3D model = m.copy();
 			switch (rot.getInteger()) {

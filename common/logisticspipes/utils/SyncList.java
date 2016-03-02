@@ -20,11 +20,11 @@ public class SyncList<E> implements List<E> {
 	private int dim, x, z;
 
 	public SyncList() {
-		this(null, new ArrayList<E>());
+		this(null, new ArrayList<>());
 	}
 
 	public SyncList(ListSyncPacket<E> type) {
-		this(type, new ArrayList<E>());
+		this(type, new ArrayList<>());
 	}
 
 	public SyncList(ListSyncPacket<E> type, List<E> list) {

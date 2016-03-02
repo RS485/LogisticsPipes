@@ -29,7 +29,7 @@ public class ParamProfiler {
 			if(isConst) continue;
 			final long methodId = minMethodId++;
 
-			final List<String> varList = new ArrayList<String>();
+			final List<String> varList = new ArrayList<>();
 			if(!methodDesc.startsWith("(")) throw new UnsupportedOperationException(methodDesc);
 			outer:
 			for(int i=1; i<methodDesc.length();i++) {
@@ -53,7 +53,7 @@ public class ParamProfiler {
 						varList.add(String.valueOf(methodDesc.charAt(i)));
 				}
 			}
-			final List<Label> catchStatement = new ArrayList<Label>();
+			final List<Label> catchStatement = new ArrayList<>();
 			MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
 
 				@Override
@@ -182,14 +182,14 @@ public class ParamProfiler {
 		return writer.toByteArray();
 	}
 
-	private static Map<Thread, Stack<Entry>> stack = new HashMap<Thread, Stack<Entry>>();
+	private static Map<Thread, Stack<Entry>> stack = new HashMap<>();
 
 	@SuppressWarnings("unused") // Used by ASM
 	public static void methodStart(long id, String name, Object root, Object... params) {
 		if(!isActive) return;
 		Stack<Entry> access = stack.get(Thread.currentThread());
 		if(access == null) {
-			access = new Stack<Entry>();
+			access = new Stack<>();
 			stack.put(Thread.currentThread(), access);
 		}
 		access.push(new Entry(id, name, root, params));
@@ -212,12 +212,12 @@ public class ParamProfiler {
 	}
 
 	@Getter
-	private static WeakHashMap<Throwable, ArrayList<Entry>> infoLink = new WeakHashMap<Throwable, ArrayList<Entry>>();
+	private static WeakHashMap<Throwable, ArrayList<Entry>> infoLink = new WeakHashMap<>();
 
 	@SuppressWarnings("unused") // Used by ASM
 	public static void handleException(Throwable t) {
 		Stack<Entry> access = stack.get(Thread.currentThread());
-		infoLink.put(t, new ArrayList<Entry>(access));
+		infoLink.put(t, new ArrayList<>(access));
 	}
 
 	@Data

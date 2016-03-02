@@ -171,14 +171,12 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 
 	public void onBlockRemoval() {
 		if (getWorld().getWorldInfo().getGameType() != GameType.CREATIVE) {
-			for (ItemStack stack : computeItemDrop()) {
-				dropItem(stack);
-			}
+			computeItemDrop().forEach(this::dropItem);
 		}
 	}
 
 	public ArrayList<ItemStack> computeItemDrop() {
-		ArrayList<ItemStack> result = new ArrayList<ItemStack>();
+		ArrayList<ItemStack> result = new ArrayList<>();
 		bcPipePart.addItemDrops(result);
 		return result;
 	}

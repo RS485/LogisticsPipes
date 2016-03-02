@@ -19,7 +19,7 @@ public abstract class SubCommandHandler implements ICommandHandler {
 		registerSubCommands();
 	}
 
-	private final List<ICommandHandler> subCommands = new ArrayList<ICommandHandler>();
+	private final List<ICommandHandler> subCommands = new ArrayList<>();
 
 	public abstract void registerSubCommands();
 

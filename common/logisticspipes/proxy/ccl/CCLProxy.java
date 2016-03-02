@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import logisticspipes.proxy.DontLoadProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -104,7 +105,7 @@ public class CCLProxy implements ICCLProxy {
 
 	@Override
 	public Map<String, IModel3D> parseObjModels(InputStream resourceAsStream, int i, LPScale scale) throws IOException {
-		Map<String, IModel3D> target = new HashMap<String, IModel3D>();
+		Map<String, IModel3D> target = new HashMap<>();
 		Map<String, CCModel> source = CCModel.parseObjModels(resourceAsStream, i, (Transformation) scale.getOriginal());
 		for (Entry<String, CCModel> entry : source.entrySet()) {
 			target.put(entry.getKey(), SimpleServiceLocator.cclProxy.wrapModel(entry.getValue()));
@@ -155,7 +156,7 @@ public class CCLProxy implements ICCLProxy {
 
 	@Override
 	public Object getUVTransformationList(I3DOperation[] uvTranslation) {
-		List<UVTransformation> transforms = new ArrayList<UVTransformation>();
+		List<UVTransformation> transforms = new ArrayList<>();
 		for (I3DOperation op : uvTranslation) {
 			transforms.add((UVTransformation) op.getOriginal());
 		}
@@ -180,10 +181,8 @@ public class CCLProxy implements ICCLProxy {
 
 	@Override
 	public IModel3D combine(Collection<IModel3D> list) {
-		List<CCModel> collection = new ArrayList<CCModel>(list.size());
-		for(IModel3D model: list) {
-			collection.add((CCModel) model.getOriginal());
-		}
+		List<CCModel> collection = new ArrayList<>(list.size());
+		collection.addAll(list.stream().map(model -> (CCModel) model.getOriginal()).collect(Collectors.toList()));
 		return SimpleServiceLocator.cclProxy.wrapModel(CCModel.combine(collection));
 	}
 

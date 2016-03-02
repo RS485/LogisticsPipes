@@ -18,7 +18,7 @@ import org.objectweb.asm.Opcodes;
 
 public class ClassCreator {
 
-	private static List<String> createdClasses = new ArrayList<String>();
+	private static List<String> createdClasses = new ArrayList<>();
 
 	public static byte[] getWrappedClassAsBytes(CCWrapperInformation info, String className) {
 

@@ -50,13 +50,13 @@ public class DummyContainer extends Container {
 	protected IInventory _playerInventory;
 	protected IInventory _dummyInventory;
 	protected IGuiOpenControler[] _controler;
-	private List<Slot> transferTop = new ArrayList<Slot>();
-	private List<Slot> transferBottom = new ArrayList<Slot>();
+	private List<Slot> transferTop = new ArrayList<>();
+	private List<Slot> transferBottom = new ArrayList<>();
 	private long lastClicked;
 	private long lastDragnDropLockup;
 	boolean wasDummyLookup;
 	boolean overrideMCAntiSend;
-	public List<BitSet> inventoryFuzzySlotsContent = new ArrayList<BitSet>();
+	public List<BitSet> inventoryFuzzySlotsContent = new ArrayList<>();
 
 	public DummyContainer(IInventory playerInventory, IInventory dummyInventory) {
 		_playerInventory = playerInventory;
@@ -852,15 +852,15 @@ public class DummyContainer extends Container {
 				itemstack1 = itemstack == null ? null : itemstack.copy();
 				inventoryItemStacks.set(i, itemstack1);
 
-				for (int j = 0; j < crafters.size(); ++j) {
+				for (Object crafter : crafters) {
 					boolean revert = false;
-					if (overrideMCAntiSend && crafters.get(j) instanceof EntityPlayerMP && ((EntityPlayerMP) crafters.get(j)).isChangingQuantityOnly) {
-						((EntityPlayerMP) crafters.get(j)).isChangingQuantityOnly = false;
+					if (overrideMCAntiSend && crafter instanceof EntityPlayerMP && ((EntityPlayerMP) crafter).isChangingQuantityOnly) {
+						((EntityPlayerMP) crafter).isChangingQuantityOnly = false;
 						revert = true;
 					}
-					((ICrafting) crafters.get(j)).sendSlotContents(this, i, itemstack1);
+					((ICrafting) crafter).sendSlotContents(this, i, itemstack1);
 					if (revert) {
-						((EntityPlayerMP) crafters.get(j)).isChangingQuantityOnly = true;
+						((EntityPlayerMP) crafter).isChangingQuantityOnly = true;
 					}
 				}
 			}

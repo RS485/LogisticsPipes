@@ -32,7 +32,7 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 	private final String _name;
 	private final int _stackLimit;
 
-	private final LinkedList<ISimpleInventoryEventHandler> _listener = new LinkedList<ISimpleInventoryEventHandler>();
+	private final LinkedList<ISimpleInventoryEventHandler> _listener = new LinkedList<>();
 
 	public SimpleStackInventory(int size, String name, int stackLimit) {
 		_contents = new ItemStack[size];
@@ -272,7 +272,7 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 			@Override
 			public Pair<ItemStack, Integer> next() {
 				pos++;
-				return new Pair<ItemStack, Integer>(iter.next(), pos);
+				return new Pair<>(iter.next(), pos);
 			}
 
 			@Override

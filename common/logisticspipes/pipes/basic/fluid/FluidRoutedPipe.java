@@ -231,8 +231,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 			if (isConnectableTank(tile, arrivingItem.output, false)) {
 				List<Pair<TileEntity, ForgeDirection>> adjTanks = getAdjacentTanks(false);
 				//Try to put liquid into all adjacent tanks.
-				for (int i = 0; i < adjTanks.size(); i++) {
-					Pair<TileEntity, ForgeDirection> pair = adjTanks.get(i);
+				for (Pair<TileEntity, ForgeDirection> pair : adjTanks) {
 					IFluidHandler tank = (IFluidHandler) pair.getValue1();
 					ForgeDirection dir = pair.getValue2();
 					filled = tank.fill(dir.getOpposite(), liquid.copy(), true);
@@ -293,7 +292,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	}
 
 	public List<TileEntity> getAllTankTiles() {
-		List<TileEntity> list = new ArrayList<TileEntity>();
+		List<TileEntity> list = new ArrayList<>();
 		for (Pair<TileEntity, ForgeDirection> pair : getAdjacentTanks(false)) {
 			list.addAll(SimpleServiceLocator.specialTankHandler.getBaseTileFor(pair.getValue1()));
 		}

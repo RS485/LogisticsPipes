@@ -205,7 +205,7 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 
 	@Override
 	public List<String> getClientInformation() {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		list.add("Mode: " + (isDischargeMode() ? "Discharge Items" : "Charge Items"));
 		list.add("Supplied: ");
 		list.add("<inventory>");

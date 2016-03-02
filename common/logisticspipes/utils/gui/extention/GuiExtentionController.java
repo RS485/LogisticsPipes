@@ -20,13 +20,13 @@ public class GuiExtentionController {
 		RIGHT;
 	}
 
-	private final List<GuiExtention> extentions = new ArrayList<GuiExtention>();
-	private final List<GuiExtention> extentionsToRemove = new ArrayList<GuiExtention>();
+	private final List<GuiExtention> extentions = new ArrayList<>();
+	private final List<GuiExtention> extentionsToRemove = new ArrayList<>();
 	@Setter
 	private int maxBottom;
 	private GuiExtention currentlyExtended = null;
-	private Map<Slot, Integer> slotMap = new HashMap<Slot, Integer>();
-	private Map<GuiButton, Integer> buttonMap = new HashMap<GuiButton, Integer>();
+	private Map<Slot, Integer> slotMap = new HashMap<>();
+	private Map<GuiButton, Integer> buttonMap = new HashMap<>();
 
 	private final GuiSide side;
 
@@ -113,12 +113,12 @@ public class GuiExtentionController {
 
 	public void mouseClicked(int x, int y, int k) {
 		if (currentlyExtended == null) {
-			for (GuiExtention extention : extentions) {
-				if (x > extention.getCurrentXPos() && x < extention.getCurrentXPos() + extention.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0) && y > extention.getCurrentYPos() && y < extention.getCurrentYPos() + extention.getCurrentHeight()) {
-					currentlyExtended = extention;
-					currentlyExtended.setExtending(true);
-				}
-			}
+			extentions.stream()
+					.filter(extention -> x > extention.getCurrentXPos() && x < extention.getCurrentXPos() + extention.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0) && y > extention.getCurrentYPos() && y < extention.getCurrentYPos() + extention.getCurrentHeight())
+					.forEach(extention -> {
+						currentlyExtended = extention;
+						currentlyExtended.setExtending(true);
+					});
 		} else {
 			if (x > currentlyExtended.getCurrentXPos() && x < currentlyExtended.getCurrentXPos() + currentlyExtended.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0) && y > currentlyExtended.getCurrentYPos() && y < currentlyExtended.getCurrentYPos() + currentlyExtended.getCurrentHeight()) {
 				currentlyExtended.setExtending(false);

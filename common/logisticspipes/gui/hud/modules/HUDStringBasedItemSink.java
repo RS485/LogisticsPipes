@@ -20,7 +20,7 @@ public class HUDStringBasedItemSink implements IHUDModuleRenderer {
 
 	public HUDStringBasedItemSink(IStringBasedModule module) {
 		itemSink = module;
-		list = new ArrayList<IHUDButton>();
+		list = new ArrayList<>();
 		list.add(new BasicHUDButton("<", 10, -35, 8, 8) {
 
 			@Override

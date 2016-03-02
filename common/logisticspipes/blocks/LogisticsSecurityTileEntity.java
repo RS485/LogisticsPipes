@@ -50,8 +50,8 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 	public ItemIdentifierInventory inv = new ItemIdentifierInventory(1, "ID Slots", 64);
 	private PlayerCollectionList listener = new PlayerCollectionList();
 	private UUID secId = null;
-	private Map<String, SecuritySettings> settingsList = new HashMap<String, SecuritySettings>();
-	public List<Integer> excludedCC = new ArrayList<Integer>();
+	private Map<String, SecuritySettings> settingsList = new HashMap<>();
+	public List<Integer> excludedCC = new ArrayList<>();
 	public boolean allowCC = false;
 	public boolean allowAutoDestroy = false;
 

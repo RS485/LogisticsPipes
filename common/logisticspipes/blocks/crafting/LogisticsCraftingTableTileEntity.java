@@ -67,7 +67,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		for (int i = 0; i < 9; i++) {
 			craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
 		}
-		List<IRecipe> list = new ArrayList<IRecipe>();
+		List<IRecipe> list = new ArrayList<>();
 		for (IRecipe r : CraftingUtil.getRecipeList()) {
 			if (r.matches(craftInv, getWorldObj())) {
 				list.add(r);
@@ -117,7 +117,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		for (int i = 0; i < 9; i++) {
 			craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
 		}
-		List<IRecipe> list = new ArrayList<IRecipe>();
+		List<IRecipe> list = new ArrayList<>();
 		for (IRecipe r : CraftingUtil.getRecipeList()) {
 			if (r.matches(craftInv, getWorldObj())) {
 				list.add(r);

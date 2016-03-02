@@ -57,13 +57,7 @@ public class GuiItemSink extends ModuleBaseGui {
 		super.initGui();
 		// Default item toggle:
 		buttonList.clear();
-		buttonList.add(new GuiStringHandlerButton(0, width / 2 + 50, height / 2 - 34, 30, 20, new GuiStringHandlerButton.StringHandler() {
-
-			@Override
-			public String getContent() {
-				return StringUtils.translate(GuiItemSink.PREFIX + (_itemSink.isDefaultRoute() ? "Yes" : "No"));
-			}
-		}));
+		buttonList.add(new GuiStringHandlerButton(0, width / 2 + 50, height / 2 - 34, 30, 20, () -> StringUtils.translate(GuiItemSink.PREFIX + (_itemSink.isDefaultRoute() ? "Yes" : "No"))));
 		buttonList.add(new SmallGuiButton(1, guiLeft + 10, guiTop + 37, 40, 10, StringUtils.translate(GuiItemSink.PREFIX + "import")));
 	}
 

@@ -66,26 +66,16 @@ public class StatisticsGui extends CoordinatesGuiProvider {
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
 		super.writeData(data);
-		data.writeList(trackingList, new IWriteListObject<TrackingTask>() {
-
-			@Override
-			public void writeObject(LPDataOutputStream data, TrackingTask object) throws IOException {
-				object.writeToLPData(data);
-			}
-		});
+		data.writeList(trackingList, (data1, object) -> object.writeToLPData(data1));
 	}
 
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);
-		trackingList = data.readList(new IReadListObject<TrackingTask>() {
-
-			@Override
-			public TrackingTask readObject(LPDataInputStream data) throws IOException {
-				TrackingTask object = new TrackingTask();
-				object.readFromLPData(data);
-				return object;
-			}
+		trackingList = data.readList(data1 -> {
+			TrackingTask object = new TrackingTask();
+			object.readFromLPData(data1);
+			return object;
 		});
 	}
 }

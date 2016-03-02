@@ -5,6 +5,7 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import logisticspipes.gui.hud.modules.HUDItemSink;
 import logisticspipes.interfaces.IClientInformationProvider;
@@ -184,7 +185,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 
 	@Override
 	public List<String> getClientInformation() {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		list.add("Default: " + (isDefaultRoute() ? "Yes" : "No"));
 		list.add("Filter: ");
 		list.add("<inventory>");
@@ -242,11 +243,9 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 			return null;
 		}
 		Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
-		List<ItemIdentifier> li = new ArrayList<ItemIdentifier>(mapIC.size());
+		List<ItemIdentifier> li = new ArrayList<>(mapIC.size());
 		li.addAll(mapIC.keySet());
-		for (ItemIdentifier id : mapIC.keySet()) {
-			li.add(id.getUndamaged());
-		}
+		li.addAll(mapIC.keySet().stream().map(ItemIdentifier::getUndamaged).collect(Collectors.toList()));
 		if (_service.getUpgradeManager(slot, positionInt).isFuzzyUpgrade()) {
 			for (Pair<ItemIdentifierStack, Integer> stack : _filterInventory) {
 				ItemIdentifier ident = stack.getValue1().getItem();

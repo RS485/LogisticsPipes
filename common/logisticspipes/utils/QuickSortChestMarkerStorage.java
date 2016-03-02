@@ -14,14 +14,14 @@ public class QuickSortChestMarkerStorage {
 
 	private QuickSortChestMarkerStorage() {}
 
-	private HashMap<Quartet<Integer, Integer, Integer, Integer>, Integer> marker = new HashMap<Quartet<Integer, Integer, Integer, Integer>, Integer>();
+	private HashMap<Quartet<Integer, Integer, Integer, Integer>, Integer> marker = new HashMap<>();
 
 	@Getter
 	private boolean isActivated = false;
 
 	public void setSlots(int x, int y, int z, int slot, int pos) {
 		if (isActivated) {
-			marker.put(new Quartet<Integer, Integer, Integer, Integer>(x, y, z, slot), pos);
+			marker.put(new Quartet<>(x, y, z, slot), pos);
 		}
 	}
 

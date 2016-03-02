@@ -117,11 +117,9 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 				CoreRoutedPipe cachedPipe = exit.destination.getCachedPipe();
 				if(cachedPipe != null) {
 					List<Pair<ForgeDirection, IPipeSign>> pipeSigns = cachedPipe.getPipeSigns();
-					for(Pair<ForgeDirection, IPipeSign> signPair:pipeSigns) {
-						if(signPair != null && signPair.getValue2() instanceof ItemAmountPipeSign) {
-							((ItemAmountPipeSign)signPair.getValue2()).updateStats(availableItems, set);
-						}
-					}
+					pipeSigns.stream()
+							.filter(signPair -> signPair != null && signPair.getValue2() instanceof ItemAmountPipeSign)
+							.forEach(signPair -> ((ItemAmountPipeSign) signPair.getValue2()).updateStats(availableItems, set));
 				}
 			}
 		}

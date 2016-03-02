@@ -11,8 +11,8 @@ public class CCWrapperInformation {
 
 	public boolean isCCType = false;
 	public String type = "";
-	public HashMap<Integer, String> commandMap = new HashMap<Integer, String>();
-	public Map<Integer, Method> commands = new LinkedHashMap<Integer, Method>();
-	public Map<String, Pair<Boolean, String>> commandTypes = new LinkedHashMap<String, Pair<Boolean, String>>();
+	public HashMap<Integer, String> commandMap = new HashMap<>();
+	public Map<Integer, Method> commands = new LinkedHashMap<>();
+	public Map<String, Pair<Boolean, String>> commandTypes = new LinkedHashMap<>();
 	public Method securityMethod = null;
 }

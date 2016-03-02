@@ -29,7 +29,7 @@ public class ClientPacketBufferHandlerThread {
 	private class ClientCompressorThread extends Thread {
 
 		//list of C->S packets to be serialized and compressed
-		private final LinkedList<ModernPacket> clientList = new LinkedList<ModernPacket>();
+		private final LinkedList<ModernPacket> clientList = new LinkedList<>();
 		//serialized but still uncompressed C->S data
 		private byte[] clientBuffer = new byte[] {};
 		//used to cork the compressor so we can queue up a whole bunch of packets at once
@@ -136,13 +136,13 @@ public class ClientPacketBufferHandlerThread {
 	private class ClientDecompressorThread extends Thread {
 
 		//Received compressed S->C data
-		private final LinkedList<byte[]> queue = new LinkedList<byte[]>();
+		private final LinkedList<byte[]> queue = new LinkedList<>();
 		//decompressed serialized S->C data
 		private byte[] ByteBuffer = new byte[] {};
 		//FIFO for deserialized S->C packets, decompressor adds, tickEnd removes
-		private final LinkedList<Pair<EntityPlayer, byte[]>> PacketBuffer = new LinkedList<Pair<EntityPlayer, byte[]>>();
+		private final LinkedList<Pair<EntityPlayer, byte[]>> PacketBuffer = new LinkedList<>();
 		//List of packets that that should be reattempted to apply in the next tick
-		private final LinkedList<Pair<EntityPlayer, ModernPacket>> retryPackets = new LinkedList<Pair<EntityPlayer, ModernPacket>>();
+		private final LinkedList<Pair<EntityPlayer, ModernPacket>> retryPackets = new LinkedList<>();
 		//Clear content on next tick
 		private boolean clear = false;
 
@@ -204,7 +204,7 @@ public class ClientPacketBufferHandlerThread {
 					byte[] packet = Arrays.copyOfRange(ByteBuffer, 4, size + 4);
 					ByteBuffer = Arrays.copyOfRange(ByteBuffer, size + 4, ByteBuffer.length);
 					synchronized (PacketBuffer) {
-						PacketBuffer.add(new Pair<EntityPlayer, byte[]>(MainProxy.proxy.getClientPlayer(), packet));
+						PacketBuffer.add(new Pair<>(MainProxy.proxy.getClientPlayer(), packet));
 					}
 				}
 				synchronized (queue) {
@@ -235,7 +235,7 @@ public class ClientPacketBufferHandlerThread {
 		}
 
 		public void queueFailedPacket(ModernPacket packet, EntityPlayer player) {
-			retryPackets.add(new Pair<EntityPlayer, ModernPacket>(player, packet));
+			retryPackets.add(new Pair<>(player, packet));
 		}
 	}
 

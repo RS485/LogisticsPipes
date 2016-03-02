@@ -34,9 +34,9 @@ import net.minecraft.nbt.NBTBase;
 
 public class CCObjectWrapper {
 
-	private static Map<Class<?>, CCWrapperInformation> ccMapings = new HashMap<Class<?>, CCWrapperInformation>();
-	private static Map<Object, Object> wrappedObjects = new WeakHashMap<Object, Object>();
-	private static Map<Class<? extends ILPCCTypeHolder>, ILPCCTypeDefinition> specialMappings = new HashMap<Class<? extends ILPCCTypeHolder>, ILPCCTypeDefinition>();
+	private static Map<Class<?>, CCWrapperInformation> ccMapings = new HashMap<>();
+	private static Map<Object, Object> wrappedObjects = new WeakHashMap<>();
+	private static Map<Class<? extends ILPCCTypeHolder>, ILPCCTypeDefinition> specialMappings = new HashMap<>();
 	static {
 		CCObjectWrapper.specialMappings.put(ItemIdentifier.class, new CCItemIdentifier());
 		CCObjectWrapper.specialMappings.put(ItemIdentifierStack.class, new CCItemIdentifierStack());
@@ -164,7 +164,9 @@ public class CCObjectWrapper {
 								pair.setValue2("Multipurpose method. Use help() for more information");
 							}
 						} else {
-							info.commandTypes.put(method.getName(), new Pair<Boolean, String>(method.isAnnotationPresent(CCQueued.class), method.getAnnotation(CCCommand.class).description()));
+							info.commandTypes.put(method.getName(), new Pair<>(method
+									.isAnnotationPresent(CCQueued.class), method.getAnnotation(CCCommand.class)
+									.description()));
 						}
 						i++;
 					}

@@ -47,7 +47,7 @@ public class GuiSolderingStation extends LogisticsBaseGuiScreen {
 		}
 		if (resultstack != null) {
 			ItemIdentifierStack iis = ItemIdentifier.get(resultstack).makeStack(0);
-			List<ItemIdentifierStack> iisl = new LinkedList<ItemIdentifierStack>();
+			List<ItemIdentifierStack> iisl = new LinkedList<>();
 			iisl.add(iis);
 			ItemStackRenderer.renderItemIdentifierStackListIntoGui(iisl, null, 0, guiLeft + 141, guiTop + 47, 1, 1, 18, 18, 100.0F, DisplayAmount.NEVER);
 		}

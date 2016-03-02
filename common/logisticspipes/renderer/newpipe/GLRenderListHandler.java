@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.GLAllocation;
 
 public class GLRenderListHandler {
 
-	private List<GLRenderList> collection = new ArrayList<GLRenderList>();
+	private List<GLRenderList> collection = new ArrayList<>();
 
 	public GLRenderList getNewRenderList() {
 		GLRenderList list = new GLRenderList();
@@ -16,13 +16,11 @@ public class GLRenderListHandler {
 	}
 
 	public void tick() {
-		List<GLRenderList> newCollection = new ArrayList<GLRenderList>(collection);
-		for (GLRenderList ref : collection) {
-			if (!ref.check()) {
-				GLAllocation.deleteDisplayLists(ref.getID());
-				newCollection.remove(ref);
-			}
-		}
+		List<GLRenderList> newCollection = new ArrayList<>(collection);
+		collection.stream().filter(ref -> !ref.check()).forEach(ref -> {
+			GLAllocation.deleteDisplayLists(ref.getID());
+			newCollection.remove(ref);
+		});
 		if (newCollection.size() != collection.size()) {
 			collection = newCollection;
 		}

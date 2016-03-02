@@ -260,20 +260,14 @@ public class ClientProxy implements IProxy {
 	@Override
 	public void openFluidSelectGui(final int slotId) {
 		if (Minecraft.getMinecraft().currentScreen instanceof LogisticsBaseGuiScreen) {
-			final List<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>();
+			final List<ItemIdentifierStack> list = new ArrayList<>();
 			for (FluidIdentifier fluid : FluidIdentifier.all()) {
 				if (fluid == null) {
 					continue;
 				}
 				list.add(fluid.getItemIdentifier().makeStack(1));
 			}
-			SelectItemOutOfList subGui = new SelectItemOutOfList(list, new IHandleItemChoise() {
-
-				@Override
-				public void handleItemChoise(int slot) {
-					MainProxy.sendPacketToServer(PacketHandler.getPacket(DummyContainerSlotClick.class).setSlotId(slotId).setStack(list.get(slot).makeNormalStack()).setButton(0));
-				}
-			});
+			SelectItemOutOfList subGui = new SelectItemOutOfList(list, slot -> MainProxy.sendPacketToServer(PacketHandler.getPacket(DummyContainerSlotClick.class).setSlotId(slotId).setStack(list.get(slot).makeNormalStack()).setButton(0)));
 			LogisticsBaseGuiScreen gui = (LogisticsBaseGuiScreen) Minecraft.getMinecraft().currentScreen;
 			if (!gui.hasSubGui()) {
 				gui.setSubGui(subGui);

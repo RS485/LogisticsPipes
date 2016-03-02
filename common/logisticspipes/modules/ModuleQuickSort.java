@@ -98,7 +98,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 					continue;
 				}
 
-				LinkedList<Integer> jamList = new LinkedList<Integer>();
+				LinkedList<Integer> jamList = new LinkedList<>();
 				Pair<Integer, SinkReply> reply = _service.hasDestination(item.getKey(), false, jamList);
 				if (reply == null) {
 					if (lastStackLookedAt == lastSuceededStack) {
@@ -183,7 +183,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 			send();
 
 			// begin duplicate code
-			List<Integer> jamList = new LinkedList<Integer>();
+			List<Integer> jamList = new LinkedList<>();
 			Pair<Integer, SinkReply> reply = _service.hasDestination(ItemIdentifier.get(slot), false, jamList);
 			if (reply == null) {
 				if (lastStackLookedAt == lastSuceededStack) {

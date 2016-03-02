@@ -82,7 +82,7 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public Set<ItemIdentifier> getItems() {
-		Set<ItemIdentifier> result = new TreeSet<ItemIdentifier>();
+		Set<ItemIdentifier> result = new TreeSet<>();
 		ItemStack items = _storage.getStoredItemType();
 		if (items != null) {
 			result.add(ItemIdentifier.get(items));
@@ -92,7 +92,7 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
-		HashMap<ItemIdentifier, Integer> result = new HashMap<ItemIdentifier, Integer>();
+		HashMap<ItemIdentifier, Integer> result = new HashMap<>();
 		ItemStack items = _storage.getStoredItemType();
 		if (items != null && items.stackSize > 0) {
 			result.put(ItemIdentifier.get(items), _storage.isCreative() ? (int) (Math.pow(2, 20)) : items.stackSize - (_hideOnePerStack ? 1 : 0));

@@ -40,7 +40,7 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 	private static final String PREFIX = "gui.securitystation.";
 
 	private final LogisticsSecurityTileEntity _tile;
-	private final List<String> players = new LinkedList<String>();
+	private final List<String> players = new LinkedList<>();
 
 	//Player name:
 	protected String searchinput1 = "";

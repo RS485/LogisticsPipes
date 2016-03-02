@@ -21,13 +21,7 @@ import org.luaj.vm2.LuaTable;
 
 public class CCCommandWrapper implements ILuaObject {
 
-	public static final ICommandWrapper WRAPPER = new ICommandWrapper() {
-
-		@Override
-		public Object getWrappedObject(CCWrapperInformation info, Object object) {
-			return new CCCommandWrapper(info, object);
-		}
-	};
+	public static final ICommandWrapper WRAPPER = CCCommandWrapper::new;
 
 	private CCWrapperInformation info;
 	private Object object;
@@ -42,7 +36,7 @@ public class CCCommandWrapper implements ILuaObject {
 
 	@Override
 	public String[] getMethodNames() {
-		LinkedList<String> list = new LinkedList<String>();
+		LinkedList<String> list = new LinkedList<>();
 		list.add("help");
 		list.add("commandHelp");
 		list.add("getType");
@@ -129,9 +123,7 @@ public class CCCommandWrapper implements ILuaObject {
 						throw new RuntimeException(e.getTargetException());
 					}
 					throw new RuntimeException(e);
-				} catch (IllegalAccessException e) {
-					throw new RuntimeException(e);
-				} catch (IllegalArgumentException e) {
+				} catch (IllegalAccessException | IllegalArgumentException e) {
 					throw new RuntimeException(e);
 				}
 			}
@@ -144,27 +136,23 @@ public class CCCommandWrapper implements ILuaObject {
 			final Boolean[] booleans = new Boolean[2];
 			booleans[0] = false;
 			booleans[1] = false;
-			QueuedTasks.queueTask(new Callable<Object>() {
-
-				@Override
-				public Object call() throws Exception {
-					try {
-						Object result = m.invoke(object, a);
-						if (result != null) {
-							resultArray[0] = result;
-						}
-					} catch (InvocationTargetException e) {
-						if (e.getTargetException() instanceof PermissionException) {
-							booleans[1] = true;
-							resultArray[0] = e.getTargetException();
-						} else {
-							booleans[0] = true;
-							throw e;
-						}
+			QueuedTasks.queueTask(() -> {
+				try {
+					Object result = m.invoke(object, a);
+					if (result != null) {
+						resultArray[0] = result;
 					}
-					booleans[0] = true;
-					return null;
+				} catch (InvocationTargetException e) {
+					if (e.getTargetException() instanceof PermissionException) {
+						booleans[1] = true;
+						resultArray[0] = e.getTargetException();
+					} else {
+						booleans[0] = true;
+						throw e;
+					}
 				}
+				booleans[0] = true;
+				return null;
 			});
 			int count = 0;
 			while (!booleans[0] && count < 200) {
@@ -196,9 +184,7 @@ public class CCCommandWrapper implements ILuaObject {
 				throw new RuntimeException(e.getTargetException());
 			}
 			throw new RuntimeException(e);
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException(e);
-		} catch (IllegalArgumentException e) {
+		} catch (IllegalAccessException | IllegalArgumentException e) {
 			throw new RuntimeException(e);
 		}
 		return CCObjectWrapper.createArray(CCObjectWrapper.getWrappedObject(result, CCCommandWrapper.WRAPPER));

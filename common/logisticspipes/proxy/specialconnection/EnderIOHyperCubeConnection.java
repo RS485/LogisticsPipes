@@ -45,10 +45,10 @@ public class EnderIOHyperCubeConnection implements ISpecialTileConnection {
 			}
 		}
 		if (!onlyOnePipe || !SimpleServiceLocator.enderIOProxy.isSendAndReceive(tile)) {
-			return new ArrayList<TileEntity>(0);
+			return new ArrayList<>(0);
 		}
 		List<? extends TileEntity> connections = SimpleServiceLocator.enderIOProxy.getConnectedHyperCubes(tile);
-		List<TileEntity> list = new ArrayList<TileEntity>();
+		List<TileEntity> list = new ArrayList<>();
 		for (TileEntity connected : connections) {
 			if (!SimpleServiceLocator.enderIOProxy.isSendAndReceive(connected)) {
 				continue;
@@ -73,7 +73,7 @@ public class EnderIOHyperCubeConnection implements ISpecialTileConnection {
 		if (list.size() == 1) {
 			return list;
 		} else {
-			return new ArrayList<TileEntity>(0);
+			return new ArrayList<>(0);
 		}
 	}
 

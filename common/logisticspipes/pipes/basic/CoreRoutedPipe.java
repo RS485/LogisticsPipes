@@ -162,13 +162,13 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 
 	protected RouteLayer _routeLayer;
 	protected TransportLayer _transportLayer;
-	protected final PriorityBlockingQueue<ItemRoutingInformation> _inTransitToMe = new PriorityBlockingQueue<ItemRoutingInformation>(10, new ItemRoutingInformation.DelayComparator());
+	protected final PriorityBlockingQueue<ItemRoutingInformation> _inTransitToMe = new PriorityBlockingQueue<>(10, new ItemRoutingInformation.DelayComparator());
 
 	protected UpgradeManager upgradeManager = new UpgradeManager(this);
 	protected LogisticsItemOrderManager _orderItemManager = null;
 
 	@Getter
-	private List<IOrderInfoProvider> clientSideOrderManager = new ArrayList<IOrderInfoProvider>();
+	private List<IOrderInfoProvider> clientSideOrderManager = new ArrayList<>();
 
 	public int stat_session_sent;
 	public int stat_session_recieved;
@@ -180,9 +180,9 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 
 	public int server_routing_table_size = 0;
 
-	protected final LinkedList<Triplet<IRoutedItem, ForgeDirection, ItemSendMode>> _sendQueue = new LinkedList<Triplet<IRoutedItem, ForgeDirection, ItemSendMode>>();
+	protected final LinkedList<Triplet<IRoutedItem, ForgeDirection, ItemSendMode>> _sendQueue = new LinkedList<>();
 
-	protected final Map<ItemIdentifier, Queue<Pair<Integer, ItemRoutingInformation>>> queuedDataForUnroutedItems = Collections.synchronizedMap(new TreeMap<ItemIdentifier, Queue<Pair<Integer, ItemRoutingInformation>>>());
+	protected final Map<ItemIdentifier, Queue<Pair<Integer, ItemRoutingInformation>>> queuedDataForUnroutedItems = Collections.synchronizedMap(new TreeMap<>());
 
 	public final PlayerCollectionList watchers = new PlayerCollectionList();
 
@@ -248,7 +248,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		if (from == null) {
 			throw new NullPointerException();
 		}
-		_sendQueue.addLast(new Triplet<IRoutedItem, ForgeDirection, ItemSendMode>(routedItem, from, ItemSendMode.Normal));
+		_sendQueue.addLast(new Triplet<>(routedItem, from, ItemSendMode.Normal));
 		sendQueueChanged(false);
 	}
 
@@ -256,7 +256,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		if (from == null) {
 			throw new NullPointerException();
 		}
-		_sendQueue.addLast(new Triplet<IRoutedItem, ForgeDirection, ItemSendMode>(routedItem, from, mode));
+		_sendQueue.addLast(new Triplet<>(routedItem, from, mode));
 		sendQueueChanged(false);
 	}
 
@@ -670,7 +670,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 			return;
 		}
 		if (MainProxy.isServer(getWorld())) {
-			ArrayList<ParticleCount> tosend = new ArrayList<ParticleCount>(queuedParticles.length);
+			ArrayList<ParticleCount> tosend = new ArrayList<>(queuedParticles.length);
 			for (int i = 0; i < queuedParticles.length; i++) {
 				if (queuedParticles[i] > 0) {
 					tosend.add(new ParticleCount(Particles.values()[i], queuedParticles[i]));
@@ -792,7 +792,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 			LPTravelingItemServer item = new LPTravelingItemServer(tagentityitem);
 			ForgeDirection from = ForgeDirection.values()[tagentry.getByte("from")];
 			ItemSendMode mode = ItemSendMode.values()[tagentry.getByte("mode")];
-			_sendQueue.add(new Triplet<IRoutedItem, ForgeDirection, ItemSendMode>(item, from, mode));
+			_sendQueue.add(new Triplet<>(item, from, mode));
 		}
 		for (int i = 0; i < 6; i++) {
 			if (nbttagcompound.getBoolean("PipeSign_" + i)) {
@@ -802,9 +802,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 					signItem[i] = typeClass.newInstance();
 					signItem[i].init(this, ForgeDirection.getOrientation(i));
 					signItem[i].readFromNBT(nbttagcompound.getCompoundTag("PipeSign_" + i + "_tags"));
-				} catch (InstantiationException e) {
-					throw new RuntimeException(e);
-				} catch (IllegalAccessException e) {
+				} catch (InstantiationException | IllegalAccessException e) {
 					throw new RuntimeException(e);
 				}
 			}
@@ -1141,7 +1139,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 			return true;
 		}
 		if (providersToIgnore == null) {
-			providersToIgnore = new ArrayList<Object>();
+			providersToIgnore = new ArrayList<>();
 		}
 		if (providersToIgnore.contains(this)) {
 			return false;
@@ -1263,9 +1261,9 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 			synchronized (queuedDataForUnroutedItems) {
 				Queue<Pair<Integer, ItemRoutingInformation>> queue = queuedDataForUnroutedItems.get(item.getItem());
 				if (queue == null) {
-					queuedDataForUnroutedItems.put(item.getItem(), queue = new LinkedList<Pair<Integer, ItemRoutingInformation>>());
+					queuedDataForUnroutedItems.put(item.getItem(), queue = new LinkedList<>());
 				}
-				queue.add(new Pair<Integer, ItemRoutingInformation>(item.getStackSize(), information));
+				queue.add(new Pair<>(item.getStackSize(), information));
 			}
 		}
 	}
@@ -1412,18 +1410,12 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		}
 		final int fSourceId = sourceId;
 		BitSet set = new BitSet(ServerRouter.getBiggestSimpleID());
-		for (ExitRoute exit : getRouter().getIRoutersByCost()) {
-			if (exit.destination != null && !set.get(exit.destination.getSimpleID())) {
-				exit.destination.queueTask(10, new IRouterQueuedTask() {
-
-					@Override
-					public void call(CoreRoutedPipe pipe, IRouter router) {
-						pipe.handleMesssage(computerId.intValue(), message, fSourceId);
-					}
+		getRouter().getIRoutersByCost().stream()
+				.filter(exit -> exit.destination != null && !set.get(exit.destination.getSimpleID()))
+				.forEach(exit -> {
+					exit.destination.queueTask(10, (pipe, router1) -> pipe.handleMesssage(computerId.intValue(), message, fSourceId));
+					set.set(exit.destination.getSimpleID());
 				});
-				set.set(exit.destination.getSimpleID());
-			}
-		}
 	}
 
 	@CCCommand(description = "Sends a broadcast message to all Computer connected to this LP network. Event: " + CCConstants.LP_CC_BROADCAST_EVENT)
@@ -1435,18 +1427,12 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		}
 		final int fSourceId = sourceId;
 		BitSet set = new BitSet(ServerRouter.getBiggestSimpleID());
-		for (ExitRoute exit : getRouter().getIRoutersByCost()) {
-			if (exit.destination != null && !set.get(exit.destination.getSimpleID())) {
-				exit.destination.queueTask(10, new IRouterQueuedTask() {
-
-					@Override
-					public void call(CoreRoutedPipe pipe, IRouter router) {
-						pipe.handleBroadcast(message, fSourceId);
-					}
+		getRouter().getIRoutersByCost().stream()
+				.filter(exit -> exit.destination != null && !set.get(exit.destination.getSimpleID()))
+				.forEach(exit -> {
+					exit.destination.queueTask(10, (pipe, router1) -> pipe.handleBroadcast(message, fSourceId));
+					set.set(exit.destination.getSimpleID());
 				});
-				set.set(exit.destination.getSimpleID());
-			}
-		}
 	}
 
 	@CCCommand(description = "Returns the access to the pipe of the givven router UUID")
@@ -1655,7 +1641,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	}
 
 	public void sendSignData(EntityPlayer player) {
-		List<Integer> types = new ArrayList<Integer>();
+		List<Integer> types = new ArrayList<>();
 		for (int i = 0; i < 6; i++) {
 			if (signItem[i] == null) {
 				types.add(-1);
@@ -1707,10 +1693,10 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	}
 
 	public List<Pair<ForgeDirection, IPipeSign>> getPipeSigns() {
-		List<Pair<ForgeDirection, IPipeSign>> list = new ArrayList<Pair<ForgeDirection, IPipeSign>>();
+		List<Pair<ForgeDirection, IPipeSign>> list = new ArrayList<>();
 		for (int i = 0; i < 6; i++) {
 			if (signItem[i] != null) {
-				list.add(new Pair<ForgeDirection, IPipeSign>(ForgeDirection.getOrientation(i), signItem[i]));
+				list.add(new Pair<>(ForgeDirection.getOrientation(i), signItem[i]));
 			}
 		}
 		return list;
@@ -1728,9 +1714,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 					try {
 						signItem[i] = type.newInstance();
 						signItem[i].init(this, ForgeDirection.getOrientation(i));
-					} catch (InstantiationException e) {
-						throw new RuntimeException(e);
-					} catch (IllegalAccessException e) {
+					} catch (InstantiationException | IllegalAccessException e) {
 						throw new RuntimeException(e);
 					}
 				}
@@ -1770,7 +1754,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	public void addStatusInformation(List<StatusEntry> status) {
 		StatusEntry entry = new StatusEntry();
 		entry.name = "Send Queue";
-		entry.subEntry = new ArrayList<StatusEntry>();
+		entry.subEntry = new ArrayList<>();
 		for (Triplet<IRoutedItem, ForgeDirection, ItemSendMode> part : _sendQueue) {
 			StatusEntry subEntry = new StatusEntry();
 			subEntry.name = part.toString();
@@ -1779,7 +1763,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		status.add(entry);
 		entry = new StatusEntry();
 		entry.name = "In Transit To Me";
-		entry.subEntry = new ArrayList<StatusEntry>();
+		entry.subEntry = new ArrayList<>();
 		for (ItemRoutingInformation part : _inTransitToMe) {
 			StatusEntry subEntry = new StatusEntry();
 			subEntry.name = part.toString();

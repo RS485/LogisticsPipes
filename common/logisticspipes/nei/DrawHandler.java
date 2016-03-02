@@ -27,12 +27,12 @@ public class DrawHandler implements IContainerDrawHandler {
 	public void renderSlotUnderlay(GuiContainer gui, Slot slotActive) {
 		if (slotActive.slotNumber == 0) {
 			if (QuickSortChestMarkerStorage.getInstance().isActivated()) {
-				for (Slot slot : ((List<Slot>) gui.inventorySlots.inventorySlots)) {
-					if (QuickSortChestMarkerStorage.getInstance().getMarker().contains(slot.slotNumber)) {
-						Minecraft.getMinecraft().renderEngine.bindTexture(GuiGraphics.WIDGETS_TEXTURE);
-						gui.drawTexturedModalRect(slot.xDisplayPosition - 3, slot.yDisplayPosition - 3, 1, 23, 22, 22);
-					}
-				}
+				((List<Slot>) gui.inventorySlots.inventorySlots).stream()
+						.filter(slot -> QuickSortChestMarkerStorage.getInstance().getMarker().contains(slot.slotNumber))
+						.forEach(slot -> {
+							Minecraft.getMinecraft().renderEngine.bindTexture(GuiGraphics.WIDGETS_TEXTURE);
+							gui.drawTexturedModalRect(slot.xDisplayPosition - 3, slot.yDisplayPosition - 3, 1, 23, 22, 22);
+						});
 			}
 		}
 	}

@@ -287,67 +287,55 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 
 		//Pipe slots
 		for (int pipeSlot = 0; pipeSlot < 8; pipeSlot++) {
-			dummy.addRestrictedSlot(pipeSlot, inv, 8 + pipeSlot * 18, 18, new ISlotCheck() {
-
-				@Override
-				public boolean isStackAllowed(ItemStack itemStack) {
-					if (itemStack == null) {
-						return false;
-					}
-					if (itemStack.getItem() == LogisticsPipes.UpgradeItem) {
-						if (!LogisticsPipes.UpgradeItem.getUpgradeForItem(itemStack, null).isAllowedForPipe(pipe)) {
-							return false;
-						}
-					} else {
-						return false;
-					}
-					return true;
-				}
-			});
-		}
-		//Static slot for Security Cards
-		dummy.addStaticRestrictedSlot(0, secInv, 8 + 8 * 18, 18, new ISlotCheck() {
-
-			@Override
-			public boolean isStackAllowed(ItemStack itemStack) {
+			dummy.addRestrictedSlot(pipeSlot, inv, 8 + pipeSlot * 18, 18, itemStack -> {
 				if (itemStack == null) {
 					return false;
 				}
-				if (itemStack.getItem() != LogisticsPipes.LogisticsItemCard) {
-					return false;
-				}
-				if (itemStack.getItemDamage() != LogisticsItemCard.SEC_CARD) {
-					return false;
-				}
-				if (!SimpleServiceLocator.securityStationManager.isAuthorized(UUID.fromString(itemStack.getTagCompound().getString("UUID")))) {
+				if (itemStack.getItem() == LogisticsPipes.UpgradeItem) {
+					if (!LogisticsPipes.UpgradeItem.getUpgradeForItem(itemStack, null).isAllowedForPipe(pipe)) {
+						return false;
+					}
+				} else {
 					return false;
 				}
 				return true;
+			});
+		}
+		//Static slot for Security Cards
+		dummy.addStaticRestrictedSlot(0, secInv, 8 + 8 * 18, 18, itemStack -> {
+			if (itemStack == null) {
+				return false;
 			}
+			if (itemStack.getItem() != LogisticsPipes.LogisticsItemCard) {
+				return false;
+			}
+			if (itemStack.getItemDamage() != LogisticsItemCard.SEC_CARD) {
+				return false;
+			}
+			if (!SimpleServiceLocator.securityStationManager.isAuthorized(UUID.fromString(itemStack.getTagCompound().getString("UUID")))) {
+				return false;
+			}
+			return true;
 		}, 1);
 
 		int y = isCombinedSneakyUpgrade ? 58 : 100000;
 		for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
-			dummy.addRestrictedSlot(pipeSlot, sneakyInv, 8 + pipeSlot * 18, y, new ISlotCheck() {
-
-				@Override
-				public boolean isStackAllowed(ItemStack itemStack) {
-					if (itemStack == null) {
-						return false;
-					}
-					if (itemStack.getItem() == LogisticsPipes.UpgradeItem) {
-						IPipeUpgrade upgrade = LogisticsPipes.UpgradeItem.getUpgradeForItem(itemStack, null);
-						if (!(upgrade instanceof SneakyUpgrade)) {
-							return false;
-						}
-						if (!upgrade.isAllowedForPipe(pipe)) {
-							return false;
-						}
-					} else {
-						return false;
-					}
-					return true;
+			dummy.addRestrictedSlot(pipeSlot, sneakyInv, 8 + pipeSlot * 18, y, itemStack -> {
+				if (itemStack == null) {
+					return false;
 				}
+				if (itemStack.getItem() == LogisticsPipes.UpgradeItem) {
+					IPipeUpgrade upgrade = LogisticsPipes.UpgradeItem.getUpgradeForItem(itemStack, null);
+					if (!(upgrade instanceof SneakyUpgrade)) {
+						return false;
+					}
+					if (!upgrade.isAllowedForPipe(pipe)) {
+						return false;
+					}
+				} else {
+					return false;
+				}
+				return true;
 			});
 		}
 		return dummy;

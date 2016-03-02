@@ -51,37 +51,33 @@ public class DebugHelper implements IContainerTooltipHandler {
 			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Keyboard.isKeyDown(Keyboard.KEY_H)) {
 				if (DebugHelper.lastTime + 1000 < System.currentTimeMillis()) {
 					DebugHelper.lastTime = System.currentTimeMillis();
-					new Thread(new Runnable() {
-
-						@Override
-						public void run() {
-							while (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_H)) {
-								try {
-									Thread.sleep(50);
-								} catch (InterruptedException e) {
-									e.printStackTrace();
-								}
+					new Thread(() -> {
+						while (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_H)) {
+							try {
+								Thread.sleep(50);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
 							}
-							DefaultMutableTreeNode node = new DefaultMutableTreeNode(ItemIdentifier.get(itemstack).getFriendlyName());
-							node.add(new DefaultMutableTreeNode("ItemId: " + Item.getIdFromItem(itemstack.getItem())));
-							node.add(new DefaultMutableTreeNode("ItemDamage: " + itemstack.getItemDamage()));
-							if (itemstack.hasTagCompound()) {
-								DefaultMutableTreeNode tag = new DefaultMutableTreeNode("Tag:");
-								try {
-									addNBTToTree(itemstack.getTagCompound(), tag);
-								} catch (Exception e) {
-									tag.add(new DefaultMutableTreeNode(e));
-								}
-								node.add(tag);
-							}
-							JTree tree = new JTree(node);
-							JScrollPane treeView = new JScrollPane(tree);
-							JFrame frame = new JFrame("Item Info");
-							frame.getContentPane().add(treeView, BorderLayout.CENTER);
-							frame.setLocationRelativeTo(null);
-							frame.pack();
-							frame.setVisible(true);
 						}
+						DefaultMutableTreeNode node = new DefaultMutableTreeNode(ItemIdentifier.get(itemstack).getFriendlyName());
+						node.add(new DefaultMutableTreeNode("ItemId: " + Item.getIdFromItem(itemstack.getItem())));
+						node.add(new DefaultMutableTreeNode("ItemDamage: " + itemstack.getItemDamage()));
+						if (itemstack.hasTagCompound()) {
+							DefaultMutableTreeNode tag = new DefaultMutableTreeNode("Tag:");
+							try {
+								addNBTToTree(itemstack.getTagCompound(), tag);
+							} catch (Exception e) {
+								tag.add(new DefaultMutableTreeNode(e));
+							}
+							node.add(tag);
+						}
+						JTree tree = new JTree(node);
+						JScrollPane treeView = new JScrollPane(tree);
+						JFrame frame = new JFrame("Item Info");
+						frame.getContentPane().add(treeView, BorderLayout.CENTER);
+						frame.setLocationRelativeTo(null);
+						frame.pack();
+						frame.setVisible(true);
 					}).start();
 				}
 			}

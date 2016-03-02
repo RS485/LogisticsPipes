@@ -31,14 +31,14 @@ public class BuildCraftTankHandler implements ISpecialTankAccessHandler {
 
 	@Override
 	public List<TileEntity> getBaseTilesFor(TileEntity tile) {
-		List<TileEntity> tiles = new ArrayList<TileEntity>(1);
+		List<TileEntity> tiles = new ArrayList<>(1);
 		tiles.add(((TileTank) tile).getBottomTank());
 		return tiles;
 	}
 
 	@Override
 	public Map<FluidIdentifier, Long> getAvailableLiquid(TileEntity tile) {
-		Map<FluidIdentifier, Long> map = new HashMap<FluidIdentifier, Long>();
+		Map<FluidIdentifier, Long> map = new HashMap<>();
 		FluidTankInfo[] tanks = ((IFluidHandler) tile).getTankInfo(ForgeDirection.UNKNOWN);
 		for (FluidTankInfo tank : tanks) {
 			if (tank == null) {

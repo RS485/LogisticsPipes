@@ -12,7 +12,7 @@ public class LogisticsBaseTabGuiScreen extends LogisticsBaseGuiScreen {
 
 	private int current_Tab;
 
-	private final List<TabSubGui> tabList = new ArrayList<TabSubGui>();
+	private final List<TabSubGui> tabList = new ArrayList<>();
 
 	public LogisticsBaseTabGuiScreen(int xSize, int ySize) {
 		super(xSize, ySize, 0, 0);
@@ -22,18 +22,12 @@ public class LogisticsBaseTabGuiScreen extends LogisticsBaseGuiScreen {
 	public void initGui() {
 		super.initGui();
 		buttonList.clear();
-		for (int i = 0; i < tabList.size(); i++) {
-			tabList.get(i).initTab();
-		}
+		tabList.forEach(TabSubGui::initTab);
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton button) {
-		for (int i = 0; i < tabList.size(); i++) {
-			if (tabList.get(i).isButtonFromGui(button)) {
-				tabList.get(i).buttonClicked(button);
-			}
-		}
+		tabList.stream().filter(aTabList -> aTabList.isButtonFromGui(button)).forEach(aTabList -> aTabList.buttonClicked(button));
 	}
 
 	@Override
@@ -47,8 +41,8 @@ public class LogisticsBaseTabGuiScreen extends LogisticsBaseGuiScreen {
 		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 135);
 
 		int x = 6;
-		for (int i = 0; i < tabList.size(); i++) {
-			tabList.get(i).renderIcon(guiLeft + x, guiTop + 3);
+		for (TabSubGui aTabList : tabList) {
+			aTabList.renderIcon(guiLeft + x, guiTop + 3);
 			x += 25;
 		}
 
@@ -89,9 +83,7 @@ public class LogisticsBaseTabGuiScreen extends LogisticsBaseGuiScreen {
 			}
 		}
 		if (p_73869_2_ == 1 || p_73869_2_ == mc.gameSettings.keyBindInventory.getKeyCode()) {
-			for (int i = 0; i < tabList.size(); i++) {
-				tabList.get(i).guiClose();
-			}
+			tabList.forEach(TabSubGui::guiClose);
 		}
 		super.keyTyped(p_73869_1_, p_73869_2_);
 	}
@@ -152,8 +144,8 @@ public class LogisticsBaseTabGuiScreen extends LogisticsBaseGuiScreen {
 
 	protected abstract class TabSubGui {
 
-		private final List<Slot> TAB_SLOTS = new ArrayList<Slot>();
-		private final List<GuiButton> TAB_BUTTONS = new ArrayList<GuiButton>();
+		private final List<Slot> TAB_SLOTS = new ArrayList<>();
+		private final List<GuiButton> TAB_BUTTONS = new ArrayList<>();
 
 		public abstract void renderIcon(int x, int y);
 

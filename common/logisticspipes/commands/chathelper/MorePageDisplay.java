@@ -13,8 +13,8 @@ import net.minecraft.util.ChatComponentText;
 
 public class MorePageDisplay {
 
-	private ArrayList<String> header = new ArrayList<String>();
-	private ArrayList<StringConnected> content = new ArrayList<StringConnected>();
+	private ArrayList<String> header = new ArrayList<>();
+	private ArrayList<StringConnected> content = new ArrayList<>();
 
 	private final int row = 20;
 	private final int colum = 55;
@@ -34,7 +34,7 @@ public class MorePageDisplay {
 
 	public MorePageDisplay(String[] header, ICommandSender name) {
 		if (header.length <= (row - 2)) {
-			this.header = new ArrayList<String>();
+			this.header = new ArrayList<>();
 			for (String element : header) {
 				this.header.add(element);
 			}

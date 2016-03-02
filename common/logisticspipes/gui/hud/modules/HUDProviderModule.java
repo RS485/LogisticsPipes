@@ -18,7 +18,7 @@ import org.lwjgl.opengl.GL11;
 
 public class HUDProviderModule implements IHUDModuleRenderer {
 
-	private List<IHUDButton> buttons = new ArrayList<IHUDButton>();
+	private List<IHUDButton> buttons = new ArrayList<>();
 
 	private int page = 0;
 

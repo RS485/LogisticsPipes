@@ -41,7 +41,7 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISi
 
 	public ItemIdentifierInventory inv = new ItemIdentifierInventory(16, "Buffer", 127);
 
-	public List<ItemIdentifierStack> bufferList = new LinkedList<ItemIdentifierStack>();
+	public List<ItemIdentifierStack> bufferList = new LinkedList<>();
 
 	public ModuleCrafterMK3() {
 		inv.addListener(this);
@@ -69,7 +69,7 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISi
 	}
 
 	protected int spaceFor(ItemIdentifier item, boolean includeInTransit, boolean addBufferSpace) {
-		Triplet<String, ItemIdentifier, Boolean> key = new Triplet<String, ItemIdentifier, Boolean>("spaceForMK3", item, addBufferSpace);
+		Triplet<String, ItemIdentifier, Boolean> key = new Triplet<>("spaceForMK3", item, addBufferSpace);
 		int invSpace = super.spaceFor(item, includeInTransit);
 		Object cache = _service.getCacheHolder().getCacheFor(CacheTypes.Inventory, key);
 		if (cache != null) {

@@ -169,7 +169,7 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 	}
 
 	public List<CCSinkResponder> queueCCSinkEvent(ItemIdentifierStack item) {
-		return new ArrayList<CCSinkResponder>(0);
+		return new ArrayList<>(0);
 	}
 
 	public void registerCCEventQueuer(IQueueCCEvent eventQueuer) {}

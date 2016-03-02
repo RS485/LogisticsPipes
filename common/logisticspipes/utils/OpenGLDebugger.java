@@ -108,7 +108,7 @@ public class OpenGLDebugger {
 
 		public ExtendedHashMap() {
 			sessionStarted = false;
-			orderedKeys = new ArrayList<Integer>();
+			orderedKeys = new ArrayList<>();
 		}
 
 		@Override
@@ -117,8 +117,8 @@ public class OpenGLDebugger {
 		}
 
 		public void startSession() {
-			newKeys = new ArrayList<Integer>();
-			updatedKeys = new ArrayList<Integer>();
+			newKeys = new ArrayList<>();
+			updatedKeys = new ArrayList<>();
 			sessionStarted = true;
 		}
 
@@ -241,9 +241,7 @@ public class OpenGLDebugger {
 				if ("Windows".equals(info.getName())) {
 					try {
 						UIManager.setLookAndFeel(info.getClassName());
-					} catch (ReflectiveOperationException e) {
-						e.printStackTrace();
-					} catch (UnsupportedLookAndFeelException e) {
+					} catch (ReflectiveOperationException | UnsupportedLookAndFeelException e) {
 						e.printStackTrace();
 					}
 					break;
@@ -270,13 +268,7 @@ public class OpenGLDebugger {
 				}
 			});
 
-			mainPanel.registerKeyboardAction(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					stop();
-				}
-			}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+			mainPanel.registerKeyboardAction(e -> stop(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 		}
 
 		@Override
@@ -369,7 +361,7 @@ public class OpenGLDebugger {
 
 		this.printOnCycle = printOnCycle;
 		glStuff = new ExtendedHashMap();
-		glVariablesToCheck = new ConcurrentHashMap<Integer, GLTypes>();
+		glVariablesToCheck = new ConcurrentHashMap<>();
 
 		probeGUIThread = new Thread(new ProbeGUI(), "LogisticsPipes GLDebug Probe #" + OpenGLDebugger.probeID);
 		OpenGLDebugger.probeID++;
@@ -429,7 +421,7 @@ public class OpenGLDebugger {
 	}
 
 	private static void updateNiceToHave() {
-		OpenGLDebugger.niceToHave = new HashMap<Integer, String>();
+		OpenGLDebugger.niceToHave = new HashMap<>();
 		int crawlerVersion = 11;
 		boolean almostEnd = false;
 		boolean end = false;

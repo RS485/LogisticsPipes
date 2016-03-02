@@ -111,7 +111,7 @@ public final class SimpleServiceLocator {
 		SimpleServiceLocator.inventoryUtilFactory = invUtilFactory;
 	}
 
-	public static LinkedList<ICraftingRecipeProvider> craftingRecipeProviders = new LinkedList<ICraftingRecipeProvider>();
+	public static LinkedList<ICraftingRecipeProvider> craftingRecipeProviders = new LinkedList<>();
 
 	public static void addCraftingRecipeProvider(ICraftingRecipeProvider provider) {
 		SimpleServiceLocator.craftingRecipeProviders.add(provider);

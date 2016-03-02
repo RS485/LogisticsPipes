@@ -2,6 +2,7 @@ package logisticspipes.proxy.te;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import logisticspipes.proxy.interfaces.ICraftingParts;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
@@ -25,15 +26,13 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 	@Override
 	public List<TileEntity> getConnectedTesseracts(TileEntity tile) {
 		List<IEnderItemHandler> interfaces = RegistryEnderAttuned.getLinkedItemOutputs((TileTesseract) tile);
-		List<TileEntity> validOutputs = new LinkedList<TileEntity>();
+		List<TileEntity> validOutputs = new LinkedList<>();
 		if (interfaces == null) {
 			return validOutputs;
 		}
-		for (IEnderItemHandler object : interfaces) {
-			if (object.canReceiveItems() && object.canSendItems() && object instanceof TileEntity) {
-				validOutputs.add((TileEntity) object);
-			}
-		}
+		validOutputs.addAll(interfaces.stream()
+				.filter(object -> object.canReceiveItems() && object.canSendItems() && object instanceof TileEntity)
+				.map(object -> (TileEntity) object).collect(Collectors.toList()));
 		return validOutputs;
 	}
 

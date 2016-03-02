@@ -87,14 +87,14 @@ public abstract class InventoryModuleCoordinatesPacket extends ModuleCoordinates
 		super.readData(data);
 		byte mode = data.readByte();
 		if (mode == 0) {
-			stackList = new LinkedList<ItemStack>();
+			stackList = new LinkedList<>();
 			byte index = data.readByte();
 			while (index != -1) { // read until the end
 				((LinkedList<ItemStack>) stackList).addLast(readItemStack(data));
 				index = data.readByte(); // read the next slot
 			}
 		} else if (mode == 1) {
-			identList = new LinkedList<ItemIdentifierStack>();
+			identList = new LinkedList<>();
 			byte index = data.readByte();
 			while (index != -1) { // read until the end
 				if (index == 0) {

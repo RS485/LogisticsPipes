@@ -6,7 +6,7 @@ import logisticspipes.config.Configs;
 
 public class RoutingTableUpdateThread extends Thread {
 
-	private static PriorityBlockingQueue<Runnable> updateCalls = new PriorityBlockingQueue<Runnable>();
+	private static PriorityBlockingQueue<Runnable> updateCalls = new PriorityBlockingQueue<>();
 
 	private static Long average = 0L;
 

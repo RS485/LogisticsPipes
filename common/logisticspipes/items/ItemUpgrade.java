@@ -5,6 +5,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import logisticspipes.LPConstants;
 import logisticspipes.pipes.upgrades.AdvancedSatelliteUpgrade;
@@ -102,7 +103,7 @@ public class ItemUpgrade extends LogisticsItem {
 	public static final int MAX_LIQUID_CRAFTER = 3;
 	public static final int MAX_CRAFTING_CLEANUP = 4;
 
-	List<Upgrade> upgrades = new ArrayList<Upgrade>();
+	List<Upgrade> upgrades = new ArrayList<>();
 	private IIcon[] icons;
 
 	private class Upgrade {
@@ -123,17 +124,7 @@ public class ItemUpgrade extends LogisticsItem {
 			}
 			try {
 				return upgradeClass.getConstructor(new Class[] {}).newInstance(new Object[] {});
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (SecurityException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			} catch (InstantiationException e) {
+			} catch (IllegalArgumentException | InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | SecurityException e) {
 				e.printStackTrace();
 			}
 			return null;
@@ -226,9 +217,9 @@ public class ItemUpgrade extends LogisticsItem {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
-		for (Upgrade upgrade : upgrades) {
-			par3List.add(new ItemStack(this, 1, upgrade.getId()));
-		}
+		par3List.addAll(upgrades.stream()
+				.map(upgrade -> new ItemStack(this, 1, upgrade.getId()))
+				.collect(Collectors.toList()));
 	}
 
 	public IPipeUpgrade getUpgradeForItem(ItemStack itemStack, IPipeUpgrade currentUpgrade) {

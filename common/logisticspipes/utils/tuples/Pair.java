@@ -18,7 +18,7 @@ public class Pair<T1, T2> implements ILPCCTypeHolder {
 	}
 
 	public Pair<T1, T2> copy() {
-		return new Pair<T1, T2>(value1, value2);
+		return new Pair<>(value1, value2);
 	}
 
 	@Override

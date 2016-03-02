@@ -82,7 +82,7 @@ public class GuiThaumicAspectSink extends ModuleBaseGui {
 			if (_module.aspectList != null && i < _module.aspectList.size()) {
 				tmpInv.clearInventorySlotContents(0);
 				if (stackTags == null) {
-					stackTags = new LinkedList<String>();
+					stackTags = new LinkedList<>();
 				}
 				if (!stackTags.contains(_module.aspectList.get(i)) && stackTags.size() < 9) {
 					stackTags.add(_module.aspectList.get(i));

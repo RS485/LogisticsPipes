@@ -2,6 +2,7 @@ package logisticspipes.gui.orderer;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
@@ -83,8 +84,8 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 	private int orderIdForButton;
 
 	private GuiButton[] sycleButtons = new GuiButton[2];
-	private IChainAddList<GuiButton> moveWhileSmall = new ChainAddArrayList<GuiButton>();
-	private IChainAddList<GuiButton> hideWhileSmall = new ChainAddArrayList<GuiButton>();
+	private IChainAddList<GuiButton> moveWhileSmall = new ChainAddArrayList<>();
+	private IChainAddList<GuiButton> hideWhileSmall = new ChainAddArrayList<>();
 	private GuiButton hideShowButton;
 
 	public GuiRequestTable(EntityPlayer entityPlayer, PipeBlockRequestTable table) {
@@ -109,13 +110,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 				dummy.addDummySlot(i++, guiLeft + (x * 18) + 20, guiTop + (y * 18) + 15);
 			}
 		}
-		dummy.addCallableSlotHandler(0, _table.resultInv, guiLeft + 101, guiTop + 33, new ISlotClick() {
-
-			@Override
-			public ItemStack getResultForClick() {
-				return _table.getResultForClick();
-			}
-		});
+		dummy.addCallableSlotHandler(0, _table.resultInv, guiLeft + 101, guiTop + 33, _table::getResultForClick);
 		dummy.addNormalSlot(0, _table.toSortInv, guiLeft + 164, guiTop + 51);
 		dummy.addNormalSlot(0, _table.diskInv, guiLeft + 164, guiTop + 25);
 		dummy.addNormalSlotsForPlayerInventory(20, 150);
@@ -196,8 +191,8 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 
 	@Override
 	public void drawGuiContainerBackgroundLayer(float f, int i, int j) {
-		for (int c = 0; c < sycleButtons.length; c++) {
-			sycleButtons[c].visible = _table.targetType != null;
+		for (GuiButton sycleButton : sycleButtons) {
+			sycleButton.visible = _table.targetType != null;
 		}
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right - (showRequest ? 0 : 105), bottom, zLevel, true);
 
@@ -249,7 +244,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 				handledExtention.set(entry.getKey());
 				extentionControllerLeft.addExtention(new GuiExtention() {
 
-					private Map<Pair<Integer, Integer>, IOrderInfoProvider> ordererPosition = new HashMap<Pair<Integer, Integer>, IOrderInfoProvider>();
+					private Map<Pair<Integer, Integer>, IOrderInfoProvider> ordererPosition = new HashMap<>();
 					private int height;
 					private int width = 4;
 					private GuiButton localControlledButton;
@@ -314,7 +309,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 
 								// Draw number
 								mc.fontRenderer.drawStringWithShadow(s, x + 17 - mc.fontRenderer.getStringWidth(s), y + 9, 16777215);
-								ordererPosition.put(new Pair<Integer, Integer>(x, y), order);
+								ordererPosition.put(new Pair<>(x, y), order);
 								x += 18;
 								if (x > left + getFinalWidth() - 18) {
 									x = left + 6;
@@ -377,17 +372,19 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 					@Override
 					public void handleMouseOverAt(int xPos, int yPos) {
 						if (isFullyExtended()) {
-							for (Pair<Integer, Integer> key : ordererPosition.keySet()) {
-								if (xPos >= key.getValue1() && xPos < key.getValue1() + 18 && yPos >= key.getValue2() && yPos < key.getValue2() + 18) {
-									IOrderInfoProvider order = ordererPosition.get(key);
-									List<String> list = new ArrayList<String>();
-									list.add(ChatColor.BLUE + "Request Type: " + ChatColor.YELLOW + order.getType().name());
-									list.add(ChatColor.BLUE + "Send to Router ID: " + ChatColor.YELLOW + order.getRouterId());
-									GuiGraphics.displayItemToolTip(new Object[] { xPos - 10, yPos, order.getAsDisplayItem().makeNormalStack(), true, list }, zLevel, guiLeft, guiTop, false, false);
-								}
-							}
+							ordererPosition.keySet().stream()
+									.filter(key -> xPos >= key.getValue1() && xPos < key.getValue1() + 18 && yPos >= key
+											.getValue2() && yPos < key.getValue2() + 18).forEach(key -> {
+								IOrderInfoProvider order = ordererPosition.get(key);
+								List<String> list = new ArrayList<>();
+								list.add(ChatColor.BLUE + "Request Type: " + ChatColor.YELLOW + order.getType().name());
+								list.add(ChatColor.BLUE + "Send to Router ID: " + ChatColor.YELLOW + order
+										.getRouterId());
+								GuiGraphics.displayItemToolTip(new Object[]{xPos - 10, yPos, order
+										.getAsDisplayItem().makeNormalStack(), true, list}, zLevel, guiLeft, guiTop, false, false);
+							});
 						} else {
-							List<String> list = new ArrayList<String>();
+							List<String> list = new ArrayList<>();
 							list.add(ChatColor.BLUE + "Request ID: " + ChatColor.YELLOW + entry.getKey());
 							GuiGraphics.displayItemToolTip(new Object[] { xPos - 10, yPos, entry.getValue().getValue1().getDisplayItem().makeNormalStack(), true, list }, zLevel, guiLeft, guiTop, false, false);
 						}
@@ -509,10 +506,9 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ClearCraftingGridPacket.class).setTilePos(_table.container));
 			_table.cacheRecipe();
 		} else if(guibutton.id == 31) {
-			ArrayList<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>(9);
-			for (Entry<ItemIdentifier, Integer> e : _table.matrix.getItemsAndCount().entrySet()) {
-				list.add(e.getKey().makeStack(e.getValue()));
-			}
+			ArrayList<ItemIdentifierStack> list = new ArrayList<>(9);
+			list.addAll(_table.matrix.getItemsAndCount().entrySet().stream()
+					.map(e -> e.getKey().makeStack(e.getValue())).collect(Collectors.toList()));
 			for(Pair<ItemStack, Integer> entry:_table.inv) {
 				if(entry.getValue1() == null) continue;
 				int size = entry.getValue1().stackSize;
@@ -538,10 +534,9 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 	}
 
 	private void requestMatrix(int multiplier) {
-		ArrayList<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>(9);
-		for (Entry<ItemIdentifier, Integer> e : _table.matrix.getItemsAndCount().entrySet()) {
-			list.add(e.getKey().makeStack(e.getValue() * multiplier));
-		}
+		ArrayList<ItemIdentifierStack> list = new ArrayList<>(9);
+		list.addAll(_table.matrix.getItemsAndCount().entrySet().stream()
+				.map(e -> e.getKey().makeStack(e.getValue() * multiplier)).collect(Collectors.toList()));
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitListPacket.class).setIdentList(list).setTilePos(_table.container));
 		refreshItems();
 	}

@@ -69,10 +69,10 @@ import lombok.Setter;
 
 public class LogisticsEventListener {
 
-	public static final WeakHashMap<EntityPlayer, List<WeakReference<ModuleQuickSort>>> chestQuickSortConnection = new WeakHashMap<EntityPlayer, List<WeakReference<ModuleQuickSort>>>();
-	public static Map<ChunkCoordIntPair, PlayerCollectionList> watcherList = new ConcurrentHashMap<ChunkCoordIntPair, PlayerCollectionList>();
+	public static final WeakHashMap<EntityPlayer, List<WeakReference<ModuleQuickSort>>> chestQuickSortConnection = new WeakHashMap<>();
+	public static Map<ChunkCoordIntPair, PlayerCollectionList> watcherList = new ConcurrentHashMap<>();
 	int taskCount = 0;
-	public static Map<PlayerIdentifier, PlayerConfig> playerConfigs = new HashMap<PlayerIdentifier, PlayerConfig>();
+	public static Map<PlayerIdentifier, PlayerConfig> playerConfigs = new HashMap<>();
 
 	@SubscribeEvent
 	public void onEntitySpawn(EntityJoinWorldEvent event) {
@@ -143,7 +143,7 @@ public class LogisticsEventListener {
 		}
 	}
 
-	public static HashMap<Integer, Long> WorldLoadTime = new HashMap<Integer, Long>();
+	public static HashMap<Integer, Long> WorldLoadTime = new HashMap<>();
 
 	@SubscribeEvent
 	public void WorldLoad(WorldEvent.Load event) {
@@ -220,7 +220,7 @@ public class LogisticsEventListener {
 	}
 
 	@Getter(lazy = true)
-	private static final Queue<GuiEntry> guiPos = new LinkedList<GuiEntry>();
+	private static final Queue<GuiEntry> guiPos = new LinkedList<>();
 
 	//Handle GuiRepoen
 	@SubscribeEvent
@@ -260,48 +260,42 @@ public class LogisticsEventListener {
 		SimpleServiceLocator.clientBufferHandler.clear();
 
 		if (Configs.CHECK_FOR_UPDATES) {
-			LogisticsPipes.singleThreadExecutor.execute(new Runnable() {
-
-				@Override
-				public void run() {
-					// try to get player entity ten times, once a second
-					int times = 0;
-					EntityClientPlayerMP playerEntity;
-					do {
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-							return;
-						}
-						playerEntity = FMLClientHandler.instance().getClientPlayerEntity();
-						++times;
-					} while (playerEntity == null && times <= 10);
-
-					if (times > 10) {
+			LogisticsPipes.singleThreadExecutor.execute(() -> {
+				// try to get player entity ten times, once a second
+				int times = 0;
+				EntityClientPlayerMP playerEntity;
+				do {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
 						return;
 					}
-					assert playerEntity != null;
+					playerEntity = FMLClientHandler.instance().getClientPlayerEntity();
+					++times;
+				} while (playerEntity == null && times <= 10);
 
-					VersionChecker checker = LogisticsPipes.versionChecker;
+				if (times > 10) {
+					return;
+				}
+				assert playerEntity != null;
 
-					// send player message
-					String versionMessage = checker.getVersionCheckerStatus();
+				VersionChecker checker = LogisticsPipes.versionChecker;
 
-					if (checker.isVersionCheckDone() && checker.getVersionInfo().isNewVersionAvailable() && !checker.getVersionInfo().isImcMessageSent()) {
-						playerEntity.addChatComponentMessage(new ChatComponentText(versionMessage));
-						playerEntity.addChatComponentMessage(new ChatComponentText("Use \"/logisticspipes changelog\" to see a changelog."));
-					} else if (!checker.isVersionCheckDone()) {
-						playerEntity.addChatComponentMessage(new ChatComponentText(versionMessage));
-					}
+				// send player message
+				String versionMessage = checker.getVersionCheckerStatus();
+
+				if (checker.isVersionCheckDone() && checker.getVersionInfo().isNewVersionAvailable() && !checker.getVersionInfo().isImcMessageSent()) {
+					playerEntity.addChatComponentMessage(new ChatComponentText(versionMessage));
+					playerEntity.addChatComponentMessage(new ChatComponentText("Use \"/logisticspipes changelog\" to see a changelog."));
+				} else if (!checker.isVersionCheckDone()) {
+					playerEntity.addChatComponentMessage(new ChatComponentText(versionMessage));
 				}
 			});
 		}
 	}
 
 	public static void serverShutdown() {
-		for (PlayerConfig config : LogisticsEventListener.playerConfigs.values()) {
-			config.writeToFile();
-		}
+		LogisticsEventListener.playerConfigs.values().forEach(PlayerConfig::writeToFile);
 		LogisticsEventListener.playerConfigs.clear();
 	}
 

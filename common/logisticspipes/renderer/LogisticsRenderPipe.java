@@ -72,7 +72,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 
 	private final int[] angleY = { 0, 0, 270, 90, 0, 180 };
 	private final int[] angleZ = { 90, 270, 0, 0, 0, 0 };
-	private HashMap<Integer, DisplayFluidList> displayFluidLists = new HashMap<Integer, DisplayFluidList>();
+	private HashMap<Integer, DisplayFluidList> displayFluidLists = new HashMap<>();
 	private ModelSign modelSign;
 	private RenderBlocks renderBlocks = new RenderBlocks();
 	private IBCRenderTESR bcRenderer = SimpleServiceLocator.buildCraftProxy.getBCRenderTESR();
@@ -243,7 +243,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 	}
 
 	private boolean needDistance(List<Pair<ForgeDirection, IPipeSign>> list) {
-		List<Pair<ForgeDirection, IPipeSign>> copy = new ArrayList<Pair<ForgeDirection, IPipeSign>>(list);
+		List<Pair<ForgeDirection, IPipeSign>> copy = new ArrayList<>(list);
 		Iterator<Pair<ForgeDirection, IPipeSign>> iter = copy.iterator();
 		boolean north = false, south = false, east = false, west = false;
 		while (iter.hasNext()) {

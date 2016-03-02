@@ -37,9 +37,7 @@ public class ChangelogCommand implements ICommandHandler {
 			if (versionInfo.getChangelog().isEmpty()) {
 				display.append("No commits since your version.");
 			} else {
-				for (String commit : versionInfo.getChangelog()) {
-					display.append(commit);
-				}
+				versionInfo.getChangelog().forEach(display::append);
 			}
 			display.display(sender);
 		} else {

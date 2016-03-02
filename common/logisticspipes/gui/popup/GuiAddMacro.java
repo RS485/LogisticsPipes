@@ -42,7 +42,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 	private int wheeldown = 0;
 	private boolean editsearch = false;
 	private boolean editname = false;
-	private LinkedList<ItemIdentifierStack> macroItems = new LinkedList<ItemIdentifierStack>();
+	private LinkedList<ItemIdentifierStack> macroItems = new LinkedList<>();
 	private String name1 = "";
 	private String name2 = "";
 	private String Search1 = "";

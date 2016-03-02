@@ -21,7 +21,7 @@ public class RoutingLaserPacket extends ModernPacket {
 
 	@Setter
 	@Getter
-	List<LaserData> lasers = new ArrayList<LaserData>();
+	List<LaserData> lasers = new ArrayList<>();
 
 	public RoutingLaserPacket(int id) {
 		super(id);

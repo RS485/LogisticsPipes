@@ -27,7 +27,7 @@ public class LogisticsNewPipeItemBoxRenderer {
 
 	private int renderList = -1;
 	private static final ResourceLocation BLOCKS = new ResourceLocation("textures/atlas/blocks.png");
-	private static final Map<FluidIdentifier, int[]> renderLists = new HashMap<FluidIdentifier, int[]>();
+	private static final Map<FluidIdentifier, int[]> renderLists = new HashMap<>();
 
 	public void doRenderItem(ItemStack itemstack, float light, double x, double y, double z, double boxScale, double yaw, double pitch, double yawForPitch) {
 		if(LogisticsNewRenderPipe.innerTransportBox == null) return;

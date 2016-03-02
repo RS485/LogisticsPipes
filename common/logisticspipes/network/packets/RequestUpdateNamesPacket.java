@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
@@ -34,16 +35,14 @@ public class RequestUpdateNamesPacket extends ModernPacket {
 		//XXX stubbed out. How do you enumerate every item now?
 		//Item[] itemList = Item.itemsList;
 		Item[] itemList = new Item[0];
-		List<ItemIdentifier> identList = new LinkedList<ItemIdentifier>();
+		List<ItemIdentifier> identList = new LinkedList<>();
 		for (Item item : itemList) {
 			if (item != null) {
 				for (CreativeTabs tab : item.getCreativeTabs()) {
-					List<ItemStack> list = new ArrayList<ItemStack>();
+					List<ItemStack> list = new ArrayList<>();
 					item.getSubItems(item, tab, list);
 					if (list.size() > 0) {
-						for (ItemStack stack : list) {
-							identList.add(ItemIdentifier.get(stack));
-						}
+						identList.addAll(list.stream().map(ItemIdentifier::get).collect(Collectors.toList()));
 					} else {
 						identList.add(ItemIdentifier.get(item, 0, null));
 					}

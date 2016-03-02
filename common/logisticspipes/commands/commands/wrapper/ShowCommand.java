@@ -37,7 +37,7 @@ public class ShowCommand implements ICommandHandler {
 			return;
 		}
 		String name = args[0];
-		List<AbstractWrapper> list = new ArrayList<AbstractWrapper>(LogisticsWrapperHandler.wrapperController);
+		List<AbstractWrapper> list = new ArrayList<>(LogisticsWrapperHandler.wrapperController);
 		Iterator<AbstractWrapper> iter = list.iterator();
 		while (iter.hasNext()) {
 			AbstractWrapper item = iter.next();

@@ -47,7 +47,7 @@ import net.minecraft.util.ChatComponentText;
 @CCType(name = "LogisticsPipes:Request")
 public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IRequestItems, IRequestAPI {
 
-	private final LinkedList<Map<ItemIdentifier, Integer>> _history = new LinkedList<Map<ItemIdentifier, Integer>>();
+	private final LinkedList<Map<ItemIdentifier, Integer>> _history = new LinkedList<>();
 
 	public PipeItemsRequestLogistics(Item item) {
 		super(item);
@@ -108,10 +108,10 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 	@Override
 	public List<ItemStack> getProvidedItems() {
 		if (stillNeedReplace()) {
-			return new ArrayList<ItemStack>();
+			return new ArrayList<>();
 		}
 		Map<ItemIdentifier, Integer> items = SimpleServiceLocator.logisticsManager.getAvailableItems(getRouter().getIRoutersByCost());
-		List<ItemStack> list = new ArrayList<ItemStack>(items.size());
+		List<ItemStack> list = new ArrayList<>(items.size());
 		for (Entry<ItemIdentifier, Integer> item : items.entrySet()) {
 			ItemStack is = item.getKey().unsafeMakeNormalStack(item.getValue());
 			list.add(is);
@@ -122,10 +122,10 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 	@Override
 	public List<ItemStack> getCraftedItems() {
 		if (stillNeedReplace()) {
-			return new ArrayList<ItemStack>();
+			return new ArrayList<>();
 		}
 		LinkedList<ItemIdentifier> items = SimpleServiceLocator.logisticsManager.getCraftableItems(getRouter().getIRoutersByCost());
-		List<ItemStack> list = new ArrayList<ItemStack>(items.size());
+		List<ItemStack> list = new ArrayList<>(items.size());
 		for (ItemIdentifier item : items) {
 			ItemStack is = item.unsafeMakeNormalStack(0);
 			list.add(is);
@@ -135,8 +135,8 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 
 	@Override
 	public SimulationResult simulateRequest(ItemStack wanted) {
-		final List<IResource> used = new ArrayList<IResource>();
-		final List<IResource> missing = new ArrayList<IResource>();
+		final List<IResource> used = new ArrayList<>();
+		final List<IResource> missing = new ArrayList<>();
 		RequestTree.simulate(ItemIdentifier.get(wanted).makeStack(wanted.stackSize), this, new RequestLog() {
 
 			@Override
@@ -152,8 +152,8 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 				used.addAll(items);
 			}
 		});
-		List<ItemStack> usedList = new ArrayList<ItemStack>(used.size());
-		List<ItemStack> missingList = new ArrayList<ItemStack>(missing.size());
+		List<ItemStack> usedList = new ArrayList<>(used.size());
+		List<ItemStack> missingList = new ArrayList<>(missing.size());
 		for (IResource e : used) {
 			if (e instanceof ItemResource) {
 				usedList.add(((ItemResource) e).getItem().unsafeMakeNormalStack(e.getRequestedAmount()));
@@ -177,7 +177,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 
 	@Override
 	public List<ItemStack> performRequest(ItemStack wanted) {
-		final List<IResource> missing = new ArrayList<IResource>();
+		final List<IResource> missing = new ArrayList<>();
 		RequestTree.request(ItemIdentifier.get(wanted).makeStack(wanted.stackSize), this, new RequestLog() {
 
 			@Override
@@ -191,7 +191,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 			@Override
 			public void handleSucessfullRequestOfList(List<IResource> items, LinkedLogisticsOrderList parts) {}
 		}, null);
-		List<ItemStack> missingList = new ArrayList<ItemStack>(missing.size());
+		List<ItemStack> missingList = new ArrayList<>(missing.size());
 		for (IResource e : missing) {
 			if (e instanceof ItemResource) {
 				missingList.add(((ItemResource) e).getItem().unsafeMakeNormalStack(e.getRequestedAmount()));
@@ -238,10 +238,10 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 	@CCQueued
 	public List<Pair<ItemIdentifier, Integer>> getAvailableItems() {
 		Map<ItemIdentifier, Integer> items = SimpleServiceLocator.logisticsManager.getAvailableItems(getRouter().getIRoutersByCost());
-		List<Pair<ItemIdentifier, Integer>> list = new LinkedList<Pair<ItemIdentifier, Integer>>();
+		List<Pair<ItemIdentifier, Integer>> list = new LinkedList<>();
 		for (Entry<ItemIdentifier, Integer> item : items.entrySet()) {
 			int amount = item.getValue();
-			list.add(new Pair<ItemIdentifier, Integer>(item.getKey(), amount));
+			list.add(new Pair<>(item.getKey(), amount));
 		}
 		return list;
 	}

@@ -81,7 +81,7 @@ import buildcraft.transport.TravelingItem;
 public class PipeTransportLogistics {
 
 	private final int _bufferTimeOut = 20 * 2; // 2 Seconds
-	public final SyncList<Triplet<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>, LPTravelingItemServer>> _itemBuffer = new SyncList<Triplet<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>, LPTravelingItemServer>>();
+	public final SyncList<Triplet<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>, LPTravelingItemServer>> _itemBuffer = new SyncList<>();
 	private Chunk chunk;
 	public LPItemList items = new LPItemList(this);
 	public LogisticsTileGenericPipe container;
@@ -279,7 +279,7 @@ public class PipeTransportLogistics {
 	}
 
 	public ForgeDirection resolveUnroutedDestination(LPTravelingItemServer data) {
-		List<ForgeDirection> dirs = new ArrayList<ForgeDirection>(Arrays.asList(ForgeDirection.VALID_DIRECTIONS));
+		List<ForgeDirection> dirs = new ArrayList<>(Arrays.asList(ForgeDirection.VALID_DIRECTIONS));
 		dirs.remove(data.input.getOpposite());
 		Iterator<ForgeDirection> iter = dirs.iterator();
 		while (iter.hasNext()) {

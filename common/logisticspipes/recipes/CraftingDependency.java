@@ -26,7 +26,7 @@ public enum CraftingDependency {
 	Power_Distribution(Upgrades);
 
 	private CraftingDependency[] dependencies;
-	private List<ItemStack> results = new ArrayList<ItemStack>();
+	private List<ItemStack> results = new ArrayList<>();
 
 	private CraftingDependency(CraftingDependency... dependencies) {
 		this.dependencies = dependencies;

@@ -41,7 +41,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 
 	@Override
 	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
-		ArrayList<ItemStack> list = new ArrayList<ItemStack>();
+		ArrayList<ItemStack> list = new ArrayList<>();
 		return list;
 	}
 
@@ -92,12 +92,12 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 				}
 			}
 			if(!handled) {
-				for(LogisticsTileGenericPipe mainPipe:mainPipeList) {
-					if (mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock()) {
-						DoubleCoordinates mainPipePos = mainPipe.pipe.getLPPosition();
-						mainPipePos.setBlockToAir(world);
-					}
-				}
+				mainPipeList.stream()
+						.filter(mainPipe -> mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock())
+						.forEach(mainPipe -> {
+							DoubleCoordinates mainPipePos = mainPipe.pipe.getLPPosition();
+							mainPipePos.setBlockToAir(world);
+						});
 			}
 		}
 	}
@@ -129,12 +129,9 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 		TileEntity tile = pos.getTileEntity(world);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
-			for(LogisticsTileGenericPipe mainPipe:mainPipeList) {
-				if (mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock()) {
-					LogisticsPipes.LogisticsPipeBlock.addCollisionBoxesToList(world, mainPipe.xCoord, mainPipe.yCoord, mainPipe.zCoord, axisalignedbb, arraylist, entity);
-					//((CoreMultiBlockPipe)((LogisticsTileGenericPipe)mainPipe).pipe).addCollisionBoxesToList(arraylist, axisalignedbb);
-				}
-			}
+			mainPipeList.stream()
+					.filter(mainPipe -> mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock())
+					.forEach(mainPipe -> LogisticsPipes.LogisticsPipeBlock.addCollisionBoxesToList(world, mainPipe.xCoord, mainPipe.yCoord, mainPipe.zCoord, axisalignedbb, arraylist, entity));
 		}
 	}
 

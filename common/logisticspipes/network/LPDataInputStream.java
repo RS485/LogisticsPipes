@@ -61,13 +61,7 @@ public class LPDataInputStream extends DataInputStream {
 		double distanceToDestination = readDouble();
 		double destinationDistanceToRoot = readDouble();
 		int blockDistance = readInt();
-		List<DoubleCoordinates> positions = this.readList(new IReadListObject<DoubleCoordinates>() {
-
-			@Override
-			public DoubleCoordinates readObject(LPDataInputStream data) throws IOException {
-				return data.readLPPosition();
-			}
-		});
+		List<DoubleCoordinates> positions = this.readList(LPDataInputStream::readLPPosition);
 		ExitRoute e = new ExitRoute(root, destination, exitOri, insertOri, destinationDistanceToRoot, connectionDetails, blockDistance);
 		e.distanceToDestination = distanceToDestination;
 		e.debug.filterPosition = positions;
@@ -173,7 +167,7 @@ public class LPDataInputStream extends DataInputStream {
 
 	public <T> List<T> readList(IReadListObject<T> handler) throws IOException {
 		int size = readInt();
-		List<T> list = new ArrayList<T>(size);
+		List<T> list = new ArrayList<>(size);
 		for (int i = 0; i < size; i++) {
 			list.add(handler.readObject(this));
 		}
@@ -195,13 +189,7 @@ public class LPDataInputStream extends DataInputStream {
 		boolean isFinished = readBoolean();
 		boolean inProgress = readBoolean();
 		ResourceType type = this.readEnum(ResourceType.class);
-		List<Float> list = this.readList(new IReadListObject<Float>() {
-
-			@Override
-			public Float readObject(LPDataInputStream data) throws IOException {
-				return data.readFloat();
-			}
-		});
+		List<Float> list = this.readList(DataInputStream::readFloat);
 		byte machineProgress = readByte();
 		DoubleCoordinates pos = readLPPosition();
 		ItemIdentifier ident = readItemIdentifier();
@@ -214,20 +202,8 @@ public class LPDataInputStream extends DataInputStream {
 
 	public LinkedLogisticsOrderList readLinkedLogisticsOrderList() throws IOException {
 		LinkedLogisticsOrderList list = new LinkedLogisticsOrderList();
-		list.addAll(this.readList(new IReadListObject<IOrderInfoProvider>() {
-
-			@Override
-			public IOrderInfoProvider readObject(LPDataInputStream data) throws IOException {
-				return data.readOrderInfo();
-			}
-		}));
-		list.getSubOrders().addAll(this.readList(new IReadListObject<LinkedLogisticsOrderList>() {
-
-			@Override
-			public LinkedLogisticsOrderList readObject(LPDataInputStream data) throws IOException {
-				return data.readLinkedLogisticsOrderList();
-			}
-		}));
+		list.addAll(this.readList(LPDataInputStream::readOrderInfo));
+		list.getSubOrders().addAll(this.readList(LPDataInputStream::readLinkedLogisticsOrderList));
 		return list;
 	}
 

@@ -92,15 +92,11 @@ public class RoutingUpdateTargetResponse extends ModernPacket {
 			} else if (!(((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe)) {
 				player.addChatMessage(new ChatComponentText(ChatColor.RED + "No CoreRoutedPipe found"));
 			} else {
-				LPChatListener.addTask(new Callable<Boolean>() {
-
-					@Override
-					public Boolean call() throws Exception {
-						player.addChatMessage(new ChatComponentText(ChatColor.GREEN + "Starting RoutingTable debug update."));
-						DebugController.instance(player).debug(((ServerRouter) ((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).getRouter()));
-						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
-						return true;
-					}
+				LPChatListener.addTask(() -> {
+					player.addChatMessage(new ChatComponentText(ChatColor.GREEN + "Starting RoutingTable debug update."));
+					DebugController.instance(player).debug(((ServerRouter) ((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).getRouter()));
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
+					return true;
 				}, player);
 				player.addChatMessage(new ChatComponentText(ChatColor.AQUA + "Start RoutingTable debug update ? " + ChatColor.RESET + "<" + ChatColor.GREEN + "yes" + ChatColor.RESET + "/" + ChatColor.RED + "no" + ChatColor.RESET + ">"));
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);

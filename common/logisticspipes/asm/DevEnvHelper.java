@@ -27,6 +27,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 
 import com.google.common.io.Resources;
 import logisticspipes.LPConstants;
@@ -107,13 +108,7 @@ public class DevEnvHelper {
 
 		FMLRelaunchLog.fine("Discovering coremods");
 		File coreMods = (File) setupCoreModDir.invoke(null, mcDir.get(null));
-		FilenameFilter ff = new FilenameFilter() {
-
-			@Override
-			public boolean accept(File dir, String name) {
-				return name.endsWith(".jar");
-			}
-		};
+		FilenameFilter ff = (dir, name) -> name.endsWith(".jar");
 		File[] FMLcoreModListArray = coreMods.listFiles(ff);
 		File versionedModDir = new File(coreMods, "1.7.10");
 		if (versionedModDir.isDirectory()) {
@@ -121,13 +116,13 @@ public class DevEnvHelper {
 			FMLcoreModListArray = ObjectArrays.concat(FMLcoreModListArray, versionedCoreMods, File.class);
 		}
 
-		List<String> FMLcoreModList = new ArrayList<String>();
+		List<String> FMLcoreModList = new ArrayList<>();
 
 		for (File f : FMLcoreModListArray) {
 			FMLcoreModList.add(f.getName());
 		}
 
-		List<File> coreModList = new ArrayList<File>();
+		List<File> coreModList = new ArrayList<>();
 
 		for (URL path : classLoader.getURLs()) {
 			File file = new File(URLDecoder.decode(path.getFile()));
@@ -240,7 +235,7 @@ public class DevEnvHelper {
 		loadersF.setAccessible(true);
 		addURL.setAccessible(true);
 
-		ArrayList<File> modFileList = new ArrayList<File>();
+		ArrayList<File> modFileList = new ArrayList<>();
 		File modsFolder = new File("mods");
 		if (modsFolder.exists()) {
 			File[] modses = modsFolder.listFiles();
@@ -426,19 +421,14 @@ public class DevEnvHelper {
 					DevEnvHelper.processAnnotationList(DevEnvHelper.m, mn.invisibleAnnotations);
 					DevEnvHelper.processAnnotationList(DevEnvHelper.m, mn.invisibleParameterAnnotations);
 
-					for (TryCatchBlockNode tcb : mn.tryCatchBlocks) {
-						if (tcb.type != null) {
-							tcb.type = DevEnvHelper.m.getClass(tcb.type);
-						}
-					}
+					mn.tryCatchBlocks.stream().filter(tcb -> tcb.type != null).forEach(tcb -> tcb.type = DevEnvHelper.m.getClass(tcb.type));
 
 					{
-						Set<String> exceptions = new HashSet<String>(mn.exceptions);
+						Set<String> exceptions = new HashSet<>(mn.exceptions);
 						exceptions.addAll(DevEnvHelper.m.getExceptions(cn.name, mn.name, mn.desc));
 						mn.exceptions.clear();
-						for (String s : exceptions) {
-							mn.exceptions.add(DevEnvHelper.m.getClass(s));
-						}
+						mn.exceptions.addAll(exceptions.stream().map(s -> DevEnvHelper.m.getClass(s))
+								.collect(Collectors.toList()));
 					}
 
 					if (mn.localVariables != null) {
@@ -672,11 +662,11 @@ public class DevEnvHelper {
 
 	public static class Mapping {
 
-		private Map<String, String> classes = new HashMap<String, String>();
-		private Map<String, String> methods = new HashMap<String, String>();
-		private Map<String, String> fields = new HashMap<String, String>();
-		private Map<String, List<String>> exceptions = new HashMap<String, List<String>>();
-		private Map<String, String> classPrefixes = new HashMap<String, String>();
+		private Map<String, String> classes = new HashMap<>();
+		private Map<String, String> methods = new HashMap<>();
+		private Map<String, String> fields = new HashMap<>();
+		private Map<String, List<String>> exceptions = new HashMap<>();
+		private Map<String, String> classPrefixes = new HashMap<>();
 		private String defaultPackage = "";
 
 		public final NameSet fromNS, toNS;
@@ -879,8 +869,8 @@ public class DevEnvHelper {
 		// reverse: mcp -> searge -> obf
 		private Mapping forwardSRG, reverseSRG, forwardCSV, reverseCSV;
 
-		private Map<String, Set<String>> srgMethodOwnersAndDescs = new HashMap<String, Set<String>>(); // SRG name -> SRG owners
-		private Map<String, Set<String>> srgFieldOwners = new HashMap<String, Set<String>>(); // SRG name -> SRG owners
+		private Map<String, Set<String>> srgMethodOwnersAndDescs = new HashMap<>(); // SRG name -> SRG owners
+		private Map<String, Set<String>> srgFieldOwners = new HashMap<>(); // SRG name -> SRG owners
 
 		private ExcFile excFileData;
 
@@ -980,7 +970,7 @@ public class DevEnvHelper {
 
 					Set<String> owners = srgFieldOwners.get(srgName);
 					if (owners == null) {
-						srgFieldOwners.put(srgName, owners = new HashSet<String>());
+						srgFieldOwners.put(srgName, owners = new HashSet<>());
 					}
 					owners.add(srgOwner);
 				}
@@ -1003,7 +993,7 @@ public class DevEnvHelper {
 
 				Set<String> srgMethodOwnersThis = srgMethodOwnersAndDescs.get(srgName);
 				if (srgMethodOwnersThis == null) {
-					srgMethodOwnersAndDescs.put(srgName, srgMethodOwnersThis = new HashSet<String>());
+					srgMethodOwnersAndDescs.put(srgName, srgMethodOwnersThis = new HashSet<>());
 				}
 				srgMethodOwnersThis.add(srgOwner + srgDesc);
 
@@ -1012,7 +1002,7 @@ public class DevEnvHelper {
 
 				String[] srgExceptions = excFileData.getExceptionClasses(srgOwner, srgName, srgDesc);
 				if (srgExceptions.length > 0) {
-					List<String> obfExceptions = new ArrayList<String>();
+					List<String> obfExceptions = new ArrayList<>();
 					for (String s : srgExceptions) {
 						obfExceptions.add(reverseSRG.getClass(s));
 					}
@@ -1096,7 +1086,7 @@ public class DevEnvHelper {
 
 		/** Does not close <var>r</var>. */
 		public static Map<String, String> read(Reader r, int[] n_sides) throws IOException {
-			Map<String, String> data = new HashMap<String, String>();
+			Map<String, String> data = new HashMap<>();
 
 			@SuppressWarnings("resource")
 			Scanner in = new Scanner(r);
@@ -1140,7 +1130,7 @@ public class DevEnvHelper {
 
 	public static class ExcFile {
 
-		public Map<String, String[]> exceptions = new HashMap<String, String[]>();
+		public Map<String, String[]> exceptions = new HashMap<>();
 
 		private static String[] EMPTY_STRING_ARRAY = new String[0];
 
@@ -1227,9 +1217,9 @@ public class DevEnvHelper {
 
 	public static class SrgFile {
 
-		public Map<String, String> classes = new HashMap<String, String>(); // name -> name
-		public Map<String, String> fields = new HashMap<String, String>(); // owner/name -> name
-		public Map<String, String> methods = new HashMap<String, String>(); // owner/namedesc -> name
+		public Map<String, String> classes = new HashMap<>(); // name -> name
+		public Map<String, String> fields = new HashMap<>(); // owner/name -> name
+		public Map<String, String> methods = new HashMap<>(); // owner/namedesc -> name
 
 		public static String getLastComponent(String s) {
 			String[] parts = s.split("/");

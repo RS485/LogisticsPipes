@@ -72,7 +72,7 @@ public class LPBCPipe extends Pipe<LPBCPipeTransportsItems> implements IBCPipePa
 
 	@Override
 	public LinkedList<IActionInternal> getActions() {
-		LinkedList<IActionInternal> result = new LinkedList<IActionInternal>();
+		LinkedList<IActionInternal> result = new LinkedList<>();
 		if (pipe.pipe instanceof CoreRoutedPipe) {
 			if (BuildCraftProxy.LogisticsDisableAction != null) {
 				result.add(BuildCraftProxy.LogisticsDisableAction);
@@ -88,11 +88,9 @@ public class LPBCPipe extends Pipe<LPBCPipeTransportsItems> implements IBCPipePa
 		}
 		((CoreRoutedPipe) pipe.pipe).setEnabled(true);
 		// Activate the actions
-		for (StatementSlot slot : actions) {
-			if (slot.statement instanceof ActionDisableLogistics) {
-				((CoreRoutedPipe) pipe.pipe).setEnabled(false);
-			}
-		}
+		actions.stream()
+				.filter(slot -> slot.statement instanceof ActionDisableLogistics)
+				.forEach(slot -> ((CoreRoutedPipe) pipe.pipe).setEnabled(false));
 	}
 
 	@Override

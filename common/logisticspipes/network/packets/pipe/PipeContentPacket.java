@@ -46,9 +46,9 @@ public class PipeContentPacket extends ModernPacket {
 		}
 		if (content == null) {
 			content = new LPTravelingItemClient(travelId, item);
-			LPTravelingItem.clientList.put(travelId, new WeakReference<LPTravelingItemClient>(content));
+			LPTravelingItem.clientList.put(travelId, new WeakReference<>(content));
 			synchronized (LPTravelingItem.forceKeep) {
-				LPTravelingItem.forceKeep.add(new Pair<Integer, Object>(10, content)); //Keep in memory for min 10 ticks
+				LPTravelingItem.forceKeep.add(new Pair<>(10, content)); //Keep in memory for min 10 ticks
 			}
 		} else {
 			content.setItem(item);

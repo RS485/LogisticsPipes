@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
@@ -106,7 +107,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	private boolean convertFromMeta = false;
 
 	// HUD
-	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<ItemIdentifierStack>();
+	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<>();
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	private HudChassisPipe hud;
 
@@ -128,7 +129,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		if (_cachedAdjacentInventories != null) {
 			return _cachedAdjacentInventories;
 		}
-		List<IInventory> adjacent = new ArrayList<IInventory>(1);
+		List<IInventory> adjacent = new ArrayList<>(1);
 		IInventory adjinv = getRealInventory();
 		if (adjinv != null) {
 			adjacent.add(adjinv);
@@ -606,7 +607,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public Set<ItemIdentifier> getSpecificInterests() {
-		Set<ItemIdentifier> l1 = new TreeSet<ItemIdentifier>();
+		Set<ItemIdentifier> l1 = new TreeSet<>();
 		//if we don't have a pointed inventory we can't be interested in anything
 		if (getRealInventory() == null) {
 			return l1;
@@ -622,9 +623,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 				l1.addAll(items);
 
 				//also add tag-less variants ... we should probably add a module.interestedIgnoringNBT at some point
-				for (ItemIdentifier id : items) {
-					l1.add(id.getIgnoringNBT());
-				}
+				l1.addAll(items.stream().map(ItemIdentifier::getIgnoringNBT).collect(Collectors.toList()));
 
 				boolean modulesInterestedInUndamged = false;
 				for (int i = 0; i < getChassiSize(); i++) {
@@ -634,9 +633,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 					}
 				}
 				if (modulesInterestedInUndamged) {
-					for (ItemIdentifier id : items) {
-						l1.add(id.getUndamaged());
-					}
+					l1.addAll(items.stream().map(ItemIdentifier::getUndamaged).collect(Collectors.toList()));
 				}
 				break; // no need to check other modules for interest in the inventory, when we know that 1 already is.
 			}
@@ -681,7 +678,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	public abstract ResourceLocation getChassiGUITexture();
 
 	/** ICraftItems */
-	public final LinkedList<LogisticsOrder> _extras = new LinkedList<LogisticsOrder>();
+	public final LinkedList<LogisticsOrder> _extras = new LinkedList<>();
 
 	@Override
 	public void registerExtras(IPromise promise) {
@@ -716,7 +713,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 			if (x != null && x instanceof ICraftItems) {
 				if (craftables == null) {
-					craftables = new LinkedList<ItemIdentifierStack>();
+					craftables = new LinkedList<>();
 				}
 				craftables.addAll(((ICraftItems) x).getCraftedItems());
 			}

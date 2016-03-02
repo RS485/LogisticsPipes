@@ -101,7 +101,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 	private ItemIdentifierInventory dummyInventory = new ItemIdentifierInventory(1, "Fluid to keep stocked", 127, true);
 	private int amount = 0;
 
-	private final Map<FluidIdentifier, Integer> _requestedItems = new HashMap<FluidIdentifier, Integer>();
+	private final Map<FluidIdentifier, Integer> _requestedItems = new HashMap<>();
 
 	private boolean _requestPartials = false;
 	private MinMode _bucketMinimum = MinMode.ONEBUCKET;
@@ -134,12 +134,12 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 					}
 
 					//How much do I want?
-					Map<FluidIdentifier, Integer> wantFluids = new HashMap<FluidIdentifier, Integer>();
+					Map<FluidIdentifier, Integer> wantFluids = new HashMap<>();
 					FluidIdentifier fIdent = FluidIdentifier.get(dummyInventory.getIDStackInSlot(0).getItem());
 					wantFluids.put(fIdent, amount);
 
 					//How much do I have?
-					HashMap<FluidIdentifier, Integer> haveFluids = new HashMap<FluidIdentifier, Integer>();
+					HashMap<FluidIdentifier, Integer> haveFluids = new HashMap<>();
 
 					FluidTankInfo[] result = container.getTankInfo(ForgeDirection.UNKNOWN);
 					for (FluidTankInfo slot : result) {

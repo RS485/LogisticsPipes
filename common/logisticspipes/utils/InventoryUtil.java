@@ -57,7 +57,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 
 	@Override
 	public Map<ItemIdentifier, Integer> getItemsAndCount() {
-		Map<ItemIdentifier, Integer> items = new LinkedHashMap<ItemIdentifier, Integer>();
+		Map<ItemIdentifier, Integer> items = new LinkedHashMap<>();
 		for (int i = _cropStart; i < _inventory.getSizeInventory() - _cropEnd; i++) {
 			ItemStack stack = _inventory.getStackInSlot(i);
 			if (stack == null) {
@@ -77,7 +77,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 
 	@Override
 	public Set<ItemIdentifier> getItems() {
-		Set<ItemIdentifier> items = new TreeSet<ItemIdentifier>();
+		Set<ItemIdentifier> items = new TreeSet<>();
 		for (int i = _cropStart; i < _inventory.getSizeInventory() - _cropEnd; i++) {
 			ItemStack stack = _inventory.getStackInSlot(i);
 			if (stack == null) {

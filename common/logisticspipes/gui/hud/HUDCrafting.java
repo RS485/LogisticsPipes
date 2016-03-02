@@ -53,7 +53,7 @@ public class HUDCrafting extends BasicHUDGui {
 			mc.fontRenderer.drawString(message, -16, -10, 0);
 		}
 		GL11.glScalef(0.8F, 0.8F, -1F);
-		List<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>();
+		List<ItemIdentifierStack> list = new ArrayList<>();
 		List<ItemIdentifierStack> craftables = pipe.getCraftedItems();
 		if (craftables != null && craftables.size() > 0) {
 			//TODO: handle multiple crafables.

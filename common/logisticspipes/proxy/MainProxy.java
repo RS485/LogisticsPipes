@@ -46,7 +46,7 @@ public class MainProxy {
 	private static int globalTick;
 	public static EnumMap<Side, FMLEmbeddedChannel> channels;
 
-	private static WeakHashMap<Thread, Side> threadSideMap = new WeakHashMap<Thread, Side>();
+	private static WeakHashMap<Thread, Side> threadSideMap = new WeakHashMap<>();
 	public static final String networkChannelName = "LogisticsPipes";
 
 	private static Side getEffectiveSide() {

@@ -100,12 +100,9 @@ public final class VersionChecker implements Callable<VersionChecker.VersionInfo
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		InputStream inputStream = (InputStream) conn.getContent();
 		String jsonString;
-		Scanner sc = new Scanner(inputStream);
-		try {
+		try (Scanner sc = new Scanner(inputStream)) {
 			sc.useDelimiter("\\A");
 			jsonString = sc.next();
-		} finally {
-			sc.close();
 		}
 
 		Gson gson = new Gson();
@@ -120,7 +117,7 @@ public final class VersionChecker implements Callable<VersionChecker.VersionInfo
 			@SuppressWarnings("unchecked")
 			LinkedTreeMap<String, List<String>> changelog = (LinkedTreeMap<String, List<String>>) part.get("changelog");
 
-			List<String> changeLogList = new ArrayList<String>();
+			List<String> changeLogList = new ArrayList<>();
 			if (changelog != null) {
 				for (String build : changelog.keySet()) {
 					changeLogList.add(build + ": ");

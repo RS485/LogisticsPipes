@@ -29,7 +29,7 @@ public class RequestRunningCraftingTasks extends CoordinatesPacket {
 			return;
 		}
 
-		List<ItemIdentifierStack> items = new ArrayList<ItemIdentifierStack>();
+		List<ItemIdentifierStack> items = new ArrayList<>();
 
 		for (ExitRoute r : pipe.getRouter().getIRoutersByCost()) {
 			if (r == null) {

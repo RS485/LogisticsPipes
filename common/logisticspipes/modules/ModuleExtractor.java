@@ -159,7 +159,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 				continue;
 			}
 			ItemIdentifier slotitem = ItemIdentifier.get(slot);
-			List<Integer> jamList = new LinkedList<Integer>();
+			List<Integer> jamList = new LinkedList<>();
 			Pair<Integer, SinkReply> reply = _service.hasDestination(slotitem, true, jamList);
 			if (reply == null) {
 				continue;
@@ -205,7 +205,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 
 	@Override
 	public List<String> getClientInformation() {
-		List<String> list = new ArrayList<String>(1);
+		List<String> list = new ArrayList<>(1);
 		list.add("Extraction: " + ((_sneakyDirection == ForgeDirection.UNKNOWN) ? "DEFAULT" : _sneakyDirection.name()));
 		return list;
 	}

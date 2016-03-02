@@ -45,13 +45,13 @@ public class GuiRecipeImport extends SubGuiScreen {
 	public GuiRecipeImport(TileEntity tile, ItemStack[][] stacks) {
 		super(150, 200, 0, 0);
 		this.tile = tile;
-		list = new ArrayList<Canidates>();
+		list = new ArrayList<>();
 		for (int i = 0; i < 9; i++) {
 			if (stacks[i] == null) {
 				continue;
 			}
-			Set<ItemIdentifierStack> part = new TreeSet<ItemIdentifierStack>();
-			List<ItemIdentifierStack> order = new ArrayList<ItemIdentifierStack>();
+			Set<ItemIdentifierStack> part = new TreeSet<>();
+			List<ItemIdentifierStack> order = new ArrayList<>();
 			for (ItemStack stack : stacks[i]) {
 				ItemIdentifierStack iStack = ItemIdentifierStack.getFromStack(stack);
 				part.add(iStack);
@@ -216,13 +216,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 		for (final Canidates canidate : list) {
 
 			if (guiLeft + 20 + x * 40 < mouseX && mouseX < guiLeft + 20 + x * 40 + 16 && guiTop + 90 + y * 40 < mouseY && mouseY < guiTop + 90 + y * 40 + 16) {
-				setSubGui(new SelectItemOutOfList(canidate.order, new IHandleItemChoise() {
-
-					@Override
-					public void handleItemChoise(int slot) {
-						canidate.pos = slot;
-					}
-				}));
+				setSubGui(new SelectItemOutOfList(canidate.order, slot -> canidate.pos = slot));
 			}
 
 			x++;

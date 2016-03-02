@@ -109,7 +109,7 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 	}
 
 	public static LinkedList<ItemIdentifierStack> getListFromInventory(IInventory inv, boolean removeNull) {
-		LinkedList<ItemIdentifierStack> list = new LinkedList<ItemIdentifierStack>();
+		LinkedList<ItemIdentifierStack> list = new LinkedList<>();
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
 			if (inv.getStackInSlot(i) == null) {
 				if (!removeNull) {
@@ -123,7 +123,7 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 	}
 
 	public static LinkedList<ItemIdentifierStack> getListSendQueue(LinkedList<Triplet<IRoutedItem, ForgeDirection, ItemSendMode>> _sendQueue) {
-		LinkedList<ItemIdentifierStack> list = new LinkedList<ItemIdentifierStack>();
+		LinkedList<ItemIdentifierStack> list = new LinkedList<>();
 		for (Triplet<IRoutedItem, ForgeDirection, ItemSendMode> part : _sendQueue) {
 			if (part == null) {
 				list.add(null);

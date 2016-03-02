@@ -132,7 +132,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 	// from PipeItemsFluidSupplier
 	private ItemIdentifierInventory dummyInventory = new ItemIdentifierInventory(9, "Fluids to keep stocked", 127);
 
-	private final HashMap<ItemIdentifier, Integer> _requestedItems = new HashMap<ItemIdentifier, Integer>();
+	private final HashMap<ItemIdentifier, Integer> _requestedItems = new HashMap<>();
 
 	private boolean _requestPartials = false;
 
@@ -165,7 +165,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 
 			//How much do I want?
 			Map<ItemIdentifier, Integer> wantContainers = dummyInventory.getItemsAndCount();
-			HashMap<FluidIdentifier, Integer> wantFluids = new HashMap<FluidIdentifier, Integer>();
+			HashMap<FluidIdentifier, Integer> wantFluids = new HashMap<>();
 			for (Entry<ItemIdentifier, Integer> item : wantContainers.entrySet()) {
 				ItemStack wantItem = item.getKey().unsafeMakeNormalStack(1);
 				FluidStack liquidstack = FluidContainerRegistry.getFluidForFilledItem(wantItem);
@@ -176,7 +176,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 			}
 
 			//How much do I have?
-			HashMap<FluidIdentifier, Integer> haveFluids = new HashMap<FluidIdentifier, Integer>();
+			HashMap<FluidIdentifier, Integer> haveFluids = new HashMap<>();
 
 			for (FluidTankInfo slot : result) {
 				if (slot == null || slot.fluid == null || slot.fluid.getFluidID() == 0 || !wantFluids.containsKey(FluidIdentifier.get(slot.fluid))) {

@@ -35,7 +35,7 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 	private static final String PREFIX = "gui.invsyscon.";
 
 	private int page = 0;
-	private final List<ItemIdentifierStack> _allItems = new ArrayList<ItemIdentifierStack>();
+	private final List<ItemIdentifierStack> _allItems = new ArrayList<>();
 	private final PipeItemsInvSysConnector pipe;
 	private int localresistance;
 
@@ -43,21 +43,17 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 		super(180, 200, 0, 0);
 		DummyContainer dummy = new DummyContainer(player.inventory, pipe.inv);
 
-		dummy.addRestrictedSlot(0, pipe.inv, 98, 17, new ISlotCheck() {
-
-			@Override
-			public boolean isStackAllowed(ItemStack itemStack) {
-				if (itemStack == null) {
-					return false;
-				}
-				if (itemStack.getItem() != LogisticsPipes.LogisticsItemCard) {
-					return false;
-				}
-				if (itemStack.getItemDamage() != LogisticsItemCard.FREQ_CARD) {
-					return false;
-				}
-				return true;
+		dummy.addRestrictedSlot(0, pipe.inv, 98, 17, itemStack -> {
+			if (itemStack == null) {
+				return false;
 			}
+			if (itemStack.getItem() != LogisticsPipes.LogisticsItemCard) {
+				return false;
+			}
+			if (itemStack.getItemDamage() != LogisticsItemCard.FREQ_CARD) {
+				return false;
+			}
+			return true;
 		});
 
 		dummy.addNormalSlotsForPlayerInventory(10, 115);

@@ -2,6 +2,7 @@ package logisticspipes.renderer.newpipe;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
@@ -179,7 +180,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 
 		public ForgeDirection getPointer() {
-			List<ForgeDirection> canidates = new ArrayList<ForgeDirection>();
+			List<ForgeDirection> canidates = new ArrayList<>();
 			canidates.add(corner.ew.dir);
 			canidates.add(corner.ns.dir);
 			canidates.add(corner.ud.dir);
@@ -262,22 +263,22 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 	}
 
-	static Map<ForgeDirection, List<IModel3D>> sideNormal = new HashMap<ForgeDirection, List<IModel3D>>();
-	static Map<ForgeDirection, List<IModel3D>> sideBC = new HashMap<ForgeDirection, List<IModel3D>>();
-	static Map<Edge, IModel3D> edges = new HashMap<Edge, IModel3D>();
-	static Map<Corner, List<IModel3D>> corners_M = new HashMap<Corner, List<IModel3D>>();
-	static Map<Corner, List<IModel3D>> corners_I3 = new HashMap<Corner, List<IModel3D>>();
-	static Map<PipeTurnCorner, IModel3D> corners_I = new HashMap<PipeTurnCorner, IModel3D>();
-	static Map<PipeSupport, IModel3D> supports = new HashMap<PipeSupport, IModel3D>();
-	static Map<PipeTurnCorner, IModel3D> spacers = new HashMap<PipeTurnCorner, IModel3D>();
-	static Map<PipeMount, IModel3D> mounts = new HashMap<PipeMount, IModel3D>();
+	static Map<ForgeDirection, List<IModel3D>> sideNormal = new HashMap<>();
+	static Map<ForgeDirection, List<IModel3D>> sideBC = new HashMap<>();
+	static Map<Edge, IModel3D> edges = new HashMap<>();
+	static Map<Corner, List<IModel3D>> corners_M = new HashMap<>();
+	static Map<Corner, List<IModel3D>> corners_I3 = new HashMap<>();
+	static Map<PipeTurnCorner, IModel3D> corners_I = new HashMap<>();
+	static Map<PipeSupport, IModel3D> supports = new HashMap<>();
+	static Map<PipeTurnCorner, IModel3D> spacers = new HashMap<>();
+	static Map<PipeMount, IModel3D> mounts = new HashMap<>();
 
-	static Map<ForgeDirection, List<IModel3D>> texturePlate_Inner = new HashMap<ForgeDirection, List<IModel3D>>();
-	static Map<ForgeDirection, List<IModel3D>> texturePlate_Outer = new HashMap<ForgeDirection, List<IModel3D>>();
-	static Map<ForgeDirection, Quartet<List<IModel3D>, List<IModel3D>, List<IModel3D>, List<IModel3D>>> sideTexturePlate = new HashMap<ForgeDirection, Quartet<List<IModel3D>, List<IModel3D>, List<IModel3D>, List<IModel3D>>>();
-	static Map<PipeMount, List<IModel3D>> textureConnectorPlate = new HashMap<PipeMount, List<IModel3D>>();
+	static Map<ForgeDirection, List<IModel3D>> texturePlate_Inner = new HashMap<>();
+	static Map<ForgeDirection, List<IModel3D>> texturePlate_Outer = new HashMap<>();
+	static Map<ForgeDirection, Quartet<List<IModel3D>, List<IModel3D>, List<IModel3D>, List<IModel3D>>> sideTexturePlate = new HashMap<>();
+	static Map<PipeMount, List<IModel3D>> textureConnectorPlate = new HashMap<>();
 
-	static Map<ScaleObject, IModel3D> scaleMap = new HashMap<ScaleObject, IModel3D>();
+	static Map<ScaleObject, IModel3D> scaleMap = new HashMap<>();
 
 	@Data
 	@AllArgsConstructor
@@ -308,26 +309,22 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			List<IModel3D> highlightList = new ArrayList<>();
 
 			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-				LogisticsNewRenderPipe.sideNormal.put(dir, new ArrayList<IModel3D>());
+				LogisticsNewRenderPipe.sideNormal.put(dir, new ArrayList<>());
 				String grp = "Side_" + LogisticsNewRenderPipe.getDirAsString_Type1(dir);
-				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
-					if (entry.getKey().contains(" " + grp + " ") || entry.getKey().endsWith(" " + grp)) {
-						LogisticsNewRenderPipe.sideNormal.get(dir).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
-					}
-				}
+				pipePartModels.entrySet().stream()
+						.filter(entry -> entry.getKey().contains(" " + grp + " ") || entry.getKey().endsWith(" " + grp))
+						.forEach(entry -> LogisticsNewRenderPipe.sideNormal.get(dir).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0)))));
 				if (LogisticsNewRenderPipe.sideNormal.get(dir).size() != 4) {
 					throw new RuntimeException("Couldn't load " + dir.name() + " (" + grp + "). Only loaded " + LogisticsNewRenderPipe.sideNormal.get(dir).size());
 				}
 			}
 
 			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-				LogisticsNewRenderPipe.sideBC.put(dir, new ArrayList<IModel3D>());
+				LogisticsNewRenderPipe.sideBC.put(dir, new ArrayList<>());
 				String grp = "Side_BC_" + LogisticsNewRenderPipe.getDirAsString_Type1(dir);
-				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
-					if (entry.getKey().contains(" " + grp + " ") || entry.getKey().endsWith(" " + grp)) {
-						LogisticsNewRenderPipe.sideBC.get(dir).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
-					}
-				}
+				pipePartModels.entrySet().stream()
+						.filter(entry -> entry.getKey().contains(" " + grp + " ") || entry.getKey().endsWith(" " + grp))
+						.forEach(entry -> LogisticsNewRenderPipe.sideBC.get(dir).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0)))));
 				if (LogisticsNewRenderPipe.sideBC.get(dir).size() != 8) {
 					throw new RuntimeException("Couldn't load " + dir.name() + " (" + grp + "). Only loaded " + LogisticsNewRenderPipe.sideBC.get(dir).size());
 				}
@@ -353,13 +350,11 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			}
 
 			for (Corner corner : Corner.values()) {
-				LogisticsNewRenderPipe.corners_M.put(corner, new ArrayList<IModel3D>());
+				LogisticsNewRenderPipe.corners_M.put(corner, new ArrayList<>());
 				String grp = "Corner_M_" + corner.ud.s + "_" + corner.ns.s + corner.ew.s;
-				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
-					if (entry.getKey().contains(" " + grp + " ") || entry.getKey().endsWith(" " + grp)) {
-						LogisticsNewRenderPipe.corners_M.get(corner).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
-					}
-				}
+				pipePartModels.entrySet().stream()
+						.filter(entry -> entry.getKey().contains(" " + grp + " ") || entry.getKey().endsWith(" " + grp))
+						.forEach(entry -> LogisticsNewRenderPipe.corners_M.get(corner).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0)))));
 				if (LogisticsNewRenderPipe.corners_M.get(corner).size() != 2) {
 					throw new RuntimeException("Couldn't load " + corner.name() + " (" + grp + "). Only loaded " + LogisticsNewRenderPipe.corners_M.get(corner).size());
 				}
@@ -367,13 +362,11 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			}
 
 			for (Corner corner : Corner.values()) {
-				LogisticsNewRenderPipe.corners_I3.put(corner, new ArrayList<IModel3D>());
+				LogisticsNewRenderPipe.corners_I3.put(corner, new ArrayList<>());
 				String grp = "Corner_I3_" + corner.ud.s + "_" + corner.ns.s + corner.ew.s;
-				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
-					if (entry.getKey().contains(" " + grp + " ") || entry.getKey().endsWith(" " + grp)) {
-						LogisticsNewRenderPipe.corners_I3.get(corner).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
-					}
-				}
+				pipePartModels.entrySet().stream()
+						.filter(entry -> entry.getKey().contains(" " + grp + " ") || entry.getKey().endsWith(" " + grp))
+						.forEach(entry -> LogisticsNewRenderPipe.corners_I3.get(corner).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0)))));
 				if (LogisticsNewRenderPipe.corners_I3.get(corner).size() != 2) {
 					throw new RuntimeException("Couldn't load " + corner.name() + " (" + grp + "). Only loaded " + LogisticsNewRenderPipe.corners_I3.get(corner).size());
 				}
@@ -453,33 +446,27 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			}
 
 			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-				LogisticsNewRenderPipe.texturePlate_Inner.put(dir, new ArrayList<IModel3D>());
+				LogisticsNewRenderPipe.texturePlate_Inner.put(dir, new ArrayList<>());
 				String grp = "Inner_Plate_" + LogisticsNewRenderPipe.getDirAsString_Type1(dir);
-				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
-					if (entry.getKey().contains(" " + grp)) {
-						LogisticsNewRenderPipe.texturePlate_Inner.get(dir).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
-					}
-				}
+				pipePartModels.entrySet().stream().filter(entry -> entry.getKey().contains(" " + grp))
+						.forEach(entry -> LogisticsNewRenderPipe.texturePlate_Inner.get(dir).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0)))));
 				if (LogisticsNewRenderPipe.texturePlate_Inner.get(dir).size() != 2) {
 					throw new RuntimeException("Couldn't load " + dir.name() + " (" + grp + "). Only loaded " + LogisticsNewRenderPipe.texturePlate_Inner.get(dir).size());
 				}
 			}
 
 			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-				LogisticsNewRenderPipe.texturePlate_Outer.put(dir, new ArrayList<IModel3D>());
+				LogisticsNewRenderPipe.texturePlate_Outer.put(dir, new ArrayList<>());
 				String grp = "Texture_Plate_" + LogisticsNewRenderPipe.getDirAsString_Type1(dir);
-				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
-					if (entry.getKey().contains(" " + grp)) {
-						LogisticsNewRenderPipe.texturePlate_Outer.get(dir).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0)).apply(new LPTranslation(-0.5, -0.5, -0.5)).apply(new LPScale(1.001D)).apply(new LPTranslation(0.5, 0.5, 0.5))));
-					}
-				}
+				pipePartModels.entrySet().stream().filter(entry -> entry.getKey().contains(" " + grp))
+						.forEach(entry -> LogisticsNewRenderPipe.texturePlate_Outer.get(dir).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0)).apply(new LPTranslation(-0.5, -0.5, -0.5)).apply(new LPScale(1.001D)).apply(new LPTranslation(0.5, 0.5, 0.5)))));
 				if (LogisticsNewRenderPipe.texturePlate_Outer.get(dir).size() != 2) {
 					throw new RuntimeException("Couldn't load " + dir.name() + " (" + grp + "). Only loaded " + LogisticsNewRenderPipe.texturePlate_Outer.get(dir).size());
 				}
 			}
 
 			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-				LogisticsNewRenderPipe.sideTexturePlate.put(dir, new Quartet<List<IModel3D>, List<IModel3D>, List<IModel3D>, List<IModel3D>>(new ArrayList<IModel3D>(), new ArrayList<IModel3D>(), new ArrayList<IModel3D>(), new ArrayList<IModel3D>()));
+				LogisticsNewRenderPipe.sideTexturePlate.put(dir, new Quartet<>(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>()));
 				String grp = "Texture_Side_" + LogisticsNewRenderPipe.getDirAsString_Type1(dir);
 				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
 					if (entry.getKey().contains(" " + grp)) {
@@ -520,13 +507,11 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			}
 
 			for (PipeMount mount : PipeMount.values()) {
-				LogisticsNewRenderPipe.textureConnectorPlate.put(mount, new ArrayList<IModel3D>());
+				LogisticsNewRenderPipe.textureConnectorPlate.put(mount, new ArrayList<>());
 				String grp = "Texture_Connector_" + LogisticsNewRenderPipe.getDirAsString_Type1(mount.dir) + "_" + LogisticsNewRenderPipe.getDirAsString_Type1(mount.side);
-				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
-					if (entry.getKey().contains(" " + grp + " ") || entry.getKey().endsWith(" " + grp)) {
-						LogisticsNewRenderPipe.textureConnectorPlate.get(mount).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
-					}
-				}
+				pipePartModels.entrySet().stream()
+						.filter(entry -> entry.getKey().contains(" " + grp + " ") || entry.getKey().endsWith(" " + grp))
+						.forEach(entry -> LogisticsNewRenderPipe.textureConnectorPlate.get(mount).add(LogisticsNewRenderPipe.compute(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0)))));
 				if (LogisticsNewRenderPipe.textureConnectorPlate.get(mount).size() != 4) {
 					throw new RuntimeException("Couldn't load " + mount.name() + " (" + grp + "). Only loaded " + LogisticsNewRenderPipe.textureConnectorPlate.get(mount).size());
 				}
@@ -614,7 +599,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			renderState.forceRenderOldPipe = false;
 			boolean recalculateList = false;
 			if (renderState.cachedRenderer == null) {
-				List<RenderEntry> objectsToRender = new ArrayList<RenderEntry>();
+				List<RenderEntry> objectsToRender = new ArrayList<>();
 
 				if (pipeTile.pipe != null && pipeTile.pipe.actAsNormalPipe()) {
 					fillObjectsToRenderList(objectsToRender, pipeTile, renderState);
@@ -685,9 +670,9 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 	}
 
 	private void fillObjectsToRenderList(List<RenderEntry> objectsToRender, LogisticsTileGenericPipe pipeTile, PipeRenderState renderState) {
-		List<Edge> edgesToRender = new ArrayList<Edge>(Arrays.asList(Edge.values()));
-		Map<Corner, Integer> connectionAtCorner = new HashMap<Corner, Integer>();
-		List<PipeMount> mountCanidates = new ArrayList<PipeMount>(Arrays.asList(PipeMount.values()));
+		List<Edge> edgesToRender = new ArrayList<>(Arrays.asList(Edge.values()));
+		Map<Corner, Integer> connectionAtCorner = new HashMap<>();
+		List<PipeMount> mountCanidates = new ArrayList<>(Arrays.asList(PipeMount.values()));
 
 		int connectionCount = 0;
 
@@ -823,13 +808,12 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			}
 		}
 
-		for (Edge edge : edgesToRender) {
-			objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.edges.get(edge), new I3DOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
-		}
+		objectsToRender.addAll(edgesToRender.stream()
+				.map(edge -> new RenderEntry(LogisticsNewRenderPipe.edges.get(edge), new I3DOperation[]{LogisticsNewRenderPipe.basicPipeTexture})).collect(Collectors.toList()));
 
 		for (int i = 0; i < 6; i += 2) {
 			ForgeDirection dir = ForgeDirection.getOrientation(i);
-			List<ForgeDirection> list = new ArrayList<ForgeDirection>(Arrays.asList(ForgeDirection.VALID_DIRECTIONS));
+			List<ForgeDirection> list = new ArrayList<>(Arrays.asList(ForgeDirection.VALID_DIRECTIONS));
 			list.remove(dir);
 			list.remove(dir.getOpposite());
 			if (renderState.pipeConnectionMatrix.isConnected(dir) && renderState.pipeConnectionMatrix.isConnected(dir.getOpposite())) {
@@ -907,9 +891,9 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 				new RuntimeException("Trying to render " + mountCanidates.size() + " Mounts").printStackTrace();
 			}
 
-			for (PipeMount mount : mountCanidates) {
-				objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.mounts.get(mount), new I3DOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
-			}
+			objectsToRender.addAll(mountCanidates.stream()
+					.map(mount -> new RenderEntry(LogisticsNewRenderPipe.mounts.get(mount), new I3DOperation[]{LogisticsNewRenderPipe.basicPipeTexture}))
+					.collect(Collectors.toList()));
 		}
 
 		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
@@ -925,14 +909,14 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		if (renderState.textureMatrix.isFluid()) {
 			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
 				if (!renderState.pipeConnectionMatrix.isConnected(dir)) {
-					for (IModel3D model : LogisticsNewRenderPipe.texturePlate_Inner.get(dir)) {
-						objectsToRender.add(new RenderEntry(model, new I3DOperation[] { LogisticsNewRenderPipe.glassCenterTexture }));
-					}
+					objectsToRender.addAll(LogisticsNewRenderPipe.texturePlate_Inner.get(dir).stream()
+							.map(model -> new RenderEntry(model, new I3DOperation[]{LogisticsNewRenderPipe.glassCenterTexture}))
+							.collect(Collectors.toList()));
 				} else {
 					if (!renderState.textureMatrix.isRoutedInDir(dir)) {
-						for (IModel3D model : LogisticsNewRenderPipe.sideTexturePlate.get(dir).getValue1()) {
-							objectsToRender.add(new RenderEntry(model, new I3DOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
-						}
+						objectsToRender.addAll(LogisticsNewRenderPipe.sideTexturePlate.get(dir).getValue1().stream()
+								.map(model -> new RenderEntry(model, new I3DOperation[]{LogisticsNewRenderPipe.basicPipeTexture}))
+								.collect(Collectors.toList()));
 					}
 				}
 			}
@@ -953,7 +937,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		if (mountCanidates.size() <= 2) {
 			return;
 		}
-		List<ForgeDirection> keep = new ArrayList<ForgeDirection>();
+		List<ForgeDirection> keep = new ArrayList<>();
 		if (sides[2] && sides[3]) {
 			keep.add(ForgeDirection.NORTH);
 			keep.add(ForgeDirection.SOUTH);
@@ -985,9 +969,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 
 	private void reduceToOnePerSide(List<PipeMount> mountCanidates, ForgeDirection dir, ForgeDirection pref) {
 		boolean found = false;
-		Iterator<PipeMount> iter = mountCanidates.iterator();
-		while (iter.hasNext()) {
-			PipeMount mount = iter.next();
+		for (PipeMount mount : mountCanidates) {
 			if (mount.dir != dir) {
 				continue;
 			}
@@ -998,7 +980,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		if (!found) {
 			reduceToOnePerSide(mountCanidates, dir);
 		} else {
-			iter = mountCanidates.iterator();
+			Iterator<PipeMount> iter = mountCanidates.iterator();
 			while (iter.hasNext()) {
 				PipeMount mount = iter.next();
 				if (mount.dir != dir) {
@@ -1029,9 +1011,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 
 	private void removeIfHasOponentSide(List<PipeMount> mountCanidates) {
 		boolean sides[] = new boolean[6];
-		Iterator<PipeMount> iter = mountCanidates.iterator();
-		while (iter.hasNext()) {
-			PipeMount mount = iter.next();
+		for (PipeMount mount : mountCanidates) {
 			sides[mount.dir.ordinal()] = true;
 		}
 		if (sides[2] && sides[3]) {
@@ -1049,9 +1029,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 
 	private void removeIfHasConnectedSide(List<PipeMount> mountCanidates) {
 		boolean sides[] = new boolean[6];
-		Iterator<PipeMount> iter = mountCanidates.iterator();
-		while (iter.hasNext()) {
-			PipeMount mount = iter.next();
+		for (PipeMount mount : mountCanidates) {
 			sides[mount.dir.ordinal()] = true;
 		}
 		for (int i = 2; i < 6; i++) {
@@ -1079,9 +1057,9 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 	}
 
 	public static void renderBoxWithDir(ForgeDirection dir) {
-		List<RenderEntry> objectsToRender = new ArrayList<RenderEntry>();
-		List<Edge> edgesToRender = new ArrayList<Edge>(Arrays.asList(Edge.values()));
-		Map<Corner, Integer> connectionAtCorner = new HashMap<Corner, Integer>();
+		List<RenderEntry> objectsToRender = new ArrayList<>();
+		List<Edge> edgesToRender = new ArrayList<>(Arrays.asList(Edge.values()));
+		Map<Corner, Integer> connectionAtCorner = new HashMap<>();
 
 		for (Edge edge : Edge.values()) {
 			if (edge.part1 == dir || edge.part2 == dir) {
@@ -1101,9 +1079,9 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			IIconTransformation cornerTexture = LogisticsNewRenderPipe.basicPipeTexture;
 			int count = connectionAtCorner.containsKey(corner) ? connectionAtCorner.get(corner) : 0;
 			if (count == 0) {
-				for (IModel3D model : LogisticsNewRenderPipe.corners_M.get(corner)) {
-					objectsToRender.add(new RenderEntry(model, new I3DOperation[] { cornerTexture }));
-				}
+				objectsToRender.addAll(LogisticsNewRenderPipe.corners_M.get(corner).stream()
+						.map(model -> new RenderEntry(model, new I3DOperation[]{cornerTexture}))
+						.collect(Collectors.toList()));
 			} else if (count == 1) {
 				for (PipeTurnCorner turn : PipeTurnCorner.values()) {
 					if (turn.corner != corner) {
@@ -1125,15 +1103,15 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 					}
 				}
 			} else if (count == 3) {
-				for (IModel3D model : LogisticsNewRenderPipe.corners_I3.get(corner)) {
-					objectsToRender.add(new RenderEntry(model, new I3DOperation[] { cornerTexture }));
-				}
+				objectsToRender.addAll(LogisticsNewRenderPipe.corners_I3.get(corner).stream()
+						.map(model -> new RenderEntry(model, new I3DOperation[]{cornerTexture}))
+						.collect(Collectors.toList()));
 			}
 		}
 
-		for (Edge edge : edgesToRender) {
-			objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.edges.get(edge), new I3DOperation[] { LogisticsNewRenderPipe.basicPipeTexture }));
-		}
+		objectsToRender.addAll(edgesToRender.stream()
+				.map(edge -> new RenderEntry(LogisticsNewRenderPipe.edges.get(edge), new I3DOperation[]{LogisticsNewRenderPipe.basicPipeTexture}))
+				.collect(Collectors.toList()));
 		for (RenderEntry model : objectsToRender) {
 			model.getModel().render(model.getOperations());
 		}

@@ -38,7 +38,7 @@ public class PipeTransportLayer extends TransportLayer {
 
 		List<AdjacentTileEntity> adjacentEntities = new WorldCoordinatesWrapper(routedPipe.container)
 				.getConnectedAdjacentTileEntities(IPipeInformationProvider.ConnectionPipeType.ITEM).collect(Collectors.toList());
-		LinkedList<ForgeDirection> possibleForgeDirection = new LinkedList<ForgeDirection>();
+		LinkedList<ForgeDirection> possibleForgeDirection = new LinkedList<>();
 
 		// 1st prio, deliver to adjacent IInventories
 

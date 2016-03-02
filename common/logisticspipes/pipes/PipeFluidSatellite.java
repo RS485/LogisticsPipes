@@ -49,8 +49,8 @@ import net.minecraftforge.fluids.IFluidHandler;
 public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid, IRequireReliableFluidTransport, IHeadUpDisplayRendererProvider, IChestContentReceiver {
 
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
-	public final LinkedList<ItemIdentifierStack> itemList = new LinkedList<ItemIdentifierStack>();
-	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
+	public final LinkedList<ItemIdentifierStack> itemList = new LinkedList<>();
+	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<>();
 	private final HUDSatellite HUD = new HUDSatellite(this);
 
 	public PipeFluidSatellite(Item item) {
@@ -174,14 +174,14 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	}
 
 	// from baseLogicLiquidSatellite
-	public static HashSet<PipeFluidSatellite> AllSatellites = new HashSet<PipeFluidSatellite>();
+	public static HashSet<PipeFluidSatellite> AllSatellites = new HashSet<>();
 
 	// called only on server shutdown
 	public static void cleanup() {
 		PipeFluidSatellite.AllSatellites.clear();
 	}
 
-	protected final Map<FluidIdentifier, Integer> _lostItems = new HashMap<FluidIdentifier, Integer>();
+	protected final Map<FluidIdentifier, Integer> _lostItems = new HashMap<>();
 
 	public int satelliteId;
 

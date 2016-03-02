@@ -34,30 +34,26 @@ public class ClassTileMultiBlockHandler {
 			FMLCommonHandler.instance().exitJava(1, true);
 		}
 
-		for (FieldNode f : node.fields) {
-			if (f.name.equals("duct")) {
-				f.access |= Opcodes.ACC_PUBLIC;
-			}
-		}
+		node.fields.stream().filter(f -> f.name.equals("duct")).forEach(f -> f.access |= Opcodes.ACC_PUBLIC);
 
-		for (MethodNode m : node.methods) {
-			if (m.name.equals("getAdjTileEntitySafe") && m.desc.equals("(I)Lnet/minecraft/tileentity/TileEntity;")) {
-				MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+		node.methods.stream().filter(m -> m.name.equals("getAdjTileEntitySafe") && m.desc.equals("(I)Lnet/minecraft/tileentity/TileEntity;"))
+				.forEach(m -> {
+					MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions
+							.toArray(new String[0])) {
 
-					@Override
-					public void visitInsn(int opcode) {
-						if (opcode == Opcodes.ARETURN) {
-							visitVarInsn(Opcodes.ILOAD, 1);
-							visitVarInsn(Opcodes.ALOAD, 0);
-							this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/td/ThermalDynamicsHooks", "checkGetTileEntity", "(Lnet/minecraft/tileentity/TileEntity;ILcofh/thermaldynamics/block/TileTDBase;)Lnet/minecraft/tileentity/TileEntity;", false);
+						@Override
+						public void visitInsn(int opcode) {
+							if (opcode == Opcodes.ARETURN) {
+								visitVarInsn(Opcodes.ILOAD, 1);
+								visitVarInsn(Opcodes.ALOAD, 0);
+								this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/td/ThermalDynamicsHooks", "checkGetTileEntity", "(Lnet/minecraft/tileentity/TileEntity;ILcofh/thermaldynamics/block/TileTDBase;)Lnet/minecraft/tileentity/TileEntity;", false);
+							}
+							super.visitInsn(opcode);
 						}
-						super.visitInsn(opcode);
-					}
-				};
-				m.accept(mv);
-				node.methods.set(node.methods.indexOf(m), mv);
-			}
-		}
+					};
+					m.accept(mv);
+					node.methods.set(node.methods.indexOf(m), mv);
+				});
 
 		ClassWriter writer = new ClassWriter(0/*ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES*/);
 		node.accept(writer);

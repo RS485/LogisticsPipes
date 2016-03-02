@@ -33,8 +33,8 @@ import org.objectweb.asm.tree.MethodNode;
 
 public class LogisticsClassTransformer implements IClassTransformer {
 
-	public List<String> interfacesToClearA = new ArrayList<String>();
-	public List<String> interfacesToClearB = new ArrayList<String>();
+	public List<String> interfacesToClearA = new ArrayList<>();
+	public List<String> interfacesToClearB = new ArrayList<>();
 	private LaunchClassLoader cl = (LaunchClassLoader) LogisticsClassTransformer.class.getClassLoader();
 	private Field negativeResourceCache;
 	private Field invalidClasses;
@@ -193,7 +193,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 				}
 			}
 		}
-		List<MethodNode> methodsToRemove = new ArrayList<MethodNode>();
+		List<MethodNode> methodsToRemove = new ArrayList<>();
 		for (MethodNode m : node.methods) {
 			if (m.visibleAnnotations != null) {
 				for (AnnotationNode a : m.visibleAnnotations) {
@@ -273,7 +273,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 		for (MethodNode m : methodsToRemove) {
 			node.methods.remove(m);
 		}
-		List<FieldNode> fieldsToRemove = new ArrayList<FieldNode>();
+		List<FieldNode> fieldsToRemove = new ArrayList<>();
 		for (FieldNode f : node.fields) {
 			if (f.visibleAnnotations != null) {
 				for (AnnotationNode a : f.visibleAnnotations) {

@@ -50,8 +50,8 @@ public class ItemDisplay {
 	private static final int PANELSIZEY = 20;
 
 	private ItemIdentifierStack selectedItem = null;
-	public final LinkedList<ItemIdentifierStack> _allItems = new LinkedList<ItemIdentifierStack>();
-	private final Map<Pair<Integer, Integer>, ItemIdentifierStack> map = new HashMap<Pair<Integer, Integer>, ItemIdentifierStack>();
+	public final LinkedList<ItemIdentifierStack> _allItems = new LinkedList<>();
+	private final Map<Pair<Integer, Integer>, ItemIdentifierStack> map = new HashMap<>();
 
 	@Getter
 	private int page = 0;
@@ -288,7 +288,7 @@ public class ItemDisplay {
 				int realX = x - 2;
 				int realY = y - 2;
 
-				Pair<Integer, Integer> pair = new Pair<Integer, Integer>(realX, realY);
+				Pair<Integer, Integer> pair = new Pair<>(realX, realY);
 				if (map.get(pair) != itemIdentifierStack) {
 					map.put(pair, itemIdentifierStack);
 				}

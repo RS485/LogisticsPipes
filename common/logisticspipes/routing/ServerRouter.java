@@ -27,6 +27,7 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 import logisticspipes.LPConstants;
 import logisticspipes.api.ILogisticsPowerProvider;
@@ -75,12 +76,12 @@ import lombok.Setter;
 public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 	// things with specific interests -- providers (including crafters)
-	static HashMap<ItemIdentifier, Set<IRouter>> _globalSpecificInterests = new HashMap<ItemIdentifier, Set<IRouter>>();
+	static HashMap<ItemIdentifier, Set<IRouter>> _globalSpecificInterests = new HashMap<>();
 	// things potentially interested in every item (chassi with generic sinks)
-	static Set<IRouter> _genericInterests = new TreeSet<IRouter>();
+	static Set<IRouter> _genericInterests = new TreeSet<>();
 
 	// things this pipe is interested in (either providing or sinking)
-	Set<ItemIdentifier> _hasInterestIn = new TreeSet<ItemIdentifier>();
+	Set<ItemIdentifier> _hasInterestIn = new TreeSet<>();
 	boolean _hasGenericInterest;
 
 	static final int REFRESH_TIME = 20;
@@ -206,11 +207,11 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	}
 
 	// these are maps, not hashMaps because they are unmodifiable Collections to avoid concurrentModification exceptions.
-	public Map<CoreRoutedPipe, ExitRoute> _adjacent = new HashMap<CoreRoutedPipe, ExitRoute>();
-	public Map<IRouter, ExitRoute> _adjacentRouter = new HashMap<IRouter, ExitRoute>();
-	public Map<IRouter, ExitRoute> _adjacentRouter_Old = new HashMap<IRouter, ExitRoute>();
-	public List<Pair<ILogisticsPowerProvider, List<IFilter>>> _powerAdjacent = new ArrayList<Pair<ILogisticsPowerProvider, List<IFilter>>>();
-	public List<Pair<ISubSystemPowerProvider, List<IFilter>>> _subSystemPowerAdjacent = new ArrayList<Pair<ISubSystemPowerProvider, List<IFilter>>>();
+	public Map<CoreRoutedPipe, ExitRoute> _adjacent = new HashMap<>();
+	public Map<IRouter, ExitRoute> _adjacentRouter = new HashMap<>();
+	public Map<IRouter, ExitRoute> _adjacentRouter_Old = new HashMap<>();
+	public List<Pair<ILogisticsPowerProvider, List<IFilter>>> _powerAdjacent = new ArrayList<>();
+	public List<Pair<ISubSystemPowerProvider, List<IFilter>>> _subSystemPowerAdjacent = new ArrayList<>();
 
 	public boolean[] sideDisconnected = new boolean[6];
 
@@ -231,13 +232,13 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	protected static LSA[] SharedLSADatabase = new LSA[0];
 
 	/** Map of router -> orientation for all known destinations **/
-	public List<List<ExitRoute>> _routeTable = Collections.unmodifiableList(new ArrayList<List<ExitRoute>>());
-	public List<ExitRoute> _routeCosts = Collections.unmodifiableList(new ArrayList<ExitRoute>());
-	public List<Pair<ILogisticsPowerProvider, List<IFilter>>> _LPPowerTable = Collections.unmodifiableList(new ArrayList<Pair<ILogisticsPowerProvider, List<IFilter>>>());
-	public List<Pair<ISubSystemPowerProvider, List<IFilter>>> _SubSystemPowerTable = Collections.unmodifiableList(new ArrayList<Pair<ISubSystemPowerProvider, List<IFilter>>>());
+	public List<List<ExitRoute>> _routeTable = Collections.unmodifiableList(new ArrayList<>());
+	public List<ExitRoute> _routeCosts = Collections.unmodifiableList(new ArrayList<>());
+	public List<Pair<ILogisticsPowerProvider, List<IFilter>>> _LPPowerTable = Collections.unmodifiableList(new ArrayList<>());
+	public List<Pair<ISubSystemPowerProvider, List<IFilter>>> _SubSystemPowerTable = Collections.unmodifiableList(new ArrayList<>());
 
 	private EnumSet<ForgeDirection> _routedExits = EnumSet.noneOf(ForgeDirection.class);
-	private EnumMap<ForgeDirection, Integer> _subPowerExits = new EnumMap<ForgeDirection, Integer>(ForgeDirection.class);
+	private EnumMap<ForgeDirection, Integer> _subPowerExits = new EnumMap<>(ForgeDirection.class);
 
 	private static int firstFreeId = 1;
 	private static BitSet simpleIdUsedSet = new BitSet();
@@ -257,7 +258,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	private boolean destroied = false;
 
 	private WeakReference<CoreRoutedPipe> _myPipeCache = null;
-	private LinkedList<Pair<Integer, IRouterQueuedTask>> queue = new LinkedList<Pair<Integer, IRouterQueuedTask>>();
+	private LinkedList<Pair<Integer, IRouterQueuedTask>> queue = new LinkedList<>();
 
 	@Override
 	public void clearPipeCache() {
@@ -306,8 +307,8 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		_zCoord = zCoord;
 		clearPipeCache();
 		_myLsa = new LSA();
-		_myLsa.neighboursWithMetric = new HashMap<IRouter, Quartet<Double, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>>();
-		_myLsa.power = new ArrayList<Pair<ILogisticsPowerProvider, List<IFilter>>>();
+		_myLsa.neighboursWithMetric = new HashMap<>();
+		_myLsa.power = new ArrayList<>();
 		ServerRouter.SharedLSADatabasewriteLock.lock(); // any time after we claim the SimpleID, the database could be accessed at that index
 		simpleID = ServerRouter.claimSimpleID();
 		if (ServerRouter.SharedLSADatabase.length <= simpleID) {
@@ -363,7 +364,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
 			return null;
 		}
-		_myPipeCache = new WeakReference<CoreRoutedPipe>((CoreRoutedPipe) pipe.pipe);
+		_myPipeCache = new WeakReference<>((CoreRoutedPipe) pipe.pipe);
 
 		return (CoreRoutedPipe) pipe.pipe;
 	}
@@ -415,7 +416,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	}
 
 	private int connectionNeedsChecking = 0;
-	private List<DoubleCoordinates> causedBy = new LinkedList<DoubleCoordinates>();
+	private List<DoubleCoordinates> causedBy = new LinkedList<>();
 
 	private ITileEntityChangeListener localChangeListener = new ITileEntityChangeListener() {
 
@@ -450,8 +451,8 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		}
 	};
 
-	private Set<List<ITileEntityChangeListener>> listenedPipes = new HashSet<List<ITileEntityChangeListener>>();
-	private Set<LPTileEntityObject> oldTouchedPipes = new HashSet<LPTileEntityObject>();
+	private Set<List<ITileEntityChangeListener>> listenedPipes = new HashSet<>();
+	private Set<LPTileEntityObject> oldTouchedPipes = new HashSet<>();
 
 	/**
 	 * Rechecks the piped connection to all adjacent routers as well as discover
@@ -487,30 +488,22 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		subSystemPower = finder.subPowerProvider;
 		adjacent = finder.result;
 
-		Map<ForgeDirection, List<CoreRoutedPipe>> pipeDirections = new HashMap<ForgeDirection, List<CoreRoutedPipe>>();
+		Map<ForgeDirection, List<CoreRoutedPipe>> pipeDirections = new HashMap<>();
 
 		for (Entry<CoreRoutedPipe, ExitRoute> entry : adjacent.entrySet()) {
 			List<CoreRoutedPipe> list = pipeDirections.get(entry.getValue().exitOrientation);
 			if (list == null) {
-				list = new ArrayList<CoreRoutedPipe>();
+				list = new ArrayList<>();
 				pipeDirections.put(entry.getValue().exitOrientation, list);
 			}
 			list.add(entry.getKey());
 		}
 
-		for (Entry<ForgeDirection, List<CoreRoutedPipe>> entry : pipeDirections.entrySet()) {
-			if (entry.getValue().size() > Configs.MAX_UNROUTED_CONNECTIONS) {
-				for (CoreRoutedPipe pipe : entry.getValue()) {
-					adjacent.remove(pipe);
-				}
-			}
-		}
+		pipeDirections.entrySet().stream()
+				.filter(entry -> entry.getValue().size() > Configs.MAX_UNROUTED_CONNECTIONS)
+				.forEach(entry -> entry.getValue().forEach(adjacent::remove));
 
-		for (List<ITileEntityChangeListener> list : listenedPipes) {
-			if (!finder.listenedPipes.contains(list)) {
-				list.remove(localChangeListener);
-			}
-		}
+		listenedPipes.stream().filter(list -> !finder.listenedPipes.contains(list)).forEach(list -> list.remove(localChangeListener));
 		listenedPipes = finder.listenedPipes;
 
 		for (CoreRoutedPipe pipe : adjacent.keySet()) {
@@ -614,9 +607,9 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		}
 
 		if (adjacentChanged) {
-			HashMap<IRouter, ExitRoute> adjacentRouter = new HashMap<IRouter, ExitRoute>();
+			HashMap<IRouter, ExitRoute> adjacentRouter = new HashMap<>();
 			EnumSet<ForgeDirection> routedexits = EnumSet.noneOf(ForgeDirection.class);
-			EnumMap<ForgeDirection, Integer> subpowerexits = new EnumMap<ForgeDirection, Integer>(ForgeDirection.class);
+			EnumMap<ForgeDirection, Integer> subpowerexits = new EnumMap<>(ForgeDirection.class);
 			for (Entry<CoreRoutedPipe, ExitRoute> pipe : adjacent.entrySet()) {
 				adjacentRouter.put(pipe.getKey().getRouter(), pipe.getValue());
 				if ((pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRouteTo) || pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom) && !routedexits.contains(pipe.getValue().exitOrientation))) {
@@ -652,7 +645,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			return;
 		}
 		UUID id = pipe.getSecurityID();
-		List<CoreRoutedPipe> toRemove = new ArrayList<CoreRoutedPipe>();
+		List<CoreRoutedPipe> toRemove = new ArrayList<>();
 		if (id != null) {
 			for (Entry<CoreRoutedPipe, ExitRoute> entry : adjacent.entrySet()) {
 				if (!entry.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRouteTo) && !entry.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom)) {
@@ -673,32 +666,30 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 					}
 				}
 			}
-			for (Entry<CoreRoutedPipe, ExitRoute> entry : adjacent.entrySet()) {
-				if (sideDisconnected[entry.getValue().exitOrientation.ordinal()]) {
-					toRemove.add(entry.getKey());
-				}
-			}
-			for (CoreRoutedPipe remove : toRemove) {
-				adjacent.remove(remove);
-			}
+			toRemove.addAll(adjacent.entrySet().stream()
+					.filter(entry -> sideDisconnected[entry.getValue().exitOrientation.ordinal()])
+					.map(Entry<CoreRoutedPipe, ExitRoute>::getKey).collect(Collectors.toList()));
+			toRemove.forEach(adjacent::remove);
 		}
 	}
 
 	private void SendNewLSA() {
-		HashMap<IRouter, Quartet<Double, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>> neighboursWithMetric = new HashMap<IRouter, Quartet<Double, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>>();
+		HashMap<IRouter, Quartet<Double, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>> neighboursWithMetric = new HashMap<>();
 		for (Entry<IRouter, ExitRoute> adjacent : _adjacentRouter.entrySet()) {
-			neighboursWithMetric.put(adjacent.getKey(), new Quartet<Double, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>(adjacent.getValue().distanceToDestination, adjacent.getValue().connectionDetails, adjacent.getValue().filters, adjacent.getValue().blockDistance));
+			neighboursWithMetric.put(adjacent.getKey(), new Quartet<>(adjacent
+					.getValue().distanceToDestination, adjacent.getValue().connectionDetails, adjacent
+					.getValue().filters, adjacent.getValue().blockDistance));
 		}
 		ArrayList<Pair<ILogisticsPowerProvider, List<IFilter>>> power = null;
 		if (_powerAdjacent != null) {
-			power = new ArrayList<Pair<ILogisticsPowerProvider, List<IFilter>>>();
+			power = new ArrayList<>();
 			for (Pair<ILogisticsPowerProvider, List<IFilter>> provider : _powerAdjacent) {
 				power.add(provider);
 			}
 		}
 		ArrayList<Pair<ISubSystemPowerProvider, List<IFilter>>> subSystemPower = null;
 		if (_subSystemPowerAdjacent != null) {
-			subSystemPower = new ArrayList<Pair<ISubSystemPowerProvider, List<IFilter>>>();
+			subSystemPower = new ArrayList<>();
 			for (Pair<ISubSystemPowerProvider, List<IFilter>> provider : _subSystemPowerAdjacent) {
 				subSystemPower.add(provider);
 			}
@@ -744,37 +735,38 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		 * same info as above, but sorted by distance -- sorting is implicit,
 		 * because Dijkstra finds the closest routes first.
 		 **/
-		List<ExitRoute> routeCosts = new ArrayList<ExitRoute>(routingTableSize);
+		List<ExitRoute> routeCosts = new ArrayList<>(routingTableSize);
 
 		//Add the current Router
 		routeCosts.add(new ExitRoute(this, this, ForgeDirection.UNKNOWN, ForgeDirection.UNKNOWN, 0, EnumSet.allOf(PipeRoutingConnectionType.class), 0));
 
 		ArrayList<Pair<ILogisticsPowerProvider, List<IFilter>>> powerTable;
 		if (_powerAdjacent != null) {
-			powerTable = new ArrayList<Pair<ILogisticsPowerProvider, List<IFilter>>>(_powerAdjacent);
+			powerTable = new ArrayList<>(_powerAdjacent);
 		} else {
-			powerTable = new ArrayList<Pair<ILogisticsPowerProvider, List<IFilter>>>(5);
+			powerTable = new ArrayList<>(5);
 		}
 		ArrayList<Pair<ISubSystemPowerProvider, List<IFilter>>> subSystemPower;
 		if (_subSystemPowerAdjacent != null) {
-			subSystemPower = new ArrayList<Pair<ISubSystemPowerProvider, List<IFilter>>>(_subSystemPowerAdjacent);
+			subSystemPower = new ArrayList<>(_subSystemPowerAdjacent);
 		} else {
-			subSystemPower = new ArrayList<Pair<ISubSystemPowerProvider, List<IFilter>>>(5);
+			subSystemPower = new ArrayList<>(5);
 		}
 
 		//space and time inefficient, a bitset with 3 bits per node would save a lot but makes the main iteration look like a complete mess
-		ArrayList<EnumSet<PipeRoutingConnectionType>> closedSet = new ArrayList<EnumSet<PipeRoutingConnectionType>>(ServerRouter.getBiggestSimpleID());
+		ArrayList<EnumSet<PipeRoutingConnectionType>> closedSet = new ArrayList<>(ServerRouter.getBiggestSimpleID());
 		for (int i = 0; i < ServerRouter.getBiggestSimpleID(); i++) {
 			closedSet.add(null);
 		}
 
-		ArrayList<EnumMap<PipeRoutingConnectionType, List<List<IFilter>>>> filterList = new ArrayList<EnumMap<PipeRoutingConnectionType, List<List<IFilter>>>>(ServerRouter.getBiggestSimpleID());
+		ArrayList<EnumMap<PipeRoutingConnectionType, List<List<IFilter>>>> filterList = new ArrayList<>(ServerRouter
+				.getBiggestSimpleID());
 		for (int i = 0; i < ServerRouter.getBiggestSimpleID(); i++) {
 			filterList.add(null);
 		}
 
 		/** The total cost for the candidate route **/
-		PriorityQueue<ExitRoute> candidatesCost = new PriorityQueue<ExitRoute>((int) Math.sqrt(routingTableSize)); // sqrt nodes is a good guess for the total number of candidate nodes at once.
+		PriorityQueue<ExitRoute> candidatesCost = new PriorityQueue<>((int) Math.sqrt(routingTableSize)); // sqrt nodes is a good guess for the total number of candidate nodes at once.
 
 		//Init candidates
 		// the shortest way to go to an adjacent item is the adjacent item.
@@ -782,7 +774,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			ExitRoute currentE = pipe.getValue();
 			IRouter newRouter = pipe.getKey();
 			if (newRouter != null) {
-				ExitRoute newER = new ExitRoute(newRouter, newRouter, currentE.distanceToDestination, currentE.connectionDetails, currentE.filters, new ArrayList<IFilter>(0), currentE.blockDistance);
+				ExitRoute newER = new ExitRoute(newRouter, newRouter, currentE.distanceToDestination, currentE.connectionDetails, currentE.filters, new ArrayList<>(0), currentE.blockDistance);
 				candidatesCost.add(newER);
 				debug.newCanidate(newER);
 			}
@@ -875,7 +867,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 				if (lsa.power != null && (lsa.power.isEmpty() == false)) {
 					for (Pair<ILogisticsPowerProvider, List<IFilter>> p : lsa.power) {
 						Pair<ILogisticsPowerProvider, List<IFilter>> entry = p.copy();
-						List<IFilter> list = new ArrayList<IFilter>();
+						List<IFilter> list = new ArrayList<>();
 						list.addAll(p.getValue2());
 						list.addAll(lowestCostNode.filters);
 						entry.setValue2(Collections.unmodifiableList(list));
@@ -889,7 +881,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 				if (lsa.subSystemPower != null && (lsa.subSystemPower.isEmpty() == false)) {
 					for (Pair<ISubSystemPowerProvider, List<IFilter>> p : lsa.subSystemPower) {
 						Pair<ISubSystemPowerProvider, List<IFilter>> entry = p.copy();
-						List<IFilter> list = new ArrayList<IFilter>();
+						List<IFilter> list = new ArrayList<>();
 						list.addAll(p.getValue2());
 						list.addAll(lowestCostNode.filters);
 						entry.setValue2(Collections.unmodifiableList(list));
@@ -899,9 +891,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 					}
 				}
 			}
-			Iterator<Entry<IRouter, Quartet<Double, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>>> it = lsa.neighboursWithMetric.entrySet().iterator();
-			while (it.hasNext()) {
-				Entry<IRouter, Quartet<Double, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>> newCandidate = it.next();
+			for (Entry<IRouter, Quartet<Double, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>> newCandidate : lsa.neighboursWithMetric.entrySet()) {
 				double candidateCost = lowestCostNode.distanceToDestination + newCandidate.getValue().getValue1();
 				int blockDistance = lowestCostNode.blockDistance + newCandidate.getValue().getValue4();
 				EnumSet<PipeRoutingConnectionType> newCT = lowestCostNode.getFlags();
@@ -923,14 +913,14 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			}
 			EnumMap<PipeRoutingConnectionType, List<List<IFilter>>> map = filterList.get(lowestCostNode.destination.getSimpleID());
 			if (map == null) {
-				map = new EnumMap<PipeRoutingConnectionType, List<List<IFilter>>>(PipeRoutingConnectionType.class);
+				map = new EnumMap<>(PipeRoutingConnectionType.class);
 				filterList.set(lowestCostNode.destination.getSimpleID(), map);
 			}
 			for (PipeRoutingConnectionType type : lowestCostNode.getFlagsNoCopy()) {
 				if (!map.containsKey(type)) {
-					map.put(type, new ArrayList<List<IFilter>>());
+					map.put(type, new ArrayList<>());
 				}
-				map.get(type).add(Collections.unmodifiableList(new ArrayList<IFilter>(lowestCostNode.filters)));
+				map.get(type).add(Collections.unmodifiableList(new ArrayList<>(lowestCostNode.filters)));
 			}
 			if (lowestCostNode.filters.isEmpty()) {
 				closedSet.set(lowestCostNode.destination.getSimpleID(), lowestCostClosedFlags);
@@ -949,15 +939,14 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		debug.stepOneDone();
 
 		//Build route table
-		ArrayList<List<ExitRoute>> routeTable = new ArrayList<List<ExitRoute>>(ServerRouter.getBiggestSimpleID() + 1);
+		ArrayList<List<ExitRoute>> routeTable = new ArrayList<>(ServerRouter.getBiggestSimpleID() + 1);
 		while (simpleID >= routeTable.size()) {
 			routeTable.add(null);
 		}
-		routeTable.set(simpleID, new OneList<ExitRoute>(new ExitRoute(this, this, ForgeDirection.UNKNOWN, ForgeDirection.UNKNOWN, 0, EnumSet.allOf(PipeRoutingConnectionType.class), 0)));
+		routeTable.set(simpleID, new OneList<>(new ExitRoute(this, this, ForgeDirection.UNKNOWN, ForgeDirection.UNKNOWN, 0, EnumSet
+				.allOf(PipeRoutingConnectionType.class), 0)));
 
-		Iterator<ExitRoute> itr = routeCosts.iterator();
-		while (itr.hasNext()) {
-			ExitRoute node = itr.next();
+		for (ExitRoute node : routeCosts) {
 			IRouter firstHop = node.root;
 			ExitRoute hop = _adjacentRouter.get(firstHop);
 			if (hop == null) {
@@ -965,18 +954,19 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			}
 			node.root = this; // replace the root with this, rather than the first hop.
 			node.exitOrientation = hop.exitOrientation;
-			while (node.destination.getSimpleID() >= routeTable.size()) { // the array will not expand, as it is init'd to contain enough elements
+			while (node.destination.getSimpleID() >= routeTable
+					.size()) { // the array will not expand, as it is init'd to contain enough elements
 				routeTable.add(null);
 			}
 
 			List<ExitRoute> current = routeTable.get(node.destination.getSimpleID());
 			if (current != null && !current.isEmpty()) {
-				List<ExitRoute> list = new ArrayList<ExitRoute>();
+				List<ExitRoute> list = new ArrayList<>();
 				list.addAll(current);
 				list.add(node);
 				routeTable.set(node.destination.getSimpleID(), Collections.unmodifiableList(list));
 			} else {
-				routeTable.set(node.destination.getSimpleID(), new OneList<ExitRoute>(node));
+				routeTable.set(node.destination.getSimpleID(), new OneList<>(node));
 			}
 		}
 		debug.stepTwoDone();
@@ -1045,9 +1035,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 	private void removeAllInterests() {
 		removeGenericInterest();
-		for (ItemIdentifier i : _hasInterestIn) {
-			removeInterest(i);
-		}
+		_hasInterestIn.forEach(this::removeInterest);
 		_hasInterestIn.clear();
 	}
 
@@ -1141,7 +1129,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		for (IRouter r : _adjacentRouter_Old.keySet()) {
 			r.act(visited, new flagForLSAUpdate());
 		}
-		_adjacentRouter_Old = new HashMap<IRouter, ExitRoute>();
+		_adjacentRouter_Old = new HashMap<>();
 		act(visited, new flagForLSAUpdate());
 	}
 
@@ -1317,7 +1305,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		}
 		Set<ItemIdentifier> newInterests = pipe.getSpecificInterests();
 		if (newInterests == null) {
-			newInterests = new TreeSet<ItemIdentifier>();
+			newInterests = new TreeSet<>();
 		}
 		if (!newInterests.equals(_hasInterestIn)) {
 			for (ItemIdentifier i : _hasInterestIn) {
@@ -1325,11 +1313,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 					removeInterest(i);
 				}
 			}
-			for (ItemIdentifier i : newInterests) {
-				if (!_hasInterestIn.contains(i)) {
-					addInterest(i);
-				}
-			}
+			newInterests.stream().filter(i -> !_hasInterestIn.contains(i)).forEach(this::addInterest);
 			_hasInterestIn = newInterests;
 		}
 	}
@@ -1347,7 +1331,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	private void addInterest(ItemIdentifier items) {
 		Set<IRouter> interests = ServerRouter._globalSpecificInterests.get(items);
 		if (interests == null) {
-			interests = new TreeSet<IRouter>();
+			interests = new TreeSet<>();
 			ServerRouter._globalSpecificInterests.put(items, interests);
 		}
 		interests.add(this);
@@ -1435,13 +1419,12 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 					s.set(r.getSimpleID());
 				}
 			}
-			for (Entry<ItemIdentifier, Set<IRouter>> entry : ServerRouter._globalSpecificInterests.entrySet()) {
-				if (dict.matches(entry.getKey(), IResource.MatchSettings.NORMAL)) {
-					for (IRouter r : entry.getValue()) {
-						s.set(r.getSimpleID());
-					}
+			ServerRouter._globalSpecificInterests.entrySet().stream()
+					.filter(entry -> dict.matches(entry.getKey(), IResource.MatchSettings.NORMAL)).forEach(entry -> {
+				for (IRouter r : entry.getValue()) {
+					s.set(r.getSimpleID());
 				}
-			}
+			});
 			return s;
 		}
 		return new BitSet(ServerRouter.getBiggestSimpleID() + 1);
@@ -1457,10 +1440,10 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		ensureRouteTableIsUpToDate(true);
 		int id = r.getSimpleID();
 		if (_routeTable.size() <= id) {
-			return new ArrayList<ExitRoute>(0);
+			return new ArrayList<>(0);
 		}
 		List<ExitRoute> result = _routeTable.get(id);
-		return result != null ? result : new ArrayList<ExitRoute>(0);
+		return result != null ? result : new ArrayList<>(0);
 	}
 
 	public static Map<ItemIdentifier, Set<IRouter>> getInterestedInSpecifics() {
@@ -1505,12 +1488,9 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 	@Override
 	public List<ExitRoute> getRoutersOnSide(ForgeDirection direction) {
-		List<ExitRoute> routers = new ArrayList<ExitRoute>();
-		for (ExitRoute exit : _adjacentRouter.values()) {
-			if (exit.exitOrientation == direction) {
-				routers.add(exit);
-			}
-		}
+		List<ExitRoute> routers = _adjacentRouter.values().stream()
+				.filter(exit -> exit.exitOrientation == direction)
+				.collect(Collectors.toList());
 		return routers;
 	}
 
@@ -1521,6 +1501,6 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 	@Override
 	public void queueTask(int i, IRouterQueuedTask callable) {
-		queue.add(new Pair<Integer, IRouterQueuedTask>(i + MainProxy.getGlobalTick(), callable));
+		queue.add(new Pair<>(i + MainProxy.getGlobalTick(), callable));
 	}
 }

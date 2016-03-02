@@ -115,13 +115,7 @@ public class BuildCraftProxy implements IBCProxy {
 			f.setAccessible(true);
 			EntityItem item = (EntityItem) f.get(renderer);
 			item.hoverStart = 0;
-		} catch (NoSuchFieldException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		} catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException | SecurityException e) {
 			e.printStackTrace();
 		}
 	}
@@ -252,11 +246,7 @@ public class BuildCraftProxy implements IBCProxy {
 		}
 		try {
 			return (Boolean) canPipeConnect.invoke(pipe, with, side);
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
+		} catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e) {
 			e.printStackTrace();
 		}
 		return false;

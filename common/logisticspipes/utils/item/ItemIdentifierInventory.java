@@ -45,16 +45,16 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 	private final HashSet<ItemIdentifier> _contentsUndamagedNoNBTSet;
 	private final boolean isLiquidInvnetory;
 
-	private final LinkedList<ISimpleInventoryEventHandler> _listener = new LinkedList<ISimpleInventoryEventHandler>();
+	private final LinkedList<ISimpleInventoryEventHandler> _listener = new LinkedList<>();
 
 	public ItemIdentifierInventory(int size, String name, int stackLimit, boolean liquidInv) {
 		_contents = new ItemIdentifierStack[size];
 		_name = name;
 		_stackLimit = stackLimit;
-		_contentsMap = new HashMap<ItemIdentifier, Integer>((int) (size * 1.5));
-		_contentsUndamagedSet = new HashSet<ItemIdentifier>((int) (size * 1.5));
-		_contentsNoNBTSet = new HashSet<ItemIdentifier>((int) (size * 1.5));
-		_contentsUndamagedNoNBTSet = new HashSet<ItemIdentifier>((int) (size * 1.5));
+		_contentsMap = new HashMap<>((int) (size * 1.5));
+		_contentsUndamagedSet = new HashSet<>((int) (size * 1.5));
+		_contentsNoNBTSet = new HashSet<>((int) (size * 1.5));
+		_contentsUndamagedNoNBTSet = new HashSet<>((int) (size * 1.5));
 		isLiquidInvnetory = liquidInv;
 	}
 
@@ -508,7 +508,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 			@Override
 			public Pair<ItemIdentifierStack, Integer> next() {
 				pos++;
-				return new Pair<ItemIdentifierStack, Integer>(iter.next(), pos);
+				return new Pair<>(iter.next(), pos);
 			}
 
 			@Override

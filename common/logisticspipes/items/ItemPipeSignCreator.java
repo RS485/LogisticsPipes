@@ -27,7 +27,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemPipeSignCreator extends LogisticsItem {
 
-	public static final List<Class<? extends IPipeSign>> signTypes = new ArrayList<Class<? extends IPipeSign>>();
+	public static final List<Class<? extends IPipeSign>> signTypes = new ArrayList<>();
 
 	private IIcon[] itemIcon = new IIcon[2];
 
@@ -85,9 +85,7 @@ public class ItemPipeSignCreator extends LogisticsItem {
 					} else {
 						return false;
 					}
-				} catch (InstantiationException e) {
-					throw new RuntimeException(e);
-				} catch (IllegalAccessException e) {
+				} catch (InstantiationException | IllegalAccessException e) {
 					throw new RuntimeException(e);
 				}
 			} else {

@@ -211,7 +211,8 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 			Iterable<Route> paramIterable = routes.outputRoutes;
 			Route route = null;
 			Object cache = null;
-			Triplet<Integer, ItemIdentifier, Boolean> key = new Triplet<Integer, ItemIdentifier, Boolean>(id, item.getItemIdentifierStack().getItem(), serverItem.getInfo()._transportMode == TransportMode.Active);
+			Triplet<Integer, ItemIdentifier, Boolean> key = new Triplet<>(id, item.getItemIdentifierStack()
+					.getItem(), serverItem.getInfo()._transportMode == TransportMode.Active);
 			if (duct instanceof ILPTEInformation && ((ILPTEInformation) duct).getObject() != null) {
 				cache = ((ILPTEInformation) duct).getObject().getCacheHolder().getCacheFor(CacheTypes.Routing, key);
 			}
@@ -223,7 +224,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 			}
 			if (route == null) {
 				Pair<Double, Route> closesedConnection = null;
-				List<DoubleCoordinates> visited = new ArrayList<DoubleCoordinates>();
+				List<DoubleCoordinates> visited = new ArrayList<>();
 				visited.add(new DoubleCoordinates(from));
 				for (Route localRoute1 : paramIterable) {
 					if (localRoute1.endPoint instanceof LPItemDuct) {
@@ -246,7 +247,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 						visited.remove(pos);
 
 						if (distance != Integer.MAX_VALUE && (closesedConnection == null || distance + localRoute1.pathDirections.size() < closesedConnection.getValue1())) {
-							closesedConnection = new Pair<Double, Route>(distance + localRoute1.pathWeight, localRoute1);
+							closesedConnection = new Pair<>(distance + localRoute1.pathWeight, localRoute1);
 						}
 					}
 				}
@@ -287,7 +288,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 
 	@Override
 	public List<RouteInfo> getConnectedPipes(ForgeDirection from) {
-		List<RouteInfo> list = new ArrayList<RouteInfo>();
+		List<RouteInfo> list = new ArrayList<>();
 		if (duct.internalGrid == null) {
 			return null;
 		}

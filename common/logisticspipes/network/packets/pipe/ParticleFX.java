@@ -41,7 +41,7 @@ public class ParticleFX extends CoordinatesPacket {
 	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);
 		int nparticles = data.readInt();
-		particles = new ArrayList<ParticleCount>(nparticles);
+		particles = new ArrayList<>(nparticles);
 		for (int i = 0; i < nparticles; i++) {
 			int particle = data.readByte();
 			int amount = data.readInt();

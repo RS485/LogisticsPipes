@@ -39,24 +39,14 @@ public class SolderingStationGui extends CoordinatesGuiProvider {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				final int slotNumber = i * 3 + j;
-				dummy.addRestrictedSlot(slotNumber, tile, 44 + (j * 18), 17 + (i * 18), new ISlotCheck() {
-
-					@Override
-					public boolean isStackAllowed(ItemStack itemStack) {
-						return tile.checkSlot(itemStack, slotNumber);
-					}
+				dummy.addRestrictedSlot(slotNumber, tile, 44 + (j * 18), 17 + (i * 18), itemStack -> {
+					return tile.checkSlot(itemStack, slotNumber);
 				});
 			}
 		}
 		dummy.addRestrictedSlot(9, tile, 107, 17, Items.iron_ingot);
 		dummy.addRestrictedSlot(10, tile, 141, 47, (Item) null);
-		dummy.addRestrictedSlot(11, tile, 9, 9, new ISlotCheck() {
-
-			@Override
-			public boolean isStackAllowed(ItemStack itemStack) {
-				return tile.getRecipeForTaget(itemStack) != null && tile.areStacksEmpty();
-			}
-		});
+		dummy.addRestrictedSlot(11, tile, 9, 9, itemStack -> tile.getRecipeForTaget(itemStack) != null && tile.areStacksEmpty());
 		dummy.addNormalSlotsForPlayerInventory(8, 84);
 		return dummy;
 	}

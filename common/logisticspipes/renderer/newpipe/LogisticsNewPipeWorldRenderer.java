@@ -58,7 +58,7 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 				return false;
 			}
 			if (requestBlock == null || true) {
-				requestBlock = new HashMap<BlockRotation, IModel3D>();
+				requestBlock = new HashMap<>();
 				for (BlockRotation rot : BlockRotation.values()) {
 					requestBlock.put(rot, LogisticsNewSolidBlockWorldRenderer.block.get(rot).copy().apply(new LPScale(0.999)).apply(new LPTranslation(0.0005, 0.0005, 0.0005)));
 				}

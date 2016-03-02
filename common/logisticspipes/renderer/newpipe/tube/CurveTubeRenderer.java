@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ITubeOrientation;
@@ -42,11 +43,11 @@ public class CurveTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacem
 	}
 
 	//Tube Models
-	static Map<TurnDirection, List<IModel3D>> tubeTurnBase = new HashMap<TurnDirection, List<IModel3D>>();
-	static Map<TurnDirection, Map<Pair<TubeMount, Integer>, IModel3D>> tubeTurnMounts = new HashMap<TurnDirection, Map<Pair<TubeMount, Integer>, IModel3D>>();
+	static Map<TurnDirection, List<IModel3D>> tubeTurnBase = new HashMap<>();
+	static Map<TurnDirection, Map<Pair<TubeMount, Integer>, IModel3D>> tubeTurnMounts = new HashMap<>();
 
 	//Tube global Access
-	public static Map<TurnDirection, IModel3D> tubeCurve = new HashMap<TurnDirection, IModel3D>();
+	public static Map<TurnDirection, IModel3D> tubeCurve = new HashMap<>();
 
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/blocks/pipes/HS-Tube.png");
 
@@ -60,16 +61,16 @@ public class CurveTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacem
 
 			//tubeTurnMounts
 			for (TurnDirection turn : TurnDirection.values()) {
-				CurveTubeRenderer.tubeTurnBase.put(turn, new ArrayList<IModel3D>());
+				CurveTubeRenderer.tubeTurnBase.put(turn, new ArrayList<>());
 			}
-			for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
-				if (entry.getKey().startsWith("Lane ") || entry.getKey().contains(" Lane ") || entry.getKey().endsWith(" Lane")) {
-					CurveTubeRenderer.tubeTurnBase.get(TurnDirection.SOUTH_WEST).add(LogisticsNewRenderPipe.compute(entry.getValue().twoFacedCopy().apply(new LPTranslation(0.0, 0.0, 0.0)).apply(new LPRotation(-Math.PI / 2, 0, 1, 0))));
-					CurveTubeRenderer.tubeTurnBase.get(TurnDirection.EAST_SOUTH).add(LogisticsNewRenderPipe.compute(entry.getValue().twoFacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
-					CurveTubeRenderer.tubeTurnBase.get(TurnDirection.NORTH_EAST).add(LogisticsNewRenderPipe.compute(entry.getValue().twoFacedCopy().apply(new LPTranslation(-1.0, 0.0, 1.0)).apply(new LPRotation(Math.PI / 2, 0, 1, 0))));
-					CurveTubeRenderer.tubeTurnBase.get(TurnDirection.WEST_NORTH).add(LogisticsNewRenderPipe.compute(entry.getValue().twoFacedCopy().apply(new LPTranslation(-1.0, 0.0, 0.0)).apply(new LPRotation(Math.PI, 0, 1, 0))));
-				}
-			}
+			pipePartModels.entrySet().stream()
+					.filter(entry -> entry.getKey().startsWith("Lane ") || entry.getKey().contains(" Lane ") || entry.getKey().endsWith(" Lane"))
+					.forEach(entry -> {
+						CurveTubeRenderer.tubeTurnBase.get(TurnDirection.SOUTH_WEST).add(LogisticsNewRenderPipe.compute(entry.getValue().twoFacedCopy().apply(new LPTranslation(0.0, 0.0, 0.0)).apply(new LPRotation(-Math.PI / 2, 0, 1, 0))));
+						CurveTubeRenderer.tubeTurnBase.get(TurnDirection.EAST_SOUTH).add(LogisticsNewRenderPipe.compute(entry.getValue().twoFacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
+						CurveTubeRenderer.tubeTurnBase.get(TurnDirection.NORTH_EAST).add(LogisticsNewRenderPipe.compute(entry.getValue().twoFacedCopy().apply(new LPTranslation(-1.0, 0.0, 1.0)).apply(new LPRotation(Math.PI / 2, 0, 1, 0))));
+						CurveTubeRenderer.tubeTurnBase.get(TurnDirection.WEST_NORTH).add(LogisticsNewRenderPipe.compute(entry.getValue().twoFacedCopy().apply(new LPTranslation(-1.0, 0.0, 0.0)).apply(new LPRotation(Math.PI, 0, 1, 0))));
+					});
 			if (CurveTubeRenderer.tubeTurnBase.get(TurnDirection.NORTH_EAST).size() != 4) {
 				throw new RuntimeException("Couldn't load Tube Lanes. Only loaded " + CurveTubeRenderer.tubeTurnBase.get(TurnDirection.NORTH_EAST).size());
 			}
@@ -88,9 +89,10 @@ public class CurveTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacem
 		if (pipe instanceof HSTubeCurve) {
 			HSTubeCurve tube = (HSTubeCurve) pipe;
 			if (tube.getOrientation() != null) {
-				for (IModel3D model : CurveTubeRenderer.tubeTurnBase.get(tube.getOrientation().getRenderOrientation())) {
-					objectsToRender.add(new RenderEntry(model, new I3DOperation[] { new LPUVTransformationList(new LPUVTranslation(0, 0)) }, CurveTubeRenderer.TEXTURE));
-				}
+				objectsToRender.addAll(CurveTubeRenderer.tubeTurnBase.get(tube.getOrientation().getRenderOrientation())
+						.stream()
+						.map(model -> new RenderEntry(model, new I3DOperation[]{new LPUVTransformationList(new LPUVTranslation(0, 0))}, CurveTubeRenderer.TEXTURE))
+						.collect(Collectors.toList()));
 			}
 		}
 	}

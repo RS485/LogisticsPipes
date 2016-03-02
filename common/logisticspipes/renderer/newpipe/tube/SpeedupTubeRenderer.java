@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ITubeOrientation;
@@ -28,10 +29,10 @@ public final class SpeedupTubeRenderer implements ISpecialPipeRenderer, IHighlig
 
 	public static final SpeedupTubeRenderer instance = new SpeedupTubeRenderer();
 
-	static Map<SpeedupDirection, List<IModel3D>> tubeSpeedupBase = new HashMap<SpeedupDirection, List<IModel3D>>();
+	static Map<SpeedupDirection, List<IModel3D>> tubeSpeedupBase = new HashMap<>();
 
 	//Global Access
-	public static Map<SpeedupDirection, IModel3D> tubeSpeedup = new HashMap<SpeedupDirection, IModel3D>();
+	public static Map<SpeedupDirection, IModel3D> tubeSpeedup = new HashMap<>();
 
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/blocks/pipes/HS-Speedup.png");
 
@@ -45,16 +46,16 @@ public final class SpeedupTubeRenderer implements ISpecialPipeRenderer, IHighlig
 
 			//tubeTurnMounts
 			for (SpeedupDirection turn : SpeedupDirection.values()) {
-				SpeedupTubeRenderer.tubeSpeedupBase.put(turn, new ArrayList<IModel3D>());
+				SpeedupTubeRenderer.tubeSpeedupBase.put(turn, new ArrayList<>());
 			}
-			for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
-				if (entry.getKey().startsWith("Side ") || entry.getKey().contains(" Side ") || entry.getKey().endsWith(" Side")) {
-					SpeedupTubeRenderer.tubeSpeedupBase.get(SpeedupDirection.EAST).add(LogisticsNewRenderPipe.compute(entry.getValue().twoFacedCopy().apply(new LPTranslation(0.0, 0.0, 0.0)).apply(new LPRotation(-Math.PI / 2, 0, 1, 0))));
-					SpeedupTubeRenderer.tubeSpeedupBase.get(SpeedupDirection.NORTH).add(LogisticsNewRenderPipe.compute(entry.getValue().twoFacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
-					SpeedupTubeRenderer.tubeSpeedupBase.get(SpeedupDirection.WEST).add(LogisticsNewRenderPipe.compute(entry.getValue().twoFacedCopy().apply(new LPTranslation(-1.0, 0.0, 1.0)).apply(new LPRotation(Math.PI / 2, 0, 1, 0))));
-					SpeedupTubeRenderer.tubeSpeedupBase.get(SpeedupDirection.SOUTH).add(LogisticsNewRenderPipe.compute(entry.getValue().twoFacedCopy().apply(new LPTranslation(-1.0, 0.0, 0.0)).apply(new LPRotation(Math.PI, 0, 1, 0))));
-				}
-			}
+			pipePartModels.entrySet().stream()
+					.filter(entry -> entry.getKey().startsWith("Side ") || entry.getKey().contains(" Side ") || entry.getKey().endsWith(" Side"))
+					.forEach(entry -> {
+						SpeedupTubeRenderer.tubeSpeedupBase.get(SpeedupDirection.EAST).add(LogisticsNewRenderPipe.compute(entry.getValue().twoFacedCopy().apply(new LPTranslation(0.0, 0.0, 0.0)).apply(new LPRotation(-Math.PI / 2, 0, 1, 0))));
+						SpeedupTubeRenderer.tubeSpeedupBase.get(SpeedupDirection.NORTH).add(LogisticsNewRenderPipe.compute(entry.getValue().twoFacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
+						SpeedupTubeRenderer.tubeSpeedupBase.get(SpeedupDirection.WEST).add(LogisticsNewRenderPipe.compute(entry.getValue().twoFacedCopy().apply(new LPTranslation(-1.0, 0.0, 1.0)).apply(new LPRotation(Math.PI / 2, 0, 1, 0))));
+						SpeedupTubeRenderer.tubeSpeedupBase.get(SpeedupDirection.SOUTH).add(LogisticsNewRenderPipe.compute(entry.getValue().twoFacedCopy().apply(new LPTranslation(-1.0, 0.0, 0.0)).apply(new LPRotation(Math.PI, 0, 1, 0))));
+					});
 			if (SpeedupTubeRenderer.tubeSpeedupBase.get(SpeedupDirection.NORTH).size() != 4) {
 				throw new RuntimeException("Couldn't load Tube Side. Only loaded " + SpeedupTubeRenderer.tubeSpeedupBase.get(SpeedupDirection.NORTH).size());
 			}
@@ -74,9 +75,9 @@ public final class SpeedupTubeRenderer implements ISpecialPipeRenderer, IHighlig
 			HSTubeSpeedup tube = (HSTubeSpeedup) pipe;
 			if (tube.getOrientation() != null) {
 				SpeedupDirection speedupDirection = (SpeedupDirection) tube.getOrientation().getRenderOrientation();
-				for (IModel3D model : SpeedupTubeRenderer.tubeSpeedupBase.get(speedupDirection)) {
-					objectsToRender.add(new RenderEntry(model,  new I3DOperation[] { new LPUVTransformationList(new LPUVTranslation(0, 0)) }, SpeedupTubeRenderer.TEXTURE));
-				}
+				objectsToRender.addAll(SpeedupTubeRenderer.tubeSpeedupBase.get(speedupDirection).stream()
+						.map(model -> new RenderEntry(model, new I3DOperation[]{new LPUVTransformationList(new LPUVTranslation(0, 0))}, SpeedupTubeRenderer.TEXTURE))
+						.collect(Collectors.toList()));
 			}
 		}
 	}

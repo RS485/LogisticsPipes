@@ -36,9 +36,9 @@ public abstract class LogisticsOrderManager<T extends LogisticsOrder> implements
 		this.listener = listener;
 	}
 
-	private LinkedList<T> oldOrders = new LinkedList<T>();
+	private LinkedList<T> oldOrders = new LinkedList<>();
 
-	protected LinkedList<T> _orders = new LinkedList<T>();
+	protected LinkedList<T> _orders = new LinkedList<>();
 	protected IChangeListener listener = null;
 
 	protected PlayerCollectionList watchingPlayers = new PlayerCollectionList();
@@ -54,9 +54,9 @@ public abstract class LogisticsOrderManager<T extends LogisticsOrder> implements
 
 	public LinkedList<ItemIdentifierStack> getContentList(World world) {
 		if (MainProxy.isClient(world) || _orders.size() == 0) {
-			return new LinkedList<ItemIdentifierStack>();
+			return new LinkedList<>();
 		}
-		LinkedList<ItemIdentifierStack> list = new LinkedList<ItemIdentifierStack>();
+		LinkedList<ItemIdentifierStack> list = new LinkedList<>();
 		for (LogisticsOrder request : _orders) {
 			LogisticsOrderManager.addToList(request.getAsDisplayItem(), list);
 		}

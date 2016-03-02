@@ -44,9 +44,9 @@ import lombok.Setter;
 
 public abstract class LPTravelingItem {
 
-	public static final Map<Integer, WeakReference<LPTravelingItemServer>> serverList = new HashMap<Integer, WeakReference<LPTravelingItemServer>>();
-	public static final Map<Integer, WeakReference<LPTravelingItemClient>> clientList = new HashMap<Integer, WeakReference<LPTravelingItemClient>>();
-	public static final List<Pair<Integer, Object>> forceKeep = new ArrayList<Pair<Integer, Object>>();
+	public static final Map<Integer, WeakReference<LPTravelingItemServer>> serverList = new HashMap<>();
+	public static final Map<Integer, WeakReference<LPTravelingItemClient>> clientList = new HashMap<>();
+	public static final List<Pair<Integer, Object>> forceKeep = new ArrayList<>();
 	public static final SlidingWindowBitSet clientSideKnownIDs = new SlidingWindowBitSet(20); // 20
 
 	private static int nextFreeId = 0;

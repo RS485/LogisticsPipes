@@ -46,7 +46,7 @@ public abstract class BaseWrapperClass extends AbstractValue {
 
 	public static final ICommandWrapper WRAPPER = new ICommandWrapper() {
 
-		private Map<Class<?>, Class<? extends BaseWrapperClass>> map = new HashMap<Class<?>, Class<? extends BaseWrapperClass>>();
+		private Map<Class<?>, Class<? extends BaseWrapperClass>> map = new HashMap<>();
 
 		@Override
 		public Object getWrappedObject(CCWrapperInformation info, Object object) {
@@ -229,11 +229,7 @@ public abstract class BaseWrapperClass extends AbstractValue {
 						return getType() + ": " + ((ICCTypeWrapped) object).getObject().toString();
 					}
 				}
-			} catch (NoSuchMethodException e) {
-				if (LPConstants.DEBUG) {
-					e.printStackTrace();
-				}
-			} catch (SecurityException e) {
+			} catch (NoSuchMethodException | SecurityException e) {
 				if (LPConstants.DEBUG) {
 					e.printStackTrace();
 				}
@@ -380,20 +376,16 @@ public abstract class BaseWrapperClass extends AbstractValue {
 			int z = nbt.getInteger("Z");
 			final DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
 			final int dim = nbt.getInteger("Dim");
-			QueuedTasks.queueTask(new Callable<Object>() {
-
-				@Override
-				public Object call() throws Exception {
-					World world = DimensionManager.getWorld(dim);
-					if (world != null) {
-						TileEntity tile = pos.getTileEntity(world);
-						if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe) {
-							object = ((LogisticsTileGenericPipe) tile).pipe;
-							checkType();
-						}
+			QueuedTasks.queueTask(() -> {
+				World world = DimensionManager.getWorld(dim);
+				if (world != null) {
+					TileEntity tile = pos.getTileEntity(world);
+					if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe) {
+						object = ((LogisticsTileGenericPipe) tile).pipe;
+						checkType();
 					}
-					return null;
 				}
+				return null;
 			});
 		} else if (type.equals("CCItemIdentifierImplementation")) {
 			ItemStack stack = ItemStack.loadItemStackFromNBT(nbt);
@@ -422,20 +414,16 @@ public abstract class BaseWrapperClass extends AbstractValue {
 			int z = nbt.getInteger("Z");
 			final DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
 			final int dim = nbt.getInteger("Dim");
-			QueuedTasks.queueTask(new Callable<Object>() {
-
-				@Override
-				public Object call() throws Exception {
-					World world = DimensionManager.getWorld(dim);
-					if (world != null) {
-						TileEntity tile = pos.getTileEntity(world);
-						if (tile instanceof LogisticsSolidTileEntity) {
-							object = tile;
-							checkType();
-						}
+			QueuedTasks.queueTask(() -> {
+				World world = DimensionManager.getWorld(dim);
+				if (world != null) {
+					TileEntity tile = pos.getTileEntity(world);
+					if (tile instanceof LogisticsSolidTileEntity) {
+						object = tile;
+						checkType();
 					}
-					return null;
 				}
+				return null;
 			});
 		} else {
 			System.out.println("Unknown type to load");

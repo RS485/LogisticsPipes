@@ -67,19 +67,11 @@ public class ChassiGuiProvider extends BooleanModuleCoordinatesGuiProvider {
 			for (int i = 0; i < _chassiPipe.getChassiSize(); i++) {
 				final int fI = i;
 				ModuleUpgradeManager upgradeManager = _chassiPipe.getModuleUpgradeManager(i);
-				dummy.addRestrictedSlot(0, upgradeManager.getInv(), 145, 9 + i * 20, new ISlotCheck() {
-
-					@Override
-					public boolean isStackAllowed(ItemStack itemStack) {
-						return ChassiGuiProvider.checkStack(itemStack, _chassiPipe, fI);
-					}
+				dummy.addRestrictedSlot(0, upgradeManager.getInv(), 145, 9 + i * 20, itemStack -> {
+					return ChassiGuiProvider.checkStack(itemStack, _chassiPipe, fI);
 				});
-				dummy.addRestrictedSlot(1, upgradeManager.getInv(), 165, 9 + i * 20, new ISlotCheck() {
-
-					@Override
-					public boolean isStackAllowed(ItemStack itemStack) {
-						return ChassiGuiProvider.checkStack(itemStack, _chassiPipe, fI);
-					}
+				dummy.addRestrictedSlot(1, upgradeManager.getInv(), 165, 9 + i * 20, itemStack -> {
+					return ChassiGuiProvider.checkStack(itemStack, _chassiPipe, fI);
 				});
 			}
 		}

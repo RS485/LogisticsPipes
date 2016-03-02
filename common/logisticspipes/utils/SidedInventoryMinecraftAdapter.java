@@ -43,7 +43,7 @@ public final class SidedInventoryMinecraftAdapter implements IInventory {
 			if (_side == ForgeDirection.UNKNOWN.ordinal()) {
 				_slotMapCache = buildAllSidedMap();
 			} else {
-				ArrayList<Integer> list = new ArrayList<Integer>();
+				ArrayList<Integer> list = new ArrayList<>();
 
 				int allSlots[] = _sidedInventory.getAccessibleSlotsFromSide(_side);
 				for (int number : allSlots) {
@@ -60,7 +60,7 @@ public final class SidedInventoryMinecraftAdapter implements IInventory {
 	}
 
 	private int[] buildAllSidedMap() {
-		ArrayList<Integer> list = new ArrayList<Integer>();
+		ArrayList<Integer> list = new ArrayList<>();
 
 		for (int i = 0; i < 6; i++) {
 			int slots[] = _sidedInventory.getAccessibleSlotsFromSide(i);

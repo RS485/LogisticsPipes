@@ -54,8 +54,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport, IHeadUpDisplayRendererProvider, IChestContentReceiver {
 
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
-	public final LinkedList<ItemIdentifierStack> itemList = new LinkedList<ItemIdentifierStack>();
-	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
+	public final LinkedList<ItemIdentifierStack> itemList = new LinkedList<>();
+	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<>();
 	private final HUDSatellite HUD = new HUDSatellite(this);
 
 	public PipeItemsSatelliteLogistics(Item item) {
@@ -175,14 +175,14 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		return HUD;
 	}
 
-	public static Set<PipeItemsSatelliteLogistics> AllSatellites = Collections.newSetFromMap(new WeakHashMap<PipeItemsSatelliteLogistics, Boolean>());;
+	public static Set<PipeItemsSatelliteLogistics> AllSatellites = Collections.newSetFromMap(new WeakHashMap<>());;
 
 	// called only on server shutdown
 	public static void cleanup() {
 		PipeItemsSatelliteLogistics.AllSatellites.clear();
 	}
 
-	protected final LinkedList<ItemIdentifierStack> _lostItems = new LinkedList<ItemIdentifierStack>();
+	protected final LinkedList<ItemIdentifierStack> _lostItems = new LinkedList<>();
 
 	public int satelliteId;
 

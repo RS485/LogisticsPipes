@@ -21,7 +21,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 public class InventoryUtilFactory {
 
-	private final LinkedList<SpecialInventoryHandler> handler = new LinkedList<SpecialInventoryHandler>();
+	private final LinkedList<SpecialInventoryHandler> handler = new LinkedList<>();
 
 	public void registerHandler(SpecialInventoryHandler invHandler) {
 		if (invHandler.init()) {

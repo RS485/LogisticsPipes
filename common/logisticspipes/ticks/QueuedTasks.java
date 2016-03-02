@@ -15,7 +15,7 @@ import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
 public class QueuedTasks {
 
 	@SuppressWarnings("rawtypes")
-	private static LinkedList<Callable> queue = new LinkedList<Callable>();
+	private static LinkedList<Callable> queue = new LinkedList<>();
 
 	// called on server shutdown only.
 	public static void clearAllTasks() {

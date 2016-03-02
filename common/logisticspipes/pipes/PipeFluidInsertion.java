@@ -21,7 +21,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 public class PipeFluidInsertion extends FluidRoutedPipe {
 
-	private List<Pair<Integer, Integer>> localJamList = new ArrayList<Pair<Integer, Integer>>();
+	private List<Pair<Integer, Integer>> localJamList = new ArrayList<>();
 	private int[] nextSendMax = new int[ForgeDirection.VALID_DIRECTIONS.length];
 	private int[] nextSendMin = new int[ForgeDirection.VALID_DIRECTIONS.length];
 
@@ -32,9 +32,9 @@ public class PipeFluidInsertion extends FluidRoutedPipe {
 	@Override
 	public void enabledUpdateEntity() {
 		super.enabledUpdateEntity();
-		List<Integer> tempJamList = new ArrayList<Integer>();
+		List<Integer> tempJamList = new ArrayList<>();
 		if (!localJamList.isEmpty()) {
-			List<Pair<Integer, Integer>> toRemove = new ArrayList<Pair<Integer, Integer>>();
+			List<Pair<Integer, Integer>> toRemove = new ArrayList<>();
 			for (Pair<Integer, Integer> part : localJamList) {
 				part.setValue2(part.getValue2() - 1);
 				if (part.getValue2() <= 0) {

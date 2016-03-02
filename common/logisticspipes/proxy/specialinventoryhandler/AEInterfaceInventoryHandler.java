@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import logisticspipes.utils.item.ItemIdentifier;
 
@@ -81,9 +82,9 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	private Map<ItemIdentifier, Integer> getItemsAndCount(boolean linked) {
 		Map<ItemIdentifier, Integer> result;
 		if (linked) {
-			result = new LinkedHashMap<ItemIdentifier, Integer>();
+			result = new LinkedHashMap<>();
 		} else {
-			result = new HashMap<ItemIdentifier, Integer>();
+			result = new HashMap<>();
 		}
 		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
 		if (tmp == null || tmp.getItemInventory() == null || tmp.getItemInventory().getStorageList() == null) {
@@ -103,7 +104,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public Set<ItemIdentifier> getItems() {
-		Set<ItemIdentifier> result = new TreeSet<ItemIdentifier>();
+		Set<ItemIdentifier> result = new TreeSet<>();
 		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
 		if (tmp == null || tmp.getItemInventory() == null || tmp.getItemInventory().getStorageList() == null) {
 			return result;
@@ -220,10 +221,8 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	public void initCache() {
 		Map<ItemIdentifier, Integer> map = getItemsAndCount(true);
-		cached = new LinkedList<Map.Entry<ItemIdentifier, Integer>>();
-		for (Entry<ItemIdentifier, Integer> e : map.entrySet()) {
-			cached.add(e);
-		}
+		cached = new LinkedList<>();
+		cached.addAll(map.entrySet().stream().collect(Collectors.toList()));
 	}
 
 	@Override

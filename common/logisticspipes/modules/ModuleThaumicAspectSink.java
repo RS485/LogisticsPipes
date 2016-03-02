@@ -3,6 +3,7 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IModuleWatchReciver;
@@ -34,7 +35,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClientInformationProvider, IModuleWatchReciver {
 
-	public final List<String> aspectList = new LinkedList<String>();
+	public final List<String> aspectList = new LinkedList<>();
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
@@ -66,8 +67,8 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 		if (itemAspectList == null || itemAspectList.size() == 0) {
 			return false;
 		}
-		for (int i = 0; i < itemAspectList.size(); i++) {
-			if (aspectList.contains(itemAspectList.get(i))) {
+		for (String anItemAspectList : itemAspectList) {
+			if (aspectList.contains(anItemAspectList)) {
 				return true;
 			}
 		}
@@ -132,15 +133,13 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 
 	@Override
 	public List<String> getClientInformation() {
-		List<String> info = new ArrayList<String>();
+		List<String> info = new ArrayList<>();
 		info.add("Aspects: ");
 		if (aspectList.size() == 0) {
 			info.add("none");
 		}
-		for (int i = 0; i < aspectList.size(); i++) {
-			//info.add(" - " + SimpleServiceLocator.thaumCraftProxy.getNameForTagID(aspectList.get(i)));
-			info.add(" - " + aspectList.get(i));
-		}
+		//info.add(" - " + SimpleServiceLocator.thaumCraftProxy.getNameForTagID(aspectList.get(i)));
+		info.addAll(aspectList.stream().map(anAspectList -> " - " + anAspectList).collect(Collectors.toList()));
 		return info;
 	}
 

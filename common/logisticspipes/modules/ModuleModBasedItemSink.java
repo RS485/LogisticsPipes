@@ -40,8 +40,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStringBasedModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 
-	public final List<String> modList = new LinkedList<String>();
-	private final Set<String> modIdSet = new HashSet<String>();
+	public final List<String> modList = new LinkedList<>();
+	private final Set<String> modIdSet = new HashSet<>();
 
 	private IHUDModuleRenderer HUD = new HUDStringBasedItemSink(this);
 
@@ -116,7 +116,7 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStrin
 
 	@Override
 	public List<String> getClientInformation() {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		list.add("Mods: ");
 		list.addAll(modList);
 		return list;

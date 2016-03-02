@@ -91,7 +91,7 @@ public class ModuleCCBasedItemSink extends LogisticsModule {
 	public List<CCSinkResponder> queueCCSinkEvent(ItemIdentifierStack item) {
 		CCSinkResponder resonse = new CCSinkResponder(item, _service.getSourceID(), eventQueuer);
 		eventQueuer.queueEvent("ItemSink", new Object[] { SimpleServiceLocator.ccProxy.getAnswer(resonse) });
-		return new OneList<CCSinkResponder>(resonse);
+		return new OneList<>(resonse);
 	}
 
 	@Override

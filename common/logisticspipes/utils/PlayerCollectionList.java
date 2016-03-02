@@ -9,7 +9,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 
 public class PlayerCollectionList {
 
-	private List<EqualWeakReference<EntityPlayer>> players = new ArrayList<EqualWeakReference<EntityPlayer>>();
+	private List<EqualWeakReference<EntityPlayer>> players = new ArrayList<>();
 	private boolean checkingPlayers = false;
 
 	public void checkPlayers() {
@@ -36,14 +36,7 @@ public class PlayerCollectionList {
 
 	public Iterable<EntityPlayer> players() {
 		checkPlayers();
-		return new Iterable<EntityPlayer>() {
-
-			@Override
-			public Iterator<EntityPlayer> iterator() {
-				return new Itr(players.iterator());
-			}
-
-		};
+		return () -> new Itr(players.iterator());
 	}
 
 	public int size() {
@@ -62,12 +55,12 @@ public class PlayerCollectionList {
 	}
 
 	public void add(EntityPlayer player) {
-		players.add(new EqualWeakReference<EntityPlayer>(player));
+		players.add(new EqualWeakReference<>(player));
 	}
 
 	public boolean remove(EntityPlayer player) {
 		if (contains(player) && players.size() > 0) {
-			return players.remove(new EqualWeakReference<EntityPlayer>(player));
+			return players.remove(new EqualWeakReference<>(player));
 		} else {
 			return false;
 		}
@@ -75,7 +68,7 @@ public class PlayerCollectionList {
 
 	public boolean contains(EntityPlayer player) {
 		checkPlayers();
-		return players.contains(new EqualWeakReference<EntityPlayer>(player));
+		return players.contains(new EqualWeakReference<>(player));
 	}
 
 	private class Itr implements Iterator<EntityPlayer> {

@@ -63,7 +63,7 @@ public class PipeManagerContentPacket extends CoordinatesPacket {
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);
-		clientOrder = new LinkedList<IOrderInfoProvider>();
+		clientOrder = new LinkedList<>();
 		while (data.readByte() == 1) {
 			clientOrder.add(data.readOrderInfo());
 		}

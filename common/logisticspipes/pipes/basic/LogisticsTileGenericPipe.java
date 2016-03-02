@@ -95,7 +95,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
 
-	public Set<DoubleCoordinates> subMultiBlock = new HashSet<DoubleCoordinates>();
+	public Set<DoubleCoordinates> subMultiBlock = new HashSet<>();
 
 	public boolean[] turtleConnect = new boolean[7];
 
@@ -123,7 +123,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 
 	public LogisticsTileGenericPipe() {
 		if (SimpleServiceLocator.ccProxy.isCC()) {
-			connections = new HashMap<IComputerAccess, ForgeDirection>();
+			connections = new HashMap<>();
 		}
 		SimpleServiceLocator.openComputersProxy.initLogisticsTileGenericPipe(this);
 		tilePart = SimpleServiceLocator.buildCraftProxy.getBCTilePart(this);

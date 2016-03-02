@@ -8,11 +8,11 @@ import net.minecraftforge.oredict.OreDictionary;
 
 public class DictIdentifier {
 
-	private static List<DictIdentifier> identifiers = new ArrayList<DictIdentifier>();
+	private static List<DictIdentifier> identifiers = new ArrayList<>();
 
 	static DictIdentifier getForId(int id) {
 		if (DictIdentifier.identifiers.size() <= id) {
-			ArrayList<DictIdentifier> newidentifiers = new ArrayList<DictIdentifier>(id + 1);
+			ArrayList<DictIdentifier> newidentifiers = new ArrayList<>(id + 1);
 			while (newidentifiers.size() <= id) {
 				newidentifiers.add(null);
 			}

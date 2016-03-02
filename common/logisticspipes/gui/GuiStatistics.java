@@ -3,6 +3,7 @@ package logisticspipes.gui;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
 import logisticspipes.blocks.stats.TrackingTask;
@@ -37,9 +38,9 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 	private final int TAB_COUNT = 2;
 	private int current_Tab;
 
-	private final List<GuiButton> TAB_BUTTON_1 = new ArrayList<GuiButton>();
-	private final List<GuiButton> TAB_BUTTON_1_2 = new ArrayList<GuiButton>();
-	private final List<GuiButton> TAB_BUTTON_2 = new ArrayList<GuiButton>();
+	private final List<GuiButton> TAB_BUTTON_1 = new ArrayList<>();
+	private final List<GuiButton> TAB_BUTTON_1_2 = new ArrayList<>();
+	private final List<GuiButton> TAB_BUTTON_2 = new ArrayList<>();
 	private final LogisticsStatisticsTileEntity tile;
 
 	private ItemDisplay itemDisplay_1;
@@ -73,7 +74,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 
 		if (itemDisplay_2 == null) {
 			itemDisplay_2 = new ItemDisplay(null, fontRendererObj, this, null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[] { 1, 10, 64, 64 }, true);
-			itemDisplay_2.setItemList(new ArrayList<ItemIdentifierStack>());
+			itemDisplay_2.setItemList(new ArrayList<>());
 		}
 		itemDisplay_2.reposition(guiLeft + 10, guiTop + 80, xSize - 20, 125);
 
@@ -87,10 +88,8 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 	}
 
 	public void updateItemList() {
-		List<ItemIdentifierStack> allItems = new ArrayList<ItemIdentifierStack>();
-		for (TrackingTask task : tile.tasks) {
-			allItems.add(task.item.makeStack(1));
-		}
+		List<ItemIdentifierStack> allItems = tile.tasks.stream().map(task -> task.item.makeStack(1))
+				.collect(Collectors.toList());
 		itemDisplay_1.setItemList(allItems);
 	}
 

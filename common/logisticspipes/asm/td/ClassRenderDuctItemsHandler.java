@@ -29,31 +29,32 @@ public class ClassRenderDuctItemsHandler {
 			FMLCommonHandler.instance().exitJava(1, true);
 		}
 
-		for (MethodNode m : node.methods) {
-			if (m.name.equals("renderTravelingItems") && m.desc.equals("(Ljava/util/Iterator;Lcofh/thermaldynamics/duct/item/TileItemDuct;Lnet/minecraft/world/World;DDDF)V")) {
-				MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+		node.methods.stream().filter(m -> m.name.equals("renderTravelingItems") && m.desc.equals("(Ljava/util/Iterator;Lcofh/thermaldynamics/duct/item/TileItemDuct;Lnet/minecraft/world/World;DDDF)V"))
+				.forEach(m -> {
+					MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions
+							.toArray(new String[0])) {
 
-					@Override
-					public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
-						super.visitMethodInsn(opcode, owner, name, desc, itf);
-						if (owner.equals("org/lwjgl/opengl/GL11") && name.equals("glScalef") && desc.equals("(FFF)V")) {
-							Label l = new Label();
-							visitLabel(l);
-							if ("200CEA4577399EED0689ED20BE6B4D065E1B2E29".equals(sumHandleEvent)) {
-								visitVarInsn(Opcodes.ALOAD, 12);
-							} else if ("2AA29BD8490065CAEB36AE72C3BFD99054DED33E".equals(sumHandleEvent)) {
-								visitVarInsn(Opcodes.ALOAD, 11);
-							} else {
-								throw new UnsupportedOperationException();
+						@Override
+						public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
+							super.visitMethodInsn(opcode, owner, name, desc, itf);
+							if (owner.equals("org/lwjgl/opengl/GL11") && name.equals("glScalef") && desc
+									.equals("(FFF)V")) {
+								Label l = new Label();
+								visitLabel(l);
+								if ("200CEA4577399EED0689ED20BE6B4D065E1B2E29".equals(sumHandleEvent)) {
+									visitVarInsn(Opcodes.ALOAD, 12);
+								} else if ("2AA29BD8490065CAEB36AE72C3BFD99054DED33E".equals(sumHandleEvent)) {
+									visitVarInsn(Opcodes.ALOAD, 11);
+								} else {
+									throw new UnsupportedOperationException();
+								}
+								this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/td/ThermalDynamicsHooks", "renderItemTransportBox", "(Lcofh/thermaldynamics/duct/item/TravelingItem;)V", false);
 							}
-							this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/td/ThermalDynamicsHooks", "renderItemTransportBox", "(Lcofh/thermaldynamics/duct/item/TravelingItem;)V", false);
 						}
-					}
-				};
-				m.accept(mv);
-				node.methods.set(node.methods.indexOf(m), mv);
-			}
-		}
+					};
+					m.accept(mv);
+					node.methods.set(node.methods.indexOf(m), mv);
+				});
 
 		ClassWriter writer = new ClassWriter(0/*ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES*/);
 		node.accept(writer);

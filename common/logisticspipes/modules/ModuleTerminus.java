@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import logisticspipes.gui.hud.modules.HUDSimpleFilterModule;
 import logisticspipes.interfaces.IClientInformationProvider;
@@ -99,7 +100,7 @@ public class ModuleTerminus extends LogisticsSimpleFilterModule implements IClie
 
 	@Override
 	public List<String> getClientInformation() {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		list.add("Terminated: ");
 		list.add("<inventory>");
 		list.add("<that>");
@@ -152,11 +153,9 @@ public class ModuleTerminus extends LogisticsSimpleFilterModule implements IClie
 	@Override
 	public List<ItemIdentifier> getSpecificInterests() {
 		Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
-		List<ItemIdentifier> li = new ArrayList<ItemIdentifier>(mapIC.size());
+		List<ItemIdentifier> li = new ArrayList<>(mapIC.size());
 		li.addAll(mapIC.keySet());
-		for (ItemIdentifier id : mapIC.keySet()) {
-			li.add(id.getUndamaged());
-		}
+		li.addAll(mapIC.keySet().stream().map(ItemIdentifier::getUndamaged).collect(Collectors.toList()));
 		return li;
 	}
 

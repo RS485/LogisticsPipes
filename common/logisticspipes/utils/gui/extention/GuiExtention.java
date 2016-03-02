@@ -20,8 +20,8 @@ public abstract class GuiExtention {
 	private int currentYPos = 0;
 	private int targetYPos = 0;
 	private boolean init = true;
-	private List<Integer> slotList = new ArrayList<Integer>();
-	private List<Integer> buttonList = new ArrayList<Integer>();
+	private List<Integer> slotList = new ArrayList<>();
+	private List<Integer> buttonList = new ArrayList<>();
 
 	public abstract int getFinalWidth();
 

@@ -57,7 +57,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	protected final int yCenterOffset;
 
 	private SubGuiScreen subGui;
-	protected List<IRenderSlot> slots = new ArrayList<IRenderSlot>();
+	protected List<IRenderSlot> slots = new ArrayList<>();
 	protected GuiExtentionController extentionControllerLeft = new GuiExtentionController(GuiSide.LEFT);
 	protected GuiExtentionController extentionControllerRight = new GuiExtentionController(GuiSide.RIGHT);
 	private GuiButton selectedButton;
@@ -68,7 +68,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	private IFuzzySlot fuzzySlot;
 	private boolean fuzzySlotActiveGui;
 	private int fuzzySlotGuiHoverTime;
-	private Queue<Runnable> renderAtTheEnd = new LinkedList<Runnable>();
+	private Queue<Runnable> renderAtTheEnd = new LinkedList<>();
 
 	public LogisticsBaseGuiScreen(int xSize, int ySize, int xCenterOffset, int yCenterOffset) {
 		this(new DummyContainer(null, null), xSize, ySize, xCenterOffset, yCenterOffset);
@@ -199,7 +199,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 				if (slot.getXPos() < mouseX && slot.getXPos() > mouseXMax && slot.getYPos() < mouseY && slot.getYPos() > mouseYMax) {
 					if (slot.displayToolTip()) {
 						if (slot.getToolTipText() != null && !slot.getToolTipText().equals("")) {
-							ArrayList<String> list = new ArrayList<String>();
+							ArrayList<String> list = new ArrayList<>();
 							list.add(slot.getToolTipText());
 							GuiGraphics.drawToolTip(par1, par2, list, EnumChatFormatting.WHITE, false);
 						}
@@ -283,20 +283,17 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 				//int posY = 0;
 				final int posX = slot.xDisplayPosition + guiLeft;
 				final int posY = slot.yDisplayPosition + 17 + guiTop;
-				renderAtTheEnd.add(new Runnable() {
-					@Override
-					public void run() {
-						GL11.glDisable(GL11.GL_DEPTH_TEST);
-						GL11.glDisable(GL11.GL_LIGHTING);
-						GuiGraphics.drawGuiBackGround(mc, posX, posY, posX + 60, posY + 52, zLevel, true, true, true, true, true);
-						final String PREFIX = "gui.crafting.";
-						mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OreDict"), posX + 4, posY + 4, (!resource.use_od ? 0x404040 : 0xFF4040));
-						mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnDamage"), posX + 4, posY + 14, (!resource.ignore_dmg ? 0x404040 : 0x40FF40));
-						mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnNBT"), posX + 4, posY + 26, (!resource.ignore_nbt ? 0x404040 : 0x4040FF));
-						mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OrePrefix"), posX + 4, posY + 38, (!resource.use_category ? 0x404040 : 0x7F7F40));
-						GL11.glEnable(GL11.GL_LIGHTING);
-						GL11.glEnable(GL11.GL_DEPTH_TEST);
-					}
+				renderAtTheEnd.add(() -> {
+					GL11.glDisable(GL11.GL_DEPTH_TEST);
+					GL11.glDisable(GL11.GL_LIGHTING);
+					GuiGraphics.drawGuiBackGround(mc, posX, posY, posX + 60, posY + 52, zLevel, true, true, true, true, true);
+					final String PREFIX = "gui.crafting.";
+					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OreDict"), posX + 4, posY + 4, (!resource.use_od ? 0x404040 : 0xFF4040));
+					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnDamage"), posX + 4, posY + 14, (!resource.ignore_dmg ? 0x404040 : 0x40FF40));
+					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnNBT"), posX + 4, posY + 26, (!resource.ignore_nbt ? 0x404040 : 0x4040FF));
+					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OrePrefix"), posX + 4, posY + 38, (!resource.use_category ? 0x404040 : 0x7F7F40));
+					GL11.glEnable(GL11.GL_LIGHTING);
+					GL11.glEnable(GL11.GL_DEPTH_TEST);
 				});
 			}
 		}
@@ -431,8 +428,8 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 		}
 		boolean handledButton = false;
 		if (par3 == 0) {
-			for (int l = 0; l < buttonList.size(); ++l) {
-				GuiButton guibutton = (GuiButton) buttonList.get(l);
+			for (Object aButtonList : buttonList) {
+				GuiButton guibutton = (GuiButton) aButtonList;
 				if (guibutton.mousePressed(mc, par1, par2)) {
 					selectedButton = guibutton;
 					guibutton.func_146113_a(mc.getSoundHandler());
@@ -465,8 +462,8 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	}
 
 	private boolean mouseCanPressButton(int par1, int par2) {
-		for (int l = 0; l < buttonList.size(); ++l) {
-			GuiButton guibutton = (GuiButton) buttonList.get(l);
+		for (Object aButtonList : buttonList) {
+			GuiButton guibutton = (GuiButton) aButtonList;
 			if (guibutton.mousePressed(mc, par1, par2)) {
 				return true;
 			}

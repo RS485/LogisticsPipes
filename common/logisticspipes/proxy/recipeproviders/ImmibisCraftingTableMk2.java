@@ -91,10 +91,7 @@ public class ImmibisCraftingTableMk2 implements ICraftingRecipeProvider {
 				inventory.setInventorySlotContents(9, result);
 				return true;
 			}
-		} catch (IllegalArgumentException e) {
-			LogisticsPipes.log.fatal("Error while importing recipe from Tubestuff's AutoCraftingMk2");
-			e.printStackTrace();
-		} catch (NoSuchFieldException e) {
+		} catch (IllegalArgumentException | NoSuchFieldException e) {
 			LogisticsPipes.log.fatal("Error while importing recipe from Tubestuff's AutoCraftingMk2");
 			e.printStackTrace();
 		} catch (Exception e) {

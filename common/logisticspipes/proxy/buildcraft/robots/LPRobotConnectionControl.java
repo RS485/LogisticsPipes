@@ -37,23 +37,23 @@ public class LPRobotConnectionControl implements ISpecialPipedConnection {
 
 	public static class RobotConnection {
 
-		public final Set<Pair<DoubleCoordinates, ForgeDirection>> localConnectedRobots = new HashSet<Pair<DoubleCoordinates, ForgeDirection>>();
+		public final Set<Pair<DoubleCoordinates, ForgeDirection>> localConnectedRobots = new HashSet<>();
 	}
 
-	private final Map<World, Set<Pair<DoubleCoordinates, ForgeDirection>>> globalAvailableRobots = new WeakHashMap<World, Set<Pair<DoubleCoordinates, ForgeDirection>>>();
+	private final Map<World, Set<Pair<DoubleCoordinates, ForgeDirection>>> globalAvailableRobots = new WeakHashMap<>();
 
 	public void addRobot(World world, DoubleCoordinates pos, ForgeDirection dir) {
 		if (globalAvailableRobots.get(world) == null) {
-			globalAvailableRobots.put(world, new HashSet<Pair<DoubleCoordinates, ForgeDirection>>());
+			globalAvailableRobots.put(world, new HashSet<>());
 		}
-		globalAvailableRobots.get(world).add(new Pair<DoubleCoordinates, ForgeDirection>(pos, dir));
+		globalAvailableRobots.get(world).add(new Pair<>(pos, dir));
 		checkAll(world);
 	}
 
 	//TODO: Call this somewhere...
 	public void removeRobot(World world, DoubleCoordinates pos, ForgeDirection dir) {
 		if (globalAvailableRobots.containsKey(world)) {
-			globalAvailableRobots.get(world).remove(new Pair<DoubleCoordinates, ForgeDirection>(pos, dir));
+			globalAvailableRobots.get(world).remove(new Pair<>(pos, dir));
 		}
 		checkAll(world);
 	}
@@ -95,7 +95,7 @@ public class LPRobotConnectionControl implements ISpecialPipedConnection {
 	}
 
 	public boolean isModified(LogisticsRoutingBoardRobot board) {
-		Set<Pair<DoubleCoordinates, ForgeDirection>> localConnectedRobots = new HashSet<Pair<DoubleCoordinates, ForgeDirection>>();
+		Set<Pair<DoubleCoordinates, ForgeDirection>> localConnectedRobots = new HashSet<>();
 		DoubleCoordinates sourceRobotPosition = CoordinateUtils.add(board.getLinkedStationPosition().center(), board.robot.getLinkedStation().side(), 0.5);
 		IZone zone = board.robot.getZoneToWork();
 		for (Pair<DoubleCoordinates, ForgeDirection> canidatePos : globalAvailableRobots.get(board.robot.worldObj)) {
@@ -137,7 +137,7 @@ public class LPRobotConnectionControl implements ISpecialPipedConnection {
 
 	@Override
 	public List<ConnectionInformation> getConnections(IPipeInformationProvider startPipe, EnumSet<PipeRoutingConnectionType> connection, ForgeDirection side) {
-		List<ConnectionInformation> list = new ArrayList<ConnectionInformation>();
+		List<ConnectionInformation> list = new ArrayList<>();
 		LogisticsTileGenericPipe pipe = (LogisticsTileGenericPipe) startPipe;
 		if (pipe == null || pipe.tilePart.getOriginal() == null) {
 			return list; // Proxy got disabled

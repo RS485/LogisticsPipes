@@ -16,7 +16,7 @@ import net.minecraft.nbt.NBTTagString;
 
 public class ItemModuleInformationManager {
 
-	private static final List<String> Filter = new ArrayList<String>();
+	private static final List<String> Filter = new ArrayList<>();
 	static {
 		ItemModuleInformationManager.Filter.add("moduleInformation");
 		ItemModuleInformationManager.Filter.add("informationList");

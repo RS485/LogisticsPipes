@@ -53,11 +53,7 @@ public class CCProxy implements ICCProxy {
 	private Runnable getTaget(Thread thread) {
 		try {
 			return (Runnable) target.get(thread);
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		} catch (SecurityException | IllegalAccessException | IllegalArgumentException e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -100,11 +96,7 @@ public class CCProxy implements ICCProxy {
 
 	@Override
 	public void handleMesssage(int computerId, Object message, LogisticsTileGenericPipe tile, int sourceId) {
-		for (IComputerAccess computer : tile.connections.keySet()) {
-			if (computer.getID() == computerId) {
-				computer.queueEvent(CCConstants.LP_CC_MESSAGE_EVENT, new Object[] { sourceId, message });
-			}
-		}
+		tile.connections.keySet().stream().filter(computer -> computer.getID() == computerId).forEach(computer -> computer.queueEvent(CCConstants.LP_CC_MESSAGE_EVENT, new Object[]{sourceId, message}));
 	}
 
 	@Override

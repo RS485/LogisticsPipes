@@ -29,14 +29,14 @@ import net.minecraft.entity.player.EntityPlayer;
 
 public class RouterManager implements IRouterManager, IDirectConnectionManager, ISecurityStationManager {
 
-	private final ArrayList<IRouter> _routersClient = new ArrayList<IRouter>();
-	private final ArrayList<IRouter> _routersServer = new ArrayList<IRouter>();
-	private final Map<UUID, Integer> _uuidMap = new HashMap<UUID, Integer>();
+	private final ArrayList<IRouter> _routersClient = new ArrayList<>();
+	private final ArrayList<IRouter> _routersServer = new ArrayList<>();
+	private final Map<UUID, Integer> _uuidMap = new HashMap<>();
 
-	private final WeakHashMap<LogisticsSecurityTileEntity, Void> _security = new WeakHashMap<LogisticsSecurityTileEntity, Void>();
-	private List<String> _authorized = new LinkedList<String>();
+	private final WeakHashMap<LogisticsSecurityTileEntity, Void> _security = new WeakHashMap<>();
+	private List<String> _authorized = new LinkedList<>();
 
-	private final ArrayList<DirectConnection> connectedPipes = new ArrayList<DirectConnection>();
+	private final ArrayList<DirectConnection> connectedPipes = new ArrayList<>();
 
 	@Override
 	public IRouter getRouter(int id) {
@@ -290,12 +290,10 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager, 
 	@Override
 	public void dimensionUnloaded(int dim) {
 		synchronized (_routersServer) {
-			for (IRouter r : _routersServer) {
-				if (r != null && r.isInDim(dim)) {
-					r.clearPipeCache();
-					r.clearInterests();
-				}
-			}
+			_routersServer.stream().filter(r -> r != null && r.isInDim(dim)).forEach(r -> {
+				r.clearPipeCache();
+				r.clearInterests();
+			});
 		}
 	}
 
@@ -348,10 +346,6 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager, 
 
 	@Override
 	public void printAllRouters() {
-		for (IRouter router : _routersServer) {
-			if (router != null) {
-				System.out.println(router.toString());
-			}
-		}
+		_routersServer.stream().filter(router -> router != null).forEach(router -> System.out.println(router.toString()));
 	}
 }

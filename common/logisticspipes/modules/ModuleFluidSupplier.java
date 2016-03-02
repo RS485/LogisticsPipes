@@ -83,7 +83,7 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 
 	@Override
 	public List<String> getClientInformation() {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		list.add("Supplied: ");
 		list.add("<inventory>");
 		list.add("<that>");

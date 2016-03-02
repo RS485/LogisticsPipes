@@ -3,6 +3,7 @@ package logisticspipes.proxy.enderio;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import logisticspipes.asm.ModVersionedClass;
 import logisticspipes.proxy.interfaces.IEnderIOProxy;
@@ -34,19 +35,14 @@ public class EnderIOProxy implements IEnderIOProxy {
 	@Override
 	public List<TileEntity> getConnectedHyperCubes(TileEntity tile) {
 		List<TileHyperCube> cons = HyperCubeRegister.instance.getCubesForChannel(((TileHyperCube) tile).getChannel());
-		List<TileEntity> tiles = new ArrayList<TileEntity>();
-		for (TileHyperCube cube : cons) {
-			if (cube != tile) {
-				tiles.add(cube);
-			}
-		}
+		List<TileEntity> tiles = cons.stream().filter(cube -> cube != tile).collect(Collectors.toList());
 		return tiles;
 	}
 
 	@Override
 	public List<TileEntity> getConnectedTransceivers(TileEntity tile) {
 		TileTransceiver transceiver = (TileTransceiver) tile;
-		List<TileEntity> tiles = new ArrayList<TileEntity>();
+		List<TileEntity> tiles = new ArrayList<>();
 		Object channel = transceiver.getRecieveChannels(ChannelType.ITEM).toArray()[0];
 		for (TileTransceiver t : ServerChannelRegister.instance.getIterator((Channel) channel)) {
 			if (t == transceiver) {

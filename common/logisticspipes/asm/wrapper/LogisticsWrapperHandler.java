@@ -40,8 +40,8 @@ public class LogisticsWrapperHandler {
 
 	private static final boolean DUMP = false;
 
-	private static Map<String, Class<?>> lookupMap = new HashMap<String, Class<?>>();
-	public static List<AbstractWrapper> wrapperController = new ArrayList<AbstractWrapper>();
+	private static Map<String, Class<?>> lookupMap = new HashMap<>();
+	public static List<AbstractWrapper> wrapperController = new ArrayList<>();
 
 	private static Method m_defineClass = null;
 

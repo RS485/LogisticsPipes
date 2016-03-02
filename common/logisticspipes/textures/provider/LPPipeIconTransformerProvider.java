@@ -9,7 +9,7 @@ import net.minecraft.util.IIcon;
 
 public class LPPipeIconTransformerProvider {
 
-	public ArrayList<IIconTransformation> icons = new ArrayList<IIconTransformation>();
+	public ArrayList<IIconTransformation> icons = new ArrayList<>();
 
 	public IIconTransformation getIcon(int iconIndex) {
 		return icons.get(iconIndex);

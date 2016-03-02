@@ -239,11 +239,7 @@ public class ServerProxy implements IProxy {
 		if (server != null && server.getConfigurationManager() != null) {
 			List list = server.getConfigurationManager().playerEntityList;
 			if (list != null && !list.isEmpty()) {
-				for (Object obj : list) {
-					if (obj instanceof EntityPlayerMP) {
-						((EntityPlayerMP) obj).addChatMessage(new ChatComponentText("[LP] Server: " + message));
-					}
-				}
+				list.stream().filter(obj -> obj instanceof EntityPlayerMP).forEach(obj -> ((EntityPlayerMP) obj).addChatMessage(new ChatComponentText("[LP] Server: " + message)));
 			}
 		}
 	}

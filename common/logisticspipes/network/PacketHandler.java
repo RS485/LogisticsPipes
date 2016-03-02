@@ -44,7 +44,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 	public static Map<Class<? extends ModernPacket>, ModernPacket> packetmap;
 
 	private static int packetDebugID = 1;
-	public static final Map<Integer, StackTraceElement[]> debugMap = new HashMap<Integer, StackTraceElement[]>();
+	public static final Map<Integer, StackTraceElement[]> debugMap = new HashMap<>();
 
 	@SuppressWarnings("unchecked")
 	// Suppressed because this cast should never fail.
@@ -80,17 +80,12 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 	@SneakyThrows({ IOException.class, InvocationTargetException.class, IllegalAccessException.class, InstantiationException.class, IllegalArgumentException.class, NoSuchMethodException.class, SecurityException.class })
 	// Suppression+sneakiness because these shouldn't ever fail, and if they do, it needs to fail.
 	public static final void initialize() {
-		final List<ClassInfo> classes = new ArrayList<ClassInfo>(ClassPath.from(PacketHandler.class.getClassLoader()).getTopLevelClassesRecursive("logisticspipes.network.packets"));
-		Collections.sort(classes, new Comparator<ClassInfo>() {
+		final List<ClassInfo> classes = new ArrayList<>(ClassPath.from(PacketHandler.class.getClassLoader())
+				.getTopLevelClassesRecursive("logisticspipes.network.packets"));
+		Collections.sort(classes, (o1, o2) -> o1.getSimpleName().compareTo(o2.getSimpleName()));
 
-			@Override
-			public int compare(ClassInfo o1, ClassInfo o2) {
-				return o1.getSimpleName().compareTo(o2.getSimpleName());
-			}
-		});
-
-		PacketHandler.packetlist = new ArrayList<ModernPacket>(classes.size());
-		PacketHandler.packetmap = new HashMap<Class<? extends ModernPacket>, ModernPacket>(classes.size());
+		PacketHandler.packetlist = new ArrayList<>(classes.size());
+		PacketHandler.packetmap = new HashMap<>(classes.size());
 
 		int currentid = 0;
 
@@ -104,12 +99,12 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 	}
 
 	//TODO correct to work with WeakReference (See FML original)
-	protected static final AttributeKey<ThreadLocal<FMLProxyPacket>> INBOUNDPACKETTRACKER = new AttributeKey<ThreadLocal<FMLProxyPacket>>("lp:inboundpacket");
+	protected static final AttributeKey<ThreadLocal<FMLProxyPacket>> INBOUNDPACKETTRACKER = new AttributeKey<>("lp:inboundpacket");
 
 	@Override
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
 		super.handlerAdded(ctx);
-		ctx.attr(PacketHandler.INBOUNDPACKETTRACKER).set(new ThreadLocal<FMLProxyPacket>());
+		ctx.attr(PacketHandler.INBOUNDPACKETTRACKER).set(new ThreadLocal<>());
 	}
 
 	//Used to provide the Description packet

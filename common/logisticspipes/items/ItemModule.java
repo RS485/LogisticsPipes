@@ -3,6 +3,7 @@ package logisticspipes.items;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
@@ -112,7 +113,7 @@ public class ItemModule extends LogisticsItem {
 	public static final int CRAFTER_MK2 = 601;
 	public static final int CRAFTER_MK3 = 602;
 
-	private List<Module> modules = new ArrayList<Module>();
+	private List<Module> modules = new ArrayList<>();
 
 	private class Module {
 
@@ -131,17 +132,7 @@ public class ItemModule extends LogisticsItem {
 			}
 			try {
 				return moduleClass.getConstructor(new Class[] {}).newInstance(new Object[] {});
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (SecurityException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			} catch (InstantiationException e) {
+			} catch (IllegalArgumentException | InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | SecurityException e) {
 				e.printStackTrace();
 			}
 			return null;
@@ -167,9 +158,7 @@ public class ItemModule extends LogisticsItem {
 				try {
 					LogisticsModule instance = moduleClass.newInstance();
 					moduleIcon = instance.getIconTexture(par1IIconRegister);
-				} catch (InstantiationException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
+				} catch (InstantiationException | IllegalAccessException e) {
 					e.printStackTrace();
 				}
 			}
@@ -248,9 +237,9 @@ public class ItemModule extends LogisticsItem {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
-		for (Module module : modules) {
-			par3List.add(new ItemStack(this, 1, module.getId()));
-		}
+		par3List.addAll(modules.stream()
+				.map(module -> new ItemStack(this, 1, module.getId()))
+				.collect(Collectors.toList()));
 	}
 
 	private void openConfigGui(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World) {

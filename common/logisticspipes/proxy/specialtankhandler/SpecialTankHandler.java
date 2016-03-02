@@ -12,7 +12,7 @@ import com.google.common.collect.Lists;
 
 public class SpecialTankHandler {
 
-	private List<ISpecialTankHandler> handlers = new ArrayList<ISpecialTankHandler>();
+	private List<ISpecialTankHandler> handlers = new ArrayList<>();
 
 	public void registerHandler(ISpecialTankHandler handler) {
 		try {

@@ -10,7 +10,7 @@ import net.minecraft.tileentity.TileEntity;
 
 public class MachineProgressProvider {
 
-	private List<IGenericProgressProvider> providers = new ArrayList<IGenericProgressProvider>();
+	private List<IGenericProgressProvider> providers = new ArrayList<>();
 
 	public void registerProgressProvider(IGenericProgressProvider provider) {
 		providers.add(provider);

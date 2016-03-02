@@ -13,7 +13,7 @@ import org.lwjgl.opengl.GL11;
 
 public abstract class BasicHUDGui implements IHeadUpDisplayRenderer {
 
-	protected final List<IHUDButton> buttons = new ArrayList<IHUDButton>();
+	protected final List<IHUDButton> buttons = new ArrayList<>();
 
 	protected void addButton(IHUDButton button) {
 		buttons.add(button);

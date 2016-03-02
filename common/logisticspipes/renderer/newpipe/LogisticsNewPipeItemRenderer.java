@@ -2,6 +2,7 @@ package logisticspipes.renderer.newpipe;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemLogisticsPipe;
@@ -71,16 +72,17 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 	}
 
 	private void generatePipeRenderList(int texture) {
-		List<Pair<IModel3D, IIconTransformation>> objectsToRender = new ArrayList<Pair<IModel3D, IIconTransformation>>();
+		List<Pair<IModel3D, IIconTransformation>> objectsToRender = new ArrayList<>();
 
 		for (Corner corner : Corner.values()) {
-			for (IModel3D model : LogisticsNewRenderPipe.corners_M.get(corner)) {
-				objectsToRender.add(new Pair<IModel3D, IIconTransformation>(model, LogisticsNewRenderPipe.basicPipeTexture));
-			}
+			objectsToRender.addAll(LogisticsNewRenderPipe.corners_M.get(corner).stream()
+					.map(model -> new Pair<>(model, LogisticsNewRenderPipe.basicPipeTexture))
+					.collect(Collectors.toList()));
 		}
 
 		for (Edge edge : Edge.values()) {
-			objectsToRender.add(new Pair<IModel3D, IIconTransformation>(LogisticsNewRenderPipe.edges.get(edge), LogisticsNewRenderPipe.basicPipeTexture));
+			objectsToRender.add(new Pair<>(LogisticsNewRenderPipe.edges
+					.get(edge), LogisticsNewRenderPipe.basicPipeTexture));
 		}
 
 		//ArrayList<Pair<CCModel, IconTransformation>> objectsToRender2 = new ArrayList<Pair<CCModel, IconTransformation>>();
@@ -88,7 +90,7 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 			for (IModel3D model : LogisticsNewRenderPipe.texturePlate_Outer.get(dir)) {
 				IIconTransformation icon = Textures.LPnewPipeIconProvider.getIcon(texture);
 				if (icon != null) {
-					objectsToRender.add(new Pair<IModel3D, IIconTransformation>(model, icon));
+					objectsToRender.add(new Pair<>(model, icon));
 				}
 			}
 		}

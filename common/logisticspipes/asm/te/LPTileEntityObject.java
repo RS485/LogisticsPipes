@@ -8,7 +8,7 @@ import logisticspipes.utils.CacheHolder.CacheTypes;
 
 public class LPTileEntityObject {
 
-	public List<ITileEntityChangeListener> changeListeners = new ArrayList<ITileEntityChangeListener>();
+	public List<ITileEntityChangeListener> changeListeners = new ArrayList<>();
 	public long initialised = 0;
 
 	private CacheHolder cacheHolder;

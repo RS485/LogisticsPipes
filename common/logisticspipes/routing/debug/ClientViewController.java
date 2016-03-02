@@ -7,6 +7,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import logisticspipes.interfaces.IDebugHUDProvider;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
@@ -32,18 +33,18 @@ public class ClientViewController implements IDebugHUDProvider {
 
 	private DoubleCoordinates mainPipe = null;
 	private int tick = 0;
-	private final List<DoubleCoordinates> canidates = new ArrayList<DoubleCoordinates>();
+	private final List<DoubleCoordinates> canidates = new ArrayList<>();
 	private DebugWindow debugWindow;
 
-	private List<IHeadUpDisplayRendererProvider> listHUD = new ArrayList<IHeadUpDisplayRendererProvider>();
-	private HashMap<DoubleCoordinates, DebugInformation> HUDPositions = new HashMap<DoubleCoordinates, DebugInformation>();
+	private List<IHeadUpDisplayRendererProvider> listHUD = new ArrayList<>();
+	private HashMap<DoubleCoordinates, DebugInformation> HUDPositions = new HashMap<>();
 
 	public static class DebugInformation {
 
 		public boolean isNew = false;
 		public int newIndex = -1;
-		public List<Integer> positions = new ArrayList<Integer>();
-		public List<ExitRoute> routes = new ArrayList<ExitRoute>();
+		public List<Integer> positions = new ArrayList<>();
+		public List<ExitRoute> routes = new ArrayList<>();
 		public EnumSet<PipeRoutingConnectionType> closedSet;
 		public EnumMap<PipeRoutingConnectionType, List<List<DoubleCoordinates>>> filters;
 		public EnumSet<PipeRoutingConnectionType> nextFlags;
@@ -141,9 +142,9 @@ public class ClientViewController implements IDebugHUDProvider {
 			getDebugInformation(pos).routes.add(exit);
 			getDebugInformation(pos).positions.add(i);
 		}
-		for (Entry<DoubleCoordinates, DebugInformation> entry : HUDPositions.entrySet()) {
-			listHUD.add(new HUDRoutingTableDebugProvider(new HUDRoutingTableGeneralInfo(entry.getValue()), entry.getKey()));
-		}
+		listHUD.addAll(HUDPositions.entrySet().stream()
+				.map(entry -> new HUDRoutingTableDebugProvider(new HUDRoutingTableGeneralInfo(entry.getValue()), entry.getKey()))
+				.collect(Collectors.toList()));
 	}
 
 	@Override

@@ -49,16 +49,14 @@ public class DebugGuiController {
 	}
 
 	public void execServer() {
-		for(IDebugGuiEntry entry:serverDebugger.values()) {
-			entry.exec();
-		}
+		serverDebugger.values().forEach(IDebugGuiEntry::exec);
 	}
 
-	private HashMap<EntityPlayer, IDebugGuiEntry> serverDebugger = new HashMap<EntityPlayer, IDebugGuiEntry>();
-	private List<IDataConnection> serverList = new LinkedList<IDataConnection>();
+	private HashMap<EntityPlayer, IDebugGuiEntry> serverDebugger = new HashMap<>();
+	private List<IDataConnection> serverList = new LinkedList<>();
 
 	private IDebugGuiEntry clientController = null;
-	private List<Future<IDataConnection>> clientList = new LinkedList<Future<IDataConnection>>();
+	private List<Future<IDataConnection>> clientList = new LinkedList<>();
 
 	public void startWatchingOf(Object object, EntityPlayer player) {
 		if (object == null) {
@@ -69,13 +67,7 @@ public class DebugGuiController {
 			try {
 				entry = IDebugGuiEntry.create();
 				serverDebugger.put(player, entry);
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-				return;
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-				return;
-			} catch (InstantiationException e) {
+			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();
 				return;
 			}
@@ -97,13 +89,7 @@ public class DebugGuiController {
 		if(clientController == null) {
 			try {
 				clientController = IDebugGuiEntry.create();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-				return;
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-				return;
-			} catch (InstantiationException e) {
+			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();
 				return;
 			}
@@ -137,9 +123,7 @@ public class DebugGuiController {
 				IDataConnection connection = null;
 				try {
 					connection = connectionFuture.get();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				} catch (ExecutionException e) {
+				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
 				}
 				if(connection != null) {

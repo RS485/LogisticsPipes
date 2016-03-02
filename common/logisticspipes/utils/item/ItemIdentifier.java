@@ -120,7 +120,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		private ConcurrentHashMap<Integer, ItemIdentifier> holder;
 
 		public MapDamagedItentifierHolder() {
-			holder = new ConcurrentHashMap<Integer, ItemIdentifier>(4096, 0.5f, 1);
+			holder = new ConcurrentHashMap<>(4096, 0.5f, 1);
 		}
 
 		@Override
@@ -144,7 +144,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		public ArrayDamagedItentifierHolder(int damage) {
 			//round to nearest superior power of 2
 			int newlen = 1 << (32 - Integer.numberOfLeadingZeros(damage));
-			holder = new AtomicReferenceArray<ItemIdentifier>(newlen);
+			holder = new AtomicReferenceArray<>(newlen);
 		}
 
 		@Override
@@ -161,7 +161,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		public void ensureCapacity(int damage) {
 			if (holder.length() <= damage) {
 				int newlen = 1 << (32 - Integer.numberOfLeadingZeros(damage));
-				AtomicReferenceArray<ItemIdentifier> newdamages = new AtomicReferenceArray<ItemIdentifier>(newlen);
+				AtomicReferenceArray<ItemIdentifier> newdamages = new AtomicReferenceArray<>(newlen);
 				for (int i = 0; i < holder.length(); i++) {
 					newdamages.set(i, holder.get(i));
 				}
@@ -171,17 +171,17 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 	}
 
 	//array of ItemIdentifiers for damage=0,tag=null items
-	private final static ConcurrentHashMap<Item, ItemIdentifier> simpleIdentifiers = new ConcurrentHashMap<Item, ItemIdentifier>(4096, 0.5f, 1);
+	private final static ConcurrentHashMap<Item, ItemIdentifier> simpleIdentifiers = new ConcurrentHashMap<>(4096, 0.5f, 1);
 
 	//array of arrays for items with damage>0 and tag==null
-	private final static ConcurrentHashMap<Item, IDamagedIdentifierHolder> damageIdentifiers = new ConcurrentHashMap<Item, IDamagedIdentifierHolder>(4096, 0.5f, 1);
+	private final static ConcurrentHashMap<Item, IDamagedIdentifierHolder> damageIdentifiers = new ConcurrentHashMap<>(4096, 0.5f, 1);
 
 	//map for id+damage+tag -> ItemIdentifier lookup
-	private final static HashMap<ItemKey, IDReference> keyRefMap = new HashMap<ItemKey, IDReference>(1024, 0.5f);
+	private final static HashMap<ItemKey, IDReference> keyRefMap = new HashMap<>(1024, 0.5f);
 	//for tracking the tagUniqueIDs in use for a given Item
-	private final static HashMap<Item, BitSet> tagIDsets = new HashMap<Item, BitSet>(1024, 0.5f);
+	private final static HashMap<Item, BitSet> tagIDsets = new HashMap<>(1024, 0.5f);
 	//a referenceQueue to collect GCed identifier refs
-	private final static ReferenceQueue<ItemIdentifier> keyRefQueue = new ReferenceQueue<ItemIdentifier>();
+	private final static ReferenceQueue<ItemIdentifier> keyRefQueue = new ReferenceQueue<>();
 	//and locks to protect these
 	private final static ReadWriteLock keyRefLock = new ReentrantReadWriteLock();
 	private final static Lock keyRefRlock = ItemIdentifier.keyRefLock.readLock();
@@ -379,7 +379,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 
 	public static List<ItemIdentifier> getMatchingNBTIdentifier(Item item, int itemData) {
 		//inefficient, we'll have to add another map if this becomes a bottleneck
-		ArrayList<ItemIdentifier> resultlist = new ArrayList<ItemIdentifier>(16);
+		ArrayList<ItemIdentifier> resultlist = new ArrayList<>(16);
 		ItemIdentifier.keyRefRlock.lock();
 		for (IDReference r : ItemIdentifier.keyRefMap.values()) {
 			ItemIdentifier t = r.get();
@@ -517,7 +517,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 						}
 					}
 				}
-			} catch (NoSuchFieldException e) {} catch (SecurityException e) {} catch (IllegalArgumentException e) {} catch (IllegalAccessException e) {}
+			} catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException | SecurityException e) {}
 			if (creativeTabName == null) {
 				creativeTabName = "UNKNOWN";
 			}
@@ -561,7 +561,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 	}
 
 	private static Map<Integer, Object> getArrayAsMap(int[] array) {
-		HashMap<Integer, Object> map = new HashMap<Integer, Object>();
+		HashMap<Integer, Object> map = new HashMap<>();
 		int i = 0;
 		for (int object : array) {
 			map.put(i, object);
@@ -571,7 +571,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 	}
 
 	private static Map<Integer, Object> getArrayAsMap(byte[] array) {
-		HashMap<Integer, Object> map = new HashMap<Integer, Object>();
+		HashMap<Integer, Object> map = new HashMap<>();
 		int i = 1;
 		for (byte object : array) {
 			map.put(i, object);
@@ -586,38 +586,38 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 			return null;
 		}
 		if (nbt instanceof NBTTagByte) {
-			HashMap<Object, Object> map = new HashMap<Object, Object>();
+			HashMap<Object, Object> map = new HashMap<>();
 			map.put("type", "NBTTagByte");
 			map.put("value", ((NBTTagByte) nbt).func_150290_f());
 			return map;
 		} else if (nbt instanceof NBTTagByteArray) {
-			HashMap<Object, Object> map = new HashMap<Object, Object>();
+			HashMap<Object, Object> map = new HashMap<>();
 			map.put("type", "NBTTagByteArray");
 			map.put("value", ItemIdentifier.getArrayAsMap(((NBTTagByteArray) nbt).func_150292_c()));
 			return map;
 		} else if (nbt instanceof NBTTagDouble) {
-			HashMap<Object, Object> map = new HashMap<Object, Object>();
+			HashMap<Object, Object> map = new HashMap<>();
 			map.put("type", "NBTTagDouble");
 			map.put("value", ((NBTTagDouble) nbt).func_150286_g());
 			return map;
 		} else if (nbt instanceof NBTTagFloat) {
-			HashMap<Object, Object> map = new HashMap<Object, Object>();
+			HashMap<Object, Object> map = new HashMap<>();
 			map.put("type", "NBTTagFloat");
 			map.put("value", ((NBTTagFloat) nbt).func_150288_h());
 			return map;
 		} else if (nbt instanceof NBTTagInt) {
-			HashMap<Object, Object> map = new HashMap<Object, Object>();
+			HashMap<Object, Object> map = new HashMap<>();
 			map.put("type", "NBTTagInt");
 			map.put("value", ((NBTTagInt) nbt).func_150287_d());
 			return map;
 		} else if (nbt instanceof NBTTagIntArray) {
-			HashMap<Object, Object> map = new HashMap<Object, Object>();
+			HashMap<Object, Object> map = new HashMap<>();
 			map.put("type", "NBTTagIntArray");
 			map.put("value", ItemIdentifier.getArrayAsMap(((NBTTagIntArray) nbt).func_150302_c()));
 			return map;
 		} else if (nbt instanceof NBTTagList) {
 			List internal = ((NBTTagList) nbt).tagList;
-			HashMap<Integer, Object> content = new HashMap<Integer, Object>();
+			HashMap<Integer, Object> content = new HashMap<>();
 			int i = 1;
 			for (Object object : internal) {
 				if (object instanceof NBTBase) {
@@ -625,14 +625,14 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 				}
 				i++;
 			}
-			HashMap<Object, Object> map = new HashMap<Object, Object>();
+			HashMap<Object, Object> map = new HashMap<>();
 			map.put("type", "NBTTagList");
 			map.put("value", content);
 			return map;
 		} else if (nbt instanceof NBTTagCompound) {
 			Map internal = ((NBTTagCompound) nbt).tagMap;
-			HashMap<Object, Object> content = new HashMap<Object, Object>();
-			HashMap<Integer, Object> keys = new HashMap<Integer, Object>();
+			HashMap<Object, Object> content = new HashMap<>();
+			HashMap<Integer, Object> keys = new HashMap<>();
 			int i = 1;
 			for (Object object : internal.entrySet()) {
 				Entry e = (Entry) object;
@@ -642,23 +642,23 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 				}
 				i++;
 			}
-			HashMap<Object, Object> map = new HashMap<Object, Object>();
+			HashMap<Object, Object> map = new HashMap<>();
 			map.put("type", "NBTTagCompound");
 			map.put("value", content);
 			map.put("keys", keys);
 			return map;
 		} else if (nbt instanceof NBTTagLong) {
-			HashMap<Object, Object> map = new HashMap<Object, Object>();
+			HashMap<Object, Object> map = new HashMap<>();
 			map.put("type", "NBTTagLong");
 			map.put("value", ((NBTTagLong) nbt).func_150291_c());
 			return map;
 		} else if (nbt instanceof NBTTagShort) {
-			HashMap<Object, Object> map = new HashMap<Object, Object>();
+			HashMap<Object, Object> map = new HashMap<>();
 			map.put("type", "NBTTagShort");
 			map.put("value", ((NBTTagShort) nbt).func_150287_d());
 			return map;
 		} else if (nbt instanceof NBTTagString) {
-			HashMap<Object, Object> map = new HashMap<Object, Object>();
+			HashMap<Object, Object> map = new HashMap<>();
 			map.put("type", "NBTTagString");
 			map.put("value", ((NBTTagString) nbt).func_150285_a_());
 			return map;

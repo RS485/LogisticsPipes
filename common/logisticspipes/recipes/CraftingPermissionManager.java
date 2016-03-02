@@ -25,7 +25,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class CraftingPermissionManager {
 
-	private Map<PlayerIdentifier, Pair<Long, EnumSet<CraftingDependency>>> serverCache = new HashMap<PlayerIdentifier, Pair<Long, EnumSet<CraftingDependency>>>();
+	private Map<PlayerIdentifier, Pair<Long, EnumSet<CraftingDependency>>> serverCache = new HashMap<>();
 	private int tick = 0;
 	public EnumSet<CraftingDependency> clientSidePermission;
 
@@ -87,9 +87,9 @@ public class CraftingPermissionManager {
 					enumSet.add(type);
 				}
 			}
-			serverCache.put(player, new Pair<Long, EnumSet<CraftingDependency>>(System.currentTimeMillis(), enumSet));
+			serverCache.put(player, new Pair<>(System.currentTimeMillis(), enumSet));
 		} catch (Exception e) {
-			serverCache.put(player, new Pair<Long, EnumSet<CraftingDependency>>(System.currentTimeMillis(), EnumSet.of(CraftingDependency.Basic)));
+			serverCache.put(player, new Pair<>(System.currentTimeMillis(), EnumSet.of(CraftingDependency.Basic)));
 		}
 	}
 

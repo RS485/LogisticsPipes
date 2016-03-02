@@ -1,6 +1,7 @@
 package logisticspipes.nei;
 
 import java.awt.Rectangle;
+import java.util.stream.Collectors;
 
 import logisticspipes.gui.GuiSolderingStation;
 import logisticspipes.recipes.SolderingStationRecipes;
@@ -39,11 +40,9 @@ public class NEISolderingStationRecipeManager extends ShapedRecipeHandler {
 
 	@Override
 	public void loadCraftingRecipes(ItemStack result) {
-		for (SolderingStationRecipe recipe : SolderingStationRecipes.getRecipes()) {
-			if (NEIServerUtils.areStacksSameTypeCrafting(recipe.result, result)) {
-				arecipes.add(getShape(recipe));
-			}
-		}
+		arecipes.addAll(SolderingStationRecipes.getRecipes().stream()
+				.filter(recipe -> NEIServerUtils.areStacksSameTypeCrafting(recipe.result, result)).map(this::getShape)
+				.collect(Collectors.toList()));
 	}
 
 	@Override
@@ -86,9 +85,9 @@ public class NEISolderingStationRecipeManager extends ShapedRecipeHandler {
 	@Override
 	public void loadCraftingRecipes(String outputId, Object... results) {
 		if (outputId.equals("solderingstation") && getClass() == NEISolderingStationRecipeManager.class) {
-			for (SolderingStationRecipe recipe : SolderingStationRecipes.getRecipes()) {
-				arecipes.add(getShape(recipe));
-			}
+			arecipes.addAll(SolderingStationRecipes.getRecipes().stream()
+					.map(this::getShape)
+					.collect(Collectors.toList()));
 		} else {
 			super.loadCraftingRecipes(outputId, results);
 		}

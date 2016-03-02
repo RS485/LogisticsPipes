@@ -56,7 +56,7 @@ public class LogisticsCraftingOverlayHandler implements IOverlayHandler {
 			}
 			if (slot < 9) {
 				stack[slot] = ps.items[0];
-				List<ItemStack> list = new ArrayList<ItemStack>(Arrays.asList(ps.items));
+				List<ItemStack> list = new ArrayList<>(Arrays.asList(ps.items));
 				Iterator<ItemStack> iter = list.iterator();
 				while (iter.hasNext()) {
 					ItemStack wildCardCheckStack = iter.next();

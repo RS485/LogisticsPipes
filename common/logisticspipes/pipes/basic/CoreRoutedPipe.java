@@ -821,7 +821,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 	@Override
 	public IRouter getRouter() {
 		if (stillNeedReplace) {
-			System.out.println("Hey, don't get routers for pipes that aren't ready");
+			System.out.format("Hey, don't get routers for pipes that aren't ready (%d, %d, %d, '%s')", this.getX(), this.getY(), this.getZ(), this.getWorld().getWorldInfo().getWorldName());
 			new Throwable().printStackTrace();
 		}
 		if (router == null) {

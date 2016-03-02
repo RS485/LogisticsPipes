@@ -37,7 +37,7 @@ public class LPItemDuct extends TileItemDuct {
 	@Override
 	public RouteInfo canRouteItem(ItemStack arg0) {
 		if (arg0 != null) {
-			if (pipe.pipe.isRoutedPipe()) {
+			if (pipe.pipe.isRoutedPipe() && !((CoreRoutedPipe)pipe.pipe).stillNeedReplace()) {
 				if (SimpleServiceLocator.logisticsManager.hasDestination(ItemIdentifier.get(arg0), true, ((CoreRoutedPipe) pipe.pipe).getRouterId(), new ArrayList<Integer>()) != null) {
 					return new RouteInfo(0, (byte) dir.getOpposite().ordinal());
 				}

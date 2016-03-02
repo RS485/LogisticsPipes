@@ -126,6 +126,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 			}
 			count -= removed.stackSize;
 		}
+		_inventory.markDirty();
 		return outputStack;
 	}
 
@@ -203,7 +204,9 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 
 	@Override
 	public ItemStack decrStackSize(int i, int j) {
-		return _inventory.decrStackSize(i, j);
+		ItemStack stack = _inventory.decrStackSize(i, j);
+		_inventory.markDirty();
+		return stack;
 	}
 
 	@Override
@@ -237,6 +240,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 
 		stackInSlot.stackSize += toAdd;
 		_inventory.setInventorySlotContents(i, stackInSlot);
+		_inventory.markDirty();
 		return toAdd;
 	}
 }

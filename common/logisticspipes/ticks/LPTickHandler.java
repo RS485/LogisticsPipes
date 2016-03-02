@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.google.common.collect.MapMaker;
 import logisticspipes.commands.commands.debug.DebugGuiController;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -49,7 +50,7 @@ public class LPTickHandler {
 		DebugGuiController.instance().execServer();
 	}
 
-	private static Map<World, LPWorldInfo> worldInfo = new ConcurrentHashMap<World, LPWorldInfo>();
+	private static Map<World, LPWorldInfo> worldInfo = new MapMaker().weakKeys().makeMap();
 
 	@SubscribeEvent
 	public void worldTick(WorldTickEvent event) {

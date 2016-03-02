@@ -20,7 +20,7 @@
 	<property name="ic2.filename"          value="industrialcraft-2-2.2.595-experimental-api.zip"/>
 	<property name="cc.filename"           value="ComputerCraftAPI1.64pr4.zip"/>
 	<property name="thaumcraft.filename"   value="Thaumcraft-1.7.2-4.1.1.14-api.zip"/>
-	<property name="ocapi.filename"        value="OpenComputers-MC1.7.10-1.5.19.37-api.zip"/>
+	<property name="ocapi.filename"        value="OpenComputers-MC1.7.10-1.5.22.46-api.zip"/>
 	<property name="appeng.filename"       value="appliedenergistics2-rv2-beta-14-api.zip"/>
 	<property name="bc.filename"           value="buildcraft-7.1.5-dev.jar"/>
 

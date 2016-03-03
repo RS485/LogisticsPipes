@@ -11,7 +11,6 @@
 	<property name="thaumcraft.dir"       value="${build.dir}/unpack/thaumcraft"/>
 	<property name="ocapi.dir"            value="${build.dir}/unpack/ocapi"/>
 	<property name="appeng.dir"           value="${build.dir}/unpack/appeng"/>
-	<property name="enderio.dir"          value="${build.dir}/unpack/enderio"/>
 
 	<property name="downloadserver"       value="http://rs485.theZorro266.com"/>
 	<property name="downloadserver.dir"   value="external/"/>
@@ -24,7 +23,6 @@
 	<property name="ocapi.filename"        value="OpenComputers-MC1.7.10-1.5.22.46-api.zip"/>
 	<property name="appeng.filename"       value="appliedenergistics2-rv2-beta-14-api.zip"/>
 	<property name="bc.filename"           value="buildcraft-7.1.5-dev.jar"/>
-	<property name="enderio.filename"      value="EnderIO-1.7.10-2.3.0.424_beta-api.jar"/>
 
 	<target name="download">
 		<mkdir dir="${download.dir}"/>
@@ -36,7 +34,6 @@
 		<get src="${downloadserver.full}${ocapi.filename}" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}${appeng.filename}" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}${bc.filename}" dest="${download.dir}" usetimestamp="True"/>
-		<get src="${downloadserver.full}${enderio.filename}" dest="${download.dir}" usetimestamp="True"/>
 		<echo message="Download finished"/>
 	</target>
 
@@ -76,12 +73,6 @@
 		<unzip dest="${appeng.dir}" failOnEmptyArchive="true">
 			<fileset dir="${download.dir}">
 				<include name="${appeng.filename}"/>
-			</fileset>
-		</unzip>
-
-		<unzip dest="${enderio.dir}" failOnEmptyArchive="true">
-			<fileset dir="${download.dir}">
-				<include name="${enderio.filename}"/>
 			</fileset>
 		</unzip>
 
@@ -131,11 +122,5 @@
 
 		<echo message="Copied Applied Energistics 2 API"/>
 
-		<!-- Copy EnderIO API source -->
-		<copy todir="${api.dir}">
-			<fileset dir="${enderio.dir}"/>
-		</copy>
-
-		<echo message="Copied EnderIO API"/>
 	</target>
 </project>

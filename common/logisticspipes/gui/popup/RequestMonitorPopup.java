@@ -466,7 +466,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		int size = list.size();
 		int startLeft = -(size - 1) * (30 / 2) + xPos;
 		yPos += 13;
-		for (Object aList : list) {
+		for (IOrderInfoProvider aList : list) {
 			if (aList.isInProgress()) {
 				GL11.glColor4f(0.1F, 0.9F, 0.1F, 1.0F);
 			} else {

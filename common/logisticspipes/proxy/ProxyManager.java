@@ -95,11 +95,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.Fluid;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -322,6 +320,9 @@ public class ProxyManager {
 			@Override public List<TileEntity> getConnectedHyperCubes(TileEntity tile) {return new ArrayList<>(0);}
 			@Override public List<TileEntity> getConnectedTransceivers(TileEntity tile) {return null;}
 			@Override public boolean isEnderIO() {return false;}
+			@Override public boolean isItemConduit(TileEntity tile, ForgeDirection dir) {return false;}
+			@Override public boolean isFluidConduit(TileEntity tile, ForgeDirection dir) {return false;}
+			@Override public boolean isBundledPipe(TileEntity tile) {return false;}
 		}));
 
 		SimpleServiceLocator.setIronChestProxy(ProxyManager.getWrappedProxy("IronChest", IIronChestProxy.class, IronChestProxy.class, new IIronChestProxy() {

@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Set;
 
 import logisticspipes.LPConstants;
+import logisticspipes.asm.enderio.ClassAbstractLiquidConduitHandler;
+import logisticspipes.asm.enderio.ClassItemConduitHandler;
+import logisticspipes.asm.enderio.ClassNetworkedInventoryHandler;
 import logisticspipes.asm.td.ClassRenderDuctItemsHandler;
 import logisticspipes.asm.td.ClassTileMultiBlockHandler;
 import logisticspipes.asm.td.ClassTravelingItemHandler;
@@ -111,6 +114,15 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			}
 			if (name.equals("cofh.thermaldynamics.render.RenderDuctItems")) {
 				return ClassRenderDuctItemsHandler.handleRenderDuctItemsClass(bytes);
+			}
+			if (name.equals("crazypants.enderio.conduit.item.ItemConduit")) {
+				return ClassItemConduitHandler.handleItemConduitClass(bytes);
+			}
+			if (name.equals("crazypants.enderio.conduit.item.NetworkedInventory")) {
+				return ClassNetworkedInventoryHandler.handleNetworkedInventoryClass(bytes);
+			}
+			if (name.equals("crazypants.enderio.conduit.liquid.AbstractLiquidConduit")) {
+				return ClassAbstractLiquidConduitHandler.handleAbstractLiquidConduitClass(bytes);
 			}
 			if (!name.startsWith("logisticspipes.")) {
 				return bytes;

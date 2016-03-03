@@ -16,8 +16,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
-import logisticspipes.pipes.tubes.HSTubeSpeedup;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -658,7 +656,7 @@ public class PipeTransportLogistics {
 				}
 			}
 			if (SimpleServiceLocator.betterStorageProxy.isBetterStorageCrate(tile) || SimpleServiceLocator.factorizationProxy.isBarral(tile)
-			//|| (Configs.TE_PIPE_SUPPORT && SimpleServiceLocator.thermalExpansionProxy.isItemConduit(tile) && SimpleServiceLocator.thermalExpansionProxy.isSideFree(tile, side.getOpposite().ordinal()))
+					|| SimpleServiceLocator.enderIOProxy.isItemConduit(tile, side.getOpposite())
 					|| (getPipe().getUpgradeManager().hasRFPowerSupplierUpgrade() && SimpleServiceLocator.cofhPowerProxy.isEnergyReceiver(tile)) || (getPipe().getUpgradeManager().getIC2PowerLevel() > 0 && SimpleServiceLocator.IC2Proxy.isEnergySink(tile))) {
 				return true;
 			}

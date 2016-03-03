@@ -49,6 +49,9 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 
 	@Override
 	public boolean logisitcsIsPipeConnected(TileEntity tile, ForgeDirection dir) {
+		if(SimpleServiceLocator.enderIOProxy.isBundledPipe(tile)) {
+			return SimpleServiceLocator.enderIOProxy.isFluidConduit(tile, dir.getOpposite());
+		}
 		if (tile instanceof IFluidHandler) {
 			IFluidHandler liq = (IFluidHandler) tile;
 

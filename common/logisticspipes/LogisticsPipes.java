@@ -535,6 +535,9 @@ public class LogisticsPipes {
 		forName("cofh.thermaldynamics.block.TileTDBase");
 		forName("cofh.thermaldynamics.duct.item.TravelingItem");
 		forName("cofh.thermaldynamics.render.RenderDuctItems");
+		forName("crazypants.enderio.conduit.item.ItemConduit");
+		forName("crazypants.enderio.conduit.item.NetworkedInventory");
+		forName("crazypants.enderio.conduit.liquid.AbstractLiquidConduit");
 	}
 
 	private void forName(String string) {

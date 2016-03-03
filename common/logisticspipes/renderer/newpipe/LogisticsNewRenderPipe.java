@@ -5,11 +5,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import logisticspipes.interfaces.ITubeOrientation;
-import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
-import logisticspipes.pipes.tubes.HSTubeSCurve;
 import logisticspipes.proxy.object3d.operation.*;
-import logisticspipes.renderer.newpipe.tube.SCurveTubeRenderer;
-import logisticspipes.renderer.state.PipeSubRenderState;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -724,6 +720,9 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 						DoubleCoordinates coords = CoordinateUtils.add(new DoubleCoordinates((TileEntity) pipeTile), dir);
 						Block block = coords.getBlock(pipeTile.getWorld());
 						double[] bounds = { block.getBlockBoundsMinY(), block.getBlockBoundsMinZ(), block.getBlockBoundsMinX(), block.getBlockBoundsMaxY(), block.getBlockBoundsMaxZ(), block.getBlockBoundsMaxX() };
+						if(SimpleServiceLocator.enderIOProxy.isItemConduit(coords.getTileEntity(pipeTile.getWorld()), dir.getOpposite()) || SimpleServiceLocator.enderIOProxy.isFluidConduit(coords.getTileEntity(pipeTile.getWorld()), dir.getOpposite())) {
+							bounds = new double[]{0.0249D, 0.0249D, 0.0249D, 0.9751D, 0.9751D, 0.9751D};
+						}
 						double bound = bounds[dir.ordinal() / 2 + (dir.ordinal() % 2 == 0 ? 3 : 0)];
 						ScaleObject key = new ScaleObject(model, bound);
 						IModel3D model2 = LogisticsNewRenderPipe.scaleMap.get(key);

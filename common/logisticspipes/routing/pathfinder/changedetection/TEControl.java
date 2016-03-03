@@ -141,6 +141,21 @@ public class TEControl {
 			return;
 		}
 		final TileEntity tile = pos.getTileEntity(world);
+		if(SimpleServiceLocator.enderIOProxy.isBundledPipe(tile)) {
+			QueuedTasks.queueTask(() -> {
+				for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+					DoubleCoordinates newPos = CoordinateUtils.sum(pos, dir);
+					if (!newPos.blockExists(world)) {
+						continue;
+					}
+					TileEntity nextTile = newPos.getTileEntity(world);
+					if(nextTile instanceof LogisticsTileGenericPipe) {
+						((LogisticsTileGenericPipe)nextTile).scheduleNeighborChange();
+					}
+				}
+				return null;
+			});
+		}
 		if (tile == null || ((ILPTEInformation) tile).getObject() == null) {
 			return;
 		}

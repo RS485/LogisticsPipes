@@ -38,7 +38,6 @@ public class Configs {
 
 	public static boolean TOOLTIP_INFO = LPConstants.DEBUG;
 	public static boolean MANDATORY_CARPENTER_RECIPES = true;
-	public static boolean ENABLE_BETA_RECIPES = false;
 	public static boolean ENABLE_PARTICLE_FX = true;
 
 	// GuiOrderer Popup setting
@@ -137,12 +136,6 @@ public class Configs {
 						"mandatoryCarpenterRecipes",
 						Configs.MANDATORY_CARPENTER_RECIPES,
 						"Whether or not the Carpenter is required to craft Forestry related pipes/modules.")
-						.getBoolean(false);
-		Configs.ENABLE_BETA_RECIPES = Configs.CONFIGURATION
-				.get(Configuration.CATEGORY_GENERAL,
-						"enableBetaRecipes",
-						Configs.ENABLE_BETA_RECIPES,
-						"Wether or not the Beta-Recipes for Stuff shall be used for pipes/modules.")
 						.getBoolean(false);
 		Configs.ENABLE_PARTICLE_FX = Configs.CONFIGURATION.get(Configuration.CATEGORY_GENERAL,
 				"enableParticleFX", Configs.ENABLE_PARTICLE_FX,

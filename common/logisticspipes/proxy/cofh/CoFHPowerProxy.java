@@ -3,7 +3,6 @@ package logisticspipes.proxy.cofh;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.config.Configs;
-import logisticspipes.items.ItemPipeComponents;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyReceiver;
 import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyStorage;
@@ -61,22 +60,15 @@ public class CoFHPowerProxy implements ICoFHPowerProxy {
 	@Override
 	public void addCraftingRecipes(ICraftingParts parts) {
 		LocalCraftingManager craftingManager = RecipeManager.craftingManager;
-		if (!Configs.ENABLE_BETA_RECIPES) {
-			craftingManager.addRecipe(
-					new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_RF_SUPPLIER),
-					CraftingDependency.Power_Distribution,
-					new Object[] { false, "PEP", "RBR", "PTP", Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_TRANSPORTATION), Character.valueOf('P'), Items.paper, Character.valueOf('E'), parts.getBlockDynamo(), Character.valueOf('T'), parts.getPowerCoilSilver(),
-							Character.valueOf('R'), parts.getPowerCoilGold() });
-			craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_RF_POWERPROVIDER), CraftingDependency.Power_Distribution,
-					new Object[] { false, "PEP", "RBR", "PTP", Character.valueOf('B'), Blocks.redstone_block, Character.valueOf('P'), Items.paper, Character.valueOf('E'), parts.getBlockDynamo(), Character.valueOf('T'), parts.getPowerCoilSilver(), Character.valueOf('R'), parts.getPowerCoilGold() });
-		}
-		if (Configs.ENABLE_BETA_RECIPES) {
-			craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_RF_SUPPLIER), CraftingDependency.Power_Distribution, new Object[] { false, "PEP", "RBR", "PTP", Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsPipeComponents, 1, ItemPipeComponents.ITEM_LOGICEXPANDER),
-					Character.valueOf('P'), Items.paper, Character.valueOf('E'), new ItemStack(LogisticsPipes.LogisticsPipeComponents, 1, ItemPipeComponents.ITEM_POWERACCEPT), Character.valueOf('T'), parts.getPowerCoilSilver(), Character.valueOf('R'), parts.getPowerCoilGold() });
-			craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_RF_POWERPROVIDER), CraftingDependency.Power_Distribution,
-					new Object[] { false, "PEP", "RBR", "PTP", Character.valueOf('B'), Blocks.glowstone, Character.valueOf('P'), Items.iron_ingot, Character.valueOf('E'), new ItemStack(LogisticsPipes.LogisticsPipeComponents, 1, ItemPipeComponents.ITEM_FOCUSLENSE), Character.valueOf('T'), parts.getPowerCoilSilver(),
-							Character.valueOf('R'), parts.getPowerCoilGold() });
-		}
+		/*
+		craftingManager.addRecipe(
+				new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_RF_SUPPLIER),
+				CraftingDependency.Power_Distribution,
+				new Object[] { false, "PEP", "RBR", "PTP", Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_TRANSPORTATION), Character.valueOf('P'), Items.paper, Character.valueOf('E'), parts.getBlockDynamo(), Character.valueOf('T'), parts.getPowerCoilSilver(),
+						Character.valueOf('R'), parts.getPowerCoilGold() });
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_RF_POWERPROVIDER), CraftingDependency.Power_Distribution,
+				new Object[] { false, "PEP", "RBR", "PTP", Character.valueOf('B'), Blocks.redstone_block, Character.valueOf('P'), Items.paper, Character.valueOf('E'), parts.getBlockDynamo(), Character.valueOf('T'), parts.getPowerCoilSilver(), Character.valueOf('R'), parts.getPowerCoilGold() });
+		*/
 	}
 
 	@Override

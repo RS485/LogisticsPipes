@@ -132,21 +132,6 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 
 	//Ignores slot/item hiding
 	@Override
-	public boolean containsItem(ItemIdentifier item) {
-		for (int i = 0; i < _inventory.getSizeInventory(); i++) {
-			ItemStack stack = _inventory.getStackInSlot(i);
-			if (stack == null) {
-				continue;
-			}
-			if (ItemIdentifier.get(stack).equals(item)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	//Ignores slot/item hiding
-	@Override
 	public boolean containsUndamagedItem(ItemIdentifier item) {
 		for (int i = 0; i < _inventory.getSizeInventory(); i++) {
 			ItemStack stack = _inventory.getStackInSlot(i);

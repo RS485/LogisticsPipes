@@ -145,16 +145,6 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public boolean containsItem(ItemIdentifier item) {
-		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
-		if (tmp == null || tmp.getItemInventory() == null) {
-			return false;
-		}
-		IAEItemStack stack = AEApi.instance().storage().createItemStack(item.unsafeMakeNormalStack(1));
-		return tmp.getItemInventory().extractItems(stack, Actionable.SIMULATE, source) != null;
-	}
-
-	@Override
 	public boolean containsUndamagedItem(ItemIdentifier item) {
 		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
 		if (tmp == null || tmp.getItemInventory() == null || tmp.getItemInventory().getStorageList() == null) {

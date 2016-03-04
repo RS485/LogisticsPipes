@@ -220,38 +220,10 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public boolean containsItem(ItemIdentifier itemIdent) {
-		ItemStack stack = itemIdent.makeNormalStack(1);
-		if (_smartGroup != null) {
-			for (int slot : _smartGroup.enumerateDrawersForExtraction(stack, true)) {
-				IDrawer drawer = _drawer.getDrawer(slot);
-				if (!drawer.isEmpty()) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		for (int i = 0; i < _drawer.getDrawerCount(); i++) {
-			if (!_drawer.isDrawerEnabled(i)) {
-				continue;
-			}
-
-			IDrawer drawer = _drawer.getDrawer(i);
-			if (drawer != null && !drawer.isEmpty()) {
-				if (drawer.canItemBeStored(stack)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	@Override
 	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
 		if (_smartGroup != null) {
 			ItemStack stack = itemIdent.makeNormalStack(1);
-			for (int slot : _smartGroup.enumerateDrawersForExtraction(stack, true)) {
+			for (int slot : _smartGroup.enumerateDrawersForInsertion(stack, true)) {
 				IDrawer drawer = _drawer.getDrawer(slot);
 				if (!drawer.isEmpty() && ItemIdentifier.get(drawer.getStoredItemPrototype()).getUndamaged().equals(itemIdent)) {
 					return true;

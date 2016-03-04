@@ -106,12 +106,6 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public boolean containsItem(ItemIdentifier itemIdent) {
-		ItemStack items = _storage.getStoredItemType();
-		return items != null && _storage.sameItem(itemIdent.makeNormalStack(1));
-	}
-
-	@Override
 	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
 		ItemStack items = _storage.getStoredItemType();
 		if (items != null && ItemIdentifier.get(items).getUndamaged().equals(itemIdent)) {

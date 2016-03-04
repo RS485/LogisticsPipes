@@ -224,7 +224,7 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
 		if (_smartGroup != null) {
 			ItemStack stack = itemIdent.makeNormalStack(1);
-			for (int slot : _smartGroup.enumerateDrawersForExtraction(stack, true)) {
+			for (int slot : _smartGroup.enumerateDrawersForInsertion(stack, true)) {
 				IDrawer drawer = _drawer.getDrawer(slot);
 				if (!drawer.isEmpty() && ItemIdentifier.get(drawer.getStoredItemPrototype()).getUndamaged().equals(itemIdent)) {
 					return true;

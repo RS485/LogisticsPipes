@@ -172,22 +172,6 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public boolean containsItem(ItemIdentifier itemIdent) {
-		try {
-			ItemStack itemStack = (ItemStack) BarrelInventoryHandler.item.get(_tile);
-			if (itemStack != null) {
-				return ItemIdentifier.get(itemStack).equals(itemIdent);
-			}
-			return false;
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-
-	@Override
 	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
 		try {
 			ItemStack itemStack = (ItemStack) BarrelInventoryHandler.item.get(_tile);

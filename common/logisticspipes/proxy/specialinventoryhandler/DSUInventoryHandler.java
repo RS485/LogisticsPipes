@@ -97,12 +97,6 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public boolean containsItem(ItemIdentifier itemIdent) {
-		ItemStack items = _tile.getStoredItemType();
-		return items != null && ItemIdentifier.get(items).equals(itemIdent);
-	}
-
-	@Override
 	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
 		ItemStack items = _tile.getStoredItemType();
 		if (items != null && ItemIdentifier.get(items).getUndamaged().equals(itemIdent)) {

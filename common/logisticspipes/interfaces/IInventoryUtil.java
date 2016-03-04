@@ -17,8 +17,12 @@ public interface IInventoryUtil {
 
 	public ItemStack getMultipleItems(ItemIdentifier item, int count);
 
-	public boolean containsItem(ItemIdentifier item);
-
+	/**
+	 * Checks to see if the item is inside the inventory. Used by the PolymorphicItemSink
+	 * This includes slots that are limited to one item type but don't contain any items.
+	 * @param item The item to check
+	 * @return true if the item is inside the inventory
+	 */
 	public boolean containsUndamagedItem(ItemIdentifier item);
 
 	public int roomForItem(ItemIdentifier item);

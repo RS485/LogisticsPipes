@@ -85,12 +85,6 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public boolean containsItem(ItemIdentifier itemIdent) {
-		int count = _tile.getItemCount(itemIdent.unsafeMakeNormalStack(1));
-		return (count > 0);
-	}
-
-	@Override
 	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
 		if (!itemIdent.isDamageable()) {
 			int count = _tile.getItemCount(itemIdent.unsafeMakeNormalStack(1));

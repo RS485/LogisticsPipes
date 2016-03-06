@@ -9,7 +9,9 @@ package logisticspipes;
 
 import java.lang.reflect.Field;
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -296,6 +298,7 @@ public class LogisticsPipes {
 	public static ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
 	public static VersionChecker versionChecker;
 
+	private Queue<Runnable> postInitRun = new LinkedList<Runnable>();
 	private static LPGlobalCCAccess generalAccess;
 	private static PlayerConfig playerConfig;
 
@@ -375,6 +378,11 @@ public class LogisticsPipes {
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
+		while(!postInitRun.isEmpty()) {
+			postInitRun.poll().run();
+		}
+		postInitRun = null;
+
 		SpecialInventoryHandlerManager.load();
 		SpecialTankHandlerManager.load();
 
@@ -615,12 +623,17 @@ public class LogisticsPipes {
 	}
 
 	protected Item createPipe(Class<? extends CoreUnroutedPipe> clas, String descr, Side side) {
-		ItemLogisticsPipe res = LogisticsBlockGenericPipe.registerPipe(clas);
+		final ItemLogisticsPipe res = LogisticsBlockGenericPipe.registerPipe(clas);
 		res.setCreativeTab(LogisticsPipes.LPCreativeTab);
 		res.setUnlocalizedName(clas.getSimpleName());
-		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.createPipe(res);
+		final CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.createPipe(res);
 		if (pipe instanceof CoreRoutedPipe) {
-			res.setPipeIconIndex(((CoreRoutedPipe) pipe).getTextureType(ForgeDirection.UNKNOWN).normal, ((CoreRoutedPipe) pipe).getTextureType(ForgeDirection.UNKNOWN).newTexture);
+			postInitRun.add(new Runnable() {
+				@Override
+				public void run() {
+					res.setPipeIconIndex(((CoreRoutedPipe) pipe).getTextureType(ForgeDirection.UNKNOWN).normal, ((CoreRoutedPipe) pipe).getTextureType(ForgeDirection.UNKNOWN).newTexture);
+				}
+			});
 		}
 
 		if (side.isClient()) {

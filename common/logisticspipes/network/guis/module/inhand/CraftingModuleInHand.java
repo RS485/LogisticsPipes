@@ -9,6 +9,7 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.DummyModuleContainer;
 
@@ -48,6 +49,7 @@ public class CraftingModuleInHand extends ModuleInHandGuiProvider {
 		if (!(dummy.getModule() instanceof ModuleCrafter)) {
 			return null;
 		}
+		MainProxy.sendPacketToPlayer(((ModuleCrafter)dummy.getModule()).getCPipePacket(), player);
 		dummy.setInventory(((ModuleCrafter) dummy.getModule()).getDummyInventory());
 		dummy.addNormalSlotsForPlayerInventory(18, 97);
 		//Input slots

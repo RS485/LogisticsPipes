@@ -1,9 +1,6 @@
 package logisticspipes.proxy.specialinventoryhandler;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import com.jaquadro.minecraft.storagedrawers.api.storage.ISmartGroup;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -224,7 +221,15 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
 		if (_smartGroup != null) {
 			ItemStack stack = itemIdent.makeNormalStack(1);
-			for (int slot : _smartGroup.enumerateDrawersForInsertion(stack, true)) {
+			BitSet set = new BitSet();
+			for(int slot:_smartGroup.enumerateDrawersForInsertion(stack, true)) {
+				set.set(slot);
+			}
+			for(int slot:_smartGroup.enumerateDrawersForExtraction(stack, true)) {
+				set.set(slot);
+			}
+			int slot = -1;
+			while ((slot = set.nextSetBit(slot + 1)) != -1) {
 				IDrawer drawer = _drawer.getDrawer(slot);
 				if (!drawer.isEmpty() && ItemIdentifier.get(drawer.getStoredItemPrototype()).getUndamaged().equals(itemIdent)) {
 					return true;
@@ -259,7 +264,15 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 		ItemStack protoStack = itemIdent.makeNormalStack(1);
 
 		if (_smartGroup != null) {
-			for (int slot : _smartGroup.enumerateDrawersForInsertion(protoStack, false)) {
+			BitSet set = new BitSet();
+			for(int slot:_smartGroup.enumerateDrawersForInsertion(protoStack, false)) {
+				set.set(slot);
+			}
+			for(int slot:_smartGroup.enumerateDrawersForExtraction(protoStack, false)) {
+				set.set(slot);
+			}
+			int slot = -1;
+			while ((slot = set.nextSetBit(slot + 1)) != -1) {
 				IDrawer drawer = _drawer.getDrawer(slot);
 				if (!drawer.isEmpty()) {
 					if (drawer instanceof IVoidable && ((IVoidable) drawer).isVoid()) {
@@ -316,7 +329,15 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 		st.stackSize = 0;
 
 		if (_smartGroup != null) {
-			for (int slot : _smartGroup.enumerateDrawersForInsertion(stack, false)) {
+			BitSet set = new BitSet();
+			for(int slot:_smartGroup.enumerateDrawersForInsertion(stack, false)) {
+				set.set(slot);
+			}
+			for(int slot:_smartGroup.enumerateDrawersForExtraction(stack, false)) {
+				set.set(slot);
+			}
+			int slot = -1;
+			while ((slot = set.nextSetBit(slot + 1)) != -1) {
 				IDrawer drawer = _drawer.getDrawer(slot);
 				int avail = 0;
 				if (!drawer.isEmpty()) {

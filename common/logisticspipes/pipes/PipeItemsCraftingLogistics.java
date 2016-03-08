@@ -29,7 +29,6 @@ import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.hud.HUDStartWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopWatchingPacket;
-import logisticspipes.network.packets.module.RequestCraftingPipeUpdatePacket;
 import logisticspipes.network.packets.orderer.OrdererManagerContent;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.signs.CraftingPipeSign;

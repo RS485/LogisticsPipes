@@ -34,4 +34,6 @@ public interface IPipeSign {
 
 	@SideOnly(Side.CLIENT)
 	void render(CoreRoutedPipe pipe, LogisticsRenderPipe renderer);
+
+	IPipeSignData getRenderData(CoreRoutedPipe pipe);
 }

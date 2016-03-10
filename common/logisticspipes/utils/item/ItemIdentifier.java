@@ -22,11 +22,14 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.asm.addinfo.IAddInfo;
 import logisticspipes.asm.addinfo.IAddInfoProvider;
 import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
+import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.utils.FinalNBTTagCompound;
 import logisticspipes.utils.ReflectionHelper;
 
@@ -244,6 +247,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 	private ItemIdentifier _IDIgnoringData = null;
 	private DictItemIdentifier _dict;
 	private boolean canHaveDict = true;
+	private Boolean isRenderListCompatible = null;
 	private String modName;
 	private String creativeTabName;
 
@@ -739,6 +743,14 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 			canHaveDict = false;
 		}
 		return _dict;
+	}
+
+	@SideOnly(Side.CLIENT)
+	public boolean isRenderListCompatible(LogisticsRenderPipe render) {
+		if(isRenderListCompatible == null) {
+			isRenderListCompatible = render.isRenderListCompatible(this.makeNormalStack(1));
+		}
+		return isRenderListCompatible;
 	}
 
 	public void debugDumpData(boolean isClient) {

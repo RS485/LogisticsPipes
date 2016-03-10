@@ -16,9 +16,11 @@ import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtils;
 
 import logisticspipes.utils.tuples.Pair;
+import lombok.Data;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -38,6 +40,19 @@ import java.util.List;
 import java.util.Map;
 
 public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandler {
+
+	@Data
+	private static class ItemAmountPipeSignData implements IPipeSignData {
+		private final ItemIdentifierStack item;
+		private final int amount;
+
+		@Override
+		@SideOnly(Side.CLIENT)
+		public boolean isListCompatible(LogisticsRenderPipe render) {
+			return item == null || item.getItem().isRenderListCompatible(render);
+		}
+	}
+
 
 	public ItemIdentifierInventory itemTypeInv = new ItemIdentifierInventory(1, "", 1);
 	public int amount = 100;
@@ -196,6 +211,21 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 			GL11.glDepthMask(true);
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		}
+	}
+
+	@Override
+	public IPipeSignData getRenderData(CoreRoutedPipe pipe) {
+		ItemAmountPipeSignData result = null;
+		if (pipe != null) {
+			final ItemIdentifierStack idStackInSlot = itemTypeInv.getIDStackInSlot(0);
+			if (itemTypeInv != null && idStackInSlot != null) {
+				String displayAmount = StringUtils.getFormatedStackSize(amount, false);
+				return new ItemAmountPipeSignData(idStackInSlot, amount);
+			} else {
+				return new ItemAmountPipeSignData(null, -1);
+			}
+		}
+		return null;
 	}
 
 	@Override

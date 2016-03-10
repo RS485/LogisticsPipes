@@ -12,6 +12,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
+import lombok.Data;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -26,6 +27,18 @@ import cpw.mods.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 public class CraftingPipeSign implements IPipeSign {
+
+	@Data
+	private static class CraftingPipeSignData implements IPipeSignData {
+		private final ItemIdentifierStack item;
+		private final int satID;
+
+		@Override
+		@SideOnly(Side.CLIENT)
+		public boolean isListCompatible(LogisticsRenderPipe render) {
+			return item == null || item.getItem().isRenderListCompatible(render);
+		}
+	}
 
 	public CoreRoutedPipe pipe;
 	public ForgeDirection dir;
@@ -111,5 +124,21 @@ public class CraftingPipeSign implements IPipeSign {
 			GL11.glDepthMask(true);
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		}
+	}
+
+	@Override
+	public IPipeSignData getRenderData(CoreRoutedPipe pipe) {
+		PipeItemsCraftingLogistics cpipe = (PipeItemsCraftingLogistics) pipe;
+		if (cpipe != null) {
+			List<ItemIdentifierStack> craftables = cpipe.getCraftedItems();
+			if (craftables != null && craftables.size() > 0) {
+				ItemIdentifierStack itemIdentifierStack = craftables.get(0);
+				ModuleCrafter logisticsMod = cpipe.getLogisticsModule();
+				return new CraftingPipeSignData(itemIdentifierStack, logisticsMod.satelliteId);
+			} else {
+				return new CraftingPipeSignData(null, -1);
+			}
+		}
+		return null;
 	}
 }

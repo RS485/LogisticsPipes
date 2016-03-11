@@ -8,6 +8,7 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -66,6 +67,7 @@ public class CraftingModuleSlot extends ModuleCoordinatesGuiProvider {
 		if (module == null) {
 			return null;
 		}
+		MainProxy.sendPacketToPlayer(module.getCPipePacket(), player);
 		DummyContainer dummy = new DummyContainer(player.inventory, module.getDummyInventory());
 		dummy.addNormalSlotsForPlayerInventory(18, 97);
 		//Input slots

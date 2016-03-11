@@ -1,9 +1,6 @@
 package logisticspipes.renderer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
@@ -13,11 +10,14 @@ import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
 import logisticspipes.pipes.signs.IPipeSign;
+import logisticspipes.pipes.signs.IPipeSignData;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCRenderTESR;
 import logisticspipes.renderer.CustomBlockRenderer.RenderInfo;
+import logisticspipes.renderer.newpipe.GLRenderList;
 import logisticspipes.renderer.newpipe.LogisticsNewPipeItemBoxRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
+import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.transport.PipeTransportLogistics;
@@ -69,6 +69,8 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 	public static LogisticsNewPipeItemBoxRenderer boxRenderer = new LogisticsNewPipeItemBoxRenderer();
 	public static PlayerConfig config;
 	private static ItemStackRenderer itemRenderer = new ItemStackRenderer(0, 0, 0, false, false, false);
+	private static Map<IPipeSignData, GLRenderList> pipeSignRenderListMap = new HashMap<IPipeSignData, GLRenderList>();
+	private static int localItemTestRenderList = -1;
 
 	private final int[] angleY = { 0, 0, 270, 90, 0, 180 };
 	private final int[] angleZ = { 90, 270, 0, 0, 0, 0 };
@@ -342,7 +344,20 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 
 		GL11.glTranslatef(-0.32F, 0.5F * signScale + 0.08F, 0.07F * signScale);
 
-		type.render(pipe, this);
+		IPipeSignData data = type.getRenderData(pipe);
+		GLRenderList renderList = pipeSignRenderListMap.get(data);
+		if(data.isListCompatible(this)) {
+			if (renderList == null || renderList.isInvalid() || !renderList.isFilled()) {
+				renderList = SimpleServiceLocator.renderListHandler.getNewRenderList();
+				pipeSignRenderListMap.put(data, renderList);
+				renderList.startListCompile();
+				type.render(pipe, this);
+				renderList.stopCompile();
+			}
+			renderList.render();
+		} else {
+			type.render(pipe, this);
+		}
 	}
 
 	public void renderItemStackOnSign(ItemStack itemstack) {
@@ -692,6 +707,51 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		}
 
 		return d;
+	}
+
+	public boolean isRenderListCompatible(ItemStack stack) {
+		GL11.glPushMatrix();
+		GL11.glScaled(0, 0, 0);
+		try {
+			renderItemStackOnSign(stack);
+			int i = GL11.glGetError();
+			if (i != 0) {
+				GL11.glPopMatrix();
+				return false;
+			}
+			if(localItemTestRenderList == -1) {
+				localItemTestRenderList = GLAllocation.generateDisplayLists(1);
+			}
+			GL11.glNewList(localItemTestRenderList, GL11.GL_COMPILE);
+			i = GL11.glGetError();
+			if (i != 0) {
+				GL11.glPopMatrix();
+				return false;
+			}
+			renderItemStackOnSign(stack);
+			i = GL11.glGetError();
+			if (i != 0) {
+				GL11.glPopMatrix();
+				return false;
+			}
+			GL11.glEndList();
+			i = GL11.glGetError();
+			if (i != 0) {
+				GL11.glPopMatrix();
+				return false;
+			}
+			GL11.glCallList(localItemTestRenderList);
+			i = GL11.glGetError();
+			if (i != 0) {
+				GL11.glPopMatrix();
+				return false;
+			}
+			GL11.glPopMatrix();
+			return true;
+		} catch (Exception e) {
+		}
+		GL11.glPopMatrix();
+		return false;
 	}
 
 	private class DisplayFluidList {

@@ -29,7 +29,6 @@ import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.hud.HUDStartWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopWatchingPacket;
-import logisticspipes.network.packets.module.RequestCraftingPipeUpdatePacket;
 import logisticspipes.network.packets.orderer.OrdererManagerContent;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.signs.CraftingPipeSign;
@@ -71,7 +70,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	private final HUDCrafting HUD = new HUDCrafting(this);
 
-	private boolean init = false;
 	private boolean doContentUpdate = true;
 
 	public PipeItemsCraftingLogistics(Item item) {
@@ -93,22 +91,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public void onAllowedRemoval() {
 		while (_orderItemManager.hasOrders(ResourceType.CRAFTING)) {
 			_orderItemManager.sendFailed();
-		}
-	}
-
-	public void enableUpdateRequest() {
-		init = false;
-	}
-
-	@Override
-	public void ignoreDisableUpdateEntity() {
-		if (!init) {
-			if (MainProxy.isClient(getWorld())) {
-				if (FMLClientHandler.instance().getClient() != null && FMLClientHandler.instance().getClient().thePlayer != null && FMLClientHandler.instance().getClient().thePlayer.sendQueue != null) {
-					MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestCraftingPipeUpdatePacket.class).setModulePos(craftingModule));
-				}
-			}
-			init = true;
 		}
 	}
 

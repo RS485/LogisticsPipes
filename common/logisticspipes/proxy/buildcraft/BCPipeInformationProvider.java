@@ -17,7 +17,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import buildcraft.core.CoreConstants;
 import buildcraft.core.lib.TileBuffer;
@@ -93,7 +93,7 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 	}
 
 	@Override
-	public TileEntity getNextConnectedTile(ForgeDirection direction) {
+	public TileEntity getNextConnectedTile(EnumFacing direction) {
 		return pipe.getTile(direction);
 	}
 
@@ -129,12 +129,12 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 	}
 
 	@Override
-	public boolean isOutputOpen(ForgeDirection direction) {
+	public boolean isOutputOpen(EnumFacing direction) {
 		return pipe.pipe.outputOpen(direction);
 	}
 
 	@Override
-	public boolean canConnect(TileEntity to, ForgeDirection direction, boolean flag) {
+	public boolean canConnect(TileEntity to, EnumFacing direction, boolean flag) {
 		return SimpleServiceLocator.buildCraftProxy.canPipeConnect(pipe, to, direction);
 	}
 
@@ -159,11 +159,11 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 	}
 
 	@Override
-	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double traveled, double max, List<DoubleCoordinates> visited) {
+	public double getDistanceTo(int destinationint, EnumFacing ignore, ItemIdentifier ident, boolean isActive, double traveled, double max, List<DoubleCoordinates> visited) {
 		if (traveled >= max) {
 			return Integer.MAX_VALUE;
 		}
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing dir : EnumFacing.VALUES) {
 			if (ignore == dir) {
 				continue;
 			}
@@ -200,9 +200,9 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 
 			DoubleCoordinates p = new DoubleCoordinates(pipe.xCoord + 0.5F, pipe.yCoord + CoreConstants.PIPE_MIN_POS, pipe.zCoord + 0.5F);
 			double move;
-			if (item.output.getOpposite() == ForgeDirection.DOWN) {
+			if (item.output.getOpposite() == EnumFacing.DOWN) {
 				move = 0.24;
-			} else if (item.output.getOpposite() == ForgeDirection.UP) {
+			} else if (item.output.getOpposite() == EnumFacing.UP) {
 				move = 0.74;
 			} else {
 				move = 0.49;
@@ -221,7 +221,7 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 	}
 
 	@Override
-	public void refreshTileCacheOnSide(ForgeDirection side) {
+	public void refreshTileCacheOnSide(EnumFacing side) {
 		TileBuffer[] cache = pipe.getTileCache();
 		if (cache != null) {
 			cache[side.ordinal()].refresh();

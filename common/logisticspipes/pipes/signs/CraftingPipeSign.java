@@ -19,10 +19,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import org.lwjgl.opengl.GL11;
 
@@ -41,7 +41,7 @@ public class CraftingPipeSign implements IPipeSign {
 	}
 
 	public CoreRoutedPipe pipe;
-	public ForgeDirection dir;
+	public EnumFacing dir;
 
 	@Override
 	public boolean isAllowedFor(CoreRoutedPipe pipe) {
@@ -49,7 +49,7 @@ public class CraftingPipeSign implements IPipeSign {
 	}
 
 	@Override
-	public void addSignTo(CoreRoutedPipe pipe, ForgeDirection dir, EntityPlayer player) {
+	public void addSignTo(CoreRoutedPipe pipe, EnumFacing dir, EntityPlayer player) {
 		pipe.addPipeSign(dir, new CraftingPipeSign(), player);
 	}
 
@@ -69,7 +69,7 @@ public class CraftingPipeSign implements IPipeSign {
 	public void updateServerSide() {}
 
 	@Override
-	public void init(CoreRoutedPipe pipe, ForgeDirection dir) {
+	public void init(CoreRoutedPipe pipe, EnumFacing dir) {
 		this.pipe = pipe;
 		this.dir = dir;
 	}

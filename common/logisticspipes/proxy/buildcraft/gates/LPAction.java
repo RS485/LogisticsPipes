@@ -12,10 +12,10 @@ package logisticspipes.proxy.buildcraft.gates;
 import logisticspipes.textures.Textures;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import buildcraft.api.statements.IActionInternal;
 import buildcraft.api.statements.IStatementParameter;
@@ -66,7 +66,7 @@ public abstract class LPAction implements IActionInternal {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIcon() {
+	public TextureAtlasSprite getIcon() {
 		return Textures.LPactionIconProvider.getIcon(getIconIndex());
 	}
 

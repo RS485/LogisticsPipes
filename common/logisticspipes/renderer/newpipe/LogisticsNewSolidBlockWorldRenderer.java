@@ -13,7 +13,7 @@ import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.object3d.interfaces.I3DOperation;
-import logisticspipes.proxy.object3d.interfaces.IIconTransformation;
+import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
 import logisticspipes.proxy.object3d.interfaces.IModel3D;
 import logisticspipes.proxy.object3d.operation.LPRotation;
 import logisticspipes.proxy.object3d.operation.LPScale;
@@ -25,7 +25,7 @@ import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.Getter;
 import org.lwjgl.opengl.GL11;
@@ -33,30 +33,30 @@ import org.lwjgl.opengl.GL11;
 public class LogisticsNewSolidBlockWorldRenderer {
 
 	enum CoverSides {
-		DOWN(ForgeDirection.DOWN, "D"),
-		NORTH(ForgeDirection.NORTH, "N"),
-		SOUTH(ForgeDirection.SOUTH, "S"),
-		WEST(ForgeDirection.WEST, "W"),
-		EAST(ForgeDirection.EAST, "E");
+		DOWN(EnumFacing.DOWN, "D"),
+		NORTH(EnumFacing.NORTH, "N"),
+		SOUTH(EnumFacing.SOUTH, "S"),
+		WEST(EnumFacing.WEST, "W"),
+		EAST(EnumFacing.EAST, "E");
 
-		private ForgeDirection dir;
+		private EnumFacing dir;
 		@Getter
 		private String letter;
 
-		CoverSides(ForgeDirection dir, String letter) {
+		CoverSides(EnumFacing dir, String letter) {
 			this.dir = dir;
 			this.letter = letter;
 		}
 
-		public ForgeDirection getDir(BlockRotation rot) {
-			ForgeDirection result = dir;
+		public EnumFacing getDir(BlockRotation rot) {
+			EnumFacing result = dir;
 			switch (rot.getInteger()) {
 				case 0:
-					result = result.getRotation(ForgeDirection.UP);
+					result = result.getRotation(EnumFacing.UP);
 				case 3:
-					result = result.getRotation(ForgeDirection.UP);
+					result = result.getRotation(EnumFacing.UP);
 				case 1:
-					result = result.getRotation(ForgeDirection.UP);
+					result = result.getRotation(EnumFacing.UP);
 				case 2:
 			}
 			return result;
@@ -171,12 +171,12 @@ public class LogisticsNewSolidBlockWorldRenderer {
 
 		BlockRotation rotation = BlockRotation.getRotation(blockTile.getRotation());
 
-		int brightness = new DoubleCoordinates(blockTile).getBlock(blockTile.getWorldObj()).getMixedBrightnessForBlock(blockTile.getWorldObj(), blockTile.xCoord, blockTile.yCoord, blockTile.zCoord);
+		int brightness = new DoubleCoordinates(blockTile).getBlock(blockTile.getWorld()).getMixedBrightnessForBlock(blockTile.getWorld(), blockTile.xCoord, blockTile.yCoord, blockTile.zCoord);
 
 		tess.setColorOpaque_F(1F, 1F, 1F);
 		tess.setBrightness(brightness);
 
-		IIconTransformation icon = SimpleServiceLocator.cclProxy.createIconTransformer(LogisticsSolidBlock.getNewIcon(blockTile.getWorldObj(), blockTile.xCoord, blockTile.yCoord, blockTile.zCoord));
+		TextureTransformation icon = SimpleServiceLocator.cclProxy.createIconTransformer(LogisticsSolidBlock.getNewIcon(blockTile.getWorld(), blockTile.xCoord, blockTile.yCoord, blockTile.zCoord));
 
 		//Draw
 		LogisticsNewSolidBlockWorldRenderer.block.get(rotation).render(new I3DOperation[] { new LPTranslation(x, y, z), icon });
@@ -184,7 +184,7 @@ public class LogisticsNewSolidBlockWorldRenderer {
 		for (CoverSides side : CoverSides.values()) {
 			boolean render = true;
 			DoubleCoordinates newPos = CoordinateUtils.sum(pos, side.getDir(rotation));
-			TileEntity sideTile = newPos.getTileEntity(blockTile.getWorldObj());
+			TileEntity sideTile = newPos.getTileEntity(blockTile.getWorld());
 			if (sideTile instanceof LogisticsTileGenericPipe) {
 				LogisticsTileGenericPipe tilePipe = (LogisticsTileGenericPipe) sideTile;
 				if (tilePipe.renderState.pipeConnectionMatrix.isConnected(side.getDir(rotation).getOpposite())) {
@@ -213,7 +213,7 @@ public class LogisticsNewSolidBlockWorldRenderer {
 
 		tess.startDrawingQuads();
 
-		IIconTransformation icon = SimpleServiceLocator.cclProxy.createIconTransformer(LogisticsSolidBlock.getNewIcon(metadata));
+		TextureTransformation icon = SimpleServiceLocator.cclProxy.createIconTransformer(LogisticsSolidBlock.getNewIcon(metadata));
 
 		//Draw
 		LogisticsNewSolidBlockWorldRenderer.block.get(rotation).render(new I3DOperation[] { icon });

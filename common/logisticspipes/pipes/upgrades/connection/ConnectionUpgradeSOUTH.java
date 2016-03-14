@@ -2,13 +2,13 @@ package logisticspipes.pipes.upgrades.connection;
 
 import logisticspipes.pipes.upgrades.ConnectionUpgrade;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public class ConnectionUpgradeSOUTH extends ConnectionUpgrade {
 
 	@Override
-	public ForgeDirection getSide() {
-		return ForgeDirection.SOUTH;
+	public EnumFacing getSide() {
+		return EnumFacing.SOUTH;
 	}
 
 }

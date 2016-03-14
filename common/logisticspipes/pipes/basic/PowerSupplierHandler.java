@@ -14,7 +14,7 @@ import logisticspipes.utils.tuples.Pair;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagFloat;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper.AdjacentTileEntity;
@@ -72,7 +72,7 @@ public class PowerSupplierHandler {
 				if (SimpleServiceLocator.cofhPowerProxy.isEnergyReceiver(adjacent.tileEntity)) {
 					if (pipe.canPipeConnect(adjacent.tileEntity, adjacent.direction)) {
 						ICoFHEnergyReceiver energyReceiver = SimpleServiceLocator.cofhPowerProxy.getEnergyReceiver(adjacent.tileEntity);
-						ForgeDirection oppositeDir = adjacent.direction.getOpposite();
+						EnumFacing oppositeDir = adjacent.direction.getOpposite();
 						if (energyReceiver.canConnectEnergy(oppositeDir)) {
 							globalNeed += need[i] = (energyReceiver.getMaxEnergyStored(oppositeDir) - energyReceiver.getEnergyStored(oppositeDir));
 						}
@@ -91,7 +91,7 @@ public class PowerSupplierHandler {
 					if (SimpleServiceLocator.cofhPowerProxy.isEnergyReceiver(adjacent.tileEntity)) {
 						if (pipe.canPipeConnect(adjacent.tileEntity, adjacent.direction)) {
 							ICoFHEnergyReceiver energyReceiver = SimpleServiceLocator.cofhPowerProxy.getEnergyReceiver(adjacent.tileEntity);
-							ForgeDirection oppositeDir = adjacent.direction.getOpposite();
+							EnumFacing oppositeDir = adjacent.direction.getOpposite();
 							if (energyReceiver.canConnectEnergy(oppositeDir)) {
 								if (internalBufferRF + 1 < need[i] * fullfillable) {
 									return;

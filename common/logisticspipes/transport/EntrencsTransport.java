@@ -7,7 +7,7 @@ import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public class EntrencsTransport extends PipeTransportLogistics {
 
@@ -18,7 +18,7 @@ public class EntrencsTransport extends PipeTransportLogistics {
 	public PipeItemsSystemEntranceLogistics pipe;
 
 	@Override
-	public ForgeDirection resolveDestination(LPTravelingItemServer data) {
+	public EnumFacing resolveDestination(LPTravelingItemServer data) {
 		if (data.getDestination() < 0 || data.getArrived()) {
 			if (pipe.getLocalFreqUUID() != null) {
 				if (pipe.useEnergy(5)) {

@@ -23,7 +23,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import buildcraft.api.boards.RedstoneBoardRobot;
 import buildcraft.api.boards.RedstoneBoardRobotNBT;
@@ -47,7 +47,7 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 	@Getter
 	private Set<LPTravelingItemServer> items = new HashSet<>();
 	private DoubleCoordinates targetStationPos;
-	private ForgeDirection targetStationSide = ForgeDirection.UNKNOWN;
+	private EnumFacing targetStationSide = null;
 
 	private int ticksWithContent = 0;
 	@Getter
@@ -178,7 +178,7 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 	private Pair<Double, LogisticsRoutingBoardRobot> findTarget() {
 		Pair<Double, LogisticsRoutingBoardRobot> result = null;
 		DoubleCoordinates robotPos = new DoubleCoordinates(robot);
-		for (Pair<DoubleCoordinates, ForgeDirection> canidatePos : connectionDetails.localConnectedRobots) {
+		for (Pair<DoubleCoordinates, EnumFacing> canidatePos : connectionDetails.localConnectedRobots) {
 			if (robot.getLinkedStation() == null) {
 				continue;
 			}
@@ -295,14 +295,14 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 		if (robot.isDead) {
 			return arrivingItem;
 		}
-		ITransactor trans = InventoryHelper.getTransactorFor(robot, ForgeDirection.UNKNOWN);
-		ItemStack inserted = trans.add(arrivingItem.getItemIdentifierStack().makeNormalStack(), ForgeDirection.UNKNOWN, false);
+		ITransactor trans = InventoryHelper.getTransactorFor(robot, null);
+		ItemStack inserted = trans.add(arrivingItem.getItemIdentifierStack().makeNormalStack(), null, false);
 		if (inserted.stackSize != arrivingItem.getItemIdentifierStack().getStackSize()) {
 			acceptsItems = false;
 			startTransport();
 			return arrivingItem;
 		}
-		inserted = trans.add(arrivingItem.getItemIdentifierStack().makeNormalStack(), ForgeDirection.UNKNOWN, true);
+		inserted = trans.add(arrivingItem.getItemIdentifierStack().makeNormalStack(), null, true);
 		if (inserted.stackSize != arrivingItem.getItemIdentifierStack().getStackSize()) {
 			throw new UnsupportedOperationException("" + trans);
 		}
@@ -349,7 +349,7 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 			}
 		}
 		targetStationPos = DoubleCoordinates.readFromNBT("targetStationPos_", nbt);
-		targetStationSide = ForgeDirection.getOrientation(nbt.getByte("targetStationSide"));
+		targetStationSide = EnumFacing.getOrientation(nbt.getByte("targetStationSide"));
 	}
 
 	public DoubleCoordinates getLinkedStationPosition() {

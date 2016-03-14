@@ -10,7 +10,7 @@ import logisticspipes.proxy.td.LPItemDuct;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import cofh.thermaldynamics.core.TickHandler;
 
@@ -25,15 +25,15 @@ public class TDPart implements ITDPart {
 	}
 
 	@Override
-	public TileEntity getInternalDuctForSide(ForgeDirection opposite) {
+	public TileEntity getInternalDuctForSide(EnumFacing opposite) {
 		if (opposite.ordinal() < 6) {
 			LPItemDuct duct = thermalDynamicsDucts[opposite.ordinal()];
 			if (duct == null) {
 				duct = thermalDynamicsDucts[opposite.ordinal()] = new LPItemDuct(pipe, opposite);
-				if (MainProxy.isServer(pipe.getWorldObj())) {
+				if (MainProxy.isServer(pipe.getWorld())) {
 					TickHandler.addMultiBlockToCalculate(duct);
 				}
-				duct.setWorldObj(pipe.getWorldObj());
+				duct.setWorldObj(pipe.getWorld());
 				duct.xCoord = pipe.xCoord;
 				duct.yCoord = pipe.yCoord;
 				duct.zCoord = pipe.zCoord;

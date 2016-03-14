@@ -1,15 +1,15 @@
 package logisticspipes.proxy.cofh.subproxies;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public interface ICoFHEnergyReceiver {
 
-	public int getMaxEnergyStored(ForgeDirection opposite);
+	public int getMaxEnergyStored(EnumFacing opposite);
 
-	public int getEnergyStored(ForgeDirection opposite);
+	public int getEnergyStored(EnumFacing opposite);
 
-	public boolean canConnectEnergy(ForgeDirection opposite);
+	public boolean canConnectEnergy(EnumFacing opposite);
 
-	public int receiveEnergy(ForgeDirection opposite, int i, boolean b);
+	public int receiveEnergy(EnumFacing opposite, int i, boolean b);
 
 }

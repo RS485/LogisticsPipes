@@ -59,11 +59,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.World;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import org.lwjgl.input.Keyboard;
 
@@ -119,7 +119,7 @@ public class ItemModule extends LogisticsItem {
 
 		private int id;
 		private Class<? extends LogisticsModule> moduleClass;
-		private IIcon moduleIcon = null;
+		private TextureAtlasSprite moduleIcon = null;
 
 		private Module(int id, Class<? extends LogisticsModule> moduleClass) {
 			this.id = id;
@@ -146,7 +146,7 @@ public class ItemModule extends LogisticsItem {
 			return id;
 		}
 
-		private IIcon getIcon() {
+		private TextureAtlasSprite getIcon() {
 			return moduleIcon;
 		}
 
@@ -343,7 +343,7 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	@Override
-	public IIcon getIconFromDamage(int i) {
+	public TextureAtlasSprite getIconFromDamage(int i) {
 		// should set and store TextureIndex with this object.
 		for (Module module : modules) {
 			if (module.getId() == i) {

@@ -17,10 +17,10 @@ import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 
@@ -108,9 +108,9 @@ public abstract class CoreMultiBlockPipe extends CoreUnroutedPipe {
 		return (float) (getItemRenderYaw(getPipeLength(), item) - getItemRenderYaw(0.0F, item));
 	}
 
-	public abstract ForgeDirection getExitForInput(ForgeDirection commingFrom);
+	public abstract EnumFacing getExitForInput(EnumFacing commingFrom);
 
-	public abstract TileEntity getConnectedEndTile(ForgeDirection output);
+	public abstract TileEntity getConnectedEndTile(EnumFacing output);
 
 	@Override
 	public abstract boolean actAsNormalPipe();
@@ -120,7 +120,7 @@ public abstract class CoreMultiBlockPipe extends CoreUnroutedPipe {
 	public abstract ISpecialPipeRenderer getSpecialRenderer();
 
 	@Override
-	public boolean canPipeConnect(TileEntity tile, ForgeDirection side) {
+	public boolean canPipeConnect(TileEntity tile, EnumFacing side) {
 		if(tile instanceof LogisticsTileGenericSubMultiBlock) {
 			return true;
 		}

@@ -17,7 +17,7 @@ import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidHandler;
@@ -60,7 +60,7 @@ public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 		}
 		int onTheWay = this.countOnRoute(ident);
 		int freeSpace = -onTheWay;
-		for (Pair<TileEntity, ForgeDirection> pair : getAdjacentTanks(true)) {
+		for (Pair<TileEntity, EnumFacing> pair : getAdjacentTanks(true)) {
 			FluidTank tank = ((PipeFluidTransportLogistics) transport).sideTanks[pair.getValue2().ordinal()];
 			freeSpace += ident.getFreeSpaceInsideTank((IFluidHandler) pair.getValue1(), pair.getValue2().getOpposite());
 			freeSpace += ident.getFreeSpaceInsideTank(tank);

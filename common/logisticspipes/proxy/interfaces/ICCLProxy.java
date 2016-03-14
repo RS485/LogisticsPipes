@@ -3,22 +3,21 @@ package logisticspipes.proxy.interfaces;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import logisticspipes.proxy.object3d.interfaces.I3DOperation;
-import logisticspipes.proxy.object3d.interfaces.IIconTransformation;
+import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
 import logisticspipes.proxy.object3d.interfaces.IModel3D;
 import logisticspipes.proxy.object3d.interfaces.IRenderState;
 import logisticspipes.proxy.object3d.interfaces.ITranslation;
 import logisticspipes.proxy.object3d.interfaces.IVec3;
 import logisticspipes.proxy.object3d.operation.LPScale;
 
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 public interface ICCLProxy {
 
-	IIconTransformation createIconTransformer(IIcon registerIcon);
+	TextureTransformation createIconTransformer(TextureAtlasSprite registerIcon);
 
 	IRenderState getRenderState();
 

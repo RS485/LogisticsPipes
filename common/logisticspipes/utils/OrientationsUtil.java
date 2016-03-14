@@ -2,42 +2,42 @@ package logisticspipes.utils;
 
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public class OrientationsUtil {
 
-	public static ForgeDirection getOrientationOfTilewithTile(TileEntity pipe, TileEntity tile) {
+	public static EnumFacing getOrientationOfTilewithTile(TileEntity pipe, TileEntity tile) {
 		if (pipe.zCoord == tile.zCoord) {
 			if (pipe.yCoord == tile.yCoord) {
 				if (pipe.xCoord < tile.xCoord) {
-					return ForgeDirection.EAST;
+					return EnumFacing.EAST;
 				} else if (pipe.xCoord > tile.xCoord) {
-					return ForgeDirection.WEST;
+					return EnumFacing.WEST;
 				}
 			}
 		}
 		if (pipe.xCoord == tile.xCoord) {
 			if (pipe.zCoord == tile.zCoord) {
 				if (pipe.yCoord < tile.yCoord) {
-					return ForgeDirection.UP;
+					return EnumFacing.UP;
 				} else if (pipe.yCoord > tile.yCoord) {
-					return ForgeDirection.DOWN;
+					return EnumFacing.DOWN;
 				}
 			}
 		}
 		if (pipe.xCoord == tile.xCoord) {
 			if (pipe.yCoord == tile.yCoord) {
 				if (pipe.zCoord < tile.zCoord) {
-					return ForgeDirection.SOUTH;
+					return EnumFacing.SOUTH;
 				} else if (pipe.zCoord > tile.zCoord) {
-					return ForgeDirection.NORTH;
+					return EnumFacing.NORTH;
 				}
 			}
 		}
-		return ForgeDirection.UNKNOWN;
+		return null;
 	}
 
-	public static TileEntity getTileNextToThis(TileEntity tile, ForgeDirection dir) {
+	public static TileEntity getTileNextToThis(TileEntity tile, EnumFacing dir) {
 		int x = tile.xCoord;
 		int y = tile.yCoord;
 		int z = tile.zCoord;
@@ -63,10 +63,10 @@ public class OrientationsUtil {
 			default:
 				break;
 		}
-		return tile.getWorldObj().getTileEntity(x, y, z);
+		return tile.getWorld().getTileEntity(x, y, z);
 	}
 
-	public static boolean isSide(ForgeDirection ori) {
-		return ori == ForgeDirection.EAST || ori == ForgeDirection.WEST || ori == ForgeDirection.SOUTH || ori == ForgeDirection.NORTH;
+	public static boolean isSide(EnumFacing ori) {
+		return ori == EnumFacing.EAST || ori == EnumFacing.WEST || ori == EnumFacing.SOUTH || ori == EnumFacing.NORTH;
 	}
 }

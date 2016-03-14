@@ -24,7 +24,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import java.util.*;
 
@@ -53,7 +53,7 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity implements ISu
 		if (mainPipe == null) {
 			mainPipe = new ArrayList<>();
 			for(DoubleCoordinates pos:mainPipePos) {
-				TileEntity tile = pos.getTileEntity(getWorldObj());
+				TileEntity tile = pos.getTileEntity(getWorld());
 				if (tile instanceof LogisticsTileGenericPipe) {
 					mainPipe.add((LogisticsTileGenericPipe) tile);
 				}
@@ -68,7 +68,7 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity implements ISu
 			}
 		}
 		if (mainPipe.isEmpty() || allInvalid) {
-			getWorldObj().setBlockToAir(xCoord, yCoord, zCoord);
+			getWorld().setBlockToAir(xCoord, yCoord, zCoord);
 		}
 		if(mainPipe != null) {
 			return mainPipe;
@@ -82,7 +82,7 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity implements ISu
 
 	@Override
 	public void updateEntity() {
-		if (MainProxy.isClient(getWorldObj())) {
+		if (MainProxy.isClient(getWorld())) {
 			return;
 		}
 		List<LogisticsTileGenericPipe> pipes = getMainPipe();
@@ -175,11 +175,11 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity implements ISu
 		return this;
 	}
 
-	public TileEntity getTile(ForgeDirection to) {
+	public TileEntity getTile(EnumFacing to) {
 		return getTile(to, false);
 	}
 
-	public TileEntity getTile(ForgeDirection to, boolean force) {
+	public TileEntity getTile(EnumFacing to, boolean force) {
 		TileBuffer[] cache = getTileCache();
 		if (cache != null) {
 			if (force) {
@@ -191,7 +191,7 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity implements ISu
 		}
 	}
 
-	public Block getBlock(ForgeDirection to) {
+	public Block getBlock(EnumFacing to) {
 		TileBuffer[] cache = getTileCache();
 		if (cache != null) {
 			return cache[to.ordinal()].getBlock();

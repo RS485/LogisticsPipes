@@ -44,12 +44,12 @@ public class GuiSecurityStationPopup extends SubGuiScreen {
 	@Override
 	protected void renderGuiBackground(int par1, int par2) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "Player") + ": " + activeSetting.name, guiLeft + 10, guiTop + 10, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "ConfigureSettings") + ": ", guiLeft + 10, guiTop + 30, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "ActiveRequesting") + ": ", guiLeft + 10, guiTop + 45, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "UpgradePipes") + ": ", guiLeft + 10, guiTop + 60, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "CheckNetwork") + ": ", guiLeft + 10, guiTop + 75, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "RemovePipes") + ": ", guiLeft + 10, guiTop + 90, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "Player") + ": " + activeSetting.name, guiLeft + 10, guiTop + 10, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "ConfigureSettings") + ": ", guiLeft + 10, guiTop + 30, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "ActiveRequesting") + ": ", guiLeft + 10, guiTop + 45, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "UpgradePipes") + ": ", guiLeft + 10, guiTop + 60, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "CheckNetwork") + ": ", guiLeft + 10, guiTop + 75, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "RemovePipes") + ": ", guiLeft + 10, guiTop + 90, 0x404040);
 	}
 
 	@Override

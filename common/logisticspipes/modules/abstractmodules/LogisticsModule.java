@@ -17,10 +17,10 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import lombok.Getter;
 
@@ -156,7 +156,7 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 	 * @return
 	 */
 	@SideOnly(Side.CLIENT)
-	public abstract IIcon getIconTexture(IIconRegister register);
+	public abstract TextureAtlasSprite getIconTexture(IIconRegister register);
 
 	/**
 	 * Returns whether the module should be displayed the effect when as an

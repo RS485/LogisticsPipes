@@ -9,7 +9,7 @@ import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyStorage;
 
 import net.minecraft.nbt.NBTTagCompound;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import cofh.api.energy.IEnergyHandler;
 
@@ -27,7 +27,7 @@ public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTi
 	}
 
 	public void addEnergy(double amount) {
-		if (MainProxy.isClient(getWorldObj())) {
+		if (MainProxy.isClient(getWorld())) {
 			return;
 		}
 		internalStorage += amount;
@@ -65,31 +65,31 @@ public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTi
 
 	@Override
 	@ModDependentMethod(modId = "CoFHAPI|energy")
-	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
+	public int receiveEnergy(EnumFacing from, int maxReceive, boolean simulate) {
 		return storage.receiveEnergy(maxReceive, simulate);
 	}
 
 	@Override
 	@ModDependentMethod(modId = "CoFHAPI|energy")
-	public int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate) {
+	public int extractEnergy(EnumFacing from, int maxExtract, boolean simulate) {
 		return storage.extractEnergy(maxExtract, simulate);
 	}
 
 	@Override
 	@ModDependentMethod(modId = "CoFHAPI|energy")
-	public boolean canConnectEnergy(ForgeDirection from) {
+	public boolean canConnectEnergy(EnumFacing from) {
 		return true;
 	}
 
 	@Override
 	@ModDependentMethod(modId = "CoFHAPI|energy")
-	public int getEnergyStored(ForgeDirection from) {
+	public int getEnergyStored(EnumFacing from) {
 		return storage.getEnergyStored();
 	}
 
 	@Override
 	@ModDependentMethod(modId = "CoFHAPI|energy")
-	public int getMaxEnergyStored(ForgeDirection from) {
+	public int getMaxEnergyStored(EnumFacing from) {
 		return storage.getMaxEnergyStored();
 	}
 

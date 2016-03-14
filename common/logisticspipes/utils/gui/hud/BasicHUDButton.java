@@ -8,7 +8,7 @@ import logisticspipes.utils.gui.SimpleGraphics;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureMap;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import org.lwjgl.opengl.GL11;
 
@@ -101,7 +101,7 @@ public abstract class BasicHUDButton implements IHUDButton {
 				GL11.glTranslatef(0.0F, 0.0F, -0.02F);
 			}
 		}
-		minecraft.fontRenderer.drawString(label, -(minecraft.fontRenderer.getStringWidth(label) / 2) + posX + sizeX / 2, posY + (sizeY - 8) / 2, color);
+		minecraft.fontRendererObj.drawString(label, -(minecraft.fontRendererObj.getStringWidth(label) / 2) + posX + sizeX / 2, posY + (sizeY - 8) / 2, color);
 		if (!clicked && hover) {
 			GL11.glTranslatef(0.0F, 0.0F, 0.02F);
 		}

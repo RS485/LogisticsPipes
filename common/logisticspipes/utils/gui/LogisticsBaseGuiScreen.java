@@ -8,6 +8,7 @@
 
 package logisticspipes.utils.gui;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -226,12 +227,12 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	}
 
 	@Override
-	protected void func_146977_a(Slot slot) {
+	protected void drawSlot(Slot slot) {
 		if (extentionControllerLeft.renderSlot(slot) && extentionControllerRight.renderSlot(slot)) {
 			if(subGui == null) {
 				onRenderSlot(slot);
 			}
-			super.func_146977_a(slot);
+			super.drawSlot(slot);
 		}
 	}
 
@@ -274,7 +275,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 			if(fuzzySlotActiveGui && fuzzySlot == slot) {
 				if(!mouseOver) {
 					//Check within FuzzyGui
-					if(!func_146978_c(slot.xDisplayPosition, slot.yDisplayPosition + 16, 60, 52, currentDrawScreenMouseX, currentDrawScreenMouseY)) {
+					if(!isPointInRegion(slot.xDisplayPosition, slot.yDisplayPosition + 16, 60, 52, currentDrawScreenMouseX, currentDrawScreenMouseY)) {
 						fuzzySlotActiveGui = false;
 						fuzzySlot = null;
 					}
@@ -288,10 +289,10 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 					GL11.glDisable(GL11.GL_LIGHTING);
 					GuiGraphics.drawGuiBackGround(mc, posX, posY, posX + 60, posY + 52, zLevel, true, true, true, true, true);
 					final String PREFIX = "gui.crafting.";
-					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OreDict"), posX + 4, posY + 4, (!resource.use_od ? 0x404040 : 0xFF4040));
-					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnDamage"), posX + 4, posY + 14, (!resource.ignore_dmg ? 0x404040 : 0x40FF40));
-					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnNBT"), posX + 4, posY + 26, (!resource.ignore_nbt ? 0x404040 : 0x4040FF));
-					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OrePrefix"), posX + 4, posY + 38, (!resource.use_category ? 0x404040 : 0x7F7F40));
+					mc.fontRendererObj.drawString(StringUtils.translate(PREFIX + "OreDict"), posX + 4, posY + 4, (!resource.use_od ? 0x404040 : 0xFF4040));
+					mc.fontRendererObj.drawString(StringUtils.translate(PREFIX + "IgnDamage"), posX + 4, posY + 14, (!resource.ignore_dmg ? 0x404040 : 0x40FF40));
+					mc.fontRendererObj.drawString(StringUtils.translate(PREFIX + "IgnNBT"), posX + 4, posY + 26, (!resource.ignore_nbt ? 0x404040 : 0x4040FF));
+					mc.fontRendererObj.drawString(StringUtils.translate(PREFIX + "OrePrefix"), posX + 4, posY + 38, (!resource.use_category ? 0x404040 : 0x7F7F40));
 					GL11.glEnable(GL11.GL_LIGHTING);
 					GL11.glEnable(GL11.GL_DEPTH_TEST);
 				});
@@ -313,7 +314,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 
 	private boolean isMouseInFuzzyPanel(int x, int y) {
 		if (!fuzzySlotActiveGui || fuzzySlot == null) return false;
-		return func_146978_c(fuzzySlot.getX(), fuzzySlot.getY() + 16, 60, 52, x, y);
+		return isPointInRegion(fuzzySlot.getX(), fuzzySlot.getY() + 16, 60, 52, x, y);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -335,7 +336,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	}
 
 	@Override
-	public final void handleMouseInput() {
+	public final void handleMouseInput() throws IOException {
 		if (subGui != null) {
 			subGui.handleMouseInput();
 		} else {
@@ -343,12 +344,12 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 		}
 	}
 
-	public void handleMouseInputSub() {
+	public void handleMouseInputSub() throws IOException {
 		super.handleMouseInput();
 	}
 
 	@Override
-	public final void handleKeyboardInput() {
+	public final void handleKeyboardInput() throws IOException {
 		if (subGui != null) {
 			subGui.handleKeyboardInput();
 		} else {
@@ -388,7 +389,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	}
 
 	@Override
-	protected void mouseClicked(int par1, int par2, int par3) {
+	protected void mouseClicked(int par1, int par2, int par3) throws IOException {
 		for (IRenderSlot slot : slots) {
 			int mouseX = par1 - guiLeft;
 			int mouseY = par2 - guiTop;
@@ -432,7 +433,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 				GuiButton guibutton = (GuiButton) aButtonList;
 				if (guibutton.mousePressed(mc, par1, par2)) {
 					selectedButton = guibutton;
-					guibutton.func_146113_a(mc.getSoundHandler());
+					guibutton.playPressSound(mc.getSoundHandler());
 					actionPerformed(guibutton);
 					handledButton = true;
 					break;
@@ -451,13 +452,13 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	}
 
 	@Override
-	protected void mouseMovedOrUp(int par1, int par2, int par3) {
+	protected void mouseReleased(int par1, int par2, int par3) {
 		if (selectedButton != null && par3 == 0) {
 			selectedButton.mouseReleased(par1, par2);
 			selectedButton = null;
 		} else if (isMouseInFuzzyPanel(par1 - guiLeft, par2 - guiTop)) {
 		} else {
-				super.mouseMovedOrUp(par1, par2, par3);
+				super.mouseReleased(par1, par2, par3);
 			}
 	}
 
@@ -514,7 +515,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 		}
 	}
 
-	public void closeGui() {
+	public void closeGui() throws IOException {
 		keyTyped(' ', 1);
 	}
 

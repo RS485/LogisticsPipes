@@ -9,6 +9,7 @@ import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
 import lombok.Getter;
@@ -52,9 +53,9 @@ public abstract class CoordinatesGuiProvider extends GuiProvider {
 	}
 
 	public CoordinatesGuiProvider setTilePos(TileEntity tile) {
-		setPosX(tile.xCoord);
-		setPosY(tile.yCoord);
-		setPosZ(tile.zCoord);
+		setPosX(tile.getPos().getX());
+		setPosY(tile.getPos().getY());
+		setPosZ(tile.getPos().getZ());
 		return this;
 	}
 
@@ -70,7 +71,7 @@ public abstract class CoordinatesGuiProvider extends GuiProvider {
 		if (world == null) {
 			return null;
 		}
-		if (!world.blockExists(getPosX(), getPosY(), getPosZ())) {
+		if (world.isAirBlock(new BlockPos(getPosX(), getPosY(), getPosZ()))) {
 			if (LPConstants.DEBUG) {
 				LogisticsPipes.log.fatal(toString());
 				new RuntimeException("Couldn't find " + clazz.getName()).printStackTrace();
@@ -78,7 +79,7 @@ public abstract class CoordinatesGuiProvider extends GuiProvider {
 			return null;
 		}
 
-		final TileEntity tile = world.getTileEntity(getPosX(), getPosY(), getPosZ());
+		final TileEntity tile = world.getTileEntity(new BlockPos(getPosX(), getPosY(), getPosZ()));
 		if (tile != null) {
 			if (!(clazz.isAssignableFrom(tile.getClass()))) {
 				if (LPConstants.DEBUG) {

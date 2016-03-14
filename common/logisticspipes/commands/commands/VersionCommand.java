@@ -8,7 +8,7 @@ import logisticspipes.ticks.VersionChecker;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ChatComponentText;
 
-import cpw.mods.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod;
 
 public class VersionCommand implements ICommandHandler {
 

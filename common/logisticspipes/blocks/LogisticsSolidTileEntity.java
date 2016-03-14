@@ -22,10 +22,10 @@ import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Context;
@@ -78,7 +78,7 @@ public class LogisticsSolidTileEntity extends TileEntity implements ILPCCTypeHol
 			addedToNetwork = true;
 			SimpleServiceLocator.openComputersProxy.addToNetwork(this);
 		}
-		if (MainProxy.isClient(getWorldObj())) {
+		if (MainProxy.isClient(getWorld())) {
 			if (!init) {
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestRotationPacket.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 				init = true;
@@ -151,14 +151,14 @@ public class LogisticsSolidTileEntity extends TileEntity implements ILPCCTypeHol
 	@Override
 	@SideOnly(Side.CLIENT)
 	@ModDependentMethod(modId = LPConstants.openComputersModID)
-	public boolean canConnect(ForgeDirection dir) {
+	public boolean canConnect(EnumFacing dir) {
 		TileEntity tileEntity = new WorldCoordinatesWrapper(this).getAdjacentFromDirection(dir).tileEntity;
 		return !(tileEntity instanceof LogisticsTileGenericPipe) && !(tileEntity instanceof LogisticsSolidTileEntity);
 	}
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.openComputersModID)
-	public Node sidedNode(ForgeDirection dir) {
+	public Node sidedNode(EnumFacing dir) {
 		return canConnect(dir) ? node() : null;
 	}
 

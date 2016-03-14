@@ -13,9 +13,9 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -37,7 +37,7 @@ public class PipeFXLaserPowerBeam extends EntityFX {
 	private float random = 0;
 	private TileEntity tile;
 
-	public PipeFXLaserPowerBeam(World par1World, DoubleCoordinates pos, float length, ForgeDirection dir, int color, TileEntity tile) {
+	public PipeFXLaserPowerBeam(World par1World, DoubleCoordinates pos, float length, EnumFacing dir, int color, TileEntity tile) {
 		super(par1World, pos.getXCoord() + 0.5D, pos.getYCoord() + 0.5D, pos.getZCoord() + 0.5D, 0.0D, 0.0D, 0.0D);
 		setSize(0.02F, 0.02F);
 		this.tile = tile;

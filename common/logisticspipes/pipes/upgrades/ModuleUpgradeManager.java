@@ -11,7 +11,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.Getter;
 
@@ -25,7 +25,7 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 
 	private final UpgradeManager parent;
 
-	private ForgeDirection sneakyOrientation = ForgeDirection.UNKNOWN;
+	private EnumFacing sneakyOrientation = null;
 	private boolean isAdvancedCrafter = false;
 	private boolean isFuzzyUpgrade = false;
 	private int liquidCrafter = 0;
@@ -71,15 +71,15 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 
 	@Override
 	public boolean hasSneakyUpgrade() {
-		if (sneakyOrientation != ForgeDirection.UNKNOWN) {
+		if (sneakyOrientation != null) {
 			return true;
 		}
 		return parent.hasSneakyUpgrade();
 	}
 
 	@Override
-	public ForgeDirection getSneakyOrientation() {
-		if (sneakyOrientation != ForgeDirection.UNKNOWN) {
+	public EnumFacing getSneakyOrientation() {
+		if (sneakyOrientation != null) {
 			return sneakyOrientation;
 		}
 		return parent.getSneakyOrientation();
@@ -87,7 +87,7 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 
 	@Override
 	public boolean hasOwnSneakyUpgrade() {
-		return sneakyOrientation != ForgeDirection.UNKNOWN;
+		return sneakyOrientation != null;
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 			}
 		}
 		//update sneaky direction, speed upgrade count and disconnection
-		sneakyOrientation = ForgeDirection.UNKNOWN;
+		sneakyOrientation = null;
 		isAdvancedCrafter = false;
 		isFuzzyUpgrade = false;
 		liquidCrafter = 0;
@@ -111,7 +111,7 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 		craftingCleanup = 0;
 		for (int i = 0; i < upgrades.length; i++) {
 			IPipeUpgrade upgrade = upgrades[i];
-			if (upgrade instanceof SneakyUpgrade && sneakyOrientation == ForgeDirection.UNKNOWN) {
+			if (upgrade instanceof SneakyUpgrade && sneakyOrientation == null) {
 				sneakyOrientation = ((SneakyUpgrade) upgrade).getSneakyOrientation();
 			} else if (upgrade instanceof AdvancedSatelliteUpgrade) {
 				isAdvancedCrafter = true;

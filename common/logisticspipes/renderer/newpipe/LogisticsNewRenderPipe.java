@@ -19,7 +19,7 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.object3d.interfaces.I3DOperation;
 import logisticspipes.proxy.object3d.interfaces.IBounds;
-import logisticspipes.proxy.object3d.interfaces.IIconTransformation;
+import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
 import logisticspipes.proxy.object3d.interfaces.IModel3D;
 import logisticspipes.proxy.object3d.interfaces.IVec3;
 import logisticspipes.renderer.state.PipeRenderState;
@@ -34,7 +34,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -43,62 +43,62 @@ import org.lwjgl.opengl.GL11;
 public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 
 	enum Edge {
-		Upper_North(ForgeDirection.UP, ForgeDirection.NORTH),
-		Upper_South(ForgeDirection.UP, ForgeDirection.SOUTH),
-		Upper_East(ForgeDirection.UP, ForgeDirection.EAST),
-		Upper_West(ForgeDirection.UP, ForgeDirection.WEST),
-		Lower_North(ForgeDirection.DOWN, ForgeDirection.NORTH),
-		Lower_South(ForgeDirection.DOWN, ForgeDirection.SOUTH),
-		Lower_East(ForgeDirection.DOWN, ForgeDirection.EAST),
-		Lower_West(ForgeDirection.DOWN, ForgeDirection.WEST),
-		Middle_North_West(ForgeDirection.NORTH, ForgeDirection.WEST),
-		Middle_North_East(ForgeDirection.NORTH, ForgeDirection.EAST),
-		Lower_South_East(ForgeDirection.SOUTH, ForgeDirection.EAST),
-		Lower_South_West(ForgeDirection.SOUTH, ForgeDirection.WEST);
+		Upper_North(EnumFacing.UP, EnumFacing.NORTH),
+		Upper_South(EnumFacing.UP, EnumFacing.SOUTH),
+		Upper_East(EnumFacing.UP, EnumFacing.EAST),
+		Upper_West(EnumFacing.UP, EnumFacing.WEST),
+		Lower_North(EnumFacing.DOWN, EnumFacing.NORTH),
+		Lower_South(EnumFacing.DOWN, EnumFacing.SOUTH),
+		Lower_East(EnumFacing.DOWN, EnumFacing.EAST),
+		Lower_West(EnumFacing.DOWN, EnumFacing.WEST),
+		Middle_North_West(EnumFacing.NORTH, EnumFacing.WEST),
+		Middle_North_East(EnumFacing.NORTH, EnumFacing.EAST),
+		Lower_South_East(EnumFacing.SOUTH, EnumFacing.EAST),
+		Lower_South_West(EnumFacing.SOUTH, EnumFacing.WEST);
 
-		final ForgeDirection part1;
-		final ForgeDirection part2;
+		final EnumFacing part1;
+		final EnumFacing part2;
 
-		Edge(ForgeDirection part1, ForgeDirection part2) {
+		Edge(EnumFacing part1, EnumFacing part2) {
 			this.part1 = part1;
 			this.part2 = part2;
 		}
 	}
 
 	enum UpDown {
-		UP("U", ForgeDirection.UP),
-		DOWN("D", ForgeDirection.DOWN);
+		UP("U", EnumFacing.UP),
+		DOWN("D", EnumFacing.DOWN);
 
 		final String s;
-		final ForgeDirection dir;
+		final EnumFacing dir;
 
-		UpDown(String s, ForgeDirection dir) {
+		UpDown(String s, EnumFacing dir) {
 			this.s = s;
 			this.dir = dir;
 		}
 	}
 
 	enum NorthSouth {
-		NORTH("N", ForgeDirection.NORTH),
-		SOUTH("S", ForgeDirection.SOUTH);
+		NORTH("N", EnumFacing.NORTH),
+		SOUTH("S", EnumFacing.SOUTH);
 
 		final String s;
-		final ForgeDirection dir;
+		final EnumFacing dir;
 
-		NorthSouth(String s, ForgeDirection dir) {
+		NorthSouth(String s, EnumFacing dir) {
 			this.s = s;
 			this.dir = dir;
 		}
 	}
 
 	enum EastWest {
-		EAST("E", ForgeDirection.EAST),
-		WEST("W", ForgeDirection.WEST);
+		EAST("E", EnumFacing.EAST),
+		WEST("W", EnumFacing.WEST);
 
 		final String s;
-		final ForgeDirection dir;
+		final EnumFacing dir;
 
-		EastWest(String s, ForgeDirection dir) {
+		EastWest(String s, EnumFacing dir) {
 			this.s = s;
 			this.dir = dir;
 		}
@@ -126,14 +126,14 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 	}
 
 	enum Turn {
-		NORTH_SOUTH(ForgeDirection.NORTH, ForgeDirection.SOUTH),
-		EAST_WEST(ForgeDirection.EAST, ForgeDirection.WEST),
-		UP_DOWN(ForgeDirection.UP, ForgeDirection.DOWN);
+		NORTH_SOUTH(EnumFacing.NORTH, EnumFacing.SOUTH),
+		EAST_WEST(EnumFacing.EAST, EnumFacing.WEST),
+		UP_DOWN(EnumFacing.UP, EnumFacing.DOWN);
 
-		final ForgeDirection dir1;
-		final ForgeDirection dir2;
+		final EnumFacing dir1;
+		final EnumFacing dir2;
 
-		Turn(ForgeDirection dir1, ForgeDirection dir2) {
+		Turn(EnumFacing dir1, EnumFacing dir2) {
 			this.dir1 = dir1;
 			this.dir2 = dir2;
 		}
@@ -175,8 +175,8 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			this.number = number;
 		}
 
-		public ForgeDirection getPointer() {
-			List<ForgeDirection> canidates = new ArrayList<>();
+		public EnumFacing getPointer() {
+			List<EnumFacing> canidates = new ArrayList<>();
 			canidates.add(corner.ew.dir);
 			canidates.add(corner.ns.dir);
 			canidates.add(corner.ud.dir);
@@ -202,65 +202,65 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 	}
 
 	enum PipeSupport {
-		UP_UP(ForgeDirection.UP, PipeSupportOri.UP_DOWN),
-		UP_SIDE(ForgeDirection.UP, PipeSupportOri.SIDE),
-		DOWN_UP(ForgeDirection.DOWN, PipeSupportOri.UP_DOWN),
-		DOWN_SIDE(ForgeDirection.DOWN, PipeSupportOri.SIDE),
-		NORTH_UP(ForgeDirection.NORTH, PipeSupportOri.UP_DOWN),
-		NORTH_SIDE(ForgeDirection.NORTH, PipeSupportOri.SIDE),
-		SOUTH_UP(ForgeDirection.SOUTH, PipeSupportOri.UP_DOWN),
-		SOUTH_SIDE(ForgeDirection.SOUTH, PipeSupportOri.SIDE),
-		EAST_UP(ForgeDirection.EAST, PipeSupportOri.UP_DOWN),
-		EAST_SIDE(ForgeDirection.EAST, PipeSupportOri.SIDE),
-		WEST_UP(ForgeDirection.WEST, PipeSupportOri.UP_DOWN),
-		WEST_SIDE(ForgeDirection.WEST, PipeSupportOri.SIDE);
+		UP_UP(EnumFacing.UP, PipeSupportOri.UP_DOWN),
+		UP_SIDE(EnumFacing.UP, PipeSupportOri.SIDE),
+		DOWN_UP(EnumFacing.DOWN, PipeSupportOri.UP_DOWN),
+		DOWN_SIDE(EnumFacing.DOWN, PipeSupportOri.SIDE),
+		NORTH_UP(EnumFacing.NORTH, PipeSupportOri.UP_DOWN),
+		NORTH_SIDE(EnumFacing.NORTH, PipeSupportOri.SIDE),
+		SOUTH_UP(EnumFacing.SOUTH, PipeSupportOri.UP_DOWN),
+		SOUTH_SIDE(EnumFacing.SOUTH, PipeSupportOri.SIDE),
+		EAST_UP(EnumFacing.EAST, PipeSupportOri.UP_DOWN),
+		EAST_SIDE(EnumFacing.EAST, PipeSupportOri.SIDE),
+		WEST_UP(EnumFacing.WEST, PipeSupportOri.UP_DOWN),
+		WEST_SIDE(EnumFacing.WEST, PipeSupportOri.SIDE);
 
-		PipeSupport(ForgeDirection dir, PipeSupportOri ori) {
+		PipeSupport(EnumFacing dir, PipeSupportOri ori) {
 			this.dir = dir;
 			this.ori = ori;
 		}
 
-		final ForgeDirection dir;
+		final EnumFacing dir;
 		final PipeSupportOri ori;
 	}
 
 	enum PipeMount {
-		UP_NORTH(ForgeDirection.UP, ForgeDirection.NORTH),
-		UP_SOUTH(ForgeDirection.UP, ForgeDirection.SOUTH),
-		UP_EAST(ForgeDirection.UP, ForgeDirection.EAST),
-		UP_WEST(ForgeDirection.UP, ForgeDirection.WEST),
-		DOWN_NORTH(ForgeDirection.DOWN, ForgeDirection.NORTH),
-		DOWN_SOUTH(ForgeDirection.DOWN, ForgeDirection.SOUTH),
-		DOWN_EAST(ForgeDirection.DOWN, ForgeDirection.EAST),
-		DOWN_WEST(ForgeDirection.DOWN, ForgeDirection.WEST),
-		NORTH_UP(ForgeDirection.NORTH, ForgeDirection.UP),
-		NORTH_DOWN(ForgeDirection.NORTH, ForgeDirection.DOWN),
-		NORTH_EAST(ForgeDirection.NORTH, ForgeDirection.EAST),
-		NORTH_WEST(ForgeDirection.NORTH, ForgeDirection.WEST),
-		SOUTH_UP(ForgeDirection.SOUTH, ForgeDirection.UP),
-		SOUTH_DOWN(ForgeDirection.SOUTH, ForgeDirection.DOWN),
-		SOUTH_EAST(ForgeDirection.SOUTH, ForgeDirection.EAST),
-		SOUTH_WEST(ForgeDirection.SOUTH, ForgeDirection.WEST),
-		EAST_UP(ForgeDirection.EAST, ForgeDirection.UP),
-		EAST_DOWN(ForgeDirection.EAST, ForgeDirection.DOWN),
-		EAST_NORTH(ForgeDirection.EAST, ForgeDirection.NORTH),
-		EAST_SOUTH(ForgeDirection.EAST, ForgeDirection.SOUTH),
-		WEST_UP(ForgeDirection.WEST, ForgeDirection.UP),
-		WEST_DOWN(ForgeDirection.WEST, ForgeDirection.DOWN),
-		WEST_NORTH(ForgeDirection.WEST, ForgeDirection.NORTH),
-		WEST_SOUTH(ForgeDirection.WEST, ForgeDirection.SOUTH);
+		UP_NORTH(EnumFacing.UP, EnumFacing.NORTH),
+		UP_SOUTH(EnumFacing.UP, EnumFacing.SOUTH),
+		UP_EAST(EnumFacing.UP, EnumFacing.EAST),
+		UP_WEST(EnumFacing.UP, EnumFacing.WEST),
+		DOWN_NORTH(EnumFacing.DOWN, EnumFacing.NORTH),
+		DOWN_SOUTH(EnumFacing.DOWN, EnumFacing.SOUTH),
+		DOWN_EAST(EnumFacing.DOWN, EnumFacing.EAST),
+		DOWN_WEST(EnumFacing.DOWN, EnumFacing.WEST),
+		NORTH_UP(EnumFacing.NORTH, EnumFacing.UP),
+		NORTH_DOWN(EnumFacing.NORTH, EnumFacing.DOWN),
+		NORTH_EAST(EnumFacing.NORTH, EnumFacing.EAST),
+		NORTH_WEST(EnumFacing.NORTH, EnumFacing.WEST),
+		SOUTH_UP(EnumFacing.SOUTH, EnumFacing.UP),
+		SOUTH_DOWN(EnumFacing.SOUTH, EnumFacing.DOWN),
+		SOUTH_EAST(EnumFacing.SOUTH, EnumFacing.EAST),
+		SOUTH_WEST(EnumFacing.SOUTH, EnumFacing.WEST),
+		EAST_UP(EnumFacing.EAST, EnumFacing.UP),
+		EAST_DOWN(EnumFacing.EAST, EnumFacing.DOWN),
+		EAST_NORTH(EnumFacing.EAST, EnumFacing.NORTH),
+		EAST_SOUTH(EnumFacing.EAST, EnumFacing.SOUTH),
+		WEST_UP(EnumFacing.WEST, EnumFacing.UP),
+		WEST_DOWN(EnumFacing.WEST, EnumFacing.DOWN),
+		WEST_NORTH(EnumFacing.WEST, EnumFacing.NORTH),
+		WEST_SOUTH(EnumFacing.WEST, EnumFacing.SOUTH);
 
-		ForgeDirection dir;
-		ForgeDirection side;
+		EnumFacing dir;
+		EnumFacing side;
 
-		PipeMount(ForgeDirection dir, ForgeDirection side) {
+		PipeMount(EnumFacing dir, EnumFacing side) {
 			this.dir = dir;
 			this.side = side;
 		}
 	}
 
-	static Map<ForgeDirection, List<IModel3D>> sideNormal = new HashMap<>();
-	static Map<ForgeDirection, List<IModel3D>> sideBC = new HashMap<>();
+	static Map<EnumFacing, List<IModel3D>> sideNormal = new HashMap<>();
+	static Map<EnumFacing, List<IModel3D>> sideBC = new HashMap<>();
 	static Map<Edge, IModel3D> edges = new HashMap<>();
 	static Map<Corner, List<IModel3D>> corners_M = new HashMap<>();
 	static Map<Corner, List<IModel3D>> corners_I3 = new HashMap<>();
@@ -269,9 +269,9 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 	static Map<PipeTurnCorner, IModel3D> spacers = new HashMap<>();
 	static Map<PipeMount, IModel3D> mounts = new HashMap<>();
 
-	static Map<ForgeDirection, List<IModel3D>> texturePlate_Inner = new HashMap<>();
-	static Map<ForgeDirection, List<IModel3D>> texturePlate_Outer = new HashMap<>();
-	static Map<ForgeDirection, Quartet<List<IModel3D>, List<IModel3D>, List<IModel3D>, List<IModel3D>>> sideTexturePlate = new HashMap<>();
+	static Map<EnumFacing, List<IModel3D>> texturePlate_Inner = new HashMap<>();
+	static Map<EnumFacing, List<IModel3D>> texturePlate_Outer = new HashMap<>();
+	static Map<EnumFacing, Quartet<List<IModel3D>, List<IModel3D>, List<IModel3D>, List<IModel3D>>> sideTexturePlate = new HashMap<>();
 	static Map<PipeMount, List<IModel3D>> textureConnectorPlate = new HashMap<>();
 
 	static Map<ScaleObject, IModel3D> scaleMap = new HashMap<>();
@@ -287,12 +287,12 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 	static IModel3D innerTransportBox;
 	static IModel3D highlight;
 
-	public static IIconTransformation basicPipeTexture;
-	public static IIconTransformation inactiveTexture;
-	public static IIconTransformation glassCenterTexture;
-	public static IIconTransformation innerBoxTexture;
-	public static IIconTransformation statusTexture;
-	public static IIconTransformation statusBCTexture;
+	public static TextureTransformation basicPipeTexture;
+	public static TextureTransformation inactiveTexture;
+	public static TextureTransformation glassCenterTexture;
+	public static TextureTransformation innerBoxTexture;
+	public static TextureTransformation statusTexture;
+	public static TextureTransformation statusBCTexture;
 
 	static {
 		LogisticsNewRenderPipe.loadModels();
@@ -304,7 +304,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			Map<String, IModel3D> pipePartModels = SimpleServiceLocator.cclProxy.parseObjModels(LogisticsPipes.class.getResourceAsStream("/logisticspipes/models/PipeModel_moved.obj"), 7, new LPScale(1 / 100f));
 			List<IModel3D> highlightList = new ArrayList<>();
 
-			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+			for (EnumFacing dir : EnumFacing.VALUES) {
 				LogisticsNewRenderPipe.sideNormal.put(dir, new ArrayList<>());
 				String grp = "Side_" + LogisticsNewRenderPipe.getDirAsString_Type1(dir);
 				pipePartModels.entrySet().stream()
@@ -315,7 +315,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 				}
 			}
 
-			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+			for (EnumFacing dir : EnumFacing.VALUES) {
 				LogisticsNewRenderPipe.sideBC.put(dir, new ArrayList<>());
 				String grp = "Side_BC_" + LogisticsNewRenderPipe.getDirAsString_Type1(dir);
 				pipePartModels.entrySet().stream()
@@ -328,7 +328,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 
 			for (Edge edge : Edge.values()) {
 				String grp;
-				if (edge.part1 == ForgeDirection.UP || edge.part1 == ForgeDirection.DOWN) {
+				if (edge.part1 == EnumFacing.UP || edge.part1 == EnumFacing.DOWN) {
 					grp = "Edge_M_" + LogisticsNewRenderPipe.getDirAsString_Type1(edge.part1) + "_" + LogisticsNewRenderPipe.getDirAsString_Type1(edge.part2);
 				} else {
 					grp = "Edge_M_S_" + LogisticsNewRenderPipe.getDirAsString_Type1(edge.part1) + LogisticsNewRenderPipe.getDirAsString_Type1(edge.part2);
@@ -441,7 +441,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 				}
 			}
 
-			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+			for (EnumFacing dir : EnumFacing.VALUES) {
 				LogisticsNewRenderPipe.texturePlate_Inner.put(dir, new ArrayList<>());
 				String grp = "Inner_Plate_" + LogisticsNewRenderPipe.getDirAsString_Type1(dir);
 				pipePartModels.entrySet().stream().filter(entry -> entry.getKey().contains(" " + grp))
@@ -451,7 +451,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 				}
 			}
 
-			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+			for (EnumFacing dir : EnumFacing.VALUES) {
 				LogisticsNewRenderPipe.texturePlate_Outer.put(dir, new ArrayList<>());
 				String grp = "Texture_Plate_" + LogisticsNewRenderPipe.getDirAsString_Type1(dir);
 				pipePartModels.entrySet().stream().filter(entry -> entry.getKey().contains(" " + grp))
@@ -461,7 +461,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 				}
 			}
 
-			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+			for (EnumFacing dir : EnumFacing.VALUES) {
 				LogisticsNewRenderPipe.sideTexturePlate.put(dir, new Quartet<>(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>()));
 				String grp = "Texture_Side_" + LogisticsNewRenderPipe.getDirAsString_Type1(dir);
 				for (Entry<String, IModel3D> entry : pipePartModels.entrySet()) {
@@ -524,7 +524,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 	}
 
-	private static String getDirAsString_Type1(ForgeDirection dir) {
+	private static String getDirAsString_Type1(EnumFacing dir) {
 		switch (dir) {
 			case NORTH:
 				return "N";
@@ -621,7 +621,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			SimpleServiceLocator.cclProxy.getRenderState().setUseNormals(true);
 			SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
 
-			int brightness = new DoubleCoordinates(subTile).getBlock(subTile.getWorldObj()).getMixedBrightnessForBlock(subTile.getWorldObj(), subTile.xCoord, subTile.yCoord, subTile.zCoord);
+			int brightness = new DoubleCoordinates(subTile).getBlock(subTile.getWorld()).getMixedBrightnessForBlock(subTile.getWorld(), subTile.xCoord, subTile.yCoord, subTile.zCoord);
 			SimpleServiceLocator.cclProxy.getRenderState().setBrightness(brightness);
 			boolean tesselating = false;
 
@@ -672,7 +672,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 
 		int connectionCount = 0;
 
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing dir : EnumFacing.VALUES) {
 			if (renderState.pipeConnectionMatrix.isConnected(dir) || pipeTile.pipe.hasSpecialPipeEndAt(dir)) {
 				connectionCount++;
 				if (renderState.pipeConnectionMatrix.isBCConnected(dir) || renderState.pipeConnectionMatrix.isTDConnected(dir)) {
@@ -769,7 +769,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 
 		for (Corner corner : Corner.values()) {
-			IIconTransformation cornerTexture = LogisticsNewRenderPipe.basicPipeTexture;
+			TextureTransformation cornerTexture = LogisticsNewRenderPipe.basicPipeTexture;
 			if (!renderState.textureMatrix.isHasPower() && renderState.textureMatrix.isRouted()) {
 				cornerTexture = LogisticsNewRenderPipe.inactiveTexture;
 			} else if (!renderState.textureMatrix.isRouted() && connectionCount > 2) {
@@ -811,13 +811,13 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 				.map(edge -> new RenderEntry(LogisticsNewRenderPipe.edges.get(edge), new I3DOperation[]{LogisticsNewRenderPipe.basicPipeTexture})).collect(Collectors.toList()));
 
 		for (int i = 0; i < 6; i += 2) {
-			ForgeDirection dir = ForgeDirection.getOrientation(i);
-			List<ForgeDirection> list = new ArrayList<>(Arrays.asList(ForgeDirection.VALID_DIRECTIONS));
+			EnumFacing dir = EnumFacing.getOrientation(i);
+			List<EnumFacing> list = new ArrayList<>(Arrays.asList(EnumFacing.VALUES));
 			list.remove(dir);
 			list.remove(dir.getOpposite());
 			if (renderState.pipeConnectionMatrix.isConnected(dir) && renderState.pipeConnectionMatrix.isConnected(dir.getOpposite())) {
 				boolean found = false;
-				for (ForgeDirection dir2 : list) {
+				for (EnumFacing dir2 : list) {
 					if (renderState.pipeConnectionMatrix.isConnected(dir2)) {
 						found = true;
 						break;
@@ -851,10 +851,10 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 
 		boolean[] solidSides = new boolean[6];
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing dir : EnumFacing.VALUES) {
 			DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates((TileEntity) pipeTile), dir);
-			Block blockSide = pos.getBlock(pipeTile.getWorldObj());
-			if (blockSide == null || !blockSide.isSideSolid(pipeTile.getWorldObj(), pos.getXInt(), pos.getYInt(), pos.getZInt(), dir.getOpposite()) || renderState.pipeConnectionMatrix.isConnected(dir)) {
+			Block blockSide = pos.getBlock(pipeTile.getWorld());
+			if (blockSide == null || !blockSide.isSideSolid(pipeTile.getWorld(), pos.getXInt(), pos.getYInt(), pos.getZInt(), dir.getOpposite()) || renderState.pipeConnectionMatrix.isConnected(dir)) {
 				Iterator<PipeMount> iter = mountCanidates.iterator();
 				while (iter.hasNext()) {
 					PipeMount mount = iter.next();
@@ -868,13 +868,13 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 
 		if (!mountCanidates.isEmpty()) {
-			if (solidSides[ForgeDirection.DOWN.ordinal()]) {
-				findOponentOnSameSide(mountCanidates, ForgeDirection.DOWN);
-			} else if (solidSides[ForgeDirection.UP.ordinal()]) {
-				findOponentOnSameSide(mountCanidates, ForgeDirection.UP);
+			if (solidSides[EnumFacing.DOWN.ordinal()]) {
+				findOponentOnSameSide(mountCanidates, EnumFacing.DOWN);
+			} else if (solidSides[EnumFacing.UP.ordinal()]) {
+				findOponentOnSameSide(mountCanidates, EnumFacing.UP);
 			} else {
-				removeFromSide(mountCanidates, ForgeDirection.DOWN);
-				removeFromSide(mountCanidates, ForgeDirection.UP);
+				removeFromSide(mountCanidates, EnumFacing.DOWN);
+				removeFromSide(mountCanidates, EnumFacing.UP);
 				if (mountCanidates.size() > 2) {
 					removeIfHasOponentSide(mountCanidates);
 				}
@@ -895,10 +895,10 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 					.collect(Collectors.toList()));
 		}
 
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing dir : EnumFacing.VALUES) {
 			if (!renderState.pipeConnectionMatrix.isConnected(dir)) {
 				for (IModel3D model : LogisticsNewRenderPipe.texturePlate_Outer.get(dir)) {
-					IIconTransformation icon = Textures.LPnewPipeIconProvider.getIcon(renderState.textureMatrix.getTextureIndex());
+					TextureTransformation icon = Textures.LPnewPipeIconProvider.getIcon(renderState.textureMatrix.getTextureIndex());
 					if (icon != null) {
 						objectsToRender.add(new RenderEntry(model, new I3DOperation[] { icon }));
 					}
@@ -906,7 +906,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			}
 		}
 		if (renderState.textureMatrix.isFluid()) {
-			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+			for (EnumFacing dir : EnumFacing.VALUES) {
 				if (!renderState.pipeConnectionMatrix.isConnected(dir)) {
 					objectsToRender.addAll(LogisticsNewRenderPipe.texturePlate_Inner.get(dir).stream()
 							.map(model -> new RenderEntry(model, new I3DOperation[]{LogisticsNewRenderPipe.glassCenterTexture}))
@@ -922,7 +922,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 	}
 
-	private void findOponentOnSameSide(List<PipeMount> mountCanidates, ForgeDirection dir) {
+	private void findOponentOnSameSide(List<PipeMount> mountCanidates, EnumFacing dir) {
 		boolean sides[] = new boolean[6];
 		Iterator<PipeMount> iter = mountCanidates.iterator();
 		while (iter.hasNext()) {
@@ -936,16 +936,16 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		if (mountCanidates.size() <= 2) {
 			return;
 		}
-		List<ForgeDirection> keep = new ArrayList<>();
+		List<EnumFacing> keep = new ArrayList<>();
 		if (sides[2] && sides[3]) {
-			keep.add(ForgeDirection.NORTH);
-			keep.add(ForgeDirection.SOUTH);
+			keep.add(EnumFacing.NORTH);
+			keep.add(EnumFacing.SOUTH);
 		} else if (sides[4] && sides[5]) {
-			keep.add(ForgeDirection.EAST);
-			keep.add(ForgeDirection.WEST);
+			keep.add(EnumFacing.EAST);
+			keep.add(EnumFacing.WEST);
 		} else if (sides[0] && sides[1]) {
-			keep.add(ForgeDirection.UP);
-			keep.add(ForgeDirection.DOWN);
+			keep.add(EnumFacing.UP);
+			keep.add(EnumFacing.DOWN);
 		}
 		iter = mountCanidates.iterator();
 		while (iter.hasNext()) {
@@ -956,7 +956,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 	}
 
-	private void removeFromSide(List<PipeMount> mountCanidates, ForgeDirection dir) {
+	private void removeFromSide(List<PipeMount> mountCanidates, EnumFacing dir) {
 		Iterator<PipeMount> iter = mountCanidates.iterator();
 		while (iter.hasNext()) {
 			PipeMount mount = iter.next();
@@ -966,7 +966,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 	}
 
-	private void reduceToOnePerSide(List<PipeMount> mountCanidates, ForgeDirection dir, ForgeDirection pref) {
+	private void reduceToOnePerSide(List<PipeMount> mountCanidates, EnumFacing dir, EnumFacing pref) {
 		boolean found = false;
 		for (PipeMount mount : mountCanidates) {
 			if (mount.dir != dir) {
@@ -992,7 +992,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 	}
 
-	private void reduceToOnePerSide(List<PipeMount> mountCanidates, ForgeDirection dir) {
+	private void reduceToOnePerSide(List<PipeMount> mountCanidates, EnumFacing dir) {
 		boolean found = false;
 		Iterator<PipeMount> iter = mountCanidates.iterator();
 		while (iter.hasNext()) {
@@ -1014,15 +1014,15 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			sides[mount.dir.ordinal()] = true;
 		}
 		if (sides[2] && sides[3]) {
-			removeFromSide(mountCanidates, ForgeDirection.EAST);
-			removeFromSide(mountCanidates, ForgeDirection.WEST);
-			reduceToOnePerSide(mountCanidates, ForgeDirection.NORTH);
-			reduceToOnePerSide(mountCanidates, ForgeDirection.SOUTH);
+			removeFromSide(mountCanidates, EnumFacing.EAST);
+			removeFromSide(mountCanidates, EnumFacing.WEST);
+			reduceToOnePerSide(mountCanidates, EnumFacing.NORTH);
+			reduceToOnePerSide(mountCanidates, EnumFacing.SOUTH);
 		} else if (sides[4] && sides[5]) {
-			removeFromSide(mountCanidates, ForgeDirection.NORTH);
-			removeFromSide(mountCanidates, ForgeDirection.SOUTH);
-			reduceToOnePerSide(mountCanidates, ForgeDirection.EAST);
-			reduceToOnePerSide(mountCanidates, ForgeDirection.WEST);
+			removeFromSide(mountCanidates, EnumFacing.NORTH);
+			removeFromSide(mountCanidates, EnumFacing.SOUTH);
+			reduceToOnePerSide(mountCanidates, EnumFacing.EAST);
+			reduceToOnePerSide(mountCanidates, EnumFacing.WEST);
 		}
 	}
 
@@ -1032,11 +1032,11 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			sides[mount.dir.ordinal()] = true;
 		}
 		for (int i = 2; i < 6; i++) {
-			ForgeDirection dir = ForgeDirection.getOrientation(i);
-			ForgeDirection rot = dir.getRotation(ForgeDirection.UP);
+			EnumFacing dir = EnumFacing.getOrientation(i);
+			EnumFacing rot = dir.getRotation(EnumFacing.UP);
 			if (sides[dir.ordinal()] && sides[rot.ordinal()]) {
-				reduceToOnePerSide(mountCanidates, dir, dir.getRotation(ForgeDirection.DOWN));
-				reduceToOnePerSide(mountCanidates, rot, rot.getRotation(ForgeDirection.UP));
+				reduceToOnePerSide(mountCanidates, dir, dir.getRotation(EnumFacing.DOWN));
+				reduceToOnePerSide(mountCanidates, rot, rot.getRotation(EnumFacing.UP));
 			}
 		}
 	}
@@ -1055,7 +1055,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 	}
 
-	public static void renderBoxWithDir(ForgeDirection dir) {
+	public static void renderBoxWithDir(EnumFacing dir) {
 		List<RenderEntry> objectsToRender = new ArrayList<>();
 		List<Edge> edgesToRender = new ArrayList<>(Arrays.asList(Edge.values()));
 		Map<Corner, Integer> connectionAtCorner = new HashMap<>();
@@ -1075,7 +1075,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			}
 		}
 		for (Corner corner : Corner.values()) {
-			IIconTransformation cornerTexture = LogisticsNewRenderPipe.basicPipeTexture;
+			TextureTransformation cornerTexture = LogisticsNewRenderPipe.basicPipeTexture;
 			int count = connectionAtCorner.containsKey(corner) ? connectionAtCorner.get(corner) : 0;
 			if (count == 0) {
 				objectsToRender.addAll(LogisticsNewRenderPipe.corners_M.get(corner).stream()

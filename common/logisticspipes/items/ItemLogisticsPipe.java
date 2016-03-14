@@ -29,11 +29,11 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.World;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import lombok.Getter;
 import network.rs485.logisticspipes.world.DoubleCoordinatesType;
@@ -194,7 +194,7 @@ public class ItemLogisticsPipe extends LogisticsItem {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconFromDamage(int par1) {
+	public TextureAtlasSprite getIconFromDamage(int par1) {
 		if (iconProvider != null) { // invalid pipes won't have this set
 			return iconProvider.getIcon(pipeIconIndex);
 		} else {

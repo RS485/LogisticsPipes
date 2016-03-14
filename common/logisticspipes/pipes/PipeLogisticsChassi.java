@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import logisticspipes.utils.EnumFacingUtil;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -89,9 +90,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ResourceLocation;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import lombok.Getter;
 
@@ -103,8 +104,6 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	private final ModuleUpgradeManager[] _upgradeManagers;
 	private boolean switchOrientationOnTick = true;
 	private boolean init = false;
-
-	private boolean convertFromMeta = false;
 
 	// HUD
 	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<>();
@@ -121,7 +120,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		}
 		_module = new ChassiModule(getChassiSize(), this);
 		hud = new HudChassisPipe(this, _module, _moduleInventory);
-		pointedDirection = ForgeDirection.UNKNOWN;
+		pointedDirection = null;
 	}
 
 	@Override
@@ -140,16 +139,16 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	public void nextOrientation() {
 		boolean found = false;
-		ForgeDirection oldOrientation = pointedDirection;
+		EnumFacing oldOrientation = pointedDirection;
 		for (int l = 0; l < 6; ++l) {
-			pointedDirection = ForgeDirection.values()[(pointedDirection.ordinal() + 1) % 6];
+			pointedDirection = EnumFacing.values()[(pointedDirection.ordinal() + 1) % 6];
 			if (isValidOrientation(pointedDirection)) {
 				found = true;
 				break;
 			}
 		}
 		if (!found) {
-			pointedDirection = ForgeDirection.UNKNOWN;
+			pointedDirection = null;
 		}
 		if (pointedDirection != oldOrientation) {
 			clearCache();
@@ -158,14 +157,14 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		}
 	}
 
-	public void setClientOrientation(ForgeDirection dir) {
+	public void setClientOrientation(EnumFacing dir) {
 		if (MainProxy.isClient(getWorld())) {
 			pointedDirection = dir;
 		}
 	}
 
-	private boolean isValidOrientation(ForgeDirection connection) {
-		if (connection == ForgeDirection.UNKNOWN) {
+	private boolean isValidOrientation(EnumFacing connection) {
+		if (connection == null) {
 			return false;
 		}
 		if (getRouter().isRoutedExit(connection)) {
@@ -197,7 +196,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	}
 
 	@Override
-	public TextureType getRoutedTexture(ForgeDirection connection) {
+	public TextureType getRoutedTexture(EnumFacing connection) {
 		if (getRouter().isSubPoweredExit(connection)) {
 			return Textures.LOGISTICSPIPE_SUBPOWER_TEXTURE;
 		}
@@ -205,7 +204,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	}
 
 	@Override
-	public TextureType getNonRoutedTexture(ForgeDirection connection) {
+	public TextureType getNonRoutedTexture(EnumFacing connection) {
 		if (connection.equals(pointedDirection)) {
 			return Textures.LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE;
 		}
@@ -237,11 +236,8 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 			_moduleInventory.readFromNBT(nbttagcompound, "chassi");
 			InventoryChanged(_moduleInventory);
 			_module.readFromNBT(nbttagcompound);
-			pointedDirection = ForgeDirection.values()[nbttagcompound.getInteger("Orientation") % 7];
-			if (nbttagcompound.getInteger("Orientation") == 0) {
-				convertFromMeta = true;
-			}
-			switchOrientationOnTick = (pointedDirection == ForgeDirection.UNKNOWN);
+			pointedDirection = EnumFacingUtil.getOrientation(nbttagcompound.getInteger("Orientation") % 7);
+			switchOrientationOnTick = (pointedDirection == null);
 			for (int i = 0; i < getChassiSize(); i++) {
 				_upgradeManagers[i].readFromNBT(nbttagcompound, Integer.toString(i));
 			}
@@ -256,7 +252,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		_moduleInventory.writeToNBT(nbttagcompound, "chassi");
 		_module.writeToNBT(nbttagcompound);
 		if (pointedDirection == null) {
-			pointedDirection = ForgeDirection.UNKNOWN;
+			pointedDirection = null;
 		}
 		nbttagcompound.setInteger("Orientation", pointedDirection.ordinal());
 		for (int i = 0; i < getChassiSize(); i++) {
@@ -391,11 +387,6 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 			if (MainProxy.isServer(getWorld())) {
 				nextOrientation();
 			}
-		}
-		if (convertFromMeta && getWorld().getBlockMetadata(getX(), getY(), getZ()) != 0) {
-			pointedDirection = ForgeDirection.values()[getWorld().getBlockMetadata(getX(), getY(), getZ()) % 6];
-			getWorld().setBlockMetadataWithNotify(getX(), getY(), getZ(), 0, 0);
-			convertFromMeta = false;
 		}
 		if (!init) {
 			init = true;

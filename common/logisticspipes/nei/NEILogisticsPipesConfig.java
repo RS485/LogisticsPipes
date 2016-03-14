@@ -6,7 +6,7 @@ import logisticspipes.gui.GuiLogisticsCraftingTable;
 import logisticspipes.gui.GuiSolderingStation;
 import logisticspipes.gui.orderer.GuiRequestTable;
 
-import cpw.mods.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod;
 
 import codechicken.nei.api.API;
 import codechicken.nei.api.IConfigureNEI;

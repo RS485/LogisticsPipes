@@ -21,7 +21,7 @@ import logisticspipes.utils.tuples.Pair;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public class ClientRouter implements IRouter {
 
@@ -49,7 +49,7 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public boolean isRoutedExit(ForgeDirection connection) {
+	public boolean isRoutedExit(EnumFacing connection) {
 		if (LPConstants.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
@@ -166,7 +166,7 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public boolean isSideDisconneceted(ForgeDirection dir) {
+	public boolean isSideDisconneceted(EnumFacing dir) {
 		return false;
 	}
 
@@ -194,7 +194,7 @@ public class ClientRouter implements IRouter {
 	public void forceLsaUpdate() {}
 
 	@Override
-	public boolean isSubPoweredExit(ForgeDirection connection) {
+	public boolean isSubPoweredExit(EnumFacing connection) {
 		return false;
 	}
 
@@ -217,7 +217,7 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public List<ExitRoute> getRoutersOnSide(ForgeDirection exitOrientation) {
+	public List<ExitRoute> getRoutersOnSide(EnumFacing exitOrientation) {
 		return null;
 	}
 
@@ -227,7 +227,7 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public int getDistanceToNextPowerPipe(ForgeDirection dir) {
+	public int getDistanceToNextPowerPipe(EnumFacing dir) {
 		return 0;
 	}
 

@@ -456,7 +456,7 @@ public abstract class BaseWrapperClass extends AbstractValue {
 		} else if (object instanceof LogisticsSolidTileEntity) {
 			DoubleCoordinates pos = ((LogisticsSolidTileEntity) object).getLPPosition();
 			nbt.setString("Type", "LogisticsSolidTileEntity");
-			nbt.setInteger("Dim", MainProxy.getDimensionForWorld(((LogisticsSolidTileEntity) object).getWorldObj()));
+			nbt.setInteger("Dim", MainProxy.getDimensionForWorld(((LogisticsSolidTileEntity) object).getWorld()));
 			nbt.setInteger("X", pos.getXInt());
 			nbt.setInteger("Y", pos.getYInt());
 			nbt.setInteger("Z", pos.getZInt());

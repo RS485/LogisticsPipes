@@ -12,7 +12,7 @@ import logisticspipes.utils.FluidIdentifier;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.FluidStack;
 
 import appeng.api.AEApi;
@@ -47,7 +47,7 @@ public class AETankHandler implements ISpecialTankAccessHandler {
 		List<TileEntity> tiles = new ArrayList<>(1);
 		if (tile instanceof IGridHost) {
 			IGridHost host = (IGridHost) tile;
-			IGridNode node = host.getGridNode(ForgeDirection.UNKNOWN);
+			IGridNode node = host.getGridNode(null);
 			if (node != null) {
 				TileEntity base = getBaseTileEntity(node);
 				if (base != null) {
@@ -69,7 +69,7 @@ public class AETankHandler implements ISpecialTankAccessHandler {
 			if (mon == null) {
 				return map;
 			}
-			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+			for (EnumFacing dir : EnumFacing.VALUES) {
 				MachineSource source = new MachineSource(new LPActionHost(((IGridHost) tile).getGridNode(dir)));
 				IStorageMonitorable monitor = mon.getMonitorable(dir, source);
 				if (monitor == null || monitor.getFluidInventory() == null) {
@@ -95,7 +95,7 @@ public class AETankHandler implements ISpecialTankAccessHandler {
 			if (mon == null) {
 				return null;
 			}
-			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+			for (EnumFacing dir : EnumFacing.VALUES) {
 				MachineSource source = new MachineSource(new LPActionHost(((IGridHost) tile).getGridNode(dir)));
 				IStorageMonitorable monitor = mon.getMonitorable(dir, source);
 				if (monitor == null || monitor.getFluidInventory() == null) {
@@ -149,12 +149,12 @@ public class AETankHandler implements ISpecialTankAccessHandler {
 		public void securityBreak() {}
 
 		@Override
-		public IGridNode getGridNode(ForgeDirection paramForgeDirection) {
+		public IGridNode getGridNode(EnumFacing paramEnumFacing) {
 			return null;
 		}
 
 		@Override
-		public AECableType getCableConnectionType(ForgeDirection paramForgeDirection) {
+		public AECableType getCableConnectionType(EnumFacing paramEnumFacing) {
 			return null;
 		}
 

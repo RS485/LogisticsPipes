@@ -45,17 +45,17 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 
 public class LogisticsBlockGenericPipe extends BlockContainer {
@@ -95,7 +95,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	@Override
 	@SideOnly(Side.CLIENT)
 	@SuppressWarnings({ "all" })
-	public IIcon getIcon(IBlockAccess iblockaccess, int i, int j, int k, int l) {
+	public TextureAtlasSprite getIcon(IBlockAccess iblockaccess, int i, int j, int k, int l) {
 		TileEntity tile = iblockaccess.getTileEntity(i, j, k);
 		if (!(tile instanceof LogisticsTileGenericPipe)) {
 			return null;
@@ -130,64 +130,64 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		if (tile instanceof LogisticsTileGenericPipe) {
 			LogisticsTileGenericPipe tileG = (LogisticsTileGenericPipe) tile;
 
-			if (tileG.isPipeConnected(ForgeDirection.WEST)) {
+			if (tileG.isPipeConnected(EnumFacing.WEST)) {
 				setBlockBounds(0.0F, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS);
 				super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			}
 
-			if (tileG.isPipeConnected(ForgeDirection.EAST)) {
+			if (tileG.isPipeConnected(EnumFacing.EAST)) {
 				setBlockBounds(LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, 1.0F, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS);
 				super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			}
 
-			if (tileG.isPipeConnected(ForgeDirection.DOWN)) {
+			if (tileG.isPipeConnected(EnumFacing.DOWN)) {
 				setBlockBounds(LPConstants.PIPE_MIN_POS, 0.0F, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS);
 				super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			}
 
-			if (tileG.isPipeConnected(ForgeDirection.UP)) {
+			if (tileG.isPipeConnected(EnumFacing.UP)) {
 				setBlockBounds(LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MAX_POS, 1.0F, LPConstants.PIPE_MAX_POS);
 				super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			}
 
-			if (tileG.isPipeConnected(ForgeDirection.NORTH)) {
+			if (tileG.isPipeConnected(EnumFacing.NORTH)) {
 				setBlockBounds(LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, 0.0F, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS);
 				super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			}
 
-			if (tileG.isPipeConnected(ForgeDirection.SOUTH)) {
+			if (tileG.isPipeConnected(EnumFacing.SOUTH)) {
 				setBlockBounds(LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, 1.0F);
 				super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			}
 
 			float facadeThickness = LPConstants.FACADE_THICKNESS;
 
-			if (tileG.tilePart.hasEnabledFacade(ForgeDirection.EAST)) {
+			if (tileG.tilePart.hasEnabledFacade(EnumFacing.EAST)) {
 				setBlockBounds(1 - facadeThickness, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 				super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			}
 
-			if (tileG.tilePart.hasEnabledFacade(ForgeDirection.WEST)) {
+			if (tileG.tilePart.hasEnabledFacade(EnumFacing.WEST)) {
 				setBlockBounds(0.0F, 0.0F, 0.0F, facadeThickness, 1.0F, 1.0F);
 				super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			}
 
-			if (tileG.tilePart.hasEnabledFacade(ForgeDirection.UP)) {
+			if (tileG.tilePart.hasEnabledFacade(EnumFacing.UP)) {
 				setBlockBounds(0.0F, 1 - facadeThickness, 0.0F, 1.0F, 1.0F, 1.0F);
 				super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			}
 
-			if (tileG.tilePart.hasEnabledFacade(ForgeDirection.DOWN)) {
+			if (tileG.tilePart.hasEnabledFacade(EnumFacing.DOWN)) {
 				setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, facadeThickness, 1.0F);
 				super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			}
 
-			if (tileG.tilePart.hasEnabledFacade(ForgeDirection.SOUTH)) {
+			if (tileG.tilePart.hasEnabledFacade(EnumFacing.SOUTH)) {
 				setBlockBounds(0.0F, 0.0F, 1 - facadeThickness, 1.0F, 1.0F, 1.0F);
 				super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			}
 
-			if (tileG.tilePart.hasEnabledFacade(ForgeDirection.NORTH)) {
+			if (tileG.tilePart.hasEnabledFacade(EnumFacing.NORTH)) {
 				setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, facadeThickness);
 				super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, par7Entity);
 			}
@@ -374,29 +374,29 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		 */
 		MovingObjectPosition[] hits = new MovingObjectPosition[31];
 		AxisAlignedBB[] boxes = new AxisAlignedBB[31];
-		ForgeDirection[] sideHit = new ForgeDirection[31];
-		Arrays.fill(sideHit, ForgeDirection.UNKNOWN);
+		EnumFacing[] sideHit = new EnumFacing[31];
+		Arrays.fill(sideHit, null);
 
 		// pipe
 
-		for (ForgeDirection side : LogisticsBlockGenericPipe.DIR_VALUES) {
-			if (side == ForgeDirection.UNKNOWN || tileG.isPipeConnected(side)) {
+		for (EnumFacing side : LogisticsBlockGenericPipe.DIR_VALUES) {
+			if (side == null || tileG.isPipeConnected(side)) {
 				AxisAlignedBB bb = getPipeBoundingBox(side);
 				setBlockBounds(bb);
 				boxes[side.ordinal()] = bb;
-				hits[side.ordinal()] = super.collisionRayTrace(tileG.getWorldObj(), tileG.xCoord, tileG.yCoord, tileG.zCoord, origin, direction);
+				hits[side.ordinal()] = super.collisionRayTrace(tileG.getWorld(), tileG.xCoord, tileG.yCoord, tileG.zCoord, origin, direction);
 				sideHit[side.ordinal()] = side;
 			}
 		}
 
 		// pluggables
 
-		for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing side : EnumFacing.VALUES) {
 			if (tileG.getPipePluggable(side) != null) {
 				AxisAlignedBB bb = tileG.getPipePluggable(side).getBoundingBox(side);
 				setBlockBounds(bb);
 				boxes[7 + side.ordinal()] = bb;
-				hits[7 + side.ordinal()] = super.collisionRayTrace(tileG.getWorldObj(), tileG.xCoord, tileG.yCoord, tileG.zCoord, origin, direction);
+				hits[7 + side.ordinal()] = super.collisionRayTrace(tileG.getWorld(), tileG.xCoord, tileG.yCoord, tileG.zCoord, origin, direction);
 				sideHit[7 + side.ordinal()] = side;
 			}
 		}
@@ -461,7 +461,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		for (int i = 0; i < boxes.size(); i++) {
 			AxisAlignedBB bb = boxes.get(i);
 			setBlockBoundsFromAbsolut(bb, tileG);
-			hits.set(i, super.collisionRayTrace(tileG.getWorldObj(), tileG.xCoord, tileG.yCoord, tileG.zCoord, origin, direction));
+			hits.set(i, super.collisionRayTrace(tileG.getWorld(), tileG.xCoord, tileG.yCoord, tileG.zCoord, origin, direction));
 		}
 
 		double minLengthSquared = Double.POSITIVE_INFINITY;
@@ -494,7 +494,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 					/*/
 					boxes.get(minIndex).getOffsetBoundingBox(-tileG.xCoord, -tileG.yCoord, -tileG.zCoord)
 					//*/
-					, ForgeDirection.UNKNOWN);
+					, null);
 		}
 	}
 
@@ -506,11 +506,11 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		setBlockBounds((float) bb.minX - tile.xCoord, (float) bb.minY - tile.yCoord, (float) bb.minZ - tile.zCoord, (float) bb.maxX - tile.xCoord, (float) bb.maxY - tile.yCoord, (float) bb.maxZ - tile.zCoord);
 	}
 
-	private AxisAlignedBB getPipeBoundingBox(ForgeDirection side) {
+	private AxisAlignedBB getPipeBoundingBox(EnumFacing side) {
 		float min = LPConstants.PIPE_MIN_POS;
 		float max = LPConstants.PIPE_MAX_POS;
 
-		if (side == ForgeDirection.UNKNOWN) {
+		if (side == null) {
 			return AxisAlignedBB.getBoundingBox(min, min, min, max, max, max);
 		}
 
@@ -541,8 +541,8 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		return par1Vec3 == null ? false : par1Vec3.xCoord >= minX && par1Vec3.xCoord <= maxX && par1Vec3.yCoord >= minY && par1Vec3.yCoord <= maxY;
 	}
 
-	public static IIcon getRequestTableTextureFromSide(int l) {
-		ForgeDirection dir = ForgeDirection.getOrientation(l);
+	public static TextureAtlasSprite getRequestTableTextureFromSide(int l) {
+		EnumFacing dir = EnumFacing.getOrientation(l);
 		switch (dir) {
 			case UP:
 				return Textures.LOGISTICS_REQUEST_TABLE[0];
@@ -573,9 +573,9 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		public final Part hitPart;
 		public final MovingObjectPosition movingObjectPosition;
 		public final AxisAlignedBB boundingBox;
-		public final ForgeDirection sideHit;
+		public final EnumFacing sideHit;
 
-		RaytraceResult(Part hitPart, MovingObjectPosition movingObjectPosition, AxisAlignedBB boundingBox, ForgeDirection side) {
+		RaytraceResult(Part hitPart, MovingObjectPosition movingObjectPosition, AxisAlignedBB boundingBox, EnumFacing side) {
 			this.hitPart = hitPart;
 			this.movingObjectPosition = movingObjectPosition;
 			this.boundingBox = boundingBox;
@@ -588,7 +588,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		}
 	}
 
-	private static final ForgeDirection[] DIR_VALUES = ForgeDirection.values();
+	private static final EnumFacing[] DIR_VALUES = EnumFacing.values();
 	private boolean skippedFirstIconRegister;
 	private int renderMask = 0;
 	protected final Random rand = new Random();
@@ -637,7 +637,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		renderMask = 0x3f;
 	}
 
-	public void setRenderSide(ForgeDirection side, boolean render) {
+	public void setRenderSide(EnumFacing side, boolean render) {
 		if (render) {
 			renderMask |= 1 << side.ordinal();
 		} else {
@@ -652,7 +652,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 
 	@Override
-	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
+	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, EnumFacing side) {
 		TileEntity tile = world.getTileEntity(x, y, z);
 
 		if (tile instanceof LogisticsTileGenericPipe) {
@@ -681,7 +681,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			LogisticsBlockGenericPipe.cacheTileToPreventRemoval(pipe);
 		}
 
-		World world = pipe.container.getWorldObj();
+		World world = pipe.container.getWorld();
 
 		if (pipe.isMultiBlock()) {
 			if (pipe.preventRemove()) {
@@ -1091,7 +1091,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			return false;
 		}
 
-		IIcon icon = pipe.getIconProvider().getIcon(pipe.getIconIndexForItem());
+		TextureAtlasSprite icon = pipe.getIconProvider().getIcon(pipe.getIconIndexForItem());
 
 		int sideHit = target.sideHit;
 
@@ -1163,7 +1163,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		if (config.isUseNewRenderer()) {
 			LogisticsNewRenderPipe.renderDestruction(pipe, worldObj, x, y, z, effectRenderer);
 		} else {
-			IIcon icon = pipe.getIconProvider().getIcon(pipe.getIconIndexForItem());
+			TextureAtlasSprite icon = pipe.getIconProvider().getIcon(pipe.getIconIndexForItem());
 
 			byte its = 4;
 			for (int i = 0; i < its; ++i) {

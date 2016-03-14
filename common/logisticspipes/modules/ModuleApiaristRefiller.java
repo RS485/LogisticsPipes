@@ -16,12 +16,12 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ModuleApiaristRefiller extends LogisticsModule {
 
@@ -72,7 +72,7 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 			return;
 		}
 		ISidedInventory sinv = (ISidedInventory) inv;
-		ForgeDirection direction = _service.inventoryOrientation().getOpposite();
+		EnumFacing direction = _service.inventoryOrientation().getOpposite();
 		ItemStack stack = extractItem(sinv, false, direction, 1);
 		if (stack == null) {
 			return;
@@ -96,7 +96,7 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 		_service.sendStack(stack, reply, ItemSendMode.Normal);
 	}
 
-	private ItemStack extractItem(ISidedInventory inv, boolean remove, ForgeDirection dir, int amount) {
+	private ItemStack extractItem(ISidedInventory inv, boolean remove, EnumFacing dir, int amount) {
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
 			if (inv.getStackInSlot(i) != null && inv.canExtractItem(i, inv.getStackInSlot(i), dir.ordinal())) {
 				if (remove) {
@@ -111,7 +111,7 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 		return null;
 	}
 
-	private int addItem(ISidedInventory inv, ItemStack stack, ForgeDirection dir) {
+	private int addItem(ISidedInventory inv, ItemStack stack, EnumFacing dir) {
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
 			if (inv.getStackInSlot(i) == null && inv.canInsertItem(i, stack, dir.ordinal())) {
 				inv.setInventorySlotContents(i, stack);
@@ -121,7 +121,7 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 		return 0;
 	}
 
-	private boolean reinsertBee(ItemStack stack, ISidedInventory inv, ForgeDirection direction) {
+	private boolean reinsertBee(ItemStack stack, ISidedInventory inv, EnumFacing direction) {
 		if ((inv.getStackInSlot(0) == null)) {
 			if (SimpleServiceLocator.forestryProxy.isPrincess(stack)) {
 				if (SimpleServiceLocator.forestryProxy.isPurebred(stack)) {
@@ -182,7 +182,7 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
+	public TextureAtlasSprite getIconTexture(IIconRegister register) {
 		return register.registerIcon("logisticspipes:itemModule/ModuleApiaristRefiller");
 	}
 }

@@ -35,9 +35,9 @@ public class GuiFluidBasic extends LogisticsBaseGuiScreen {
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		if (inventorySlots.getSlot(0).getStack() == null) {
-			mc.fontRenderer.drawString(StringUtils.translate("gui.fluidbasic.Empty"), 50, 18, 0x404040);
+			mc.fontRendererObj.drawString(StringUtils.translate("gui.fluidbasic.Empty"), 50, 18, 0x404040);
 		} else {
-			mc.fontRenderer.drawString(ItemIdentifier.get(inventorySlots.getSlot(0).getStack()).getFriendlyName(), 50, 18, 0x404040);
+			mc.fontRendererObj.drawString(ItemIdentifier.get(inventorySlots.getSlot(0).getStack()).getFriendlyName(), 50, 18, 0x404040);
 		}
 	}
 }

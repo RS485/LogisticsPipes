@@ -20,6 +20,8 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
+import java.io.IOException;
+
 public class GuiFluidSupplierPipe extends LogisticsBaseGuiScreen {
 
 	private static final String PREFIX = "gui.fluidsupplier.";
@@ -49,9 +51,9 @@ public class GuiFluidSupplierPipe extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		mc.fontRenderer.drawString(StringUtils.translate(GuiFluidSupplierPipe.PREFIX + "TargetInv"), xSize / 2 - mc.fontRenderer.getStringWidth(StringUtils.translate(GuiFluidSupplierPipe.PREFIX + "TargetInv")) / 2, 6, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiFluidSupplierPipe.PREFIX + "Inventory"), 18, ySize - 102, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiFluidSupplierPipe.PREFIX + "Partialrequests") + ":", xSize - 140, ySize - 112, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiFluidSupplierPipe.PREFIX + "TargetInv"), xSize / 2 - mc.fontRendererObj.getStringWidth(StringUtils.translate(GuiFluidSupplierPipe.PREFIX + "TargetInv")) / 2, 6, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiFluidSupplierPipe.PREFIX + "Inventory"), 18, ySize - 102, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiFluidSupplierPipe.PREFIX + "Partialrequests") + ":", xSize - 140, ySize - 112, 0x404040);
 	}
 
 	protected static final ResourceLocation SUPPLIER = new ResourceLocation("logisticspipes", "textures/gui/supplier.png");
@@ -75,7 +77,7 @@ public class GuiFluidSupplierPipe extends LogisticsBaseGuiScreen {
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton guibutton) {
+	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		if (guibutton.id == 0) {
 			logic.setRequestingPartials(!logic.isRequestingPartials());
 			((GuiButton) buttonList.get(0)).displayString = logic.isRequestingPartials() ? StringUtils.translate(GuiFluidSupplierPipe.PREFIX + "Yes") : StringUtils.translate(GuiFluidSupplierPipe.PREFIX + "No");

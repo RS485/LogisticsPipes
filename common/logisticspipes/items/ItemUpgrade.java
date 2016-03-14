@@ -47,10 +47,10 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import org.lwjgl.input.Keyboard;
 
@@ -104,7 +104,7 @@ public class ItemUpgrade extends LogisticsItem {
 	public static final int MAX_CRAFTING_CLEANUP = 4;
 
 	List<Upgrade> upgrades = new ArrayList<>();
-	private IIcon[] icons;
+	private TextureAtlasSprite[] icons;
 
 	private class Upgrade {
 
@@ -266,7 +266,7 @@ public class ItemUpgrade extends LogisticsItem {
 
 	@Override
 	public void registerIcons(IIconRegister par1IIconRegister) {
-		icons = new IIcon[32];
+		icons = new TextureAtlasSprite[32];
 		icons[0] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyUP");
 		icons[1] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyDOWN");
 		icons[2] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyNORTH");
@@ -305,7 +305,7 @@ public class ItemUpgrade extends LogisticsItem {
 	}
 
 	@Override
-	public IIcon getIconFromDamage(int i) {
+	public TextureAtlasSprite getIconFromDamage(int i) {
 
 		for (Upgrade upgrade : upgrades) {
 			if (upgrade.getId() == i) {

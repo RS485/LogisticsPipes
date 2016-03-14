@@ -7,8 +7,8 @@ import logisticspipes.interfaces.IItemAdvancedExistance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class LogisticsBrokenItem extends LogisticsItem implements IItemAdvancedExistance {
 

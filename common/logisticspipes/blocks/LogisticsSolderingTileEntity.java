@@ -35,7 +35,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ISidedInventory, IGuiOpenControler {
 
@@ -200,7 +200,7 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	}
 
 	private void updateHeat() {
-		MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(getWorldObj()), PacketHandler.getPacket(SolderingStationHeat.class).setInteger(heat).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
+		MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(getWorld()), PacketHandler.getPacket(SolderingStationHeat.class).setInteger(heat).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(SolderingStationHeat.class).setInteger(heat).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), listener);
 	}
 
@@ -215,7 +215,7 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
-		if (MainProxy.isClient(getWorldObj())) {
+		if (MainProxy.isClient(getWorld())) {
 			return;
 		}
 		hasWork = hasWork();
@@ -230,9 +230,9 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 				}
 				usedEnergy = true;
 			} else {
-				for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+				for (EnumFacing dir : EnumFacing.VALUES) {
 					DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates(this), dir);
-					TileEntity tile = pos.getTileEntity(getWorldObj());
+					TileEntity tile = pos.getTileEntity(getWorld());
 					if (!(tile instanceof LogisticsTileGenericPipe)) {
 						continue;
 					}
@@ -252,7 +252,7 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 					}
 				}
 			}
-			if (!usedEnergy && getWorldObj().getTotalWorldTime() % 5 == 0) {
+			if (!usedEnergy && getWorld().getTotalWorldTime() % 5 == 0) {
 				heat--;
 				if (heat < 0) {
 					heat = 0;
@@ -264,9 +264,9 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 			updateHeat();
 		}
 		if (hasWork && heat >= 100) {
-			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+			for (EnumFacing dir : EnumFacing.VALUES) {
 				DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates(this), dir);
-				TileEntity tile = pos.getTileEntity(getWorldObj());
+				TileEntity tile = pos.getTileEntity(getWorld());
 				if (!(tile instanceof LogisticsTileGenericPipe)) {
 					continue;
 				}
@@ -389,7 +389,7 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	}
 
 	public void onBlockBreak() {
-		inv.dropContents(getWorldObj(), xCoord, yCoord, zCoord);
+		inv.dropContents(getWorld(), xCoord, yCoord, zCoord);
 	}
 
 	@Override

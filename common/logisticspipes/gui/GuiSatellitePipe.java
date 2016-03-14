@@ -89,12 +89,12 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		mc.fontRenderer.drawString(StringUtils.translate("gui.satellite.SatelliteID"), 33, 10, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate("gui.satellite.SatelliteID"), 33, 10, 0x404040);
 		if (_satellite != null) {
-			mc.fontRenderer.drawString(_satellite.satelliteId + "", 59 - mc.fontRenderer.getStringWidth(_satellite.satelliteId + "") / 2, 31, 0x404040);
+			mc.fontRendererObj.drawString(_satellite.satelliteId + "", 59 - mc.fontRendererObj.getStringWidth(_satellite.satelliteId + "") / 2, 31, 0x404040);
 		}
 		if (_liquidSatellite != null) {
-			mc.fontRenderer.drawString(_liquidSatellite.satelliteId + "", 59 - mc.fontRenderer.getStringWidth(_liquidSatellite.satelliteId + "") / 2, 31, 0x404040);
+			mc.fontRendererObj.drawString(_liquidSatellite.satelliteId + "", 59 - mc.fontRendererObj.getStringWidth(_liquidSatellite.satelliteId + "") / 2, 31, 0x404040);
 		}
 	}
 

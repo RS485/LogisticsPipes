@@ -11,10 +11,10 @@ import logisticspipes.utils.item.ItemIdentifier;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ModulePolymorphicItemSink extends LogisticsModule {
 
@@ -106,7 +106,7 @@ public class ModulePolymorphicItemSink extends LogisticsModule {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
+	public TextureAtlasSprite getIconTexture(IIconRegister register) {
 		return register.registerIcon("logisticspipes:itemModule/ModulePolymorphicItemSink");
 	}
 }

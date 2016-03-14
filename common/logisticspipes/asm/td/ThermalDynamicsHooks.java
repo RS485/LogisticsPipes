@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import cofh.thermaldynamics.block.TileTDBase;
 import cofh.thermaldynamics.duct.item.TileItemDuct;
@@ -20,7 +20,7 @@ public class ThermalDynamicsHooks {
 		if (source instanceof TileItemDuct) {
 			if (tile instanceof LogisticsTileGenericPipe) {
 				LogisticsTileGenericPipe pipe = (LogisticsTileGenericPipe) tile;
-				return pipe.tdPart.getInternalDuctForSide(ForgeDirection.getOrientation(side).getOpposite());
+				return pipe.tdPart.getInternalDuctForSide(EnumFacing.getOrientation(side).getOpposite());
 			}
 		}
 		return tile;

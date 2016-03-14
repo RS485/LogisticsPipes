@@ -6,7 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.IBlockAccess;
 
 public final class CustomBlockRenderer {
@@ -23,8 +23,8 @@ public final class CustomBlockRenderer {
 		public double maxY;
 		public double maxZ;
 		public Block baseBlock = Blocks.sand;
-		public IIcon texture = null;
-		public IIcon[] textureArray = null;
+		public TextureAtlasSprite texture = null;
+		public TextureAtlasSprite[] textureArray = null;
 		public boolean[] renderSide = new boolean[6];
 		public float light = -1f;
 		public int brightness = -1;
@@ -33,7 +33,7 @@ public final class CustomBlockRenderer {
 			setRenderAllSides();
 		}
 
-		public RenderInfo(Block template, IIcon[] texture) {
+		public RenderInfo(Block template, TextureAtlasSprite[] texture) {
 			this();
 			baseBlock = template;
 			textureArray = texture;
@@ -88,7 +88,7 @@ public final class CustomBlockRenderer {
 			maxZ = 1 - temp;
 		}
 
-		public IIcon getBlockTextureFromSide(int i) {
+		public TextureAtlasSprite getBlockTextureFromSide(int i) {
 			if (texture != null) {
 				return texture;
 			}

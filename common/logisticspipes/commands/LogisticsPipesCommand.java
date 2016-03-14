@@ -16,7 +16,7 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 
-import cpw.mods.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class LogisticsPipesCommand extends CommandBase {
 
@@ -47,7 +47,7 @@ public class LogisticsPipesCommand extends CommandBase {
 	}
 
 	@Override
-	public void processCommand(ICommandSender sender, String[] arguments) {
+	public void processCommand(ICommandSender sender, String[] arguments) throws CommandException {
 		if (arguments.length <= 0) {
 			throw new WrongUsageException("Type '" + getCommandUsage(sender) + "' for help.");
 		}
@@ -71,7 +71,7 @@ public class LogisticsPipesCommand extends CommandBase {
 	}
 
 	public static boolean isOP(ICommandSender sender) {
-		return Arrays.asList(FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().func_152603_m().func_152685_a())
-				.contains(sender.getCommandSenderName().toLowerCase(Locale.US)) || (MainProxy.proxy.checkSinglePlayerOwner(sender.getCommandSenderName()));
+		return Arrays.asList(FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().getOppedPlayers().getKeys())
+				.contains(sender.getName().toLowerCase(Locale.US)) || (MainProxy.proxy.checkSinglePlayerOwner(sender.getName()));
 	}
 }

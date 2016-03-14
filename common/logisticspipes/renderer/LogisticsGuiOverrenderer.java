@@ -13,7 +13,7 @@ import logisticspipes.utils.gui.SimpleGraphics;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import lombok.Getter;
 import lombok.Setter;

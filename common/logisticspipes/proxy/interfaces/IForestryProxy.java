@@ -5,11 +5,11 @@ import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.World;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public interface IForestryProxy {
 
@@ -58,7 +58,7 @@ public interface IForestryProxy {
 	public abstract String getForestryTranslation(String input);
 
 	@SideOnly(Side.CLIENT)
-	public abstract IIcon getIconIndexForAlleleId(String uid, int phase);
+	public abstract TextureAtlasSprite getIconIndexForAlleleId(String uid, int phase);
 
 	@SideOnly(Side.CLIENT)
 	public abstract int getColorForAlleleId(String uid, int phase);
@@ -67,7 +67,7 @@ public interface IForestryProxy {
 	public abstract int getRenderPassesForAlleleId(String uid);
 
 	@SideOnly(Side.CLIENT)
-	public abstract IIcon getIconFromTextureManager(String name);
+	public abstract TextureAtlasSprite getIconFromTextureManager(String name);
 
 	public abstract void addCraftingRecipes(ICraftingParts parts);
 

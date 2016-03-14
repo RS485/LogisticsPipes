@@ -80,7 +80,7 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 	@Override
 	protected void renderGuiBackground(int par1, int par2) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		//mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "title"), guiLeft + 5, guiTop + 6, 0x404040);
+		//mc.fontRendererObj.drawString(StringUtils.translate(PREFIX + "title"), guiLeft + 5, guiTop + 6, 0x404040);
 		itemDisplay.renderPageNumber(right - 47, guiTop + 6);
 
 		search.renderSearchBar();

@@ -116,13 +116,13 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 	public void drawGuiContainerBackgroundLayer(float f, int i, int j) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 
-		mc.fontRenderer.drawString(_title, guiLeft + mc.fontRenderer.getStringWidth(_title) / 2, guiTop + 6, 0x404040);
+		mc.fontRendererObj.drawString(_title, guiLeft + mc.fontRendererObj.getStringWidth(_title) / 2, guiTop + 6, 0x404040);
 		itemDisplay.renderPageNumber(right - 47, guiTop + 6);
 
 		if (buttonList.get(9) instanceof GuiCheckBox && ((GuiCheckBox) buttonList.get(9)).getState()) {
-			mc.fontRenderer.drawString("Popup", guiLeft + 25, bottom - 56, 0x404040);
+			mc.fontRendererObj.drawString("Popup", guiLeft + 25, bottom - 56, 0x404040);
 		} else {
-			mc.fontRenderer.drawString("Popup", guiLeft + 25, bottom - 56, Color.getValue(Color.GREY));
+			mc.fontRendererObj.drawString("Popup", guiLeft + 25, bottom - 56, Color.getValue(Color.GREY));
 		}
 
 		itemDisplay.renderAmount(xCenter, bottom - 24, getStackAmount());

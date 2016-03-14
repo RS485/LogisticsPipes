@@ -7,7 +7,7 @@ import logisticspipes.LPConstants;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 
-import cpw.mods.fml.common.Loader;
+import net.minecraftforge.fml.common.Loader;
 
 //@formatter:off
 //CHECKSTYLE:OFF

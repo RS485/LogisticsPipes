@@ -10,7 +10,7 @@ import logisticspipes.utils.gui.hud.BasicHUDButton;
 
 import net.minecraft.client.Minecraft;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class HUDStringBasedItemSink implements IHUDModuleRenderer {
 
@@ -62,8 +62,8 @@ public class HUDStringBasedItemSink implements IHUDModuleRenderer {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		for (int i = page * 6; i < itemSink.getStringList().size() && i < 6 + (page * 6); i++) {
 			String mod = itemSink.getStringList().get(i);
-			mc.fontRenderer.drawString(mod.substring(0, Math.min(12, mod.length())), -28, -25 + ((i - (page * 6)) * 10), 0x404040);
-			//mc.fontRenderer.drawSplitString(mod, -28, -25 + ((i - (page * 6)) * 10), 50, 0x404040);
+			mc.fontRendererObj.drawString(mod.substring(0, Math.min(12, mod.length())), -28, -25 + ((i - (page * 6)) * 10), 0x404040);
+			//mc.fontRendererObj.drawSplitString(mod, -28, -25 + ((i - (page * 6)) * 10), 50, 0x404040);
 		}
 	}
 

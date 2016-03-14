@@ -28,7 +28,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
@@ -44,19 +44,19 @@ public class LPDataInputStream extends DataInputStream {
 		super(new ByteBufInputStream(inputBytes));
 	}
 
-	public ForgeDirection readForgeDirection() throws IOException {
+	public EnumFacing readEnumFacing() throws IOException {
 		int dir = in.read();
 		if (dir == 10) {
 			return null;
 		}
-		return ForgeDirection.values()[dir];
+		return EnumFacing.values()[dir];
 	}
 
 	public ExitRoute readExitRoute(World world) throws IOException {
 		IRouter destination = readIRouter(world);
 		IRouter root = readIRouter(world);
-		ForgeDirection exitOri = readForgeDirection();
-		ForgeDirection insertOri = readForgeDirection();
+		EnumFacing exitOri = readEnumFacing();
+		EnumFacing insertOri = readEnumFacing();
 		EnumSet<PipeRoutingConnectionType> connectionDetails = this.readEnumSet(PipeRoutingConnectionType.class);
 		double distanceToDestination = readDouble();
 		double destinationDistanceToRoot = readDouble();
@@ -121,15 +121,11 @@ public class LPDataInputStream extends DataInputStream {
 	}
 
 	public NBTTagCompound readNBTTagCompound() throws IOException {
-		short legth = readShort();
-		if (legth < 0) {
+		if (readShort() < 0) {
 			return null;
 		} else {
-			byte[] array = new byte[legth];
-			this.readFully(array);
-			return CompressedStreamTools.func_152457_a(array, new NBTSizeTracker(Long.MAX_VALUE));
+			return CompressedStreamTools.read(this);
 		}
-
 	}
 
 	public boolean[] readBooleanArray() throws IOException {

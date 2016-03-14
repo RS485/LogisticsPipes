@@ -48,7 +48,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagFloat;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 @CCType(name = "LogisticsPowerProvider")
 public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTileEntity
@@ -146,14 +146,14 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 
 	protected abstract void handlePower(CoreRoutedPipe pipe, double toSend);
 
-	private void sendPowerLaserPackets(IRouter sourceRouter, IRouter destinationRouter, ForgeDirection exitOrientation, boolean addBall) {
+	private void sendPowerLaserPackets(IRouter sourceRouter, IRouter destinationRouter, EnumFacing exitOrientation, boolean addBall) {
 		if (sourceRouter == destinationRouter) {
 			return;
 		}
-		LinkedList<Triplet<IRouter, ForgeDirection, Boolean>> todo = new LinkedList<>();
+		LinkedList<Triplet<IRouter, EnumFacing, Boolean>> todo = new LinkedList<>();
 		todo.add(new Triplet<>(sourceRouter, exitOrientation, addBall));
 		while (!todo.isEmpty()) {
-			Triplet<IRouter, ForgeDirection, Boolean> part = todo.pollFirst();
+			Triplet<IRouter, EnumFacing, Boolean> part = todo.pollFirst();
 			List<ExitRoute> exits = part.getValue1().getRoutersOnSide(part.getValue2());
 			for (ExitRoute exit : exits) {
 				if (exit.containsFlag(PipeRoutingConnectionType.canPowerSubSystemFrom)) { // Find only result (caused by only straight connections)
@@ -292,7 +292,7 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 
 	@Override
 	public World getWorld() {
-		return getWorldObj();
+		return getWorld();
 	}
 
 	@Override

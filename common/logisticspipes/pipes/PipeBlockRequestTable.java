@@ -47,9 +47,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements ISimpleInventoryEventHandler, IRequestWatcher, IGuiOpenControler, IRotationProvider {
 
@@ -161,7 +161,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 			IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
 			SimpleServiceLocator.logisticsManager.assignDestinationFor(itemToSend, getRouter().getSimpleID(), false);
 			if (itemToSend.getDestinationUUID() != null) {
-				ForgeDirection dir = getRouteLayer().getOrientationForItem(itemToSend, null);
+				EnumFacing dir = getRouteLayer().getOrientationForItem(itemToSend, null);
 				super.queueRoutedItem(itemToSend, dir.getOpposite());
 				spawnParticle(Particles.OrangeParticle, 4);
 				toSortInv.clearInventorySlotContents(0);
@@ -194,17 +194,17 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	}
 
 	@Override
-	public TextureType getRoutedTexture(ForgeDirection connection) {
+	public TextureType getRoutedTexture(EnumFacing connection) {
 		return Textures.empty_1;
 	}
 
 	@Override
-	public TextureType getNonRoutedTexture(ForgeDirection connection) {
+	public TextureType getNonRoutedTexture(EnumFacing connection) {
 		return Textures.empty_2;
 	}
 
-	public IIcon getTextureFor(int l) {
-		ForgeDirection dir = ForgeDirection.getOrientation(l);
+	public TextureAtlasSprite getTextureFor(int l) {
+		EnumFacing dir = EnumFacing.getOrientation(l);
 		if (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer()) {
 			switch (dir) {
 				case UP:
@@ -526,7 +526,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 				}
 
 				@Override
-				public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection denyed) {
+				public EnumFacing itemArrived(IRoutedItem item, EnumFacing denyed) {
 					return null;
 				}
 

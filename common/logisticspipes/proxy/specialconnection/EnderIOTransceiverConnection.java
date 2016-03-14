@@ -18,7 +18,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public class EnderIOTransceiverConnection implements ISpecialTileConnection {
 
@@ -35,9 +35,9 @@ public class EnderIOTransceiverConnection implements ISpecialTileConnection {
 	@Override
 	public Collection<TileEntity> getConnections(TileEntity tile) {
 		boolean onlyOnePipe = false;
-		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing direction : EnumFacing.VALUES) {
 			DoubleCoordinates p = CoordinateUtils.add(new DoubleCoordinates(tile), direction);
-			TileEntity candidate = p.getTileEntity(tile.getWorldObj());
+			TileEntity candidate = p.getTileEntity(tile.getWorld());
 			if (candidate instanceof LogisticsTileGenericPipe && MainProxy.checkPipesConnections(tile, candidate, direction)) {
 				if (onlyOnePipe) {
 					onlyOnePipe = false;
@@ -57,9 +57,9 @@ public class EnderIOTransceiverConnection implements ISpecialTileConnection {
 				continue;
 			}
 			LogisticsTileGenericPipe pipe = null;
-			for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+			for (EnumFacing direction : EnumFacing.VALUES) {
 				DoubleCoordinates p = CoordinateUtils.add(new DoubleCoordinates(connected), direction);
-				TileEntity candidate = p.getTileEntity(tile.getWorldObj());
+				TileEntity candidate = p.getTileEntity(tile.getWorld());
 				if (candidate instanceof LogisticsTileGenericPipe && MainProxy.checkPipesConnections(connected, candidate, direction)) {
 					if (pipe != null) {
 						pipe = null;

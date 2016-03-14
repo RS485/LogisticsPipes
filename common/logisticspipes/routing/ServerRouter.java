@@ -67,7 +67,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -237,8 +237,8 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	public List<Pair<ILogisticsPowerProvider, List<IFilter>>> _LPPowerTable = Collections.unmodifiableList(new ArrayList<>());
 	public List<Pair<ISubSystemPowerProvider, List<IFilter>>> _SubSystemPowerTable = Collections.unmodifiableList(new ArrayList<>());
 
-	private EnumSet<ForgeDirection> _routedExits = EnumSet.noneOf(ForgeDirection.class);
-	private EnumMap<ForgeDirection, Integer> _subPowerExits = new EnumMap<>(ForgeDirection.class);
+	private EnumSet<EnumFacing> _routedExits = EnumSet.noneOf(EnumFacing.class);
+	private EnumMap<EnumFacing, Integer> _subPowerExits = new EnumMap<>(EnumFacing.class);
 
 	private static int firstFreeId = 1;
 	private static BitSet simpleIdUsedSet = new BitSet();
@@ -431,7 +431,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		}
 
 		@Override
-		public void pipeAdded(DoubleCoordinates pos, ForgeDirection side) {
+		public void pipeAdded(DoubleCoordinates pos, EnumFacing side) {
 			if (connectionNeedsChecking == 0) {
 				connectionNeedsChecking = 1;
 			}
@@ -488,7 +488,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		subSystemPower = finder.subPowerProvider;
 		adjacent = finder.result;
 
-		Map<ForgeDirection, List<CoreRoutedPipe>> pipeDirections = new HashMap<>();
+		Map<EnumFacing, List<CoreRoutedPipe>> pipeDirections = new HashMap<>();
 
 		for (Entry<CoreRoutedPipe, ExitRoute> entry : adjacent.entrySet()) {
 			List<CoreRoutedPipe> list = pipeDirections.get(entry.getValue().exitOrientation);
@@ -608,8 +608,8 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 		if (adjacentChanged) {
 			HashMap<IRouter, ExitRoute> adjacentRouter = new HashMap<>();
-			EnumSet<ForgeDirection> routedexits = EnumSet.noneOf(ForgeDirection.class);
-			EnumMap<ForgeDirection, Integer> subpowerexits = new EnumMap<>(ForgeDirection.class);
+			EnumSet<EnumFacing> routedexits = EnumSet.noneOf(EnumFacing.class);
+			EnumMap<EnumFacing, Integer> subpowerexits = new EnumMap<>(EnumFacing.class);
 			for (Entry<CoreRoutedPipe, ExitRoute> pipe : adjacent.entrySet()) {
 				adjacentRouter.put(pipe.getKey().getRouter(), pipe.getValue());
 				if ((pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRouteTo) || pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom) && !routedexits.contains(pipe.getValue().exitOrientation))) {
@@ -738,7 +738,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		List<ExitRoute> routeCosts = new ArrayList<>(routingTableSize);
 
 		//Add the current Router
-		routeCosts.add(new ExitRoute(this, this, ForgeDirection.UNKNOWN, ForgeDirection.UNKNOWN, 0, EnumSet.allOf(PipeRoutingConnectionType.class), 0));
+		routeCosts.add(new ExitRoute(this, this, null, null, 0, EnumSet.allOf(PipeRoutingConnectionType.class), 0));
 
 		ArrayList<Pair<ILogisticsPowerProvider, List<IFilter>>> powerTable;
 		if (_powerAdjacent != null) {
@@ -943,7 +943,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		while (simpleID >= routeTable.size()) {
 			routeTable.add(null);
 		}
-		routeTable.set(simpleID, new OneList<>(new ExitRoute(this, this, ForgeDirection.UNKNOWN, ForgeDirection.UNKNOWN, 0, EnumSet
+		routeTable.set(simpleID, new OneList<>(new ExitRoute(this, this, null, null, 0, EnumSet
 				.allOf(PipeRoutingConnectionType.class), 0)));
 
 		for (ExitRoute node : routeCosts) {
@@ -1185,17 +1185,17 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	/************* IROUTER *******************/
 
 	@Override
-	public boolean isRoutedExit(ForgeDirection o) {
+	public boolean isRoutedExit(EnumFacing o) {
 		return _routedExits.contains(o);
 	}
 
 	@Override
-	public boolean isSubPoweredExit(ForgeDirection o) {
+	public boolean isSubPoweredExit(EnumFacing o) {
 		return _subPowerExits.containsKey(o);
 	}
 
 	@Override
-	public int getDistanceToNextPowerPipe(ForgeDirection dir) {
+	public int getDistanceToNextPowerPipe(EnumFacing dir) {
 		return _subPowerExits.get(dir);
 	}
 
@@ -1278,8 +1278,8 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	}
 
 	@Override
-	public boolean isSideDisconneceted(ForgeDirection dir) {
-		return ForgeDirection.UNKNOWN != dir && sideDisconnected[dir.ordinal()];
+	public boolean isSideDisconneceted(EnumFacing dir) {
+		return null != dir && sideDisconnected[dir.ordinal()];
 	}
 
 	@Override
@@ -1487,7 +1487,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	}
 
 	@Override
-	public List<ExitRoute> getRoutersOnSide(ForgeDirection direction) {
+	public List<ExitRoute> getRoutersOnSide(EnumFacing direction) {
 		List<ExitRoute> routers = _adjacentRouter.values().stream()
 				.filter(exit -> exit.exitOrientation == direction)
 				.collect(Collectors.toList());

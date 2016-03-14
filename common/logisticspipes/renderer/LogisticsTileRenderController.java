@@ -16,10 +16,10 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 import net.minecraft.client.Minecraft;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,7 +36,7 @@ public class LogisticsTileRenderController {
 	@AllArgsConstructor
 	private class LaserKey {
 
-		final ForgeDirection dir;
+		final EnumFacing dir;
 		final int color;
 	}
 
@@ -65,9 +65,9 @@ public class LogisticsTileRenderController {
 
 	private class LaserBeamDataClient extends LaserBeamData {
 
-		public LaserBeamDataClient(float length, int timeout, boolean reverse, ForgeDirection dir, int color) {
+		public LaserBeamDataClient(float length, int timeout, boolean reverse, EnumFacing dir, int color) {
 			super(length, timeout, reverse);
-			entity = new PipeFXLaserPowerBeam(pipe.getWorldObj(), new DoubleCoordinates((TileEntity) pipe), length, dir, color, pipe).setReverse(reverse);
+			entity = new PipeFXLaserPowerBeam(pipe.getWorld(), new DoubleCoordinates((TileEntity) pipe), length, dir, color, pipe).setReverse(reverse);
 			Minecraft.getMinecraft().effectRenderer.addEffect(entity);
 
 		}
@@ -123,7 +123,7 @@ public class LogisticsTileRenderController {
 
 		public LaserBallDataClient(float length, int timeout, int color) {
 			super(length, timeout);
-			entity = new PipeFXLaserPowerBall(pipe.getWorldObj(), new DoubleCoordinates((TileEntity) pipe), color, pipe);
+			entity = new PipeFXLaserPowerBall(pipe.getWorld(), new DoubleCoordinates((TileEntity) pipe), color, pipe);
 			Minecraft.getMinecraft().effectRenderer.addEffect(entity);
 		}
 
@@ -181,7 +181,7 @@ public class LogisticsTileRenderController {
 				if (data.timeout < 0 || data.isDeadEntity()) {
 					data.setDead();
 					if (data.sendPacket()) {
-						MainProxy.sendPacketToAllWatchingChunk(pipe.getX(), pipe.getZ(), MainProxy.getDimensionForWorld(pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(key).setRenderBall(true).setDir(ForgeDirection.UNKNOWN).setRemove(true).setTilePos(pipe));
+						MainProxy.sendPacketToAllWatchingChunk(pipe.getX(), pipe.getZ(), MainProxy.getDimensionForWorld(pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(key).setRenderBall(true).setDir(null).setRemove(true).setTilePos(pipe));
 					}
 					iter.remove();
 				}
@@ -189,7 +189,7 @@ public class LogisticsTileRenderController {
 		}
 	}
 
-	public void addLaser(ForgeDirection dir, float length, int color, boolean reverse, boolean renderBall) {
+	public void addLaser(EnumFacing dir, float length, int color, boolean reverse, boolean renderBall) {
 		if (!Configs.ENABLE_PARTICLE_FX) {
 			return;
 		}
@@ -197,7 +197,7 @@ public class LogisticsTileRenderController {
 		if (powerLasersBeam.containsKey(new LaserKey(dir, color))) {
 			powerLasersBeam.get(new LaserKey(dir, color)).timeout = LASER_TIMEOUT_TICKS;
 		} else {
-			if (MainProxy.isClient(pipe.getWorldObj())) {
+			if (MainProxy.isClient(pipe.getWorld())) {
 				powerLasersBeam.put(new LaserKey(dir, color), new LaserBeamDataClient(length, LASER_TIMEOUT_TICKS, reverse, dir, color));
 			} else {
 				powerLasersBeam.put(new LaserKey(dir, color), new LaserBeamData(length, LASER_TIMEOUT_TICKS, reverse));
@@ -208,7 +208,7 @@ public class LogisticsTileRenderController {
 			if (powerLasersBall.containsKey(color)) {
 				powerLasersBall.get(color).timeout = LASER_TIMEOUT_TICKS;
 			} else {
-				if (MainProxy.isClient(pipe.getWorldObj())) {
+				if (MainProxy.isClient(pipe.getWorld())) {
 					powerLasersBall.put(color, new LaserBallDataClient(length, LASER_TIMEOUT_TICKS, color));
 				} else {
 					powerLasersBall.put(color, new LaserBallData(length, LASER_TIMEOUT_TICKS));
@@ -221,8 +221,8 @@ public class LogisticsTileRenderController {
 		}
 	}
 
-	public void removeLaser(ForgeDirection dir, int color, boolean isBall) {
-		if (!MainProxy.isClient(pipe.getWorldObj())) {
+	public void removeLaser(EnumFacing dir, int color, boolean isBall) {
+		if (!MainProxy.isClient(pipe.getWorld())) {
 			return;
 		}
 		if (!isBall) {
@@ -230,7 +230,7 @@ public class LogisticsTileRenderController {
 			LaserBeamData beam = powerLasersBeam.get(key);
 			if (beam != null) {
 				beam.timeout = -1;
-				if (MainProxy.isClient(pipe.getWorldObj())) {
+				if (MainProxy.isClient(pipe.getWorld())) {
 					((LaserBeamDataClient) beam).entity.setDead();
 				}
 				powerLasersBeam.remove(key);
@@ -239,7 +239,7 @@ public class LogisticsTileRenderController {
 			LaserBallData ball = powerLasersBall.get(color);
 			if (ball != null) {
 				ball.timeout = -1;
-				if (MainProxy.isClient(pipe.getWorldObj())) {
+				if (MainProxy.isClient(pipe.getWorld())) {
 					((LaserBallDataClient) ball).entity.setDead();
 				}
 				powerLasersBall.remove(color);

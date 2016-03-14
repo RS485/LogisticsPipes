@@ -22,10 +22,10 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.ResourceLocation;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -137,7 +137,7 @@ public final class GuiGraphics {
 			int var12;
 
 			for (var11 = 0; var11 < msg.size(); ++var11) {
-				var12 = FMLClientHandler.instance().getClient().fontRenderer.getStringWidth(msg.get(var11));
+				var12 = FMLClientHandler.instance().getClient().fontRendererObj.getStringWidth(msg.get(var11));
 
 				if (var12 > var10) {
 					var10 = var12;
@@ -178,7 +178,7 @@ public final class GuiGraphics {
 					var19 = "\u00a77" + var19;
 				}
 
-				FMLClientHandler.instance().getClient().fontRenderer.drawStringWithShadow(var19, var11, var12, -1);
+				FMLClientHandler.instance().getClient().fontRendererObj.drawStringWithShadow(var19, var11, var12, -1);
 
 				if (var18 == 0) {
 					var12 += 2;
@@ -279,7 +279,7 @@ public final class GuiGraphics {
 		var9.draw();
 	}
 
-	public static void renderIconAt(Minecraft mc, int x, int y, float zLevel, IIcon icon) {
+	public static void renderIconAt(Minecraft mc, int x, int y, float zLevel, TextureAtlasSprite icon) {
 		if (icon == null) {
 			return;
 		}

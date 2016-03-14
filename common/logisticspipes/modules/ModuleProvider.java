@@ -62,18 +62,18 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @CCType(name = "Provider Module")
 public class ModuleProvider extends LogisticsSneakyDirectionModule implements ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive {
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Items to provide (or empty for all)", 1);
-	private ForgeDirection _sneakyDirection = ForgeDirection.UNKNOWN;
+	private EnumFacing _sneakyDirection = null;
 
 	private boolean isActive = false;
 
@@ -101,23 +101,23 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 		isExcludeFilter = nbttagcompound.getBoolean("filterisexclude");
 		_extractionMode = ExtractionMode.getMode(nbttagcompound.getInteger("extractionMode"));
 		if (nbttagcompound.hasKey("sneakydirection")) {
-			_sneakyDirection = ForgeDirection.values()[nbttagcompound.getInteger("sneakydirection")];
+			_sneakyDirection = EnumFacing.values()[nbttagcompound.getInteger("sneakydirection")];
 		} else if (nbttagcompound.hasKey("sneakyorientation")) {
 			//convert sneakyorientation to sneakydirection
 			int t = nbttagcompound.getInteger("sneakyorientation");
 			switch (t) {
 				default:
 				case 0:
-					_sneakyDirection = ForgeDirection.UNKNOWN;
+					_sneakyDirection = null;
 					break;
 				case 1:
-					_sneakyDirection = ForgeDirection.UP;
+					_sneakyDirection = EnumFacing.UP;
 					break;
 				case 2:
-					_sneakyDirection = ForgeDirection.SOUTH;
+					_sneakyDirection = EnumFacing.SOUTH;
 					break;
 				case 3:
-					_sneakyDirection = ForgeDirection.DOWN;
+					_sneakyDirection = EnumFacing.DOWN;
 					break;
 			}
 		}
@@ -136,12 +136,12 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 	}
 
 	@Override
-	public ForgeDirection getSneakyDirection() {
+	public EnumFacing getSneakyDirection() {
 		return _sneakyDirection;
 	}
 
 	@Override
-	public void setSneakyDirection(ForgeDirection sneakyDirection) {
+	public void setSneakyDirection(EnumFacing sneakyDirection) {
 		_sneakyDirection = sneakyDirection;
 		if(MainProxy.isServer(this._world.getWorld())) {
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(ExtractorModuleMode.class).setDirection(_sneakyDirection).setModulePos(this), localModeWatchers);
@@ -504,7 +504,7 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
+	public TextureAtlasSprite getIconTexture(IIconRegister register) {
 		return register.registerIcon("logisticspipes:itemModule/ModuleProvider");
 	}
 }

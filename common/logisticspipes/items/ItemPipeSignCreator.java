@@ -17,19 +17,19 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemPipeSignCreator extends LogisticsItem {
 
 	public static final List<Class<? extends IPipeSign>> signTypes = new ArrayList<>();
 
-	private IIcon[] itemIcon = new IIcon[2];
+	private TextureAtlasSprite[] itemIcon = new TextureAtlasSprite[2];
 
 	public ItemPipeSignCreator() {
 		super();
@@ -57,8 +57,8 @@ public class ItemPipeSignCreator extends LogisticsItem {
 
 		int mode = itemStack.getTagCompound().getInteger("CreatorMode");
 
-		ForgeDirection dir = ForgeDirection.getOrientation(sideinput);
-		if (dir == ForgeDirection.UNKNOWN) {
+		EnumFacing dir = EnumFacing.getOrientation(sideinput);
+		if (dir == null) {
 			return false;
 		}
 
@@ -111,7 +111,7 @@ public class ItemPipeSignCreator extends LogisticsItem {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconIndex(ItemStack stack) {
+	public TextureAtlasSprite getIconIndex(ItemStack stack) {
 		if (!stack.hasTagCompound()) {
 			stack.setTagCompound(new NBTTagCompound());
 		}
@@ -124,7 +124,7 @@ public class ItemPipeSignCreator extends LogisticsItem {
 	}
 
 	@Override
-	public IIcon getIcon(ItemStack stack, int pass) {
+	public TextureAtlasSprite getIcon(ItemStack stack, int pass) {
 		if (!stack.hasTagCompound()) {
 			stack.setTagCompound(new NBTTagCompound());
 		}

@@ -8,7 +8,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.tileentity.TileEntityChest;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public class InventoryHelper {
 
@@ -48,7 +48,7 @@ public class InventoryHelper {
 	}
 
 	//BC getTransactorFor using our getInventory
-	public static ITransactor getTransactorFor(Object object, ForgeDirection dir) {
+	public static ITransactor getTransactorFor(Object object, EnumFacing dir) {
 		if (object instanceof IInventory) {
 			ITransactor t = SimpleServiceLocator.inventoryUtilFactory.getUtilForInv((IInventory) object, dir, false, false, 0, 0);
 			if (t != null) {

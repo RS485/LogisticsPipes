@@ -16,10 +16,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import org.lwjgl.opengl.GL11;
 
@@ -46,7 +46,7 @@ public class GuiApiaristSink extends ModuleBaseGui {
 		mc.renderEngine.bindTexture(TextureMap.locationItemsTexture);
 
 		for (int i = 0; i < SimpleServiceLocator.forestryProxy.getRenderPassesForAlleleId(id); i++) {
-			IIcon icon = SimpleServiceLocator.forestryProxy.getIconIndexForAlleleId(id, i);
+			TextureAtlasSprite icon = SimpleServiceLocator.forestryProxy.getIconIndexForAlleleId(id, i);
 			if (icon == null) {
 				continue;
 			}
@@ -90,7 +90,7 @@ public class GuiApiaristSink extends ModuleBaseGui {
 
 		@Override
 		@SideOnly(Side.CLIENT)
-		public IIcon getTextureIcon() {
+		public TextureAtlasSprite getTextureIcon() {
 			if (setting.filterType == null) {
 				return null;
 			}
@@ -334,7 +334,7 @@ public class GuiApiaristSink extends ModuleBaseGui {
 
 		@Override
 		@SideOnly(Side.CLIENT)
-		public IIcon getTextureIcon() {
+		public TextureAtlasSprite getTextureIcon() {
 			return null;
 		}
 

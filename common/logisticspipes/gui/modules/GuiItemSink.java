@@ -25,6 +25,8 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
+import java.io.IOException;
+
 public class GuiItemSink extends ModuleBaseGui {
 
 	private static final String PREFIX = "gui.itemsink.";
@@ -77,9 +79,9 @@ public class GuiItemSink extends ModuleBaseGui {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		mc.fontRenderer.drawString(_itemSink.getFilterInventory().getInventoryName(), 8, 6, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiItemSink.PREFIX + "Inventory"), 8, ySize - 92, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiItemSink.PREFIX + "Defaultroute") + ":", 65, 45, 0x404040);
+		mc.fontRendererObj.drawString(_itemSink.getFilterInventory().getName(), 8, 6, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiItemSink.PREFIX + "Inventory"), 8, ySize - 92, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiItemSink.PREFIX + "Defaultroute") + ":", 65, 45, 0x404040);
 
 		if (isFuzzy) {
 			int mx = par1 - guiLeft;
@@ -106,8 +108,8 @@ public class GuiItemSink extends ModuleBaseGui {
 			int posY = 18 + 16;
 			GuiGraphics.drawGuiBackGround(mc, posX, posY, posX + 70, posY + 27, zLevel, true, true, true, true, true);
 
-			mc.fontRenderer.drawString(StringUtils.translate(GuiItemSink.PREFIX + "IgnoreData"), posX + 4, posY + 4, !_itemSink.isIgnoreData(fuzzyPanelSelection) ? 0x404040 : 0xFF4040);
-			mc.fontRenderer.drawString(StringUtils.translate(GuiItemSink.PREFIX + "IgnoreNBT"), posX + 4, posY + 14, !_itemSink.isIgnoreNBT(fuzzyPanelSelection) ? 0x404040 : 0x40FF40);
+			mc.fontRendererObj.drawString(StringUtils.translate(GuiItemSink.PREFIX + "IgnoreData"), posX + 4, posY + 4, !_itemSink.isIgnoreData(fuzzyPanelSelection) ? 0x404040 : 0xFF4040);
+			mc.fontRendererObj.drawString(StringUtils.translate(GuiItemSink.PREFIX + "IgnoreNBT"), posX + 4, posY + 14, !_itemSink.isIgnoreNBT(fuzzyPanelSelection) ? 0x404040 : 0x40FF40);
 		}
 
 	}
@@ -122,15 +124,15 @@ public class GuiItemSink extends ModuleBaseGui {
 	}
 
 	@Override
-	protected void mouseMovedOrUp(int mouseX, int mouseY, int which) {
+	protected void mouseReleased(int mouseX, int mouseY, int which) {
 		if (isMouseInFuzzyPanel(mouseX - guiLeft, mouseY - guiTop)) {
 			return;
 		}
-		super.mouseMovedOrUp(mouseX, mouseY, which);
+		super.mouseReleased(mouseX, mouseY, which);
 	}
 
 	@Override
-	protected void mouseClicked(int mouseX, int mouseY, int par3) {
+	protected void mouseClicked(int mouseX, int mouseY, int par3) throws IOException {
 		if (isMouseInFuzzyPanel(mouseX - guiLeft, mouseY - guiTop)) {
 			int posX = 8 + fuzzyPanelSelection * 18;
 			int posY = 18 + 16;

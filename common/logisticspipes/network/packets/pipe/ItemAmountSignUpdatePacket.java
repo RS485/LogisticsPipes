@@ -14,7 +14,7 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -38,7 +38,7 @@ public class ItemAmountSignUpdatePacket extends Integer2CoordinatesPacket {
 			return;
 		}
 
-		IPipeSign sign = ((CoreRoutedPipe) pipe.pipe).getPipeSign(ForgeDirection.getOrientation(getInteger()));
+		IPipeSign sign = ((CoreRoutedPipe) pipe.pipe).getPipeSign(EnumFacing.getOrientation(getInteger()));
 		if (sign == null) {
 			return;
 		}

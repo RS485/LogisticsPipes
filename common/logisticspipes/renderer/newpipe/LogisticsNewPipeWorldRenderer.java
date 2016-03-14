@@ -14,7 +14,7 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePluggable;
 import logisticspipes.proxy.object3d.interfaces.I3DOperation;
-import logisticspipes.proxy.object3d.interfaces.IIconTransformation;
+import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
 import logisticspipes.proxy.object3d.interfaces.IModel3D;
 import logisticspipes.proxy.object3d.operation.LPScale;
 import logisticspipes.proxy.object3d.operation.LPTranslation;
@@ -31,9 +31,9 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
+import net.minecraftforge.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandler {
 
@@ -64,7 +64,7 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 				}
 			}
 
-			renderState.currentTexture = icons.getIcon(renderState.textureMatrix.getTextureIndex(ForgeDirection.UNKNOWN));
+			renderState.currentTexture = icons.getIcon(renderState.textureMatrix.getTextureIndex(null));
 			((LogisticsBlockGenericPipe) block).setRenderAllSides();
 			block.setBlockBounds(0, 0, 0, 1, 1, 1);
 			renderer.setRenderBoundsFromBlock(block);
@@ -81,7 +81,7 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 			tess.setColorOpaque_F(1F, 1F, 1F);
 			tess.setBrightness(brightness);
 
-			IIconTransformation icon = SimpleServiceLocator.cclProxy.createIconTransformer(Textures.LOGISTICS_REQUEST_TABLE_NEW);
+			TextureTransformation icon = SimpleServiceLocator.cclProxy.createIconTransformer(Textures.LOGISTICS_REQUEST_TABLE_NEW);
 
 			requestBlock.get(rotation).render(new I3DOperation[] { new LPTranslation(x, y, z), icon });
 
@@ -98,7 +98,7 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 		tess.addTranslation(0.00002F, 0.00002F, 0.00002F);
 		renderer.setRenderBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing dir : EnumFacing.VALUES) {
 			if (pipeTile.tilePart.hasPipePluggable(dir)) {
 				IBCPipePluggable p = pipeTile.tilePart.getBCPipePluggable(dir);
 				p.renderPluggable(renderer, dir, LogisticsPipeWorldRenderer.renderPass, x, y, z);
@@ -107,10 +107,10 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 		tess.addTranslation(-0.00002F, -0.00002F, -0.00002F);
 
 		boolean[] solidSides = new boolean[6];
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing dir : EnumFacing.VALUES) {
 			DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates((TileEntity) pipeTile), dir);
-			Block blockSide = pos.getBlock(pipeTile.getWorldObj());
-			if (blockSide != null && blockSide.isSideSolid(pipeTile.getWorldObj(), pos.getXInt(), pos.getYInt(), pos.getZInt(), dir.getOpposite())
+			Block blockSide = pos.getBlock(pipeTile.getWorld());
+			if (blockSide != null && blockSide.isSideSolid(pipeTile.getWorld(), pos.getXInt(), pos.getYInt(), pos.getZInt(), dir.getOpposite())
 					&& !renderState.pipeConnectionMatrix.isConnected(dir)) {
 				solidSides[dir.ordinal()] = true;
 			}

@@ -19,7 +19,7 @@ import net.minecraft.tileentity.TileEntity;
 
 import net.minecraftforge.oredict.OreDictionary;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import codechicken.nei.PositionedStack;
 import codechicken.nei.api.IOverlayHandler;

@@ -25,7 +25,7 @@ import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import cofh.lib.util.helpers.BlockHelper;
 import cofh.thermaldynamics.block.TileTDBase;
@@ -64,7 +64,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 
 	@Override
 	public World getWorld() {
-		return duct.getWorldObj();
+		return duct.getWorld();
 	}
 
 	@Override
@@ -83,7 +83,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 	}
 
 	@Override
-	public TileEntity getNextConnectedTile(ForgeDirection direction) {
+	public TileEntity getNextConnectedTile(EnumFacing direction) {
 		return BlockHelper.getAdjacentTileEntity(duct, direction);
 	}
 
@@ -118,12 +118,12 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 	}
 
 	@Override
-	public boolean isOutputOpen(ForgeDirection direction) {
+	public boolean isOutputOpen(EnumFacing direction) {
 		return duct.isSideConnected((byte) direction.ordinal());
 	}
 
 	@Override
-	public boolean canConnect(TileEntity to, ForgeDirection direction, boolean ignoreSystemDisconnect) {
+	public boolean canConnect(TileEntity to, EnumFacing direction, boolean ignoreSystemDisconnect) {
 		TileEntity connection = duct.getAdjTileEntitySafe(direction.ordinal());
 		if (!(connection instanceof TileTDBase)) {
 			return false;
@@ -159,7 +159,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 	}
 
 	@Override
-	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double traveled, double max, List<DoubleCoordinates> visited) {
+	public double getDistanceTo(int destinationint, EnumFacing ignore, ItemIdentifier ident, boolean isActive, double traveled, double max, List<DoubleCoordinates> visited) {
 		if (traveled >= max) {
 			return Integer.MAX_VALUE;
 		}
@@ -183,7 +183,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 				}
 				visited.add(pos);
 
-				double distance = lpDuct.pipe.getDistanceTo(destinationint, ForgeDirection.getOrientation(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1)).getOpposite(), ident, isActive, traveled + localRoute1.pathWeight, Math.min(max, closesedConnection), visited);
+				double distance = lpDuct.pipe.getDistanceTo(destinationint, EnumFacing.getOrientation(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1)).getOpposite(), ident, isActive, traveled + localRoute1.pathWeight, Math.min(max, closesedConnection), visited);
 
 				visited.remove(pos);
 
@@ -241,7 +241,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 						}
 						visited.add(pos);
 
-						double distance = lpDuct.pipe.getDistanceTo(id, ForgeDirection.getOrientation(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1)).getOpposite(), item.getItemIdentifierStack().getItem(), serverItem.getInfo()._transportMode == TransportMode.Active, localRoute1.pathWeight, max,
+						double distance = lpDuct.pipe.getDistanceTo(id, EnumFacing.getOrientation(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1)).getOpposite(), item.getItemIdentifierStack().getItem(), serverItem.getInfo()._transportMode == TransportMode.Active, localRoute1.pathWeight, max,
 								visited);
 
 						visited.remove(pos);
@@ -271,7 +271,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 	}
 
 	@Override
-	public void refreshTileCacheOnSide(ForgeDirection side) {
+	public void refreshTileCacheOnSide(EnumFacing side) {
 		if(duct.myGrid == null) return;
 		duct.myGrid.destroyAndRecreate();
 	}
@@ -287,7 +287,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 	}
 
 	@Override
-	public List<RouteInfo> getConnectedPipes(ForgeDirection from) {
+	public List<RouteInfo> getConnectedPipes(EnumFacing from) {
 		List<RouteInfo> list = new ArrayList<>();
 		if (duct.internalGrid == null) {
 			return null;
@@ -296,7 +296,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 		for (Route localRoute1 : paramIterable) {
 			if (localRoute1.endPoint instanceof LPItemDuct) {
 				LPItemDuct lpDuct = (LPItemDuct) localRoute1.endPoint;
-				list.add(new RouteInfo(lpDuct.pipe, localRoute1.pathWeight, ForgeDirection.getOrientation(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1))));
+				list.add(new RouteInfo(lpDuct.pipe, localRoute1.pathWeight, EnumFacing.getOrientation(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1))));
 			}
 		}
 		return list;

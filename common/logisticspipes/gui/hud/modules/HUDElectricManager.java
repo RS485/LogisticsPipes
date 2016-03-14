@@ -11,7 +11,7 @@ import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 
 import net.minecraft.client.Minecraft;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import org.lwjgl.opengl.GL11;
 
@@ -29,11 +29,11 @@ public class HUDElectricManager implements IHUDModuleRenderer {
 		GL11.glScalef(1.0F, 1.0F, -0.000001F);
 		ItemStackRenderer.renderItemIdentifierStackListIntoGui(ItemIdentifierStack.getListFromInventory(module.getFilterInventory()), null, 0, -25, -32, 3, 9, 18, 18, 100.0F, DisplayAmount.NEVER, true, false, shifted);
 		GL11.glScalef(1.0F, 1.0F, 1 / -0.000001F);
-		mc.fontRenderer.drawString("Charge:", -29, 25, 0);
+		mc.fontRendererObj.drawString("Charge:", -29, 25, 0);
 		if (module.isDischargeMode()) {
-			mc.fontRenderer.drawString("No", 15, 25, 0);
+			mc.fontRendererObj.drawString("No", 15, 25, 0);
 		} else {
-			mc.fontRenderer.drawString("Yes", 11, 25, 0);
+			mc.fontRendererObj.drawString("Yes", 11, 25, 0);
 		}
 	}
 

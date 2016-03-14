@@ -35,7 +35,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import cofh.api.energy.IEnergyHandler;
 import ic2.api.energy.tile.IEnergySink;
@@ -264,7 +264,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 
 	@Override
 	public World getWorld() {
-		return getWorldObj();
+		return getWorld();
 	}
 
 	@Override
@@ -301,7 +301,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 
 	@Override
 	@ModDependentMethod(modId = "IC2")
-	public boolean acceptsEnergyFrom(TileEntity tile, ForgeDirection dir) {
+	public boolean acceptsEnergyFrom(TileEntity tile, EnumFacing dir) {
 		return true;
 	}
 
@@ -326,7 +326,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 
 	@Override
 	@ModDependentMethod(modId = "IC2")
-	public double injectEnergy(ForgeDirection directionFrom, double amount, double voltage) {
+	public double injectEnergy(EnumFacing directionFrom, double amount, double voltage) {
 		internalBuffer += amount * LogisticsPowerJunctionTileEntity.IC2Multiplier;
 		transferFromIC2Buffer();
 		return 0;
@@ -345,7 +345,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 
 	@Override
 	@ModDependentMethod(modId = "CoFHAPI|energy")
-	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
+	public int receiveEnergy(EnumFacing from, int maxReceive, boolean simulate) {
 		if (freeSpace() < 1) {
 			return 0;
 		}
@@ -364,25 +364,25 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 
 	@Override
 	@ModDependentMethod(modId = "CoFHAPI|energy")
-	public int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate) {
+	public int extractEnergy(EnumFacing from, int maxExtract, boolean simulate) {
 		return 0;
 	}
 
 	@Override
 	@ModDependentMethod(modId = "CoFHAPI|energy")
-	public boolean canConnectEnergy(ForgeDirection from) {
+	public boolean canConnectEnergy(EnumFacing from) {
 		return true;
 	}
 
 	@Override
 	@ModDependentMethod(modId = "CoFHAPI|energy")
-	public int getEnergyStored(ForgeDirection from) {
+	public int getEnergyStored(EnumFacing from) {
 		return internalStorage * LogisticsPowerJunctionTileEntity.RFDivisor + internalRFbuffer;
 	}
 
 	@Override
 	@ModDependentMethod(modId = "CoFHAPI|energy")
-	public int getMaxEnergyStored(ForgeDirection from) {
+	public int getMaxEnergyStored(EnumFacing from) {
 		return LogisticsPowerJunctionTileEntity.MAX_STORAGE * LogisticsPowerJunctionTileEntity.RFDivisor;
 	}
 

@@ -8,7 +8,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.object3d.interfaces.I3DOperation;
-import logisticspipes.proxy.object3d.interfaces.IIconTransformation;
+import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
 import logisticspipes.proxy.object3d.interfaces.IModel3D;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe.Corner;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe.Edge;
@@ -23,7 +23,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
 
 import net.minecraftforge.client.IItemRenderer;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import org.lwjgl.opengl.GL11;
 
@@ -72,7 +72,7 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 	}
 
 	private void generatePipeRenderList(int texture) {
-		List<Pair<IModel3D, IIconTransformation>> objectsToRender = new ArrayList<>();
+		List<Pair<IModel3D, TextureTransformation>> objectsToRender = new ArrayList<>();
 
 		for (Corner corner : Corner.values()) {
 			objectsToRender.addAll(LogisticsNewRenderPipe.corners_M.get(corner).stream()
@@ -86,16 +86,16 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 		}
 
 		//ArrayList<Pair<CCModel, IconTransformation>> objectsToRender2 = new ArrayList<Pair<CCModel, IconTransformation>>();
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing dir : EnumFacing.VALUES) {
 			for (IModel3D model : LogisticsNewRenderPipe.texturePlate_Outer.get(dir)) {
-				IIconTransformation icon = Textures.LPnewPipeIconProvider.getIcon(texture);
+				TextureTransformation icon = Textures.LPnewPipeIconProvider.getIcon(texture);
 				if (icon != null) {
 					objectsToRender.add(new Pair<>(model, icon));
 				}
 			}
 		}
 
-		for (Pair<IModel3D, IIconTransformation> part : objectsToRender) {
+		for (Pair<IModel3D, TextureTransformation> part : objectsToRender) {
 			part.getValue1().render(part.getValue2());
 		}
 
@@ -115,7 +115,7 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 
 		tess.startDrawingQuads();
 
-		IIconTransformation icon = SimpleServiceLocator.cclProxy.createIconTransformer(Textures.LOGISTICS_REQUEST_TABLE_NEW);
+		TextureTransformation icon = SimpleServiceLocator.cclProxy.createIconTransformer(Textures.LOGISTICS_REQUEST_TABLE_NEW);
 
 		//Draw
 		LogisticsNewSolidBlockWorldRenderer.block.get(rotation).render(new I3DOperation[] { icon });

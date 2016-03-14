@@ -21,14 +21,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 
@@ -46,14 +46,14 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 	}
 
 	@Override
-	public IIcon getIcon(int p_149691_1_, int p_149691_2_) {
+	public TextureAtlasSprite getIcon(int p_149691_1_, int p_149691_2_) {
 		return LogisticsPipes.LogisticsPipeBlock.getIcon(p_149691_1_, p_149691_2_);
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	@SuppressWarnings({ "all" })
-	public IIcon getIcon(IBlockAccess iblockaccess, int i, int j, int k, int l) {
+	public TextureAtlasSprite getIcon(IBlockAccess iblockaccess, int i, int j, int k, int l) {
 		DoubleCoordinates pos = new DoubleCoordinates(i, j, k);
 		TileEntity tile = pos.getTileEntity(iblockaccess);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
@@ -256,7 +256,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 							return false;
 						}
 
-						IIcon icon = pipe.getIconProvider().getIcon(pipe.getIconIndexForItem());
+						TextureAtlasSprite icon = pipe.getIconProvider().getIcon(pipe.getIconIndexForItem());
 
 						int sideHit = target.sideHit;
 

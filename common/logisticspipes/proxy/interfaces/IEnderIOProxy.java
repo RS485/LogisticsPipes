@@ -3,7 +3,7 @@ package logisticspipes.proxy.interfaces;
 import java.util.List;
 
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public interface IEnderIOProxy {
 
@@ -19,9 +19,9 @@ public interface IEnderIOProxy {
 
 	public boolean isEnderIO();
 
-	boolean isItemConduit(TileEntity tile, ForgeDirection dir);
+	boolean isItemConduit(TileEntity tile, EnumFacing dir);
 
-	boolean isFluidConduit(TileEntity tile, ForgeDirection dir);
+	boolean isFluidConduit(TileEntity tile, EnumFacing dir);
 
 	boolean isBundledPipe(TileEntity tile);
 }

@@ -34,10 +34,10 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @CCType(name = "Terminus Module")
 public class ModuleTerminus extends LogisticsSimpleFilterModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive {
@@ -176,7 +176,7 @@ public class ModuleTerminus extends LogisticsSimpleFilterModule implements IClie
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
+	public TextureAtlasSprite getIconTexture(IIconRegister register) {
 		return register.registerIcon("logisticspipes:itemModule/ModuleTerminus");
 	}
 }

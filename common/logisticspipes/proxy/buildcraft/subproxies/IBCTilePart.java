@@ -5,11 +5,11 @@ import logisticspipes.asm.IgnoreDisabledProxy;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public interface IBCTilePart {
 
-	boolean hasBlockingPluggable(ForgeDirection side);
+	boolean hasBlockingPluggable(EnumFacing side);
 
 	@IgnoreDisabledProxy
 	void writeToNBT_LP(NBTTagCompound nbt);
@@ -17,7 +17,7 @@ public interface IBCTilePart {
 	@IgnoreDisabledProxy
 	void readFromNBT_LP(NBTTagCompound nbt);
 
-	boolean isSolidOnSide(ForgeDirection side);
+	boolean isSolidOnSide(EnumFacing side);
 
 	void invalidate_LP();
 
@@ -27,7 +27,7 @@ public interface IBCTilePart {
 
 	void scheduleNeighborChange();
 
-	boolean hasGate(ForgeDirection orientation);
+	boolean hasGate(EnumFacing orientation);
 
 	IBCRenderState getBCRenderState();
 
@@ -35,9 +35,9 @@ public interface IBCTilePart {
 
 	IBCPluggableState getBCPlugableState();
 
-	boolean hasEnabledFacade(ForgeDirection dir);
+	boolean hasEnabledFacade(EnumFacing dir);
 
-	IBCPipePluggable getBCPipePluggable(ForgeDirection sideHit);
+	IBCPipePluggable getBCPipePluggable(EnumFacing sideHit);
 
 	void readOldRedStone(NBTTagCompound nbt);
 
@@ -45,7 +45,7 @@ public interface IBCTilePart {
 
 	Object getOriginal();
 
-	boolean hasPipePluggable(ForgeDirection dir);
+	boolean hasPipePluggable(EnumFacing dir);
 
 	void setWorldObj_LP(World world);
 }

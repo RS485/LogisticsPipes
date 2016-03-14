@@ -3,7 +3,7 @@ package logisticspipes.proxy.buildcraft.gates;
 import logisticspipes.textures.Textures;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 import buildcraft.api.statements.IStatement;
 import buildcraft.api.statements.IStatementContainer;
@@ -54,7 +54,7 @@ public abstract class LPTrigger implements IStatement {
 	}
 
 	@Override
-	public IIcon getIcon() {
+	public TextureAtlasSprite getIcon() {
 		return Textures.LPactionIconProvider.getIcon(getIconIndex());
 	}
 

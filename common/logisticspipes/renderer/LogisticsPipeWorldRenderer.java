@@ -19,9 +19,9 @@ import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
+import net.minecraftforge.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler {
 
@@ -40,7 +40,7 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 			if (icons == null) {
 				return false;
 			}
-			state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(ForgeDirection.UNKNOWN));
+			state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(null));
 			block.setRenderAllSides();
 			block.setBlockBounds(0, 0, 0, 1, 1, 1);
 			renderblocks.setRenderBoundsFromBlock(block);
@@ -69,7 +69,7 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 				// render the unconnected pipe faces of the center block (if any)
 				if (connectivity != 0x3f) { // note: 0x3f = 0x111111 = all sides
 					LogisticsPipeWorldRenderer.resetToCenterDimensions(dim);
-					state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(ForgeDirection.UNKNOWN));
+					state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(null));
 					LogisticsPipeWorldRenderer.renderTwoWayBlock(renderblocks, block, x, y, z, dim, connectivity ^ 0x3f);
 				}
 
@@ -94,7 +94,7 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 					renderblocks.uvRotateEast = renderblocks.uvRotateNorth = renderblocks.uvRotateWest = renderblocks.uvRotateSouth = (dir < 2) ? 0 : 1;
 
 					// render sub block
-					state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(ForgeDirection.VALID_DIRECTIONS[dir]));
+					state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(EnumFacing.VALUES[dir]));
 
 					LogisticsPipeWorldRenderer.renderTwoWayBlock(renderblocks, block, x, y, z, dim, renderMask);
 					renderblocks.uvRotateEast = renderblocks.uvRotateNorth = renderblocks.uvRotateWest = renderblocks.uvRotateSouth = 0;
@@ -109,7 +109,7 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 					LogisticsPipeWorldRenderer.renderOneWayBlock(renderblocks, block, x, y, z, dim, connectivity ^ 0x3f);
 
 					//Render Pipe Texture
-					state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(ForgeDirection.UNKNOWN));
+					state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(null));
 					LogisticsPipeWorldRenderer.renderOneWayBlock(renderblocks, block, x, y, z, dim, connectivity ^ 0x3f);
 				}
 
@@ -138,7 +138,7 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 					LogisticsPipeWorldRenderer.renderOneWayBlock(renderblocks, block, x, y, z, dim, 0x3f);
 
 					// render sub block
-					state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(ForgeDirection.VALID_DIRECTIONS[dir]));
+					state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(EnumFacing.VALUES[dir]));
 					LogisticsPipeWorldRenderer.renderOneWayBlock(renderblocks, block, x, y, z, dim, renderMask);
 					renderblocks.uvRotateEast = renderblocks.uvRotateNorth = renderblocks.uvRotateWest = renderblocks.uvRotateSouth = 0;
 				}
@@ -147,7 +147,7 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 
 		renderblocks.setRenderBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing dir : EnumFacing.VALUES) {
 			if (pipe.tilePart.hasPipePluggable(dir)) {
 				IBCPipePluggable p = pipe.tilePart.getBCPipePluggable(dir);
 				p.renderPluggable(renderblocks, dir, LogisticsPipeWorldRenderer.renderPass, x, y, z);

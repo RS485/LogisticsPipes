@@ -20,7 +20,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.World;
 
 import net.minecraftforge.common.DimensionManager;
@@ -29,7 +29,7 @@ import org.lwjgl.input.Keyboard;
 
 public class RemoteOrderer extends Item {
 
-	final static IIcon[] _icons = new IIcon[17];
+	final static TextureAtlasSprite[] _icons = new TextureAtlasSprite[17];
 
 	@Override
 	public void registerIcons(IIconRegister par1IIconRegister) {
@@ -44,7 +44,7 @@ public class RemoteOrderer extends Item {
 	}
 
 	@Override
-	public IIcon getIconFromDamage(int par1) {
+	public TextureAtlasSprite getIconFromDamage(int par1) {
 		if (par1 > 16) {
 			par1 = 0;
 		}

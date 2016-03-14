@@ -126,9 +126,9 @@ public class HUDProvider extends BasicHUDGui {
 		ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.itemListOrderer, null, pageB, -36, 23, 4, 4, 18, 18, itemStackRenderer);
 		GL11.glScalef(0.875F, 0.875F, -1F);
 		String message = "(" + Integer.toString(page + 1) + "/" + Integer.toString(getMaxPage()) + ")";
-		mc.fontRenderer.drawString(message, 9, -50, 0);
+		mc.fontRendererObj.drawString(message, 9, -50, 0);
 		message = "(" + Integer.toString(pageB + 1) + "/" + Integer.toString(getMaxPageOrderer()) + ")";
-		mc.fontRenderer.drawString(message, 9, 23, 0);
+		mc.fontRendererObj.drawString(message, 9, 23, 0);
 	}
 
 	public int getMaxPage() {

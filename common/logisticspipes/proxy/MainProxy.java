@@ -21,18 +21,19 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.network.FMLEmbeddedChannel;
-import cpw.mods.fml.common.network.FMLOutboundHandler;
-import cpw.mods.fml.common.network.FMLOutboundHandler.OutboundTarget;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.network.FMLEmbeddedChannel;
+import net.minecraftforge.fml.common.network.FMLOutboundHandler;
+import net.minecraftforge.fml.common.network.FMLOutboundHandler.OutboundTarget;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 
 import lombok.Getter;
 
@@ -157,6 +158,11 @@ public class MainProxy {
 	}
 
 	// ignores dimension; more stringent check done inside sendPacketToAllWatching
+	public static boolean isAnyoneWatching(BlockPos pos, int dimensionID) {
+		return isAnyoneWatching(pos.getX(), pos.getZ(), dimensionID);
+	}
+
+	// ignores dimension; more stringent check done inside sendPacketToAllWatching
 	public static boolean isAnyoneWatching(int X, int Z, int dimensionID) {
 		ChunkCoordIntPair chunk = new ChunkCoordIntPair(X >> 4, Z >> 4);
 		PlayerCollectionList players = LogisticsEventListener.watcherList.get(chunk);
@@ -167,7 +173,7 @@ public class MainProxy {
 	}
 
 	public static void sendPacketToAllWatchingChunk(TileEntity tile, ModernPacket packet) {
-		sendPacketToAllWatchingChunk(tile.xCoord, tile.zCoord, MainProxy.getDimensionForWorld(tile.getWorldObj()), packet);
+		sendPacketToAllWatchingChunk(tile.getPos().getX(), tile.getPos().getZ(), MainProxy.getDimensionForWorld(tile.getWorld()), packet);
 	}
 
 	public static void sendPacketToAllWatchingChunk(int X, int Z, int dimensionId, ModernPacket packet) {
@@ -266,11 +272,11 @@ public class MainProxy {
 		return MainProxy.checkPipesConnections(from, to, OrientationsUtil.getOrientationOfTilewithTile(from, to));
 	}
 
-	public static boolean checkPipesConnections(TileEntity from, TileEntity to, ForgeDirection way) {
+	public static boolean checkPipesConnections(TileEntity from, TileEntity to, EnumFacing way) {
 		return MainProxy.checkPipesConnections(from, to, way, false);
 	}
 
-	public static boolean checkPipesConnections(TileEntity from, TileEntity to, ForgeDirection way, boolean ignoreSystemDisconnection) {
+	public static boolean checkPipesConnections(TileEntity from, TileEntity to, EnumFacing way, boolean ignoreSystemDisconnection) {
 		if (from == null || to == null) {
 			return false;
 		}

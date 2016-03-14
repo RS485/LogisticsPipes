@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
+import net.minecraft.util.BlockPos;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -36,10 +37,11 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSettings.GameType;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import network.rs485.logisticspipes.world.IntegerCoordinates;
 
 public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTypeHolder {
 
@@ -81,7 +83,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		transport.onNeighborBlockChange(blockId);
 	}
 
-	public boolean canPipeConnect(TileEntity tile, ForgeDirection side) {
+	public boolean canPipeConnect(TileEntity tile, EnumFacing side) {
 		CoreUnroutedPipe otherPipe;
 
 		if (tile instanceof LogisticsTileGenericPipe) {
@@ -100,7 +102,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	 * getTextureIndex(Orienations.Unknown) has logic. Then override this
 	 */
 	public int getIconIndexForItem() {
-		return getIconIndex(ForgeDirection.UNKNOWN);
+		return getIconIndex(null);
 	}
 
 	/**
@@ -122,7 +124,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	 *            Unknown for pipe center
 	 * @return An index valid in the array returned by getTextureIcons()
 	 */
-	public abstract int getIconIndex(ForgeDirection direction);
+	public abstract int getIconIndex(EnumFacing direction);
 
 	public void updateEntity() {
 		transport.updateEntity();
@@ -130,7 +132,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		if (MainProxy.isClient(getWorld())) {
 			if (oldRendererState != (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer() && !container.renderState.forceRenderOldPipe)) {
 				oldRendererState = (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer() && !container.renderState.forceRenderOldPipe);
-				getWorld().markBlockForUpdate(getX(), getY(), getZ());
+				getWorld().markBlockForUpdate(getPos());
 			}
 		}
 	}
@@ -152,21 +154,21 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		initialized = true;
 	}
 
-	protected void notifyBlockOfNeighborChange(ForgeDirection side) {
-		container.getWorldObj().notifyBlockOfNeighborChange(container.xCoord + side.offsetX, container.yCoord + side.offsetY, container.zCoord + side.offsetZ, LogisticsPipes.LogisticsPipeBlock);
+	protected void notifyBlockOfNeighborChange(EnumFacing side) {
+		container.getWorld().notifyNeighborsOfStateChange(CoordinateUtils.add(new DoubleCoordinates(container), side), LogisticsPipes.LogisticsPipeBlock);
 	}
 
 	public void updateNeighbors(boolean needSelf) {
 		if (needSelf) {
-			container.getWorldObj().notifyBlockOfNeighborChange(container.xCoord, container.yCoord, container.zCoord, LogisticsPipes.LogisticsPipeBlock);
+			container.getWorld().notifyNeighborsOfStateChange(new DoubleCoordinates(container), LogisticsPipes.LogisticsPipeBlock);
 		}
-		for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing side : EnumFacing.VALUES) {
 			notifyBlockOfNeighborChange(side);
 		}
 	}
 
 	public void dropItem(ItemStack stack) {
-		MainProxy.dropItems(container.getWorldObj(), stack, container.xCoord, container.yCoord, container.zCoord);
+		MainProxy.dropItems(container.getWorld(), stack, getX(), getY(), getZ());
 	}
 
 	public void onBlockRemoval() {
@@ -192,12 +194,12 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	/**
 	 * If this pipe is open on one side, return it.
 	 */
-	public ForgeDirection getOpenOrientation() {
+	public EnumFacing getOpenOrientation() {
 		int connectionsNum = 0;
 
-		ForgeDirection targetOrientation = ForgeDirection.UNKNOWN;
+		EnumFacing targetOrientation = null;
 
-		for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing o : EnumFacing.VALUES) {
 			if (container.isPipeConnected(o)) {
 
 				connectionsNum++;
@@ -209,7 +211,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		}
 
 		if (connectionsNum > 1 || connectionsNum == 0) {
-			return ForgeDirection.UNKNOWN;
+			return null;
 		}
 
 		return targetOrientation.getOpposite();
@@ -231,31 +233,35 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public void onChunkUnload() {}
 
 	public World getWorld() {
-		return container.getWorldObj();
+		return container.getWorld();
 	}
 
 	public void onEntityCollidedWithBlock(Entity entity) {
 
 	}
 
-	public boolean canPipeConnect(TileEntity tile, ForgeDirection direction, boolean flag) {
+	public boolean canPipeConnect(TileEntity tile, EnumFacing direction, boolean flag) {
 		return canPipeConnect(tile, direction);
 	}
 
-	public boolean isSideBlocked(ForgeDirection side, boolean ignoreSystemDisconnection) {
+	public boolean isSideBlocked(EnumFacing side, boolean ignoreSystemDisconnection) {
 		return false;
 	}
 
 	public final int getX() {
-		return container.xCoord;
+		return getPos().getX();
 	}
 
 	public final int getY() {
-		return container.yCoord;
+		return getPos().getY();
 	}
 
 	public final int getZ() {
-		return container.zCoord;
+		return getPos().getZ();
+	}
+
+	public final BlockPos getPos() {
+		return container.getPos();
 	}
 
 	public boolean canBeDestroyed() {
@@ -338,7 +344,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 			}
 
 			@Override
-			public boolean isSideDisconnected(ForgeDirection side) {
+			public boolean isSideDisconnected(EnumFacing side) {
 				return false;
 			}
 
@@ -368,15 +374,15 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 			}
 
 			@Override
-			public ForgeDirection[] getCombinedSneakyOrientation() {
+			public EnumFacing[] getCombinedSneakyOrientation() {
 				return null;
 			}
 		};
 	}
 
-	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double travled, double max, List<DoubleCoordinates> visited) {
+	public double getDistanceTo(int destinationint, EnumFacing ignore, ItemIdentifier ident, boolean isActive, double travled, double max, List<DoubleCoordinates> visited) {
 		double lowest = Integer.MAX_VALUE;
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing dir : EnumFacing.VALUES) {
 			if (ignore == dir) {
 				continue;
 			}
@@ -417,14 +423,14 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		return null;
 	}
 
-	public boolean hasSpecialPipeEndAt(ForgeDirection dir) {
+	public boolean hasSpecialPipeEndAt(EnumFacing dir) {
 		return false;
 	}
 
 	public DoubleCoordinates getItemRenderPos(float fPos, LPTravelingItem travelItem) {
 		DoubleCoordinates pos = new DoubleCoordinates(0.5, 0.5, 0.5);
 		if (fPos < 0.5) {
-			if (travelItem.input == ForgeDirection.UNKNOWN) {
+			if (travelItem.input == null) {
 				return null;
 			}
 			if (!container.renderState.pipeConnectionMatrix.isConnected(travelItem.input.getOpposite())) {
@@ -432,7 +438,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 			}
 			CoordinateUtils.add(pos, travelItem.input.getOpposite(), 0.5 - fPos);
 		} else {
-			if (travelItem.output == ForgeDirection.UNKNOWN) {
+			if (travelItem.output == null) {
 				return null;
 			}
 			if (!container.renderState.pipeConnectionMatrix.isConnected(travelItem.output)) {

@@ -8,9 +8,9 @@ import logisticspipes.textures.provider.LPPipeIconProvider;
 import logisticspipes.textures.provider.LPPipeIconTransformerProvider;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
-import cpw.mods.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class Textures {
 
@@ -96,23 +96,23 @@ public class Textures {
 
 	public static SmallTextureType LOGISTICSPIPE_BASIC_TRANSPORT_TEXTURE = Textures.smallEmpty;
 
-	public static IIcon LOGISTICS_REQUEST_TABLE[] = new IIcon[0];
-	public static IIcon LOGISTICS_REQUEST_TABLE_NEW = null;
-	public static IIcon LOGISTICS_REQUEST_TABLE_NEW_ROUTED = null;
-	public static IIcon LOGISTICS_REQUEST_TABLE_NEW_UNROUTED = null;
-	public static IIcon LOGISTICS_REQUEST_TABLE_NEW_EMPTY = null;
+	public static TextureAtlasSprite LOGISTICS_REQUEST_TABLE[] = new TextureAtlasSprite[0];
+	public static TextureAtlasSprite LOGISTICS_REQUEST_TABLE_NEW = null;
+	public static TextureAtlasSprite LOGISTICS_REQUEST_TABLE_NEW_ROUTED = null;
+	public static TextureAtlasSprite LOGISTICS_REQUEST_TABLE_NEW_UNROUTED = null;
+	public static TextureAtlasSprite LOGISTICS_REQUEST_TABLE_NEW_EMPTY = null;
 
 	public static int LOGISTICSPIPE_LIQUID_CONNECTOR = 0;
-	public static IIcon LOGISTICSACTIONTRIGGERS_DISABLED;
-	public static IIcon LOGISTICSACTIONTRIGGERS_CRAFTING_ICON;
-	public static IIcon LOGISTICSACTIONTRIGGERS_TEXTURE_FILE;
-	public static IIcon LOGISTICSACTIONTRIGGERS_NEEDS_POWER_ICON;
-	public static IIcon LOGISTICSACTIONTRIGGERS_SUPPLIER_FAILED_ICON;
-	public static IIcon[] LOGISTICS_UPGRADES_DISCONECT_ICONINDEX;
-	public static IIcon[] LOGISTICS_UPGRADES_SNEAKY_ICONINDEX;
-	public static IIcon[] LOGISTICS_UPGRADES_ICONINDEX;
-	public static IIcon LOGISTICSITEMS_ITEMHUD_ICON;
-	public static IIcon LOGISTICSITEMTEXTURE_FOR_DISK;
+	public static TextureAtlasSprite LOGISTICSACTIONTRIGGERS_DISABLED;
+	public static TextureAtlasSprite LOGISTICSACTIONTRIGGERS_CRAFTING_ICON;
+	public static TextureAtlasSprite LOGISTICSACTIONTRIGGERS_TEXTURE_FILE;
+	public static TextureAtlasSprite LOGISTICSACTIONTRIGGERS_NEEDS_POWER_ICON;
+	public static TextureAtlasSprite LOGISTICSACTIONTRIGGERS_SUPPLIER_FAILED_ICON;
+	public static TextureAtlasSprite[] LOGISTICS_UPGRADES_DISCONECT_ICONINDEX;
+	public static TextureAtlasSprite[] LOGISTICS_UPGRADES_SNEAKY_ICONINDEX;
+	public static TextureAtlasSprite[] LOGISTICS_UPGRADES_ICONINDEX;
+	public static TextureAtlasSprite LOGISTICSITEMS_ITEMHUD_ICON;
+	public static TextureAtlasSprite LOGISTICSITEMTEXTURE_FOR_DISK;
 
 	// Standalone pipes
 	public static String LOGISTICSPIPE_TEXTURE_FILE = "pipes/basic";
@@ -251,7 +251,7 @@ public class Textures {
 		Textures.LOGISTICSPIPE_BASIC_TRANSPORT_TEXTURE = registerSmallTexture(par1IIconRegister, Textures.LOGISTICSPIPE_BASIC_TRANSPORT_TEXTURE_FILE);
 
 		if (MainProxy.isClient() && par1IIconRegister != null) {
-			Textures.LOGISTICS_REQUEST_TABLE = new IIcon[5];
+			Textures.LOGISTICS_REQUEST_TABLE = new TextureAtlasSprite[5];
 			for (int i = 0; i < 5; i++) {
 				Textures.LOGISTICS_REQUEST_TABLE[i] = par1IIconRegister.registerIcon("logisticspipes:requesttable/" + i);
 			}

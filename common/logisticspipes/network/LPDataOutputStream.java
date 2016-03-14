@@ -21,7 +21,7 @@ import net.minecraft.item.Item;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
@@ -40,7 +40,7 @@ public class LPDataOutputStream extends DataOutputStream {
 		byteStream = null;
 	}
 
-	public void writeForgeDirection(ForgeDirection dir) throws IOException {
+	public void writeEnumFacing(EnumFacing dir) throws IOException {
 		if (dir == null) {
 			out.write(10);
 		} else {
@@ -51,8 +51,8 @@ public class LPDataOutputStream extends DataOutputStream {
 	public void writeExitRoute(ExitRoute route) throws IOException {
 		writeIRouter(route.destination);
 		writeIRouter(route.root);
-		writeForgeDirection(route.exitOrientation);
-		writeForgeDirection(route.insertOrientation);
+		writeEnumFacing(route.exitOrientation);
+		writeEnumFacing(route.insertOrientation);
 		this.writeEnumSet(route.connectionDetails, PipeRoutingConnectionType.class);
 		writeDouble(route.distanceToDestination);
 		writeDouble(route.destinationDistanceToRoot);
@@ -107,9 +107,8 @@ public class LPDataOutputStream extends DataOutputStream {
 		if (tag == null) {
 			writeShort(-1);
 		} else {
-			byte[] var3 = CompressedStreamTools.compress(tag);
-			writeShort((short) var3.length);
-			this.write(var3);
+			writeShort(1);
+			CompressedStreamTools.write(tag, this);
 		}
 	}
 

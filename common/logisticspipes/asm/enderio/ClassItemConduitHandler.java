@@ -1,6 +1,6 @@
 package logisticspipes.asm.enderio;
 
-import cpw.mods.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import logisticspipes.LPConstants;
 import logisticspipes.asm.util.ASMHelper;
 import org.objectweb.asm.ClassReader;
@@ -17,7 +17,7 @@ public class ClassItemConduitHandler {
 		reader.accept(node, 0);
 
 		boolean noChecksumMatch = false;
-		final String sumHandleEvent = ASMHelper.getCheckSumForMethod(reader, "getExternalInventory", "(Lnet/minecraftforge/common/util/ForgeDirection;)Lnet/minecraft/inventory/IInventory;");
+		final String sumHandleEvent = ASMHelper.getCheckSumForMethod(reader, "getExternalInventory", "(Lnet/minecraftforge/common/util/EnumFacing;)Lnet/minecraft/inventory/IInventory;");
 		if (!"D37FEE8DB16279D8D85139FEED862D542C5E4E52".equals(sumHandleEvent) && !"5E0C7EC3AAF256A5689F65D79092C1599804C9ED".equals(sumHandleEvent)) {
 			noChecksumMatch = true;
 		}
@@ -33,7 +33,7 @@ public class ClassItemConduitHandler {
 		}
 
 		node.methods.stream()
-			.filter(m -> m.name.equals("getExternalInventory") && m.desc.equals("(Lnet/minecraftforge/common/util/ForgeDirection;)Lnet/minecraft/inventory/IInventory;"))
+			.filter(m -> m.name.equals("getExternalInventory") && m.desc.equals("(Lnet/minecraftforge/common/util/EnumFacing;)Lnet/minecraft/inventory/IInventory;"))
 			.forEach(m -> {
 				MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
 					int nullcount = 0;

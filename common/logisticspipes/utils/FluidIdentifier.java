@@ -21,7 +21,7 @@ import lombok.AllArgsConstructor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -221,10 +221,10 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 
 	public FluidStack makeFluidStack(int amount) {
 		//FluidStack constructor does the tag.copy(), so this is safe
-		return new FluidStack(fluidID, amount, tag);
+		return new FluidStack(FluidRegistry.getFluid(fluidID), amount, tag);
 	}
 
-	public int getFreeSpaceInsideTank(IFluidHandler container, ForgeDirection dir) {
+	public int getFreeSpaceInsideTank(IFluidHandler container, EnumFacing dir) {
 		int free = 0;
 		FluidTankInfo[] tanks = container.getTankInfo(dir);
 		if (tanks != null && tanks.length > 0) {
@@ -240,7 +240,7 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 			return 0;
 		}
 		FluidStack liquid = tanks.fluid;
-		if (liquid == null || liquid.getFluidID() <= 0) {
+		if (liquid == null || liquid.getFluid() != null) {
 			return tanks.capacity;
 		}
 		if (FluidIdentifier.get(liquid).equals(this)) {
@@ -251,7 +251,7 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 
 	public int getFreeSpaceInsideTank(IFluidTank tank) {
 		FluidStack liquid = tank.getFluid();
-		if (liquid == null || liquid.getFluidID() <= 0) {
+		if (liquid == null || liquid.getFluid() != null) {
 			return tank.getCapacity();
 		}
 		if (FluidIdentifier.get(liquid).equals(this)) {

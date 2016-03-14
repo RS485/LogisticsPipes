@@ -6,6 +6,7 @@ import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.exception.TargetNotFoundException;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import net.minecraft.util.BlockPos;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.tileentity.TileEntity;
@@ -58,9 +59,9 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	}
 
 	public CoordinatesPacket setTilePos(TileEntity tile) {
-		setPosX(tile.xCoord);
-		setPosY(tile.yCoord);
-		setPosZ(tile.zCoord);
+		setPosX(tile.getPos().getX());
+		setPosY(tile.getPos().getY());
+		setPosZ(tile.getPos().getZ());
 		return this;
 	}
 
@@ -91,12 +92,12 @@ public abstract class CoordinatesPacket extends ModernPacket {
 			targetNotFound("World was null");
 			return null;
 		}
-		if (!world.blockExists(getPosX(), getPosY(), getPosZ())) {
+		if (world.isAirBlock(new BlockPos(getPosX(), getPosY(), getPosZ()))) {
 			targetNotFound("Couldn't find " + clazz.getName());
 			return null;
 		}
 
-		final TileEntity tile = world.getTileEntity(getPosX(), getPosY(), getPosZ());
+		final TileEntity tile = world.getTileEntity(new BlockPos(getPosX(), getPosY(), getPosZ()));
 		if (tile != null) {
 			if (!(clazz.isAssignableFrom(tile.getClass()))) {
 				targetNotFound("Couldn't find " + clazz.getName() + ", found " + tile.getClass());
@@ -121,12 +122,12 @@ public abstract class CoordinatesPacket extends ModernPacket {
 			targetNotFound("World was null");
 			return null;
 		}
-		if (!world.blockExists(getPosX(), getPosY(), getPosZ())) {
+		if (world.isAirBlock(new BlockPos(getPosX(), getPosY(), getPosZ()))) {
 			targetNotFound("Couldn't find " + clazz.getName());
 			return null;
 		}
 
-		final TileEntity tile = world.getTileEntity(getPosX(), getPosY(), getPosZ());
+		final TileEntity tile = world.getTileEntity(new BlockPos(getPosX(), getPosY(), getPosZ()));
 		if (tile != null) {
 			if (clazz.isAssignableFrom(tile.getClass())) {
 				return (T) tile;

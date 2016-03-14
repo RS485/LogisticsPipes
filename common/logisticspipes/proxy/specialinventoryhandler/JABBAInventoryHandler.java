@@ -9,7 +9,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import mcp.mobius.betterbarrels.common.blocks.IBarrelStorage;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
@@ -43,7 +43,7 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public SpecialInventoryHandler getUtilForTile(TileEntity tile, ForgeDirection dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+	public SpecialInventoryHandler getUtilForTile(TileEntity tile, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		return new JABBAInventoryHandler(tile, hideOnePerStack, hideOne, cropStart, cropEnd);
 	}
 
@@ -139,7 +139,7 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public ItemStack add(ItemStack stack, ForgeDirection from, boolean doAdd) {
+	public ItemStack add(ItemStack stack, EnumFacing from, boolean doAdd) {
 		ItemStack st = stack.copy();
 		st.stackSize = 0;
 		if (stack.getTagCompound() != null) {

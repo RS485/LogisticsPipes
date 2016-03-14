@@ -23,7 +23,7 @@ import logisticspipes.proxy.buildcraft.subproxies.LPBCPipe;
 
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import buildcraft.api.statements.IStatementContainer;
 import buildcraft.api.statements.ITriggerExternal;
@@ -55,7 +55,7 @@ public class LogisticsTriggerProvider implements ITriggerProvider {
 	}
 
 	@Override
-	public Collection<ITriggerExternal> getExternalTriggers(ForgeDirection paramForgeDirection, TileEntity tile) {
+	public Collection<ITriggerExternal> getExternalTriggers(EnumFacing paramEnumFacing, TileEntity tile) {
 		if (tile instanceof LogisticsPowerJunctionTileEntity || tile instanceof LogisticsSolderingTileEntity) {
 			LinkedList<ITriggerExternal> triggers = new LinkedList<>();
 			triggers.add(BuildCraftProxy.LogisticsNeedPowerTrigger);

@@ -34,6 +34,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 
+import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.util.Constants;
 
 public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ISimpleInventoryEventHandler, IInventory, IGuiOpenControler {
@@ -69,7 +70,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		}
 		List<IRecipe> list = new ArrayList<>();
 		for (IRecipe r : CraftingUtil.getRecipeList()) {
-			if (r.matches(craftInv, getWorldObj())) {
+			if (r.matches(craftInv, getWorld())) {
 				list.add(r);
 			}
 		}
@@ -102,7 +103,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 			targetType = null;
 		}
 		outputFuzzyFlags.stack = resultInv.getIDStackInSlot(0);
-		if (((targetType == null && oldTargetType != null) || (targetType != null && !targetType.equals(oldTargetType))) && !guiWatcher.isEmpty() && getWorldObj() != null && MainProxy.isServer(getWorldObj())) {
+		if (((targetType == null && oldTargetType != null) || (targetType != null && !targetType.equals(oldTargetType))) && !guiWatcher.isEmpty() && getWorld() != null && MainProxy.isServer(getWorld())) {
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(this), guiWatcher);
 		}
 	}
@@ -119,7 +120,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		}
 		List<IRecipe> list = new ArrayList<>();
 		for (IRecipe r : CraftingUtil.getRecipeList()) {
-			if (r.matches(craftInv, getWorldObj())) {
+			if (r.matches(craftInv, getWorld())) {
 				list.add(r);
 			}
 		}
@@ -158,7 +159,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 			}
 			targetType = ItemIdentifier.get(cache.getCraftingResult(craftInv));
 		}
-		if (!guiWatcher.isEmpty() && getWorldObj() != null && MainProxy.isServer(getWorldObj())) {
+		if (!guiWatcher.isEmpty() && getWorld() != null && MainProxy.isServer(getWorld())) {
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(this), guiWatcher);
 		}
 		cacheRecipe();
@@ -212,11 +213,11 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		}
 		IRecipe recipe = cache;
 		outputFuzzyFlags.stack = resultInv.getIDStackInSlot(0);
-		if (!recipe.matches(crafter, getWorldObj())) {
+		if (!recipe.matches(crafter, getWorld())) {
 			if(isFuzzy && outputFuzzyFlags.getBitSet().nextSetBit(0) != -1) {
 				recipe = null;
 				for (IRecipe r : CraftingUtil.getRecipeList()) {
-					if (r.matches(crafter, getWorldObj()) && outputFuzzyFlags.matches(ItemIdentifier.get(r.getRecipeOutput()), IResource.MatchSettings.NORMAL)) {
+					if (r.matches(crafter, getWorld()) && outputFuzzyFlags.matches(ItemIdentifier.get(r.getRecipeOutput()), IResource.MatchSettings.NORMAL)) {
 						recipe = r;
 						break;
 					}
@@ -270,7 +271,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 			if (left != null) {
 				left.stackSize = inv.addCompressed(left, false);
 				if (left.stackSize > 0) {
-					ItemIdentifierInventory.dropItems(worldObj, left, xCoord, yCoord, zCoord);
+					ItemIdentifierInventory.dropItems(worldObj, left, getPos());
 				}
 			}
 		}
@@ -280,7 +281,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 			if (left != null) {
 				left.stackSize = inv.addCompressed(left, false);
 				if (left.stackSize > 0) {
-					ItemIdentifierInventory.dropItems(worldObj, left, xCoord, yCoord, zCoord);
+					ItemIdentifierInventory.dropItems(worldObj, left, getPos());
 				}
 			}
 		}
@@ -288,7 +289,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	public void onBlockBreak() {
-		inv.dropContents(worldObj, xCoord, yCoord, zCoord);
+		inv.dropContents(worldObj, getPos());
 	}
 
 	@Override
@@ -390,23 +391,13 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	@Override
-	public ItemStack getStackInSlotOnClosing(int i) {
-		return inv.getStackInSlotOnClosing(i);
+	public ItemStack removeStackFromSlot(int i) {
+		return inv.removeStackFromSlot(i);
 	}
 
 	@Override
 	public void setInventorySlotContents(int i, ItemStack itemstack) {
 		inv.setInventorySlotContents(i, itemstack);
-	}
-
-	@Override
-	public String getInventoryName() {
-		return "LogisticsCraftingTable";
-	}
-
-	@Override
-	public boolean hasCustomInventoryName() {
-		return false;
 	}
 
 	@Override
@@ -420,10 +411,10 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	@Override
-	public void openInventory() {}
+	public void openInventory(EntityPlayer player) {}
 
 	@Override
-	public void closeInventory() {}
+	public void closeInventory(EntityPlayer player) {}
 
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
@@ -438,6 +429,26 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public int getField(int id) {
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, int value) {
+
+	}
+
+	@Override
+	public int getFieldCount() {
+		return 0;
+	}
+
+	@Override
+	public void clear() {
+
 	}
 
 	public void placedBy(EntityLivingBase par5EntityLivingBase) {
@@ -463,5 +474,20 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	@Override
 	public void guiClosedByPlayer(EntityPlayer player) {
 		guiWatcher.remove(player);
+	}
+
+	@Override
+	public String getName() {
+		return "LogisticsCraftingTable";
+	}
+
+	@Override
+	public boolean hasCustomName() {
+		return true;
+	}
+
+	@Override
+	public IChatComponent getDisplayName() {
+		return null;
 	}
 }

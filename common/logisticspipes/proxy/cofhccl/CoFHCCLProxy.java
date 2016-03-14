@@ -14,14 +14,14 @@ import logisticspipes.proxy.DontLoadProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.ICCLProxy;
 import logisticspipes.proxy.object3d.interfaces.I3DOperation;
-import logisticspipes.proxy.object3d.interfaces.IIconTransformation;
+import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
 import logisticspipes.proxy.object3d.interfaces.IModel3D;
 import logisticspipes.proxy.object3d.interfaces.IRenderState;
 import logisticspipes.proxy.object3d.interfaces.ITranslation;
 import logisticspipes.proxy.object3d.interfaces.IVec3;
 import logisticspipes.proxy.object3d.operation.LPScale;
 
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 import cofh.repack.codechicken.lib.render.CCModel;
 import cofh.repack.codechicken.lib.render.CCRenderState;
@@ -48,9 +48,9 @@ public class CoFHCCLProxy implements ICCLProxy {
 	}
 
 	@Override
-	public IIconTransformation createIconTransformer(IIcon registerIcon) {
+	public TextureTransformation createIconTransformer(TextureAtlasSprite registerIcon) {
 		final IconTransformation icon = new IconTransformation(registerIcon);
-		return new IIconTransformation() {
+		return new TextureTransformation() {
 
 			@Override
 			public Object getOriginal() {
@@ -58,7 +58,7 @@ public class CoFHCCLProxy implements ICCLProxy {
 			}
 
 			@Override
-			public void update(IIcon registerIcon) {
+			public void update(TextureAtlasSprite registerIcon) {
 				icon.icon = registerIcon;
 			}
 

@@ -45,12 +45,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @CCType(name = "Advanced Extractor Module")
 public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
@@ -60,7 +60,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Item list", 1);
 	private boolean _itemsIncluded = true;
 
-	private ForgeDirection _sneakyDirection = ForgeDirection.UNKNOWN;
+	private EnumFacing _sneakyDirection = null;
 
 	private IHUDModuleRenderer HUD = new HUDAdvancedExtractor(this);
 
@@ -76,12 +76,12 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 	}
 
 	@Override
-	public ForgeDirection getSneakyDirection() {
+	public EnumFacing getSneakyDirection() {
 		return _sneakyDirection;
 	}
 
 	@Override
-	public void setSneakyDirection(ForgeDirection sneakyDirection) {
+	public void setSneakyDirection(EnumFacing sneakyDirection) {
 		_sneakyDirection = sneakyDirection;
 	}
 
@@ -90,23 +90,23 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 		_filterInventory.readFromNBT(nbttagcompound);
 		setItemsIncluded(nbttagcompound.getBoolean("itemsIncluded"));
 		if (nbttagcompound.hasKey("sneakydirection")) {
-			_sneakyDirection = ForgeDirection.values()[nbttagcompound.getInteger("sneakydirection")];
+			_sneakyDirection = EnumFacing.values()[nbttagcompound.getInteger("sneakydirection")];
 		} else if (nbttagcompound.hasKey("sneakyorientation")) {
 			//convert sneakyorientation to sneakydirection
 			int t = nbttagcompound.getInteger("sneakyorientation");
 			switch (t) {
 				default:
 				case 0:
-					_sneakyDirection = ForgeDirection.UNKNOWN;
+					_sneakyDirection = null;
 					break;
 				case 1:
-					_sneakyDirection = ForgeDirection.UP;
+					_sneakyDirection = EnumFacing.UP;
 					break;
 				case 2:
-					_sneakyDirection = ForgeDirection.SOUTH;
+					_sneakyDirection = EnumFacing.SOUTH;
 					break;
 				case 3:
-					_sneakyDirection = ForgeDirection.DOWN;
+					_sneakyDirection = EnumFacing.DOWN;
 					break;
 			}
 		}
@@ -162,8 +162,8 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 		}
 		currentTick = 0;
 
-		ForgeDirection extractOrientation = _sneakyDirection;
-		if (extractOrientation == ForgeDirection.UNKNOWN) {
+		EnumFacing extractOrientation = _sneakyDirection;
+		if (extractOrientation == null) {
 			extractOrientation = _service.inventoryOrientation().getOpposite();
 		}
 		IInventoryUtil inventory = _service.getSneakyInventory(extractOrientation, true);
@@ -252,7 +252,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 	public List<String> getClientInformation() {
 		List<String> list = new ArrayList<>(5);
 		list.add(areItemsIncluded() ? "Included" : "Excluded");
-		list.add("Extraction: " + ((_sneakyDirection == ForgeDirection.UNKNOWN) ? "DEFAULT" : _sneakyDirection.name()));
+		list.add("Extraction: " + ((_sneakyDirection == null) ? "DEFAULT" : _sneakyDirection.name()));
 		list.add("Filter: ");
 		list.add("<inventory>");
 		list.add("<that>");
@@ -326,7 +326,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
+	public TextureAtlasSprite getIconTexture(IIconRegister register) {
 		return register.registerIcon("logisticspipes:itemModule/ModuleAdvancedExtractor");
 	}
 }

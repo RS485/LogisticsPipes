@@ -15,9 +15,9 @@ import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 
 import net.minecraft.client.Minecraft;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import org.lwjgl.opengl.GL11;
 
@@ -38,19 +38,19 @@ public class HUDAdvancedExtractor implements IHUDModuleRenderer {
 	public void renderContent(boolean shifted) {
 		if (selected == 0) {
 			Minecraft mc = FMLClientHandler.instance().getClient();
-			ForgeDirection d = module.getSneakyDirection();
-			mc.fontRenderer.drawString("Extract", -22, -22, 0);
-			mc.fontRenderer.drawString("from:", -22, -9, 0);
-			mc.fontRenderer.drawString(((d == ForgeDirection.UNKNOWN) ? "DEFAULT" : d.name()), -22, 18, 0);
+			EnumFacing d = module.getSneakyDirection();
+			mc.fontRendererObj.drawString("Extract", -22, -22, 0);
+			mc.fontRendererObj.drawString("from:", -22, -9, 0);
+			mc.fontRendererObj.drawString(((d == null) ? "DEFAULT" : d.name()), -22, 18, 0);
 		} else {
 			Minecraft mc = FMLClientHandler.instance().getClient();
 			GL11.glScalef(1.0F, 1.0F, -0.00001F);
 			ItemStackRenderer.renderItemIdentifierStackListIntoGui(ItemIdentifierStack.getListFromInventory(module.getFilterInventory()), null, 0, -25, -32, 3, 9, 18, 18, 100.0F, DisplayAmount.NEVER, true, false, shifted);
 			GL11.glScalef(1.0F, 1.0F, 1 / -0.00001F);
 			if (module.areItemsIncluded()) {
-				mc.fontRenderer.drawString("Included", -22, 25, 0);
+				mc.fontRendererObj.drawString("Included", -22, 25, 0);
 			} else {
-				mc.fontRenderer.drawString("Excluded", -22, 25, 0);
+				mc.fontRendererObj.drawString("Excluded", -22, 25, 0);
 			}
 		}
 	}
@@ -104,7 +104,7 @@ public class HUDAdvancedExtractor implements IHUDModuleRenderer {
 				color = Color.getValue(Color.DARK_GREY);
 			}
 			GL11.glScaled(0.8D, 0.8D, 1.0D);
-			mc.fontRenderer.drawString(label, (int) ((-(mc.fontRenderer.getStringWidth(label) / (2 * (1 / 0.8D))) + posX + sizeX / 2) * (1 / 0.8D)), (int) ((posY + (sizeY - 8) / 2) * (1 / 0.8D)) + 2, color);
+			mc.fontRendererObj.drawString(label, (int) ((-(mc.fontRendererObj.getStringWidth(label) / (2 * (1 / 0.8D))) + posX + sizeX / 2) * (1 / 0.8D)), (int) ((posY + (sizeY - 8) / 2) * (1 / 0.8D)) + 2, color);
 			GL11.glScaled(1 / 0.8D, 1 / 0.8D, 1.0D);
 			if (hover) {
 				GL11.glTranslatef(0.0F, 0.0F, 0.01F);

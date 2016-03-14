@@ -3,11 +3,11 @@ package logisticspipes.pipes.upgrades;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public abstract class ConnectionUpgrade implements IPipeUpgrade {
 
-	public abstract ForgeDirection getSide();
+	public abstract EnumFacing getSide();
 
 	@Override
 	public boolean needsUpdate() {

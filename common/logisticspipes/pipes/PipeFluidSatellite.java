@@ -41,7 +41,7 @@ import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
@@ -108,7 +108,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 
 	private void updateInv(boolean force) {
 		itemList.clear();
-		for (Pair<TileEntity, ForgeDirection> pair : getAdjacentTanks(false)) {
+		for (Pair<TileEntity, EnumFacing> pair : getAdjacentTanks(false)) {
 			if (!(pair.getValue1() instanceof IFluidHandler)) {
 				continue;
 			}

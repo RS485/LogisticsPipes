@@ -20,7 +20,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import org.lwjgl.opengl.GL11;
 
@@ -57,13 +57,13 @@ public class GuiExtractor extends ModuleBaseGui {
 	private void refreshButtons() {
 		for (Object p : buttonList) {
 			GuiButton button = (GuiButton) p;
-			button.displayString = isExtract(ForgeDirection.getOrientation(button.id));
+			button.displayString = isExtract(EnumFacing.getOrientation(button.id));
 		}
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
-		_directionReceiver.setSneakyDirection(ForgeDirection.getOrientation(guibutton.id));
+		_directionReceiver.setSneakyDirection(EnumFacing.getOrientation(guibutton.id));
 
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(ExtractorModuleDirectionPacket.class).setDirection(_directionReceiver.getSneakyDirection()).setModulePos(_directionReceiver));
 
@@ -78,7 +78,7 @@ public class GuiExtractor extends ModuleBaseGui {
 
 		super.drawGuiContainerForegroundLayer(par1, par2);
 
-		mc.fontRenderer.drawString("Extract orientation", xSize / 2 - mc.fontRenderer.getStringWidth("Extract orientation") / 2, 10, 0x404040);
+		mc.fontRendererObj.drawString("Extract orientation", xSize / 2 - mc.fontRendererObj.getStringWidth("Extract orientation") / 2, 10, 0x404040);
 	}
 
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/extractor.png");
@@ -93,15 +93,15 @@ public class GuiExtractor extends ModuleBaseGui {
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 	}
 
-	private String isExtract(ForgeDirection o) {
-		String s = (o == ForgeDirection.UNKNOWN ? "DEFAULT" : o.name());
+	private String isExtract(EnumFacing o) {
+		String s = (o == null ? "DEFAULT" : o.name());
 		if (o == _directionReceiver.getSneakyDirection()) {
 			return "\u00a7a>" + s + "<";
 		}
 		return s.toLowerCase(Locale.US);
 	}
 
-	public void setMode(ForgeDirection o) {
+	public void setMode(EnumFacing o) {
 		_directionReceiver.setSneakyDirection(o);
 		refreshButtons();
 	}

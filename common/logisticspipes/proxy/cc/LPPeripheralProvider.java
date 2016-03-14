@@ -8,7 +8,7 @@ import logisticspipes.proxy.cc.wrapper.LPPeripheralTileSolidWrapper;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.api.peripheral.IPeripheralProvider;
@@ -27,10 +27,10 @@ public class LPPeripheralProvider implements IPeripheralProvider {
 			if (((LogisticsTileGenericPipe) tile).pipe == null) {
 				return null;
 			}
-			return new LPPeripheralTilePipeWrapper((LogisticsTileGenericPipe) tile, ForgeDirection.VALID_DIRECTIONS[side]);
+			return new LPPeripheralTilePipeWrapper((LogisticsTileGenericPipe) tile, EnumFacing.VALUES[side]);
 		}
 		if (tile instanceof LogisticsSolidTileEntity) {
-			return new LPPeripheralTileSolidWrapper((LogisticsSolidTileEntity) tile, ForgeDirection.VALID_DIRECTIONS[side]);
+			return new LPPeripheralTileSolidWrapper((LogisticsSolidTileEntity) tile, EnumFacing.VALUES[side]);
 		}
 		return null;
 	}

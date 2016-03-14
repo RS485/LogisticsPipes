@@ -24,10 +24,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import buildcraft.api.robots.DockingStation;
 import buildcraft.api.robots.EntityRobotBase;
@@ -51,7 +51,7 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 	private final LPBCPipeRenderState bcRenderState;
 	@Getter
 	private final LogisticsTileGenericPipe lpPipe;
-	public Map<ForgeDirection, List<StatementSlot>> activeActions = new HashMap<>();
+	public Map<EnumFacing, List<StatementSlot>> activeActions = new HashMap<>();
 
 	public LPBCTileGenericPipe(LPBCPipe pipe, LogisticsTileGenericPipe lpPipe) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		this.pipe = bcPipe = pipe;
@@ -69,7 +69,7 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 	public void writeToNBT_LP(NBTTagCompound nbt) {
 		NBTTagCompound bcNBT = new NBTTagCompound();
 
-		for (int i = 0; i < ForgeDirection.VALID_DIRECTIONS.length; i++) {
+		for (int i = 0; i < EnumFacing.VALUES.length; i++) {
 			final String key = "redstoneInputSide[" + i + "]";
 			bcNBT.setByte(key, (byte) redstoneInputSide[i]);
 		}
@@ -84,7 +84,7 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 	public void readFromNBT_LP(NBTTagCompound nbt) {
 		if (!nbt.hasKey("BC_Pipe_NBT")) {
 			redstoneInput = 0;
-			for (int i = 0; i < ForgeDirection.VALID_DIRECTIONS.length; i++) {
+			for (int i = 0; i < EnumFacing.VALUES.length; i++) {
 				final String key = "redstoneInputSide[" + i + "]";
 				if (nbt.hasKey(key)) {
 					redstoneInputSide[i] = nbt.getByte(key);
@@ -108,7 +108,7 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 
 		redstoneInput = 0;
 
-		for (int i = 0; i < ForgeDirection.VALID_DIRECTIONS.length; i++) {
+		for (int i = 0; i < EnumFacing.VALUES.length; i++) {
 			final String key = "redstoneInputSide[" + i + "]";
 			if (bcNBT.hasKey(key)) {
 				redstoneInputSide[i] = bcNBT.getByte(key);
@@ -151,10 +151,10 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 			attachPluggables = false;
 			// Attach callback
 			PipePluggable[] pluggables = ReflectionHelper.getPrivateField(PipePluggable[].class, SideProperties.class, "pluggables", sideProperties);
-			for (int i = 0; i < ForgeDirection.VALID_DIRECTIONS.length; i++) {
+			for (int i = 0; i < EnumFacing.VALUES.length; i++) {
 				if (pluggables[i] != null) {
 					pipe.eventBus.registerHandler(pluggables[i]);
-					pluggables[i].onAttachedPipe(this, ForgeDirection.getOrientation(i));
+					pluggables[i].onAttachedPipe(this, EnumFacing.getOrientation(i));
 				}
 			}
 			notifyBlockChanged();
@@ -167,7 +167,7 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 		pipe.updateEntity();
 
 		boolean recheckThisPipe = false;
-		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing direction : EnumFacing.VALUES) {
 			PipePluggable p = getPipePluggable(direction);
 			if (p != null) {
 				p.update(this, direction);
@@ -269,7 +269,7 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 
 	@Override
 	public void readOldRedStone(NBTTagCompound nbt) {
-		for (int i = 0; i < ForgeDirection.VALID_DIRECTIONS.length; i++) {
+		for (int i = 0; i < EnumFacing.VALUES.length; i++) {
 			final String key = "redstoneInputSide[" + i + "]";
 			if (nbt.hasKey(key)) {
 				redstoneInputSide[i] = nbt.getByte(key);
@@ -284,7 +284,7 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 	}
 
 	@Override
-	public IBCPipePluggable getBCPipePluggable(final ForgeDirection sideHit) {
+	public IBCPipePluggable getBCPipePluggable(final EnumFacing sideHit) {
 		final PipePluggable plug = getPipePluggable(sideHit);
 		if (plug == null) {
 			return null;
@@ -308,7 +308,7 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 
 			@Override
 			@SideOnly(Side.CLIENT)
-			public void renderPluggable(RenderBlocks renderblocks, ForgeDirection dir, int renderPass, int x, int y, int z) {
+			public void renderPluggable(RenderBlocks renderblocks, EnumFacing dir, int renderPass, int x, int y, int z) {
 				if (plug.getRenderer() == null) {
 					return;
 				}
@@ -348,7 +348,7 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 	@Override
 	public void afterStateUpdated() {
 		if (worldObj == null) {
-			worldObj = lpPipe.getWorldObj();
+			worldObj = lpPipe.getWorld();
 		}
 		this.afterStateUpdated((byte) 2);
 	}
@@ -362,12 +362,12 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 	}
 
 	@Override
-	public Block getBlock(ForgeDirection to) {
+	public Block getBlock(EnumFacing to) {
 		return lpPipe.getBlock(to);
 	}
 
 	@Override
-	public TileEntity getTile(ForgeDirection to) {
+	public TileEntity getTile(EnumFacing to) {
 		return lpPipe.getTile(to);
 	}
 
@@ -391,12 +391,12 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 	}
 
 	@Override
-	public boolean isPipeConnected(ForgeDirection with) {
+	public boolean isPipeConnected(EnumFacing with) {
 		return lpPipe.isPipeConnected(with);
 	}
 
 	@Override
-	public boolean setPluggable(ForgeDirection direction, PipePluggable pluggable, EntityPlayer player) {
+	public boolean setPluggable(EnumFacing direction, PipePluggable pluggable, EntityPlayer player) {
 		if (pluggable instanceof LensPluggable) {
 			// Coloring fundamentally doesn't work on Logistics Pipes
 			return false;

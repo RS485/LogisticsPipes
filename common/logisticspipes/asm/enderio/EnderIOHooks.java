@@ -13,7 +13,7 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.IFluidHandler;
 
 public class EnderIOHooks {
@@ -27,7 +27,7 @@ public class EnderIOHooks {
 	public static IInventory handleGetExternalInventory(ItemConduit itemConduit, TileEntity tileEntity) {
 		if(isEnabled && tileEntity instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tileEntity).isRoutingPipe() && ((LogisticsTileGenericPipe) tileEntity).isRouterInitialized()) {
 			try {
-				TileEntity conduitTile = itemConduit.getLocation().getTileEntity(tileEntity.getWorldObj());
+				TileEntity conduitTile = itemConduit.getLocation().getTileEntity(tileEntity.getWorld());
 				return new LogisticsInsertionInventory((LogisticsTileGenericPipe) tileEntity, OrientationsUtil
 						.getOrientationOfTilewithTile(tileEntity, conduitTile));
 			} catch (Exception e) {
@@ -37,7 +37,7 @@ public class EnderIOHooks {
 		return null;
 	}
 
-	public static ISidedInventory handleUpdateInventoryNetworkedInventory(ISidedInventory original, TileEntity tileEntity, ForgeDirection dir) {
+	public static ISidedInventory handleUpdateInventoryNetworkedInventory(ISidedInventory original, TileEntity tileEntity, EnumFacing dir) {
 		if(isEnabled && original == null && tileEntity instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tileEntity).isRoutingPipe() && ((LogisticsTileGenericPipe) tileEntity).isRouterInitialized()) {
 			try {
 				return new InventoryWrapper(new LogisticsInsertionInventory((LogisticsTileGenericPipe) tileEntity, dir.getOpposite()));

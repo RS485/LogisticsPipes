@@ -7,11 +7,11 @@ import logisticspipes.modules.ModulePolymorphicItemSink;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public abstract class SneakyUpgrade implements IPipeUpgrade {
 
-	public abstract ForgeDirection getSneakyOrientation();
+	public abstract EnumFacing getSneakyOrientation();
 
 	@Override
 	public boolean needsUpdate() {

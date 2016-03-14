@@ -4,7 +4,7 @@ import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.utils.SinkReply;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public class ChassiTransportLayer extends TransportLayer {
 
@@ -15,7 +15,7 @@ public class ChassiTransportLayer extends TransportLayer {
 	}
 
 	@Override
-	public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection blocked) {
+	public EnumFacing itemArrived(IRoutedItem item, EnumFacing blocked) {
 		if (item.getItemIdentifierStack() != null) {
 			_chassiPipe.recievedItem(item.getItemIdentifierStack().getStackSize());
 		}
@@ -40,9 +40,9 @@ public class ChassiTransportLayer extends TransportLayer {
 		}
 
 		if (reply.maxNumberOfItems > 0 && item.getItemIdentifierStack().getStackSize() > reply.maxNumberOfItems) {
-			ForgeDirection o = _chassiPipe.getPointedOrientation();
-			if (o == null || o == ForgeDirection.UNKNOWN) {
-				o = ForgeDirection.UP;
+			EnumFacing o = _chassiPipe.getPointedOrientation();
+			if (o == null || o == null) {
+				o = EnumFacing.UP;
 			}
 
 			item.split(reply.maxNumberOfItems, o);

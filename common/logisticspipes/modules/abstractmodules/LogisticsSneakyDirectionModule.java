@@ -1,10 +1,10 @@
 package logisticspipes.modules.abstractmodules;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public abstract class LogisticsSneakyDirectionModule extends LogisticsGuiModule {
 
-	public abstract ForgeDirection getSneakyDirection();
+	public abstract EnumFacing getSneakyDirection();
 
-	public abstract void setSneakyDirection(ForgeDirection sneakyDirection);
+	public abstract void setSneakyDirection(EnumFacing sneakyDirection);
 }

@@ -26,13 +26,15 @@ import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.utils.IPositionRotateble;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.Data;
 
@@ -60,7 +62,7 @@ public class DoubleCoordinates implements IPositionRotateble, ICoordinates {
 	}
 
 	public DoubleCoordinates(TileEntity tile) {
-		this(tile.xCoord, tile.yCoord, tile.zCoord);
+		this(tile.getPos());
 	}
 
 	public DoubleCoordinates(CoreUnroutedPipe pipe) {
@@ -77,6 +79,10 @@ public class DoubleCoordinates implements IPositionRotateble, ICoordinates {
 
 	public DoubleCoordinates(Entity entity) {
 		this(entity.posX, entity.posY, entity.posZ);
+	}
+
+	public DoubleCoordinates(BlockPos pos) {
+		this(pos.getX(), pos.getY(), pos.getZ());
 	}
 
 	public static DoubleCoordinates readFromNBT(String prefix, NBTTagCompound nbt) {
@@ -116,8 +122,12 @@ public class DoubleCoordinates implements IPositionRotateble, ICoordinates {
 		return (int) getZCoord();
 	}
 
+	public BlockPos getBlockPos() {
+		return new BlockPos(getXCoord(), getYCoord(), getZCoord());
+	}
+
 	public TileEntity getTileEntity(IBlockAccess world) {
-		return world.getTileEntity(getXInt(), getYInt(), getZInt());
+		return world.getTileEntity(getBlockPos());
 	}
 
 	@Override
@@ -130,11 +140,16 @@ public class DoubleCoordinates implements IPositionRotateble, ICoordinates {
 	}
 
 	public Block getBlock(IBlockAccess world) {
-		return world.getBlock(getXInt(), getYInt(), getZInt());
+		IBlockState state = this.getBlockState(world);
+		return state == null ? null : state.getBlock();
+	}
+
+	public IBlockState getBlockState(IBlockAccess world) {
+		return world.getBlockState(getBlockPos());
 	}
 
 	public boolean blockExists(World world) {
-		return world.blockExists(getXInt(), getYInt(), getZInt());
+		return !world.isAirBlock(getBlockPos());
 	}
 
 	public double distanceTo(DoubleCoordinates targetPos) {
@@ -164,7 +179,7 @@ public class DoubleCoordinates implements IPositionRotateble, ICoordinates {
 	}
 
 	public void setBlockToAir(World world) {
-		world.setBlockToAir(getXInt(), getYInt(), getZInt());
+		world.setBlockToAir(getBlockPos());
 	}
 
 	@Override

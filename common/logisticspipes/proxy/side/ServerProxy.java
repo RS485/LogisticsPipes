@@ -40,8 +40,8 @@ import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.config.Configuration;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.server.FMLServerHandler;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.server.FMLServerHandler;
 
 public class ServerProxy implements IProxy {
 

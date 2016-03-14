@@ -12,7 +12,7 @@ import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import net.minecraft.tileentity.TileEntity;
 
 import net.minecraft.world.Explosion;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 	}
 
 	@Override
-	public boolean canPipeConnect(TileEntity tile, ForgeDirection side) {
+	public boolean canPipeConnect(TileEntity tile, EnumFacing side) {
 		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe != null && ((LogisticsTileGenericPipe) tile).pipe.isHSTube()) {
 			return true;
 		}
@@ -67,7 +67,7 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 	}
 
 	@Override
-	public ForgeDirection resolveDestination(LPTravelingItemServer data) {
+	public EnumFacing resolveDestination(LPTravelingItemServer data) {
 		if (getMultiPipe() == null) {
 			return null;
 		}
@@ -81,7 +81,7 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 			tile = getMultiPipe().getConnectedEndTile(item.output);
 		}
 		if (items.scheduleRemoval(item)) {
-			if (MainProxy.isServer(container.getWorldObj())) {
+			if (MainProxy.isServer(container.getWorld())) {
 				handleTileReachedServer((LPTravelingItemServer) item, tile, item.output);
 			} else {
 				handleTileReachedClient((LPTravelingItemClient) item, tile, item.output);
@@ -90,7 +90,7 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 	}
 
 	@Override
-	protected void handleTileReachedServer(LPTravelingItemServer arrivingItem, TileEntity tile, ForgeDirection dir) {
+	protected void handleTileReachedServer(LPTravelingItemServer arrivingItem, TileEntity tile, EnumFacing dir) {
 		markChunkModified(tile);
 		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe instanceof CoreMultiBlockPipe) {
 			passToNextPipe(arrivingItem, tile);
@@ -112,7 +112,7 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 	}
 
 	@Override
-	protected void handleTileReachedClient(LPTravelingItemClient arrivingItem, TileEntity tile, ForgeDirection dir) {
+	protected void handleTileReachedClient(LPTravelingItemClient arrivingItem, TileEntity tile, EnumFacing dir) {
 		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe instanceof CoreMultiBlockPipe) {
 			passToNextPipe(arrivingItem, tile);
 			return;
@@ -138,7 +138,7 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 	}
 
 	@Override
-	public CoreUnroutedPipe getNextPipe(ForgeDirection output) {
+	public CoreUnroutedPipe getNextPipe(EnumFacing output) {
 		TileEntity tile = null;
 		if (getMultiPipe() != null) {
 			tile = getMultiPipe().getConnectedEndTile(output);

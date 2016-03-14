@@ -39,7 +39,7 @@ public class GuiMessagePopup extends SubGuiScreen {
 		if (mWidth == 0) {
 			int lWidth = 0;
 			for (String msg : text) {
-				int tWidth = mc.fontRenderer.getStringWidth(msg);
+				int tWidth = mc.fontRendererObj.getStringWidth(msg);
 				if (tWidth > lWidth) {
 					lWidth = tWidth;
 				}
@@ -53,8 +53,8 @@ public class GuiMessagePopup extends SubGuiScreen {
 				continue;
 			}
 			String msg = StringUtils.getCuttedString(text[i], mWidth - 10, mc.fontRenderer);
-			int stringWidth = mc.fontRenderer.getStringWidth(msg);
-			mc.fontRenderer.drawString(msg, xCenter - (stringWidth / 2), guiTop + 10 + (i * 10), 0x404040);
+			int stringWidth = mc.fontRendererObj.getStringWidth(msg);
+			mc.fontRendererObj.drawString(msg, xCenter - (stringWidth / 2), guiTop + 10 + (i * 10), 0x404040);
 		}
 	}
 

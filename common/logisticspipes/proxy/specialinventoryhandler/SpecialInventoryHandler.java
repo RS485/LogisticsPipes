@@ -9,7 +9,7 @@ import logisticspipes.utils.transactor.ITransactor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransactor {
 
@@ -17,7 +17,7 @@ public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransa
 
 	public abstract boolean isType(TileEntity tile);
 
-	public abstract SpecialInventoryHandler getUtilForTile(TileEntity tile, ForgeDirection dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd);
+	public abstract SpecialInventoryHandler getUtilForTile(TileEntity tile, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd);
 
 	@Override
 	public int itemCount(ItemIdentifier itemIdent) {

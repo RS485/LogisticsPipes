@@ -10,7 +10,7 @@ import logisticspipes.renderer.LogisticsHUDRenderer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import ic2.api.energy.tile.IEnergySink;
 
@@ -129,7 +129,7 @@ public class LogisticsIC2PowerProviderTileEntity extends LogisticsPowerProviderT
 
 	@Override
 	@ModDependentMethod(modId = "IC2")
-	public boolean acceptsEnergyFrom(TileEntity tile, ForgeDirection dir) {
+	public boolean acceptsEnergyFrom(TileEntity tile, EnumFacing dir) {
 		return true;
 	}
 
@@ -147,7 +147,7 @@ public class LogisticsIC2PowerProviderTileEntity extends LogisticsPowerProviderT
 
 	@Override
 	@ModDependentMethod(modId = "IC2")
-	public double injectEnergy(ForgeDirection directionFrom, double amount, double voltage) {
+	public double injectEnergy(EnumFacing directionFrom, double amount, double voltage) {
 		addEnergy(amount);
 		return 0;
 	}

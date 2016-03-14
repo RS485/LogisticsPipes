@@ -15,9 +15,10 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import com.google.common.primitives.Ints;
+import net.minecraft.util.IChatComponent;
 
 /**
  * This class is responsible for abstracting an ISidedInventory as a normal
@@ -28,24 +29,24 @@ import com.google.common.primitives.Ints;
 public final class SidedInventoryMinecraftAdapter implements IInventory {
 
 	public final ISidedInventory _sidedInventory;
-	private final int _side;
+	private final EnumFacing _side;
 	private final boolean _forExtraction;
 	private int[] _slotMapCache;
 
-	public SidedInventoryMinecraftAdapter(ISidedInventory sidedInventory, ForgeDirection side, boolean forExtraction) {
+	public SidedInventoryMinecraftAdapter(ISidedInventory sidedInventory, EnumFacing side, boolean forExtraction) {
 		_sidedInventory = sidedInventory;
-		_side = side.ordinal();
+		_side = side;
 		_forExtraction = forExtraction;
 	}
 
 	private int[] getSlotMap() {
 		if(_slotMapCache == null) {
-			if (_side == ForgeDirection.UNKNOWN.ordinal()) {
+			if (_side == null) {
 				_slotMapCache = buildAllSidedMap();
 			} else {
 				ArrayList<Integer> list = new ArrayList<>();
 
-				int allSlots[] = _sidedInventory.getAccessibleSlotsFromSide(_side);
+				int allSlots[] = _sidedInventory.getSlotsForFace(_side);
 				for (int number : allSlots) {
 					ItemStack item = _sidedInventory.getStackInSlot(number);
 					if (!list.contains(number) && (!_forExtraction || // check extract condition
@@ -62,12 +63,12 @@ public final class SidedInventoryMinecraftAdapter implements IInventory {
 	private int[] buildAllSidedMap() {
 		ArrayList<Integer> list = new ArrayList<>();
 
-		for (int i = 0; i < 6; i++) {
-			int slots[] = _sidedInventory.getAccessibleSlotsFromSide(i);
+		for (EnumFacing side:EnumFacing.VALUES) {
+			int slots[] = _sidedInventory.getSlotsForFace(side);
 			for (int number : slots) {
 				ItemStack item = _sidedInventory.getStackInSlot(number);
 				if (!list.contains(number) && (!_forExtraction || // check extract condition
-						(item != null && _sidedInventory.canExtractItem(number, item, i)))) {
+						(item != null && _sidedInventory.canExtractItem(number, item, side)))) {
 					list.add(number);
 				}
 			}
@@ -96,13 +97,13 @@ public final class SidedInventoryMinecraftAdapter implements IInventory {
 	}
 
 	@Override
-	public void setInventorySlotContents(int i, ItemStack itemstack) {
-		_sidedInventory.setInventorySlotContents(getSlotMap()[i], itemstack);
+	public ItemStack removeStackFromSlot(int index) {
+		return null;
 	}
 
 	@Override
-	public String getInventoryName() {
-		return _sidedInventory.getInventoryName();
+	public void setInventorySlotContents(int i, ItemStack itemstack) {
+		_sidedInventory.setInventorySlotContents(getSlotMap()[i], itemstack);
 	}
 
 	@Override
@@ -121,27 +122,52 @@ public final class SidedInventoryMinecraftAdapter implements IInventory {
 	}
 
 	@Override
-	public void openInventory() {
-		_sidedInventory.openInventory();
+	public void openInventory(EntityPlayer player) {
+		_sidedInventory.openInventory(player);
 	}
 
 	@Override
-	public void closeInventory() {
-		_sidedInventory.closeInventory();
-	}
-
-	@Override
-	public ItemStack getStackInSlotOnClosing(int slot) {
-		return _sidedInventory.getStackInSlotOnClosing(getSlotMap()[slot]);
-	}
-
-	@Override
-	public boolean hasCustomInventoryName() {
-		return _sidedInventory.hasCustomInventoryName();
+	public void closeInventory(EntityPlayer player) {
+		_sidedInventory.closeInventory(player);
 	}
 
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack itemstack) {
 		return _sidedInventory.isItemValidForSlot(getSlotMap()[slot], itemstack) && _sidedInventory.canInsertItem(getSlotMap()[slot], itemstack, _side);
+	}
+
+	@Override
+	public int getField(int id) {
+		return _sidedInventory.getField(id);
+	}
+
+	@Override
+	public void setField(int id, int value) {
+		_sidedInventory.setField(id, value);
+	}
+
+	@Override
+	public int getFieldCount() {
+		return _sidedInventory.getFieldCount();
+	}
+
+	@Override
+	public void clear() {
+		_sidedInventory.clear();
+	}
+
+	@Override
+	public String getName() {
+		return _sidedInventory.getName();
+	}
+
+	@Override
+	public boolean hasCustomName() {
+		return _sidedInventory.hasCustomName();
+	}
+
+	@Override
+	public IChatComponent getDisplayName() {
+		return _sidedInventory.getDisplayName();
 	}
 }

@@ -78,7 +78,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper.AdjacentTileEntity;
@@ -156,7 +156,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(container);
 
 		//@formatter:off
-		Iterator<Pair<IInventoryUtil, ForgeDirection>> iterator = worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
+		Iterator<Pair<IInventoryUtil, EnumFacing>> iterator = worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
 				.filter(adjacent -> adjacent.tileEntity instanceof IInventory)
 				.filter(adjacent -> SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.tileEntity))
 				.map(adjacent -> new Pair<>(getAdaptedInventoryUtil(adjacent), adjacent.direction))
@@ -164,7 +164,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		//@formatter:on
 
 		while (iterator.hasNext()) {
-			Pair<IInventoryUtil, ForgeDirection> next = iterator.next();
+			Pair<IInventoryUtil, EnumFacing> next = iterator.next();
 			int available = next.getValue1().itemCount(item);
 			if (available == 0) {
 				continue;

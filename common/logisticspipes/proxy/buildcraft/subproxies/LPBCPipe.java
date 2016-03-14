@@ -15,7 +15,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import buildcraft.api.core.IIconProvider;
 import buildcraft.api.statements.IActionInternal;
@@ -39,7 +39,7 @@ public class LPBCPipe extends Pipe<LPBCPipeTransportsItems> implements IBCPipePa
 	}
 
 	@Override
-	public int getIconIndex(ForgeDirection direction) {
+	public int getIconIndex(EnumFacing direction) {
 		return 0;
 	}
 
@@ -94,7 +94,7 @@ public class LPBCPipe extends Pipe<LPBCPipeTransportsItems> implements IBCPipePa
 	}
 
 	@Override
-	public boolean canPipeConnect(TileEntity tile, ForgeDirection side) {
+	public boolean canPipeConnect(TileEntity tile, EnumFacing side) {
 		return pipe.canPipeConnect(tile, side);
 	}
 }

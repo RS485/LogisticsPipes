@@ -8,7 +8,7 @@ import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipe
 
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public class PipeInformationManager {
 
@@ -48,7 +48,7 @@ public class PipeInformationManager {
 		infoProvider.put(source, provider);
 	}
 
-	public boolean canConnect(IPipeInformationProvider startPipe, IPipeInformationProvider provider, ForgeDirection direction, boolean flag) {
+	public boolean canConnect(IPipeInformationProvider startPipe, IPipeInformationProvider provider, EnumFacing direction, boolean flag) {
 		return startPipe.canConnect(provider.getTile(), direction, flag) && provider.canConnect(startPipe.getTile(), direction.getOpposite(), flag);
 	}
 

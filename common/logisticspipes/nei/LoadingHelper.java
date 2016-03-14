@@ -2,7 +2,7 @@ package logisticspipes.nei;
 
 import logisticspipes.config.Configs;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import codechicken.nei.guihook.GuiContainerManager;
 

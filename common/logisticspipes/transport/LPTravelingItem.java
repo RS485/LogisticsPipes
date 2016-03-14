@@ -22,6 +22,7 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.routing.IRouterManager;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.order.IDistanceTracker;
+import logisticspipes.utils.EnumFacingUtil;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.SlidingWindowBitSet;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -36,7 +37,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.FluidStack;
 
 import lombok.Getter;
@@ -58,15 +59,15 @@ public abstract class LPTravelingItem {
 	protected TileEntity container;
 	protected float position = 0;
 	protected float yaw = 0;
-	public ForgeDirection input = ForgeDirection.UNKNOWN;
-	public ForgeDirection output = ForgeDirection.UNKNOWN;
-	public final EnumSet<ForgeDirection> blacklist = EnumSet.noneOf(ForgeDirection.class);
+	public EnumFacing input = null;
+	public EnumFacing output = null;
+	public final EnumSet<EnumFacing> blacklist = EnumSet.noneOf(EnumFacing.class);
 
 	public LPTravelingItem() {
 		id = getNextId();
 	}
 
-	public LPTravelingItem(int id, float position, ForgeDirection input, ForgeDirection output, float yaw) {
+	public LPTravelingItem(int id, float position, EnumFacing input, EnumFacing output, float yaw) {
 		this.id = id;
 		this.position = position;
 		this.input = input;
@@ -143,7 +144,7 @@ public abstract class LPTravelingItem {
 		private int age;
 		private float hoverStart = (float) (Math.random() * Math.PI * 2.0D);
 
-		public LPTravelingItemClient(int id, float position, ForgeDirection input, ForgeDirection output, float yaw) {
+		public LPTravelingItemClient(int id, float position, EnumFacing input, EnumFacing output, float yaw) {
 			super(id, position, input, output, yaw);
 		}
 
@@ -157,7 +158,7 @@ public abstract class LPTravelingItem {
 			return item;
 		}
 
-		public void updateInformation(ForgeDirection input, ForgeDirection output, float speed, float position, float yaw) {
+		public void updateInformation(EnumFacing input, EnumFacing output, float speed, float position, float yaw) {
 			this.input = input;
 			this.output = output;
 			this.speed = speed;
@@ -227,8 +228,8 @@ public abstract class LPTravelingItem {
 		public void readFromNBT(NBTTagCompound data) {
 			setPosition(data.getFloat("position"));
 			setSpeed(data.getFloat("speed"));
-			input = ForgeDirection.getOrientation(data.getInteger("input"));
-			output = ForgeDirection.getOrientation(data.getInteger("output"));
+			input = EnumFacingUtil.getOrientation(data.getInteger("input"));
+			output = EnumFacingUtil.getOrientation(data.getInteger("output"));
 			info.readFromNBT(data);
 		}
 
@@ -244,7 +245,7 @@ public abstract class LPTravelingItem {
 		}
 
 		public EntityItem toEntityItem() {
-			World worldObj = container.getWorldObj();
+			World worldObj = container.getWorld();
 			if (MainProxy.isServer(worldObj)) {
 				if (getItemIdentifierStack().getStackSize() <= 0) {
 					return null;
@@ -255,12 +256,12 @@ public abstract class LPTravelingItem {
 					return null;
 				}
 
-				ForgeDirection exitdirection = output;
-				if (exitdirection == ForgeDirection.UNKNOWN) {
+				EnumFacing exitdirection = output;
+				if (exitdirection == null) {
 					exitdirection = input;
 				}
 
-				DoubleCoordinates position = new DoubleCoordinates(container.xCoord + 0.5, container.yCoord + 0.375, container.zCoord + 0.5);
+				DoubleCoordinates position = new DoubleCoordinates(container).add(new DoubleCoordinates(0.5, 0.375, 0.5));
 
 				switch (exitdirection) {
 					case DOWN:
@@ -275,7 +276,6 @@ public abstract class LPTravelingItem {
 					case EAST:
 						CoordinateUtils.add(position, exitdirection, 0.625);
 						break;
-					case UNKNOWN:
 					default:
 						break;
 				}
@@ -318,7 +318,7 @@ public abstract class LPTravelingItem {
 
 		public void itemWasLost() {
 			if (container != null) {
-				if (MainProxy.isClient(container.getWorldObj())) {
+				if (MainProxy.isClient(container.getWorld())) {
 					return;
 				}
 			}
@@ -376,7 +376,7 @@ public abstract class LPTravelingItem {
 		}
 
 		@Override
-		public void split(int itemsToTake, ForgeDirection orientation) {
+		public void split(int itemsToTake, EnumFacing orientation) {
 			if (getItemIdentifierStack().getItem().isFluidContainer()) {
 				throw new UnsupportedOperationException("Can't split up a FluidContainer");
 			}

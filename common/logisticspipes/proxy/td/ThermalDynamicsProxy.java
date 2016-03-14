@@ -10,10 +10,10 @@ import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import cofh.repack.codechicken.lib.render.CCRenderState;
 import cofh.repack.codechicken.lib.render.uv.IconTransformation;
@@ -50,7 +50,7 @@ public class ThermalDynamicsProxy implements ITDProxy {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void renderPipeConnections(LogisticsTileGenericPipe pipeTile, RenderBlocks renderer) {
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing dir : EnumFacing.VALUES) {
 			if (pipeTile.renderState.pipeConnectionMatrix.isTDConnected(dir)) {
 				IconTransformation texture = connectionTextureBasic;
 				if (pipeTile.renderState.textureMatrix.isRouted()) {
@@ -81,7 +81,7 @@ public class ThermalDynamicsProxy implements ITDProxy {
 	}
 
 	@Override
-	public boolean isBlockedSide(TileEntity with, ForgeDirection opposite) {
+	public boolean isBlockedSide(TileEntity with, EnumFacing opposite) {
 		if (!(with instanceof TileItemDuct)) {
 			return false;
 		}

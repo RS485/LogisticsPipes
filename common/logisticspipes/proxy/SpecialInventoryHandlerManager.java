@@ -7,7 +7,7 @@ import logisticspipes.proxy.specialinventoryhandler.DSUInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.JABBAInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.StorageDrawersInventoryHandler;
 
-import cpw.mods.fml.common.Loader;
+import net.minecraftforge.fml.common.Loader;
 
 public class SpecialInventoryHandlerManager {
 

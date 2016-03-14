@@ -27,10 +27,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -42,14 +42,14 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 	public enum CurveSOrientation implements ITubeOrientation {
 		//@formatter:off
 		// Name: Placement from  _ TurnDirection
-		NORTH_EAST(TurnSDirection.NORTH_INV, new DoubleCoordinates(0, 0, 0), ForgeDirection.NORTH, ForgeDirection.EAST),
-		NORTH_WEST(TurnSDirection.NORTH, new DoubleCoordinates(0, 0, 0), ForgeDirection.NORTH, ForgeDirection.WEST),
-		EAST_SOUTH(TurnSDirection.EAST_INV, new DoubleCoordinates(0, 0, 0), ForgeDirection.EAST, ForgeDirection.SOUTH),
-		EAST_NORTH(TurnSDirection.EAST, new DoubleCoordinates(0, 0, 0), ForgeDirection.EAST, ForgeDirection.NORTH),
-		SOUTH_WEST(TurnSDirection.NORTH_INV, new DoubleCoordinates(-1, 0, 3), ForgeDirection.SOUTH, ForgeDirection.WEST),
-		SOUTH_EAST(TurnSDirection.NORTH, new DoubleCoordinates(1, 0, 3), ForgeDirection.SOUTH, ForgeDirection.EAST),
-		WEST_NORTH(TurnSDirection.EAST_INV, new DoubleCoordinates(-3, 0, -1), ForgeDirection.WEST, ForgeDirection.NORTH),
-		WEST_SOUTH(TurnSDirection.EAST, new DoubleCoordinates(-3, 0, 1), ForgeDirection.WEST, ForgeDirection.SOUTH);
+		NORTH_EAST(TurnSDirection.NORTH_INV, new DoubleCoordinates(0, 0, 0), EnumFacing.NORTH, EnumFacing.EAST),
+		NORTH_WEST(TurnSDirection.NORTH, new DoubleCoordinates(0, 0, 0), EnumFacing.NORTH, EnumFacing.WEST),
+		EAST_SOUTH(TurnSDirection.EAST_INV, new DoubleCoordinates(0, 0, 0), EnumFacing.EAST, EnumFacing.SOUTH),
+		EAST_NORTH(TurnSDirection.EAST, new DoubleCoordinates(0, 0, 0), EnumFacing.EAST, EnumFacing.NORTH),
+		SOUTH_WEST(TurnSDirection.NORTH_INV, new DoubleCoordinates(-1, 0, 3), EnumFacing.SOUTH, EnumFacing.WEST),
+		SOUTH_EAST(TurnSDirection.NORTH, new DoubleCoordinates(1, 0, 3), EnumFacing.SOUTH, EnumFacing.EAST),
+		WEST_NORTH(TurnSDirection.EAST_INV, new DoubleCoordinates(-3, 0, -1), EnumFacing.WEST, EnumFacing.NORTH),
+		WEST_SOUTH(TurnSDirection.EAST, new DoubleCoordinates(-3, 0, 1), EnumFacing.WEST, EnumFacing.SOUTH);
 		//@formatter:on
 
 		@Getter
@@ -57,9 +57,9 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 		@Getter
 		DoubleCoordinates offset;
 		@Getter
-		ForgeDirection dir;
+		EnumFacing dir;
 		@Getter
-		ForgeDirection looking;
+		EnumFacing looking;
 
 		@Override
 		public void rotatePositions(IPositionRotateble set) {
@@ -75,14 +75,14 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 	@AllArgsConstructor
 	public enum TurnSDirection implements ITubeRenderOrientation {
 		//@formatter:off
-		NORTH(ForgeDirection.NORTH),
-		EAST(ForgeDirection.EAST),
-		NORTH_INV(ForgeDirection.SOUTH),
-		EAST_INV(ForgeDirection.WEST);
+		NORTH(EnumFacing.NORTH),
+		EAST(EnumFacing.EAST),
+		NORTH_INV(EnumFacing.SOUTH),
+		EAST_INV(EnumFacing.WEST);
 		//@formatter:on
 
 		@Getter
-		private ForgeDirection dir1;
+		private EnumFacing dir1;
 
 		public void rotatePositions(IPositionRotateble set) {
 			if (this == NORTH) {
@@ -123,7 +123,7 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public int getIconIndex(ForgeDirection direction) {
+	public int getIconIndex(EnumFacing direction) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -237,35 +237,35 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 		if (w < 0) {
 			w += 2 * Math.PI;
 		}
-		ForgeDirection dir = ForgeDirection.UNKNOWN;
-		ForgeDirection dir1 = ForgeDirection.UNKNOWN;
-		ForgeDirection dir2 = ForgeDirection.UNKNOWN;
+		EnumFacing dir = null;
+		EnumFacing dir1 = null;
+		EnumFacing dir2 = null;
 		double addition = 0;
 		if (0 < w && w <= halfPI) {
-			dir = ForgeDirection.EAST;
-			dir1 = ForgeDirection.NORTH;
-			dir2 = ForgeDirection.SOUTH;
+			dir = EnumFacing.EAST;
+			dir1 = EnumFacing.NORTH;
+			dir2 = EnumFacing.SOUTH;
 			addition = halfPI;
 		} else if (halfPI < w && w <= 2 * halfPI) {
-			dir = ForgeDirection.NORTH;
-			dir1 = ForgeDirection.EAST;
-			dir2 = ForgeDirection.WEST;
+			dir = EnumFacing.NORTH;
+			dir1 = EnumFacing.EAST;
+			dir2 = EnumFacing.WEST;
 		} else if (2 * halfPI < w && w <= 3 * halfPI) {
-			dir = ForgeDirection.WEST;
-			dir1 = ForgeDirection.NORTH;
-			dir2 = ForgeDirection.SOUTH;
+			dir = EnumFacing.WEST;
+			dir1 = EnumFacing.NORTH;
+			dir2 = EnumFacing.SOUTH;
 			addition = halfPI;
 		} else if (3 * halfPI < w && w <= 4 * halfPI) {
-			dir = ForgeDirection.SOUTH;
-			dir1 = ForgeDirection.EAST;
-			dir2 = ForgeDirection.WEST;
+			dir = EnumFacing.SOUTH;
+			dir1 = EnumFacing.EAST;
+			dir2 = EnumFacing.WEST;
 		}
 		w = Math.atan2(player.getLookVec().xCoord, player.getLookVec().zCoord);
 		w -= addition;
 		if (w < 0) {
 			w += 2 * Math.PI;
 		}
-		ForgeDirection dir3 = ForgeDirection.UNKNOWN;
+		EnumFacing dir3 = null;
 		if (0 < w && w <= 2 * halfPI) {
 			dir3 = dir1;
 		} else if (2 * halfPI < w && w <= 4 * halfPI) {
@@ -299,7 +299,7 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public ForgeDirection getExitForInput(ForgeDirection commingFrom) {
+	public EnumFacing getExitForInput(EnumFacing commingFrom) {
 		if (orientation.dir.getOpposite() == commingFrom) {
 			return orientation.dir;
 		}
@@ -310,7 +310,7 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public TileEntity getConnectedEndTile(ForgeDirection output) {
+	public TileEntity getConnectedEndTile(EnumFacing output) {
 		boolean useOwn;
 		if(orientation.getOffset().getLength() != 0) {
 			if (orientation.dir.getOpposite() == output) {

@@ -29,7 +29,7 @@ import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidHandler;
@@ -48,7 +48,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	}
 
 	@Override
-	public boolean logisitcsIsPipeConnected(TileEntity tile, ForgeDirection dir) {
+	public boolean logisitcsIsPipeConnected(TileEntity tile, EnumFacing dir) {
 		if(SimpleServiceLocator.enderIOProxy.isBundledPipe(tile)) {
 			return SimpleServiceLocator.enderIOProxy.isFluidConduit(tile, dir.getOpposite());
 		}
@@ -69,14 +69,14 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	}
 
 	@Override
-	public TextureType getNonRoutedTexture(ForgeDirection connection) {
+	public TextureType getNonRoutedTexture(EnumFacing connection) {
 		if (isFluidSidedTexture(connection)) {
 			return Textures.LOGISTICSPIPE_LIQUID_TEXTURE;
 		}
 		return super.getNonRoutedTexture(connection);
 	}
 
-	private boolean isFluidSidedTexture(ForgeDirection connection) {
+	private boolean isFluidSidedTexture(EnumFacing connection) {
 		TileEntity tileEntity = new WorldCoordinatesWrapper(container).getAdjacentFromDirection(connection).tileEntity;
 		if (tileEntity instanceof IFluidHandler) {
 			IFluidHandler liq = (IFluidHandler) tileEntity;
@@ -98,7 +98,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	 *            Weather to list a Nearby Pipe or not
 	 */
 
-	public final List<Pair<TileEntity, ForgeDirection>> getAdjacentTanks(boolean flag) {
+	public final List<Pair<TileEntity, EnumFacing>> getAdjacentTanks(boolean flag) {
 		return new WorldCoordinatesWrapper(container).getAdjacentTileEntities()
 				.filter(adjacent -> isConnectableTank(adjacent.tileEntity, adjacent.direction, flag))
 				.map(adjacent -> new Pair<>(adjacent.tileEntity, adjacent.direction)).collect(Collectors.toList());
@@ -114,7 +114,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	 *            Weather to list a Nearby Pipe or not
 	 */
 
-	public final boolean isConnectableTank(TileEntity tile, ForgeDirection dir, boolean flag) {
+	public final boolean isConnectableTank(TileEntity tile, EnumFacing dir, boolean flag) {
 		if (SimpleServiceLocator.specialTankHandler.hasHandlerFor(tile)) {
 			return true;
 		}
@@ -143,8 +143,8 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 		super.enabledUpdateEntity();
 		if (canInsertFromSideToTanks()) {
 			int validDirections = 0;
-			List<Pair<TileEntity, ForgeDirection>> list = getAdjacentTanks(true);
-			for (Pair<TileEntity, ForgeDirection> pair : list) {
+			List<Pair<TileEntity, EnumFacing>> list = getAdjacentTanks(true);
+			for (Pair<TileEntity, EnumFacing> pair : list) {
 				if (pair.getValue1() instanceof LogisticsTileGenericPipe) {
 					if (((LogisticsTileGenericPipe) pair.getValue1()).pipe instanceof CoreRoutedPipe) {
 						continue;
@@ -174,7 +174,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 			if (stack == null) {
 				return;
 			}
-			for (Pair<TileEntity, ForgeDirection> pair : list) {
+			for (Pair<TileEntity, EnumFacing> pair : list) {
 				if (pair.getValue1() instanceof LogisticsTileGenericPipe) {
 					if (((LogisticsTileGenericPipe) pair.getValue1()).pipe instanceof CoreRoutedPipe) {
 						continue;
@@ -232,11 +232,11 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 			int filled = 0;
 			FluidStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(arrivingItem.getItemIdentifierStack());
 			if (isConnectableTank(tile, arrivingItem.output, false)) {
-				List<Pair<TileEntity, ForgeDirection>> adjTanks = getAdjacentTanks(false);
+				List<Pair<TileEntity, EnumFacing>> adjTanks = getAdjacentTanks(false);
 				//Try to put liquid into all adjacent tanks.
-				for (Pair<TileEntity, ForgeDirection> pair : adjTanks) {
+				for (Pair<TileEntity, EnumFacing> pair : adjTanks) {
 					IFluidHandler tank = (IFluidHandler) pair.getValue1();
-					ForgeDirection dir = pair.getValue2();
+					EnumFacing dir = pair.getValue2();
 					filled = tank.fill(dir.getOpposite(), liquid.copy(), true);
 					liquid.amount -= filled;
 					if (liquid.amount != 0) {
@@ -296,7 +296,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 
 	public List<TileEntity> getAllTankTiles() {
 		List<TileEntity> list = new ArrayList<>();
-		for (Pair<TileEntity, ForgeDirection> pair : getAdjacentTanks(false)) {
+		for (Pair<TileEntity, EnumFacing> pair : getAdjacentTanks(false)) {
 			list.addAll(SimpleServiceLocator.specialTankHandler.getBaseTileFor(pair.getValue1()));
 		}
 		return list;

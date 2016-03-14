@@ -1,6 +1,6 @@
 package logisticspipes.asm.enderio;
 
-import cpw.mods.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import logisticspipes.LPConstants;
 import logisticspipes.asm.util.ASMHelper;
 import org.objectweb.asm.ClassReader;

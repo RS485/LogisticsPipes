@@ -27,7 +27,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
@@ -128,7 +128,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 				.map(adjacent -> new Pair<>((IFluidHandler) adjacent.tileEntity, adjacent.direction))
 		//@formatter:on
 				.forEach(fluidHandlerDirectionPair -> {
-					FluidTankInfo[] tankInfo = fluidHandlerDirectionPair.getValue1().getTankInfo(ForgeDirection.UNKNOWN);
+					FluidTankInfo[] tankInfo = fluidHandlerDirectionPair.getValue1().getTankInfo(null);
 					if (tankInfo == null || tankInfo.length == 0) {
 						return;
 					}
@@ -141,7 +141,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 					//How much do I have?
 					HashMap<FluidIdentifier, Integer> haveFluids = new HashMap<>();
 
-					FluidTankInfo[] result = container.getTankInfo(ForgeDirection.UNKNOWN);
+					FluidTankInfo[] result = container.getTankInfo(null);
 					for (FluidTankInfo slot : result) {
 						if (slot == null || slot.fluid == null || slot.fluid.getFluidID() == 0 || !wantFluids.containsKey(FluidIdentifier.get(slot.fluid))) {
 							continue;

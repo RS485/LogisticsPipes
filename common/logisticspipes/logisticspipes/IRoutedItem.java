@@ -19,7 +19,7 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 
 import net.minecraft.nbt.NBTTagCompound;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 /**
  * This interface describes the actions that must be available on an item that
@@ -80,5 +80,5 @@ public interface IRoutedItem {
 
 	public ItemRoutingInformation getInfo();
 
-	void split(int itemsToTake, ForgeDirection orientation);
+	void split(int itemsToTake, EnumFacing orientation);
 }

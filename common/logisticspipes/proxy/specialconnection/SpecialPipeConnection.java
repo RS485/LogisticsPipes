@@ -8,7 +8,7 @@ import logisticspipes.interfaces.routing.ISpecialPipedConnection;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,7 +23,7 @@ public class SpecialPipeConnection {
 		}
 	}
 
-	public List<ConnectionInformation> getConnectedPipes(IPipeInformationProvider startPipe, EnumSet<PipeRoutingConnectionType> connection, ForgeDirection side) {
+	public List<ConnectionInformation> getConnectedPipes(IPipeInformationProvider startPipe, EnumSet<PipeRoutingConnectionType> connection, EnumFacing side) {
 		for (ISpecialPipedConnection connectionHandler : handler) {
 			if (connectionHandler.isType(startPipe)) {
 				return connectionHandler.getConnections(startPipe, connection, side);
@@ -38,8 +38,8 @@ public class SpecialPipeConnection {
 
 		private IPipeInformationProvider connectedPipe;
 		private EnumSet<PipeRoutingConnectionType> connectionFlags;
-		private ForgeDirection insertOrientation;
-		private ForgeDirection exitOrientation;
+		private EnumFacing insertOrientation;
+		private EnumFacing exitOrientation;
 		private double distance;
 	}
 }

@@ -22,6 +22,8 @@ import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
 
+import java.io.IOException;
+
 public class GuiFluidSupplierMk2Pipe extends LogisticsBaseGuiScreen {
 
 	private static final String PREFIX = "gui.fluidsuppliermk2.";
@@ -46,14 +48,14 @@ public class GuiFluidSupplierMk2Pipe extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		mc.fontRenderer.drawString(StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "TargetInv"), xSize / 2 - mc.fontRenderer.getStringWidth(StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "TargetInv")) / 2, 6, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "Inventory"), 15, ySize - 95, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "Fluid") + ":", 25, 22, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "Partial") + ":", xSize - 176, ySize - 109, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "minMode") + ":", xSize - 108, ySize - 109, 0x404040);
-		mc.fontRenderer.drawString(Integer.toString(logic.getAmount()), xSize / 2, 22, 0x404040);
-		mc.fontRenderer.drawString("+", 32, 39, 0x404040);
-		mc.fontRenderer.drawString("-", 32, 50, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "TargetInv"), xSize / 2 - mc.fontRendererObj.getStringWidth(StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "TargetInv")) / 2, 6, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "Inventory"), 15, ySize - 95, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "Fluid") + ":", 25, 22, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "Partial") + ":", xSize - 176, ySize - 109, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "minMode") + ":", xSize - 108, ySize - 109, 0x404040);
+		mc.fontRendererObj.drawString(Integer.toString(logic.getAmount()), xSize / 2, 22, 0x404040);
+		mc.fontRendererObj.drawString("+", 32, 39, 0x404040);
+		mc.fontRendererObj.drawString("-", 32, 50, 0x404040);
 	}
 
 	@Override
@@ -86,7 +88,7 @@ public class GuiFluidSupplierMk2Pipe extends LogisticsBaseGuiScreen {
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton guibutton) {
+	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		if (guibutton.id == 0) {
 			logic.setRequestingPartials(!logic.isRequestingPartials());
 			((GuiButton) buttonList.get(0)).displayString = logic.isRequestingPartials() ? StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "Yes") : StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "No");

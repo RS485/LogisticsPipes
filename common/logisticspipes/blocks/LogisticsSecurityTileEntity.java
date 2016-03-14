@@ -43,7 +43,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implements IGuiOpenControler, ISecurityProvider, IGuiTileEntity {
 
@@ -325,7 +325,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 
 	private boolean useEnergy(int amount) {
 		for (int i = 0; i < 4; i++) {
-			TileEntity tile = OrientationsUtil.getTileNextToThis(this, ForgeDirection.VALID_DIRECTIONS[i + 2]);
+			TileEntity tile = OrientationsUtil.getTileNextToThis(this, EnumFacing.VALUES[i + 2]);
 			if (tile instanceof IRoutedPowerProvider) {
 				if (((IRoutedPowerProvider) tile).useEnergy(amount)) {
 					return true;
@@ -349,7 +349,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 	}
 
 	public World getWorld() {
-		return getWorldObj();
+		return getWorld();
 	}
 
 	@Override

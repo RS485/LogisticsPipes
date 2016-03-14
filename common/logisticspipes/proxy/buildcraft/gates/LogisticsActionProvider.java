@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import buildcraft.api.statements.IActionExternal;
 import buildcraft.api.statements.IActionInternal;
@@ -33,7 +33,7 @@ public class LogisticsActionProvider implements IActionProvider {
 
 		ArrayList<DockingStation> stations = new ArrayList<DockingStation>();
 
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing dir : EnumFacing.VALUES) {
 			if (RobotUtils.getStation((IPipeTile) tile, dir) != null) {
 				DockingStation station = RobotUtils.getStation((IPipeTile) tile, dir);
 				if(!station.isTaken()) continue;
@@ -51,7 +51,7 @@ public class LogisticsActionProvider implements IActionProvider {
 	}
 
 	@Override
-	public Collection<IActionExternal> getExternalActions(ForgeDirection side, TileEntity tile) {
+	public Collection<IActionExternal> getExternalActions(EnumFacing side, TileEntity tile) {
 		return null;
 	}
 

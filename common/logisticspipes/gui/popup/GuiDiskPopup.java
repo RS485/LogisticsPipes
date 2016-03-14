@@ -92,7 +92,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 	@Override
 	protected void renderGuiBackground(int par1, int par2) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		mc.fontRenderer.drawStringWithShadow("Disk", xCenter - (mc.fontRenderer.getStringWidth("Disk") / 2), guiTop + 10, 0xFFFFFF);
+		mc.fontRendererObj.drawStringWithShadow("Disk", xCenter - (mc.fontRendererObj.getStringWidth("Disk") / 2), guiTop + 10, 0xFFFFFF);
 
 		//NameInput
 		if (editname) {
@@ -103,7 +103,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 		}
 		Gui.drawRect(guiLeft + 12, guiTop + 30, right - 12, guiTop + 43, Color.getValue(Color.DARKER_GREY));
 
-		mc.fontRenderer.drawString(name1 + name2, guiLeft + 15, guiTop + 33, 0xFFFFFF);
+		mc.fontRendererObj.drawString(name1 + name2, guiLeft + 15, guiTop + 33, 0xFFFFFF);
 
 		Gui.drawRect(guiLeft + 6, guiTop + 46, right - 6, bottom - 30, Color.getValue(Color.GREY));
 
@@ -140,7 +140,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 			}
 			NBTTagCompound entry = list.getCompoundTagAt(i);
 			String name = entry.getString("name");
-			mc.fontRenderer.drawString(name, guiLeft + 10, guiTop + 50 + ((i - scroll) * 10), 0xFFFFFF);
+			mc.fontRendererObj.drawString(name, guiLeft + 10, guiTop + 50 + ((i - scroll) * 10), 0xFFFFFF);
 		}
 
 		if (!flag) {
@@ -148,7 +148,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 		}
 
 		if (editname) {
-			int linex = guiLeft + 15 + mc.fontRenderer.getStringWidth(name1);
+			int linex = guiLeft + 15 + mc.fontRendererObj.getStringWidth(name1);
 			if (System.currentTimeMillis() - oldSystemTime > 500) {
 				displaycursor = !displaycursor;
 				oldSystemTime = System.currentTimeMillis();
@@ -253,7 +253,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 				}
 				return;
 			} else if (Character.isLetterOrDigit(c) || c == ' ') {
-				if (mc.fontRenderer.getStringWidth(name1 + c + name2) <= searchWidth) {
+				if (mc.fontRendererObj.getStringWidth(name1 + c + name2) <= searchWidth) {
 					name1 += c;
 				}
 				return;

@@ -22,7 +22,7 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
@@ -198,7 +198,7 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 		GL11.glColor4f(0.7F, 0.7F, 0.7F, 1.0F);
 		for (int yVar = 0; yVar * 16 - moveBackgroundY < zoom.bottomRenderBorder; yVar++) {
 			for (int xVar = 0; xVar * 16 - moveBackgroundX < zoom.rightRenderBorder; xVar++) {
-				IIcon icon = Blocks.stone.getIcon(0, 0);
+				TextureAtlasSprite icon = Blocks.stone.getIcon(0, 0);
 				mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
 				drawTexturedModelRectFromIcon(innerLeftSide + xVar * 16 - moveBackgroundX, innerTopSide + yVar * 16 - moveBackgroundY, icon, 16, 16);
 			}
@@ -385,7 +385,7 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 			renderitem.zLevel = 0.0F;
 			// Draw number
-			mc.fontRenderer.drawStringWithShadow(s, x + 17 - mc.fontRenderer.getStringWidth(s), y + 9, 16777215);
+			mc.fontRendererObj.drawStringWithShadow(s, x + 17 - mc.fontRendererObj.getStringWidth(s), y + 9, 16777215);
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 			GL11.glEnable(GL11.GL_LIGHTING);
 		}

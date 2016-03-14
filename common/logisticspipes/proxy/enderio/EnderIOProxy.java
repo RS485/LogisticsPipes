@@ -21,7 +21,7 @@ import crazypants.enderio.machine.transceiver.Channel;
 import crazypants.enderio.machine.transceiver.ChannelType;
 import crazypants.enderio.machine.transceiver.ServerChannelRegister;
 import crazypants.enderio.machine.transceiver.TileTransceiver;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public class EnderIOProxy implements IEnderIOProxy {
 
@@ -79,10 +79,10 @@ public class EnderIOProxy implements IEnderIOProxy {
 	}
 
 	@Override
-	public boolean isItemConduit(TileEntity tile, ForgeDirection dir) {
+	public boolean isItemConduit(TileEntity tile, EnumFacing dir) {
 		if(tile instanceof IConduitBundle) {
 			if(((IConduitBundle)tile).hasType(IItemConduit.class)) {
-				if(dir != ForgeDirection.UNKNOWN) {
+				if(dir != null) {
 					return ((IConduitBundle) tile).getConduit(IItemConduit.class).getConnectionMode(dir) != ConnectionMode.DISABLED;
 				}
 				return true;
@@ -92,10 +92,10 @@ public class EnderIOProxy implements IEnderIOProxy {
 	}
 
 	@Override
-	public boolean isFluidConduit(TileEntity tile, ForgeDirection dir) {
+	public boolean isFluidConduit(TileEntity tile, EnumFacing dir) {
 		if(tile instanceof IConduitBundle) {
 			if(((IConduitBundle)tile).hasType(ILiquidConduit.class)) {
-				if(dir != ForgeDirection.UNKNOWN) {
+				if(dir != null) {
 					return ((IConduitBundle) tile).getConduit(ILiquidConduit.class).getConnectionMode(dir) != ConnectionMode.DISABLED;
 				}
 				return true;

@@ -200,13 +200,13 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		drawRect(guiLeft + 164, guiTop + 25, guiLeft + 180, guiTop + 41, Color.DARKER_GREY);
 
 		if (showRequest) {
-			mc.fontRenderer.drawString(_title, guiLeft + 180 + mc.fontRenderer.getStringWidth(_title) / 2, guiTop + 6, 0x404040);
+			mc.fontRendererObj.drawString(_title, guiLeft + 180 + mc.fontRendererObj.getStringWidth(_title) / 2, guiTop + 6, 0x404040);
 			itemDisplay.renderPageNumber(right - 47, guiTop + 6);
 
 			if (buttonList.get(9) instanceof GuiCheckBox && ((GuiCheckBox) buttonList.get(9)).getState()) {
-				mc.fontRenderer.drawString("Popup", guiLeft + 225, bottom - 56, 0x404040);
+				mc.fontRendererObj.drawString("Popup", guiLeft + 225, bottom - 56, 0x404040);
 			} else {
-				mc.fontRenderer.drawString("Popup", guiLeft + 225, bottom - 56, Color.getValue(Color.GREY));
+				mc.fontRendererObj.drawString("Popup", guiLeft + 225, bottom - 56, Color.getValue(Color.GREY));
 			}
 
 			itemDisplay.renderAmount(right - 103, bottom - 24, getStackAmount());
@@ -227,7 +227,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 				GuiGraphics.drawSlotBackground(mc, guiLeft + (x * 18) + 19, guiTop + (y * 18) + 14);
 			}
 		}
-		mc.fontRenderer.drawString("Sort:", guiLeft + 136, guiTop + 55, 0xffffff);
+		mc.fontRendererObj.drawString("Sort:", guiLeft + 136, guiTop + 55, 0xffffff);
 		GuiGraphics.drawSlotBackground(mc, guiLeft + 100, guiTop + 32);
 		GuiGraphics.drawSlotBackground(mc, guiLeft + 163, guiTop + 50);
 		drawRect(guiLeft + 75, guiTop + 38, guiLeft + 95, guiTop + 43, Color.DARKER_GREY);
@@ -276,7 +276,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 						GuiScreen.itemRender.zLevel = 0.0F;
 
 						// Draw number
-						mc.fontRenderer.drawStringWithShadow(s, left + 22 - mc.fontRenderer.getStringWidth(s), top + 14, 16777215);
+						mc.fontRendererObj.drawStringWithShadow(s, left + 22 - mc.fontRendererObj.getStringWidth(s), top + 14, 16777215);
 						if (isFullyExtended()) {
 							if (localControlledButton == null || orderIdForButton != entry.getKey()) {
 								if (localControlledButton != null) {
@@ -289,7 +289,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 							List<IOrderInfoProvider> list = entry.getValue().getValue2().getList();
 							calculateSize(left, top, list);
 							String ident = "ID: " + Integer.toString(entry.getKey());
-							mc.fontRenderer.drawStringWithShadow(ident, left + 25, top + 7, 16777215);
+							mc.fontRendererObj.drawStringWithShadow(ident, left + 25, top + 7, 16777215);
 							int x = left + 6;
 							int y = top + 25;
 							for (IOrderInfoProvider order : list) {
@@ -308,7 +308,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 								GuiScreen.itemRender.zLevel = 0.0F;
 
 								// Draw number
-								mc.fontRenderer.drawStringWithShadow(s, x + 17 - mc.fontRenderer.getStringWidth(s), y + 9, 16777215);
+								mc.fontRendererObj.drawStringWithShadow(s, x + 17 - mc.fontRendererObj.getStringWidth(s), y + 9, 16777215);
 								ordererPosition.put(new Pair<>(x, y), order);
 								x += 18;
 								if (x > left + getFinalWidth() - 18) {

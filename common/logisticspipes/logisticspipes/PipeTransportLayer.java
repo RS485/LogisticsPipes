@@ -11,7 +11,7 @@ import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper.AdjacentTileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 /**
  * This class is responsible for handling incoming items for standard pipes
@@ -31,14 +31,14 @@ public class PipeTransportLayer extends TransportLayer {
 	}
 
 	@Override
-	public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection denyed) {
+	public EnumFacing itemArrived(IRoutedItem item, EnumFacing denyed) {
 		if (item.getItemIdentifierStack() != null) {
 			_trackStatistics.recievedItem(item.getItemIdentifierStack().getStackSize());
 		}
 
 		List<AdjacentTileEntity> adjacentEntities = new WorldCoordinatesWrapper(routedPipe.container)
 				.getConnectedAdjacentTileEntities(IPipeInformationProvider.ConnectionPipeType.ITEM).collect(Collectors.toList());
-		LinkedList<ForgeDirection> possibleForgeDirection = new LinkedList<>();
+		LinkedList<EnumFacing> possibleEnumFacing = new LinkedList<>();
 
 		// 1st prio, deliver to adjacent IInventories
 
@@ -60,10 +60,10 @@ public class PipeTransportLayer extends TransportLayer {
 				}
 			}
 
-			possibleForgeDirection.add(adjacent.direction);
+			possibleEnumFacing.add(adjacent.direction);
 		}
-		if (possibleForgeDirection.size() != 0) {
-			return possibleForgeDirection.get(routedPipe.getWorld().rand.nextInt(possibleForgeDirection.size()));
+		if (possibleEnumFacing.size() != 0) {
+			return possibleEnumFacing.get(routedPipe.getWorld().rand.nextInt(possibleEnumFacing.size()));
 		}
 
 		// 2nd prio, deliver to non-routed exit
@@ -79,15 +79,15 @@ public class PipeTransportLayer extends TransportLayer {
 				}
 			}
 
-			possibleForgeDirection.add(adjacent.direction);
+			possibleEnumFacing.add(adjacent.direction);
 		}
 		// 3rd prio, drop item
 
-		if (possibleForgeDirection.size() == 0) {
+		if (possibleEnumFacing.size() == 0) {
 			return null;
 		}
 
-		return possibleForgeDirection.get(routedPipe.getWorld().rand.nextInt(possibleForgeDirection.size()));
+		return possibleEnumFacing.get(routedPipe.getWorld().rand.nextInt(possibleEnumFacing.size()));
 	}
 
 	//Pipes are dumb and always want the item

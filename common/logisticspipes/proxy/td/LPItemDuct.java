@@ -16,7 +16,7 @@ import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import cofh.thermaldynamics.duct.Duct;
 import cofh.thermaldynamics.duct.TDDucts;
@@ -27,9 +27,9 @@ import cofh.thermaldynamics.multiblock.IMultiBlock;
 public class LPItemDuct extends TileItemDuct {
 
 	public final LogisticsTileGenericPipe pipe;
-	public final ForgeDirection dir;
+	public final EnumFacing dir;
 
-	public LPItemDuct(LogisticsTileGenericPipe pipe, ForgeDirection orientation) {
+	public LPItemDuct(LogisticsTileGenericPipe pipe, EnumFacing orientation) {
 		this.pipe = pipe;
 		dir = orientation;
 	}
@@ -53,7 +53,7 @@ public class LPItemDuct extends TileItemDuct {
 			info.setItem(ItemIdentifierStack.getFromStack(item.stack));
 			LPTravelingItemServer lpItem = new LPTravelingItemServer(info);
 			lpItem.setSpeed(info._transportMode == TransportMode.Active ? 0.3F : 0.2F);
-			pipe.pipe.transport.injectItem(lpItem, ForgeDirection.getOrientation(item.direction));
+			pipe.pipe.transport.injectItem(lpItem, EnumFacing.getOrientation(item.direction));
 		} else if (item.stack != null) {
 			int consumed = pipe.injectItem(item.stack, true, dir);
 			item.stack.stackSize -= consumed;
@@ -70,7 +70,7 @@ public class LPItemDuct extends TileItemDuct {
 	}
 
 	public boolean isLPBlockedSide(int paramInt, boolean ignoreSystemDisconnect) {
-		ForgeDirection dir = ForgeDirection.getOrientation(paramInt);
+		EnumFacing dir = EnumFacing.getOrientation(paramInt);
 		if (pipe.tilePart.hasBlockingPluggable(dir)) {
 			return true;
 		}
@@ -96,7 +96,7 @@ public class LPItemDuct extends TileItemDuct {
 
 	@Override
 	public IMultiBlock getConnectedSide(byte paramByte) {
-		if (ForgeDirection.getOrientation(paramByte) != dir) {
+		if (EnumFacing.getOrientation(paramByte) != dir) {
 			return null;
 		}
 		return super.getConnectedSide(paramByte);
@@ -104,7 +104,7 @@ public class LPItemDuct extends TileItemDuct {
 
 	@Override
 	public NeighborTypes getCachedSideType(byte paramByte) {
-		if (ForgeDirection.getOrientation(paramByte) != dir) {
+		if (EnumFacing.getOrientation(paramByte) != dir) {
 			return null;
 		}
 		return super.getCachedSideType(paramByte);
@@ -112,7 +112,7 @@ public class LPItemDuct extends TileItemDuct {
 
 	@Override
 	public ConnectionTypes getConnectionType(byte paramByte) {
-		if (ForgeDirection.getOrientation(paramByte) != dir) {
+		if (EnumFacing.getOrientation(paramByte) != dir) {
 			return null;
 		}
 		return super.getConnectionType(paramByte);
@@ -120,7 +120,7 @@ public class LPItemDuct extends TileItemDuct {
 
 	@Override
 	public IMultiBlock getCachedTile(byte paramByte) {
-		if (ForgeDirection.getOrientation(paramByte) != dir) {
+		if (EnumFacing.getOrientation(paramByte) != dir) {
 			return null;
 		}
 		return super.getCachedTile(paramByte);
@@ -128,7 +128,7 @@ public class LPItemDuct extends TileItemDuct {
 
 	@Override
 	public TileEntity getAdjTileEntitySafe(int ordinal) {
-		if (ForgeDirection.getOrientation(ordinal) != dir) {
+		if (EnumFacing.getOrientation(ordinal) != dir) {
 			return null;
 		}
 		return super.getAdjTileEntitySafe(ordinal);

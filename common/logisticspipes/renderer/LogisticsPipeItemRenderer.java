@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 import net.minecraftforge.client.IItemRenderer;
 
@@ -43,7 +43,7 @@ public class LogisticsPipeItemRenderer implements IItemRenderer {
 		Tessellator tessellator = Tessellator.instance;
 
 		Block block = LogisticsPipes.LogisticsPipeBlock;
-		IIcon icon = item.getItem().getIconFromDamage(0);
+		TextureAtlasSprite icon = item.getItem().getIconFromDamage(0);
 
 		if (icon == null) {
 			icon = ((TextureMap) Minecraft.getMinecraft().getTextureManager().getTexture(TextureMap.locationBlocksTexture)).getAtlasSprite("missingno");

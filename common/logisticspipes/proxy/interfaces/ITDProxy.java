@@ -7,10 +7,10 @@ import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public interface ITDProxy {
 
@@ -28,5 +28,5 @@ public interface ITDProxy {
 	@SideOnly(Side.CLIENT)
 	void registerTextures(IIconRegister iconRegister);
 
-	boolean isBlockedSide(TileEntity with, ForgeDirection opposite);
+	boolean isBlockedSide(TileEntity with, EnumFacing opposite);
 }

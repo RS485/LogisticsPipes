@@ -4,13 +4,13 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public class LogisticsInsertionInventory implements IInventory {
 	private final LogisticsTileGenericPipe pipe;
-	private final ForgeDirection from;
+	private final EnumFacing from;
 
-	public LogisticsInsertionInventory(LogisticsTileGenericPipe pipe, ForgeDirection from) {
+	public LogisticsInsertionInventory(LogisticsTileGenericPipe pipe, EnumFacing from) {
 		this.pipe = pipe;
 		this.from = from;
 	}

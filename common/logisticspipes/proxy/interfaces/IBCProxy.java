@@ -13,7 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public interface IBCProxy {
 
@@ -25,12 +25,12 @@ public interface IBCProxy {
 
 	void initProxy();
 
-	boolean checkForPipeConnection(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe);
+	boolean checkForPipeConnection(TileEntity with, EnumFacing side, LogisticsTileGenericPipe pipe);
 
-	IConnectionOverrideResult checkConnectionOverride(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe);
+	IConnectionOverrideResult checkConnectionOverride(TileEntity with, EnumFacing side, LogisticsTileGenericPipe pipe);
 
 	/** Only used by the BC proxy internaly */
-	boolean canPipeConnect(TileEntity pipe, TileEntity tile, ForgeDirection direction);
+	boolean canPipeConnect(TileEntity pipe, TileEntity tile, EnumFacing direction);
 
 	boolean isActive();
 
@@ -47,7 +47,7 @@ public interface IBCProxy {
 
 	Class<? extends ICraftingRecipeProvider> getAssemblyTableProviderClass();
 
-	void notifyOfChange(LogisticsTileGenericPipe logisticsTileGenericPipe, TileEntity tile, ForgeDirection o);
+	void notifyOfChange(LogisticsTileGenericPipe logisticsTileGenericPipe, TileEntity tile, EnumFacing o);
 
 	IBCTilePart getBCTilePart(LogisticsTileGenericPipe logisticsTileGenericPipe);
 

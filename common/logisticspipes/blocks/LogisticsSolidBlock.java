@@ -19,14 +19,14 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class LogisticsSolidBlock extends BlockContainer {
 
@@ -41,8 +41,8 @@ public class LogisticsSolidBlock extends BlockContainer {
 	public static final int LOGISTICS_RF_POWERPROVIDER = 11;
 	public static final int LOGISTICS_IC2_POWERPROVIDER = 12;
 
-	private static final IIcon[] icons = new IIcon[18];
-	private static final IIcon[] newTextures = new IIcon[10];
+	private static final TextureAtlasSprite[] icons = new TextureAtlasSprite[18];
+	private static final TextureAtlasSprite[] newTextures = new TextureAtlasSprite[10];
 
 	@Override
 	public boolean isOpaqueCube() {
@@ -50,7 +50,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 	}
 
 	@Override
-	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
+	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, EnumFacing side) {
 		return true;
 	}
 
@@ -135,7 +135,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 	}
 
 	@Override
-	public IIcon getIcon(int side, int meta) {
+	public TextureAtlasSprite getIcon(int side, int meta) {
 		return getRotatedTexture(meta, side, 2, 0);
 	}
 
@@ -180,7 +180,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIcon(IBlockAccess access, int x, int y, int z, int side) {
+	public TextureAtlasSprite getIcon(IBlockAccess access, int x, int y, int z, int side) {
 		int meta = access.getBlockMetadata(x, y, z);
 		TileEntity tile = access.getTileEntity(x, y, z);
 		if (tile instanceof IRotationProvider) {
@@ -208,7 +208,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 		LogisticsSolidBlock.newTextures[8] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/powerIC2Texture"); // LOGISTICS_IC2_POWERPROVIDER
 	}
 
-	private IIcon getRotatedTexture(int meta, int side, int rotation, int front) {
+	private TextureAtlasSprite getRotatedTexture(int meta, int side, int rotation, int front) {
 		switch (meta) {
 			case SOLDERING_STATION:
 				if (front == 0) {
@@ -331,7 +331,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 		}
 	}
 
-	public static IIcon getNewIcon(IBlockAccess access, int x, int y, int z) {
+	public static TextureAtlasSprite getNewIcon(IBlockAccess access, int x, int y, int z) {
 		int meta = access.getBlockMetadata(x, y, z);
 		if (meta == LogisticsSolidBlock.SOLDERING_STATION) {
 			TileEntity tile = access.getTileEntity(x, y, z);
@@ -344,7 +344,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 		return LogisticsSolidBlock.getNewIcon(meta);
 	}
 
-	public static IIcon getNewIcon(int meta) {
+	public static TextureAtlasSprite getNewIcon(int meta) {
 		switch (meta) {
 			case SOLDERING_STATION:
 				return LogisticsSolidBlock.newTextures[1];

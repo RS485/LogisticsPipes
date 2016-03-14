@@ -3,10 +3,10 @@ package logisticspipes.textures.provider;
 import logisticspipes.renderer.IIconProvider;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class LPActionTriggerIconProvider implements IIconProvider {
 
@@ -18,15 +18,15 @@ public class LPActionTriggerIconProvider implements IIconProvider {
 	public static int triggerHasDestinationIconIndex = 5;
 	public static int actionRobotRoutingIconIndex = 6;
 
-	private IIcon icons[];
+	private TextureAtlasSprite icons[];
 
 	public LPActionTriggerIconProvider() {
-		icons = new IIcon[7];
+		icons = new TextureAtlasSprite[7];
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIcon(int iconIndex) {
+	public TextureAtlasSprite getIcon(int iconIndex) {
 		if (iconIndex > 6) {
 			return null;
 		}

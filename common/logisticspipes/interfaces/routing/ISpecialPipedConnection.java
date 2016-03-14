@@ -7,7 +7,7 @@ import logisticspipes.proxy.specialconnection.SpecialPipeConnection.ConnectionIn
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public interface ISpecialPipedConnection {
 
@@ -15,5 +15,5 @@ public interface ISpecialPipedConnection {
 
 	public boolean isType(IPipeInformationProvider startPipe);
 
-	public List<ConnectionInformation> getConnections(IPipeInformationProvider startPipe, EnumSet<PipeRoutingConnectionType> connection, ForgeDirection side);
+	public List<ConnectionInformation> getConnections(IPipeInformationProvider startPipe, EnumSet<PipeRoutingConnectionType> connection, EnumFacing side);
 }

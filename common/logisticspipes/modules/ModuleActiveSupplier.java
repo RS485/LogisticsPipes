@@ -49,12 +49,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -155,7 +155,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
+	public TextureAtlasSprite getIconTexture(IIconRegister register) {
 		return register.registerIcon("logisticspipes:itemModule/ModuleActiveSupplier");
 	}
 
@@ -216,7 +216,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 				.filter(adjacent -> ((IInventory) adjacent.tileEntity).getSizeInventory() > 0)
 		//@formatter:on
 				.forEach(adjacent -> {
-					ForgeDirection direction = adjacent.direction;
+					EnumFacing direction = adjacent.direction;
 					if (_service.getUpgradeManager(slot, positionInt).hasSneakyUpgrade()) {
 						direction = _service.getUpgradeManager(slot, positionInt).getSneakyOrientation();
 					}

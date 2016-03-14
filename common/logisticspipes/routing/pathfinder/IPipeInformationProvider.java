@@ -13,7 +13,7 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public interface IPipeInformationProvider {
 
@@ -40,7 +40,7 @@ public interface IPipeInformationProvider {
 
 	CoreRoutedPipe getRoutingPipe();
 
-	TileEntity getNextConnectedTile(ForgeDirection direction);
+	TileEntity getNextConnectedTile(EnumFacing direction);
 
 	boolean isFirewallPipe();
 
@@ -54,9 +54,9 @@ public interface IPipeInformationProvider {
 
 	boolean isOnewayPipe();
 
-	boolean isOutputOpen(ForgeDirection direction);
+	boolean isOutputOpen(EnumFacing direction);
 
-	boolean canConnect(TileEntity to, ForgeDirection direction, boolean flag);
+	boolean canConnect(TileEntity to, EnumFacing direction, boolean flag);
 
 	double getDistance();
 
@@ -66,11 +66,11 @@ public interface IPipeInformationProvider {
 
 	boolean isPowerPipe();
 
-	double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double travled, double max, List<DoubleCoordinates> visited);
+	double getDistanceTo(int destinationint, EnumFacing ignore, ItemIdentifier ident, boolean isActive, double travled, double max, List<DoubleCoordinates> visited);
 
 	boolean acceptItem(LPTravelingItem item, TileEntity from);
 
-	void refreshTileCacheOnSide(ForgeDirection side);
+	void refreshTileCacheOnSide(EnumFacing side);
 
 	boolean isMultiBlock();
 

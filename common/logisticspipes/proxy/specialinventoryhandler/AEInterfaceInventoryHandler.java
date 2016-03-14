@@ -14,7 +14,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
@@ -37,12 +37,12 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	private final ITileStorageMonitorable tile;
 	private final boolean hideOnePerStack;
 	private final MachineSource source;
-	private final ForgeDirection dir;
+	private final EnumFacing dir;
 	public boolean init = false;
 	LinkedList<Entry<ItemIdentifier, Integer>> cached;
 
-	private AEInterfaceInventoryHandler(TileEntity tile, ForgeDirection dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
-		if (dir.equals(ForgeDirection.UNKNOWN)) {
+	private AEInterfaceInventoryHandler(TileEntity tile, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+		if (dir.equals(null)) {
 			throw new IllegalArgumentException("The direction must not be unknown");
 		}
 		this.tile = (ITileStorageMonitorable) tile;
@@ -55,7 +55,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		tile = null;
 		hideOnePerStack = false;
 		source = null;
-		dir = ForgeDirection.UNKNOWN;
+		dir = null;
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public SpecialInventoryHandler getUtilForTile(TileEntity tile, ForgeDirection dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+	public SpecialInventoryHandler getUtilForTile(TileEntity tile, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		return new AEInterfaceInventoryHandler(tile, dir, hideOnePerStack, hideOne, cropStart, cropEnd);
 	}
 
@@ -181,7 +181,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public ItemStack add(ItemStack stack, ForgeDirection from, boolean doAdd) {
+	public ItemStack add(ItemStack stack, EnumFacing from, boolean doAdd) {
 		ItemStack st = stack.copy();
 		IAEItemStack tst = AEApi.instance().storage().createItemStack(stack);
 
@@ -250,12 +250,12 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		public void securityBreak() {}
 
 		@Override
-		public IGridNode getGridNode(ForgeDirection paramForgeDirection) {
+		public IGridNode getGridNode(EnumFacing paramEnumFacing) {
 			return null;
 		}
 
 		@Override
-		public AECableType getCableConnectionType(ForgeDirection paramForgeDirection) {
+		public AECableType getCableConnectionType(EnumFacing paramEnumFacing) {
 			return null;
 		}
 

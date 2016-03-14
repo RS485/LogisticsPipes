@@ -119,7 +119,7 @@ public class Model3D implements IModel3D {
 
 			@Override
 			public AxisAlignedBB toAABB() {
-				return bounds.toAABB();
+				return bounds.aabb();
 			}
 		};
 	}
@@ -167,7 +167,7 @@ public class Model3D implements IModel3D {
 	public IBounds getBoundsInside(AxisAlignedBB boundingBox) {
 		Cuboid6 c = null;
 		for (Vertex5 v : model.verts) {
-			if (boundingBox.isVecInside(Vec3.createVectorHelper(v.vec.x, v.vec.y, v.vec.z))) {
+			if (boundingBox.isVecInside(new Vec3(v.vec.x, v.vec.y, v.vec.z))) {
 				if (c == null) {
 					c = new Cuboid6(v.vec.copy(), v.vec.copy());
 				} else {

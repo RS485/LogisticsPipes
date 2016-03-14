@@ -21,7 +21,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 import logisticspipes.utils.tuples.Pair;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public interface IRouter {
 
@@ -38,11 +38,11 @@ public interface IRouter {
 
 	public void updateInterests(); // calls getInterests on the attached pipe, and updates the global cache.
 
-	public boolean isRoutedExit(ForgeDirection connection);
+	public boolean isRoutedExit(EnumFacing connection);
 
-	public boolean isSubPoweredExit(ForgeDirection connection);
+	public boolean isSubPoweredExit(EnumFacing connection);
 
-	public int getDistanceToNextPowerPipe(ForgeDirection dir);
+	public int getDistanceToNextPowerPipe(EnumFacing dir);
 
 	public boolean hasRoute(int id, boolean active, ItemIdentifier type);
 
@@ -86,7 +86,7 @@ public interface IRouter {
 	public boolean checkAdjacentUpdate();
 
 	/* Automated Disconnection */
-	public boolean isSideDisconneceted(ForgeDirection dir);
+	public boolean isSideDisconneceted(EnumFacing dir);
 
 	public List<ExitRoute> getDistanceTo(IRouter r);
 
@@ -101,7 +101,7 @@ public interface IRouter {
 	//force-update LSA version in the network
 	public void forceLsaUpdate();
 
-	public List<ExitRoute> getRoutersOnSide(ForgeDirection direction);
+	public List<ExitRoute> getRoutersOnSide(EnumFacing direction);
 
 	public int getDimension();
 

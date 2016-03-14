@@ -21,8 +21,8 @@ import logisticspipes.utils.tuples.Pair;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 
 public class ClientPacketBufferHandlerThread {
 

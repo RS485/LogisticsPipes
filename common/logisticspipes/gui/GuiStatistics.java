@@ -1,5 +1,6 @@
 package logisticspipes.gui;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -177,7 +178,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 					GL11.glDisable(GL11.GL_LIGHTING);
 					GL11.glDisable(GL11.GL_DEPTH_TEST);
 					GuiScreen.itemRender.zLevel = 0.0F;
-					mc.fontRenderer.drawString(StringUtils.getWithMaxWidth(task.item.getFriendlyName(), 136, fontRendererObj), guiLeft + 32, guiTop + 104, Color.getValue(Color.DARKER_GREY), false);
+					mc.fontRendererObj.drawString(StringUtils.getWithMaxWidth(task.item.getFriendlyName(), 136, fontRendererObj), guiLeft + 32, guiTop + 104, Color.getValue(Color.DARKER_GREY), false);
 
 					int xOrigo = xCenter - 68;
 					int yOrigo = yCenter + 90;
@@ -286,7 +287,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 	}
 
 	@Override
-	protected void keyTyped(char c, int i) {
+	protected void keyTyped(char c, int i) throws IOException {
 		if (current_Tab == 0) {
 			if (i == 201) { //PgUp
 				itemDisplay_1.prevPage();
@@ -309,7 +310,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 	}
 
 	@Override
-	protected void mouseClicked(int par1, int par2, int par3) {
+	protected void mouseClicked(int par1, int par2, int par3) throws IOException {
 		if (par3 == 0 && par1 > guiLeft && par1 < guiLeft + 220 && par2 > guiTop && par2 < guiTop + 20) {
 			par1 -= guiLeft + 3;
 			current_Tab = Math.max(0, Math.min(par1 / 25, TAB_COUNT - 1));
@@ -327,9 +328,9 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		if (current_Tab == 0) {
-			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "amount"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
+			mc.fontRendererObj.drawString(StringUtils.translate(PREFIX + "amount"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
 		} else if (current_Tab == 1) {
-			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "crafting"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
+			mc.fontRendererObj.drawString(StringUtils.translate(PREFIX + "crafting"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
 			GuiGraphics.displayItemToolTip(itemDisplay_2.getToolTip(), this, zLevel, guiLeft, guiTop);
 		}
 	}

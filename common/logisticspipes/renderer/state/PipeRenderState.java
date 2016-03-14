@@ -13,10 +13,10 @@ import logisticspipes.proxy.object3d.interfaces.IModel3D;
 import logisticspipes.renderer.newpipe.GLRenderList;
 import logisticspipes.renderer.newpipe.RenderEntry;
 
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class PipeRenderState implements IClientState {
 
@@ -34,9 +34,9 @@ public class PipeRenderState implements IClientState {
 	 * This is a placeholder for the pipe renderer to set to a value that the BlockGenericPipe->TileGenericPipe will then return the the WorldRenderer
 	 */
 	@SideOnly(Side.CLIENT)
-	public IIcon currentTexture;
+	public TextureAtlasSprite currentTexture;
 	@SideOnly(Side.CLIENT)
-	public IIcon[] textureArray;
+	public TextureAtlasSprite[] textureArray;
 
 	private boolean dirty = true;
 

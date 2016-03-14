@@ -31,7 +31,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -42,13 +42,13 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 	@AllArgsConstructor
 	public enum SpeedupDirection implements ITubeRenderOrientation, ITubeOrientation {
 		//@formatter:off
-		NORTH(ForgeDirection.NORTH),
-		SOUTH(ForgeDirection.SOUTH),
-		EAST(ForgeDirection.EAST),
-		WEST(ForgeDirection.WEST);
+		NORTH(EnumFacing.NORTH),
+		SOUTH(EnumFacing.SOUTH),
+		EAST(EnumFacing.EAST),
+		WEST(EnumFacing.WEST);
 		//@formatter:on
 		@Getter
-		ForgeDirection dir1;
+		EnumFacing dir1;
 
 		@Override
 		public void rotatePositions(IPositionRotateble set) {
@@ -85,7 +85,7 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 		super(new PipeMultiBlockTransportLogistics() {
 
 			@Override
-			public boolean canPipeConnect(TileEntity tile, ForgeDirection side) {
+			public boolean canPipeConnect(TileEntity tile, EnumFacing side) {
 				if (side.getOpposite() == ((HSTubeSpeedup) getMultiPipe()).orientation.dir1) {
 					return super.canPipeConnect_internal(tile, side);
 				}
@@ -93,7 +93,7 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 			}
 
 			@Override
-			protected void handleTileReachedServer(LPTravelingItemServer arrivingItem, TileEntity tile, ForgeDirection dir) {
+			protected void handleTileReachedServer(LPTravelingItemServer arrivingItem, TileEntity tile, EnumFacing dir) {
 				if (dir.getOpposite() == ((HSTubeSpeedup) getMultiPipe()).orientation.dir1) {
 					arrivingItem.setSpeed(LPConstants.PIPE_NORMAL_SPEED * 20);
 					handleTileReachedServer_internal(arrivingItem, tile, dir);
@@ -103,7 +103,7 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 			}
 
 			@Override
-			protected void handleTileReachedClient(LPTravelingItemClient arrivingItem, TileEntity tile, ForgeDirection dir) {
+			protected void handleTileReachedClient(LPTravelingItemClient arrivingItem, TileEntity tile, EnumFacing dir) {
 				if (dir.getOpposite() == ((HSTubeSpeedup) getMultiPipe()).orientation.dir1) {
 					if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
 						arrivingItem.setSpeed(LPConstants.PIPE_NORMAL_SPEED * 20);
@@ -184,15 +184,15 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 		if (w < 0) {
 			w += 2 * Math.PI;
 		}
-		ForgeDirection dir = ForgeDirection.UNKNOWN;
+		EnumFacing dir = null;
 		if (0 < w && w <= halfPI) {
-			dir = ForgeDirection.WEST;
+			dir = EnumFacing.WEST;
 		} else if (halfPI < w && w <= 2 * halfPI) {
-			dir = ForgeDirection.SOUTH;
+			dir = EnumFacing.SOUTH;
 		} else if (2 * halfPI < w && w <= 3 * halfPI) {
-			dir = ForgeDirection.EAST;
+			dir = EnumFacing.EAST;
 		} else if (3 * halfPI < w && w <= 4 * halfPI) {
-			dir = ForgeDirection.NORTH;
+			dir = EnumFacing.NORTH;
 		}
 		for (SpeedupDirection ori : SpeedupDirection.values()) {
 			if (ori.dir1.getOpposite().equals(dir)) {
@@ -220,12 +220,12 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public ForgeDirection getExitForInput(ForgeDirection commingFrom) {
+	public EnumFacing getExitForInput(EnumFacing commingFrom) {
 		return commingFrom.getOpposite();
 	}
 
 	@Override
-	public TileEntity getConnectedEndTile(ForgeDirection output) {
+	public TileEntity getConnectedEndTile(EnumFacing output) {
 		if (orientation.dir1 == output) {
 			DoubleCoordinates pos = new DoubleCoordinates(0, 0, -3);
 			LPPositionSet<DoubleCoordinates> set = new LPPositionSet<>(DoubleCoordinates.class);
@@ -257,7 +257,7 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public int getIconIndex(ForgeDirection direction) {
+	public int getIconIndex(EnumFacing direction) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -269,7 +269,7 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public boolean hasSpecialPipeEndAt(ForgeDirection dir) {
+	public boolean hasSpecialPipeEndAt(EnumFacing dir) {
 		return dir == orientation.dir1;
 	}
 
@@ -282,7 +282,7 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 			pPos = this.getPipeLength() - fPos;
 		}
 		if (pPos < 0.5) {
-			if (travelItem.input == ForgeDirection.UNKNOWN) {
+			if (travelItem.input == null) {
 				return null;
 			}
 			if (!container.renderState.pipeConnectionMatrix.isConnected(travelItem.input.getOpposite())) {
@@ -290,7 +290,7 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 			}
 			CoordinateUtils.add(pos, travelItem.input.getOpposite(), 0.5 - fPos);
 		} else {
-			if (travelItem.output == ForgeDirection.UNKNOWN) {
+			if (travelItem.output == null) {
 				return null;
 			}
 			CoordinateUtils.add(pos, travelItem.output, fPos - 0.5);
@@ -299,7 +299,7 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public boolean canPipeConnect(TileEntity tile, ForgeDirection side) {
+	public boolean canPipeConnect(TileEntity tile, EnumFacing side) {
 		if(tile instanceof LogisticsTileGenericSubMultiBlock) {
 			if(this.getOrientation().getDir1() != side) {
 				return false;

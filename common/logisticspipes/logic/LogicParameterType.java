@@ -1,6 +1,6 @@
 package logisticspipes.logic;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.Getter;
 
@@ -8,7 +8,7 @@ public enum LogicParameterType {
 	Number(long.class),
 	Float(double.class),
 	Boolean(boolean.class),
-	Direction(ForgeDirection.class);
+	Direction(EnumFacing.class);
 
 	@Getter
 	private final Class<?> javaClass;

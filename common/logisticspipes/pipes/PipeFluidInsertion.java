@@ -16,14 +16,14 @@ import logisticspipes.utils.tuples.Pair;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.FluidStack;
 
 public class PipeFluidInsertion extends FluidRoutedPipe {
 
 	private List<Pair<Integer, Integer>> localJamList = new ArrayList<>();
-	private int[] nextSendMax = new int[ForgeDirection.VALID_DIRECTIONS.length];
-	private int[] nextSendMin = new int[ForgeDirection.VALID_DIRECTIONS.length];
+	private int[] nextSendMax = new int[EnumFacing.VALUES.length];
+	private int[] nextSendMin = new int[EnumFacing.VALUES.length];
 
 	public PipeFluidInsertion(Item item) {
 		super(item);
@@ -48,7 +48,7 @@ public class PipeFluidInsertion extends FluidRoutedPipe {
 			}
 		}
 		PipeFluidTransportLogistics transport = (PipeFluidTransportLogistics) this.transport;
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing dir : EnumFacing.VALUES) {
 			FluidStack stack = transport.sideTanks[dir.ordinal()].getFluid();
 			if (stack == null) {
 				continue;

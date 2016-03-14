@@ -19,9 +19,10 @@ import logisticspipes.proxy.SimpleServiceLocator;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-import cpw.mods.fml.common.FMLLog;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.network.internal.FMLProxyPacket;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
@@ -117,7 +118,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 		buffer.writeShort(msg.getId());
 		buffer.writeInt(msg.getDebugId());
 		msg.writeData(new LPDataOutputStream(buffer));
-		return new FMLProxyPacket(buffer.copy(), channel);
+		return new FMLProxyPacket(new PacketBuffer(buffer.copy()), channel);
 	}
 
 	@Override

@@ -23,6 +23,8 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
+import java.io.IOException;
+
 public class GuiProviderPipe extends LogisticsBaseGuiScreen {
 
 	private static final String PREFIX = "gui.providerpipe.";
@@ -61,7 +63,7 @@ public class GuiProviderPipe extends LogisticsBaseGuiScreen {
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton guibutton) {
+	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		if (guibutton.id == 0) {
 			logic.setFilterExcluded(!logic.isExcludeFilter());
 			((GuiButton) buttonList.get(0)).displayString = logic.isExcludeFilter() ? StringUtils.translate(GuiProviderPipe.PREFIX + "Exclude") : StringUtils.translate(GuiProviderPipe.PREFIX + "Include");
@@ -79,9 +81,9 @@ public class GuiProviderPipe extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		mc.fontRenderer.drawString(StringUtils.translate(GuiProviderPipe.PREFIX + "TargetInv"), xSize / 2 - mc.fontRenderer.getStringWidth(StringUtils.translate(GuiProviderPipe.PREFIX + "TargetInv")) / 2, 6, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiProviderPipe.PREFIX + "Inventory"), 18, ySize - 102, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiProviderPipe.PREFIX + "Mode") + ": " + logic.getExtractionMode().getExtractionModeString(), 9, ySize - 112, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiProviderPipe.PREFIX + "TargetInv"), xSize / 2 - mc.fontRendererObj.getStringWidth(StringUtils.translate(GuiProviderPipe.PREFIX + "TargetInv")) / 2, 6, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiProviderPipe.PREFIX + "Inventory"), 18, ySize - 102, 0x404040);
+		mc.fontRendererObj.drawString(StringUtils.translate(GuiProviderPipe.PREFIX + "Mode") + ": " + logic.getExtractionMode().getExtractionModeString(), 9, ySize - 112, 0x404040);
 	}
 
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/supplier.png");

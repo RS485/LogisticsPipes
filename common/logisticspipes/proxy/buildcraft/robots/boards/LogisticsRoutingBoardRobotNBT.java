@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.ResourceLocation;
 
 import buildcraft.api.boards.RedstoneBoardRobot;
@@ -21,7 +21,7 @@ public class LogisticsRoutingBoardRobotNBT extends RedstoneBoardRobotNBT {
 
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/robots/robot_router.png");
 
-	private IIcon icon;
+	private TextureAtlasSprite icon;
 
 	@Override
 	public RedstoneBoardRobot create(EntityRobotBase robot) {
@@ -50,7 +50,7 @@ public class LogisticsRoutingBoardRobotNBT extends RedstoneBoardRobotNBT {
 	}
 
 	@Override
-	public IIcon getIcon(NBTTagCompound nbt) {
+	public TextureAtlasSprite getIcon(NBTTagCompound nbt) {
 		return icon;
 	}
 }

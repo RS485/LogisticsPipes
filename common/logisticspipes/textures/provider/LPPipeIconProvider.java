@@ -5,21 +5,21 @@ import java.util.ArrayList;
 import logisticspipes.renderer.IIconProvider;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class LPPipeIconProvider implements IIconProvider {
 
-	public ArrayList<IIcon> icons = new ArrayList<>();
+	public ArrayList<TextureAtlasSprite> icons = new ArrayList<>();
 
 	@Override
-	public IIcon getIcon(int iconIndex) {
+	public TextureAtlasSprite getIcon(int iconIndex) {
 		return icons.get(iconIndex);
 	}
 
-	public void setIcon(int index, IIcon icon) {
+	public void setIcon(int index, TextureAtlasSprite icon) {
 		while (icons.size() < index + 1) {
 			icons.add(null);
 		}

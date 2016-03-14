@@ -3,11 +3,11 @@ package logisticspipes.proxy.td.subproxies;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public interface ITDPart {
 
-	TileEntity getInternalDuctForSide(ForgeDirection opposite);
+	TileEntity getInternalDuctForSide(EnumFacing opposite);
 
 	void setWorldObj_LP(World world);
 

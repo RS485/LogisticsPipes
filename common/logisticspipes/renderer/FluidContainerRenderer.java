@@ -14,15 +14,15 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.fluids.FluidStack;
 
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -135,7 +135,7 @@ public class FluidContainerRenderer implements IItemRenderer {
 
 		GL11.glColor4f(f, f1, f2, 1.0F);
 
-		IIcon icon = liquid.getFluid().getIcon();
+		TextureAtlasSprite icon = liquid.getFluid().getIcon();
 		if (icon != null) {
 			renderIcon(5, 2, icon, 6, 12, 0);
 			if (type == ItemRenderType.ENTITY) {
@@ -152,7 +152,7 @@ public class FluidContainerRenderer implements IItemRenderer {
 		GL11.glPopMatrix();
 	}
 
-	public void renderIcon(int x, int y, IIcon par3Icon, int width, int height, double zLevel) {
+	public void renderIcon(int x, int y, TextureAtlasSprite par3Icon, int width, int height, double zLevel) {
 		Tessellator tessellator = Tessellator.instance;
 		tessellator.startDrawingQuads();
 		tessellator.addVertexWithUV(x + 0, y + height, zLevel, par3Icon.getInterpolatedU(x), par3Icon.getInterpolatedV(y + height));

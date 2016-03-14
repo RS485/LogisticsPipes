@@ -37,7 +37,7 @@ public class EnderIOHooks {
 		return null;
 	}
 
-	public static ISidedInventory handleUpdateInventoryNetworkedInventory(ISidedInventory original, TileEntity tileEntity, EnumFacing dir) {
+	public static ISidedInventory handleUpdateInventoryNetworkedInventory(ISidedInventory original, TileEntity tileEntity, ForgeDirection dir) {
 		if(isEnabled && original == null && tileEntity instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tileEntity).isRoutingPipe() && ((LogisticsTileGenericPipe) tileEntity).isRouterInitialized()) {
 			try {
 				return new InventoryWrapper(new LogisticsInsertionInventory((LogisticsTileGenericPipe) tileEntity, dir.getOpposite()));

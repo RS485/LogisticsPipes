@@ -106,7 +106,7 @@ processResources {
 }
 
 dependencies {
-    compile files("build/download/buildcraft-7.1.5-dev.jar")
+    compile files("build/download/buildcraft-7.1.16-dev.jar")
     compile 'org.projectlombok:lombok:1.16.4'
     compile 'codechicken:NotEnoughItems:1.7.10-1.0.5.111:dev'
     compile 'codechicken:CodeChickenCore:1.7.10-1.0.7.46:dev'

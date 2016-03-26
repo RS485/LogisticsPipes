@@ -88,7 +88,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 	@Override
 	public void onAllowedRemoval() {
-		while (_orderItemManager.hasOrders(ResourceType.CRAFTING)) {
+		while (_orderItemManager.hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA)) {
 			_orderItemManager.sendFailed();
 		}
 	}

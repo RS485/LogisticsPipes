@@ -316,7 +316,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	}
 
 	@Override
-	public LogisticsOrderManager<?> getOrderManager() {
+	public LogisticsOrderManager<?, ?> getOrderManager() {
 		return getFluidOrderManager();
 	}
 }

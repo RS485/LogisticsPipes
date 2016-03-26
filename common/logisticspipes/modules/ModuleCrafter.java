@@ -138,7 +138,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	public boolean[] craftingSigns = new boolean[6];
 	public boolean waitingForCraft = false;
 
-	public final LinkedList<LogisticsItemOrder> _extras = new LinkedList<LogisticsItemOrder>();
 	private WeakReference<TileEntity> lastAccessedCrafter = new WeakReference<TileEntity>(null);
 
 	public boolean cleanupModeIsExclude = true;
@@ -321,8 +320,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	@Override
 	public void canProvide(RequestTreeNode tree, RequestTree root, List<IFilter> filters) {
-
-		if (_extras.isEmpty()) {
+		if (!_service.getItemOrderManager().hasExtras() || tree.hasBeenQueried(_service.getItemOrderManager())) {
 			return;
 		}
 
@@ -338,31 +336,50 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			}
 		}
 		int remaining = 0;
-		for (LogisticsItemOrder extra : _extras) {
-			if (extra.getResource().getItem().equals(requestedItem)) {
-				remaining += extra.getResource().stack.getStackSize();
+		for (LogisticsItemOrder extra : _service.getItemOrderManager()) {
+			if(extra.getType() == ResourceType.EXTRA) {
+				if (extra.getResource().getItem().equals(requestedItem)) {
+					remaining += extra.getResource().stack.getStackSize();
+				}
 			}
-
 		}
 		remaining -= root.getAllPromissesFor(this, getCraftedItem().getItem());
 		if (remaining < 1) {
 			return;
 		}
-		LogisticsExtraPromise promise = new LogisticsExtraPromise(getCraftedItem().getItem(), Math.min(remaining, tree.getMissingAmount()), this, true);
-		tree.addPromise(promise);
-
+		if(this.getUpgradeManager().isFuzzyUpgrade() && outputFuzzyFlags.getBitSet().nextSetBit(0) != -1) {
+			DictResource dict = new DictResource(getCraftedItem(), null).loadFromBitSet(outputFuzzyFlags.getBitSet());
+			LogisticsExtraDictPromise promise = new LogisticsExtraDictPromise(dict, Math.min(remaining, tree.getMissingAmount()), this, true);
+			tree.addPromise(promise);
+		} else {
+			LogisticsExtraPromise promise = new LogisticsExtraPromise(getCraftedItem().getItem(), Math.min(remaining, tree.getMissingAmount()), this, true);
+			tree.addPromise(promise);
+		}
+		tree.setQueried(_service.getItemOrderManager());
 	}
 
 	@Override
 	public LogisticsItemOrder fullFill(LogisticsPromise promise, IRequestItems destination, IAdditionalTargetInformation info) {
-		if (promise instanceof LogisticsExtraPromise) {
-			removeExtras(promise.numberOfItems, promise.item);
-		} else if(promise instanceof LogisticsDictPromise) {
+		try {
+			System.out.println("FullFill: " + promise.getItemType() + " / " + promise.numberOfItems);
+			if (promise instanceof LogisticsExtraDictPromise) {
+				_service.getItemOrderManager().removeExtras(((LogisticsExtraDictPromise) promise).getResource());
+			}
+			if (promise instanceof LogisticsExtraPromise) {
+				_service.getItemOrderManager()
+						.removeExtras(new DictResource(new ItemIdentifierStack(promise.item, promise.numberOfItems), null));
+			}
+			if (promise instanceof LogisticsDictPromise) {
+				_service.spawnParticle(Particles.WhiteParticle, 2);
+				return _service.getItemOrderManager().addOrder(((LogisticsDictPromise) promise)
+						.getResource(), destination, ResourceType.CRAFTING, info);
+			}
 			_service.spawnParticle(Particles.WhiteParticle, 2);
-			return _service.getItemOrderManager().addOrder(((LogisticsDictPromise) promise).getResource(), destination, ResourceType.CRAFTING, info);
+			return _service.getItemOrderManager()
+					.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, ResourceType.CRAFTING, info);
+		} finally {
+			_service.getItemOrderManager().dump();
 		}
-		_service.spawnParticle(Particles.WhiteParticle, 2);
-		return _service.getItemOrderManager().addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, ResourceType.CRAFTING, info);
 	}
 
 	@Override
@@ -392,9 +409,16 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	@Override
 	public void registerExtras(IPromise promise) {
-		ItemIdentifierStack stack = new ItemIdentifierStack(promise.getItemType(), promise.getAmount());
-		_extras.add(new LogisticsItemOrder(new DictResource(stack, null), null, ResourceType.EXTRA, null));
-
+		System.out.println("registerExtras: " + promise.getItemType() + " / " + promise.getAmount());
+		if(promise instanceof LogisticsDictPromise) {
+			_service.getItemOrderManager().addExtra(((LogisticsDictPromise) promise).getResource());
+			_service.getItemOrderManager().dump();
+			return;
+		} else {
+			ItemIdentifierStack stack = new ItemIdentifierStack(promise.getItemType(), promise.getAmount());
+			_service.getItemOrderManager().addExtra(new DictResource(stack, null));
+			_service.getItemOrderManager().dump();
+		}
 	}
 
 	@Override
@@ -1144,7 +1168,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	public void enabledUpdateEntity() {
-		if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING)) {
+		if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA)) {
 			if (_service.isNthTick(6)) {
 				cacheAreAllOrderesToBuffer();
 			}
@@ -1166,7 +1190,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 		waitingForCraft = false;
 
-		if ((!_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING) && _extras.isEmpty())) {
+		if ((!_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA))) {
 			if (getUpgradeManager().getCrafterCleanup() > 0) {
 				List<AdjacentTile> crafters = locateCrafters();
 				ItemStack extracted = null;
@@ -1188,12 +1212,13 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 		waitingForCraft = true;
 
+		System.out.println("Start:");
+		_service.getItemOrderManager().dump();
+
 		List<AdjacentTile> crafters = locateCrafters();
 		if (crafters.size() < 1) {
-			if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING)) {
+			if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA)) {
 				_service.getItemOrderManager().sendFailed();
-			} else {
-				_extras.clear();
 			}
 			return;
 		}
@@ -1207,15 +1232,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 		int itemsleft = itemsToExtract();
 		int stacksleft = stacksToExtract();
-		while (itemsleft > 0 && stacksleft > 0 && (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING) || !_extras.isEmpty())) {
-			LogisticsItemOrder nextOrder;
-			boolean processingOrder = false;
-			if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING)) {
-				nextOrder = _service.getItemOrderManager().peekAtTopRequest(ResourceType.CRAFTING); // fetch but not remove.
-				processingOrder = true;
-			} else {
-				nextOrder = _extras.getFirst(); // fetch but not remove.
-			}
+		while (itemsleft > 0 && stacksleft > 0 && (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA))) {
+			LogisticsItemOrder nextOrder = _service.getItemOrderManager().peekAtTopRequest(ResourceType.CRAFTING, ResourceType.EXTRA); // fetch but not remove.
 			int maxtosend = Math.min(itemsleft, nextOrder.getResource().stack.getStackSize());
 			maxtosend = Math.min(nextOrder.getResource().getItem().getMaxStackSize(), maxtosend);
 			// retrieve the new crafted items
@@ -1229,9 +1247,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				}
 			}
 			if (extracted == null || extracted.stackSize == 0) {
-				if (processingOrder) {
-					_service.getItemOrderManager().deferSend();
-				}
+				_service.getItemOrderManager().deferSend();
 				break;
 			}
 			_service.getCacheHolder().trigger(CacheTypes.Inventory);
@@ -1241,10 +1257,10 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			while (extracted.stackSize > 0) {
 				if (!doesExtractionMatch(nextOrder, extractedID)) {
 					LogisticsItemOrder startOrder = nextOrder;
-					if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING)) {
+					if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA)) {
 						do {
 							_service.getItemOrderManager().deferSend();
-							nextOrder = _service.getItemOrderManager().peekAtTopRequest(ResourceType.CRAFTING);
+							nextOrder = _service.getItemOrderManager().peekAtTopRequest(ResourceType.CRAFTING, ResourceType.EXTRA);
 						} while (!doesExtractionMatch(nextOrder, extractedID) && startOrder != nextOrder);
 					}
 					if (startOrder == nextOrder) {
@@ -1269,7 +1285,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				stacksleft -= 1;
 				itemsleft -= numtosend;
 				ItemStack stackToSend = extracted.splitStack(numtosend);
-				if (processingOrder) {
+				if (nextOrder.getDestination() != null) {
 					SinkReply reply = LogisticsManager.canSink(nextOrder.getDestination().getRouter(), null, true, ItemIdentifier.get(stackToSend), null, true, false);
 					boolean defersend = false;
 					if (reply == null || reply.bufferMode != BufferMode.NONE || reply.maxNumberOfItems < 1) {
@@ -1281,20 +1297,17 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 					item.setAdditionalTargetInformation(nextOrder.getInformation());
 					_service.queueRoutedItem(item, tile.orientation);
 					_service.getItemOrderManager().sendSuccessfull(stackToSend.stackSize, defersend, item);
-					if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING)) {
-						nextOrder = _service.getItemOrderManager().peekAtTopRequest(ResourceType.CRAFTING); // fetch but not remove.
-					} else {
-						processingOrder = false;
-						if (!_extras.isEmpty()) {
-							nextOrder = _extras.getFirst();
-						}
-					}
 				} else {
-					removeExtras(numtosend, nextOrder.getResource().getItem());
 					_service.sendStack(stackToSend, -1, ItemSendMode.Normal, nextOrder.getInformation());
+					_service.getItemOrderManager().sendSuccessfull(stackToSend.stackSize, false, null);
+				}
+				if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA)) {
+					nextOrder = _service.getItemOrderManager().peekAtTopRequest(ResourceType.CRAFTING, ResourceType.EXTRA); // fetch but not remove.
 				}
 			}
 		}
+		System.out.println("End:");
+		_service.getItemOrderManager().dump();
 
 	}
 
@@ -1323,25 +1336,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			}
 		}
 		cachedAreAllOrderesToBuffer = result;
-	}
-
-	private void removeExtras(int numToSend, ItemIdentifier item) {
-		Iterator<LogisticsItemOrder> i = _extras.iterator();
-		while (i.hasNext()) {
-			ItemIdentifierStack e = i.next().getResource().stack;
-			if (e.getItem().equals(item)) {
-				if (numToSend >= e.getStackSize()) {
-					numToSend -= e.getStackSize();
-					i.remove();
-					if (numToSend == 0) {
-						return;
-					}
-				} else {
-					e.setStackSize(e.getStackSize() - numToSend);
-					break;
-				}
-			}
-		}
 	}
 
 	private ItemStack extract(AdjacentTile tile, IResource item, int amount) {

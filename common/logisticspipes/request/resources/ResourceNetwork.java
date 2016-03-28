@@ -35,6 +35,10 @@ public enum ResourceNetwork {
 	}
 
 	public static void writeResource(LPDataOutputStream data, IResource resource) throws IOException {
+		if(resource == null) {
+			data.writeInt(-1);
+			return;
+		}
 		ResourceNetwork[] values = ResourceNetwork.values();
 		for (ResourceNetwork value : values) {
 			if (value.clazz.isAssignableFrom(resource.getClass())) {
@@ -48,6 +52,9 @@ public enum ResourceNetwork {
 
 	public static IResource readResource(LPDataInputStream data) throws IOException {
 		int id = data.readInt();
+		if(id == -1) {
+			return null;
+		}
 		return ResourceNetwork.values()[id].readData(data);
 	}
 

@@ -360,26 +360,21 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	@Override
 	public LogisticsItemOrder fullFill(LogisticsPromise promise, IRequestItems destination, IAdditionalTargetInformation info) {
-		try {
-			System.out.println("FullFill: " + promise.getItemType() + " / " + promise.numberOfItems);
-			if (promise instanceof LogisticsExtraDictPromise) {
-				_service.getItemOrderManager().removeExtras(((LogisticsExtraDictPromise) promise).getResource());
-			}
-			if (promise instanceof LogisticsExtraPromise) {
-				_service.getItemOrderManager()
-						.removeExtras(new DictResource(new ItemIdentifierStack(promise.item, promise.numberOfItems), null));
-			}
-			if (promise instanceof LogisticsDictPromise) {
-				_service.spawnParticle(Particles.WhiteParticle, 2);
-				return _service.getItemOrderManager().addOrder(((LogisticsDictPromise) promise)
-						.getResource(), destination, ResourceType.CRAFTING, info);
-			}
-			_service.spawnParticle(Particles.WhiteParticle, 2);
-			return _service.getItemOrderManager()
-					.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, ResourceType.CRAFTING, info);
-		} finally {
-			_service.getItemOrderManager().dump();
+		if (promise instanceof LogisticsExtraDictPromise) {
+			_service.getItemOrderManager().removeExtras(((LogisticsExtraDictPromise) promise).getResource());
 		}
+		if (promise instanceof LogisticsExtraPromise) {
+			_service.getItemOrderManager()
+					.removeExtras(new DictResource(new ItemIdentifierStack(promise.item, promise.numberOfItems), null));
+		}
+		if (promise instanceof LogisticsDictPromise) {
+			_service.spawnParticle(Particles.WhiteParticle, 2);
+			return _service.getItemOrderManager().addOrder(((LogisticsDictPromise) promise)
+					.getResource(), destination, ResourceType.CRAFTING, info);
+		}
+		_service.spawnParticle(Particles.WhiteParticle, 2);
+		return _service.getItemOrderManager()
+				.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, ResourceType.CRAFTING, info);
 	}
 
 	@Override
@@ -409,15 +404,12 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	@Override
 	public void registerExtras(IPromise promise) {
-		System.out.println("registerExtras: " + promise.getItemType() + " / " + promise.getAmount());
 		if(promise instanceof LogisticsDictPromise) {
 			_service.getItemOrderManager().addExtra(((LogisticsDictPromise) promise).getResource());
-			_service.getItemOrderManager().dump();
 			return;
 		} else {
 			ItemIdentifierStack stack = new ItemIdentifierStack(promise.getItemType(), promise.getAmount());
 			_service.getItemOrderManager().addExtra(new DictResource(stack, null));
-			_service.getItemOrderManager().dump();
 		}
 	}
 
@@ -1212,9 +1204,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 		waitingForCraft = true;
 
-		System.out.println("Start:");
-		_service.getItemOrderManager().dump();
-
 		List<AdjacentTile> crafters = locateCrafters();
 		if (crafters.size() < 1) {
 			if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA)) {
@@ -1306,8 +1295,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				}
 			}
 		}
-		System.out.println("End:");
-		_service.getItemOrderManager().dump();
 
 	}
 

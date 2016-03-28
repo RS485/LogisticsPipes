@@ -45,6 +45,13 @@ public class LogisticsOrderLinkedList<E extends LogisticsOrder, I> implements It
 		}
 	}
 
+	public void removeAll(List<E> orders) {
+		list.removeAll(orders);
+		for(E order:orders) {
+			elemRemove(order);
+		}
+	}
+
 	private void elemRemove(E elem) {
 		if(identifyer.isExtra(elem)) {
 			I ident = identifyer.getIdentity(elem);

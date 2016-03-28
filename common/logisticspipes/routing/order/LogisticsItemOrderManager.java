@@ -14,6 +14,7 @@ import logisticspipes.utils.tuples.Pair;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 public class LogisticsItemOrderManager extends LogisticsOrderManager<LogisticsItemOrder, DictResource.Identifier> {
 
@@ -77,14 +78,16 @@ public class LogisticsItemOrderManager extends LogisticsOrderManager<LogisticsIt
 		int itemsToRemove = resource.getRequestedAmount();
 		DictResource.Identifier ident = resource.getIdentifier();
 		Iterator<LogisticsItemOrder> iter = _orders.iterator();
+		List<LogisticsItemOrder> toRemove = new LinkedList<LogisticsItemOrder>();
 		while(iter.hasNext()) {
 			LogisticsItemOrder order = iter.next();
 			if(order.getType() != ResourceType.EXTRA) continue;
 			if (order.getResource().getIdentifier().equals(ident)) {
 				if (itemsToRemove >= order.getAmount()) {
 					itemsToRemove -= order.getAmount();
-					iter.remove();
+					toRemove.add(order);
 					if (itemsToRemove == 0) {
+						_orders.removeAll(toRemove);
 						return;
 					}
 				} else {
@@ -93,6 +96,7 @@ public class LogisticsItemOrderManager extends LogisticsOrderManager<LogisticsIt
 				}
 			}
 		}
+		_orders.removeAll(toRemove);
 	}
 
 	public int totalItemsCountInOrders(ItemIdentifier item) {

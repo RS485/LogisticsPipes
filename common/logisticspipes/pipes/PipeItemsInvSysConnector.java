@@ -115,6 +115,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 
 			WorldUtil wUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
 			for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)) {
+				if(!isConnectedInv(tile.tile)) continue;
 				if (tile.tile instanceof IInventory) {
 					IInventory inv = InventoryHelper.getInventory((IInventory) tile.tile);
 					if (inv instanceof net.minecraft.inventory.ISidedInventory) {
@@ -311,9 +312,10 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	private boolean inventoryConnected() {
 		for (int i = 0; i < 6; i++) {
 			LPPosition p = new LPPosition(getX(), getY(), getZ());
-			p.moveForward(ForgeDirection.values()[i]);
+			ForgeDirection dir = ForgeDirection.values()[i];
+			p.moveForward(dir);
 			TileEntity tile = p.getTileEntity(getWorld());
-			if (tile instanceof IInventory) {
+			if (tile instanceof IInventory && this.container.canPipeConnect(tile, dir)) {
 				return true;
 			}
 		}
@@ -348,9 +350,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	}
 
 	@Override
-	public void addItem(ItemRoutingInformation info)
-
-	{
+	public void addItem(ItemRoutingInformation info) {
 		if (info.getItem() != null && info.getItem().getStackSize() > 0 && info.destinationint >= 0) {
 			ItemIdentifier insertedType = info.getItem().getItem();
 			List<ItemRoutingInformation> entry = itemsOnRoute.get(insertedType);
@@ -365,14 +365,14 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 
 	public boolean isConnectedInv(TileEntity tile) {
 		for (int i = 0; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.values()[i];
 			LPPosition p = new LPPosition(getX(), getY(), getZ());
-			p.moveForward(ForgeDirection.values()[i]);
+			p.moveForward(dir);
 			TileEntity lTile = p.getTileEntity(getWorld());
 			if (lTile instanceof IInventory) {
 				if (lTile == tile) {
-					return true;
+					return this.container.canPipeConnect(lTile, dir);
 				}
-				return false;
 			}
 		}
 		return false;

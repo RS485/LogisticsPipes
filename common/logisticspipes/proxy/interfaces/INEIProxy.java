@@ -2,6 +2,8 @@ package logisticspipes.proxy.interfaces;
 
 import java.util.List;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,7 +18,7 @@ public interface INEIProxy {
 
 	public List<String> getInfoForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver);
 
-	boolean renderItemToolTip(int posX, int posY, List<String> msg, EnumChatFormatting rarityColor, ItemStack stack);
+	@SideOnly(Side.CLIENT) boolean renderItemToolTip(int posX, int posY, List<String> msg, EnumChatFormatting rarityColor, ItemStack stack);
 
-	List<String> getItemToolTip(ItemStack var22, EntityPlayer thePlayer, boolean advancedItemTooltips, GuiContainer screen);
+	@SideOnly(Side.CLIENT) List<String> getItemToolTip(ItemStack var22, EntityPlayer thePlayer, boolean advancedItemTooltips, GuiContainer screen);
 }

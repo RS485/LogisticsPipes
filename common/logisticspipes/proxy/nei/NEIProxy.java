@@ -5,6 +5,8 @@ import java.util.*;
 import codechicken.lib.gui.GuiDraw;
 import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.guihook.IContainerTooltipHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.proxy.interfaces.INEIProxy;
 
 import logisticspipes.utils.ReflectionHelper;
@@ -41,6 +43,7 @@ public class NEIProxy implements INEIProxy {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	@SneakyThrows({NoSuchFieldException.class, IllegalAccessException.class})
 	public boolean renderItemToolTip(int mousex, int mousey, List<String> msg, EnumChatFormatting rarityColor, ItemStack stack) {
 		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) {
@@ -67,6 +70,7 @@ public class NEIProxy implements INEIProxy {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public List<String> getItemToolTip(ItemStack stack, EntityPlayer thePlayer, boolean advancedItemTooltips, GuiContainer screen) {
 		return GuiContainerManager.itemDisplayNameMultiline(stack, screen, true);
 	}

@@ -143,7 +143,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 	@Override
 	protected void renderToolTips(int mouseX, int mouseY, float par3) {
 		if (!hasSubGui()) {
-			GuiGraphics.displayItemToolTip(tooltip, 300, guiLeft, guiTop, true, false);
+			GuiGraphics.displayItemToolTip(tooltip, 300, guiLeft, guiTop, false);
 		}
 	}
 

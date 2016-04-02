@@ -131,7 +131,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 	@Override
 	protected void renderToolTips(int mouseX, int mouseY, float par3) {
 		if (tooltip != null) {
-			GuiGraphics.displayItemToolTip(tooltip, zLevel, guiLeft, guiTop, false, true);
+			GuiGraphics.displayItemToolTip(tooltip, zLevel, guiLeft, guiTop, true);
 		}
 	}
 

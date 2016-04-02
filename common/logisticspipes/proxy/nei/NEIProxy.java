@@ -1,14 +1,22 @@
 package logisticspipes.proxy.nei;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
+import codechicken.lib.gui.GuiDraw;
+import codechicken.nei.guihook.GuiContainerManager;
+import codechicken.nei.guihook.IContainerTooltipHandler;
 import logisticspipes.proxy.interfaces.INEIProxy;
 
+import logisticspipes.utils.ReflectionHelper;
+import lombok.SneakyThrows;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityClientPlayerMP;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
@@ -30,6 +38,37 @@ public class NEIProxy implements INEIProxy {
 			}
 		});
 		return ItemInfo.getText(items.get(0), world, player, objectMouseOver);
+	}
+
+	@Override
+	@SneakyThrows({NoSuchFieldException.class, IllegalAccessException.class})
+	public boolean renderItemToolTip(int mousex, int mousey, List<String> msg, EnumChatFormatting rarityColor, ItemStack stack) {
+		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) {
+			return false;
+		}
+		GuiContainer window = (GuiContainer) Minecraft.getMinecraft().currentScreen;
+		List<String> tooltip = new LinkedList<String>();
+		FontRenderer font = GuiDraw.fontRenderer;
+
+		if (GuiContainerManager.shouldShowTooltip(window)) {
+			font = GuiContainerManager.getFontRenderer(stack);
+			if (stack != null) {
+				tooltip = msg;
+			}
+			for (IContainerTooltipHandler handler : (List<IContainerTooltipHandler>) ReflectionHelper.getPrivateField(List.class, GuiContainerManager.class, "instanceTooltipHandlers", GuiContainerManager.getManager())) {
+				tooltip = handler.handleItemTooltip(window, stack, mousex, mousey, tooltip);
+			}
+		}
+		if (tooltip.size() > 0) {
+			tooltip.set(0, (String) tooltip.get(0) + "§h");
+		}
+		GuiDraw.drawMultilineTip(font, mousex + 12, mousey - 12, tooltip);
+		return true;
+	}
+
+	@Override
+	public List<String> getItemToolTip(ItemStack stack, EntityClientPlayerMP thePlayer, boolean advancedItemTooltips, GuiContainer screen) {
+		return GuiContainerManager.itemDisplayNameMultiline(stack, screen, true);
 	}
 
 	@Override

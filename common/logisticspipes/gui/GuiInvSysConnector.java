@@ -122,7 +122,7 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 			int mouseY = height - Mouse.getY() * height / mc.displayHeight - 1;
 
 			if (x < mouseX && mouseX < x + 18 && y < mouseY && mouseY < y + 18) {
-				GuiGraphics.displayItemToolTip(new Object[] { mouseX, mouseY, st, true }, zLevel, guiLeft, guiTop, false, false);
+				GuiGraphics.displayItemToolTip(new Object[] { mouseX, mouseY, st, true }, zLevel, guiLeft, guiTop, false);
 			}
 
 			column++;

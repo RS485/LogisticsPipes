@@ -390,14 +390,14 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 									List<String> list = new ArrayList<String>();
 									list.add(ChatColor.BLUE + "Request Type: " + ChatColor.YELLOW + order.getType().name());
 									list.add(ChatColor.BLUE + "Send to Router ID: " + ChatColor.YELLOW + order.getRouterId());
-									GuiGraphics.displayItemToolTip(new Object[] { xPos - 10, yPos, order.getAsDisplayItem().makeNormalStack(), true, list }, zLevel, guiLeft, guiTop, false, false);
+									GuiGraphics.displayItemToolTip(new Object[] { xPos - 10, yPos, order.getAsDisplayItem().makeNormalStack(), true, list }, zLevel, guiLeft, guiTop, false);
 								}
 							}
 						} else {
 							if(entry.getValue().getValue1() != null) {
 								List<String> list = new ArrayList<String>();
 								list.add(ChatColor.BLUE + "Request ID: " + ChatColor.YELLOW + entry.getKey());
-								GuiGraphics.displayItemToolTip(new Object[]{xPos - 10, yPos, entry.getValue().getValue1().getDisplayItem().makeNormalStack(), true, list}, zLevel, guiLeft, guiTop, false, false);
+								GuiGraphics.displayItemToolTip(new Object[]{xPos - 10, yPos, entry.getValue().getValue1().getDisplayItem().makeNormalStack(), true, list}, zLevel, guiLeft, guiTop, false);
 							}
 						}
 					}

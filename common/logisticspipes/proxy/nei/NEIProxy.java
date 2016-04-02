@@ -67,7 +67,7 @@ public class NEIProxy implements INEIProxy {
 	}
 
 	@Override
-	public List<String> getItemToolTip(ItemStack stack, EntityClientPlayerMP thePlayer, boolean advancedItemTooltips, GuiContainer screen) {
+	public List<String> getItemToolTip(ItemStack stack, EntityPlayer thePlayer, boolean advancedItemTooltips, GuiContainer screen) {
 		return GuiContainerManager.itemDisplayNameMultiline(stack, screen, true);
 	}
 

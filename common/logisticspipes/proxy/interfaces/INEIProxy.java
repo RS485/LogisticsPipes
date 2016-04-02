@@ -18,5 +18,5 @@ public interface INEIProxy {
 
 	boolean renderItemToolTip(int posX, int posY, List<String> msg, EnumChatFormatting rarityColor, ItemStack stack);
 
-	List<String> getItemToolTip(ItemStack var22, EntityClientPlayerMP thePlayer, boolean advancedItemTooltips, GuiContainer screen);
+	List<String> getItemToolTip(ItemStack var22, EntityPlayer thePlayer, boolean advancedItemTooltips, GuiContainer screen);
 }

@@ -16,7 +16,7 @@
 	<property name="downloadserver.dir"   value="external/"/>
 	<property name="downloadserver.full"  value="${downloadserver}/${downloadserver.dir}"/>
 
-	<property name="forestry.filename"     value="forestry_1.7.10-3.6.3.20-api.zip"/>
+	<property name="forestry.filename"     value="forestry_1.7.10-4.2.11.59-api.zip"/>
 	<property name="ic2.filename"          value="industrialcraft-2-2.2.595-experimental-api.zip"/>
 	<property name="cc.filename"           value="ComputerCraftAPI1.64pr4.zip"/>
 	<property name="thaumcraft.filename"   value="Thaumcraft-1.7.2-4.1.1.14-api.zip"/>

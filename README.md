@@ -18,7 +18,7 @@ See [this repo](https://github.com/RS485/LogisticsPipes-Language) for translatio
 
 ##Builds
 
-See our [Jenkins](http://ci.thezorro266.com/view/Logistics Pipes/).
+See our [Jenkins](http://ci.rs485.network/).
 
 ##Contact
 

@@ -167,7 +167,7 @@ public final class VersionChecker implements Callable<VersionChecker.VersionInfo
 			NBTTagCompound tag = new NBTTagCompound();
 			tag.setString("oldVersion", LPConstants.VERSION);
 			tag.setString("newVersion", versionInfo.getNewestBuild());
-			tag.setString("updateUrl", "http://ci.thezorro266.com/view/Logistics%20Pipes/");
+			tag.setString("updateUrl", "http://ci.rs485.network/view/Logistics%20Pipes/");
 			tag.setBoolean("isDirectLink", false);
 
 			StringBuilder stringBuilder = new StringBuilder();

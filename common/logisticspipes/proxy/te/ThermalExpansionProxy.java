@@ -4,6 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import cofh.core.RegistryEnderAttuned;
+import cofh.lib.transport.EnderRegistry;
 import logisticspipes.proxy.interfaces.ICraftingParts;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
 
@@ -11,7 +13,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
 import cofh.api.transport.IEnderItemHandler;
-import cofh.api.transport.RegistryEnderAttuned;
 import cofh.thermalexpansion.block.TEBlocks;
 import cofh.thermalexpansion.block.ender.TileTesseract;
 import cofh.thermalexpansion.item.TEItems;
@@ -25,8 +26,10 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 
 	@Override
 	public List<TileEntity> getConnectedTesseracts(TileEntity tile) {
-		List<IEnderItemHandler> interfaces = RegistryEnderAttuned.getLinkedItemOutputs((TileTesseract) tile);
+		EnderRegistry registry = RegistryEnderAttuned.getRegistry();
 		List<TileEntity> validOutputs = new LinkedList<>();
+		if(registry == null) return validOutputs;
+		List<IEnderItemHandler> interfaces = registry.getLinkedItemOutputs((TileTesseract) tile);
 		if (interfaces == null) {
 			return validOutputs;
 		}

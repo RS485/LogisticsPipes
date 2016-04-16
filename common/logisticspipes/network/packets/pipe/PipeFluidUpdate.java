@@ -41,7 +41,7 @@ public class PipeFluidUpdate extends CoordinatesPacket {
 		bits = data.readBitSet();
 		for(int i=0;i < renderCache.length;i++) {
 			if(bits.get(i)) {
-				renderCache[i] = new FluidStack(FluidRegistry.getFluid(data.readInt()), data.readInt());
+				renderCache[i] = new FluidStack(FluidRegistry.getFluid(data.readInt()), data.readInt(), data.readNBTTagCompound());
 			}
 		}
 	}
@@ -57,6 +57,7 @@ public class PipeFluidUpdate extends CoordinatesPacket {
 			if (aRenderCache != null) {
 				data.writeInt(FluidRegistry.getFluidID(aRenderCache.getFluid()));
 				data.writeInt(aRenderCache.amount);
+				data.writeNBTTagCompound(aRenderCache.tag);
 			}
 		}
 	}

@@ -140,7 +140,7 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 		}
 		GL11.glTranslatef(0.0F, 0.0F, 100.0F);
 		if (tooltip != null) {
-			GuiGraphics.displayItemToolTip(tooltip, zLevel, guiLeft, guiTop, false, true);
+			GuiGraphics.displayItemToolTip(tooltip, zLevel, guiLeft, guiTop, true);
 		}
 	}
 

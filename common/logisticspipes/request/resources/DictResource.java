@@ -3,6 +3,7 @@ package logisticspipes.request.resources;
 import java.io.IOException;
 import java.util.BitSet;
 
+import com.google.common.base.Objects;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.LPDataOutputStream;
@@ -116,6 +117,15 @@ public class DictResource implements IResource {
 		return clone;
 	}
 
+	public DictResource clone() {
+		DictResource clone = new DictResource(this.stack.clone(), requester);
+		clone.use_od = use_od;
+		clone.ignore_dmg = ignore_dmg;
+		clone.ignore_nbt = ignore_nbt;
+		clone.use_category = use_category;
+		return clone;
+	}
+
 	public IRequestItems getTarget() {
 		return requester;
 	}
@@ -199,11 +209,12 @@ public class DictResource implements IResource {
 		return stack;
 	}
 
-	public void loadFromBitSet(BitSet bits) {
+	public DictResource loadFromBitSet(BitSet bits) {
 		use_od = bits.get(0);
 		ignore_dmg = bits.get(1);
 		ignore_nbt = bits.get(2);
 		use_category = bits.get(3);
+		return this;
 	}
 
 	public BitSet getBitSet() {
@@ -213,5 +224,34 @@ public class DictResource implements IResource {
 		bits.set(2, ignore_nbt);
 		bits.set(3, use_category);
 		return bits;
+	}
+
+	public Identifier getIdentifier() {
+		return new Identifier();
+	}
+
+	public class Identifier {
+
+		private ItemIdentifier getItem() {
+			return stack.getItem();
+		}
+
+		private BitSet getBitSet() {
+			return DictResource.this.getBitSet();
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hashCode(getItem(), getBitSet());
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if(obj instanceof Identifier) {
+				Identifier id = (Identifier) obj;
+				return id.getItem().equals(getItem()) && id.getBitSet().equals(getBitSet());
+			}
+			return false;
+		}
 	}
 }

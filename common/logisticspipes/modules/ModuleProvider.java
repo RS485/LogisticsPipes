@@ -243,10 +243,11 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 		for (ItemIdentifier item : possible) {
 			int canProvide = getAvailableItemCount(item);
 			canProvide -= root.getAllPromissesFor((IProvideItems) _service, item);
+			canProvide = Math.min(canProvide, tree.getMissingAmount());
 			if (canProvide < 1) {
 				return;
 			}
-			LogisticsPromise promise = new LogisticsPromise(item, Math.min(canProvide, tree.getMissingAmount()), (IProvideItems) _service, ResourceType.PROVIDER);
+			LogisticsPromise promise = new LogisticsPromise(item, canProvide, (IProvideItems) _service, ResourceType.PROVIDER);
 			tree.addPromise(promise);
 		}
 	}

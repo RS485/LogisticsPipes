@@ -25,7 +25,7 @@ public class PipeManagerContentPacket extends CoordinatesPacket {
 
 	@Getter
 	@Setter
-	private LogisticsOrderManager<? extends LogisticsOrder> manager;
+	private LogisticsOrderManager<? extends LogisticsOrder, ?> manager;
 
 	private List<IOrderInfoProvider> clientOrder;
 

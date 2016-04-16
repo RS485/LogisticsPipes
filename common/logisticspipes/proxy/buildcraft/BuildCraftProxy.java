@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import buildcraft.api.events.RobotEvent;
 import buildcraft.transport.*;
 import buildcraft.transport.render.PipeTransportItemsRenderer;
 import buildcraft.transport.render.PipeTransportRenderer;
@@ -58,7 +59,6 @@ import buildcraft.BuildCraftTransport;
 import buildcraft.api.boards.RedstoneBoardRegistry;
 import buildcraft.api.boards.RedstoneBoardRobotNBT;
 import buildcraft.api.core.BCLog;
-import buildcraft.api.events.RobotPlacementEvent;
 import buildcraft.api.robots.DockingStation;
 import buildcraft.api.robots.RobotManager;
 import buildcraft.api.statements.IActionInternal;
@@ -445,12 +445,15 @@ public class BuildCraftProxy implements IBCProxy {
 					if (robotNBT == RedstoneBoardRegistry.instance.getEmptyRobotBoard()) {
 						return true;
 					}
-					RobotPlacementEvent robotEvent = new RobotPlacementEvent(player, robotNBT.getID());
+
+					EntityRobot robot = ((ItemRobot) currentItem.getItem())
+							.createRobot(currentItem, world);
+
+					RobotEvent.Place robotEvent = new RobotEvent.Place(robot, player);
 					FMLCommonHandler.instance().bus().post(robotEvent);
 					if (robotEvent.isCanceled()) {
 						return true;
 					}
-					EntityRobot robot = ((ItemRobot) currentItem.getItem()).createRobot(currentItem, world);
 
 					if (robot != null && robot.getRegistry() != null) {
 						robot.setUniqueRobotId(robot.getRegistry().getNextRobotId());

@@ -537,6 +537,10 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		System.out.println("~~~~~~~~~~~SUBSYSTEMPOWER~~~~~~~~~~~");
 		System.out.println(r.getSubSystemPowerProvider());
 		System.out.println();
+		if(_orderItemManager != null) {
+			System.out.println("################ORDERDUMP#################");
+			_orderItemManager.dump();
+		}
 		System.out.println("################END#################");
 		refreshConnectionAndRender(true);
 		System.out.print("");
@@ -1624,7 +1628,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe implements IClient
 		return _orderItemManager;
 	}
 
-	public LogisticsOrderManager<?> getOrderManager() {
+	public LogisticsOrderManager<?, ?> getOrderManager() {
 		return getItemOrderManager();
 	}
 

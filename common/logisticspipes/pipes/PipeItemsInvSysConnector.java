@@ -118,6 +118,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 			//@formatter:off
 			new WorldCoordinatesWrapper(container).getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
 					.filter(adjacent -> adjacent.tileEntity instanceof IInventory)
+					.filter(adjacent -> isConnectedInv(adjacent.tileEntity))
 					.map(adjacent -> {
 						IInventory inv = InventoryHelper.getInventory((IInventory) adjacent.tileEntity);
 						if (inv instanceof ISidedInventory) {
@@ -313,9 +314,10 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 
 	private boolean inventoryConnected() {
 		for (int i = 0; i < 6; i++) {
-			DoubleCoordinates p = CoordinateUtils.add(new DoubleCoordinates(this), ForgeDirection.values()[i]);
+			ForgeDirection dir = ForgeDirection.values()[i];
+			DoubleCoordinates p = CoordinateUtils.add(new DoubleCoordinates(this), dir);
 			TileEntity tile = p.getTileEntity(getWorld());
-			if (tile instanceof IInventory) {
+			if (tile instanceof IInventory && this.container.canPipeConnect(tile, dir)) {
 				return true;
 			}
 		}
@@ -350,9 +352,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	}
 
 	@Override
-	public void addItem(ItemRoutingInformation info)
-
-	{
+	public void addItem(ItemRoutingInformation info) {
 		if (info.getItem() != null && info.getItem().getStackSize() > 0 && info.destinationint >= 0) {
 			ItemIdentifier insertedType = info.getItem().getItem();
 			List<ItemRoutingInformation> entry = itemsOnRoute.get(insertedType);
@@ -367,10 +367,13 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 
 	public boolean isConnectedInv(TileEntity tile) {
 		for (int i = 0; i < 6; i++) {
-			DoubleCoordinates p = CoordinateUtils.add(new DoubleCoordinates(this), ForgeDirection.values()[i]);
+			ForgeDirection dir = ForgeDirection.values()[i];
+			DoubleCoordinates p = CoordinateUtils.add(new DoubleCoordinates(this), dir);
 			TileEntity lTile = p.getTileEntity(getWorld());
 			if (lTile instanceof IInventory) {
-				return lTile == tile;
+				if (lTile == tile) {
+					return this.container.canPipeConnect(lTile, dir);
+				}
 			}
 		}
 		return false;

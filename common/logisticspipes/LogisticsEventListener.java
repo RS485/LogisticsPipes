@@ -198,8 +198,10 @@ public class LogisticsEventListener {
 	public void onPlayerLogout(PlayerLoggedOutEvent event) {
 		SimpleServiceLocator.serverBufferHandler.clear(event.player);
 		PlayerIdentifier ident = PlayerIdentifier.get(event.player);
-		PlayerConfig config = LogisticsEventListener.getPlayerConfig(ident);
-		config.writeToFile();
+		PlayerConfig config = LogisticsEventListener.playerConfigs.get(ident);
+		if (config != null) {
+			config.writeToFile();
+		}
 		LogisticsEventListener.playerConfigs.remove(ident);
 	}
 

@@ -550,6 +550,9 @@ public class DevEnvHelper {
 	// returns actual owner of field
 	// or null if the field could not be resolved
 	private static String resolveField(String owner, String name, String desc, Mapping m) throws IOException {
+		if (owner == null) {
+			return null;
+		}
 		byte[] bytes = Launch.classLoader.getClassBytes(owner);
 		if (bytes == null) {
 			return null;
@@ -582,6 +585,9 @@ public class DevEnvHelper {
 	// returns [realOwner, realDesc]
 	// or null if the method could not be resolved
 	private static String[] resolveMethod(String owner, String name, String desc, Mapping m) throws IOException {
+		if (owner == null) {
+			return null;
+		}
 		byte[] bytes = Launch.classLoader.getClassBytes(owner);
 		if (bytes == null) {
 			return null;
@@ -617,6 +623,10 @@ public class DevEnvHelper {
 
 			while (true) {
 
+				if(owner == null) {
+					break;
+				}
+
 				bytes = Launch.classLoader.getClassBytes(owner);
 				if (bytes == null) {
 					break;
@@ -638,6 +648,9 @@ public class DevEnvHelper {
 			owner = originalOwner;
 
 			while (true) {
+				if (owner == null) {
+					break;
+				}
 				bytes = Launch.classLoader.getClassBytes(owner);
 				if (bytes == null) {
 					break;

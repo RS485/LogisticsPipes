@@ -267,10 +267,17 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 						GL11.glEnable(GL11.GL_LIGHTING);
 						GL11.glEnable(GL11.GL_DEPTH_TEST);
 						RenderHelper.enableGUIStandardItemLighting();
-						ItemStack stack = entry.getValue().getValue1().getDisplayItem().makeNormalStack();
-						GuiScreen.itemRender.renderItemAndEffectIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5);
-						GuiScreen.itemRender.renderItemOverlayIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5, "");
-						String s = StringUtils.getFormatedStackSize(stack.stackSize, false);
+						ItemStack stack = null;
+						IResource resource = entry.getValue().getValue1();
+						String s = null;
+						if(resource != null) {
+							stack = resource.getDisplayItem().makeNormalStack();
+							GuiScreen.itemRender.renderItemAndEffectIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5);
+							GuiScreen.itemRender.renderItemOverlayIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5, "");
+							s = StringUtils.getFormatedStackSize(stack.stackSize, false);
+						} else {
+							s = "List";
+						}
 						GL11.glDisable(GL11.GL_LIGHTING);
 						GL11.glDisable(GL11.GL_DEPTH_TEST);
 						GuiScreen.itemRender.zLevel = 0.0F;
@@ -381,12 +388,12 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 								list.add(ChatColor.BLUE + "Send to Router ID: " + ChatColor.YELLOW + order
 										.getRouterId());
 								GuiGraphics.displayItemToolTip(new Object[]{xPos - 10, yPos, order
-										.getAsDisplayItem().makeNormalStack(), true, list}, zLevel, guiLeft, guiTop, false, false);
+										.getAsDisplayItem().makeNormalStack(), true, list}, zLevel, guiLeft, guiTop, false);
 							});
 						} else {
 							List<String> list = new ArrayList<>();
 							list.add(ChatColor.BLUE + "Request ID: " + ChatColor.YELLOW + entry.getKey());
-							GuiGraphics.displayItemToolTip(new Object[] { xPos - 10, yPos, entry.getValue().getValue1().getDisplayItem().makeNormalStack(), true, list }, zLevel, guiLeft, guiTop, false, false);
+							GuiGraphics.displayItemToolTip(new Object[] { xPos - 10, yPos, entry.getValue().getValue1().getDisplayItem().makeNormalStack(), true, list }, zLevel, guiLeft, guiTop, false);
 						}
 					}
 				});

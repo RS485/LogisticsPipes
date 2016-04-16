@@ -1,18 +1,7 @@
 package logisticspipes.request;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.PriorityQueue;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
@@ -31,6 +20,8 @@ import logisticspipes.routing.ServerRouter;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
+import logisticspipes.routing.order.LogisticsItemOrderManager;
+import logisticspipes.routing.order.LogisticsOrderManager;
 import logisticspipes.utils.tuples.Pair;
 
 import lombok.Getter;
@@ -81,6 +72,7 @@ public class RequestTreeNode {
 	private List<IExtraPromise> extrapromises = new ArrayList<>();
 	private List<IExtraPromise> byproducts = new ArrayList<>();
 	private SortedSet<ICraftingTemplate> usedCrafters = new TreeSet<>();
+	private Set<LogisticsOrderManager<?, ?>> usedExtrasFromManager = new HashSet<LogisticsOrderManager<?, ?>>();
 	private ICraftingTemplate lastCrafterTried = null;
 
 	private int promiseAmount = 0;
@@ -491,6 +483,14 @@ public class RequestTreeNode {
 			}
 		//LogisticsPipes.log.info("done");
 		return isDone();
+	}
+
+	public boolean hasBeenQueried(LogisticsOrderManager<?, ?> orderManager) {
+		return usedExtrasFromManager.contains(orderManager);
+	}
+
+	public void setQueried(LogisticsOrderManager<?, ?> orderManager) {
+		usedExtrasFromManager.add(orderManager);
 	}
 
 	private class CraftingSorterNode implements Comparable<CraftingSorterNode> {

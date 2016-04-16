@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.UUID;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -30,6 +32,8 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 
 public class PlayerConfig {
+
+	private static final Lock fileAccesLock = new ReentrantLock();
 
 	private final PlayerIdentifier playerIdent;
 
@@ -114,14 +118,28 @@ public class PlayerConfig {
 		if (playerIdent.getUsername() != null && !playerIdent.getUsername().isEmpty()) {
 			File file = new File(lpData, playerIdent.getUsername() + ".info");
 			if (file.exists()) {
-				lpUserData = CompressedStreamTools.readCompressed(new FileInputStream(file));
+				fileAccesLock.lock();
+				try {
+					lpUserData = CompressedStreamTools.readCompressed(new FileInputStream(file));
+				} catch(IOException e) {
+					//We simply can't load the old settings. Just fall back to the default once.
+				} finally {
+					fileAccesLock.unlock();
+				}
 				file.delete();
 			}
 		}
 		if (lpUserData == null && playerIdent.getId() != null) {
 			File file = new File(lpData, playerIdent.getId().toString() + ".info");
 			if (file.exists()) {
-				lpUserData = CompressedStreamTools.readCompressed(new FileInputStream(file));
+				fileAccesLock.lock();
+				try {
+					lpUserData = CompressedStreamTools.readCompressed(new FileInputStream(file));
+				} catch(IOException e) {
+					//We simply can't load the old settings. Just fall back to the default once.
+				} finally {
+					fileAccesLock.unlock();
+				}
 			}
 		}
 		if (lpUserData == null) {
@@ -163,7 +181,14 @@ public class PlayerConfig {
 			if (file.exists()) {
 				file.delete();
 			}
-			CompressedStreamTools.writeCompressed(lpUserData, new FileOutputStream(file));
+			fileAccesLock.lock();
+			try {
+				CompressedStreamTools.writeCompressed(lpUserData, new FileOutputStream(file));
+			} catch(IOException e) {
+				//If we can't save them, so be it.
+			} finally {
+				fileAccesLock.unlock();
+			}
 			lpUserData = null;
 		}
 		if (lpUserData != null) {
@@ -171,7 +196,14 @@ public class PlayerConfig {
 			if (file.exists()) {
 				file.delete();
 			}
-			CompressedStreamTools.writeCompressed(lpUserData, new FileOutputStream(file));
+			fileAccesLock.lock();
+			try {
+				CompressedStreamTools.writeCompressed(lpUserData, new FileOutputStream(file));
+			} catch(IOException e) {
+				//If we can't save them, so be it.
+			} finally {
+				fileAccesLock.unlock();
+			}
 			lpUserData = null;
 		}
 	}

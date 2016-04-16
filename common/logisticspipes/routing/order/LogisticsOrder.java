@@ -49,6 +49,9 @@ public abstract class LogisticsOrder implements IOrderInfoProvider {
 
 	@Override
 	public int getRouterId() {
+		if(getRouter() == null) {
+			return -1;
+		}
 		return getRouter().getSimpleID();
 	}
 

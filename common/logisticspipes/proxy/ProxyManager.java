@@ -82,7 +82,9 @@ import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.item.ItemIdentifier;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -92,6 +94,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
@@ -308,6 +311,8 @@ public class ProxyManager {
 
 		SimpleServiceLocator.setNEIProxy(ProxyManager.getWrappedProxy("NotEnoughItems", INEIProxy.class, NEIProxy.class, new INEIProxy() {
 			@Override public List<String> getInfoForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver) {return new ArrayList<>(0);}
+			@Override @SideOnly(Side.CLIENT) public boolean renderItemToolTip(int posX, int posY, List<String> msg, EnumChatFormatting rarityColor, ItemStack stack) {return false;}
+			@Override @SideOnly(Side.CLIENT) public List<String> getItemToolTip(ItemStack stack, EntityPlayer thePlayer, boolean advancedItemTooltips, GuiContainer screen) {return stack.getTooltip(thePlayer, advancedItemTooltips);}
 			@Override public ItemStack getItemForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver) {return null;}
 		}));
 

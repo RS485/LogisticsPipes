@@ -201,7 +201,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 						if (slot.getToolTipText() != null && !slot.getToolTipText().equals("")) {
 							ArrayList<String> list = new ArrayList<>();
 							list.add(slot.getToolTipText());
-							GuiGraphics.drawToolTip(par1, par2, list, EnumChatFormatting.WHITE, false);
+							GuiGraphics.drawToolTip(par1, par2, list, EnumChatFormatting.WHITE);
 						}
 					}
 				}

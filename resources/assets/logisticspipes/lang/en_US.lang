@@ -266,6 +266,7 @@ item.upgrade.info.chassi=Chassi
 item.upgrade.info.basic=Basic
 
 # Blocks
+tile.logisticsblankblock=Logistics Block Frame
 tile.solderingstation=Soldering Station
 tile.logisticspowerjunction=Logistics Power Junction
 tile.logisticssecuritystation=Logistics Security Station

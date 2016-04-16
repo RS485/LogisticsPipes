@@ -30,6 +30,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class LogisticsSolidBlock extends BlockContainer {
 
+	public static final int LOGISTICS_BLANK_BLOCK = 15;
+
 	public static final int SOLDERING_STATION = 0;
 	public static final int LOGISTICS_POWER_JUNCTION = 1;
 	public static final int LOGISTICS_SECURITY_STATION = 2;
@@ -173,6 +175,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 			case LOGISTICS_STATISTICS_TABLE:
 			case LOGISTICS_RF_POWERPROVIDER:
 			case LOGISTICS_IC2_POWERPROVIDER:
+			case LOGISTICS_BLANK_BLOCK:
 				return par1;
 		}
 		return super.damageDropped(par1);
@@ -325,6 +328,13 @@ public class LogisticsSolidBlock extends BlockContainer {
 						return LogisticsSolidBlock.icons[5];
 					default: //Front
 						return LogisticsSolidBlock.icons[6];
+				}
+			case LOGISTICS_BLANK_BLOCK:
+				switch (side) {
+					case 1: //TOP
+						return LogisticsSolidBlock.icons[10];
+					default:
+						return LogisticsSolidBlock.icons[2];
 				}
 			default:
 				return LogisticsSolidBlock.icons[0];

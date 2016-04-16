@@ -8,6 +8,8 @@ import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.proxy.interfaces.ICraftingParts;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
@@ -18,6 +20,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
+
 import static net.minecraftforge.oredict.RecipeSorter.Category.SHAPED;
 import static net.minecraftforge.oredict.RecipeSorter.Category.SHAPELESS;
 
@@ -25,12 +32,39 @@ import static net.minecraftforge.oredict.RecipeSorter.Category.SHAPELESS;
 //CHECKSTYLE:OFF
 
 public class RecipeManager {
+	@AllArgsConstructor
+	@Getter
+	private static class RecipeIndex {
+		private char index;
+		private Object value;
+	}
+	@AllArgsConstructor
+	@Getter
+	private static class RecipeLayout {
+		private String line1;
+		private String line2;
+		private String line3;
+	}
+
 	public static class LocalCraftingManager {
 		private CraftingManager craftingManager = CraftingManager.getInstance();
 		public LocalCraftingManager() {}
 		@SuppressWarnings("unchecked")
 		public void addRecipe(ItemStack stack, CraftingDependency dependent, Object... objects) {
-			craftingManager.getRecipeList().add(new LPShapedOreRecipe(stack, dependent, objects));
+			List<Object> result = new ArrayList<>();
+			Arrays.stream(objects).forEach(o-> {
+				if(o instanceof RecipeLayout) {
+					result.add(((RecipeLayout)o).getLine1());
+					result.add(((RecipeLayout)o).getLine2());
+					result.add(((RecipeLayout)o).getLine3());
+				} else if(o instanceof RecipeIndex) {
+					result.add(((RecipeIndex)o).getIndex());
+					result.add(((RecipeIndex)o).getValue());
+				} else {
+					result.add(o);
+				}
+			});
+			craftingManager.getRecipeList().add(new LPShapedOreRecipe(stack, dependent, result.toArray()));
 		}
 		@SuppressWarnings("unchecked")
 		public void addOrdererRecipe(ItemStack stack, String dye, ItemStack orderer) {
@@ -75,8 +109,6 @@ public class RecipeManager {
 	}
 
 	public static void loadRecipes(ICraftingParts parts) {
-
-
 		for(int i=0; i<1000;i++) {
 			LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(new ItemStack(LogisticsPipes.ModuleItem, 1, i), null, null, null);
 			if(module != null) {
@@ -92,7 +124,6 @@ public class RecipeManager {
 				}
 			}
 		}
-
 		String[] dyes =
 		{
 			"dyeBlack",
@@ -120,5 +151,14 @@ public class RecipeManager {
 			RecipeManager.craftingManager.addShapelessResetRecipe(LogisticsPipes.LogisticsRemoteOrderer, i);
 		}
 		RecipeManager.craftingManager.addShapelessResetRecipe(LogisticsPipes.LogisticsRemoteOrderer, 0);
+
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_BLANK_BLOCK), CraftingDependency.Basic,
+				new RecipeLayout(
+						"iri",
+						"   ",
+						"w w"),
+				new RecipeIndex('i', Items.iron_ingot),
+				new RecipeIndex('r', Items.redstone),
+				new RecipeIndex('w', Blocks.planks));
 	}
 }

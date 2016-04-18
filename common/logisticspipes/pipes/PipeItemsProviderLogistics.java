@@ -132,7 +132,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		//@formatter:off
 		return new WorldCoordinatesWrapper(container).getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
 				.filter(adjacent -> adjacent.tileEntity instanceof IInventory)
-				.filter(adjacent -> SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.tileEntity))
+				.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.tileEntity))
 				.map(adjacent -> getAdaptedInventoryUtil(adjacent).itemCount(item))
 				.reduce(Integer::sum).orElse(0);
 		//@formatter:on
@@ -158,7 +158,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		//@formatter:off
 		Iterator<Pair<IInventoryUtil, ForgeDirection>> iterator = worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
 				.filter(adjacent -> adjacent.tileEntity instanceof IInventory)
-				.filter(adjacent -> SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.tileEntity))
+				.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.tileEntity))
 				.map(adjacent -> new Pair<>(getAdaptedInventoryUtil(adjacent), adjacent.direction))
 				.iterator();
 		//@formatter:on
@@ -345,7 +345,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		//@formatter:off
 		Iterator<Map<ItemIdentifier,Integer>> iterator = worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
 				.filter(adjacent -> adjacent.tileEntity instanceof IInventory)
-				.filter(adjacent -> SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.tileEntity))
+				.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.tileEntity))
 				.map(adjacent -> getAdaptedInventoryUtil(adjacent).getItemsAndCount())
 				.iterator();
 		//@formatter:on
@@ -486,7 +486,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		//@formatter:off
 		return new WorldCoordinatesWrapper(container).getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
 				.filter(adjacent -> adjacent.tileEntity instanceof IInventory)
-				.filter(adjacent -> SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.tileEntity))
+				.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.tileEntity))
 				.flatMap(adjacent -> getAdaptedInventoryUtil(adjacent).getItems().stream())
 				.collect(Collectors.toSet());
 		//@formatter:on

@@ -80,7 +80,7 @@ public abstract class SubGuiScreen extends GuiScreen implements ISubGuiControler
 		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) short1 / 1.0F, (float) short2 / 1.0F);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-		this.drawGuiContainerForegroundLayer(par1, par2);
+		this.drawGuiContainerForegroundLayer(par1, par2, par3);
 
 		GL11.glPopMatrix();
 
@@ -100,6 +100,10 @@ public abstract class SubGuiScreen extends GuiScreen implements ISubGuiControler
 	}
 
 	protected void renderToolTips(int mouseX, int mouseY, float par3) {}
+
+	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY, float partialTick) {
+		drawGuiContainerForegroundLayer(mouseX, mouseY);
+	}
 
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {}
 

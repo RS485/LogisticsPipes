@@ -15,10 +15,7 @@ import java.util.List;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
-import logisticspipes.interfaces.IFuzzySlot;
-import logisticspipes.interfaces.IGuiOpenControler;
-import logisticspipes.interfaces.ISlotCheck;
-import logisticspipes.interfaces.ISlotClick;
+import logisticspipes.interfaces.*;
 import logisticspipes.items.ItemModule;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
 import logisticspipes.modules.ChassiModule;
@@ -26,6 +23,7 @@ import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.FuzzySlotSettingsPacket;
 import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.resources.DictResource;
 import logisticspipes.utils.FluidIdentifier;
@@ -171,6 +169,18 @@ public class DummyContainer extends Container {
 
 	public Slot addFuzzyUnmodifiableSlot(int slotId, IInventory inventory, int xCoord, int yCoord, DictResource dictResource) {
 		return addSlotToContainer(new FuzzyUnmodifiableSlot(inventory, slotId, xCoord, yCoord, dictResource));
+	}
+
+	public Slot addUpgradeSlot(int slotId, ISlotUpgradeManager manager, int upgradeSlotId, int xCoord, int yCoord, ISlotCheck slotCheck) {
+		Slot slot = addSlotToContainer(new UpgradeSlot(manager, upgradeSlotId, slotId, xCoord, yCoord, slotCheck));
+		transferTop.add(slot);
+		return slot;
+	}
+
+	public Slot addSneakyUpgradeSlot(int slotId, UpgradeManager manager, int upgradeSlotId, int xCoord, int yCoord, ISlotCheck slotCheck) {
+		Slot slot = addSlotToContainer(new SneakyUpgradeSlot(manager, upgradeSlotId, slotId, xCoord, yCoord, slotCheck));
+		transferTop.add(slot);
+		return slot;
 	}
 
 	@Override

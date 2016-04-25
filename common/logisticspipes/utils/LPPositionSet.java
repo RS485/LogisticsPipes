@@ -42,49 +42,49 @@ public class LPPositionSet<T extends DoubleCoordinates> extends HashSet<T> imple
 	}
 
 	public double getMaxXD() {
-		double x = Integer.MIN_VALUE;
+		double x = -Double.MAX_VALUE;
 		for (DoubleCoordinates pos : this) {
-			x = Math.max(x, pos.getXCoord());
+			x = Math.max(x, pos.getXDouble());
 		}
 		return x;
 	}
 
 	public double getMaxYD() {
-		double y = Integer.MIN_VALUE;
+		double y = -Double.MAX_VALUE;
 		for (DoubleCoordinates pos : this) {
-			y = Math.max(y, pos.getYCoord());
+			y = Math.max(y, pos.getYDouble());
 		}
 		return y;
 	}
 
 	public double getMaxZD() {
-		double z = Integer.MIN_VALUE;
+		double z = -Double.MAX_VALUE;
 		for (DoubleCoordinates pos : this) {
-			z = Math.max(z, pos.getZCoord());
+			z = Math.max(z, pos.getZDouble());
 		}
 		return z;
 	}
 
 	public double getMinXD() {
-		double x = Integer.MAX_VALUE;
+		double x = Double.MAX_VALUE;
 		for (DoubleCoordinates pos : this) {
-			x = Math.min(x, pos.getXCoord());
+			x = Math.min(x, pos.getXDouble());
 		}
 		return x;
 	}
 
 	public double getMinYD() {
-		double y = Integer.MAX_VALUE;
+		double y = Double.MAX_VALUE;
 		for (DoubleCoordinates pos : this) {
-			y = Math.min(y, pos.getYCoord());
+			y = Math.min(y, pos.getYDouble());
 		}
 		return y;
 	}
 
 	public double getMinZD() {
-		double z = Integer.MAX_VALUE;
+		double z = Double.MAX_VALUE;
 		for (DoubleCoordinates pos : this) {
-			z = Math.min(z, pos.getZCoord());
+			z = Math.min(z, pos.getZDouble());
 		}
 		return z;
 	}

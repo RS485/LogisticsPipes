@@ -1,6 +1,10 @@
 package logisticspipes.interfaces;
 
+import logisticspipes.pipes.upgrades.IPipeUpgrade;
+import net.minecraft.inventory.IInventory;
 import net.minecraftforge.common.util.ForgeDirection;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+import network.rs485.logisticspipes.world.IntegerCoordinates;
 
 public interface ISlotUpgradeManager {
 
@@ -21,4 +25,10 @@ public interface ISlotUpgradeManager {
 	ForgeDirection getSneakyOrientation();
 
 	boolean hasOwnSneakyUpgrade();
+
+	IInventory getInv();
+
+	IPipeUpgrade getUpgrade(int slot);
+
+	DoubleCoordinates getPipePosition();
 }

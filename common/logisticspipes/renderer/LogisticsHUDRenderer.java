@@ -2,7 +2,6 @@ package logisticspipes.renderer;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,7 +19,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LaserData;
 import logisticspipes.routing.PipeRoutingConnectionType;
-import logisticspipes.utils.MathVector;
+import logisticspipes.utils.math.Vector3d;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
@@ -564,79 +563,79 @@ public class LogisticsHUDRenderer {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		EntityPlayer player = mc.thePlayer;
 
-		MathVector playerView = MathVector.getFromAngles((270 - player.rotationYaw) / 360 * -2 * Math.PI, (player.rotationPitch) / 360 * -2 * Math.PI);
-		MathVector playerPos = new MathVector();
-		playerPos.X = player.posX;
-		playerPos.Y = player.posY;
-		playerPos.Z = player.posZ;
+		Vector3d playerView = Vector3d.getFromAngles((270 - player.rotationYaw) / 360 * -2 * Math.PI, (player.rotationPitch) / 360 * -2 * Math.PI);
+		Vector3d playerPos = new Vector3d();
+		playerPos.x = player.posX;
+		playerPos.y = player.posY;
+		playerPos.z = player.posZ;
 
-		MathVector panelPos = new MathVector();
-		panelPos.X = renderer.getX() + 0.5;
-		panelPos.Y = renderer.getY() + 0.5;
-		panelPos.Z = renderer.getZ() + 0.5;
+		Vector3d panelPos = new Vector3d();
+		panelPos.x = renderer.getX() + 0.5;
+		panelPos.y = renderer.getY() + 0.5;
+		panelPos.z = renderer.getZ() + 0.5;
 
-		MathVector panelView = new MathVector();
-		panelView.X = playerPos.X - panelPos.X;
-		panelView.Y = playerPos.Y - panelPos.Y;
-		panelView.Z = playerPos.Z - panelPos.Z;
+		Vector3d panelView = new Vector3d();
+		panelView.x = playerPos.x - panelPos.x;
+		panelView.y = playerPos.y - panelPos.y;
+		panelView.z = playerPos.z - panelPos.z;
 
 		panelPos.add(panelView, 0.44D);
 
-		double d = panelPos.X * panelView.X + panelPos.Y * panelView.Y + panelPos.Z * panelView.Z;
-		double c = panelView.X * playerPos.X + panelView.Y * playerPos.Y + panelView.Z * playerPos.Z;
-		double b = panelView.X * playerView.X + panelView.Y * playerView.Y + panelView.Z * playerView.Z;
+		double d = panelPos.x * panelView.x + panelPos.y * panelView.y + panelPos.z * panelView.z;
+		double c = panelView.x * playerPos.x + panelView.y * playerPos.y + panelView.z * playerPos.z;
+		double b = panelView.x * playerView.x + panelView.y * playerView.y + panelView.z * playerView.z;
 		double a = (d - c) / b;
 
-		MathVector viewPos = new MathVector();
-		viewPos.X = playerPos.X + a * playerView.X - panelPos.X;
-		viewPos.Y = playerPos.Y + a * playerView.Y - panelPos.Y;
-		viewPos.Z = playerPos.Z + a * playerView.Z - panelPos.Z;
+		Vector3d viewPos = new Vector3d();
+		viewPos.x = playerPos.x + a * playerView.x - panelPos.x;
+		viewPos.y = playerPos.y + a * playerView.y - panelPos.y;
+		viewPos.z = playerPos.z + a * playerView.z - panelPos.z;
 
-		MathVector panelScalVector1 = new MathVector();
+		Vector3d panelScalVector1 = new Vector3d();
 
-		if (panelView.Y == 0) {
-			panelScalVector1.X = 0;
-			panelScalVector1.Y = 1;
-			panelScalVector1.Z = 0;
+		if (panelView.y == 0) {
+			panelScalVector1.x = 0;
+			panelScalVector1.y = 1;
+			panelScalVector1.z = 0;
 		} else {
-			panelScalVector1 = panelView.getOrtogonal(-panelView.X, null, -panelView.Z).makeVectorLength(1.0D);
+			panelScalVector1 = panelView.getOrtogonal(-panelView.x, null, -panelView.z).makeVectorLength(1.0D);
 		}
 
-		MathVector panelScalVector2 = new MathVector();
+		Vector3d panelScalVector2 = new Vector3d();
 
-		if (panelView.Z == 0) {
-			panelScalVector2.X = 0;
-			panelScalVector2.Y = 0;
-			panelScalVector2.Z = 1;
+		if (panelView.z == 0) {
+			panelScalVector2.x = 0;
+			panelScalVector2.y = 0;
+			panelScalVector2.z = 1;
 		} else {
 			panelScalVector2 = panelView.getOrtogonal(1.0D, 0.0D, null).makeVectorLength(1.0D);
 		}
 
-		if (panelScalVector1.Y == 0) {
+		if (panelScalVector1.y == 0) {
 			return new int[] {};
 		}
 
-		double cursorY = -viewPos.Y / panelScalVector1.Y;
+		double cursorY = -viewPos.y / panelScalVector1.y;
 
-		MathVector restViewPos = viewPos.clone();
-		restViewPos.X += cursorY * panelScalVector1.X;
-		restViewPos.Y = 0;
-		restViewPos.Z += cursorY * panelScalVector1.Z;
+		Vector3d restViewPos = viewPos.clone();
+		restViewPos.x += cursorY * panelScalVector1.x;
+		restViewPos.y = 0;
+		restViewPos.z += cursorY * panelScalVector1.z;
 
 		double cursorX;
 
-		if (panelScalVector2.X == 0) {
-			cursorX = restViewPos.Z / panelScalVector2.Z;
+		if (panelScalVector2.x == 0) {
+			cursorX = restViewPos.z / panelScalVector2.z;
 		} else {
-			cursorX = restViewPos.X / panelScalVector2.X;
+			cursorX = restViewPos.x / panelScalVector2.x;
 		}
 
 		cursorX *= 50 / 0.47D;
 		cursorY *= 50 / 0.47D;
-		if (panelView.Z < 0) {
+		if (panelView.z < 0) {
 			cursorX *= -1;
 		}
-		if (panelView.Y < 0) {
+		if (panelView.y < 0) {
 			cursorY *= -1;
 		}
 

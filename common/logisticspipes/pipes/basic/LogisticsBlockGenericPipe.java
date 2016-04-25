@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.Callable;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
@@ -25,7 +24,7 @@ import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.textures.Textures;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.LPPositionSet;
-import logisticspipes.utils.MatrixTranformations;
+import logisticspipes.utils.math.MatrixTranformations;
 
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -195,6 +194,8 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 	}
 
+	public static RaytraceResult bypassPlayerTrace = null;
+	public static boolean ignoreSideRayTrace = false;
 	@Override
 	@SideOnly(Side.CLIENT)
 	public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int x, int y, int z) {
@@ -202,7 +203,12 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe instanceof PipeBlockRequestTable) {
 			return AxisAlignedBB.getBoundingBox(x + 0.0, y + 0.0, z + 0.0, x + 1.0, y + 1.0, z + 1.0);
 		}
-		RaytraceResult rayTraceResult = doRayTrace(world, x, y, z, Minecraft.getMinecraft().thePlayer);
+		RaytraceResult rayTraceResult = null;
+		if(bypassPlayerTrace == null) {
+			rayTraceResult = doRayTrace(world, x, y, z, Minecraft.getMinecraft().thePlayer);
+		} else {
+			rayTraceResult = bypassPlayerTrace;
+		}
 
 		if (rayTraceResult != null && rayTraceResult.boundingBox != null) {
 			AxisAlignedBB box = rayTraceResult.boundingBox;
@@ -323,7 +329,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		return doRayTrace(world, x, y, z, origin, direction);
 	}
 
-	private RaytraceResult doRayTrace(World world, int x, int y, int z, Vec3 origin, Vec3 direction) {
+	public RaytraceResult doRayTrace(World world, int x, int y, int z, Vec3 origin, Vec3 direction) {
 		TileEntity pipeTileEntity = world.getTileEntity(x, y, z);
 
 		LogisticsTileGenericPipe tileG = null;
@@ -378,13 +384,14 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		Arrays.fill(sideHit, ForgeDirection.UNKNOWN);
 
 		// pipe
-
 		for (ForgeDirection side : LogisticsBlockGenericPipe.DIR_VALUES) {
 			if (side == ForgeDirection.UNKNOWN || tileG.isPipeConnected(side)) {
+				if(side != ForgeDirection.UNKNOWN && ignoreSideRayTrace) continue;
 				AxisAlignedBB bb = getPipeBoundingBox(side);
 				setBlockBounds(bb);
 				boxes[side.ordinal()] = bb;
-				hits[side.ordinal()] = super.collisionRayTrace(tileG.getWorldObj(), tileG.xCoord, tileG.yCoord, tileG.zCoord, origin, direction);
+				hits[side.ordinal()] = super.collisionRayTrace(tileG
+						.getWorldObj(), tileG.xCoord, tileG.yCoord, tileG.zCoord, origin, direction);
 				sideHit[side.ordinal()] = side;
 			}
 		}
@@ -393,10 +400,12 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 		for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
 			if (tileG.getPipePluggable(side) != null) {
+				if(side != ForgeDirection.UNKNOWN && ignoreSideRayTrace) continue;
 				AxisAlignedBB bb = tileG.getPipePluggable(side).getBoundingBox(side);
 				setBlockBounds(bb);
 				boxes[7 + side.ordinal()] = bb;
-				hits[7 + side.ordinal()] = super.collisionRayTrace(tileG.getWorldObj(), tileG.xCoord, tileG.yCoord, tileG.zCoord, origin, direction);
+				hits[7 + side.ordinal()] = super.collisionRayTrace(tileG
+						.getWorldObj(), tileG.xCoord, tileG.yCoord, tileG.zCoord, origin, direction);
 				sideHit[7 + side.ordinal()] = side;
 			}
 		}

@@ -552,7 +552,7 @@ public class PipeTransportLogistics {
 					if (slotManager.hasSneakyUpgrade()) {
 						insertion = slotManager.getSneakyOrientation();
 					}
-					ItemStack added = InventoryHelper.getTransactorFor(tile, dir.getOpposite()).add(arrivingItem.getItemIdentifierStack().makeNormalStack(), insertion, true);
+					ItemStack added = InventoryHelper.getTransactorFor(tile, insertion).add(arrivingItem.getItemIdentifierStack().makeNormalStack(), insertion, true);
 
 					arrivingItem.getItemIdentifierStack().lowerStackSize(added.stackSize);
 
@@ -584,7 +584,7 @@ public class PipeTransportLogistics {
 						if (insertion == null) {
 							continue;
 						}
-						ItemStack added = InventoryHelper.getTransactorFor(tile, dir.getOpposite()).add(arrivingItem.getItemIdentifierStack().makeNormalStack(), insertion, true);
+						ItemStack added = InventoryHelper.getTransactorFor(tile, insertion).add(arrivingItem.getItemIdentifierStack().makeNormalStack(), insertion, true);
 
 						arrivingItem.getItemIdentifierStack().lowerStackSize(added.stackSize);
 						if (added.stackSize > 0) {

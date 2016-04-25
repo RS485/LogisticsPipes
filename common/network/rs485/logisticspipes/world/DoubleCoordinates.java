@@ -25,6 +25,7 @@ import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.utils.IPositionRotateble;
 
+import lombok.AccessLevel;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -35,6 +36,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import lombok.Data;
+import lombok.Getter;
 
 @Data
 public class DoubleCoordinates implements IPositionRotateble, ICoordinates {

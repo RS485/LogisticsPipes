@@ -14,6 +14,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import lombok.Getter;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgradeManager {
 
@@ -88,6 +89,16 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 	@Override
 	public boolean hasOwnSneakyUpgrade() {
 		return sneakyOrientation != ForgeDirection.UNKNOWN;
+	}
+
+	@Override
+	public IPipeUpgrade getUpgrade(int slot) {
+		return upgrades[slot];
+	}
+
+	@Override
+	public DoubleCoordinates getPipePosition() {
+		return pipe.getLPPosition();
 	}
 
 	@Override

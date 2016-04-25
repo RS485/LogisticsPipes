@@ -8,21 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import logisticspipes.LPConstants;
-import logisticspipes.pipes.upgrades.AdvancedSatelliteUpgrade;
-import logisticspipes.pipes.upgrades.CCRemoteControlUpgrade;
-import logisticspipes.pipes.upgrades.CombinedSneakyUpgrade;
-import logisticspipes.pipes.upgrades.CraftingByproductUpgrade;
-import logisticspipes.pipes.upgrades.CraftingCleanupUpgrade;
-import logisticspipes.pipes.upgrades.CraftingMonitoringUpgrade;
-import logisticspipes.pipes.upgrades.FluidCraftingUpgrade;
-import logisticspipes.pipes.upgrades.FuzzyUpgrade;
-import logisticspipes.pipes.upgrades.IPipeUpgrade;
-import logisticspipes.pipes.upgrades.LogicControllerUpgrade;
-import logisticspipes.pipes.upgrades.OpaqueUpgrade;
-import logisticspipes.pipes.upgrades.PatternUpgrade;
-import logisticspipes.pipes.upgrades.PowerTransportationUpgrade;
-import logisticspipes.pipes.upgrades.SpeedUpgrade;
-import logisticspipes.pipes.upgrades.UpgradeModuleUpgrade;
+import logisticspipes.pipes.upgrades.*;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeDOWN;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeEAST;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeNORTH;
@@ -64,6 +50,7 @@ public class ItemUpgrade extends LogisticsItem {
 	public static final int SNEAKY_EAST = 4;
 	public static final int SNEAKY_WEST = 5;
 	public static final int SNEAKY_COMBINATION = 6;
+	public static final int SNEAKY = 7;
 
 	//Connection Upgrades
 	public static final int CONNECTION_UP = 10;
@@ -72,6 +59,7 @@ public class ItemUpgrade extends LogisticsItem {
 	public static final int CONNECTION_SOUTH = 13;
 	public static final int CONNECTION_EAST = 14;
 	public static final int CONNECTION_WEST = 15;
+	public static final int CONNECTION = 16;
 
 	//Speed Upgrade
 	public static final int SPEED = 20;
@@ -111,11 +99,19 @@ public class ItemUpgrade extends LogisticsItem {
 		private int id;
 		private Class<? extends IPipeUpgrade> upgradeClass;
 		private int textureIndex = -1;
+		private boolean deprecated = false;
 
 		private Upgrade(int id, Class<? extends IPipeUpgrade> moduleClass, int textureIndex) {
 			this.id = id;
 			upgradeClass = moduleClass;
 			this.textureIndex = textureIndex;
+		}
+
+		private Upgrade(int id, Class<? extends IPipeUpgrade> moduleClass, int textureIndex, boolean deprecated) {
+			this.id = id;
+			upgradeClass = moduleClass;
+			this.textureIndex = textureIndex;
+			this.deprecated = deprecated;
 		}
 
 		private IPipeUpgrade getIPipeUpgrade() {
@@ -148,20 +144,22 @@ public class ItemUpgrade extends LogisticsItem {
 	}
 
 	public void loadUpgrades() {
-		registerUpgrade(ItemUpgrade.SNEAKY_UP, SneakyUpgradeUP.class, 0);
-		registerUpgrade(ItemUpgrade.SNEAKY_DOWN, SneakyUpgradeDOWN.class, 1);
-		registerUpgrade(ItemUpgrade.SNEAKY_NORTH, SneakyUpgradeNORTH.class, 2);
-		registerUpgrade(ItemUpgrade.SNEAKY_SOUTH, SneakyUpgradeSOUTH.class, 3);
-		registerUpgrade(ItemUpgrade.SNEAKY_EAST, SneakyUpgradeEAST.class, 4);
-		registerUpgrade(ItemUpgrade.SNEAKY_WEST, SneakyUpgradeWEST.class, 5);
+		registerUpgrade(ItemUpgrade.SNEAKY_UP, SneakyUpgradeUP.class, 0, true);
+		registerUpgrade(ItemUpgrade.SNEAKY_DOWN, SneakyUpgradeDOWN.class, 1, true);
+		registerUpgrade(ItemUpgrade.SNEAKY_NORTH, SneakyUpgradeNORTH.class, 2, true);
+		registerUpgrade(ItemUpgrade.SNEAKY_SOUTH, SneakyUpgradeSOUTH.class, 3, true);
+		registerUpgrade(ItemUpgrade.SNEAKY_EAST, SneakyUpgradeEAST.class, 4, true);
+		registerUpgrade(ItemUpgrade.SNEAKY_WEST, SneakyUpgradeWEST.class, 5, true);
 		registerUpgrade(ItemUpgrade.SNEAKY_COMBINATION, CombinedSneakyUpgrade.class, 6);
+		registerUpgrade(ItemUpgrade.SNEAKY, SneakyUpgradeConfig.class, 32);
 		registerUpgrade(ItemUpgrade.SPEED, SpeedUpgrade.class, 7);
-		registerUpgrade(ItemUpgrade.CONNECTION_UP, ConnectionUpgradeUP.class, 8);
-		registerUpgrade(ItemUpgrade.CONNECTION_DOWN, ConnectionUpgradeDOWN.class, 9);
-		registerUpgrade(ItemUpgrade.CONNECTION_NORTH, ConnectionUpgradeNORTH.class, 10);
-		registerUpgrade(ItemUpgrade.CONNECTION_SOUTH, ConnectionUpgradeSOUTH.class, 11);
-		registerUpgrade(ItemUpgrade.CONNECTION_EAST, ConnectionUpgradeEAST.class, 12);
-		registerUpgrade(ItemUpgrade.CONNECTION_WEST, ConnectionUpgradeWEST.class, 13);
+		registerUpgrade(ItemUpgrade.CONNECTION_UP, ConnectionUpgradeUP.class, 8, true);
+		registerUpgrade(ItemUpgrade.CONNECTION_DOWN, ConnectionUpgradeDOWN.class, 9, true);
+		registerUpgrade(ItemUpgrade.CONNECTION_NORTH, ConnectionUpgradeNORTH.class, 10, true);
+		registerUpgrade(ItemUpgrade.CONNECTION_SOUTH, ConnectionUpgradeSOUTH.class, 11, true);
+		registerUpgrade(ItemUpgrade.CONNECTION_EAST, ConnectionUpgradeEAST.class, 12, true);
+		registerUpgrade(ItemUpgrade.CONNECTION_WEST, ConnectionUpgradeWEST.class, 13, true);
+		registerUpgrade(ItemUpgrade.CONNECTION, ConnectionUpgradeConfig.class, 33);
 
 		registerUpgrade(ItemUpgrade.ADVANCED_SAT_CRAFTINGPIPE, AdvancedSatelliteUpgrade.class, 14);
 		registerUpgrade(ItemUpgrade.LIQUID_CRAFTING, FluidCraftingUpgrade.class, 15);
@@ -200,6 +198,22 @@ public class ItemUpgrade extends LogisticsItem {
 		}
 	}
 
+	public void registerUpgrade(int id, Class<? extends IPipeUpgrade> moduleClass, int textureId, boolean deprecated) {
+		boolean flag = true;
+		for (Upgrade upgrade : upgrades) {
+			if (upgrade.getId() == id) {
+				flag = false;
+			}
+		}
+		if (flag) {
+			upgrades.add(new Upgrade(id, moduleClass, textureId, deprecated));
+		} else if (!flag) {
+			throw new UnsupportedOperationException("Someting went wrong while registering a new Logistics Pipe Upgrade. (Id " + id + " already in use)");
+		} else {
+			throw new UnsupportedOperationException("Someting went wrong while registering a new Logistics Pipe Upgrade. (No name given)");
+		}
+	}
+
 	public int[] getRegisteredUpgradeIDs() {
 		int[] array = new int[upgrades.size()];
 		int i = 0;
@@ -217,7 +231,7 @@ public class ItemUpgrade extends LogisticsItem {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
-		par3List.addAll(upgrades.stream()
+		par3List.addAll(upgrades.stream().filter(upgrade -> !upgrade.deprecated)
 				.map(upgrade -> new ItemStack(this, 1, upgrade.getId()))
 				.collect(Collectors.toList()));
 	}
@@ -261,12 +275,17 @@ public class ItemUpgrade extends LogisticsItem {
 
 	@Override
 	public String getItemStackDisplayName(ItemStack itemstack) {
+		for (Upgrade upgrade : upgrades) {
+			if (itemstack.getItemDamage() == upgrade.getId()) {
+				return StringUtils.translate(getUnlocalizedName(itemstack)) + (upgrade.deprecated ? " (Deprecated)" : "");
+			}
+		}
 		return StringUtils.translate(getUnlocalizedName(itemstack));
 	}
 
 	@Override
 	public void registerIcons(IIconRegister par1IIconRegister) {
-		icons = new IIcon[32];
+		icons = new IIcon[34];
 		icons[0] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyUP");
 		icons[1] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyDOWN");
 		icons[2] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyNORTH");
@@ -302,6 +321,9 @@ public class ItemUpgrade extends LogisticsItem {
 		icons[29] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/CraftingCleanup");
 		icons[30] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/LogicController");
 		icons[31] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/UpgradeModule");
+
+		icons[32] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/Sneaky");
+		icons[33] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/Dis");
 	}
 
 	@Override

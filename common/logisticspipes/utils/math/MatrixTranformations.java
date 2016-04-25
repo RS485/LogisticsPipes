@@ -1,4 +1,4 @@
-package logisticspipes.utils;
+package logisticspipes.utils.math;
 
 import net.minecraftforge.common.util.ForgeDirection;
 

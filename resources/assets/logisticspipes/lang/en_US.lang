@@ -249,7 +249,9 @@ item.CraftingMonitoringUpgrade=Crafting Monitoring Upgrade
 item.OpaqueUpgrade=Opaque Upgrade
 item.CraftingCleanupUpgrade=Crafting Cleanup Upgrade
 item.LogicControllerUpgrade=Logic Controller Upgrade
-item.UpgradeModuleUpgrade=Upgrade Module Upgrade
+item.UpgradeModuleUpgrade=Module Upgrade
+item.SneakyUpgradeConfig=Sneaky Upgrade
+item.ConnectionUpgradeConfig=Disconnection Upgrade
 
 #Upgrade info
 
@@ -436,6 +438,8 @@ gui.pipecontroller.Sent=Sent
 gui.pipecontroller.Recieved=Recieved
 gui.pipecontroller.Relayed=Relayed
 gui.pipecontroller.RoutingTableSize=RoutingTableSize
+gui.pipecontroller.popup.disconnectTitle=Disconnection Configuration
+gui.pipecontroller.popup.sneakyTitle=Sneaky Configuration
 
 gui.networkstatistics.amount=Track amount
 gui.networkstatistics.crafting=View active crafting tasks

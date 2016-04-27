@@ -184,8 +184,13 @@ public class LPDataOutputStream extends DataOutputStream {
 			}
 		});
 		writeByte(order.getMachineProgress());
-		writeLPPosition(order.getTargetPosition());
-		writeItemIdentifier(order.getTargetType());
+		if(order.getTargetPosition() != null) {
+			writeBoolean(true);
+			writeLPPosition(order.getTargetPosition());
+			writeItemIdentifier(order.getTargetType());
+		} else {
+			writeBoolean(false);
+		}
 	}
 
 	public <T extends Enum<T>> void writeEnum(T object) throws IOException {

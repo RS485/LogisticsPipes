@@ -196,8 +196,12 @@ public class LPDataInputStream extends DataInputStream {
 			}
 		});
 		byte machineProgress = readByte();
-		LPPosition pos = readLPPosition();
-		ItemIdentifier ident = readItemIdentifier();
+		LPPosition pos = null;
+		ItemIdentifier ident = null;
+		if(readBoolean()) {
+			pos = readLPPosition();
+			ident = readItemIdentifier();
+		}
 		return new ClientSideOrderInfo(stack, isFinished, type, inProgress, routerId, list, machineProgress, pos, ident);
 	}
 

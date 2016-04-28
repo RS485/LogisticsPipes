@@ -6,7 +6,7 @@
 	<property name="antcontlib.dir"       value="${build.dir}/antcontlib"/>
 	<property name="resource.dir"         value="${build.dir}/resources/main"/>
 	
-	<property name="sign.dir"             value="/home/jenkins/.sign"/>
+	<property name="sign.dir"             value="/var/jenkins_home/.sign" />
 	
 	<property name="languageDownload"     value="https://github.com/RS485/LogisticsPipes-Language/archive/master.zip"/>
 	

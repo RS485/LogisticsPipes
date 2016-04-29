@@ -9,7 +9,6 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public class FireWallFlag extends BitSetCoordinatesPacket {
 
 	public FireWallFlag(int id) {

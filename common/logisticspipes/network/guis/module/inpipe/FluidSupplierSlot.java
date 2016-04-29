@@ -10,7 +10,6 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public class FluidSupplierSlot extends ModuleCoordinatesGuiProvider {
 
 	public FluidSupplierSlot(int id) {

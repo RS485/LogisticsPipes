@@ -12,7 +12,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import java.io.IOException;
 import java.util.BitSet;
 
-@Accessors(chain = true)
 public class FuzzySlotSettingsPacket extends ModernPacket {
 
 	@Getter

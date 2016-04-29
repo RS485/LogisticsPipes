@@ -30,7 +30,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
-@Accessors(chain = true)
 public class FindMostLikelyRecipeComponents extends CoordinatesPacket {
 
 	@Getter

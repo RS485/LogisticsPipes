@@ -11,7 +11,6 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public class ExtractorModuleDirectionPacket extends DirectionModuleCoordinatesPacket {
 
 	public ExtractorModuleDirectionPacket(int id) {

@@ -18,7 +18,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public abstract class ModuleCoordinatesGuiProvider extends CoordinatesGuiProvider {
 
 	public ModuleCoordinatesGuiProvider(int id) {

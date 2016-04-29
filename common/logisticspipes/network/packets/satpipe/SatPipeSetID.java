@@ -16,7 +16,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public class SatPipeSetID extends CoordinatesPacket {
 
 	public SatPipeSetID(int id) {

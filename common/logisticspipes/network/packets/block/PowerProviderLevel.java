@@ -12,7 +12,6 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public class PowerProviderLevel extends CoordinatesPacket {
 
 	private Double aDouble;

@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public class PipeFluidUpdate extends CoordinatesPacket {
 
 	public PipeFluidUpdate(int id) {

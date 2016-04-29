@@ -20,7 +20,6 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public class ParticleFX extends CoordinatesPacket {
 
 	public ParticleFX(int id) {

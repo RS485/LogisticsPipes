@@ -29,7 +29,6 @@ import lombok.experimental.Accessors;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
 
-@Accessors(chain = true)
 public class DebugTargetResponse extends ModernPacket {
 
 	public DebugTargetResponse(int id) {

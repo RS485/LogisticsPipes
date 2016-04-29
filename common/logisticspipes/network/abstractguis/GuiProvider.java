@@ -13,7 +13,6 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.minecraftforge.common.util.FakePlayer;
 
-@Accessors(chain = true)
 public abstract class GuiProvider {
 
 	@Getter

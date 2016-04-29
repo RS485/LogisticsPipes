@@ -16,7 +16,6 @@ import cpw.mods.fml.client.FMLClientHandler;
 
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public class PipeDebugLogAskForTarget extends ModernPacket {
 
 	public PipeDebugLogAskForTarget(int id) {

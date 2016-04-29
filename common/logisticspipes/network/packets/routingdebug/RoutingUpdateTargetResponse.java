@@ -31,7 +31,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public class RoutingUpdateTargetResponse extends ModernPacket {
 
 	public RoutingUpdateTargetResponse(int id) {

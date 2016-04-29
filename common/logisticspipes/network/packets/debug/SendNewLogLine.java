@@ -13,7 +13,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public class SendNewLogLine extends ModernPacket {
 
 	@Getter

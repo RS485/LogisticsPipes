@@ -18,7 +18,6 @@ import net.minecraftforge.common.DimensionManager;
 
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public class PlayerListRequest extends ModernPacket {
 
 	public PlayerListRequest(int id) {

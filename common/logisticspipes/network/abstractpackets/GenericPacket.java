@@ -14,7 +14,6 @@ import logisticspipes.network.LPDataOutputStream;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public abstract class GenericPacket extends ModernPacket {
 
 	@Getter

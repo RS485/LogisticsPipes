@@ -16,7 +16,6 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 @ToString
 public abstract class CoordinatesPacket extends ModernPacket {
 

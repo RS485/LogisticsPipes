@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public abstract class BitSetCoordinatesPacket extends CoordinatesPacket {
 
 	@Getter

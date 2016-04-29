@@ -16,7 +16,6 @@ import network.rs485.logisticspipes.world.IntegerCoordinates;
 
 import java.io.IOException;
 
-@Accessors(chain = true)
 @ToString
 public abstract class CoordinatesPopupGuiProvider extends PopupGuiProvider {
 

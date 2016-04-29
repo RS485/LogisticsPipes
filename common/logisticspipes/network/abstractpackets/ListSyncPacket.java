@@ -13,7 +13,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public abstract class ListSyncPacket<E> extends CoordinatesPacket implements IWriteListObject<E>, IReadListObject<E> {
 
 	@Setter

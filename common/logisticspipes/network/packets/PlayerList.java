@@ -10,7 +10,6 @@ import cpw.mods.fml.client.FMLClientHandler;
 
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public class PlayerList extends StringListPacket {
 
 	public PlayerList(int id) {

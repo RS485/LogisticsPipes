@@ -10,7 +10,6 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public class FluidSupplierAmount extends IntegerCoordinatesPacket {
 
 	public FluidSupplierAmount(int id) {

@@ -14,7 +14,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public class SecurityStationOpenPlayer extends NBTCoordinatesPacket {
 
 	public SecurityStationOpenPlayer(int id) {

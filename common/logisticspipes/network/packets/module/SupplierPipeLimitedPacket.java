@@ -20,7 +20,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public class SupplierPipeLimitedPacket extends ModuleCoordinatesPacket {
 
 	@Getter

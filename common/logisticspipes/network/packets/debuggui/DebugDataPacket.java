@@ -11,7 +11,6 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import java.io.IOException;
 
-@Accessors(chain = true)
 public class DebugDataPacket extends ModernPacket {
 
 	@Getter

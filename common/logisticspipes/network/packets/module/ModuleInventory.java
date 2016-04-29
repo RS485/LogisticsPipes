@@ -8,7 +8,6 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public class ModuleInventory extends InventoryModuleCoordinatesPacket {
 
 	public ModuleInventory(int id) {

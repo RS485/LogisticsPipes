@@ -26,7 +26,6 @@ import lombok.experimental.Accessors;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper.AdjacentTileEntity;
 
-@Accessors(chain = true)
 public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 
 	@Getter

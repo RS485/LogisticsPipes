@@ -10,7 +10,6 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public class InvSysConResistance extends IntegerCoordinatesPacket {
 
 	public InvSysConResistance(int id) {

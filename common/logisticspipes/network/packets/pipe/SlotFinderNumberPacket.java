@@ -28,7 +28,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 
 	@Getter

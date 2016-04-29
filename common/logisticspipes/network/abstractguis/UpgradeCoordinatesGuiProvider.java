@@ -21,7 +21,6 @@ import net.minecraft.world.World;
 
 import java.io.IOException;
 
-@Accessors(chain = true)
 public abstract class UpgradeCoordinatesGuiProvider extends CoordinatesPopupGuiProvider {
 
 	public UpgradeCoordinatesGuiProvider(int id) {

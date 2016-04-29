@@ -23,7 +23,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import java.io.IOException;
 import java.util.List;
 
-@Accessors(chain = true)
 public class MostLikelyRecipeComponentsResponse extends ModernPacket {
 
 	@Getter

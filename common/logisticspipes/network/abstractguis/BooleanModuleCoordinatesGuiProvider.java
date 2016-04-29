@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public abstract class BooleanModuleCoordinatesGuiProvider extends ModuleCoordinatesGuiProvider {
 
 	public BooleanModuleCoordinatesGuiProvider(int id) {

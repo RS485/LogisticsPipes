@@ -16,7 +16,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public class StatUpdate extends CoordinatesPacket {
 
 	@Setter

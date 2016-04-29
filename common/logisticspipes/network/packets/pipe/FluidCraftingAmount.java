@@ -9,7 +9,6 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public class FluidCraftingAmount extends Integer2ModuleCoordinatesPacket {
 
 	public FluidCraftingAmount(int id) {

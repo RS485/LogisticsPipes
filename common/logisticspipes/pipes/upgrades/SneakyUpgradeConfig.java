@@ -8,8 +8,9 @@ import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.UpgradeCoordinatesGuiProvider;
 import logisticspipes.network.guis.upgrade.SneakyUpgradeConfigGuiProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import logisticspipes.utils.LombokExtentionMethods;
+import lombok.*;
+import lombok.experimental.ExtensionMethod;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -18,6 +19,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+//@ExtensionMethod(LombokExtentionMethods.class)
 public class SneakyUpgradeConfig implements IConfigPipeUpgrade {
 
 	public static final String SIDE_KEY = "LPSNEAKY-SIDE";
@@ -34,11 +36,9 @@ public class SneakyUpgradeConfig implements IConfigPipeUpgrade {
 		private ForgeDirection dir;
 		@Getter private String lpName;
 		public static String getNameForDirection(ForgeDirection fd) {
-			Optional<Sides> opt = Arrays.stream(values()).filter(side -> side.getDir() == fd).findFirst();
-			if(opt.isPresent()) {
-				return opt.get().getLpName();
-			}
-			return "LPSNEAKY-UNKNWON";
+			// IntellJ currently shows an error here. But this is fine. (Method contained in logisticspipes.utils.LombokExtentionMethods.class)
+			//return Arrays.stream(values()).filter(side -> side.getDir() == fd).map(Sides::getLpName).getFirstOrDefault("LPSNEAKY-UNKNWON");
+			return LombokExtentionMethods.getFirstOrDefault(Arrays.stream(values()).filter(side -> side.getDir() == fd).map(Sides::getLpName), "LPSNEAKY-UNKNWON");
 		}
 	}
 
@@ -78,10 +78,8 @@ public class SneakyUpgradeConfig implements IConfigPipeUpgrade {
 		}
 		NBTTagCompound nbt = stack.getTagCompound();
 		String sideString = nbt.getString(SIDE_KEY);
-		Optional<Sides> opt = Arrays.stream(Sides.values()).filter(side -> side.getLpName().equals(sideString)).findFirst();
-		if(opt.isPresent()) {
-			return opt.get().getDir();
-		}
-		return ForgeDirection.UNKNOWN;
+		// IntellJ currently shows an error here. But this is fine. (Method contained in logisticspipes.utils.LombokExtentionMethods.class)
+		//return Arrays.stream(Sides.values()).filter(side -> side.getLpName().equals(sideString)).map(Sides::getDir).getFirstOrDefault(ForgeDirection.UNKNOWN);
+		return LombokExtentionMethods.getFirstOrDefault(Arrays.stream(Sides.values()).filter(side -> side.getLpName().equals(sideString)).map(Sides::getDir), ForgeDirection.UNKNOWN);
 	}
 }

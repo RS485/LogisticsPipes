@@ -14,7 +14,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public class PlayerConfigToClientPacket extends ModernPacket {
 
 	@Getter

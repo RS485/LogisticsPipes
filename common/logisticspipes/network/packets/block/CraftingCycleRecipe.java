@@ -17,7 +17,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public class CraftingCycleRecipe extends CoordinatesPacket {
 
 	public CraftingCycleRecipe(int id) {

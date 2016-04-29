@@ -16,7 +16,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import java.io.IOException;
 
-@Accessors(chain = true)
 public class SneakyUpgradeSidePacket extends SlotPacket {
 
 	@Setter

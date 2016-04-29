@@ -8,7 +8,6 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public class ElectricManagerPacket extends BooleanModuleCoordinatesPacket {
 
 	public ElectricManagerPacket(int id) {

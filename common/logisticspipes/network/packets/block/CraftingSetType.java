@@ -18,7 +18,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
 public class CraftingSetType extends CoordinatesPacket {
 
 	public CraftingSetType(int id) {

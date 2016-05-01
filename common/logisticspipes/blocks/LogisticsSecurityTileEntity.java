@@ -99,9 +99,9 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 
 	@Override
 	public void guiOpenedByPlayer(EntityPlayer player) {
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationCC.class).setInteger(allowCC ? 1 : 0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationAutoDestroy.class).setInteger(allowAutoDestroy ? 1 : 0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationId.class).setUuid(getSecId()).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationCC.class).setInteger(allowCC ? 1 : 0).setBlockPos(pos), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationAutoDestroy.class).setInteger(allowAutoDestroy ? 1 : 0).setBlockPos(pos), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationId.class).setUuid(getSecId()).setBlockPos(pos), player);
 		SimpleServiceLocator.securityStationManager.sendClientAuthorizationList();
 		listener.add(player);
 	}
@@ -161,7 +161,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 		list = par1nbtTagCompound.getTagList("excludedCC", 3);
 		while (list.tagCount() > 0) {
 			NBTBase base = list.removeTag(0);
-			excludedCC.add(((NBTTagInt) base).func_150287_d());
+			excludedCC.add(((NBTTagInt) base).getInt());
 		}
 	}
 
@@ -258,23 +258,23 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 			entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.misc.noenergy"));
 			return new SecuritySettings("No Energy");
 		}
-		SecuritySettings setting = settingsList.get(entityplayer.getDisplayName());
+		SecuritySettings setting = settingsList.get(entityplayer.getDisplayNameString());
 		//TODO Change to GameProfile based Authentication
 		if (setting == null) {
-			setting = new SecuritySettings(entityplayer.getDisplayName());
-			settingsList.put(entityplayer.getDisplayName(), setting);
+			setting = new SecuritySettings(entityplayer.getDisplayNameString());
+			settingsList.put(entityplayer.getDisplayNameString(), setting);
 		}
 		return setting;
 	}
 
 	public void changeCC() {
 		allowCC = !allowCC;
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(SecurityStationCC.class).setInteger(allowCC ? 1 : 0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), listener);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(SecurityStationCC.class).setInteger(allowCC ? 1 : 0).setBlockPos(pos), listener);
 	}
 
 	public void changeDestroy() {
 		allowAutoDestroy = !allowAutoDestroy;
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(SecurityStationAutoDestroy.class).setInteger(allowAutoDestroy ? 1 : 0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), listener);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(SecurityStationAutoDestroy.class).setInteger(allowAutoDestroy ? 1 : 0).setBlockPos(pos), listener);
 	}
 
 	public void addCCToList(Integer id) {
@@ -295,7 +295,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 			list.appendTag(new NBTTagInt(i));
 		}
 		tag.setTag("list", list);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationCCIDs.class).setTag(tag).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationCCIDs.class).setTag(tag).setBlockPos(pos), player);
 	}
 
 	public void handleListPacket(NBTTagCompound tag) {
@@ -303,7 +303,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 		NBTTagList list = tag.getTagList("list", 3);
 		while (list.tagCount() > 0) {
 			NBTBase base = list.removeTag(0);
-			excludedCC.add(((NBTTagInt) base).func_150287_d());
+			excludedCC.add(((NBTTagInt) base).getInt());
 		}
 	}
 
@@ -343,8 +343,8 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 	}
 
 	@Override
-	public void func_145828_a(CrashReportCategory par1CrashReportCategory) {
-		super.func_145828_a(par1CrashReportCategory);
+	public void addInfoToCrashReport(CrashReportCategory par1CrashReportCategory) {
+		super.addInfoToCrashReport(par1CrashReportCategory);
 		par1CrashReportCategory.addCrashSection("LP-Version", LPConstants.VERSION);
 	}
 

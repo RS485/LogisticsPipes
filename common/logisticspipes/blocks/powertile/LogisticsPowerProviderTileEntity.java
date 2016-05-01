@@ -78,8 +78,8 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 	}
 
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		pauseRequesting = false;
 		if (!init) {
 			if (MainProxy.isClient(getWorld())) {
@@ -277,17 +277,17 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 
 	@Override
 	public int getX() {
-		return xCoord;
+		return pos.getX();
 	}
 
 	@Override
 	public int getY() {
-		return yCoord;
+		return pos.getY();
 	}
 
 	@Override
 	public int getZ() {
-		return zCoord;
+		return pos.getZ();
 	}
 
 	@Override
@@ -318,7 +318,7 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 
 	@Override
 	public boolean isHUDExistent() {
-		return getWorld().getTileEntity(xCoord, yCoord, zCoord) == this;
+		return getWorld().getTileEntity(pos) == this;
 	}
 
 	@Override
@@ -338,8 +338,8 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 	}
 
 	@Override
-	public void func_145828_a(CrashReportCategory par1CrashReportCategory) {
-		super.func_145828_a(par1CrashReportCategory);
+	public void addInfoToCrashReport(CrashReportCategory par1CrashReportCategory) {
+		super.addInfoToCrashReport(par1CrashReportCategory);
 		par1CrashReportCategory.addCrashSection("LP-Version", LPConstants.VERSION);
 	}
 

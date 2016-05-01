@@ -184,12 +184,6 @@ public class ChassiModule extends LogisticsGuiModule {
 	}
 
 	@Override
-	public TextureAtlasSprite getIconTexture(IIconRegister register) {
-		//Not Needed
-		return null;
-	}
-
-	@Override
 	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
 		return NewGuiHandler.getGui(ChassiGuiProvider.class).setFlag(parentChassis.getUpgradeManager().hasUpgradeModuleUpgrade());
 	}

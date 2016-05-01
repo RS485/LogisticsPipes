@@ -37,6 +37,7 @@ import logisticspipes.proxy.opencomputers.IOCTile;
 import logisticspipes.proxy.opencomputers.asm.BaseWrapperClass;
 import logisticspipes.proxy.td.subproxies.ITDPart;
 import logisticspipes.renderer.IIconProvider;
+import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.renderer.LogisticsTileRenderController;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
@@ -47,6 +48,8 @@ import logisticspipes.utils.StackTraceUtil;
 import logisticspipes.utils.StackTraceUtil.Info;
 import logisticspipes.utils.TileBuffer;
 import logisticspipes.utils.item.ItemIdentifier;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.ITickable;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.block.Block;
@@ -89,9 +92,7 @@ import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 import org.apache.logging.log4j.Level;
 
-@ModDependentInterface(modId = { "CoFHCore", LPConstants.openComputersModID, LPConstants.openComputersModID, LPConstants.openComputersModID, "BuildCraft|Transport", "BuildCraft|Transport" }, interfacePath = { "cofh.api.transport.IItemDuct", "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment",
-		"buildcraft.api.transport.IPipeTile", "buildcraft.api.transport.IPipeConnection" })
-public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILPPipeTile, IPipeInformationProvider, IItemDuct, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IPipeTile, ILogicControllerTile, IPipeConnection {
+public abstract class LogisticsTileGenericPipe extends TileEntity implements ITickable, IPipeInformationProvider, ILogicControllerTile, IFluidHandler, IOCTile, ILPPipeTile {
 
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
 
@@ -101,14 +102,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 
 	private LogisticsTileRenderController renderController;
 
-	@ModDependentField(modId = LPConstants.computerCraftModID)
-	public HashMap<IComputerAccess, EnumFacing> connections;
-
-	@ModDependentField(modId = LPConstants.computerCraftModID)
-	public IComputerAccess currentPC;
-
-	@ModDependentField(modId = LPConstants.openComputersModID)
-	public Node node;
 	private boolean addedToNetwork = false;
 
 	private boolean sendInitPacket = true;
@@ -122,15 +115,15 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	public final ITDPart tdPart;
 
 	public LogisticsTileGenericPipe() {
-		if (SimpleServiceLocator.ccProxy.isCC()) {
-			connections = new HashMap<>();
-		}
+		preInit();
 		SimpleServiceLocator.openComputersProxy.initLogisticsTileGenericPipe(this);
 		tilePart = SimpleServiceLocator.buildCraftProxy.getBCTilePart(this);
 		tdPart = SimpleServiceLocator.thermalDynamicsProxy.getTDPart(this);
 		renderState = new PipeRenderState(tilePart);
 		bcPlugableState = tilePart.getBCPlugableState();
 	}
+
+	protected void preInit() {}
 
 	@Override
 	public void invalidate() {
@@ -173,7 +166,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	}
 
 	@Override
-	public void updateEntity() {
+	public void update() {
 		Info superDebug = StackTraceUtil.addSuperTraceInformation("Time: " + getWorld().getWorldTime());
 		Info debug = StackTraceUtil.addTraceInformation("(" + getX() + ", " + getY() + ", " + getZ() + ")", superDebug);
 		if (sendInitPacket && MainProxy.isServer(getWorld())) {
@@ -182,7 +175,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		}
 		if (!worldObj.isRemote) {
 			if (deletePipe) {
-				worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+				worldObj.setBlockToAir(getPos());
 			}
 
 			if (pipe == null) {
@@ -227,7 +220,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 			}
 			// Pipe Textures
 			for (int i = 0; i < 7; i++) {
-				EnumFacing o = EnumFacing.getOrientation(i);
+				EnumFacing o = EnumFacing.getFront(i);
 				renderState.textureMatrix.setIconIndex(o, pipe.getIconIndex(o));
 			}
 			//New Pipe Texture States
@@ -248,7 +241,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		if (sendClientUpdate) {
 			sendClientUpdate = false;
 
-			MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(worldObj), getLPDescriptionPacket());
+			MainProxy.sendPacketToAllWatchingChunk(this, getLPDescriptionPacket());
 		}
 		getRenderController().onUpdate();
 		if (!addedToNetwork) {
@@ -270,9 +263,9 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	}
 
 	@Override
-	public void func_145828_a(CrashReportCategory par1CrashReportCategory) {
+	public void addInfoToCrashReport(CrashReportCategory par1CrashReportCategory) {
 		try {
-			super.func_145828_a(par1CrashReportCategory);
+			super.addInfoToCrashReport(par1CrashReportCategory);
 		} catch (Exception e) {
 			if (LPConstants.DEBUG) {
 				e.printStackTrace();
@@ -297,7 +290,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		}
 	}
 
-	@Override
 	public void scheduleNeighborChange() {
 		tilePart.scheduleNeighborChange();
 		tdPart.scheduleNeighborChange();
@@ -364,7 +356,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		if (pipe != null) {
 			pipe.readFromNBT(nbt);
 		} else {
-			LogisticsPipes.log.log(Level.WARN, "Pipe failed to load from NBT at {0},{1},{2}", new Object[] { xCoord, yCoord, zCoord });
+			LogisticsPipes.log.log(Level.WARN, "Pipe failed to load from NBT at {0},{1},{2}", new Object[] { pos.getX(), pos.getY(), pos.getZ() });
 			deletePipe = true;
 		}
 
@@ -449,7 +441,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		return SimpleServiceLocator.ccProxy.getLastCCID(this);
 	}
 
-	@Override
 	public ItemStack insertItem(EnumFacing dir, ItemStack stack) {
 		int used = injectItem(stack, true, dir);
 		if (used == stack.stackSize) {
@@ -485,17 +476,17 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 
 	@Override
 	public int getX() {
-		return xCoord;
+		return getPos().getX();
 	}
 
 	@Override
 	public int getY() {
-		return yCoord;
+		return getPos().getY();
 	}
 
 	@Override
 	public int getZ() {
-		return zCoord;
+		return getPos().getZ();
 	}
 
 	@Override
@@ -584,17 +575,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		return 1;
 	}
 
-	/**
-	 * Used to determine where BC items can go.
-	 */
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public boolean isBCPipeConnected(TileGenericPipe container, EnumFacing o) {
-		return container.isPipeConnected(o);
-	}
-
-	//@Override
-	//@ModDependentMethod(modId="BuildCraft|Transport")
-	@Override
 	public int injectItem(ItemStack payload, boolean doAdd, EnumFacing from) {
 		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport != null && isPipeConnected(from)) {
 			if (doAdd && MainProxy.isServer(getWorld())) {
@@ -611,68 +591,8 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		return 0;
 	}
 
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public int injectItem(ItemStack payload, boolean doAdd, EnumFacing from, EnumColor color) {
-		return injectItem(payload, doAdd, from);
-	}
-
 	public boolean isOpaque() {
 		return pipe.isOpaque();
-	}
-
-	@Override
-	@ModDependentMethod(modId = LPConstants.openComputersModID)
-	public Node node() {
-		return node;
-	}
-
-	@Override
-	@ModDependentMethod(modId = LPConstants.openComputersModID)
-	public void onConnect(Node node1) {}
-
-	@Override
-	@ModDependentMethod(modId = LPConstants.openComputersModID)
-	public void onDisconnect(Node node1) {}
-
-	@Override
-	@ModDependentMethod(modId = LPConstants.openComputersModID)
-	public void onMessage(Message message) {}
-
-	@Override
-	@ModDependentMethod(modId = LPConstants.openComputersModID)
-	public Object[] invoke(String s, Context context, Arguments arguments) throws Exception {
-		BaseWrapperClass object = (BaseWrapperClass) CCObjectWrapper.getWrappedObject(pipe, BaseWrapperClass.WRAPPER);
-		object.isDirectCall = true;
-		return CCObjectWrapper.createArray(object);
-	}
-
-	@Override
-	@ModDependentMethod(modId = LPConstants.openComputersModID)
-	public String[] methods() {
-		return new String[] { "getPipe" };
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	@ModDependentMethod(modId = LPConstants.openComputersModID)
-	public boolean canConnect(EnumFacing dir) {
-		return !(this.getTile(dir) instanceof LogisticsTileGenericPipe) && !(this.getTile(dir) instanceof LogisticsSolidTileEntity);
-	}
-
-	@Override
-	@ModDependentMethod(modId = LPConstants.openComputersModID)
-	public Node sidedNode(EnumFacing dir) {
-		if (this.getTile(dir) instanceof LogisticsTileGenericPipe || this.getTile(dir) instanceof LogisticsSolidTileEntity) {
-			return null;
-		} else {
-			return node();
-		}
-	}
-
-	@Override
-	public Object getOCNode() {
-		return node();
 	}
 
 	@Getter
@@ -714,8 +634,8 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		blockType = getBlockType();
 
 		if (pipe == null) {
-			LogisticsPipes.log.log(Level.WARN, "Pipe failed to initialize at {0},{1},{2}, deleting", new Object[] { xCoord, yCoord, zCoord });
-			worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+			LogisticsPipes.log.log(Level.WARN, "Pipe failed to initialize at {0},{1},{2}, deleting", new Object[] { pos.getX(), pos.getY(), pos.getY() });
+			worldObj.setBlockToAir(getPos());
 			return;
 		}
 
@@ -777,10 +697,10 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 			return;
 		}
 
-		worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
+		worldObj.markBlockRangeForRenderUpdate(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
 
 		if (renderState.needsRenderUpdate()) {
-			worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
+			worldObj.markBlockRangeForRenderUpdate(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
 			renderState.clean();
 		}
 		tilePart.afterStateUpdated();
@@ -792,7 +712,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 
 	public TileBuffer[] getTileCache() {
 		if (tileBuffer == null && pipe != null) {
-			tileBuffer = TileBuffer.makeBuffer(worldObj, xCoord, yCoord, zCoord, pipe.transport.delveIntoUnloadedChunks());
+			tileBuffer = TileBuffer.makeBuffer(worldObj, pos.getX(), pos.getY(), pos.getZ(), pipe.transport.delveIntoUnloadedChunks());
 		}
 		return tileBuffer;
 	}
@@ -863,15 +783,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		}
 	}
 
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public boolean isPipeConnected(EnumFacing with) {
-		if (worldObj.isRemote) {
-			return renderState.pipeConnectionMatrix.isConnected(with);
-		}
-		return pipeConnectionsBuffer[with.ordinal()];
-	}
-
 	/**
 	 * ITankContainer implementation *
 	 */
@@ -925,7 +836,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		return null;
 	}
 
-	@Override
 	public void scheduleRenderUpdate() {
 		refreshRenderState = true;
 	}
@@ -944,11 +854,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 		return 64 * 4 * 64 * 4;
 	}
 
-	@Override
-	public boolean shouldRefresh(Block oldBlock, Block newBlock, int oldMeta, int newMeta, World world, int x, int y, int z) {
-		return oldBlock != newBlock;
-	}
-
 	public boolean isSolidOnSide(EnumFacing side) {
 		return tilePart.isSolidOnSide(side);
 	}
@@ -963,13 +868,7 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	}
 
 	public boolean isUseableByPlayer(EntityPlayer player) {
-		return worldObj.getTileEntity(xCoord, yCoord, zCoord) == this;
-	}
-
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public PipeType getPipeType() {
-		return (PipeType) SimpleServiceLocator.buildCraftProxy.getLPPipeType();
+		return worldObj.getTileEntity(pos) == this;
 	}
 
 	@Override
@@ -991,98 +890,6 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	}
 
 	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public IPipe getPipe() {
-		return (IPipe) tilePart.getBCPipePart().getOriginal();
-	}
-
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public boolean canInjectItems(EnumFacing from) {
-		return isPipeConnected(from);
-	}
-
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public int x() {
-		return xCoord;
-	}
-
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public int y() {
-		return yCoord;
-	}
-
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public int z() {
-		return zCoord;
-	}
-
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public Block getNeighborBlock(EnumFacing dir) {
-		return getBlock(dir);
-	}
-
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public TileEntity getNeighborTile(EnumFacing dir) {
-		return getTile(dir);
-	}
-
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public IPipe getNeighborPipe(EnumFacing dir) {
-		if (getTile(dir) instanceof IPipeTile) {
-			return ((IPipeTile) getTile(dir)).getPipe();
-		}
-		return null;
-	}
-
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public int getPipeColor() {
-		return 0;
-	}
-
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public PipePluggable getPipePluggable(EnumFacing direction) {
-		if (tilePart.getBCPipePluggable(direction) == null) {
-			return null;
-		}
-		return (PipePluggable) tilePart.getBCPipePluggable(direction).getOriginal();
-	}
-
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public boolean hasPipePluggable(EnumFacing direction) {
-		return tilePart.getBCPipePluggable(direction) != null;
-	}
-
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public boolean hasBlockingPluggable(EnumFacing direction) {
-		if (tilePart.getBCPipePluggable(direction) == null) {
-			return false;
-		}
-		return tilePart.getBCPipePluggable(direction).isBlocking();
-	}
-
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public ConnectOverride overridePipeConnection(PipeType pipeType, EnumFacing EnumFacing) {
-		if(this.pipe != null && this.pipe.isFluidPipe()) {
-			if(pipeType == PipeType.FLUID) {
-				return ConnectOverride.CONNECT;
-			}
-		}
-		return ConnectOverride.DEFAULT;
-	}
-
-	@Override
 	public void setWorldObj(World world) {
 		super.setWorldObj(world);
 		tilePart.setWorldObj_LP(world);
@@ -1099,16 +906,16 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 			return renderBox;
 		}
 		if (pipe == null) {
-			return AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 1, zCoord + 1);
+			return new AxisAlignedBB(getPos(), getPos().add(1, 1, 1));
 		}
 		if (!pipe.isMultiBlock()) {
-			renderBox = AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 1, zCoord + 1);
+			renderBox = new AxisAlignedBB(getPos(), getPos().add(1, 1, 1));
 		} else {
 			LPPositionSet<DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare>> set = ((CoreMultiBlockPipe) pipe).getRotatedSubBlocks();
 			set.addToAll(pipe.getLPPosition());
-			set.add(new DoubleCoordinatesType<>(xCoord, yCoord, zCoord, CoreMultiBlockPipe.SubBlockTypeForShare.NON_SHARE));
-			set.add(new DoubleCoordinatesType<>(xCoord + 1, yCoord + 1, zCoord + 1, CoreMultiBlockPipe.SubBlockTypeForShare.NON_SHARE));
-			renderBox = AxisAlignedBB.getBoundingBox(set.getMinXD() - 1, set.getMinYD() - 1, set.getMinZD() - 1, set.getMaxXD() + 1, set.getMaxYD() + 1, set.getMaxZD() + 1);
+			set.add(new DoubleCoordinatesType<>(getPos(), CoreMultiBlockPipe.SubBlockTypeForShare.NON_SHARE));
+			set.add(new DoubleCoordinatesType<>(getPos().add(1, 1, 1), CoreMultiBlockPipe.SubBlockTypeForShare.NON_SHARE));
+			renderBox = AxisAlignedBB.fromBounds(set.getMinXD() - 1, set.getMinYD() - 1, set.getMinZD() - 1, set.getMaxXD() + 1, set.getMaxYD() + 1, set.getMaxZD() + 1);
 		}
 		return renderBox;
 	}
@@ -1150,5 +957,25 @@ public class LogisticsTileGenericPipe extends TileEntity implements IOCTile, ILP
 	@Override
 	public Stream<TileEntity> getPartsOfPipe() {
 		return this.subMultiBlock.stream().map(pos -> pos.getTileEntity(worldObj));
+	}
+
+	public boolean isPipeConnected(EnumFacing with) {
+		if (worldObj.isRemote) {
+			return renderState.pipeConnectionMatrix.isConnected(with);
+		}
+		return pipeConnectionsBuffer[with.ordinal()];
+	}
+
+	public PipePluggable getPipePluggable(EnumFacing direction) {
+		if (tilePart.getBCPipePluggable(direction) == null) {
+			return null;
+		}
+		return (PipePluggable) tilePart.getBCPipePluggable(direction).getOriginal();
+	}
+
+	@Override
+	public boolean shouldRenderInPass(int pass) {
+		LogisticsPipeWorldRenderer.renderPass = pass;
+		return super.shouldRenderInPass(pass);
 	}
 }

@@ -57,6 +57,11 @@ public class WorldCoordinatesWrapper {
 		setCoords(coords);
 	}
 
+	public WorldCoordinatesWrapper(World world, BlockPos coords) {
+		setWorld(world);
+		setCoords(new IntegerCoordinates(coords));
+	}
+
 	public WorldCoordinatesWrapper(World world, int xCoord, int yCoord, int zCoord) {
 		setWorld(world);
 		setCoords(new IntegerCoordinates(xCoord, yCoord, zCoord));

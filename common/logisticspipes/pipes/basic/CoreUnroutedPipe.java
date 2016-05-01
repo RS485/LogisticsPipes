@@ -155,12 +155,12 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	}
 
 	protected void notifyBlockOfNeighborChange(EnumFacing side) {
-		container.getWorld().notifyNeighborsOfStateChange(CoordinateUtils.add(new DoubleCoordinates(container), side), LogisticsPipes.LogisticsPipeBlock);
+		container.getWorld().notifyNeighborsOfStateChange(CoordinateUtils.add(new DoubleCoordinates(container.getPos()), side).getBlockPos(), LogisticsPipes.LogisticsPipeBlock);
 	}
 
 	public void updateNeighbors(boolean needSelf) {
 		if (needSelf) {
-			container.getWorld().notifyNeighborsOfStateChange(new DoubleCoordinates(container), LogisticsPipes.LogisticsPipeBlock);
+			container.getWorld().notifyNeighborsOfStateChange(container.getPos(), LogisticsPipes.LogisticsPipeBlock);
 		}
 		for (EnumFacing side : EnumFacing.VALUES) {
 			notifyBlockOfNeighborChange(side);

@@ -9,8 +9,11 @@ import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
 import logisticspipes.proxy.buildcraft.subproxies.IConnectionOverrideResult;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import net.minecraft.util.EnumFacing;
@@ -51,9 +54,9 @@ public interface IBCProxy {
 
 	IBCTilePart getBCTilePart(LogisticsTileGenericPipe logisticsTileGenericPipe);
 
-	IBCClickResult handleBCClickOnPipe(World world, int x, int y, int z, EntityPlayer player, int side, float xOffset, float yOffset, float zOffset, CoreUnroutedPipe pipe);
+	IBCClickResult handleBCClickOnPipe(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side, float xOffset, float yOffset, float zOffset, CoreUnroutedPipe pipe);
 
-	void callBCNeighborBlockChange(World world, int x, int y, int z, Block block);
+	void callBCNeighborBlockChange(IBlockAccess world, BlockPos pos, BlockPos neighbor);
 
 	void callBCRemovePipe(World world, int x, int y, int z);
 

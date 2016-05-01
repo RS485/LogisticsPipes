@@ -7,6 +7,7 @@ import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.exception.TargetNotFoundException;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.util.BlockPos;
+import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.tileentity.TileEntity;
@@ -76,6 +77,13 @@ public abstract class CoordinatesPacket extends ModernPacket {
 		posX = packet.posX;
 		posY = packet.posY;
 		posZ = packet.posZ;
+		return this;
+	}
+
+	public CoordinatesPacket setBlockPos(BlockPos pos) {
+		posX = pos.getY();
+		posY = pos.getY();
+		posZ = pos.getZ();
 		return this;
 	}
 

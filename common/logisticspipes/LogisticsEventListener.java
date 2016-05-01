@@ -33,6 +33,7 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.PlayerIdentifier;
 import logisticspipes.utils.QuickSortChestMarkerStorage;
 
+import net.minecraft.client.entity.EntityPlayerSP;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 import net.minecraft.client.entity.EntityClientPlayerMP;
@@ -102,14 +103,14 @@ public class LogisticsEventListener {
 	public void onPlayerInteract(final PlayerInteractEvent event) {
 		if (MainProxy.isServer(event.entityPlayer.worldObj)) {
 			if (event.action == Action.LEFT_CLICK_BLOCK) {
-				final TileEntity tile = event.entityPlayer.worldObj.getTileEntity(event.x, event.y, event.z);
+				final TileEntity tile = event.entityPlayer.worldObj.getTileEntity(event.pos);
 				if (tile instanceof LogisticsTileGenericPipe) {
 					if (((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe) {
 						if (!((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).canBeDestroyedByPlayer(event.entityPlayer)) {
 							event.setCanceled(true);
 							event.entityPlayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
 							((LogisticsTileGenericPipe) tile).scheduleNeighborChange();
-							event.entityPlayer.worldObj.markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
+							event.entityPlayer.worldObj.markBlockForUpdate(tile.getPos());
 							((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).delayTo = System.currentTimeMillis() + 200;
 							((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).repeatFor = 10;
 						} else {
@@ -119,7 +120,7 @@ public class LogisticsEventListener {
 				}
 			}
 			if (event.action == Action.RIGHT_CLICK_BLOCK) {
-				WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(event.entityPlayer.worldObj, event.x, event.y, event.z);
+				WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(event.entityPlayer.worldObj, event.pos);
 				TileEntity tileEntity = worldCoordinates.getTileEntity();
 				if (tileEntity instanceof TileEntityChest || SimpleServiceLocator.ironChestProxy.isIronChest(tileEntity)) {
 					//@formatter:off
@@ -263,7 +264,7 @@ public class LogisticsEventListener {
 			LogisticsPipes.singleThreadExecutor.execute(() -> {
 				// try to get player entity ten times, once a second
 				int times = 0;
-				EntityClientPlayerMP playerEntity;
+				EntityPlayerSP playerEntity;
 				do {
 					try {
 						Thread.sleep(1000);

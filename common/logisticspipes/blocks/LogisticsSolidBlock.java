@@ -14,12 +14,13 @@ import logisticspipes.proxy.MainProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -50,7 +51,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 	}
 
 	@Override
-	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, EnumFacing side) {
+	public boolean isSideSolid(IBlockAccess world, BlockPos pos, EnumFacing side) {
 		return true;
 	}
 
@@ -61,23 +62,18 @@ public class LogisticsSolidBlock extends BlockContainer {
 	}
 
 	@Override
-	public void onBlockClicked(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer) {
-		super.onBlockClicked(par1World, par2, par3, par4, par5EntityPlayer);
-	}
-
-	@Override
-	public void onNeighborChange(IBlockAccess world, int x, int y, int z, int tileX, int tileY, int tileZ) {
-		super.onNeighborChange(world, x, y, z, tileX, tileY, tileZ);
-		TileEntity tile = world.getTileEntity(x, y, z);
+	public void onNeighborChange(IBlockAccess world, BlockPos pos, BlockPos neigbour) {
+		super.onNeighborChange(world, pos, neigbour);
+		TileEntity tile = world.getTileEntity(pos);
 		if (tile instanceof LogisticsSolidTileEntity) {
 			((LogisticsSolidTileEntity) tile).notifyOfBlockChange();
 		}
 	}
 
 	@Override
-	public boolean onBlockActivated(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer, int par6, float par7, float par8, float par9) {
+	public boolean onBlockActivated(World par1World, BlockPos pos, IBlockState state, EntityPlayer par5EntityPlayer, EnumFacing side, float par7, float par8, float par9) {
 		if (!par5EntityPlayer.isSneaking()) {
-			TileEntity tile = par1World.getTileEntity(par2, par3, par4);
+			TileEntity tile = par1World.getTileEntity(pos);
 			if (tile instanceof IGuiTileEntity) {
 				if (MainProxy.isServer(par5EntityPlayer.worldObj)) {
 					((IGuiTileEntity) tile).getGuiProvider().setTilePos(tile).open(par5EntityPlayer);
@@ -89,15 +85,15 @@ public class LogisticsSolidBlock extends BlockContainer {
 	}
 
 	@Override
-	public void onBlockPlacedBy(World world, int posX, int posY, int posZ, EntityLivingBase entity, ItemStack itemStack) {
-		super.onBlockPlacedBy(world, posX, posY, posZ, entity, itemStack);
-		TileEntity tile = world.getTileEntity(posX, posY, posZ);
+	public IBlockState onBlockPlaced(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+		IBlockState state = super.onBlockPlaced(world, pos, facing, hitX, hitY, hitZ, meta, placer);
+		TileEntity tile = world.getTileEntity(pos);
 		if (tile instanceof LogisticsCraftingTableTileEntity) {
-			((LogisticsCraftingTableTileEntity) tile).placedBy(entity);
+			((LogisticsCraftingTableTileEntity) tile).placedBy(placer);
 		}
 		if (tile instanceof IRotationProvider) {
-			double x = tile.xCoord + 0.5 - entity.posX;
-			double z = tile.zCoord + 0.5 - entity.posZ;
+			double x = tile.getPos().getX() + 0.5 - placer.posX;
+			double z = tile.getPos().getZ() + 0.5 - placer.posZ;
 			double w = Math.atan2(x, z);
 			double halfPI = Math.PI / 2;
 			double halfhalfPI = halfPI / 2;
@@ -115,11 +111,12 @@ public class LogisticsSolidBlock extends BlockContainer {
 				((IRotationProvider) tile).setRotation(3);
 			}
 		}
+		return state;
 	}
 
 	@Override
 	public void breakBlock(World par1World, int par2, int par3, int par4, Block par5, int par6) {
-		TileEntity tile = par1World.getTileEntity(par2, par3, par4);
+		TileEntity tile = par1World.getTileEntity(pos);
 		if (tile instanceof LogisticsSolderingTileEntity) {
 			((LogisticsSolderingTileEntity) tile).onBlockBreak();
 		}

@@ -23,6 +23,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import net.minecraftforge.common.DimensionManager;
@@ -73,31 +74,37 @@ public class MainProxy {
 		return Side.CLIENT;
 	}
 
-	public static boolean isClient(World world) {
-		try {
-			return world.isRemote;
-		} catch (NullPointerException n) {
-			LogisticsPipes.log.fatal("isClient called with a null world - using slow thread based fallback");
-			n.printStackTrace();
+	public static boolean isClient(IBlockAccess blockAccess) {
+		if(blockAccess instanceof World) {
+			World world = (World) blockAccess;
+			try {
+				return world.isRemote;
+			} catch (NullPointerException n) {
+				LogisticsPipes.log.fatal("isClient called with a null world - using slow thread based fallback");
+				n.printStackTrace();
+			}
 		}
 		return MainProxy.isClient();
 	}
 
 	@Deprecated
 	/**
-	 * isClient is slow, find a world and check isServer(world)
+	 * isClient is slow, find a world and check isClient(world)
 	 * @return
 	 */
 	public static boolean isClient() {
 		return MainProxy.getEffectiveSide() == Side.CLIENT;
 	}
 
-	public static boolean isServer(World world) {
-		try {
-			return !world.isRemote;
-		} catch (NullPointerException n) {
-			LogisticsPipes.log.fatal("isServer called with a null world - using slow thread based fallback");
-			n.printStackTrace();
+	public static boolean isServer(IBlockAccess blockAccess) {
+		if(blockAccess instanceof World) {
+			World world = (World) blockAccess;
+			try {
+				return !world.isRemote;
+			} catch (NullPointerException n) {
+				LogisticsPipes.log.fatal("isServer called with a null world - using slow thread based fallback");
+				n.printStackTrace();
+			}
 		}
 		return MainProxy.isServer();
 	}

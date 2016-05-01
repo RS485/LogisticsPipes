@@ -2,6 +2,7 @@ package logisticspipes.blocks.powertile;
 
 import java.util.List;
 
+import ic2.api.energy.tile.IEnergyEmitter;
 import logisticspipes.LPConstants;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.asm.ModDependentInterface;
@@ -104,8 +105,8 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	public void updateClients() {
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(PowerJunctionLevel.class).setInteger(internalStorage).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), guiListener);
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(PowerJunctionLevel.class).setInteger(internalStorage).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), watcherList);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(PowerJunctionLevel.class).setInteger(internalStorage).setBlockPos(pos), guiListener);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(PowerJunctionLevel.class).setInteger(internalStorage).setBlockPos(pos), watcherList);
 		lastUpdateStorage = internalStorage;
 	}
 
@@ -144,8 +145,8 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		if (MainProxy.isServer(getWorld())) {
 			if (internalStorage != lastUpdateStorage) {
 				updateClients();
@@ -249,17 +250,17 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 
 	@Override
 	public int getX() {
-		return xCoord;
+		return pos.getX();
 	}
 
 	@Override
 	public int getY() {
-		return yCoord;
+		return pos.getY();
 	}
 
 	@Override
 	public int getZ() {
-		return zCoord;
+		return pos.getZ();
 	}
 
 	@Override
@@ -290,18 +291,18 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 
 	@Override
 	public boolean isHUDExistent() {
-		return getWorld().getTileEntity(xCoord, yCoord, zCoord) == this;
+		return getWorld().getTileEntity(pos) == this;
 	}
 
 	@Override
-	public void func_145828_a(CrashReportCategory par1CrashReportCategory) {
-		super.func_145828_a(par1CrashReportCategory);
+	public void addInfoToCrashReport(CrashReportCategory par1CrashReportCategory) {
+		super.addInfoToCrashReport(par1CrashReportCategory);
 		par1CrashReportCategory.addCrashSection("LP-Version", LPConstants.VERSION);
 	}
 
 	@Override
 	@ModDependentMethod(modId = "IC2")
-	public boolean acceptsEnergyFrom(TileEntity tile, EnumFacing dir) {
+	public boolean acceptsEnergyFrom(IEnergyEmitter tile, EnumFacing dir) {
 		return true;
 	}
 

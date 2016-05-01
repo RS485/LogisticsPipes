@@ -13,6 +13,7 @@ import java.util.List;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.utils.string.StringUtils;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -34,8 +35,10 @@ public class LogisticsItem extends Item {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister par1IIconRegister) {
-		itemIcon = par1IIconRegister.registerIcon("logisticspipes:" + getUnlocalizedName().replace("item.", ""));
+	public void registerIcons() {
+		String iconName = "logisticspipes:" + getUnlocalizedName().replace("item.", "");
+		TextureAtlasSprite texture = new TextureHabitatLocator(iconName);
+		Minecraft.getMinecraft().getTextureMapBlocks().setTextureEntry(iconName, texture);
 	}
 
 	@Override

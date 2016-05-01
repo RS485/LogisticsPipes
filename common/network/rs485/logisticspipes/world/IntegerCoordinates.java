@@ -21,6 +21,7 @@
 package network.rs485.logisticspipes.world;
 
 import lombok.Data;
+import net.minecraft.util.BlockPos;
 
 @Data
 public class IntegerCoordinates implements ICoordinates {
@@ -43,6 +44,10 @@ public class IntegerCoordinates implements ICoordinates {
 
 	public IntegerCoordinates(ICoordinates coords) {
 		this(coords.getXInt(), coords.getYInt(), coords.getZInt());
+	}
+
+	public IntegerCoordinates(BlockPos pos) {
+		this(pos.getX(), pos.getY(), pos.getZ());
 	}
 
 	@Override

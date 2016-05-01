@@ -3,6 +3,8 @@ package logisticspipes.blocks;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.util.IChatComponent;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -200,21 +202,21 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	}
 
 	private void updateHeat() {
-		MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(getWorld()), PacketHandler.getPacket(SolderingStationHeat.class).setInteger(heat).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(SolderingStationHeat.class).setInteger(heat).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), listener);
+		MainProxy.sendPacketToAllWatchingChunk(this, PacketHandler.getPacket(SolderingStationHeat.class).setInteger(heat).setBlockPos(pos));
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(SolderingStationHeat.class).setInteger(heat).setBlockPos(pos), listener);
 	}
 
 	private void updateProgress() {
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(SolderingStationProgress.class).setInteger(progress).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), listener);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(SolderingStationProgress.class).setInteger(progress).setBlockPos(pos), listener);
 	}
 
 	private void updateInventory() {
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(SolderingStationInventory.class).setInventory(this).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), listener);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(SolderingStationInventory.class).setInventory(this).setBlockPos(pos), listener);
 	}
 
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		if (MainProxy.isClient(getWorld())) {
 			return;
 		}
@@ -344,8 +346,8 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	}
 
 	@Override
-	public ItemStack getStackInSlotOnClosing(int var1) {
-		return inv.getStackInSlotOnClosing(var1);
+	public ItemStack removeStackFromSlot(int index) {
+		return inv.removeStackFromSlot(index);
 	}
 
 	@Override
@@ -354,8 +356,8 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	}
 
 	@Override
-	public String getInventoryName() {
-		return inv.getInventoryName();
+	public String getName() {
+		return inv.getName();
 	}
 
 	@Override
@@ -369,13 +371,13 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	}
 
 	@Override
-	public void openInventory() {
-		inv.openInventory();
+	public void openInventory(EntityPlayer player) {
+		inv.openInventory(player);
 	}
 
 	@Override
-	public void closeInventory() {
-		inv.closeInventory();
+	public void closeInventory(EntityPlayer player) {
+		inv.closeInventory(player);
 	}
 
 	@Override
@@ -389,7 +391,7 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	}
 
 	public void onBlockBreak() {
-		inv.dropContents(getWorld(), xCoord, yCoord, zCoord);
+		inv.dropContents(getWorld(), pos);
 	}
 
 	@Override
@@ -402,8 +404,13 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	}
 
 	@Override
-	public boolean hasCustomInventoryName() {
-		return false;
+	public boolean hasCustomName() {
+		return inv.hasCustomName();
+	}
+
+	@Override
+	public IChatComponent getDisplayName() {
+		return inv.getDisplayName();
 	}
 
 	@Override
@@ -412,13 +419,33 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	}
 
 	@Override
-	public void func_145828_a(CrashReportCategory par1CrashReportCategory) {
-		super.func_145828_a(par1CrashReportCategory);
+	public int getField(int id) {
+		return inv.getField(id);
+	}
+
+	@Override
+	public void setField(int id, int value) {
+		inv.setField(id, value);
+	}
+
+	@Override
+	public int getFieldCount() {
+		return inv.getFieldCount();
+	}
+
+	@Override
+	public void clear() {
+		inv.clear();
+	}
+
+	@Override
+	public void addInfoToCrashReport(CrashReportCategory par1CrashReportCategory) {
+		super.addInfoToCrashReport(par1CrashReportCategory);
 		par1CrashReportCategory.addCrashSection("LP-Version", LPConstants.VERSION);
 	}
 
 	@Override
-	public int[] getAccessibleSlotsFromSide(int var1) {
+	public int[] getSlotsForFace(EnumFacing face) {
 		return new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 	}
 
@@ -428,12 +455,12 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	}
 
 	@Override
-	public boolean canInsertItem(int var1, ItemStack var2, int var3) {
-		return var1 < 10;
+	public boolean canInsertItem(int index, ItemStack itemStack, EnumFacing direction) {
+		return index < 10;
 	}
 
 	@Override
-	public boolean canExtractItem(int var1, ItemStack var2, int var3) {
-		return var1 == 10;
+	public boolean canExtractItem(int index, ItemStack itemStack, EnumFacing direction) {
+		return index == 10;
 	}
 }

@@ -1,5 +1,6 @@
 package logisticspipes.blocks.powertile;
 
+import ic2.api.energy.tile.IEnergyEmitter;
 import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -29,8 +30,8 @@ public class LogisticsIC2PowerProviderTileEntity extends LogisticsPowerProviderT
 	}
 
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		if (!init) {
 			if (!addedToEnergyNet) {
 				SimpleServiceLocator.IC2Proxy.registerToEneryNet(this);
@@ -129,7 +130,7 @@ public class LogisticsIC2PowerProviderTileEntity extends LogisticsPowerProviderT
 
 	@Override
 	@ModDependentMethod(modId = "IC2")
-	public boolean acceptsEnergyFrom(TileEntity tile, EnumFacing dir) {
+	public boolean acceptsEnergyFrom(IEnergyEmitter tile, EnumFacing dir) {
 		return true;
 	}
 

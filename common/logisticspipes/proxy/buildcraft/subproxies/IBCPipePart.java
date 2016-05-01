@@ -5,14 +5,15 @@ import java.util.ArrayList;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 
 public interface IBCPipePart {
 
 	boolean canConnectRedstone();
 
-	int isPoweringTo(int l);
+	int isPoweringTo(EnumFacing l);
 
-	int isIndirectlyPoweringTo(int l);
+	int isIndirectlyPoweringTo(EnumFacing l);
 
 	Object getClientGui(InventoryPlayer inventory, int side);
 

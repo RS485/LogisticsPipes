@@ -27,7 +27,7 @@ import java.util.concurrent.Future;
 public class DebugGuiController {
 
 	static {
-		Launch.classLoader.addClassLoaderExclusion("com.trolltech.qt.");
+		Launch.classLoader.addTransformerExclusion("com.trolltech.qt.");
 		Launch.classLoader.addTransformerExclusion("network.rs485.debuggui.");
 	}
 

@@ -1,25 +1,26 @@
 package logisticspipes.pipes.upgrades;
 
-import logisticspipes.modules.*;
+import java.util.Arrays;
+
+import logisticspipes.modules.ModuleCreativeTabBasedItemSink;
+import logisticspipes.modules.ModuleItemSink;
+import logisticspipes.modules.ModuleModBasedItemSink;
+import logisticspipes.modules.ModuleOreDictItemSink;
+import logisticspipes.modules.ModulePolymorphicItemSink;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
-import logisticspipes.network.GuiHandler;
 import logisticspipes.network.NewGuiHandler;
-import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.UpgradeCoordinatesGuiProvider;
 import logisticspipes.network.guis.upgrade.SneakyUpgradeConfigGuiProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.utils.LombokExtentionMethods;
-import lombok.*;
-import lombok.experimental.ExtensionMethod;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+
 import net.minecraftforge.common.util.ForgeDirection;
 
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.stream.Stream;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-//@ExtensionMethod(LombokExtentionMethods.class)
 public class SneakyUpgradeConfig implements IConfigPipeUpgrade {
 
 	public static final String SIDE_KEY = "LPSNEAKY-SIDE";
@@ -32,13 +33,18 @@ public class SneakyUpgradeConfig implements IConfigPipeUpgrade {
 		SOUTH(ForgeDirection.SOUTH, "LPSNEAKY-SOUTH"),
 		EAST(ForgeDirection.EAST, "LPSNEAKY-EAST"),
 		WEST(ForgeDirection.WEST, "LPSNEAKY-WEST");
+
 		@Getter
 		private ForgeDirection dir;
-		@Getter private String lpName;
+		@Getter
+		private String lpName;
+
 		public static String getNameForDirection(ForgeDirection fd) {
-			// IntellJ currently shows an error here. But this is fine. (Method contained in logisticspipes.utils.LombokExtentionMethods.class)
-			//return Arrays.stream(values()).filter(side -> side.getDir() == fd).map(Sides::getLpName).getFirstOrDefault("LPSNEAKY-UNKNWON");
-			return LombokExtentionMethods.getFirstOrDefault(Arrays.stream(values()).filter(side -> side.getDir() == fd).map(Sides::getLpName), "LPSNEAKY-UNKNWON");
+			return Arrays.stream(values())
+					.filter(side -> side.getDir() == fd)
+					.map(Sides::getLpName)
+					.findFirst()
+					.orElse("LPSNEAKY-UNKNWON");
 		}
 	}
 
@@ -54,7 +60,8 @@ public class SneakyUpgradeConfig implements IConfigPipeUpgrade {
 
 	@Override
 	public boolean isAllowedForModule(LogisticsModule module) {
-		return module instanceof ModuleItemSink || module instanceof ModulePolymorphicItemSink || module instanceof ModuleModBasedItemSink || module instanceof ModuleOreDictItemSink || module instanceof ModuleCreativeTabBasedItemSink;
+		return module instanceof ModuleItemSink || module instanceof ModulePolymorphicItemSink || module instanceof ModuleModBasedItemSink
+				|| module instanceof ModuleOreDictItemSink || module instanceof ModuleCreativeTabBasedItemSink;
 	}
 
 	@Override
@@ -73,13 +80,16 @@ public class SneakyUpgradeConfig implements IConfigPipeUpgrade {
 	}
 
 	public ForgeDirection getSide(ItemStack stack) {
-		if(!stack.hasTagCompound()) {
+		if (!stack.hasTagCompound()) {
 			stack.setTagCompound(new NBTTagCompound());
 		}
 		NBTTagCompound nbt = stack.getTagCompound();
 		String sideString = nbt.getString(SIDE_KEY);
-		// IntellJ currently shows an error here. But this is fine. (Method contained in logisticspipes.utils.LombokExtentionMethods.class)
-		//return Arrays.stream(Sides.values()).filter(side -> side.getLpName().equals(sideString)).map(Sides::getDir).getFirstOrDefault(ForgeDirection.UNKNOWN);
-		return LombokExtentionMethods.getFirstOrDefault(Arrays.stream(Sides.values()).filter(side -> side.getLpName().equals(sideString)).map(Sides::getDir), ForgeDirection.UNKNOWN);
+
+		return Arrays.stream(Sides.values())
+				.filter(side -> side.getLpName().equals(sideString))
+				.map(Sides::getDir)
+				.findFirst()
+				.orElse(ForgeDirection.UNKNOWN);
 	}
 }

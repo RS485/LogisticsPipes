@@ -3,7 +3,24 @@ package logisticspipes.network;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import net.minecraft.item.Item;
+import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.NBTSizeTracker;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.Unpooled;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -18,23 +35,10 @@ import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
+import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
-import net.minecraft.item.Item;
-import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTSizeTracker;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-
-import net.minecraftforge.common.util.ForgeDirection;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.buffer.Unpooled;
-
-public class LPDataInputStream extends DataInputStream {
+public class LPDataInputStream extends DataInputStream implements LPDataInput {
 
 	public LPDataInputStream(byte[] inputBytes) throws IOException {
 		super(new ByteArrayInputStream(inputBytes));
@@ -44,8 +48,13 @@ public class LPDataInputStream extends DataInputStream {
 		super(new ByteBufInputStream(inputBytes));
 	}
 
+	@Override
+	public byte[] readLengthAndBytes() throws IOException {
+		return this.readByteArray();
+	}
+
 	public ForgeDirection readForgeDirection() throws IOException {
-		int dir = in.read();
+		int dir = readByte();
 		if (dir == 10) {
 			return null;
 		}
@@ -61,7 +70,7 @@ public class LPDataInputStream extends DataInputStream {
 		double distanceToDestination = readDouble();
 		double destinationDistanceToRoot = readDouble();
 		int blockDistance = readInt();
-		List<DoubleCoordinates> positions = this.readList(LPDataInputStream::readLPPosition);
+		List<DoubleCoordinates> positions = this.readList(LPDataInput::readLPPosition);
 		ExitRoute e = new ExitRoute(root, destination, exitOri, insertOri, destinationDistanceToRoot, connectionDetails, blockDistance);
 		e.distanceToDestination = distanceToDestination;
 		e.debug.filterPosition = positions;
@@ -77,7 +86,7 @@ public class LPDataInputStream extends DataInputStream {
 	 * @throws IOException
 	 */
 	public IRouter readIRouter(World world) throws IOException {
-		if (in.read() == 0) {
+		if (readByte() == 0) {
 			return null;
 		} else {
 			DoubleCoordinates pos = readLPPosition();
@@ -96,9 +105,9 @@ public class LPDataInputStream extends DataInputStream {
 	public <T extends Enum<T>> EnumSet<T> readEnumSet(Class<T> clazz) throws IOException {
 		EnumSet<T> types = EnumSet.noneOf(clazz);
 		T[] parts = clazz.getEnumConstants();
-		int length = in.read();
-		byte[] set = new byte[length];
-		in.read(set);
+		int length;
+		length = readByte();
+		byte[] set = readBytes(length);
 		for (T part : parts) {
 			if ((set[part.ordinal() / 8] & (1 << (part.ordinal() % 8))) != 0) {
 				types.add(part);
@@ -107,10 +116,16 @@ public class LPDataInputStream extends DataInputStream {
 		return types;
 	}
 
+	private byte[] readBytes(int count) throws IOException {
+		byte[] bytes = new byte[count];
+		int read = in.read(bytes);
+		assert read == count;
+		return bytes;
+	}
+
 	public BitSet readBitSet() throws IOException {
 		byte size = readByte();
-		byte[] bytes = new byte[size];
-		this.read(bytes);
+		byte[] bytes = readBytes(size);
 		BitSet bits = new BitSet();
 		for (int i = 0; i < bytes.length * 8; i++) {
 			if ((bytes[bytes.length - i / 8 - 1] & (1 << (i % 8))) > 0) {
@@ -133,12 +148,18 @@ public class LPDataInputStream extends DataInputStream {
 	}
 
 	public boolean[] readBooleanArray() throws IOException {
-		boolean[] array = new boolean[readInt()];
+		boolean[] array = new boolean[0];
+		array = new boolean[readInt()];
 		BitSet set = readBitSet();
 		for (int i = 0; i < array.length; i++) {
 			array[i] = set.get(i);
 		}
 		return array;
+	}
+
+	@Override
+	public int[] readIntArray() {
+		return new int[0];
 	}
 
 	public int[] readIntegerArray() throws IOException {
@@ -176,11 +197,11 @@ public class LPDataInputStream extends DataInputStream {
 
 	public <T> Set<T> readSet(IReadListObject<T> handler) throws IOException {
 		int size = readInt();
-		Set<T> list = new HashSet<>(size);
+		Set<T> set = new HashSet<>(size);
 		for (int i = 0; i < size; i++) {
-			list.add(handler.readObject(this));
+			set.add(handler.readObject(this));
 		}
-		return list;
+		return set;
 	}
 
 	public IOrderInfoProvider readOrderInfo() throws IOException {
@@ -189,7 +210,7 @@ public class LPDataInputStream extends DataInputStream {
 		boolean isFinished = readBoolean();
 		boolean inProgress = readBoolean();
 		ResourceType type = this.readEnum(ResourceType.class);
-		List<Float> list = this.readList(DataInputStream::readFloat);
+		List<Float> list = this.readList(LPDataInput::readFloat);
 		byte machineProgress = readByte();
 		DoubleCoordinates pos = readLPPosition();
 		ItemIdentifier ident = readItemIdentifier();
@@ -202,8 +223,8 @@ public class LPDataInputStream extends DataInputStream {
 
 	public LinkedLogisticsOrderList readLinkedLogisticsOrderList() throws IOException {
 		LinkedLogisticsOrderList list = new LinkedLogisticsOrderList();
-		list.addAll(this.readList(LPDataInputStream::readOrderInfo));
-		list.getSubOrders().addAll(this.readList(LPDataInputStream::readLinkedLogisticsOrderList));
+		list.addAll(this.readList(LPDataInput::readOrderInfo));
+		list.getSubOrders().addAll(this.readList(LPDataInput::readLinkedLogisticsOrderList));
 		return list;
 	}
 
@@ -226,6 +247,11 @@ public class LPDataInputStream extends DataInputStream {
 			array[i] = readLong();
 		}
 		return array;
+	}
+
+	@Override
+	public IResource readResource() throws IOException {
+		return null;
 	}
 
 	public IResource readIResource() throws IOException {

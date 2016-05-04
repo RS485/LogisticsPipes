@@ -3,9 +3,21 @@ package logisticspipes.network;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 
-import logisticspipes.interfaces.routing.IFilter;
+import net.minecraft.item.Item;
+import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.util.ForgeDirection;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufOutputStream;
+
 import logisticspipes.request.resources.IResource;
 import logisticspipes.request.resources.ResourceNetwork;
 import logisticspipes.routing.ExitRoute;
@@ -15,18 +27,10 @@ import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.util.LPDataOutput;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
-import net.minecraft.item.Item;
-import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTTagCompound;
-
-import net.minecraftforge.common.util.ForgeDirection;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufOutputStream;
-
-public class LPDataOutputStream extends DataOutputStream {
+public class LPDataOutputStream extends DataOutputStream implements LPDataOutput {
 
 	private final ByteArrayOutputStream byteStream;
 
@@ -42,9 +46,9 @@ public class LPDataOutputStream extends DataOutputStream {
 
 	public void writeForgeDirection(ForgeDirection dir) throws IOException {
 		if (dir == null) {
-			out.write(10);
+			writeByte(10);
 		} else {
-			out.write(dir.ordinal());
+			writeByte(dir.ordinal());
 		}
 	}
 
@@ -66,9 +70,9 @@ public class LPDataOutputStream extends DataOutputStream {
 
 	public void writeIRouter(IRouter router) throws IOException {
 		if (router == null) {
-			out.write(0);
+			writeByte(0);
 		} else {
-			out.write(1);
+			writeByte(1);
 			writeLPPosition(router.getLPPosition());
 		}
 	}
@@ -82,13 +86,17 @@ public class LPDataOutputStream extends DataOutputStream {
 	public <T extends Enum<T>> void writeEnumSet(EnumSet<T> types, Class<T> clazz) throws IOException {
 		T[] parts = clazz.getEnumConstants();
 		byte[] set = new byte[parts.length / 8 + (parts.length % 8 == 0 ? 0 : 1)];
-		out.write(set.length);
+		writeByte(set.length);
 		for (T part : parts) {
 			if (types.contains(part)) {
 				byte i = (byte) (1 << (part.ordinal() % 8));
 				set[part.ordinal() / 8] |= i;
 			}
 		}
+		writeBytes(set);
+	}
+
+	private void writeBytes(byte[] set) throws IOException {
 		out.write(set);
 	}
 
@@ -100,16 +108,17 @@ public class LPDataOutputStream extends DataOutputStream {
 			}
 		}
 		writeByte(bytes.length);
-		this.write(bytes);
+		writeBytes(bytes);
 	}
 
 	public void writeNBTTagCompound(NBTTagCompound tag) throws IOException {
 		if (tag == null) {
 			writeShort(-1);
 		} else {
-			byte[] var3 = CompressedStreamTools.compress(tag);
+			byte[] var3;
+			var3 = CompressedStreamTools.compress(tag);
 			writeShort((short) var3.length);
-			this.write(var3);
+			writeBytes(var3);
 		}
 	}
 
@@ -174,7 +183,7 @@ public class LPDataOutputStream extends DataOutputStream {
 		writeBoolean(order.isFinished());
 		writeBoolean(order.isInProgress());
 		this.writeEnum(order.getType());
-		this.writeList(order.getProgresses(), DataOutputStream::writeFloat);
+		this.writeList(order.getProgresses(), LPDataOutput::writeFloat);
 		writeByte(order.getMachineProgress());
 		writeLPPosition(order.getTargetPosition());
 		writeItemIdentifier(order.getTargetType());
@@ -185,14 +194,38 @@ public class LPDataOutputStream extends DataOutputStream {
 	}
 
 	public void writeLinkedLogisticsOrderList(LinkedLogisticsOrderList orders) throws IOException {
-		this.writeList(orders, LPDataOutputStream::writeOrderInfo);
-		this.writeList(orders.getSubOrders(), LPDataOutputStream::writeLinkedLogisticsOrderList);
+		this.writeList(orders, LPDataOutput::writeOrderInfo);
+		this.writeList(orders.getSubOrders(), LPDataOutput::writeLinkedLogisticsOrderList);
+	}
+
+	@Override
+	public void writeResource(IResource res) throws IOException {
+		this.writeIResource(res);
+	}
+
+	@Override
+	public void writeByte(byte b) throws IOException {
+		super.writeByte(b);
+	}
+
+	@Override
+	public void writeShort(short s) throws IOException {
+		super.writeShort(s);
 	}
 
 	public void writeByteArray(byte[] array) throws IOException {
 		writeInt(array.length);
 		for (byte element : array) {
 			writeByte(element);
+		}
+	}
+
+	@Override
+	public void writeLengthAndBytes(byte[] arr) throws IOException {
+		if (arr == null) {
+			writeInt(-1);
+		} else {
+			this.writeByteArray(arr);
 		}
 	}
 
@@ -209,6 +242,19 @@ public class LPDataOutputStream extends DataOutputStream {
 			buf.getBytes(buf.readerIndex(), bytes);
 		}
 		writeByteArray(bytes);
+	}
+
+	@SuppressWarnings("Duplicates")
+	@Override
+	public void writeIntArray(int[] arr) throws IOException {
+		if (arr == null) {
+			writeInt(-1);
+		} else {
+			writeInt(arr.length);
+			for (int i : arr) {
+				writeInt(i);
+			}
+		}
 	}
 
 	public void writeLongArray(long[] array) throws IOException {

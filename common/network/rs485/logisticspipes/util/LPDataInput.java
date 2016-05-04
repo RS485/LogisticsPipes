@@ -43,7 +43,7 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public interface LPDataInput {
 
-	byte[] readLengthAndBytes();
+	byte[] readLengthAndBytes() throws IOException;
 
 	/**
 	 * @see java.io.DataInput#readByte()
@@ -85,24 +85,24 @@ public interface LPDataInput {
 	 */
 	String readUTF() throws IOException;
 
-	ForgeDirection readForgeDirection();
+	ForgeDirection readForgeDirection() throws IOException;
 
 	ExitRoute readExitRoute(World world) throws IOException;
 
 	/**
 	 * @return ServerRouter or ClientRouter depending where we are
 	 */
-	IRouter readIRouter(World world);
+	IRouter readIRouter(World world) throws IOException;
 
-	DoubleCoordinates readLPPosition();
+	DoubleCoordinates readLPPosition() throws IOException;
 
-	<T extends Enum<T>> EnumSet<T> readEnumSet(Class<T> clazz);
+	<T extends Enum<T>> EnumSet<T> readEnumSet(Class<T> clazz) throws IOException;
 
-	BitSet readBitSet();
+	BitSet readBitSet() throws IOException;
 
 	NBTTagCompound readNBTTagCompound() throws IOException;
 
-	boolean[] readBooleanArray();
+	boolean[] readBooleanArray() throws IOException;
 
 	int[] readIntArray();
 
@@ -114,13 +114,13 @@ public interface LPDataInput {
 
 	IOrderInfoProvider readOrderInfo() throws IOException;
 
-	<T extends Enum<T>> T readEnum(Class<T> clazz);
+	<T extends Enum<T>> T readEnum(Class<T> clazz) throws IOException;
 
 	LinkedLogisticsOrderList readLinkedLogisticsOrderList() throws IOException;
 
-	ByteBuf readByteBuf();
+	ByteBuf readByteBuf() throws IOException;
 
-	long[] readLongArray();
+	long[] readLongArray() throws IOException;
 
 	IResource readResource() throws IOException;
 

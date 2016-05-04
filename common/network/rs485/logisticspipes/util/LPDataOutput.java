@@ -47,14 +47,14 @@ public interface LPDataOutput {
 	 */
 	void writeByte(int b) throws IOException;
 
-	void writeByte(byte b);
+	void writeByte(byte b) throws IOException;
 
 	/**
 	 * @see java.io.DataOutput#writeShort(int)
 	 */
 	void writeShort(int s) throws IOException;
 
-	void writeShort(short s);
+	void writeShort(short s) throws IOException;
 
 	/**
 	 * @see java.io.DataOutput#writeInt(int)
@@ -88,29 +88,29 @@ public interface LPDataOutput {
 	 */
 	void writeUTF(String s) throws IOException;
 
-	void writeByteArray(byte[] data);
+	void writeByteArray(byte[] data) throws IOException;
 
-	void writeLengthAndBytes(byte[] arr);
+	void writeLengthAndBytes(byte[] arr) throws IOException;
 
-	void writeByteBuf(ByteBuf buffer);
+	void writeByteBuf(ByteBuf buffer) throws IOException;
 
-	void writeIntArray(int[] arr);
+	void writeIntArray(int[] arr) throws IOException;
 
-	void writeLongArray(long[] arr);
+	void writeLongArray(long[] arr) throws IOException;
 
-	void writeBooleanArray(boolean[] arr);
+	void writeBooleanArray(boolean[] arr) throws IOException;
 
-	void writeForgeDirection(ForgeDirection direction);
+	void writeForgeDirection(ForgeDirection direction) throws IOException;
 
 	void writeExitRoute(ExitRoute route) throws IOException;
 
-	void writeIRouter(IRouter router);
+	void writeIRouter(IRouter router) throws IOException;
 
-	void writeLPPosition(DoubleCoordinates pos);
+	void writeLPPosition(DoubleCoordinates pos) throws IOException;
 
-	<T extends Enum<T>> void writeEnumSet(EnumSet<T> types, Class<T> clazz);
+	<T extends Enum<T>> void writeEnumSet(EnumSet<T> types, Class<T> clazz) throws IOException;
 
-	void writeBitSet(BitSet bits);
+	void writeBitSet(BitSet bits) throws IOException;
 
 	void writeNBTTagCompound(NBTTagCompound tag) throws IOException;
 
@@ -122,7 +122,7 @@ public interface LPDataOutput {
 
 	void writeOrderInfo(IOrderInfoProvider order) throws IOException;
 
-	<T extends Enum<T>> void writeEnum(T obj);
+	<T extends Enum<T>> void writeEnum(T obj) throws IOException;
 
 	void writeLinkedLogisticsOrderList(LinkedLogisticsOrderList orderList) throws IOException;
 

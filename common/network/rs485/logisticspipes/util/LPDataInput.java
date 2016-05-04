@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.BitSet;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -111,6 +112,8 @@ public interface LPDataInput {
 	ItemIdentifierStack readItemIdentifierStack() throws IOException;
 
 	<T> List<T> readList(IReadListObject<T> handler) throws IOException;
+
+	<T> Set<T> readSet(IReadListObject<T> handler) throws IOException;
 
 	IOrderInfoProvider readOrderInfo() throws IOException;
 

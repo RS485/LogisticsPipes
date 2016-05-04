@@ -27,7 +27,9 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.item.Item;
 import net.minecraft.nbt.CompressedStreamTools;
@@ -590,6 +592,20 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 				list.add(handler.readObject(this));
 			}
 			return list;
+		}
+	}
+
+	@Override
+	public <T> Set<T> readSet(IReadListObject<T> handler) throws IOException {
+		int length = localBuffer.readInt();
+		if (length < 0) {
+			return null;
+		} else {
+			Set<T> set = new HashSet<>(length);
+			for (int i = 0; i < length; i++) {
+				set.add(handler.readObject(this));
+			}
+			return set;
 		}
 	}
 

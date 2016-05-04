@@ -25,6 +25,11 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.EnumSet;
 
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.util.ForgeDirection;
+
+import io.netty.buffer.ByteBuf;
+
 import logisticspipes.network.IWriteListObject;
 import logisticspipes.request.resources.IResource;
 import logisticspipes.routing.ExitRoute;
@@ -33,38 +38,55 @@ import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import net.minecraft.nbt.NBTTagCompound;
-
-import net.minecraftforge.common.util.ForgeDirection;
-
-import io.netty.buffer.ByteBuf;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public interface LPDataOutput {
 
-	void writeByte(int b);
+	/**
+	 * @see java.io.DataOutput#writeByte(int)
+	 */
+	void writeByte(int b) throws IOException;
 
 	void writeByte(byte b);
 
-	void writeShort(int s);
+	/**
+	 * @see java.io.DataOutput#writeShort(int)
+	 */
+	void writeShort(int s) throws IOException;
 
 	void writeShort(short s);
 
-	void writeInt(int i);
-
-	void writeLong(long l);
-
-	void writeFloat(float f);
-
-	void writeDouble(double d);
-
-	void writeBoolean(boolean b);
+	/**
+	 * @see java.io.DataOutput#writeInt(int)
+	 */
+	void writeInt(int i) throws IOException;
 
 	/**
-	 * Uses UTF-8 and not UTF-16. This makes sense for most of the use cases.
+	 * @see java.io.DataOutput#writeLong(long)
 	 */
-	void writeUTF(String s);
+	void writeLong(long l) throws IOException;
+
+	/**
+	 * @see java.io.DataOutput#writeFloat(float)
+	 */
+	void writeFloat(float f) throws IOException;
+
+	/**
+	 * @see java.io.DataOutput#writeDouble(double)
+	 */
+	void writeDouble(double d) throws IOException;
+
+	/**
+	 * @see java.io.DataOutput#writeBoolean(boolean)
+	 */
+	void writeBoolean(boolean b) throws IOException;
+
+	/**
+	 * Uses UTF-8 and not UTF-16.
+	 *
+	 * @see java.io.DataOutput#writeUTF(String)
+	 */
+	void writeUTF(String s) throws IOException;
 
 	void writeByteArray(byte[] data);
 

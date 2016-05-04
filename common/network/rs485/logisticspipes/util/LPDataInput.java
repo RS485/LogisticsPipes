@@ -25,6 +25,12 @@ import java.util.BitSet;
 import java.util.EnumSet;
 import java.util.List;
 
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+
+import io.netty.buffer.ByteBuf;
+
 import logisticspipes.network.IReadListObject;
 import logisticspipes.request.resources.IResource;
 import logisticspipes.routing.ExitRoute;
@@ -33,34 +39,51 @@ import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
-
-import net.minecraftforge.common.util.ForgeDirection;
-
-import io.netty.buffer.ByteBuf;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public interface LPDataInput {
 
 	byte[] readLengthAndBytes();
 
-	byte readByte();
+	/**
+	 * @see java.io.DataInput#readByte()
+	 */
+	byte readByte() throws IOException;
 
-	short readShort();
+	/**
+	 * @see java.io.DataInput#readShort()
+	 */
+	short readShort() throws IOException;
 
-	int readInt();
+	/**
+	 * @see java.io.DataInput#readInt()
+	 */
+	int readInt() throws IOException;
 
-	long readLong();
+	/**
+	 * @see java.io.DataInput#readLong()
+	 */
+	long readLong() throws IOException;
 
-	float readFloat();
+	/**
+	 * @see java.io.DataInput#readFloat()
+	 */
+	float readFloat() throws IOException;
 
-	double readDouble();
+	/**
+	 * @see java.io.DataInput#readDouble()
+	 */
+	double readDouble() throws IOException;
 
-	boolean readBoolean();
+	/**
+	 * @see java.io.DataInput#readBoolean()
+	 */
+	boolean readBoolean() throws IOException;
 
-	String readUTF();
+	/**
+	 * @see java.io.DataInput#readUTF()
+	 */
+	String readUTF() throws IOException;
 
 	ForgeDirection readForgeDirection();
 

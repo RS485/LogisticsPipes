@@ -2,21 +2,19 @@ package logisticspipes.network.guis.module.inpipe;
 
 import java.io.IOException;
 
-import logisticspipes.gui.modules.GuiExtractor;
-import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractguis.GuiProvider;
-import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
-import logisticspipes.utils.gui.DummyContainer;
-
 import net.minecraft.entity.player.EntityPlayer;
-
 import net.minecraftforge.common.util.ForgeDirection;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.gui.modules.GuiExtractor;
+import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
+import logisticspipes.network.abstractguis.GuiProvider;
+import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
+import logisticspipes.utils.gui.DummyContainer;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class ExtractorModuleSlot extends ModuleCoordinatesGuiProvider {
 
@@ -29,15 +27,15 @@ public class ExtractorModuleSlot extends ModuleCoordinatesGuiProvider {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeForgeDirection(sneakyOrientation);
+	public void writeData(LPDataOutput output) throws IOException {
+		super.writeData(output);
+		output.writeForgeDirection(sneakyOrientation);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		sneakyOrientation = data.readForgeDirection();
+	public void readData(LPDataInput input) throws IOException {
+		super.readData(input);
+		sneakyOrientation = input.readForgeDirection();
 	}
 
 	@Override

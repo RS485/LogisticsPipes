@@ -2,22 +2,21 @@ package logisticspipes.network.guis.module.inhand;
 
 import java.io.IOException;
 
+import net.minecraft.entity.player.EntityPlayer;
+
+import lombok.Getter;
+import lombok.Setter;
+
 import logisticspipes.gui.GuiCraftingPipe;
 import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.DummyModuleContainer;
-
-import net.minecraft.entity.player.EntityPlayer;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class CraftingModuleInHand extends ModuleInHandGuiProvider {
 
@@ -39,7 +38,8 @@ public class CraftingModuleInHand extends ModuleInHandGuiProvider {
 		if (!(module instanceof ModuleCrafter)) {
 			return null;
 		}
-		return new GuiCraftingPipe(player, ((ModuleCrafter) module).getDummyInventory(), ((ModuleCrafter) module), false, 0, amount, false, false, 0, cleanupExclude);
+		return new GuiCraftingPipe(player, ((ModuleCrafter) module).getDummyInventory(), ((ModuleCrafter) module), false, 0, amount, false, false, 0,
+				cleanupExclude);
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class CraftingModuleInHand extends ModuleInHandGuiProvider {
 		if (!(dummy.getModule() instanceof ModuleCrafter)) {
 			return null;
 		}
-		MainProxy.sendPacketToPlayer(((ModuleCrafter)dummy.getModule()).getCPipePacket(), player);
+		MainProxy.sendPacketToPlayer(((ModuleCrafter) dummy.getModule()).getCPipePacket(), player);
 		dummy.setInventory(((ModuleCrafter) dummy.getModule()).getDummyInventory());
 		dummy.addNormalSlotsForPlayerInventory(18, 97);
 		//Input slots
@@ -67,16 +67,16 @@ public class CraftingModuleInHand extends ModuleInHandGuiProvider {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeIntegerArray(amount);
-		data.writeBoolean(cleanupExclude);
+	public void writeData(LPDataOutput output) throws IOException {
+		super.writeData(output);
+		output.writeIntArray(amount);
+		output.writeBoolean(cleanupExclude);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		amount = data.readIntegerArray();
-		cleanupExclude = data.readBoolean();
+	public void readData(LPDataInput input) throws IOException {
+		super.readData(input);
+		amount = input.readIntArray();
+		cleanupExclude = input.readBoolean();
 	}
 }

@@ -2,12 +2,12 @@ package logisticspipes.network.packets.routingdebug;
 
 import java.io.IOException;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.routing.debug.ClientViewController;
-
-import net.minecraft.entity.player.EntityPlayer;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class RoutingUpdateInitDebug extends ModernPacket {
 
@@ -16,7 +16,7 @@ public class RoutingUpdateInitDebug extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {}
+	public void readData(LPDataInput input) throws IOException {}
 
 	@Override
 	public void processPacket(EntityPlayer player) {
@@ -24,7 +24,7 @@ public class RoutingUpdateInitDebug extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {}
+	public void writeData(LPDataOutput output) throws IOException {}
 
 	@Override
 	public ModernPacket template() {

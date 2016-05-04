@@ -3,12 +3,11 @@ package logisticspipes.network.abstractpackets;
 import java.io.IOException;
 import java.util.BitSet;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public abstract class BitSetCoordinatesPacket extends CoordinatesPacket {
 
@@ -21,14 +20,14 @@ public abstract class BitSetCoordinatesPacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeBitSet(getFlags());
+	public void writeData(LPDataOutput output) throws IOException {
+		super.writeData(output);
+		output.writeBitSet(getFlags());
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		setFlags(data.readBitSet());
+	public void readData(LPDataInput input) throws IOException {
+		super.readData(input);
+		setFlags(input.readBitSet());
 	}
 }

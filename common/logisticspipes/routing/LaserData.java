@@ -1,7 +1,5 @@
 package logisticspipes.routing;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.EnumSet;
 
@@ -12,6 +10,9 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
+
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 @Data
 @RequiredArgsConstructor
@@ -33,30 +34,30 @@ public class LaserData {
 	private boolean startPipe = false;
 	private int length = 1;
 
-	public void writeData(DataOutputStream data) throws IOException {
-		data.writeInt(posX);
-		data.writeInt(posY);
-		data.writeInt(posZ);
-		data.writeByte(dir.ordinal());
-		data.writeBoolean(finalPipe);
-		data.writeBoolean(startPipe);
-		data.writeInt(length);
+	public void writeData(LPDataOutput output) throws IOException {
+		output.writeInt(posX);
+		output.writeInt(posY);
+		output.writeInt(posZ);
+		output.writeByte(dir.ordinal());
+		output.writeBoolean(finalPipe);
+		output.writeBoolean(startPipe);
+		output.writeInt(length);
 		for (PipeRoutingConnectionType type : PipeRoutingConnectionType.values()) {
-			data.writeBoolean(connectionType.contains(type));
+			output.writeBoolean(connectionType.contains(type));
 		}
 	}
 
-	public LaserData readData(DataInputStream data) throws IOException {
-		posX = data.readInt();
-		posY = data.readInt();
-		posZ = data.readInt();
-		dir = ForgeDirection.values()[data.readByte()];
-		finalPipe = data.readBoolean();
-		startPipe = data.readBoolean();
-		length = data.readInt();
+	public LaserData readData(LPDataInput input) throws IOException {
+		posX = input.readInt();
+		posY = input.readInt();
+		posZ = input.readInt();
+		dir = ForgeDirection.values()[input.readByte()];
+		finalPipe = input.readBoolean();
+		startPipe = input.readBoolean();
+		length = input.readInt();
 		connectionType = EnumSet.noneOf(PipeRoutingConnectionType.class);
 		for (PipeRoutingConnectionType type : PipeRoutingConnectionType.values()) {
-			if (data.readBoolean()) {
+			if (input.readBoolean()) {
 				connectionType.add(type);
 			}
 		}

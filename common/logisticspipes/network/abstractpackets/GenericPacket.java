@@ -8,11 +8,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-
 import lombok.Getter;
-import lombok.experimental.Accessors;
+
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public abstract class GenericPacket extends ModernPacket {
 
@@ -24,16 +23,13 @@ public abstract class GenericPacket extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		int size = data.readInt();
+	public void readData(LPDataInput input) throws IOException {
+		int size = input.readInt();
 		args = new Object[size];
 		for (int i = 0; i < size; i++) {
-			int arraySize = data.readInt();
-			byte[] bytes = new byte[arraySize];
-			data.read(bytes);
+			byte[] bytes = input.readLengthAndBytes();
 			ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-			ObjectInput in = null;
-			in = new ObjectInputStream(bis);
+			ObjectInput in = new ObjectInputStream(bis);
 			try {
 				Object o = in.readObject();
 				args[i] = o;
@@ -44,16 +40,13 @@ public abstract class GenericPacket extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeInt(args.length);
+	public void writeData(LPDataOutput output) throws IOException {
+		output.writeInt(args.length);
 		for (Object arg : args) {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			ObjectOutput out = null;
-			out = new ObjectOutputStream(bos);
+			ObjectOutput out = new ObjectOutputStream(bos);
 			out.writeObject(arg);
-			byte[] bytes = bos.toByteArray();
-			data.writeInt(bytes.length);
-			data.write(bytes);
+			output.writeLengthAndBytes(bos.toByteArray());
 		}
 	}
 

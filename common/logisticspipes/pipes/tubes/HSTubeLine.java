@@ -1,9 +1,19 @@
 package logisticspipes.pipes.tubes;
 
+import java.io.IOException;
+import java.util.List;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraftforge.common.util.ForgeDirection;
+
+import lombok.Getter;
+
 import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.interfaces.ITubeRenderOrientation;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.pipes.basic.CoreMultiBlockPipe;
 import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
 import logisticspipes.renderer.newpipe.ISpecialPipeRenderer;
@@ -11,18 +21,10 @@ import logisticspipes.renderer.newpipe.tube.LineTubeRenderer;
 import logisticspipes.transport.PipeMultiBlockTransportLogistics;
 import logisticspipes.utils.IPositionRotateble;
 import logisticspipes.utils.LPPositionSet;
-import lombok.Getter;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraftforge.common.util.ForgeDirection;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 import network.rs485.logisticspipes.world.DoubleCoordinatesType;
-
-import java.io.IOException;
-import java.util.List;
 
 public class HSTubeLine extends CoreMultiBlockPipe {
 
@@ -30,8 +32,7 @@ public class HSTubeLine extends CoreMultiBlockPipe {
 		NORTH(TubeLineRenderOrientation.NORTH_SOUTH, new DoubleCoordinates(0, 0, 0), ForgeDirection.NORTH),
 		SOUTH(TubeLineRenderOrientation.NORTH_SOUTH, new DoubleCoordinates(0, 0, 0), ForgeDirection.SOUTH),
 		EAST(TubeLineRenderOrientation.EAST_WEST, new DoubleCoordinates(0, 0, 0), ForgeDirection.EAST),
-		WEST(TubeLineRenderOrientation.EAST_WEST, new DoubleCoordinates(0, 0, 0), ForgeDirection.WEST)
-		;
+		WEST(TubeLineRenderOrientation.EAST_WEST, new DoubleCoordinates(0, 0, 0), ForgeDirection.WEST);
 
 		@Getter
 		TubeLineRenderOrientation renderOrientation;
@@ -53,7 +54,7 @@ public class HSTubeLine extends CoreMultiBlockPipe {
 
 		@Override
 		public void setOnPipe(CoreMultiBlockPipe pipe) {
-			((HSTubeLine)pipe).orientation = this;
+			((HSTubeLine) pipe).orientation = this;
 		}
 	}
 
@@ -69,7 +70,7 @@ public class HSTubeLine extends CoreMultiBlockPipe {
 		}
 
 		public void rotateOrientation(IPositionRotateble set) {
-			if(this == EAST_WEST) {
+			if (this == EAST_WEST) {
 				set.rotateLeft();
 			}
 		}
@@ -83,19 +84,19 @@ public class HSTubeLine extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
+	public void writeData(LPDataOutput output) throws IOException {
 		if (orientation == null) {
-			data.writeBoolean(false);
+			output.writeBoolean(false);
 		} else {
-			data.writeBoolean(true);
-			data.writeEnum(orientation);
+			output.writeBoolean(true);
+			output.writeEnum(orientation);
 		}
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		if (data.readBoolean()) {
-			orientation = data.readEnum(TubeLineOrientation.class);
+	public void readData(LPDataInput input) throws IOException {
+		if (input.readBoolean()) {
+			orientation = input.readEnum(TubeLineOrientation.class);
 		}
 	}
 
@@ -181,7 +182,7 @@ public class HSTubeLine extends CoreMultiBlockPipe {
 
 	@Override
 	public TileEntity getConnectedEndTile(ForgeDirection output) {
-		if(output == this.orientation.dir || output.getOpposite() == this.orientation.dir) {
+		if (output == this.orientation.dir || output.getOpposite() == this.orientation.dir) {
 			return container.getTile(output);
 		}
 		return null;

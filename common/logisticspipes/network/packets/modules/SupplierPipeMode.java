@@ -2,22 +2,20 @@ package logisticspipes.network.packets.modules;
 
 import java.io.IOException;
 
-import logisticspipes.gui.GuiSupplierPipe;
-import logisticspipes.modules.ModuleActiveSupplier;
-import logisticspipes.modules.ModuleActiveSupplier.PatternMode;
-import logisticspipes.modules.ModuleActiveSupplier.SupplyMode;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.IntegerModuleCoordinatesPacket;
-import logisticspipes.network.abstractpackets.ModernPacket;
-
 import net.minecraft.entity.player.EntityPlayer;
-
 import cpw.mods.fml.client.FMLClientHandler;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.gui.GuiSupplierPipe;
+import logisticspipes.modules.ModuleActiveSupplier;
+import logisticspipes.modules.ModuleActiveSupplier.PatternMode;
+import logisticspipes.modules.ModuleActiveSupplier.SupplyMode;
+import logisticspipes.network.abstractpackets.IntegerModuleCoordinatesPacket;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class SupplierPipeMode extends IntegerModuleCoordinatesPacket {
 
@@ -51,15 +49,15 @@ public class SupplierPipeMode extends IntegerModuleCoordinatesPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		hasPatternUpgrade = data.readBoolean();
+	public void readData(LPDataInput input) throws IOException {
+		super.readData(input);
+		hasPatternUpgrade = input.readBoolean();
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeBoolean(hasPatternUpgrade);
+	public void writeData(LPDataOutput output) throws IOException {
+		super.writeData(output);
+		output.writeBoolean(hasPatternUpgrade);
 	}
 
 }

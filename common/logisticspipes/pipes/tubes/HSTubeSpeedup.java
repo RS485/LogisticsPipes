@@ -3,13 +3,20 @@ package logisticspipes.pipes.tubes;
 import java.io.IOException;
 import java.util.List;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraftforge.common.util.ForgeDirection;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import logisticspipes.LPConstants;
 import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.interfaces.ITubeRenderOrientation;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.pipes.basic.CoreMultiBlockPipe;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
@@ -21,20 +28,10 @@ import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.transport.PipeMultiBlockTransportLogistics;
 import logisticspipes.utils.IPositionRotateble;
 import logisticspipes.utils.LPPositionSet;
-
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-
-import net.minecraftforge.common.util.ForgeDirection;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 
 public class HSTubeSpeedup extends CoreMultiBlockPipe {
@@ -118,13 +115,13 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeEnum(orientation);
+	public void writeData(LPDataOutput output) throws IOException {
+		output.writeEnum(orientation);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		orientation = data.readEnum(SpeedupDirection.class);
+	public void readData(LPDataInput input) throws IOException {
+		orientation = input.readEnum(SpeedupDirection.class);
 	}
 
 	@Override
@@ -300,8 +297,8 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 
 	@Override
 	public boolean canPipeConnect(TileEntity tile, ForgeDirection side) {
-		if(tile instanceof LogisticsTileGenericSubMultiBlock) {
-			if(this.getOrientation().getDir1() != side) {
+		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
+			if (this.getOrientation().getDir1() != side) {
 				return false;
 			}
 		}

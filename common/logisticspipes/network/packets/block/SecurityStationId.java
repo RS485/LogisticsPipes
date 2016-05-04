@@ -3,17 +3,16 @@ package logisticspipes.network.packets.block;
 import java.io.IOException;
 import java.util.UUID;
 
-import logisticspipes.blocks.LogisticsSecurityTileEntity;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
-import logisticspipes.network.abstractpackets.ModernPacket;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.blocks.LogisticsSecurityTileEntity;
+import logisticspipes.network.abstractpackets.CoordinatesPacket;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class SecurityStationId extends CoordinatesPacket {
 
@@ -39,15 +38,15 @@ public class SecurityStationId extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeLong(uuid.getMostSignificantBits());
-		data.writeLong(uuid.getLeastSignificantBits());
+	public void writeData(LPDataOutput output) throws IOException {
+		super.writeData(output);
+		output.writeLong(uuid.getMostSignificantBits());
+		output.writeLong(uuid.getLeastSignificantBits());
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		uuid = new UUID(data.readLong(), data.readLong());
+	public void readData(LPDataInput input) throws IOException {
+		super.readData(input);
+		uuid = new UUID(input.readLong(), input.readLong());
 	}
 }

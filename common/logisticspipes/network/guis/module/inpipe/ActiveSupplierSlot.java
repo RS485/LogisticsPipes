@@ -2,21 +2,20 @@ package logisticspipes.network.guis.module.inpipe;
 
 import java.io.IOException;
 
-import logisticspipes.gui.GuiSupplierPipe;
-import logisticspipes.modules.ModuleActiveSupplier;
-import logisticspipes.modules.ModuleActiveSupplier.PatternMode;
-import logisticspipes.modules.ModuleActiveSupplier.SupplyMode;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractguis.GuiProvider;
-import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
-import logisticspipes.utils.gui.DummyContainer;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.gui.GuiSupplierPipe;
+import logisticspipes.modules.ModuleActiveSupplier;
+import logisticspipes.modules.ModuleActiveSupplier.PatternMode;
+import logisticspipes.modules.ModuleActiveSupplier.SupplyMode;
+import logisticspipes.network.abstractguis.GuiProvider;
+import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
+import logisticspipes.utils.gui.DummyContainer;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class ActiveSupplierSlot extends ModuleCoordinatesGuiProvider {
 
@@ -41,21 +40,21 @@ public class ActiveSupplierSlot extends ModuleCoordinatesGuiProvider {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeBoolean(patternUpgarde);
-		data.writeIntegerArray(slotArray);
-		data.writeBoolean(isLimit);
-		data.writeInt(mode);
+	public void writeData(LPDataOutput output) throws IOException {
+		super.writeData(output);
+		output.writeBoolean(patternUpgarde);
+		output.writeIntArray(slotArray);
+		output.writeBoolean(isLimit);
+		output.writeInt(mode);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		patternUpgarde = data.readBoolean();
-		slotArray = data.readIntegerArray();
-		isLimit = data.readBoolean();
-		mode = data.readInt();
+	public void readData(LPDataInput input) throws IOException {
+		super.readData(input);
+		patternUpgarde = input.readBoolean();
+		slotArray = input.readIntArray();
+		isLimit = input.readBoolean();
+		mode = input.readInt();
 	}
 
 	@Override

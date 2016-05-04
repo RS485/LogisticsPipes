@@ -2,17 +2,16 @@ package logisticspipes.network.packets.pipe;
 
 import java.io.IOException;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
-import logisticspipes.renderer.LogisticsGuiOverrenderer;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
+import logisticspipes.renderer.LogisticsGuiOverrenderer;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class SlotFinderActivatePacket extends ModuleCoordinatesPacket {
 
@@ -39,21 +38,21 @@ public class SlotFinderActivatePacket extends ModuleCoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeInt(tagetPosX);
-		data.writeInt(tagetPosY);
-		data.writeInt(tagetPosZ);
-		data.writeInt(slot);
+	public void writeData(LPDataOutput output) throws IOException {
+		super.writeData(output);
+		output.writeInt(tagetPosX);
+		output.writeInt(tagetPosY);
+		output.writeInt(tagetPosZ);
+		output.writeInt(slot);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		tagetPosX = data.readInt();
-		tagetPosY = data.readInt();
-		tagetPosZ = data.readInt();
-		slot = data.readInt();
+	public void readData(LPDataInput input) throws IOException {
+		super.readData(input);
+		tagetPosX = input.readInt();
+		tagetPosY = input.readInt();
+		tagetPosZ = input.readInt();
+		slot = input.readInt();
 	}
 
 	@Override

@@ -2,17 +2,16 @@ package logisticspipes.pipes.unrouted;
 
 import java.io.IOException;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
+import net.minecraft.item.Item;
+import net.minecraftforge.common.util.ForgeDirection;
+
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
 import logisticspipes.textures.Textures;
 import logisticspipes.transport.PipeTransportLogistics;
-
-import net.minecraft.item.Item;
-
-import net.minecraftforge.common.util.ForgeDirection;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class PipeItemsBasicTransport extends CoreUnroutedPipe {
 
@@ -21,10 +20,10 @@ public class PipeItemsBasicTransport extends CoreUnroutedPipe {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {}
+	public void writeData(LPDataOutput output) throws IOException {}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {}
+	public void readData(LPDataInput input) throws IOException {}
 
 	@Override
 	public int getIconIndex(ForgeDirection direction) {

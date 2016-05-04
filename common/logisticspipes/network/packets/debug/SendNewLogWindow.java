@@ -2,16 +2,15 @@ package logisticspipes.network.packets.debug;
 
 import java.io.IOException;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.basic.debug.LogWindow;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.basic.debug.LogWindow;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class SendNewLogWindow extends ModernPacket {
 
@@ -28,9 +27,9 @@ public class SendNewLogWindow extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		windowID = data.readInt();
-		title = data.readUTF();
+	public void readData(LPDataInput input) throws IOException {
+		windowID = input.readInt();
+		title = input.readUTF();
 	}
 
 	@Override
@@ -39,9 +38,9 @@ public class SendNewLogWindow extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeInt(windowID);
-		data.writeUTF(title);
+	public void writeData(LPDataOutput output) throws IOException {
+		output.writeInt(windowID);
+		output.writeUTF(title);
 	}
 
 	@Override

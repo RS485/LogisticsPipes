@@ -2,19 +2,18 @@ package logisticspipes.network.packets.routingdebug;
 
 import java.io.IOException;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.MovingObjectPosition.MovingObjectType;
+import cpw.mods.fml.client.FMLClientHandler;
+
 import logisticspipes.asm.ClientSideOnlyMethodContent;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.routingdebug.RoutingUpdateTargetResponse.TargetMode;
 import logisticspipes.proxy.MainProxy;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.MovingObjectPosition.MovingObjectType;
-
-import cpw.mods.fml.client.FMLClientHandler;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class RoutingUpdateAskForTarget extends ModernPacket {
 
@@ -23,7 +22,7 @@ public class RoutingUpdateAskForTarget extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {}
+	public void readData(LPDataInput input) throws IOException {}
 
 	@Override
 	@ClientSideOnlyMethodContent
@@ -32,14 +31,16 @@ public class RoutingUpdateAskForTarget extends ModernPacket {
 		if (box == null) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(RoutingUpdateTargetResponse.class).setMode(TargetMode.None));
 		} else if (box.typeOfHit == MovingObjectType.BLOCK) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(RoutingUpdateTargetResponse.class).setMode(TargetMode.Block).setAdditions(new Object[] { box.blockX, box.blockY, box.blockZ }));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(RoutingUpdateTargetResponse.class).setMode(TargetMode.Block)
+					.setAdditions(new Object[] { box.blockX, box.blockY, box.blockZ }));
 		} else if (box.typeOfHit == MovingObjectType.ENTITY) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(RoutingUpdateTargetResponse.class).setMode(TargetMode.Entity).setAdditions(new Object[] { box.entityHit.getEntityId() }));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(RoutingUpdateTargetResponse.class).setMode(TargetMode.Entity)
+					.setAdditions(new Object[] { box.entityHit.getEntityId() }));
 		}
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {}
+	public void writeData(LPDataOutput output) throws IOException {}
 
 	@Override
 	public ModernPacket template() {

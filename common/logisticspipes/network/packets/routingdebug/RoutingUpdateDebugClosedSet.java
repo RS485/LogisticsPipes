@@ -3,19 +3,17 @@ package logisticspipes.network.packets.routingdebug;
 import java.io.IOException;
 import java.util.EnumSet;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.routing.PipeRoutingConnectionType;
-import logisticspipes.routing.debug.ClientViewController;
-
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.routing.PipeRoutingConnectionType;
+import logisticspipes.routing.debug.ClientViewController;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class RoutingUpdateDebugClosedSet extends ModernPacket {
 
@@ -32,9 +30,9 @@ public class RoutingUpdateDebugClosedSet extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		set = data.readEnumSet(PipeRoutingConnectionType.class);
-		pos = data.readLPPosition();
+	public void readData(LPDataInput input) throws IOException {
+		set = input.readEnumSet(PipeRoutingConnectionType.class);
+		pos = input.readLPPosition();
 	}
 
 	@Override
@@ -43,9 +41,9 @@ public class RoutingUpdateDebugClosedSet extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeEnumSet(set, PipeRoutingConnectionType.class);
-		data.writeLPPosition(pos);
+	public void writeData(LPDataOutput output) throws IOException {
+		output.writeEnumSet(set, PipeRoutingConnectionType.class);
+		output.writeLPPosition(pos);
 	}
 
 	@Override

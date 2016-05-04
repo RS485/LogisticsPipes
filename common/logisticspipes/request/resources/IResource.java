@@ -2,14 +2,14 @@ package logisticspipes.request.resources;
 
 import java.io.IOException;
 
-import logisticspipes.network.LPDataOutputStream;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 /**
  * With Destination and amount
@@ -23,7 +23,7 @@ public interface IResource extends ILPCCTypeHolder {
 	 */
 	enum MatchSettings {
 		NORMAL,
-		WITHOUT_NBT;
+		WITHOUT_NBT
 	}
 
 	int getRequestedAmount();
@@ -34,7 +34,7 @@ public interface IResource extends ILPCCTypeHolder {
 
 	IResource clone(int multiplier);
 
-	void writeData(LPDataOutputStream data) throws IOException;
+	void writeData(LPDataOutput output) throws IOException;
 
 	boolean mergeForDisplay(IResource resource, int withAmount); //Amount overrides existing amount inside the resource
 
@@ -48,6 +48,6 @@ public interface IResource extends ILPCCTypeHolder {
 	enum ColorCode {
 		NONE,
 		MISSING,
-		SUCCESS;
+		SUCCESS
 	}
 }

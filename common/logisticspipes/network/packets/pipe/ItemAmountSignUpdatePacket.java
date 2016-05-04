@@ -2,8 +2,12 @@ package logisticspipes.network.packets.pipe;
 
 import java.io.IOException;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.common.util.ForgeDirection;
+
+import lombok.Getter;
+import lombok.Setter;
+
 import logisticspipes.network.abstractpackets.Integer2CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -11,14 +15,8 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.signs.IPipeSign;
 import logisticspipes.pipes.signs.ItemAmountPipeSign;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import net.minecraft.entity.player.EntityPlayer;
-
-import net.minecraftforge.common.util.ForgeDirection;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class ItemAmountSignUpdatePacket extends Integer2CoordinatesPacket {
 
@@ -46,21 +44,21 @@ public class ItemAmountSignUpdatePacket extends Integer2CoordinatesPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		if (data.readBoolean()) {
-			stack = data.readItemIdentifierStack();
+	public void readData(LPDataInput input) throws IOException {
+		super.readData(input);
+		if (input.readBoolean()) {
+			stack = input.readItemIdentifierStack();
 		}
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
+	public void writeData(LPDataOutput output) throws IOException {
+		super.writeData(output);
 		if (stack == null) {
-			data.writeBoolean(false);
+			output.writeBoolean(false);
 		} else {
-			data.writeBoolean(true);
-			data.writeItemIdentifierStack(stack);
+			output.writeBoolean(true);
+			output.writeItemIdentifierStack(stack);
 		}
 	}
 

@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
+import net.minecraft.entity.player.EntityPlayer;
+
+import lombok.Getter;
+import lombok.Setter;
+
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -13,12 +16,8 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LogisticsOrder;
 import logisticspipes.routing.order.LogisticsOrderManager;
-
-import net.minecraft.entity.player.EntityPlayer;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class PipeManagerContentPacket extends CoordinatesPacket {
 
@@ -50,21 +49,21 @@ public class PipeManagerContentPacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
+	public void writeData(LPDataOutput output) throws IOException {
+		super.writeData(output);
 		for (LogisticsOrder order : manager) {
-			data.writeByte(1);
-			data.writeOrderInfo(order);
+			output.writeByte(1);
+			output.writeOrderInfo(order);
 		}
-		data.writeByte(0);
+		output.writeByte(0);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
+	public void readData(LPDataInput input) throws IOException {
+		super.readData(input);
 		clientOrder = new LinkedList<>();
-		while (data.readByte() == 1) {
-			clientOrder.add(data.readOrderInfo());
+		while (input.readByte() == 1) {
+			clientOrder.add(input.readOrderInfo());
 		}
 	}
 }

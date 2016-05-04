@@ -3,17 +3,6 @@ package logisticspipes.network.packets.pipe;
 import java.io.IOException;
 import java.util.Iterator;
 
-import logisticspipes.interfaces.ISpecialInsertion;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.PacketHandler;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
-import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
-
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -22,7 +11,17 @@ import net.minecraft.item.ItemStack;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.interfaces.ISpecialInsertion;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
+import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper.AdjacentTileEntity;
 
@@ -123,14 +122,14 @@ public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeInt(slot);
+	public void writeData(LPDataOutput output) throws IOException {
+		super.writeData(output);
+		output.writeInt(slot);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		slot = data.readInt();
+	public void readData(LPDataInput input) throws IOException {
+		super.readData(input);
+		slot = input.readInt();
 	}
 }

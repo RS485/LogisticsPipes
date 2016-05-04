@@ -9,11 +9,30 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import net.minecraft.block.Block;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 import logisticspipes.LPConstants;
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.binnie.BinnieProxy;
@@ -80,30 +99,8 @@ import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 import logisticspipes.proxy.toolWrench.ToolWrenchProxy;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.item.ItemIdentifier;
-
-import net.minecraft.block.Block;
-import net.minecraft.client.entity.EntityClientPlayerMP;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.world.World;
-
-import net.minecraftforge.common.util.ForgeDirection;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 //@formatter:off
 //CHECKSTYLE:OFF
@@ -157,10 +154,10 @@ public class ProxyManager {
 						return new IBCRenderState() {
 							@Override public boolean needsRenderUpdate() {return false;}
 							@Override public boolean isDirty() {return false;}
-							@Override public void writeData_LP(LPDataOutputStream data) throws IOException {
-								data.writeBoolean(false);
+							@Override public void writeData_LP(LPDataOutput output) throws IOException {
+								output.writeBoolean(false);
 							}
-							@Override public void readData_LP(LPDataInputStream data) {}
+							@Override public void readData_LP(LPDataInput input) {}
 							@Override public void clean() {}
 						};
 					}
@@ -177,8 +174,8 @@ public class ProxyManager {
 					}
 					@Override public IBCPluggableState getBCPlugableState() {
 						return new IBCPluggableState() {
-							@Override public void writeData(LPDataOutputStream data) throws IOException {}
-							@Override public void readData(LPDataInputStream data) throws IOException {}
+							@Override public void writeData(LPDataOutput output) throws IOException {}
+							@Override public void readData(LPDataInput input) throws IOException {}
 							@Override public boolean isDirty(boolean clean) {return false;}
 						};
 					}

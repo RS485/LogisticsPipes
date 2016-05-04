@@ -7,27 +7,25 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
-import java.util.concurrent.Callable;
+
+import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatComponentText;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import logisticspipes.commands.chathelper.LPChatListener;
 import logisticspipes.commands.commands.debug.DebugGuiController;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.gui.OpenChatGui;
 import logisticspipes.proxy.MainProxy;
-
 import logisticspipes.utils.string.ChatColor;
-import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentText;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class DebugTargetResponse extends ModernPacket {
 
@@ -38,7 +36,7 @@ public class DebugTargetResponse extends ModernPacket {
 	public enum TargetMode {
 		Block,
 		Entity,
-		None;
+		None
 	}
 
 	@Getter
@@ -50,17 +48,14 @@ public class DebugTargetResponse extends ModernPacket {
 	private Object[] additions = new Object[0];
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		mode = TargetMode.values()[data.readByte()];
-		int size = data.readInt();
+	public void readData(LPDataInput input) throws IOException {
+		mode = TargetMode.values()[input.readByte()];
+		int size = input.readInt();
 		additions = new Object[size];
 		for (int i = 0; i < size; i++) {
-			int arraySize = data.readInt();
-			byte[] bytes = new byte[arraySize];
-			data.read(bytes);
+			byte[] bytes = input.readLengthAndBytes();
 			ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-			ObjectInput in = null;
-			in = new ObjectInputStream(bis);
+			ObjectInput in = new ObjectInputStream(bis);
 			try {
 				Object o = in.readObject();
 				additions[i] = o;
@@ -86,13 +81,16 @@ public class DebugTargetResponse extends ModernPacket {
 				player.addChatComponentMessage(new ChatComponentText(ChatColor.RED + "No TileEntity found"));
 			} else {
 				LPChatListener.addTask(() -> {
-					player.addChatComponentMessage(new ChatComponentText(ChatColor.GREEN + "Starting debuging of TileEntity: " + ChatColor.BLUE + ChatColor.UNDERLINE + tile.getClass().getSimpleName()));
+					player.addChatComponentMessage(new ChatComponentText(
+							ChatColor.GREEN + "Starting debuging of TileEntity: " + ChatColor.BLUE + ChatColor.UNDERLINE + tile.getClass().getSimpleName()));
 					DebugGuiController.instance().startWatchingOf(tile, player);
 					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
 					return true;
 				}, player);
-				player.addChatComponentMessage(new ChatComponentText(ChatColor.AQUA + "Start debuging of TileEntity: " + ChatColor.BLUE + ChatColor.UNDERLINE + tile.getClass().getSimpleName() + ChatColor.AQUA + "? " + ChatColor.RESET + "<" + ChatColor.GREEN + "yes" + ChatColor.RESET + "/" + ChatColor.RED + "no"
-						+ ChatColor.RESET + ">"));
+				player.addChatComponentMessage(new ChatComponentText(
+						ChatColor.AQUA + "Start debuging of TileEntity: " + ChatColor.BLUE + ChatColor.UNDERLINE + tile.getClass().getSimpleName()
+								+ ChatColor.AQUA + "? " + ChatColor.RESET + "<" + ChatColor.GREEN + "yes" + ChatColor.RESET + "/" + ChatColor.RED + "no"
+								+ ChatColor.RESET + ">"));
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
 			}
 		} else if (mode == TargetMode.Entity) {
@@ -102,30 +100,31 @@ public class DebugTargetResponse extends ModernPacket {
 				player.addChatComponentMessage(new ChatComponentText(ChatColor.RED + "No Entity found"));
 			} else {
 				LPChatListener.addTask(() -> {
-					player.addChatComponentMessage(new ChatComponentText(ChatColor.GREEN + "Starting debuging of Entity: " + ChatColor.BLUE + ChatColor.UNDERLINE + entity.getClass().getSimpleName()));
+					player.addChatComponentMessage(new ChatComponentText(
+							ChatColor.GREEN + "Starting debuging of Entity: " + ChatColor.BLUE + ChatColor.UNDERLINE + entity.getClass().getSimpleName()));
 					DebugGuiController.instance().startWatchingOf(entity, player);
 					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
 					return true;
 				}, player);
-				player.addChatComponentMessage(new ChatComponentText(ChatColor.AQUA + "Start debuging of Entity: " + ChatColor.BLUE + ChatColor.UNDERLINE + entity.getClass().getSimpleName() + ChatColor.AQUA + "? " + ChatColor.RESET + "<" + ChatColor.GREEN + "yes" + ChatColor.RESET + "/" + ChatColor.RED + "no"
-						+ ChatColor.RESET + ">"));
+				player.addChatComponentMessage(new ChatComponentText(
+						ChatColor.AQUA + "Start debuging of Entity: " + ChatColor.BLUE + ChatColor.UNDERLINE + entity.getClass().getSimpleName()
+								+ ChatColor.AQUA + "? " + ChatColor.RESET + "<" + ChatColor.GREEN + "yes" + ChatColor.RESET + "/" + ChatColor.RED + "no"
+								+ ChatColor.RESET + ">"));
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
 			}
 		}
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeByte(mode.ordinal());
-		data.writeInt(additions.length);
+	public void writeData(LPDataOutput output) throws IOException {
+		output.writeByte(mode.ordinal());
+		output.writeInt(additions.length);
 		for (Object addition : additions) {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			ObjectOutput out = null;
 			out = new ObjectOutputStream(bos);
 			out.writeObject(addition);
-			byte[] bytes = bos.toByteArray();
-			data.writeInt(bytes.length);
-			data.write(bytes);
+			output.writeLengthAndBytes(bos.toByteArray());
 		}
 	}
 

@@ -2,10 +2,10 @@ package logisticspipes.renderer.state;
 
 import java.io.IOException;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-
 import net.minecraftforge.common.util.ForgeDirection;
+
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class ConnectionMatrix {
 
@@ -74,27 +74,27 @@ public class ConnectionMatrix {
 		dirty = false;
 	}
 
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeByte(mask);
-		data.writeByte(isBCPipeMask);
-		data.writeByte(isTDPipeMask);
+	public void writeData(LPDataOutput output) throws IOException {
+		output.writeByte(mask);
+		output.writeByte(isBCPipeMask);
+		output.writeByte(isTDPipeMask);
 	}
 
-	public void readData(LPDataInputStream data) throws IOException {
-		byte newMask = data.readByte();
+	public void readData(LPDataInput input) throws IOException {
+		byte newMask = input.readByte();
 
 		if (newMask != mask) {
 			mask = newMask;
 			dirty = true;
 		}
 
-		newMask = data.readByte();
+		newMask = input.readByte();
 		if (newMask != isBCPipeMask) {
 			isBCPipeMask = newMask;
 			dirty = true;
 		}
 
-		newMask = data.readByte();
+		newMask = input.readByte();
 		if (newMask != isTDPipeMask) {
 			isTDPipeMask = newMask;
 			dirty = true;

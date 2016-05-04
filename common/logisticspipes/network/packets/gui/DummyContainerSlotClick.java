@@ -2,15 +2,6 @@ package logisticspipes.network.packets.gui;
 
 import java.io.IOException;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.utils.gui.ColorSlot;
-import logisticspipes.utils.gui.DummyContainer;
-import logisticspipes.utils.gui.DummySlot;
-import logisticspipes.utils.gui.FluidSlot;
-import logisticspipes.utils.item.ItemIdentifierStack;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Slot;
@@ -18,7 +9,15 @@ import net.minecraft.item.ItemStack;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.utils.gui.ColorSlot;
+import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.DummySlot;
+import logisticspipes.utils.gui.FluidSlot;
+import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class DummyContainerSlotClick extends ModernPacket {
 
@@ -39,10 +38,10 @@ public class DummyContainerSlotClick extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		slotId = data.readInt();
-		stack = data.readItemIdentifierStack().makeNormalStack();
-		button = data.readInt();
+	public void readData(LPDataInput input) throws IOException {
+		slotId = input.readInt();
+		stack = input.readItemIdentifierStack().makeNormalStack();
+		button = input.readInt();
 	}
 
 	@Override
@@ -57,10 +56,10 @@ public class DummyContainerSlotClick extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeInt(slotId);
-		data.writeItemIdentifierStack(ItemIdentifierStack.getFromStack(stack));
-		data.writeInt(button);
+	public void writeData(LPDataOutput output) throws IOException {
+		output.writeInt(slotId);
+		output.writeItemIdentifierStack(ItemIdentifierStack.getFromStack(stack));
+		output.writeInt(button);
 	}
 
 	@Override

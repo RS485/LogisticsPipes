@@ -2,17 +2,19 @@ package logisticspipes.network.packets.pipe;
 
 import java.io.IOException;
 
-import logisticspipes.interfaces.IClientState;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
+
+import logisticspipes.interfaces.IClientState;
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.abstractpackets.CoordinatesPacket;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import network.rs485.logisticspipes.util.LPDataIOWrapper;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class PipeTileStatePacket extends CoordinatesPacket {
 
@@ -67,43 +69,24 @@ public class PipeTileStatePacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		LPDataOutputStream out = new LPDataOutputStream();
-		renderState.writeData(out);
-		byte[] bytes = out.toByteArray();
-		data.writeInt(bytes.length);
-		data.write(bytes);
+	public void writeData(LPDataOutput output) throws IOException {
+		super.writeData(output);
 
-		out = new LPDataOutputStream();
-		coreState.writeData(out);
-		bytes = out.toByteArray();
-		data.writeInt(bytes.length);
-		data.write(bytes);
-
-		out = new LPDataOutputStream();
-		bcPluggableState.writeData(out);
-		bytes = out.toByteArray();
-		data.writeInt(bytes.length);
-		data.write(bytes);
-
-		out = new LPDataOutputStream();
-		pipe.writeData(out);
-		bytes = out.toByteArray();
-		data.writeInt(bytes.length);
-		data.write(bytes);
+		IClientState[] clientStates = new IClientState[] { renderState, coreState, bcPluggableState, pipe };
+		byte[][] clientStateBuffers = new byte[][] { bytesRenderState, bytesCoreState, bytesBCPluggableState, bytesPipe };
+		for (int i = 0; i < clientStates.length; i++) {
+			clientStateBuffers[i] = LPDataIOWrapper.collectData(clientStates[i]::writeData);
+			output.writeLengthAndBytes(clientStateBuffers[i]);
+		}
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		bytesRenderState = new byte[data.readInt()];
-		data.read(bytesRenderState);
-		bytesCoreState = new byte[data.readInt()];
-		data.read(bytesCoreState);
-		bytesBCPluggableState = new byte[data.readInt()];
-		data.read(bytesBCPluggableState);
-		bytesPipe = new byte[data.readInt()];
-		data.read(bytesPipe);
+	public void readData(LPDataInput input) throws IOException {
+		super.readData(input);
+
+		bytesRenderState = input.readLengthAndBytes();
+		bytesCoreState = input.readLengthAndBytes();
+		bytesBCPluggableState = input.readLengthAndBytes();
+		bytesPipe = input.readLengthAndBytes();
 	}
 }

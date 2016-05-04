@@ -2,23 +2,21 @@ package logisticspipes.network.packets.module;
 
 import java.io.IOException;
 
-import logisticspipes.asm.ClientSideOnlyMethodContent;
-import logisticspipes.gui.GuiSupplierPipe;
-import logisticspipes.modules.ModuleActiveSupplier;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.PacketHandler;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
-import logisticspipes.proxy.MainProxy;
-
 import net.minecraft.entity.player.EntityPlayer;
-
 import cpw.mods.fml.client.FMLClientHandler;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.asm.ClientSideOnlyMethodContent;
+import logisticspipes.gui.GuiSupplierPipe;
+import logisticspipes.modules.ModuleActiveSupplier;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
+import logisticspipes.proxy.MainProxy;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class SupplierPipeLimitedPacket extends ModuleCoordinatesPacket {
 
@@ -57,14 +55,14 @@ public class SupplierPipeLimitedPacket extends ModuleCoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeBoolean(isLimited);
+	public void writeData(LPDataOutput output) throws IOException {
+		super.writeData(output);
+		output.writeBoolean(isLimited);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		isLimited = data.readBoolean();
+	public void readData(LPDataInput input) throws IOException {
+		super.readData(input);
+		isLimited = input.readBoolean();
 	}
 }

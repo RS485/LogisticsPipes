@@ -4,15 +4,15 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.LogisticsEventListener;
 import logisticspipes.modules.ModuleQuickSort;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.MainProxy;
-
-import net.minecraft.entity.player.EntityPlayer;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class ChestGuiOpened extends ModernPacket {
 
@@ -21,7 +21,7 @@ public class ChestGuiOpened extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {}
+	public void readData(LPDataInput input) throws IOException {}
 
 	@Override
 	public void processPacket(EntityPlayer player) {
@@ -40,7 +40,7 @@ public class ChestGuiOpened extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {}
+	public void writeData(LPDataOutput output) throws IOException {}
 
 	@Override
 	public ModernPacket template() {

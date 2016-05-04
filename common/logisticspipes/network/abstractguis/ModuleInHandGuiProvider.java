@@ -2,20 +2,19 @@ package logisticspipes.network.abstractguis;
 
 import java.io.IOException;
 
-import logisticspipes.LogisticsPipes;
-import logisticspipes.logisticspipes.ItemModuleInformationManager;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
-import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.utils.DummyWorldProvider;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.LogisticsPipes;
+import logisticspipes.logisticspipes.ItemModuleInformationManager;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
+import logisticspipes.utils.DummyWorldProvider;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public abstract class ModuleInHandGuiProvider extends GuiProvider {
 
@@ -28,15 +27,15 @@ public abstract class ModuleInHandGuiProvider extends GuiProvider {
 	private int invSlot;
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeInt(invSlot);
+	public void writeData(LPDataOutput output) throws IOException {
+		super.writeData(output);
+		output.writeInt(invSlot);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		invSlot = data.readInt();
+	public void readData(LPDataInput input) throws IOException {
+		super.readData(input);
+		invSlot = input.readInt();
 	}
 
 	public final LogisticsModule getLogisticsModule(EntityPlayer player) {

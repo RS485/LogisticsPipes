@@ -2,18 +2,17 @@ package logisticspipes.network.packets.routingdebug;
 
 import java.io.IOException;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.routing.ExitRoute;
-import logisticspipes.routing.debug.ClientViewController;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.routing.ExitRoute;
+import logisticspipes.routing.debug.ClientViewController;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class RoutingUpdateDebugCanidateList extends ModernPacket {
 
@@ -26,10 +25,10 @@ public class RoutingUpdateDebugCanidateList extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		msg = new ExitRoute[data.readInt()];
+	public void readData(LPDataInput input) throws IOException {
+		msg = new ExitRoute[input.readInt()];
 		for (int i = 0; i < msg.length; i++) {
-			msg[i] = data.readExitRoute(MainProxy.getClientMainWorld());
+			msg[i] = input.readExitRoute(MainProxy.getClientMainWorld());
 		}
 	}
 
@@ -39,10 +38,10 @@ public class RoutingUpdateDebugCanidateList extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeInt(msg.length);
+	public void writeData(LPDataOutput output) throws IOException {
+		output.writeInt(msg.length);
 		for (ExitRoute element : msg) {
-			data.writeExitRoute(element);
+			output.writeExitRoute(element);
 		}
 	}
 

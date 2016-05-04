@@ -2,18 +2,19 @@ package logisticspipes.network.packets.pipe;
 
 import java.io.IOException;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.network.abstractpackets.ListSyncPacket;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
-import net.minecraft.entity.player.EntityPlayer;
-
-public class ItemBufferSyncPacket extends ListSyncPacket<Triplet<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>, LPTravelingItemServer>> {
+public class ItemBufferSyncPacket
+		extends ListSyncPacket<Triplet<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>, LPTravelingItemServer>> {
 
 	public ItemBufferSyncPacket(int id, int x, int y, int z) {
 		super(id, x, y, z);
@@ -24,13 +25,15 @@ public class ItemBufferSyncPacket extends ListSyncPacket<Triplet<ItemIdentifierS
 	}
 
 	@Override
-	public void writeObject(LPDataOutputStream data, Triplet<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>, LPTravelingItemServer> object) throws IOException {
-		data.writeItemIdentifierStack(object.getValue1());
+	public void writeObject(LPDataOutput output,
+			Triplet<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>, LPTravelingItemServer> object) throws IOException {
+		output.writeItemIdentifierStack(object.getValue1());
 	}
 
 	@Override
-	public Triplet<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>, LPTravelingItemServer> readObject(LPDataInputStream data) throws IOException {
-		return new Triplet<>(data.readItemIdentifierStack(), null, null);
+	public Triplet<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>, LPTravelingItemServer> readObject(LPDataInput input)
+			throws IOException {
+		return new Triplet<>(input.readItemIdentifierStack(), null, null);
 	}
 
 	@Override

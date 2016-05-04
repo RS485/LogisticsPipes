@@ -2,8 +2,8 @@ package logisticspipes.proxy.buildcraft.subproxies;
 
 import java.io.IOException;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public interface IBCRenderState {
 
@@ -11,9 +11,9 @@ public interface IBCRenderState {
 
 	boolean isDirty();
 
-	void writeData_LP(LPDataOutputStream data) throws IOException;
+	void writeData_LP(LPDataOutput output) throws IOException;
 
-	void readData_LP(LPDataInputStream data) throws IOException;
+	void readData_LP(LPDataInput input) throws IOException;
 
 	void clean();
 

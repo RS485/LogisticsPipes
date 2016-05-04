@@ -1,20 +1,20 @@
 package logisticspipes.network.abstractguis;
 
-import logisticspipes.LPConstants;
-import logisticspipes.LogisticsPipes;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import java.io.IOException;
+
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.experimental.Accessors;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-import network.rs485.logisticspipes.world.IntegerCoordinates;
 
-import java.io.IOException;
+import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 @ToString
 public abstract class CoordinatesPopupGuiProvider extends PopupGuiProvider {
@@ -34,19 +34,19 @@ public abstract class CoordinatesPopupGuiProvider extends PopupGuiProvider {
 	private int posZ;
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
+	public void writeData(LPDataOutput output) throws IOException {
 
-		data.writeInt(posX);
-		data.writeInt(posY);
-		data.writeInt(posZ);
+		output.writeInt(posX);
+		output.writeInt(posY);
+		output.writeInt(posZ);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
+	public void readData(LPDataInput input) throws IOException {
 
-		posX = data.readInt();
-		posY = data.readInt();
-		posZ = data.readInt();
+		posX = input.readInt();
+		posY = input.readInt();
+		posZ = input.readInt();
 
 	}
 
@@ -67,7 +67,7 @@ public abstract class CoordinatesPopupGuiProvider extends PopupGuiProvider {
 	@SuppressWarnings("unchecked")
 	/**
 	 * Retrieves tileEntity at packet coordinates if any.
-	 * 
+	 *
 	 * @param world
 	 * @param clazz
 	 * @return TileEntity
@@ -104,7 +104,7 @@ public abstract class CoordinatesPopupGuiProvider extends PopupGuiProvider {
 
 	/**
 	 * Retrieves pipe at packet coordinates if any.
-	 * 
+	 *
 	 * @param world
 	 * @return
 	 */

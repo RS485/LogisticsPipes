@@ -2,23 +2,22 @@ package logisticspipes.network.abstractpackets;
 
 import java.io.IOException;
 
-import logisticspipes.LPConstants;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
-import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.pipes.PipeLogisticsChassi;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.gui.DummyModuleContainer;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.LPConstants;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
+import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.gui.DummyModuleContainer;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
 
@@ -35,21 +34,21 @@ public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeBoolean(type != null);
+	public void writeData(LPDataOutput output) throws IOException {
+		super.writeData(output);
+		output.writeBoolean(type != null);
 		if (type != null) {
-			data.writeEnum(type);
-			data.writeInt(positionInt);
+			output.writeEnum(type);
+			output.writeInt(positionInt);
 		}
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		if (data.readBoolean()) {
-			type = data.readEnum(ModulePositionType.class);
-			positionInt = data.readInt();
+	public void readData(LPDataInput input) throws IOException {
+		super.readData(input);
+		if (input.readBoolean()) {
+			type = input.readEnum(ModulePositionType.class);
+			positionInt = input.readInt();
 		}
 	}
 

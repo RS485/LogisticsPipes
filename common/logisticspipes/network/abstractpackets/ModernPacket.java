@@ -2,14 +2,13 @@ package logisticspipes.network.abstractpackets;
 
 import java.io.IOException;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public abstract class ModernPacket {
 
@@ -66,11 +65,11 @@ public abstract class ModernPacket {
 		}
 	 */
 
-	public abstract void readData(LPDataInputStream data) throws IOException;
+	public abstract void readData(LPDataInput input) throws IOException;
 
 	public abstract void processPacket(EntityPlayer player);
 
-	public abstract void writeData(LPDataOutputStream data) throws IOException;
+	public abstract void writeData(LPDataOutput output) throws IOException;
 
 	public abstract ModernPacket template();
 

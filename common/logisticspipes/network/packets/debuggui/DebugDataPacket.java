@@ -1,15 +1,16 @@
 package logisticspipes.network.packets.debuggui;
 
-import logisticspipes.commands.commands.debug.DebugGuiController;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
+import java.io.IOException;
+
 import net.minecraft.entity.player.EntityPlayer;
 
-import java.io.IOException;
+import lombok.Getter;
+import lombok.Setter;
+
+import logisticspipes.commands.commands.debug.DebugGuiController;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class DebugDataPacket extends ModernPacket {
 
@@ -26,9 +27,9 @@ public class DebugDataPacket extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		payload = data.readByteArray();
-		identifier = data.readInt();
+	public void readData(LPDataInput input) throws IOException {
+		payload = input.readLengthAndBytes();
+		identifier = input.readInt();
 	}
 
 	@Override
@@ -37,9 +38,9 @@ public class DebugDataPacket extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeByteArray(payload);
-		data.writeInt(identifier);
+	public void writeData(LPDataOutput output) throws IOException {
+		output.writeByteArray(payload);
+		output.writeInt(identifier);
 	}
 
 	@Override

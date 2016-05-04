@@ -2,19 +2,18 @@ package logisticspipes.network.abstractpackets;
 
 import java.io.IOException;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.exception.TargetNotFoundException;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.experimental.Accessors;
+
+import logisticspipes.network.exception.TargetNotFoundException;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 @ToString
 public abstract class CoordinatesPacket extends ModernPacket {
@@ -22,7 +21,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	public enum LTGPCompletionCheck {
 		NONE,
 		PIPE,
-		TRANSPORT;
+		TRANSPORT
 	}
 
 	public CoordinatesPacket(int id) {
@@ -40,19 +39,19 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	private int posZ;
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
+	public void writeData(LPDataOutput output) throws IOException {
 
-		data.writeInt(posX);
-		data.writeInt(posY);
-		data.writeInt(posZ);
+		output.writeInt(posX);
+		output.writeInt(posY);
+		output.writeInt(posZ);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
+	public void readData(LPDataInput input) throws IOException {
 
-		posX = data.readInt();
-		posY = data.readInt();
-		posZ = data.readInt();
+		posX = input.readInt();
+		posY = input.readInt();
+		posZ = input.readInt();
 
 	}
 
@@ -80,7 +79,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	@SuppressWarnings("unchecked")
 	/**
 	 * Retrieves tileEntity at packet coordinates if any.
-	 * 
+	 *
 	 * @param world
 	 * @param clazz
 	 * @return TileEntity
@@ -110,7 +109,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	@SuppressWarnings("unchecked")
 	/**
 	 * Retrieves tileEntity or CoreUnroutedPipe at packet coordinates if any.
-	 * 
+	 *
 	 * @param world
 	 * @param clazz
 	 * @return TileEntity
@@ -147,7 +146,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 
 	/**
 	 * Retrieves pipe at packet coordinates if any.
-	 * 
+	 *
 	 * @param world
 	 * @return
 	 */

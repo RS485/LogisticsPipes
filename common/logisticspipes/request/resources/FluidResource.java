@@ -3,13 +3,13 @@ package logisticspipes.request.resources;
 import java.io.IOException;
 
 import logisticspipes.interfaces.routing.IRequestFluid;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class FluidResource implements IResource {
 
@@ -23,16 +23,16 @@ public class FluidResource implements IResource {
 		this.target = target;
 	}
 
-	public FluidResource(LPDataInputStream data) throws IOException {
-		liquid = FluidIdentifier.get(data.readItemIdentifier());
-		amount = data.readInt();
+	public FluidResource(LPDataInput input) throws IOException {
+		liquid = FluidIdentifier.get(input.readItemIdentifier());
+		amount = input.readInt();
 		target = null;
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeItemIdentifier(liquid.getItemIdentifier());
-		data.writeInt(amount);
+	public void writeData(LPDataOutput output) throws IOException {
+		output.writeItemIdentifier(liquid.getItemIdentifier());
+		output.writeInt(amount);
 	}
 
 	@Override

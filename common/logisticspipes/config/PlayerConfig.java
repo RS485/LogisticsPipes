@@ -14,22 +14,21 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
+import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
+
+import lombok.Getter;
+import lombok.SneakyThrows;
+
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.PlayerConfigToServerPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.PlayerIdentifier;
-
-import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
-
-import net.minecraftforge.common.DimensionManager;
-
-import lombok.Getter;
-import lombok.SneakyThrows;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class PlayerConfig {
 
@@ -76,18 +75,18 @@ public class PlayerConfig {
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(PlayerConfigToServerPacket.class).setConfig(this));
 	}
 
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeBoolean(useNewRenderer);
-		data.writeBoolean(useFallbackRenderer);
-		data.writeInt(renderPipeDistance);
-		data.writeInt(renderPipeContentDistance);
+	public void writeData(LPDataOutput output) throws IOException {
+		output.writeBoolean(useNewRenderer);
+		output.writeBoolean(useFallbackRenderer);
+		output.writeInt(renderPipeDistance);
+		output.writeInt(renderPipeContentDistance);
 	}
 
-	public void readData(LPDataInputStream data) throws IOException {
-		useNewRenderer = data.readBoolean();
-		useFallbackRenderer = data.readBoolean();
-		renderPipeDistance = data.readInt();
-		renderPipeContentDistance = data.readInt();
+	public void readData(LPDataInput input) throws IOException {
+		useNewRenderer = input.readBoolean();
+		useFallbackRenderer = input.readBoolean();
+		renderPipeDistance = input.readInt();
+		renderPipeContentDistance = input.readInt();
 		isUninitialised = false;
 	}
 
@@ -121,7 +120,7 @@ public class PlayerConfig {
 				fileAccesLock.lock();
 				try {
 					lpUserData = CompressedStreamTools.readCompressed(new FileInputStream(file));
-				} catch(IOException e) {
+				} catch (IOException e) {
 					//We simply can't load the old settings. Just fall back to the default once.
 				} finally {
 					fileAccesLock.unlock();
@@ -135,7 +134,7 @@ public class PlayerConfig {
 				fileAccesLock.lock();
 				try {
 					lpUserData = CompressedStreamTools.readCompressed(new FileInputStream(file));
-				} catch(IOException e) {
+				} catch (IOException e) {
 					//We simply can't load the old settings. Just fall back to the default once.
 				} finally {
 					fileAccesLock.unlock();
@@ -184,7 +183,7 @@ public class PlayerConfig {
 			fileAccesLock.lock();
 			try {
 				CompressedStreamTools.writeCompressed(lpUserData, new FileOutputStream(file));
-			} catch(IOException e) {
+			} catch (IOException e) {
 				//If we can't save them, so be it.
 			} finally {
 				fileAccesLock.unlock();
@@ -199,7 +198,7 @@ public class PlayerConfig {
 			fileAccesLock.lock();
 			try {
 				CompressedStreamTools.writeCompressed(lpUserData, new FileOutputStream(file));
-			} catch(IOException e) {
+			} catch (IOException e) {
 				//If we can't save them, so be it.
 			} finally {
 				fileAccesLock.unlock();

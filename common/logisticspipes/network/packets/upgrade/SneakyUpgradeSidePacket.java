@@ -1,20 +1,21 @@
 package logisticspipes.network.packets.upgrade;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.abstractpackets.SlotPacket;
-import logisticspipes.pipes.upgrades.SneakyUpgradeConfig;
-import logisticspipes.utils.gui.UpgradeSlot;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
+import java.io.IOException;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import java.io.IOException;
+import lombok.Getter;
+import lombok.Setter;
+
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.abstractpackets.SlotPacket;
+import logisticspipes.pipes.upgrades.SneakyUpgradeConfig;
+import logisticspipes.utils.gui.UpgradeSlot;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class SneakyUpgradeSidePacket extends SlotPacket {
 
@@ -30,7 +31,7 @@ public class SneakyUpgradeSidePacket extends SlotPacket {
 	public void processPacket(EntityPlayer player) {
 		UpgradeSlot slot = getSlot(player, UpgradeSlot.class);
 		ItemStack stack = slot.getStack();
-		if(!stack.hasTagCompound()) {
+		if (!stack.hasTagCompound()) {
 			stack.setTagCompound(new NBTTagCompound());
 		}
 		stack.getTagCompound().setString(SneakyUpgradeConfig.SIDE_KEY, SneakyUpgradeConfig.Sides.getNameForDirection(side));
@@ -38,15 +39,15 @@ public class SneakyUpgradeSidePacket extends SlotPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeForgeDirection(side);
+	public void writeData(LPDataOutput output) throws IOException {
+		super.writeData(output);
+		output.writeForgeDirection(side);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		side = data.readForgeDirection();
+	public void readData(LPDataInput input) throws IOException {
+		super.readData(input);
+		side = input.readForgeDirection();
 	}
 
 	@Override

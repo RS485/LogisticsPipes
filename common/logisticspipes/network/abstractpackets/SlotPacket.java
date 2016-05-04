@@ -1,17 +1,18 @@
 package logisticspipes.network.abstractpackets;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.exception.TargetNotFoundException;
-import logisticspipes.utils.gui.DummyContainer;
-import logisticspipes.utils.gui.UpgradeSlot;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import java.io.IOException;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 
-import java.io.IOException;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+
+import logisticspipes.network.exception.TargetNotFoundException;
+import logisticspipes.utils.gui.DummyContainer;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public abstract class SlotPacket extends ModernPacket {
 
@@ -24,14 +25,14 @@ public abstract class SlotPacket extends ModernPacket {
 	}
 
 	public <T extends Slot> T getSlot(EntityPlayer player, Class<T> clazz) {
-		if(player.openContainer instanceof DummyContainer) {
+		if (player.openContainer instanceof DummyContainer) {
 			if (getInteger() >= player.openContainer.inventorySlots.size()) {
 				targetNotFound("The requested Slot was out of range");
 			} else {
 				Slot slot = player.openContainer.getSlot(getInteger());
 				if (slot == null) {
 					targetNotFound("The requested Slot was null");
-				} else if(!clazz.isAssignableFrom(slot.getClass())) {
+				} else if (!clazz.isAssignableFrom(slot.getClass())) {
 					targetNotFound("Couldn't find " + clazz.getName() + ", found slot with " + slot.getClass());
 				} else {
 					return (T) slot;
@@ -47,13 +48,13 @@ public abstract class SlotPacket extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		setInteger(data.readInt());
+	public void readData(LPDataInput input) throws IOException {
+		setInteger(input.readInt());
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeInt(getInteger());
+	public void writeData(LPDataOutput output) throws IOException {
+		output.writeInt(getInteger());
 	}
 
 	protected void targetNotFound(String message) {

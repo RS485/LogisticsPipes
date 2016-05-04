@@ -4,27 +4,23 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import logisticspipes.asm.ClientSideOnlyMethodContent;
-import logisticspipes.config.Configs;
-import logisticspipes.gui.orderer.GuiOrderer;
-import logisticspipes.gui.orderer.GuiRequestTable;
-import logisticspipes.network.IReadListObject;
-import logisticspipes.network.IWriteListObject;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.request.resources.IResource;
-import logisticspipes.request.resources.IResource.ColorCode;
-import logisticspipes.utils.string.ChatColor;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
-
 import cpw.mods.fml.client.FMLClientHandler;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.asm.ClientSideOnlyMethodContent;
+import logisticspipes.config.Configs;
+import logisticspipes.gui.orderer.GuiOrderer;
+import logisticspipes.gui.orderer.GuiRequestTable;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.request.resources.IResource;
+import logisticspipes.request.resources.IResource.ColorCode;
+import logisticspipes.utils.string.ChatColor;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class MissingItems extends ModernPacket {
 
@@ -49,9 +45,11 @@ public class MissingItems extends ModernPacket {
 	@ClientSideOnlyMethodContent
 	public void processPacket(EntityPlayer player) {
 		if (Configs.DISPLAY_POPUP && FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
-			((GuiOrderer) FMLClientHandler.instance().getClient().currentScreen).handleRequestAnswer(getItems(), isFlag(), (GuiOrderer) FMLClientHandler.instance().getClient().currentScreen, player);
+			((GuiOrderer) FMLClientHandler.instance().getClient().currentScreen)
+					.handleRequestAnswer(getItems(), isFlag(), (GuiOrderer) FMLClientHandler.instance().getClient().currentScreen, player);
 		} else if (Configs.DISPLAY_POPUP && FMLClientHandler.instance().getClient().currentScreen instanceof GuiRequestTable) {
-			((GuiRequestTable) FMLClientHandler.instance().getClient().currentScreen).handleRequestAnswer(getItems(), isFlag(), (GuiRequestTable) FMLClientHandler.instance().getClient().currentScreen, player);
+			((GuiRequestTable) FMLClientHandler.instance().getClient().currentScreen)
+					.handleRequestAnswer(getItems(), isFlag(), (GuiRequestTable) FMLClientHandler.instance().getClient().currentScreen, player);
 		} else if (isFlag()) {
 			for (IResource item : items) {
 				player.addChatComponentMessage(new ChatComponentText(ChatColor.RED + "Missing: " + item.getDisplayText(ColorCode.MISSING)));
@@ -65,14 +63,14 @@ public class MissingItems extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeCollection(items, LPDataOutputStream::writeIResource);
-		data.writeBoolean(isFlag());
+	public void writeData(LPDataOutput output) throws IOException {
+		output.writeCollection(items, LPDataOutput::writeResource);
+		output.writeBoolean(isFlag());
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		items = data.readList(LPDataInputStream::readIResource);
-		setFlag(data.readBoolean());
+	public void readData(LPDataInput input) throws IOException {
+		items = input.readList(LPDataInput::readResource);
+		setFlag(input.readBoolean());
 	}
 }

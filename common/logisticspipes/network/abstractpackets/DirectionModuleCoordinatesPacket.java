@@ -2,14 +2,13 @@ package logisticspipes.network.abstractpackets;
 
 import java.io.IOException;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-
 import net.minecraftforge.common.util.ForgeDirection;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public abstract class DirectionModuleCoordinatesPacket extends ModuleCoordinatesPacket {
 
@@ -22,14 +21,14 @@ public abstract class DirectionModuleCoordinatesPacket extends ModuleCoordinates
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeForgeDirection(direction);
+	public void writeData(LPDataOutput output) throws IOException {
+		super.writeData(output);
+		output.writeForgeDirection(direction);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		direction = data.readForgeDirection();
+	public void readData(LPDataInput input) throws IOException {
+		super.readData(input);
+		direction = input.readForgeDirection();
 	}
 }

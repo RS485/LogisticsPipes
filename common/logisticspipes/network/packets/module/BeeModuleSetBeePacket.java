@@ -2,18 +2,17 @@ package logisticspipes.network.packets.module;
 
 import java.io.IOException;
 
-import logisticspipes.modules.ModuleApiaristSink;
-import logisticspipes.modules.ModuleApiaristSink.FilterType;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.modules.ModuleApiaristSink;
+import logisticspipes.modules.ModuleApiaristSink.FilterType;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class BeeModuleSetBeePacket extends ModuleCoordinatesPacket {
 
@@ -68,23 +67,23 @@ public class BeeModuleSetBeePacket extends ModuleCoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeInt(integer2);
-		data.writeInt(integer3);
-		data.writeInt(integer4);
+	public void writeData(LPDataOutput output) throws IOException {
+		super.writeData(output);
+		output.writeInt(integer2);
+		output.writeInt(integer3);
+		output.writeInt(integer4);
 		if (string1 == null) {
 			string1 = "";
 		}
-		data.writeUTF(string1);
+		output.writeUTF(string1);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		integer2 = data.readInt();
-		integer3 = data.readInt();
-		integer4 = data.readInt();
-		string1 = data.readUTF();
+	public void readData(LPDataInput input) throws IOException {
+		super.readData(input);
+		integer2 = input.readInt();
+		integer3 = input.readInt();
+		integer4 = input.readInt();
+		string1 = input.readUTF();
 	}
 }

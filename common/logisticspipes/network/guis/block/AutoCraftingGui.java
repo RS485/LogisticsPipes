@@ -2,16 +2,16 @@ package logisticspipes.network.guis.block;
 
 import java.io.IOException;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.gui.GuiLogisticsCraftingTable;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.item.ItemIdentifier;
-
-import net.minecraft.entity.player.EntityPlayer;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class AutoCraftingGui extends CoordinatesGuiProvider {
 
@@ -68,30 +68,30 @@ public class AutoCraftingGui extends CoordinatesGuiProvider {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeItemIdentifier(targetType);
-		data.writeBoolean(isFuzzy);
+	public void writeData(LPDataOutput output) throws IOException {
+		super.writeData(output);
+		output.writeItemIdentifier(targetType);
+		output.writeBoolean(isFuzzy);
 		if (isFuzzy) {
 			for (int i = 0; i < 9; i++) {
-				data.writeBoolean(ignore_dmg[i]);
-				data.writeBoolean(ignore_nbt[i]);
-				data.writeBoolean(use_od[i]);
-				data.writeBoolean(use_category[i]);
+				output.writeBoolean(ignore_dmg[i]);
+				output.writeBoolean(ignore_nbt[i]);
+				output.writeBoolean(use_od[i]);
+				output.writeBoolean(use_category[i]);
 			}
 		}
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		targetType = data.readItemIdentifier();
-		if (data.readBoolean()) {
+	public void readData(LPDataInput input) throws IOException {
+		super.readData(input);
+		targetType = input.readItemIdentifier();
+		if (input.readBoolean()) {
 			for (int i = 0; i < 9; i++) {
-				ignore_dmg[i] = data.readBoolean();
-				ignore_nbt[i] = data.readBoolean();
-				use_od[i] = data.readBoolean();
-				use_category[i] = data.readBoolean();
+				ignore_dmg[i] = input.readBoolean();
+				ignore_nbt[i] = input.readBoolean();
+				use_od[i] = input.readBoolean();
+				use_category[i] = input.readBoolean();
 			}
 		}
 	}

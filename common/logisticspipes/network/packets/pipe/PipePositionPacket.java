@@ -2,19 +2,17 @@ package logisticspipes.network.packets.pipe;
 
 import java.io.IOException;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-
 import net.minecraft.entity.player.EntityPlayer;
-
 import net.minecraftforge.common.util.ForgeDirection;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.network.abstractpackets.CoordinatesPacket;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class PipePositionPacket extends CoordinatesPacket {
 
@@ -51,25 +49,25 @@ public class PipePositionPacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeInt(travelId);
-		data.writeFloat(speed);
-		data.writeFloat(position);
-		data.writeForgeDirection(input);
-		data.writeForgeDirection(output);
-		data.writeFloat(yaw);
+	public void writeData(LPDataOutput output) throws IOException {
+		super.writeData(output);
+		output.writeInt(travelId);
+		output.writeFloat(speed);
+		output.writeFloat(position);
+		output.writeForgeDirection(input);
+		output.writeForgeDirection(this.output);
+		output.writeFloat(yaw);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		travelId = data.readInt();
-		speed = data.readFloat();
-		position = data.readFloat();
-		input = data.readForgeDirection();
-		output = data.readForgeDirection();
-		yaw = data.readFloat();
+	public void readData(LPDataInput input) throws IOException {
+		super.readData(input);
+		travelId = input.readInt();
+		speed = input.readFloat();
+		position = input.readFloat();
+		this.input = input.readForgeDirection();
+		output = input.readForgeDirection();
+		yaw = input.readFloat();
 	}
 
 	@Override

@@ -41,7 +41,6 @@ public class LogisticsTriggerProvider implements ITriggerProvider {
 				triggers.add(BuildCraftProxy.LogisticsFailedTrigger);
 			}
 			if (lPipe.pipe instanceof PipeItemsCraftingLogistics) {
-				System.out.println("adding crafting trigger");
 				triggers.add(BuildCraftProxy.LogisticsCraftingTrigger);
 			}
 			if (lPipe.pipe instanceof CoreRoutedPipe) {

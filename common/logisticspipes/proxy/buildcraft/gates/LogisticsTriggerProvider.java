@@ -19,8 +19,8 @@ import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
-import logisticspipes.proxy.buildcraft.subproxies.LPBCPipe;
 
+import logisticspipes.proxy.buildcraft.subproxies.LPBCTileGenericPipe;
 import net.minecraft.tileentity.TileEntity;
 
 import net.minecraftforge.common.util.ForgeDirection;
@@ -34,13 +34,14 @@ public class LogisticsTriggerProvider implements ITriggerProvider {
 
 	@Override
 	public Collection<ITriggerInternal> getInternalTriggers(IStatementContainer pipe) {
-		if (pipe instanceof LPBCPipe) {
-			LogisticsTileGenericPipe lPipe = ((LPBCPipe) pipe).pipe;
+		if (pipe.getTile() instanceof LPBCTileGenericPipe) {
+			LogisticsTileGenericPipe lPipe = ((LPBCTileGenericPipe) pipe.getTile()).getLpPipe();
 			LinkedList<ITriggerInternal> triggers = new LinkedList<>();
 			if (lPipe.pipe instanceof PipeItemsSupplierLogistics || lPipe.pipe instanceof PipeItemsFluidSupplier) {
 				triggers.add(BuildCraftProxy.LogisticsFailedTrigger);
 			}
 			if (lPipe.pipe instanceof PipeItemsCraftingLogistics) {
+				System.out.println("adding crafting trigger");
 				triggers.add(BuildCraftProxy.LogisticsCraftingTrigger);
 			}
 			if (lPipe.pipe instanceof CoreRoutedPipe) {

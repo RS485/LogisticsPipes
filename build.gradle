@@ -60,7 +60,7 @@ minecraft {
 
 jar {
     manifest {
-        attributes('FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader', 
+        attributes('FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader',
                    'FMLCorePluginContainsFMLMod': 'true',
                    'Implementation-Vendor': 'RS485',
                    'Implementation-Title': 'LogisticsPipes',
@@ -92,6 +92,12 @@ sourceSets {
     }
 }
 
+test {
+    reports {
+        html.enabled = true
+    }
+}
+
 processResources {
     // this will ensure that this task is redone when the versions change.
     inputs.property "version", project.version
@@ -100,11 +106,11 @@ processResources {
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-                
+
         // replace version and mcversion
         expand 'version':project.version, 'mcversion':project.minecraft.version
     }
-        
+
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
@@ -124,13 +130,14 @@ dependencies {
 task deobfJar(type: Jar, dependsOn: 'jar') {
     from sourceSets.main.output
     classifier = 'dev'
-	manifest {
-        attributes(	'FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader', 
-					'FMLCorePluginContainsFMLMod': 'true',
-					'Implementation-Vendor': 'RS485',
-					'Implementation-Title': 'LogisticsPipes',
-					'Implementation-Version': version,
-					'Built-By': buildby )
+    manifest {
+        attributes(
+            'FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader',
+            'FMLCorePluginContainsFMLMod': 'true',
+            'Implementation-Vendor': 'RS485',
+            'Implementation-Title': 'LogisticsPipes',
+            'Implementation-Version': version,
+            'Built-By': buildby)
     }
 }
 
@@ -141,7 +148,7 @@ task sourceJar(type: Jar, dependsOn: 'jar') {
 
 curse {
     displayName = 'Logistics Pipes 0.10.0 (BC7) build ' + System.getenv().BUILD_NUMBER
-    
+
     projectId = '232838'
     apiKey = project.hasProperty('curseForgeApiKey') ? project.curseForgeApiKey : ''
     releaseType = 'release'
@@ -159,4 +166,3 @@ tasks.compileApiJava.dependsOn('extract')
 tasks.compileJava.dependsOn('loadFingerprints')
 tasks.processResources.dependsOn('integrateLang')
 tasks.assemble.dependsOn('deobfJar', 'sourceJar', 'signJars')
-

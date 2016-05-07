@@ -44,6 +44,7 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 		byteStream = null;
 	}
 
+	@Override
 	public void writeForgeDirection(ForgeDirection dir) throws IOException {
 		if (dir == null) {
 			writeByte(10);
@@ -52,6 +53,7 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 		}
 	}
 
+	@Override
 	public void writeExitRoute(ExitRoute route) throws IOException {
 		writeIRouter(route.destination);
 		writeIRouter(route.root);
@@ -68,6 +70,7 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 		writeInt(route.debug.index);
 	}
 
+	@Override
 	public void writeIRouter(IRouter router) throws IOException {
 		if (router == null) {
 			writeByte(0);
@@ -77,12 +80,14 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 		}
 	}
 
+	@Override
 	public void writeLPPosition(DoubleCoordinates pos) throws IOException {
 		writeDouble(pos.getXCoord());
 		writeDouble(pos.getYCoord());
 		writeDouble(pos.getZCoord());
 	}
 
+	@Override
 	public <T extends Enum<T>> void writeEnumSet(EnumSet<T> types, Class<T> clazz) throws IOException {
 		T[] parts = clazz.getEnumConstants();
 		byte[] set = new byte[parts.length / 8 + (parts.length % 8 == 0 ? 0 : 1)];
@@ -96,10 +101,12 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 		writeBytes(set);
 	}
 
+	@Override
 	public void writeBytes(byte[] set) throws IOException {
 		out.write(set);
 	}
 
+	@Override
 	public void writeBitSet(BitSet bits) throws IOException {
 		byte[] bytes = new byte[(bits.length() + 7) / 8];
 		for (int i = 0; i < bits.length(); i++) {
@@ -111,6 +118,7 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 		writeBytes(bytes);
 	}
 
+	@Override
 	public void writeNBTTagCompound(NBTTagCompound tag) throws IOException {
 		if (tag == null) {
 			writeShort(-1);
@@ -122,6 +130,7 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 		}
 	}
 
+	@Override
 	public void writeBooleanArray(boolean[] array) throws IOException {
 		writeInt(array.length);
 		BitSet set = new BitSet();
@@ -131,10 +140,7 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 		writeBitSet(set);
 	}
 
-	public byte[] toByteArray() {
-		return byteStream.toByteArray();
-	}
-
+	@Override
 	public void writeItemIdentifier(ItemIdentifier item) throws IOException {
 		if (item == null) {
 			writeBoolean(false);
@@ -146,30 +152,18 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 		writeNBTTagCompound(item.tag);
 	}
 
+	@Override
 	public void writeItemIdentifierStack(ItemIdentifierStack stack) throws IOException {
 		writeItemIdentifier(stack.getItem());
 		writeInt(stack.getStackSize());
 	}
 
-	public <T> void writeList(List<T> list, IWriteListObject<T> handler) throws IOException {
-		writeInt(list.size());
-		for (T aList : list) {
-			handler.writeObject(this, aList);
-		}
-	}
-
-	public <T> void writeSet(Set<T> list, IWriteListObject<T> handler) throws IOException {
-		writeInt(list.size());
-		Object[] array = list.toArray();
-		for (int i = 0; i < list.size(); i++) {
-			handler.writeObject(this, (T) array[i]);
-		}
-	}
-
+	@Override
 	public <T> void writeCollection(Collection<T> collection, IWriteListObject<T> handler) throws IOException {
 		this.writeList(new ArrayList<>(collection), handler);
 	}
 
+	@Override
 	public void writeOrderInfo(IOrderInfoProvider order) throws IOException {
 		writeItemIdentifierStack(order.getAsDisplayItem());
 		writeInt(order.getRouterId());
@@ -182,10 +176,12 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 		writeItemIdentifier(order.getTargetType());
 	}
 
+	@Override
 	public <T extends Enum<T>> void writeEnum(T object) throws IOException {
 		writeInt(object.ordinal());
 	}
 
+	@Override
 	public void writeLinkedLogisticsOrderList(LinkedLogisticsOrderList orders) throws IOException {
 		this.writeList(orders, LPDataOutput::writeOrderInfo);
 		this.writeList(orders.getSubOrders(), LPDataOutput::writeLinkedLogisticsOrderList);
@@ -216,6 +212,7 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 		}
 	}
 
+	@Override
 	public void writeByteBuf(ByteBuf buf) throws IOException {
 		buf = buf.copy();
 		buf.setIndex(0, 0);
@@ -231,8 +228,8 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 		writeByteArray(data);
 	}
 
-	@SuppressWarnings("Duplicates")
 	@Override
+	@SuppressWarnings("Duplicates")
 	public void writeIntArray(int[] arr) throws IOException {
 		if (arr == null) {
 			writeInt(-1);
@@ -244,10 +241,30 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 		}
 	}
 
+	@Override
 	public void writeLongArray(long[] array) throws IOException {
 		writeInt(array.length);
 		for (long element : array) {
 			writeLong(element);
 		}
+	}
+
+	public <T> void writeList(List<T> list, IWriteListObject<T> handler) throws IOException {
+		writeInt(list.size());
+		for (T aList : list) {
+			handler.writeObject(this, aList);
+		}
+	}
+
+	public <T> void writeSet(Set<T> list, IWriteListObject<T> handler) throws IOException {
+		writeInt(list.size());
+		Object[] array = list.toArray();
+		for (int i = 0; i < list.size(); i++) {
+			handler.writeObject(this, (T) array[i]);
+		}
+	}
+
+	public byte[] toByteArray() {
+		return byteStream.toByteArray();
 	}
 }

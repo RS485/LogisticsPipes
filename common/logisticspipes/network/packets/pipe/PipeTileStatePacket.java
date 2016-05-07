@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import logisticspipes.interfaces.IClientState;
-import logisticspipes.network.LPDataInputStream;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -53,11 +52,11 @@ public class PipeTileStatePacket extends CoordinatesPacket {
 			return;
 		}
 		try {
-			pipe.renderState.readData(new LPDataInputStream(bytesRenderState));
-			pipe.coreState.readData(new LPDataInputStream(bytesCoreState));
-			pipe.bcPlugableState.readData(new LPDataInputStream(bytesBCPluggableState));
+			LPDataIOWrapper.provideData(bytesRenderState, pipe.renderState::readData);
+			LPDataIOWrapper.provideData(bytesCoreState, pipe.coreState::readData);
+			LPDataIOWrapper.provideData(bytesBCPluggableState, pipe.bcPlugableState::readData);
 			pipe.afterStateUpdated();
-			pipe.pipe.readData(new LPDataInputStream(bytesPipe));
+			LPDataIOWrapper.provideData(bytesPipe, pipe.pipe::readData);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

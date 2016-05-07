@@ -131,13 +131,6 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 		writeBitSet(set);
 	}
 
-	public void writeIntegerArray(int[] array) throws IOException {
-		writeInt(array.length);
-		for (int element : array) {
-			writeInt(element);
-		}
-	}
-
 	public byte[] toByteArray() {
 		return byteStream.toByteArray();
 	}

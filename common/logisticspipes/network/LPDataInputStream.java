@@ -159,16 +159,16 @@ public class LPDataInputStream extends DataInputStream implements LPDataInput {
 	}
 
 	@Override
-	public int[] readIntArray() {
-		return new int[0];
-	}
-
-	public int[] readIntegerArray() throws IOException {
-		int[] array = new int[readInt()];
-		for (int i = 0; i < array.length; i++) {
-			array[i] = readInt();
+	public int[] readIntArray() throws IOException {
+		int length = readInt();
+		if (length < 0) {
+			return null;
 		}
-		return array;
+		int[] arr = new int[length];
+		for (int i = 0; i < length; i++) {
+			arr[i] = readInt();
+		}
+		return arr;
 	}
 
 	public ItemIdentifier readItemIdentifier() throws IOException {

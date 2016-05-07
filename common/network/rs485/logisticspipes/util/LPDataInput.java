@@ -105,7 +105,7 @@ public interface LPDataInput {
 
 	boolean[] readBooleanArray() throws IOException;
 
-	int[] readIntArray();
+	int[] readIntArray() throws IOException;
 
 	byte[] readBytes(int length) throws IOException;
 

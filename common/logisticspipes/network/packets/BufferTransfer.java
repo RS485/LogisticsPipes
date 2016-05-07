@@ -39,11 +39,11 @@ public class BufferTransfer extends ModernPacket {
 
 	@Override
 	public void readData(LPDataInput input) throws IOException {
-		content = input.readLengthAndBytes();
+		content = input.readByteArray();
 	}
 
 	@Override
 	public void writeData(LPDataOutput output) throws IOException {
-		output.writeLengthAndBytes(content);
+		output.writeByteArray(content);
 	}
 }

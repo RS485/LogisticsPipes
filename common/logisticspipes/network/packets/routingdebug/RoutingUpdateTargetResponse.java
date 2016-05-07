@@ -55,7 +55,7 @@ public class RoutingUpdateTargetResponse extends ModernPacket {
 		int size = input.readInt();
 		additions = new Object[size];
 		for (int i = 0; i < size; i++) {
-			byte[] bytes = input.readLengthAndBytes();
+			byte[] bytes = input.readByteArray();
 			ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 			ObjectInput in = new ObjectInputStream(bis);
 			try {

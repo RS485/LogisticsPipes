@@ -88,9 +88,7 @@ public interface LPDataOutput {
 	 */
 	void writeUTF(String s) throws IOException;
 
-	void writeByteArray(byte[] data) throws IOException;
-
-	void writeLengthAndBytes(byte[] arr) throws IOException;
+	void writeByteArray(byte[] arr) throws IOException;
 
 	void writeByteBuf(ByteBuf buffer) throws IOException;
 
@@ -127,6 +125,8 @@ public interface LPDataOutput {
 	void writeLinkedLogisticsOrderList(LinkedLogisticsOrderList orderList) throws IOException;
 
 	void writeResource(IResource res) throws IOException;
+
+	void writeBytes(byte[] arr) throws IOException;
 
 	interface LPDataOutputConsumer {
 

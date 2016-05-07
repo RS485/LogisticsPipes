@@ -27,7 +27,7 @@ public abstract class GenericPacket extends ModernPacket {
 		int size = input.readInt();
 		args = new Object[size];
 		for (int i = 0; i < size; i++) {
-			byte[] bytes = input.readLengthAndBytes();
+			byte[] bytes = input.readByteArray();
 			ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 			ObjectInput in = new ObjectInputStream(bis);
 			try {
@@ -46,7 +46,7 @@ public abstract class GenericPacket extends ModernPacket {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			ObjectOutput out = new ObjectOutputStream(bos);
 			out.writeObject(arg);
-			output.writeLengthAndBytes(bos.toByteArray());
+			output.writeByteArray(bos.toByteArray());
 		}
 	}
 

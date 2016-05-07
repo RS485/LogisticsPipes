@@ -75,7 +75,7 @@ public class PipeTileStatePacket extends CoordinatesPacket {
 		byte[][] clientStateBuffers = new byte[][] { bytesRenderState, bytesCoreState, bytesBCPluggableState, bytesPipe };
 		for (int i = 0; i < clientStates.length; i++) {
 			clientStateBuffers[i] = LPDataIOWrapper.collectData(clientStates[i]::writeData);
-			output.writeLengthAndBytes(clientStateBuffers[i]);
+			output.writeByteArray(clientStateBuffers[i]);
 		}
 	}
 
@@ -83,9 +83,9 @@ public class PipeTileStatePacket extends CoordinatesPacket {
 	public void readData(LPDataInput input) throws IOException {
 		super.readData(input);
 
-		bytesRenderState = input.readLengthAndBytes();
-		bytesCoreState = input.readLengthAndBytes();
-		bytesBCPluggableState = input.readLengthAndBytes();
-		bytesPipe = input.readLengthAndBytes();
+		bytesRenderState = input.readByteArray();
+		bytesCoreState = input.readByteArray();
+		bytesBCPluggableState = input.readByteArray();
+		bytesPipe = input.readByteArray();
 	}
 }

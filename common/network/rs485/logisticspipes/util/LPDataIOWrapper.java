@@ -135,7 +135,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeLengthAndBytes(byte[] arr) {
+	public void writeByteArray(byte[] arr) {
 		if (arr == null) {
 			localBuffer.writeInt(-1);
 		} else {
@@ -145,7 +145,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public byte[] readLengthAndBytes() {
+	public byte[] readByteArray() {
 		final int length = localBuffer.readInt();
 		if (length < 0) {
 			return null;
@@ -210,16 +210,8 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		if (s == null) {
 			localBuffer.writeInt(-1);
 		} else {
-			this.writeLengthAndBytes(s.getBytes(UTF_8));
+			this.writeByteArray(s.getBytes(UTF_8));
 		}
-	}
-
-	@Override
-	public void writeByteArray(byte[] data) {
-		if (data == null) {
-			throw new NullPointerException("Byte array may not be null");
-		}
-		localBuffer.writeBytes(data);
 	}
 
 	@Override
@@ -277,7 +269,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 				set[part.ordinal() / 8] |= i;
 			}
 		}
-		this.writeLengthAndBytes(set);
+		this.writeByteArray(set);
 	}
 
 	@Override
@@ -285,7 +277,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		if (bits == null) {
 			throw new NullPointerException("BitSet may not be null");
 		}
-		this.writeLengthAndBytes(bits.toByteArray());
+		this.writeByteArray(bits.toByteArray());
 	}
 
 	@Override
@@ -294,7 +286,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 			localBuffer.writeInt(-1);
 		} else {
 			byte[] bytes = CompressedStreamTools.compress(tag);
-			this.writeLengthAndBytes(bytes);
+			this.writeByteArray(bytes);
 		}
 	}
 
@@ -400,6 +392,11 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
+	public void writeBytes(byte[] arr) throws IOException {
+		localBuffer.writeBytes(arr);
+	}
+
+	@Override
 	public byte readByte() {
 		return localBuffer.readByte();
 	}
@@ -436,7 +433,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 
 	@Override
 	public String readUTF() {
-		byte[] arr = this.readLengthAndBytes();
+		byte[] arr = this.readByteArray();
 		if (arr == null) {
 			return null;
 		} else {
@@ -495,7 +492,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	@Override
 	public <T extends Enum<T>> EnumSet<T> readEnumSet(Class<T> clazz) {
 		EnumSet<T> types = EnumSet.noneOf(clazz);
-		byte[] arr = this.readLengthAndBytes();
+		byte[] arr = this.readByteArray();
 		if (arr != null) {
 			T[] parts = clazz.getEnumConstants();
 			for (T part : parts) {
@@ -509,7 +506,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 
 	@Override
 	public BitSet readBitSet() {
-		byte[] arr = this.readLengthAndBytes();
+		byte[] arr = this.readByteArray();
 		if (arr == null) {
 			return new BitSet();
 		} else {
@@ -519,7 +516,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 
 	@Override
 	public NBTTagCompound readNBTTagCompound() throws IOException {
-		byte[] arr = this.readLengthAndBytes();
+		byte[] arr = this.readByteArray();
 		if (arr == null) {
 			return null;
 		}
@@ -533,18 +530,14 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 			return null;
 		}
 
-		boolean[] arr = new boolean[bitCount];
-		final int byteCount = (bitCount / 8) + (bitCount % 8 == 0 ? 0 : 1);
-		byte[] data = new byte[byteCount];
-
-		if (!localBuffer.isReadable(byteCount)) {
-			System.err.println("Trying to read " + byteCount + " bytes (" + bitCount + " bits)");
-			throw new IndexOutOfBoundsException(byteCount + " > " + localBuffer.readableBytes());
-		} else {
-			localBuffer.readBytes(data, 0, byteCount);
+		byte[] data = readByteArray();
+		if (data == null) {
+			return new boolean[0];
 		}
 		BitSet bits = BitSet.valueOf(data);
-		for (int i = 0; i < arr.length; i++) {
+
+		boolean[] arr = new boolean[bitCount];
+		for (int i = 0; i < bitCount; i++) {
 			arr[i] = bits.get(i);
 		}
 		return arr;
@@ -562,6 +555,13 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 			}
 			return arr;
 		}
+	}
+
+	@Override
+	public byte[] readBytes(int length) throws IOException {
+		byte[] arr = new byte[length];
+		localBuffer.readBytes(arr, 0, length);
+		return arr;
 	}
 
 	@Override
@@ -649,7 +649,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 
 	@Override
 	public ByteBuf readByteBuf() {
-		byte[] arr = this.readLengthAndBytes();
+		byte[] arr = this.readByteArray();
 		if (arr == null) {
 			return buffer();
 		} else {

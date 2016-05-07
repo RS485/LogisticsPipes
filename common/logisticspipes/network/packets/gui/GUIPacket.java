@@ -44,7 +44,7 @@ public class GUIPacket extends ModernPacket {
 	public void readData(LPDataInput input) throws IOException {
 		guiID = input.readInt();
 		windowID = input.readInt();
-		guiData = input.readLengthAndBytes();
+		guiData = input.readByteArray();
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class GUIPacket extends ModernPacket {
 		output.writeInt(guiID);
 		output.writeInt(windowID);
 		output.writeInt(guiData.length);
-		output.writeLengthAndBytes(guiData);
+		output.writeByteArray(guiData);
 	}
 
 	@Override

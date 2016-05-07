@@ -28,7 +28,7 @@ public class DebugDataPacket extends ModernPacket {
 
 	@Override
 	public void readData(LPDataInput input) throws IOException {
-		payload = input.readLengthAndBytes();
+		payload = input.readByteArray();
 		identifier = input.readInt();
 	}
 

@@ -57,11 +57,11 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testWriteLengthAndBytes() throws Exception {
+	public void testWriteByteArray() throws Exception {
 		ByteBuf dataBuffer = buffer(Integer.BYTES * 2);
 		byte[] arr = TestUtil.getBytesFromInteger(-1);
 
-		LPDataIOWrapper.writeData(dataBuffer, dataOutput -> dataOutput.writeLengthAndBytes(arr));
+		LPDataIOWrapper.writeData(dataBuffer, dataOutput -> dataOutput.writeByteArray(arr));
 
 		assertEquals(4, dataBuffer.readInt());
 		assertEquals(-1, dataBuffer.readInt());
@@ -70,14 +70,14 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testReadLengthAndBytes() throws Exception {
+	public void testReadByteArray() throws Exception {
 		ByteBuf dataBuffer = buffer(Integer.BYTES * 2);
 
 		dataBuffer.writeInt(4);
 		dataBuffer.writeInt(-1);
 
 		LPDataIOWrapper.provideData(dataBuffer, dataInput -> {
-			byte[] bytes = dataInput.readLengthAndBytes();
+			byte[] bytes = dataInput.readByteArray();
 			assertArrayEquals(TestUtil.getBytesFromInteger(-1), bytes);
 		});
 
@@ -214,20 +214,6 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testWriteByteArray() throws Exception {
-		byte[] arr = TestUtil.getBytesFromInteger(741893247);
-		ByteBuf testBuffer = buffer(Integer.BYTES);
-
-		LPDataIOWrapper.writeData(testBuffer, output -> output.writeByteArray(arr));
-
-		LPDataIOWrapper.provideData(testBuffer, input -> {
-			for (byte b : arr) {
-				assertEquals(b, input.readByte());
-			}
-		});
-	}
-
-	@Test
 	public void testWriteForgeDirection() throws Exception {
 		ForgeDirection value = ForgeDirection.UP;
 		ByteBuf testBuffer = buffer(Long.BYTES);
@@ -289,18 +275,16 @@ public class LPDataIOWrapperTest {
 	@Test
 	public void testWriteByteBuf() throws Exception {
 		byte[] arr = TestUtil.getBytesFromInteger(741893247);
-		ByteBuf testBuffer = buffer(Integer.BYTES);
+		ByteBuf testBuffer = buffer(arr.length);
 
-		LPDataIOWrapper.writeData(testBuffer, output -> output.writeByteArray(arr));
+		LPDataIOWrapper.writeData(testBuffer, output -> output.writeBytes(arr));
 
 		// buffer in byte array
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeByteBuf(testBuffer));
 
 		LPDataIOWrapper.provideData(data, input -> {
 			LPDataIOWrapper.provideData(input.readByteBuf(), bufferInput -> {
-				for (byte b : arr) {
-					assertEquals(b, bufferInput.readByte());
-				}
+				assertArrayEquals(arr, bufferInput.readBytes(arr.length));
 			});
 		});
 	}

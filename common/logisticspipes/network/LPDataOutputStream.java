@@ -96,7 +96,7 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 		writeBytes(set);
 	}
 
-	private void writeBytes(byte[] set) throws IOException {
+	public void writeBytes(byte[] set) throws IOException {
 		out.write(set);
 	}
 
@@ -213,35 +213,29 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 		super.writeShort(s);
 	}
 
-	public void writeByteArray(byte[] array) throws IOException {
-		writeInt(array.length);
-		for (byte element : array) {
-			writeByte(element);
-		}
-	}
-
 	@Override
-	public void writeLengthAndBytes(byte[] arr) throws IOException {
+	public void writeByteArray(byte[] arr) throws IOException {
 		if (arr == null) {
 			writeInt(-1);
 		} else {
-			this.writeByteArray(arr);
+			writeInt(arr.length);
+			writeBytes(arr);
 		}
 	}
 
 	public void writeByteBuf(ByteBuf buf) throws IOException {
 		buf = buf.copy();
 		buf.setIndex(0, 0);
-		byte[] bytes;
+		byte[] data;
 		int length = buf.readableBytes();
 
 		if (buf.hasArray()) {
-			bytes = buf.array();
+			data = buf.array();
 		} else {
-			bytes = new byte[length];
-			buf.getBytes(buf.readerIndex(), bytes);
+			data = new byte[length];
+			buf.getBytes(buf.readerIndex(), data);
 		}
-		writeByteArray(bytes);
+		writeByteArray(data);
 	}
 
 	@SuppressWarnings("Duplicates")

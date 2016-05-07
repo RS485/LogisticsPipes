@@ -49,8 +49,9 @@ public class LPDataInputStream extends DataInputStream implements LPDataInput {
 	}
 
 	@Override
-	public byte[] readLengthAndBytes() throws IOException {
-		return this.readByteArray();
+	public byte[] readByteArray() throws IOException {
+		int length = readInt();
+		return readBytes(length);
 	}
 
 	public ForgeDirection readForgeDirection() throws IOException {
@@ -116,7 +117,7 @@ public class LPDataInputStream extends DataInputStream implements LPDataInput {
 		return types;
 	}
 
-	private byte[] readBytes(int count) throws IOException {
+	public byte[] readBytes(int count) throws IOException {
 		byte[] bytes = new byte[count];
 		int read = in.read(bytes);
 		assert read == count;
@@ -226,14 +227,6 @@ public class LPDataInputStream extends DataInputStream implements LPDataInput {
 		list.addAll(this.readList(LPDataInput::readOrderInfo));
 		list.getSubOrders().addAll(this.readList(LPDataInput::readLinkedLogisticsOrderList));
 		return list;
-	}
-
-	public byte[] readByteArray() throws IOException {
-		byte[] array = new byte[readInt()];
-		for (int i = 0; i < array.length; i++) {
-			array[i] = readByte();
-		}
-		return array;
 	}
 
 	public ByteBuf readByteBuf() throws IOException {

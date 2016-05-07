@@ -44,7 +44,7 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public interface LPDataInput {
 
-	byte[] readLengthAndBytes() throws IOException;
+	byte[] readByteArray() throws IOException;
 
 	/**
 	 * @see java.io.DataInput#readByte()
@@ -106,6 +106,8 @@ public interface LPDataInput {
 	boolean[] readBooleanArray() throws IOException;
 
 	int[] readIntArray();
+
+	byte[] readBytes(int length) throws IOException;
 
 	ItemIdentifier readItemIdentifier() throws IOException;
 

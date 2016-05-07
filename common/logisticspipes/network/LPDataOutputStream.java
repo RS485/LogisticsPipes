@@ -200,7 +200,7 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 
 	@Override
 	public void writeResource(IResource res) throws IOException {
-		this.writeIResource(res);
+		ResourceNetwork.writeResource(this, res);
 	}
 
 	@Override
@@ -256,9 +256,5 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 		for (long element : array) {
 			writeLong(element);
 		}
-	}
-
-	public void writeIResource(IResource stack) throws IOException {
-		ResourceNetwork.writeResource(this, stack);
 	}
 }

@@ -244,10 +244,7 @@ public class LPDataInputStream extends DataInputStream implements LPDataInput {
 
 	@Override
 	public IResource readResource() throws IOException {
-		return null;
-	}
-
-	public IResource readIResource() throws IOException {
 		return ResourceNetwork.readResource(this);
 	}
+
 }

@@ -128,13 +128,17 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 	}
 
 	@Override
-	public void writeBooleanArray(boolean[] array) throws IOException {
-		writeInt(array.length);
-		BitSet set = new BitSet();
-		for (int i = 0; i < array.length; i++) {
-			set.set(i, array[i]);
+	public void writeBooleanArray(boolean[] arr) throws IOException {
+		if (arr == null) {
+			writeInt(-1);
+		} else {
+			writeInt(arr.length);
+			BitSet set = new BitSet();
+			for (int i = 0; i < arr.length; i++) {
+				set.set(i, arr[i]);
+			}
+			writeBitSet(set);
 		}
-		writeBitSet(set);
 	}
 
 	@Override
@@ -198,12 +202,12 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 
 	@Override
 	public void writeByte(byte b) throws IOException {
-		writeByte(b);
+		super.writeByte(b);
 	}
 
 	@Override
 	public void writeShort(short s) throws IOException {
-		writeShort(s);
+		super.writeShort(s);
 	}
 
 	@Override

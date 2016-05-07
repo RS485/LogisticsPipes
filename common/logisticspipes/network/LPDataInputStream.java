@@ -51,6 +51,9 @@ public class LPDataInputStream extends DataInputStream implements LPDataInput {
 	@Override
 	public byte[] readByteArray() throws IOException {
 		int length = readInt();
+		if (length < 0) {
+			return null;
+		}
 		return readBytes(length);
 	}
 
@@ -149,22 +152,25 @@ public class LPDataInputStream extends DataInputStream implements LPDataInput {
 		if (legth < 0) {
 			return null;
 		} else {
-			byte[] array = new byte[legth];
-			readFully(array);
-			return CompressedStreamTools.func_152457_a(array, new NBTSizeTracker(Long.MAX_VALUE));
+			byte[] arr = new byte[legth];
+			readFully(arr);
+			return CompressedStreamTools.func_152457_a(arr, new NBTSizeTracker(Long.MAX_VALUE));
 		}
 
 	}
 
 	@Override
 	public boolean[] readBooleanArray() throws IOException {
-		boolean[] array = new boolean[0];
-		array = new boolean[readInt()];
-		BitSet set = readBitSet();
-		for (int i = 0; i < array.length; i++) {
-			array[i] = set.get(i);
+		int length = readInt();
+		if (length < 0) {
+			return null;
 		}
-		return array;
+		boolean[] arr = new boolean[length];
+		BitSet set = readBitSet();
+		for (int i = 0; i < arr.length; i++) {
+			arr[i] = set.get(i);
+		}
+		return arr;
 	}
 
 	@Override
@@ -253,11 +259,15 @@ public class LPDataInputStream extends DataInputStream implements LPDataInput {
 
 	@Override
 	public long[] readLongArray() throws IOException {
-		long[] array = new long[readInt()];
-		for (int i = 0; i < array.length; i++) {
-			array[i] = readLong();
+		int length = readInt();
+		if (length < 0) {
+			return null;
 		}
-		return array;
+		long[] arr = new long[length];
+		for (int i = 0; i < arr.length; i++) {
+			arr[i] = readLong();
+		}
+		return arr;
 	}
 
 	@Override

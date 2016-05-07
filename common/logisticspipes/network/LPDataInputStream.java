@@ -69,15 +69,15 @@ public class LPDataInputStream extends DataInputStream implements LPDataInput {
 		IRouter root = readIRouter(world);
 		ForgeDirection exitOri = readForgeDirection();
 		ForgeDirection insertOri = readForgeDirection();
-		EnumSet<PipeRoutingConnectionType> connectionDetails = this.readEnumSet(PipeRoutingConnectionType.class);
+		EnumSet<PipeRoutingConnectionType> connectionDetails = readEnumSet(PipeRoutingConnectionType.class);
 		double distanceToDestination = readDouble();
 		double destinationDistanceToRoot = readDouble();
 		int blockDistance = readInt();
-		List<DoubleCoordinates> positions = this.readList(LPDataInput::readLPPosition);
+		List<DoubleCoordinates> positions = readList(LPDataInput::readLPPosition);
 		ExitRoute e = new ExitRoute(root, destination, exitOri, insertOri, destinationDistanceToRoot, connectionDetails, blockDistance);
 		e.distanceToDestination = distanceToDestination;
 		e.debug.filterPosition = positions;
-		e.debug.toStringNetwork = this.readUTF();
+		e.debug.toStringNetwork = readUTF();
 		e.debug.isNewlyAddedCanidate = readBoolean();
 		e.debug.isTraced = readBoolean();
 		e.debug.index = readInt();
@@ -150,7 +150,7 @@ public class LPDataInputStream extends DataInputStream implements LPDataInput {
 			return null;
 		} else {
 			byte[] array = new byte[legth];
-			this.readFully(array);
+			readFully(array);
 			return CompressedStreamTools.func_152457_a(array, new NBTSizeTracker(Long.MAX_VALUE));
 		}
 
@@ -224,8 +224,8 @@ public class LPDataInputStream extends DataInputStream implements LPDataInput {
 		int routerId = readInt();
 		boolean isFinished = readBoolean();
 		boolean inProgress = readBoolean();
-		ResourceType type = this.readEnum(ResourceType.class);
-		List<Float> list = this.readList(LPDataInput::readFloat);
+		ResourceType type = readEnum(ResourceType.class);
+		List<Float> list = readList(LPDataInput::readFloat);
 		byte machineProgress = readByte();
 		DoubleCoordinates pos = readLPPosition();
 		ItemIdentifier ident = readItemIdentifier();
@@ -240,8 +240,8 @@ public class LPDataInputStream extends DataInputStream implements LPDataInput {
 	@Override
 	public LinkedLogisticsOrderList readLinkedLogisticsOrderList() throws IOException {
 		LinkedLogisticsOrderList list = new LinkedLogisticsOrderList();
-		list.addAll(this.readList(LPDataInput::readOrderInfo));
-		list.getSubOrders().addAll(this.readList(LPDataInput::readLinkedLogisticsOrderList));
+		list.addAll(readList(LPDataInput::readOrderInfo));
+		list.getSubOrders().addAll(readList(LPDataInput::readLinkedLogisticsOrderList));
 		return list;
 	}
 

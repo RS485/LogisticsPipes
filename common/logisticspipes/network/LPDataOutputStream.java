@@ -3,12 +3,9 @@ package logisticspipes.network;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
 
 import net.minecraft.item.Item;
 import net.minecraft.nbt.CompressedStreamTools;
@@ -59,11 +56,11 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 		writeIRouter(route.root);
 		writeForgeDirection(route.exitOrientation);
 		writeForgeDirection(route.insertOrientation);
-		this.writeEnumSet(route.connectionDetails, PipeRoutingConnectionType.class);
+		writeEnumSet(route.connectionDetails, PipeRoutingConnectionType.class);
 		writeDouble(route.distanceToDestination);
 		writeDouble(route.destinationDistanceToRoot);
 		writeInt(route.blockDistance);
-		this.writeList(route.filters, (data, filter) -> data.writeLPPosition(filter.getLPPosition()));
+		writeCollection(route.filters, (output, filter) -> output.writeLPPosition(filter.getLPPosition()));
 		writeUTF(route.toString());
 		writeBoolean(route.debug.isNewlyAddedCanidate);
 		writeBoolean(route.debug.isTraced);
@@ -160,7 +157,14 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 
 	@Override
 	public <T> void writeCollection(Collection<T> collection, IWriteListObject<T> handler) throws IOException {
-		this.writeList(new ArrayList<>(collection), handler);
+		if (collection == null) {
+			writeInt(-1);
+		} else {
+			writeInt(collection.size());
+			for (T obj : collection) {
+				handler.writeObject(this, obj);
+			}
+		}
 	}
 
 	@Override
@@ -169,8 +173,8 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 		writeInt(order.getRouterId());
 		writeBoolean(order.isFinished());
 		writeBoolean(order.isInProgress());
-		this.writeEnum(order.getType());
-		this.writeList(order.getProgresses(), LPDataOutput::writeFloat);
+		writeEnum(order.getType());
+		writeCollection(order.getProgresses(), LPDataOutput::writeFloat);
 		writeByte(order.getMachineProgress());
 		writeLPPosition(order.getTargetPosition());
 		writeItemIdentifier(order.getTargetType());
@@ -183,8 +187,8 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 
 	@Override
 	public void writeLinkedLogisticsOrderList(LinkedLogisticsOrderList orders) throws IOException {
-		this.writeList(orders, LPDataOutput::writeOrderInfo);
-		this.writeList(orders.getSubOrders(), LPDataOutput::writeLinkedLogisticsOrderList);
+		writeCollection(orders, LPDataOutput::writeOrderInfo);
+		writeCollection(orders.getSubOrders(), LPDataOutput::writeLinkedLogisticsOrderList);
 	}
 
 	@Override
@@ -194,12 +198,12 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 
 	@Override
 	public void writeByte(byte b) throws IOException {
-		super.writeByte(b);
+		writeByte(b);
 	}
 
 	@Override
 	public void writeShort(short s) throws IOException {
-		super.writeShort(s);
+		writeShort(s);
 	}
 
 	@Override
@@ -242,25 +246,14 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 	}
 
 	@Override
-	public void writeLongArray(long[] array) throws IOException {
-		writeInt(array.length);
-		for (long element : array) {
-			writeLong(element);
-		}
-	}
-
-	public <T> void writeList(List<T> list, IWriteListObject<T> handler) throws IOException {
-		writeInt(list.size());
-		for (T aList : list) {
-			handler.writeObject(this, aList);
-		}
-	}
-
-	public <T> void writeSet(Set<T> list, IWriteListObject<T> handler) throws IOException {
-		writeInt(list.size());
-		Object[] array = list.toArray();
-		for (int i = 0; i < list.size(); i++) {
-			handler.writeObject(this, (T) array[i]);
+	public void writeLongArray(long[] arr) throws IOException {
+		if (arr == null) {
+			writeInt(-1);
+		} else {
+			writeInt(arr.length);
+			for (long i : arr) {
+				writeLong(i);
+			}
 		}
 	}
 

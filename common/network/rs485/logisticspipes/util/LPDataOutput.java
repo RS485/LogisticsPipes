@@ -25,6 +25,7 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.EnumSet;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -111,6 +112,8 @@ public interface LPDataOutput {
 	void writeBitSet(BitSet bits) throws IOException;
 
 	void writeNBTTagCompound(NBTTagCompound tag) throws IOException;
+
+	void writeItemStack(ItemStack itemstack) throws IOException;
 
 	void writeItemIdentifier(ItemIdentifier item) throws IOException;
 

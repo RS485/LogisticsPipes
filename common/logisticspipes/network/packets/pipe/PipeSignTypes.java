@@ -43,7 +43,7 @@ public class PipeSignTypes extends CoordinatesPacket {
 	@Override
 	public void readData(LPDataInput input) throws IOException {
 		super.readData(input);
-		types = input.readList(LPDataInput::readInt);
+		types = input.readArrayList(LPDataInput::readInt);
 	}
 
 	@Override

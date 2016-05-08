@@ -100,9 +100,9 @@ public class FindMostLikelyRecipeComponents extends CoordinatesPacket {
 	@Override
 	public void readData(LPDataInput input) throws IOException {
 		super.readData(input);
-		content = input.readList(input1 -> {
+		content = input.readArrayList(input1 -> {
 			GuiRecipeImport.Canidates can = new GuiRecipeImport.Canidates(new TreeSet<>());
-			can.order = input1.readList(LPDataInput::readItemIdentifierStack);
+			can.order = input1.readArrayList(LPDataInput::readItemIdentifierStack);
 			return can;
 		});
 	}

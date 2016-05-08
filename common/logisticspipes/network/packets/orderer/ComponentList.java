@@ -69,7 +69,7 @@ public class ComponentList extends ModernPacket {
 
 	@Override
 	public void readData(LPDataInput input) throws IOException {
-		used = input.readList(LPDataInput::readResource);
-		missing = input.readList(LPDataInput::readResource);
+		used = input.readArrayList(LPDataInput::readResource);
+		missing = input.readArrayList(LPDataInput::readResource);
 	}
 }

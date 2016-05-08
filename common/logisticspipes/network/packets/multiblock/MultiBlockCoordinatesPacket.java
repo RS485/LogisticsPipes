@@ -38,7 +38,7 @@ public class MultiBlockCoordinatesPacket extends CoordinatesPacket {
 	public void readData(LPDataInput input) throws IOException {
 		super.readData(input);
 		targetPos = input.readSet(LPDataInput::readLPPosition);
-		subTypes = input.readList(data1 -> data1.readEnum(CoreMultiBlockPipe.SubBlockTypeForShare.class));
+		subTypes = input.readArrayList(data1 -> data1.readEnum(CoreMultiBlockPipe.SubBlockTypeForShare.class));
 	}
 
 	public MultiBlockCoordinatesPacket(int id) {

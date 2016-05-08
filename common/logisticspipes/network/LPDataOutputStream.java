@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -142,21 +143,36 @@ public class LPDataOutputStream extends DataOutputStream implements LPDataOutput
 	}
 
 	@Override
+	public void writeItemStack(ItemStack itemstack) throws IOException {
+		if (itemstack == null) {
+			writeInt(0);
+		} else {
+			writeInt(Item.getIdFromItem(itemstack.getItem()));
+			writeInt(itemstack.stackSize);
+			writeInt(itemstack.getItemDamage());
+			writeNBTTagCompound(itemstack.getTagCompound());
+		}
+	}
+
+	@Override
 	public void writeItemIdentifier(ItemIdentifier item) throws IOException {
 		if (item == null) {
-			writeBoolean(false);
-			return;
+			writeInt(0);
+		} else {
+			writeInt(Item.getIdFromItem(item.item));
+			writeInt(item.itemDamage);
+			writeNBTTagCompound(item.tag);
 		}
-		writeBoolean(true);
-		writeInt(Item.getIdFromItem(item.item));
-		writeInt(item.itemDamage);
-		writeNBTTagCompound(item.tag);
 	}
 
 	@Override
 	public void writeItemIdentifierStack(ItemIdentifierStack stack) throws IOException {
-		writeItemIdentifier(stack.getItem());
-		writeInt(stack.getStackSize());
+		if (stack == null) {
+			writeInt(-1);
+		} else {
+			writeInt(stack.getStackSize());
+			writeItemIdentifier(stack.getItem());
+		}
 	}
 
 	@Override

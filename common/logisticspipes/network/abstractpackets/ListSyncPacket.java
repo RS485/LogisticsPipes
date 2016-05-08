@@ -38,7 +38,7 @@ public abstract class ListSyncPacket<E> extends CoordinatesPacket implements IWr
 	@Override
 	public void readData(LPDataInput input) throws IOException {
 		super.readData(input);
-		list = input.readList(this);
+		list = input.readArrayList(this);
 	}
 
 	@Override

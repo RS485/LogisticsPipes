@@ -70,7 +70,7 @@ public class MissingItems extends ModernPacket {
 
 	@Override
 	public void readData(LPDataInput input) throws IOException {
-		items = input.readList(LPDataInput::readResource);
+		items = input.readArrayList(LPDataInput::readResource);
 		setFlag(input.readBoolean());
 	}
 }

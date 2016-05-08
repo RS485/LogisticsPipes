@@ -21,11 +21,13 @@
 package network.rs485.logisticspipes.util;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.EnumSet;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Set;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -113,7 +115,11 @@ public interface LPDataInput {
 
 	ItemIdentifierStack readItemIdentifierStack() throws IOException;
 
-	<T> List<T> readList(IReadListObject<T> handler) throws IOException;
+	ItemStack readItemStack() throws IOException;
+
+	<T> ArrayList<T> readArrayList(IReadListObject<T> reader) throws IOException;
+
+	<T> LinkedList<T> readLinkedList(IReadListObject<T> reader) throws IOException;
 
 	<T> Set<T> readSet(IReadListObject<T> handler) throws IOException;
 

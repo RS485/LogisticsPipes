@@ -33,14 +33,14 @@ public class UpdateStatusEntries extends ModernPacket {
 	@Override
 	public void readData(LPDataInput input) throws IOException {
 		windowID = input.readInt();
-		status = input.readList(new IReadListObject<StatusEntry>() {
+		status = input.readArrayList(new IReadListObject<StatusEntry>() {
 
 			@Override
 			public StatusEntry readObject(LPDataInput input) throws IOException {
 				StatusEntry status = new StatusEntry();
 				status.name = input.readUTF();
 				if (input.readBoolean()) {
-					status.subEntry = input.readList(this);
+					status.subEntry = input.readArrayList(this);
 				}
 				return status;
 			}

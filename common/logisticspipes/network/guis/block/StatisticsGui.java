@@ -67,7 +67,7 @@ public class StatisticsGui extends CoordinatesGuiProvider {
 	@Override
 	public void readData(LPDataInput input) throws IOException {
 		super.readData(input);
-		trackingList = input.readList(data1 -> {
+		trackingList = input.readArrayList(data1 -> {
 			TrackingTask object = new TrackingTask();
 			object.readFromLPData(data1);
 			return object;

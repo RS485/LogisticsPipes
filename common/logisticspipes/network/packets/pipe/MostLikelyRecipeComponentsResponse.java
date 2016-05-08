@@ -32,7 +32,7 @@ public class MostLikelyRecipeComponentsResponse extends ModernPacket {
 
 	@Override
 	public void readData(LPDataInput input) throws IOException {
-		response = input.readList(LPDataInput::readInt);
+		response = input.readArrayList(LPDataInput::readInt);
 	}
 
 	@Override

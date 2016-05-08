@@ -7,10 +7,12 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTSizeTracker;
 import net.minecraft.nbt.NBTTagCompound;
@@ -76,7 +78,7 @@ public class LPDataInputStream extends DataInputStream implements LPDataInput {
 		double distanceToDestination = readDouble();
 		double destinationDistanceToRoot = readDouble();
 		int blockDistance = readInt();
-		List<DoubleCoordinates> positions = readList(LPDataInput::readLPPosition);
+		List<DoubleCoordinates> positions = readArrayList(LPDataInput::readLPPosition);
 		ExitRoute e = new ExitRoute(root, destination, exitOri, insertOri, destinationDistanceToRoot, connectionDetails, blockDistance);
 		e.distanceToDestination = distanceToDestination;
 		e.debug.filterPosition = positions;
@@ -187,29 +189,66 @@ public class LPDataInputStream extends DataInputStream implements LPDataInput {
 	}
 
 	@Override
-	public ItemIdentifier readItemIdentifier() throws IOException {
-		if (!readBoolean()) {
+	public ItemStack readItemStack() throws IOException {
+		final int itemId = readInt();
+		if (itemId == 0) {
 			return null;
 		}
-		int itemID = readInt();
+
+		int stackSize = readInt();
+		int damage = readInt();
+		ItemStack stack = new ItemStack(Item.getItemById(itemId), stackSize, damage);
+		stack.setTagCompound(readNBTTagCompound());
+		return stack;
+	}
+
+	@Override
+	public ItemIdentifier readItemIdentifier() throws IOException {
+		final int itemId = readInt();
+		if (itemId == 0) {
+			return null;
+		}
+
 		int damage = readInt();
 		NBTTagCompound tag = readNBTTagCompound();
-		return ItemIdentifier.get(Item.getItemById(itemID), damage, tag);
+		return ItemIdentifier.get(Item.getItemById(itemId), damage, tag);
 	}
 
 	@Override
 	public ItemIdentifierStack readItemIdentifierStack() throws IOException {
-		ItemIdentifier item = readItemIdentifier();
 		int stacksize = readInt();
+		if (stacksize == -1) {
+			return null;
+		}
+
+		ItemIdentifier item = readItemIdentifier();
 		return new ItemIdentifierStack(item, stacksize);
 	}
 
 	@Override
-	public <T> List<T> readList(IReadListObject<T> handler) throws IOException {
+	public <T> ArrayList<T> readArrayList(IReadListObject<T> reader) throws IOException {
 		int size = readInt();
-		List<T> list = new ArrayList<>(size);
+		if (size == -1) {
+			return null;
+		}
+
+		ArrayList<T> list = new ArrayList<>(size);
 		for (int i = 0; i < size; i++) {
-			list.add(handler.readObject(this));
+			list.add(reader.readObject(this));
+		}
+		return list;
+	}
+
+	@Override
+	public <T> LinkedList<T> readLinkedList(IReadListObject<T> reader) throws IOException {
+		int size = readInt();
+		if (size == -1) {
+			return null;
+		}
+
+		LinkedList<T> list = new LinkedList<>();
+		for (int i = 0; i < size; i++) {
+			list.add(reader.readObject(this));
 		}
 		return list;
 	}
@@ -231,7 +270,7 @@ public class LPDataInputStream extends DataInputStream implements LPDataInput {
 		boolean isFinished = readBoolean();
 		boolean inProgress = readBoolean();
 		ResourceType type = readEnum(ResourceType.class);
-		List<Float> list = readList(LPDataInput::readFloat);
+		List<Float> list = readArrayList(LPDataInput::readFloat);
 		byte machineProgress = readByte();
 		DoubleCoordinates pos = readLPPosition();
 		ItemIdentifier ident = readItemIdentifier();
@@ -246,8 +285,8 @@ public class LPDataInputStream extends DataInputStream implements LPDataInput {
 	@Override
 	public LinkedLogisticsOrderList readLinkedLogisticsOrderList() throws IOException {
 		LinkedLogisticsOrderList list = new LinkedLogisticsOrderList();
-		list.addAll(readList(LPDataInput::readOrderInfo));
-		list.getSubOrders().addAll(readList(LPDataInput::readLinkedLogisticsOrderList));
+		list.addAll(readArrayList(LPDataInput::readOrderInfo));
+		list.getSubOrders().addAll(readArrayList(LPDataInput::readLinkedLogisticsOrderList));
 		return list;
 	}
 
@@ -260,9 +299,10 @@ public class LPDataInputStream extends DataInputStream implements LPDataInput {
 	@Override
 	public long[] readLongArray() throws IOException {
 		int length = readInt();
-		if (length < 0) {
+		if (length == -1) {
 			return null;
 		}
+
 		long[] arr = new long[length];
 		for (int i = 0; i < arr.length; i++) {
 			arr[i] = readLong();

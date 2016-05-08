@@ -28,10 +28,12 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTSizeTracker;
 import net.minecraft.nbt.NBTTagCompound;
@@ -147,9 +149,10 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	@Override
 	public byte[] readByteArray() {
 		final int length = localBuffer.readInt();
-		if (length < 0) {
+		if (length == -1) {
 			return null;
 		}
+
 		byte[] arr = new byte[length];
 		if (!localBuffer.isReadable(length)) {
 			System.err.println("Trying to read " + length + " bytes");
@@ -317,21 +320,36 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
+	public void writeItemStack(ItemStack itemstack) throws IOException {
+		if (itemstack == null) {
+			writeInt(0);
+		} else {
+			writeInt(Item.getIdFromItem(itemstack.getItem()));
+			writeInt(itemstack.stackSize);
+			writeInt(itemstack.getItemDamage());
+			writeNBTTagCompound(itemstack.getTagCompound());
+		}
+	}
+
+	@Override
 	public void writeItemIdentifier(ItemIdentifier item) throws IOException {
 		if (item == null) {
-			localBuffer.writeBoolean(false);
+			writeInt(0);
 		} else {
-			localBuffer.writeBoolean(true);
-			localBuffer.writeInt(Item.getIdFromItem(item.item));
-			localBuffer.writeInt(item.itemDamage);
-			this.writeNBTTagCompound(item.tag);
+			writeInt(Item.getIdFromItem(item.item));
+			writeInt(item.itemDamage);
+			writeNBTTagCompound(item.tag);
 		}
 	}
 
 	@Override
 	public void writeItemIdentifierStack(ItemIdentifierStack stack) throws IOException {
-		this.writeItemIdentifier(stack.getItem());
-		localBuffer.writeInt(stack.getStackSize());
+		if (stack == null) {
+			writeInt(-1);
+		} else {
+			writeInt(stack.getStackSize());
+			writeItemIdentifier(stack.getItem());
+		}
 	}
 
 	@Override
@@ -461,7 +479,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		double distanceToDestination = localBuffer.readDouble();
 		double destinationDistanceToRoot = localBuffer.readDouble();
 		int blockDistance = localBuffer.readInt();
-		List<DoubleCoordinates> positions = this.readList(LPDataInput::readLPPosition);
+		List<DoubleCoordinates> positions = this.readArrayList(LPDataInput::readLPPosition);
 		ExitRoute e = new ExitRoute(root, destination, exitOri, insertOri, destinationDistanceToRoot, connectionDetails, blockDistance);
 		e.distanceToDestination = distanceToDestination;
 		e.debug.filterPosition = positions;
@@ -520,13 +538,14 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		if (arr == null) {
 			return null;
 		}
+
 		return CompressedStreamTools.func_152457_a(arr, new NBTSizeTracker(Long.MAX_VALUE));
 	}
 
 	@Override
 	public boolean[] readBooleanArray() {
 		final int bitCount = localBuffer.readInt();
-		if (bitCount < 0) {
+		if (bitCount == -1) {
 			return null;
 		}
 
@@ -534,6 +553,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		if (data == null) {
 			return new boolean[0];
 		}
+
 		BitSet bits = BitSet.valueOf(data);
 
 		boolean[] arr = new boolean[bitCount];
@@ -546,15 +566,16 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	@Override
 	public int[] readIntArray() {
 		final int length = localBuffer.readInt();
-		if (length < 0) {
+		if (length == -1) {
 			return null;
-		} else {
-			int[] arr = new int[length];
-			for (int i = 0; i < length; i++) {
-				arr[i] = localBuffer.readInt();
-			}
-			return arr;
 		}
+
+		int[] arr = new int[length];
+		for (int i = 0; i < length; i++) {
+			arr[i] = localBuffer.readInt();
+		}
+		return arr;
+
 	}
 
 	@Override
@@ -565,48 +586,82 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public ItemIdentifier readItemIdentifier() throws IOException {
-		if (localBuffer.readBoolean()) {
-			int itemId = localBuffer.readInt();
-			int damage = localBuffer.readInt();
-			NBTTagCompound tag = readNBTTagCompound();
-			return ItemIdentifier.get(Item.getItemById(itemId), damage, tag);
+	public ItemStack readItemStack() throws IOException {
+		final int itemId = readInt();
+		if (itemId == 0) {
+			return null;
 		}
-		return null;
+
+		int stackSize = readInt();
+		int damage = readInt();
+		ItemStack stack = new ItemStack(Item.getItemById(itemId), stackSize, damage);
+		stack.setTagCompound(readNBTTagCompound());
+		return stack;
+	}
+
+	@Override
+	public ItemIdentifier readItemIdentifier() throws IOException {
+		final int itemId = readInt();
+		if (itemId == 0) {
+			return null;
+		}
+
+		int damage = readInt();
+		NBTTagCompound tag = readNBTTagCompound();
+		return ItemIdentifier.get(Item.getItemById(itemId), damage, tag);
 	}
 
 	@Override
 	public ItemIdentifierStack readItemIdentifierStack() throws IOException {
-		ItemIdentifier item = this.readItemIdentifier();
-		return new ItemIdentifierStack(item, localBuffer.readInt());
+		int stacksize = readInt();
+		if (stacksize == -1) {
+			return null;
+		}
+
+		ItemIdentifier item = readItemIdentifier();
+		return new ItemIdentifierStack(item, stacksize);
 	}
 
 	@Override
-	public <T> List<T> readList(IReadListObject<T> handler) throws IOException {
-		int length = localBuffer.readInt();
-		if (length < 0) {
+	public <T> ArrayList<T> readArrayList(IReadListObject<T> reader) throws IOException {
+		int size = readInt();
+		if (size == -1) {
 			return null;
-		} else {
-			List<T> list = new ArrayList<>(length);
-			for (int i = 0; i < length; i++) {
-				list.add(handler.readObject(this));
-			}
-			return list;
 		}
+
+		ArrayList<T> list = new ArrayList<>(size);
+		for (int i = 0; i < size; i++) {
+			list.add(reader.readObject(this));
+		}
+		return list;
+	}
+
+	@Override
+	public <T> LinkedList<T> readLinkedList(IReadListObject<T> reader) throws IOException {
+		int size = readInt();
+		if (size == -1) {
+			return null;
+		}
+
+		LinkedList<T> list = new LinkedList<>();
+		for (int i = 0; i < size; i++) {
+			list.add(reader.readObject(this));
+		}
+		return list;
 	}
 
 	@Override
 	public <T> Set<T> readSet(IReadListObject<T> handler) throws IOException {
-		int length = localBuffer.readInt();
-		if (length < 0) {
+		int size = readInt();
+		if (size == -1) {
 			return null;
-		} else {
-			Set<T> set = new HashSet<>(length);
-			for (int i = 0; i < length; i++) {
-				set.add(handler.readObject(this));
-			}
-			return set;
 		}
+
+		Set<T> set = new HashSet<>(size);
+		for (int i = 0; i < size; i++) {
+			set.add(handler.readObject(this));
+		}
+		return set;
 	}
 
 	@Override
@@ -616,7 +671,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		boolean isFinished = localBuffer.readBoolean();
 		boolean inProgress = localBuffer.readBoolean();
 		IOrderInfoProvider.ResourceType type = this.readEnum(IOrderInfoProvider.ResourceType.class);
-		List<Float> list = this.readList(LPDataInput::readFloat);
+		List<Float> list = this.readArrayList(LPDataInput::readFloat);
 		byte machineProgress = localBuffer.readByte();
 		DoubleCoordinates pos = this.readLPPosition();
 		ItemIdentifier ident = this.readItemIdentifier();
@@ -632,13 +687,13 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	public LinkedLogisticsOrderList readLinkedLogisticsOrderList() throws IOException {
 		LinkedLogisticsOrderList list = new LinkedLogisticsOrderList();
 
-		List<IOrderInfoProvider> orderInfoProviders = this.readList(LPDataInput::readOrderInfo);
+		List<IOrderInfoProvider> orderInfoProviders = this.readArrayList(LPDataInput::readOrderInfo);
 		if (orderInfoProviders == null) {
 			throw new IOException("Expected order info provider list");
 		}
 		list.addAll(orderInfoProviders);
 
-		List<LinkedLogisticsOrderList> orderLists = this.readList(LPDataInput::readLinkedLogisticsOrderList);
+		List<LinkedLogisticsOrderList> orderLists = this.readArrayList(LPDataInput::readLinkedLogisticsOrderList);
 		if (orderLists == null) {
 			throw new IOException("Expected logistics order list");
 		}

@@ -39,7 +39,7 @@ public class RunningCraftingTasks extends ModernPacket {
 
 	@Override
 	public void readData(LPDataInput input) throws IOException {
-		identList = input.readList(LPDataInput::readItemIdentifierStack);
+		identList = input.readArrayList(LPDataInput::readItemIdentifierStack);
 	}
 
 	@Override

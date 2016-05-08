@@ -8,7 +8,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import lombok.SneakyThrows;
 
-import logisticspipes.network.LPDataOutputStream;
+import network.rs485.logisticspipes.util.LPDataIOWrapper;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
@@ -32,14 +32,10 @@ public class LPBCPluggableState extends PipePluggableState implements IBCPluggab
 	@Override
 	@SneakyThrows({ IOException.class })
 	public boolean isDirty(boolean clean) {
-		LPDataOutputStream buffer = new LPDataOutputStream();
-		ByteBuf buf = Unpooled.buffer(128);
-		this.writeData(buf);
-		buffer.writeByteBuf(buf);
-		byte[] newBuffer = buffer.toByteArray();
-		boolean result = !Arrays.equals(newBuffer, oldBuffer);
+		byte[] newBytes = LPDataIOWrapper.collectData(this::writeData);
+		boolean result = !Arrays.equals(newBytes, oldBuffer);
 		if (clean && result) {
-			oldBuffer = newBuffer;
+			oldBuffer = newBytes;
 		}
 		return result;
 	}

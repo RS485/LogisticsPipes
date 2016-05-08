@@ -2,7 +2,6 @@ package logisticspipes.ticks;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -11,18 +10,16 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
+import net.minecraft.entity.player.EntityPlayer;
+import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.BufferTransfer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.tuples.Pair;
-
-import net.minecraft.entity.player.EntityPlayer;
-
-import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import network.rs485.logisticspipes.util.LPDataIOWrapper;
 
 public class ClientPacketBufferHandlerThread {
 
@@ -51,22 +48,20 @@ public class ClientPacketBufferHandlerThread {
 				try {
 					synchronized (clientList) {
 						if (!pause && clientList.size() > 0) {
-							ByteArrayOutputStream out = new ByteArrayOutputStream();
-							DataOutputStream data = new DataOutputStream(out);
-							data.write(clientBuffer);
-							LinkedList<ModernPacket> packets = clientList;
-							clearLock.lock();
-							for (ModernPacket packet : packets) {
-								LPDataOutputStream t = new LPDataOutputStream();
-								t.writeShort(packet.getId());
-								t.writeInt(packet.getDebugId());
-								packet.writeData(t);
-								data.writeInt(t.size());
-								data.write(t.toByteArray());
-							}
-							packets.clear();
-							clearLock.unlock();
-							clientBuffer = out.toByteArray();
+							clientBuffer = LPDataIOWrapper.collectData(output -> {
+								output.writeBytes(clientBuffer);
+								clearLock.lock();
+								try {
+									for (ModernPacket packet : clientList) {
+										output.writeShort(packet.getId());
+										output.writeInt(packet.getDebugId());
+										packet.writeData(output);
+									}
+								} finally {
+									clientList.clear();
+									clearLock.unlock();
+								}
+							});
 						}
 					}
 					//Send Content
@@ -141,6 +136,7 @@ public class ClientPacketBufferHandlerThread {
 		private byte[] ByteBuffer = new byte[] {};
 		//FIFO for deserialized S->C packets, decompressor adds, tickEnd removes
 		private final LinkedList<Pair<EntityPlayer, byte[]>> PacketBuffer = new LinkedList<>();
+		private final ReentrantLock packetBufferLock = new ReentrantLock();
 		//List of packets that that should be reattempted to apply in the next tick
 		private final LinkedList<Pair<EntityPlayer, ModernPacket>> retryPackets = new LinkedList<>();
 		//Clear content on next tick
@@ -152,31 +148,41 @@ public class ClientPacketBufferHandlerThread {
 			start();
 		}
 
+		private void handlePacketData(final Pair<EntityPlayer, byte[]> playerDataPair) {
+			try {
+				LPDataIOWrapper.provideData(playerDataPair.getValue2(), input -> {
+					PacketHandler.onPacketData(input, playerDataPair.getValue1());
+				});
+			} catch (IOException e) {
+				System.err.println("IO Error in handlePacketData for player " + playerDataPair.getValue1().getCommandSenderName());
+				e.printStackTrace();
+			}
+		}
+
 		public void clientTickEnd() {
-			boolean flag = false;
-			do {
-				flag = false;
-				Pair<EntityPlayer, byte[]> part = null;
-				synchronized (PacketBuffer) {
+			Pair<EntityPlayer, byte[]> part = null;
+			while (true) {
+				packetBufferLock.lock();
+				try {
 					if (PacketBuffer.size() > 0) {
-						flag = true;
 						part = PacketBuffer.pop();
 					}
+				} finally {
+					packetBufferLock.unlock();
 				}
-				if (flag) {
-					try {
-						PacketHandler.onPacketData(new LPDataInputStream(part.getValue2()), part.getValue1());
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+
+				if (part == null) {
+					break;
 				}
-			} while (flag);
+
+				handlePacketData(part);
+			}
 		}
 
 		@Override
 		public void run() {
 			while (true) {
-				boolean flag = false;
+				boolean flag;
 				do {
 					flag = false;
 					byte[] buffer = null;
@@ -203,15 +209,18 @@ public class ClientPacketBufferHandlerThread {
 					}
 					byte[] packet = Arrays.copyOfRange(ByteBuffer, 4, size + 4);
 					ByteBuffer = Arrays.copyOfRange(ByteBuffer, size + 4, ByteBuffer.length);
-					synchronized (PacketBuffer) {
+					packetBufferLock.lock();
+					try {
 						PacketBuffer.add(new Pair<>(MainProxy.proxy.getClientPlayer(), packet));
+					} finally {
+						packetBufferLock.unlock();
 					}
 				}
 				synchronized (queue) {
 					while (queue.size() == 0) {
 						try {
 							queue.wait();
-						} catch (InterruptedException e) {}
+						} catch (InterruptedException e) { }
 					}
 				}
 				if (clear) {

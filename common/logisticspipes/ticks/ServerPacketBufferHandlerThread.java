@@ -2,7 +2,6 @@ package logisticspipes.ticks;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,21 +9,20 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.Queue;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
+import net.minecraft.entity.player.EntityPlayer;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
+
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.BufferTransfer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.tuples.Pair;
-
-import net.minecraft.entity.player.EntityPlayer;
-
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
+import network.rs485.logisticspipes.util.LPDataIOWrapper;
 
 public class ServerPacketBufferHandlerThread {
 
@@ -51,23 +49,24 @@ public class ServerPacketBufferHandlerThread {
 				try {
 					synchronized (serverList) {
 						if (!pause) {
-							for (Entry<EntityPlayer, LinkedList<ModernPacket>> player : serverList.entrySet()) {
-								ByteArrayOutputStream out = new ByteArrayOutputStream();
-								DataOutputStream data = new DataOutputStream(out);
-								byte[] towrite = serverBuffer.get(player.getKey());
-								if (towrite != null) {
-									data.write(towrite);
-								}
-								LinkedList<ModernPacket> packets = player.getValue();
-								for (ModernPacket packet : packets) {
-									LPDataOutputStream t = new LPDataOutputStream();
-									t.writeShort(packet.getId());
-									t.writeInt(packet.getDebugId());
-									packet.writeData(t);
-									data.writeInt(t.size());
-									data.write(t.toByteArray());
-								}
-								serverBuffer.put(player.getKey(), out.toByteArray());
+							for (Entry<EntityPlayer, LinkedList<ModernPacket>> playerPacketEntry : serverList.entrySet()) {
+								EntityPlayer player = playerPacketEntry.getKey();
+								serverBuffer.put(player, LPDataIOWrapper.collectData(output -> {
+									if (serverBuffer.containsKey(player)) {
+										output.writeBytes(serverBuffer.get(player));
+									}
+
+									LinkedList<ModernPacket> packets = playerPacketEntry.getValue();
+									try {
+										for (ModernPacket packet : packets) {
+											output.writeShort(packet.getId());
+											output.writeInt(packet.getDebugId());
+											packet.writeData(output);
+										}
+									} finally {
+										packets.clear();
+									}
+								}));
 							}
 							serverList.clear();
 						}
@@ -151,6 +150,7 @@ public class ServerPacketBufferHandlerThread {
 		private final HashMap<EntityPlayer, byte[]> ByteBuffer = new HashMap<>();
 		//FIFO for deserialized C->S packets, decompressor adds, tickEnd removes
 		private final LinkedList<Pair<EntityPlayer, byte[]>> PacketBuffer = new LinkedList<>();
+		private final ReentrantLock packetBufferLock = new ReentrantLock();
 		//Clear content on next tick
 		private Queue<EntityPlayer> playersToClear = new LinkedList<>();
 
@@ -160,25 +160,35 @@ public class ServerPacketBufferHandlerThread {
 			start();
 		}
 
+		private void handlePacketData(final Pair<EntityPlayer, byte[]> playerDataPair) {
+			try {
+				LPDataIOWrapper.provideData(playerDataPair.getValue2(), input -> {
+					PacketHandler.onPacketData(input, playerDataPair.getValue1());
+				});
+			} catch (IOException e) {
+				System.err.println("IO Error in handlePacketData for player " + playerDataPair.getValue1().getCommandSenderName());
+				e.printStackTrace();
+			}
+		}
+
 		public void serverTickEnd() {
-			boolean flag = false;
-			do {
-				flag = false;
-				Pair<EntityPlayer, byte[]> part = null;
-				synchronized (PacketBuffer) {
+			Pair<EntityPlayer, byte[]> part = null;
+			while (true) {
+				packetBufferLock.lock();
+				try {
 					if (PacketBuffer.size() > 0) {
-						flag = true;
 						part = PacketBuffer.pop();
 					}
+				} finally {
+					packetBufferLock.unlock();
 				}
-				if (flag) {
-					try {
-						PacketHandler.onPacketData(new LPDataInputStream(part.getValue2()), part.getValue1());
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+
+				if (part == null) {
+					break;
 				}
-			} while (flag);
+
+				handlePacketData(part);
+			}
 		}
 
 		@Override
@@ -233,8 +243,11 @@ public class ServerPacketBufferHandlerThread {
 						byte[] packet = Arrays.copyOfRange(ByteBufferForPlayer, 4, size + 4);
 						ByteBufferForPlayer = Arrays.copyOfRange(ByteBufferForPlayer, size + 4, ByteBufferForPlayer.length);
 						player.setValue(ByteBufferForPlayer);
-						synchronized (PacketBuffer) {
+						packetBufferLock.lock();
+						try {
 							PacketBuffer.add(new Pair<>(player.getKey(), packet));
+						} finally {
+							packetBufferLock.unlock();
 						}
 					}
 				}

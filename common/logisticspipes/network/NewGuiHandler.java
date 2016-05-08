@@ -4,27 +4,15 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cpw.mods.fml.client.FMLClientHandler;
-import logisticspipes.LPConstants;
-import logisticspipes.LogisticsPipes;
-import logisticspipes.network.abstractguis.GuiProvider;
-import logisticspipes.network.abstractguis.PopupGuiProvider;
-import logisticspipes.network.exception.TargetNotFoundException;
-import logisticspipes.network.packets.gui.GUIPacket;
-import logisticspipes.proxy.MainProxy;
-
-import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
-import logisticspipes.utils.gui.SubGuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
-
+import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -32,6 +20,16 @@ import cpw.mods.fml.relauncher.SideOnly;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 import lombok.SneakyThrows;
+
+import logisticspipes.LogisticsPipes;
+import logisticspipes.network.abstractguis.GuiProvider;
+import logisticspipes.network.abstractguis.PopupGuiProvider;
+import logisticspipes.network.exception.TargetNotFoundException;
+import logisticspipes.network.packets.gui.GUIPacket;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
+import logisticspipes.utils.gui.SubGuiScreen;
+import network.rs485.logisticspipes.util.LPDataIOWrapper;
 
 public class NewGuiHandler {
 
@@ -74,15 +72,12 @@ public class NewGuiHandler {
 		EntityPlayerMP player = (EntityPlayerMP) oPlayer;
 		Container container = guiProvider.getContainer(player);
 		if (container == null) {
-			if(guiProvider instanceof PopupGuiProvider) {
+			if (guiProvider instanceof PopupGuiProvider) {
 				GUIPacket packet = PacketHandler.getPacket(GUIPacket.class);
-				LPDataOutputStream data = new LPDataOutputStream();
-				guiProvider.writeData(data);
 				packet.setGuiID(guiProvider.getId());
 				packet.setWindowID(-2);
-				packet.setGuiData(data.toByteArray());
+				packet.setGuiData(LPDataIOWrapper.collectData(guiProvider::writeData));
 				MainProxy.sendPacketToPlayer(packet, player);
-
 			}
 			return;
 		}
@@ -91,11 +86,9 @@ public class NewGuiHandler {
 		int windowId = player.currentWindowId;
 
 		GUIPacket packet = PacketHandler.getPacket(GUIPacket.class);
-		LPDataOutputStream data = new LPDataOutputStream();
-		guiProvider.writeData(data);
 		packet.setGuiID(guiProvider.getId());
 		packet.setWindowID(windowId);
-		packet.setGuiData(data.toByteArray());
+		packet.setGuiData(LPDataIOWrapper.collectData(guiProvider::writeData));
 		MainProxy.sendPacketToPlayer(packet, player);
 
 		player.openContainer = container;
@@ -108,9 +101,10 @@ public class NewGuiHandler {
 	public static void openGui(GUIPacket packet, EntityPlayer player) {
 		int guiID = packet.getGuiID();
 		GuiProvider provider = NewGuiHandler.guilist.get(guiID).template();
-		provider.readData(new LPDataInputStream(packet.getGuiData()));
-		if(provider instanceof PopupGuiProvider && packet.getWindowID() == -2) {
-			if(FMLClientHandler.instance().getClient().currentScreen instanceof LogisticsBaseGuiScreen) {
+		LPDataIOWrapper.provideData(packet.getGuiData(), provider::readData);
+		
+		if (provider instanceof PopupGuiProvider && packet.getWindowID() == -2) {
+			if (FMLClientHandler.instance().getClient().currentScreen instanceof LogisticsBaseGuiScreen) {
 				LogisticsBaseGuiScreen baseGUI = (LogisticsBaseGuiScreen) FMLClientHandler.instance().getClient().currentScreen;
 				SubGuiScreen newSub;
 				try {
@@ -122,7 +116,7 @@ public class NewGuiHandler {
 					LogisticsPipes.log.error(packet.toString());
 					throw new RuntimeException(e);
 				}
-				if(newSub != null) {
+				if (newSub != null) {
 					if (!baseGUI.hasSubGui()) {
 						baseGUI.setSubGui(newSub);
 					} else {

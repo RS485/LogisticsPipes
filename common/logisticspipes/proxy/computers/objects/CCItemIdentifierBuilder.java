@@ -15,15 +15,26 @@ public class CCItemIdentifierBuilder implements ILPCCTypeHolder {
 	private Object ccType;
 
 	private int itemID = 0;
+	private String itemIDName = null;
 	private int itemData = 0;
 
 	@CCCommand(description = "Set the itemID for this ItemIdentifierBuilder")
 	public void setItemID(Double id) {
 		itemID = id.intValue();
+		itemIDName = null;
 	}
 
-	@CCCommand(description = "Returns the itemID for this ItemIdentifierBuilder")
-	public int getItemID() {
+	@CCCommand(description = "Set the itemID for this ItemIdentifierBuilder")
+	public void setItemID(String id) {
+		itemID = 0;
+		itemIDName = id;
+	}
+
+	@CCCommand(description = "Returns the itemID (String or Int) for this ItemIdentifierBuilder")
+	public Object getItemID() {
+		if(itemIDName != null) {
+			return itemIDName;
+		}
 		return itemID;
 	}
 
@@ -39,7 +50,12 @@ public class CCItemIdentifierBuilder implements ILPCCTypeHolder {
 
 	@CCCommand(description = "Returns the ItemIdentifier for this ItemIdentifierBuilder")
 	public ItemIdentifier build() {
-		Item item = Item.getItemById(itemID);
+		Item item = null;
+		if(itemIDName != null) {
+			item = (Item) Item.itemRegistry.getObject(itemIDName);
+		} else {
+			item = Item.getItemById(itemID);
+		}
 		if (item == null) {
 			throw new UnsupportedOperationException("Not a valid ItemIdentifier");
 		}

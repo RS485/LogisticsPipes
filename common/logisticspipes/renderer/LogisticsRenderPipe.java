@@ -540,6 +540,13 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 				// XXX int stage = (int) ((float) fluidStack.amount / (float) (trans.getCapacity()) * (LIQUID_STAGES - 1));
 				int stage = (int) ((float) fluidStack.amount / (float) (trans.getSideCapacity()) * (LogisticsRenderPipe.LIQUID_STAGES - 1));
 
+				if(stage >= LogisticsRenderPipe.LIQUID_STAGES) {
+					stage = LogisticsRenderPipe.LIQUID_STAGES - 1;
+				}
+				if(stage < 0) {
+					stage = 0;
+				}
+
 				GL11.glPushMatrix();
 				int list = 0;
 

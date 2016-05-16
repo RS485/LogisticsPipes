@@ -737,7 +737,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public ISlotUpgradeManager getUpgradeManager(ModulePositionType slot, int positionInt) {
-		if (slot != ModulePositionType.SLOT || positionInt > _upgradeManagers.length) {
+		if (slot != ModulePositionType.SLOT || positionInt >= _upgradeManagers.length) {
 			if (LPConstants.DEBUG) {
 				new UnsupportedOperationException("Position info arn't for a chassi pipe. (" + slot + "/" + positionInt + ")").printStackTrace();
 			}

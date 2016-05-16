@@ -29,6 +29,7 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtils;
 
+import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -418,14 +419,21 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 			int stringPos = 40;
 			for (int i = start; i < start + 3 && i < pipe.getClientSideOrderManager().size(); i++) {
 				IOrderInfoProvider order = pipe.getClientSideOrderManager().get(i);
-				String s = order.getTargetType().getFriendlyName();
-				fontRendererObj.drawString(s, 35, stringPos, 0x303030);
+				ItemIdentifier target = order.getTargetType();
+				String s = "";
+				if(target != null) {
+					s = target.getFriendlyName();
+					fontRendererObj.drawString(s, 35, stringPos, 0x303030);
+				}
 				s = Integer.toString(i + 1);
 				stringPos += 6;
 				fontRendererObj.drawString(s, 3, stringPos, 0x303030);
 				stringPos += 4;
-				s = order.getTargetPosition().toIntBasedString();
-				fontRendererObj.drawString(s, 40, stringPos, 0x303030);
+				LPPosition pos = order.getTargetPosition();
+				if (pos != null) {
+					s = pos.toIntBasedString();
+					fontRendererObj.drawString(s, 40, stringPos, 0x303030);
+				}
 				stringPos += 10;
 			}
 		}

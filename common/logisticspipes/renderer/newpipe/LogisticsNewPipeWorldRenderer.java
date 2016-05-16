@@ -64,12 +64,6 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 				}
 			}
 
-			renderState.currentTexture = icons.getIcon(renderState.textureMatrix.getTextureIndex(ForgeDirection.UNKNOWN));
-			((LogisticsBlockGenericPipe) block).setRenderAllSides();
-			block.setBlockBounds(0, 0, 0, 1, 1, 1);
-			renderer.setRenderBoundsFromBlock(block);
-			renderer.renderStandardBlock(block, x, y, z);
-
 			SimpleServiceLocator.cclProxy.getRenderState().reset();
 			SimpleServiceLocator.cclProxy.getRenderState().setUseNormals(true);
 			SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
@@ -95,6 +89,8 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 			return true;
 		}
 
+		boolean hasRendered = false;
+
 		tess.addTranslation(0.00002F, 0.00002F, 0.00002F);
 		renderer.setRenderBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 
@@ -102,6 +98,7 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 			if (pipeTile.tilePart.hasPipePluggable(dir)) {
 				IBCPipePluggable p = pipeTile.tilePart.getBCPipePluggable(dir);
 				p.renderPluggable(renderer, dir, LogisticsPipeWorldRenderer.renderPass, x, y, z);
+				hasRendered = true;
 			}
 		}
 		tess.addTranslation(-0.00002F, -0.00002F, -0.00002F);
@@ -120,12 +117,14 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 			renderState.cachedRenderer = null;
 		}
 
-		block.setBlockBounds(0, 0, 0, 0, 0, 0);
-		renderer.setRenderBoundsFromBlock(block);
-		renderer.renderStandardBlock(block, x, y, z);
+		if(hasRendered) {
+			block.setBlockBounds(0, 0, 0, 0, 0, 0);
+			renderer.setRenderBoundsFromBlock(block);
+			renderer.renderStandardBlock(block, x, y, z);
 
-		block.setBlockBounds(0, 0, 0, 1, 1, 1);
-		return true;
+			block.setBlockBounds(0, 0, 0, 1, 1, 1);
+		}
+		return hasRendered;
 	}
 
 	@Override

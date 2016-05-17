@@ -29,7 +29,6 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtils;
 
-import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -39,6 +38,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -429,7 +429,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 				stringPos += 6;
 				fontRendererObj.drawString(s, 3, stringPos, 0x303030);
 				stringPos += 4;
-				LPPosition pos = order.getTargetPosition();
+				DoubleCoordinates pos = order.getTargetPosition();
 				if (pos != null) {
 					s = pos.toIntBasedString();
 					fontRendererObj.drawString(s, 40, stringPos, 0x303030);

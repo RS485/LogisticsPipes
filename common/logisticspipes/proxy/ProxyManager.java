@@ -47,7 +47,7 @@ import logisticspipes.proxy.interfaces.IBinnieProxy;
 import logisticspipes.proxy.interfaces.ICCLProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.ICoFHPowerProxy;
-import logisticspipes.proxy.interfaces.ICraftingParts;
+import logisticspipes.recipes.CraftingParts;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IEnderIOProxy;
 import logisticspipes.proxy.interfaces.IEnderStorageProxy;
@@ -82,7 +82,6 @@ import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.item.ItemIdentifier;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -138,8 +137,8 @@ public class ProxyManager {
 			@Override public boolean isInstalled() {return false;}
 			@Override public Object getLPPipeType() {return null;}
 			@Override public void registerTrigger() {}
-			@Override public ICraftingParts getRecipeParts() {return null;}
-			@Override public void addCraftingRecipes(ICraftingParts parts) {}
+			@Override public CraftingParts getRecipeParts() {return null;}
+			@Override public void addCraftingRecipes(CraftingParts parts) {}
 			@Override public Class<? extends ICraftingRecipeProvider> getAssemblyTableProviderClass() {return null;}
 			@Override public void notifyOfChange(LogisticsTileGenericPipe logisticsTileGenericPipe, TileEntity tile, ForgeDirection o) {}
 			@Override public IBCTilePart getBCTilePart(LogisticsTileGenericPipe logisticsTileGenericPipe) {
@@ -243,7 +242,7 @@ public class ProxyManager {
 			@Override @SideOnly(Side.CLIENT) public IIcon getIconIndexForAlleleId(String id, int phase) {return null;}
 			@Override @SideOnly(Side.CLIENT) public int getColorForAlleleId(String id, int phase) {return 16777215;}
 			@Override @SideOnly(Side.CLIENT) public int getRenderPassesForAlleleId(String id) {return 0;}
-			@Override public void addCraftingRecipes(ICraftingParts parts) {}
+			@Override public void addCraftingRecipes(CraftingParts parts) {}
 			@Override public String getNextAlleleId(String uid, World world) {return "";}
 			@Override public String getPrevAlleleId(String uid, World world) {return "";}
 			@Override @SideOnly(Side.CLIENT) public IIcon getIconFromTextureManager(String name) {return null;}
@@ -256,7 +255,7 @@ public class ProxyManager {
 			@Override public boolean isFullyCharged(ItemStack stack) {return false;}
 			@Override public boolean isFullyDischarged(ItemStack stack) {return false;}
 			@Override public boolean isPartiallyCharged(ItemStack stack) {return false;}
-			@Override public void addCraftingRecipes(ICraftingParts parts) {}
+			@Override public void addCraftingRecipes(CraftingParts parts) {}
 			@Override public boolean hasIC2() {return false;}
 			@Override public void registerToEneryNet(TileEntity tile) {}
 			@Override public void unregisterToEneryNet(TileEntity tile) {}
@@ -276,7 +275,7 @@ public class ProxyManager {
 			@Override public boolean getTurtleConnect(LogisticsTileGenericPipe logisticsTileGenericPipe) {return false;}
 			@Override public int getLastCCID(LogisticsTileGenericPipe logisticsTileGenericPipe) {return 0;}
 			@Override public void handleMesssage(int computerId, Object message, LogisticsTileGenericPipe tile, int sourceId) {}
-			@Override public void addCraftingRecipes(ICraftingParts parts) {}
+			@Override public void addCraftingRecipes(CraftingParts parts) {}
 			@Override public Object getAnswer(Object object) {return object;}
 		}));
 
@@ -285,14 +284,14 @@ public class ProxyManager {
 			@Override public List<String> getListOfTagsForStack(ItemStack stack) {return null;}
 			@Override @SideOnly(Side.CLIENT) public void renderAspectsDown(ItemStack item, int x, int y, GuiScreen gui) {}
 			@Override @SideOnly(Side.CLIENT) public void renderAspectsInGrid(List<String> eTags, int x, int y, int legnth, int width, GuiScreen gui) {}
-			@Override public void addCraftingRecipes(ICraftingParts parts) {}
+			@Override public void addCraftingRecipes(CraftingParts parts) {}
 		}));
 
 		SimpleServiceLocator.setThermalExpansionProxy(ProxyManager.getWrappedProxy("ThermalExpansion", IThermalExpansionProxy.class, ThermalExpansionProxy.class, new IThermalExpansionProxy() {
 			@Override public boolean isTesseract(TileEntity tile) {return false;}
 			@Override public boolean isTE() {return false;}
 			@Override public List<TileEntity> getConnectedTesseracts(TileEntity tile) {return new ArrayList<>(0);}
-			@Override public ICraftingParts getRecipeParts() {return null;}
+			@Override public CraftingParts getRecipeParts() {return null;}
 		}));
 
 		SimpleServiceLocator.setBetterStorageProxy(ProxyManager.getWrappedProxy("betterstorage", IBetterStorageProxy.class, BetterStorageProxy.class, new IBetterStorageProxy() {
@@ -369,7 +368,7 @@ public class ProxyManager {
 					@Override public int receiveEnergy(ForgeDirection opposite, int i, boolean b) {return 0;}
 				};
 			}
-			@Override public void addCraftingRecipes(ICraftingParts parts) {}
+			@Override public void addCraftingRecipes(CraftingParts parts) {}
 			@Override public ICoFHEnergyStorage getEnergyStorage(int i) {
 				return new ICoFHEnergyStorage() {
 					@Override public int extractEnergy(int space, boolean b) {return 0;}

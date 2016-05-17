@@ -3,19 +3,12 @@ package logisticspipes.proxy.forestry;
 import java.lang.reflect.Method;
 import java.util.Locale;
 
-import logisticspipes.LogisticsPipes;
-import logisticspipes.config.Configs;
-import logisticspipes.items.ItemModule;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.interfaces.ICraftingParts;
+import logisticspipes.recipes.CraftingParts;
 import logisticspipes.proxy.interfaces.IForestryProxy;
-import logisticspipes.recipes.CraftingDependency;
-import logisticspipes.recipes.RecipeManager;
-import logisticspipes.recipes.RecipeManager.LocalCraftingManager;
 import logisticspipes.utils.item.ItemIdentifier;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -37,7 +30,6 @@ import forestry.api.core.ForestryAPI;
 import forestry.api.genetics.AlleleManager;
 import forestry.api.genetics.IAllele;
 import forestry.api.genetics.IAlleleSpecies;
-import forestry.api.recipes.RecipeManagers;
 
 public class ForestryProxy implements IForestryProxy {
 
@@ -466,7 +458,7 @@ public class ForestryProxy implements IForestryProxy {
 	 * Void method, called to initialize LogisticsPipes' Forestry recipes.
 	 */
 	@Override
-	public void addCraftingRecipes(ICraftingParts parts) {
+	public void addCraftingRecipes(CraftingParts parts) {
 		/*
 		//Enable Carpenter-based Recipes
 		if (Configs.MANDATORY_CARPENTER_RECIPES) {

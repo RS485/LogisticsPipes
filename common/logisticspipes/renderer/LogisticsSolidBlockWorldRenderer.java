@@ -63,7 +63,7 @@ public class LogisticsSolidBlockWorldRenderer implements ISimpleBlockRenderingHa
 				renderer.uvRotateTop = 0;
 				return true;
 			}
-		} else if(world.getBlockMetadata(x, y, z) == LogisticsSolidBlock.LOGISTICS_BLANK_BLOCK) {
+		} else if(world.getBlockMetadata(x, y, z) == LogisticsSolidBlock.LOGISTICS_BLOCK_FRAME) {
 			if (config.isUseNewRenderer()) {
 				newRenderer.renderWorldBlock(world, null, renderer, x, y, z);
 				return true;

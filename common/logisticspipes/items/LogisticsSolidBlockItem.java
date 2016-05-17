@@ -41,7 +41,7 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 				return "tile.logisticstepowerprovider";
 			case LogisticsSolidBlock.LOGISTICS_IC2_POWERPROVIDER:
 				return "tile.logisticsic2powerprovider";
-			case LogisticsSolidBlock.LOGISTICS_BLANK_BLOCK:
+			case LogisticsSolidBlock.LOGISTICS_BLOCK_FRAME:
 				return "tile.logisticsblankblock";
 		}
 		return super.getUnlocalizedName(stack);
@@ -65,7 +65,7 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
-		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_BLANK_BLOCK));
+		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_BLOCK_FRAME));
 		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.SOLDERING_STATION));
 		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_POWER_JUNCTION));
 		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_SECURITY_STATION));

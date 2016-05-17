@@ -9,7 +9,7 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.cc.wrapper.CCCommandWrapper;
 import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
 import logisticspipes.proxy.interfaces.ICCProxy;
-import logisticspipes.proxy.interfaces.ICraftingParts;
+import logisticspipes.recipes.CraftingParts;
 import logisticspipes.recipes.CraftingDependency;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.RecipeManager.LocalCraftingManager;
@@ -100,7 +100,8 @@ public class CCProxy implements ICCProxy {
 	}
 
 	@Override
-	public void addCraftingRecipes(ICraftingParts parts) {
+	public void addCraftingRecipes(CraftingParts parts) {
+		/*
 		LocalCraftingManager craftingManager = RecipeManager.craftingManager;
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CC_REMOTE_CONTROL), CraftingDependency.Upgrades, new Object[] { false, "rTr", "WCM", "rKr", Character.valueOf('C'), parts.getChipTear3(), Character.valueOf('r'), Items.redstone, Character.valueOf('T'), Blocks.redstone_torch,
 				Character.valueOf('W'), new ItemStack(ComputerCraft.Blocks.peripheral, 1, 1), Character.valueOf('M'), new ItemStack(ComputerCraft.Blocks.cable, 1, 1), Character.valueOf('K'), new ItemStack(ComputerCraft.Blocks.cable, 1, 0) });
@@ -108,6 +109,7 @@ public class CCProxy implements ICCProxy {
 				Character.valueOf('T'), Blocks.redstone_torch, Character.valueOf('W'), new ItemStack(ComputerCraft.Blocks.peripheral, 1, 1), Character.valueOf('M'), new ItemStack(ComputerCraft.Blocks.cable, 1, 1), Character.valueOf('K'), new ItemStack(ComputerCraft.Blocks.cable, 1, 0) });
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.CC_BASED_QUICKSORT), CraftingDependency.Upgrades, new Object[] { false, "rTr", "WCM", "rKr", Character.valueOf('C'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.QUICKSORT), Character.valueOf('r'), Items.redstone,
 				Character.valueOf('T'), Blocks.redstone_torch, Character.valueOf('W'), new ItemStack(ComputerCraft.Blocks.peripheral, 1, 1), Character.valueOf('M'), new ItemStack(ComputerCraft.Blocks.cable, 1, 1), Character.valueOf('K'), new ItemStack(ComputerCraft.Blocks.cable, 1, 0) });
+				*/
 	}
 
 	@Override

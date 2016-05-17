@@ -2,6 +2,7 @@ package logisticspipes.proxy.interfaces;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 
+import logisticspipes.recipes.CraftingParts;
 import net.minecraft.tileentity.TileEntity;
 
 public interface ICCProxy {
@@ -24,7 +25,7 @@ public interface ICCProxy {
 
 	public void handleMesssage(int computerId, Object message, LogisticsTileGenericPipe tile, int sourceId);
 
-	public void addCraftingRecipes(ICraftingParts parts);
+	public void addCraftingRecipes(CraftingParts parts);
 
 	public Object getAnswer(Object object);
 }

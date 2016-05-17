@@ -2,6 +2,7 @@ package logisticspipes.proxy.interfaces;
 
 import java.util.List;
 
+import logisticspipes.recipes.CraftingParts;
 import net.minecraft.tileentity.TileEntity;
 
 public interface IThermalExpansionProxy {
@@ -12,5 +13,5 @@ public interface IThermalExpansionProxy {
 
 	public boolean isTE();
 
-	public ICraftingParts getRecipeParts();
+	public CraftingParts getRecipeParts();
 }

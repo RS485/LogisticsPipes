@@ -35,7 +35,7 @@ import logisticspipes.proxy.buildcraft.subproxies.LPBCPipe;
 import logisticspipes.proxy.buildcraft.subproxies.LPBCPipeTransportsItems;
 import logisticspipes.proxy.buildcraft.subproxies.LPBCTileGenericPipe;
 import logisticspipes.proxy.interfaces.IBCProxy;
-import logisticspipes.proxy.interfaces.ICraftingParts;
+import logisticspipes.recipes.CraftingParts;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.ReflectionHelper;
@@ -285,83 +285,12 @@ public class BuildCraftProxy implements IBCProxy {
 	}
 
 	@Override
-	public ICraftingParts getRecipeParts() {
-		return new ICraftingParts() {
-
-			@Override
-			public ItemStack getChipTear1() {
-				return new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1);
-			}
-
-			@Override
-			public ItemStack getChipTear2() {
-				return new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2);
-			}
-
-			@Override
-			public ItemStack getChipTear3() {
-				return new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3);
-			}
-
-			@Override
-			public Object getGearTear1() {
-				return "gearIron";
-			}
-
-			@Override
-			public Object getGearTear2() {
-				return "gearGold";
-			}
-
-			@Override
-			public Object getGearTear3() {
-				return "gearDiamond";
-			}
-
-			@Override
-			public Object getSortingLogic() {
-				return BuildCraftTransport.pipeItemsDiamond;
-			}
-
-			@Override
-			public Object getBasicTransport() {
-				return BuildCraftTransport.pipeItemsCobblestone;
-			}
-
-			@Override
-			public Object getWaterProof() {
-				return BuildCraftTransport.pipeWaterproof;
-			}
-
-			@Override
-			public Object getExtractorItem() {
-				return BuildCraftTransport.pipeItemsWood;
-			}
-
-			@Override
-			public Object getExtractorFluid() {
-				return BuildCraftTransport.pipeFluidsWood;
-			}
-
-			@Override
-			public Object getBlockDynamo() {
-				return new ItemStack(BuildCraftCore.engineBlock, 1, 2);
-			}
-
-			@Override
-			public Object getPowerCoilSilver() {
-				return getChipTear1();
-			}
-
-			@Override
-			public Object getPowerCoilGold() {
-				return getChipTear2();
-			}
-		};
+	public CraftingParts getRecipeParts() {
+		return null;
 	}
 
 	@Override
-	public void addCraftingRecipes(ICraftingParts parts) {}
+	public void addCraftingRecipes(CraftingParts parts) {}
 
 	@Override
 	public Class<? extends ICraftingRecipeProvider> getAssemblyTableProviderClass() {

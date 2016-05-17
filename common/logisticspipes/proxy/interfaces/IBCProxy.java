@@ -8,6 +8,7 @@ import logisticspipes.proxy.buildcraft.subproxies.IBCRenderTESR;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
 import logisticspipes.proxy.buildcraft.subproxies.IConnectionOverrideResult;
 
+import logisticspipes.recipes.CraftingParts;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -41,9 +42,9 @@ public interface IBCProxy {
 
 	void registerTrigger();
 
-	ICraftingParts getRecipeParts();
+	CraftingParts getRecipeParts();
 
-	void addCraftingRecipes(ICraftingParts parts);
+	void addCraftingRecipes(CraftingParts parts);
 
 	Class<? extends ICraftingRecipeProvider> getAssemblyTableProviderClass();
 

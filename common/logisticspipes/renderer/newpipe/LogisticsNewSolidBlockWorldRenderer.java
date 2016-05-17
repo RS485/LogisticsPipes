@@ -227,7 +227,7 @@ public class LogisticsNewSolidBlockWorldRenderer {
 
 		//Draw
 		LogisticsNewSolidBlockWorldRenderer.block.get(rotation).render(new I3DOperation[] { icon });
-		if(metadata != LogisticsSolidBlock.LOGISTICS_BLANK_BLOCK) {
+		if(metadata != LogisticsSolidBlock.LOGISTICS_BLOCK_FRAME) {
 			for (CoverSides side : CoverSides.values()) {
 				LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation).render(new I3DOperation[]{icon});
 			}

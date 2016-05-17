@@ -2,6 +2,7 @@ package logisticspipes.proxy.interfaces;
 
 import java.util.List;
 
+import logisticspipes.recipes.CraftingParts;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 
@@ -18,5 +19,5 @@ public interface IThaumCraftProxy {
 
 	public @SideOnly(Side.CLIENT) void renderAspectsInGrid(List<String> eTags, int x, int y, int legnth, int width, GuiScreen gui);
 
-	public abstract void addCraftingRecipes(ICraftingParts parts);
+	public abstract void addCraftingRecipes(CraftingParts parts);
 }

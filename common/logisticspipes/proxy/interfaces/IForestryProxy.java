@@ -1,5 +1,6 @@
 package logisticspipes.proxy.interfaces;
 
+import logisticspipes.recipes.CraftingParts;
 import logisticspipes.utils.item.ItemIdentifier;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -69,7 +70,7 @@ public interface IForestryProxy {
 	@SideOnly(Side.CLIENT)
 	public abstract IIcon getIconFromTextureManager(String name);
 
-	public abstract void addCraftingRecipes(ICraftingParts parts);
+	public abstract void addCraftingRecipes(CraftingParts parts);
 
 	public abstract void syncTracker(World world, EntityPlayer player);
 }

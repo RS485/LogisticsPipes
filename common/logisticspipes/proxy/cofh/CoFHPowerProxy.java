@@ -1,20 +1,12 @@
 package logisticspipes.proxy.cofh;
 
-import logisticspipes.LogisticsPipes;
-import logisticspipes.blocks.LogisticsSolidBlock;
-import logisticspipes.config.Configs;
-import logisticspipes.items.ItemUpgrade;
 import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyReceiver;
 import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyStorage;
 import logisticspipes.proxy.interfaces.ICoFHPowerProxy;
-import logisticspipes.proxy.interfaces.ICraftingParts;
-import logisticspipes.recipes.CraftingDependency;
+import logisticspipes.recipes.CraftingParts;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.RecipeManager.LocalCraftingManager;
 
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
@@ -58,7 +50,7 @@ public class CoFHPowerProxy implements ICoFHPowerProxy {
 	}
 
 	@Override
-	public void addCraftingRecipes(ICraftingParts parts) {
+	public void addCraftingRecipes(CraftingParts parts) {
 		LocalCraftingManager craftingManager = RecipeManager.craftingManager;
 		/*
 		craftingManager.addRecipe(

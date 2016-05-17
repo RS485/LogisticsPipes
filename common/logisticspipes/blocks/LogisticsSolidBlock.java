@@ -1,16 +1,5 @@
 package logisticspipes.blocks;
 
-import logisticspipes.LPConstants;
-import logisticspipes.LogisticsPipes;
-import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
-import logisticspipes.blocks.powertile.LogisticsIC2PowerProviderTileEntity;
-import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
-import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
-import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
-import logisticspipes.interfaces.IGuiTileEntity;
-import logisticspipes.interfaces.IRotationProvider;
-import logisticspipes.proxy.MainProxy;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -22,15 +11,24 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-
 import net.minecraftforge.common.util.ForgeDirection;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
+import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
+import logisticspipes.blocks.powertile.LogisticsIC2PowerProviderTileEntity;
+import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
+import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
+import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
+import logisticspipes.interfaces.IGuiTileEntity;
+import logisticspipes.interfaces.IRotationProvider;
+import logisticspipes.proxy.MainProxy;
+
 public class LogisticsSolidBlock extends BlockContainer {
 
-	public static final int LOGISTICS_BLANK_BLOCK = 15;
+	public static final int LOGISTICS_BLOCK_FRAME = 15;
 
 	public static final int SOLDERING_STATION = 0;
 	public static final int LOGISTICS_POWER_JUNCTION = 1;
@@ -175,7 +173,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 			case LOGISTICS_STATISTICS_TABLE:
 			case LOGISTICS_RF_POWERPROVIDER:
 			case LOGISTICS_IC2_POWERPROVIDER:
-			case LOGISTICS_BLANK_BLOCK:
+			case LOGISTICS_BLOCK_FRAME:
 				return par1;
 		}
 		return super.damageDropped(par1);
@@ -329,7 +327,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 					default: //Front
 						return LogisticsSolidBlock.icons[6];
 				}
-			case LOGISTICS_BLANK_BLOCK:
+			case LOGISTICS_BLOCK_FRAME:
 				switch (side) {
 					case 1: //TOP
 						return LogisticsSolidBlock.icons[10];

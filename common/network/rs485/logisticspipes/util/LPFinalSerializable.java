@@ -37,7 +37,7 @@
 
 package network.rs485.logisticspipes.util;
 
-public interface LPSerializable extends LPFinalSerializable {
+public interface LPFinalSerializable {
 
-	void read(LPDataInput input);
+	void write(LPDataOutput output);
 }

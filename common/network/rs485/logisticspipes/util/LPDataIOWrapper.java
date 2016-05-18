@@ -64,8 +64,6 @@ import static io.netty.buffer.Unpooled.wrappedBuffer;
 
 import logisticspipes.network.IReadListObject;
 import logisticspipes.network.IWriteListObject;
-import logisticspipes.request.resources.IResource;
-import logisticspipes.request.resources.ResourceNetwork;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
@@ -367,11 +365,6 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeResource(IResource res) {
-		ResourceNetwork.writeResource(this, res);
-	}
-
-	@Override
 	public void writeBytes(byte[] arr) {
 		localBuffer.writeBytes(arr);
 	}
@@ -615,10 +608,5 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		final long[] arr = new long[length];
 		IntStream.range(0, length).forEach(i -> arr[i] = localBuffer.readLong());
 		return arr;
-	}
-
-	@Override
-	public IResource readResource() {
-		return ResourceNetwork.readResource(this);
 	}
 }

@@ -10,6 +10,7 @@ import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.request.resources.IResource;
+import logisticspipes.request.resources.ResourceNetwork;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
@@ -31,14 +32,14 @@ public class OrdererWatchPacket extends IntegerCoordinatesPacket {
 	@Override
 	public void writeData(LPDataOutput output) {
 		super.writeData(output);
-		output.writeResource(stack);
+		output.writeSerializable(stack);
 		output.writeSerializable(orders);
 	}
 
 	@Override
 	public void readData(LPDataInput input) {
 		super.readData(input);
-		stack = input.readResource();
+		stack = ResourceNetwork.readResource(input);
 		orders = new LinkedLogisticsOrderList(input);
 	}
 

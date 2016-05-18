@@ -48,7 +48,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import io.netty.buffer.ByteBuf;
 
 import logisticspipes.network.IWriteListObject;
-import logisticspipes.request.resources.IResource;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
@@ -131,8 +130,6 @@ public interface LPDataOutput {
 	}
 
 	<T extends Enum<T>> void writeEnum(T obj);
-
-	void writeResource(IResource res);
 
 	void writeBytes(byte[] arr);
 

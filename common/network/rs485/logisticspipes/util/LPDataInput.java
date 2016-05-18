@@ -50,7 +50,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import io.netty.buffer.ByteBuf;
 
 import logisticspipes.network.IReadListObject;
-import logisticspipes.request.resources.IResource;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
@@ -129,8 +128,6 @@ public interface LPDataInput {
 	ByteBuf readByteBuf();
 
 	long[] readLongArray();
-
-	IResource readResource();
 
 	//LPSerializable readSerializable(Class<? extends LPSerializable> serializableClass);
 

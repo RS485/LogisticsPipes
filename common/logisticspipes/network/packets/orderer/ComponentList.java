@@ -17,6 +17,7 @@ import logisticspipes.gui.orderer.GuiRequestTable;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.request.resources.IResource;
 import logisticspipes.request.resources.IResource.ColorCode;
+import logisticspipes.request.resources.ResourceNetwork;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
@@ -60,15 +61,15 @@ public class ComponentList extends ModernPacket {
 
 	@Override
 	public void writeData(LPDataOutput output) {
-		output.writeCollection(used, LPDataOutput::writeResource);
-		output.writeCollection(missing, LPDataOutput::writeResource);
+		output.writeCollection(used);
+		output.writeCollection(missing);
 		// ToDo: ???
 		output.writeByte(0);
 	}
 
 	@Override
 	public void readData(LPDataInput input) {
-		used = input.readArrayList(LPDataInput::readResource);
-		missing = input.readArrayList(LPDataInput::readResource);
+		used = input.readArrayList(ResourceNetwork::readResource);
+		missing = input.readArrayList(ResourceNetwork::readResource);
 	}
 }

@@ -8,11 +8,12 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.util.LPDataOutput;
+import network.rs485.logisticspipes.util.LPFinalSerializable;
 
 /**
  * With Destination and amount
  */
-public interface IResource extends ILPCCTypeHolder {
+public interface IResource extends ILPCCTypeHolder, LPFinalSerializable {
 
 	ItemIdentifier getAsItem();
 
@@ -34,6 +35,11 @@ public interface IResource extends ILPCCTypeHolder {
 	String getDisplayText(ColorCode missing);
 
 	ItemIdentifierStack getDisplayItem();
+
+	@Override
+	default void write(LPDataOutput output) {
+		ResourceNetwork.writeResource(output, this);
+	}
 
 	/**
 	 * Settings only apply for the normal Item Implementation.

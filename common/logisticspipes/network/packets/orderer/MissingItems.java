@@ -17,6 +17,7 @@ import logisticspipes.gui.orderer.GuiRequestTable;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.request.resources.IResource;
 import logisticspipes.request.resources.IResource.ColorCode;
+import logisticspipes.request.resources.ResourceNetwork;
 import logisticspipes.utils.string.ChatColor;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
@@ -63,13 +64,13 @@ public class MissingItems extends ModernPacket {
 
 	@Override
 	public void writeData(LPDataOutput output) {
-		output.writeCollection(items, LPDataOutput::writeResource);
+		output.writeCollection(items);
 		output.writeBoolean(isFlag());
 	}
 
 	@Override
 	public void readData(LPDataInput input) {
-		items = input.readArrayList(LPDataInput::readResource);
+		items = input.readArrayList(ResourceNetwork::readResource);
 		setFlag(input.readBoolean());
 	}
 }

@@ -63,8 +63,6 @@ public class ComponentList extends ModernPacket {
 	public void writeData(LPDataOutput output) {
 		output.writeCollection(used);
 		output.writeCollection(missing);
-		// ToDo: ???
-		output.writeByte(0);
 	}
 
 	@Override

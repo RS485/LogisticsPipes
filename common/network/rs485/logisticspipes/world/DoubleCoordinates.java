@@ -73,6 +73,10 @@ public class DoubleCoordinates implements IPositionRotateble, ICoordinates, LPSe
 		setZCoord(zCoord);
 	}
 
+	public DoubleCoordinates(LPDataInput input) {
+		read(input);
+	}
+
 	public DoubleCoordinates(ICoordinates coords) {
 		this(coords.getXDouble(), coords.getYDouble(), coords.getZDouble());
 	}

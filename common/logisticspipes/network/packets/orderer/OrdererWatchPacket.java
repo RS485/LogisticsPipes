@@ -32,14 +32,14 @@ public class OrdererWatchPacket extends IntegerCoordinatesPacket {
 	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeResource(stack);
-		output.writeLinkedLogisticsOrderList(orders);
+		output.writeSerializable(orders);
 	}
 
 	@Override
 	public void readData(LPDataInput input) {
 		super.readData(input);
 		stack = input.readResource();
-		orders = input.readLinkedLogisticsOrderList();
+		orders = new LinkedLogisticsOrderList(input);
 	}
 
 	@Override

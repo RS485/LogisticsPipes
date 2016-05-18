@@ -33,7 +33,7 @@ public class MultiBlockCoordinatesPacket extends CoordinatesPacket {
 	@Override
 	public void writeData(LPDataOutput output) {
 		super.writeData(output);
-		output.writeCollection(targetPos, LPDataOutput::writeSerializable);
+		output.writeCollection(targetPos);
 		output.writeCollection(subTypes, LPDataOutput::writeEnum);
 	}
 

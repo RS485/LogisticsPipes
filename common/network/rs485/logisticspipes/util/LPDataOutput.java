@@ -49,7 +49,6 @@ import io.netty.buffer.ByteBuf;
 
 import logisticspipes.network.IWriteListObject;
 import logisticspipes.request.resources.IResource;
-import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
@@ -127,9 +126,11 @@ public interface LPDataOutput {
 
 	<T> void writeCollection(Collection<T> collection, IWriteListObject<T> handler);
 
-	<T extends Enum<T>> void writeEnum(T obj);
+	default <T extends LPFinalSerializable> void writeCollection(Collection<T> collection) {
+		writeCollection(collection, LPDataOutput::writeSerializable);
+	}
 
-	void writeLinkedLogisticsOrderList(LinkedLogisticsOrderList orderList);
+	<T extends Enum<T>> void writeEnum(T obj);
 
 	void writeResource(IResource res);
 

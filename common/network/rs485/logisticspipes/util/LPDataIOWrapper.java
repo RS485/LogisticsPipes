@@ -46,7 +46,6 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
 
@@ -67,9 +66,6 @@ import logisticspipes.network.IReadListObject;
 import logisticspipes.network.IWriteListObject;
 import logisticspipes.request.resources.IResource;
 import logisticspipes.request.resources.ResourceNetwork;
-import logisticspipes.routing.order.ClientSideOrderInfo;
-import logisticspipes.routing.order.IOrderInfoProvider;
-import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
@@ -349,12 +345,6 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeLinkedLogisticsOrderList(LinkedLogisticsOrderList orderList) {
-		writeCollection(orderList, LPDataOutput::writeSerializable);
-		writeCollection(orderList.getSubOrders(), LPDataOutput::writeLinkedLogisticsOrderList);
-	}
-
-	@Override
 	public void writeByteBuf(ByteBuf otherBuffer) {
 		if (otherBuffer == null) {
 			throw new NullPointerException("Other buffer may not be null");
@@ -603,25 +593,6 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	@Override
 	public <T extends Enum<T>> T readEnum(Class<T> clazz) {
 		return clazz.getEnumConstants()[localBuffer.readInt()];
-	}
-
-	@Override
-	public LinkedLogisticsOrderList readLinkedLogisticsOrderList() {
-		LinkedLogisticsOrderList list = new LinkedLogisticsOrderList();
-
-		List<IOrderInfoProvider> orderInfoProviders = readArrayList(ClientSideOrderInfo::new);
-		if (orderInfoProviders == null) {
-			throw new NullPointerException("Expected order info provider list");
-		}
-		list.addAll(orderInfoProviders);
-
-		List<LinkedLogisticsOrderList> orderLists = readArrayList(LPDataInput::readLinkedLogisticsOrderList);
-		if (orderLists == null) {
-			throw new NullPointerException("Expected logistics order list");
-		}
-		list.getSubOrders().addAll(orderLists);
-
-		return list;
 	}
 
 	@Override

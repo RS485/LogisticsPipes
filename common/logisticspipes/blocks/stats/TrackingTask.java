@@ -1,7 +1,5 @@
 package logisticspipes.blocks.stats;
 
-import java.io.IOException;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -59,13 +57,13 @@ public class TrackingTask {
 		item.makeNormalStack(1).writeToNBT(nbt);
 	}
 
-	public void writeToLPData(LPDataOutput output) throws IOException {
+	public void writeToLPData(LPDataOutput output) {
 		output.writeLongArray(amountRecorded);
 		output.writeInt(arrayPos);
 		output.writeItemIdentifier(item);
 	}
 
-	public void readFromLPData(LPDataInput input) throws IOException {
+	public void readFromLPData(LPDataInput input) {
 		amountRecorded = input.readLongArray();
 		arrayPos = input.readInt();
 		item = input.readItemIdentifier();

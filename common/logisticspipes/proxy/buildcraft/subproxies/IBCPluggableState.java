@@ -1,7 +1,5 @@
 package logisticspipes.proxy.buildcraft.subproxies;
 
-import java.io.IOException;
-
 import logisticspipes.interfaces.IClientState;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
@@ -9,10 +7,10 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 public interface IBCPluggableState extends IClientState {
 
 	@Override
-	void writeData(LPDataOutput output) throws IOException;
+	void writeData(LPDataOutput output);
 
 	@Override
-	void readData(LPDataInput input) throws IOException;
+	void readData(LPDataInput input);
 
 	boolean isDirty(boolean clean);
 }

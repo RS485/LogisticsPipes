@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.IOException;
 import java.util.Iterator;
 
 import net.minecraft.block.Block;
@@ -122,13 +121,13 @@ public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeInt(slot);
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		slot = input.readInt();
 	}

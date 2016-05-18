@@ -1,6 +1,5 @@
 package logisticspipes.pipes.tubes;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,64 +31,8 @@ import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 
 public class HSTubeGain extends CoreMultiBlockPipe {
 
-	public enum TubeGainOrientation implements ITubeOrientation {
-		NORTH(TubeGainRenderOrientation.NORTH, new DoubleCoordinates(0, 0, 0), ForgeDirection.NORTH),
-		SOUTH(TubeGainRenderOrientation.SOUTH, new DoubleCoordinates(0, 0, 0), ForgeDirection.SOUTH),
-		EAST(TubeGainRenderOrientation.EAST, new DoubleCoordinates(0, 0, 0), ForgeDirection.EAST),
-		WEST(TubeGainRenderOrientation.WEST, new DoubleCoordinates(0, 0, 0), ForgeDirection.WEST);
-
-		@Getter
-		TubeGainRenderOrientation renderOrientation;
-		@Getter
-		DoubleCoordinates offset;
-		@Getter
-		ForgeDirection dir;
-
-		TubeGainOrientation(TubeGainRenderOrientation render, DoubleCoordinates off, ForgeDirection dir) {
-			renderOrientation = render;
-			offset = off;
-			this.dir = dir;
-		}
-
-		@Override
-		public void rotatePositions(IPositionRotateble set) {
-			renderOrientation.rotateOrientation(set);
-		}
-
-		@Override
-		public void setOnPipe(CoreMultiBlockPipe pipe) {
-			((HSTubeGain) pipe).orientation = this;
-		}
-	}
-
-	public enum TubeGainRenderOrientation implements ITubeRenderOrientation {
-		NORTH(ForgeDirection.NORTH),
-		SOUTH(ForgeDirection.SOUTH),
-		WEST(ForgeDirection.WEST),
-		EAST(ForgeDirection.EAST);
-
-		@Getter
-		private ForgeDirection dir;
-
-		TubeGainRenderOrientation(ForgeDirection dir) {
-			this.dir = dir;
-		}
-
-		public void rotateOrientation(IPositionRotateble set) {
-			if (this == EAST) {
-				set.rotateRight();
-			} else if (this == WEST) {
-				set.rotateLeft();
-			} else if (this == SOUTH) {
-				set.rotateLeft();
-				set.rotateLeft();
-			}
-		}
-	}
-
 	@Getter
 	private TubeGainOrientation orientation;
-
 	private List<AxisAlignedBB> boxes = null;
 
 	public HSTubeGain(Item item) {
@@ -97,7 +40,7 @@ public class HSTubeGain extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		if (orientation == null) {
 			output.writeBoolean(false);
 		} else {
@@ -107,7 +50,7 @@ public class HSTubeGain extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		if (input.readBoolean()) {
 			orientation = input.readEnum(TubeGainOrientation.class);
 		}
@@ -413,5 +356,60 @@ public class HSTubeGain extends CoreMultiBlockPipe {
 	@Override
 	public boolean isHSTube() {
 		return true;
+	}
+
+	public enum TubeGainOrientation implements ITubeOrientation {
+		NORTH(TubeGainRenderOrientation.NORTH, new DoubleCoordinates(0, 0, 0), ForgeDirection.NORTH),
+		SOUTH(TubeGainRenderOrientation.SOUTH, new DoubleCoordinates(0, 0, 0), ForgeDirection.SOUTH),
+		EAST(TubeGainRenderOrientation.EAST, new DoubleCoordinates(0, 0, 0), ForgeDirection.EAST),
+		WEST(TubeGainRenderOrientation.WEST, new DoubleCoordinates(0, 0, 0), ForgeDirection.WEST);
+
+		@Getter
+		TubeGainRenderOrientation renderOrientation;
+		@Getter
+		DoubleCoordinates offset;
+		@Getter
+		ForgeDirection dir;
+
+		TubeGainOrientation(TubeGainRenderOrientation render, DoubleCoordinates off, ForgeDirection dir) {
+			renderOrientation = render;
+			offset = off;
+			this.dir = dir;
+		}
+
+		@Override
+		public void rotatePositions(IPositionRotateble set) {
+			renderOrientation.rotateOrientation(set);
+		}
+
+		@Override
+		public void setOnPipe(CoreMultiBlockPipe pipe) {
+			((HSTubeGain) pipe).orientation = this;
+		}
+	}
+
+	public enum TubeGainRenderOrientation implements ITubeRenderOrientation {
+		NORTH(ForgeDirection.NORTH),
+		SOUTH(ForgeDirection.SOUTH),
+		WEST(ForgeDirection.WEST),
+		EAST(ForgeDirection.EAST);
+
+		@Getter
+		private ForgeDirection dir;
+
+		TubeGainRenderOrientation(ForgeDirection dir) {
+			this.dir = dir;
+		}
+
+		public void rotateOrientation(IPositionRotateble set) {
+			if (this == EAST) {
+				set.rotateRight();
+			} else if (this == WEST) {
+				set.rotateLeft();
+			} else if (this == SOUTH) {
+				set.rotateLeft();
+				set.rotateLeft();
+			}
+		}
 	}
 }

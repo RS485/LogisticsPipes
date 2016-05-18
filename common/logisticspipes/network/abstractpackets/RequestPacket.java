@@ -1,7 +1,5 @@
 package logisticspipes.network.abstractpackets;
 
-import java.io.IOException;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,14 +28,14 @@ public abstract class RequestPacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeItemIdentifierStack(stack);
 		output.writeInt(dimension);
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		stack = input.readItemIdentifierStack();
 		dimension = input.readInt();

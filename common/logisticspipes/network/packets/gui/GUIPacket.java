@@ -1,7 +1,5 @@
 package logisticspipes.network.packets.gui;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
@@ -41,7 +39,7 @@ public class GUIPacket extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		guiID = input.readInt();
 		windowID = input.readInt();
 		guiData = input.readByteArray();
@@ -54,7 +52,7 @@ public class GUIPacket extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeInt(guiID);
 		output.writeInt(windowID);
 		output.writeByteArray(guiData);

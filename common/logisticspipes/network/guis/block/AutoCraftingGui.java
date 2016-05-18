@@ -1,7 +1,5 @@
 package logisticspipes.network.guis.block;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
@@ -68,7 +66,7 @@ public class AutoCraftingGui extends CoordinatesGuiProvider {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeItemIdentifier(targetType);
 		output.writeBoolean(isFuzzy);
@@ -83,7 +81,7 @@ public class AutoCraftingGui extends CoordinatesGuiProvider {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		targetType = input.readItemIdentifier();
 		if (input.readBoolean()) {

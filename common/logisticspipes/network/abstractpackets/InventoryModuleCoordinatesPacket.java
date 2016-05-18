@@ -1,6 +1,5 @@
 package logisticspipes.network.abstractpackets;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -38,7 +37,7 @@ public abstract class InventoryModuleCoordinatesPacket extends ModuleCoordinates
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 
 		if (inventory != null) {
@@ -62,7 +61,7 @@ public abstract class InventoryModuleCoordinatesPacket extends ModuleCoordinates
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 
 		byte marker = input.readByte();

@@ -55,10 +55,6 @@ public class PlayerConfig {
 		playerIdent = ident;
 	}
 
-	public void setUseNewRenderer(boolean flag) {
-		useNewRenderer = flag;
-	}
-
 	public void setUseFallbackRenderer(boolean flag) {
 		useFallbackRenderer = flag;
 	}
@@ -75,14 +71,14 @@ public class PlayerConfig {
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(PlayerConfigToServerPacket.class).setConfig(this));
 	}
 
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeBoolean(useNewRenderer);
 		output.writeBoolean(useFallbackRenderer);
 		output.writeInt(renderPipeDistance);
 		output.writeInt(renderPipeContentDistance);
 	}
 
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		useNewRenderer = input.readBoolean();
 		useFallbackRenderer = input.readBoolean();
 		renderPipeDistance = input.readInt();
@@ -217,5 +213,9 @@ public class PlayerConfig {
 
 	public boolean isUseNewRenderer() {
 		return useNewRenderer && SimpleServiceLocator.cclProxy.isActivated();
+	}
+
+	public void setUseNewRenderer(boolean flag) {
+		useNewRenderer = flag;
 	}
 }

@@ -1,7 +1,5 @@
 package logisticspipes.network.packets.block;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 
@@ -18,13 +16,13 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class CraftingCycleRecipe extends CoordinatesPacket {
 
-	public CraftingCycleRecipe(int id) {
-		super(id);
-	}
-
 	@Getter
 	@Setter
 	private boolean down;
+
+	public CraftingCycleRecipe(int id) {
+		super(id);
+	}
 
 	@Override
 	public void processPacket(EntityPlayer player) {
@@ -42,13 +40,13 @@ public class CraftingCycleRecipe extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeBoolean(down);
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		down = input.readBoolean();
 	}

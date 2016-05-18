@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.IOException;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -127,7 +126,7 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeInt(inventorySlot);
 		output.writeInt(slot);
@@ -137,7 +136,7 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		inventorySlot = input.readInt();
 		slot = input.readInt();

@@ -1,7 +1,5 @@
 package logisticspipes.request.resources;
 
-import java.io.IOException;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -18,14 +16,6 @@ public interface IResource extends ILPCCTypeHolder {
 
 	ItemIdentifier getAsItem();
 
-	/**
-	 * Settings only apply for the normal Item Implementation.
-	 */
-	enum MatchSettings {
-		NORMAL,
-		WITHOUT_NBT
-	}
-
 	int getRequestedAmount();
 
 	IRouter getRouter();
@@ -34,7 +24,7 @@ public interface IResource extends ILPCCTypeHolder {
 
 	IResource clone(int multiplier);
 
-	void writeData(LPDataOutput output) throws IOException;
+	void writeData(LPDataOutput output);
 
 	boolean mergeForDisplay(IResource resource, int withAmount); //Amount overrides existing amount inside the resource
 
@@ -44,6 +34,14 @@ public interface IResource extends ILPCCTypeHolder {
 	String getDisplayText(ColorCode missing);
 
 	ItemIdentifierStack getDisplayItem();
+
+	/**
+	 * Settings only apply for the normal Item Implementation.
+	 */
+	enum MatchSettings {
+		NORMAL,
+		WITHOUT_NBT
+	}
 
 	enum ColorCode {
 		NONE,

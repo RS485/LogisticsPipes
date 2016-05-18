@@ -1,6 +1,5 @@
 package logisticspipes.request.resources;
 
-import java.io.IOException;
 import java.util.BitSet;
 
 import net.minecraft.item.ItemStack;
@@ -17,9 +16,8 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class DictResource implements IResource {
 
-	public ItemIdentifierStack stack;
 	private final IRequestItems requester;
-
+	public ItemIdentifierStack stack;
 	//match all items with same oredict name
 	public boolean use_od = false;
 	//match all items with same id
@@ -28,13 +26,14 @@ public class DictResource implements IResource {
 	public boolean ignore_nbt = false;
 	//match all items with same oredict prefix
 	public boolean use_category = false;
+	private Object ccObject;
 
 	public DictResource(ItemIdentifierStack stack, IRequestItems requester) {
 		this.stack = stack;
 		this.requester = requester;
 	}
 
-	public DictResource(LPDataInput input) throws IOException {
+	public DictResource(LPDataInput input) {
 		stack = input.readItemIdentifierStack();
 		requester = null;
 		BitSet bits = input.readBitSet();
@@ -45,7 +44,7 @@ public class DictResource implements IResource {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeItemIdentifierStack(stack);
 		BitSet bits = new BitSet();
 		bits.set(0, use_od);
@@ -161,16 +160,14 @@ public class DictResource implements IResource {
 		return clone;
 	}
 
-	private Object ccObject;
+	@Override
+	public Object getCCType() {
+		return ccObject;
+	}
 
 	@Override
 	public void setCCType(Object type) {
 		ccObject = type;
-	}
-
-	@Override
-	public Object getCCType() {
-		return ccObject;
 	}
 
 	@Override

@@ -1,7 +1,5 @@
 package logisticspipes.network.packets;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import logisticspipes.LPConstants;
@@ -18,7 +16,7 @@ public class ActivateNBTDebug extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {}
+	public void readData(LPDataInput input) {}
 
 	@Override
 	public void processPacket(EntityPlayer player) {
@@ -36,7 +34,7 @@ public class ActivateNBTDebug extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {}
+	public void writeData(LPDataOutput output) {}
 
 	@Override
 	public ModernPacket template() {

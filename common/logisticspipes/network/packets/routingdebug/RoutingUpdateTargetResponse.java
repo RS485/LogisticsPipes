@@ -1,13 +1,5 @@
 package logisticspipes.network.packets.routingdebug;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
-
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -31,40 +23,21 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class RoutingUpdateTargetResponse extends ModernPacket {
 
+	@Getter
+	@Setter
+	private TargetMode mode;
+	@Getter
+	@Setter
+	private int[] additions = new int[0];
+
 	public RoutingUpdateTargetResponse(int id) {
 		super(id);
 	}
 
-	public enum TargetMode {
-		Block,
-		Entity,
-		None
-	}
-
-	@Getter
-	@Setter
-	private TargetMode mode;
-
-	@Getter
-	@Setter
-	private Object[] additions = new Object[0];
-
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		mode = TargetMode.values()[input.readByte()];
-		int size = input.readInt();
-		additions = new Object[size];
-		for (int i = 0; i < size; i++) {
-			byte[] bytes = input.readByteArray();
-			ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-			ObjectInput in = new ObjectInputStream(bis);
-			try {
-				Object o = in.readObject();
-				additions[i] = o;
-			} catch (ClassNotFoundException e) {
-				throw new UnsupportedOperationException(e);
-			}
-		}
+		additions = input.readIntArray();
 	}
 
 	@Override
@@ -72,9 +45,9 @@ public class RoutingUpdateTargetResponse extends ModernPacket {
 		if (mode == TargetMode.None) {
 			player.addChatMessage(new ChatComponentText(ChatColor.RED + "No Target Found"));
 		} else if (mode == TargetMode.Block) {
-			int x = (Integer) additions[0];
-			int y = (Integer) additions[1];
-			int z = (Integer) additions[2];
+			int x = additions[0];
+			int y = additions[1];
+			int z = additions[2];
 			player.addChatMessage(new ChatComponentText("Checking Block at: x:" + x + " y:" + y + " z:" + z));
 			Block id = player.worldObj.getBlock(x, y, z);
 			player.addChatMessage(new ChatComponentText("Found Block with Id: " + Block.getIdFromBlock(id)));
@@ -103,15 +76,9 @@ public class RoutingUpdateTargetResponse extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeByte(mode.ordinal());
-		output.writeInt(additions.length);
-		for (Object addition : additions) {
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			ObjectOutput out = new ObjectOutputStream(bos);
-			out.writeObject(addition);
-			output.writeByteArray(bos.toByteArray());
-		}
+		output.writeIntArray(additions);
 	}
 
 	@Override
@@ -122,5 +89,11 @@ public class RoutingUpdateTargetResponse extends ModernPacket {
 	@Override
 	public boolean isCompressable() {
 		return true;
+	}
+
+	public enum TargetMode {
+		Block,
+		Entity,
+		None
 	}
 }

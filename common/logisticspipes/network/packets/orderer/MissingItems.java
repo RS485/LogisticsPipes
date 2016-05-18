@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.orderer;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -63,13 +62,13 @@ public class MissingItems extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeCollection(items, LPDataOutput::writeResource);
 		output.writeBoolean(isFlag());
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		items = input.readArrayList(LPDataInput::readResource);
 		setFlag(input.readBoolean());
 	}

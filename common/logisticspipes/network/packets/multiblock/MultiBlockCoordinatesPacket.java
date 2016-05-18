@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.multiblock;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -27,22 +26,22 @@ public class MultiBlockCoordinatesPacket extends CoordinatesPacket {
 	@Setter
 	private List<CoreMultiBlockPipe.SubBlockTypeForShare> subTypes;
 
+	public MultiBlockCoordinatesPacket(int id) {
+		super(id);
+	}
+
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeCollection(targetPos, LPDataOutput::writeLPPosition);
 		output.writeCollection(subTypes, LPDataOutput::writeEnum);
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		targetPos = input.readSet(LPDataInput::readLPPosition);
 		subTypes = input.readArrayList(data1 -> data1.readEnum(CoreMultiBlockPipe.SubBlockTypeForShare.class));
-	}
-
-	public MultiBlockCoordinatesPacket(int id) {
-		super(id);
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.block;
 
-import java.io.IOException;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -33,12 +32,12 @@ public class RunningCraftingTasks extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeCollection(identList, LPDataOutput::writeItemIdentifierStack);
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		identList = input.readArrayList(LPDataInput::readItemIdentifierStack);
 	}
 

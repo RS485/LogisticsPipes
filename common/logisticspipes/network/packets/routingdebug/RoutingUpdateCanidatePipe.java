@@ -1,7 +1,5 @@
 package logisticspipes.network.packets.routingdebug;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
@@ -40,12 +38,12 @@ public class RoutingUpdateCanidatePipe extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		exitRoute = input.readExitRoute(MainProxy.getClientMainWorld());
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeExitRoute(exitRoute);
 	}
 }

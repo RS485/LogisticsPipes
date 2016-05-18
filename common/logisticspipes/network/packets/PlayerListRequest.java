@@ -1,6 +1,5 @@
 package logisticspipes.network.packets;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -35,8 +34,8 @@ public class PlayerListRequest extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {}
+	public void readData(LPDataInput input) {}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {}
+	public void writeData(LPDataOutput output) {}
 }

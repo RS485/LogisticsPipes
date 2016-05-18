@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -21,14 +20,14 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class ParticleFX extends CoordinatesPacket {
 
-	public ParticleFX(int id) {
-		super(id);
-	}
-
 	@Getter
 	@Setter
 	@NonNull
 	private Collection<ParticleCount> particles;
+
+	public ParticleFX(int id) {
+		super(id);
+	}
 
 	@Override
 	public ModernPacket template() {
@@ -36,7 +35,7 @@ public class ParticleFX extends CoordinatesPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		int nparticles = input.readInt();
 		particles = new ArrayList<>(nparticles);
@@ -48,7 +47,7 @@ public class ParticleFX extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeInt(particles.size());
 		for (ParticleCount pc : particles) {

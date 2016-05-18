@@ -20,7 +20,6 @@
 
 package network.rs485.logisticspipes.util;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.EnumSet;
@@ -46,97 +45,97 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public interface LPDataInput {
 
-	byte[] readByteArray() throws IOException;
+	byte[] readByteArray();
 
 	/**
 	 * @see java.io.DataInput#readByte()
 	 */
-	byte readByte() throws IOException;
+	byte readByte();
 
 	/**
 	 * @see java.io.DataInput#readShort()
 	 */
-	short readShort() throws IOException;
+	short readShort();
 
 	/**
 	 * @see java.io.DataInput#readInt()
 	 */
-	int readInt() throws IOException;
+	int readInt();
 
 	/**
 	 * @see java.io.DataInput#readLong()
 	 */
-	long readLong() throws IOException;
+	long readLong();
 
 	/**
 	 * @see java.io.DataInput#readFloat()
 	 */
-	float readFloat() throws IOException;
+	float readFloat();
 
 	/**
 	 * @see java.io.DataInput#readDouble()
 	 */
-	double readDouble() throws IOException;
+	double readDouble();
 
 	/**
 	 * @see java.io.DataInput#readBoolean()
 	 */
-	boolean readBoolean() throws IOException;
+	boolean readBoolean();
 
 	/**
 	 * @see java.io.DataInput#readUTF()
 	 */
-	String readUTF() throws IOException;
+	String readUTF();
 
-	ForgeDirection readForgeDirection() throws IOException;
+	ForgeDirection readForgeDirection();
 
-	ExitRoute readExitRoute(World world) throws IOException;
+	ExitRoute readExitRoute(World world);
 
 	/**
 	 * @return ServerRouter or ClientRouter depending where we are
 	 */
-	IRouter readIRouter(World world) throws IOException;
+	IRouter readIRouter(World world);
 
-	DoubleCoordinates readLPPosition() throws IOException;
+	DoubleCoordinates readLPPosition();
 
-	<T extends Enum<T>> EnumSet<T> readEnumSet(Class<T> clazz) throws IOException;
+	<T extends Enum<T>> EnumSet<T> readEnumSet(Class<T> clazz);
 
-	BitSet readBitSet() throws IOException;
+	BitSet readBitSet();
 
-	NBTTagCompound readNBTTagCompound() throws IOException;
+	NBTTagCompound readNBTTagCompound();
 
-	boolean[] readBooleanArray() throws IOException;
+	boolean[] readBooleanArray();
 
-	int[] readIntArray() throws IOException;
+	int[] readIntArray();
 
-	byte[] readBytes(int length) throws IOException;
+	byte[] readBytes(int length);
 
-	ItemIdentifier readItemIdentifier() throws IOException;
+	ItemIdentifier readItemIdentifier();
 
-	ItemIdentifierStack readItemIdentifierStack() throws IOException;
+	ItemIdentifierStack readItemIdentifierStack();
 
-	ItemStack readItemStack() throws IOException;
+	ItemStack readItemStack();
 
-	<T> ArrayList<T> readArrayList(IReadListObject<T> reader) throws IOException;
+	<T> ArrayList<T> readArrayList(IReadListObject<T> reader);
 
-	<T> LinkedList<T> readLinkedList(IReadListObject<T> reader) throws IOException;
+	<T> LinkedList<T> readLinkedList(IReadListObject<T> reader);
 
-	<T> Set<T> readSet(IReadListObject<T> handler) throws IOException;
+	<T> Set<T> readSet(IReadListObject<T> handler);
 
-	IOrderInfoProvider readOrderInfo() throws IOException;
+	IOrderInfoProvider readOrderInfo();
 
-	<T extends Enum<T>> T readEnum(Class<T> clazz) throws IOException;
+	<T extends Enum<T>> T readEnum(Class<T> clazz);
 
-	LinkedLogisticsOrderList readLinkedLogisticsOrderList() throws IOException;
+	LinkedLogisticsOrderList readLinkedLogisticsOrderList();
 
-	ByteBuf readByteBuf() throws IOException;
+	ByteBuf readByteBuf();
 
-	long[] readLongArray() throws IOException;
+	long[] readLongArray();
 
-	IResource readResource() throws IOException;
+	IResource readResource();
 
 	interface LPDataInputConsumer {
 
-		void accept(LPDataInput dataInput) throws IOException;
+		void accept(LPDataInput dataInput);
 	}
 }

@@ -1,6 +1,5 @@
 package logisticspipes.pipes.tubes;
 
-import java.io.IOException;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -35,45 +34,6 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 
 public class HSTubeSpeedup extends CoreMultiBlockPipe {
-
-	@AllArgsConstructor
-	public enum SpeedupDirection implements ITubeRenderOrientation, ITubeOrientation {
-		//@formatter:off
-		NORTH(ForgeDirection.NORTH),
-		SOUTH(ForgeDirection.SOUTH),
-		EAST(ForgeDirection.EAST),
-		WEST(ForgeDirection.WEST);
-		//@formatter:on
-		@Getter
-		ForgeDirection dir1;
-
-		@Override
-		public void rotatePositions(IPositionRotateble set) {
-			if (this == SOUTH) {
-				set.rotateLeft();
-				set.rotateLeft();
-			} else if (this == EAST) {
-				set.rotateRight();
-			} else if (this == WEST) {
-				set.rotateLeft();
-			}
-		}
-
-		@Override
-		public ITubeRenderOrientation getRenderOrientation() {
-			return this;
-		}
-
-		@Override
-		public DoubleCoordinates getOffset() {
-			return new DoubleCoordinates(0, 0, 0);
-		}
-
-		@Override
-		public void setOnPipe(CoreMultiBlockPipe pipe) {
-			((HSTubeSpeedup) pipe).orientation = this;
-		}
-	}
 
 	@Getter
 	private SpeedupDirection orientation;
@@ -115,12 +75,12 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeEnum(orientation);
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		orientation = input.readEnum(SpeedupDirection.class);
 	}
 
@@ -308,5 +268,44 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 	@Override
 	public boolean isHSTube() {
 		return true;
+	}
+
+	@AllArgsConstructor
+	public enum SpeedupDirection implements ITubeRenderOrientation, ITubeOrientation {
+		//@formatter:off
+		NORTH(ForgeDirection.NORTH),
+		SOUTH(ForgeDirection.SOUTH),
+		EAST(ForgeDirection.EAST),
+		WEST(ForgeDirection.WEST);
+		//@formatter:on
+		@Getter
+		ForgeDirection dir1;
+
+		@Override
+		public void rotatePositions(IPositionRotateble set) {
+			if (this == SOUTH) {
+				set.rotateLeft();
+				set.rotateLeft();
+			} else if (this == EAST) {
+				set.rotateRight();
+			} else if (this == WEST) {
+				set.rotateLeft();
+			}
+		}
+
+		@Override
+		public ITubeRenderOrientation getRenderOrientation() {
+			return this;
+		}
+
+		@Override
+		public DoubleCoordinates getOffset() {
+			return new DoubleCoordinates(0, 0, 0);
+		}
+
+		@Override
+		public void setOnPipe(CoreMultiBlockPipe pipe) {
+			((HSTubeSpeedup) pipe).orientation = this;
+		}
 	}
 }

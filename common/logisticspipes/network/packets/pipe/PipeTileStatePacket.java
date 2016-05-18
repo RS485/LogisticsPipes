@@ -1,7 +1,5 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
@@ -51,15 +49,11 @@ public class PipeTileStatePacket extends CoordinatesPacket {
 		if (pipe == null) {
 			return;
 		}
-		try {
-			LPDataIOWrapper.provideData(bytesRenderState, pipe.renderState::readData);
-			LPDataIOWrapper.provideData(bytesCoreState, pipe.coreState::readData);
-			LPDataIOWrapper.provideData(bytesBCPluggableState, pipe.bcPlugableState::readData);
-			pipe.afterStateUpdated();
-			LPDataIOWrapper.provideData(bytesPipe, pipe.pipe::readData);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		LPDataIOWrapper.provideData(bytesRenderState, pipe.renderState::readData);
+		LPDataIOWrapper.provideData(bytesCoreState, pipe.coreState::readData);
+		LPDataIOWrapper.provideData(bytesBCPluggableState, pipe.bcPlugableState::readData);
+		pipe.afterStateUpdated();
+		LPDataIOWrapper.provideData(bytesPipe, pipe.pipe::readData);
 	}
 
 	@Override
@@ -68,7 +62,7 @@ public class PipeTileStatePacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 
 		IClientState[] clientStates = new IClientState[] { renderState, coreState, bcPluggableState, pipe };
@@ -80,7 +74,7 @@ public class PipeTileStatePacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 
 		bytesRenderState = input.readByteArray();

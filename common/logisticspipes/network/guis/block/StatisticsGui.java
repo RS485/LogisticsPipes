@@ -1,6 +1,5 @@
 package logisticspipes.network.guis.block;
 
-import java.io.IOException;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -58,14 +57,14 @@ public class StatisticsGui extends CoordinatesGuiProvider {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeCollection(trackingList, (output1, object) -> object.writeToLPData(output1));
 
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		trackingList = input.readArrayList(data1 -> {
 			TrackingTask object = new TrackingTask();

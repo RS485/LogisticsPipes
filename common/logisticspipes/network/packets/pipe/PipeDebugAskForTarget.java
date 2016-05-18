@@ -1,7 +1,5 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
@@ -31,7 +29,7 @@ public class PipeDebugAskForTarget extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		isServer = input.readBoolean();
 	}
 
@@ -56,7 +54,7 @@ public class PipeDebugAskForTarget extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeBoolean(isServer);
 	}
 

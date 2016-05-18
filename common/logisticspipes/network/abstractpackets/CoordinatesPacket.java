@@ -1,7 +1,5 @@
 package logisticspipes.network.abstractpackets;
 
-import java.io.IOException;
-
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
@@ -18,16 +16,6 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 @ToString
 public abstract class CoordinatesPacket extends ModernPacket {
 
-	public enum LTGPCompletionCheck {
-		NONE,
-		PIPE,
-		TRANSPORT
-	}
-
-	public CoordinatesPacket(int id) {
-		super(id);
-	}
-
 	@Getter
 	@Setter
 	private int posX;
@@ -38,8 +26,12 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	@Setter
 	private int posZ;
 
+	public CoordinatesPacket(int id) {
+		super(id);
+	}
+
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 
 		output.writeInt(posX);
 		output.writeInt(posY);
@@ -47,7 +39,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 
 		posX = input.readInt();
 		posY = input.readInt();
@@ -172,5 +164,11 @@ public abstract class CoordinatesPacket extends ModernPacket {
 
 	protected void targetNotFound(String message) {
 		throw new TargetNotFoundException(message, this);
+	}
+
+	public enum LTGPCompletionCheck {
+		NONE,
+		PIPE,
+		TRANSPORT
 	}
 }

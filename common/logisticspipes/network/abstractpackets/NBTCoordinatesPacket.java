@@ -1,7 +1,5 @@
 package logisticspipes.network.abstractpackets;
 
-import java.io.IOException;
-
 import net.minecraft.nbt.NBTTagCompound;
 
 import lombok.Getter;
@@ -21,13 +19,13 @@ public abstract class NBTCoordinatesPacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeNBTTagCompound(tag);
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		tag = input.readNBTTagCompound();
 	}

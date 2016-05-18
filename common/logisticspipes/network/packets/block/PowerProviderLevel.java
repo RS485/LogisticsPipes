@@ -1,7 +1,5 @@
 package logisticspipes.network.packets.block;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import logisticspipes.blocks.powertile.LogisticsPowerProviderTileEntity;
@@ -28,13 +26,13 @@ public class PowerProviderLevel extends CoordinatesPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		setDouble(input.readDouble());
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeDouble(getDouble());
 	}

@@ -1,6 +1,5 @@
 package logisticspipes.network.packets;
 
-import java.io.IOException;
 import java.util.EnumSet;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,7 +24,7 @@ public class CraftingPermissionPacket extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		enumSet = EnumSet.noneOf(CraftingDependency.class);
 		for (CraftingDependency type : CraftingDependency.values()) {
 			if (input.readBoolean()) {
@@ -40,7 +39,7 @@ public class CraftingPermissionPacket extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		for (CraftingDependency type : CraftingDependency.values()) {
 			output.writeBoolean(enumSet.contains(type));
 		}

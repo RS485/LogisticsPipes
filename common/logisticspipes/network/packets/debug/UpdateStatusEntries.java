@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.debug;
 
-import java.io.IOException;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -31,12 +30,12 @@ public class UpdateStatusEntries extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		windowID = input.readInt();
 		status = input.readArrayList(new IReadListObject<StatusEntry>() {
 
 			@Override
-			public StatusEntry readObject(LPDataInput input) throws IOException {
+			public StatusEntry readObject(LPDataInput input) {
 				StatusEntry status = new StatusEntry();
 				status.name = input.readUTF();
 				if (input.readBoolean()) {
@@ -53,12 +52,12 @@ public class UpdateStatusEntries extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeInt(windowID);
 		output.writeCollection(status, new IWriteListObject<StatusEntry>() {
 
 			@Override
-			public void writeObject(LPDataOutput output, StatusEntry entry) throws IOException {
+			public void writeObject(LPDataOutput output, StatusEntry entry) {
 				output.writeUTF(entry.name);
 				output.writeBoolean(entry.subEntry != null);
 				if (entry.subEntry != null) {

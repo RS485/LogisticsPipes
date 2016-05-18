@@ -36,6 +36,8 @@ public class NewGuiHandler {
 	public static List<GuiProvider> guilist;
 	public static Map<Class<? extends GuiProvider>, GuiProvider> guimap;
 
+	private NewGuiHandler() { }
+
 	@SuppressWarnings("unchecked")
 	// Suppressed because this cast should never fail.
 	public static <T extends GuiProvider> T getGui(Class<T> clazz) {
@@ -64,7 +66,6 @@ public class NewGuiHandler {
 		}
 	}
 
-	@SneakyThrows(IOException.class)
 	public static void openGui(GuiProvider guiProvider, EntityPlayer oPlayer) {
 		if (!(oPlayer instanceof EntityPlayerMP)) {
 			throw new UnsupportedOperationException("Gui can only be opened on the server side");
@@ -96,7 +97,6 @@ public class NewGuiHandler {
 		player.openContainer.addCraftingToCrafters(player);
 	}
 
-	@SneakyThrows(IOException.class)
 	@SideOnly(Side.CLIENT)
 	public static void openGui(GUIPacket packet, EntityPlayer player) {
 		int guiID = packet.getGuiID();

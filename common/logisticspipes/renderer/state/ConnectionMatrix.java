@@ -1,7 +1,5 @@
 package logisticspipes.renderer.state;
 
-import java.io.IOException;
-
 import net.minecraftforge.common.util.ForgeDirection;
 
 import network.rs485.logisticspipes.util.LPDataInput;
@@ -74,13 +72,13 @@ public class ConnectionMatrix {
 		dirty = false;
 	}
 
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeByte(mask);
 		output.writeByte(isBCPipeMask);
 		output.writeByte(isTDPipeMask);
 	}
 
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		byte newMask = input.readByte();
 
 		if (newMask != mask) {

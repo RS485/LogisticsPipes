@@ -1,6 +1,5 @@
 package logisticspipes.network.abstractpackets;
 
-import java.io.IOException;
 import java.util.List;
 
 import lombok.AccessLevel;
@@ -30,13 +29,13 @@ public abstract class ListSyncPacket<E> extends CoordinatesPacket implements IWr
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeCollection(list, this);
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		list = input.readArrayList(this);
 	}

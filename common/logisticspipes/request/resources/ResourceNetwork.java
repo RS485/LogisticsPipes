@@ -1,26 +1,24 @@
 package logisticspipes.request.resources;
 
-import java.io.IOException;
-
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
 public enum ResourceNetwork {
 	DictResource(DictResource.class) {
 		@Override
-		protected IResource readData(LPDataInput input) throws IOException {
+		protected IResource readData(LPDataInput input) {
 			return new DictResource(input);
 		}
 	},
 	ItemResource(ItemResource.class) {
 		@Override
-		protected IResource readData(LPDataInput input) throws IOException {
+		protected IResource readData(LPDataInput input) {
 			return new ItemResource(input);
 		}
 	},
 	FluidResource(FluidResource.class) {
 		@Override
-		protected IResource readData(LPDataInput input) throws IOException {
+		protected IResource readData(LPDataInput input) {
 			return new FluidResource(input);
 		}
 	};
@@ -31,7 +29,7 @@ public enum ResourceNetwork {
 		this.clazz = clazz;
 	}
 
-	public static void writeResource(LPDataOutput output, IResource resource) throws IOException {
+	public static void writeResource(LPDataOutput output, IResource resource) {
 		if (resource == null) {
 			output.writeInt(-1);
 			return;
@@ -47,7 +45,7 @@ public enum ResourceNetwork {
 		throw new UnsupportedOperationException(resource.getClass().toString());
 	}
 
-	public static IResource readResource(LPDataInput input) throws IOException {
+	public static IResource readResource(LPDataInput input) {
 		int id = input.readInt();
 		if (id == -1) {
 			return null;
@@ -55,5 +53,5 @@ public enum ResourceNetwork {
 		return ResourceNetwork.values()[id].readData(input);
 	}
 
-	protected abstract IResource readData(LPDataInput input) throws IOException;
+	protected abstract IResource readData(LPDataInput input);
 }

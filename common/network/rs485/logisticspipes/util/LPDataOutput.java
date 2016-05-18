@@ -20,7 +20,6 @@
 
 package network.rs485.logisticspipes.util;
 
-import java.io.IOException;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -46,93 +45,93 @@ public interface LPDataOutput {
 	/**
 	 * @see java.io.DataOutput#writeByte(int)
 	 */
-	void writeByte(int b) throws IOException;
+	void writeByte(int b);
 
-	void writeByte(byte b) throws IOException;
+	void writeByte(byte b);
 
 	/**
 	 * @see java.io.DataOutput#writeShort(int)
 	 */
-	void writeShort(int s) throws IOException;
+	void writeShort(int s);
 
-	void writeShort(short s) throws IOException;
+	void writeShort(short s);
 
 	/**
 	 * @see java.io.DataOutput#writeInt(int)
 	 */
-	void writeInt(int i) throws IOException;
+	void writeInt(int i);
 
 	/**
 	 * @see java.io.DataOutput#writeLong(long)
 	 */
-	void writeLong(long l) throws IOException;
+	void writeLong(long l);
 
 	/**
 	 * @see java.io.DataOutput#writeFloat(float)
 	 */
-	void writeFloat(float f) throws IOException;
+	void writeFloat(float f);
 
 	/**
 	 * @see java.io.DataOutput#writeDouble(double)
 	 */
-	void writeDouble(double d) throws IOException;
+	void writeDouble(double d);
 
 	/**
 	 * @see java.io.DataOutput#writeBoolean(boolean)
 	 */
-	void writeBoolean(boolean b) throws IOException;
+	void writeBoolean(boolean b);
 
 	/**
 	 * Uses UTF-8 and not UTF-16.
 	 *
 	 * @see java.io.DataOutput#writeUTF(String)
 	 */
-	void writeUTF(String s) throws IOException;
+	void writeUTF(String s);
 
-	void writeByteArray(byte[] arr) throws IOException;
+	void writeByteArray(byte[] arr);
 
-	void writeByteBuf(ByteBuf buffer) throws IOException;
+	void writeByteBuf(ByteBuf buffer);
 
-	void writeIntArray(int[] arr) throws IOException;
+	void writeIntArray(int[] arr);
 
-	void writeLongArray(long[] arr) throws IOException;
+	void writeLongArray(long[] arr);
 
-	void writeBooleanArray(boolean[] arr) throws IOException;
+	void writeBooleanArray(boolean[] arr);
 
-	void writeForgeDirection(ForgeDirection direction) throws IOException;
+	void writeForgeDirection(ForgeDirection direction);
 
-	void writeExitRoute(ExitRoute route) throws IOException;
+	void writeExitRoute(ExitRoute route);
 
-	void writeIRouter(IRouter router) throws IOException;
+	void writeIRouter(IRouter router);
 
-	void writeLPPosition(DoubleCoordinates pos) throws IOException;
+	void writeLPPosition(DoubleCoordinates pos);
 
-	<T extends Enum<T>> void writeEnumSet(EnumSet<T> types, Class<T> clazz) throws IOException;
+	<T extends Enum<T>> void writeEnumSet(EnumSet<T> types, Class<T> clazz);
 
-	void writeBitSet(BitSet bits) throws IOException;
+	void writeBitSet(BitSet bits);
 
-	void writeNBTTagCompound(NBTTagCompound tag) throws IOException;
+	void writeNBTTagCompound(NBTTagCompound tag);
 
-	void writeItemStack(ItemStack itemstack) throws IOException;
+	void writeItemStack(ItemStack itemstack);
 
-	void writeItemIdentifier(ItemIdentifier item) throws IOException;
+	void writeItemIdentifier(ItemIdentifier item);
 
-	void writeItemIdentifierStack(ItemIdentifierStack stack) throws IOException;
+	void writeItemIdentifierStack(ItemIdentifierStack stack);
 
-	<T> void writeCollection(Collection<T> collection, IWriteListObject<T> handler) throws IOException;
+	<T> void writeCollection(Collection<T> collection, IWriteListObject<T> handler);
 
-	void writeOrderInfo(IOrderInfoProvider order) throws IOException;
+	void writeOrderInfo(IOrderInfoProvider order);
 
-	<T extends Enum<T>> void writeEnum(T obj) throws IOException;
+	<T extends Enum<T>> void writeEnum(T obj);
 
-	void writeLinkedLogisticsOrderList(LinkedLogisticsOrderList orderList) throws IOException;
+	void writeLinkedLogisticsOrderList(LinkedLogisticsOrderList orderList);
 
-	void writeResource(IResource res) throws IOException;
+	void writeResource(IResource res);
 
-	void writeBytes(byte[] arr) throws IOException;
+	void writeBytes(byte[] arr);
 
 	interface LPDataOutputConsumer {
 
-		void accept(LPDataOutput dataOutput) throws IOException;
+		void accept(LPDataOutput dataOutput);
 	}
 }

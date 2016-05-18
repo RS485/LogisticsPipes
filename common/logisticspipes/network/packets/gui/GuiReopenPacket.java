@@ -1,7 +1,5 @@
 package logisticspipes.network.packets.gui;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
@@ -19,20 +17,20 @@ public class GuiReopenPacket extends CoordinatesPacket {
 	@Setter
 	private int guiID;
 
+	public GuiReopenPacket(int id) {
+		super(id);
+	}
+
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeInt(getGuiID());
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		guiID = input.readInt();
-	}
-
-	public GuiReopenPacket(int id) {
-		super(id);
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.IOException;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -75,7 +74,7 @@ public class StatUpdate extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		initData();
 		super.writeData(output);
 		output.writeInt(stat_session_sent);
@@ -88,7 +87,7 @@ public class StatUpdate extends CoordinatesPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		stat_session_sent = input.readInt();
 		stat_session_recieved = input.readInt();

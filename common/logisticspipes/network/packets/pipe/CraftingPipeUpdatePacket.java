@@ -1,7 +1,5 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
@@ -54,7 +52,7 @@ public class CraftingPipeUpdatePacket extends ModuleCoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeIntArray(amount);
 		output.writeIntArray(liquidSatelliteIdArray);
@@ -65,7 +63,7 @@ public class CraftingPipeUpdatePacket extends ModuleCoordinatesPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		amount = input.readIntArray();
 		liquidSatelliteIdArray = input.readIntArray();

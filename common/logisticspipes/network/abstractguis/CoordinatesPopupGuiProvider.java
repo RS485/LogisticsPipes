@@ -1,7 +1,5 @@
 package logisticspipes.network.abstractguis;
 
-import java.io.IOException;
-
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
@@ -19,10 +17,6 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 @ToString
 public abstract class CoordinatesPopupGuiProvider extends PopupGuiProvider {
 
-	public CoordinatesPopupGuiProvider(int id) {
-		super(id);
-	}
-
 	@Getter
 	@Setter
 	private int posX;
@@ -33,8 +27,12 @@ public abstract class CoordinatesPopupGuiProvider extends PopupGuiProvider {
 	@Setter
 	private int posZ;
 
+	public CoordinatesPopupGuiProvider(int id) {
+		super(id);
+	}
+
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 
 		output.writeInt(posX);
 		output.writeInt(posY);
@@ -42,7 +40,7 @@ public abstract class CoordinatesPopupGuiProvider extends PopupGuiProvider {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 
 		posX = input.readInt();
 		posY = input.readInt();

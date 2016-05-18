@@ -1,7 +1,5 @@
 package logisticspipes.network.guis.module.inpipe;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -76,7 +74,7 @@ public class ProviderModuleGuiProvider extends ModuleCoordinatesGuiProvider {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeBoolean(exclude);
 		output.writeInt(extractorMode);
@@ -85,7 +83,7 @@ public class ProviderModuleGuiProvider extends ModuleCoordinatesGuiProvider {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		exclude = input.readBoolean();
 		extractorMode = input.readInt();

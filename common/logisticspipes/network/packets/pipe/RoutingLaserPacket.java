@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +25,7 @@ public class RoutingLaserPacket extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		while (input.readBoolean()) {
 			lasers.add(new LaserData().readData(input));
 		}
@@ -38,7 +37,7 @@ public class RoutingLaserPacket extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		for (LaserData laser : lasers) {
 			output.writeBoolean(true);
 			laser.writeData(output);

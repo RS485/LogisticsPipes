@@ -1,6 +1,5 @@
 package logisticspipes.pipes.tubes;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,67 +34,8 @@ import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 
 public class HSTubeSCurve extends CoreMultiBlockPipe {
 
-	@AllArgsConstructor
-	public enum CurveSOrientation implements ITubeOrientation {
-		//@formatter:off
-		// Name: Placement from  _ TurnDirection
-		NORTH_EAST(TurnSDirection.NORTH_INV, new DoubleCoordinates(0, 0, 0), ForgeDirection.NORTH, ForgeDirection.EAST),
-		NORTH_WEST(TurnSDirection.NORTH, new DoubleCoordinates(0, 0, 0), ForgeDirection.NORTH, ForgeDirection.WEST),
-		EAST_SOUTH(TurnSDirection.EAST_INV, new DoubleCoordinates(0, 0, 0), ForgeDirection.EAST, ForgeDirection.SOUTH),
-		EAST_NORTH(TurnSDirection.EAST, new DoubleCoordinates(0, 0, 0), ForgeDirection.EAST, ForgeDirection.NORTH),
-		SOUTH_WEST(TurnSDirection.NORTH_INV, new DoubleCoordinates(-1, 0, 3), ForgeDirection.SOUTH, ForgeDirection.WEST),
-		SOUTH_EAST(TurnSDirection.NORTH, new DoubleCoordinates(1, 0, 3), ForgeDirection.SOUTH, ForgeDirection.EAST),
-		WEST_NORTH(TurnSDirection.EAST_INV, new DoubleCoordinates(-3, 0, -1), ForgeDirection.WEST, ForgeDirection.NORTH),
-		WEST_SOUTH(TurnSDirection.EAST, new DoubleCoordinates(-3, 0, 1), ForgeDirection.WEST, ForgeDirection.SOUTH);
-		//@formatter:on
-
-		@Getter
-		TurnSDirection renderOrientation;
-		@Getter
-		DoubleCoordinates offset;
-		@Getter
-		ForgeDirection dir;
-		@Getter
-		ForgeDirection looking;
-
-		@Override
-		public void rotatePositions(IPositionRotateble set) {
-			renderOrientation.rotatePositions(set);
-		}
-
-		@Override
-		public void setOnPipe(CoreMultiBlockPipe pipe) {
-			((HSTubeSCurve) pipe).orientation = this;
-		}
-	}
-
-	@AllArgsConstructor
-	public enum TurnSDirection implements ITubeRenderOrientation {
-		//@formatter:off
-		NORTH(ForgeDirection.NORTH),
-		EAST(ForgeDirection.EAST),
-		NORTH_INV(ForgeDirection.SOUTH),
-		EAST_INV(ForgeDirection.WEST);
-		//@formatter:on
-
-		@Getter
-		private ForgeDirection dir1;
-
-		public void rotatePositions(IPositionRotateble set) {
-			if (this == NORTH) {
-				set.mirrorX();
-			} else if (this == EAST) {
-				set.mirrorX();
-				set.rotateRight();
-			} else if (this == EAST_INV) {
-				set.rotateRight();
-			}
-		}
-	}
-
 	@Getter
 	private CurveSOrientation orientation;
-
 	private List<AxisAlignedBB> boxes = null;
 
 	public HSTubeSCurve(Item item) {
@@ -103,7 +43,7 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		if (orientation == null) {
 			output.writeBoolean(false);
 		} else {
@@ -113,7 +53,7 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		if (input.readBoolean()) {
 			orientation = input.readEnum(CurveSOrientation.class);
 		}
@@ -455,5 +395,63 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 	@Override
 	public boolean isHSTube() {
 		return true;
+	}
+
+	@AllArgsConstructor
+	public enum CurveSOrientation implements ITubeOrientation {
+		//@formatter:off
+		// Name: Placement from  _ TurnDirection
+		NORTH_EAST(TurnSDirection.NORTH_INV, new DoubleCoordinates(0, 0, 0), ForgeDirection.NORTH, ForgeDirection.EAST),
+		NORTH_WEST(TurnSDirection.NORTH, new DoubleCoordinates(0, 0, 0), ForgeDirection.NORTH, ForgeDirection.WEST),
+		EAST_SOUTH(TurnSDirection.EAST_INV, new DoubleCoordinates(0, 0, 0), ForgeDirection.EAST, ForgeDirection.SOUTH),
+		EAST_NORTH(TurnSDirection.EAST, new DoubleCoordinates(0, 0, 0), ForgeDirection.EAST, ForgeDirection.NORTH),
+		SOUTH_WEST(TurnSDirection.NORTH_INV, new DoubleCoordinates(-1, 0, 3), ForgeDirection.SOUTH, ForgeDirection.WEST),
+		SOUTH_EAST(TurnSDirection.NORTH, new DoubleCoordinates(1, 0, 3), ForgeDirection.SOUTH, ForgeDirection.EAST),
+		WEST_NORTH(TurnSDirection.EAST_INV, new DoubleCoordinates(-3, 0, -1), ForgeDirection.WEST, ForgeDirection.NORTH),
+		WEST_SOUTH(TurnSDirection.EAST, new DoubleCoordinates(-3, 0, 1), ForgeDirection.WEST, ForgeDirection.SOUTH);
+		//@formatter:on
+
+		@Getter
+		TurnSDirection renderOrientation;
+		@Getter
+		DoubleCoordinates offset;
+		@Getter
+		ForgeDirection dir;
+		@Getter
+		ForgeDirection looking;
+
+		@Override
+		public void rotatePositions(IPositionRotateble set) {
+			renderOrientation.rotatePositions(set);
+		}
+
+		@Override
+		public void setOnPipe(CoreMultiBlockPipe pipe) {
+			((HSTubeSCurve) pipe).orientation = this;
+		}
+	}
+
+	@AllArgsConstructor
+	public enum TurnSDirection implements ITubeRenderOrientation {
+		//@formatter:off
+		NORTH(ForgeDirection.NORTH),
+		EAST(ForgeDirection.EAST),
+		NORTH_INV(ForgeDirection.SOUTH),
+		EAST_INV(ForgeDirection.WEST);
+		//@formatter:on
+
+		@Getter
+		private ForgeDirection dir1;
+
+		public void rotatePositions(IPositionRotateble set) {
+			if (this == NORTH) {
+				set.mirrorX();
+			} else if (this == EAST) {
+				set.mirrorX();
+				set.rotateRight();
+			} else if (this == EAST_INV) {
+				set.rotateRight();
+			}
+		}
 	}
 }

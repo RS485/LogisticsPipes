@@ -1,7 +1,5 @@
 package logisticspipes.network.packets.satpipe;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
@@ -17,6 +15,10 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class SatPipeSetID extends CoordinatesPacket {
 
+	@Getter
+	@Setter
+	private int satID;
+
 	public SatPipeSetID(int id) {
 		super(id);
 	}
@@ -26,18 +28,14 @@ public class SatPipeSetID extends CoordinatesPacket {
 		return new SatPipeSetID(getId());
 	}
 
-	@Getter
-	@Setter
-	private int satID;
-
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeInt(satID);
 		super.writeData(output);
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		satID = input.readInt();
 		super.readData(input);
 	}

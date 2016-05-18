@@ -1,7 +1,5 @@
 package logisticspipes.network.packets.routingdebug;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
@@ -25,7 +23,7 @@ public class RoutingUpdateDebugCanidateList extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		msg = new ExitRoute[input.readInt()];
 		for (int i = 0; i < msg.length; i++) {
 			msg[i] = input.readExitRoute(MainProxy.getClientMainWorld());
@@ -38,7 +36,7 @@ public class RoutingUpdateDebugCanidateList extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeInt(msg.length);
 		for (ExitRoute element : msg) {
 			output.writeExitRoute(element);

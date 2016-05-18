@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.modules;
 
-import java.io.IOException;
 import java.util.BitSet;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -55,7 +54,7 @@ public class ItemSinkFuzzy extends ModuleCoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeInt(pos);
 		if (pos != -1) {
@@ -67,7 +66,7 @@ public class ItemSinkFuzzy extends ModuleCoordinatesPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		pos = input.readInt();
 		if (pos != -1) {

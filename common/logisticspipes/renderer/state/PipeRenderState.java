@@ -1,6 +1,5 @@
 package logisticspipes.renderer.state;
 
-import java.io.IOException;
 import java.util.List;
 
 import net.minecraft.util.IIcon;
@@ -58,14 +57,14 @@ public class PipeRenderState implements IClientState {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		pipeConnectionMatrix.writeData(output);
 		textureMatrix.writeData(output);
 		bcRenderState.writeData_LP(output); //Always needs to be last. Different length depending on proxy loading state.
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		pipeConnectionMatrix.readData(input);
 		textureMatrix.readData(input);
 		bcRenderState.readData_LP(input); //Always needs to be last. Different length depending on proxy loading state.

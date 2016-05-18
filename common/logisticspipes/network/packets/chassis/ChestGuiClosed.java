@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.chassis;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
@@ -19,7 +18,7 @@ public class ChestGuiClosed extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {}
+	public void readData(LPDataInput input) {}
 
 	@Override
 	public void processPacket(EntityPlayer player) {
@@ -38,7 +37,7 @@ public class ChestGuiClosed extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {}
+	public void writeData(LPDataOutput output) {}
 
 	@Override
 	public ModernPacket template() {

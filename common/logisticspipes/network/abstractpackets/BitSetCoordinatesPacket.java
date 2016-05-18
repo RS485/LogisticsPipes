@@ -1,6 +1,5 @@
 package logisticspipes.network.abstractpackets;
 
-import java.io.IOException;
 import java.util.BitSet;
 
 import lombok.Getter;
@@ -20,13 +19,13 @@ public abstract class BitSetCoordinatesPacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeBitSet(getFlags());
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		setFlags(input.readBitSet());
 	}

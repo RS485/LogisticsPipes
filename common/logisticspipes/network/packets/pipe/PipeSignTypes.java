@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.IOException;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,13 +16,13 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class PipeSignTypes extends CoordinatesPacket {
 
-	public PipeSignTypes(int id) {
-		super(id);
-	}
-
 	@Getter
 	@Setter
 	private List<Integer> types;
+
+	public PipeSignTypes(int id) {
+		super(id);
+	}
 
 	@Override
 	public void processPacket(EntityPlayer player) {
@@ -35,13 +34,13 @@ public class PipeSignTypes extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeCollection(types, LPDataOutput::writeInt);
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		types = input.readArrayList(LPDataInput::readInt);
 	}

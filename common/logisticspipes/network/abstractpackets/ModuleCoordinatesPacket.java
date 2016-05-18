@@ -1,7 +1,5 @@
 package logisticspipes.network.abstractpackets;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
@@ -28,13 +26,14 @@ public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
 	@Getter
 	@Setter
 	private int positionInt;
+	private boolean moduleBased = false;
 
 	public ModuleCoordinatesPacket(int id) {
 		super(id);
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeBoolean(type != null);
 		if (type != null) {
@@ -44,7 +43,7 @@ public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		if (input.readBoolean()) {
 			type = input.readEnum(ModulePositionType.class);
@@ -67,8 +66,6 @@ public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
 		super.setPacketPos(packet);
 		return this;
 	}
-
-	private boolean moduleBased = false;
 
 	@SuppressWarnings("unchecked")
 	public <T> T getLogisticsModule(EntityPlayer player, Class<T> clazz) {

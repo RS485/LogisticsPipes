@@ -1,7 +1,5 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -49,7 +47,7 @@ public class PipePositionPacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeInt(travelId);
 		output.writeFloat(speed);
@@ -60,7 +58,7 @@ public class PipePositionPacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		travelId = input.readInt();
 		speed = input.readFloat();

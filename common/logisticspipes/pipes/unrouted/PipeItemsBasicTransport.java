@@ -1,7 +1,5 @@
 package logisticspipes.pipes.unrouted;
 
-import java.io.IOException;
-
 import net.minecraft.item.Item;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -20,10 +18,10 @@ public class PipeItemsBasicTransport extends CoreUnroutedPipe {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {}
+	public void writeData(LPDataOutput output) {}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {}
+	public void readData(LPDataInput input) {}
 
 	@Override
 	public int getIconIndex(ForgeDirection direction) {

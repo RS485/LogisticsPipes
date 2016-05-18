@@ -1,7 +1,5 @@
 package logisticspipes.network.abstractpackets;
 
-import java.io.IOException;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,13 +17,13 @@ public abstract class Integer2CoordinatesPacket extends IntegerCoordinatesPacket
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		setInteger2(input.readInt());
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeInt(getInteger2());
 	}

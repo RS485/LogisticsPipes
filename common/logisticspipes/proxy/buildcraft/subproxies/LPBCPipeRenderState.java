@@ -1,7 +1,5 @@
 package logisticspipes.proxy.buildcraft.subproxies;
 
-import java.io.IOException;
-
 import buildcraft.transport.PipeRenderState;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -12,7 +10,7 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 public class LPBCPipeRenderState extends PipeRenderState implements IBCRenderState {
 
 	@Override
-	public void writeData_LP(LPDataOutput output) throws IOException {
+	public void writeData_LP(LPDataOutput output) {
 		output.writeBoolean(true);
 		ByteBuf buf = Unpooled.buffer(128);
 		writeData(buf);
@@ -20,7 +18,7 @@ public class LPBCPipeRenderState extends PipeRenderState implements IBCRenderSta
 	}
 
 	@Override
-	public void readData_LP(LPDataInput input) throws IOException {
+	public void readData_LP(LPDataInput input) {
 		if (input.readBoolean()) {
 			ByteBuf buf = input.readByteBuf();
 			readData(buf);

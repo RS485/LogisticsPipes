@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.routingdebug;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -35,7 +34,7 @@ public class RoutingUpdateDebugFilters extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		pos = input.readLPPosition();
 		filterPositions = new EnumMap<>(PipeRoutingConnectionType.class);
 		short id;
@@ -60,7 +59,7 @@ public class RoutingUpdateDebugFilters extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeLPPosition(pos);
 		for (PipeRoutingConnectionType type : filters.keySet()) {
 			output.writeShort(type.ordinal());

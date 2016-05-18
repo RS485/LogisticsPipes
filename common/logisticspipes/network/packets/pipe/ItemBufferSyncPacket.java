@@ -1,7 +1,5 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import logisticspipes.network.abstractpackets.ListSyncPacket;
@@ -26,13 +24,12 @@ public class ItemBufferSyncPacket
 
 	@Override
 	public void writeObject(LPDataOutput output,
-			Triplet<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>, LPTravelingItemServer> object) throws IOException {
+			Triplet<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>, LPTravelingItemServer> object) {
 		output.writeItemIdentifierStack(object.getValue1());
 	}
 
 	@Override
-	public Triplet<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>, LPTravelingItemServer> readObject(LPDataInput input)
-			throws IOException {
+	public Triplet<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>, LPTravelingItemServer> readObject(LPDataInput input) {
 		return new Triplet<>(input.readItemIdentifierStack(), null, null);
 	}
 

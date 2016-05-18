@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.IOException;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
@@ -31,7 +30,7 @@ public class MostLikelyRecipeComponentsResponse extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		response = input.readArrayList(LPDataInput::readInt);
 	}
 
@@ -61,7 +60,7 @@ public class MostLikelyRecipeComponentsResponse extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeCollection(response, LPDataOutput::writeInt);
 	}
 

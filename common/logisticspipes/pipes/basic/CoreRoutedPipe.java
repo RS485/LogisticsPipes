@@ -7,7 +7,6 @@
 
 package logisticspipes.pipes.basic;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -132,71 +131,49 @@ import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		implements IClientState, IRequestItems, ITrackStatistics, IWorldProvider, IWatchingHandler, IPipeServiceProvider, IQueueCCEvent, ILPPositionProvider {
 
-	public enum ItemSendMode {
-		Normal,
-		Fast
-	}
-
-	protected boolean stillNeedReplace = true;
-	private boolean recheckConnections = false;
-
-	protected IRouter router;
-	protected String routerId;
-	protected Object routerIdLock = new Object();
 	private static int pipecount = 0;
-	protected int _delayOffset = 0;
-
-	public boolean _textureBufferPowered;
-
-	protected boolean _initialInit = true;
-
-	private boolean enabled = true;
-	private boolean preventRemove = false;
-	private boolean destroyByPlayer = false;
-	private PowerSupplierHandler powerHandler = new PowerSupplierHandler(this);
-
-	public long delayTo = 0;
-	public int repeatFor = 0;
-
-	protected RouteLayer _routeLayer;
-	protected TransportLayer _transportLayer;
+	public final PlayerCollectionList watchers = new PlayerCollectionList();
 	protected final PriorityBlockingQueue<ItemRoutingInformation> _inTransitToMe = new PriorityBlockingQueue<>(10,
 			new ItemRoutingInformation.DelayComparator());
-
-	protected UpgradeManager upgradeManager = new UpgradeManager(this);
-	protected LogisticsItemOrderManager _orderItemManager = null;
-
-	@Getter
-	private List<IOrderInfoProvider> clientSideOrderManager = new ArrayList<>();
-
+	protected final LinkedList<Triplet<IRoutedItem, ForgeDirection, ItemSendMode>> _sendQueue = new LinkedList<>();
+	protected final Map<ItemIdentifier, Queue<Pair<Integer, ItemRoutingInformation>>> queuedDataForUnroutedItems = Collections.synchronizedMap(new TreeMap<>());
+	public boolean _textureBufferPowered;
+	public long delayTo = 0;
+	public int repeatFor = 0;
 	public int stat_session_sent;
 	public int stat_session_recieved;
 	public int stat_session_relayed;
-
 	public long stat_lifetime_sent;
 	public long stat_lifetime_recieved;
 	public long stat_lifetime_relayed;
-
 	public int server_routing_table_size = 0;
-
-	protected final LinkedList<Triplet<IRoutedItem, ForgeDirection, ItemSendMode>> _sendQueue = new LinkedList<>();
-
-	protected final Map<ItemIdentifier, Queue<Pair<Integer, ItemRoutingInformation>>> queuedDataForUnroutedItems = Collections.synchronizedMap(new TreeMap<>());
-
-	public final PlayerCollectionList watchers = new PlayerCollectionList();
-
+	public boolean globalIgnoreConnectionDisconnection = false;
+	protected boolean stillNeedReplace = true;
+	protected IRouter router;
+	protected String routerId;
+	protected Object routerIdLock = new Object();
+	protected int _delayOffset = 0;
+	protected boolean _initialInit = true;
+	protected RouteLayer _routeLayer;
+	protected TransportLayer _transportLayer;
+	protected UpgradeManager upgradeManager = new UpgradeManager(this);
+	protected LogisticsItemOrderManager _orderItemManager = null;
 	protected List<IInventory> _cachedAdjacentInventories;
-
 	protected ForgeDirection pointedDirection = ForgeDirection.UNKNOWN;
 	//public BaseRoutingLogic logic;
 	// from BaseRoutingLogic
 	protected int throttleTime = 20;
+	protected IPipeSign[] signItem = new IPipeSign[6];
+	private boolean recheckConnections = false;
+	private boolean enabled = true;
+	private boolean preventRemove = false;
+	private boolean destroyByPlayer = false;
+	private PowerSupplierHandler powerHandler = new PowerSupplierHandler(this);
+	@Getter
+	private List<IOrderInfoProvider> clientSideOrderManager = new ArrayList<>();
 	private int throttleTimeLeft = 20 + new Random().nextInt(Configs.LOGISTICS_DETECTION_FREQUENCY);
-
 	private int[] queuedParticles = new int[Particles.values().length];
 	private boolean hasQueuedParticles = false;
-
-	protected IPipeSign[] signItem = new IPipeSign[6];
 	private boolean isOpaqueClientSide = false;
 
 	private CacheHolder cacheHolder;
@@ -1030,8 +1007,6 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		return canPipeConnect(tile, dir, false);
 	}
 
-	public boolean globalIgnoreConnectionDisconnection = false;
-
 	@Override
 	public final boolean canPipeConnect(TileEntity tile, ForgeDirection dir, boolean ignoreSystemDisconnection) {
 		ForgeDirection side = OrientationsUtil.getOrientationOfTilewithTile(container, tile);
@@ -1072,8 +1047,6 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		getOriginalUpgradeManager().insetSecurityID(id);
 	}
 
-	/* Power System */
-
 	public List<Pair<ILogisticsPowerProvider, List<IFilter>>> getRoutedPowerProviders() {
 		if (MainProxy.isClient(getWorld())) {
 			return null;
@@ -1083,6 +1056,8 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		}
 		return getRouter().getPowerProvider();
 	}
+
+	/* Power System */
 
 	@Override
 	public boolean useEnergy(int amount) {
@@ -1378,14 +1353,6 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		return router.getId().toString();
 	}
 
-	@CCCommand(description = "Sets the TurtleConnect flag for this Turtle on this LogisticsPipe")
-	@CCDirectCall
-	public void setTurtleConnect(Boolean flag) {
-		if (container instanceof LogisticsTileGenericPipe) {
-			container.setTurtleConnect(flag);
-		}
-	}
-
 	@CCCommand(description = "Returns the TurtleConnect flag for this Turtle on this LogisticsPipe")
 	@CCDirectCall
 	public boolean getTurtleConnect() {
@@ -1393,6 +1360,14 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 			return container.getTurtleConnect();
 		}
 		return false;
+	}
+
+	@CCCommand(description = "Sets the TurtleConnect flag for this Turtle on this LogisticsPipe")
+	@CCDirectCall
+	public void setTurtleConnect(Boolean flag) {
+		if (container instanceof LogisticsTileGenericPipe) {
+			container.setTurtleConnect(flag);
+		}
 	}
 
 	@CCCommand(description = "Returns true if the computer is allowed to interact with the connected pipe.", needPermission = false)
@@ -1743,12 +1718,12 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeBoolean(isOpaque());
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		isOpaqueClientSide = input.readBoolean();
 	}
 
@@ -1840,5 +1815,10 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	@Override
 	public IHighlightPlacementRenderer getHighlightRenderer() {
 		return LogisticsRenderPipe.secondRenderer;
+	}
+
+	public enum ItemSendMode {
+		Normal,
+		Fast
 	}
 }

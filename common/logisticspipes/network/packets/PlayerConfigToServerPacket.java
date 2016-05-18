@@ -1,7 +1,5 @@
 package logisticspipes.network.packets;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
@@ -25,7 +23,7 @@ public class PlayerConfigToServerPacket extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		config = new PlayerConfig(null);
 		config.readData(input);
 	}
@@ -36,7 +34,7 @@ public class PlayerConfigToServerPacket extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		config.writeData(output);
 	}
 

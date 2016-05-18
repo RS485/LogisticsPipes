@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.routingdebug;
 
-import java.io.IOException;
 import java.util.EnumSet;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -30,7 +29,7 @@ public class RoutingUpdateDebugClosedSet extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		set = input.readEnumSet(PipeRoutingConnectionType.class);
 		pos = input.readLPPosition();
 	}
@@ -41,7 +40,7 @@ public class RoutingUpdateDebugClosedSet extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeEnumSet(set, PipeRoutingConnectionType.class);
 		output.writeLPPosition(pos);
 	}

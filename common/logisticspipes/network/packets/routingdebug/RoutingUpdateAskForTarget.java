@@ -1,7 +1,5 @@
 package logisticspipes.network.packets.routingdebug;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
@@ -22,7 +20,7 @@ public class RoutingUpdateAskForTarget extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {}
+	public void readData(LPDataInput input) {}
 
 	@Override
 	@ClientSideOnlyMethodContent
@@ -32,15 +30,15 @@ public class RoutingUpdateAskForTarget extends ModernPacket {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(RoutingUpdateTargetResponse.class).setMode(TargetMode.None));
 		} else if (box.typeOfHit == MovingObjectType.BLOCK) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(RoutingUpdateTargetResponse.class).setMode(TargetMode.Block)
-					.setAdditions(new Object[] { box.blockX, box.blockY, box.blockZ }));
+					.setAdditions(new int[] { box.blockX, box.blockY, box.blockZ }));
 		} else if (box.typeOfHit == MovingObjectType.ENTITY) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(RoutingUpdateTargetResponse.class).setMode(TargetMode.Entity)
-					.setAdditions(new Object[] { box.entityHit.getEntityId() }));
+					.setAdditions(new int[] { box.entityHit.getEntityId() }));
 		}
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {}
+	public void writeData(LPDataOutput output) {}
 
 	@Override
 	public ModernPacket template() {

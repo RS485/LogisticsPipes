@@ -1,7 +1,5 @@
 package logisticspipes.network.packets.hud;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentTranslation;
 
@@ -99,14 +97,14 @@ public class HUDSettingsPacket extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		buttonId = input.readInt();
 		state = input.readBoolean();
 		slot = input.readInt();
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeInt(buttonId);
 		output.writeBoolean(state);
 		output.writeInt(slot);

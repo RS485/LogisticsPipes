@@ -1,7 +1,5 @@
 package logisticspipes.request.resources;
 
-import java.io.IOException;
-
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -14,19 +12,20 @@ public class ItemResource implements IResource {
 
 	private final ItemIdentifierStack stack;
 	private final IRequestItems requester;
+	private Object ccObject;
 
 	public ItemResource(ItemIdentifierStack stack, IRequestItems requester) {
 		this.stack = stack;
 		this.requester = requester;
 	}
 
-	public ItemResource(LPDataInput input) throws IOException {
+	public ItemResource(LPDataInput input) {
 		stack = input.readItemIdentifierStack();
 		requester = null;
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeItemIdentifierStack(stack);
 	}
 
@@ -93,16 +92,14 @@ public class ItemResource implements IResource {
 		return new ItemResource(stack, requester);
 	}
 
-	private Object ccObject;
+	@Override
+	public Object getCCType() {
+		return ccObject;
+	}
 
 	@Override
 	public void setCCType(Object type) {
 		ccObject = type;
-	}
-
-	@Override
-	public Object getCCType() {
-		return ccObject;
 	}
 
 	@Override

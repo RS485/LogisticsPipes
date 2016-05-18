@@ -1,7 +1,5 @@
 package logisticspipes.network.abstractpackets;
 
-import java.io.IOException;
-
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
@@ -22,7 +20,7 @@ public abstract class ItemPacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		if (getStack() != null) {
 			output.writeInt(Item.getIdFromItem(getStack().getItem()));
@@ -35,7 +33,7 @@ public abstract class ItemPacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 
 		final int itemID = input.readInt();

@@ -1,6 +1,5 @@
 package logisticspipes.proxy;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -154,7 +153,7 @@ public class ProxyManager {
 						return new IBCRenderState() {
 							@Override public boolean needsRenderUpdate() {return false;}
 							@Override public boolean isDirty() {return false;}
-							@Override public void writeData_LP(LPDataOutput output) throws IOException {
+							@Override public void writeData_LP(LPDataOutput output)  {
 								output.writeBoolean(false);
 							}
 							@Override public void readData_LP(LPDataInput input) {}
@@ -174,8 +173,8 @@ public class ProxyManager {
 					}
 					@Override public IBCPluggableState getBCPlugableState() {
 						return new IBCPluggableState() {
-							@Override public void writeData(LPDataOutput output) throws IOException {}
-							@Override public void readData(LPDataInput input) throws IOException {}
+							@Override public void writeData(LPDataOutput output)  {}
+							@Override public void readData(LPDataInput input)  {}
 							@Override public boolean isDirty(boolean clean) {return false;}
 						};
 					}

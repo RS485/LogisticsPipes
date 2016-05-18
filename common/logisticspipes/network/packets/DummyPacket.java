@@ -1,7 +1,5 @@
 package logisticspipes.network.packets;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -15,7 +13,7 @@ public class DummyPacket extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		throw new RuntimeException("This packet should never be used");
 	}
 
@@ -25,7 +23,7 @@ public class DummyPacket extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		throw new RuntimeException("This packet should never be used");
 	}
 

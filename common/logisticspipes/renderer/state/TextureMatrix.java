@@ -1,7 +1,5 @@
 package logisticspipes.renderer.state;
 
-import java.io.IOException;
-
 import net.minecraftforge.common.util.ForgeDirection;
 
 import lombok.Getter;
@@ -112,7 +110,7 @@ public class TextureMatrix {
 		dirty = false;
 	}
 
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		for (int iconIndexe : iconIndexes) {
 			output.writeByte(iconIndexe);
 		}
@@ -126,7 +124,7 @@ public class TextureMatrix {
 		output.writeForgeDirection(pointedOrientation);
 	}
 
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		for (int i = 0; i < iconIndexes.length; i++) {
 			int icon = input.readByte();
 			if (iconIndexes[i] != icon) {

@@ -89,16 +89,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		}
 	}
 
-	private void unsetBuffer() {
-		if (localBuffer.hasMemoryAddress()) {
-			if (--reference < 1) {
-				BUFFER_WRAPPER_MAP.remove(localBuffer.memoryAddress());
-			}
-		}
-		localBuffer = null;
-	}
-
-	public static void provideData(byte[] data, LPDataInputConsumer dataInputConsumer) throws IOException {
+	public static void provideData(byte[] data, LPDataInputConsumer dataInputConsumer) {
 		ByteBuf dataBuffer = wrappedBuffer(data);
 		LPDataIOWrapper lpData = getInstance(dataBuffer);
 
@@ -108,7 +99,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		dataBuffer.release();
 	}
 
-	public static byte[] collectData(LPDataOutputConsumer dataOutputConsumer) throws IOException {
+	public static byte[] collectData(LPDataOutputConsumer dataOutputConsumer) {
 		ByteBuf dataBuffer = buffer();
 		LPDataIOWrapper lpData = getInstance(dataBuffer);
 
@@ -123,7 +114,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		return data;
 	}
 
-	public static void provideData(ByteBuf dataBuffer, LPDataInputConsumer dataInputConsumer) throws IOException {
+	public static void provideData(ByteBuf dataBuffer, LPDataInputConsumer dataInputConsumer) {
 		LPDataIOWrapper lpData = getInstance(dataBuffer);
 
 		dataInputConsumer.accept(lpData);
@@ -131,7 +122,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		lpData.unsetBuffer();
 	}
 
-	public static void writeData(ByteBuf dataBuffer, LPDataOutputConsumer dataOutputConsumer) throws IOException {
+	public static void writeData(ByteBuf dataBuffer, LPDataOutputConsumer dataOutputConsumer) {
 		LPDataIOWrapper lpData = getInstance(dataBuffer);
 
 		dataOutputConsumer.accept(lpData);
@@ -139,8 +130,17 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		lpData.unsetBuffer();
 	}
 
+	private void unsetBuffer() {
+		if (localBuffer.hasMemoryAddress()) {
+			if (--reference < 1) {
+				BUFFER_WRAPPER_MAP.remove(localBuffer.memoryAddress());
+			}
+		}
+		localBuffer = null;
+	}
+
 	@Override
-	public void writeByteArray(byte[] arr) throws IOException {
+	public void writeByteArray(byte[] arr) {
 		if (arr == null) {
 			writeInt(-1);
 		} else {
@@ -150,7 +150,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public byte[] readByteArray() throws IOException {
+	public byte[] readByteArray() {
 		final int length = readInt();
 		if (length == -1) {
 			return null;
@@ -205,7 +205,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeUTF(String s) throws IOException {
+	public void writeUTF(String s) {
 		if (s == null) {
 			writeInt(-1);
 		} else {
@@ -223,7 +223,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeExitRoute(ExitRoute route) throws IOException {
+	public void writeExitRoute(ExitRoute route) {
 		writeIRouter(route.destination);
 		writeIRouter(route.root);
 		writeForgeDirection(route.exitOrientation);
@@ -257,7 +257,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public <T extends Enum<T>> void writeEnumSet(EnumSet<T> types, Class<T> clazz) throws IOException {
+	public <T extends Enum<T>> void writeEnumSet(EnumSet<T> types, Class<T> clazz) {
 		T[] parts = clazz.getEnumConstants();
 		final int length = parts.length / 8 + (parts.length % 8 == 0 ? 0 : 1);
 		byte[] set = new byte[length];
@@ -272,7 +272,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeBitSet(BitSet bits) throws IOException {
+	public void writeBitSet(BitSet bits) {
 		if (bits == null) {
 			throw new NullPointerException("BitSet may not be null");
 		}
@@ -280,17 +280,22 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeNBTTagCompound(NBTTagCompound tag) throws IOException {
+	public void writeNBTTagCompound(NBTTagCompound tag) {
 		if (tag == null) {
 			writeByte(0);
 		} else {
 			writeByte(1);
-			CompressedStreamTools.write(tag, new ByteBufOutputStream(localBuffer));
+			try {
+				CompressedStreamTools.write(tag, new ByteBufOutputStream(localBuffer));
+			} catch (IOException e) {
+
+				e.printStackTrace();
+			}
 		}
 	}
 
 	@Override
-	public void writeBooleanArray(boolean[] arr) throws IOException {
+	public void writeBooleanArray(boolean[] arr) {
 		if (arr == null) {
 			writeInt(-1);
 		} else if (arr.length == 0) {
@@ -319,7 +324,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeItemStack(ItemStack itemstack) throws IOException {
+	public void writeItemStack(ItemStack itemstack) {
 		if (itemstack == null) {
 			writeInt(0);
 		} else {
@@ -331,7 +336,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeItemIdentifier(ItemIdentifier item) throws IOException {
+	public void writeItemIdentifier(ItemIdentifier item) {
 		if (item == null) {
 			writeInt(0);
 		} else {
@@ -342,7 +347,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeItemIdentifierStack(ItemIdentifierStack stack) throws IOException {
+	public void writeItemIdentifierStack(ItemIdentifierStack stack) {
 		if (stack == null) {
 			writeInt(-1);
 		} else {
@@ -352,7 +357,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public <T> void writeCollection(Collection<T> collection, IWriteListObject<T> handler) throws IOException {
+	public <T> void writeCollection(Collection<T> collection, IWriteListObject<T> handler) {
 		if (collection == null) {
 			writeInt(-1);
 		} else {
@@ -364,7 +369,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeOrderInfo(IOrderInfoProvider order) throws IOException {
+	public void writeOrderInfo(IOrderInfoProvider order) {
 		writeItemIdentifierStack(order.getAsDisplayItem());
 		writeInt(order.getRouterId());
 		writeBoolean(order.isFinished());
@@ -382,7 +387,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeLinkedLogisticsOrderList(LinkedLogisticsOrderList orderList) throws IOException {
+	public void writeLinkedLogisticsOrderList(LinkedLogisticsOrderList orderList) {
 		writeCollection(orderList, LPDataOutput::writeOrderInfo);
 		writeCollection(orderList.getSubOrders(), LPDataOutput::writeLinkedLogisticsOrderList);
 	}
@@ -410,12 +415,12 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeResource(IResource res) throws IOException {
+	public void writeResource(IResource res) {
 		ResourceNetwork.writeResource(this, res);
 	}
 
 	@Override
-	public void writeBytes(byte[] arr) throws IOException {
+	public void writeBytes(byte[] arr) {
 		localBuffer.writeBytes(arr);
 	}
 
@@ -455,7 +460,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public String readUTF() throws IOException {
+	public String readUTF() {
 		byte[] arr = readByteArray();
 		if (arr == null) {
 			return null;
@@ -475,7 +480,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public ExitRoute readExitRoute(World world) throws IOException {
+	public ExitRoute readExitRoute(World world) {
 		IRouter destination = readIRouter(world);
 		IRouter root = readIRouter(world);
 		ForgeDirection exitOri = readForgeDirection();
@@ -513,7 +518,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public <T extends Enum<T>> EnumSet<T> readEnumSet(Class<T> clazz) throws IOException {
+	public <T extends Enum<T>> EnumSet<T> readEnumSet(Class<T> clazz) {
 		EnumSet<T> types = EnumSet.noneOf(clazz);
 		byte[] arr = readByteArray();
 		if (arr != null) {
@@ -528,7 +533,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public BitSet readBitSet() throws IOException {
+	public BitSet readBitSet() {
 		byte[] arr = readByteArray();
 		if (arr == null) {
 			return new BitSet();
@@ -538,17 +543,22 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public NBTTagCompound readNBTTagCompound() throws IOException {
+	public NBTTagCompound readNBTTagCompound() {
 		boolean isEmpty = (readByte() == 0);
 		if (isEmpty) {
 			return null;
 		}
 
-		return CompressedStreamTools.func_152456_a(new ByteBufInputStream(localBuffer), NBTSizeTracker.field_152451_a);
+		try {
+			return CompressedStreamTools.func_152456_a(new ByteBufInputStream(localBuffer), NBTSizeTracker.field_152451_a);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override
-	public boolean[] readBooleanArray() throws IOException {
+	public boolean[] readBooleanArray() {
 		final int bitCount = localBuffer.readInt();
 		if (bitCount == -1) {
 			return null;
@@ -581,14 +591,14 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public byte[] readBytes(int length) throws IOException {
+	public byte[] readBytes(int length) {
 		byte[] arr = new byte[length];
 		localBuffer.readBytes(arr, 0, length);
 		return arr;
 	}
 
 	@Override
-	public ItemStack readItemStack() throws IOException {
+	public ItemStack readItemStack() {
 		final int itemId = readInt();
 		if (itemId == 0) {
 			return null;
@@ -602,7 +612,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public ItemIdentifier readItemIdentifier() throws IOException {
+	public ItemIdentifier readItemIdentifier() {
 		final int itemId = readInt();
 		if (itemId == 0) {
 			return null;
@@ -614,7 +624,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public ItemIdentifierStack readItemIdentifierStack() throws IOException {
+	public ItemIdentifierStack readItemIdentifierStack() {
 		int stacksize = readInt();
 		if (stacksize == -1) {
 			return null;
@@ -625,7 +635,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public <T> ArrayList<T> readArrayList(IReadListObject<T> reader) throws IOException {
+	public <T> ArrayList<T> readArrayList(IReadListObject<T> reader) {
 		int size = readInt();
 		if (size == -1) {
 			return null;
@@ -639,7 +649,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public <T> LinkedList<T> readLinkedList(IReadListObject<T> reader) throws IOException {
+	public <T> LinkedList<T> readLinkedList(IReadListObject<T> reader) {
 		int size = readInt();
 		if (size == -1) {
 			return null;
@@ -653,7 +663,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public <T> Set<T> readSet(IReadListObject<T> handler) throws IOException {
+	public <T> Set<T> readSet(IReadListObject<T> handler) {
 		int size = readInt();
 		if (size == -1) {
 			return null;
@@ -667,7 +677,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public IOrderInfoProvider readOrderInfo() throws IOException {
+	public IOrderInfoProvider readOrderInfo() {
 		ItemIdentifierStack stack = readItemIdentifierStack();
 		int routerId = localBuffer.readInt();
 		boolean isFinished = localBuffer.readBoolean();
@@ -686,18 +696,18 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public LinkedLogisticsOrderList readLinkedLogisticsOrderList() throws IOException {
+	public LinkedLogisticsOrderList readLinkedLogisticsOrderList() {
 		LinkedLogisticsOrderList list = new LinkedLogisticsOrderList();
 
 		List<IOrderInfoProvider> orderInfoProviders = readArrayList(LPDataInput::readOrderInfo);
 		if (orderInfoProviders == null) {
-			throw new IOException("Expected order info provider list");
+			throw new NullPointerException("Expected order info provider list");
 		}
 		list.addAll(orderInfoProviders);
 
 		List<LinkedLogisticsOrderList> orderLists = readArrayList(LPDataInput::readLinkedLogisticsOrderList);
 		if (orderLists == null) {
-			throw new IOException("Expected logistics order list");
+			throw new NullPointerException("Expected logistics order list");
 		}
 		list.getSubOrders().addAll(orderLists);
 
@@ -705,7 +715,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public ByteBuf readByteBuf() throws IOException {
+	public ByteBuf readByteBuf() {
 		byte[] arr = readByteArray();
 		if (arr == null) {
 			throw new NullPointerException("Buffer may not be null, but read null");
@@ -727,7 +737,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public IResource readResource() throws IOException {
+	public IResource readResource() {
 		return ResourceNetwork.readResource(this);
 	}
 }

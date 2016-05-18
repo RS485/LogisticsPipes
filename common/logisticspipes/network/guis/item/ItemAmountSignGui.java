@@ -1,7 +1,5 @@
 package logisticspipes.network.guis.item;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -51,13 +49,13 @@ public class ItemAmountSignGui extends CoordinatesGuiProvider {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeForgeDirection(dir);
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		dir = input.readForgeDirection();
 	}

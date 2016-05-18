@@ -1,7 +1,5 @@
 package logisticspipes.network.guis.module.inpipe;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
@@ -40,7 +38,7 @@ public class ActiveSupplierSlot extends ModuleCoordinatesGuiProvider {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeBoolean(patternUpgarde);
 		output.writeIntArray(slotArray);
@@ -49,7 +47,7 @@ public class ActiveSupplierSlot extends ModuleCoordinatesGuiProvider {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		patternUpgarde = input.readBoolean();
 		slotArray = input.readIntArray();

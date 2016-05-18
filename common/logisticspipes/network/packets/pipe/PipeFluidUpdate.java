@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.IOException;
 import java.util.BitSet;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,18 +20,17 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class PipeFluidUpdate extends CoordinatesPacket {
 
+	@Getter(value = AccessLevel.PRIVATE)
+	@Setter
+	private FluidStack[] renderCache = new FluidStack[ForgeDirection.values().length];
+	private BitSet bits = new BitSet();
+
 	public PipeFluidUpdate(int id) {
 		super(id);
 	}
 
-	@Getter(value = AccessLevel.PRIVATE)
-	@Setter
-	private FluidStack[] renderCache = new FluidStack[ForgeDirection.values().length];
-
-	private BitSet bits = new BitSet();
-
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		bits = input.readBitSet();
 		for (int i = 0; i < renderCache.length; i++) {
@@ -43,7 +41,7 @@ public class PipeFluidUpdate extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		for (int i = 0; i < renderCache.length; i++) {
 			bits.set(i, renderCache[i] != null);

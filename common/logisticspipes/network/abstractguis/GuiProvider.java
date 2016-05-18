@@ -1,7 +1,5 @@
 package logisticspipes.network.abstractguis;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraftforge.common.util.FakePlayer;
@@ -21,9 +19,9 @@ public abstract class GuiProvider {
 		this.id = id;
 	}
 
-	public void writeData(LPDataOutput output) throws IOException {}
+	public void writeData(LPDataOutput output) {}
 
-	public void readData(LPDataInput input) throws IOException {}
+	public void readData(LPDataInput input) {}
 
 	/**
 	 * @return LogisticsBaseGuiScreen

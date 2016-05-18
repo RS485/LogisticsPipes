@@ -1,7 +1,5 @@
 package logisticspipes.network.packets.block;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -16,36 +14,31 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class PowerPacketLaser extends CoordinatesPacket {
 
-	public PowerPacketLaser(int id) {
-		super(id);
-	}
-
 	@Getter
 	@Setter
 	private ForgeDirection dir;
-
 	@Getter
 	@Setter
 	private int color;
-
 	@Getter
 	@Setter
 	private boolean reverse;
-
 	@Getter
 	@Setter
 	private boolean renderBall;
-
 	@Getter
 	@Setter
 	private float length;
-
 	@Getter
 	@Setter
 	private boolean remove = false;
 
+	public PowerPacketLaser(int id) {
+		super(id);
+	}
+
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		length = input.readFloat();
 		dir = input.readForgeDirection();
@@ -66,7 +59,7 @@ public class PowerPacketLaser extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeFloat(length);
 		output.writeForgeDirection(dir);

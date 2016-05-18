@@ -1,7 +1,5 @@
 package logisticspipes.network.packets.module;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
@@ -67,7 +65,7 @@ public class BeeModuleSetBeePacket extends ModuleCoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeInt(integer2);
 		output.writeInt(integer3);
@@ -79,7 +77,7 @@ public class BeeModuleSetBeePacket extends ModuleCoordinatesPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		integer2 = input.readInt();
 		integer3 = input.readInt();

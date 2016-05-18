@@ -1,6 +1,5 @@
 package logisticspipes.routing;
 
-import java.io.IOException;
 import java.util.EnumSet;
 
 import net.minecraftforge.common.util.ForgeDirection;
@@ -34,7 +33,7 @@ public class LaserData {
 	private boolean startPipe = false;
 	private int length = 1;
 
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeInt(posX);
 		output.writeInt(posY);
 		output.writeInt(posZ);
@@ -47,7 +46,7 @@ public class LaserData {
 		}
 	}
 
-	public LaserData readData(LPDataInput input) throws IOException {
+	public LaserData readData(LPDataInput input) {
 		posX = input.readInt();
 		posY = input.readInt();
 		posZ = input.readInt();

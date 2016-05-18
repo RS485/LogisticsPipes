@@ -1,7 +1,5 @@
 package logisticspipes.network.packets.gui;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Slot;
@@ -38,7 +36,7 @@ public class DummyContainerSlotClick extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		slotId = input.readInt();
 		stack = input.readItemIdentifierStack().makeNormalStack();
 		button = input.readInt();
@@ -56,7 +54,7 @@ public class DummyContainerSlotClick extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeInt(slotId);
 		output.writeItemIdentifierStack(ItemIdentifierStack.getFromStack(stack));
 		output.writeInt(button);

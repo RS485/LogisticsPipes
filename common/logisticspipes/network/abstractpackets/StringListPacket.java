@@ -1,6 +1,5 @@
 package logisticspipes.network.abstractpackets;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +20,7 @@ public abstract class StringListPacket extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		int size = input.readInt();
 		for (int i = 0; i < size; i++) {
 			getStringList().add(input.readUTF());
@@ -29,7 +28,7 @@ public abstract class StringListPacket extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeInt(getStringList().size());
 		for (int i = 0; i < getStringList().size(); i++) {
 			output.writeUTF(getStringList().get(i));

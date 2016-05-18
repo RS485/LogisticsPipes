@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.block;
 
-import java.io.IOException;
 import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -38,14 +37,14 @@ public class SecurityStationId extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeLong(uuid.getMostSignificantBits());
 		output.writeLong(uuid.getLeastSignificantBits());
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		uuid = new UUID(input.readLong(), input.readLong());
 	}

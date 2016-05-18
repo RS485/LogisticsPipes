@@ -1,6 +1,5 @@
 package logisticspipes.network.guis.module.inpipe;
 
-import java.io.IOException;
 import java.util.BitSet;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -39,7 +38,7 @@ public class ItemSinkSlot extends ModuleCoordinatesGuiProvider {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeBoolean(isDefaultRoute);
 		output.writeBoolean(hasFuzzyUpgrade);
@@ -48,7 +47,7 @@ public class ItemSinkSlot extends ModuleCoordinatesGuiProvider {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		isDefaultRoute = input.readBoolean();
 		hasFuzzyUpgrade = input.readBoolean();

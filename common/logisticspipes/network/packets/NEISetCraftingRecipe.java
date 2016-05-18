@@ -1,7 +1,5 @@
 package logisticspipes.network.packets;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -44,7 +42,7 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 
 		output.writeInt(content.length);
@@ -64,7 +62,7 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 
 		content = new ItemStack[input.readInt()];

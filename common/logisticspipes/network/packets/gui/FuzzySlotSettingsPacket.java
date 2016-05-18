@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.gui;
 
-import java.io.IOException;
 import java.util.BitSet;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,7 +27,7 @@ public class FuzzySlotSettingsPacket extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		slotNumber = input.readInt();
 		flags = input.readBitSet();
 	}
@@ -41,7 +40,7 @@ public class FuzzySlotSettingsPacket extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeInt(slotNumber);
 		output.writeBitSet(flags);
 	}

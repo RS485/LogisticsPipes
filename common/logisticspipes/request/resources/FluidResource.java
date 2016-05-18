@@ -1,7 +1,5 @@
 package logisticspipes.request.resources;
 
-import java.io.IOException;
-
 import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.FluidIdentifier;
@@ -14,8 +12,9 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 public class FluidResource implements IResource {
 
 	private final FluidIdentifier liquid;
-	private int amount;
 	private final IRequestFluid target;
+	private int amount;
+	private Object ccObject;
 
 	public FluidResource(FluidIdentifier liquid, int amount, IRequestFluid target) {
 		this.liquid = liquid;
@@ -23,14 +22,14 @@ public class FluidResource implements IResource {
 		this.target = target;
 	}
 
-	public FluidResource(LPDataInput input) throws IOException {
+	public FluidResource(LPDataInput input) {
 		liquid = FluidIdentifier.get(input.readItemIdentifier());
 		amount = input.readInt();
 		target = null;
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeItemIdentifier(liquid.getItemIdentifier());
 		output.writeInt(amount);
 	}
@@ -88,16 +87,14 @@ public class FluidResource implements IResource {
 		return new FluidResource(liquid, amount, null);
 	}
 
-	private Object ccObject;
+	@Override
+	public Object getCCType() {
+		return ccObject;
+	}
 
 	@Override
 	public void setCCType(Object type) {
 		ccObject = type;
-	}
-
-	@Override
-	public Object getCCType() {
-		return ccObject;
 	}
 
 	@Override

@@ -1,7 +1,5 @@
 package logisticspipes.network.abstractguis;
 
-import java.io.IOException;
-
 import net.minecraft.world.World;
 
 import lombok.Getter;
@@ -19,27 +17,26 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 
 public abstract class ModuleCoordinatesGuiProvider extends CoordinatesGuiProvider {
 
-	public ModuleCoordinatesGuiProvider(int id) {
-		super(id);
-	}
-
 	@Getter
 	@Setter
 	private ModulePositionType slot;
-
 	@Getter
 	@Setter
 	private int positionInt;
 
+	public ModuleCoordinatesGuiProvider(int id) {
+		super(id);
+	}
+
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeEnum(slot);
 		output.writeInt(positionInt);
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		slot = input.readEnum(ModulePositionType.class);
 		positionInt = input.readInt();

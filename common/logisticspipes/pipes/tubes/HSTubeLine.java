@@ -1,6 +1,5 @@
 package logisticspipes.pipes.tubes;
 
-import java.io.IOException;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,54 +27,6 @@ import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 
 public class HSTubeLine extends CoreMultiBlockPipe {
 
-	public enum TubeLineOrientation implements ITubeOrientation {
-		NORTH(TubeLineRenderOrientation.NORTH_SOUTH, new DoubleCoordinates(0, 0, 0), ForgeDirection.NORTH),
-		SOUTH(TubeLineRenderOrientation.NORTH_SOUTH, new DoubleCoordinates(0, 0, 0), ForgeDirection.SOUTH),
-		EAST(TubeLineRenderOrientation.EAST_WEST, new DoubleCoordinates(0, 0, 0), ForgeDirection.EAST),
-		WEST(TubeLineRenderOrientation.EAST_WEST, new DoubleCoordinates(0, 0, 0), ForgeDirection.WEST);
-
-		@Getter
-		TubeLineRenderOrientation renderOrientation;
-		@Getter
-		DoubleCoordinates offset;
-		@Getter
-		ForgeDirection dir;
-
-		TubeLineOrientation(TubeLineRenderOrientation render, DoubleCoordinates off, ForgeDirection dir) {
-			renderOrientation = render;
-			offset = off;
-			this.dir = dir;
-		}
-
-		@Override
-		public void rotatePositions(IPositionRotateble set) {
-			renderOrientation.rotateOrientation(set);
-		}
-
-		@Override
-		public void setOnPipe(CoreMultiBlockPipe pipe) {
-			((HSTubeLine) pipe).orientation = this;
-		}
-	}
-
-	public enum TubeLineRenderOrientation implements ITubeRenderOrientation {
-		NORTH_SOUTH(ForgeDirection.NORTH),
-		EAST_WEST(ForgeDirection.EAST);
-
-		@Getter
-		private ForgeDirection dir;
-
-		TubeLineRenderOrientation(ForgeDirection dir) {
-			this.dir = dir;
-		}
-
-		public void rotateOrientation(IPositionRotateble set) {
-			if (this == EAST_WEST) {
-				set.rotateLeft();
-			}
-		}
-	}
-
 	@Getter
 	private TubeLineOrientation orientation;
 
@@ -84,7 +35,7 @@ public class HSTubeLine extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		if (orientation == null) {
 			output.writeBoolean(false);
 		} else {
@@ -94,7 +45,7 @@ public class HSTubeLine extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		if (input.readBoolean()) {
 			orientation = input.readEnum(TubeLineOrientation.class);
 		}
@@ -216,5 +167,53 @@ public class HSTubeLine extends CoreMultiBlockPipe {
 	@Override
 	public boolean isHSTube() {
 		return true;
+	}
+
+	public enum TubeLineOrientation implements ITubeOrientation {
+		NORTH(TubeLineRenderOrientation.NORTH_SOUTH, new DoubleCoordinates(0, 0, 0), ForgeDirection.NORTH),
+		SOUTH(TubeLineRenderOrientation.NORTH_SOUTH, new DoubleCoordinates(0, 0, 0), ForgeDirection.SOUTH),
+		EAST(TubeLineRenderOrientation.EAST_WEST, new DoubleCoordinates(0, 0, 0), ForgeDirection.EAST),
+		WEST(TubeLineRenderOrientation.EAST_WEST, new DoubleCoordinates(0, 0, 0), ForgeDirection.WEST);
+
+		@Getter
+		TubeLineRenderOrientation renderOrientation;
+		@Getter
+		DoubleCoordinates offset;
+		@Getter
+		ForgeDirection dir;
+
+		TubeLineOrientation(TubeLineRenderOrientation render, DoubleCoordinates off, ForgeDirection dir) {
+			renderOrientation = render;
+			offset = off;
+			this.dir = dir;
+		}
+
+		@Override
+		public void rotatePositions(IPositionRotateble set) {
+			renderOrientation.rotateOrientation(set);
+		}
+
+		@Override
+		public void setOnPipe(CoreMultiBlockPipe pipe) {
+			((HSTubeLine) pipe).orientation = this;
+		}
+	}
+
+	public enum TubeLineRenderOrientation implements ITubeRenderOrientation {
+		NORTH_SOUTH(ForgeDirection.NORTH),
+		EAST_WEST(ForgeDirection.EAST);
+
+		@Getter
+		private ForgeDirection dir;
+
+		TubeLineRenderOrientation(ForgeDirection dir) {
+			this.dir = dir;
+		}
+
+		public void rotateOrientation(IPositionRotateble set) {
+			if (this == EAST_WEST) {
+				set.rotateLeft();
+			}
+		}
 	}
 }

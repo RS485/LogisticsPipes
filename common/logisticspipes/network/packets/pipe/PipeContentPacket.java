@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,10 +17,6 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class PipeContentPacket extends ModernPacket {
 
-	public PipeContentPacket(int id) {
-		super(id);
-	}
-
 	@Getter
 	@Setter
 	private ItemIdentifierStack item;
@@ -29,8 +24,12 @@ public class PipeContentPacket extends ModernPacket {
 	@Setter
 	private int travelId;
 
+	public PipeContentPacket(int id) {
+		super(id);
+	}
+
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		item = input.readItemIdentifierStack();
 		travelId = input.readInt();
 	}
@@ -54,7 +53,7 @@ public class PipeContentPacket extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeItemIdentifierStack(item);
 		output.writeInt(travelId);
 	}

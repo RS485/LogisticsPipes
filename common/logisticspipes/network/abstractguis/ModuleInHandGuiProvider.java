@@ -1,7 +1,5 @@
 package logisticspipes.network.abstractguis;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
@@ -18,22 +16,22 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 
 public abstract class ModuleInHandGuiProvider extends GuiProvider {
 
-	public ModuleInHandGuiProvider(int id) {
-		super(id);
-	}
-
 	@Getter
 	@Setter
 	private int invSlot;
 
+	public ModuleInHandGuiProvider(int id) {
+		super(id);
+	}
+
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeInt(invSlot);
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		invSlot = input.readInt();
 	}

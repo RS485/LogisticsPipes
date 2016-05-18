@@ -618,7 +618,8 @@ public class LPDataIOWrapperTest {
 		arrayList.add("drölf");
 		arrayList.add("text");
 
-		byte[] data = LPDataIOWrapper.collectData(output -> output.writeCollection(arrayList, LPDataOutput::writeUTF));
+		byte[] data = LPDataIOWrapper.collectData(output -> output.writeCollection(arrayList,
+				(logisticspipes.network.IWriteListObject<String>) LPDataOutput::writeUTF));
 
 		LPDataIOWrapper.provideData(data, input -> {
 			assertEquals(arrayList, input.readArrayList(LPDataInput::readUTF));
@@ -629,7 +630,8 @@ public class LPDataIOWrapperTest {
 
 	@Test
 	public void testNullArrayList() throws Exception {
-		byte[] data = LPDataIOWrapper.collectData(output -> output.writeCollection(null, LPDataOutput::writeUTF));
+		byte[] data = LPDataIOWrapper.collectData(output -> output.writeCollection(null,
+				(logisticspipes.network.IWriteListObject<String>) LPDataOutput::writeUTF));
 
 		LPDataIOWrapper.provideData(data, input -> {
 			assertEquals(null, input.readArrayList(LPDataInput::readUTF));
@@ -644,7 +646,8 @@ public class LPDataIOWrapperTest {
 		linkedList.add("drölf");
 		linkedList.add("text");
 
-		byte[] data = LPDataIOWrapper.collectData(output -> output.writeCollection(linkedList, LPDataOutput::writeUTF));
+		byte[] data = LPDataIOWrapper.collectData(output -> output.writeCollection(linkedList,
+				(logisticspipes.network.IWriteListObject<String>) LPDataOutput::writeUTF));
 
 		LPDataIOWrapper.provideData(data, input -> {
 			assertEquals(linkedList, input.readLinkedList(LPDataInput::readUTF));
@@ -655,7 +658,8 @@ public class LPDataIOWrapperTest {
 
 	@Test
 	public void testNullLinkedList() throws Exception {
-		byte[] data = LPDataIOWrapper.collectData(output -> output.writeCollection(null, LPDataOutput::writeUTF));
+		byte[] data = LPDataIOWrapper.collectData(output -> output.writeCollection(null,
+				(logisticspipes.network.IWriteListObject<String>) LPDataOutput::writeUTF));
 
 		LPDataIOWrapper.provideData(data, input -> {
 			assertEquals(null, input.readLinkedList(LPDataInput::readUTF));
@@ -670,7 +674,8 @@ public class LPDataIOWrapperTest {
 		set.add("drölf");
 		set.add("text");
 
-		byte[] data = LPDataIOWrapper.collectData(output -> output.writeCollection(set, LPDataOutput::writeUTF));
+		byte[] data = LPDataIOWrapper.collectData(output -> output.writeCollection(set,
+				(logisticspipes.network.IWriteListObject<String>) LPDataOutput::writeUTF));
 
 		LPDataIOWrapper.provideData(data, input -> {
 			assertEquals(set, input.readSet(LPDataInput::readUTF));
@@ -681,7 +686,8 @@ public class LPDataIOWrapperTest {
 
 	@Test
 	public void testNullSet() throws Exception {
-		byte[] data = LPDataIOWrapper.collectData(output -> output.writeCollection(null, LPDataOutput::writeUTF));
+		byte[] data = LPDataIOWrapper.collectData(output -> output.writeCollection(null,
+				(logisticspipes.network.IWriteListObject<String>) LPDataOutput::writeUTF));
 
 		LPDataIOWrapper.provideData(data, input -> {
 			assertEquals(null, input.readSet(LPDataInput::readUTF));

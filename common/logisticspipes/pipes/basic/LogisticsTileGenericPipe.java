@@ -1,6 +1,5 @@
 package logisticspipes.pipes.basic;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -94,33 +93,38 @@ public class LogisticsTileGenericPipe extends TileEntity
 		implements IOCTile, ILPPipeTile, IPipeInformationProvider, IItemDuct, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IPipeTile,
 		ILogicControllerTile, IPipeConnection {
 
-	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
-
-	public Set<DoubleCoordinates> subMultiBlock = new HashSet<>();
-
-	public boolean[] turtleConnect = new boolean[7];
-
-	private LogisticsTileRenderController renderController;
-
-	@ModDependentField(modId = LPConstants.computerCraftModID)
-	public HashMap<IComputerAccess, ForgeDirection> connections;
-
-	@ModDependentField(modId = LPConstants.computerCraftModID)
-	public IComputerAccess currentPC;
-
-	@ModDependentField(modId = LPConstants.openComputersModID)
-	public Node node;
-	private boolean addedToNetwork = false;
-
-	private boolean sendInitPacket = true;
-
-	public LogicController logicController = new LogicController();
-
 	public final PipeRenderState renderState;
 	public final CoreState coreState = new CoreState();
 	public final IBCTilePart tilePart;
 	public final IBCPluggableState bcPlugableState;
 	public final ITDPart tdPart;
+	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
+	public Set<DoubleCoordinates> subMultiBlock = new HashSet<>();
+	public boolean[] turtleConnect = new boolean[7];
+	@ModDependentField(modId = LPConstants.computerCraftModID)
+	public HashMap<IComputerAccess, ForgeDirection> connections;
+	@ModDependentField(modId = LPConstants.computerCraftModID)
+	public IComputerAccess currentPC;
+	@ModDependentField(modId = LPConstants.openComputersModID)
+	public Node node;
+	public LogicController logicController = new LogicController();
+	public boolean[] pipeConnectionsBuffer = new boolean[6];
+	public boolean[] pipeBCConnectionsBuffer = new boolean[6];
+	public boolean[] pipeTDConnectionsBuffer = new boolean[6];
+	public CoreUnroutedPipe pipe;
+	private LogisticsTileRenderController renderController;
+	private boolean addedToNetwork = false;
+	private boolean sendInitPacket = true;
+	@Getter
+	private boolean initialized = false;
+	private boolean deletePipe = false;
+	private TileBuffer[] tileBuffer;
+	private boolean sendClientUpdate = false;
+	private boolean blockNeighborChange = false;
+	private boolean refreshRenderState = false;
+	private boolean pipeBound = false;
+	@SideOnly(Side.CLIENT)
+	private AxisAlignedBB renderBox;
 
 	public LogisticsTileGenericPipe() {
 		if (SimpleServiceLocator.ccProxy.isCC()) {
@@ -314,6 +318,8 @@ public class LogisticsTileGenericPipe extends TileEntity
 		}
 	}
 
+	/* IPipeInformationProvider */
+
 	@Override
 	public void writeToNBT(NBTTagCompound nbt) {
 		super.writeToNBT(nbt);
@@ -439,12 +445,12 @@ public class LogisticsTileGenericPipe extends TileEntity
 		SimpleServiceLocator.ccProxy.handleMesssage(computerId, message, this, sourceId);
 	}
 
-	public void setTurtleConnect(boolean flag) {
-		SimpleServiceLocator.ccProxy.setTurtleConnect(flag, this);
-	}
-
 	public boolean getTurtleConnect() {
 		return SimpleServiceLocator.ccProxy.getTurtleConnect(this);
+	}
+
+	public void setTurtleConnect(boolean flag) {
+		SimpleServiceLocator.ccProxy.setTurtleConnect(flag, this);
 	}
 
 	public int getLastCCID() {
@@ -477,8 +483,6 @@ public class LogisticsTileGenericPipe extends TileEntity
 		}
 		return renderController;
 	}
-
-	/* IPipeInformationProvider */
 
 	@Override
 	public boolean isCorrect(ConnectionPipeType type) {
@@ -632,6 +636,8 @@ public class LogisticsTileGenericPipe extends TileEntity
 	@Override
 	@ModDependentMethod(modId = LPConstants.openComputersModID)
 	public void onConnect(Node node1) {}
+	//public int redstoneInput = 0;
+	//public int[] redstoneInputSide = new int[ForgeDirection.VALID_DIRECTIONS.length];
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.openComputersModID)
@@ -675,41 +681,6 @@ public class LogisticsTileGenericPipe extends TileEntity
 	@Override
 	public Object getOCNode() {
 		return node();
-	}
-
-	@Getter
-	private boolean initialized = false;
-
-	public boolean[] pipeConnectionsBuffer = new boolean[6];
-	public boolean[] pipeBCConnectionsBuffer = new boolean[6];
-	public boolean[] pipeTDConnectionsBuffer = new boolean[6];
-
-	public CoreUnroutedPipe pipe;
-	//public int redstoneInput = 0;
-	//public int[] redstoneInputSide = new int[ForgeDirection.VALID_DIRECTIONS.length];
-
-	private boolean deletePipe = false;
-	private TileBuffer[] tileBuffer;
-	private boolean sendClientUpdate = false;
-	private boolean blockNeighborChange = false;
-	private boolean refreshRenderState = false;
-	private boolean pipeBound = false;
-
-	public class CoreState implements IClientState {
-
-		public int pipeId = -1;
-
-		@Override
-		public void writeData(LPDataOutput output) throws IOException {
-			output.writeInt(pipeId);
-
-		}
-
-		@Override
-		public void readData(LPDataInput input) throws IOException {
-			pipeId = input.readInt();
-
-		}
 	}
 
 	public void initialize(CoreUnroutedPipe pipe) {
@@ -1092,9 +1063,6 @@ public class LogisticsTileGenericPipe extends TileEntity
 	}
 
 	@SideOnly(Side.CLIENT)
-	private AxisAlignedBB renderBox;
-
-	@SideOnly(Side.CLIENT)
 	@Override
 	public AxisAlignedBB getRenderBoundingBox() {
 		if (renderBox != null) {
@@ -1154,5 +1122,22 @@ public class LogisticsTileGenericPipe extends TileEntity
 	@Override
 	public Stream<TileEntity> getPartsOfPipe() {
 		return this.subMultiBlock.stream().map(pos -> pos.getTileEntity(worldObj));
+	}
+
+	public class CoreState implements IClientState {
+
+		public int pipeId = -1;
+
+		@Override
+		public void writeData(LPDataOutput output) {
+			output.writeInt(pipeId);
+
+		}
+
+		@Override
+		public void readData(LPDataInput input) {
+			pipeId = input.readInt();
+
+		}
 	}
 }

@@ -1,7 +1,5 @@
 package logisticspipes.network.abstractguis;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 
@@ -16,22 +14,22 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 
 public abstract class UpgradeCoordinatesGuiProvider extends CoordinatesPopupGuiProvider {
 
-	public UpgradeCoordinatesGuiProvider(int id) {
-		super(id);
-	}
-
 	@Getter(AccessLevel.PROTECTED)
 	@Setter(AccessLevel.PRIVATE)
 	private int positionInt;
 
+	public UpgradeCoordinatesGuiProvider(int id) {
+		super(id);
+	}
+
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeInt(positionInt);
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		positionInt = input.readInt();
 	}

@@ -1,7 +1,5 @@
 package logisticspipes.network.abstractpackets;
 
-import java.io.IOException;
-
 import net.minecraftforge.common.util.ForgeDirection;
 
 import lombok.Getter;
@@ -21,13 +19,13 @@ public abstract class DirectionModuleCoordinatesPacket extends ModuleCoordinates
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeForgeDirection(direction);
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		super.readData(input);
 		direction = input.readForgeDirection();
 	}

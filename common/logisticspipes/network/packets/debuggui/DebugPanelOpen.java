@@ -1,7 +1,5 @@
 package logisticspipes.network.packets.debuggui;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
@@ -32,13 +30,13 @@ public class DebugPanelOpen extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInput input) throws IOException {
+	public void readData(LPDataInput input) {
 		setName(input.readUTF());
 		setIdentification(input.readInt());
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) throws IOException {
+	public void writeData(LPDataOutput output) {
 		output.writeUTF(getName());
 		output.writeInt(getIdentification());
 	}

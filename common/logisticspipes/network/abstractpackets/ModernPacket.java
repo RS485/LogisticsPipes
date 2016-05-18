@@ -1,7 +1,5 @@
 package logisticspipes.network.abstractpackets;
 
-import java.io.IOException;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
@@ -12,28 +10,24 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 
 public abstract class ModernPacket {
 
-	@Getter
-	@Setter
-	private boolean isChunkDataPacket;
-
-	@Getter
-	@Setter
-	private boolean compressable;
 	/*
 	@Getter
 	protected String channel;
 	 */
 	@Getter
 	private final int id;
-
+	protected int leftRetries = 5;
+	@Getter
+	@Setter
+	private boolean isChunkDataPacket;
+	@Getter
+	@Setter
+	private boolean compressable;
 	@Getter
 	private byte[] data = null;
-
 	@Getter
 	@Setter
 	private int debugId = 0;
-
-	protected int leftRetries = 5;
 
 	public ModernPacket(int id) {
 		//this.channel = LogisticsPipes.LOGISTICS_PIPES_CHANNEL_NAME;
@@ -65,11 +59,11 @@ public abstract class ModernPacket {
 		}
 	 */
 
-	public abstract void readData(LPDataInput input) throws IOException;
+	public abstract void readData(LPDataInput input);
 
 	public abstract void processPacket(EntityPlayer player);
 
-	public abstract void writeData(LPDataOutput output) throws IOException;
+	public abstract void writeData(LPDataOutput output);
 
 	public abstract ModernPacket template();
 

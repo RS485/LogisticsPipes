@@ -49,8 +49,6 @@ import io.netty.buffer.ByteBuf;
 
 import logisticspipes.network.IWriteListObject;
 import logisticspipes.request.resources.IResource;
-import logisticspipes.routing.ExitRoute;
-import logisticspipes.routing.IRouter;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -115,10 +113,6 @@ public interface LPDataOutput {
 	void writeBooleanArray(boolean[] arr);
 
 	void writeForgeDirection(ForgeDirection direction);
-
-	void writeExitRoute(ExitRoute route);
-
-	void writeIRouter(IRouter router);
 
 	<T extends Enum<T>> void writeEnumSet(EnumSet<T> types, Class<T> clazz);
 

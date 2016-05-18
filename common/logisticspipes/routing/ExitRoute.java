@@ -14,23 +14,33 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.routing.debug.ExitRouteDebug;
-
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+import logisticspipes.interfaces.routing.IFilter;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.routing.debug.ExitRouteDebug;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+import network.rs485.logisticspipes.util.LPFinalSerializable;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 /**
  * Defines direction with a cost
  */
-public class ExitRoute implements Comparable<ExitRoute> {
+public class ExitRoute implements Comparable<ExitRoute>, LPFinalSerializable {
 
-	public ForgeDirection exitOrientation;
-	public ForgeDirection insertOrientation;
-	public double distanceToDestination;
 	public final double destinationDistanceToRoot;
 	public final int blockDistance;
 	public final EnumSet<PipeRoutingConnectionType> connectionDetails;
 	public final IRouter destination;
+	public ForgeDirection exitOrientation;
+	public ForgeDirection insertOrientation;
+	public double distanceToDestination;
 	public IRouter root;
 	public List<IFilter> filters = Collections.unmodifiableList(new ArrayList<>(0));
 	/**
@@ -39,9 +49,10 @@ public class ExitRoute implements Comparable<ExitRoute> {
 	 */
 	public ExitRouteDebug debug = new ExitRouteDebug();
 
-	public ExitRoute(IRouter source, IRouter destination, ForgeDirection exitOrientation, ForgeDirection insertOrientation, double metric, EnumSet<PipeRoutingConnectionType> connectionDetails, int blockDistance) {
+	public ExitRoute(IRouter source, IRouter destination, ForgeDirection exitOrientation, ForgeDirection insertOrientation, double metric,
+			EnumSet<PipeRoutingConnectionType> connectionDetails, int blockDistance) {
 		this.destination = destination;
-		root = source;
+		this.root = source;
 		this.exitOrientation = exitOrientation;
 		this.insertOrientation = insertOrientation;
 		this.connectionDetails = connectionDetails;
@@ -56,6 +67,95 @@ public class ExitRoute implements Comparable<ExitRoute> {
 			destinationDistanceToRoot = Integer.MAX_VALUE;
 		}
 		this.blockDistance = blockDistance;
+	}
+
+	@SideOnly(Side.CLIENT)
+	public ExitRoute(LPDataInput input) {
+		if (input.readBoolean()) {
+			destination = readRouter(input);
+		} else {
+			destination = null;
+		}
+
+		if (input.readBoolean()) {
+			root = readRouter(input);
+		} else {
+			root = null;
+		}
+
+		exitOrientation = input.readForgeDirection();
+		insertOrientation = input.readForgeDirection();
+
+		connectionDetails = input.readEnumSet(PipeRoutingConnectionType.class);
+
+		distanceToDestination = input.readDouble();
+
+		double metric = input.readDouble();
+		if (!connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom)) {
+			metric = Integer.MAX_VALUE;
+		}
+		destinationDistanceToRoot = metric;
+
+		blockDistance = input.readInt();
+
+		debug.filterPosition = input.readArrayList(DoubleCoordinates::new);
+		debug.toStringNetwork = input.readUTF();
+		debug.isNewlyAddedCanidate = input.readBoolean();
+		debug.isTraced = input.readBoolean();
+		debug.index = input.readInt();
+	}
+
+	public ExitRoute(IRouter source, IRouter destination, double distance, EnumSet<PipeRoutingConnectionType> enumSet, List<IFilter> filterA,
+			List<IFilter> filterB, int blockDistance) {
+		this(source, destination, ForgeDirection.UNKNOWN, ForgeDirection.UNKNOWN, distance, enumSet, blockDistance);
+		List<IFilter> filter = new ArrayList<>(filterA.size() + filterB.size());
+		filter.addAll(filterA);
+		filter.addAll(filterB);
+		filters = Collections.unmodifiableList(filter);
+	}
+
+	@SideOnly(Side.CLIENT)
+	private IRouter readRouter(LPDataInput input) {
+		DoubleCoordinates pos = new DoubleCoordinates(input);
+		TileEntity tile = pos.getTileEntity(MainProxy.getClientMainWorld());
+		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe) {
+			return ((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).getRouter();
+		}
+		return null;
+	}
+
+	@Override
+	public void write(LPDataOutput output) {
+		if (destination == null) {
+			output.writeBoolean(false);
+		} else {
+			output.writeBoolean(true);
+			destination.write(output);
+		}
+
+		if (root == null) {
+			output.writeBoolean(false);
+		} else {
+			output.writeBoolean(true);
+			root.write(output);
+		}
+
+		output.writeForgeDirection(exitOrientation);
+		output.writeForgeDirection(insertOrientation);
+
+		output.writeEnumSet(connectionDetails, PipeRoutingConnectionType.class);
+
+		output.writeDouble(distanceToDestination);
+
+		output.writeDouble(destinationDistanceToRoot);
+
+		output.writeInt(blockDistance);
+
+		output.writeCollection(filters, (innerOutput, filter) -> innerOutput.writeSerializable(filter.getLPPosition()));
+		output.writeUTF(toString());
+		output.writeBoolean(debug.isNewlyAddedCanidate);
+		output.writeBoolean(debug.isTraced);
+		output.writeInt(debug.index);
 	}
 
 	@Override
@@ -114,13 +214,5 @@ public class ExitRoute implements Comparable<ExitRoute> {
 			return destination.getSimpleID() - o.destination.getSimpleID();
 		}
 		return c;
-	}
-
-	public ExitRoute(IRouter source, IRouter destination, double distance, EnumSet<PipeRoutingConnectionType> enumSet, List<IFilter> filterA, List<IFilter> filterB, int blockDistance) {
-		this(source, destination, ForgeDirection.UNKNOWN, ForgeDirection.UNKNOWN, distance, enumSet, blockDistance);
-		List<IFilter> filter = new ArrayList<>(filterA.size() + filterB.size());
-		filter.addAll(filterA);
-		filter.addAll(filterB);
-		filters = Collections.unmodifiableList(filter);
 	}
 }

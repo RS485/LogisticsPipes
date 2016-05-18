@@ -55,8 +55,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTSizeTracker;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import io.netty.buffer.ByteBuf;
@@ -67,13 +65,8 @@ import static io.netty.buffer.Unpooled.wrappedBuffer;
 
 import logisticspipes.network.IReadListObject;
 import logisticspipes.network.IWriteListObject;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.request.resources.IResource;
 import logisticspipes.request.resources.ResourceNetwork;
-import logisticspipes.routing.ExitRoute;
-import logisticspipes.routing.IRouter;
-import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.order.ClientSideOrderInfo;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
@@ -236,33 +229,6 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 			writeByte(Byte.MIN_VALUE);
 		} else {
 			writeByte(direction.ordinal());
-		}
-	}
-
-	@Override
-	public void writeExitRoute(ExitRoute route) {
-		writeIRouter(route.destination);
-		writeIRouter(route.root);
-		writeForgeDirection(route.exitOrientation);
-		writeForgeDirection(route.insertOrientation);
-		writeEnumSet(route.connectionDetails, PipeRoutingConnectionType.class);
-		writeDouble(route.distanceToDestination);
-		writeDouble(route.destinationDistanceToRoot);
-		writeInt(route.blockDistance);
-		writeCollection(route.filters, (data, filter) -> data.writeSerializable(filter.getLPPosition()));
-		writeUTF(route.toString());
-		writeBoolean(route.debug.isNewlyAddedCanidate);
-		writeBoolean(route.debug.isTraced);
-		writeInt(route.debug.index);
-	}
-
-	@Override
-	public void writeIRouter(IRouter router) {
-		if (router == null) {
-			writeBoolean(false);
-		} else {
-			writeBoolean(true);
-			writeSerializable(router.getLPPosition());
 		}
 	}
 
@@ -487,39 +453,6 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 			return null;
 		}
 		return ForgeDirection.values()[b];
-	}
-
-	@Override
-	public ExitRoute readExitRoute(World world) {
-		IRouter destination = readIRouter(world);
-		IRouter root = readIRouter(world);
-		ForgeDirection exitOri = readForgeDirection();
-		ForgeDirection insertOri = readForgeDirection();
-		EnumSet<PipeRoutingConnectionType> connectionDetails = readEnumSet(PipeRoutingConnectionType.class);
-		double distanceToDestination = localBuffer.readDouble();
-		double destinationDistanceToRoot = localBuffer.readDouble();
-		int blockDistance = localBuffer.readInt();
-		List<DoubleCoordinates> positions = readArrayList(DoubleCoordinates::new);
-		ExitRoute e = new ExitRoute(root, destination, exitOri, insertOri, destinationDistanceToRoot, connectionDetails, blockDistance);
-		e.distanceToDestination = distanceToDestination;
-		e.debug.filterPosition = positions;
-		e.debug.toStringNetwork = readUTF();
-		e.debug.isNewlyAddedCanidate = localBuffer.readBoolean();
-		e.debug.isTraced = localBuffer.readBoolean();
-		e.debug.index = localBuffer.readInt();
-		return e;
-	}
-
-	@Override
-	public IRouter readIRouter(World world) {
-		if (localBuffer.readBoolean()) {
-			DoubleCoordinates pos = new DoubleCoordinates(this);
-			TileEntity tile = pos.getTileEntity(world);
-			if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe) {
-				return ((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).getRouter();
-			}
-		}
-		return null;
 	}
 
 	@Override

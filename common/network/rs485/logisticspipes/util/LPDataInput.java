@@ -45,15 +45,12 @@ import java.util.Set;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import io.netty.buffer.ByteBuf;
 
 import logisticspipes.network.IReadListObject;
 import logisticspipes.request.resources.IResource;
-import logisticspipes.routing.ExitRoute;
-import logisticspipes.routing.IRouter;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -104,13 +101,6 @@ public interface LPDataInput {
 	String readUTF();
 
 	ForgeDirection readForgeDirection();
-
-	ExitRoute readExitRoute(World world);
-
-	/**
-	 * @return ServerRouter or ClientRouter depending where we are
-	 */
-	IRouter readIRouter(World world);
 
 	<T extends Enum<T>> EnumSet<T> readEnumSet(Class<T> clazz);
 

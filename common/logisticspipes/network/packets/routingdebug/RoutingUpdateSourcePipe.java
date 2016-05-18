@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.debug.ClientViewController;
 import network.rs485.logisticspipes.util.LPDataInput;
@@ -39,11 +38,11 @@ public class RoutingUpdateSourcePipe extends ModernPacket {
 
 	@Override
 	public void readData(LPDataInput input) {
-		exitRoute = input.readExitRoute(MainProxy.getClientMainWorld());
+		exitRoute = new ExitRoute(input);
 	}
 
 	@Override
 	public void writeData(LPDataOutput output) {
-		output.writeExitRoute(exitRoute);
+		exitRoute.write(output);
 	}
 }

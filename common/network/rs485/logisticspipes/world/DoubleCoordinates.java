@@ -37,12 +37,6 @@
 
 package network.rs485.logisticspipes.world;
 
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
-import logisticspipes.pipes.basic.CoreUnroutedPipe;
-import logisticspipes.routing.pathfinder.IPipeInformationProvider;
-import logisticspipes.utils.IPositionRotateble;
-
-import lombok.AccessLevel;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -50,13 +44,18 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
-
 import lombok.Data;
-import lombok.Getter;
+
+import logisticspipes.network.abstractpackets.CoordinatesPacket;
+import logisticspipes.pipes.basic.CoreUnroutedPipe;
+import logisticspipes.routing.pathfinder.IPipeInformationProvider;
+import logisticspipes.utils.IPositionRotateble;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+import network.rs485.logisticspipes.util.LPSerializable;
 
 @Data
-public class DoubleCoordinates implements IPositionRotateble, ICoordinates {
+public class DoubleCoordinates implements IPositionRotateble, ICoordinates, LPSerializable {
 
 	private double xCoord;
 	private double yCoord;
@@ -212,5 +211,19 @@ public class DoubleCoordinates implements IPositionRotateble, ICoordinates {
 
 	public double getLength() {
 		return Math.sqrt(getXDouble() * getXDouble() + getYDouble() * getYDouble() + getZDouble() * getZDouble());
+	}
+
+	@Override
+	public void read(LPDataInput input) {
+		xCoord = input.readDouble();
+		yCoord = input.readDouble();
+		zCoord = input.readDouble();
+	}
+
+	@Override
+	public void write(LPDataOutput output) {
+		output.writeDouble(xCoord);
+		output.writeDouble(yCoord);
+		output.writeDouble(zCoord);
 	}
 }

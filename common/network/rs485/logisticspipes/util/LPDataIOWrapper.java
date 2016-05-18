@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -42,6 +43,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
 import static io.netty.buffer.Unpooled.buffer;
 import static io.netty.buffer.Unpooled.wrappedBuffer;
 
@@ -63,9 +66,9 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 
-	public static final Charset UTF_8 = Charset.forName("utf-8");
-	private static final HashMap<Long, LPDataIOWrapper> bufferWrapperMap = new HashMap<>();
-	private ByteBuf localBuffer;
+	private static final Charset UTF_8 = Charset.forName("utf-8");
+	private static final HashMap<Long, LPDataIOWrapper> BUFFER_WRAPPER_MAP = new HashMap<>();
+	ByteBuf localBuffer;
 	private int reference;
 
 	private LPDataIOWrapper(ByteBuf buffer) {
@@ -74,10 +77,10 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 
 	private static LPDataIOWrapper getInstance(ByteBuf buffer) {
 		if (buffer.hasMemoryAddress()) {
-			LPDataIOWrapper instance = bufferWrapperMap.get(buffer.memoryAddress());
+			LPDataIOWrapper instance = BUFFER_WRAPPER_MAP.get(buffer.memoryAddress());
 			if (instance == null) {
 				instance = new LPDataIOWrapper(buffer);
-				bufferWrapperMap.put(buffer.memoryAddress(), instance);
+				BUFFER_WRAPPER_MAP.put(buffer.memoryAddress(), instance);
 			}
 			++instance.reference;
 			return instance;
@@ -89,7 +92,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	private void unsetBuffer() {
 		if (localBuffer.hasMemoryAddress()) {
 			if (--reference < 1) {
-				bufferWrapperMap.remove(localBuffer.memoryAddress());
+				BUFFER_WRAPPER_MAP.remove(localBuffer.memoryAddress());
 			}
 		}
 		localBuffer = null;
@@ -137,30 +140,23 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeByteArray(byte[] arr) {
+	public void writeByteArray(byte[] arr) throws IOException {
 		if (arr == null) {
-			localBuffer.writeInt(-1);
+			writeInt(-1);
 		} else {
-			localBuffer.writeInt(arr.length);
-			localBuffer.writeBytes(arr);
+			writeInt(arr.length);
+			writeBytes(arr);
 		}
 	}
 
 	@Override
-	public byte[] readByteArray() {
-		final int length = localBuffer.readInt();
+	public byte[] readByteArray() throws IOException {
+		final int length = readInt();
 		if (length == -1) {
 			return null;
 		}
 
-		byte[] arr = new byte[length];
-		if (!localBuffer.isReadable(length)) {
-			System.err.println("Trying to read " + length + " bytes");
-			throw new IndexOutOfBoundsException(length + " > " + localBuffer.readableBytes());
-		} else {
-			localBuffer.readBytes(arr, 0, length);
-		}
-		return arr;
+		return readBytes(length);
 	}
 
 	@Override
@@ -209,59 +205,59 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeUTF(String s) {
+	public void writeUTF(String s) throws IOException {
 		if (s == null) {
-			localBuffer.writeInt(-1);
+			writeInt(-1);
 		} else {
-			this.writeByteArray(s.getBytes(UTF_8));
+			writeByteArray(s.getBytes(UTF_8));
 		}
 	}
 
 	@Override
 	public void writeForgeDirection(ForgeDirection direction) {
 		if (direction == null) {
-			localBuffer.writeByte(Byte.MIN_VALUE);
+			writeByte(Byte.MIN_VALUE);
 		} else {
-			localBuffer.writeByte(direction.ordinal());
+			writeByte(direction.ordinal());
 		}
 	}
 
 	@Override
 	public void writeExitRoute(ExitRoute route) throws IOException {
-		this.writeIRouter(route.destination);
-		this.writeIRouter(route.root);
-		this.writeForgeDirection(route.exitOrientation);
-		this.writeForgeDirection(route.insertOrientation);
-		this.writeEnumSet(route.connectionDetails, PipeRoutingConnectionType.class);
-		localBuffer.writeDouble(route.distanceToDestination);
-		localBuffer.writeDouble(route.destinationDistanceToRoot);
-		localBuffer.writeInt(route.blockDistance);
-		this.writeCollection(route.filters, (data, filter) -> data.writeLPPosition(filter.getLPPosition()));
-		this.writeUTF(route.toString());
-		localBuffer.writeBoolean(route.debug.isNewlyAddedCanidate);
-		localBuffer.writeBoolean(route.debug.isTraced);
-		localBuffer.writeInt(route.debug.index);
+		writeIRouter(route.destination);
+		writeIRouter(route.root);
+		writeForgeDirection(route.exitOrientation);
+		writeForgeDirection(route.insertOrientation);
+		writeEnumSet(route.connectionDetails, PipeRoutingConnectionType.class);
+		writeDouble(route.distanceToDestination);
+		writeDouble(route.destinationDistanceToRoot);
+		writeInt(route.blockDistance);
+		writeCollection(route.filters, (data, filter) -> data.writeLPPosition(filter.getLPPosition()));
+		writeUTF(route.toString());
+		writeBoolean(route.debug.isNewlyAddedCanidate);
+		writeBoolean(route.debug.isTraced);
+		writeInt(route.debug.index);
 	}
 
 	@Override
 	public void writeIRouter(IRouter router) {
 		if (router == null) {
-			localBuffer.writeBoolean(false);
+			writeBoolean(false);
 		} else {
-			localBuffer.writeBoolean(true);
-			this.writeLPPosition(router.getLPPosition());
+			writeBoolean(true);
+			writeLPPosition(router.getLPPosition());
 		}
 	}
 
 	@Override
 	public void writeLPPosition(DoubleCoordinates pos) {
-		localBuffer.writeDouble(pos.getXCoord());
-		localBuffer.writeDouble(pos.getYCoord());
-		localBuffer.writeDouble(pos.getZCoord());
+		writeDouble(pos.getXCoord());
+		writeDouble(pos.getYCoord());
+		writeDouble(pos.getZCoord());
 	}
 
 	@Override
-	public <T extends Enum<T>> void writeEnumSet(EnumSet<T> types, Class<T> clazz) {
+	public <T extends Enum<T>> void writeEnumSet(EnumSet<T> types, Class<T> clazz) throws IOException {
 		T[] parts = clazz.getEnumConstants();
 		final int length = parts.length / 8 + (parts.length % 8 == 0 ? 0 : 1);
 		byte[] set = new byte[length];
@@ -272,49 +268,52 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 				set[part.ordinal() / 8] |= i;
 			}
 		}
-		this.writeByteArray(set);
+		writeByteArray(set);
 	}
 
 	@Override
-	public void writeBitSet(BitSet bits) {
+	public void writeBitSet(BitSet bits) throws IOException {
 		if (bits == null) {
 			throw new NullPointerException("BitSet may not be null");
 		}
-		this.writeByteArray(bits.toByteArray());
+		writeByteArray(bits.toByteArray());
 	}
 
 	@Override
 	public void writeNBTTagCompound(NBTTagCompound tag) throws IOException {
 		if (tag == null) {
-			localBuffer.writeInt(-1);
+			writeByte(0);
 		} else {
-			byte[] bytes = CompressedStreamTools.compress(tag);
-			this.writeByteArray(bytes);
+			writeByte(1);
+			CompressedStreamTools.write(tag, new ByteBufOutputStream(localBuffer));
 		}
 	}
 
 	@Override
-	public void writeBooleanArray(boolean[] arr) {
+	public void writeBooleanArray(boolean[] arr) throws IOException {
 		if (arr == null) {
-			localBuffer.writeInt(-1);
+			writeInt(-1);
+		} else if (arr.length == 0) {
+			writeInt(0);
+			writeByteArray(null);
 		} else {
 			BitSet bits = new BitSet(arr.length);
 			for (int i = 0; i < arr.length; i++) {
 				bits.set(i, arr[i]);
 			}
-			localBuffer.writeInt(arr.length);
-			this.writeByteArray(bits.toByteArray());
+			writeInt(arr.length);
+			writeByteArray(bits.toByteArray());
 		}
 	}
 
 	@Override
 	public void writeIntArray(int[] arr) {
 		if (arr == null) {
-			localBuffer.writeInt(-1);
+			writeInt(-1);
 		} else {
-			localBuffer.writeInt(arr.length);
+			writeInt(arr.length);
 			for (int i : arr) {
-				localBuffer.writeInt(i);
+				writeInt(i);
 			}
 		}
 	}
@@ -355,9 +354,9 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	@Override
 	public <T> void writeCollection(Collection<T> collection, IWriteListObject<T> handler) throws IOException {
 		if (collection == null) {
-			localBuffer.writeInt(-1);
+			writeInt(-1);
 		} else {
-			localBuffer.writeInt(collection.size());
+			writeInt(collection.size());
 			for (T obj : collection) {
 				handler.writeObject(this, obj);
 			}
@@ -366,41 +365,47 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 
 	@Override
 	public void writeOrderInfo(IOrderInfoProvider order) throws IOException {
-		this.writeItemIdentifierStack(order.getAsDisplayItem());
-		localBuffer.writeInt(order.getRouterId());
-		localBuffer.writeBoolean(order.isFinished());
-		localBuffer.writeBoolean(order.isInProgress());
-		this.writeEnum(order.getType());
-		this.writeCollection(order.getProgresses(), LPDataOutput::writeFloat);
-		localBuffer.writeByte(order.getMachineProgress());
-		this.writeLPPosition(order.getTargetPosition());
-		this.writeItemIdentifier(order.getTargetType());
+		writeItemIdentifierStack(order.getAsDisplayItem());
+		writeInt(order.getRouterId());
+		writeBoolean(order.isFinished());
+		writeBoolean(order.isInProgress());
+		writeEnum(order.getType());
+		writeCollection(order.getProgresses(), LPDataOutput::writeFloat);
+		writeByte(order.getMachineProgress());
+		writeLPPosition(order.getTargetPosition());
+		writeItemIdentifier(order.getTargetType());
 	}
 
 	@Override
 	public <T extends Enum<T>> void writeEnum(T obj) {
-		localBuffer.writeInt(obj.ordinal());
+		writeInt(obj.ordinal());
 	}
 
 	@Override
 	public void writeLinkedLogisticsOrderList(LinkedLogisticsOrderList orderList) throws IOException {
-		this.writeCollection(orderList, LPDataOutput::writeOrderInfo);
-		this.writeCollection(orderList.getSubOrders(), LPDataOutput::writeLinkedLogisticsOrderList);
+		writeCollection(orderList, LPDataOutput::writeOrderInfo);
+		writeCollection(orderList.getSubOrders(), LPDataOutput::writeLinkedLogisticsOrderList);
 	}
 
 	@Override
 	public void writeByteBuf(ByteBuf otherBuffer) {
-		final ByteBuf copy = otherBuffer.copy();
-		copy.readerIndex(0);
-		localBuffer.writeInt(copy.readableBytes());
-		localBuffer.writeBytes(copy);
+		if (otherBuffer == null) {
+			throw new NullPointerException("Other buffer may not be null");
+		}
+
+		writeInt(otherBuffer.readableBytes());
+		localBuffer.writeBytes(otherBuffer, otherBuffer.readableBytes());
 	}
 
 	@Override
 	public void writeLongArray(long[] arr) {
-		localBuffer.writeInt(arr.length);
-		for (long l : arr) {
-			localBuffer.writeLong(l);
+		if (arr == null) {
+			writeInt(-1);
+		} else {
+			writeInt(arr.length);
+			for (long l : arr) {
+				writeLong(l);
+			}
 		}
 	}
 
@@ -450,8 +455,8 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public String readUTF() {
-		byte[] arr = this.readByteArray();
+	public String readUTF() throws IOException {
+		byte[] arr = readByteArray();
 		if (arr == null) {
 			return null;
 		} else {
@@ -471,19 +476,19 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 
 	@Override
 	public ExitRoute readExitRoute(World world) throws IOException {
-		IRouter destination = this.readIRouter(world);
-		IRouter root = this.readIRouter(world);
-		ForgeDirection exitOri = this.readForgeDirection();
-		ForgeDirection insertOri = this.readForgeDirection();
-		EnumSet<PipeRoutingConnectionType> connectionDetails = this.readEnumSet(PipeRoutingConnectionType.class);
+		IRouter destination = readIRouter(world);
+		IRouter root = readIRouter(world);
+		ForgeDirection exitOri = readForgeDirection();
+		ForgeDirection insertOri = readForgeDirection();
+		EnumSet<PipeRoutingConnectionType> connectionDetails = readEnumSet(PipeRoutingConnectionType.class);
 		double distanceToDestination = localBuffer.readDouble();
 		double destinationDistanceToRoot = localBuffer.readDouble();
 		int blockDistance = localBuffer.readInt();
-		List<DoubleCoordinates> positions = this.readArrayList(LPDataInput::readLPPosition);
+		List<DoubleCoordinates> positions = readArrayList(LPDataInput::readLPPosition);
 		ExitRoute e = new ExitRoute(root, destination, exitOri, insertOri, destinationDistanceToRoot, connectionDetails, blockDistance);
 		e.distanceToDestination = distanceToDestination;
 		e.debug.filterPosition = positions;
-		e.debug.toStringNetwork = this.readUTF();
+		e.debug.toStringNetwork = readUTF();
 		e.debug.isNewlyAddedCanidate = localBuffer.readBoolean();
 		e.debug.isTraced = localBuffer.readBoolean();
 		e.debug.index = localBuffer.readInt();
@@ -493,7 +498,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	@Override
 	public IRouter readIRouter(World world) {
 		if (localBuffer.readBoolean()) {
-			DoubleCoordinates pos = this.readLPPosition();
+			DoubleCoordinates pos = readLPPosition();
 			TileEntity tile = pos.getTileEntity(world);
 			if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe) {
 				return ((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).getRouter();
@@ -508,9 +513,9 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public <T extends Enum<T>> EnumSet<T> readEnumSet(Class<T> clazz) {
+	public <T extends Enum<T>> EnumSet<T> readEnumSet(Class<T> clazz) throws IOException {
 		EnumSet<T> types = EnumSet.noneOf(clazz);
-		byte[] arr = this.readByteArray();
+		byte[] arr = readByteArray();
 		if (arr != null) {
 			T[] parts = clazz.getEnumConstants();
 			for (T part : parts) {
@@ -523,8 +528,8 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public BitSet readBitSet() {
-		byte[] arr = this.readByteArray();
+	public BitSet readBitSet() throws IOException {
+		byte[] arr = readByteArray();
 		if (arr == null) {
 			return new BitSet();
 		} else {
@@ -534,32 +539,32 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 
 	@Override
 	public NBTTagCompound readNBTTagCompound() throws IOException {
-		byte[] arr = this.readByteArray();
-		if (arr == null) {
+		boolean isEmpty = (readByte() == 0);
+		if (isEmpty) {
 			return null;
 		}
 
-		return CompressedStreamTools.func_152457_a(arr, new NBTSizeTracker(Long.MAX_VALUE));
+		return CompressedStreamTools.func_152456_a(new ByteBufInputStream(localBuffer), NBTSizeTracker.field_152451_a);
 	}
 
 	@Override
-	public boolean[] readBooleanArray() {
+	public boolean[] readBooleanArray() throws IOException {
 		final int bitCount = localBuffer.readInt();
 		if (bitCount == -1) {
 			return null;
 		}
 
 		byte[] data = readByteArray();
-		if (data == null) {
+		if (bitCount == 0) {
 			return new boolean[0];
+		} else if (data == null) {
+			throw new NullPointerException("Boolean's byte array is null");
 		}
 
 		BitSet bits = BitSet.valueOf(data);
 
-		boolean[] arr = new boolean[bitCount];
-		for (int i = 0; i < bitCount; i++) {
-			arr[i] = bits.get(i);
-		}
+		final boolean[] arr = new boolean[bitCount];
+		IntStream.range(0, bitCount).forEach(i -> arr[i] = bits.get(i));
 		return arr;
 	}
 
@@ -570,12 +575,9 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 			return null;
 		}
 
-		int[] arr = new int[length];
-		for (int i = 0; i < length; i++) {
-			arr[i] = localBuffer.readInt();
-		}
+		final int[] arr = new int[length];
+		IntStream.range(0, length).forEach(i -> arr[i] = localBuffer.readInt());
 		return arr;
-
 	}
 
 	@Override
@@ -666,15 +668,15 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 
 	@Override
 	public IOrderInfoProvider readOrderInfo() throws IOException {
-		ItemIdentifierStack stack = this.readItemIdentifierStack();
+		ItemIdentifierStack stack = readItemIdentifierStack();
 		int routerId = localBuffer.readInt();
 		boolean isFinished = localBuffer.readBoolean();
 		boolean inProgress = localBuffer.readBoolean();
-		IOrderInfoProvider.ResourceType type = this.readEnum(IOrderInfoProvider.ResourceType.class);
-		List<Float> list = this.readArrayList(LPDataInput::readFloat);
+		IOrderInfoProvider.ResourceType type = readEnum(IOrderInfoProvider.ResourceType.class);
+		List<Float> list = readArrayList(LPDataInput::readFloat);
 		byte machineProgress = localBuffer.readByte();
-		DoubleCoordinates pos = this.readLPPosition();
-		ItemIdentifier ident = this.readItemIdentifier();
+		DoubleCoordinates pos = readLPPosition();
+		ItemIdentifier ident = readItemIdentifier();
 		return new ClientSideOrderInfo(stack, isFinished, type, inProgress, routerId, list, machineProgress, pos, ident);
 	}
 
@@ -687,13 +689,13 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	public LinkedLogisticsOrderList readLinkedLogisticsOrderList() throws IOException {
 		LinkedLogisticsOrderList list = new LinkedLogisticsOrderList();
 
-		List<IOrderInfoProvider> orderInfoProviders = this.readArrayList(LPDataInput::readOrderInfo);
+		List<IOrderInfoProvider> orderInfoProviders = readArrayList(LPDataInput::readOrderInfo);
 		if (orderInfoProviders == null) {
 			throw new IOException("Expected order info provider list");
 		}
 		list.addAll(orderInfoProviders);
 
-		List<LinkedLogisticsOrderList> orderLists = this.readArrayList(LPDataInput::readLinkedLogisticsOrderList);
+		List<LinkedLogisticsOrderList> orderLists = readArrayList(LPDataInput::readLinkedLogisticsOrderList);
 		if (orderLists == null) {
 			throw new IOException("Expected logistics order list");
 		}
@@ -703,10 +705,10 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public ByteBuf readByteBuf() {
-		byte[] arr = this.readByteArray();
+	public ByteBuf readByteBuf() throws IOException {
+		byte[] arr = readByteArray();
 		if (arr == null) {
-			return buffer();
+			throw new NullPointerException("Buffer may not be null, but read null");
 		} else {
 			return wrappedBuffer(arr);
 		}
@@ -715,10 +717,12 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	@Override
 	public long[] readLongArray() {
 		final int length = localBuffer.readInt();
-		long[] arr = new long[length];
-		for (int i = 0; i < length; i++) {
-			arr[i] = localBuffer.readLong();
+		if (length == -1) {
+			return null;
 		}
+
+		final long[] arr = new long[length];
+		IntStream.range(0, length).forEach(i -> arr[i] = localBuffer.readLong());
 		return arr;
 	}
 

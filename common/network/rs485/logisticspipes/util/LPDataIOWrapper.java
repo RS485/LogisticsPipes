@@ -72,7 +72,6 @@ import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 
@@ -345,26 +344,13 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeOrderInfo(IOrderInfoProvider order) {
-		writeItemIdentifierStack(order.getAsDisplayItem());
-		writeInt(order.getRouterId());
-		writeBoolean(order.isFinished());
-		writeBoolean(order.isInProgress());
-		writeEnum(order.getType());
-		writeCollection(order.getProgresses(), LPDataOutput::writeFloat);
-		writeByte(order.getMachineProgress());
-		writeSerializable(order.getTargetPosition());
-		writeItemIdentifier(order.getTargetType());
-	}
-
-	@Override
 	public <T extends Enum<T>> void writeEnum(T obj) {
 		writeInt(obj.ordinal());
 	}
 
 	@Override
 	public void writeLinkedLogisticsOrderList(LinkedLogisticsOrderList orderList) {
-		writeCollection(orderList, LPDataOutput::writeOrderInfo);
+		writeCollection(orderList, LPDataOutput::writeSerializable);
 		writeCollection(orderList.getSubOrders(), LPDataOutput::writeLinkedLogisticsOrderList);
 	}
 
@@ -615,20 +601,6 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public IOrderInfoProvider readOrderInfo() {
-		ItemIdentifierStack stack = readItemIdentifierStack();
-		int routerId = localBuffer.readInt();
-		boolean isFinished = localBuffer.readBoolean();
-		boolean inProgress = localBuffer.readBoolean();
-		IOrderInfoProvider.ResourceType type = readEnum(IOrderInfoProvider.ResourceType.class);
-		List<Float> list = readArrayList(LPDataInput::readFloat);
-		byte machineProgress = localBuffer.readByte();
-		DoubleCoordinates pos = new DoubleCoordinates(this);
-		ItemIdentifier ident = readItemIdentifier();
-		return new ClientSideOrderInfo(stack, isFinished, type, inProgress, routerId, list, machineProgress, pos, ident);
-	}
-
-	@Override
 	public <T extends Enum<T>> T readEnum(Class<T> clazz) {
 		return clazz.getEnumConstants()[localBuffer.readInt()];
 	}
@@ -637,7 +609,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	public LinkedLogisticsOrderList readLinkedLogisticsOrderList() {
 		LinkedLogisticsOrderList list = new LinkedLogisticsOrderList();
 
-		List<IOrderInfoProvider> orderInfoProviders = readArrayList(LPDataInput::readOrderInfo);
+		List<IOrderInfoProvider> orderInfoProviders = readArrayList(ClientSideOrderInfo::new);
 		if (orderInfoProviders == null) {
 			throw new NullPointerException("Expected order info provider list");
 		}

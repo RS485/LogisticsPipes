@@ -51,7 +51,6 @@ import io.netty.buffer.ByteBuf;
 
 import logisticspipes.network.IReadListObject;
 import logisticspipes.request.resources.IResource;
-import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -125,8 +124,6 @@ public interface LPDataInput {
 	<T> LinkedList<T> readLinkedList(IReadListObject<T> reader);
 
 	<T> Set<T> readSet(IReadListObject<T> handler);
-
-	IOrderInfoProvider readOrderInfo();
 
 	<T extends Enum<T>> T readEnum(Class<T> clazz);
 

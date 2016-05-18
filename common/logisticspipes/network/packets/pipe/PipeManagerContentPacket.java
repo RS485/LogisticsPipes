@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.pipe;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -12,6 +11,7 @@ import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.routing.order.ClientSideOrderInfo;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LogisticsOrder;
 import logisticspipes.routing.order.LogisticsOrderManager;
@@ -39,7 +39,6 @@ public class PipeManagerContentPacket extends CoordinatesPacket {
 		CoreRoutedPipe cPipe = (CoreRoutedPipe) pipe.pipe;
 		cPipe.getClientSideOrderManager().clear();
 		cPipe.getClientSideOrderManager().addAll(clientOrder);
-
 	}
 
 	@Override
@@ -50,19 +49,18 @@ public class PipeManagerContentPacket extends CoordinatesPacket {
 	@Override
 	public void writeData(LPDataOutput output) {
 		super.writeData(output);
+
+		// manual collection write, because generics are wrong here
+		output.writeInt(manager.size());
 		for (LogisticsOrder order : manager) {
-			output.writeByte(1);
-			output.writeOrderInfo(order);
+			output.writeSerializable(order);
 		}
-		output.writeByte(0);
 	}
 
 	@Override
 	public void readData(LPDataInput input) {
 		super.readData(input);
-		clientOrder = new LinkedList<>();
-		while (input.readByte() == 1) {
-			clientOrder.add(input.readOrderInfo());
-		}
+
+		clientOrder = input.readLinkedList(ClientSideOrderInfo::new);
 	}
 }

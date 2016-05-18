@@ -13,6 +13,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.World;
+
 import logisticspipes.interfaces.IChangeListener;
 import logisticspipes.interfaces.ILPPositionProvider;
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -23,10 +26,12 @@ import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
-
 public abstract class LogisticsOrderManager<T extends LogisticsOrder, I> implements Iterable<T> {
+
+	protected final LogisticsOrderLinkedList<T, I> _orders;
+	protected IChangeListener listener = null;
+	protected PlayerCollectionList watchingPlayers = new PlayerCollectionList();
+	private ILPPositionProvider pos = null;
 
 	public LogisticsOrderManager(LogisticsOrderLinkedList<T, I> orders, ILPPositionProvider pos) {
 		_orders = orders;
@@ -38,12 +43,15 @@ public abstract class LogisticsOrderManager<T extends LogisticsOrder, I> impleme
 		this.listener = listener;
 	}
 
-	protected final LogisticsOrderLinkedList<T, I> _orders;
-	protected IChangeListener listener = null;
-
-	protected PlayerCollectionList watchingPlayers = new PlayerCollectionList();
-
-	private ILPPositionProvider pos = null;
+	private static void addToList(ItemIdentifierStack stack, LinkedList<ItemIdentifierStack> list) {
+		for (ItemIdentifierStack ident : list) {
+			if (ident.getItem().equals(stack.getItem())) {
+				ident.setStackSize(ident.getStackSize() + stack.getStackSize());
+				return;
+			}
+		}
+		list.addLast(stack.clone());
+	}
 
 	protected void listen() {
 		changed();
@@ -53,7 +61,7 @@ public abstract class LogisticsOrderManager<T extends LogisticsOrder, I> impleme
 	}
 
 	public void dump() {
-		StringBuilder sb = new StringBuilder(" ############################################# ").append(System.getProperty("line.separator"));;
+		StringBuilder sb = new StringBuilder(" ############################################# ").append(System.getProperty("line.separator"));
 		for (T s : _orders) {
 			sb.append(s.getAsDisplayItem() + " / " + s.getAmount() + " / " + s.getType().name()).append(System.getProperty("line.separator"));
 		}
@@ -70,16 +78,6 @@ public abstract class LogisticsOrderManager<T extends LogisticsOrder, I> impleme
 			LogisticsOrderManager.addToList(request.getAsDisplayItem(), list);
 		}
 		return list;
-	}
-
-	private static void addToList(ItemIdentifierStack stack, LinkedList<ItemIdentifierStack> list) {
-		for (ItemIdentifierStack ident : list) {
-			if (ident.getItem().equals(stack.getItem())) {
-				ident.setStackSize(ident.getStackSize() + stack.getStackSize());
-				return;
-			}
-		}
-		list.addLast(stack.clone());
 	}
 
 	public boolean hasOrders(ResourceType... type) {
@@ -208,5 +206,9 @@ public abstract class LogisticsOrderManager<T extends LogisticsOrder, I> impleme
 	@Override
 	public Iterator<T> iterator() {
 		return this._orders.iterator();
+	}
+
+	public int size() {
+		return _orders.size();
 	}
 }

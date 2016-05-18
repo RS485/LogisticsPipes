@@ -111,9 +111,11 @@ public class ClientPacketBufferHandlerThread {
 							clearLock.lock();
 							try {
 								for (ModernPacket packet : clientList) {
-									output.writeShort(packet.getId());
-									output.writeInt(packet.getDebugId());
-									packet.writeData(output);
+									output.writeByteArray(LPDataIOWrapper.collectData(dataOutput -> {
+										dataOutput.writeShort(packet.getId());
+										dataOutput.writeInt(packet.getDebugId());
+										packet.writeData(dataOutput);
+									}));
 								}
 							} finally {
 								clientList.clear();
@@ -208,8 +210,9 @@ public class ClientPacketBufferHandlerThread {
 		}
 
 		public void clientTickEnd() {
-			Pair<EntityPlayer, byte[]> part = null;
+			Pair<EntityPlayer, byte[]> part;
 			while (true) {
+				part = null;
 				packetBufferLock.lock();
 				try {
 					if (PacketBuffer.size() > 0) {

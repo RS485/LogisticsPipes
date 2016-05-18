@@ -119,9 +119,11 @@ public class ServerPacketBufferHandlerThread {
 								LinkedList<ModernPacket> packets = playerPacketEntry.getValue();
 								try {
 									for (ModernPacket packet : packets) {
-										output.writeShort(packet.getId());
-										output.writeInt(packet.getDebugId());
-										packet.writeData(output);
+										output.writeByteArray(LPDataIOWrapper.collectData(dataOutput -> {
+											dataOutput.writeShort(packet.getId());
+											dataOutput.writeInt(packet.getDebugId());
+											packet.writeData(dataOutput);
+										}));
 									}
 								} finally {
 									packets.clear();
@@ -222,8 +224,9 @@ public class ServerPacketBufferHandlerThread {
 		}
 
 		public void serverTickEnd() {
-			Pair<EntityPlayer, byte[]> part = null;
+			Pair<EntityPlayer, byte[]> part;
 			while (true) {
+				part = null;
 				packetBufferLock.lock();
 				try {
 					if (PacketBuffer.size() > 0) {

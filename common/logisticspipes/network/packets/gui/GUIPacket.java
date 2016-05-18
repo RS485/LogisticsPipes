@@ -57,7 +57,6 @@ public class GUIPacket extends ModernPacket {
 	public void writeData(LPDataOutput output) throws IOException {
 		output.writeInt(guiID);
 		output.writeInt(windowID);
-		output.writeInt(guiData.length);
 		output.writeByteArray(guiData);
 	}
 

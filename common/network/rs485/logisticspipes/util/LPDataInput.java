@@ -58,7 +58,6 @@ import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public interface LPDataInput {
 
@@ -112,8 +111,6 @@ public interface LPDataInput {
 	 * @return ServerRouter or ClientRouter depending where we are
 	 */
 	IRouter readIRouter(World world);
-
-	DoubleCoordinates readLPPosition();
 
 	<T extends Enum<T>> EnumSet<T> readEnumSet(Class<T> clazz);
 

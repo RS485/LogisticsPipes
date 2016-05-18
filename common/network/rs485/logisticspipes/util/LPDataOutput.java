@@ -55,7 +55,6 @@ import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public interface LPDataOutput {
 
@@ -120,8 +119,6 @@ public interface LPDataOutput {
 	void writeExitRoute(ExitRoute route);
 
 	void writeIRouter(IRouter router);
-
-	void writeLPPosition(DoubleCoordinates pos);
 
 	<T extends Enum<T>> void writeEnumSet(EnumSet<T> types, Class<T> clazz);
 

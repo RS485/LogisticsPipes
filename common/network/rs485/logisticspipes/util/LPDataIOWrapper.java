@@ -249,7 +249,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		writeDouble(route.distanceToDestination);
 		writeDouble(route.destinationDistanceToRoot);
 		writeInt(route.blockDistance);
-		writeCollection(route.filters, (data, filter) -> data.writeLPPosition(filter.getLPPosition()));
+		writeCollection(route.filters, (data, filter) -> data.writeSerializable(filter.getLPPosition()));
 		writeUTF(route.toString());
 		writeBoolean(route.debug.isNewlyAddedCanidate);
 		writeBoolean(route.debug.isTraced);
@@ -262,15 +262,8 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 			writeBoolean(false);
 		} else {
 			writeBoolean(true);
-			writeLPPosition(router.getLPPosition());
+			writeSerializable(router.getLPPosition());
 		}
-	}
-
-	@Override
-	public void writeLPPosition(DoubleCoordinates pos) {
-		writeDouble(pos.getXCoord());
-		writeDouble(pos.getYCoord());
-		writeDouble(pos.getZCoord());
 	}
 
 	@Override
@@ -394,7 +387,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		writeEnum(order.getType());
 		writeCollection(order.getProgresses(), LPDataOutput::writeFloat);
 		writeByte(order.getMachineProgress());
-		writeLPPosition(order.getTargetPosition());
+		writeSerializable(order.getTargetPosition());
 		writeItemIdentifier(order.getTargetType());
 	}
 
@@ -506,7 +499,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		double distanceToDestination = localBuffer.readDouble();
 		double destinationDistanceToRoot = localBuffer.readDouble();
 		int blockDistance = localBuffer.readInt();
-		List<DoubleCoordinates> positions = readArrayList(LPDataInput::readLPPosition);
+		List<DoubleCoordinates> positions = readArrayList(DoubleCoordinates::new);
 		ExitRoute e = new ExitRoute(root, destination, exitOri, insertOri, destinationDistanceToRoot, connectionDetails, blockDistance);
 		e.distanceToDestination = distanceToDestination;
 		e.debug.filterPosition = positions;
@@ -520,18 +513,13 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	@Override
 	public IRouter readIRouter(World world) {
 		if (localBuffer.readBoolean()) {
-			DoubleCoordinates pos = readLPPosition();
+			DoubleCoordinates pos = new DoubleCoordinates(this);
 			TileEntity tile = pos.getTileEntity(world);
 			if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe) {
 				return ((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).getRouter();
 			}
 		}
 		return null;
-	}
-
-	@Override
-	public DoubleCoordinates readLPPosition() {
-		return new DoubleCoordinates(localBuffer.readDouble(), localBuffer.readDouble(), localBuffer.readDouble());
 	}
 
 	@Override
@@ -702,7 +690,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		IOrderInfoProvider.ResourceType type = readEnum(IOrderInfoProvider.ResourceType.class);
 		List<Float> list = readArrayList(LPDataInput::readFloat);
 		byte machineProgress = localBuffer.readByte();
-		DoubleCoordinates pos = readLPPosition();
+		DoubleCoordinates pos = new DoubleCoordinates(this);
 		ItemIdentifier ident = readItemIdentifier();
 		return new ClientSideOrderInfo(stack, isFinished, type, inProgress, routerId, list, machineProgress, pos, ident);
 	}

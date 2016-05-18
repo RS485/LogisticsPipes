@@ -35,7 +35,7 @@ public class RoutingUpdateDebugFilters extends ModernPacket {
 
 	@Override
 	public void readData(LPDataInput input) {
-		pos = input.readLPPosition();
+		pos = new DoubleCoordinates(input);
 		filterPositions = new EnumMap<>(PipeRoutingConnectionType.class);
 		short id;
 		while ((id = input.readShort()) != -1) {
@@ -45,7 +45,7 @@ public class RoutingUpdateDebugFilters extends ModernPacket {
 			while ((length = input.readShort()) != -1) {
 				List<DoubleCoordinates> linkedFilter = new ArrayList<>();
 				for (int i = 0; i < length; i++) {
-					linkedFilter.add(input.readLPPosition());
+					linkedFilter.add(new DoubleCoordinates(input));
 				}
 				typeFilters.add(linkedFilter);
 			}
@@ -60,13 +60,13 @@ public class RoutingUpdateDebugFilters extends ModernPacket {
 
 	@Override
 	public void writeData(LPDataOutput output) {
-		output.writeLPPosition(pos);
+		output.writeSerializable(pos);
 		for (PipeRoutingConnectionType type : filters.keySet()) {
 			output.writeShort(type.ordinal());
 			for (List<IFilter> linkedFilter : filters.get(type)) {
 				output.writeShort(linkedFilter.size());
 				for (IFilter filter : linkedFilter) {
-					output.writeLPPosition(filter.getLPPosition());
+					output.writeSerializable(filter.getLPPosition());
 				}
 			}
 			output.writeShort(-1);

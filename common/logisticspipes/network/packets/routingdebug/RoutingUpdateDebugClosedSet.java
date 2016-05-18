@@ -31,7 +31,7 @@ public class RoutingUpdateDebugClosedSet extends ModernPacket {
 	@Override
 	public void readData(LPDataInput input) {
 		set = input.readEnumSet(PipeRoutingConnectionType.class);
-		pos = input.readLPPosition();
+		pos = new DoubleCoordinates(input);
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class RoutingUpdateDebugClosedSet extends ModernPacket {
 	@Override
 	public void writeData(LPDataOutput output) {
 		output.writeEnumSet(set, PipeRoutingConnectionType.class);
-		output.writeLPPosition(pos);
+		output.writeSerializable(pos);
 	}
 
 	@Override

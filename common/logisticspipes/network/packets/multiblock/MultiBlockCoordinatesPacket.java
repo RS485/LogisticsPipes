@@ -33,14 +33,14 @@ public class MultiBlockCoordinatesPacket extends CoordinatesPacket {
 	@Override
 	public void writeData(LPDataOutput output) {
 		super.writeData(output);
-		output.writeCollection(targetPos, LPDataOutput::writeLPPosition);
+		output.writeCollection(targetPos, LPDataOutput::writeSerializable);
 		output.writeCollection(subTypes, LPDataOutput::writeEnum);
 	}
 
 	@Override
 	public void readData(LPDataInput input) {
 		super.readData(input);
-		targetPos = input.readSet(LPDataInput::readLPPosition);
+		targetPos = input.readSet(DoubleCoordinates::new);
 		subTypes = input.readArrayList(data1 -> data1.readEnum(CoreMultiBlockPipe.SubBlockTypeForShare.class));
 	}
 

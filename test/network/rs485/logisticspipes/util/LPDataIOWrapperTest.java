@@ -21,8 +21,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-
 public class LPDataIOWrapperTest {
 
 	private static final String BUFFER_EMPTY_MSG = "Buffer must be empty";
@@ -327,19 +325,6 @@ public class LPDataIOWrapperTest {
 
 		LPDataIOWrapper.provideData(data, input -> {
 			assertEquals(null, input.readForgeDirection());
-
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
-		});
-	}
-
-	@Test
-	public void testLPPosition() throws Exception {
-		DoubleCoordinates value = new DoubleCoordinates(1.0, 2.0, 3.0);
-
-		byte[] data = LPDataIOWrapper.collectData(output -> output.writeLPPosition(value));
-
-		LPDataIOWrapper.provideData(data, input -> {
-			assertEquals(value, input.readLPPosition());
 
 			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
 		});

@@ -130,6 +130,10 @@ public interface LPDataOutput {
 
 	void writeBytes(byte[] arr);
 
+	default void writeSerializable(LPSerializable serializable) {
+		serializable.write(this);
+	}
+
 	interface LPDataOutputConsumer {
 
 		void accept(LPDataOutput dataOutput);

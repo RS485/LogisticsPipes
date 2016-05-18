@@ -134,6 +134,12 @@ public interface LPDataInput {
 
 	IResource readResource();
 
+	//LPSerializable readSerializable(Class<? extends LPSerializable> serializableClass);
+
+	default void readSerializable(LPSerializable serializable) {
+		serializable.read(this);
+	}
+
 	interface LPDataInputConsumer {
 
 		void accept(LPDataInput dataInput);

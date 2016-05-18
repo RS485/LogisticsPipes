@@ -1,33 +1,32 @@
 package logisticspipes.request.resources;
 
-import java.io.IOException;
-
 import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class ItemResource implements IResource {
 
 	private final ItemIdentifierStack stack;
 	private final IRequestItems requester;
+	private Object ccObject;
 
 	public ItemResource(ItemIdentifierStack stack, IRequestItems requester) {
 		this.stack = stack;
 		this.requester = requester;
 	}
 
-	public ItemResource(LPDataInputStream data) throws IOException {
-		stack = data.readItemIdentifierStack();
+	public ItemResource(LPDataInput input) {
+		stack = input.readItemIdentifierStack();
 		requester = null;
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeItemIdentifierStack(stack);
+	public void writeData(LPDataOutput output) {
+		output.writeItemIdentifierStack(stack);
 	}
 
 	@Override
@@ -59,7 +58,7 @@ public class ItemResource implements IResource {
 
 	@Override
 	public boolean matches(ItemIdentifier itemType, MatchSettings settings) {
-		switch(settings) {
+		switch (settings) {
 			case NORMAL:
 				return stack.getItem().equals(itemType);
 			case WITHOUT_NBT:
@@ -93,16 +92,14 @@ public class ItemResource implements IResource {
 		return new ItemResource(stack, requester);
 	}
 
-	private Object ccObject;
+	@Override
+	public Object getCCType() {
+		return ccObject;
+	}
 
 	@Override
 	public void setCCType(Object type) {
 		ccObject = type;
-	}
-
-	@Override
-	public Object getCCType() {
-		return ccObject;
 	}
 
 	@Override

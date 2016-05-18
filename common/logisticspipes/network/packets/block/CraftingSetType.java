@@ -1,32 +1,29 @@
 package logisticspipes.network.packets.block;
 
-import java.io.IOException;
-
-import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.PipeBlockRequestTable;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.utils.item.ItemIdentifier;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
+import logisticspipes.network.abstractpackets.CoordinatesPacket;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.PipeBlockRequestTable;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.utils.item.ItemIdentifier;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class CraftingSetType extends CoordinatesPacket {
-
-	public CraftingSetType(int id) {
-		super(id);
-	}
 
 	@Getter
 	@Setter
 	private ItemIdentifier targetType;
+
+	public CraftingSetType(int id) {
+		super(id);
+	}
 
 	@Override
 	public void processPacket(EntityPlayer player) {
@@ -46,14 +43,14 @@ public class CraftingSetType extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeItemIdentifier(targetType);
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
+		output.writeItemIdentifier(targetType);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		targetType = data.readItemIdentifier();
+	public void readData(LPDataInput input) {
+		super.readData(input);
+		targetType = input.readItemIdentifier();
 	}
 }

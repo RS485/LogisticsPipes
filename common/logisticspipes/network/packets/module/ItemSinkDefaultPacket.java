@@ -1,18 +1,15 @@
 package logisticspipes.network.packets.module;
 
-import java.io.IOException;
-
-import logisticspipes.modules.ModuleItemSink;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.modules.ModuleItemSink;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class ItemSinkDefaultPacket extends ModuleCoordinatesPacket {
 
@@ -25,15 +22,15 @@ public class ItemSinkDefaultPacket extends ModuleCoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeBoolean(isDefault);
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
+		output.writeBoolean(isDefault);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		isDefault = data.readBoolean();
+	public void readData(LPDataInput input) {
+		super.readData(input);
+		isDefault = input.readBoolean();
 	}
 
 	@Override

@@ -1,34 +1,28 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.List;
-
-import logisticspipes.network.IReadListObject;
-import logisticspipes.network.IWriteListObject;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.network.abstractpackets.CoordinatesPacket;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class PipeSignTypes extends CoordinatesPacket {
-
-	public PipeSignTypes(int id) {
-		super(id);
-	}
 
 	@Getter
 	@Setter
 	private List<Integer> types;
+
+	public PipeSignTypes(int id) {
+		super(id);
+	}
 
 	@Override
 	public void processPacket(EntityPlayer player) {
@@ -40,15 +34,15 @@ public class PipeSignTypes extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeList(types, DataOutputStream::writeInt);
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
+		output.writeCollection(types, LPDataOutput::writeInt);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		types = data.readList(DataInputStream::readInt);
+	public void readData(LPDataInput input) {
+		super.readData(input);
+		types = input.readArrayList(LPDataInput::readInt);
 	}
 
 	@Override

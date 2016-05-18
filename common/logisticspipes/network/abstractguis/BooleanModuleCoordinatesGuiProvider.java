@@ -1,33 +1,30 @@
 package logisticspipes.network.abstractguis;
 
-import java.io.IOException;
-
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public abstract class BooleanModuleCoordinatesGuiProvider extends ModuleCoordinatesGuiProvider {
-
-	public BooleanModuleCoordinatesGuiProvider(int id) {
-		super(id);
-	}
 
 	@Getter
 	@Setter
 	private boolean flag;
 
-	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeBoolean(flag);
+	public BooleanModuleCoordinatesGuiProvider(int id) {
+		super(id);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		flag = data.readBoolean();
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
+		output.writeBoolean(flag);
+	}
+
+	@Override
+	public void readData(LPDataInput input) {
+		super.readData(input);
+		flag = input.readBoolean();
 	}
 }

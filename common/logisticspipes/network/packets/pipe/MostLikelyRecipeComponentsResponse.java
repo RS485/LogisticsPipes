@@ -1,27 +1,23 @@
 package logisticspipes.network.packets.pipe;
 
+import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.player.EntityPlayer;
+
+import lombok.Getter;
+import lombok.Setter;
+
 import logisticspipes.asm.ClientSideOnlyMethodContent;
 import logisticspipes.gui.GuiLogisticsCraftingTable;
 import logisticspipes.gui.orderer.GuiRequestTable;
 import logisticspipes.gui.popup.GuiRecipeImport;
-import logisticspipes.gui.popup.SelectItemOutOfList;
-import logisticspipes.network.IReadListObject;
-import logisticspipes.network.IWriteListObject;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SubGuiScreen;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.entity.player.EntityPlayer;
-
-import java.io.IOException;
-import java.util.List;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class MostLikelyRecipeComponentsResponse extends ModernPacket {
 
@@ -34,13 +30,8 @@ public class MostLikelyRecipeComponentsResponse extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		response = data.readList(new IReadListObject<Integer>() {
-			@Override
-			public Integer readObject(LPDataInputStream data) throws IOException {
-				return data.readInt();
-			}
-		});
+	public void readData(LPDataInput input) {
+		response = input.readArrayList(LPDataInput::readInt);
 	}
 
 	@Override
@@ -57,25 +48,20 @@ public class MostLikelyRecipeComponentsResponse extends ModernPacket {
 		}
 		GuiRecipeImport importGui = null;
 		SubGuiScreen sub = gui.getSubGui();
-		while(sub != null) {
+		while (sub != null) {
 			if (sub instanceof GuiRecipeImport) {
 				importGui = (GuiRecipeImport) sub;
 				break;
 			}
 			sub = sub.getSubGui();
 		}
-		if(importGui == null) return;
+		if (importGui == null) return;
 		importGui.handleProposePacket(response);
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeList(response, new IWriteListObject<Integer>() {
-			@Override
-			public void writeObject(LPDataOutputStream data, Integer object) throws IOException {
-				data.writeInt(object);
-			}
-		});
+	public void writeData(LPDataOutput output) {
+		output.writeCollection(response, LPDataOutput::writeInt);
 	}
 
 	@Override

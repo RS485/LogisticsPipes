@@ -1,16 +1,13 @@
 package logisticspipes.network.packets.gui;
 
-import java.io.IOException;
-
-import logisticspipes.asm.ClientSideOnlyMethodContent;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.ModernPacket;
-
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.entity.player.EntityPlayer;
-
 import cpw.mods.fml.client.FMLClientHandler;
+
+import logisticspipes.asm.ClientSideOnlyMethodContent;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class OpenChatGui extends ModernPacket {
 
@@ -19,7 +16,7 @@ public class OpenChatGui extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {}
+	public void readData(LPDataInput input) {}
 
 	@Override
 	@ClientSideOnlyMethodContent
@@ -28,7 +25,7 @@ public class OpenChatGui extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {}
+	public void writeData(LPDataOutput output) {}
 
 	@Override
 	public ModernPacket template() {

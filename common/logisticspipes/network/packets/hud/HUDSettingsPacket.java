@@ -1,19 +1,16 @@
 package logisticspipes.network.packets.hud;
 
-import java.io.IOException;
-
-import logisticspipes.hud.HUDConfig;
-import logisticspipes.interfaces.IHUDConfig;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.ModernPacket;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentTranslation;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.hud.HUDConfig;
+import logisticspipes.interfaces.IHUDConfig;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class HUDSettingsPacket extends ModernPacket {
 
@@ -100,16 +97,16 @@ public class HUDSettingsPacket extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		buttonId = data.readInt();
-		state = data.readBoolean();
-		slot = data.readInt();
+	public void readData(LPDataInput input) {
+		buttonId = input.readInt();
+		state = input.readBoolean();
+		slot = input.readInt();
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeInt(buttonId);
-		data.writeBoolean(state);
-		data.writeInt(slot);
+	public void writeData(LPDataOutput output) {
+		output.writeInt(buttonId);
+		output.writeBoolean(state);
+		output.writeInt(slot);
 	}
 }

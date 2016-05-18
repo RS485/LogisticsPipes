@@ -1,18 +1,15 @@
 package logisticspipes.network.packets;
 
-import java.io.IOException;
-
-import logisticspipes.LogisticsPipes;
-import logisticspipes.config.PlayerConfig;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.ModernPacket;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.LogisticsPipes;
+import logisticspipes.config.PlayerConfig;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class PlayerConfigToClientPacket extends ModernPacket {
 
@@ -25,16 +22,16 @@ public class PlayerConfigToClientPacket extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		LogisticsPipes.getClientPlayerConfig().readData(data);
+	public void readData(LPDataInput input) {
+		LogisticsPipes.getClientPlayerConfig().readData(input);
 	}
 
 	@Override
 	public void processPacket(EntityPlayer player) {}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		config.writeData(data);
+	public void writeData(LPDataOutput output) {
+		config.writeData(output);
 	}
 
 	@Override

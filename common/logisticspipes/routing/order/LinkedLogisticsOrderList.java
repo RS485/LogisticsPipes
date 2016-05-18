@@ -5,7 +5,11 @@ import java.util.List;
 
 import lombok.Getter;
 
-public class LinkedLogisticsOrderList extends ArrayList<IOrderInfoProvider> {
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+import network.rs485.logisticspipes.util.LPFinalSerializable;
+
+public class LinkedLogisticsOrderList extends ArrayList<IOrderInfoProvider> implements LPFinalSerializable {
 
 	private static final long serialVersionUID = 4328359512757178338L;
 
@@ -14,6 +18,28 @@ public class LinkedLogisticsOrderList extends ArrayList<IOrderInfoProvider> {
 
 	private List<IOrderInfoProvider> cachedList = null;
 	private List<Float> cachedProgress = null;
+
+	public LinkedLogisticsOrderList() { }
+
+	public LinkedLogisticsOrderList(LPDataInput input) {
+		List<IOrderInfoProvider> orderInfoProviders = input.readArrayList(ClientSideOrderInfo::new);
+		if (orderInfoProviders == null) {
+			throw new NullPointerException("Null order info providers read");
+		}
+		this.addAll(orderInfoProviders);
+
+		List<LinkedLogisticsOrderList> orderLists = input.readArrayList(LinkedLogisticsOrderList::new);
+		if (orderLists == null) {
+			throw new NullPointerException("Null order lists read");
+		}
+		subOrders.addAll(orderLists);
+	}
+
+	@Override
+	public void write(LPDataOutput output) {
+		output.writeCollection(this);
+		output.writeCollection(subOrders);
+	}
 
 	private void generateCache() {
 		cachedList = new ArrayList<>();

@@ -1,24 +1,21 @@
 package logisticspipes.network.packets.routingdebug;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
-
-import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.routing.PipeRoutingConnectionType;
-import logisticspipes.routing.debug.ClientViewController;
-
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.interfaces.routing.IFilter;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.routing.PipeRoutingConnectionType;
+import logisticspipes.routing.debug.ClientViewController;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class RoutingUpdateDebugFilters extends ModernPacket {
 
@@ -37,18 +34,18 @@ public class RoutingUpdateDebugFilters extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		pos = data.readLPPosition();
+	public void readData(LPDataInput input) {
+		pos = new DoubleCoordinates(input);
 		filterPositions = new EnumMap<>(PipeRoutingConnectionType.class);
 		short id;
-		while ((id = data.readShort()) != -1) {
+		while ((id = input.readShort()) != -1) {
 			PipeRoutingConnectionType type = PipeRoutingConnectionType.values[id];
 			List<List<DoubleCoordinates>> typeFilters = new ArrayList<>();
 			int length;
-			while ((length = data.readShort()) != -1) {
+			while ((length = input.readShort()) != -1) {
 				List<DoubleCoordinates> linkedFilter = new ArrayList<>();
 				for (int i = 0; i < length; i++) {
-					linkedFilter.add(data.readLPPosition());
+					linkedFilter.add(new DoubleCoordinates(input));
 				}
 				typeFilters.add(linkedFilter);
 			}
@@ -62,19 +59,19 @@ public class RoutingUpdateDebugFilters extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeLPPosition(pos);
+	public void writeData(LPDataOutput output) {
+		output.writeSerializable(pos);
 		for (PipeRoutingConnectionType type : filters.keySet()) {
-			data.writeShort(type.ordinal());
+			output.writeShort(type.ordinal());
 			for (List<IFilter> linkedFilter : filters.get(type)) {
-				data.writeShort(linkedFilter.size());
+				output.writeShort(linkedFilter.size());
 				for (IFilter filter : linkedFilter) {
-					data.writeLPPosition(filter.getLPPosition());
+					output.writeSerializable(filter.getLPPosition());
 				}
 			}
-			data.writeShort(-1);
+			output.writeShort(-1);
 		}
-		data.writeShort(-1);
+		output.writeShort(-1);
 	}
 
 	@Override

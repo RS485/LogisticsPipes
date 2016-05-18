@@ -1,22 +1,23 @@
 package logisticspipes.network.packets.satpipe;
 
-import java.io.IOException;
+import net.minecraft.entity.player.EntityPlayer;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
+import lombok.Getter;
+import lombok.Setter;
+
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-
-import net.minecraft.entity.player.EntityPlayer;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class SatPipeSetID extends CoordinatesPacket {
+
+	@Getter
+	@Setter
+	private int satID;
 
 	public SatPipeSetID(int id) {
 		super(id);
@@ -27,20 +28,16 @@ public class SatPipeSetID extends CoordinatesPacket {
 		return new SatPipeSetID(getId());
 	}
 
-	@Getter
-	@Setter
-	private int satID;
-
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeInt(satID);
-		super.writeData(data);
+	public void writeData(LPDataOutput output) {
+		output.writeInt(satID);
+		super.writeData(output);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		satID = data.readInt();
-		super.readData(data);
+	public void readData(LPDataInput input) {
+		satID = input.readInt();
+		super.readData(input);
 	}
 
 	@Override

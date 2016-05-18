@@ -1,8 +1,8 @@
 package logisticspipes.network;
 
-import java.io.IOException;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public interface IWriteListObject<T> {
 
-	public void writeObject(LPDataOutputStream data, T object) throws IOException;
+	void writeObject(LPDataOutput output, T object);
 }

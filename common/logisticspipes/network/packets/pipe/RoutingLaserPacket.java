@@ -1,20 +1,18 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.renderer.LogisticsHUDRenderer;
-import logisticspipes.routing.LaserData;
 
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.renderer.LogisticsHUDRenderer;
+import logisticspipes.routing.LaserData;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class RoutingLaserPacket extends ModernPacket {
 
@@ -27,9 +25,9 @@ public class RoutingLaserPacket extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		while (data.readBoolean()) {
-			lasers.add(new LaserData().readData(data));
+	public void readData(LPDataInput input) {
+		while (input.readBoolean()) {
+			lasers.add(new LaserData().readData(input));
 		}
 	}
 
@@ -39,12 +37,12 @@ public class RoutingLaserPacket extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
+	public void writeData(LPDataOutput output) {
 		for (LaserData laser : lasers) {
-			data.writeBoolean(true);
-			laser.writeData(data);
+			output.writeBoolean(true);
+			laser.writeData(output);
 		}
-		data.writeBoolean(false);
+		output.writeBoolean(false);
 	}
 
 	@Override

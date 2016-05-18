@@ -12,63 +12,58 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.UUID;
 
+import net.minecraftforge.common.util.ForgeDirection;
+
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.utils.item.ItemIdentifier;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 import logisticspipes.utils.tuples.Pair;
+import network.rs485.logisticspipes.util.LPDataOutput;
+import network.rs485.logisticspipes.util.LPFinalSerializable;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
-import net.minecraftforge.common.util.ForgeDirection;
+public interface IRouter extends LPFinalSerializable {
 
-public interface IRouter {
+	void destroy();
 
-	public interface IRAction {
+	void update(boolean doFullRefresh, CoreRoutedPipe pipe);
 
-		public boolean isInteresting(IRouter that);
+	void updateInterests(); // calls getInterests on the attached pipe, and updates the global cache.
 
-		public void doTo(IRouter that);
-	}
+	boolean isRoutedExit(ForgeDirection connection);
 
-	public void destroy();
+	boolean isSubPoweredExit(ForgeDirection connection);
 
-	public void update(boolean doFullRefresh, CoreRoutedPipe pipe);
+	int getDistanceToNextPowerPipe(ForgeDirection dir);
 
-	public void updateInterests(); // calls getInterests on the attached pipe, and updates the global cache.
+	boolean hasRoute(int id, boolean active, ItemIdentifier type);
 
-	public boolean isRoutedExit(ForgeDirection connection);
+	ExitRoute getExitFor(int id, boolean active, ItemIdentifier type);
 
-	public boolean isSubPoweredExit(ForgeDirection connection);
+	List<List<ExitRoute>> getRouteTable();
 
-	public int getDistanceToNextPowerPipe(ForgeDirection dir);
+	List<ExitRoute> getIRoutersByCost();
 
-	public boolean hasRoute(int id, boolean active, ItemIdentifier type);
+	CoreRoutedPipe getPipe();
 
-	public ExitRoute getExitFor(int id, boolean active, ItemIdentifier type);
+	CoreRoutedPipe getCachedPipe();
 
-	public List<List<ExitRoute>> getRouteTable();
+	boolean isInDim(int dimension);
 
-	public List<ExitRoute> getIRoutersByCost();
+	boolean isAt(int dimension, int xCoord, int yCoord, int zCoord);
 
-	public CoreRoutedPipe getPipe();
+	UUID getId();
 
-	public CoreRoutedPipe getCachedPipe();
+	LogisticsModule getLogisticsModule();
 
-	public boolean isInDim(int dimension);
+	void clearPipeCache();
 
-	public boolean isAt(int dimension, int xCoord, int yCoord, int zCoord);
+	int getSimpleID();
 
-	public UUID getId();
-
-	public LogisticsModule getLogisticsModule();
-
-	public void clearPipeCache();
-
-	public int getSimpleID();
-
-	public DoubleCoordinates getLPPosition();
+	DoubleCoordinates getLPPosition();
 
 	/**
 	 * @param hasBeenProcessed
@@ -79,31 +74,43 @@ public interface IRouter {
 	 * @return true if the bitset was cleared at some stage during the process,
 	 *         resulting in a potentially incomplete bitset.
 	 */
-	public void act(BitSet hasBeenProcessed, IRAction actor);
+	void act(BitSet hasBeenProcessed, IRAction actor);
 
-	public void flagForRoutingUpdate();
+	void flagForRoutingUpdate();
 
-	public boolean checkAdjacentUpdate();
+	boolean checkAdjacentUpdate();
 
 	/* Automated Disconnection */
-	public boolean isSideDisconneceted(ForgeDirection dir);
+	boolean isSideDisconneceted(ForgeDirection dir);
 
-	public List<ExitRoute> getDistanceTo(IRouter r);
+	List<ExitRoute> getDistanceTo(IRouter r);
 
-	public void clearInterests();
+	void clearInterests();
 
-	public List<Pair<ILogisticsPowerProvider, List<IFilter>>> getPowerProvider();
+	List<Pair<ILogisticsPowerProvider, List<IFilter>>> getPowerProvider();
 
-	public List<Pair<ISubSystemPowerProvider, List<IFilter>>> getSubSystemPowerProvider();
+	List<Pair<ISubSystemPowerProvider, List<IFilter>>> getSubSystemPowerProvider();
 
-	public boolean isValidCache();
+	boolean isValidCache();
 
 	//force-update LSA version in the network
-	public void forceLsaUpdate();
+	void forceLsaUpdate();
 
-	public List<ExitRoute> getRoutersOnSide(ForgeDirection direction);
+	List<ExitRoute> getRoutersOnSide(ForgeDirection direction);
 
-	public int getDimension();
+	int getDimension();
 
-	public void queueTask(int i, IRouterQueuedTask callable);
+	void queueTask(int i, IRouterQueuedTask callable);
+
+	@Override
+	default void write(LPDataOutput output) {
+		output.writeSerializable(getLPPosition());
+	}
+
+	interface IRAction {
+
+		boolean isInteresting(IRouter that);
+
+		void doTo(IRouter that);
+	}
 }

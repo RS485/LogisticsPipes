@@ -1,16 +1,14 @@
 package logisticspipes.network.packets.debuggui;
 
-import java.io.IOException;
-
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.MovingObjectPosition;
 import cpw.mods.fml.client.FMLClientHandler;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
+
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.MainProxy;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.MovingObjectPosition;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class DebugAskForTarget extends ModernPacket {
 
@@ -19,7 +17,7 @@ public class DebugAskForTarget extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {}
+	public void readData(LPDataInput input) {}
 
 	@Override
 	public void processPacket(EntityPlayer player) {
@@ -27,14 +25,16 @@ public class DebugAskForTarget extends ModernPacket {
 		if (box == null) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(DebugTargetResponse.class).setMode(DebugTargetResponse.TargetMode.None));
 		} else if (box.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(DebugTargetResponse.class).setMode(DebugTargetResponse.TargetMode.Block).setAdditions(new Object[] { box.blockX, box.blockY, box.blockZ }));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(DebugTargetResponse.class).setMode(DebugTargetResponse.TargetMode.Block)
+					.setAdditions(new int[] { box.blockX, box.blockY, box.blockZ }));
 		} else if (box.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(DebugTargetResponse.class).setMode(DebugTargetResponse.TargetMode.Entity).setAdditions(new Object[] { box.entityHit.getEntityId() }));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(DebugTargetResponse.class).setMode(DebugTargetResponse.TargetMode.Entity)
+					.setAdditions(new int[] { box.entityHit.getEntityId() }));
 		}
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {}
+	public void writeData(LPDataOutput output) {}
 
 	@Override
 	public ModernPacket template() {

@@ -1,19 +1,16 @@
 package logisticspipes.network.packets;
 
-import java.io.IOException;
-
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.PacketHandler;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.item.ItemIdentifier;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.item.ItemIdentifier;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class UpdateName extends ModernPacket {
 
@@ -44,15 +41,15 @@ public class UpdateName extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		ident = data.readItemIdentifierStack().getItem();
-		name = data.readUTF();
+	public void readData(LPDataInput input) {
+		ident = input.readItemIdentifierStack().getItem();
+		name = input.readUTF();
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeItemIdentifierStack(ident.makeStack(0));
-		data.writeUTF(name);
+	public void writeData(LPDataOutput output) {
+		output.writeItemIdentifierStack(ident.makeStack(0));
+		output.writeUTF(name);
 	}
 
 	@Override

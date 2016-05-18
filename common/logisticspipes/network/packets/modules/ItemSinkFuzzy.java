@@ -1,19 +1,17 @@
 package logisticspipes.network.packets.modules;
 
-import java.io.IOException;
 import java.util.BitSet;
-
-import logisticspipes.modules.ModuleItemSink;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.modules.ModuleItemSink;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class ItemSinkFuzzy extends ModuleCoordinatesPacket {
 
@@ -56,26 +54,26 @@ public class ItemSinkFuzzy extends ModuleCoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeInt(pos);
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
+		output.writeInt(pos);
 		if (pos != -1) {
-			data.writeBoolean(isNBT);
+			output.writeBoolean(isNBT);
 		} else {
-			data.writeBitSet(ignoreData);
-			data.writeBitSet(ignoreNBT);
+			output.writeBitSet(ignoreData);
+			output.writeBitSet(ignoreNBT);
 		}
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		pos = data.readInt();
+	public void readData(LPDataInput input) {
+		super.readData(input);
+		pos = input.readInt();
 		if (pos != -1) {
-			isNBT = data.readBoolean();
+			isNBT = input.readBoolean();
 		} else {
-			ignoreData = data.readBitSet();
-			ignoreNBT = data.readBitSet();
+			ignoreData = input.readBitSet();
+			ignoreNBT = input.readBitSet();
 		}
 	}
 

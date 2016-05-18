@@ -1,18 +1,17 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.IOException;
-
-import logisticspipes.interfaces.IClientState;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
+
+import logisticspipes.interfaces.IClientState;
+import logisticspipes.network.abstractpackets.CoordinatesPacket;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import network.rs485.logisticspipes.util.LPDataIOWrapper;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class PipeTileStatePacket extends CoordinatesPacket {
 
@@ -50,15 +49,11 @@ public class PipeTileStatePacket extends CoordinatesPacket {
 		if (pipe == null) {
 			return;
 		}
-		try {
-			pipe.renderState.readData(new LPDataInputStream(bytesRenderState));
-			pipe.coreState.readData(new LPDataInputStream(bytesCoreState));
-			pipe.bcPlugableState.readData(new LPDataInputStream(bytesBCPluggableState));
-			pipe.afterStateUpdated();
-			pipe.pipe.readData(new LPDataInputStream(bytesPipe));
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		LPDataIOWrapper.provideData(bytesRenderState, pipe.renderState::readData);
+		LPDataIOWrapper.provideData(bytesCoreState, pipe.coreState::readData);
+		LPDataIOWrapper.provideData(bytesBCPluggableState, pipe.bcPlugableState::readData);
+		pipe.afterStateUpdated();
+		LPDataIOWrapper.provideData(bytesPipe, pipe.pipe::readData);
 	}
 
 	@Override
@@ -67,43 +62,24 @@ public class PipeTileStatePacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		LPDataOutputStream out = new LPDataOutputStream();
-		renderState.writeData(out);
-		byte[] bytes = out.toByteArray();
-		data.writeInt(bytes.length);
-		data.write(bytes);
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
 
-		out = new LPDataOutputStream();
-		coreState.writeData(out);
-		bytes = out.toByteArray();
-		data.writeInt(bytes.length);
-		data.write(bytes);
-
-		out = new LPDataOutputStream();
-		bcPluggableState.writeData(out);
-		bytes = out.toByteArray();
-		data.writeInt(bytes.length);
-		data.write(bytes);
-
-		out = new LPDataOutputStream();
-		pipe.writeData(out);
-		bytes = out.toByteArray();
-		data.writeInt(bytes.length);
-		data.write(bytes);
+		IClientState[] clientStates = new IClientState[] { renderState, coreState, bcPluggableState, pipe };
+		byte[][] clientStateBuffers = new byte[][] { bytesRenderState, bytesCoreState, bytesBCPluggableState, bytesPipe };
+		for (int i = 0; i < clientStates.length; i++) {
+			clientStateBuffers[i] = LPDataIOWrapper.collectData(clientStates[i]::writeData);
+			output.writeByteArray(clientStateBuffers[i]);
+		}
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		bytesRenderState = new byte[data.readInt()];
-		data.read(bytesRenderState);
-		bytesCoreState = new byte[data.readInt()];
-		data.read(bytesCoreState);
-		bytesBCPluggableState = new byte[data.readInt()];
-		data.read(bytesBCPluggableState);
-		bytesPipe = new byte[data.readInt()];
-		data.read(bytesPipe);
+	public void readData(LPDataInput input) {
+		super.readData(input);
+
+		bytesRenderState = input.readByteArray();
+		bytesCoreState = input.readByteArray();
+		bytesBCPluggableState = input.readByteArray();
+		bytesPipe = input.readByteArray();
 	}
 }

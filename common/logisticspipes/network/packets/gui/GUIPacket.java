@@ -1,18 +1,15 @@
 package logisticspipes.network.packets.gui;
 
-import java.io.IOException;
-
-import logisticspipes.asm.ClientSideOnlyMethodContent;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.NewGuiHandler;
-import logisticspipes.network.abstractpackets.ModernPacket;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.asm.ClientSideOnlyMethodContent;
+import logisticspipes.network.NewGuiHandler;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class GUIPacket extends ModernPacket {
 
@@ -42,11 +39,10 @@ public class GUIPacket extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		guiID = data.readInt();
-		windowID = data.readInt();
-		guiData = new byte[data.readInt()];
-		data.read(guiData);
+	public void readData(LPDataInput input) {
+		guiID = input.readInt();
+		windowID = input.readInt();
+		guiData = input.readByteArray();
 	}
 
 	@Override
@@ -56,11 +52,10 @@ public class GUIPacket extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeInt(guiID);
-		data.writeInt(windowID);
-		data.writeInt(guiData.length);
-		data.write(guiData);
+	public void writeData(LPDataOutput output) {
+		output.writeInt(guiID);
+		output.writeInt(windowID);
+		output.writeByteArray(guiData);
 	}
 
 	@Override

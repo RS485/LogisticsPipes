@@ -1,20 +1,15 @@
 package logisticspipes.network.packets.debug;
 
-import java.io.IOException;
-
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.PacketHandler;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.proxy.MainProxy;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
-
 import cpw.mods.fml.client.FMLClientHandler;
 
-import lombok.experimental.Accessors;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.proxy.MainProxy;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class PipeDebugLogAskForTarget extends ModernPacket {
 
@@ -23,7 +18,7 @@ public class PipeDebugLogAskForTarget extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {}
+	public void readData(LPDataInput input) {}
 
 	@Override
 	public void processPacket(EntityPlayer player) {
@@ -34,7 +29,7 @@ public class PipeDebugLogAskForTarget extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {}
+	public void writeData(LPDataOutput output) {}
 
 	@Override
 	public ModernPacket template() {

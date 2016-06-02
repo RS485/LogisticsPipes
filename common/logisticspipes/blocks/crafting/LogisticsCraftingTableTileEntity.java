@@ -85,7 +85,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 						craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
 					}
 					ItemStack result = recipe.getCraftingResult(craftInv);
-					if (targetType.equals(ItemIdentifier.get(result))) {
+					if (result != null && targetType.equals(ItemIdentifier.get(result))) {
 						resultInv.setInventorySlotContents(0, result);
 						cache = recipe;
 						break;
@@ -93,10 +93,14 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 				}
 			}
 			if (cache == null) {
-				cache = list.get(0);
-				ItemStack result = cache.getCraftingResult(craftInv);
-				resultInv.setInventorySlotContents(0, result);
-				targetType = ItemIdentifier.get(result);
+				for (IRecipe r : list) {
+					ItemStack result = r.getCraftingResult(craftInv);
+					if (result != null) {
+						cache = r;
+						resultInv.setInventorySlotContents(0, result);
+						targetType = ItemIdentifier.get(result);
+					}
+				}
 			}
 		} else {
 			targetType = null;

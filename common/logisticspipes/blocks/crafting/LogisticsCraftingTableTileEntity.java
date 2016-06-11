@@ -99,6 +99,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 						cache = r;
 						resultInv.setInventorySlotContents(0, result);
 						targetType = ItemIdentifier.get(result);
+						break;
 					}
 				}
 			}

@@ -216,6 +216,12 @@ item.ItemPipeSignCreator.1=Item Amount Sign Creator
 item.logisticsHUDGlasses=Logistics HUD Glasses
 item.remoteOrdererItem=Remote Orderer
 
+# Tooltips
+tooltip.brokenItem.1=This is an useless item
+tooltip.brokenItem.2=You get this by trying to
+tooltip.brokenItem.3=break a protected pipe
+tooltip.logisticsItemCard=This is no valid Card
+
 # Upgrades
 
 item.SneakyUpgradeUP=Sneaky Upgrade (UP)

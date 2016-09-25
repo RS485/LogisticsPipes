@@ -6,6 +6,7 @@
 
 package logisticspipes.pipes;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -140,12 +141,11 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 		if (itemSinkModule.isDefaultRoute()) {
 			return null;
 		}
+
 		Set<ItemIdentifier> l1 = new TreeSet<ItemIdentifier>();
-		for (int i = 0; i < 9; i++) {
-			ItemIdentifierStack item = itemSinkModule.getFilterInventory().getIDStackInSlot(i);
-			if (item != null) {
-				l1.add(item.getItem());
-			}
+		Collection<ItemIdentifier> current = itemSinkModule.getSpecificInterests();
+		if (current != null) {
+			l1.addAll(current);
 		}
 		return l1;
 	}

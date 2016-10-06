@@ -18,66 +18,47 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package network.rs485.logisticspipes.world;
+package network.rs485.logisticspipes.utils.block;
 
-import lombok.Data;
+import lombok.experimental.Delegate;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
-@Data
-public class IntegerCoordinates implements ICoordinates {
+import javax.annotation.Nullable;
 
-	private int xCoord;
-	private int yCoord;
-	private int zCoord;
-
-	public IntegerCoordinates() {
-		setXCoord(0);
-		setYCoord(0);
-		setZCoord(0);
+public class BoundingBoxDelegateBlockState implements IBlockState  {
+	private interface RemoveDelegate {
+		@Nullable
+		AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos);
+		AxisAlignedBB getBoundingBox(IBlockAccess blockAccess, BlockPos pos);
 	}
 
-	public IntegerCoordinates(int xCoord, int yCoord, int zCoord) {
-		setXCoord(xCoord);
-		setYCoord(yCoord);
-		setZCoord(zCoord);
+	private final AxisAlignedBB box;
+
+	@Delegate(excludes = RemoveDelegate.class)
+	private final IBlockState state;
+
+	public BoundingBoxDelegateBlockState(float minPosX, float minPosY, float minPosZ, float maxPosX, float maxPosY, float maxPosZ, IBlockState state) {
+		this.box = new AxisAlignedBB(minPosX, minPosY, minPosZ, maxPosX, maxPosY, maxPosZ);
+		this.state = state;
 	}
 
-	public IntegerCoordinates(ICoordinates coords) {
-		this(coords.getXInt(), coords.getYInt(), coords.getZInt());
+	public BoundingBoxDelegateBlockState(AxisAlignedBB bb, IBlockState state) {
+		this.box = bb;
+		this.state = state;
 	}
 
-	public IntegerCoordinates(BlockPos pos) {
-		this(pos.getX(), pos.getY(), pos.getZ());
+	@Nullable
+	@Override
+	public AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos) {
+		return box;
 	}
 
 	@Override
-	public double getXDouble() {
-		return getXCoord() + 0.5;
+	public AxisAlignedBB getBoundingBox(IBlockAccess blockAccess, BlockPos pos) {
+		return box;
 	}
-
-	@Override
-	public double getYDouble() {
-		return getYCoord() + 0.5;
-	}
-
-	@Override
-	public double getZDouble() {
-		return getZCoord() + 0.5;
-	}
-
-	@Override
-	public int getXInt() {
-		return getXCoord();
-	}
-
-	@Override
-	public int getYInt() {
-		return getYCoord();
-	}
-
-	@Override
-	public int getZInt() {
-		return getZCoord();
-	}
-
 }

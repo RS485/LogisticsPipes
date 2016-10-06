@@ -556,6 +556,7 @@ public class DummyContainer extends Container {
 	public ItemStack slotClick(int slotId, int mouseButton, int isShift, EntityPlayer entityplayer) {
 		lastClicked = System.currentTimeMillis();
 		if (slotId < 0) {
+			super.slotClick()
 			return superSlotClick(slotId, mouseButton, isShift, entityplayer);
 		}
 		Slot slot = (Slot) inventorySlots.get(slotId);

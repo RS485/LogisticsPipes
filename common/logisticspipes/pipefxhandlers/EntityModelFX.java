@@ -6,13 +6,14 @@ import logisticspipes.proxy.object3d.interfaces.IModel3D;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
-public class EntityModelFX extends EntityFX {
+public class EntityModelFX extends Particle {
 
 	private final IModel3D model;
 	private final I3DOperation[] operations;
@@ -29,9 +30,9 @@ public class EntityModelFX extends EntityFX {
 	public void renderParticle(Tessellator tess, float p_70539_2_, float p_70539_3_, float p_70539_4_, float p_70539_5_, float p_70539_6_, float p_70539_7_) {
 		tess.draw();
 		GL11.glPushMatrix();
-		double x = posX - EntityFX.interpPosX;
-		double y = posY - EntityFX.interpPosY;
-		double z = posZ - EntityFX.interpPosZ;
+		double x = posX - Particle.interpPosX;
+		double y = posY - Particle.interpPosY;
+		double z = posZ - Particle.interpPosZ;
 		GL11.glTranslated(x, y, z);
 
 		SimpleServiceLocator.cclProxy.getRenderState().reset();

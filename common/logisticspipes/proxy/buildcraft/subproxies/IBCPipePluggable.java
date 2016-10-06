@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack;
 
 import net.minecraft.util.EnumFacing;
 
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -26,4 +27,5 @@ public interface IBCPipePluggable {
 
 	LPTravelingItemServer handleItem(LPTravelingItemServer arrivingItem);
 
+	AxisAlignedBB getBoundingBox(EnumFacing side);
 }

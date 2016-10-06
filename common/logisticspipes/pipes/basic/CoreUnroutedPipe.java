@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameType;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -35,7 +36,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldSettings.GameType;
 
 import net.minecraft.util.EnumFacing;
 

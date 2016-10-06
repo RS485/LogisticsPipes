@@ -3,33 +3,37 @@ package logisticspipes.utils;
 import net.minecraft.tileentity.TileEntity;
 
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import network.rs485.logisticspipes.world.IntegerCoordinates;
 
 public class OrientationsUtil {
 
-	public static EnumFacing getOrientationOfTilewithTile(TileEntity pipe, TileEntity tile) {
-		if (pipe.zCoord == tile.zCoord) {
-			if (pipe.yCoord == tile.yCoord) {
-				if (pipe.xCoord < tile.xCoord) {
+	public static EnumFacing getOrientationOfTilewithTile(TileEntity pipeTile, TileEntity tileTile) {
+		IntegerCoordinates pipe = new IntegerCoordinates(pipeTile.getPos());
+		IntegerCoordinates tile = new IntegerCoordinates(tileTile.getPos());
+		if (pipe.getZCoord() == tile.getZCoord()) {
+			if (pipe.getYCoord() == tile.getYCoord()) {
+				if (pipe.getXCoord() < tile.getXCoord()) {
 					return EnumFacing.EAST;
-				} else if (pipe.xCoord > tile.xCoord) {
+				} else if (pipe.getXCoord() > tile.getXCoord()) {
 					return EnumFacing.WEST;
 				}
 			}
 		}
-		if (pipe.xCoord == tile.xCoord) {
-			if (pipe.zCoord == tile.zCoord) {
-				if (pipe.yCoord < tile.yCoord) {
+		if (pipe.getXCoord() == tile.getXCoord()) {
+			if (pipe.getZCoord() == tile.getZCoord()) {
+				if (pipe.getYCoord() < tile.getYCoord()) {
 					return EnumFacing.UP;
-				} else if (pipe.yCoord > tile.yCoord) {
+				} else if (pipe.getYCoord() > tile.getYCoord()) {
 					return EnumFacing.DOWN;
 				}
 			}
 		}
-		if (pipe.xCoord == tile.xCoord) {
-			if (pipe.yCoord == tile.yCoord) {
-				if (pipe.zCoord < tile.zCoord) {
+		if (pipe.getXCoord() == tile.getXCoord()) {
+			if (pipe.getYCoord() == tile.getYCoord()) {
+				if (pipe.getZCoord() < tile.getZCoord()) {
 					return EnumFacing.SOUTH;
-				} else if (pipe.zCoord > tile.zCoord) {
+				} else if (pipe.getZCoord() > tile.getZCoord()) {
 					return EnumFacing.NORTH;
 				}
 			}
@@ -38,9 +42,9 @@ public class OrientationsUtil {
 	}
 
 	public static TileEntity getTileNextToThis(TileEntity tile, EnumFacing dir) {
-		int x = tile.xCoord;
-		int y = tile.yCoord;
-		int z = tile.zCoord;
+		int x = tile.getPos().getX();
+		int y = tile.getPos().getY();
+		int z = tile.getPos().getZ();
 		switch (dir) {
 			case UP:
 				y = y + 1;
@@ -63,7 +67,7 @@ public class OrientationsUtil {
 			default:
 				break;
 		}
-		return tile.getWorld().getTileEntity(x, y, z);
+		return tile.getWorld().getTileEntity(new BlockPos(x, y, z));
 	}
 
 	public static boolean isSide(EnumFacing ori) {

@@ -2,6 +2,7 @@ package logisticspipes.utils;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryLargeChest;
+import net.minecraft.world.ILockableContainer;
 
 /**
  * A large chest helper implementing hashCode and equals
@@ -13,7 +14,7 @@ public class InventoryLargeChestLogistics extends InventoryLargeChest {
 	private final IInventory _upperChest;
 	private final IInventory _lowerChest;
 
-	public InventoryLargeChestLogistics(String par1Str, IInventory par2IInventory, IInventory par3IInventory) {
+	public InventoryLargeChestLogistics(String par1Str, ILockableContainer par2IInventory, ILockableContainer par3IInventory) {
 		super(par1Str, par2IInventory, par3IInventory);
 		_upperChest = par2IInventory;
 		_lowerChest = par3IInventory;

@@ -29,6 +29,7 @@ import logisticspipes.network.packets.pipe.PipeTileStatePacket;
 import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.buildcraft.subproxies.IBCPipePluggable;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPluggableState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
 import logisticspipes.proxy.buildcraft.subproxies.IConnectionOverrideResult;
@@ -48,8 +49,8 @@ import logisticspipes.utils.StackTraceUtil;
 import logisticspipes.utils.StackTraceUtil.Info;
 import logisticspipes.utils.TileBuffer;
 import logisticspipes.utils.item.ItemIdentifier;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.math.AxisAlignedBB;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.block.Block;
@@ -60,7 +61,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
 import net.minecraft.util.EnumFacing;
@@ -72,12 +72,6 @@ import net.minecraftforge.fluids.IFluidHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import buildcraft.api.core.EnumColor;
-import buildcraft.api.transport.IPipe;
-import buildcraft.api.transport.IPipeConnection;
-import buildcraft.api.transport.IPipeTile;
-import buildcraft.api.transport.pluggable.PipePluggable;
-import buildcraft.transport.TileGenericPipe;
 import cofh.api.transport.IItemDuct;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
@@ -915,7 +909,7 @@ public abstract class LogisticsTileGenericPipe extends TileEntity implements ITi
 			set.addToAll(pipe.getLPPosition());
 			set.add(new DoubleCoordinatesType<>(getPos(), CoreMultiBlockPipe.SubBlockTypeForShare.NON_SHARE));
 			set.add(new DoubleCoordinatesType<>(getPos().add(1, 1, 1), CoreMultiBlockPipe.SubBlockTypeForShare.NON_SHARE));
-			renderBox = AxisAlignedBB.fromBounds(set.getMinXD() - 1, set.getMinYD() - 1, set.getMinZD() - 1, set.getMaxXD() + 1, set.getMaxYD() + 1, set.getMaxZD() + 1);
+			renderBox = new AxisAlignedBB(set.getMinXD() - 1, set.getMinYD() - 1, set.getMinZD() - 1, set.getMaxXD() + 1, set.getMaxYD() + 1, set.getMaxZD() + 1);
 		}
 		return renderBox;
 	}
@@ -966,11 +960,11 @@ public abstract class LogisticsTileGenericPipe extends TileEntity implements ITi
 		return pipeConnectionsBuffer[with.ordinal()];
 	}
 
-	public PipePluggable getPipePluggable(EnumFacing direction) {
+	public IBCPipePluggable getPipePluggable(EnumFacing direction) {
 		if (tilePart.getBCPipePluggable(direction) == null) {
 			return null;
 		}
-		return (PipePluggable) tilePart.getBCPipePluggable(direction).getOriginal();
+		return tilePart.getBCPipePluggable(direction);
 	}
 
 	@Override

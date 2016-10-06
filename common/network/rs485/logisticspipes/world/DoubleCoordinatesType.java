@@ -6,7 +6,7 @@ import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import lombok.Getter;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 
 public class DoubleCoordinatesType<T> extends DoubleCoordinates {
 

@@ -4,9 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 
 import lombok.SneakyThrows;
+import net.minecraft.util.math.AxisAlignedBB;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
-
-import net.minecraft.util.AxisAlignedBB;
 
 public class LPPositionSet<T extends DoubleCoordinates> extends HashSet<T> implements IPositionRotateble {
 
@@ -106,7 +105,7 @@ public class LPPositionSet<T extends DoubleCoordinates> extends HashSet<T> imple
 	}
 
 	public AxisAlignedBB toABB() {
-		return AxisAlignedBB.getBoundingBox(getMinXD(), getMinYD(), getMinZD(), getMaxXD(), getMaxYD(), getMaxZD());
+		return new AxisAlignedBB(getMinXD(), getMinYD(), getMinZD(), getMaxXD(), getMaxYD(), getMaxZD());
 	}
 
 	@Override

@@ -24,6 +24,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
 public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pair<ItemStack, Integer>> {
@@ -76,8 +77,13 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 	}
 
 	@Override
-	public String getInventoryName() {
+	public String getName() {
 		return _name;
+	}
+
+	@Override
+	public ITextComponent getDisplayName() {
+		return null;
 	}
 
 	@Override
@@ -98,10 +104,10 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 	}
 
 	@Override
-	public void openInventory() {}
+	public void openInventory(EntityPlayer player) {}
 
 	@Override
-	public void closeInventory() {}
+	public void closeInventory(EntityPlayer player) {}
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
@@ -161,7 +167,7 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 		double d1 = (world.rand.nextFloat() * f1) + (1.0F - f1) * 0.5D;
 		double d2 = (world.rand.nextFloat() * f1) + (1.0F - f1) * 0.5D;
 		EntityItem entityitem = new EntityItem(world, i + d, j + d1, k + d2, stack);
-		entityitem.delayBeforeCanPickup = 10;
+		entityitem.setDefaultPickupDelay();
 		world.spawnEntityInWorld(entityitem);
 	}
 
@@ -178,7 +184,7 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 	}
 
 	@Override
-	public ItemStack getStackInSlotOnClosing(int i) {
+	public ItemStack removeStackFromSlot(int i) {
 		if (_contents[i] == null) {
 			return null;
 		}
@@ -248,12 +254,32 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 		return true;
 	}
 
+	@Override
+	public int getField(int id) {
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, int value) {
+
+	}
+
+	@Override
+	public int getFieldCount() {
+		return 0;
+	}
+
+	@Override
+	public void clear() {
+
+	}
+
 	public void clearInventorySlotContents(int i) {
 		_contents[i] = null;
 	}
 
 	@Override
-	public boolean hasCustomInventoryName() {
+	public boolean hasCustomName() {
 		return true;
 	}
 

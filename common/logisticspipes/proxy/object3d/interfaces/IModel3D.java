@@ -1,6 +1,6 @@
 package logisticspipes.proxy.object3d.interfaces;
 
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 
 public interface IModel3D {

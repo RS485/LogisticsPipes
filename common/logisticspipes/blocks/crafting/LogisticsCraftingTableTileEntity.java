@@ -34,7 +34,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.Constants;
 
 public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ISimpleInventoryEventHandler, IInventory, IGuiOpenControler {
@@ -487,7 +487,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	@Override
-	public IChatComponent getDisplayName() {
+	public ITextComponent getDisplayName() {
 		return null;
 	}
 }

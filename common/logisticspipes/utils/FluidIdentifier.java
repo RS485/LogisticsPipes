@@ -1,11 +1,6 @@
 package logisticspipes.utils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -39,12 +34,12 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 	private final static HashMap<Integer, FluidIdentifier> _fluidIdentifierIdCache = new HashMap<>(256, 0.5f);
 
 	//for fluids with tags, map fluidID -> map tag -> FluidIdentifier
-	private final static ArrayList<HashMap<FinalNBTTagCompound, FluidIdentifier>> _fluidIdentifierTagCache = new ArrayList<>(256);
+	private final static Map<String, HashMap<FinalNBTTagCompound, FluidIdentifier>> _fluidIdentifierTagCache = new HashMap<>(256);
 
 	//for fluids without tags, map fluidID -> FluidIdentifier
-	private final static ArrayList<FluidIdentifier> _fluidIdentifierCache = new ArrayList<>(256);
+	private final static Map<String, FluidIdentifier> _fluidIdentifierCache = new HashMap<>(256);
 
-	public final int fluidID;
+	public final String fluidID;
 	public final String name;
 	public final FinalNBTTagCompound tag;
 	public final int uniqueID;
@@ -59,7 +54,7 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 		private final FluidIdentifier fluid;
 	}
 
-	private FluidIdentifier(int fluidID, String name, FinalNBTTagCompound tag, int uniqueID) {
+	private FluidIdentifier(String fluidID, String name, FinalNBTTagCompound tag, int uniqueID) {
 		this.fluidID = fluidID;
 		this.name = name;
 		this.tag = tag;
@@ -67,7 +62,7 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 	}
 
 	public static FluidIdentifier get(Fluid fluid, NBTTagCompound tag, FluidIdentifier proposal) {
-		int fluidID = fluid.getID();
+		String fluidID = fluid.getName();
 		if (tag == null) {
 			if(proposal != null) {
 				if(proposal.fluidID == fluidID && proposal.tag == null) {
@@ -90,7 +85,7 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 			return ident;
 		} else {
 			FluidIdentifier.rlock.lock();
-			if (fluidID < FluidIdentifier._fluidIdentifierTagCache.size()) {
+			{
 				HashMap<FinalNBTTagCompound, FluidIdentifier> fluidNBTList = FluidIdentifier._fluidIdentifierTagCache.get(fluidID);
 				if (fluidNBTList != null) {
 					FinalNBTTagCompound tagwithfixedname = new FinalNBTTagCompound(tag);
@@ -103,7 +98,7 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 			}
 			FluidIdentifier.rlock.unlock();
 			FluidIdentifier.wlock.lock();
-			if (fluidID < FluidIdentifier._fluidIdentifierTagCache.size()) {
+			{
 				HashMap<FinalNBTTagCompound, FluidIdentifier> fluidNBTList = FluidIdentifier._fluidIdentifierTagCache.get(fluidID);
 				if (fluidNBTList != null) {
 					FinalNBTTagCompound tagwithfixedname = new FinalNBTTagCompound(tag);
@@ -114,13 +109,10 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 					}
 				}
 			}
-			while (FluidIdentifier._fluidIdentifierTagCache.size() <= fluidID) {
-				FluidIdentifier._fluidIdentifierTagCache.add(null);
-			}
 			HashMap<FinalNBTTagCompound, FluidIdentifier> fluidNBTList = FluidIdentifier._fluidIdentifierTagCache.get(fluidID);
 			if (fluidNBTList == null) {
 				fluidNBTList = new HashMap<>(16, 0.5f);
-				FluidIdentifier._fluidIdentifierTagCache.set(fluidID, fluidNBTList);
+				FluidIdentifier._fluidIdentifierTagCache.put(fluidID, fluidNBTList);
 			}
 			FinalNBTTagCompound finaltag = new FinalNBTTagCompound((NBTTagCompound) tag.copy());
 			int id = FluidIdentifier.getUnusedId();
@@ -132,14 +124,14 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 		}
 	}
 
-	private static FluidIdentifier getFluidIdentifierWithoutTag(Fluid fluid, int fluidID, FluidIdentifier proposal) {
+	private static FluidIdentifier getFluidIdentifierWithoutTag(Fluid fluid, String fluidID, FluidIdentifier proposal) {
 		if(proposal != null) {
 			if(proposal.fluidID == fluidID && proposal.tag == null) {
 				return proposal;
 			}
 		}
 		FluidIdentifier.rlock.lock();
-		if (fluidID < FluidIdentifier._fluidIdentifierCache.size()) {
+		{
 			FluidIdentifier unknownFluid = FluidIdentifier._fluidIdentifierCache.get(fluidID);
 			if (unknownFluid != null) {
 				FluidIdentifier.rlock.unlock();
@@ -148,7 +140,7 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 		}
 		FluidIdentifier.rlock.unlock();
 		FluidIdentifier.wlock.lock();
-		if (fluidID < FluidIdentifier._fluidIdentifierCache.size()) {
+		{
 			FluidIdentifier unknownFluid = FluidIdentifier._fluidIdentifierCache.get(fluidID);
 			if (unknownFluid != null) {
 				FluidIdentifier.wlock.unlock();
@@ -157,10 +149,7 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 		}
 		int id = FluidIdentifier.getUnusedId();
 		FluidIdentifier unknownFluid = new FluidIdentifier(fluidID, FluidRegistry.getFluidName(fluid), null, id);
-		while (FluidIdentifier._fluidIdentifierCache.size() <= fluidID) {
-			FluidIdentifier._fluidIdentifierCache.add(null);
-		}
-		FluidIdentifier._fluidIdentifierCache.set(fluidID, unknownFluid);
+		FluidIdentifier._fluidIdentifierCache.put(fluidID, unknownFluid);
 		FluidIdentifier._fluidIdentifierIdCache.put(id, unknownFluid);
 		FluidIdentifier.wlock.unlock();
 		return (unknownFluid);
@@ -282,7 +271,7 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 	public FluidIdentifier next() {
 		FluidIdentifier.rlock.lock();
 		boolean takeNext = false;
-		for (FluidIdentifier i : FluidIdentifier._fluidIdentifierCache) {
+		for (FluidIdentifier i : FluidIdentifier._fluidIdentifierCache.values()) {
 			if (takeNext && i != null) {
 				FluidIdentifier.rlock.unlock();
 				return i;
@@ -298,7 +287,7 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 	public FluidIdentifier prev() {
 		FluidIdentifier.rlock.lock();
 		FluidIdentifier last = null;
-		for (FluidIdentifier i : FluidIdentifier._fluidIdentifierCache) {
+		for (FluidIdentifier i : FluidIdentifier._fluidIdentifierCache.values()) {
 			if (equals(i)) {
 				FluidIdentifier.rlock.unlock();
 				return last;
@@ -313,7 +302,7 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 
 	public static FluidIdentifier first() {
 		FluidIdentifier.rlock.lock();
-		for (FluidIdentifier i : FluidIdentifier._fluidIdentifierCache) {
+		for (FluidIdentifier i : FluidIdentifier._fluidIdentifierCache.values()) {
 			if (i != null) {
 				FluidIdentifier.rlock.unlock();
 				return i;
@@ -326,7 +315,7 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 	public static FluidIdentifier last() {
 		FluidIdentifier.rlock.lock();
 		FluidIdentifier last = null;
-		for (FluidIdentifier i : FluidIdentifier._fluidIdentifierCache) {
+		for (FluidIdentifier i : FluidIdentifier._fluidIdentifierCache.values()) {
 			if (i != null) {
 				last = i;
 			}
@@ -335,9 +324,9 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 		return last;
 	}
 
-	public static List<FluidIdentifier> all() {
+	public static Collection<FluidIdentifier> all() {
 		FluidIdentifier.rlock.lock();
-		List<FluidIdentifier> list = Collections.unmodifiableList(FluidIdentifier._fluidIdentifierCache);
+		Collection<FluidIdentifier> list = Collections.unmodifiableCollection(FluidIdentifier._fluidIdentifierCache.values());
 		FluidIdentifier.rlock.unlock();
 		return list;
 	}

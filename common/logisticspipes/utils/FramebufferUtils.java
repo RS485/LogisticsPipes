@@ -23,60 +23,60 @@ public final class FramebufferUtils {
 	public static void bindRenderBuffer(int renderbuffer) {
 		assert OpenGlHelper.isFramebufferEnabled();
 
-		OpenGlHelper.func_153176_h(FramebufferUtils.GL_RENDERBUFFER, renderbuffer);
+		OpenGlHelper.glBindBuffer(FramebufferUtils.GL_RENDERBUFFER, renderbuffer);
 	}
 
 	public static void deleteRenderbuffer(int renderbuffer) {
 		assert OpenGlHelper.isFramebufferEnabled();
 
-		OpenGlHelper.func_153184_g(renderbuffer);
+		OpenGlHelper.glDeleteBuffers(renderbuffer);
 	}
 
 	public static int genRenderbuffer() {
 		assert OpenGlHelper.isFramebufferEnabled();
 
-		return OpenGlHelper.func_153185_f();
+		return OpenGlHelper.glGenRenderbuffers();
 	}
 
 	public static void renderbufferStorage(int format, int width, int height) {
 		assert OpenGlHelper.isFramebufferEnabled();
 
-		OpenGlHelper.func_153186_a(FramebufferUtils.GL_RENDERBUFFER, format, width, height);
+		OpenGlHelper.glRenderbufferStorage(FramebufferUtils.GL_RENDERBUFFER, format, width, height);
 	}
 
 	public static int genFramebuffer() {
 		assert OpenGlHelper.isFramebufferEnabled();
 
-		return OpenGlHelper.func_153165_e();
+		return OpenGlHelper.glGenFramebuffers();
 	}
 
 	public static int checkFramebuffer(int target) {
 		assert OpenGlHelper.isFramebufferEnabled();
 
-		return OpenGlHelper.func_153167_i(target);
+		return OpenGlHelper.glCheckFramebufferStatus(target);
 	}
 
 	public static void bindFramebuffer(int target, int framebuffer) {
 		assert OpenGlHelper.isFramebufferEnabled();
 
-		OpenGlHelper.func_153171_g(target, framebuffer);
+		OpenGlHelper.glBindFramebuffer(target, framebuffer);
 	}
 
 	public static void deleteFramebuffer(int framebuffer) {
 		assert OpenGlHelper.isFramebufferEnabled();
 
-		OpenGlHelper.func_153174_h(framebuffer);
+		OpenGlHelper.glDeleteFramebuffers(framebuffer);
 	}
 
 	public static void framebufferRenderbuffer(int target, int attachment, int renderbuffer) {
 		assert OpenGlHelper.isFramebufferEnabled();
 
-		OpenGlHelper.func_153190_b(target, attachment, FramebufferUtils.GL_RENDERBUFFER, renderbuffer);
+		OpenGlHelper.glFramebufferRenderbuffer(target, attachment, FramebufferUtils.GL_RENDERBUFFER, renderbuffer);
 	}
 
 	public static void framebufferTexture2D(int target, int attachment, int textarget, int texture, int level) {
 		assert OpenGlHelper.isFramebufferEnabled();
 
-		OpenGlHelper.func_153188_a(target, attachment, textarget, texture, level);
+		OpenGlHelper.glFramebufferTexture2D(target, attachment, textarget, texture, level);
 	}
 }

@@ -8,7 +8,6 @@ import java.util.List;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;

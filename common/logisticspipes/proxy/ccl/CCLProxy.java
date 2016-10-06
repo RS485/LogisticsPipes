@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import codechicken.lib.render.CCOBJParser;
 import logisticspipes.proxy.DontLoadProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.ICCLProxy;
@@ -106,7 +107,7 @@ public class CCLProxy implements ICCLProxy {
 	@Override
 	public Map<String, IModel3D> parseObjModels(InputStream resourceAsStream, int i, LPScale scale) throws IOException {
 		Map<String, IModel3D> target = new HashMap<>();
-		Map<String, CCModel> source = CCModel.parseObjModels(resourceAsStream, i, (Transformation) scale.getOriginal());
+		Map<String, CCModel> source = CCOBJParser.parseObjModels(resourceAsStream, i, (Transformation) scale.getOriginal());
 		for (Entry<String, CCModel> entry : source.entrySet()) {
 			target.put(entry.getKey(), SimpleServiceLocator.cclProxy.wrapModel(entry.getValue()));
 		}

@@ -18,7 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 
 import com.google.common.primitives.Ints;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
 
 /**
  * This class is responsible for abstracting an ISidedInventory as a normal
@@ -167,7 +167,7 @@ public final class SidedInventoryMinecraftAdapter implements IInventory {
 	}
 
 	@Override
-	public IChatComponent getDisplayName() {
+	public ITextComponent getDisplayName() {
 		return _sidedInventory.getDisplayName();
 	}
 }

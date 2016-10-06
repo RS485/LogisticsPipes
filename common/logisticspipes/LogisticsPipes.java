@@ -164,10 +164,10 @@ import org.apache.logging.log4j.Logger;
 		version = "%VERSION%",
 		/* %------------CERTIFICATE-SUM-----------% */
 		dependencies = "required-after:Forge@[10.12.1.1079,);" +
-				"required-after:BuildCraft|Core;" +
-				"required-after:BuildCraft|Transport;" +
-				"required-after:BuildCraft|Silicon;" +
-				"required-after:BuildCraft|Robotics;" +
+				"after:BuildCraft|Core;" +
+				"after:BuildCraft|Transport;" +
+				"after:BuildCraft|Silicon;" +
+				"after:BuildCraft|Robotics;" +
 				"after:IC2;" +
 				"after:Forestry;" +
 				"after:Thaumcraft;" +
@@ -370,7 +370,7 @@ public class LogisticsPipes {
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-		postInitRun.stream().forEach(Runnable::run);
+		postInitRun.forEach(Runnable::run);
 		postInitRun = null;
 
 		SpecialInventoryHandlerManager.load();
@@ -561,8 +561,8 @@ public class LogisticsPipes {
 	public void certificateWarning(FMLFingerprintViolationEvent warning) {
 		if (!LPConstants.DEBUG) {
 			System.out.println("[LogisticsPipes|Certificate] Certificate not correct");
-			System.out.println("[LogisticsPipes|Certificate] Expected: " + warning.expectedFingerprint);
-			System.out.println("[LogisticsPipes|Certificate] File: " + warning.source.getAbsolutePath());
+			System.out.println("[LogisticsPipes|Certificate] Expected: " + warning.getExpectedFingerprint());
+			System.out.println("[LogisticsPipes|Certificate] File: " + warning.getSource().getAbsolutePath());
 			System.out.println("[LogisticsPipes|Certificate] This in not a LogisticsPipes version from RS485.");
 			certificateError = true;
 		}

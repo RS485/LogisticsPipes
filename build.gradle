@@ -11,7 +11,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
     }
 }
 
@@ -49,14 +49,14 @@ ant.version = version
 ant.archivesBaseName = archivesBaseName
 
 minecraft {
-    version = "1.8.9-11.15.1.1722"
+    version = "1.10.2-12.18.1.2094"
     runDir = "run/assets"
     replace '%VERSION%', project.version
-    replace '%MCVERSION%', "1.8.9"
+    replace '%MCVERSION%', "1.10.2"
     replace '%DEBUG%', "false"
     replaceIn "LogisticsPipes.java"
     replaceIn "LPConstants.java"
-    mappings = "stable_22"
+    mappings = "snapshot_20161005"
 }
 
 jar {
@@ -108,11 +108,11 @@ processResources {
 }
 
 dependencies {
-    compile files("build/download/buildcraft-7.1.5-dev.jar")
+    //compile files("build/download/buildcraft-7.1.5-dev.jar")
     compile 'org.projectlombok:lombok:1.16.4'
-    compile 'codechicken:NotEnoughItems:1.8-1.0.5.104:dev'
-    compile 'codechicken:CodeChickenCore:1.8-1.0.5.36:dev'
-    compile 'codechicken:CodeChickenLib:1.8-1.1.2.133:dev'
+    compile 'codechicken:CodeChickenLib:1.10.2-2.3.1.88:deobf'
+    //compile 'codechicken:NotEnoughItems:1.8-1.0.5.104:dev'
+    //compile 'codechicken:CodeChickenCore:1.8-1.0.5.36:dev'
     //compile 'codechicken:EnderStorage:1.7.10-1.4.7.36:dev'
 }
 

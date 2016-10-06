@@ -8,6 +8,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.text.ITextComponent;
 
 public class CardManagmentInventory implements IInventory {
 
@@ -64,9 +65,9 @@ public class CardManagmentInventory implements IInventory {
 	}
 
 	@Override
-	public ItemStack getStackInSlotOnClosing(int i) {
+	public ItemStack removeStackFromSlot(int i) {
 		if (i > -1 && i < 4) {
-			return inv.getStackInSlotOnClosing(i);
+			return inv.removeStackFromSlot(i);
 		}
 		return null;
 	}
@@ -106,12 +107,17 @@ public class CardManagmentInventory implements IInventory {
 	}
 
 	@Override
-	public String getInventoryName() {
+	public String getName() {
 		return "Card Managment Inventory";
 	}
 
 	@Override
-	public boolean hasCustomInventoryName() {
+	public ITextComponent getDisplayName() {
+		return null;
+	}
+
+	@Override
+	public boolean hasCustomName() {
 		return false;
 	}
 
@@ -129,10 +135,10 @@ public class CardManagmentInventory implements IInventory {
 	public void markDirty() {}
 
 	@Override
-	public void openInventory() {}
+	public void openInventory(EntityPlayer player) {}
 
 	@Override
-	public void closeInventory() {}
+	public void closeInventory(EntityPlayer player) {}
 
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
@@ -151,4 +157,23 @@ public class CardManagmentInventory implements IInventory {
 		inv.dropContents(player.worldObj, x, y, z);
 	}
 
+	@Override
+	public int getField(int id) {
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, int value) {
+
+	}
+
+	@Override
+	public int getFieldCount() {
+		return 0;
+	}
+
+	@Override
+	public void clear() {
+
+	}
 }

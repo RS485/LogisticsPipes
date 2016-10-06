@@ -32,8 +32,8 @@ import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipe
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.EnumFaceDirection;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraft.util.EnumFacing;

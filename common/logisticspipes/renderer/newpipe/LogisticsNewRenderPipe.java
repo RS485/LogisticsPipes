@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.proxy.object3d.operation.*;
+import net.minecraft.client.particle.ParticleManager;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -1041,7 +1042,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 	}
 
-	public static void renderDestruction(CoreUnroutedPipe pipe, World worldObj, int x, int y, int z, EffectRenderer effectRenderer) {
+	public static void renderDestruction(CoreUnroutedPipe pipe, World worldObj, int x, int y, int z, ParticleManager effectRenderer) {
 		if (pipe.container != null && pipe.container.renderState != null && pipe.container.renderState.cachedRenderer != null) {
 			for (RenderEntry entry : pipe.container.renderState.cachedRenderer) {
 				IModel3D model = entry.getModel().twoFacedCopy();

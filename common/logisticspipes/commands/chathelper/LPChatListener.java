@@ -17,7 +17,8 @@ import logisticspipes.utils.string.StringUtils;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.event.ServerChatEvent;
@@ -34,10 +35,10 @@ public class LPChatListener {
 
 	@SubscribeEvent
 	public void serverChat(ServerChatEvent event) {
-		EntityPlayerMP player = event.player;
-		if (LPChatListener.tasks.containsKey(event.username)) {
-			if (event.message.startsWith("/")) {
-				player.addChatComponentMessage(new ChatComponentText(ChatColor.RED + "You need to answer the question, before you can use any other command"));
+		EntityPlayerMP player = event.getPlayer();
+		if (LPChatListener.tasks.containsKey(event.getUsername())) {
+			if (event.getMessage().startsWith("/")) {
+				player.addChatComponentMessage(new TextComponentString(ChatColor.RED + "You need to answer the question, before you can use any other command"));
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
 			} else {
 				if (!event.message.equalsIgnoreCase("true") && !event.message.equalsIgnoreCase("false") && !event.message.equalsIgnoreCase("on") && !event.message.equalsIgnoreCase("off") && !event.message.equalsIgnoreCase("0") && !event.message.equalsIgnoreCase("1") && !event.message.equalsIgnoreCase("no")
@@ -71,7 +72,7 @@ public class LPChatListener {
 
 	@SubscribeEvent
 	public void clientChat(ClientChatReceivedEvent event) {
-		IChatComponent message = event.message;
+		ITextComponent message = event.getMessage();
 		if (message != null) {
 			String realMessage = null;
 			try {

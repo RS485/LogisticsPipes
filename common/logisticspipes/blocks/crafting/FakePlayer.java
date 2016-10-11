@@ -2,7 +2,7 @@ package logisticspipes.blocks.crafting;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
 
 import com.mojang.authlib.GameProfile;
 
@@ -18,7 +18,7 @@ public class FakePlayer extends EntityPlayer {
 	}
 
 	@Override
-	public void addChatMessage(IChatComponent c) {}
+	public void addChatMessage(ITextComponent c) {}
 
 	@Override
 	public boolean canCommandSenderUseCommand(int i, String s) {

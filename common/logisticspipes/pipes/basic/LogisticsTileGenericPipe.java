@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -943,9 +944,13 @@ public abstract class LogisticsTileGenericPipe extends TileEntity implements ITi
 		}
 	}
 
+	public boolean nonNull() {
+		return Objects.nonNull(pipe);
+	}
+
 	@Override
 	public boolean isMultiBlock() {
-		return pipe != null && pipe.isMultiBlock();
+		return nonNull() && pipe.isMultiBlock();
 	}
 
 	@Override

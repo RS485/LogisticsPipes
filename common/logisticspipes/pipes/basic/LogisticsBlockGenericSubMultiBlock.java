@@ -86,23 +86,19 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 	public void breakBlock(World worldIn, @Nonnull BlockPos pos, @Nonnull IBlockState state) {
 		TileEntity tile = worldIn.getTileEntity(pos);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
-			boolean handled = false;
 			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
-			for (LogisticsTileGenericPipe mainPipe : mainPipeList) {
-				if (mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock()) {
-					if (LogisticsPipeBlock.doRayTrace(state, worldIn, pos, Minecraft.getMinecraft().thePlayer) != null) {
-						mainPipe.pipe.getLPPosition().setBlockToAir(worldIn);
-						handled = true;
-					}
-				}
-			}
-			if (!handled) {
+			boolean notHandled = mainPipeList.stream()
+					.filter(Objects::nonNull)
+					.filter(LogisticsTileGenericPipe::isMultiBlock)
+					.filter(mainPipe -> Objects.nonNull(LogisticsPipeBlock.doRayTrace(state, worldIn, mainPipe.getPos(), Minecraft.getMinecraft().thePlayer)))
+					.map(mainPipe -> worldIn.setBlockToAir(mainPipe.getPos()))
+					.count() == 0;
+
+			if (notHandled) {
 				mainPipeList.stream()
-						.filter(mainPipe -> mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock())
-						.forEach(mainPipe -> {
-							DoubleCoordinates mainPipePos = mainPipe.pipe.getLPPosition();
-							mainPipePos.setBlockToAir(worldIn);
-						});
+						.filter(Objects::nonNull)
+						.filter(LogisticsTileGenericPipe::isMultiBlock)
+						.forEach(mainPipe -> worldIn.setBlockToAir(mainPipe.getPos()));
 			}
 		}
 	}
@@ -136,8 +132,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
 			mainPipeList.stream()
 					.filter(Objects::nonNull)
-					.filter(mainPipe -> Objects.nonNull(mainPipe.pipe))
-					.filter(mainPipe -> mainPipe.pipe.isMultiBlock())
+					.filter(LogisticsTileGenericPipe::isMultiBlock)
 					.forEach(mainPipe -> LogisticsPipeBlock.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entityIn));
 		}
 	}
@@ -150,8 +145,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
 			return mainPipeList.stream()
 					.filter(Objects::nonNull)
-					.filter(mainPipe -> Objects.nonNull(mainPipe.pipe))
-					.filter(mainPipe -> mainPipe.pipe.isMultiBlock())
+					.filter(LogisticsTileGenericPipe::isMultiBlock)
 					.map(mainPipe -> LogisticsPipeBlock.collisionRayTrace(blockState, worldIn, mainPipe.getPos(), start, end))
 					.filter(Objects::nonNull)
 					.findFirst()
@@ -171,8 +165,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
 			result = mainPipeList.stream()
 					.filter(Objects::nonNull)
-					.filter(mainPipe -> Objects.nonNull(mainPipe.pipe))
-					.filter(mainPipe -> mainPipe.pipe.isMultiBlock())
+					.filter(LogisticsTileGenericPipe::isMultiBlock)
 					.filter(mainPipe -> Objects.nonNull(LogisticsPipeBlock.doRayTrace(state, worldIn, mainPipe.getPos(), Minecraft.getMinecraft().thePlayer)))
 					.map(mainPipe -> LogisticsPipeBlock.getSelectedBoundingBox(state, worldIn, mainPipe.getPos()))
 					.findFirst();
@@ -198,8 +191,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
 			result = mainPipeList.stream()
 					.filter(Objects::nonNull)
-					.filter(mainPipe -> Objects.nonNull(mainPipe.pipe))
-					.filter(mainPipe -> mainPipe.pipe.isMultiBlock())
+					.filter(LogisticsTileGenericPipe::isMultiBlock)
 					.filter(mainPipe -> Objects.nonNull(LogisticsPipeBlock.doRayTrace(state, world, mainPipe.getPos(), Minecraft.getMinecraft().thePlayer)))
 					.map(mainPipe -> LogisticsPipeBlock.addDestroyEffects(world, mainPipe.getPos(), manager))
 					.findFirst();
@@ -216,19 +208,16 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
 			result = mainPipeList.stream()
 					.filter(Objects::nonNull)
-					.filter(mainPipe -> Objects.nonNull(mainPipe.pipe))
-					.filter(mainPipe -> mainPipe.pipe.isMultiBlock())
+					.filter(LogisticsTileGenericPipe::isMultiBlock)
 					.filter(mainPipe -> Objects.nonNull(LogisticsPipeBlock.doRayTrace(state, world, mainPipe.getPos(), player)))
 					.map(mainPipe -> LogisticsPipeBlock.getPickBlock(state, target, world, mainPipe.getPos(), player))
 					.findFirst();
 
-			// TODO check the following code. Old and may be unnecessary.
-			/*
-			if (!mainPipeList.isEmpty() && mainPipeList.get(0).pipe != null && mainPipeList.get(0).pipe.isMultiBlock()) {
-				return LogisticsPipeBlock
-						.getPickBlock(target, world, mainPipeList.get(0).xCoord, mainPipeList.get(0).yCoord, mainPipeList.get(0).zCoord);
+			if (!result.isPresent()) {
+				result = mainPipeList.stream()
+						.findFirst()
+						.map(mainPipe -> LogisticsPipeBlock.getPickBlock(state, target, world, mainPipe.getPos(), player));
 			}
-			 */
 		}
 		return result.orElse(super.getPickBlock(state, target, world, pos, player));
 	}
@@ -281,8 +270,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
 			Optional<LogisticsTileGenericPipe> result = mainPipeList.stream()
 					.filter(Objects::nonNull)
-					.filter(mainPipe -> Objects.nonNull(mainPipe.pipe))
-					.filter(mainPipe -> mainPipe.pipe.isMultiBlock())
+					.filter(LogisticsTileGenericPipe::isMultiBlock)
 					.filter(mainPipe -> Objects.nonNull(LogisticsPipeBlock.doRayTrace(state, worldObj, mainPipe.getPos(), Minecraft.getMinecraft().thePlayer)))
 					.findFirst();
 

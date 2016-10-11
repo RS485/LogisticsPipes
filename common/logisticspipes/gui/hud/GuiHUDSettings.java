@@ -1,5 +1,7 @@
 package logisticspipes.gui.hud;
 
+import java.io.IOException;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.hud.HUDConfig;
 import logisticspipes.interfaces.IHUDConfig;
@@ -31,7 +33,7 @@ public class GuiHUDSettings extends LogisticsBaseGuiScreen {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void initGui() {
+	public void initGui() throws IOException {
 		super.initGui();
 		if (player.inventory.getStackInSlot(slot) != null) {
 			IHUDConfig config = new HUDConfig(player.inventory.getStackInSlot(slot));

@@ -1,5 +1,6 @@
 package logisticspipes.gui.popup;
 
+import java.io.IOException;
 import java.util.Collections;
 
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
@@ -123,7 +124,7 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 	}
 
 	@Override
-	protected void mouseClicked(int i, int j, int k) {
+	protected void mouseClicked(int i, int j, int k) throws IOException {
 		clickWasButton = false;
 		editsearchb = true;
 		super.mouseClicked(i, j, k);
@@ -184,7 +185,7 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 			case 2: {
 				Integer id = Integer.valueOf(searchinput1 + searchinput2);
 				_tile.excludedCC.remove(id);
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityRemoveCCIdPacket.class).setInteger(id).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord));
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityRemoveCCIdPacket.class).setInteger(id).setBlockPos(_tile.getPos()));
 			}
 				break;
 			case 3: {
@@ -193,7 +194,7 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 					_tile.excludedCC.add(id);
 					Collections.sort(_tile.excludedCC);
 				}
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityAddCCIdPacket.class).setInteger(id).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord));
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityAddCCIdPacket.class).setInteger(id).setBlockPos(_tile.getPos()));
 			}
 				break;
 			case 4:

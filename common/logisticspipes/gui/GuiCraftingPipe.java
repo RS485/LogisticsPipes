@@ -400,8 +400,8 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
 				RenderHelper.enableGUIStandardItemLighting();
 				ItemStack stack = new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.LIQUID_CRAFTING);
-				GuiScreen.itemRender.renderItemAndEffectIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5);
-				GuiScreen.itemRender.renderItemOverlayIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5, "");
+				GuiScreen.itemRender.renderItemAndEffectIntoGUI(stack, left + 5, top + 5);
+				GuiScreen.itemRender.renderItemOverlayIntoGUI(fontRendererObj, getMC().renderEngine, stack, left + 5, top + 5, "");
 				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
 			}
@@ -508,7 +508,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
 				RenderHelper.enableGUIStandardItemLighting();
 				ItemStack stack = new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CRAFTING_BYPRODUCT_EXTRACTOR);
-				GuiScreen.itemRender.renderItemAndEffectIntoGUI(fontRendererObj, getMC().renderEngine, stack, left + 5, top + 5);
+				GuiScreen.itemRender.renderItemAndEffectIntoGUI(stack, left + 5, top + 5);
 				GuiScreen.itemRender.renderItemOverlayIntoGUI(fontRendererObj, getMC().renderEngine, stack, left + 5, top + 5, "");
 				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -541,7 +541,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
 				RenderHelper.enableGUIStandardItemLighting();
 				ItemStack stack = new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CRAFTING_CLEANUP);
-				GuiScreen.itemRender.renderItemAndEffectIntoGUI(fontRendererObj, getMC().renderEngine, stack, left + 5, top + 5);
+				GuiScreen.itemRender.renderItemAndEffectIntoGUI(stack, left + 5, top + 5);
 				GuiScreen.itemRender.renderItemOverlayIntoGUI(fontRendererObj, getMC().renderEngine, stack, left + 5, top + 5, "");
 				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glDisable(GL11.GL_DEPTH_TEST);

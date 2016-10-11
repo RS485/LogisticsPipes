@@ -1,5 +1,7 @@
 package logisticspipes.gui;
 
+import java.io.IOException;
+
 import logisticspipes.LPConstants;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.network.PacketHandler;
@@ -65,7 +67,7 @@ public class GuiPowerJunction extends LogisticsBaseGuiScreen {
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton par1GuiButton) {
+	protected void actionPerformed(GuiButton par1GuiButton) throws IOException {
 		if (par1GuiButton.id == 0) {
 			junction.addEnergy(100000);
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(PowerJunctionCheatPacket.class).setPosX(junction.getX()).setPosY(junction.getY()).setPosZ(junction.getZ()));

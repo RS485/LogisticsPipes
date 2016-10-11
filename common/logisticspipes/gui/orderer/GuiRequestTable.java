@@ -1,5 +1,6 @@
 package logisticspipes.gui.orderer;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -162,12 +163,12 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		(sycleButtons[1] = addButton(new SmallGuiButton(22, guiLeft + 124, guiTop + 42, 15, 10, "\\/"))).visible = false;
 
 		if (search == null) {
-			search = new SearchBar(mc.fontRenderer, this, guiLeft + 205, bottom - 78, 200, 15);
+			search = new SearchBar(fontRendererObj, this, guiLeft + 205, bottom - 78, 200, 15);
 		}
 		search.reposition(guiLeft + 205, bottom - 78, 200, 15);
 
 		if (itemDisplay == null) {
-			itemDisplay = new ItemDisplay(this, mc.fontRenderer, this, this, guiLeft + 205, guiTop + 18, 200, ySize - 100, new int[] { 1, 10, 64, 64 }, true);
+			itemDisplay = new ItemDisplay(this, fontRendererObj, this, this, guiLeft + 205, guiTop + 18, 200, ySize - 100, new int[] { 1, 10, 64, 64 }, true);
 		}
 		itemDisplay.reposition(guiLeft + 205, guiTop + 18, 200, ySize - 100);
 
@@ -268,8 +269,8 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 						GL11.glEnable(GL11.GL_DEPTH_TEST);
 						RenderHelper.enableGUIStandardItemLighting();
 						ItemStack stack = entry.getValue().getValue1().getDisplayItem().makeNormalStack();
-						GuiScreen.itemRender.renderItemAndEffectIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5);
-						GuiScreen.itemRender.renderItemOverlayIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5, "");
+						GuiScreen.itemRender.renderItemAndEffectIntoGUI(stack, left + 5, top + 5);
+						GuiScreen.itemRender.renderItemOverlayIntoGUI(fontRendererObj, getMC().renderEngine, stack, left + 5, top + 5, "");
 						String s = StringUtils.getFormatedStackSize(stack.stackSize, false);
 						GL11.glDisable(GL11.GL_LIGHTING);
 						GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -300,8 +301,8 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 								GL11.glEnable(GL11.GL_LIGHTING);
 								GL11.glEnable(GL11.GL_DEPTH_TEST);
 								RenderHelper.enableGUIStandardItemLighting();
-								GuiScreen.itemRender.renderItemAndEffectIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, x, y);
-								GuiScreen.itemRender.renderItemOverlayIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, x, y, "");
+								GuiScreen.itemRender.renderItemAndEffectIntoGUI(stack, x, y);
+								GuiScreen.itemRender.renderItemOverlayIntoGUI(fontRendererObj, getMC().renderEngine, stack, x, y, "");
 								s = StringUtils.getFormatedStackSize(stack.stackSize, false);
 								GL11.glDisable(GL11.GL_LIGHTING);
 								GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -575,14 +576,12 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		}
 		//if(isSearched(String.valueOf(Item.getIdFromItem(item.item)), search.getContent())) return true;
 		//Enchantment? Enchantment!
-		Map<Integer, Integer> enchantIdLvlMap = EnchantmentHelper.getEnchantments(item.unsafeMakeNormalStack(1));
-		for (Entry<Integer, Integer> e : enchantIdLvlMap.entrySet()) {
-			if (e.getKey().intValue() < Enchantment.enchantmentsList.length && Enchantment.enchantmentsList[e.getKey()] != null) {
-				String enchantname = Enchantment.enchantmentsList[e.getKey()].getTranslatedName(e.getValue());
-				if (enchantname != null) {
-					if (isSearched(enchantname.toLowerCase(Locale.US), search.getContent().toLowerCase(Locale.US))) {
-						return true;
-					}
+		Map<Enchantment, Integer> enchantIdLvlMap = EnchantmentHelper.getEnchantments(item.unsafeMakeNormalStack(1));
+		for (Entry<Enchantment, Integer> e : enchantIdLvlMap.entrySet()) {
+			String enchantname = e.getKey().getName();
+			if (enchantname != null) {
+				if (isSearched(enchantname.toLowerCase(Locale.US), search.getContent().toLowerCase(Locale.US))) {
+					return true;
 				}
 			}
 		}
@@ -600,7 +599,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 	}
 
 	@Override
-	protected void mouseClicked(int i, int j, int k) {
+	protected void mouseClicked(int i, int j, int k) throws IOException {
 		if (showRequest) {
 			itemDisplay.handleClick(i, j, k);
 			search.handleClick(i, j, k);
@@ -609,7 +608,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 	}
 
 	@Override
-	public void handleMouseInputSub() {
+	public void handleMouseInputSub() throws IOException {
 		if (showRequest) {
 			itemDisplay.handleMouse();
 		}
@@ -635,7 +634,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 	}
 
 	@Override
-	protected void keyTyped(char c, int i) {
+	protected void keyTyped(char c, int i) throws IOException {
 		if (i == 30 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) { //Ctrl-a
 			itemDisplay.setMaxAmount();
 		} else if (i == 32 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) { //Ctrl-d

@@ -8,6 +8,8 @@ import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
@@ -51,12 +53,13 @@ public class HUDPowerLevel extends BasicHUDGui implements IHeadUpDisplayRenderer
 	public void drawTexturedModalRect(int par1, int par2, int par3, int par4, int par5, int par6) {
 		float var7 = 0.00390625F;
 		float var8 = 0.00390625F;
-		Tessellator var9 = Tessellator.instance;
-		var9.startDrawingQuads();
-		var9.addVertexWithUV(par1 + 0, par2 + par6, 0, (par3 + 0) * var7, (par4 + par6) * var8);
-		var9.addVertexWithUV(par1 + par5, par2 + par6, 0, (par3 + par5) * var7, (par4 + par6) * var8);
-		var9.addVertexWithUV(par1 + par5, par2 + 0, 0, (par3 + par5) * var7, (par4 + 0) * var8);
-		var9.addVertexWithUV(par1 + 0, par2 + 0, 0, (par3 + 0) * var7, (par4 + 0) * var8);
+		Tessellator var9 = Tessellator.getInstance();
+		VertexBuffer buffer = var9.getBuffer();
+		buffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+		buffer.pos(par1 + 0, par2 + par6, 0).tex((par3 + 0) * var7, (par4 + par6) * var8).endVertex();
+		buffer.pos(par1 + par5, par2 + par6, 0).tex((par3 + par5) * var7, (par4 + par6) * var8).endVertex();
+		buffer.pos(par1 + par5, par2 + 0, 0).tex((par3 + par5) * var7, (par4 + 0) * var8).endVertex();
+		buffer.pos(par1 + 0, par2 + 0, 0).tex((par3 + 0) * var7, (par4 + 0) * var8).endVertex();
 		var9.draw();
 	}
 

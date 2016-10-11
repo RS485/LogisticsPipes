@@ -23,11 +23,12 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtils;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.init.Blocks;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -87,7 +88,6 @@ public class RequestMonitorPopup extends SubGuiScreen {
 
 	private final PipeBlockRequestTable _table;
 	private final int orderId;
-	private final RenderItem renderitem = new RenderItem();
 
 	private int isMouseButtonDown;
 	private int mouseX;
@@ -307,8 +307,8 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		GL11.glColor4f(0.7F, 0.7F, 0.7F, 1.0F);
 		for (int yVar = 0; yVar * 16 < height; yVar++) {
 			for (int xVar = 0; xVar * 16 < width; xVar++) {
-				TextureAtlasSprite icon = Blocks.stone.getIcon(0, 0);
-				mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+				TextureAtlasSprite icon = getTexture(Blocks.STONE);
+				mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 				drawTexturedModelRectFromIcon(xVar * 16, yVar * 16, icon, 16, 16);
 			}
 		}
@@ -401,8 +401,8 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		GL11.glColor4f(0.7F, 0.7F, 0.7F, 1.0F);
 		for (int yVar = 0; yVar * 16 - moveBackgroundY < zoom.bottomRenderBorder; yVar++) {
 			for (int xVar = 0; xVar * 16 - moveBackgroundX < zoom.rightRenderBorder; xVar++) {
-				TextureAtlasSprite icon = Blocks.stone.getIcon(0, 0);
-				mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+				TextureAtlasSprite icon = getTexture(Blocks.STONE);
+				mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 				drawTexturedModelRectFromIcon(innerLeftSide + xVar * 16 - moveBackgroundX, innerTopSide + yVar * 16 - moveBackgroundY, icon, 16, 16);
 			}
 		}
@@ -582,13 +582,13 @@ public class RequestMonitorPopup extends SubGuiScreen {
 	}
 
 	private void renderItemAt(ItemIdentifierStack item, int x, int y) {
-		renderitem.renderItemAndEffectIntoGUI(mc.fontRenderer, mc.getTextureManager(), item.makeNormalStack(), x, y);
+		GuiScreen.itemRender.renderItemAndEffectIntoGUI(item.makeNormalStack(), x, y);
 		if (guiLeft < x && x < guiLeft + xSize - 16 && guiTop < y && y < guiTop + ySize - 16) {
-			renderitem.renderItemOverlayIntoGUI(mc.fontRenderer, mc.renderEngine, item.makeNormalStack(), x, y, "");
+			GuiScreen.itemRender.renderItemOverlayIntoGUI(fontRendererObj, mc.renderEngine, item.makeNormalStack(), x, y, "");
 			String s = StringUtils.getFormatedStackSize(item.getStackSize(), false);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
-			renderitem.zLevel = 0.0F;
+			GuiScreen.itemRender.zLevel = 0.0F;
 			// Draw number
 			mc.fontRendererObj.drawStringWithShadow(s, x + 17 - mc.fontRendererObj.getStringWidth(s), y + 9, 16777215);
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -599,5 +599,9 @@ public class RequestMonitorPopup extends SubGuiScreen {
 	protected void drawProgressPoint(int x, int y, int color) {
 		int line = zoom.line + 1;
 		Gui.drawRect(x - line + 1, y - line + 1, x + line, y + line, color);
+	}
+
+	private TextureAtlasSprite getTexture(Block blockIn) {
+		return Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getTexture(blockIn.getDefaultState());
 	}
 }

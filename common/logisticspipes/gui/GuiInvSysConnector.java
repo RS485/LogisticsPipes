@@ -1,5 +1,6 @@
 package logisticspipes.gui;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -158,7 +159,7 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton button) {
+	protected void actionPerformed(GuiButton button) throws IOException {
 		super.actionPerformed(button);
 		if (button.id == 0) {
 			pageDown();

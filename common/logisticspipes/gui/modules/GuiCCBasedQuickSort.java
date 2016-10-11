@@ -1,5 +1,7 @@
 package logisticspipes.gui.modules;
 
+import java.io.IOException;
+
 import logisticspipes.modules.ModuleCCBasedQuickSort;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.modules.CCBasedQuickSortMode;

@@ -1,5 +1,6 @@
 package logisticspipes.gui.popup;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -19,6 +20,7 @@ import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -36,7 +38,6 @@ public class GuiRecipeImport extends SubGuiScreen {
 		int pos = 0;
 	}
 
-	private final RenderItem itemRenderer = new RenderItem();
 	private final TileEntity tile;
 	private final Canidates[] grid = new Canidates[9];
 	private final List<Canidates> list;
@@ -117,9 +118,9 @@ public class GuiRecipeImport extends SubGuiScreen {
 					font = fontRendererObj;
 				}
 
-				itemRenderer.renderItemAndEffectIntoGUI(font, mc.renderEngine, itemStack, guiLeft + 45 + x * 18, guiTop + 20 + y * 18);
+				GuiScreen.itemRender.renderItemAndEffectIntoGUI(itemStack, guiLeft + 45 + x * 18, guiTop + 20 + y * 18);
 				// With empty string, because damage value indicator struggles with the depth
-				itemRenderer.renderItemOverlayIntoGUI(font, mc.renderEngine, itemStack, guiLeft + 45 + x * 18, guiTop + 20 + y * 18, null);
+				GuiScreen.itemRender.renderItemOverlayIntoGUI(font, mc.renderEngine, itemStack, guiLeft + 45 + x * 18, guiTop + 20 + y * 18, null);
 
 				if (guiLeft + 45 + x * 18 < mouseX && mouseX < guiLeft + 45 + x * 18 + 16 && guiTop + 20 + y * 18 < mouseY && mouseY < guiTop + 20 + y * 18 + 16 && !hasSubGui()) {
 					SimpleGraphics.drawGradientRect(guiLeft + 45 + x * 18, guiTop + 20 + y * 18, guiLeft + 45 + x * 18 + 16, guiTop + 20 + y * 18 + 16, Color.WHITE_50, Color.WHITE_50, 0.0);
@@ -137,9 +138,9 @@ public class GuiRecipeImport extends SubGuiScreen {
 				font = fontRendererObj;
 			}
 
-			itemRenderer.renderItemAndEffectIntoGUI(font, mc.renderEngine, itemStack, guiLeft + 20 + x * 40, guiTop + 90 + y * 40);
+			GuiScreen.itemRender.renderItemAndEffectIntoGUI(itemStack, guiLeft + 20 + x * 40, guiTop + 90 + y * 40);
 			// With empty string, because damage value indicator struggles with the depth
-			itemRenderer.renderItemOverlayIntoGUI(font, mc.renderEngine, itemStack, guiLeft + 20 + x * 40, guiTop + 90 + y * 40, "");
+			GuiScreen.itemRender.renderItemOverlayIntoGUI(font, mc.renderEngine, itemStack, guiLeft + 20 + x * 40, guiTop + 90 + y * 40, "");
 
 			if (guiLeft + 20 + x * 40 < mouseX && mouseX < guiLeft + 20 + x * 40 + 16 && guiTop + 90 + y * 40 < mouseY && mouseY < guiTop + 90 + y * 40 + 16 && !hasSubGui()) {
 				SimpleGraphics.drawGradientRect(guiLeft + 20 + x * 40, guiTop + 90 + y * 40, guiLeft + 20 + x * 40 + 16, guiTop + 90 + y * 40 + 16, Color.WHITE_50, Color.WHITE_50, 0.0);
@@ -189,7 +190,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 				stack[i++] = canidate.order.get(canidate.pos).makeNormalStack();
 			}
 			NEISetCraftingRecipe packet = PacketHandler.getPacket(NEISetCraftingRecipe.class);
-			MainProxy.sendPacketToServer(packet.setContent(stack).setPosX(tile.xCoord).setPosY(tile.yCoord).setPosZ(tile.zCoord));
+			MainProxy.sendPacketToServer(packet.setContent(stack).setBlockPos(tile.getPos()));
 			exitGui();
 		} else if (id >= 10 && id < 30) {
 			int slot = id % 10;
@@ -210,7 +211,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 	}
 
 	@Override
-	protected void mouseClicked(int mouseX, int mouseY, int button) {
+	protected void mouseClicked(int mouseX, int mouseY, int button) throws IOException {
 		int x = 0;
 		int y = 0;
 		for (final Canidates canidate : list) {

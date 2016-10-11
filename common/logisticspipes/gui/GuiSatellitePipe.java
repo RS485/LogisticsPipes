@@ -8,6 +8,8 @@
 
 package logisticspipes.gui;
 
+import java.io.IOException;
+
 import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
@@ -64,7 +66,7 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton guibutton) {
+	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		if (_satellite != null) {
 			if (guibutton.id == 0) {
 				_satellite.setNextId(_player);

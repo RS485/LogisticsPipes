@@ -1,5 +1,6 @@
 package logisticspipes.gui.modules;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +58,7 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton par1GuiButton) {
+	protected void actionPerformed(GuiButton par1GuiButton) throws IOException {
 		if (par1GuiButton.id == 0) {
 			currentOffset -= 1;
 		} else if (par1GuiButton.id == 1) {
@@ -68,7 +69,7 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 	}
 
 	@Override
-	protected void mouseClicked(int i, int j, int k) {
+	protected void mouseClicked(int i, int j, int k) throws IOException {
 		int x = i - guiLeft;
 		int y = j - guiTop;
 		if (0 < x && x < 175 && 0 < y && y < 208) {

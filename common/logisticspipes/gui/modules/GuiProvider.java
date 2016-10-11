@@ -1,5 +1,7 @@
 package logisticspipes.gui.modules;
 
+import java.io.IOException;
+
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.ProviderModuleIncludePacket;
@@ -60,7 +62,7 @@ public class GuiProvider extends ModuleBaseGui {
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton guibutton) {
+	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		if (guibutton.id == 0) {
 			_provider.setFilterExcluded(!_provider.isExcludeFilter());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleIncludePacket.class).setModulePos(_provider));
@@ -88,7 +90,7 @@ public class GuiProvider extends ModuleBaseGui {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		mc.fontRendererObj.drawString(_provider.getFilterInventory().getInventoryName(), xSize / 2 - mc.fontRendererObj.getStringWidth(_provider.getFilterInventory().getInventoryName()) / 2, 6, 0x404040);
+		mc.fontRendererObj.drawString(_provider.getFilterInventory().getName(), xSize / 2 - mc.fontRendererObj.getStringWidth(_provider.getFilterInventory().getName()) / 2, 6, 0x404040);
 		mc.fontRendererObj.drawString("Inventory", 18, ySize - 102, 0x404040);
 		//mc.fontRendererObj.drawString("Mode: " + _provider.getExtractionMode().getExtractionModeString(), 9, ySize - 112, 0x404040);
 		mc.fontRendererObj.drawString("Excess Inventory: " + _provider.getExtractionMode().getExtractionModeString(), 9, ySize - 112, 0x404040);

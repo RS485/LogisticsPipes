@@ -1,5 +1,6 @@
 package logisticspipes.gui.popup;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -108,7 +109,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 	}
 
 	@Override
-	protected void mouseClicked(int i, int j, int k) {
+	protected void mouseClicked(int i, int j, int k) throws IOException {
 		mousePosX = i;
 		mousePosY = j;
 		mousebutton = k;
@@ -433,7 +434,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton guibutton) {
+	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		if (guibutton.id == 0) {
 			nextPageAll();
 		} else if (guibutton.id == 1) {

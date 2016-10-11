@@ -1,5 +1,6 @@
 package logisticspipes.gui.popup;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -55,12 +56,12 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 		buttonList.add(new SmallGuiButton(20, xCenter - 13, bottom - 21, 26, 10, "Sort")); // Sort
 
 		if (search == null) {
-			search = new SearchBar(Minecraft.getMinecraft().fontRenderer, getBaseScreen(), guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
+			search = new SearchBar(fontRendererObj, getBaseScreen(), guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
 		}
 		search.reposition(guiLeft + 10, bottom - 58, right - guiLeft - 20, 15);
 
 		if (itemDisplay == null) {
-			itemDisplay = new ItemDisplay(this, Minecraft.getMinecraft().fontRenderer, getBaseScreen(), null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[] { 1, 10, 64, 64 }, true);
+			itemDisplay = new ItemDisplay(this, fontRendererObj, getBaseScreen(), null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[] { 1, 10, 64, 64 }, true);
 		}
 		itemDisplay.reposition(guiLeft + 10, guiTop + 18, xSize - 20, ySize - 80);
 	}
@@ -89,7 +90,7 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton guibutton) {
+	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		if (guibutton.id == 0 && itemDisplay.getSelectedItem() != null) {
 			boolean found = false;
 			for (TrackingTask task : tile.tasks) {
@@ -129,7 +130,7 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 	}
 
 	@Override
-	protected void mouseClicked(int i, int j, int k) {
+	protected void mouseClicked(int i, int j, int k) throws IOException {
 		itemDisplay.handleClick(i, j, k);
 		search.handleClick(i, j, k);
 		super.mouseClicked(i, j, k);
@@ -151,7 +152,7 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 
 	public void handlePacket(List<ItemIdentifierStack> identList) {
 		if (itemDisplay == null) {
-			itemDisplay = new ItemDisplay(this, Minecraft.getMinecraft().fontRenderer, getBaseScreen(), null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[] { 1, 10, 64, 64 }, true);
+			itemDisplay = new ItemDisplay(this, fontRendererObj, getBaseScreen(), null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[] { 1, 10, 64, 64 }, true);
 		}
 		itemDisplay.setItemList(identList);
 	}
@@ -167,14 +168,12 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 		}
 		//if(isSearched(String.valueOf(Item.getIdFromItem(item.item)), search.getContent())) return true;
 		//Enchantment? Enchantment!
-		Map<Integer, Integer> enchantIdLvlMap = EnchantmentHelper.getEnchantments(item.unsafeMakeNormalStack(1));
-		for (Entry<Integer, Integer> e : enchantIdLvlMap.entrySet()) {
-			if (e.getKey().intValue() < Enchantment.enchantmentsList.length && Enchantment.enchantmentsList[e.getKey()] != null) {
-				String enchantname = Enchantment.enchantmentsList[e.getKey()].getTranslatedName(e.getValue());
-				if (enchantname != null) {
-					if (isSearched(enchantname.toLowerCase(Locale.US), search.getContent().toLowerCase(Locale.US))) {
-						return true;
-					}
+		Map<Enchantment, Integer> enchantIdLvlMap = EnchantmentHelper.getEnchantments(item.unsafeMakeNormalStack(1));
+		for (Entry<Enchantment, Integer> e : enchantIdLvlMap.entrySet()) {
+			String enchantname = e.getKey().getName();
+			if (enchantname != null) {
+				if (isSearched(enchantname.toLowerCase(Locale.US), search.getContent().toLowerCase(Locale.US))) {
+					return true;
 				}
 			}
 		}

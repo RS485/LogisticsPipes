@@ -1,5 +1,7 @@
 package logisticspipes.gui.modules;
 
+import java.io.IOException;
+
 import logisticspipes.interfaces.IStringBasedModule;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.utils.Color;
@@ -50,7 +52,7 @@ public class GuiStringBasedItemSink extends ModuleBaseGui {
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton par1GuiButton) {
+	protected void actionPerformed(GuiButton par1GuiButton) throws IOException {
 		if (par1GuiButton.id == 0) {
 			if (!_itemSink.getStringList().contains(_itemSink.getStringForItem(tmpInv.getIDStackInSlot(0).getItem()))) {
 				_itemSink.getStringList().add(_itemSink.getStringForItem(tmpInv.getIDStackInSlot(0).getItem()));
@@ -70,7 +72,7 @@ public class GuiStringBasedItemSink extends ModuleBaseGui {
 	}
 
 	@Override
-	protected void mouseClicked(int i, int j, int k) {
+	protected void mouseClicked(int i, int j, int k) throws IOException {
 		int x = i - guiLeft;
 		int y = j - guiTop;
 		if (0 < x && x < 175 && 0 < y && y < 208) {

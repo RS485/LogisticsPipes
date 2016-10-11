@@ -1,5 +1,6 @@
 package logisticspipes.gui;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -136,7 +137,7 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 		TAB_BUTTON_5.add(addButton(new SmallGuiButton(1, guiLeft + 95, guiTop + 26, 10, 10, "<")));
 		TAB_BUTTON_5.add(addButton(new SmallGuiButton(2, guiLeft + 165, guiTop + 26, 10, 10, ">")));
 		if (_itemDisplay_5 == null) {
-			_itemDisplay_5 = new ItemDisplay(null, mc.fontRenderer, this, null, 10, 40, 20, 60, new int[] { 1, 1, 1, 1 }, true);
+			_itemDisplay_5 = new ItemDisplay(null, fontRendererObj, this, null, 10, 40, 20, 60, new int[] { 1, 1, 1, 1 }, true);
 		}
 		_itemDisplay_5.reposition(10, 40, 20, 60);
 	}
@@ -178,7 +179,7 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		RenderHelper.enableGUIStandardItemLighting();
 		ItemStack stack = new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.SNEAKY_COMBINATION);
-		GuiScreen.itemRender.renderItemAndEffectIntoGUI(fontRendererObj, getMC().renderEngine, stack, guiLeft + 6, guiTop + 4);
+		GuiScreen.itemRender.renderItemAndEffectIntoGUI(stack, guiLeft + 6, guiTop + 4);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GuiScreen.itemRender.zLevel = 0.0F;
@@ -195,8 +196,8 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 		GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		RenderHelper.enableGUIStandardItemLighting();
-		ItemStack stack2 = new ItemStack(Blocks.redstone_torch);
-		GuiScreen.itemRender.renderItemAndEffectIntoGUI(fontRendererObj, getMC().renderEngine, stack2, guiLeft + 81, guiTop + 1);
+		ItemStack stack2 = new ItemStack(Blocks.REDSTONE_TORCH);
+		GuiScreen.itemRender.renderItemAndEffectIntoGUI(stack2, guiLeft + 81, guiTop + 1);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GuiScreen.itemRender.zLevel = 0.0F;
@@ -225,7 +226,7 @@ public class GuiPipeController extends LogisticsBaseGuiScreen {
 	}
 
 	@Override
-	protected void mouseClicked(int par1, int par2, int par3) {
+	protected void mouseClicked(int par1, int par2, int par3) throws IOException {
 		if (par3 == 0 && par1 > guiLeft && par1 < guiLeft + 220 && par2 > guiTop && par2 < guiTop + 20) {
 			par1 -= guiLeft + 3;
 			int select = Math.max(0, Math.min(par1 / 25, TAB_COUNT - 1));

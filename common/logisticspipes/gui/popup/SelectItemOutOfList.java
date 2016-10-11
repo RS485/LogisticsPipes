@@ -1,5 +1,6 @@
 package logisticspipes.gui.popup;
 
+import java.io.IOException;
 import java.util.List;
 
 import logisticspipes.utils.Color;
@@ -12,6 +13,7 @@ import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
 
@@ -26,7 +28,6 @@ public class SelectItemOutOfList extends SubGuiScreen {
 
 	private final List<ItemIdentifierStack> canidate;
 	private final IHandleItemChoise handler;
-	private final RenderItem itemRenderer = new RenderItem();
 	private int page = 0;
 	private final int maxPage;
 	private Object[] tooltip = null;
@@ -67,9 +68,9 @@ public class SelectItemOutOfList extends SubGuiScreen {
 					font = fontRendererObj;
 				}
 
-				itemRenderer.renderItemAndEffectIntoGUI(font, mc.renderEngine, itemStack, guiLeft + 5 + x * 18, guiTop + 17 + y * 18);
+				GuiScreen.itemRender.renderItemAndEffectIntoGUI(itemStack, guiLeft + 5 + x * 18, guiTop + 17 + y * 18);
 				// With empty string, because damage value indicator struggles with the depth
-				itemRenderer.renderItemOverlayIntoGUI(font, mc.renderEngine, itemStack, guiLeft + 5 + x * 18, guiTop + 17 + y * 18, "");
+				GuiScreen.itemRender.renderItemOverlayIntoGUI(font, mc.renderEngine, itemStack, guiLeft + 5 + x * 18, guiTop + 17 + y * 18, "");
 
 				if (guiLeft + 5 + x * 18 < mouseX && mouseX < guiLeft + 5 + x * 18 + 16 && guiTop + 17 + y * 18 < mouseY && mouseY < guiTop + 17 + y * 18 + 16 && !hasSubGui()) {
 					GL11.glDisable(GL11.GL_LIGHTING);
@@ -134,7 +135,7 @@ public class SelectItemOutOfList extends SubGuiScreen {
 	}
 
 	@Override
-	protected void mouseClicked(int mouseX, int mouseY, int button) {
+	protected void mouseClicked(int mouseX, int mouseY, int button) throws IOException {
 		int x = 0;
 		int y = -page * 10;
 		int count = 0;

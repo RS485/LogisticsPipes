@@ -1,5 +1,7 @@
 package logisticspipes.gui.orderer;
 
+import java.io.IOException;
+
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.orderer.OrdererRefreshRequestPacket;
 import logisticspipes.proxy.MainProxy;
@@ -54,7 +56,7 @@ public class NormalGuiOrderer extends GuiOrderer {
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton guibutton) {
+	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		super.actionPerformed(guibutton);
 		if (guibutton.id == 9) {
 			String displayString = "";

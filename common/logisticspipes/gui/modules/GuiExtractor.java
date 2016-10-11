@@ -8,6 +8,7 @@
 
 package logisticspipes.gui.modules;
 
+import java.io.IOException;
 import java.util.Locale;
 
 import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
@@ -57,13 +58,13 @@ public class GuiExtractor extends ModuleBaseGui {
 	private void refreshButtons() {
 		for (Object p : buttonList) {
 			GuiButton button = (GuiButton) p;
-			button.displayString = isExtract(EnumFacing.getOrientation(button.id));
+			button.displayString = isExtract(EnumFacing.getFront(button.id));
 		}
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton guibutton) {
-		_directionReceiver.setSneakyDirection(EnumFacing.getOrientation(guibutton.id));
+	protected void actionPerformed(GuiButton guibutton) throws IOException {
+		_directionReceiver.setSneakyDirection(EnumFacing.getFront(guibutton.id));
 
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(ExtractorModuleDirectionPacket.class).setDirection(_directionReceiver.getSneakyDirection()).setModulePos(_directionReceiver));
 

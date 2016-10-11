@@ -8,6 +8,8 @@
 
 package logisticspipes.gui;
 
+import java.io.IOException;
+
 import logisticspipes.modules.ModuleActiveSupplier;
 import logisticspipes.modules.ModuleActiveSupplier.PatternMode;
 import logisticspipes.modules.ModuleActiveSupplier.SupplyMode;
@@ -122,7 +124,7 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton guibutton) {
+	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		if (guibutton.id == 0) {
 			if (hasPatternUpgrade) {
 				int currentMode = module.getPatternMode().ordinal() + 1;

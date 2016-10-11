@@ -1,5 +1,7 @@
 package logisticspipes.gui.popup;
 
+import java.io.IOException;
+
 import logisticspipes.interfaces.IDiskProvider;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.orderer.DiscContent;
@@ -46,7 +48,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 	}
 
 	@Override
-	protected void mouseClicked(int i, int j, int k) {
+	protected void mouseClicked(int i, int j, int k) throws IOException {
 		int x = i - guiLeft;
 		int y = j - guiTop;
 		mouseX = i;
@@ -219,7 +221,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton guibutton) {
+	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		if (guibutton.id == 0) {
 			handleRequest();
 		} else if (guibutton.id == 1) {

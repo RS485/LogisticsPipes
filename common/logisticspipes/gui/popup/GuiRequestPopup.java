@@ -13,7 +13,7 @@ import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
 public class GuiRequestPopup extends SubGuiScreen {
 
@@ -72,7 +72,7 @@ public class GuiRequestPopup extends SubGuiScreen {
 			if (text[i] == null) {
 				continue;
 			}
-			String msg = StringUtils.getCuttedString(text[i], mWidth - 10, mc.fontRenderer);
+			String msg = StringUtils.getCuttedString(text[i], mWidth - 10, fontRendererObj);
 			int stringWidth = mc.fontRendererObj.getStringWidth(msg);
 			mc.fontRendererObj.drawString(msg, xCenter - (stringWidth / 2), guiTop + 10 + (i * 10), 0x404040);
 		}
@@ -86,7 +86,7 @@ public class GuiRequestPopup extends SubGuiScreen {
 				break;
 			case 1:
 				for (String msg : text) {
-					player.addChatMessage(new ChatComponentText(msg));
+					player.addChatMessage(new TextComponentString(msg));
 				}
 				((GuiButton) buttonList.get(1)).enabled = false;
 				break;

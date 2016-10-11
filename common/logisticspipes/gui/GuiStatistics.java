@@ -150,8 +150,8 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 		GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		RenderHelper.enableGUIStandardItemLighting();
-		ItemStack stack = new ItemStack(Blocks.crafting_table, 0);
-		GuiScreen.itemRender.renderItemAndEffectIntoGUI(fontRendererObj, getMC().renderEngine, stack, guiLeft + 31, guiTop + 3);
+		ItemStack stack = new ItemStack(Blocks.CRAFTING_TABLE, 0);
+		GuiScreen.itemRender.renderItemAndEffectIntoGUI(stack, guiLeft + 31, guiTop + 3);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GuiScreen.itemRender.zLevel = 0.0F;
@@ -174,7 +174,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 					GL11.glEnable(GL11.GL_LIGHTING);
 					GL11.glEnable(GL11.GL_DEPTH_TEST);
 					RenderHelper.enableGUIStandardItemLighting();
-					GuiScreen.itemRender.renderItemAndEffectIntoGUI(fontRendererObj, getMC().renderEngine, task.item.makeNormalStack(1), guiLeft + 11, guiTop + 100);
+					GuiScreen.itemRender.renderItemAndEffectIntoGUI(task.item.makeNormalStack(1), guiLeft + 11, guiTop + 100);
 					GL11.glDisable(GL11.GL_LIGHTING);
 					GL11.glDisable(GL11.GL_DEPTH_TEST);
 					GuiScreen.itemRender.zLevel = 0.0F;

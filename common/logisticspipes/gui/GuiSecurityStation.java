@@ -1,5 +1,6 @@
 package logisticspipes.gui;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -94,30 +95,30 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton button) {
+	protected void actionPerformed(GuiButton button) throws IOException {
 		if (button.id < 4) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityCardPacket.class).setInteger(button.id).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityCardPacket.class).setInteger(button.id).setBlockPos(_tile.getPos()));
 		} else if (button.id == 4) {
 			if (searchinput1 + searchinput2 != null && ((searchinput1 + searchinput2).length() != 0)) {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityStationOpenPlayerRequest.class).setString(searchinput1 + searchinput2).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord));
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityStationOpenPlayerRequest.class).setString(searchinput1 + searchinput2).setBlockPos(_tile.getPos()));
 			}
 		} else if (button.id == 5) {
 			_tile.allowCC = !_tile.allowCC;
 			refreshCheckBoxes();
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityStationCC.class).setInteger(_tile.allowCC ? 1 : 0).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityStationCC.class).setInteger(_tile.allowCC ? 1 : 0).setBlockPos(_tile.getPos()));
 		} else if (button.id == 6) {
 			setSubGui(new GuiEditCCAccessTable(_tile));
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityRequestCCIdsPacket.class).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityRequestCCIdsPacket.class).setBlockPos(_tile.getPos()));
 		} else if (button.id == 7) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityAuthorizationPacket.class).setInteger(1).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityAuthorizationPacket.class).setInteger(1).setBlockPos(_tile.getPos()));
 			authorized = true;
 		} else if (button.id == 8) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityAuthorizationPacket.class).setInteger(0).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityAuthorizationPacket.class).setInteger(0).setBlockPos(_tile.getPos()));
 			authorized = false;
 		} else if (button.id == 9) {
 			_tile.allowAutoDestroy = !_tile.allowAutoDestroy;
 			refreshCheckBoxes();
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityStationAutoDestroy.class).setInteger(_tile.allowAutoDestroy ? 1 : 0).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityStationAutoDestroy.class).setInteger(_tile.allowAutoDestroy ? 1 : 0).setBlockPos(_tile.getPos()));
 		} else {
 			super.actionPerformed(button);
 		}
@@ -208,7 +209,7 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 	}
 
 	@Override
-	protected void mouseClicked(int i, int j, int k) {
+	protected void mouseClicked(int i, int j, int k) throws IOException {
 		clickWasButton = false;
 		editsearchb = true;
 		super.mouseClicked(i, j, k);
@@ -223,7 +224,7 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 	}
 
 	@Override
-	protected void keyTyped(char c, int i) {
+	protected void keyTyped(char c, int i) throws IOException {
 		if (editsearch) {
 			if (c == 13) {
 				editsearch = false;

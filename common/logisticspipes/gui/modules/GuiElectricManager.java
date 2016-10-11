@@ -8,6 +8,8 @@
 
 package logisticspipes.gui.modules;
 
+import java.io.IOException;
+
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.ElectricManagerPacket;
@@ -61,7 +63,7 @@ public class GuiElectricManager extends ModuleBaseGui {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		mc.fontRendererObj.drawString(_module.getFilterInventory().getInventoryName(), 8, 6, 0x404040);
+		mc.fontRendererObj.drawString(_module.getFilterInventory().getName(), 8, 6, 0x404040);
 		mc.fontRendererObj.drawString("Inventory", 8, ySize - 92, 0x404040);
 	}
 

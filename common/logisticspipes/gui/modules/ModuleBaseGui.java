@@ -1,5 +1,7 @@
 package logisticspipes.gui.modules;
 
+import java.io.IOException;
+
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.PacketHandler;
@@ -22,7 +24,7 @@ public abstract class ModuleBaseGui extends LogisticsBaseGuiScreen {
 	}
 
 	@Override
-	protected void keyTyped(char c, int i) {
+	protected void keyTyped(char c, int i) throws IOException {
 		if (module == null) {
 			super.keyTyped(c, i);
 			return;

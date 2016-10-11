@@ -8,6 +8,7 @@
 
 package logisticspipes.gui.orderer;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
@@ -97,12 +98,12 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		buttonList.add(new SmallGuiButton(20, xCenter - 13, bottom - 41, 26, 10, "Sort")); // Sort
 
 		if (search == null) {
-			search = new SearchBar(mc.fontRenderer, this, guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
+			search = new SearchBar(fontRendererObj, this, guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
 		}
 		search.reposition(guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
 
 		if (itemDisplay == null) {
-			itemDisplay = new ItemDisplay(this, mc.fontRenderer, this, this, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[] { 1, 10, 64, 64 }, true);
+			itemDisplay = new ItemDisplay(this, fontRendererObj, this, this, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[] { 1, 10, 64, 64 }, true);
 		}
 		itemDisplay.reposition(guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100);
 	}
@@ -152,14 +153,12 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		}
 		//if(isSearched(String.valueOf(Item.getIdFromItem(item.item)), search.getContent())) return true;
 		//Enchantment? Enchantment!
-		Map<Integer, Integer> enchantIdLvlMap = EnchantmentHelper.getEnchantments(item.unsafeMakeNormalStack(1));
-		for (Entry<Integer, Integer> e : enchantIdLvlMap.entrySet()) {
-			if (e.getKey().intValue() < Enchantment.enchantmentsList.length && Enchantment.enchantmentsList[e.getKey()] != null) {
-				String enchantname = Enchantment.enchantmentsList[e.getKey()].getTranslatedName(e.getValue());
-				if (enchantname != null) {
-					if (isSearched(enchantname.toLowerCase(Locale.US), search.getContent().toLowerCase(Locale.US))) {
-						return true;
-					}
+		Map<Enchantment, Integer> enchantIdLvlMap = EnchantmentHelper.getEnchantments(item.unsafeMakeNormalStack(1));
+		for (Entry<Enchantment, Integer> e : enchantIdLvlMap.entrySet()) {
+			String enchantname = e.getKey().getName();
+			if (enchantname != null) {
+				if (isSearched(enchantname.toLowerCase(Locale.US), search.getContent().toLowerCase(Locale.US))) {
+					return true;
 				}
 			}
 		}
@@ -177,14 +176,14 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 	}
 
 	@Override
-	protected void mouseClicked(int i, int j, int k) {
+	protected void mouseClicked(int i, int j, int k) throws IOException {
 		itemDisplay.handleClick(i, j, k);
 		search.handleClick(i, j, k);
 		super.mouseClicked(i, j, k);
 	}
 
 	@Override
-	public void handleMouseInputSub() {
+	public void handleMouseInputSub() throws IOException {
 		itemDisplay.handleMouse();
 		super.handleMouseInputSub();
 	}
@@ -208,7 +207,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton guibutton) {
+	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		if (guibutton.id == 0 && itemDisplay.getSelectedItem() != null) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitPacket.class).setDimension(dimension).setStack(itemDisplay.getSelectedItem().getItem().makeStack(itemDisplay.getRequestCount())).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 			refreshItems();
@@ -248,7 +247,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 	}
 
 	@Override
-	protected void keyTyped(char c, int i) {
+	protected void keyTyped(char c, int i) throws IOException {
 		if (i == 30 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) { //Ctrl-a
 			itemDisplay.setMaxAmount();
 		} else if (i == 32 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) { //Ctrl-d

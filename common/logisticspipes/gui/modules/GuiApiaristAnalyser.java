@@ -1,5 +1,7 @@
 package logisticspipes.gui.modules;
 
+import java.io.IOException;
+
 import logisticspipes.modules.ModuleApiaristAnalyser;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
@@ -28,7 +30,7 @@ public class GuiApiaristAnalyser extends ModuleBaseGui {
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton par1GuiButton) {
+	protected void actionPerformed(GuiButton par1GuiButton) throws IOException {
 		if (par1GuiButton.id == 0) {
 			int mode = module.getExtractMode();
 			if (mode == 1) {

@@ -8,6 +8,8 @@
 
 package logisticspipes.gui.modules;
 
+import java.io.IOException;
+
 import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.AdvancedExtractorIncludePacket;
@@ -69,7 +71,7 @@ public class GuiAdvancedExtractor extends ModuleBaseGui {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		mc.fontRendererObj.drawString(_advancedExtractor.getFilterInventory().getInventoryName(), 8, 6, 0x404040);
+		mc.fontRendererObj.drawString(_advancedExtractor.getFilterInventory().getName(), 8, 6, 0x404040);
 		mc.fontRendererObj.drawString("Inventory", 8, ySize - 92, 0x404040);
 	}
 

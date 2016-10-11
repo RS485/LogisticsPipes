@@ -1,5 +1,6 @@
 package logisticspipes.gui.modules;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -50,7 +51,7 @@ public class GuiThaumicAspectSink extends ModuleBaseGui {
 	}
 
 	@Override
-	protected void mouseClicked(int i, int j, int k) {
+	protected void mouseClicked(int i, int j, int k) throws IOException {
 		int x = i - guiLeft;
 		int y = j - guiTop;
 		if (0 < x && x < 175 && 0 < y && y < 172) {
@@ -94,7 +95,7 @@ public class GuiThaumicAspectSink extends ModuleBaseGui {
 		mouseY = 0;
 
 		//transfer tags from stack to gui list
-		if (tmpInv.getStackInSlot(0) != null && SimpleServiceLocator.thaumCraftProxy.isScannedObject(tmpInv.getStackInSlot(0), mc.thePlayer.getDisplayName())) {
+		if (tmpInv.getStackInSlot(0) != null && SimpleServiceLocator.thaumCraftProxy.isScannedObject(tmpInv.getStackInSlot(0), mc.thePlayer.getName())) {
 			stackTags = SimpleServiceLocator.thaumCraftProxy.getListOfTagsForStack(tmpInv.getStackInSlot(0));
 		}
 

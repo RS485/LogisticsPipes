@@ -1,5 +1,8 @@
 package logisticspipes.gui.orderer;
 
+import java.io.IOException;
+import java.util.Objects;
+
 import logisticspipes.gui.popup.GuiDiskPopup;
 import logisticspipes.interfaces.IDiskProvider;
 import logisticspipes.network.PacketHandler;
@@ -14,6 +17,7 @@ import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifier;
 
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -24,7 +28,6 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer implements IDiskProvid
 
 	public PipeItemsRequestLogisticsMk2 pipe;
 	private SmallGuiButton Macrobutton;
-	private RenderItem renderItem = new RenderItem();
 
 	public NormalMk2GuiOrderer(PipeItemsRequestLogisticsMk2 RequestPipeMK2, EntityPlayer entityPlayer) {
 		super(RequestPipeMK2.getX(), RequestPipeMK2.getY(), RequestPipeMK2.getZ(), MainProxy.getDimensionForWorld(RequestPipeMK2.getWorld()), entityPlayer);
@@ -48,7 +51,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer implements IDiskProvid
 		drawRect(right - 37, bottom - 45, right - 21, bottom - 29, Color.DARKER_GREY);
 
 		if (pipe.getDisk() != null) {
-			renderItem.renderItemIntoGUI(mc.fontRenderer, mc.renderEngine, pipe.getDisk(), right - 37, bottom - 45);
+			GuiScreen.renderItem.renderItemIntoGUI(fontRendererObj, mc.renderEngine, pipe.getDisk(), right - 37, bottom - 45);
 			Macrobutton.enabled = true;
 		} else {
 			Macrobutton.enabled = false;
@@ -57,7 +60,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer implements IDiskProvid
 	}
 
 	@Override
-	protected void mouseClicked(int x, int y, int k) {
+	protected void mouseClicked(int x, int y, int k) throws IOException {
 		if (x >= right - 39 && x < right - 19 && y >= bottom - 47 && y < bottom - 27) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskDropPacket.class).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
 		} else {
@@ -66,7 +69,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer implements IDiskProvid
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton guibutton) {
+	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		super.actionPerformed(guibutton);
 		if (guibutton.id == 12) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskRequestConectPacket.class).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
@@ -82,7 +85,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer implements IDiskProvid
 	@Override
 	public void specialItemRendering(ItemIdentifier item, int x, int y) {
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-		if (SimpleServiceLocator.thaumCraftProxy.isScannedObject(item.unsafeMakeNormalStack(1), mc.thePlayer.getDisplayName())) {
+		if (SimpleServiceLocator.thaumCraftProxy.isScannedObject(item.unsafeMakeNormalStack(1), mc.thePlayer.getName())) {
 			SimpleServiceLocator.thaumCraftProxy.renderAspectsDown(item.unsafeMakeNormalStack(1), -20, 10, this);
 		}
 		GL11.glPopAttrib();

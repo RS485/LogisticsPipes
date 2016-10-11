@@ -6,7 +6,7 @@ import logisticspipes.commands.chathelper.MorePageDisplay;
 import logisticspipes.ticks.VersionChecker;
 
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
 public class ChangelogCommand implements ICommandHandler {
 
@@ -41,7 +41,7 @@ public class ChangelogCommand implements ICommandHandler {
 			}
 			display.display(sender);
 		} else {
-			sender.addChatMessage(new ChatComponentText(statusMessage));
+			sender.addChatMessage(new TextComponentString(statusMessage));
 		}
 	}
 }

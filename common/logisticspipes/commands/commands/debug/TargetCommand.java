@@ -7,7 +7,7 @@ import logisticspipes.proxy.MainProxy;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
 public class TargetCommand implements ICommandHandler {
 
@@ -29,6 +29,6 @@ public class TargetCommand implements ICommandHandler {
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DebugAskForTarget.class), (EntityPlayer) sender);
-		sender.addChatMessage(new ChatComponentText("Asking for Target."));
+		sender.addChatMessage(new TextComponentString("Asking for Target."));
 	}
 }

@@ -6,7 +6,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.item.Item;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
 public class NameLookupCommand implements ICommandHandler {
 
@@ -35,6 +35,6 @@ public class NameLookupCommand implements ICommandHandler {
 		int id = Integer.valueOf(idString);
 		int meta = Integer.valueOf(metaString);
 		ItemIdentifier item = ItemIdentifier.get(Item.getItemById(id), meta, null);
-		sender.addChatMessage(new ChatComponentText("Name: " + item.getFriendlyNameCC()));
+		sender.addChatMessage(new TextComponentString("Name: " + item.getFriendlyNameCC()));
 	}
 }

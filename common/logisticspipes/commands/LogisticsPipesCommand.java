@@ -16,6 +16,7 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 
+import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class LogisticsPipesCommand extends CommandBase {
@@ -32,11 +33,6 @@ public class LogisticsPipesCommand extends CommandBase {
 	}
 
 	@Override
-	public boolean canCommandSenderUseCommand(ICommandSender par1iCommandSender) {
-		return true;
-	}
-
-	@Override
 	public String getCommandUsage(ICommandSender var1) {
 		return "/" + getCommandName() + " help";
 	}
@@ -47,7 +43,7 @@ public class LogisticsPipesCommand extends CommandBase {
 	}
 
 	@Override
-	public void processCommand(ICommandSender sender, String[] arguments) throws CommandException {
+	public void execute(MinecraftServer server, ICommandSender sender, String[] arguments) throws CommandException {
 		if (arguments.length <= 0) {
 			throw new WrongUsageException("Type '" + getCommandUsage(sender) + "' for help.");
 		}
@@ -71,7 +67,7 @@ public class LogisticsPipesCommand extends CommandBase {
 	}
 
 	public static boolean isOP(ICommandSender sender) {
-		return Arrays.asList(FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().getOppedPlayers().getKeys())
+		return Arrays.asList(FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getOppedPlayers().getKeys())
 				.contains(sender.getName().toLowerCase(Locale.US)) || (MainProxy.proxy.checkSinglePlayerOwner(sender.getName()));
 	}
 }

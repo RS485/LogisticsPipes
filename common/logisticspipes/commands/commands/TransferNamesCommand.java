@@ -8,7 +8,7 @@ import logisticspipes.proxy.MainProxy;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
 public class TransferNamesCommand implements ICommandHandler {
 
@@ -29,7 +29,7 @@ public class TransferNamesCommand implements ICommandHandler {
 
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
-		sender.addChatMessage(new ChatComponentText("Requesting Transfer"));
+		sender.addChatMessage(new TextComponentString("Requesting Transfer"));
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RequestUpdateNamesPacket.class), (EntityPlayer) sender);
 		MainProxy.proxy.sendNameUpdateRequest((EntityPlayer) sender);
 	}

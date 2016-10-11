@@ -8,7 +8,7 @@ import logisticspipes.proxy.MainProxy;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
 public class NBTDebugCommand implements ICommandHandler {
 
@@ -29,7 +29,7 @@ public class NBTDebugCommand implements ICommandHandler {
 
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
-		sender.addChatMessage(new ChatComponentText("Trying to Enable NBTDebug"));
+		sender.addChatMessage(new TextComponentString("Trying to Enable NBTDebug"));
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ActivateNBTDebug.class), (EntityPlayer) sender);
 	}
 }

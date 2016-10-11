@@ -23,7 +23,7 @@ public class DebugCommand extends SubCommandHandler {
 
 	@Override
 	public boolean isCommandUsableBy(ICommandSender sender) {
-		return LPConstants.DEBUG || Arrays.asList(DebugCommand.allowedPlayers).contains(sender.getCommandSenderName());
+		return LPConstants.DEBUG || Arrays.asList(DebugCommand.allowedPlayers).contains(sender.getName());
 	}
 
 	@Override

@@ -4,7 +4,7 @@ import logisticspipes.commands.abstracts.ICommandHandler;
 import logisticspipes.utils.string.ChatColor;
 
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
 public class ClearCommand implements ICommandHandler {
 
@@ -26,11 +26,11 @@ public class ClearCommand implements ICommandHandler {
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
 		if (args.length <= 0 || !args[0].equalsIgnoreCase("all")) {
-			sender.addChatMessage(new ChatComponentText("%LPSTORESENDMESSAGE%"));
-			sender.addChatMessage(new ChatComponentText("%LPCLEARCHAT%"));
-			sender.addChatMessage(new ChatComponentText("%LPRESTORESENDMESSAGE%"));
+			sender.addChatMessage(new TextComponentString("%LPSTORESENDMESSAGE%"));
+			sender.addChatMessage(new TextComponentString("%LPCLEARCHAT%"));
+			sender.addChatMessage(new TextComponentString("%LPRESTORESENDMESSAGE%"));
 		} else {
-			sender.addChatMessage(new ChatComponentText("%LPCLEARCHAT%"));
+			sender.addChatMessage(new TextComponentString("%LPCLEARCHAT%"));
 		}
 	}
 }

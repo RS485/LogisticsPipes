@@ -11,7 +11,7 @@ import logisticspipes.commands.LogisticsPipesCommand;
 import logisticspipes.commands.abstracts.ICommandHandler;
 
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
 public class EnableCommand implements ICommandHandler {
 
@@ -33,7 +33,7 @@ public class EnableCommand implements ICommandHandler {
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
 		if (args.length != 1) {
-			sender.addChatMessage(new ChatComponentText("Wrong amount of arguments"));
+			sender.addChatMessage(new TextComponentString("Wrong amount of arguments"));
 			return;
 		}
 		String name = args[0];
@@ -53,12 +53,12 @@ public class EnableCommand implements ICommandHandler {
 			}
 		}
 		if (list.size() > 1) {
-			sender.addChatMessage(new ChatComponentText("Possible: "));
+			sender.addChatMessage(new TextComponentString("Possible: "));
 			for (AbstractWrapper can : list) {
-				sender.addChatMessage(new ChatComponentText(can.getName() + can.getTypeName()));
+				sender.addChatMessage(new TextComponentString(can.getName() + can.getTypeName()));
 			}
 		} else if (list.isEmpty()) {
-			sender.addChatMessage(new ChatComponentText("No match found"));
+			sender.addChatMessage(new TextComponentString("No match found"));
 		} else {
 			AbstractWrapper wrapper = list.get(0);
 			wrapper.reEnable();

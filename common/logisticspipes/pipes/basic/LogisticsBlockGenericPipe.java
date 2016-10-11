@@ -63,7 +63,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	public LogisticsBlockGenericPipe() {
 		super(Material.GLASS);
 		setRenderAllSides();
-		setCreativeTab(null);
 	}
 
 	@Override

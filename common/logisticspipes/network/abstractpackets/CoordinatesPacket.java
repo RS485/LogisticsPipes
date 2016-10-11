@@ -2,21 +2,20 @@ package logisticspipes.network.abstractpackets;
 
 import java.io.IOException;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.exception.TargetNotFoundException;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import net.minecraft.util.BlockPos;
-import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
+import logisticspipes.network.exception.TargetNotFoundException;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 @Accessors(chain = true)
 @ToString
@@ -90,7 +89,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	@SuppressWarnings("unchecked")
 	/**
 	 * Retrieves tileEntity at packet coordinates if any.
-	 * 
+	 *
 	 * @param world
 	 * @param clazz
 	 * @return TileEntity
@@ -120,7 +119,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	@SuppressWarnings("unchecked")
 	/**
 	 * Retrieves tileEntity or CoreUnroutedPipe at packet coordinates if any.
-	 * 
+	 *
 	 * @param world
 	 * @param clazz
 	 * @return TileEntity
@@ -157,7 +156,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 
 	/**
 	 * Retrieves pipe at packet coordinates if any.
-	 * 
+	 *
 	 * @param world
 	 * @return
 	 */

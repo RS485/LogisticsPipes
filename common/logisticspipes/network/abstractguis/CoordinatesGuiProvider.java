@@ -2,20 +2,20 @@ package logisticspipes.network.abstractguis;
 
 import java.io.IOException;
 
-import logisticspipes.LPConstants;
-import logisticspipes.LogisticsPipes;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+
+import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
+import logisticspipes.network.LPDataInputStream;
+import logisticspipes.network.LPDataOutputStream;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 
 @Accessors(chain = true)
 @ToString
@@ -62,7 +62,7 @@ public abstract class CoordinatesGuiProvider extends GuiProvider {
 	@SuppressWarnings("unchecked")
 	/**
 	 * Retrieves tileEntity at packet coordinates if any.
-	 * 
+	 *
 	 * @param world
 	 * @param clazz
 	 * @return TileEntity
@@ -99,7 +99,7 @@ public abstract class CoordinatesGuiProvider extends GuiProvider {
 
 	/**
 	 * Retrieves pipe at packet coordinates if any.
-	 * 
+	 *
 	 * @param world
 	 * @return
 	 */

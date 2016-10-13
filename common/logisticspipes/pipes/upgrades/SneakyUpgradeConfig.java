@@ -10,6 +10,14 @@ import net.minecraft.util.EnumFacing;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+
+import net.minecraftforge.common.util.ForgeDirection;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import logisticspipes.modules.ModuleCreativeTabBasedItemSink;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleModBasedItemSink;

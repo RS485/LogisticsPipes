@@ -1,8 +1,5 @@
 package logisticspipes.proxy.buildcraft.subproxies;
 
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
-
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.item.ItemStack;
 
@@ -11,6 +8,9 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 
 public interface IBCPipePluggable {
 

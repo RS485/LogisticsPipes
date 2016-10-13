@@ -82,10 +82,8 @@ public class BuildCraftProxy implements IBCProxy {
 	public static ITriggerInternal LogisticsHasDestinationTrigger;
 	public static IActionInternal LogisticsDisableAction;
 	public static IActionInternal LogisticsRobotRoutingAction;
-
-	private Method canPipeConnect;
-
 	public PipeType logisticsPipeType;
+	private Method canPipeConnect;
 
 	public BuildCraftProxy() {
 		String BCVersion = null;

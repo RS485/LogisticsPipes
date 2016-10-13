@@ -67,17 +67,15 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 	private static final int LIQUID_STAGES = 40;
 	private static final int MAX_ITEMS_TO_RENDER = 10;
 	private static final ResourceLocation SIGN = new ResourceLocation("textures/entity/sign.png");
-
+	private static final IntHashMap displayFluidLists = new IntHashMap();
 	public static LogisticsNewRenderPipe secondRenderer = new LogisticsNewRenderPipe();
 	public static LogisticsNewPipeItemBoxRenderer boxRenderer = new LogisticsNewPipeItemBoxRenderer();
 	public static PlayerConfig config;
 	private static ItemStackRenderer itemRenderer = new ItemStackRenderer(0, 0, 0, false, false, false);
 	private static Map<IPipeSignData, GLRenderList> pipeSignRenderListMap = new HashMap<IPipeSignData, GLRenderList>();
 	private static int localItemTestRenderList = -1;
-
 	private final int[] angleY = { 0, 0, 270, 90, 0, 180 };
 	private final int[] angleZ = { 90, 270, 0, 0, 0, 0 };
-	private static final IntHashMap displayFluidLists = new IntHashMap();
 	private ModelSign modelSign;
 	private RenderBlocks renderBlocks = new RenderBlocks();
 	private IBCRenderTESR bcRenderer = SimpleServiceLocator.buildCraftProxy.getBCRenderTESR();
@@ -322,7 +320,6 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 						}
 						break;
 					default:
-						;
 				}
 				renderSign(pipe, pair.getValue2(), partialTickTime);
 				GL11.glPopMatrix();

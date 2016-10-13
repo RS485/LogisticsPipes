@@ -303,7 +303,7 @@ public abstract class SideConfigDisplay {
 				double d0 = origin.x - eye.x;
 				double d1 = origin.y - eye.y;
 				double d2 = origin.z - eye.z;
-				mc.renderGlobal.drawOutlinedBoundingBox(block.getSelectedBoundingBoxFromPool(mc.theWorld, selection.hit.blockX, selection.hit.blockY, selection.hit.blockZ).expand((double)f1, (double)f1, (double)f1).getOffsetBoundingBox(-d0, -d1, -d2), -1);
+				RenderGlobal.drawOutlinedBoundingBox(block.getSelectedBoundingBoxFromPool(mc.theWorld, selection.hit.blockX, selection.hit.blockY, selection.hit.blockZ).expand((double)f1, (double)f1, (double)f1).getOffsetBoundingBox(-d0, -d1, -d2), -1);
 				if(block instanceof LogisticsBlockGenericPipe) {
 					LogisticsBlockGenericPipe.bypassPlayerTrace = null;
 				}

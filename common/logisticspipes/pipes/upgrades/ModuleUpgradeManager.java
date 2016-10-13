@@ -17,9 +17,9 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgradeManager {
 
+	private final UpgradeManager parent;
 	@Getter
 	private SimpleStackInventory inv = new SimpleStackInventory(2, "UpgradeInventory", 16);
-
 	private IPipeUpgrade[] upgrades = new IPipeUpgrade[2];
 	private PipeLogisticsChassi pipe;
 
@@ -41,17 +41,17 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 
 	@Override
 	public boolean hasPatternUpgrade() {
-		return hasPatternUpgrade ? true : parent.hasPatternUpgrade();
+		return hasPatternUpgrade || parent.hasPatternUpgrade();
 	}
 
 	@Override
 	public boolean isAdvancedSatelliteCrafter() {
-		return isAdvancedCrafter ? true : parent.isAdvancedSatelliteCrafter();
+		return isAdvancedCrafter || parent.isAdvancedSatelliteCrafter();
 	}
 
 	@Override
 	public boolean hasByproductExtractor() {
-		return hasByproductExtractor ? true : parent.hasByproductExtractor();
+		return hasByproductExtractor || parent.hasByproductExtractor();
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 
 	@Override
 	public boolean isFuzzyUpgrade() {
-		return isFuzzyUpgrade ? true : parent.isFuzzyUpgrade();
+		return isFuzzyUpgrade || parent.isFuzzyUpgrade();
 	}
 
 	@Override

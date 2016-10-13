@@ -746,7 +746,7 @@ public class DevEnvHelper {
 
 		public List<String> getExceptions(String clazz, String method, String desc) {
 			List<String> ret = exceptions.get(clazz + "/" + method + desc);
-			return ret == null ? Collections.<String> emptyList() : ret;
+			return ret == null ? Collections.emptyList() : ret;
 		}
 
 		public void addPrefix(String old, String new_) {
@@ -822,13 +822,13 @@ public class DevEnvHelper {
 
 	public static class MinecraftNameSet extends NameSet {
 
-		public static enum Type {
+		public enum Type {
 			OBF,
 			SRG,
 			MCP
 		}
 
-		public static enum Side {
+		public enum Side {
 			UNIVERSAL,
 			CLIENT,
 			SERVER

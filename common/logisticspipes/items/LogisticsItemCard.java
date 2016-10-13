@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -29,7 +30,7 @@ public class LogisticsItemCard extends LogisticsItem implements IItemAdvancedExi
 	public void addInformation(ItemStack itemStack, EntityPlayer player, List list, boolean flag) {
 		super.addInformation(itemStack, player, list, flag);
 		if (!itemStack.hasTagCompound()) {
-			list.add("This is no valid Card");
+			list.add(StringUtils.translate("tooltip.logisticsItemCard"));
 		} else {
 			if (itemStack.getTagCompound().hasKey("UUID")) {
 				if (itemStack.getItemDamage() == LogisticsItemCard.FREQ_CARD) {

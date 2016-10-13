@@ -248,6 +248,9 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 		li.addAll(mapIC.keySet().stream().map(ItemIdentifier::getUndamaged).collect(Collectors.toList()));
 		if (_service.getUpgradeManager(slot, positionInt).isFuzzyUpgrade()) {
 			for (Pair<ItemIdentifierStack, Integer> stack : _filterInventory) {
+				if (stack.getValue1() == null) {
+					continue;
+				}
 				ItemIdentifier ident = stack.getValue1().getItem();
 				if (ignoreData.get(stack.getValue2())) {
 					li.add(ident.getIgnoringData());

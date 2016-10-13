@@ -58,7 +58,7 @@ public class NEIProxy implements INEIProxy {
 			}
 		}
 		if (tooltip.size() > 0) {
-			tooltip.set(0, (String) tooltip.get(0) + "§h");
+			tooltip.set(0, tooltip.get(0) + "§h");
 		}
 		GuiDraw.drawMultilineTip(font, mousex + 12, mousey - 12, tooltip);
 		return true;

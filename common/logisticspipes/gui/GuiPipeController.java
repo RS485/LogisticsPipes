@@ -214,11 +214,8 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 						if (itemStack.getItemDamage() != LogisticsItemCard.SEC_CARD) {
 							return false;
 						}
-						if (!SimpleServiceLocator.securityStationManager
-								.isAuthorized(UUID.fromString(itemStack.getTagCompound().getString("UUID")))) {
-							return false;
-						}
-						return true;
+						return SimpleServiceLocator.securityStationManager
+								.isAuthorized(UUID.fromString(itemStack.getTagCompound().getString("UUID")));
 					}, 1));
 		}
 

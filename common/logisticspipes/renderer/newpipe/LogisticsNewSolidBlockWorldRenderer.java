@@ -185,7 +185,7 @@ public class LogisticsNewSolidBlockWorldRenderer {
 		tess.setBrightness(brightness);
 
 		//Draw
-		LogisticsNewSolidBlockWorldRenderer.block.get(rotation).render(new I3DOperation[] { new LPTranslation(x, y, z), icon });
+		LogisticsNewSolidBlockWorldRenderer.block.get(rotation).render(new LPTranslation(x, y, z), icon);
 		if(blockTile != null) {
 			DoubleCoordinates pos = new DoubleCoordinates(blockTile);
 			for (CoverSides side : CoverSides.values()) {
@@ -199,8 +199,8 @@ public class LogisticsNewSolidBlockWorldRenderer {
 					}
 				}
 				if (render) {
-					LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation).render(new I3DOperation[]{new LPTranslation(x, y, z), icon});
-					LogisticsNewSolidBlockWorldRenderer.texturePlate_Inner.get(side).get(rotation).render(new I3DOperation[]{new LPTranslation(x, y, z), icon});
+					LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation).render(new LPTranslation(x, y, z), icon);
+					LogisticsNewSolidBlockWorldRenderer.texturePlate_Inner.get(side).get(rotation).render(new LPTranslation(x, y, z), icon);
 				}
 			}
 		}
@@ -224,10 +224,10 @@ public class LogisticsNewSolidBlockWorldRenderer {
 		TextureTransformation icon = SimpleServiceLocator.cclProxy.createIconTransformer(LogisticsSolidBlock.getNewIcon(metadata));
 
 		//Draw
-		LogisticsNewSolidBlockWorldRenderer.block.get(rotation).render(new I3DOperation[] { icon });
+		LogisticsNewSolidBlockWorldRenderer.block.get(rotation).render(icon);
 		if(metadata != LogisticsSolidBlock.LOGISTICS_BLOCK_FRAME) {
 			for (CoverSides side : CoverSides.values()) {
-				LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation).render(new I3DOperation[]{icon});
+				LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation).render(icon);
 			}
 		}
 		tess.draw();

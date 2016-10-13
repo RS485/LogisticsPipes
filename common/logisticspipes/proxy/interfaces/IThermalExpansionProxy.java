@@ -8,11 +8,11 @@ import logisticspipes.recipes.CraftingParts;
 
 public interface IThermalExpansionProxy {
 
-	public boolean isTesseract(TileEntity tile);
+	boolean isTesseract(TileEntity tile);
 
-	public List<TileEntity> getConnectedTesseracts(TileEntity tile);
+	List<TileEntity> getConnectedTesseracts(TileEntity tile);
 
-	public boolean isTE();
+	boolean isTE();
 
-	public CraftingParts getRecipeParts();
+	CraftingParts getRecipeParts();
 }

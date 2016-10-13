@@ -84,10 +84,7 @@ public class ChassiGuiProvider extends BooleanModuleCoordinatesGuiProvider {
 		if (module == null) {
 			return false;
 		}
-		if (!LogisticsPipes.UpgradeItem.getUpgradeForItem(stack, null).isAllowedForModule(module)) {
-			return false;
-		}
-		return true;
+		return LogisticsPipes.UpgradeItem.getUpgradeForItem(stack, null).isAllowedForModule(module);
 	}
 
 	@Override

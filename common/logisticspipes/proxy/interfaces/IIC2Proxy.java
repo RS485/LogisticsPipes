@@ -6,31 +6,33 @@ import net.minecraft.util.EnumFacing;
 
 import logisticspipes.recipes.CraftingParts;
 
+import logisticspipes.recipes.CraftingParts;
+
 public interface IIC2Proxy {
 
-	public abstract boolean isElectricItem(ItemStack stack);
+	boolean isElectricItem(ItemStack stack);
 
-	public abstract boolean isSimilarElectricItem(ItemStack stack, ItemStack template);
+	boolean isSimilarElectricItem(ItemStack stack, ItemStack template);
 
-	public abstract boolean isFullyCharged(ItemStack stack);
+	boolean isFullyCharged(ItemStack stack);
 
-	public abstract boolean isFullyDischarged(ItemStack stack);
+	boolean isFullyDischarged(ItemStack stack);
 
-	public abstract boolean isPartiallyCharged(ItemStack stack);
+	boolean isPartiallyCharged(ItemStack stack);
 
-	public abstract void addCraftingRecipes(CraftingParts parts);
+	void addCraftingRecipes(CraftingParts parts);
 
-	public abstract boolean hasIC2();
+	boolean hasIC2();
 
-	public abstract void registerToEneryNet(TileEntity tile);
+	void registerToEneryNet(TileEntity tile);
 
-	public abstract void unregisterToEneryNet(TileEntity tile);
+	void unregisterToEneryNet(TileEntity tile);
 
 	public abstract boolean acceptsEnergyFrom(TileEntity energy, TileEntity tile, EnumFacing opposite);
 
-	public abstract boolean isEnergySink(TileEntity tile);
+	boolean isEnergySink(TileEntity tile);
 
-	public abstract double demandedEnergyUnits(TileEntity tile);
+	double demandedEnergyUnits(TileEntity tile);
 
 	public abstract double injectEnergyUnits(TileEntity tile, EnumFacing opposite, double d);
 

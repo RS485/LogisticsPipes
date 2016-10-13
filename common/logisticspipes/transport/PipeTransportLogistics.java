@@ -556,7 +556,7 @@ public class PipeTransportLogistics {
 
 					if (added.stackSize > 0 && arrivingItem instanceof IRoutedItem) {
 						tookSome = true;
-						((IRoutedItem) arrivingItem).setBufferCounter(0);
+						arrivingItem.setBufferCounter(0);
 					}
 
 					ItemRoutingInformation info;
@@ -587,7 +587,7 @@ public class PipeTransportLogistics {
 						arrivingItem.getItemIdentifierStack().lowerStackSize(added.stackSize);
 						if (added.stackSize > 0) {
 							tookSome = true;
-							((IRoutedItem) arrivingItem).setBufferCounter(0);
+							arrivingItem.setBufferCounter(0);
 						}
 						ItemRoutingInformation info;
 

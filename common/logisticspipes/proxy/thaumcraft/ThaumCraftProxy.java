@@ -27,7 +27,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 
 	public ThaumCraftProxy() throws ClassNotFoundException, IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 		Class<?> tcConfig = Class.forName("thaumcraft.common.config.ConfigItems");
-		itemShard = (Item) tcConfig.getField("itemShard").get((Object) null);
+		itemShard = (Item) tcConfig.getField("itemShard").get(null);
 	}
 
 	/**

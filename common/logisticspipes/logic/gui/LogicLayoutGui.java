@@ -37,7 +37,7 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 		LEVEL_1(0.5F, 330, 465, 1, 50),
 		LEVEL_2(0.25F, 660, 950, 2, 100);
 
-		private ZOOM_LEVEL(float zoom, int bottom, int right, int line, int moveY) {
+		ZOOM_LEVEL(float zoom, int bottom, int right, int line, int moveY) {
 			this.zoom = zoom;
 			bottomRenderBorder = bottom;
 			rightRenderBorder = right;

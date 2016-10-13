@@ -58,7 +58,7 @@ public class SneakyConfigurationPopup extends SubGuiScreen {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY, float partialTick) {
-		this.drawRect(bounds.x, bounds.y, bounds.x + bounds.width, bounds.y + bounds.height, 0xff000000);
+		drawRect(bounds.x, bounds.y, bounds.x + bounds.width, bounds.y + bounds.height, 0xff000000);
 
 		Minecraft mc = Minecraft.getMinecraft();
 		ScaledResolution scaledresolution = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);

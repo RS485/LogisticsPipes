@@ -100,10 +100,7 @@ public class PipeController extends CoordinatesGuiProvider {
 			if (itemStack.getItemDamage() != LogisticsItemCard.SEC_CARD) {
 				return false;
 			}
-			if (!SimpleServiceLocator.securityStationManager.isAuthorized(UUID.fromString(itemStack.getTagCompound().getString("UUID")))) {
-				return false;
-			}
-			return true;
+			return SimpleServiceLocator.securityStationManager.isAuthorized(UUID.fromString(itemStack.getTagCompound().getString("UUID")));
 		}, 1);
 		dummy.addRestrictedSlot(0, tile.logicController.diskInv, 14, 36, LogisticsPipes.LogisticsItemDisk);
 		return dummy;

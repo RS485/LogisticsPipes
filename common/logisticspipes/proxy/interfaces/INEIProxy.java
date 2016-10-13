@@ -14,9 +14,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public interface INEIProxy {
 
-	public ItemStack getItemForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver);
+	ItemStack getItemForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver);
 
-	public List<String> getInfoForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver);
+	List<String> getInfoForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver);
 
 	@SideOnly(Side.CLIENT) boolean renderItemToolTip(int posX, int posY, List<String> msg, EnumChatFormatting rarityColor, ItemStack stack);
 

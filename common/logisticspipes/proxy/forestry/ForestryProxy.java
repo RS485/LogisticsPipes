@@ -32,23 +32,22 @@ import logisticspipes.utils.item.ItemIdentifier;
 
 public class ForestryProxy implements IForestryProxy {
 
-	public ForestryProxy() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
-		analyserClass = Class.forName("forestry.core.tiles.TileAnalyzer");
-		Class<?> stringUtil = Class.forName("forestry.core.utils.StringUtil");
-		localize = stringUtil.getDeclaredMethod("localize", new Class[] { String.class });
-		localize.setAccessible(true);
-		propolis = GameRegistry.findItem("Forestry", "propolis");
-		pollen = GameRegistry.findItem("Forestry", "pollen");
-		honey = FluidRegistry.getFluidStack("for.honey", 1500);
-		root = (IBeeRoot) AlleleManager.alleleRegistry.getSpeciesRoot("rootBees");
-	}
-
 	private Class<?> analyserClass;
 	private Method localize;
 	private Item propolis;
 	private Item pollen;
 	private FluidStack honey;
 	private IBeeRoot root;
+	public ForestryProxy() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
+		analyserClass = Class.forName("forestry.core.tiles.TileAnalyzer");
+		Class<?> stringUtil = Class.forName("forestry.core.utils.StringUtil");
+		localize = stringUtil.getDeclaredMethod("localize", String.class);
+		localize.setAccessible(true);
+		propolis = GameRegistry.findItem("Forestry", "propolis");
+		pollen = GameRegistry.findItem("Forestry", "pollen");
+		honey = FluidRegistry.getFluidStack("for.honey", 1500);
+		root = (IBeeRoot) AlleleManager.alleleRegistry.getSpeciesRoot("rootBees");
+	}
 
 	/**
 	 * Checks if item is bee via ItemIdentifier.
@@ -154,7 +153,7 @@ public class ForestryProxy implements IForestryProxy {
 		if (!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleSpecies)) {
 			return "";
 		}
-		return ((IAlleleSpecies) forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid)).getName();
+		return AlleleManager.alleleRegistry.getAllele(uid).getName();
 	}
 
 	/**
@@ -306,10 +305,7 @@ public class ForestryProxy implements IForestryProxy {
 		if (isQueen(bee)) {
 			return false;
 		}
-		if (isDrone(bee)) {
-			return false;
-		}
-		return true;
+		return !isDrone(bee);
 	}
 
 	/**

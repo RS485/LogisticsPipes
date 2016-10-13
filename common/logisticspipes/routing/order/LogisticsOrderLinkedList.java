@@ -91,7 +91,7 @@ public class LogisticsOrderLinkedList<E extends LogisticsOrder, I> implements It
 		return list.isEmpty();
 	}
 
-	public static interface IIdentityProvider<A, B> {
+	public interface IIdentityProvider<A, B> {
 		B getIdentity(A o);
 		boolean isExtra(A o);
 	}

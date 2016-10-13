@@ -219,7 +219,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 				nextOrientation();
 			}
 		}
-	};
+	}
 
 	@Override
 	public void onBlockPlaced() {

@@ -14,7 +14,6 @@ import lombok.Setter;
 
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.gui.popup.GuiRecipeImport;
-import logisticspipes.network.IWriteListObject;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -25,7 +24,6 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 import network.rs485.logisticspipes.world.CoordinateUtils;
@@ -110,7 +108,7 @@ public class FindMostLikelyRecipeComponents extends CoordinatesPacket {
 	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeCollection(content, (data, object) -> data.writeCollection(object.order,
-				(IWriteListObject<ItemIdentifierStack>) LPDataOutput::writeItemIdentifierStack));
+				LPDataOutput::writeItemIdentifierStack));
 	}
 
 	@Override

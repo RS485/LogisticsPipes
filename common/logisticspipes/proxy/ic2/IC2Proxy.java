@@ -44,10 +44,7 @@ public class IC2Proxy implements IIC2Proxy {
 		if (((IElectricItem) template.getItem()).getEmptyItem(stack) == stack.getItem()) {
 			return true;
 		}
-		if (((IElectricItem) template.getItem()).getChargedItem(stack) == stack.getItem()) {
-			return true;
-		}
-		return false;
+		return ((IElectricItem) template.getItem()).getChargedItem(stack) == stack.getItem();
 	}
 
 	/**

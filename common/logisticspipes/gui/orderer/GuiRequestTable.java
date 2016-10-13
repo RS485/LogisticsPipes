@@ -66,35 +66,23 @@ import logisticspipes.utils.tuples.Pair;
 
 public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSearch, ISpecialItemRenderer, IDiskProvider {
 
-	private enum DisplayOptions {
-		Both,
-		SupplyOnly,
-		CraftOnly,
-	}
-
-	protected DisplayOptions displayOptions = DisplayOptions.Both;
 	public final PipeBlockRequestTable _table;
-	private SmallGuiButton Macrobutton;
-
 	public final EntityPlayer _entityPlayer;
-	public ItemDisplay itemDisplay;
-	private SearchBar search;
-
 	protected final String _title = "Request items";
-
+	public ItemDisplay itemDisplay;
 	public int dimension;
+	protected DisplayOptions displayOptions = DisplayOptions.Both;
+	private SmallGuiButton Macrobutton;
+	private SearchBar search;
 	private boolean showRequest = true;
 	private int startLeft;
 	private int startXSize;
-
 	private BitSet handledExtention = new BitSet();
 	private int orderIdForButton;
-
 	private GuiButton[] sycleButtons = new GuiButton[2];
 	private IChainAddList<GuiButton> moveWhileSmall = new ChainAddArrayList<>();
 	private IChainAddList<GuiButton> hideWhileSmall = new ChainAddArrayList<>();
 	private GuiButton hideShowButton;
-
 	public GuiRequestTable(EntityPlayer entityPlayer, PipeBlockRequestTable table) {
 		super(410, 240, 0, 0);
 		_table = table;
@@ -693,5 +681,11 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 	@Override
 	public ItemDisplay getItemDisplay() {
 		return itemDisplay;
+	}
+
+	private enum DisplayOptions {
+		Both,
+		SupplyOnly,
+		CraftOnly,
 	}
 }

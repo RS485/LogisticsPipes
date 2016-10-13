@@ -8,13 +8,13 @@ import logisticspipes.recipes.CraftingParts;
 
 public interface ICoFHPowerProxy {
 
-	public boolean isEnergyReceiver(TileEntity tile);
+	boolean isEnergyReceiver(TileEntity tile);
 
-	public ICoFHEnergyReceiver getEnergyReceiver(TileEntity tile);
+	ICoFHEnergyReceiver getEnergyReceiver(TileEntity tile);
 
-	public void addCraftingRecipes(CraftingParts parts);
+	void addCraftingRecipes(CraftingParts parts);
 
-	public ICoFHEnergyStorage getEnergyStorage(int i);
+	ICoFHEnergyStorage getEnergyStorage(int i);
 
-	public boolean isAvailable();
+	boolean isAvailable();
 }

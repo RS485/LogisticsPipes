@@ -136,26 +136,22 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	public DictResource[] fuzzyCraftingFlagArray = new DictResource[9];
 	public DictResource outputFuzzyFlags = new DictResource(null, null);
 	public int priority = 0;
-
+	public int[] liquidSatelliteIdArray = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
+	public int liquidSatelliteId = 0;
+	public boolean[] craftingSigns = new boolean[6];
+	public boolean waitingForCraft = false;
+	public boolean cleanupModeIsExclude = true;
 	// from PipeItemsCraftingLogistics
 	protected ItemIdentifierInventory _dummyInventory = new ItemIdentifierInventory(11, "Requested items", 127);
 	protected ItemIdentifierInventory _liquidInventory = new ItemIdentifierInventory(ItemUpgrade.MAX_LIQUID_CRAFTER, "Fluid items", 1, true);
 	protected ItemIdentifierInventory _cleanupInventory = new ItemIdentifierInventory(ItemUpgrade.MAX_CRAFTING_CLEANUP * 3, "Cleanup Filer Items", 1);
-
 	protected int[] amount = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
-	public int[] liquidSatelliteIdArray = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
-	public int liquidSatelliteId = 0;
-
-	public boolean[] craftingSigns = new boolean[6];
-	public boolean waitingForCraft = false;
-
+	protected SinkReply _sinkReply;
+	private PipeItemsCraftingLogistics _pipe;
+	private IRequestItems _invRequester;
 	private WeakReference<TileEntity> lastAccessedCrafter = new WeakReference<TileEntity>(null);
-
-	public boolean cleanupModeIsExclude = true;
-	// for reliable transport
-	protected final DelayQueue<DelayedGeneric<Pair<ItemIdentifierStack, IAdditionalTargetInformation>>> _lostItems = new DelayQueue<>();
-
-	protected final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
+	private boolean cachedAreAllOrderesToBuffer;
+	private List<AdjacentTileEntity> cachedCrafters = null;
 
 	public ModuleCrafter() {
 		for(int i=0;i < fuzzyCraftingFlagArray.length;i++) {
@@ -182,8 +178,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		super.registerHandler(world, service);
 		_invRequester = (IRequestItems) service;
 	}
-
-	protected SinkReply _sinkReply;
 
 	@Override
 	public void registerPosition(ModulePositionType slot, int positionInt) {
@@ -237,6 +231,10 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	public int getPriority() {
 		return priority;
+	}
+
+	public void setPriority(int amount) {
+		priority = amount;
 	}
 
 	@Override
@@ -983,10 +981,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		}
 	}
 
-	public void setPriority(int amount) {
-		priority = amount;
-	}
-
 	public ItemIdentifierStack getByproductItem() {
 		return _dummyInventory.getIDStackInSlot(10);
 	}
@@ -1061,12 +1055,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		}
 	}
 
-	public void setFluidAmount(int[] amount) {
-		if (MainProxy.isClient(getWorld())) {
-			this.amount = amount;
-		}
-	}
-
 	public void defineFluidAmount(int integer, int slot) {
 		if (MainProxy.isClient(getWorld())) {
 			amount[slot] = integer;
@@ -1075,6 +1063,12 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	public int[] getFluidAmount() {
 		return amount;
+	}
+
+	public void setFluidAmount(int[] amount) {
+		if (MainProxy.isClient(getWorld())) {
+			this.amount = amount;
+		}
 	}
 
 	public void setFluidSatelliteId(int integer, int slot) {
@@ -1113,9 +1107,9 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	public void openAttachedGui(EntityPlayer player) {
 		if (MainProxy.isClient(player.worldObj)) {
 			if (player instanceof EntityPlayerMP) {
-				((EntityPlayerMP) player).closeScreen();
+				player.closeScreen();
 			} else if (player instanceof EntityPlayerSP) {
-				((EntityPlayerSP) player).closeScreen();
+				player.closeScreen();
 			}
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipeOpenConnectedGuiPacket.class).setModulePos(this));
 			return;
@@ -1311,8 +1305,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		return nextOrder.getResource().getItem().equals(extractedID) || (this.getUpgradeManager().isFuzzyUpgrade() && nextOrder.getResource().getBitSet().nextSetBit(0) != -1 && nextOrder.getResource().matches(extractedID, IResource.MatchSettings.NORMAL));
 	}
 
-	private boolean cachedAreAllOrderesToBuffer;
-
 	public boolean areAllOrderesToBuffer() {
 		return cachedAreAllOrderesToBuffer;
 	}
@@ -1487,8 +1479,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	protected int stacksToExtract() {
 		return 1;
 	}
-
-	private List<AdjacentTileEntity> cachedCrafters = null;
 
 	public List<AdjacentTileEntity> locateCrafters() {
 		if (cachedCrafters == null) {

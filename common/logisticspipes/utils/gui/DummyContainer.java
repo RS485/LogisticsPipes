@@ -48,16 +48,16 @@ import logisticspipes.utils.item.ItemIdentifier;
 
 public class DummyContainer extends Container {
 
+	public List<BitSet> inventoryFuzzySlotsContent = new ArrayList<>();
 	protected IInventory _playerInventory;
 	protected IInventory _dummyInventory;
 	protected IGuiOpenControler[] _controler;
+	boolean wasDummyLookup;
+	boolean overrideMCAntiSend;
 	private List<Slot> transferTop = new ArrayList<>();
 	private List<Slot> transferBottom = new ArrayList<>();
 	private long lastClicked;
 	private long lastDragnDropLockup;
-	boolean wasDummyLookup;
-	boolean overrideMCAntiSend;
-	public List<BitSet> inventoryFuzzySlotsContent = new ArrayList<>();
 
 	public DummyContainer(IInventory playerInventory, IInventory dummyInventory) {
 		_playerInventory = playerInventory;
@@ -340,14 +340,14 @@ public class DummyContainer extends Container {
 					if (inventoryplayer.getItemStack() != null && par1 == -999) {
 						if (par2 == 0) {
 							par4EntityPlayer.dropPlayerItemWithRandomChoice(inventoryplayer.getItemStack(), true);
-							inventoryplayer.setItemStack((ItemStack) null);
+							inventoryplayer.setItemStack(null);
 						}
 
 						if (par2 == 1) {
 							par4EntityPlayer.dropPlayerItemWithRandomChoice(inventoryplayer.getItemStack().splitStack(1), true);
 
 							if (inventoryplayer.getItemStack().stackSize == 0) {
-								inventoryplayer.setItemStack((ItemStack) null);
+								inventoryplayer.setItemStack(null);
 							}
 						}
 					}
@@ -398,7 +398,7 @@ public class DummyContainer extends Container {
 								}
 
 								if (itemstack4.stackSize == 0) {
-									inventoryplayer.setItemStack((ItemStack) null);
+									inventoryplayer.setItemStack(null);
 								}
 							}
 						} else if (slot2.canTakeStack(par4EntityPlayer)) {
@@ -408,7 +408,7 @@ public class DummyContainer extends Container {
 								inventoryplayer.setItemStack(itemstack5);
 
 								if (itemstack3.stackSize == 0) {
-									slot2.putStack((ItemStack) null);
+									slot2.putStack(null);
 								}
 
 								slot2.onPickupFromSlot(par4EntityPlayer, inventoryplayer.getItemStack());
@@ -427,7 +427,7 @@ public class DummyContainer extends Container {
 									itemstack4.splitStack(l1);
 
 									if (itemstack4.stackSize == 0) {
-										inventoryplayer.setItemStack((ItemStack) null);
+										inventoryplayer.setItemStack(null);
 									}
 
 									itemstack3.stackSize += l1;
@@ -447,7 +447,7 @@ public class DummyContainer extends Container {
 									itemstack3 = slot2.decrStackSize(l1);
 
 									if (itemstack3.stackSize == 0) {
-										slot2.putStack((ItemStack) null);
+										slot2.putStack(null);
 									}
 
 									slot2.onPickupFromSlot(par4EntityPlayer, inventoryplayer.getItemStack());
@@ -479,7 +479,7 @@ public class DummyContainer extends Container {
 							if (l1 > -1) {
 								inventoryplayer.addItemStackToInventory(itemstack3);
 								slot2.decrStackSize(itemstack5.stackSize);
-								slot2.putStack((ItemStack) null);
+								slot2.putStack(null);
 								slot2.onPickupFromSlot(par4EntityPlayer, itemstack5);
 							}
 						} else {
@@ -488,7 +488,7 @@ public class DummyContainer extends Container {
 							slot2.onPickupFromSlot(par4EntityPlayer, itemstack5);
 						}
 					} else if (!slot2.getHasStack() && itemstack3 != null && slot2.isItemValid(itemstack3)) {
-						inventoryplayer.setInventorySlotContents(par2, (ItemStack) null);
+						inventoryplayer.setInventorySlotContents(par2, null);
 						slot2.putStack(itemstack3);
 					}
 				}
@@ -526,7 +526,7 @@ public class DummyContainer extends Container {
 								itemstack3.stackSize += k1;
 
 								if (itemstack2.stackSize <= 0) {
-									slot3.putStack((ItemStack) null);
+									slot3.putStack(null);
 								}
 
 								slot3.onPickupFromSlot(par4EntityPlayer, itemstack2);

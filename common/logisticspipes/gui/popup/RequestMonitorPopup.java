@@ -73,18 +73,9 @@ public class RequestMonitorPopup extends SubGuiScreen {
 			}
 		}
 
-		ZOOM_LEVEL prev() {
-			int id = ordinal();
-			if (id - 1 < 0) {
-				return this;
-			} else {
-				return ZOOM_LEVEL.values()[id - 1];
-			}
-		}
-	}
+public class RequestMonitorPopup extends SubGuiScreen {
 
 	private static final ResourceLocation achievementTextures = new ResourceLocation("textures/gui/achievement/achievement_background.png");
-
 	private final PipeBlockRequestTable _table;
 	private final int orderId;
 
@@ -98,7 +89,6 @@ public class RequestMonitorPopup extends SubGuiScreen {
 	private int minX = -800;
 	private int maxX = 800;
 	private ZOOM_LEVEL zoom = ZOOM_LEVEL.NORMAL;
-
 	private Object[] tooltip = null;
 
 	public RequestMonitorPopup(PipeBlockRequestTable table, int orderId) {
@@ -107,6 +97,17 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		this.orderId = orderId;
 		guiMapY = -200;
 		Mouse.getDWheel(); // Reset DWheel on GUI open
+	}
+
+	private static void mirror(int[] par0ArrayOfInteger, int width, int height) {
+		int[] aint1 = new int[width];
+		int k = height / 2;
+
+		for (int l = 0; l < k; ++l) {
+			System.arraycopy(par0ArrayOfInteger, l * width, aint1, 0, width);
+			System.arraycopy(par0ArrayOfInteger, (height - 1 - l) * width, par0ArrayOfInteger, l * width, width);
+			System.arraycopy(aint1, 0, par0ArrayOfInteger, (height - 1 - l) * width, width);
+		}
 	}
 
 	@Override
@@ -282,17 +283,6 @@ public class RequestMonitorPopup extends SubGuiScreen {
 				return;
 			}
 			++i;
-		}
-	}
-
-	private static void mirror(int[] par0ArrayOfInteger, int width, int height) {
-		int[] aint1 = new int[width];
-		int k = height / 2;
-
-		for (int l = 0; l < k; ++l) {
-			System.arraycopy(par0ArrayOfInteger, l * width, aint1, 0, width);
-			System.arraycopy(par0ArrayOfInteger, (height - 1 - l) * width, par0ArrayOfInteger, l * width, width);
-			System.arraycopy(aint1, 0, par0ArrayOfInteger, (height - 1 - l) * width, width);
 		}
 	}
 

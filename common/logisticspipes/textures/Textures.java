@@ -14,38 +14,10 @@ import logisticspipes.textures.provider.LPPipeIconTransformerProvider;
 
 public class Textures {
 
-	private int index = 0;
-	private int newTextureIndex = 0;
 	public static TextureType empty = new TextureType();
-	static {
-		Textures.empty.normal = 0;
-		Textures.empty.powered = 0;
-		Textures.empty.unpowered = 0;
-	}
 	public static TextureType empty_1 = new TextureType();
-	static {
-		Textures.empty_1.normal = 1;
-		Textures.empty_1.powered = 1;
-		Textures.empty_1.unpowered = 1;
-	}
 	public static TextureType empty_2 = new TextureType();
-	static {
-		Textures.empty_2.normal = 2;
-		Textures.empty_2.powered = 2;
-		Textures.empty_2.unpowered = 2;
-	}
 	public static SmallTextureType smallEmpty = new SmallTextureType();
-	static {
-		Textures.smallEmpty.normal = 0;
-		Textures.smallEmpty.newTexture = 0;
-	}
-
-	public Textures() {
-		Textures.LPactionIconProvider = new LPActionTriggerIconProvider();
-		Textures.LPpipeIconProvider = new LPPipeIconProvider();
-		Textures.LPnewPipeIconProvider = new LPPipeIconTransformerProvider();
-	}
-
 	public static TextureType LOGISTICSPIPE_TEXTURE = Textures.empty;
 	public static TextureType LOGISTICSPIPE_PROVIDER_TEXTURE = Textures.empty;
 	public static TextureType LOGISTICSPIPE_REQUESTER_TEXTURE = Textures.empty;
@@ -93,7 +65,6 @@ public class Textures {
 	public static TextureType LOGISTICSPIPE_LIQUID_EXTRACTOR = Textures.empty;
 	public static TextureType LOGISTICSPIPE_LIQUID_SATELLITE = Textures.empty;
 	public static TextureType LOGISTICSPIPE_OPAQUE_TEXTURE = Textures.empty;
-
 	public static SmallTextureType LOGISTICSPIPE_BASIC_TRANSPORT_TEXTURE = Textures.smallEmpty;
 
 	public static TextureAtlasSprite LOGISTICS_REQUEST_TABLE[] = new TextureAtlasSprite[0];
@@ -137,7 +108,6 @@ public class Textures {
 	public static String LOGISTICSPIPE_DESTINATION_TEXTURE_FILE = "pipes/destination";
 	public static String LOGISTICSPIPE_CRAFTERMK3_TEXTURE_FILE = "pipes/crafting_mk3";
 	public static String LOGISTICSPIPE_FIREWALL_TEXTURE_FILE = "pipes/firewall";
-
 	// Fluid Pipes
 	public static String LOGISTICSPIPE_LIQUID_CONNECTOR_TEXTURE_FILE = "pipes/liquid_connector";
 	public static String LOGISTICSPIPE_LIQUID_BASIC_FILE = "pipes/liquid_basic";
@@ -146,7 +116,6 @@ public class Textures {
 	public static String LOGISTICSPIPE_LIQUID_REQUEST_FILE = "pipes/liquid_request";
 	public static String LOGISTICSPIPE_LIQUID_EXTRACTOR_FILE = "pipes/liquid_extractor";
 	public static String LOGISTICSPIPE_LIQUID_SATELLITE_FILE = "pipes/liquid_satellite";
-
 	// Status overlay
 	public static String LOGISTICSPIPE_ROUTED_TEXTURE_FILE = "pipes/status_overlay/routed";
 	public static String LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE = "pipes/status_overlay/not_routed";
@@ -160,30 +129,56 @@ public class Textures {
 	public static String LOGISTICSPIPE_SECURITY_TEXTURE_FILE = "pipes/status_overlay/security";
 	public static String LOGISTICSPIPE_SUBPOWER_TEXTURE_FILE = "pipes/status_overlay/subpower";
 	public static String LOGISTICSPIPE_OPAQUE_TEXTURE_FILE = "pipes/status_overlay/opaque";
-
 	// Chassi pipes
 	public static String LOGISTICSPIPE_CHASSI1_TEXTURE_FILE = "pipes/chassi/chassi_mk1";
 	public static String LOGISTICSPIPE_CHASSI2_TEXTURE_FILE = "pipes/chassi/chassi_mk2";
 	public static String LOGISTICSPIPE_CHASSI3_TEXTURE_FILE = "pipes/chassi/chassi_mk3";
 	public static String LOGISTICSPIPE_CHASSI4_TEXTURE_FILE = "pipes/chassi/chassi_mk4";
 	public static String LOGISTICSPIPE_CHASSI5_TEXTURE_FILE = "pipes/chassi/chassi_mk5";
-
 	// Chassi status overlay
 	public static String LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE_FILE = "pipes/chassi/status_overlay/routed";
 	public static String LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE_FILE = "pipes/chassi/status_overlay/not_routed";
 	public static String LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE_FILE = "pipes/chassi/status_overlay/direction";
-
 	// Pipe Power Overlays
 	public static String LOGISTICSPIPE_OVERLAY_POWERED_TEXTURE_FILE = "pipes/status_overlay/powered-pipe";
 	public static String LOGISTICSPIPE_OVERLAY_UNPOWERED_TEXTURE_FILE = "pipes/status_overlay/un-powered-pipe";
 	public static String LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE = "pipes/status_overlay/un-overlayed";
-
 	public static String LOGISTICSPIPE_BASIC_TRANSPORT_TEXTURE_FILE = "pipes/transport/basic";
-
 	public static String LOGISTICS_SOLID_BLOCK = Textures.LOGISTICSPIPE_TEXTURE_FILE;
 	public static IIconProvider LPactionIconProvider;
 	public static LPPipeIconProvider LPpipeIconProvider;
 	public static LPPipeIconTransformerProvider LPnewPipeIconProvider;
+
+	static {
+		Textures.empty.normal = 0;
+		Textures.empty.powered = 0;
+		Textures.empty.unpowered = 0;
+	}
+
+	static {
+		Textures.empty_1.normal = 1;
+		Textures.empty_1.powered = 1;
+		Textures.empty_1.unpowered = 1;
+	}
+
+	static {
+		Textures.empty_2.normal = 2;
+		Textures.empty_2.powered = 2;
+		Textures.empty_2.unpowered = 2;
+	}
+
+	static {
+		Textures.smallEmpty.normal = 0;
+		Textures.smallEmpty.newTexture = 0;
+	}
+
+	private int index = 0;
+	private int newTextureIndex = 0;
+	public Textures() {
+		Textures.LPactionIconProvider = new LPActionTriggerIconProvider();
+		Textures.LPpipeIconProvider = new LPPipeIconProvider();
+		Textures.LPnewPipeIconProvider = new LPPipeIconTransformerProvider();
+	}
 
 	//this gets called with null par1IIconRegister from preinit, and later with non-null from textureprestitch
 	public void registerBlockIcons(IIconRegister par1IIconRegister) {

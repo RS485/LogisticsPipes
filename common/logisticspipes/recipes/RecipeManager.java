@@ -97,7 +97,7 @@ public class RecipeManager {
 
 		@SuppressWarnings("unchecked")
 		public void addOrdererRecipe(ItemStack stack, String dye, ItemStack orderer) {
-			craftingManager.getRecipeList().add(new ShapelessOrdererRecipe(stack, new Object[]{dye, orderer}));
+			craftingManager.getRecipeList().add(new ShapelessOrdererRecipe(stack, dye, orderer));
 		}
 
 		@SuppressWarnings("unchecked")

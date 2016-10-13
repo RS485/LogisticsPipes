@@ -10,6 +10,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.IIcon;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import lombok.Getter;
+
 import logisticspipes.gui.hud.modules.HUDCCBasedQuickSort;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
@@ -41,17 +51,6 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import lombok.Getter;
 
 public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 
@@ -113,6 +112,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 			return;
 		}
 		handleSinkResponses(invUtil);
+
 		if (--currentTick > 0) {
 			return;
 		}
@@ -132,10 +132,6 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 		if ((!(invUtil instanceof SpecialInventoryHandler) && invUtil.getSizeInventory() == 0) || !_service.canUseEnergy(500)) {
 			stalled = true;
 			return;
-		}
-
-		if (lastSuceededStack >= invUtil.getSizeInventory()) {
-			lastSuceededStack = 0;
 		}
 
 		//incremented at the end of the previous loop.
@@ -181,7 +177,10 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 				}
 			}
 			if (canBeHandled || pair.getValue().getValue1() > timeout) {
-				if (handle(invUtil, pair.getKey(), pair.getValue().getValue2())) {
+				// skip entry, if slot is not in the inventory (too high).
+				boolean slotInInventory = pair.getKey() < invUtil.getSizeInventory();
+
+				if (slotInInventory && handle(invUtil, pair.getKey(), pair.getValue().getValue2())) {
 					stalled = false;
 					lastSuceededStack = pair.getKey();
 				}
